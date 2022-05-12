@@ -2,110 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28055C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349657AbiELA2i (ORCPT
+        id S1349671AbiELA3u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 20:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33112 "EHLO
+        Wed, 11 May 2022 20:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349655AbiELA2h (ORCPT
+        with ESMTP id S1349655AbiELA3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 20:28:37 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD221AEC69;
-        Wed, 11 May 2022 17:28:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=JQQpXDILRhi5lJijLn3ENVGB5zi9S0zGMEw13K7gPKk=; b=blQpV2LjsgKnCKs0TW01z5Mbf0
-        oosEGMaHooVxuB5o+XTXzqenvcUp+3IdvMLDGqHM5zTxXIA22z2i07aMFUJ73a/ZLp9jjjMvalBk9
-        ErAfLohHDRErOuVrWafejakN50eHMlryhbzlq9dGx72qjBDr/g8VzFy7Bo50GhShJZrs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nowfw-002N8s-Ru; Thu, 12 May 2022 02:27:28 +0200
-Date:   Thu, 12 May 2022 02:27:28 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
-        "kostap@marvell.com" <kostap@marvell.com>,
-        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v6 1/3] dt-bindings: marvell: Document the AC5/AC5X
- compatibles
-Message-ID: <YnxUcB2e+Y9gtwI7@lunn.ch>
-References: <20220510231002.1160798-1-chris.packham@alliedtelesis.co.nz>
- <20220510231002.1160798-2-chris.packham@alliedtelesis.co.nz>
- <YnvsInrh03BVh7lN@lunn.ch>
- <608a7d9d-9238-281a-8770-aa20feb7e6be@alliedtelesis.co.nz>
+        Wed, 11 May 2022 20:29:49 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68F11A90D9;
+        Wed, 11 May 2022 17:29:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652315388; x=1683851388;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=QVmwNynkT04gSDeDkYvO4d7kGnKP1A1Q5Qz1j6zm5lk=;
+  b=NC5miKZ91AejrLui23NrzpXvZrOXwhojnV6iBkH6q7l0y8mgD67hi/zt
+   TR0NV4AAsnAaNSo0h7Oyp+KkHJ+uYIDj/AZ6VgddE3tGfcOarGMj3WH+e
+   q+JyxCqUVlXgnNpTI1RJNvTpSeBqbukHSmM+z7aUjDQTvxKJLyFWcnt6z
+   P5rMjyUkjanRq1a+RYBGUYlGZgqxybwQUZQZf0My2iyaNiZYu87/giXR/
+   F+kio9BuGrOXMv+GHVjY5CBypUaFRonCrmFEi3pL5Nb00/6VpWGpSXoJp
+   iRSvwfJ70AmVThqBqxaMs3AV4gE35oE/aEqNnRCTGFEvA++tRktJPAiXM
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="268683462"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="268683462"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 17:29:48 -0700
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="572305211"
+Received: from wancheny-mobl.amr.corp.intel.com (HELO [10.209.114.21]) ([10.209.114.21])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 17:29:47 -0700
+Message-ID: <54ab824c-44a9-239a-9380-2f051f26a079@linux.intel.com>
+Date:   Wed, 11 May 2022 17:29:45 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <608a7d9d-9238-281a-8770-aa20feb7e6be@alliedtelesis.co.nz>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v3] PCI/AER: Handle Multi UnCorrectable/Correctable errors
+ properly
+Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver OHalloran <oohall@gmail.com>, linux-pci@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220511234024.GA831116@bhelgaas>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20220511234024.GA831116@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 11:14:25PM +0000, Chris Packham wrote:
+
+
+On 5/11/22 4:40 PM, Bjorn Helgaas wrote:
+> On Mon, Apr 18, 2022 at 03:02:37PM +0000, Kuppuswamy Sathyanarayanan wrote:
+>> Currently the aer_irq() handler returns IRQ_NONE for cases without bits
+>> PCI_ERR_ROOT_UNCOR_RCV or PCI_ERR_ROOT_COR_RCV are set. But this
+>> assumption is incorrect.
+>>
+>> Consider a scenario where aer_irq() is triggered for a correctable
+>> error, and while we process the error and before we clear the error
+>> status in "Root Error Status" register, if the same kind of error
+>> is triggered again, since aer_irq() only clears events it saw, the
+>> multi-bit error is left in tact. This will cause the interrupt to fire
+>> again, resulting in entering aer_irq() with just the multi-bit error
+>> logged in the "Root Error Status" register.
+>>
+>> Repeated AER recovery test has revealed this condition does happen
+>> and this prevents any new interrupt from being triggered. Allow to
+>> process interrupt even if only multi-correctable (BIT 1) or
+>> multi-uncorrectable bit (BIT 3) is set.
+>>
+>> Also note that, for cases with only multi-bit error is set, since this
+>> is not the first occurrence of the error, PCI_ERR_ROOT_ERR_SRC may have
+>> zero or some junk value. So we cannot cleanly process this error
+>> information using aer_isr_one_error(). All we are attempting with this
+>> fix is to make sure error interrupt processing can continue in this
+>> scenario.
+>>
+>> This error can be reproduced by making following changes to the
+>> aer_irq() function and by executing the given test commands.
+>>
+>>   static irqreturn_t aer_irq(int irq, void *context)
+>>           struct aer_err_source e_src = {};
+>>
+>>           pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS,
+>> 				&e_src.status);
+>>   +       pci_dbg(pdev->port, "Root Error Status: %04x\n",
+>>   +		e_src.status);
+>>           if (!(e_src.status & AER_ERR_STATUS_MASK))
 > 
-> On 12/05/22 05:02, Andrew Lunn wrote:
-> > On Wed, May 11, 2022 at 11:10:00AM +1200, Chris Packham wrote:
-> >> Describe the compatible properties for the Marvell Alleycat5/5X switches
-> >> with integrated CPUs.
-> >>
-> >> Alleycat5:
-> >> * 98DX2538: 24x1G + 2x10G + 2x10G Stack
-> >> * 98DX2535: 24x1G + 4x1G Stack
-> >> * 98DX2532: 8x1G + 2x10G + 2x1G Stack
-> >> * 98DX2531: 8x1G + 4x1G Stack
-> >> * 98DX2528: 24x1G + 2x10G + 2x10G Stack
-> >> * 98DX2525: 24x1G + 4x1G Stack
-> >> * 98DX2522: 8x1G + 2x10G + 2x1G Stack
-> >> * 98DX2521: 8x1G + 4x1G Stack
-> >> * 98DX2518: 24x1G + 2x10G + 2x10G Stack
-> >> * 98DX2515: 24x1G + 4x1G Stack
-> >> * 98DX2512: 8x1G + 2x10G + 2x1G Stack
-> >> * 98DX2511: 8x1G + 4x1G Stack
-> >>
-> >> Alleycat5X:
-> >> * 98DX3500: 24x1G + 6x25G
-> >> * 98DX3501: 16x1G + 6x10G
-> >> * 98DX3510: 48x1G + 6x25G
-> >> * 98DX3520: 24x2.5G + 6x25G
-> >> * 98DX3530: 48x2.5G + 6x25G
-> >> * 98DX3540: 12x5G/6x10G + 6x25G
-> >> * 98DX3550: 24x5G/12x10G + 6x25G
-> > Hi Chris
-> >
-> > When looking at this list, is it just the switch which changes, and
-> > everything else in the package stays the same?
+> Do you mean
 > 
-> CPU wise I've been told everything is identical. The differences are all 
-> in the switch side.
-
-O.K. That helps a lot with this description.
-
-> > armada-98DX2538.dtsi which extends armada-98DX25xx.dtsi
+>    if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
 > 
-> There wouldn't be anything to add in 98DX2538 (at least not until we 
-> have a proper switchdev driver).
+> here?  AER_ERR_STATUS_MASK would be after this fix.
 
-Does the switch/SoC have ID registers? For mv88e6xxx, the switch is
-identified by its ID registers, so we don't have switch specific
-compatible value in DT. Hopefully it is the same here. All we need to
-say is that there is a switch in the main .dtsi file, and the .dts
-file would then indicate which ports are actually used.
+Yes. You are correct. Do you want me to update it and Fixes tag
+and send next version?
 
-   Andrew
+> 
+>>                   return IRQ_NONE;
+>>
+>>   +       mdelay(5000);
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
