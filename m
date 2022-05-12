@@ -2,135 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 207B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 23:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B53C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 23:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359446AbiELX0a (ORCPT
+        id S1359464AbiELX2V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 19:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
+        Thu, 12 May 2022 19:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354801AbiELX00 (ORCPT
+        with ESMTP id S1354671AbiELX2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 19:26:26 -0400
-X-Greylist: delayed 185 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 16:26:22 PDT
-Received: from hfcrelay.icp-osb-irony-out6.external.iinet.net.au (hfcrelay.icp-osb-irony-out6.external.iinet.net.au [203.59.1.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C35D1EAC2
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 16:26:20 -0700 (PDT)
-IronPort-SDR: 6ED5Nm2L9KnP/3fOBxfIkd6wEWdTDOcmkgDiNW+dcYpVa+dZGr46kt9pDtiFEYr3ZcG7bQdZCQ
- QzzNDaA6Tw9DP1VjljiTbvGjzAnxQ2WtdNCwFvHhlcvJJdVhyHl13PzWZT/lCvamUVlUjyXZOL
- PHI/bK6GftBf2S8amzlq9+Dyp2+jlUdAmGQmp3gn3bE75wnoVFRZGwlB2SiAlEn6vS/dNWrjDP
- 3xwER9pjucNUN3cns+PcV+MOdQyVYGaAVrndhLOr+P4wDfiCxKe+Mw7cei40Hhqk0yZXhb5uvj
- j3w=
-X-SMTP-MATCH: 0
-X-IPAS-Result: =?us-ascii?q?A2BqAAAaln1i/0gv8TwNTR0BAQEBCQESAQUFAUAJgTQGA?=
- =?us-ascii?q?QsBhHWETpELA4skhHeCB4pCgXwLAQEBAQEBAQEBSwQBAYIOgnQChT8mNgcOA?=
- =?us-ascii?q?QIEAQEBAQMCAwEBBwEBAQUBAQEBAQEGAwGBHIUvhwkBAQEDIxVBEAsSBgICJ?=
- =?us-ascii?q?gICSQ4GDQYCAQGCea8feoExgQGIGYFlgRAsjmBDfYEQgTwMgnc+hAuED4JlB?=
- =?us-ascii?q?IFok3QoBA8DHTiBBhKBIXEBCgYDAwcKBTIGAgwYFAQCFRFTHgITBQcKHA4UH?=
- =?us-ascii?q?CQZDA8DEgMRAQcCCxIIFSwIAwIDCAMCAyMLAgMYCQcKAx0IChwSEBQCBBMfC?=
- =?us-ascii?q?wgDGh8tCQIEDgNDCAsKAxEEAxMYCxYIEAQGAwkvDSgLAxQPAQYDBgIFBQEDI?=
- =?us-ascii?q?AMUAwUnBwMhBwsmDQ0EHAcdAwMFJgMCAhsHAgIDAgYXBgICcgooDQgECAQcH?=
- =?us-ascii?q?iYTBQIHMQUELwIeBAUGEQkCFgIGBAUCBAQWAgISCAIIJxsHFhkdGQEFXgYLC?=
- =?us-ascii?q?SMcCiQNBgUGFgMnOAYiARsCUpcLexNDgS5aHjqhWZ8Mg1WfdAYTLahTlmWpD?=
- =?us-ascii?q?AqCBDMaCCgIgyNRKJ0CYzsCBgsBAQMJikaCSAEB?=
-IronPort-Data: A9a23:d9O0FKv/WTRWE0Nh5Zq3gi/MWufnVCZfMUV32f8akzHdYApBsoF/q
- tZmKWrSPvmDZmryfI9/OY2z8R4G75WHxoNjSFZsrX89RnhE9ZqZD4/BJB+pbn3Oc5bOFUg45
- p5PN9DKcMlpEnSC/R3xa+iwpnRV6/qFF+H2YALm1oCdZuPFpAMJ008LdzsR29Yw6TSB7oLkV
- era+6UzAnf8s9JPGj9SuvvrRC9H5qyo4mtF5wZmPpingXeH/5UrJMNHTU2OByagKmVkNrbSq
- zHrlezREsvxpn/BO/v9+lrJWhRiro36ZGBivkFrt52K2XCukMCTPpETb5LwYW8P49mAt4wqk
- o0V7fRcQy9xVkHHsLx1vxVwT3okZfUekFPKCSDXjCCd86HJW1jC8dQtS09vBJUj2uhFGSJp9
- qQUKQlYO3hvh8ruqF66Yto1155ldZe7ettZ4CtVpd3bJah+B8qfGuOWupkHhl/chegXdRraT
- 8UUczVHcR/EYhtSKhEQEp1WcOKA3SekKWQH9gzJzUYxy0zJyVFJi7XUC/7yWfrTT4JSkx2Ki
- 32TqgwVBTlfbrRz0wGt/X+hnPPnmSL9RZJXEePo9bhtmlL77mgSDgAGEF7l8fqRjk+lR8kZL
- 00S5zprqPZi9wqsVNaVdxm5pmOU+x0RQdxdF8Uk5wyXjKnZ+QCUAi4DVDEpQNglrOc3QyAn0
- hmCmNaBONB0mOPNDCjBr/LI8nbtY24JNWADIyQDSE0M/rEPvb0Os/4Gdf47eIbdszE/MWqYL
- +yixMTmu4gusA==
-IronPort-HdrOrdr: A9a23:9HB8+KzroiRNxeKs69BMKrPw9b1zdoMgy1knxilNoH1uA7Glfq
- WV98jzuiWUtN9vYgBHpTntAsW9qDDnhOdICPAqTMyftVDdyRGVxeJZnPffKl/bexEWn9Q1vc
- 1dms5FZ+EYZmIWsS+V2meF+6tJ+qj+zEl9v5a9858QJTsaDJ2Ilz0JaTpz5XcGIDWurKBJca
- ah2g==
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="5.91,221,1647273600"; 
-   d="scan'208";a="363217664"
-Received: from 60-241-47-72.tpgi.com.au (HELO [192.168.0.22]) ([60.241.47.72])
-  by icp-osb-irony-out6.iinet.net.au with ESMTP; 13 May 2022 07:23:14 +0800
-Message-ID: <db869491-142f-4360-0f3c-e4395563088b@uclinux.org>
-Date:   Fri, 13 May 2022 09:23:11 +1000
+        Thu, 12 May 2022 19:28:18 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1726D31907;
+        Thu, 12 May 2022 16:28:17 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id c24so2206697lfv.11;
+        Thu, 12 May 2022 16:28:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cpfA97nDV4SiW2VW+i5FVHsx+t3FCKmVLBmZii44FdE=;
+        b=kqBM6iNykm6TWh3OPtN3KNUqyw5Azl0zC+bz2Ms66O6sKoN0kw9HPHK7MEl25ZBQ9L
+         L8CRer3B1+tD6pZKaure8nj8d0GueAO/QsDzbrjXRLcTmLmZTA1q+V0aLQk4KJVG5V1J
+         VfF3Pir7FBeGVLVVt8JElNUM90239qH+if7wVSg3Gm9GlDnI1bNPHPIw6cDrL7dFVjqd
+         9apTJ1uVsRpixTJaPz8daNI4kRjjhvNTPUuANFkQ4jVRfrKNwdF+Dp3mvgugQDaovRW+
+         Hge5USiWx0kOowRq0KnkLp2ADdbQo8qW9kMAg2OtQJUw1oSA5LiBIhlft1FDabsbL6Ce
+         L78A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cpfA97nDV4SiW2VW+i5FVHsx+t3FCKmVLBmZii44FdE=;
+        b=URQqQMvQLOjhkcxiYp7834yB/qL5ksdNQ5t4ucfq60oSD/7MhjmUeChusMWdMnYqSB
+         qKn7lellySLGSD/BNHw4Uc9wYO/j3uURuW++DMkEdYaP66kyIldsYEjxuUaTt0CmVGTz
+         XaIzi3mjQuVFTJ3rxLGW0jPMPpVOh1hcw2Rm8SJTp7UG+vkGUogYrzTjLdRAOSc2LeK2
+         HWtyvyWV6XqyFQCjLGxAajCkrGfp929lU1XAnmZK8XQFDgMv5r2TyZOOmDHTFIVSl3wk
+         MaPScQTUcqdPPn2S5n+CPNLn9rH1+7TExHF/Tmnn6RXFxrscNvIMUsf9LP3yXKphPBsW
+         TvDA==
+X-Gm-Message-State: AOAM530zLwccaQI6ICk0YKW7U+YHw73xNyhBJlIXXvXdYOdlUr+VPvRf
+        kWzpB3eNiYsw/zTgeeMMbvM=
+X-Google-Smtp-Source: ABdhPJwmqcj7YqvF8NValKykWtMU500lUt5tUdBLW712+Zaujy4N8cbSQS3/q4FBv9Z1peRo/Q5rXw==
+X-Received: by 2002:a19:4f55:0:b0:472:1f2b:6d12 with SMTP id a21-20020a194f55000000b004721f2b6d12mr1434763lfk.388.1652398095274;
+        Thu, 12 May 2022 16:28:15 -0700 (PDT)
+Received: from mobilestation ([95.79.189.214])
+        by smtp.gmail.com with ESMTPSA id r18-20020ac24d12000000b0047255d2111csm131806lfi.75.2022.05.12.16.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 16:28:14 -0700 (PDT)
+Date:   Fri, 13 May 2022 02:28:11 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Vladimir Murzin <vladimir.murzin@arm.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Subject: Re: [PATCH v2 01/26] dma-direct: take dma-ranges/offsets into
+ account in resource mapping
+Message-ID: <20220512232811.6epllnb3ivb7vegq@mobilestation>
+References: <20220503225104.12108-1-Sergey.Semin@baikalelectronics.ru>
+ <20220503225104.12108-2-Sergey.Semin@baikalelectronics.ru>
+ <20220509061552.GA17190@lst.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] m68k: math-emu: Fix dependencies of math emulation
- support
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-References: <e0a9cf982a80f14efbf01cdc38e31128a9f41999.1652262437.git.geert@linux-m68k.org>
- <CAMuHMdW3BsuJOx6r1TmUJJYhqn_v5iDznTw0gnbayQAjBp2OYA@mail.gmail.com>
-From:   Greg Ungerer <gerg@uclinux.org>
-In-Reply-To: <CAMuHMdW3BsuJOx6r1TmUJJYhqn_v5iDznTw0gnbayQAjBp2OYA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509061552.GA17190@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+On Mon, May 09, 2022 at 08:15:52AM +0200, Christoph Hellwig wrote:
+> So I think the big problem pointed out by Robin is that existing DTs
+> might not take this into account. 
 
-On 11/5/22 22:54, Geert Uytterhoeven wrote:
-> On Wed, May 11, 2022 at 11:48 AM Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
->> If CONFIG_M54xx=y, CONFIG_MMU=y, and CONFIG_M68KFPU_EMU=y:
->>
->>      {standard input}:272: Error: invalid instruction for this architecture; needs 68000 or higher (68000 [68ec000, 68hc000, 68hc001, 68008, 68302, 68306, 68307, 68322, 68356], 68010, 68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060], cpu32 [68330, 68331, 68332, 68333, 68334, 68336, 68340, 68341, 68349, 68360], fidoa [fido]) -- statement `sub.b %d1,%d3' ignored
->>      {standard input}:609: Error: invalid instruction for this architecture; needs 68020 or higher (68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060]) -- statement `bfextu 4(%a1){%d0,#8},%d0' ignored
->>      {standard input}:752: Error: operands mismatch -- statement `mulu.l 4(%a0),%d3:%d0' ignored
->>      {standard input}:1155: Error: operands mismatch -- statement `divu.l %d0,%d3:%d7' ignored
->>
->> The math emulation support code is intended for 68020 and higher, and
->> uses several instructions or instruction modes not available on coldfire
->> or 68000.
->>
->> Originally, the dependency of M68KFPU_EMU on MMU was fine, as MMU
->> support was only available on 68020 or higher.  But this assumption
->> was broken by the introduction of MMU support for M547x and M548x.
->>
->> Drop the dependency on MMU, as the code should work fine on 68020 and up
->> without MMU (which are not yet supported by Linux, though).
->> Add dependencies on M68K_CLASSIC (to rule out Coldfire) and FPU (to rule
->> out 68xxx below 68020).
->>
->> Fixes: 1f7034b9616e6f14 ("m68k: allow ColdFire 547x and 548x CPUs to be built with MMU enabled")
->> Reported-by: kernel test robot <lkp@intel.com>
->> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
->> ---
->> To be queued in the m68k for-v5.19 branch.
->>
->>   arch/m68k/Kconfig.cpu | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
->> index 16ea9a67723c09dc..9abddbbee819f1d3 100644
->> --- a/arch/m68k/Kconfig.cpu
->> +++ b/arch/m68k/Kconfig.cpu
->> @@ -327,7 +327,7 @@ comment "Processor Specific Options"
->>
->>   config M68KFPU_EMU
->>          bool "Math emulation support"
->> -       depends on MMU
->> +       depends on M68K_CLASSIC && FPU
->                        ^^^^^^^^^^^^
-> Whoops, that's a silly typo...
+I'd say that the biggest problem isn't in the DT part but in the
+drivers using the dma_map_resource() method since they don't expect
+the non-uniform DMA-direct mapping can be available.
 
-Are you going to resend, or are you thinking of changing the way this is done?
+> So I think we need to do a little
+> research and at least Cc all maintainers and lists for relevant in-tree
+> DTs for drivers that use dma_map_resource to discuss this.
 
-I had thought that CONFIG_FPU enabled meant you had some type of
-floating point support in the kernel - be it hardware or software emulated.
-So I don't have a problem with this "as is".
+Right. I'll send the next patchset revision out with all possibly
+interested maintainers and lists in Cc of this patch.
 
-Regards
-Greg
+-Sergey
 
-
+> 
