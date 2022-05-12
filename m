@@ -2,177 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6858DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2050DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352111AbiELJdF (ORCPT
+        id S1348155AbiELJeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 05:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
+        Thu, 12 May 2022 05:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352008AbiELJcq (ORCPT
+        with ESMTP id S232425AbiELJeQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 05:32:46 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 02:32:43 PDT
-Received: from ewsoutbound.kpnmail.nl (ewsoutbound.kpnmail.nl [195.121.94.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3889B62104
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:32:42 -0700 (PDT)
-X-KPN-MessageId: 4e6ffd54-d1d6-11ec-a9ff-005056994fde
-Received: from smtp.kpnmail.nl (unknown [10.31.155.8])
-        by ewsoutbound.so.kpn.org (Halon) with ESMTPS
-        id 4e6ffd54-d1d6-11ec-a9ff-005056994fde;
-        Thu, 12 May 2022 11:31:31 +0200 (CEST)
+        Thu, 12 May 2022 05:34:16 -0400
+Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89E669B6B;
+        Thu, 12 May 2022 02:34:14 -0700 (PDT)
+Received: by mail-ua1-x930.google.com with SMTP id ay15so1770003uab.9;
+        Thu, 12 May 2022 02:34:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=xs4all.nl; s=xs4all01;
-        h=content-type:from:to:subject:mime-version:date:message-id;
-        bh=J5fVuHTorFO9vS+A8/3ndPu060HnZX6yzHxBET50rjw=;
-        b=mmZthCNB1ky7U/F/upi2LoOgPKYEzOY7d/njHyBbx+WPmmYjvGdY7i+V2MFGBvC1YZXV1sOKIYVFf
-         mhyhp6hoTYzk6ZeC8RcYunL2jb8VEc0YlGEbBywC+URbhmHmmjruJBsBfw/pB5aAi8Sj3RdNW5QxIz
-         OtoCDNGdFfCOjpllti5bs32/QCVk1p8yelQfhWbxVxX+4aepquKbuvjVOEYgeMrVy1YGpRvf7+CqAH
-         mGMPFZ+41/i0RFJOhzc2o289M75aCL4YOIsa/ADzA2Z5QsoNoxesvKXwh8not51IcRrPwFQg/0iVrX
-         FuJO/Gj2FFCXqXolh+fmDJgAdRz5Nzg==
-X-KPN-MID: 33|bmNIgalGIYJXpA7CRrWfasNg2BTj8AlOHOsTV3qYhtX4j/xmA4bPP+xrXkGSHxc
- avtd2wVqMgGpfLUuhlpISdg==
-X-KPN-VerifiedSender: Yes
-X-CMASSUN: 33|VG/RDjSU8Aq6zYZIftNGufBNEJo6kPBr8Ws9JbIXYGz1yKrLLPQYIHYeTTxKCbH
- DpxavEf2+O8HcZHgKJQqUhw==
-X-Originating-IP: 173.38.220.60
-Received: from [10.47.77.219] (unknown [173.38.220.60])
-        by smtp.xs4all.nl (Halon) with ESMTPSA
-        id 51ee21aa-d1d6-11ec-a066-00505699d6e5;
-        Thu, 12 May 2022 11:31:39 +0200 (CEST)
-Message-ID: <03e09da3-c068-a372-a3e5-dc0459f90682@xs4all.nl>
-Date:   Thu, 12 May 2022 11:31:36 +0200
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=It32UX8nOIVa55dLWgMXuIgBRh6vRzogSEnYGTpk8F4=;
+        b=jaEne6eQVDb6G7kiyFRSRprd1WA/ZBUURTZeUVhV4+bxfBxKf1UB6YVRzg+DD7DvBw
+         NzfA2W330TWAjtB5kRrhQ1gWZi8+MwPkTdeV9GlYsE6bzr72bGZ+M4dEHx1aXqBcAtNZ
+         U++clv2AwRZSUwL2WP87SiXd4BW2WQFFW/xE/no0RLEZgeDTb5XD/MpB4SY0KTERUFnx
+         ZsGyYzvvfIB9jsH4OcCEjGUkrsSnBe4zZzxk/TlWu3pB8gm+lX3KuEYcgIGVb8+xWApI
+         QTLZlqCxkmFS0exAel/Xn022MQNIOeH1yvz2WpaQupj4VI3prWTm/bpOsObUw88OyNGU
+         Hq6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=It32UX8nOIVa55dLWgMXuIgBRh6vRzogSEnYGTpk8F4=;
+        b=nOZKsyJXStpSI5Yv7kNkpgvjXjSPak7h5Jk2bglYVNm0nd2Xs9s26LdQ+idmNH31yQ
+         uGOcoJYLnycpqTqr9XDevwyTmY7TYkEUqXpkwAQXHI2AJhJS/uISv0Q6Cwmk2E9/TDwe
+         bvdTXTam5NYT5YhoDaVfGYn6IEUFJib7aLXcdNnGn6vnJAdUVjZpPVwt4TUUn1ocCCgm
+         g8fGeafcujL1SO9g8fxouZ9tc/fX4edfaSbrc/z5OYp6FGJRYjnvoR3msSU1d33dvTC3
+         5c66lK1DYwOxR5koXLGj7FlURBXZ3h7YxAihkwwaeTR4Yj3twXujpeiEb6cgxkAp92FJ
+         JwbA==
+X-Gm-Message-State: AOAM532vFyG06Hzm+fR0HSEwMUHt0oV8P6HTarOFk2yoSLG9TvQZeP7y
+        oq04TmRnEMwxqSY5I+EhSgA5bzc1QqxphCtKKXM=
+X-Google-Smtp-Source: ABdhPJxy4IsI78DxYQjxG3pVGElT5APglQbnF74rwi5bZzJOo7mdDSQs5xP+UgckO8uhg7WFUk1J1K4wtgF5Jo20nYs=
+X-Received: by 2002:ab0:5b4d:0:b0:35d:2f9c:f01 with SMTP id
+ v13-20020ab05b4d000000b0035d2f9c0f01mr15421035uae.86.1652348053811; Thu, 12
+ May 2022 02:34:13 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [DKIM] [PATCH v12, 13/17] media: mediatek: vcodec: Extract H264
- common code
-Content-Language: en-US
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-Cc:     Irui Wang <irui.wang@mediatek.com>,
-        George Sun <george.sun@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>, devicetree@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-kernel@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        linux-mediatek@lists.infradead.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
-References: <20220512021950.29087-1-yunfei.dong@mediatek.com>
- <20220512021950.29087-14-yunfei.dong@mediatek.com>
-From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
-In-Reply-To: <20220512021950.29087-14-yunfei.dong@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220405183953.2094007-1-pceballos@google.com> <nycvar.YFH.7.76.2204210947590.30217@cbobk.fhfr.pm>
+In-Reply-To: <nycvar.YFH.7.76.2204210947590.30217@cbobk.fhfr.pm>
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Date:   Thu, 12 May 2022 11:34:01 +0200
+Message-ID: <CAKdAkRQ7yxFFGJg41UxptxapKiP4bmHsfw7dRNE+LPzs1PRk=A@mail.gmail.com>
+Subject: Re: [PATCH] HID: Driver for Google Hangouts Meet Speakermic
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Pablo Ceballos <pceballos@google.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yunfei,
+On Thu, Apr 21, 2022 at 10:28 AM Jiri Kosina <jikos@kernel.org> wrote:
+>
+> On Tue, 5 Apr 2022, Pablo Ceballos wrote:
+>
+> > This driver works around a problem with the HID usage sent by this
+> > device for the mute button. It prevents key events from being generated
+> > for that HID usage since they would be incorrect.
+> >
+> > Signed-off-by: Pablo Ceballos <pceballos@google.com>
+>
+> Applied to hid.git#for-5.19/google. Thanks,
 
-On 5/12/22 04:19, Yunfei Dong wrote:
-> Mt8192 can use some of common code with mt8183. Moves them to
-> a new file in order to reuse.
-> 
-> Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-> Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> ---
->  .../media/platform/mediatek/vcodec/Makefile   |   1 +
->  .../vcodec/vdec/vdec_h264_req_common.c        | 310 +++++++++++++
->  .../vcodec/vdec/vdec_h264_req_common.h        | 274 +++++++++++
->  .../mediatek/vcodec/vdec/vdec_h264_req_if.c   | 427 ++----------------
->  4 files changed, 629 insertions(+), 383 deletions(-)
->  create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.c
->  create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.h
-> 
-> diff --git a/drivers/media/platform/mediatek/vcodec/Makefile b/drivers/media/platform/mediatek/vcodec/Makefile
-> index 359619653a0e..3f41d748eee5 100644
-> --- a/drivers/media/platform/mediatek/vcodec/Makefile
-> +++ b/drivers/media/platform/mediatek/vcodec/Makefile
-> @@ -9,6 +9,7 @@ mtk-vcodec-dec-y := vdec/vdec_h264_if.o \
->  		vdec/vdec_vp8_if.o \
->  		vdec/vdec_vp9_if.o \
->  		vdec/vdec_h264_req_if.o \
-> +		vdec/vdec_h264_req_common.o \
->  		mtk_vcodec_dec_drv.o \
->  		vdec_drv_if.o \
->  		vdec_vpu_if.o \
-> diff --git a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.c b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.c
-> new file mode 100644
-> index 000000000000..4e7c9d47751d
-> --- /dev/null
-> +++ b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.c
-> @@ -0,0 +1,310 @@
+I am curious, could not this be achieved without a kernel driver by
+simply using udev to map this usage code to KEY_RESERVED?
 
-<snip>
+Thanks.
 
-Here there is still a cast to iomem:
-
-> +void mtk_vdec_h264_copy_scaling_matrix(struct slice_api_h264_scaling_matrix *dst_matrix,
-> +				       const struct v4l2_ctrl_h264_scaling_matrix *src_matrix)
-> +{
-> +	memcpy_toio((void __iomem *)dst_matrix->scaling_list_4x4, src_matrix->scaling_list_4x4,
-> +		    sizeof(dst_matrix->scaling_list_4x4));
-> +
-> +	memcpy_toio((void __iomem *)dst_matrix->scaling_list_8x8, src_matrix->scaling_list_8x8,
-> +		    sizeof(dst_matrix->scaling_list_8x8));
-> +}
-
-<snip>
-
-> diff --git a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
-> index 27119aa31dd9..b055ceea481d 100644
-> --- a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
-> +++ b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
-
-<snip>
-
-> -static void
-> -get_h264_scaling_matrix(struct slice_api_h264_scaling_matrix *dst_matrix,
-> -			const struct v4l2_ctrl_h264_scaling_matrix *src_matrix)
-> -{
-> -	memcpy(dst_matrix->scaling_list_4x4, src_matrix->scaling_list_4x4,
-> -	       sizeof(dst_matrix->scaling_list_4x4));
-> -
-> -	memcpy(dst_matrix->scaling_list_8x8, src_matrix->scaling_list_8x8,
-> -	       sizeof(dst_matrix->scaling_list_8x8));
-> -}
-
-but that function was moved (AFAICT) from vdec_h264_req_if.c where a regular memcpy was
-used.
-
-Did you miss one iomem case?
-
-Can I change mtk_vdec_h264_copy_scaling_matrix() to:
-
-void mtk_vdec_h264_copy_scaling_matrix(struct slice_api_h264_scaling_matrix *dst_matrix,
-				       const struct v4l2_ctrl_h264_scaling_matrix *src_matrix)
-{
-	memcpy(dst_matrix->scaling_list_4x4, src_matrix->scaling_list_4x4,
-	       sizeof(dst_matrix->scaling_list_4x4));
-
-	memcpy(dst_matrix->scaling_list_8x8, src_matrix->scaling_list_8x8,
-	       sizeof(dst_matrix->scaling_list_8x8));
-}
-
-If that's OK, then I'll do that manually, so no need to post a v13.
-
-Everything else looks fine, so this is the only issue that needs to be resolved.
-
-Regards,
-
-	Hans
+-- 
+Dmitry
