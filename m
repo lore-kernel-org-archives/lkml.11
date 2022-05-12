@@ -2,166 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64338C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356843AbiELRFc (ORCPT
+        id S1356839AbiELRGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
+        Thu, 12 May 2022 13:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356839AbiELRF3 (ORCPT
+        with ESMTP id S1347317AbiELRGe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:05:29 -0400
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA159269EFD;
-        Thu, 12 May 2022 10:05:26 -0700 (PDT)
-Received: by mail-qt1-f182.google.com with SMTP id p4so4906023qtq.12;
-        Thu, 12 May 2022 10:05:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+6B2p5x2MsdiGQqOHTdj/jEV/QOhWbmjHIG+C1y2HyI=;
-        b=HVddJcFC1vwFoH8Vz9W+YE8WP8SAZuUOcUt9Ej4BteJZh6FgiF99kmT/9ZYBL+usw1
-         qiib83DDdL3aaBc1OxTZz+gS8aZ9qYwWiW1KNbxaKdkB/MXSUYFvxRPawj61yo1s/iC3
-         sluENUT3lt3xWc2IrBI8zHt+VBLFlvb12a3nUADTZlDSRJXXpIwpjnuEx9z66IgpoB23
-         7fTqwO+QNedSMl6lLYFToYW9czCtAvOVIw7VzkJV5AHxSgCJ7OZpc8q0QZRDPNx+6NOC
-         nuDjbHKJID9PUeZ/iEIc4R6gYMsrYrahz6qxOI2IzDFXHNidQZvuYkxWCEdxdpHptsJK
-         jKpA==
-X-Gm-Message-State: AOAM5309LOmoBo9Dexjibc8PFz0yAGzNOXUne+5GZjtInjzPLxndkkib
-        9LLu6Oz6e3dwBoJbYmRuwws=
-X-Google-Smtp-Source: ABdhPJyerLlG0Vc9EMfOfjsIemvOVeJd5Nd6Zc4QkNV1NHFFQZtrSBUY2HOMiIDSb+A1DVnZY5rbVg==
-X-Received: by 2002:ac8:5896:0:b0:2f3:d231:58a9 with SMTP id t22-20020ac85896000000b002f3d23158a9mr741939qta.131.1652375125492;
-        Thu, 12 May 2022 10:05:25 -0700 (PDT)
-Received: from dev0025.ash9.facebook.com (fwdproxy-ash-011.fbsv.net. [2a03:2880:20ff:b::face:b00c])
-        by smtp.gmail.com with ESMTPSA id t80-20020a374653000000b0069fc13ce231sm3183117qka.98.2022.05.12.10.05.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 10:05:25 -0700 (PDT)
-Date:   Thu, 12 May 2022 10:05:22 -0700
-From:   David Vernet <void@manifault.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] bpf: use 'error_xxx' tags in
- bpf_kprobe_multi_link_attach
-Message-ID: <20220512170522.3e47hwj53plhr4qq@dev0025.ash9.facebook.com>
-References: <20220512141710.116135-1-wanjiabing@vivo.com>
- <20220512141710.116135-2-wanjiabing@vivo.com>
+        Thu, 12 May 2022 13:06:34 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE37448E72;
+        Thu, 12 May 2022 10:06:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652375192; x=1683911192;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=/ybuHoHzAtRBoXiWgwax+YcGH4jG6oU63lubaSD8RYc=;
+  b=V+zaATBievH2a1mXSjlWFfkJcYR6dLCH5/tYP5xfrUIorsorLWxakWoo
+   zVzaD4F9jRVcy+adqQzfyg3ZICGUi7QiaQnwCaMmGneq3M5Y5kmGwAAGF
+   P/TqH8idoY6jECf2K5yKy/+Wxpkfq76sTIH29wd5RTN8Unwe1Y+6HPzWw
+   x3myy1h9uiRhAqdRIGTDwYTkyvybCDSn8Dd8ZVLVwLNkzE3kiIe50NWV/
+   9bnK8RnZSiq1d6g64C20SQZVYzd6OE0PDs4I9gIb6fJQz7SxqAtZc0FKm
+   rgKoJsgMsoII5cyN/sx2skqDwep4kejHtQWaa9qR2R5bcvRkATqOfnLjb
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="270006497"
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="270006497"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:01:37 -0700
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="521037693"
+Received: from djiang5-mobl1.amr.corp.intel.com (HELO [10.212.68.97]) ([10.212.68.97])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:01:37 -0700
+Message-ID: <cb3d6542-10a8-22d7-ce09-2956449c02eb@intel.com>
+Date:   Thu, 12 May 2022 10:01:36 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220512141710.116135-2-wanjiabing@vivo.com>
-User-Agent: NeoMutt/20211029
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] dmaengine: sf-pdma: Add multithread support for a DMA
+ channel
+Content-Language: en-US
+To:     Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>,
+        Green Wan <green.wan@sifive.com>,
+        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     david.abdurachmanov@sifive.com, linux@yadro.com
+References: <20220512091327.349563-1-v.v.mitrofanov@yadro.com>
+From:   Dave Jiang <dave.jiang@intel.com>
+In-Reply-To: <20220512091327.349563-1-v.v.mitrofanov@yadro.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:17:08PM +0800, Wan Jiabing wrote:
-> Use 'error_addrs', 'error_cookies' and 'error_link' tags to make error
-> handling more efficient.
 
-Can you add a bit more context to this commit summary? The added goto
-labels aren't what make the code more performant, it's the avoidance of
-unnecessary free calls on NULL pointers that (supposedly) does.
+On 5/12/2022 2:13 AM, Viacheslav Mitrofanov wrote:
+> When we get a DMA channel and try to use it in multiple threads it
+> will cause oops and hanging the system.
+>
+> % echo 64 > /sys/module/dmatest/parameters/threads_per_chan
+> % echo 10000 > /sys/module/dmatest/parameters/iterations
+> % echo 1 > /sys/module/dmatest/parameters/run
+> [   89.480664] Unable to handle kernel NULL pointer dereference at virtual
+>                 address 00000000000000a0
+> [   89.488725] Oops [#1]
+> [   89.494708] CPU: 2 PID: 1008 Comm: dma0chan0-copy0 Not tainted
+>                 5.17.0-rc5
+> [   89.509385] epc : vchan_find_desc+0x32/0x46
+> [   89.513553]  ra : sf_pdma_tx_status+0xca/0xd6
+>
+> This happens because of data race. Each thread rewrite channels's
+> descriptor as soon as device_prep_dma_memcpy() is called. It leads to the
+> situation when the driver thinks that it uses right descriptor that
+> actually is freed or substituted for other one.
+>
+> With current fixes a descriptor changes it's value only when it has
 
-> 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+With the current fix a descriptor ...
+
+s/it's/its/
+
+
+> been used. A new descriptor is acquired from vc->desc_issued queue that
+> is already filled with descriptors that are ready to be sent. Threads
+> have no direct access to DMA channel descriptor, now it is just possible
+
+I suggest a '.' here instead of ','
+
+DJ
+
+> to queue a descriptor for further processing.
+>
+> Fixes: 6973886ad58e ("dmaengine: sf-pdma: add platform DMA support for HiFive Unleashed A00")
+> Signed-off-by: Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
 > ---
->  kernel/trace/bpf_trace.c | 20 +++++++++++---------
->  1 file changed, 11 insertions(+), 9 deletions(-)
-> 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 2eaac094caf8..3a8b69ef9a0d 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -2467,20 +2467,20 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->  	if (uaddrs) {
->  		if (copy_from_user(addrs, uaddrs, size)) {
->  			err = -EFAULT;
-> -			goto error;
-> +			goto error_addrs;
->  		}
->  	} else {
->  		struct user_syms us;
->  
->  		err = copy_user_syms(&us, usyms, cnt);
->  		if (err)
-> -			goto error;
-> +			goto error_addrs;
->  
->  		sort(us.syms, cnt, sizeof(*us.syms), symbols_cmp, NULL);
->  		err = ftrace_lookup_symbols(us.syms, cnt, addrs);
->  		free_user_syms(&us);
->  		if (err)
-> -			goto error;
-> +			goto error_addrs;
->  	}
->  
->  	ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
-> @@ -2488,18 +2488,18 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->  		cookies = kvmalloc(size, GFP_KERNEL);
->  		if (!cookies) {
->  			err = -ENOMEM;
-> -			goto error;
-> +			goto error_addrs;
->  		}
->  		if (copy_from_user(cookies, ucookies, size)) {
->  			err = -EFAULT;
-> -			goto error;
-> +			goto error_cookies;
->  		}
->  	}
->  
->  	link = kzalloc(sizeof(*link), GFP_KERNEL);
->  	if (!link) {
->  		err = -ENOMEM;
-> -		goto error;
-> +		goto error_cookies;
->  	}
->  
->  	bpf_link_init(&link->link, BPF_LINK_TYPE_KPROBE_MULTI,
-> @@ -2507,7 +2507,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->  
->  	err = bpf_link_prime(&link->link, &link_primer);
->  	if (err)
-> -		goto error;
-> +		goto error_link;
->  
->  	if (flags & BPF_F_KPROBE_MULTI_RETURN)
->  		link->fp.exit_handler = kprobe_multi_link_handler;
-> @@ -2539,10 +2539,12 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->  
->  	return bpf_link_settle(&link_primer);
->  
-> -error:
-> +error_link:
->  	kfree(link);
-> -	kvfree(addrs);
-> +error_cookies:
->  	kvfree(cookies);
-> +error_addrs:
-> +	kvfree(addrs);
->  	return err;
->  }
->  #else /* !CONFIG_FPROBE */
-> -- 
-> 2.35.1
-> 
-
-Could you clarify what performance gains you observed from doing this? I
-wouldn't have expected avoiding a couple of calls and NULL checks to have a
-measurable impact on performance, and I'm wondering whether the complexity
-from having multiple goto labels is really worth any supposed performance
-gains.
-
-Thanks,
-David
+>   drivers/dma/sf-pdma/sf-pdma.c | 44 ++++++++++++++++++++++++-----------
+>   1 file changed, 30 insertions(+), 14 deletions(-)
+>
+> diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
+> index f12606aeff87..70bb032c59c2 100644
+> --- a/drivers/dma/sf-pdma/sf-pdma.c
+> +++ b/drivers/dma/sf-pdma/sf-pdma.c
+> @@ -52,16 +52,6 @@ static inline struct sf_pdma_desc *to_sf_pdma_desc(struct virt_dma_desc *vd)
+>   static struct sf_pdma_desc *sf_pdma_alloc_desc(struct sf_pdma_chan *chan)
+>   {
+>   	struct sf_pdma_desc *desc;
+> -	unsigned long flags;
+> -
+> -	spin_lock_irqsave(&chan->lock, flags);
+> -
+> -	if (chan->desc && !chan->desc->in_use) {
+> -		spin_unlock_irqrestore(&chan->lock, flags);
+> -		return chan->desc;
+> -	}
+> -
+> -	spin_unlock_irqrestore(&chan->lock, flags);
+>   
+>   	desc = kzalloc(sizeof(*desc), GFP_NOWAIT);
+>   	if (!desc)
+> @@ -111,7 +101,6 @@ sf_pdma_prep_dma_memcpy(struct dma_chan *dchan,	dma_addr_t dest, dma_addr_t src,
+>   	desc->async_tx = vchan_tx_prep(&chan->vchan, &desc->vdesc, flags);
+>   
+>   	spin_lock_irqsave(&chan->vchan.lock, iflags);
+> -	chan->desc = desc;
+>   	sf_pdma_fill_desc(desc, dest, src, len);
+>   	spin_unlock_irqrestore(&chan->vchan.lock, iflags);
+>   
+> @@ -170,11 +159,17 @@ static size_t sf_pdma_desc_residue(struct sf_pdma_chan *chan,
+>   	unsigned long flags;
+>   	u64 residue = 0;
+>   	struct sf_pdma_desc *desc;
+> -	struct dma_async_tx_descriptor *tx;
+> +	struct dma_async_tx_descriptor *tx = NULL;
+>   
+>   	spin_lock_irqsave(&chan->vchan.lock, flags);
+>   
+> -	tx = &chan->desc->vdesc.tx;
+> +	list_for_each_entry(vd, &chan->vchan.desc_submitted, node)
+> +		if (vd->tx.cookie == cookie)
+> +			tx = &vd->tx;
+> +
+> +	if (!tx)
+> +		goto out;
+> +
+>   	if (cookie == tx->chan->completed_cookie)
+>   		goto out;
+>   
+> @@ -241,6 +236,19 @@ static void sf_pdma_enable_request(struct sf_pdma_chan *chan)
+>   	writel(v, regs->ctrl);
+>   }
+>   
+> +static struct sf_pdma_desc *sf_pdma_get_first_pending_desc(struct sf_pdma_chan *chan)
+> +{
+> +	struct virt_dma_chan *vchan = &chan->vchan;
+> +	struct virt_dma_desc *vdesc;
+> +
+> +	if (list_empty(&vchan->desc_issued))
+> +		return NULL;
+> +
+> +	vdesc = list_first_entry(&vchan->desc_issued, struct virt_dma_desc, node);
+> +
+> +	return container_of(vdesc, struct sf_pdma_desc, vdesc);
+> +}
+> +
+>   static void sf_pdma_xfer_desc(struct sf_pdma_chan *chan)
+>   {
+>   	struct sf_pdma_desc *desc = chan->desc;
+> @@ -268,8 +276,11 @@ static void sf_pdma_issue_pending(struct dma_chan *dchan)
+>   
+>   	spin_lock_irqsave(&chan->vchan.lock, flags);
+>   
+> -	if (vchan_issue_pending(&chan->vchan) && chan->desc)
+> +	if ((chan->desc == NULL) && vchan_issue_pending(&chan->vchan)) {
+> +		/* vchan_issue_pending has made a check that desc in not NULL */
+> +		chan->desc = sf_pdma_get_first_pending_desc(chan);
+>   		sf_pdma_xfer_desc(chan);
+> +	}
+>   
+>   	spin_unlock_irqrestore(&chan->vchan.lock, flags);
+>   }
+> @@ -298,6 +309,11 @@ static void sf_pdma_donebh_tasklet(struct tasklet_struct *t)
+>   	spin_lock_irqsave(&chan->vchan.lock, flags);
+>   	list_del(&chan->desc->vdesc.node);
+>   	vchan_cookie_complete(&chan->desc->vdesc);
+> +
+> +	chan->desc = sf_pdma_get_first_pending_desc(chan);
+> +	if (chan->desc)
+> +		sf_pdma_xfer_desc(chan);
+> +
+>   	spin_unlock_irqrestore(&chan->vchan.lock, flags);
+>   }
+>   
