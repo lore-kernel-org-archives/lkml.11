@@ -2,216 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A29C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352061AbiELJb2 (ORCPT
+        id S1346306AbiELJcC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 05:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        Thu, 12 May 2022 05:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346306AbiELJb1 (ORCPT
+        with ESMTP id S1352063AbiELJby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 05:31:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F59C612B5
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:31:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652347884;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BL3CJGsqY/cqdqqI7zN3z8l2hVpezWWDtzBjCtMeqUg=;
-        b=OXF1EdD8jFeB+hmkUpriJ/6Cws4uCCun+mg6TyM1izR2NWzZY/Tp+so0IdbCIdDYfsGML5
-        Rtl5tq8T8Vo/StlpfxynWddM6JoXBWKrIPrLnpy6vRH9FVYsfPtKCZzgcAXFzKnwuQVBnq
-        pYl13KVvT/UmIULbllxQiY0OZF2yjuk=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-82-ZgWfqGL5NZaX6eqPlHUbKw-1; Thu, 12 May 2022 05:31:22 -0400
-X-MC-Unique: ZgWfqGL5NZaX6eqPlHUbKw-1
-Received: by mail-wm1-f69.google.com with SMTP id o24-20020a05600c379800b003943412e81dso1443286wmr.6
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:31:21 -0700 (PDT)
+        Thu, 12 May 2022 05:31:54 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05016129F
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:31:53 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb7d137101so40839057b3.12
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:31:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=NwDgfb40ABLeF/4wC4EwhuT4Q1PDTckj0pFciejqkLU=;
+        b=ec8MLKTMT2o+jDVzDjA87qLPemLf9Z+I4AQOrMY8QoGg7dRL05HEbTWYVdx6amvBJC
+         4lhlj6TAYbQbbo0qrQHVheFenbABa+C60YA4QIYGAJTBnf4jEzZUcvDD9eIYXdZO3WRU
+         blqLsxAvpVOoNIMlmI9vjeKooCgz98otGs8T4DaUUFR17T/iDvrjurp2ujOw1uVPH3b1
+         509JVTtAEMwZztSC1mv8KDGDyg905FHTZ+38H3kR5zeBA5EfqPfiUynscXI4H/4Hmqdp
+         nvaXhTOEz7m70CQhUMCNwf4JHKXgI7gZQw0Rc/K/PiJFOfBUWJh5+6RFt4V2mpUoa/vL
+         +e4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=BL3CJGsqY/cqdqqI7zN3z8l2hVpezWWDtzBjCtMeqUg=;
-        b=GFYhMmw50/vamzmKX/2I99PnR6usRG7S9dQ5qr8dqC9eOI4+pEOrEovSLuk7NIuXv3
-         HoOP5l6bhN6Wj814xyj+4OkV53IGX0m+MA3yzMOi3a/+flzPxiMYhL4TkJyVU5s+QpAF
-         oFvsyCY9cm8kpNQ1lslC8OJ/+VPFx+BXLQPhA/yNqWqFS5/IaK5ymyI9cekEPRGJp/MN
-         Ekn7jsQEZThMSb5gn/IbEk5f4BQH+hg9Z7hDb25a9LytYXEekEsCPofYeBkUF+lmj40F
-         GrYwaEGolMKWZQxK5Y3JF3f3Mp+xIKfFLtQLYwrcIYsHGwRWhDKEBTjHGeEqE+YnQMPV
-         7THA==
-X-Gm-Message-State: AOAM533/ktiGOZC63JPlkqu7Nk8jeJseH8m9pf3rbnJcwXKOLh6yNwit
-        9Ke3PKZ4EXb+j79Vhaus9dF/gBr5ZZItpNbzWPB9jv2ESayci+J7HPI1I7jNX894mK0al8ID6Rd
-        rxHGFsSYxkUk0F9TkL4VtnEX6
-X-Received: by 2002:adf:fc42:0:b0:20a:c45d:3767 with SMTP id e2-20020adffc42000000b0020ac45d3767mr26462162wrs.486.1652347880721;
-        Thu, 12 May 2022 02:31:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw0UBVW7EQVs+UjMZICxFii2HRETE5UGdgxRAjQ7akuex9Vg2m4qZRuQs7QskMCy38QjmY7ZA==
-X-Received: by 2002:adf:fc42:0:b0:20a:c45d:3767 with SMTP id e2-20020adffc42000000b0020ac45d3767mr26462123wrs.486.1652347880418;
-        Thu, 12 May 2022 02:31:20 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c701:d200:ee5d:1275:f171:136d? (p200300cbc701d200ee5d1275f171136d.dip0.t-ipconnect.de. [2003:cb:c701:d200:ee5d:1275:f171:136d])
-        by smtp.gmail.com with ESMTPSA id z14-20020a1c4c0e000000b003942a244ecfsm2143561wmf.20.2022.05.12.02.31.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 02:31:19 -0700 (PDT)
-Message-ID: <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
-Date:   Thu, 12 May 2022 11:31:18 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v9 3/3] s390x: KVM: resetting the Topology-Change-Report
-Content-Language: en-US
-To:     Pierre Morel <pmorel@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
-        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
-        nrb@linux.ibm.com
-References: <20220506092403.47406-1-pmorel@linux.ibm.com>
- <20220506092403.47406-4-pmorel@linux.ibm.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220506092403.47406-4-pmorel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=NwDgfb40ABLeF/4wC4EwhuT4Q1PDTckj0pFciejqkLU=;
+        b=ynIg3kDgZ5Y5CVt9l047Ind0gnd+SD37geaZFvsC/T1M5KDlHaIUw3UbHEUetFP+w9
+         zPkWnb00XlRQErmWWqVaY3+agRnt8ctfpQAvaFHxmgpCZm7YrWpcuRYzlDqRjD6M6AiQ
+         2kNiJMX36nYKCVxgG+hwHDtqePkoVE4BUsKfyV8OzRr8GRNQtmrIGQLpzJe2EOJU7A1D
+         QupsQGO//6clGpb/8YION7B0EuGNxKm8Y3EIGYYZOurl/DZvf2q0Jq7IJPTqZPfyQ83O
+         hQbHSpZuaADsap5gQGdj1oTRgqP4tWuN4MS6wFS4A8FM6kwWMPssyIT7VsOockXSi4VB
+         vycQ==
+X-Gm-Message-State: AOAM531ovudN1+BwJ3HD2itNUgKX9fCB1/bE2r0DB1FRdtcqU3Zq09HX
+        XT1XugdFo8M+AqahPEW5EBpScOZ1bd1CR2QJK7Q=
+X-Google-Smtp-Source: ABdhPJzdglJecWxP6D2OZDCbt8U8bxbqo8komBdfAEQ2BpEYkFp8T8Lc0iAA1ROlyN1jw82ZrqK2VKM7K+4aZGv4HvI=
+X-Received: from albertccwang.ntc.corp.google.com ([2401:fa00:fc:202:8983:2d2c:f62b:626])
+ (user=albertccwang job=sendgmr) by 2002:a81:af59:0:b0:2f4:d869:b5df with SMTP
+ id x25-20020a81af59000000b002f4d869b5dfmr29984657ywj.367.1652347913055; Thu,
+ 12 May 2022 02:31:53 -0700 (PDT)
+Date:   Thu, 12 May 2022 17:31:46 +0800
+Message-Id: <20220512093146.1301669-1-albertccwang@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+Subject: [PATCH v2] usb: dwc3: gadget: Move null pinter check after window closed
+From:   Albert Wang <albertccwang@google.com>
+To:     balbi@kernel.org, gregkh@linuxfoundation.org,
+        quic_jackp@quicinc.com
+Cc:     badhri@google.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Albert Wang <albertccwang@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06.05.22 11:24, Pierre Morel wrote:
-> During a subsystem reset the Topology-Change-Report is cleared.
-> Let's give userland the possibility to clear the MTCR in the case
-> of a subsystem reset.
-> 
-> To migrate the MTCR, let's give userland the possibility to
-> query the MTCR state.
-> 
-> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-> ---
->  arch/s390/include/uapi/asm/kvm.h |  5 ++
->  arch/s390/kvm/kvm-s390.c         | 79 ++++++++++++++++++++++++++++++++
->  2 files changed, 84 insertions(+)
-> 
-> diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
-> index 7a6b14874d65..abdcf4069343 100644
-> --- a/arch/s390/include/uapi/asm/kvm.h
-> +++ b/arch/s390/include/uapi/asm/kvm.h
-> @@ -74,6 +74,7 @@ struct kvm_s390_io_adapter_req {
->  #define KVM_S390_VM_CRYPTO		2
->  #define KVM_S390_VM_CPU_MODEL		3
->  #define KVM_S390_VM_MIGRATION		4
-> +#define KVM_S390_VM_CPU_TOPOLOGY	5
->  
->  /* kvm attributes for mem_ctrl */
->  #define KVM_S390_VM_MEM_ENABLE_CMMA	0
-> @@ -171,6 +172,10 @@ struct kvm_s390_vm_cpu_subfunc {
->  #define KVM_S390_VM_MIGRATION_START	1
->  #define KVM_S390_VM_MIGRATION_STATUS	2
->  
-> +/* kvm attributes for cpu topology */
-> +#define KVM_S390_VM_CPU_TOPO_MTR_CLEAR	0
-> +#define KVM_S390_VM_CPU_TOPO_MTR_SET	1
-> +
->  /* for KVM_GET_REGS and KVM_SET_REGS */
->  struct kvm_regs {
->  	/* general purpose regs for s390 */
-> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> index c8bdce31464f..80a1244f0ead 100644
-> --- a/arch/s390/kvm/kvm-s390.c
-> +++ b/arch/s390/kvm/kvm-s390.c
-> @@ -1731,6 +1731,76 @@ static void kvm_s390_sca_set_mtcr(struct kvm *kvm)
->  	ipte_unlock(kvm);
->  }
->  
-> +/**
-> + * kvm_s390_sca_clear_mtcr
-> + * @kvm: guest KVM description
-> + *
-> + * Is only relevant if the topology facility is present,
-> + * the caller should check KVM facility 11
-> + *
-> + * Updates the Multiprocessor Topology-Change-Report to signal
-> + * the guest with a topology change.
-> + */
-> +static void kvm_s390_sca_clear_mtcr(struct kvm *kvm)
-> +{
-> +	struct bsca_block *sca = kvm->arch.sca; /* SCA version doesn't matter */
-> +
-> +	ipte_lock(kvm);
-> +	sca->utility  &= ~SCA_UTILITY_MTCR;
+After inspecting further, we do see the locking is implicit, with the
+main gotcha being the unlock/re-lock. That creates a window for a race
+to happen. This change moves the NULL check to be adjacent to where
+to it's used and after the window is "closed".
 
+Fixes: 26288448120b ("usb: dwc3: gadget: Fix null pointer exception")
 
-One space too much.
+Signed-off-by: Albert Wang <albertccwang@google.com>
+---
+ v2: Remove redundant 'else' and add additional comments and more
+     descriptive commit text
 
-sca->utility &= ~SCA_UTILITY_MTCR;
+ drivers/usb/dwc3/gadget.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-> +	ipte_unlock(kvm);
-> +}
-> +
-> +static int kvm_s390_set_topology(struct kvm *kvm, struct kvm_device_attr *attr)
-> +{
-> +	if (!test_kvm_facility(kvm, 11))
-> +		return -ENXIO;
-> +
-> +	switch (attr->attr) {
-> +	case KVM_S390_VM_CPU_TOPO_MTR_SET:
-> +		kvm_s390_sca_set_mtcr(kvm);
-> +		break;
-> +	case KVM_S390_VM_CPU_TOPO_MTR_CLEAR:
-> +		kvm_s390_sca_clear_mtcr(kvm);
-> +		break;
-> +	}
-> +	return 0;
-> +}
-> +
-> +/**
-> + * kvm_s390_sca_get_mtcr
-> + * @kvm: guest KVM description
-> + *
-> + * Is only relevant if the topology facility is present,
-> + * the caller should check KVM facility 11
-> + *
-> + * reports to QEMU the Multiprocessor Topology-Change-Report.
-> + */
-> +static int kvm_s390_sca_get_mtcr(struct kvm *kvm)
-> +{
-> +	struct bsca_block *sca = kvm->arch.sca; /* SCA version doesn't matter */
-> +	int val;
-> +
-> +	ipte_lock(kvm);
-> +	val = !!(sca->utility & SCA_UTILITY_MTCR);
-> +	ipte_unlock(kvm);
-> +
-> +	return val;
-> +}
-> +
-> +static int kvm_s390_get_topology(struct kvm *kvm, struct kvm_device_attr *attr)
-> +{
-> +	int mtcr;
-
-I think we prefer something like u16 when copying to user space.
-
-> +
-> +	if (!test_kvm_facility(kvm, 11))
-> +		return -ENXIO;
-> +
-> +	mtcr = kvm_s390_sca_get_mtcr(kvm);
-> +	if (copy_to_user((void __user *)attr->addr, &mtcr, sizeof(mtcr)))
-> +		return -EFAULT;
-> +
-> +	return 0;
-> +}
-
-You should probably add documentation, and document that only the last
-bit (0x1) has a meaning.
-
-Apart from that LGTM.
-
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index 19477f4bbf54..fda58951cf27 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -3366,14 +3366,19 @@ static bool dwc3_gadget_endpoint_trbs_complete(struct dwc3_ep *dep,
+ 	struct dwc3		*dwc = dep->dwc;
+ 	bool			no_started_trb = true;
+ 
+-	if (!dep->endpoint.desc)
+-		return no_started_trb;
+-
++	/*
++	 * This function eventually leads to dwc3_giveback() which unlocks
++	 * the dwc->lock and relocks afterwards. This actually creates a
++	 * a window for a race to happen.
++	 */
+ 	dwc3_gadget_ep_cleanup_completed_requests(dep, event, status);
+ 
+ 	if (dep->flags & DWC3_EP_END_TRANSFER_PENDING)
+ 		goto out;
+ 
++	if (!dep->endpoint.desc)
++		return no_started_trb;
++
+ 	if (usb_endpoint_xfer_isoc(dep->endpoint.desc) &&
+ 		list_empty(&dep->started_list) &&
+ 		(list_empty(&dep->pending_list) || status == -EXDEV))
 -- 
-Thanks,
-
-David / dhildenb
+2.36.0.550.gb090851708-goog
 
