@@ -2,54 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E430C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD61C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351871AbiELJSr (ORCPT
+        id S1351887AbiELJSt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 05:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55532 "EHLO
+        Thu, 12 May 2022 05:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242454AbiELJSo (ORCPT
+        with ESMTP id S242267AbiELJSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 05:18:44 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B78E22386F
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:18:41 -0700 (PDT)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BMwVNH013938
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:18:40 -0700
+        Thu, 12 May 2022 05:18:45 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D73422386F
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:18:44 -0700 (PDT)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 24BMwTCI000470
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:18:44 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=lC/lTbS1Cac4ah+UjmCrGwZl1dCdRXDsBkCYI6bUECo=;
- b=eAquaO422+CLCZX27/dM09ACxwlYorP2Xjo8nnc8XGyUR/a4hdDko14XHId0OyEJTRN8
- zIDeEuMAwjXDWtpaGv5PoyyZIjQ/UtepLIzwCqlwObc8OYrEgzr/mfs4OMSvVfUIwhbt
- KRulikZGIAsUNjdB2pqSoUO6bF3ZKQcuFcE= 
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=dvk0mYlhAFZXbgLChpK9+Tor61QIoW8Jly4TzUrF7pc=;
+ b=CwTJJnJBGlki2/HhLIjGZtdrbZgR8U6TKP3TucflriAJIRB2y8d6t7XiojsrAMdQeKQE
+ BII8Hg4SH2f5MebT02jxROQ0wus8GGqC5IBJ3XdCPhBQ4O2fkmjVjPWNlt+TTK0pG4n0
+ N7CUpBBocEZ9YuLpyUrMTxLrNfewTgivc2I= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3g04tb979b-2
+        by m0001303.ppops.net (PPS) with ESMTPS id 3g04kss8jh-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:18:40 -0700
-Received: from twshared4937.07.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:18:44 -0700
+Received: from twshared10276.08.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 12 May 2022 02:18:38 -0700
+ 15.1.2375.24; Thu, 12 May 2022 02:18:43 -0700
 Received: by devbig039.lla1.facebook.com (Postfix, from userid 572232)
-        id 190198F02238; Thu, 12 May 2022 02:18:36 -0700 (PDT)
+        id 4BE508F02251; Thu, 12 May 2022 02:18:38 -0700 (PDT)
 From:   Dylan Yudaken <dylany@fb.com>
 To:     Jens Axboe <axboe@kernel.dk>,
         Pavel Begunkov <asml.silence@gmail.com>
 CC:     <io-uring@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <kernel-team@fb.com>, Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH 0/2] Fix poll bug
-Date:   Thu, 12 May 2022 02:18:32 -0700
-Message-ID: <20220512091834.728610-1-dylany@fb.com>
+Subject: [PATCH 2/2] io_uring: only wake when the correct events are set
+Date:   Thu, 12 May 2022 02:18:34 -0700
+Message-ID: <20220512091834.728610-3-dylany@fb.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220512091834.728610-1-dylany@fb.com>
+References: <20220512091834.728610-1-dylany@fb.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: USK0j05OpSsJMLoPJxkbNKS9qbhYgi0l
-X-Proofpoint-ORIG-GUID: USK0j05OpSsJMLoPJxkbNKS9qbhYgi0l
+X-Proofpoint-ORIG-GUID: JUUVj8osLP3K5MKQeiIVoqxaPiw7_cic
+X-Proofpoint-GUID: JUUVj8osLP3K5MKQeiIVoqxaPiw7_cic
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-05-12_02,2022-05-12_01,2022-02-23_01
@@ -57,27 +60,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The check for waking up a request compares the poll_t bits, however this
+will always contain some common flags so this always wakes up.
 
-This fixes a bug in poll wakeups, where it would wake up
-unnecessarily. This is most obvious with sockets, where the socket will
-wake both readers and writers when new read data is available, even if th=
-e
-socket is still not writable.
+For files with single wait queues such as sockets this can cause the
+request to be sent to the async worker unnecesarily. Further if it is
+non-blocking will complete the request with EAGAIN which is not desired.
 
-Patch 1 is a simple bug I noticed while debugging the poll problem
-Patch 2 is the poll fix
+Here exclude these common events, making sure to not exclude POLLERR whic=
+h
+might be important.
 
-Dylan Yudaken (2):
-  io_uring: fix ordering of args in io_uring_queue_async_work
-  io_uring: only wake when the correct events are set
+Fixes: d7718a9d25a6 ("io_uring: use poll driven retry for files that supp=
+ort it")
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+---
+ fs/io_uring.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- fs/io_uring.c                   | 5 +++--
- include/trace/events/io_uring.h | 2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
-
-
-base-commit: f569add47119fa910ed7711b26b8d38e21f7ea77
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 44c57dca358d..44661a1f695a 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -6782,6 +6782,7 @@ static void io_poll_cancel_req(struct io_kiocb *req=
+)
+=20
+ #define wqe_to_req(wait)	((void *)((unsigned long) (wait)->private & ~1)=
+)
+ #define wqe_is_double(wait)	((unsigned long) (wait)->private & 1)
++#define IO_ASYNC_POLL_COMMON	(EPOLLONESHOT | POLLPRI)
+=20
+ static int io_poll_wake(struct wait_queue_entry *wait, unsigned mode, in=
+t sync,
+ 			void *key)
+@@ -6816,7 +6817,7 @@ static int io_poll_wake(struct wait_queue_entry *wa=
+it, unsigned mode, int sync,
+ 	}
+=20
+ 	/* for instances that support it check for an event match first */
+-	if (mask && !(mask & poll->events))
++	if (mask && !(mask & (poll->events & ~IO_ASYNC_POLL_COMMON)))
+ 		return 0;
+=20
+ 	if (io_poll_get_ownership(req)) {
+@@ -6973,7 +6974,7 @@ static int io_arm_poll_handler(struct io_kiocb *req=
+, unsigned issue_flags)
+ 	struct io_ring_ctx *ctx =3D req->ctx;
+ 	struct async_poll *apoll;
+ 	struct io_poll_table ipt;
+-	__poll_t mask =3D EPOLLONESHOT | POLLERR | POLLPRI;
++	__poll_t mask =3D IO_ASYNC_POLL_COMMON | POLLERR;
+ 	int ret;
+=20
+ 	if (!def->pollin && !def->pollout)
 --=20
 2.30.2
 
