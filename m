@@ -2,167 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 696B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 262A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352285AbiELJxQ (ORCPT
+        id S1352354AbiELJxr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 05:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58396 "EHLO
+        Thu, 12 May 2022 05:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352268AbiELJxH (ORCPT
+        with ESMTP id S1352294AbiELJxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 05:53:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1393E433B9
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:53:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652349185;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+3Nztyld9eDHPSeSn0M3tTjhNNbITpLXi7y864KZCxM=;
-        b=UiXBrWdBc5iVbljqIMa4ZyPUmdxeai1X/XJh05BK/SKKTinWhqC+c8woMaKF73ii/X7BLo
-        tDMJBDGMVfB4itG5fd8jDXXuQiS9J+nIG7nO4517pIaKnksk9BpX0TEn1CgJHONvNSfduh
-        c/xRivG9uFVsfaOOvDF2Ct2vYLxnP3Q=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-473-gR8rIPG1MgqvdKdo8lfAmQ-1; Thu, 12 May 2022 05:53:03 -0400
-X-MC-Unique: gR8rIPG1MgqvdKdo8lfAmQ-1
-Received: by mail-ed1-f70.google.com with SMTP id r8-20020a056402018800b00428b43999feso2855115edv.5
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:53:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+3Nztyld9eDHPSeSn0M3tTjhNNbITpLXi7y864KZCxM=;
-        b=OqE/pOPUZyDfdYeINwHYbGGXdrsRaq3BGSiC6fSEXvJ2O7GiOmXszBTuUdZd7Y8ORW
-         4p+ZDlJ/iUZFu+UWTe98NGF8s9Cr1lw6o/G3N0xYBFHnTvEhcWC/q9EPBeFSOB8wJIg9
-         LLsz3b+4nEZ/Jri2Vslfp4Ag3+KKwycMsJA5xFBeEvITrzffJJXbhil2cX4qp3ZeUVBC
-         usAYr4RS+8W7TLaZ2DgSyAY4/i6Rhqo3Ro2Sb2K1XuZkX4qNBuk+9Rs3ayHY1nyIDrZG
-         gJ1yl3rjIAhAuLtWc9iddbavdn9GkK5U1VC4EFpSFzcCeitaAcqURCLcczJXCWjhooJR
-         Ir8g==
-X-Gm-Message-State: AOAM531ZB+hnMQGQQNTKgBDUEOHUPs7E8BOLsecpUJ9OQJvKYFmVnYUj
-        WOm3XIMexdvwCV2dCPYVKhfh3XZv6WgLJd1JmVGa56FxwMKfXeu+2dwthXLrLN/5D9WcRU3nefG
-        FsxWp9jU2wp464W0eJ5zXePdo
-X-Received: by 2002:a05:6402:26d3:b0:427:c57f:5333 with SMTP id x19-20020a05640226d300b00427c57f5333mr33933004edd.61.1652349182125;
-        Thu, 12 May 2022 02:53:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxU+yiXPvmNwB30ImWEgmeuYovzHEke4htr7L1cgQhehQ+e+3Q/YNZ1VsfIH2fDixst6DQa1g==
-X-Received: by 2002:a05:6402:26d3:b0:427:c57f:5333 with SMTP id x19-20020a05640226d300b00427c57f5333mr33932995edd.61.1652349181926;
-        Thu, 12 May 2022 02:53:01 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id i11-20020a50870b000000b0042617ba63a6sm2532698edb.48.2022.05.12.02.53.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 02:53:01 -0700 (PDT)
-Message-ID: <ce8e9601-f514-5227-f9f7-87594218f95f@redhat.com>
-Date:   Thu, 12 May 2022 11:53:00 +0200
+        Thu, 12 May 2022 05:53:35 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E71B43EF5;
+        Thu, 12 May 2022 02:53:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652349197; x=1683885197;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BeG6RZutTK0vUCQ8P65D/jslwJAi+xtToKFLn6ZnKqI=;
+  b=BX9x903tUDrZoxgmt1bqPl/+nAww4cxkjsVSpF4DRa6l8GDhH9TM9+hL
+   z4yxZRjrKiI5bGGXecDQMo3e8WdTYho2ZFBjXnxCl+u6/8hZqvKpdBP+1
+   B7mVGUAdZ6tgdt8+QRCY0FFxny6iqRp/bsgbtxJxTP2AZA+hbcwpyIdId
+   O/yDX/qnSaKaDIGoonamIUr+afCrvwbAhhN0zJVsCIB4gCFscuiJKbUdN
+   2S9GFv5//7O9xM853UOzgCCafMgD29Nk/3VPxpVNCAexWyZPkIX3pW7xV
+   gxCNxAa4QPw51mB61ZDhpJf/j6wDbM7URrmZLcMhTJRgJs8mrV50q/u9E
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="250478993"
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="250478993"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 02:53:16 -0700
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="636785572"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 02:53:10 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1np5VK-00F9jS-8m;
+        Thu, 12 May 2022 12:53:06 +0300
+Date:   Thu, 12 May 2022 12:53:05 +0300
+From:   "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>
+To:     Maninder Singh <maninder1.s@samsung.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "avimalin@gmail.com" <avimalin@gmail.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
+        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>,
+        "anil.s.keshavamurthy@intel.com" <anil.s.keshavamurthy@intel.com>,
+        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vaneet Narang <v.narang@samsung.com>,
+        Onkarnath <onkarnath.1@samsung.com>
+Subject: Re: [PATCH 1/2] kallsyms: add kallsyms_show_value definition in all
+ cases
+Message-ID: <YnzZASsT2Cy7COax@smile.fi.intel.com>
+References: <202205111525.92B1C597@keescook>
+ <20220511080657.3996053-1-maninder1.s@samsung.com>
+ <CGME20220511080722epcas5p459493d02ff662a7c75590e44a11e34a6@epcms5p3>
+ <20220512034650epcms5p3c0b90af240d837491fff020497f389e5@epcms5p3>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [pdx86-platform-drivers-x86:review-hans 46/59]
- kernel/stop_machine.c:638:35: error: call to undeclared function
- 'cpu_smt_mask'; ISO C99 and later do not support implicit function
- declarations
-Content-Language: en-US
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        kernel test robot <lkp@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, Tony Luck <tony.luck@intel.com>
-References: <202205120904.Gr9HEY5E-lkp@intel.com> <87zgjnw1bg.ffs@tglx>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <87zgjnw1bg.ffs@tglx>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512034650epcms5p3c0b90af240d837491fff020497f389e5@epcms5p3>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, May 12, 2022 at 09:16:50AM +0530, Maninder Singh wrote:
+> > On Wed, May 11, 2022 at 01:36:56PM +0530, Maninder Singh wrote:
 
-On 5/12/22 11:24, Thomas Gleixner wrote:
-> On Thu, May 12 2022 at 09:29, kernel test robot wrote:
->>>> kernel/stop_machine.c:638:35: error: call to undeclared function 'cpu_smt_mask'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
->>            const struct cpumask *smt_mask = cpu_smt_mask(cpu);
+...
+
+> > This is printing raw kernel addresses with no hashing, as far as I can
+> > tell. That's not okay at all.
 > 
-> This warning with W=1 is not the worst of the problems.
+> yes same was suggested by Petr also, because earlier we were printing base address also as raw address.
 > 
-> The build will simply fail for CONFIG_SMP=y && CONFIG_SCHED_SMT=n
-> because cpu_smt_mask() cannot be resolved.
+> https://lkml.org/lkml/2022/2/28/847
 > 
-> The other issue is CONFIG_SMP=n. This will fail to build the IFS driver
-> because stop_core_cpuslocked() is not available for SMP=n.
-
-The IFS Kconfig already depends on SMP :
-
-config INTEL_IFS
-        tristate "Intel In Field Scan"
-        depends on X86 && 64BIT && SMP
-        select INTEL_IFS_DEVICE
-        help
-          Enable ...
-
-
-So I don't think we need the non-SMP implementation inside
-include/linux/stop_machine.h, we only need the #ifdef you
-suggest in kernel/stop_machine.c  ?
-
-I think it is best to just squash this into the original
-patch, do you agree ?
-
-Regards,
-
-Hans
-
-
-
-
-
-> Something like the below should work as x86 selects SCHED_SMT when
-> SMP=y.
+> but then modified approach to print base address as hash when we are going to show offset of module address,
+> but when we print complete address then we thought of keeping it same as it was:
 > 
-> Thanks,
+> original:
+>  [12.487424] ps 0xffff800000eb008c
+> with patch:
+>  [9.624152] ps 0xffff800001bd008c [crash]
 > 
->         tglx
-> ---
-> --- a/include/linux/stop_machine.h
-> +++ b/include/linux/stop_machine.h
-> @@ -156,6 +156,12 @@ static __always_inline int stop_machine_
->  }
->  
->  static __always_inline int
-> +stop_core_cpuslocked(unsigned int cpu, cpu_stop_fn_t fn, void *data)
-> +{
-> +	return stop_machine_cpuslocked(fn, data, NULL);
-> +}
-> +
-> +static __always_inline int
->  stop_machine(cpu_stop_fn_t fn, void *data, const struct cpumask *cpus)
->  {
->  	return stop_machine_cpuslocked(fn, data, cpus);
-> --- a/kernel/stop_machine.c
-> +++ b/kernel/stop_machine.c
-> @@ -631,6 +631,7 @@ int stop_machine(cpu_stop_fn_t fn, void
->  }
->  EXPORT_SYMBOL_GPL(stop_machine);
->  
-> +#ifdef CONFIG_SCHED_SMT
->  int stop_core_cpuslocked(unsigned int cpu, cpu_stop_fn_t fn, void *data)
->  {
->  	const struct cpumask *smt_mask = cpu_smt_mask(cpu);
-> @@ -649,6 +650,7 @@ int stop_core_cpuslocked(unsigned int cp
->  	return stop_cpus(smt_mask, multi_cpu_stop, &msdata);
->  }
->  EXPORT_SYMBOL_GPL(stop_core_cpuslocked);
-> +#endif
->  
->  /**
->   * stop_machine_from_inactive_cpu - stop_machine() from inactive CPU
-> 
-> 
-> 
+> But if its has to be hashed, will fix that also.
+
+In such case it should be a separate change since it will be the one that
+changes behaviour.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
