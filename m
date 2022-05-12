@@ -2,279 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9ECFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345508AbiELD7A (ORCPT
+        id S1345599AbiELD7j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 23:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
+        Wed, 11 May 2022 23:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344861AbiELD6z (ORCPT
+        with ESMTP id S1345540AbiELD7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 23:58:55 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2E32717E
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:58:53 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so3781873pjm.1
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:58:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=9YHAxVCwMQX+pkLG4apffaFkY79VVK11xX1H1uNWoZU=;
-        b=ScQXX34kCFkg6LTVK5Bzh9wpxADbH4wZ2ElWqdVAhelSVmQCmHBJ5xv35LfYe4zUNt
-         P3tVg3LOYPpBbRkXg0TyHtFhp4yRfd/6UOxaOA2A3x8Ltw3+t/MAdOxWTFHo2hN3dwYZ
-         bvh4QfM3chkDhBDZFHZ1BDO9OOFLr89R+WaAhwmo7uidQMACOoqXWPBui/uJXHo/ZZXu
-         jJY6C3R5s3F/1AV7o0m2OKZmp80ce0TqdBlk63hV+XT3iKEaNiDKbOI/aEYoqZFDcGyk
-         Q71v8VRIrocJmsSEGBxWbOWgfxSvQga7LpGOCENbmx7+y67sc78rTONkFyaX4Z2D71yI
-         vKtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9YHAxVCwMQX+pkLG4apffaFkY79VVK11xX1H1uNWoZU=;
-        b=0N/5iU2Iw3XO+NR2cib/MlrSLD2Wdi6VA1fTqyL0xjy+b71s5TwgT9yxaA5rewjcHv
-         K75IWsClvwIbI3t2OyPlqUs5bFSbXsFK+MY3kQhCGRI5LAiEfWO7oufCZrzYxxe0mZhQ
-         zcSW0l/L49D61DCMTqSLrsfUryxyUIVvEOpTfThyLgh8tVqEbLf+9LAYumG2nsLReJla
-         ltksjZCxP4L+caHaP+l6I5oWAqSLrvwJNMwpVTKmRtSb+SmtDbYL0cNqSMHRQiDOhyrn
-         VKfmguqZFUoJrkoo81pLSMuA3CrtOctfV9v91UUqvcFWOMEi1l9AWmNegg6UsBLPrI/4
-         m6ew==
-X-Gm-Message-State: AOAM531NK32CGtJsJuwJcDWG/A1wioB3T5858AcdjDZXa0CfSUgVgTgQ
-        vLMHxkfENB8uC6M6xG8wdPyjeQ==
-X-Google-Smtp-Source: ABdhPJw7Gvd7Vmzcbe3csw65DdPgMsPWhr9XM9n7NF1XATLrbwnaKRj+eJoVADnAb7XbC8SNYwYRGw==
-X-Received: by 2002:a17:90b:4f87:b0:1dd:100b:7342 with SMTP id qe7-20020a17090b4f8700b001dd100b7342mr8703718pjb.64.1652327932987;
-        Wed, 11 May 2022 20:58:52 -0700 (PDT)
-Received: from [10.71.57.194] ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id y10-20020a1709027c8a00b0015e8d4eb234sm2654861pll.126.2022.05.11.20.58.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 20:58:52 -0700 (PDT)
-Message-ID: <731c281a-9911-fa86-fec2-a3c1a3954461@bytedance.com>
-Date:   Thu, 12 May 2022 11:58:38 +0800
+        Wed, 11 May 2022 23:59:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE8F387A9;
+        Wed, 11 May 2022 20:59:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E1116199F;
+        Thu, 12 May 2022 03:59:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E87E1C34100;
+        Thu, 12 May 2022 03:59:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652327967;
+        bh=FHnlCKo4OJfwf9iDndv7NNBoXfgXo4izsk7Sb0eh2eY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MkGuGZ6ew0pLiv7fckOOiPj/57hPM1NUowfWK+QiNFX6AnDxgBoom07tVYUN0hZ+W
+         O5FWEGcQK1BfVi7f0ot2sjzD3W9FdZelrMxiyNy7cRqKnuRBLtw4jB5O6buHdbHzM5
+         JwqxvkPKqL505/PHZF+/QCtd1X7SdT8LZGJfa8LEdiU1OQ2PDi4P8uLY2rtxQdU8N3
+         u0/DhbuVW1ngJ26y4sEFLohfKCRWq1FM0bpSdtO2+qSy1O0QTw1+3FtUD8ybQzYK4b
+         AYzz3G0MwunY+wRaIZ9Dqxzaj9nyAT0+hGeHVNHptohw4Bbt7LjbX5AUB7kdotf8Oq
+         PHFyn92SVEBWQ==
+Date:   Wed, 11 May 2022 20:59:24 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Rik van Riel <riel@fb.com>
+Cc:     "song@kernel.org" <song@kernel.org>,
+        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Kernel Team <Kernel-team@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "pmladek@suse.com" <pmladek@suse.com>
+Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
+Message-ID: <20220512035924.mn42wqwtqzparafc@treble>
+References: <1bd15361edfd4db9fc9271d35e7bbe5edad1b87a.camel@fb.com>
+ <20220510184213.l3gjweeleyg7obca@treble>
+ <47440502-930F-4CBD-B859-3AC9BBFF8FC6@fb.com>
+ <20220510230402.e5ymkwt45sg7bd35@treble>
+ <D298A3F1-43A5-4FD5-B198-906364BF4B79@fb.com>
+ <6c36c09fbf426280d13f6025f41aed4c65c042d6.camel@fb.com>
+ <20220511003716.2lo6gkluwycvauda@treble>
+ <bf682c8874a044a643becbb8704a4dfedadc3321.camel@fb.com>
+ <20220511011235.f7cdkc6xn7redqa3@treble>
+ <5c146997c0ae4869b55aa1b846e96005cda72949.camel@fb.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [External] Re: [PATCH bpf-next v2 2/2] selftests/bpf: add test
- case for bpf_map_lookup_percpu_elem
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joanne Koong <joannekoong@fb.com>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        duanxiongchun@bytedance.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        zhouchengming@bytedance.com, yosryahmed@google.com
-References: <20220511093854.411-1-zhoufeng.zf@bytedance.com>
- <20220511093854.411-3-zhoufeng.zf@bytedance.com>
- <CAEf4BzZL85C7KUwKv9i5cdLSDzM175cLjiW4EDjOqNfcxbLO+A@mail.gmail.com>
-From:   Feng Zhou <zhoufeng.zf@bytedance.com>
-In-Reply-To: <CAEf4BzZL85C7KUwKv9i5cdLSDzM175cLjiW4EDjOqNfcxbLO+A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <5c146997c0ae4869b55aa1b846e96005cda72949.camel@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/5/12 上午11:34, Andrii Nakryiko 写道:
-> On Wed, May 11, 2022 at 2:39 AM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
->> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->>
->> test_progs:
->> Tests new ebpf helpers bpf_map_lookup_percpu_elem.
->>
->> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
->> ---
->>   .../bpf/prog_tests/map_lookup_percpu_elem.c   | 46 ++++++++++++++++
->>   .../bpf/progs/test_map_lookup_percpu_elem.c   | 54 +++++++++++++++++++
->>   2 files changed, 100 insertions(+)
->>   create mode 100644 tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
->>   create mode 100644 tools/testing/selftests/bpf/progs/test_map_lookup_percpu_elem.c
->>
->> diff --git a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
->> new file mode 100644
->> index 000000000000..58b24c2112b0
->> --- /dev/null
->> +++ b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
->> @@ -0,0 +1,46 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +// Copyright (c) 2022 Bytedance
-> /* */ instead of //
+On Wed, May 11, 2022 at 06:09:28PM +0000, Rik van Riel wrote:
+> On Tue, 2022-05-10 at 18:12 -0700, Josh Poimboeuf wrote:
+> > On Wed, May 11, 2022 at 12:46:32AM +0000, Rik van Riel wrote:
+> > > On Tue, 2022-05-10 at 17:37 -0700, Josh Poimboeuf wrote:
+> > > > On Wed, May 11, 2022 at 12:35:11AM +0000, Rik van Riel wrote:
+> > > > > On Tue, 2022-05-10 at 23:57 +0000, Song Liu wrote:
+> > > > > > 
+> > > > > > So, if we come back to the same question: is this a bug (or a
+> > > > > > suboptimal
+> > > > > > behavior that worth fixing)? If so, we are open to any
+> > > > > > solution
+> > > > > > that 
+> > > > > > would also help PREEMPT and/or non-x86 arches. 
+> > > > > > 
+> > > > > Using the preempt notifiers during KLP transition should
+> > > > > work equally well for PREEMPT and !PREEMPT. It also does
+> > > > > not insert any additional code into the scheduler while
+> > > > > there is no KLP transition going on.
+> > > > 
+> > > > As I've been saying, this is not going to work for PREEMPT
+> > > > because,
+> > > > without ORC, we can't reliably unwind from an IRQ handler, so the
+> > > > kthread won't get patched.
+> > > > 
+> > > Isn't the sched_out preempt notifier always run in
+> > > process context?
+> > > 
+> > > What am I missing?
+> > 
+> > Maybe it's technically process context at that point.  But the
+> > important
+> > point is that the call to the scheduler via preempt_schedule_irq()
+> > originates from the "return from interrupt" path.
+> 
+> Ahhhh, I think I understand.
+> 
+> Does that mean if the scheduling of the kernel thread originated
+> from an IRQ, the KLP transition will fail probably?
 
-Ok, I will do. Thanks.
+It will fail definitely, unless you have the ORC unwinder.
 
+> However, if the call to schedule came from a voluntary preemption,
+> for example through a cond_resched() or due to the thread going
+> to sleep a little bit, the stack walk will be reliable, and the
+> KLP transition may succeed?
 
->
->> +
->> +#include <test_progs.h>
->> +
->> +#include "test_map_lookup_percpu_elem.skel.h"
->> +
->> +#define TEST_VALUE  1
->> +
->> +void test_map_lookup_percpu_elem(void)
->> +{
->> +       struct test_map_lookup_percpu_elem *skel;
->> +       int key = 0, ret;
->> +       int nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
-> I think this is actually wrong and will break selftests on systems
-> with offline CPUs. Please use libbpf_num_possible_cpus() instead.
+Right.
 
-
-Ok, I will do. Thanks.
-
-
->
->> +       int *buf;
->> +
->> +       buf = (int *)malloc(nr_cpus*sizeof(int));
->> +       if (!ASSERT_OK_PTR(buf, "malloc"))
->> +               return;
->> +       memset(buf, 0, nr_cpus*sizeof(int));
-> this is wrong, kernel expects to have roundup(sz, 8) per each CPU,
-> while you have just 4 bytes per each element
->
-> please also have spaces around multiplication operator here and above
-
-
-Ok, I will use 8 bytes for key and val. Thanks.
-
-
->> +       buf[0] = TEST_VALUE;
->> +
->> +       skel = test_map_lookup_percpu_elem__open_and_load();
->> +       if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open_and_load"))
->> +               return;
-> buf leaking here
-
-
-Yes, sorry for my negligence.
-
-
->
->> +       ret = test_map_lookup_percpu_elem__attach(skel);
->> +       ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach");
->> +
->> +       ret = bpf_map_update_elem(bpf_map__fd(skel->maps.percpu_array_map), &key, buf, 0);
->> +       ASSERT_OK(ret, "percpu_array_map update");
->> +
->> +       ret = bpf_map_update_elem(bpf_map__fd(skel->maps.percpu_hash_map), &key, buf, 0);
->> +       ASSERT_OK(ret, "percpu_hash_map update");
->> +
->> +       ret = bpf_map_update_elem(bpf_map__fd(skel->maps.percpu_lru_hash_map), &key, buf, 0);
->> +       ASSERT_OK(ret, "percpu_lru_hash_map update");
->> +
->> +       syscall(__NR_getuid);
->> +
->> +       ret = skel->bss->percpu_array_elem_val == TEST_VALUE &&
->> +             skel->bss->percpu_hash_elem_val == TEST_VALUE &&
->> +             skel->bss->percpu_lru_hash_elem_val == TEST_VALUE;
->> +       ASSERT_OK(!ret, "bpf_map_lookup_percpu_elem success");
-> this would be better done as three separate ASSERT_EQ(), combining
-> into opaque true/false isn't helpful if something breaks
-
-
-Good suggestion.
-
-
->
->> +
->> +       test_map_lookup_percpu_elem__destroy(skel);
->> +}
->> diff --git a/tools/testing/selftests/bpf/progs/test_map_lookup_percpu_elem.c b/tools/testing/selftests/bpf/progs/test_map_lookup_percpu_elem.c
->> new file mode 100644
->> index 000000000000..5d4ef86cbf48
->> --- /dev/null
->> +++ b/tools/testing/selftests/bpf/progs/test_map_lookup_percpu_elem.c
->> @@ -0,0 +1,54 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +// Copyright (c) 2022 Bytedance
-> /* */ instead of //
-
-
-Ok, I will do. Thanks.
-
-
->
->> +
->> +#include "vmlinux.h"
->> +#include <bpf/bpf_helpers.h>
->> +
->> +int percpu_array_elem_val = 0;
->> +int percpu_hash_elem_val = 0;
->> +int percpu_lru_hash_elem_val = 0;
->> +
->> +struct {
->> +       __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
->> +       __uint(max_entries, 1);
->> +       __type(key, __u32);
->> +       __type(value, __u32);
->> +} percpu_array_map SEC(".maps");
->> +
->> +struct {
->> +       __uint(type, BPF_MAP_TYPE_PERCPU_HASH);
->> +       __uint(max_entries, 1);
->> +       __type(key, __u32);
->> +       __type(value, __u32);
->> +} percpu_hash_map SEC(".maps");
->> +
->> +struct {
->> +       __uint(type, BPF_MAP_TYPE_LRU_PERCPU_HASH);
->> +       __uint(max_entries, 1);
->> +       __type(key, __u32);
->> +       __type(value, __u32);
->> +} percpu_lru_hash_map SEC(".maps");
->> +
->> +SEC("tp/syscalls/sys_enter_getuid")
->> +int sysenter_getuid(const void *ctx)
->> +{
->> +       __u32 key = 0;
->> +       __u32 cpu = 0;
->> +       __u32 *value;
->> +
->> +       value = bpf_map_lookup_percpu_elem(&percpu_array_map, &key, cpu);
->> +       if (value)
->> +               percpu_array_elem_val = *value;
->> +
->> +       value = bpf_map_lookup_percpu_elem(&percpu_hash_map, &key, cpu);
->> +       if (value)
->> +               percpu_hash_elem_val = *value;
->> +
->> +       value = bpf_map_lookup_percpu_elem(&percpu_lru_hash_map, &key, cpu);
->> +       if (value)
->> +               percpu_lru_hash_elem_val = *value;
->> +
-> if the test happens to run on CPU 0 then the test doesn't really test
-> much. It would be more interesting to have a bpf_loop() iteration that
-> would fetch values on each possible CPU instead and do something with
-> it.
-
-
-Good suggestion. I check the code and find no bpf helper function to get 
-possible CPU nums.
-
-I think for the test function, read cpu0 elem value correctly should be 
-considered to be no problem.
-
-Or is it necessary to add a new helper function to get num_possible_cpus ?
-
-
->
->> +       return 0;
->> +}
->> +
->> +char _license[] SEC("license") = "GPL";
->> --
->> 2.20.1
->>
-
+-- 
+Josh
