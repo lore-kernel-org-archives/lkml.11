@@ -2,98 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3249C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C99C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359007AbiELVy6 (ORCPT
+        id S1359015AbiELV5w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 17:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53324 "EHLO
+        Thu, 12 May 2022 17:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359002AbiELVyh (ORCPT
+        with ESMTP id S1358985AbiELV5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 17:54:37 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1775838E
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:54:36 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2f7b815ac06so72254877b3.3
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:54:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K1VU58MHQqP+/7H+d1w/E+L2ZvFeIXOvlm41/oypmL0=;
-        b=sOYt/Gx0hkqvhlgblLEO/HYJxZTdK226ravqNQqKOZQ4UJ5y4ThWbN3ehEwwngDlYf
-         11tzgbu0WDOYcy1r8mukQ0ovGT+JvnNid4hvM/mwJSBL9p6kxhhMPl1VxGiE1H/Brvx6
-         sapouRkIaz3YQWLwT6VqH4XBSxiLo/uPAiRrSo/Sc0ntI2pRCWlzprmHwvostLXD2a1k
-         qhLlOWMG5cY3OqsqNkLjwCh4XSsVHyjdQAiYDfTxJxahxf6nPPoJvTrjufeZHC9GpGfR
-         af8bi9WIHNWL/KF5rHUcdbfZUiKC9vjY0PXp3N2S78bHVYiW6GXw6Cvfpo82kcxnTVm/
-         Ec4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K1VU58MHQqP+/7H+d1w/E+L2ZvFeIXOvlm41/oypmL0=;
-        b=AJkHPATN3oIO3id4X7690ww0KF8O3GAyIbxVJ+p91gjh9ovrNXmRN0EemvaCSoy2+J
-         XaAaD1AFFiT8d84u07RXv1/jhuz64gO98KybyZM7qTtpdy4W9tczK5+fL+jyeS/91bwI
-         c3kt9cXtQfA8BHpZo0gXu90svx0MxDRPBUQd3BZdApaKpK67J80UH2ZT9dnswXvvVhdC
-         m/ERyqRc1KD8aQ+Ya1f1i6T19R7spujhLm5pqHrAf9RDPg/h6wO9Mqw+Pkk5BNrEZh6c
-         f/+pl15epPjzpicupfsSarx4sjd1lKY3+ZqG/6JYWtSWxMRm1b3lcU0YocuKBBhWGPIX
-         +cjQ==
-X-Gm-Message-State: AOAM533sRrqBv0gw++xds9dDMM/vPZlWixCx7Pw/20ZAsTOmuOwlb3bF
-        usFRPTy3EdTXMMib7CdmSyH0A133gkH9fNaJ7eLjQQ==
-X-Google-Smtp-Source: ABdhPJzvEO0jiVxrIG+1xE2X6cZ/BJG2CWgwTmUY1c9wQnpnOTd/I357N8dayLCf00VtX03B0P1jTijf3GPai6A5/ak=
-X-Received: by 2002:a81:1d48:0:b0:2f1:8ebf:25f3 with SMTP id
- d69-20020a811d48000000b002f18ebf25f3mr2377894ywd.118.1652392475988; Thu, 12
- May 2022 14:54:35 -0700 (PDT)
+        Thu, 12 May 2022 17:57:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3865DBF0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:57:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7850F61FB4
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 21:57:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A80BCC385B8;
+        Thu, 12 May 2022 21:57:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652392655;
+        bh=yU6s+/+h1gRHCRJ83nqrVGKUBm1fWFm2gD7n/no4qEw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OfRePn8vFReViGnjqaf4Nuft1lzf0vc4DKD3h+LbhvH6CM39JZSzNUPEntffy6ttr
+         g6X8q5mMz1ISEEbjxJXT15mcjtbt8vm3zdrFTOfzVIH7h1o0o96np1souzIUJxNWw/
+         kNjIwLU3cSe2ruxp8kQ6d6QSw9xQtjGToehOCDS8BNr0KKPRYXRiqpMx9INN3e3kkL
+         R3HqBa/hYDEFwM/o38E8P8x7PVA7GTA/vifavMuEVY9nBZohrRq9dfrgkzVYf7aOw7
+         U3DFUr3W2eifkwpn4rMCjzomDJEf0vqkRmwGhxxWt+DZlX5OL0Yx0hx7063xnULI4i
+         TkghMnuhvOn7A==
+Date:   Thu, 12 May 2022 14:57:34 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Chao Yu <chao@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>
+Subject: Re: [PATCH] f2fs: separate NOCoW and pinfile semantics
+Message-ID: <Yn2CztiJUY2UAjnd@google.com>
+References: <20220512082116.2991611-1-chao@kernel.org>
 MIME-Version: 1.0
-References: <20220419211658.11403-1-apais@linux.microsoft.com>
- <20220419211658.11403-2-apais@linux.microsoft.com> <353023ba-d506-5d45-be68-df2025074ed6@kernel.org>
- <3ee366a7-e61f-e513-aa2f-12e8d5316f3c@embeddedor.com> <YmpedDjzZXz2t6NS@smile.fi.intel.com>
- <DA101ED8-F99F-4DCB-9CB7-370A62C44B65@linux.microsoft.com>
-In-Reply-To: <DA101ED8-F99F-4DCB-9CB7-370A62C44B65@linux.microsoft.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 12 May 2022 23:54:23 +0200
-Message-ID: <CACRpkdadjPn82G4TMKyyQtkju=oA4EX=GNxs8KRtrQ7CcqVOog@mail.gmail.com>
-Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
-To:     Allen Pais <apais@linux.microsoft.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        olivier.dautricourt@orolia.com, sr@denx.de,
-        Vinod Koul <vkoul@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org, ludovic.desroches@microchip.com,
-        tudor.ambarus@microchip.com, f.fainelli@gmail.com,
-        rjui@broadcom.com, sbranden@broadcom.com,
-        bcm-kernel-feedback-list@broadcom.com, nsaenz@kernel.org,
-        paul@crapouillou.net, Eugeniy.Paltsev@synopsys.com,
-        gustavo.pimentel@synopsys.com, vireshk@kernel.org,
-        leoyang.li@nxp.com, zw@zh-kernel.org, wangzhou1@hisilicon.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de,
-        sean.wang@mediatek.com, matthias.bgg@gmail.com, afaerber@suse.de,
-        mani@kernel.org, logang@deltatee.com, sanju.mehta@amd.com,
-        daniel@zonque.org, haojian.zhuang@gmail.com,
-        robert.jarzmik@free.fr, agross@kernel.org,
-        bjorn.andersson@linaro.org, krzysztof.kozlowski@linaro.org,
-        green.wan@sifive.com, orsonzhai@gmail.com, baolin.wang7@gmail.com,
-        zhang.lyra@gmail.com, patrice.chotard@foss.st.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512082116.2991611-1-chao@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 7:43 PM Allen Pais <apais@linux.microsoft.com> wrote:
+On 05/12, Chao Yu wrote:
+> Pinning a file is heavy, because skipping pinned files make GC
+> running with heavy load or no effect.
+> 
+> So that this patch proposes to separate nocow and pinfile semantics:
+> - NOCoW flag can only be set on regular file.
+> - NOCoW file will only trigger IPU at common writeback/flush.
+> - NOCow file will do OPU during GC.
+> 
+> This flag can satisfying the demand of:
+> 1) avoiding fragment of file's physical block
+> 2) userspace doesn't want to pin file's physical address
+> 
+> Signed-off-by: Chao Yu <chao.yu@oppo.com>
+> ---
+>  fs/f2fs/data.c |  3 ++-
+>  fs/f2fs/f2fs.h |  1 +
+>  fs/f2fs/file.c | 25 ++++++++++++++++++++++++-
+>  3 files changed, 27 insertions(+), 2 deletions(-)
+> 
+> diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+> index 54a7a8ad994d..c8eab78f7d89 100644
+> --- a/fs/f2fs/data.c
+> +++ b/fs/f2fs/data.c
+> @@ -2495,7 +2495,8 @@ bool f2fs_should_update_inplace(struct inode *inode, struct f2fs_io_info *fio)
+>  	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
+>  		return false;
+>  
+> -	if (f2fs_is_pinned_file(inode))
+> +	if (f2fs_is_pinned_file(inode) ||
+> +			F2FS_I(inode)->i_flags & F2FS_NOCOW_FL)
+>  		return true;
+>  
+>  	/* if this is cold file, we should overwrite to avoid fragmentation */
+> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+> index 492af5b96de1..e91ece55f5e8 100644
+> --- a/fs/f2fs/f2fs.h
+> +++ b/fs/f2fs/f2fs.h
+> @@ -2916,6 +2916,7 @@ static inline void f2fs_change_bit(unsigned int nr, char *addr)
+>  #define F2FS_NOCOMP_FL			0x00000400 /* Don't compress */
+>  #define F2FS_INDEX_FL			0x00001000 /* hash-indexed directory */
+>  #define F2FS_DIRSYNC_FL			0x00010000 /* dirsync behaviour (directories only) */
+> +#define F2FS_NOCOW_FL			0x00800000 /* Do not cow file */
+>  #define F2FS_PROJINHERIT_FL		0x20000000 /* Create with parents projid */
+>  #define F2FS_CASEFOLD_FL		0x40000000 /* Casefolded file */
+>  
+> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+> index 09287876dbb7..7f92a3a157f7 100644
+> --- a/fs/f2fs/file.c
+> +++ b/fs/f2fs/file.c
+> @@ -1851,6 +1851,20 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
+>  	if (IS_NOQUOTA(inode))
+>  		return -EPERM;
+>  
+> +	if ((iflags ^ masked_flags) & F2FS_NOCOW_FL) {
+> +		int ret;
+> +
+> +		if (!S_ISREG(inode->i_mode))
+> +			return -EINVAL;
+> +		if (f2fs_should_update_outplace(inode, NULL))
+> +			return -EINVAL;
+> +		if (f2fs_is_pinned_file(inode))
+> +			return -EINVAL;
+> +		ret = f2fs_convert_inline_inode(inode);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	if ((iflags ^ masked_flags) & F2FS_CASEFOLD_FL) {
+>  		if (!f2fs_sb_has_casefold(F2FS_I_SB(inode)))
+>  			return -EOPNOTSUPP;
+> @@ -1926,6 +1940,7 @@ static const struct {
+>  	{ F2FS_NOCOMP_FL,	FS_NOCOMP_FL },
+>  	{ F2FS_INDEX_FL,	FS_INDEX_FL },
+>  	{ F2FS_DIRSYNC_FL,	FS_DIRSYNC_FL },
+> +	{ F2FS_NOCOW_FL,	FS_NOCOW_FL },
+>  	{ F2FS_PROJINHERIT_FL,	FS_PROJINHERIT_FL },
+>  	{ F2FS_CASEFOLD_FL,	FS_CASEFOLD_FL },
+>  };
+> @@ -1957,7 +1972,8 @@ static const struct {
+>  		FS_NOCOMP_FL |		\
+>  		FS_DIRSYNC_FL |		\
+>  		FS_PROJINHERIT_FL |	\
+> -		FS_CASEFOLD_FL)
+> +		FS_CASEFOLD_FL |	\
+> +		FS_NOCOW_FL)
+>  
+>  /* Convert f2fs on-disk i_flags to FS_IOC_{GET,SET}FLAGS flags */
+>  static inline u32 f2fs_iflags_to_fsflags(u32 iflags)
+> @@ -3081,6 +3097,13 @@ static int f2fs_ioc_set_pin_file(struct file *filp, unsigned long arg)
+>  
+>  	inode_lock(inode);
+>  
+> +	if (F2FS_I(inode)->i_flags & F2FS_NOCOW_FL) {
+> +		f2fs_info(F2FS_I_SB(inode), "inode (%lu) is already NOCOW one",
+> +			inode->i_ino);
+> +		ret = -EINVAL;
 
->  - Concerns regarding throughput, would workqueues be as efficient as tasklets (Vinod)
+Why rejecting this? We can pin the file to get 2MB-aligned allocation on the
+NOCOW file.
 
-You need to ask the scheduler people about this.
-
-The workqueues goes deep into the scheduler and I can't make
-out how they are prioritized, but they are certainly not treated
-like any other task.
-
-Yours,
-Linus Walleij
+> +		goto out;
+> +	}
+> +
+>  	if (!pin) {
+>  		clear_inode_flag(inode, FI_PIN_FILE);
+>  		f2fs_i_gc_failures_write(inode, 0);
+> -- 
+> 2.25.1
