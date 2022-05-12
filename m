@@ -2,135 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 673CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349777AbiELBCF (ORCPT
+        id S1349778AbiELBDP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 21:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
+        Wed, 11 May 2022 21:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349757AbiELBB7 (ORCPT
+        with ESMTP id S1344632AbiELBDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 21:01:59 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2A56FD0D
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:01:58 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id o69so3743967pjo.3
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:01:58 -0700 (PDT)
+        Wed, 11 May 2022 21:03:14 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD306FD0E
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:03:13 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id q4so3433086plr.11
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:03:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=cqIXbNSlHT7h2zuf3TdH1Rcr/Q2tqRr9EyF43o9ouk8=;
-        b=WCMICnZ4yFop8p5BNK/Y1RabpyArV3GgkAczZYPOeEy2IHLbwvkhWqt9nL21f8Z9eP
-         bS074YqvSkLwqNYEmGDVYcrTEhATtvQd2gy8wGAaGpfepZT/1JnHe4NzM2pcEYEQGqc5
-         7wuukbwCLwYDl28E3aGbycnzw1XbQLrCqy2PA=
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ib18wyAnvSIua7ptS/vQLbuy/7W7pnuSm126r6BKOSs=;
+        b=luNq9qJhTeqeDz3jT2Otg0cIhK29IpVjShyS2KDcJkwi7jSwu2hMrifrzrMN+6U6+u
+         NwYNytU9esey4C8SeY5plISOZTfF4Mf/795/trgQPdZWIrW2wEib3yZbqIOcNXOKPihO
+         SbF0keTJDEjxypzqMCtinwlmr7zuItC0HTNSoZO45KyTGZsLlNC0dG8Y+LzbVMksuo9G
+         mriKEH5S5uLAgPe85v/cObdBIUhbEJHTtYg4AvS67zUBd236Dnfeezh7SAgQvzOh4/6o
+         JLkWna84ndlHWY4T3Pd77NrEH/kjvmQ3kSinhKxiofT4zwcn0XO4ODng52INcp/+Pfaf
+         PVVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cqIXbNSlHT7h2zuf3TdH1Rcr/Q2tqRr9EyF43o9ouk8=;
-        b=5CPX4yRhYF8Syc7myU2zUB+BFBVyF3xNAFcjaYKBgaX9PlHI1YcrXXW6XnF+4Y2H5/
-         qZ8jHsiKlQWonz5jHVRQ3RDYUqkA+Sov4++HIe6rrx1uEEwZXhdo2YzQVRqku9xbpEqD
-         8aQXdjc+iXywTN+w2SFTsV7g6SqSyReCOnYczDk6DYhg6HnAQ+mCRkJK6m1Bx+nrBHmg
-         SqyCvlc6rWtuYHaQ4eJbBiiGiLP52dKiyt9vc9im+7zZ2A+9aQyY9F7fgBpbrKcchTAZ
-         wmsFinBzRjCcapPIOid8CCEZAF/fyNNcVthcF+hlLeRCVn1Xq8WIHbFPMxvdIFWjegQm
-         rr2w==
-X-Gm-Message-State: AOAM532PBJVECRNr/Qq+TcK1JHXhsRpk+/iIame7JhkMi2m13iYBTfyU
-        TP2CF7WA4KwgqGRnDICqAHe9Dw==
-X-Google-Smtp-Source: ABdhPJyWb3Um5ooWcuLBRteAU4B7JVMDphXRC9YvJHgG1ZMSWIEuPXSZuEJwCbBW1CU1QXdL/JkEnA==
-X-Received: by 2002:a17:903:40c2:b0:15c:fd2a:7198 with SMTP id t2-20020a17090340c200b0015cfd2a7198mr27689039pld.0.1652317317957;
-        Wed, 11 May 2022 18:01:57 -0700 (PDT)
-Received: from fastly.com (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id q37-20020a17090a17a800b001da3780bfd3sm595988pja.0.2022.05.11.18.01.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 11 May 2022 18:01:57 -0700 (PDT)
-Date:   Wed, 11 May 2022 18:01:54 -0700
-From:   Joe Damato <jdamato@fastly.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: Re: [RFC,net-next,x86 0/6] Nontemporal copies in unix socket write
- path
-Message-ID: <20220512010153.GA74055@fastly.com>
-References: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
- <20220511162520.6174f487@kernel.org>
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=ib18wyAnvSIua7ptS/vQLbuy/7W7pnuSm126r6BKOSs=;
+        b=WAolAfSQtR8EN4ib0KibhAbR2+uu2g/koYQg8ruCxJabzYvSavk8fK5Fqb/j7v76Lt
+         xISff51birGQqjDZMxxAdeoehTFwYJ5XquS4+qou5JGKBf+i0PIg2HoJ1+Sggiu5TszI
+         HoxGp6D/LFA/aB1Z42rirs7F0RK6mq8uIzewbfxdjLuCNhtJjuC18X5wB/FcR62uc1xF
+         rjTqYmtKjtQ+SwEdc1rHI18wLaf2V3iv+VYKhg12yUBkD7RmMVaN+nto+BAzESYpbv3R
+         iqygBF+NnjN/UJqnY7a659erbBzyiYp6txhrDIrHxHbvUb5x2tHhVp0Xzp2Bn1luhoYZ
+         I+2A==
+X-Gm-Message-State: AOAM5325/LAglbvi1kTvluMB61/WunwA33CNFGZyY3gkLTOjQN8SFVxK
+        4HiaNrGYaK/q3ZwQEdudo1E=
+X-Google-Smtp-Source: ABdhPJypZJJ+M7FuetbveO+yXJMaW8UPZDVSuK1xTeClfN77hv8ltvUPBR98KEUR0WPwoIGvGC52Tw==
+X-Received: by 2002:a17:902:cf05:b0:156:8445:ce0f with SMTP id i5-20020a170902cf0500b001568445ce0fmr27880201plg.99.1652317392666;
+        Wed, 11 May 2022 18:03:12 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:69ef:9c87:7816:4f74])
+        by smtp.gmail.com with ESMTPSA id e15-20020a170902784f00b0015e8d4eb252sm2561773pln.156.2022.05.11.18.03.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 18:03:12 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Wed, 11 May 2022 18:03:10 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     John Hubbard <jhubbard@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        John Dias <joaodias@google.com>,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
+Message-ID: <YnxczoehQJ+x6m9Y@google.com>
+References: <f7bcda22-8ffe-67be-36bc-fcde58d8884a@nvidia.com>
+ <YnxCCPZUfgQNXSg6@google.com>
+ <8f083802-7ab0-15ec-b37d-bc9471eea0b1@nvidia.com>
+ <20220511234534.GG1790663@paulmck-ThinkPad-P17-Gen-1>
+ <ea64b36c-ecc1-74db-dd2e-909e7e507ef8@nvidia.com>
+ <0d90390c-3624-4f93-f8bd-fb29e92237d3@nvidia.com>
+ <20220512002207.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YnxUTxnCJ6EsmjEi@google.com>
+ <f7ff4186-e629-a5da-3f4d-ec629b0c8dd9@nvidia.com>
+ <20220512004949.GK1790663@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220511162520.6174f487@kernel.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <20220512004949.GK1790663@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 04:25:20PM -0700, Jakub Kicinski wrote:
-> On Tue, 10 May 2022 20:54:21 -0700 Joe Damato wrote:
-> > Initial benchmarks are extremely encouraging. I wrote a simple C program to
-> > benchmark this patchset, the program:
-> >   - Creates a unix socket pair
-> >   - Forks a child process
-> >   - The parent process writes to the unix socket using MSG_NTCOPY - or not -
-> >     depending on the command line flags
-> >   - The child process uses splice to move the data from the unix socket to
-> >     a pipe buffer, followed by a second splice call to move the data from
-> >     the pipe buffer to a file descriptor opened on /dev/null.
-> >   - taskset is used when launching the benchmark to ensure the parent and
-> >     child run on appropriate CPUs for various scenarios
+On Wed, May 11, 2022 at 05:49:49PM -0700, Paul E. McKenney wrote:
+> On Wed, May 11, 2022 at 05:34:52PM -0700, John Hubbard wrote:
+> > On 5/11/22 17:26, Minchan Kim wrote:
+> > > > > Let me try to say this more clearly: I don't think that the following
+> > > > > __READ_ONCE() statement can actually help anything, given that
+> > > > > get_pageblock_migratetype() is non-inlined:
+> > > > > 
+> > > > > +	int __mt = get_pageblock_migratetype(page);
+> > > > > +	int mt = __READ_ONCE(__mt);
+> > > > > +
+> > > > > +	if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
+> > > > > +		return false;
+> > > > > 
+> > > > > 
+> > > > > Am I missing anything here?
+> > > > 
+> > > > In the absence of future aggression from link-time optimizations (LTO),
+> > > > you are missing nothing.
+> > > 
+> > > A thing I want to note is Android kernel uses LTO full mode.
+> > 
+> > Thanks Paul for explaining the state of things.
+> > 
+> > Minchan, how about something like very close to your original draft,
+> > then, but with a little note, and the "&" as well:
+> > 
+> > int __mt = get_pageblock_migratetype(page);
+> > 
+> > /*
+> >  * Defend against future compiler LTO features, or code refactoring
+> >  * that inlines the above function, by forcing a single read. Because, this
+> >  * routine races with set_pageblock_migratetype(), and we want to avoid
+> >  * reading zero, when actually one or the other flags was set.
+> >  */
+> > int mt = __READ_ONCE(__mt);
+> > 
+> > if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
+> >     return false;
+> > 
+> > 
+> > ...which should make everyone comfortable and protected from the
+> > future sins of the compiler and linker teams? :)
 > 
-> Is there a practical use case?
+> This would work, but it would force a store to the stack and an immediate
+> reload.  Which might be OK on this code path.
+> 
+> But using READ_ONCE() in (I think?) __get_pfnblock_flags_mask()
+> would likely generate the same code that is produced today.
+> 
+> 	word = READ_ONCE(bitmap[word_bitidx]);
+> 
+> But I could easily have missed a turn in that cascade of functions.  ;-)
+> 
+> Or there might be some code path that really hates a READ_ONCE() in
+> that place.
 
-Yes; for us there seems to be - especially with AMD Zen2. I'll try to
-describe such a setup and my synthetic HTTP benchmark results.
-
-Imagine a program, call it storageD, which is responsible for storing and
-retrieving data from a data store. Other programs can request data from
-storageD via communicating with it on a Unix socket.
-
-One such program that could request data via the Unix socket is an HTTP
-daemon. For some client connections that the HTTP daemon receives, the
-daemon may determine that responses can be sent in plain text.
-
-In this case, the HTTP daemon can use splice to move data from the unix
-socket connection with storageD directly to the client TCP socket via a
-pipe. splice saves CPU cycles and avoids incurring any memory access
-latency since the data itself is not accessed.
-
-Because we'll use splice (instead of accessing the data and potentially
-affecting the CPU cache) it is advantageous for storageD to use NT copies
-when it writes to the Unix socket to avoid evicting hot data from the CPU
-cache. After all, once the data is copied into the kernel on the unix
-socket write path, it won't be touched again; only spliced.
-
-In my synthetic HTTP benchmarks for this setup, we've been able to increase
-network throughput of the the HTTP daemon by roughly 30% while reducing
-the system time of storageD. We're still collecting data on production
-workloads.
-
-The motivation, IMHO, is very similar to the motivation for
-NETIF_F_NOCACHE_COPY, as far I understand.
-
-In some cases, when an application writes to a network socket the data
-written to the socket won't be accessed again once it is copied into the
-kernel. In these cases, NETIF_F_NOCACHE_COPY can improve performance and
-helps to preserve the CPU cache and avoid evicting hot data.
-
-We get a sizable benefit from this option, too, in situations where we
-can't use splice and have to call write to transmit data to client
-connections. We want to get the same benefit of NETIF_F_NOCACHE_COPY, but
-when writing to Unix sockets as well.
-
-Let me know if that makes it more clear.
-
-> The patches look like a lot of extra indirect calls.
-
-Yup. As I mentioned in the cover letter this was mostly a PoC that seems to
-work and increases network throughput in a real world scenario.
-
-If this general line of thinking (NT copies on write to a Unix socket) is
-acceptable, I'm happy to refactor the code however you (and others) would
-like to get it to an acceptable state.
-
-Thanks for taking a look,
-Joe
+My worry about chaning __get_pfnblock_flags_mask is it's called
+multiple hot places in mm codes so I didn't want to add overhead
+to them.
