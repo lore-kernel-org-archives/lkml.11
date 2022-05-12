@@ -2,133 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA7A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349691AbiELAfT (ORCPT
+        id S1349700AbiELAfx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 20:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
+        Wed, 11 May 2022 20:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241964AbiELAfR (ORCPT
+        with ESMTP id S1344576AbiELAfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 20:35:17 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B0A227835
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 17:35:15 -0700 (PDT)
+        Wed, 11 May 2022 20:35:48 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AD92A9;
+        Wed, 11 May 2022 17:35:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652315715; x=1683851715;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dLBHzXs/7dIe56Ck53G1U2+PedWXR/Xhh4qftWNzQyo=;
-  b=HpwEktkJh+JhmSx9dEdBPZSiOXyBYXUKYesmpH7CM64ZZK5/5bZsLxup
-   JdmLB+/DJC/D4ZAPjjGWSeYaRJjX+DyAWo6nGSAJxLdauwY7Zg5NPcDwg
-   jlJwUW3olL0JmxgaVPGhvnhu69/L2ISvbvfmb4IvlHVeBDtvh+GGpdOgg
-   WGc8RnYaIrusBlLW5isigvXp3hLrd0GdaFtLsIr3BwMM3s9ly/8Y5o0UF
-   png8tNu4yVG2oC6wmN5cA3BY5aaUZ1ubaQPIlQhsLETF4DIvG5eweRt5d
-   N7wfpmDTy4Rz+Re0eDTWGSoeAFy136Ahb73/WOnA5URQL3oOuwVUucVvp
+  t=1652315744; x=1683851744;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Pa3IAVTpVZpXKpk9YhVTbJh3buDK9LGyq4dCv/GcDXI=;
+  b=Gy3FOqU4yLpRZg4WRSakp4kFDEquNMWYMK7oU+7XubDFi9+RaWY8z/NW
+   R7CgrYTiDcLc31beoR6exJxIo9t4Qg0nicQUrGN7RzV9xFZmfFYMIdRIe
+   VVRWvqxIgR00VV1qC/p6Djbg36ZS4A0mGXbY8dxznX9FsRvOxUMf52RX8
+   53fid39WWiE5+EJVMSrQ0a//j0oja7qV7UJ+SfrgLUj7QqPrRYaUPbm6J
+   ulk89nUDCahtxe9Tt1btq8WI8Vx3JFazHLzlYVeYJl0bUCusmC4ImW3nr
+   q9pgcd689aTrBm+pGpcGmbQTDteHeyoVWS+KOQOWueom27H5DBeTyl7q+
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="268684042"
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269787644"
 X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="268684042"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 17:35:15 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="269787644"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 17:35:44 -0700
 X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="711708630"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by fmsmga001.fm.intel.com with ESMTP; 11 May 2022 17:35:14 -0700
-Date:   Wed, 11 May 2022 17:38:45 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 03/29] x86/apic/msi: Set the delivery mode
- individually for each IRQ
-Message-ID: <20220512003845.GC16273@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-4-ricardo.neri-calderon@linux.intel.com>
- <8735hmh1f5.ffs@tglx>
+   d="scan'208";a="697804307"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.212.129.114]) ([10.212.129.114])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 17:35:44 -0700
+Message-ID: <add45b0e-3081-3ca0-d03c-fe306526cc01@linux.intel.com>
+Date:   Wed, 11 May 2022 17:35:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8735hmh1f5.ffs@tglx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH net-next] net: wwan: t7xx: Fix return type of
+ t7xx_dl_add_timedout()
+Content-Language: en-US
+To:     YueHaibing <yuehaibing@huawei.com>,
+        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        m.chetan.kumar@linux.intel.com, loic.poulain@linaro.org,
+        ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220511071907.29120-1-yuehaibing@huawei.com>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <20220511071907.29120-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 10:05:34PM +0200, Thomas Gleixner wrote:
-> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
-> > There are no restrictions in hardware to set  MSI messages with its
-> > own delivery mode.
-> 
-> "messages with its own" ? Plural/singular confusion.
 
-Yes, this is not correct. It should have read "messages with their own..."
-
-> 
-> > Use the mode specified in the provided IRQ hardware
-> > configuration data. Since most of the IRQs are configured to use the
-> > delivery mode of the APIC driver in use (set in all of them to
-> > APIC_DELIVERY_MODE_FIXED), the only functional changes are where
-> > IRQs are configured to use a specific delivery mode.
-> 
-> This does not parse. There are no functional changes due to this patch
-> and there is no point talking about functional changes in subsequent
-> patches here.
-
-I will remove this.
-
-> 
-> > Changing the utility function __irq_msi_compose_msg() takes care of
-> > implementing the change in the in the local APIC, PCI-MSI, and DMAR-MSI
-> 
-> in the in the
-
-Sorry! This is not correct.
-
-> 
-> > irq_chips.
-> >
-> > The IO-APIC irq_chip configures the entries in the interrupt redirection
-> > table using the delivery mode specified in the corresponding MSI message.
-> > Since the MSI message is composed by a higher irq_chip in the hierarchy,
-> > it does not need to be updated.
-> 
-> The point is that updating __irq_msi_compose_msg() covers _all_ MSI
-> consumers including IO-APIC.
-> 
-> I had to read that changelog 3 times to make sense of it. Something like
-> this perhaps:
-> 
->   "x86/apic/msi: Use the delivery mode from irq_cfg for message composition
-> 
->    irq_cfg provides a delivery mode for each interrupt. Use it instead
->    of the hardcoded APIC_DELIVERY_MODE_FIXED. This allows to compose
->    messages for NMI delivery mode which is required to implement a HPET
->    based NMI watchdog.
-> 
->    No functional change as the default delivery mode is set to
->    APIC_DELIVERY_MODE_FIXED."
-
-Thank you for your help on the changelog! I will take your suggestion.
-
-BR,
-Ricardo
-> 
-> Thanks,
-> 
->         tglx
+On 5/11/2022 12:19 AM, YueHaibing wrote:
+> t7xx_dl_add_timedout() now return int 'ret', but the return type
+> is bool. Change the return type to int for furthor errcode upstream.
+>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>   drivers/net/wwan/t7xx/t7xx_dpmaif.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wwan/t7xx/t7xx_dpmaif.c b/drivers/net/wwan/t7xx/t7xx_dpmaif.c
+> index c8bf6929af51..8ee15af1a1ce 100644
+> --- a/drivers/net/wwan/t7xx/t7xx_dpmaif.c
+> +++ b/drivers/net/wwan/t7xx/t7xx_dpmaif.c
+> @@ -1043,7 +1043,7 @@ unsigned int t7xx_dpmaif_dl_dlq_pit_get_wr_idx(struct dpmaif_hw_info *hw_info,
+>   	return value & DPMAIF_DL_RD_WR_IDX_MSK;
+>   }
+>   
+> -static bool t7xx_dl_add_timedout(struct dpmaif_hw_info *hw_info)
+> +static int t7xx_dl_add_timedout(struct dpmaif_hw_info *hw_info)
+yes, int is the right return type, thanks!
+>   {
+>   	u32 value;
+>   	int ret;
