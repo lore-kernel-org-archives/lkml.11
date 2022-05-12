@@ -2,116 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6266C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9447EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356789AbiELRBF (ORCPT
+        id S1356796AbiELRBT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
+        Thu, 12 May 2022 13:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356771AbiELRAr (ORCPT
+        with ESMTP id S1356768AbiELRAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:00:47 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E812E9D1
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:00:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652374842; x=1683910842;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=apo30zA37N3jdlCWH2sDbDBKNYM+43W8+OjQdalfpgs=;
-  b=TkhwrMBe1efd5vcgmKGRzOBG4HJUs1Sl2n5rlPB8ZQaPxaIKR6P4wB73
-   AAvfANYYQgdRUkSVRw0iKfy+4n1q24cUmahvhJ2QN+7+1XBKuu2Ydz1tO
-   tcqcyr/RRp2QUEXz30cXgpXS+JAhSivYiiftgG21FPwv8E6Ar63MkOD3N
-   n5F5JjSpIvGVKnb0oU764naTJJm3MHkI7EK95edTY/K2aXqfKcMLofh6R
-   ewLm3tH1RONy1KMmZOro/awBJ5STpTqkRmf3526SkoDYXsbEI5+v16ZMh
-   oobrQjorhj66q9mB1QgUu6onlb3Pnvm1EOUBoeJEQCaCBdROCK43ylXdi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="250588890"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="250588890"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 09:56:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="895869323"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 12 May 2022 09:56:13 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 54ED0CE; Thu, 12 May 2022 19:56:12 +0300 (EEST)
-Date:   Thu, 12 May 2022 19:56:12 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Dmitry Vyukov <dvyukov@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFCv2 00/10] Linear Address Masking enabling
-Message-ID: <20220512165612.gizedzgtpzbi7jbl@black.fi.intel.com>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511064943.GR76023@worktop.programming.kicks-ass.net>
- <87pmkivjst.ffs@tglx>
+        Thu, 12 May 2022 13:00:53 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA003B548
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:00:48 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id i1so5479404plg.7
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:00:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DekJ8UcrLNS24H0kwzTpTKU7qq2O3Iea6VLoLOi4nfQ=;
+        b=f5IqLmz12k/A5y/HILvzizzg5UZ4Xo+oPXyab7LROvRiERsd1dO3gaJTB4blXyX16d
+         a4sANvf65uub2a+/f5LHxWZ50u60S5qRyYpGcrrKicFwzUdUOysUVYkg93TA3ChY7p8C
+         3GFuNLm3fbXb2H9eFMG5JXK8hkzGeJRDVJ6fuUxviBCsAe4Y2FVxpf1uDWgFt1tHtoyO
+         6FoIVtDufRl9BdWzCWP4yL6KLSgLPORwixoU4fe1jDTH61mWIwjJXWWDDxnG2ZsDXmVZ
+         K/RfcJ3k+HMX3w57SBA0cRgDQbOPwgDjCtBE2rborWOqPL66soELs1wO0gAtXRphJMx6
+         6oWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DekJ8UcrLNS24H0kwzTpTKU7qq2O3Iea6VLoLOi4nfQ=;
+        b=cTpmKIhqfyx+aypYK4bh4F0n0qkiGzKChZCyaEe2mjtJWjcaYRZR9XeA8qCoOStF5R
+         7W8MfVjF0jDijlRenwBLmOCqTd87xtaZd6LWOupAawNimgjSWGoptc3h9AOLLV9Lyajp
+         ZRMfQMw/9MNQAEZ62e0wjdQS0xpj7cvUBtdkYn0faA8ENi/TeKN6IaWrgpVk2TNrsHc4
+         rPPoKOZZjhVmHBaBuSVdv5GrbXHLDNpJFx8ZsR3xbGwpKgt5JeQhefPSi0eJaE4hcbkJ
+         TZGprxCsu3fBlTZQX6tt3mcwH43fyAWYBReNn2R4N5gTAj+l7iPX2cX1chce+Kr7t5FY
+         E0pw==
+X-Gm-Message-State: AOAM533wNFAOQJ8MV4JK0QehJnRPmLeyNDqlo34IrbB5Qr3PelZ/5I+6
+        K6rKFzgN9fIrDbn+z92Eb0CEHLyWxgs=
+X-Google-Smtp-Source: ABdhPJzKKpeK66hB/TVR0aX0f41KqAxlOXi/iGKlAsl3QNixXAQ1XXdLKowdHap30CXSS2sIwugFIQ==
+X-Received: by 2002:a17:90a:c797:b0:1d9:2764:a83b with SMTP id gn23-20020a17090ac79700b001d92764a83bmr11609475pjb.5.1652374847650;
+        Thu, 12 May 2022 10:00:47 -0700 (PDT)
+Received: from localhost.localdomain (li567-56.members.linode.com. [192.155.81.56])
+        by smtp.gmail.com with ESMTPSA id u10-20020a63234a000000b003c14af50605sm2119374pgm.29.2022.05.12.10.00.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 10:00:47 -0700 (PDT)
+From:   Jeff Xie <xiehuan09@gmail.com>
+To:     rostedt@goodmis.org
+Cc:     mingo@redhat.com, mhiramat@kernel.org, zanussi@kernel.org,
+        linux-kernel@vger.kernel.org, Jeff Xie <xiehuan09@gmail.com>
+Subject: [PATCH v10 4/4] trace/objtrace: Add documentation for objtrace
+Date:   Fri, 13 May 2022 01:00:08 +0800
+Message-Id: <20220512170008.1301613-5-xiehuan09@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220512170008.1301613-1-xiehuan09@gmail.com>
+References: <20220512170008.1301613-1-xiehuan09@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87pmkivjst.ffs@tglx>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 05:42:58PM +0200, Thomas Gleixner wrote:
-> On Wed, May 11 2022 at 08:49, Peter Zijlstra wrote:
-> > On Wed, May 11, 2022 at 05:27:40AM +0300, Kirill A. Shutemov wrote:
-> >> Hi all. Here's long overdue update on LAM enabling.
-> >> 
-> >> # Description #
-> >> 
-> >> Linear Address Masking[1] (LAM) modifies the checking that is applied to
-> >> 64-bit linear addresses, allowing software to use of the untranslated
-> >> address bits for metadata.
-> >> 
-> >> The patchset brings support for LAM for userspace addresses.
-> >> 
-> >> The most sensitive part of enabling is change in tlb.c, where CR3 flags
-> >> get set. Please take a look that what I'm doing makes sense.
-> >> 
-> >> The feature competes for bits with 5-level paging: LAM_U48 makes it
-> >> impossible to map anything about 47-bits. The patchset made these
-> >> capability mutually exclusive: whatever used first wins. LAM_U57 can be
-> >> combined with mappings above 47-bits.
-> >
-> > So aren't we creating a problem with LAM_U48 where programs relying on
-> > it are of limited sustainability?
-> >
-> > Any such program simply *cannot* run on 5 level pagetables. Why do we
-> > want to do this?
-> 
-> More bits are better :)
-> 
-> Seriously, I agree that restricting it to LAM57, which gives us 6 bits,
-> makes a lot of sense _and_ makes the whole thing way simpler.
-> 
-> So supporting both needs a truly good justification and a real world use
-> case.
+Added documentation explaining how to use objtrace trigger to get the value
+of the object.
 
-I asked the question before[1]. Basically, more bits more better:
+Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
+---
+ Documentation/trace/events.rst | 83 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
 
-	For HWASAN #bits == detection probability.
-	For MarkUS #bits == exponential cost reduction
-
-I would really like to have only LAM_U57, but IIUC 6 bits is not always
-enough.
-
-Dmitry, could you elaborate?
-
-[1] https://mobile.twitter.com/dvyukov/status/1342019823400837120
+diff --git a/Documentation/trace/events.rst b/Documentation/trace/events.rst
+index c47f381d0c00..0dc475160133 100644
+--- a/Documentation/trace/events.rst
++++ b/Documentation/trace/events.rst
+@@ -546,6 +546,89 @@ The following commands are supported:
+ 
+   See Documentation/trace/histogram.rst for details and examples.
+ 
++- objtrace
++
++  This command provides a way to get the value of any object, The object
++  can be obtained from the dynamic event(kprobe_event/uprobe_event) or the
++  static event(tracepoint).
++
++  Usage:
++  When using the kprobe event, only need to set the objtrace(a new trigger),
++  we can get the value of the object. The object is from the setting of the
++  kprobe event.
++
++  For example:
++  For the function bio_add_page():
++
++  int bio_add_page(struct bio *bio, struct page *page,
++	unsigned int len, unsigned int offset)
++
++  Firstly, we can set the base of the object, thus the first string "arg1"
++  stands for the value of the first parameter of this function bio_add_gage(),
++
++  # echo 'p bio_add_page arg1=$arg1' > ./kprobe_events
++
++  Secondly, we can get the value dynamically based on above object.
++
++  find the offset of the bi_size in struct bio:
++  $ gdb vmlinux
++  (gdb) p &(((struct bio *)0)->bi_iter.bi_size)
++  $1 = (unsigned int *) 0x28
++
++  # echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > ./events/kprobes/ \
++	p_bio_add_page_0/trigger
++
++  # cd /sys/kernel/debug/tracing/
++  # echo 'p bio_add_page arg1=$arg1' > ./kprobe_events
++  # echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > ./events/kprobes/p_bio_add_page_0/trigger
++
++  # du -sh /test.txt
++  12.0K   /test.txt
++
++  # cat  /test.txt > /dev/null
++  # cat ./trace
++  # tracer: nop
++  #
++  # entries-in-buffer/entries-written: 128/128   #P:4
++  #
++  #                                _-----=> irqs-off/BH-disabled
++  #                               / _----=> need-resched
++  #                              | / _---=> hardirq/softirq
++  #                              || / _--=> preempt-depth
++  #                              ||| / _-=> migrate-disable
++  #                              |||| /     delay
++  #           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
++  #              | |         |   |||||     |         |
++               cat-117     [002] ...1.     1.602243: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x0
++               cat-117     [002] ...1.     1.602244: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x0
++               cat-117     [002] ...2.     1.602244: bio_add_page <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x1000
++               cat-117     [002] ...1.     1.602245: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x1000
++               cat-117     [002] ...1.     1.602245: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x1000
++               cat-117     [002] ...2.     1.602245: bio_add_page <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x2000
++               cat-117     [002] ...1.     1.602245: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x2000
++               cat-117     [002] ...1.     1.602245: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x2000
++               cat-117     [002] ...1.     1.602245: submit_bio <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602245: submit_bio_noacct <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602246: __submit_bio <-submit_bio_noacct object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602246: submit_bio_checks <-__submit_bio object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602246: __cond_resched <-submit_bio_checks object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602246: should_fail_bio <-submit_bio_checks object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602246: blk_mq_submit_bio <-submit_bio_noacct object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602246: blk_attempt_plug_merge <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602246: blk_mq_sched_bio_merge <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602247: __rcu_read_lock <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602247: __rcu_read_unlock <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
++               cat-117     [002] ...1.     1.602247: __blk_mq_alloc_requests <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
++            <idle>-0       [002] d..3.     1.602298: bio_endio <-blk_update_request object:0xffff88811bee4000 value:0x0
++            <idle>-0       [002] d..3.     1.602298: mpage_end_io <-blk_update_request object:0xffff88811bee4000 value:0x0
++            <idle>-0       [002] d..3.     1.602298: __read_end_io <-blk_update_request object:0xffff88811bee4000 value:0x0
++            <idle>-0       [002] d..3.     1.602300: bio_put <-blk_update_request object:0xffff88811bee4000 value:0x0
++            <idle>-0       [002] d..3.     1.602300: bio_free <-blk_update_request object:0xffff88811bee4000 value:0x0
++            <idle>-0       [002] d..3.     1.602300: mempool_free <-blk_update_request object:0xffff88811bee4000 value:0x0
++            <idle>-0       [002] d..3.     1.602300: mempool_free_slab <-blk_update_request object:0xffff88811bee4000 value:0x0
++            <idle>-0       [002] d..3.     1.602300: kmem_cache_free <-blk_update_request object:0xffff88811bee4000 value:0x0
++             ...
++
+ 7. In-kernel trace event API
+ ============================
+ 
 -- 
- Kirill A. Shutemov
+2.25.1
+
