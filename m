@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C68B3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF45C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358546AbiELU5Q (ORCPT
+        id S1358529AbiELU5W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 16:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
+        Thu, 12 May 2022 16:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358545AbiELU5A (ORCPT
+        with ESMTP id S1358580AbiELU5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 16:57:00 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CCA68F8F;
-        Thu, 12 May 2022 13:56:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43DA16928F;
+        Thu, 12 May 2022 13:56:39 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: nfraprado)
-        with ESMTPSA id ED4B11F45945
+        with ESMTPSA id B734F1F45AAB
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652388994;
-        bh=8931BEPpRMo9jwNwHld86dfIKOtzN61ZDy8g9afbC0U=;
+        s=mail; t=1652388998;
+        bh=oen+/Gb8r5CVD7w+WMrsnQB9YhJdlf1/8shCrq8Zx0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YLxYb8ta5a6kjhDiboyTyxwDCKdK4bJow0DMQO6QC7D/gKxdW7+8Fbv2zPWwOqZ8/
-         7XxA+B/UZKBQ8xlRHlV/2RhGp8BXp2aSNsteFCxBWsmRMtc2BFD6z8C5i59nR5fOM4
-         jqy0E+NieQ3PA92yNOT7lk1b+a6gtdgnjMHQjc+1/Bi4CoASmBzjFkbx/mNGR928+3
-         C0L6o2DmUmq+mO+FQZRRl7fHadtFSNEUxZ839TouRp+FZ6MJwkmYYG5zzNoNstHhan
-         apVGdkDdplpM/CDhpXtz0c4K2RvDkpLXcPCGzXrdFrbLwHhS/PXoxDygp/lz+DMgUz
-         T3cdxUc4D9C9Q==
+        b=GskHdfBKxcpmG8k23Wmh35zEM4lO+jrgugX00nQAHsGJNvbilMGeQQDMyKckAVan4
+         nQg2qBMWLR2CakJnlWheApUbHIwav3PNRwsLZ7OMS55SGBbK5W0MKdO7m2MaPeL+2V
+         zXOn4OTSngs3m3IJjajwBLAz5wJpbgWoMJFhgdfrPSTpPh2aL6zrV/BDa6If2yvQ9i
+         qPtRa0eTgsq6VDq4x7vYtF9qye7zC2/oCufKXLuGpog8qExGGF4+sraTaVw9bh5n/D
+         aQbed6V00oFqN1XXhkIVWSbIFBFGddbKlxrw2XGS0p5z0h0wDpAvK6XuHLXn0qsoXn
+         1Lcaiz7sy9rlw==
 From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
         <nfraprado@collabora.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>
@@ -41,9 +41,9 @@ Cc:     Chen-Yu Tsai <wenst@chromium.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 09/16] arm64: dts: mediatek: asurada: Add Cr50 TPM
-Date:   Thu, 12 May 2022 16:55:55 -0400
-Message-Id: <20220512205602.158273-10-nfraprado@collabora.com>
+Subject: [PATCH v3 11/16] arm64: dts: mediatek: asurada: Add I2C touchscreen
+Date:   Thu, 12 May 2022 16:55:57 -0400
+Message-Id: <20220512205602.158273-12-nfraprado@collabora.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220512205602.158273-1-nfraprado@collabora.com>
 References: <20220512205602.158273-1-nfraprado@collabora.com>
@@ -54,9 +54,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Asurada platform has a Google Security Chip connected to the SPI5
-bus. It runs the cr50 firmware and provides TPM functionality. Add
-support for it.
+All machines of the Asurada platform have a touchscreen at address 0x10
+in the I2C0 bus, but the devices vary: Spherion has the Elan eKTH3500
+touchscreen, while Hayato has a generic HID-over-i2c touchscreen.
+
+Add common support for the touchscreens on the platform and the
+specifics in each board file.
 
 Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
@@ -65,51 +68,81 @@ Tested-by: Chen-Yu Tsai <wenst@chromium.org>
 
 (no changes since v1)
 
- .../arm64/boot/dts/mediatek/mt8192-asurada.dtsi | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ .../dts/mediatek/mt8192-asurada-hayato-r1.dts |  7 ++++++
+ .../mediatek/mt8192-asurada-spherion-r0.dts   |  4 +++
+ .../boot/dts/mediatek/mt8192-asurada.dtsi     | 25 +++++++++++++++++++
+ 3 files changed, 36 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts b/arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts
+index ca18fcf2ad4f..1e91491945f6 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts
+@@ -38,3 +38,10 @@ MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
+ 		CROS_STD_MAIN_KEYMAP
+ 	>;
+ };
++
++&touchscreen {
++	compatible = "hid-over-i2c";
++	post-power-on-delay-ms = <10>;
++	hid-descr-addr = <0x0001>;
++	vdd-supply = <&pp3300_u>;
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts b/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
+index 30b03895de41..42db81e95fae 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
+@@ -40,3 +40,7 @@ MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
+ 		CROS_STD_MAIN_KEYMAP
+ 	>;
+ };
++
++&touchscreen {
++	compatible = "elan,ekth3500";
++};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-index bcfa688b67f7..ddf18861edad 100644
+index a63b3c86d650..d9c9852339a8 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -5,6 +5,7 @@
-  */
- /dts-v1/;
- #include "mt8192.dtsi"
-+#include <dt-bindings/gpio/gpio.h>
- 
- / {
- 	aliases {
-@@ -353,6 +354,13 @@ &pio {
- 			  "AUD_DAT_MISO0",
- 			  "AUD_DAT_MISO1";
- 
-+	cr50_int: cr50-irq-default-pins {
-+		pins-gsc-ap-int-odl {
-+			pinmux = <PINMUX_GPIO171__FUNC_GPIO171>;
-+			input-enable;
-+		};
-+	};
-+
- 	cros_ec_int: cros-ec-irq-default-pins {
- 		pins-ec-ap-int-odl {
- 			pinmux = <PINMUX_GPIO5__FUNC_GPIO5>;
-@@ -517,6 +525,15 @@ &spi5 {
- 	mediatek,pad-select = <0>;
+@@ -92,6 +92,13 @@ &i2c0 {
+ 	clock-frequency = <400000>;
  	pinctrl-names = "default";
- 	pinctrl-0 = <&spi5_pins>;
+ 	pinctrl-0 = <&i2c0_pins>;
 +
-+	cr50@0 {
-+		compatible = "google,cr50";
-+		reg = <0>;
-+		interrupts-extended = <&pio 171 IRQ_TYPE_EDGE_RISING>;
-+		spi-max-frequency = <1000000>;
++	touchscreen: touchscreen@10 {
++		reg = <0x10>;
++		interrupts-extended = <&pio 21 IRQ_TYPE_LEVEL_LOW>;
 +		pinctrl-names = "default";
-+		pinctrl-0 = <&cr50_int>;
++		pinctrl-0 = <&touchscreen_pins>;
 +	};
  };
  
- &uart0 {
+ &i2c1 {
+@@ -458,6 +465,24 @@ pins-int-n {
+ 			mediatek,pull-up-adv = <3>;
+ 		};
+ 	};
++
++	touchscreen_pins: touchscreen-default-pins {
++		pins-irq {
++			pinmux = <PINMUX_GPIO21__FUNC_GPIO21>;
++			input-enable;
++			bias-pull-up;
++		};
++
++		pins-reset {
++			pinmux = <PINMUX_GPIO137__FUNC_GPIO137>;
++			output-high;
++		};
++
++		pins-report-sw {
++			pinmux = <PINMUX_GPIO138__FUNC_GPIO138>;
++			output-low;
++		};
++	};
+ };
+ 
+ &spi1 {
 -- 
 2.36.1
 
