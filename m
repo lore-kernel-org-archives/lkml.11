@@ -2,406 +2,540 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA947C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 201A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352225AbiELJlk (ORCPT
+        id S1352209AbiELJnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 05:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48198 "EHLO
+        Thu, 12 May 2022 05:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352188AbiELJlf (ORCPT
+        with ESMTP id S1350593AbiELJnk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 05:41:35 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D4D6D1B8
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:41:32 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 70E262C06D3;
-        Thu, 12 May 2022 09:41:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1652348489;
-        bh=FYFqRE6qxhWjSQk1dqInsn4+zt+y91GjdnJ8yqZfBaQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=d4yqR3eWJvaL5Rhapp5jEz7ZmytRDBBGzfmrIf+FiUiCl5tehaAL9iQ+L6BWd7nFU
-         ZnpDmSF1BJHESTxZw3q9/CNJQFQfzBSsZ2NQbYp/0J0HrbAW+bRs6YN20kzqBxCx0T
-         OS3EncxXs7MUc9bivQih6lnYqy8a1P5lNPr/ij8CoBSY4Gv5jNs6Mb/LbpiOBif2t7
-         bOCoGjEWRRy0tNMcmirgY4u2+PaGM6nIpQgVJU8X/vgmRuRHfKZG8AUewEzR0e5vxE
-         X+YhtJ9NpNSjEC9FsCOjcUeR6Kvdjwd7/S9AkSJrwg1zSpWRnmqfwfdzt21YL/NGrV
-         tEwQZubni/pHg==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B627cd6490000>; Thu, 12 May 2022 21:41:29 +1200
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 2836713EE41;
-        Thu, 12 May 2022 21:41:29 +1200 (NZST)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 221302A00D3; Thu, 12 May 2022 21:41:29 +1200 (NZST)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        andrew@lunn.ch
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v3 1/2] dt-bindings: gpio: gpio-mvebu: convert txt binding to YAML
-Date:   Thu, 12 May 2022 21:41:24 +1200
-Message-Id: <20220512094125.3748197-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.36.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=U+Hs8tju c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=oZkIemNP1mAA:10 a=gEfo2CItAAAA:8 a=pGLkceISAAAA:8 a=KKAkSRfTAAAA:8 a=VwQbUJbxAAAA:8 a=voM4FWlXAAAA:8 a=Zr1gCg3S3BJusybWRnsA:9 a=sptkURWiP4Gy88Gu7hUp:22 a=cvBusfyB2V15izCimMoJ:22 a=AjGcO6oz07-iQ99wixmX:22 a=IC2XNlieTeVoXbcui8wp:22
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+        Thu, 12 May 2022 05:43:40 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 0436D69703;
+        Thu, 12 May 2022 02:43:35 -0700 (PDT)
+Received: from jleng.ambarella.net (unknown [180.169.129.130])
+        by mail-app3 (Coremail) with SMTP id cC_KCgB3G7iS1nxi0gENAA--.40474S2;
+        Thu, 12 May 2022 17:42:49 +0800 (CST)
+From:   3090101217@zju.edu.cn
+To:     gregkh@linuxfoundation.org, corbet@lwn.net,
+        laurent.pinchart@ideasonboard.com, balbi@kernel.org,
+        rdunlap@infradead.org, mchehab+huawei@kernel.org, bilbao@vt.edu
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, Jing Leng <jleng@ambarella.com>
+Subject: [PATCH v2] usb: gadget: uvc: add bulk transfer support
+Date:   Thu, 12 May 2022 17:42:36 +0800
+Message-Id: <20220512094236.10937-1-3090101217@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220225070006.15090-1-3090101217@zju.edu.cn>
+References: <20220225070006.15090-1-3090101217@zju.edu.cn>
+X-CM-TRANSID: cC_KCgB3G7iS1nxi0gENAA--.40474S2
+X-Coremail-Antispam: 1UD129KBjvAXoWfXr18GrW7GFWUur4DtFW3GFg_yoW8CFW8Jo
+        WUXFs8W3W8Zr1rXFn3CF1qg3y5Ar4Ikrn8tws8Jr45W3W0v39Iq343Ja18WF43uF47JFyk
+        Gw10qrs8Was5Ka45n29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
+        AaLaJ3UjIYCTnIWjp_UUUOr7k0a2IF6w4kM7kC6x804xWl14x267AKxVW8JVW5JwAFc2x0
+        x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj4
+        1l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0
+        I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwV
+        C2z280aVCY1x0267AKxVW0oVCq3wAac4AC62xK8xCEY4vEwIxC4wAac4AC6xC2jxv24VCS
+        YI8q64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2
+        WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkE
+        bVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwAKzVCY07xG64
+        k0F24lc2xSY4AK67AK6r4fMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4U
+        MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67
+        AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0
+        cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z2
+        80aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI
+        43ZEXa7IU5ZYFtUUUUU==
+X-CM-SenderInfo: qtqziiyqrsilo62m3hxhgxhubq/1tbiAwIIBVNG3GszGAAAsF
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the existing device tree binding to YAML format.
+From: Jing Leng <jleng@ambarella.com>
 
-The old binding listed the interrupt-controller and related properties
-as required but there are sufficiently many existing usages without it
-that the YAML binding does not make the interrupt properties required.
+The video data endpoint of uvc can be implemented as either an
+isochronous or a bulk endpoint.
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+The transmission speed of bulk mode is faster than isochronous mode.
+I tested the speed with cdns3 (USB 3.2 Gen1), it's difficult to reach
+2 Gbps in the isochronous mode, and it can exceed 4 Gbps in the bulk
+mode.
+
+A VideoStreaming interface with isochronous endpoints must have alternate
+settings that can be used to change certain characteristics of the
+interface and underlying endpoint(s). A typical use of alternate settings
+is to provide a way to change the bandwidth requirements an active
+isochronous pipe imposes on the USB.
+
+A VideoStreaming interface containing a bulk endpoint for streaming shall
+support only alternate setting zero. Additional alternate settings
+containing bulk endpoints are not permitted in a device that is compliant
+with the Video Class specification.
+
+In user space, isochronous/bulk modes are handled a little differently:
+
+1. APP prepares buffers and streams when it receives an UVC_EVENT_STREAMON
+message in the isochronous mode, but APP should do them when it receives a
+SET_CUR request of UVC_VS_COMMIT_CONTROL due to no UVC_EVENT_STREAMON
+message reported from the kernel in the bulk mode (Do them only once).
+
+2. In Addition, APP should set the value of dwMaxPayloadTransferSize to
+streaming_maxpacket in the isochronous mode or streaming_bulk_mult * 1024
+in the bulk mode.
+
+Here shows an example of the configfs differences:
+  if [ $BULK -eq 1 ]; then
+      echo 128 > functions/$FUNC/streaming_bulk_mult
+  else
+      echo 1024 > functions/$FUNC/streaming_maxpacket
+  fi
+
+Signed-off-by: Jing Leng <jleng@ambarella.com>
 ---
+ChangeLog v1->v2:
+- Handle imagesize in uvc_v4l2_set_format. If it's not handled,
+- switching from low resolution to high resolution will fail to play.
+---
+ .../ABI/testing/configfs-usb-gadget-uvc       |   1 +
+ Documentation/usb/gadget-testing.rst          |   4 +
+ drivers/usb/gadget/function/f_uvc.c           | 245 ++++++++++++------
+ drivers/usb/gadget/function/u_uvc.h           |   1 +
+ drivers/usb/gadget/function/uvc_configfs.c    |   2 +
+ drivers/usb/gadget/function/uvc_queue.c       |   4 +-
+ drivers/usb/gadget/function/uvc_v4l2.c        |   8 +
+ 7 files changed, 183 insertions(+), 82 deletions(-)
 
-Notes:
-    Changes in v3:
-    - Correct indent in example
-    - Move offset and marvell,pwm-offset to separate patch
-    - Correct some documentation cross references
-    Changes in v2:
-    - Collect review from Andrew
-    - Remove unnecessary/obvious property descriptions
-    - Clarify reg property requirements for armadaxp vs the rest. Enforce
-      these with a variant specific constraint.
-    - Update compatible property requirements. marvell,orion-gpio and
-      marvell,armada-8k-gpio can be used on their own. Everything else ne=
-eds
-      marvell,orion-gpio as a fallback.
-    - Correct example to include marvell,orion-gpio fallback
-
- .../arm/marvell/ap80x-system-controller.txt   |   2 +-
- .../arm/marvell/cp110-system-controller.txt   |   2 +-
- .../devicetree/bindings/gpio/gpio-mvebu.txt   |  93 ------------
- .../devicetree/bindings/gpio/gpio-mvebu.yaml  | 143 ++++++++++++++++++
- MAINTAINERS                                   |   2 +-
- 5 files changed, 146 insertions(+), 96 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
- create mode 100644 Documentation/devicetree/bindings/gpio/gpio-mvebu.yam=
-l
-
-diff --git a/Documentation/devicetree/bindings/arm/marvell/ap80x-system-c=
-ontroller.txt b/Documentation/devicetree/bindings/arm/marvell/ap80x-syste=
-m-controller.txt
-index 052a967c1f28..c83245065d44 100644
---- a/Documentation/devicetree/bindings/arm/marvell/ap80x-system-controll=
-er.txt
-+++ b/Documentation/devicetree/bindings/arm/marvell/ap80x-system-controll=
-er.txt
-@@ -72,7 +72,7 @@ mpp19	19	gpio, uart0(rxd), sdio(pw_off)
- GPIO:
- -----
- For common binding part and usage, refer to
--Documentation/devicetree/bindings/gpio/gpio-mvebu.txt.
-+Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml.
-=20
- Required properties:
-=20
-diff --git a/Documentation/devicetree/bindings/arm/marvell/cp110-system-c=
-ontroller.txt b/Documentation/devicetree/bindings/arm/marvell/cp110-syste=
-m-controller.txt
-index 0705e765f432..d84105c7c935 100644
---- a/Documentation/devicetree/bindings/arm/marvell/cp110-system-controll=
-er.txt
-+++ b/Documentation/devicetree/bindings/arm/marvell/cp110-system-controll=
-er.txt
-@@ -156,7 +156,7 @@ GPIO:
- -----
-=20
- For common binding part and usage, refer to
--Documentation/devicetree/bindings/gpio/gpio-mvebu.txt.
-+Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml.
-=20
- Required properties:
-=20
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt b/Docu=
-mentation/devicetree/bindings/gpio/gpio-mvebu.txt
-deleted file mode 100644
-index 0fc6700ed800..000000000000
---- a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
-+++ /dev/null
-@@ -1,93 +0,0 @@
--* Marvell EBU GPIO controller
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-uvc b/Documentation/ABI/testing/configfs-usb-gadget-uvc
+index 889ed45be4ca..52ca04a619ff 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-uvc
++++ b/Documentation/ABI/testing/configfs-usb-gadget-uvc
+@@ -7,6 +7,7 @@ Description:	UVC function directory
+ 		streaming_maxburst	0..15 (ss only)
+ 		streaming_maxpacket	1..1023 (fs), 1..3072 (hs/ss)
+ 		streaming_interval	1..16
++		streaming_bulk_mult	0..0x3fffffU
+ 		===================	=============================
+ 
+ What:		/config/usb-gadget/gadget/functions/uvc.name/control
+diff --git a/Documentation/usb/gadget-testing.rst b/Documentation/usb/gadget-testing.rst
+index c6d034abce3a..2cbe3e2e05c3 100644
+--- a/Documentation/usb/gadget-testing.rst
++++ b/Documentation/usb/gadget-testing.rst
+@@ -787,6 +787,10 @@ The uvc function provides these attributes in its function directory:
+ 	streaming_maxpacket maximum packet size this endpoint is capable of
+ 			    sending or receiving when this configuration is
+ 			    selected
++	streaming_bulk_mult Multiples to configure max_payload_size. If it's
++			    0, the transport mode is isochronous; otherwise
++			    the transport mode is bulk and max_payload_size
++			    is equal to streaming_bulk_mult * 1024.
+ 	=================== ================================================
+ 
+ There are also "control" and "streaming" subdirectories, each of which contain
+diff --git a/drivers/usb/gadget/function/f_uvc.c b/drivers/usb/gadget/function/f_uvc.c
+index 71bb5e477dba..61a05aa301ec 100644
+--- a/drivers/usb/gadget/function/f_uvc.c
++++ b/drivers/usb/gadget/function/f_uvc.c
+@@ -178,19 +178,19 @@ static struct usb_ss_ep_comp_descriptor uvc_ss_streaming_comp = {
+ 	 */
+ };
+ 
+-static const struct usb_descriptor_header * const uvc_fs_streaming[] = {
++static const struct usb_descriptor_header *uvc_fs_streaming[] = {
+ 	(struct usb_descriptor_header *) &uvc_streaming_intf_alt1,
+ 	(struct usb_descriptor_header *) &uvc_fs_streaming_ep,
+ 	NULL,
+ };
+ 
+-static const struct usb_descriptor_header * const uvc_hs_streaming[] = {
++static const struct usb_descriptor_header *uvc_hs_streaming[] = {
+ 	(struct usb_descriptor_header *) &uvc_streaming_intf_alt1,
+ 	(struct usb_descriptor_header *) &uvc_hs_streaming_ep,
+ 	NULL,
+ };
+ 
+-static const struct usb_descriptor_header * const uvc_ss_streaming[] = {
++static const struct usb_descriptor_header *uvc_ss_streaming[] = {
+ 	(struct usb_descriptor_header *) &uvc_streaming_intf_alt1,
+ 	(struct usb_descriptor_header *) &uvc_ss_streaming_ep,
+ 	(struct usb_descriptor_header *) &uvc_ss_streaming_comp,
+@@ -251,9 +251,12 @@ uvc_function_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
+ 
+ void uvc_function_setup_continue(struct uvc_device *uvc)
+ {
++	struct f_uvc_opts *opts = fi_to_f_uvc_opts(uvc->func.fi);
+ 	struct usb_composite_dev *cdev = uvc->func.config->cdev;
+ 
+-	usb_composite_setup_continue(cdev);
++	/* delayed_status in bulk mode is 0, so it doesn't need to continue. */
++	if (!opts->streaming_bulk_mult)
++		usb_composite_setup_continue(cdev);
+ }
+ 
+ static int
+@@ -278,6 +281,7 @@ uvc_function_set_alt(struct usb_function *f, unsigned interface, unsigned alt)
+ 	struct usb_composite_dev *cdev = f->config->cdev;
+ 	struct v4l2_event v4l2_event;
+ 	struct uvc_event *uvc_event = (void *)&v4l2_event.u.data;
++	struct f_uvc_opts *opts = fi_to_f_uvc_opts(f->fi);
+ 	int ret;
+ 
+ 	uvcg_info(f, "%s(%u, %u)\n", __func__, interface, alt);
+@@ -310,49 +314,72 @@ uvc_function_set_alt(struct usb_function *f, unsigned interface, unsigned alt)
+ 	if (interface != uvc->streaming_intf)
+ 		return -EINVAL;
+ 
+-	/* TODO
+-	if (usb_endpoint_xfer_bulk(&uvc->desc.vs_ep))
+-		return alt ? -EINVAL : 0;
+-	*/
++	if (opts->streaming_bulk_mult) {
++		switch (alt) {
++		case 0:
++			if (uvc->state != UVC_STATE_CONNECTED)
++				return 0;
+ 
+-	switch (alt) {
+-	case 0:
+-		if (uvc->state != UVC_STATE_STREAMING)
+-			return 0;
++			if (!uvc->video.ep)
++				return -EINVAL;
+ 
+-		if (uvc->video.ep)
++			uvcg_info(f, "reset UVC\n");
+ 			usb_ep_disable(uvc->video.ep);
+ 
+-		memset(&v4l2_event, 0, sizeof(v4l2_event));
+-		v4l2_event.type = UVC_EVENT_STREAMOFF;
+-		v4l2_event_queue(&uvc->vdev, &v4l2_event);
++			ret = config_ep_by_speed(f->config->cdev->gadget,
++					&(uvc->func), uvc->video.ep);
++			if (ret)
++				return ret;
++			usb_ep_enable(uvc->video.ep);
+ 
+-		uvc->state = UVC_STATE_CONNECTED;
+-		return 0;
 -
--Required properties:
--
--- compatible : Should be "marvell,orion-gpio", "marvell,mv78200-gpio",
--  "marvell,armadaxp-gpio" or "marvell,armada-8k-gpio".
--
--    "marvell,orion-gpio" should be used for Orion, Kirkwood, Dove,
--    Discovery (except MV78200) and Armada 370. "marvell,mv78200-gpio"
--    should be used for the Discovery MV78200.
--
--    "marvel,armadaxp-gpio" should be used for all Armada XP SoCs
--    (MV78230, MV78260, MV78460).
--
--    "marvell,armada-8k-gpio" should be used for the Armada 7K and 8K
--    SoCs (either from AP or CP), see
--    Documentation/devicetree/bindings/arm/marvell/ap80x-system-controlle=
-r.txt
--    for specific details about the offset property.
--
--- reg: Address and length of the register set for the device. Only one
--  entry is expected, except for the "marvell,armadaxp-gpio" variant
--  for which two entries are expected: one for the general registers,
--  one for the per-cpu registers. Not used for marvell,armada-8k-gpio.
--
--- interrupts: The list of interrupts that are used for all the pins
--  managed by this GPIO bank. There can be more than one interrupt
--  (example: 1 interrupt per 8 pins on Armada XP, which means 4
--  interrupts per bank of 32 GPIOs).
--
--- interrupt-controller: identifies the node as an interrupt controller
--
--- #interrupt-cells: specifies the number of cells needed to encode an
--  interrupt source. Should be two.
--  The first cell is the GPIO number.
--  The second cell is used to specify flags:
--    bits[3:0] trigger type and level flags:
--      1 =3D low-to-high edge triggered.
--      2 =3D high-to-low edge triggered.
--      4 =3D active high level-sensitive.
--      8 =3D active low level-sensitive.
--
--- gpio-controller: marks the device node as a gpio controller
--
--- ngpios: number of GPIOs this controller has
--
--- #gpio-cells: Should be two. The first cell is the pin number. The
--  second cell is reserved for flags, unused at the moment.
--
--Optional properties:
--
--In order to use the GPIO lines in PWM mode, some additional optional
--properties are required.
--
--- compatible: Must contain "marvell,armada-370-gpio"
--
--- reg: an additional register set is needed, for the GPIO Blink
--  Counter on/off registers.
--
--- reg-names: Must contain an entry "pwm" corresponding to the
--  additional register range needed for PWM operation.
--
--- #pwm-cells: Should be two. The first cell is the GPIO line number. The
--  second cell is the period in nanoseconds.
--
--- clocks: Must be a phandle to the clock for the GPIO controller.
--
--Example:
--
--		gpio0: gpio@d0018100 {
--			compatible =3D "marvell,armadaxp-gpio";
--			reg =3D <0xd0018100 0x40>,
--			    <0xd0018800 0x30>;
--			ngpios =3D <32>;
--			gpio-controller;
--			#gpio-cells =3D <2>;
--			interrupt-controller;
--			#interrupt-cells =3D <2>;
--			interrupts =3D <16>, <17>, <18>, <19>;
--		};
--
--		gpio1: gpio@18140 {
--			compatible =3D "marvell,armada-370-gpio";
--			reg =3D <0x18140 0x40>, <0x181c8 0x08>;
--			reg-names =3D "gpio", "pwm";
--			ngpios =3D <17>;
--			gpio-controller;
--			#gpio-cells =3D <2>;
--			#pwm-cells =3D <2>;
--			interrupt-controller;
--			#interrupt-cells =3D <2>;
--			interrupts =3D <87>, <88>, <89>;
--			clocks =3D <&coreclk 0>;
--		};
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml b/Doc=
-umentation/devicetree/bindings/gpio/gpio-mvebu.yaml
-new file mode 100644
-index 000000000000..2d95ef707f53
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml
-@@ -0,0 +1,143 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gpio/gpio-mvebu.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+-	case 1:
+-		if (uvc->state != UVC_STATE_CONNECTED)
++			memset(&v4l2_event, 0, sizeof(v4l2_event));
++			v4l2_event.type = UVC_EVENT_STREAMOFF;
++			v4l2_event_queue(&uvc->vdev, &v4l2_event);
+ 			return 0;
+ 
+-		if (!uvc->video.ep)
++		default:
+ 			return -EINVAL;
++		}
++	} else {
++		switch (alt) {
++		case 0:
++			if (uvc->state != UVC_STATE_STREAMING)
++				return 0;
+ 
+-		uvcg_info(f, "reset UVC\n");
+-		usb_ep_disable(uvc->video.ep);
++			if (uvc->video.ep)
++				usb_ep_disable(uvc->video.ep);
+ 
+-		ret = config_ep_by_speed(f->config->cdev->gadget,
+-				&(uvc->func), uvc->video.ep);
+-		if (ret)
+-			return ret;
+-		usb_ep_enable(uvc->video.ep);
++			memset(&v4l2_event, 0, sizeof(v4l2_event));
++			v4l2_event.type = UVC_EVENT_STREAMOFF;
++			v4l2_event_queue(&uvc->vdev, &v4l2_event);
+ 
+-		memset(&v4l2_event, 0, sizeof(v4l2_event));
+-		v4l2_event.type = UVC_EVENT_STREAMON;
+-		v4l2_event_queue(&uvc->vdev, &v4l2_event);
+-		return USB_GADGET_DELAYED_STATUS;
++			uvc->state = UVC_STATE_CONNECTED;
++			return 0;
+ 
+-	default:
+-		return -EINVAL;
++		case 1:
++			if (uvc->state != UVC_STATE_CONNECTED)
++				return 0;
 +
-+title: Marvell EBU GPIO controller
++			if (!uvc->video.ep)
++				return -EINVAL;
 +
-+maintainers:
-+  - Thierry Reding <thierry.reding@gmail.com>
-+  - Lee Jones <lee.jones@linaro.org>
++			uvcg_info(f, "reset UVC\n");
++			usb_ep_disable(uvc->video.ep);
 +
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - marvell,armada-8k-gpio
-+          - marvell,orion-gpio
++			ret = config_ep_by_speed(f->config->cdev->gadget,
++					&(uvc->func), uvc->video.ep);
++			if (ret)
++				return ret;
++			usb_ep_enable(uvc->video.ep);
 +
-+      - items:
-+          - enum:
-+              - marvell,mv78200-gpio
-+              - marvell,armada-370-gpio
-+              - marvell,armadaxp-gpio
-+          - const: marvell,orion-gpio
++			memset(&v4l2_event, 0, sizeof(v4l2_event));
++			v4l2_event.type = UVC_EVENT_STREAMON;
++			v4l2_event_queue(&uvc->vdev, &v4l2_event);
++			return USB_GADGET_DELAYED_STATUS;
 +
-+  reg:
-+    description: |
-+      Address and length of the register set for the device. Not used fo=
-r
-+      marvell,armada-8k-gpio.
++		default:
++			return -EINVAL;
++		}
+ 	}
+ }
+ 
+@@ -598,57 +625,90 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
+ 	uvcg_info(f, "%s()\n", __func__);
+ 
+ 	opts = fi_to_f_uvc_opts(f->fi);
+-	/* Sanity check the streaming endpoint module parameters.
+-	 */
+-	opts->streaming_interval = clamp(opts->streaming_interval, 1U, 16U);
+-	opts->streaming_maxpacket = clamp(opts->streaming_maxpacket, 1U, 3072U);
+-	opts->streaming_maxburst = min(opts->streaming_maxburst, 15U);
+-
+-	/* For SS, wMaxPacketSize has to be 1024 if bMaxBurst is not 0 */
+-	if (opts->streaming_maxburst &&
+-	    (opts->streaming_maxpacket % 1024) != 0) {
+-		opts->streaming_maxpacket = roundup(opts->streaming_maxpacket, 1024);
+-		uvcg_info(f, "overriding streaming_maxpacket to %d\n",
+-			  opts->streaming_maxpacket);
+-	}
+ 
+-	/* Fill in the FS/HS/SS Video Streaming specific descriptors from the
+-	 * module parameters.
+-	 *
+-	 * NOTE: We assume that the user knows what they are doing and won't
+-	 * give parameters that their UDC doesn't support.
+-	 */
+-	if (opts->streaming_maxpacket <= 1024) {
+-		max_packet_mult = 1;
+-		max_packet_size = opts->streaming_maxpacket;
+-	} else if (opts->streaming_maxpacket <= 2048) {
+-		max_packet_mult = 2;
+-		max_packet_size = opts->streaming_maxpacket / 2;
++	/* Handle different transfer mode for stream endpoints */
++	if (opts->streaming_bulk_mult) {
++		uvc_fs_streaming_ep.bmAttributes = USB_ENDPOINT_XFER_BULK;
++		uvc_hs_streaming_ep.bmAttributes = uvc_fs_streaming_ep.bmAttributes;
++		uvc_ss_streaming_ep.bmAttributes = uvc_fs_streaming_ep.bmAttributes;
 +
-+      For the "marvell,armadaxp-gpio" variant a second entry is expected=
- for
-+      the per-cpu registers. For other variants second entry can be prov=
-ided,
-+      for the PWM function using the GPIO Blink Counter on/off registers=
-.
-+    minItems: 1
-+    maxItems: 2
++		opts->streaming_maxburst = min(opts->streaming_maxburst, 15U);
 +
-+  reg-names:
-+    items:
-+      - const: gpio
-+      - const: pwm
-+    minItems: 1
++		uvc_fs_streaming_ep.wMaxPacketSize = cpu_to_le16(64);
++		uvc_fs_streaming_ep.bInterval = 0;
 +
-+  interrupts:
-+    description: |
-+      The list of interrupts that are used for all the pins managed by t=
-his
-+      GPIO bank. There can be more than one interrupt (example: 1 interr=
-upt
-+      per 8 pins on Armada XP, which means 4 interrupts per bank of 32
-+      GPIOs).
-+    minItems: 1
-+    maxItems: 4
++		uvc_hs_streaming_ep.wMaxPacketSize = cpu_to_le16(512);
++		uvc_hs_streaming_ep.bInterval = 0;
 +
-+  interrupt-controller: true
++		uvc_ss_streaming_ep.wMaxPacketSize = cpu_to_le16(1024);
++		uvc_ss_streaming_ep.bInterval = 0;
 +
-+  "#interrupt-cells":
-+    const: 2
++		uvc_ss_streaming_comp.bmAttributes = 0;
++		uvc_ss_streaming_comp.bMaxBurst = opts->streaming_maxburst;
++		uvc_ss_streaming_comp.wBytesPerInterval = 0;
 +
-+  gpio-controller: true
++		uvc->video.max_payload_size = opts->streaming_bulk_mult * 1024;
+ 	} else {
+-		max_packet_mult = 3;
+-		max_packet_size = opts->streaming_maxpacket / 3;
+-	}
++		uvc_fs_streaming_ep.bmAttributes = USB_ENDPOINT_SYNC_ASYNC
++						| USB_ENDPOINT_XFER_ISOC;
++		uvc_hs_streaming_ep.bmAttributes = uvc_fs_streaming_ep.bmAttributes;
++		uvc_ss_streaming_ep.bmAttributes = uvc_fs_streaming_ep.bmAttributes;
 +
-+  ngpios:
-+    minimum: 1
-+    maximum: 32
++		/* Sanity check the streaming endpoint module parameters.
++		 */
++		opts->streaming_interval = clamp(opts->streaming_interval, 1U, 16U);
++		opts->streaming_maxpacket = clamp(opts->streaming_maxpacket, 1U, 3072U);
++		opts->streaming_maxburst = min(opts->streaming_maxburst, 15U);
 +
-+  "#gpio-cells":
-+    const: 2
++		/* For SS, wMaxPacketSize has to be 1024 if bMaxBurst is not 0 */
++		if (opts->streaming_maxburst &&
++			(opts->streaming_maxpacket % 1024) != 0) {
++			opts->streaming_maxpacket = roundup(opts->streaming_maxpacket, 1024);
++			uvcg_info(f, "overriding streaming_maxpacket to %d\n",
++				opts->streaming_maxpacket);
++		}
+ 
+-	uvc_fs_streaming_ep.wMaxPacketSize =
+-		cpu_to_le16(min(opts->streaming_maxpacket, 1023U));
+-	uvc_fs_streaming_ep.bInterval = opts->streaming_interval;
++		/* Fill in the FS/HS/SS Video Streaming specific descriptors from the
++		 * module parameters.
++		 *
++		 * NOTE: We assume that the user knows what they are doing and won't
++		 * give parameters that their UDC doesn't support.
++		 */
 +
-+  "#pwm-cells":
-+    description:
-+      The first cell is the GPIO line number. The second cell is the per=
-iod
-+      in nanoseconds.
-+    const: 2
++		if (opts->streaming_maxpacket <= 1024) {
++			max_packet_mult = 0;
++			max_packet_size = opts->streaming_maxpacket;
++		} else if (opts->streaming_maxpacket <= 2048) {
++			max_packet_mult = 1;
++			max_packet_size = opts->streaming_maxpacket / 2;
++		} else {
++			max_packet_mult = 2;
++			max_packet_size = opts->streaming_maxpacket / 3;
++		}
+ 
+-	uvc_hs_streaming_ep.wMaxPacketSize =
+-		cpu_to_le16(max_packet_size | ((max_packet_mult - 1) << 11));
++		uvc_fs_streaming_ep.wMaxPacketSize =
++			cpu_to_le16(min(opts->streaming_maxpacket, 1023U));
++		uvc_fs_streaming_ep.bInterval = opts->streaming_interval;
+ 
+-	/* A high-bandwidth endpoint must specify a bInterval value of 1 */
+-	if (max_packet_mult > 1)
+-		uvc_hs_streaming_ep.bInterval = 1;
+-	else
+-		uvc_hs_streaming_ep.bInterval = opts->streaming_interval;
++		uvc_hs_streaming_ep.wMaxPacketSize =
++			cpu_to_le16(max_packet_size | (max_packet_mult << 11));
++		/* A high-bandwidth endpoint must specify a bInterval value of 1 */
++		if (max_packet_mult > 0)
++			uvc_hs_streaming_ep.bInterval = 1;
++		else
++			uvc_hs_streaming_ep.bInterval = opts->streaming_interval;
 +
-+  clocks:
-+    description:
-+      Clock(s) used for PWM function.
-+    items:
-+      - description: Core clock
-+      - description: AXI bus clock
-+    minItems: 1
++		uvc_ss_streaming_ep.wMaxPacketSize = cpu_to_le16(max_packet_size);
++		uvc_ss_streaming_ep.bInterval = opts->streaming_interval;
+ 
+-	uvc_ss_streaming_ep.wMaxPacketSize = cpu_to_le16(max_packet_size);
+-	uvc_ss_streaming_ep.bInterval = opts->streaming_interval;
+-	uvc_ss_streaming_comp.bmAttributes = max_packet_mult - 1;
+-	uvc_ss_streaming_comp.bMaxBurst = opts->streaming_maxburst;
+-	uvc_ss_streaming_comp.wBytesPerInterval =
+-		cpu_to_le16(max_packet_size * max_packet_mult *
+-			    (opts->streaming_maxburst + 1));
++		uvc_ss_streaming_comp.bmAttributes = max_packet_mult;
++		uvc_ss_streaming_comp.bMaxBurst = opts->streaming_maxburst;
++		uvc_ss_streaming_comp.wBytesPerInterval =
++			cpu_to_le16(max_packet_size * (max_packet_mult + 1) *
++				(opts->streaming_maxburst + 1));
 +
-+  clock-names:
-+    items:
-+      - const: core
-+      - const: axi
-+    minItems: 1
++		uvc->video.max_payload_size = 0;
++	}
+ 
+ 	/* Allocate endpoints. */
+ 	ep = usb_ep_autoconfig(cdev->gadget, &uvc_control_ep);
+@@ -662,7 +722,7 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
+ 		ep = usb_ep_autoconfig_ss(cdev->gadget, &uvc_ss_streaming_ep,
+ 					  &uvc_ss_streaming_comp);
+ 	else if (gadget_is_dualspeed(cdev->gadget))
+-		ep = usb_ep_autoconfig(cdev->gadget, &uvc_hs_streaming_ep);
++		ep = usb_ep_autoconfig_ss(cdev->gadget, &uvc_hs_streaming_ep, NULL);
+ 	else
+ 		ep = usb_ep_autoconfig(cdev->gadget, &uvc_fs_streaming_ep);
+ 
+@@ -703,6 +763,28 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
+ 	uvc->streaming_intf = ret;
+ 	opts->streaming_interface = ret;
+ 
++	/* Handle different transfer mode for descriptors */
++	i = 0;
++	if (opts->streaming_bulk_mult) {
++		uvc_streaming_intf_alt0.bNumEndpoints = 1;
++	} else {
++		uvc_streaming_intf_alt0.bNumEndpoints = 0;
 +
-+required:
-+  - compatible
-+  - gpio-controller
-+  - ngpios
-+  - "#gpio-cells"
++		uvc_fs_streaming[i] = USBDHDR(&uvc_streaming_intf_alt1);
++		uvc_hs_streaming[i] = USBDHDR(&uvc_streaming_intf_alt1);
++		uvc_ss_streaming[i] = USBDHDR(&uvc_streaming_intf_alt1);
++		++i;
++	}
++	uvc_fs_streaming[i] = USBDHDR(&uvc_fs_streaming_ep);
++	uvc_hs_streaming[i] = USBDHDR(&uvc_hs_streaming_ep);
++	uvc_ss_streaming[i] = USBDHDR(&uvc_ss_streaming_ep);
++	++i;
++	uvc_fs_streaming[i] = NULL;
++	uvc_hs_streaming[i] = NULL;
++	uvc_ss_streaming[i] = USBDHDR(&uvc_ss_streaming_comp);
++	++i;
++	uvc_ss_streaming[i] = NULL;
 +
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: marvell,armada-8k-gpio
-+    then:
-+      required:
-+        - offset
-+    else:
-+      required:
-+        - reg
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: marvell,armadaxp-gpio
-+    then:
-+      properties:
-+        reg:
-+          minItems: 2
+ 	/* Copy descriptors */
+ 	f->fs_descriptors = uvc_copy_descriptors(uvc, USB_SPEED_FULL);
+ 	if (IS_ERR(f->fs_descriptors)) {
+@@ -866,6 +948,7 @@ static struct usb_function_instance *uvc_alloc_inst(void)
+ 
+ 	opts->streaming_interval = 1;
+ 	opts->streaming_maxpacket = 1024;
++	opts->streaming_bulk_mult = 0;
+ 
+ 	ret = uvcg_attach_configfs(opts);
+ 	if (ret < 0) {
+diff --git a/drivers/usb/gadget/function/u_uvc.h b/drivers/usb/gadget/function/u_uvc.h
+index 9a01a7d4f17f..5607a239d55e 100644
+--- a/drivers/usb/gadget/function/u_uvc.h
++++ b/drivers/usb/gadget/function/u_uvc.h
+@@ -24,6 +24,7 @@ struct f_uvc_opts {
+ 	unsigned int					streaming_interval;
+ 	unsigned int					streaming_maxpacket;
+ 	unsigned int					streaming_maxburst;
++	unsigned int					streaming_bulk_mult;
+ 
+ 	unsigned int					control_interface;
+ 	unsigned int					streaming_interface;
+diff --git a/drivers/usb/gadget/function/uvc_configfs.c b/drivers/usb/gadget/function/uvc_configfs.c
+index 77d64031aa9c..9b08e7b25168 100644
+--- a/drivers/usb/gadget/function/uvc_configfs.c
++++ b/drivers/usb/gadget/function/uvc_configfs.c
+@@ -2422,6 +2422,7 @@ UVC_ATTR(f_uvc_opts_, cname, cname)
+ UVCG_OPTS_ATTR(streaming_interval, streaming_interval, 16);
+ UVCG_OPTS_ATTR(streaming_maxpacket, streaming_maxpacket, 3072);
+ UVCG_OPTS_ATTR(streaming_maxburst, streaming_maxburst, 15);
++UVCG_OPTS_ATTR(streaming_bulk_mult, streaming_bulk_mult, 0x3fffffU);
+ 
+ #undef UVCG_OPTS_ATTR
+ 
+@@ -2429,6 +2430,7 @@ static struct configfs_attribute *uvc_attrs[] = {
+ 	&f_uvc_opts_attr_streaming_interval,
+ 	&f_uvc_opts_attr_streaming_maxpacket,
+ 	&f_uvc_opts_attr_streaming_maxburst,
++	&f_uvc_opts_attr_streaming_bulk_mult,
+ 	NULL,
+ };
+ 
+diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
+index 2cda982f3765..98d0e933b5e1 100644
+--- a/drivers/usb/gadget/function/uvc_queue.c
++++ b/drivers/usb/gadget/function/uvc_queue.c
+@@ -135,7 +135,9 @@ int uvcg_queue_init(struct uvc_video_queue *queue, struct device *dev, enum v4l2
+ 	queue->queue.buf_struct_size = sizeof(struct uvc_buffer);
+ 	queue->queue.ops = &uvc_queue_qops;
+ 	queue->queue.lock = lock;
+-	if (cdev->gadget->sg_supported) {
 +
-+unevaluatedProperties: true
++	/* UDC supports scatter gather and transfer mode isn't bulk. */
++	if (cdev->gadget->sg_supported && !video->max_payload_size) {
+ 		queue->queue.mem_ops = &vb2_dma_sg_memops;
+ 		queue->use_sg = 1;
+ 	} else {
+diff --git a/drivers/usb/gadget/function/uvc_v4l2.c b/drivers/usb/gadget/function/uvc_v4l2.c
+index a2c78690c5c2..767f1a2ace04 100644
+--- a/drivers/usb/gadget/function/uvc_v4l2.c
++++ b/drivers/usb/gadget/function/uvc_v4l2.c
+@@ -119,6 +119,14 @@ uvc_v4l2_set_format(struct file *file, void *fh, struct v4l2_format *fmt)
+ 	bpl = format->bpp * fmt->fmt.pix.width / 8;
+ 	imagesize = bpl ? bpl * fmt->fmt.pix.height : fmt->fmt.pix.sizeimage;
+ 
++	/*
++	 * Bulk mode only allocates memory once, so user should give the
++	 * maximum image size in all formats and kernel should not decrease
++	 * the imagesize.
++	 */
++	if (video->max_payload_size && imagesize < fmt->fmt.pix.sizeimage)
++		imagesize = fmt->fmt.pix.sizeimage;
 +
-+examples:
-+  - |
-+    gpio@d0018100 {
-+      compatible =3D "marvell,armadaxp-gpio", "marvell,orion-gpio";
-+      reg =3D <0xd0018100 0x40>, <0xd0018800 0x30>;
-+      ngpios =3D <32>;
-+      gpio-controller;
-+      #gpio-cells =3D <2>;
-+      interrupt-controller;
-+      #interrupt-cells =3D <2>;
-+      interrupts =3D <16>, <17>, <18>, <19>;
-+    };
-+
-+  - |
-+    gpio@18140 {
-+      compatible =3D "marvell,armada-370-gpio", "marvell,orion-gpio";
-+      reg =3D <0x18140 0x40>, <0x181c8 0x08>;
-+      reg-names =3D "gpio", "pwm";
-+      ngpios =3D <17>;
-+      gpio-controller;
-+      #gpio-cells =3D <2>;
-+      #pwm-cells =3D <2>;
-+      interrupt-controller;
-+      #interrupt-cells =3D <2>;
-+      interrupts =3D <87>, <88>, <89>;
-+      clocks =3D <&coreclk 0>;
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e8c52d0192a6..6b1c80fd7611 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16019,7 +16019,7 @@ L:	linux-pwm@vger.kernel.org
- S:	Maintained
- Q:	https://patchwork.ozlabs.org/project/linux-pwm/list/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linu=
-x-pwm.git
--F:	Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
-+F:	Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml
- F:	Documentation/devicetree/bindings/pwm/
- F:	Documentation/driver-api/pwm.rst
- F:	drivers/gpio/gpio-mvebu.c
---=20
-2.36.0
+ 	video->fcc = format->fcc;
+ 	video->bpp = format->bpp;
+ 	video->width = fmt->fmt.pix.width;
+-- 
+2.17.1
 
