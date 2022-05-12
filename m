@@ -2,105 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E397C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C0EC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352804AbiELKua (ORCPT
+        id S1352845AbiELKvT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 06:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58042 "EHLO
+        Thu, 12 May 2022 06:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240752AbiELKuZ (ORCPT
+        with ESMTP id S1352854AbiELKvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 06:50:25 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBC322D603
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:50:21 -0700 (PDT)
-X-UUID: 42638307e20445239de8faf503934731-20220512
-X-GW-Reason: 11101
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
-X-Content-Feature: ica/max.line-size 116
-        audit/email.address 1
-        meta/cnt.alert 1
-X-UUID: 42638307e20445239de8faf503934731-20220512
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <pengfuyuan@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 124501943; Thu, 12 May 2022 16:52:21 +0800
-X-ns-mid: postfix-627CCA00-974326314
-Received: from localhost.localdomain (unknown [172.20.4.120])
-        by cs2c.com.cn (NSMail) with ESMTPA id C3C48383C640;
-        Thu, 12 May 2022 08:49:03 +0000 (UTC)
-From:   pengfuyuan <pengfuyuan@kylinos.cn>
-To:     Harry Wentland <harry.wentland@amd.com>
-Cc:     Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        pengfuyuan <pengfuyuan@kylinos.cn>
-Subject: [PATCH] drm/amd/display: Remove macro DC_DEFAULT_LOG_MASK
-Date:   Thu, 12 May 2022 16:48:51 +0800
-Message-Id: <20220512084851.104099-1-pengfuyuan@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 12 May 2022 06:51:13 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1134133A12
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:51:11 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652352669;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cDYZEyIkJfwRob8+m2Pey7phccZ669QNOKgx9WIn6UI=;
+        b=wjWgwfnmQTffysLghK9JmB2do5nJeqbxvWoR+j5Oh0kjOR9gQCMhtB7JL34jBHByqRynzk
+        4bIqvI3OKjKC602aXX+sssyKTZnWUPy11HR6cq/9ZflNFG2jFpi16HGsXexSferZOIvNLI
+        WZPBbC7LaWelwcxIye9+hFExjlVRICS3F0VR4ZpKKbNprio2Z7skIdXV5OiJZt/rU2ejjO
+        P3yOWVakiLGBnyT5TMHXR1f09z+fCUeiBH2bExfTjm7TVYA5byVezwgHv7+YV1pCINiVZE
+        yfc7m36vAlq2/ZrmbukElCrwrUCnF8Ca7k6gMlKMF8qcxVw5MAClNcm1Pl68iQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652352669;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cDYZEyIkJfwRob8+m2Pey7phccZ669QNOKgx9WIn6UI=;
+        b=WghJTq4F1yKMoQGGpE03O/74rWWGJ5UdV3CtkTUThzuBdA59/UgCVPyHWdbuspfdcFbk4m
+        ixsZwfvCJjA5FDDw==
+To:     Sean Christopherson <seanjc@google.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH 1/2] x86/crash: Disable virt in core NMI crash handler
+ to avoid double list_add
+In-Reply-To: <20220511234332.3654455-2-seanjc@google.com>
+References: <20220511234332.3654455-1-seanjc@google.com>
+ <20220511234332.3654455-2-seanjc@google.com>
+Date:   Thu, 12 May 2022 12:51:08 +0200
+Message-ID: <87wnervxb7.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Why & How]
-The DC_DEFAULT_LOG_MASK macro has not been used for a long time, so remove it.
+Sean,
 
-Signed-off-by: pengfuyuan <pengfuyuan@kylinos.cn>
+On Wed, May 11 2022 at 23:43, Sean Christopherson wrote:
+> @@ -840,6 +858,20 @@ void nmi_shootdown_cpus(nmi_shootdown_cb callback)
+>  	unsigned long msecs;
+>  	local_irq_disable();
+>  
+> +	/*
+> +	 * Invoking multiple callbacks is not currently supported, registering
+> +	 * the NMI handler twice will cause a list_add() double add BUG().
+> +	 * The exception is the "nop" handler in the emergency reboot path,
+> +	 * which can run after e.g. kdump's shootdown.  Do nothing if the crash
+> +	 * handler has already run, i.e. has already prepared other CPUs, the
+> +	 * reboot path doesn't have any work of its to do, it just needs to
+> +	 * ensure all CPUs have prepared for reboot.
+
+This is confusing at best. The double list add is just one part of the
+problem, which would be trivial enough to fix.
+
+The real point is that after the first shoot down all other CPUs are
+stuck in crash_nmi_callback() and won't respond to the second NMI.
+
+So trying to run this twice is completely pointless and guaranteed to
+run into the timeout.
+
+> +	 */
+> +	if (shootdown_callback) {
+> +		WARN_ON_ONCE(callback != nmi_shootdown_nop);
+> +		return;
+
+Instead of playing games with the callback pointer, I prefer to make
+this all explicit. Delta patch below.
+
+Thanks,
+
+        tglx
 ---
- .../drm/amd/display/include/logger_types.h    | 34 -------------------
- 1 file changed, 34 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/display/include/logger_types.h b/drivers/gpu/drm/amd/display/include/logger_types.h
-index f093b49c5e6e..a31d7c959f2c 100644
---- a/drivers/gpu/drm/amd/display/include/logger_types.h
-+++ b/drivers/gpu/drm/amd/display/include/logger_types.h
-@@ -131,37 +131,3 @@ enum dc_log_type {
- #define DC_MIN_LOG_MASK ((1 << LOG_ERROR) | \
- 		(1 << LOG_DETECTION_EDID_PARSER))
+--- a/arch/x86/kernel/reboot.c
++++ b/arch/x86/kernel/reboot.c
+@@ -528,10 +528,7 @@ static inline void kb_wait(void)
+ 	}
+ }
  
--#define DC_DEFAULT_LOG_MASK ((1ULL << LOG_ERROR) | \
--		(1ULL << LOG_WARNING) | \
--		(1ULL << LOG_EVENT_MODE_SET) | \
--		(1ULL << LOG_EVENT_DETECTION) | \
--		(1ULL << LOG_EVENT_LINK_TRAINING) | \
--		(1ULL << LOG_EVENT_LINK_LOSS) | \
--		(1ULL << LOG_EVENT_UNDERFLOW) | \
--		(1ULL << LOG_RESOURCE) | \
--		(1ULL << LOG_FEATURE_OVERRIDE) | \
--		(1ULL << LOG_DETECTION_EDID_PARSER) | \
--		(1ULL << LOG_DC) | \
--		(1ULL << LOG_HW_HOTPLUG) | \
--		(1ULL << LOG_HW_SET_MODE) | \
--		(1ULL << LOG_HW_RESUME_S3) | \
--		(1ULL << LOG_HW_HPD_IRQ) | \
--		(1ULL << LOG_SYNC) | \
--		(1ULL << LOG_BANDWIDTH_VALIDATION) | \
--		(1ULL << LOG_MST) | \
--		(1ULL << LOG_DETECTION_DP_CAPS) | \
--		(1ULL << LOG_BACKLIGHT)) | \
--		(1ULL << LOG_I2C_AUX) | \
--		(1ULL << LOG_IF_TRACE) | \
--		(1ULL << LOG_HDMI_FRL) | \
--		(1ULL << LOG_SCALER) | \
--		(1ULL << LOG_DTN) /* | \
--		(1ULL << LOG_DEBUG) | \
--		(1ULL << LOG_BIOS) | \
--		(1ULL << LOG_SURFACE) | \
--		(1ULL << LOG_DML) | \
--		(1ULL << LOG_HW_LINK_TRAINING) | \
--		(1ULL << LOG_HW_AUDIO)| \
--		(1ULL << LOG_BANDWIDTH_CALCS)*/
--
--#endif /* __DAL_LOGGER_TYPES_H__ */
--- 
-2.25.1
-
+-static void nmi_shootdown_nop(int cpu, struct pt_regs *regs)
+-{
+-	/* Nothing to do, the NMI shootdown handler disables virtualization. */
+-}
++static inline void nmi_shootdown_cpus_on_restart(void);
+ 
+ /* Use NMIs as IPIs to tell all CPUs to disable virtualization */
+ static void emergency_vmx_disable_all(void)
+@@ -554,7 +551,7 @@ static void emergency_vmx_disable_all(vo
+ 		__cpu_emergency_vmxoff();
+ 
+ 		/* Halt and exit VMX root operation on the other CPUs. */
+-		nmi_shootdown_cpus(nmi_shootdown_nop);
++		nmi_shootdown_cpus_on_restart();
+ 	}
+ }
+ 
+@@ -829,7 +826,8 @@ static int crash_nmi_callback(unsigned i
+ 		return NMI_HANDLED;
+ 	local_irq_disable();
+ 
+-	shootdown_callback(cpu, regs);
++	if (shootdown_callback)
++		shootdown_callback(cpu, regs);
+ 
+ 	/*
+ 	 * Prepare the CPU for reboot _after_ invoking the callback so that the
+@@ -846,31 +844,30 @@ static int crash_nmi_callback(unsigned i
+ 	return NMI_HANDLED;
+ }
+ 
+-/*
+- * Halt all other CPUs, calling the specified function on each of them
++/**
++ * nmi_shootdown_cpus - Stop other CPUs via NMI
++ * @callback:	Optional callback to be invoked from the NMI handler
+  *
+- * This function can be used to halt all other CPUs on crash
+- * or emergency reboot time. The function passed as parameter
+- * will be called inside a NMI handler on all CPUs.
++ * The NMI handler on the remote CPUs invokes @callback, if not
++ * NULL, first and then disables virtualization to ensure that
++ * INIT is recognized during reboot.
++ *
++ * nmi_shootdown_cpus() can only be invoked once. After the first
++ * invocation all other CPUs are stuck in crash_nmi_callback() and
++ * cannot respond to a second NMI.
+  */
+ void nmi_shootdown_cpus(nmi_shootdown_cb callback)
+ {
+ 	unsigned long msecs;
++
+ 	local_irq_disable();
+ 
+ 	/*
+-	 * Invoking multiple callbacks is not currently supported, registering
+-	 * the NMI handler twice will cause a list_add() double add BUG().
+-	 * The exception is the "nop" handler in the emergency reboot path,
+-	 * which can run after e.g. kdump's shootdown.  Do nothing if the crash
+-	 * handler has already run, i.e. has already prepared other CPUs, the
+-	 * reboot path doesn't have any work of its to do, it just needs to
+-	 * ensure all CPUs have prepared for reboot.
++	 * Aside of being pointless this would register the NMI handler
++	 * twice causing list corruption.
+ 	 */
+-	if (shootdown_callback) {
+-		WARN_ON_ONCE(callback != nmi_shootdown_nop);
++	if (WARN_ON_ONCE(crash_ipi_issued))
+ 		return;
+-	}
+ 
+ 	/* Make a note of crashing cpu. Will be used in NMI callback. */
+ 	crashing_cpu = safe_smp_processor_id();
+@@ -902,6 +899,12 @@ void nmi_shootdown_cpus(nmi_shootdown_cb
+ 	/* Leave the nmi callback set */
+ }
+ 
++static inline void nmi_shootdown_cpus_on_restart(void)
++{
++	if (!crash_ipi_issued)
++		nmi_shootdown_cpus(NULL);
++}
++
+ /*
+  * Check if the crash dumping IPI got issued and if so, call its callback
+  * directly. This function is used when we have already been in NMI handler.
+@@ -929,6 +932,8 @@ void nmi_shootdown_cpus(nmi_shootdown_cb
+ 	/* No other CPUs to shoot down */
+ }
+ 
++static inline void nmi_shootdown_cpus_on_restart(void) { }
++
+ void run_crash_ipi_callback(struct pt_regs *regs)
+ {
+ }
