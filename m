@@ -2,96 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF40C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354465AbiELNct (ORCPT
+        id S1354468AbiELNgi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 09:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        Thu, 12 May 2022 09:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354447AbiELNco (ORCPT
+        with ESMTP id S1354320AbiELNgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 09:32:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4023C13F1F6
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:32:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652362362;
+        Thu, 12 May 2022 09:36:35 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718B9326FA
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:36:33 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652362592;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LcRouEMbpVJV3CF6tUltj5T8/RbRRxoKRWpQh58FN08=;
-        b=QuR4nqLPXjLi4Ab0Ed2sBADZsZQQMc9vkVMeHj7b+mZxBh9UsdBBHvwFM/csU10aEK1S/c
-        4+8u53Z/1wXBrC0jvFAlWueUv9z1fbmuz/DyVA5OSH+LLDD6CYlVy9J2DjThY24KA4ckt1
-        cF5a3WUohe+cdp+xXqGfxeWGwvhRMgs=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-537-hIr0LyzIMYGanzMBVJ2f5A-1; Thu, 12 May 2022 09:32:41 -0400
-X-MC-Unique: hIr0LyzIMYGanzMBVJ2f5A-1
-Received: by mail-wm1-f69.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so1703331wmj.0
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:32:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=LcRouEMbpVJV3CF6tUltj5T8/RbRRxoKRWpQh58FN08=;
-        b=5QDG1H5IPPzK2M11dRdLWX2vv6Akoo1WKtT4PhPq647LDWLRqybYReaixLdkZgjwoz
-         7WUa9MbKRwx38V9ZXdblh2meZyAPSKaAH7QcNaRsrjN/R2iKLtLsi6kKZy+EyRXQiEiZ
-         ITxrLys+Vr9kN/+JUsWueBZ07ELBRJOfueoweOoY1ZGwo6/iRVVohg16XCDJMCf2SS+R
-         esB9Wbp9t5Zs8oHYcmMbW/ZSCjulXEvWr44GJKRR31P0M6FAPjWF8K2vnwj54pzxx4fu
-         zgoVwKlkczVwa0h4J3+zbOdRlQ0wemDnlbw/NQVKz+klJj+syWU4P8F89Oz9xr9HUr4s
-         bkqg==
-X-Gm-Message-State: AOAM530XcgXpWMukSJgMoMNEt6SBXgGVIzTsLoqQnjTU+XPjelB53/l/
-        FEwL2Sbqi1Jm597WYdeApyGsk/b2x9xTHfZEgxfSBkXuZaWrJhnBxQeP7gyReSodZ6sMRvBKcwV
-        aHt+BDMiPmB1vEYEYevxqvfQ+
-X-Received: by 2002:a5d:690c:0:b0:20a:d9d1:f5ce with SMTP id t12-20020a5d690c000000b0020ad9d1f5cemr27506922wru.295.1652362359990;
-        Thu, 12 May 2022 06:32:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyd3jndOvxJhiI4HngOf3ex9ZqT8WGUFCHc11sCLiJkasJfigKcQon0rwwJCtpeYPzpq3JK/g==
-X-Received: by 2002:a5d:690c:0:b0:20a:d9d1:f5ce with SMTP id t12-20020a5d690c000000b0020ad9d1f5cemr27506905wru.295.1652362359771;
-        Thu, 12 May 2022 06:32:39 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c701:d200:ee5d:1275:f171:136d? (p200300cbc701d200ee5d1275f171136d.dip0.t-ipconnect.de. [2003:cb:c701:d200:ee5d:1275:f171:136d])
-        by smtp.gmail.com with ESMTPSA id az14-20020a05600c600e00b003942a244f50sm2812086wmb.41.2022.05.12.06.32.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 06:32:39 -0700 (PDT)
-Message-ID: <8adbcdfe-3c30-0928-b74b-36fb308339e5@redhat.com>
-Date:   Thu, 12 May 2022 15:32:38 +0200
+        bh=7LGVxfd1csrHyg3a3ARuqfO22ZbRRJvUq3doY7jKQ9c=;
+        b=0PtyaDyLEdwKdNEmqZBly6HUlyPcXUUl7mjwtRW6N1p0cG2kNfHBRkfv712guwf01Fb9Px
+        DZ/RauThF3XYjocUeBUe+S9pWC6F1bdc60nWiIcDUlpSEDCVgn3itdnc5/MAXpDpujo946
+        41Tfl6AYKE1ESSxjyqfpRiaFx+eiPt1V4V5XqR92PhYo9TiZb+pHrZZM5FUmH/5M1cxQnY
+        KmZuY3dWLFyqnrHTWIJmVZRZEambTmXCpLcfn5xm7zQrkH1MZkRYV/8PYCX46R+JEzQldt
+        4bM2fDfRkoc1xILrh0XZTcmRgadFvKh2aaysWSq8sKo5rD10j557WnH82p7svw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652362592;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7LGVxfd1csrHyg3a3ARuqfO22ZbRRJvUq3doY7jKQ9c=;
+        b=lDHcjCCK2ho0I/bZ1VDJrm2Tge7rsYN1+F+mxTPNZNbNYLin0MGRvODrvmVyhAww86HLOD
+        Qbg8EGBGNc1voICQ==
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, Andrey Ryabinin <aryabinin@virtuozzo.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: Re: [RFCv2 08/10] x86/mm: Make LAM_U48 and mappings above 47-bits
+ mutually exclusive
+In-Reply-To: <20220511022751.65540-10-kirill.shutemov@linux.intel.com>
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+ <20220511022751.65540-10-kirill.shutemov@linux.intel.com>
+Date:   Thu, 12 May 2022 15:36:31 +0200
+Message-ID: <875ymax480.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 05/15] mm/swap: print bad swap offset entry in
- get_swap_device
-Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
-        neilb@suse.de, apopple@nvidia.com, surenb@google.com,
-        peterx@redhat.com, naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220509131416.17553-1-linmiaohe@huawei.com>
- <20220509131416.17553-6-linmiaohe@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220509131416.17553-6-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09.05.22 15:14, Miaohe Lin wrote:
-> If offset exceeds the si->max, print bad swap offset entry to help debug
-> the unexpected case.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+On Wed, May 11 2022 at 05:27, Kirill A. Shutemov wrote:
+> LAM_U48 steals bits above 47-bit for tags and makes it impossible for
+> userspace to use full address space on 5-level paging machine.
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+> Make these features mutually exclusive: whichever gets enabled first
+> blocks the othe one.
 
+So this patch prevents a mapping above 47bit when LAM48 is enabled, but
+I fail to spot how an already existing mapping above 47bit would prevent
+LAM48 from being enabled.
 
--- 
+Maybe I'm missing something which makes this magically mutually
+exclusive.
+
 Thanks,
 
-David / dhildenb
-
+        tglx
