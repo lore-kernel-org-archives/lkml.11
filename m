@@ -2,131 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F234DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C2BC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349607AbiELAQH (ORCPT
+        id S1349613AbiELARN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 20:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
+        Wed, 11 May 2022 20:17:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349611AbiELAPy (ORCPT
+        with ESMTP id S1345344AbiELARJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 20:15:54 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5636586;
-        Wed, 11 May 2022 17:15:49 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-e2fa360f6dso4861061fac.2;
-        Wed, 11 May 2022 17:15:49 -0700 (PDT)
+        Wed, 11 May 2022 20:17:09 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0048814913E;
+        Wed, 11 May 2022 17:17:06 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id g16so4574883lja.3;
+        Wed, 11 May 2022 17:17:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uocv32A42nu0KZF7Yg0Y4JkBC2sf3Jsh4f2LBZHV7do=;
-        b=CLylvKJ7toAIWbWncI9CKpK04030wQp7GI52qUfnWV2M9naUOsmaoJi3NBs5aIAXPy
-         i9zG2rJqJhulsH9n3T67Sik8zTTb4fvpGXDAdJRBfXHZiXWTbCOhpOsfkfUYDfNgvOt1
-         uJ9/9+FVKc1YJOtAseNwxrI8KvabUHKzBzRBLGYMHE4AOquD3EAC22Cuukc4WHh+pHhq
-         KPF7KUouHdKPgG75q7b0/MW7sKVhg1oAsaAv6p2a491qgqZdS++7/7CcRl10rkTu+hvt
-         DFVpY3lUtRXVhtVFBSG/Bejdy3PwlfHVHrKx21me2SxS4zC61JsVz3Rby1S+L1GW4syl
-         oyIg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6ewN4iebyG9uMgew1c//0eeNZDOPRJNH8c+AIOoPtww=;
+        b=I/D3IQssuH9XhW4LG1S8Ij/AirFKHPjUHHDdVkyRnf+QiaZCVa6ciRWZAD7Bi2Pyxt
+         cqujdsSbRBf5BppjlGnqydo7noSBRZ9kAsYd8p+9zHh2ZnJZ8Tr6U2LPo96gHcdX/Ycj
+         fvwu4KYwTT2GbaYgMOurp8elrvkG3yf7eNiyANvgE4VEU8WM4RqRfTGdKGRdBLz0pBdA
+         HK4mA6DueIjj0ZR6neU05sZclXW2NxgWOaZ7lzUW2Q7OjvSk5Ne9SOSs3yl5hq/Xvc9o
+         FOv0OqZMU9P5XEOjYyaNn/INcz2bxCRW7ZwD3lvk0e+OOWHpcH2txGxRhal2ToH6ZPUW
+         fqbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uocv32A42nu0KZF7Yg0Y4JkBC2sf3Jsh4f2LBZHV7do=;
-        b=UgMZRmhLwWgcpgpeeTwnT/0LhR/eVJFm9KfQsRa+0minWTDfpW8kkL24e5sZD3x1E/
-         RqlZOSdIPz1RmjFa0vzx9bD6guTsEojsaC/N3r+d7QO2uwIWcmyg/kwvSH1U3OesPKF4
-         IfDLYI5QjI+M1HYSQSCMU8mCm+/9QS7aHwDgYAxclEQIN5pwkOEM+VYFFX+fG5t3Q+6+
-         kaJWKzhuNQiN2mr5SQqaoDOAn0Zk2EhQ42FQ2goNjmnsKtAxdu0oa4+GplD2GZQs6nrx
-         vjs3GnrXcMwn+5z7Uop3iCMP4uyfW9FZvcXCEXelMvkB1sjEmdm8DlAicOSQHcvKRMHg
-         Ra0Q==
-X-Gm-Message-State: AOAM531c61AzZZgYlO4Zbeq5XT4M7T4dCoButa8obBM/8Y9+WR4WGAXI
-        Z1mzUJS7rK2qSv9/mN2wZQhwhKArwdw0vg==
-X-Google-Smtp-Source: ABdhPJwoDecLr2WXu80NgjTEUn84SQe11nQvDvepCnDLJCLW5E0woMI4dASTPgEEhcQZl/Gn4kWyVg==
-X-Received: by 2002:a05:6870:4341:b0:da:b3f:2b26 with SMTP id x1-20020a056870434100b000da0b3f2b26mr4359163oah.197.1652314548599;
-        Wed, 11 May 2022 17:15:48 -0700 (PDT)
-Received: from max-lenovo.. (169-231-139-87.wireless.ucsb.edu. [169.231.139.87])
-        by smtp.gmail.com with ESMTPSA id z23-20020a9d65d7000000b0060603221235sm1392635oth.5.2022.05.11.17.15.47
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6ewN4iebyG9uMgew1c//0eeNZDOPRJNH8c+AIOoPtww=;
+        b=2P2QRiIbTx3h0X8jW9eYPlstYSlYTF9ODWBuDjj8ePGjhkKderAVqMGtqZH3eS+uL3
+         dPbFj/mGZz5BmVJPZOgSLVBcvjf/DBvVs1WtfvIjEWsTAHxqXgw9/qGWUHhwbcniPOAY
+         1kFWIpjv9ANEZf814dhf1kUAhPg+q6fsDnLHU/SMJpo8njqVmerkFwg+wUEzUL96pOs4
+         UpNNOCPL5YswKZW1KieH957KfOjhM2CL6SP48exL/8SAILBI/tyM+2dMVNXJJ84vXjFo
+         QYa62oBzVJsuIs8zIHrMH3r3Hc97RZIjU32tTxHmYfy0kUKWuvStfuBZ7RXP0JiE6DtD
+         4nsQ==
+X-Gm-Message-State: AOAM533UEKi3a9t5q8xIjECYRZrEajBPvseCLxkQukQLgX3/yDXdpNi1
+        UNtbMlG9JKueH3RR9EbN1L0=
+X-Google-Smtp-Source: ABdhPJytZO4CvmhspGSwFD2e5Vgp3ZwOtKrciZj9kXfeEmlIwA/B6ZuKw8AWR3CBePT65bMn9m6A7g==
+X-Received: by 2002:a2e:9993:0:b0:250:b5a9:18dc with SMTP id w19-20020a2e9993000000b00250b5a918dcmr14870158lji.364.1652314625399;
+        Wed, 11 May 2022 17:17:05 -0700 (PDT)
+Received: from mobilestation ([95.79.189.214])
+        by smtp.gmail.com with ESMTPSA id o18-20020ac24c52000000b0047255d211bbsm507362lfk.234.2022.05.11.17.17.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 17:15:48 -0700 (PDT)
-From:   Max Fletcher <fletcher0max@gmail.com>
-To:     djogorchock@gmail.com, jikos@kernel.org,
-        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Max Fletcher <fletcher0max@gmail.com>
-Subject: [PATCH 2/2] HID: nintendo: add parameter to swap face buttons
-Date:   Wed, 11 May 2022 17:15:00 -0700
-Message-Id: <20220512001500.16739-2-fletcher0max@gmail.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220512001500.16739-1-fletcher0max@gmail.com>
-References: <20220512001500.16739-1-fletcher0max@gmail.com>
+        Wed, 11 May 2022 17:17:04 -0700 (PDT)
+Date:   Thu, 12 May 2022 03:17:02 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, linux-spdx@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-mips@vger.kernel.org
+Subject: Re: [patch 03/10] clocksource/drivers/mips-gic-timer: Convert to
+ SPDX identifier
+Message-ID: <20220512001702.japqljr6ayxyzwn6@mobilestation>
+References: <20220510171003.952873904@linutronix.de>
+ <20220510171254.529249404@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510171254.529249404@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the module parameter "faceswap" that swaps the face (ABXY) buttons to match the printed layout. This will be helpful for people who prefer to use the Nintendo layout over the Xbox layout.
+On Tue, May 10, 2022 at 07:24:40PM +0200, Thomas Gleixner wrote:
+> The licensing text references explicitely the COPYING file in the kernel
+> base directory, which is clearly GPL version 2 only.
 
-Signed-off-by: Max Fletcher <fletcher0max@gmail.com>
----
- drivers/hid/hid-nintendo.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+Acked-by: Serge Semin <fancer.lancer@gmail.com>
 
-diff --git a/drivers/hid/hid-nintendo.c b/drivers/hid/hid-nintendo.c
-index 7735971ede3f..925cdcd0ac77 100644
---- a/drivers/hid/hid-nintendo.c
-+++ b/drivers/hid/hid-nintendo.c
-@@ -32,6 +32,7 @@
- #include <linux/jiffies.h>
- #include <linux/leds.h>
- #include <linux/module.h>
-+#include <linux/moduleparam.h>
- #include <linux/power_supply.h>
- #include <linux/spinlock.h>
- 
-@@ -320,6 +321,8 @@ struct joycon_imu_cal {
- 	s16 scale[3];
- };
- 
-+bool faceswap;
-+
- /*
-  * All the controller's button values are stored in a u32.
-  * They can be accessed with bitwise ANDs.
-@@ -1351,10 +1354,17 @@ static void joycon_parse_report(struct joycon_ctlr *ctlr,
- 		input_report_key(dev, BTN_START, btns & JC_BTN_PLUS);
- 		input_report_key(dev, BTN_THUMBR, btns & JC_BTN_RSTICK);
- 		input_report_key(dev, BTN_MODE, btns & JC_BTN_HOME);
--		input_report_key(dev, BTN_X, btns & JC_BTN_Y);
--		input_report_key(dev, BTN_Y, btns & JC_BTN_X);
--		input_report_key(dev, BTN_B, btns & JC_BTN_A);
--		input_report_key(dev, BTN_A, btns & JC_BTN_B);
-+		if (!faceswap) {
-+			input_report_key(dev, BTN_X, btns & JC_BTN_Y);
-+			input_report_key(dev, BTN_Y, btns & JC_BTN_X);
-+			input_report_key(dev, BTN_B, btns & JC_BTN_A);
-+			input_report_key(dev, BTN_A, btns & JC_BTN_B);
-+		} else {
-+			input_report_key(dev, BTN_Y, btns & JC_BTN_Y);
-+			input_report_key(dev, BTN_X, btns & JC_BTN_X);
-+			input_report_key(dev, BTN_A, btns & JC_BTN_A);
-+			input_report_key(dev, BTN_B, btns & JC_BTN_B);
-+		}
- 	}
- 
- 	input_sync(dev);
-@@ -2313,6 +2323,10 @@ static const struct hid_device_id nintendo_hid_devices[] = {
- };
- MODULE_DEVICE_TABLE(hid, nintendo_hid_devices);
- 
-+module_param(faceswap, bool, 0440);
-+MODULE_PARM_DESC(faceswap,
-+		 "Swaps the face buttons to match the printed layout");
-+
- static struct hid_driver nintendo_hid_driver = {
- 	.name		= "nintendo",
- 	.id_table	= nintendo_hid_devices,
--- 
-2.35.3
+-Serge
 
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Cc: Serge Semin <fancer.lancer@gmail.com>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: linux-mips@vger.kernel.org
+> ---
+>  drivers/clocksource/mips-gic-timer.c |    9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+> 
+> --- a/drivers/clocksource/mips-gic-timer.c
+> +++ b/drivers/clocksource/mips-gic-timer.c
+> @@ -1,10 +1,5 @@
+> -/*
+> - * This file is subject to the terms and conditions of the GNU General Public
+> - * License.  See the file "COPYING" in the main directory of this archive
+> - * for more details.
+> - *
+> - * Copyright (C) 2012 MIPS Technologies, Inc.  All rights reserved.
+> - */
+> +// SPDX-License-Identifier: GPL-2.0
+> +// Copyright (C) 2012 MIPS Technologies, Inc.  All rights reserved.
+>  
+>  #define pr_fmt(fmt) "mips-gic-timer: " fmt
+>  
+> 
