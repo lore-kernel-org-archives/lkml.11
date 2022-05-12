@@ -2,409 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2246AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357458AbiELSBn (ORCPT
+        id S1357457AbiELSCJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 14:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38162 "EHLO
+        Thu, 12 May 2022 14:02:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357468AbiELSBj (ORCPT
+        with ESMTP id S1357463AbiELSCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 14:01:39 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861C7326DE;
-        Thu, 12 May 2022 11:01:34 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id y76so11255359ybe.1;
-        Thu, 12 May 2022 11:01:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P2Z7C4AYnqmN1fJ4A3LOaxRz+0uCusfSuGUkn36he00=;
-        b=XNfV1ATX15rJxMuZXB3ybE75+i4OnBI7kfdeDBcuIyhcJY1h9qsUi0LX2q3cm5JL83
-         D0i72oJpPe5zrbb1d+VS0GOFOtQSRT/ESIFiAicUi5dS3JG1i/Ul1x6ubjUv1Hj+2VUd
-         SMFQlORik55Rnxs7YQBKMVqIJAJhuWIWJ3SB1kO5Gzb/H9ovmGonnVIhb58tHCX4uJT5
-         z3ntBaV8Kc/jvd/TEftaDu8xWAVzlYZJLGCMMThIvuBHY/DzYs0EuOiLzOCz5PrMlEyo
-         150qSJNmycU+48P4Ehm8CM6IVxWoAGUx2kKN2jqmfUuyyI+irzhMoQtxln7WzgdSfB/5
-         3OCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P2Z7C4AYnqmN1fJ4A3LOaxRz+0uCusfSuGUkn36he00=;
-        b=GJa0/iUOp5UpI9YFcRxkS/HcreZFbGMtzhZiMF+90xsl3mknwyR8xpvHMzdJY4/Rei
-         HTeMMAkWaeda41bV3dmItdAP1s+qxP3ZSagSk3B93YykUqL3bNFqCSClgfVJ7fnQ+DzQ
-         UDWUyvBXVB7fSVlo9iFtUSgpsh7ub1teBezp15ZmFg7hkntSD12x70TqGZns9H5lMP4G
-         2U3AcGIsOE/eUlpA1awzTCybPOR2W3GB4wwUF7bOkSOKW3HGd2Bkl33zIKw4Qc5fweXC
-         vAwgZEOtkcJ0IM+VQPMLOaUUmtUYvEhfQbkD/2WEIDP4DoCQOfcSxZbRL7DpW2Kx9LLd
-         v9xg==
-X-Gm-Message-State: AOAM531RtNJjsCFClrzf0L8/4ILDzEHqW38wkHupSe1LrEjCMeeqTPlW
-        hMKP4Gkvc/F2KMg/QWe49oD9V7EPZFDpyk4mm9A=
-X-Google-Smtp-Source: ABdhPJwhNf2PpfuRuLgI2qKabNA/bdljUFEQv7+eDKrRotBSjX3OtEN/+j6LuLfxGVV4bmh8xiSvQvBOjGbNzTUH4js=
-X-Received: by 2002:a25:83d1:0:b0:648:725c:6a05 with SMTP id
- v17-20020a2583d1000000b00648725c6a05mr1012525ybm.218.1652378493736; Thu, 12
- May 2022 11:01:33 -0700 (PDT)
+        Thu, 12 May 2022 14:02:05 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2051.outbound.protection.outlook.com [40.107.92.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806B12F3AB;
+        Thu, 12 May 2022 11:02:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ObTjsNB9a8wr8XqNZUH7unF99TDLEJMjf4L47t1ojn+RlEIsmHWHHY2UyYPi4aJy7fbo9SS+kxvzb5KgiwBs/PCVcGBbaB4b5WQc3ULtrJOLWmE+nYDsS6S/ory1nOayn3u1d56B40+/Mbt1x4tTDCHHm0vYX9HAFpgZiaBjv9XSLyU4rkHNlZZ19a1qG7aSTxJFjHY5SVD759zNuGqZH8LBE9EdaXEuPTUwmQL9SuflsCmL6102Pdzd9KLarODh5L0WaZH6Q8IErk3pijfkbV/mXcMlifzK4gQn4/0AE4D668gykI3aBl4HvvynXC1O5fr2YBWsaFnr1/OZtd5UFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=E0NEAZbcL3Cttzurcyd+0XeylrS5T43t0Jzk04zfkPQ=;
+ b=iqsOQKgQsO14JpMHME1w+zSmzY6dunsaosPpB0uRIOKIRTQLERJv7xpazum07ae9NqrmyjPhjoNABqFL2QEPZ7JyrHlOMehEhWuTt3E8ryIWcY9OYecr/hFrZ7LqbPemvvcXm9BF40sdJB9JdmvhNiv3Ggyti4bqA5+RVkMqgrCufgagwBwMVzo5d+9SX65jeytTui8Ow6vH7ld2aDQUW3pjg6BADpocyR7v4pNC/wbxsjXQ8BRTeKNoBbrc9ZhWrlLSyvoKHcKxN72h/Bvvvvg/w1UFXBTeXRhYLJQmKJLIOeKiXdFY2E/6YFXmtWwvlN9xg7OUrLBoUz1Oa6fVAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E0NEAZbcL3Cttzurcyd+0XeylrS5T43t0Jzk04zfkPQ=;
+ b=lrp9w/fp4FGv3594uPJ10CKt0vYyvlpURpMk36Uck2NjJgGLXUb3x4QFlAsP9GHnMaYiYuP2l9ctw03vrKxxkCPeaB2eFS9b/gW2EhzfBtAqiQWvbNKeVLbRB6mtDSdGhRFteC3zNdm6UWv2mmw2uxO+P2rG+QarHUzldFKIjyw=
+Received: from DM5PR07CA0117.namprd07.prod.outlook.com (2603:10b6:4:ae::46) by
+ BY5PR12MB3698.namprd12.prod.outlook.com (2603:10b6:a03:194::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Thu, 12 May
+ 2022 18:02:00 +0000
+Received: from DM6NAM11FT020.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:4:ae:cafe::5c) by DM5PR07CA0117.outlook.office365.com
+ (2603:10b6:4:ae::46) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
+ Transport; Thu, 12 May 2022 18:02:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT020.mail.protection.outlook.com (10.13.172.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5250.13 via Frontend Transport; Thu, 12 May 2022 18:02:00 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
+ 2022 13:01:59 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     <jikos@kernel.org>
+CC:     <basavaraj.natikar@amd.com>, <linux-input@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        David Chang <David.Chang@amd.com>
+Subject: [PATCH] HID: amd_sfh: Don't show client init failed as error when discovery fails
+Date:   Thu, 12 May 2022 13:00:43 -0500
+Message-ID: <20220512180043.26206-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220511183210.5248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220511183210.5248-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <OS0PR01MB5922AC4FB9D5A04180F46C2A86C89@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB5922AC4FB9D5A04180F46C2A86C89@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Thu, 12 May 2022 19:01:06 +0100
-Message-ID: <CA+V-a8uCFoje_LRkCOXtA+04sEhGDzae=RrxPcn9n3TE=h9k2w@mail.gmail.com>
-Subject: Re: [PATCH v3 2/5] irqchip: Add RZ/G2L IA55 Interrupt Controller driver
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e266193a-314e-4717-8ec8-08da34418323
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3698:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB369814F11D519CB07A6EDD63E2CB9@BY5PR12MB3698.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HT2TCClecP23Q7SwXvP4o5oA5UNSP/FGFd0lzTHI5XOLu/y7hudNWOf08eOfaKnWX86YFRYbJGqB7jrBWljvFJ3smHqVP6hY1Eahnmgc61CAAkOiMym9XzoBpEGYCbLfRWRldH1K2AgVys1hRd+t+G4XnXy6SEAoe+9sWZe8ASeYJV/gNa15li2fq5ZZM8Tjr27HqsZhBh6MimEOsHc/7FCr5Pis2+YhzI47f0ssPN+Fv3t2UpIqmowIB20iuOed9C8XPPcOW5yNz8X6rMUQONMu6uTDK24GllvohrSazEI9MqzSdlAV2Sd1FVw+1lmOO0Lt51jorbAX53sf1oWuzivuvn0nk8O5r7hm11ygfoPcdwxhw3Un7qghRbA+vfz8hIxqTG/gt0lAuo1avv8mz3zQx6x5iYK4guGDmUnsW6RZe9yM6L6FoajMk5SjffUXBg4XM9pBRJz3z7fJgbAlbQa1zM0F1Sysx9a0MiwXZcX4yhmNzOq8dS0VWNzuyA2inQX9w5jakfQ93DzsdWXQQmdtsFHw/uuu7cggFsE7ULU3sIpGFVBHBHujrhuwZgY9raNPMKxZWrBe7izGT4EVu6cwRQQVLgmmQ4HfcMtaITVabi4xjUxOiocdg54Chvs86WbiIGi5png8KCeV/c1FPEkXX1/Ntzp2qEiUWULZtOE+7QR2wnz3jaFco6yZu2lhL+TXf9n/T40gg1BVqT7rTQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(36860700001)(6916009)(1076003)(40460700003)(316002)(7696005)(16526019)(26005)(186003)(83380400001)(2616005)(36756003)(54906003)(508600001)(5660300002)(8676002)(8936002)(82310400005)(2906002)(81166007)(4326008)(86362001)(70586007)(70206006)(356005)(336012)(6666004)(47076005)(426003)(44832011)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 18:02:00.3073
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e266193a-314e-4717-8ec8-08da34418323
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT020.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3698
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Biju,
+When sensor discovery fails, this means that the system doesn't have
+any sensors connected and a user should only be notified at most one time.
+A message is already displayed at WARN level of "failed ot discover,
+sensors not enabled".  It's pointless to show that the client init failed
+at ERR level for the same condition.
 
-Thank you for the review.
+Check the return code and don't display this message in thoes conditions.
 
-On Wed, May 11, 2022 at 8:25 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
->
-> Hi Prabhakar,
->
-> > Subject: [PATCH v3 2/5] irqchip: Add RZ/G2L IA55 Interrupt Controller
-> > driver
-> >
-> > Add a driver for the Renesas RZ/G2L Interrupt Controller.
-> >
-> > This supports external pins being used as interrupts. It supports one line
-> > for NMI, 8 external pins and 32 GPIO pins (out of 123) to be used as IRQ
-> > lines.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >  drivers/irqchip/Kconfig             |   8 +
-> >  drivers/irqchip/Makefile            |   1 +
-> >  drivers/irqchip/irq-renesas-rzg2l.c | 444 ++++++++++++++++++++++++++++
-> >  3 files changed, 453 insertions(+)
-> >  create mode 100644 drivers/irqchip/irq-renesas-rzg2l.c
-> >
-> > diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig index
-> > 15edb9a6fcae..f3d071422f3b 100644
-> > --- a/drivers/irqchip/Kconfig
-> > +++ b/drivers/irqchip/Kconfig
-> > @@ -242,6 +242,14 @@ config RENESAS_RZA1_IRQC
-> >         Enable support for the Renesas RZ/A1 Interrupt Controller, to use
-> > up
-> >         to 8 external interrupts with configurable sense select.
-> >
-> > +config RENESAS_RZG2L_IRQC
-> > +     bool "Renesas RZ/G2L (and alike SoC) IRQC support" if COMPILE_TEST
-> > +     select GENERIC_IRQ_CHIP
-> > +     select IRQ_DOMAIN_HIERARCHY
-> > +     help
-> > +       Enable support for the Renesas RZ/G2L (and alike SoC) Interrupt
-> > Controller
-> > +       for external devices.
-> > +
-> >  config SL28CPLD_INTC
-> >       bool "Kontron sl28cpld IRQ controller"
-> >       depends on MFD_SL28CPLD=y || COMPILE_TEST diff --git
-> > a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile index
-> > 160a1d8ceaa9..eaa56eec2b23 100644
-> > --- a/drivers/irqchip/Makefile
-> > +++ b/drivers/irqchip/Makefile
-> > @@ -51,6 +51,7 @@ obj-$(CONFIG_RDA_INTC)                      += irq-rda-intc.o
-> >  obj-$(CONFIG_RENESAS_INTC_IRQPIN)    += irq-renesas-intc-irqpin.o
-> >  obj-$(CONFIG_RENESAS_IRQC)           += irq-renesas-irqc.o
-> >  obj-$(CONFIG_RENESAS_RZA1_IRQC)              += irq-renesas-rza1.o
-> > +obj-$(CONFIG_RENESAS_RZG2L_IRQC)     += irq-renesas-rzg2l.o
-> >  obj-$(CONFIG_VERSATILE_FPGA_IRQ)     += irq-versatile-fpga.o
-> >  obj-$(CONFIG_ARCH_NSPIRE)            += irq-zevio.o
-> >  obj-$(CONFIG_ARCH_VT8500)            += irq-vt8500.o
-> > diff --git a/drivers/irqchip/irq-renesas-rzg2l.c b/drivers/irqchip/irq-
-> > renesas-rzg2l.c
-> > new file mode 100644
-> > index 000000000000..61435d8dbe1a
-> > --- /dev/null
-> > +++ b/drivers/irqchip/irq-renesas-rzg2l.c
-> > @@ -0,0 +1,444 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Renesas RZ/G2L IRQC Driver
-> > + *
-> > + * Copyright (C) 2022 Renesas Electronics Corporation.
-> > + *
-> > + * Author: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/err.h>
-> > +#include <linux/io.h>
-> > +#include <linux/irqchip.h>
-> > +#include <linux/irqdomain.h>
-> > +#include <linux/of_address.h>
-> > +#include <linux/reset.h>
-> > +#include <linux/spinlock.h>
-> > +
-> > +#define IRQC_IRQ_START                       1
-> > +#define IRQC_IRQ_COUNT                       8
-> > +#define IRQC_TINT_START                      (IRQC_IRQ_START + IRQC_IRQ_COUNT)
-> > +#define IRQC_TINT_COUNT                      32
-> > +#define IRQC_NUM_IRQ                 (IRQC_TINT_START + IRQC_TINT_COUNT)
-> > +
-> > +#define ISCR                         0x10
-> > +#define IITSR                                0x14
-> > +#define TSCR                         0x20
-> > +#define TITSR0                               0x24
-> > +#define TITSR1                               0x28
-> > +#define TITSR0_MAX_INT                       16
-> > +#define TITSEL_WIDTH                 0x2
-> > +#define TSSR(n)                              (0x30 + ((n) * 4))
-> > +#define TIEN                         BIT(7)
-> > +#define TSSEL_SHIFT(n)                       (8 * (n))
-> > +#define TSSEL_MASK                   GENMASK(7, 0)
-> > +#define IRQ_MASK                     0x3
-> > +
-> > +#define TSSR_OFFSET(n)                       ((n) % 4)
-> > +#define TSSR_INDEX(n)                        ((n) / 4)
-> > +
-> > +#define TITSR_TITSEL_EDGE_RISING     0
-> > +#define TITSR_TITSEL_EDGE_FALLING    1
-> > +#define TITSR_TITSEL_LEVEL_HIGH              2
-> > +#define TITSR_TITSEL_LEVEL_LOW               3
-> > +
-> > +#define IITSR_IITSEL(n, sense)               ((sense) << ((n) * 2))
-> > +#define IITSR_IITSEL_LEVEL_LOW               0
-> > +#define IITSR_IITSEL_EDGE_FALLING    1
-> > +#define IITSR_IITSEL_EDGE_RISING     2
-> > +#define IITSR_IITSEL_EDGE_BOTH               3
-> > +#define IITSR_IITSEL_MASK(n)         IITSR_IITSEL((n), 3)
-> > +
-> > +#define TINT_EXTRACT_HWIRQ(x)                ((x) & ~GENMASK(31, 16))
-> > +#define TINT_EXTRACT_GPIOINT(x)              ((x) >> 16)
-> > +
-> > +struct rzg2l_irqc_priv {
-> > +     void __iomem *base;
-> > +     struct of_phandle_args map[IRQC_NUM_IRQ];
-> > +     raw_spinlock_t lock;
-> > +};
-> > +
-> > +struct rzg2l_irqc_chip_data {
-> > +     int tint;
-> > +};
-> > +
-> > +static struct rzg2l_irqc_priv *irq_data_to_priv(struct irq_data *data)
-> > +{
-> > +     return data->domain->host_data;
-> > +}
-> > +
-> > +static void rzg2l_irq_eoi(struct irq_data *d) {
-> > +     unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_IRQ_START;
-> > +     struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > +     u32 bit = BIT(hw_irq);
-> > +     u32 reg;
-> > +
-> > +     reg = readl_relaxed(priv->base + ISCR);
-> > +     if (reg & bit)
-> > +             writel_relaxed(reg & ~bit, priv->base + ISCR); }
-> > +
-> > +static void rzg2l_tint_eoi(struct irq_data *d) {
-> > +     unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_TINT_START;
-> > +     struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > +     u32 bit = BIT(hw_irq);
-> > +     u32 reg;
-> > +
-> > +     reg = readl_relaxed(priv->base + TSCR);
-> > +     if (reg & bit)
-> > +             writel_relaxed(reg & ~bit, priv->base + TSCR); }
-> > +
-> > +static void rzg2l_irqc_eoi(struct irq_data *d) {
-> > +     struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > +     unsigned int hw_irq = irqd_to_hwirq(d);
-> > +
-> > +     raw_spin_lock(&priv->lock);
-> > +     if (hw_irq >= IRQC_IRQ_START && hw_irq <= IRQC_IRQ_COUNT)
-> > +             rzg2l_irq_eoi(d);
-> > +     else if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT)
-> > +             rzg2l_tint_eoi(d);
-> > +     raw_spin_unlock(&priv->lock);
-> > +     irq_chip_eoi_parent(d);
-> > +}
-> > +
-> > +static void rzg2l_irqc_irq_disable(struct irq_data *d) {
-> > +     unsigned int hw_irq = irqd_to_hwirq(d);
-> > +
-> > +     if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT) {
-> > +             struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > +             u32 offset = hw_irq - IRQC_TINT_START;
-> > +             u32 tssr_offset = TSSR_OFFSET(offset);
-> > +             u8 tssr_index = TSSR_INDEX(offset);
-> > +             u32 reg;
-> > +
-> > +             raw_spin_lock(&priv->lock);
-> > +             reg = readl_relaxed(priv->base + TSSR(tssr_index));
-> > +             reg &= ~(TSSEL_MASK << tssr_offset);
-> > +             writel_relaxed(reg, priv->base + TSSR(tssr_index));
-> > +             raw_spin_unlock(&priv->lock);
-> > +     }
-> > +     irq_chip_disable_parent(d);
-> > +}
-> > +
-> > +static void rzg2l_irqc_irq_enable(struct irq_data *d) {
-> > +     unsigned int hw_irq = irqd_to_hwirq(d);
-> > +
-> > +     if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT) {
-> > +             struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > +             struct rzg2l_irqc_chip_data *chip_data = d->chip_data;
-> > +             u32 offset = hw_irq - IRQC_TINT_START;
-> > +             u32 tssr_offset = TSSR_OFFSET(offset);
-> > +             u8 tssr_index = TSSR_INDEX(offset);
-> > +             u32 reg;
-> > +
-> > +             raw_spin_lock(&priv->lock);
-> > +             reg = readl_relaxed(priv->base + TSSR(tssr_index));
-> > +             reg |= (TIEN | chip_data->tint) << TSSEL_SHIFT(tssr_offset);
-> > +             writel_relaxed(reg, priv->base + TSSR(tssr_index));
-> > +             raw_spin_unlock(&priv->lock);
-> > +     }
-> > +     irq_chip_enable_parent(d);
-> > +}
-> > +
-> > +static int rzg2l_irq_set_type(struct irq_data *d, unsigned int type) {
-> > +     unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_IRQ_START;
-> > +     struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > +     u16 sense, tmp;
-> > +
-> > +     switch (type & IRQ_TYPE_SENSE_MASK) {
-> > +     case IRQ_TYPE_LEVEL_LOW:
-> > +             sense = IITSR_IITSEL_LEVEL_LOW;
-> > +             break;
-> > +
-> > +     case IRQ_TYPE_EDGE_FALLING:
-> > +             sense = IITSR_IITSEL_EDGE_FALLING;
-> > +             break;
-> > +
-> > +     case IRQ_TYPE_EDGE_RISING:
-> > +             sense = IITSR_IITSEL_EDGE_RISING;
-> > +             break;
-> > +
-> > +     case IRQ_TYPE_EDGE_BOTH:
-> > +             sense = IITSR_IITSEL_EDGE_BOTH;
-> > +             break;
-> > +
-> > +     default:
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     raw_spin_lock(&priv->lock);
-> > +     tmp = readl_relaxed(priv->base + IITSR);
-> > +     tmp &= ~IITSR_IITSEL_MASK(hw_irq);
-> > +     tmp |= IITSR_IITSEL(hw_irq, sense);
-> > +     writel_relaxed(tmp, priv->base + IITSR);
-> > +     raw_spin_unlock(&priv->lock);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int rzg2l_tint_set_edge(struct irq_data *d, unsigned int type) {
-> > +     struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > +     unsigned int hwirq = irqd_to_hwirq(d);
-> > +     u32 titseln = hwirq - IRQC_TINT_START;
-> > +     u32 offset;
-> > +     u8 sense;
-> > +     u32 reg;
-> > +
-> > +     switch (type & IRQ_TYPE_SENSE_MASK) {
-> > +     case IRQ_TYPE_EDGE_RISING:
-> > +             sense = TITSR_TITSEL_EDGE_RISING;
-> > +             break;
-> > +
-> > +     case IRQ_TYPE_EDGE_FALLING:
-> > +             sense = TITSR_TITSEL_EDGE_FALLING;
-> > +             break;
-> > +
-> > +     default:
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     offset = TITSR0;
-> > +     if (titseln >= TITSR0_MAX_INT) {
-> > +             titseln -= TITSR0_MAX_INT;
-> > +             offset = TITSR1;
-> > +     }
-> > +
-> > +     raw_spin_lock(&priv->lock);
-> > +     reg = readl_relaxed(priv->base + offset);
-> > +     reg &= ~(IRQ_MASK << (titseln * TITSEL_WIDTH));
-> > +     reg |= sense << (titseln * TITSEL_WIDTH);
-> > +     writel_relaxed(reg, priv->base + offset);
-> > +     raw_spin_unlock(&priv->lock);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int rzg2l_irqc_set_type(struct irq_data *d, unsigned int type) {
-> > +     unsigned int hw_irq = irqd_to_hwirq(d);
-> > +     int ret = -EINVAL;
-> > +
-> > +     if (hw_irq >= IRQC_IRQ_START && hw_irq <= IRQC_IRQ_COUNT)
-> > +             ret = rzg2l_irq_set_type(d, type);
-> > +     else if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT)
-> > +             ret = rzg2l_tint_set_edge(d, type);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     return irq_chip_set_type_parent(d, IRQ_TYPE_LEVEL_HIGH); }
-> > +
-> > +static struct irq_chip irqc_chip = {
-> > +     .name                   = "rzg2l-irqc",
-> > +     .irq_eoi                = rzg2l_irqc_eoi,
-> > +     .irq_mask               = irq_chip_mask_parent,
-> > +     .irq_unmask             = irq_chip_unmask_parent,
-> > +     .irq_disable            = rzg2l_irqc_irq_disable,
-> > +     .irq_enable             = rzg2l_irqc_irq_enable,
-> > +     .irq_get_irqchip_state  = irq_chip_get_parent_state,
-> > +     .irq_set_irqchip_state  = irq_chip_set_parent_state,
-> > +     .irq_retrigger          = irq_chip_retrigger_hierarchy,
-> > +     .irq_set_type           = rzg2l_irqc_set_type,
-> > +     .flags                  = IRQCHIP_MASK_ON_SUSPEND |
-> > +                               IRQCHIP_SET_TYPE_MASKED |
-> > +                               IRQCHIP_SKIP_SET_WAKE,
-> > +};
-> > +
-> > +static int rzg2l_irqc_alloc(struct irq_domain *domain, unsigned int virq,
-> > +                         unsigned int nr_irqs, void *arg) {
-> > +     struct rzg2l_irqc_priv *priv = domain->host_data;
-> > +     struct rzg2l_irqc_chip_data *chip_data = NULL;
-> > +     struct irq_fwspec spec;
-> > +     irq_hw_number_t hwirq;
-> > +     int tint = -EINVAL;
-> > +     unsigned int type;
-> > +     unsigned int i;
-> > +     int ret;
-> > +
-> > +     ret = irq_domain_translate_twocell(domain, arg, &hwirq, &type);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     /*
-> > +      * For TINIT interrupts ie where pinctrl driver is child of irqc
->
-> Minor pick. Typo TINIT->TINT?? Similarly, 2 other places below.
->
-Oops will fix that.
+Fixes: b5d7f43e97da ("HID: amd_sfh: Add support for sensor discovery")
+Reported-by: David Chang <David.Chang@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Cheers,
-Prabhakar
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+index dadc491bbf6b..1441787a154a 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+@@ -327,7 +327,8 @@ static int amd_mp2_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
+ 	rc = amd_sfh_hid_client_init(privdata);
+ 	if (rc) {
+ 		amd_sfh_clear_intr(privdata);
+-		dev_err(&pdev->dev, "amd_sfh_hid_client_init failed\n");
++		if (rc != -EOPNOTSUPP)
++			dev_err(&pdev->dev, "amd_sfh_hid_client_init failed\n");
+ 		return rc;
+ 	}
+ 
+-- 
+2.34.1
+
