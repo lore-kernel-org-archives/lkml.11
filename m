@@ -2,153 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11322C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E34C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356460AbiELSW4 (ORCPT
+        id S1357606AbiELSXi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 14:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
+        Thu, 12 May 2022 14:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357591AbiELSWu (ORCPT
+        with ESMTP id S244677AbiELSXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 14:22:50 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726635D64A;
-        Thu, 12 May 2022 11:22:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652379768; x=1683915768;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/lMp0wN6+3oR5lan9YwIxjQ08ZrF0e3S9TFAB75U+44=;
-  b=XjYlTGeKdyr4DwnhSpNA4+ymdmhh3bU7Garrw+0unxbFMBJDwBJH7K7p
-   NjEakCgAu/uOzdiuQtQ/a8vV0i6EwAarqubsRXHj6VQa8hMwwWJRoF9BX
-   KmeNbJNt66mzspl2sYyrVHN6xjRh0heK03EnMLKRYWIcZ065AVeHCXshl
-   mbOwYzV+KVRNgNNm1IIkTLqhwJmB86jliH5KxLmiC4MeSk4NEoHmH8N9C
-   1zrABXSV+U5Q4T98xutMGY6bmks1DAHohTADJQ/YTLa3DKi3YJuB12XuA
-   J7KZQv+xT1aa8E8Ffnvj7iQZ9MM8ZA+uxJWlLkMzL97Owm5WJM68hgTYR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="250002591"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="250002591"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 11:22:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="566828491"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 12 May 2022 11:22:44 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npDSW-000Knx-80;
-        Thu, 12 May 2022 18:22:44 +0000
-Date:   Fri, 13 May 2022 02:22:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Golle <daniel@makrotopia.org>, linux-block@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Tom Rini <trini@konsulko.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH v2 2/5] block: add partition parser for U-Boot uImage.FIT
-Message-ID: <202205130213.kRDmMP6B-lkp@intel.com>
-References: <YnjxXASWU5Ps9ZoA@makrotopia.org>
+        Thu, 12 May 2022 14:23:35 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CC85E14C;
+        Thu, 12 May 2022 11:23:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652379814; x=1683915814;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=vlLrGkHFiQUBYAKjKqyjA8kWrZ4hhnYd/FBcBEcrvJg=;
+  b=fuxvsEjoEQ9vshzkHjmK2xvLefoMv75LODu0CMyXznkGvSddroT5/L3d
+   9AVBgR+LM2iahNlSEuGtbqN6BqAdUOV074mEE8cvQnABevmC1aCtnQGov
+   G8LkstiCDUD6LQh9CUML79zytQm3E7lPEbueArGoODyd8VyhEDXDwq0a8
+   Y=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 May 2022 11:23:34 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 11:23:33 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 12 May 2022 11:23:33 -0700
+Received: from hu-kriskura-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 12 May 2022 11:23:27 -0700
+From:   Krishna Kurapati <quic_kriskura@quicinc.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>
+CC:     <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>
+Subject: [v16 0/5] USB DWC3 host wake up support from system suspend
+Date:   Thu, 12 May 2022 23:53:17 +0530
+Message-ID: <1652379802-8318-1-git-send-email-quic_kriskura@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnjxXASWU5Ps9ZoA@makrotopia.org>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+Avoiding phy powerdown in host mode when wakeup capable devices are 
+connected, so that it can be wake up by devices.
+Keep usb30_prim gdsc active to retain controller status
+during suspend/resume.
 
-I love your patch! Yet something to improve:
+Changes in v16:
+Added changes to power down the phy's during suspend only if dwc3
+is not wakeup capable.
 
-[auto build test ERROR on axboe-block/for-next]
-[also build test ERROR on mtd/mtd/next mtd/mtd/fixes v5.18-rc6 next-20220512]
-[cannot apply to rw-ubifs/next rw-ubifs/fixes]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Changes in v15:
+Added patch to enable wakeup for xhci-plat based on children wakeup status.
+Used device_wakeup_path instead of device_children_wakeup_capable
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Golle/partition-parser-for-U-Boot-s-uImage-FIT/20220509-185349
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git for-next
-config: xtensa-buildonly-randconfig-r001-20220512 (https://download.01.org/0day-ci/archive/20220513/202205130213.kRDmMP6B-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5a69884cfc6091e8d7c5491fbf57dd5e13cd5ee8
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Golle/partition-parser-for-U-Boot-s-uImage-FIT/20220509-185349
-        git checkout 5a69884cfc6091e8d7c5491fbf57dd5e13cd5ee8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
+Changes in v14:
+Added patch for device_children_wakeup_capable.
+Used device_children_wakeup_capable instead of usb_wakeup_enabled_descendants.
+Fixed minor nit picks in v13 reported by Matthias.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Changes in v13:
+Moved the dt bindings patch to start.
+Changed dwc3_set_phy_speed_mode to dwc3_check_phy_speed_mode.
+Check wakep-source property for dwc3 core node to set the
+wakeup capability. Drop the device_init_wakeup call from
+runtime suspend and resume.
+Added GENPD_FLAG_RPM_ALWAYS_ON and set GENPD_FLAG_ALWAYS_ON if
+wakeup is supported.
 
-All errors (new ones prefixed by >>):
+Changes in v12:
+Squashed PATCH 1/5 and 2/5 of v11.
+Added dt bindings and device tree entry for wakeup-source property
+for dwc3 core node.
+Dropped redundant phy_set_mode call.
 
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
->> fit.c:(.text+0x11c): undefined reference to `fdt_check_header'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x262): undefined reference to `fdt_check_header'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
->> fit.c:(.text+0x124): undefined reference to `fdt_path_offset'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x320): undefined reference to `fdt_path_offset'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
->> fit.c:(.text+0x128): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x337): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
->> fit.c:(.text+0x130): undefined reference to `fdt_subnode_offset'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x356): undefined reference to `fdt_subnode_offset'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
-   fit.c:(.text+0x138): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x382): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
-   fit.c:(.text+0x13c): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x397): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
-   fit.c:(.text+0x148): undefined reference to `fdt_path_offset'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x3e3): undefined reference to `fdt_path_offset'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
->> fit.c:(.text+0x150): undefined reference to `fdt_first_subnode'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x412): undefined reference to `fdt_first_subnode'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
->> fit.c:(.text+0x154): undefined reference to `fdt_get_name'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x423): undefined reference to `fdt_get_name'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
-   fit.c:(.text+0x158): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x43a): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
-   fit.c:(.text+0x15c): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x44b): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
-   fit.c:(.text+0x160): undefined reference to `fdt_getprop'
-   xtensa-linux-ld: block/partitions/fit.o:fit.c:(.text+0x45f): more undefined references to `fdt_getprop' follow
-   xtensa-linux-ld: block/partitions/fit.o: in function `put_page':
->> fit.c:(.text+0x184): undefined reference to `fdt_next_subnode'
-   xtensa-linux-ld: block/partitions/fit.o: in function `parse_fit_partitions':
-   fit.c:(.text+0x6ae): undefined reference to `fdt_next_subnode'
+
+Changes in v11:
+Moving back to v8 version
+https://patchwork.kernel.org/project/linux-arm-msm/cover/1624882097-23265-1-git-send-email-sanm@codeaurora.org
+as we are getting interrupts during suspend
+when enabling both DP hs phy irq and DM hs phy irq.
+Moved the set phy mode function to dwc3/core.c from xhci-plat.c
+We didn't find any other option other than accessing xhci from dwc.
+
+Changes in v10:
+PATCH 1/6: Change device_set_wakeup_capable to device_set_wakeup_enable
+PATCH 2/6: Remove redundant else part in dwc3_resume_common
+PATCH 4/6: Change the irg flags
+PATCH 5/6: Set flag GENPD_FLAG_ALWAYS_ON
+PATCH 6/6: Remove disable interrupts function and enable
+interrupts in probe.
+
+
+Changes in v9:
+Checking with device_may_makeup property instead of phy_power_off flag.
+Changed the IRQ flags and removed hs_phy_mode variable.
+
+Changes in v8:
+Moved the dwc3 suspend quirk code in dwc3/host.c to xhci-plat.c
+Checking phy_power_off flag instead of usb_wakeup_enabled_descendants 
+to keep gdsc active.
+
+Changes in v7:
+Change in commit text and message in PATCH 1/5 and PATCH 5/5
+as per Matthias suggestion.
+Added curly braces for if and else if sections in PATCH 4/5.
+
+Changes in v6:
+Addressed comments in host.c and core.c
+Separated the patches in dwc3-qcom.c to make it simple.
+Dropped wakeup-source change as it is not related to this series.
+
+Changes in v5:
+Added phy_power_off flag to check presence of wakeup capable devices.
+Dropped patch[v4,4/5] as it is present linux-next.
+Addressed comments in host.c and dwc3-qcom.c.
+
+Changes in v4:
+Addressed Matthias comments raised in v3.
+
+Changes in v3:
+Removed need_phy_for_wakeup flag and by default avoiding phy powerdown.
+Addressed Matthias comments and added entry for DEV_SUPERSPEED.
+Added suspend_quirk in dwc3 host and moved the dwc3_set_phy_speed_flags.
+Added wakeup-source dt entry and reading in dwc-qcom.c glue driver.
+
+Changes in v2:
+Dropped the patch in clock to set GENPD_FLAG_ACTIVE_WAKEUP flag and 
+setting in usb dwc3 driver.
+Separated the core patch and glue driver patch.
+Made need_phy_for_wakeup flag part of dwc structure and 
+hs_phy_flags as unsgined int.
+Adrressed the comment on device_init_wakeup call.
+Corrected offset for reading portsc register.
+Added pacth to support wakeup in xo shutdown case.
+
+Sandeep Maheswaram (5):
+  dt-bindings: usb: dwc3: Add wakeup-source property support
+  usb: dwc3: core: Host wake up support from system suspend
+  usb: dwc3: qcom: Add helper functions to enable,disable wake irqs
+  usb: dwc3: qcom: Configure wakeup interrupts during suspend
+  usb: dwc3: qcom: Keep power domain on to retain controller status
+
+ .../devicetree/bindings/usb/snps,dwc3.yaml         |  5 ++
+ drivers/usb/dwc3/core.c                            | 30 +++----
+ drivers/usb/dwc3/core.h                            |  4 +
+ drivers/usb/dwc3/dwc3-qcom.c                       | 91 +++++++++++++---------
+ drivers/usb/dwc3/host.c                            | 24 ++++++
+ 5 files changed, 104 insertions(+), 50 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.7.4
+
