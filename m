@@ -2,154 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1695C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30DB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356732AbiELQzc (ORCPT
+        id S1356746AbiELQ5A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        Thu, 12 May 2022 12:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356716AbiELQz3 (ORCPT
+        with ESMTP id S1356747AbiELQ44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:55:29 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22156E8D9;
-        Thu, 12 May 2022 09:55:27 -0700 (PDT)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kzd985FVsz67lbv;
-        Fri, 13 May 2022 00:51:56 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 12 May 2022 18:55:25 +0200
-Received: from localhost (10.81.210.133) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
- 2022 17:55:24 +0100
-Date:   Thu, 12 May 2022 17:55:22 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Markuss Broks <markuss.broks@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        <phone-devel@vger.kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>
-Subject: Re: [PATCH v3 3/5] proximity: vl53l0x: Handle the VDD regulator
-Message-ID: <20220512175522.000013cb@Huawei.com>
-In-Reply-To: <20220512110757.5297-4-markuss.broks@gmail.com>
-References: <20220512110757.5297-1-markuss.broks@gmail.com>
-        <20220512110757.5297-4-markuss.broks@gmail.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Thu, 12 May 2022 12:56:56 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD954A3DF
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:56:48 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id r71so4799918pgr.0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:56:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=C9OapljaiZ/OiA13d4g/3jGQ7Gr1SYoZDM7IohOZJMw=;
+        b=WZHk4r4OdUURkV+uv/i+IHW79scgXxJNk6w0bmDQkegUWDRjxTbgQVx113wplBoJM1
+         y5jFwCRqa1gjhe4GuODsCQCVb7gSoPXdT4QCo976FlDsbb/AivuuzAVIGFEPi61SzpzO
+         nljfmMTEyNQHN3D3mZpGJpgh6StbNqO5noiQyFyPVJ+QMvXft1fQZamwCcIeD8f5LWxd
+         SZ0fHCXEjezwVBmdLC2EEJZF8QZFSXTo3IVxsH3/d9U1J4NqBbuvPSxhTMX4KHqvgPja
+         SRKWeEi2FqmDjcfDBBA3X8y3ZZGbwszxGKv5qWTds9A6yCrajfaj8AyQWRfagYlcoqlG
+         svsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=C9OapljaiZ/OiA13d4g/3jGQ7Gr1SYoZDM7IohOZJMw=;
+        b=Qz5fpEjpRTJwRK/BrMWaebpz0bWwzl4cLa8EqGYF6UkzFZW1sczIesIZIcJcklhS9t
+         I1hY3qnz3ouqNA63g4j41cT5n1KijZSXVGQVgWG2Mje+j7eulyZn9uKudMgU6DEaaVeE
+         1ZmSLksx4K2lBGQcX9PEr4ChbJnu0tvoMYnGGcFkiagegQm+pmI0rmb/pbzIlqu5XaHe
+         klZD7fgESk4Yb+M9NPOjYyszHlaGSFaYQwQCWUo8M2YYEKwa9OrfbyptGUhilhAmz+Uj
+         dNtsMYetximGwSW9oD7+QVkj3CLBmGPwwB3weTP7IMGMT6+jTDWAvXMjifWKjRt8oA4G
+         Ds0Q==
+X-Gm-Message-State: AOAM5320gNJnhGt6dHK/vLMA0EvB8k/vdqYlS9PpiwqDdisdJBpHZSh9
+        iWGDcvVrXiq+yBNawudqRP8=
+X-Google-Smtp-Source: ABdhPJwYRz8NfONMA8aHt4KsoL4b3aqUVkTDSkVKWpClzGdbbD4dNG9CZX74biI2lpbFKpk5hxGZig==
+X-Received: by 2002:a63:6c01:0:b0:3db:5a80:16b8 with SMTP id h1-20020a636c01000000b003db5a8016b8mr477327pgc.394.1652374607962;
+        Thu, 12 May 2022 09:56:47 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:6c64])
+        by smtp.gmail.com with ESMTPSA id b9-20020a170902650900b0015e8d4eb263sm130399plk.173.2022.05.12.09.56.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 09:56:47 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 12 May 2022 06:56:45 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 (repost)] workqueue: Warn flushing of kernel-global
+ workqueues
+Message-ID: <Yn08TdfdsFjKx+qw@slm.duckdns.org>
+References: <2efd5461-fccd-f1d9-7138-0a6767cbf5fe@I-love.SAKURA.ne.jp>
+ <CAHk-=wgiCVcF4vJCOcg1hDw9PMT6zNSgt-pPuZL8ihWEcVv3eg@mail.gmail.com>
+ <e4203c4f-9c3d-6e33-06e8-052676cc5af1@I-love.SAKURA.ne.jp>
+ <YjivtdkpY+reW0Gt@slm.duckdns.org>
+ <YnzjrnnP622mad1y@google.com>
+ <33772dcb-c5dd-c5e7-30c8-d2397d21b26c@I-love.SAKURA.ne.jp>
+ <Yn0H/68tagxaj/ke@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.81.210.133]
-X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yn0H/68tagxaj/ke@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 14:07:55 +0300
-Markuss Broks <markuss.broks@gmail.com> wrote:
+Hello, Dmitry.
 
-> Handle the regulator supplying the VDD pin of VL53L0X.
+On Thu, May 12, 2022 at 06:13:35AM -0700, Dmitry Torokhov wrote:
+> > > This means that now the code has to keep track of all work items that it
+> > > allocated, instead of being able "fire and forget" works (when dealing
+> > > with extremely infrequent events) and rely on flush_workqueue() to
+> > > cleanup.
+> > 
+> > Yes. Moreover, a patch to catch and refuse at compile time was proposed at
+> > https://lkml.kernel.org/r/738afe71-2983-05d5-f0fc-d94efbdf7634@I-love.SAKURA.ne.jp .
 > 
-> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
-Hi Markuss,
+> My comment was not a wholesale endorsement of Tejun's statement, but
+> rather a note of the fact that it again adds complexity (at least as far
+> as driver writers are concerned) to the kernel code.
 
-One ordering question inline.
+I was more thinking about cases where there are a small number of static
+work items. If there are multiple dynamic work items, creating a workqueue
+as a flush domain is the way to go. It does add a bit of complexity but
+shouldn't be too bad - e.g. it just adds the alloc_workqueue() during init
+and the exit path can simply use destroy_workqueue() instead of flush.
 
-> ---
->  drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
->  1 file changed, 37 insertions(+)
+> > >          That flush typically happens in module unload path, and I
+> > > wonder if the restriction on flush_workqueue() could be relaxed to allow
+> > > calling it on unload.
+> > 
+> > A patch for drivers/input/mouse/psmouse-smbus.c is waiting for your response at
+> > https://lkml.kernel.org/r/25e2b787-cb2c-fb0d-d62c-6577ad1cd9df@I-love.SAKURA.ne.jp .
+> > Like many modules, flush_workqueue() happens on only module unload in your case.
 > 
-> diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-> index 12a3e2eff464..d8523e3981e8 100644
-> --- a/drivers/iio/proximity/vl53l0x-i2c.c
-> +++ b/drivers/iio/proximity/vl53l0x-i2c.c
-> @@ -43,6 +43,7 @@
->  struct vl53l0x_data {
->  	struct i2c_client *client;
->  	struct completion completion;
-> +	struct regulator *vdd_supply;
->  };
->  
->  static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
-> @@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info = {
->  	.read_raw = vl53l0x_read_raw,
->  };
->  
-> +static void vl53l0x_power_off(void *_data)
-> +{
-> +	struct vl53l0x_data *data = _data;
-> +
-> +	regulator_disable(data->vdd_supply);
-> +}
-> +
-> +static int vl53l0x_power_on(struct vl53l0x_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = regulator_enable(data->vdd_supply);
-> +	if (ret)
-> +		return ret;
-> +
-> +	usleep_range(3200, 5000);
-> +
-> +	return 0;
-> +}
-> +
->  static int vl53l0x_probe(struct i2c_client *client)
->  {
->  	struct vl53l0x_data *data;
->  	struct iio_dev *indio_dev;
-> +	int error;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
->  				     I2C_FUNC_SMBUS_BYTE_DATA))
->  		return -EOPNOTSUPP;
->  
-> +	data->vdd_supply = devm_regulator_get_optional(&client->dev, "vdd");
-> +	if (IS_ERR(data->vdd_supply))
-> +		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
-> +				     "Unable to get VDD regulator\n");
-> +
-> +	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off, data);
+> Yes, I saw that patch, and that is what prompted my response. I find it
+> adding complexity and I was wondering if it could be avoided. It also
+> unclear to me if there is an additional cost coming from allocating a
+> dedicated workqueue.
 
-I don't follow why you have this before the power_on.  We haven't enabled the
-regulator yet so shouldn't be turning it off if we get an error whilst trying
-to enable it.  The or_reset part is to ensure that even if this call
-fails to register a devm action it will still call the callback thus allowing
-you safely do this after turning the power on.
+A workqueue without WQ_RECLAIM is really cheap. All it does is tracking
+what's in flight for that particular frontend while interfacing with the
+shared worker pool.
 
-> +	if (error)
-> +		return dev_err_probe(&client->dev, error,
-> +				     "Failed to install poweroff action\n");
-> +
-> +	error = vl53l0x_power_on(data);
-> +	if (error)
-> +		return dev_err_probe(&client->dev, error,
-> +				     "Failed to power on the chip\n");
-> +
->  	indio_dev->name = "vl53l0x";
->  	indio_dev->info = &vl53l0x_info;
->  	indio_dev->channels = vl53l0x_channels;
+> I understand that for some of them the change makes sense, but it would
+> be nice to continue using simple API under limited circumstances.
 
+Hmmm... unfortunately, I can't think of a way to guarantee that a module
+unloading path can't get involved in a deadlock scenario through system_wq.
+Given that the added complexity should be something like half a dozen lines
+of code, switching to separte workqueues feels like the right direction to
+me.
+
+Thanks.
+
+-- 
+tejun
