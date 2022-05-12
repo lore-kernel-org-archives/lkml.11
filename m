@@ -2,104 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B109C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354485AbiELNis (ORCPT
+        id S1354504AbiELNjL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 09:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46160 "EHLO
+        Thu, 12 May 2022 09:39:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354497AbiELNip (ORCPT
+        with ESMTP id S240653AbiELNjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 09:38:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F13A25471B;
-        Thu, 12 May 2022 06:38:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF8C0B8262A;
-        Thu, 12 May 2022 13:38:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 363E4C385B8;
-        Thu, 12 May 2022 13:38:41 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="HshUXI8r"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652362719;
+        Thu, 12 May 2022 09:39:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC11C247374
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:39:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652362747;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UhB7tj2ErehCBMfKm8jUsi+ZyObxONkIjZvlx/ugygg=;
-        b=HshUXI8r0zQCZOf+Mn8g5cx0ceHDf8af6wjWM0Nl6jktJ3P4DKwK6N2xkKjuxaDjRygETx
-        Wajbpx2fbJTi348m23LCimUnMZPDGJUJFGjjaEiIg7BgbvJZ2vJsXfBxxC2pgZqm3LE9tN
-        v2dC2l7y7de2cTEZxANWaydiGQAfKKM=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a6ef1a12 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 12 May 2022 13:38:38 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH] random: credit architectural init the exact amount
-Date:   Thu, 12 May 2022 15:38:35 +0200
-Message-Id: <20220512133835.102028-1-Jason@zx2c4.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7PnKqdjvcZK6/v20kwL3cvMyHQOuF2Fu63Oq5RE2SrU=;
+        b=cAWUNLwRB0W+w5PP2zXfienmhDT3VHqxrhsqC282AsXH18RFQ2KiEYH7+ch0mra9oZxRDT
+        A5ASRFhNfJhJG6cv/0TCgviGQtyIOqau/BI0Uz7bo7hDpFxQY9CzI0na4aGo6tpU03viaP
+        ikT6EI5jfsPRlrPzzHNQ0BCNkKgeh2M=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-258-jivnzDSaPJak4AjLnuYFdA-1; Thu, 12 May 2022 09:39:06 -0400
+X-MC-Unique: jivnzDSaPJak4AjLnuYFdA-1
+Received: by mail-wm1-f71.google.com with SMTP id m124-20020a1c2682000000b00393fcd2722dso1688594wmm.4
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:39:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=7PnKqdjvcZK6/v20kwL3cvMyHQOuF2Fu63Oq5RE2SrU=;
+        b=PZDTkq0fTTEqtM9JEhvuheQStOuvjXP5PJx0rpdXks3uCDG8NGBDJvU9dOesijfSBe
+         Axa8ne2NnXdNfAj9dFj7VK3uXmJ2aAbCjby5nt8lPYDO+U28+ChP5oHsgRHbF3TXR/I3
+         tFEJm4O3d9ihwzZlxhI1WtHBip1a0KMcYSF1Rd+9sDA+omga/64vgoJHtyd51EVR+hOE
+         9P3Eqn83ohWk547cYmnvw6q7kaSAU1doJ4lBcTq+KQoO7CZXE1dBoLIaxUe0myDsYDBO
+         1bdHWXAFSJlghwAg4OAGq+ylkVe4mKP0OZKm8zpNFNx2aN37fhyAUPgqjwxL5nYkquWH
+         jpsg==
+X-Gm-Message-State: AOAM53167hxZXl7lp1bv8b5J4q7U//VO884uwAI1yEVHQtvbHeR6pRKz
+        j59miHf+iaddv0fNrEShHOQEw9ldTMhLe5op/I25SIuSPRafMoLMp/cWG+TvQVIJvn4G57hhSbf
+        T3jTdPvFI1WAR2MepS4cr2Yui
+X-Received: by 2002:a7b:ce04:0:b0:394:1f46:213 with SMTP id m4-20020a7bce04000000b003941f460213mr10074816wmc.157.1652362745544;
+        Thu, 12 May 2022 06:39:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzs5GXQv6CH5nZgYgHf2t89HxiGpxcKxrP7usek7FTknx2NYCrQo3wnKCmKVkOC9ybOOO51HA==
+X-Received: by 2002:a7b:ce04:0:b0:394:1f46:213 with SMTP id m4-20020a7bce04000000b003941f460213mr10074792wmc.157.1652362745291;
+        Thu, 12 May 2022 06:39:05 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c701:d200:ee5d:1275:f171:136d? (p200300cbc701d200ee5d1275f171136d.dip0.t-ipconnect.de. [2003:cb:c701:d200:ee5d:1275:f171:136d])
+        by smtp.gmail.com with ESMTPSA id bi22-20020a05600c3d9600b003942a244edbsm3230054wmb.32.2022.05.12.06.39.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 06:39:04 -0700 (PDT)
+Message-ID: <6f514908-0659-8c23-a11c-90e5fb88c45a@redhat.com>
+Date:   Thu, 12 May 2022 15:39:03 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 08/15] mm/swap: make page_swapcount and
+ __lru_add_drain_all
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
+        neilb@suse.de, apopple@nvidia.com, surenb@google.com,
+        peterx@redhat.com, naoya.horiguchi@nec.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220509131416.17553-1-linmiaohe@huawei.com>
+ <20220509131416.17553-9-linmiaohe@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220509131416.17553-9-linmiaohe@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RDRAND and RDSEED can fail sometimes, which is fine. We currently
-initialize the RNG with 512 bits of RDRAND/RDSEED. We only need 256 bits
-of those to succeed in order to initialize the RNG. Instead of the
-current "all or nothing" approach, actually credit these contributions
-the amount that is actually contributed.
+On 09.05.22 15:14, Miaohe Lin wrote:
+> Make page_swapcount and __lru_add_drain_all static. They are only used
+> within the file now.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index bd80d74a7f8c..9ffa41c5e092 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -934,9 +934,8 @@ static struct notifier_block pm_notifier = { .notifier_call = random_pm_notifica
-  */
- int __init random_init(const char *command_line)
- {
--	size_t i;
- 	ktime_t now = ktime_get_real();
--	bool arch_init = true;
-+	unsigned int i, arch_init;
- 	unsigned long rv;
- 
- #if defined(LATENT_ENTROPY_PLUGIN)
-@@ -944,11 +943,12 @@ int __init random_init(const char *command_line)
- 	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
- #endif
- 
--	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
-+	for (i = 0, arch_init = BLAKE2S_BLOCK_SIZE;
-+	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
- 		if (!arch_get_random_seed_long_early(&rv) &&
- 		    !arch_get_random_long_early(&rv)) {
- 			rv = random_get_entropy();
--			arch_init = false;
-+			arch_init -= sizeof(rv);
- 		}
- 		_mix_pool_bytes(&rv, sizeof(rv));
- 	}
-@@ -968,8 +968,8 @@ int __init random_init(const char *command_line)
- 
- 		/* Immediately use the above architectural contributions. */
- 		crng_reseed();
--	} else if (arch_init && trust_cpu)
--		credit_init_bits(BLAKE2S_BLOCK_SIZE * 8);
-+	} else if (trust_cpu)
-+		credit_init_bits(arch_init * 8);
- 
- 	WARN_ON(register_pm_notifier(&pm_notifier));
- 
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
