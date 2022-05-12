@@ -2,196 +2,305 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A37C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A15B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358903AbiELVsR (ORCPT
+        id S1358887AbiELVuM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 17:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
+        Thu, 12 May 2022 17:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358887AbiELVrn (ORCPT
+        with ESMTP id S243633AbiELVuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 17:47:43 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E9C49F34
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:47:40 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CLIV1V024581;
-        Thu, 12 May 2022 21:47:17 GMT
+        Thu, 12 May 2022 17:50:09 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D088849F34
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:50:07 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CKhwcP003183;
+        Thu, 12 May 2022 21:50:01 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references :
- content-transfer-encoding : content-type : mime-version;
- s=corp-2021-07-09; bh=+tS2e9WqIUvSewiodMZ3iqCHlaaxfYp0IJgi/05g2hs=;
- b=LHF3IaympdsHhgdIIMzKh6BxrXLUfy2oiizwUsPMJIiibG7WCS1tqMbCvrgeiLo5uj3J
- HRVw24k2cMKe9IdkTlXpIXxCSatmKtWKw+yksmTPjveWSIQy7jFBnZ041SnztauVNsqZ
- ErK4QUWygC/66+igaVIUSfgOuaz2QlzgUAvB8mEl4PggyM8TAGhtu9YlGo7fxQXYCdFk
- +q0OspF07Xv1kI9kiQwNStXr431D6zyow8qaIyIhqXs2jv4J/406IEyZii/78I/lboe6
- yKmg+5h0cezI94iuOYnoMTNSAa1bbzsSXspcSv6Junye3wcJhvcQp2C/Mf7QehaBkJsC jA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fwfc0x0da-1
+ subject : in-reply-to : references : date : message-id : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=gC4BnA5XozkPwtYP0J1hwdFQ2ywZALTn131caBwFg/Q=;
+ b=yzlLloa/f0gAWzL0WOryAe49+CSSfeo9s2CH4U54jEDCvSF871lTclL+vaqNZc9EalfS
+ VyRkbBRqSj8pqcLSQG455KB2+SY83SRmd5LMR/bU923zHd7uymE6G8UKOy6qxorSIPAp
+ 8BOCNJSXGUAmfVfzeSrKKiChXPZvv10gab/uAX6QUObl5YLx9WoMdzjL6K1KQmfu4zNF
+ TcCFB4hKHZ1xsj6ZPfFagBhkCP9FJvOx2yEyoM+ltEehD59RDZDKTPDKo4iNyNOEl/DE
+ OtX0GmQatIaUr0eiNC2npBl2h1cV/dqgEsn2FASBjHY7xropc9QcUFVM/8HMA7jD81CR AA== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g0a04n2q0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 21:47:17 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24CLgIkN004728;
-        Thu, 12 May 2022 21:47:15 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2101.outbound.protection.outlook.com [104.47.70.101])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fwf7c98s9-5
+        Thu, 12 May 2022 21:50:00 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24CLfkKk025625;
+        Thu, 12 May 2022 21:49:59 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2102.outbound.protection.outlook.com [104.47.58.102])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fwf762ref-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 21:47:15 +0000
+        Thu, 12 May 2022 21:49:59 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MVVnRxNR+961pxOxFiA7eYWomt7EFy8uLp4cjDyk95P4YZc9F1R3LKzOURhSgwicaGt6Bwe/2P3l5IMESDBdrYwnEM9WDAGLGeYkZ6jh50cu2inW/SernUODQ54V7AtucO+IORAwry+lGYNTQxxieeYsNiI1M03mhHAoES6R7NfGAnkJOYz9TBxyPxx5HiHVJgTpNzqJU2RK0mwXNfFloSnWRAeo2Ly8F/UZUzPj/nuYDzCB5l14261BxDHYDvjNW+8qRyTo0TA8Ku1GjwAJ/+lrx7dtrf7vPe8248dPQQw3Bi2ulZGWCpeJn3Kupm+HghfDhDmF7YOmv5uXz2OtKw==
+ b=e8xq06gPpTsnstRi0jic6QeWJbU7yiWFJEMYUHTbYuuKD0/gwZifkWIUbSpTaYZx5j/apJgyfiy4i7h14hoyBg8Qy/fn5cJPx7RaJQzeGu0HGsUwG+Sdd73q9AA5qyHLzo3KeQwRtQVpiICEUnWqTZcPBSdRXamp1UtCf97PmbwlpHER0BldQ6TxO/SYSsnsM9z8771h9XSTZTlFoOF1WqyK42NHj8uCrFF9uYCahsyUxJ4iT/X2n5fA5iSfEqFzQi9ByVqwN3C8zQwqeqVBwM0poSP9CQUW8V0Vpu6v4nsXFDzL2XMc8En2bVyHFbPJ7ic+qhONbyrcG+fOtyqaLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+tS2e9WqIUvSewiodMZ3iqCHlaaxfYp0IJgi/05g2hs=;
- b=RsE5hmyHmOuOATylCgfUlqg75j43ifNh2UDDf1FnexRL0XuPsGUHDt2ggOEe6tZjBWGcrF9TLvGrRpIeA6h6jRCZXdqnwVleYuFoEDgwVytDrO5RSC+4mizNfua74W7XIvSbeGiqG6KPMgGxAuId4JJ3yoFNlnjLaR2BBvMXqDQ/U3aCoQf6gK+DA3kD72TPhOKwyGzM7dUD7R4jgCPY6gdVitLBatkg7kdJE+miRt40VdqhPpNAUKWfoMAyEcKWYGWrKulnT/NrS1kZX6GwfTr5hJt3DQaj7shPEiYm4MJ1QKbFnAVLCzImxyX9fTGOmURuTmyp8vEURWGi5HVBKQ==
+ bh=gC4BnA5XozkPwtYP0J1hwdFQ2ywZALTn131caBwFg/Q=;
+ b=j5LDWAE3v3RLoQRdzhcfKZDh7G4VbpTBFbdN+HWEx1OYvv1tORBFEwfBQoMchpNLQvSSwtPjeOduX2PYbtnB2SzP+iJhccfxvT5xsh7jIrQLzFDiPvClfXIG/Oax9dLQdYdcN76XfnecqGTLGxmgja0gxvQUXvjJnjSJ7G7+TipR6p5EUTUtvC1GbF3p2nq8F0NyUZ87Gj21ZiCyz/RO5X0CXnZR2t9hZ2thQFnhlN8c3Fral+53j2mLut8AfLHB2QedUO6zVOAyP3cUoVaS6LiV8PrZMB9NIql1SGRcK+9Td+SFo00hbmICWiu2Ilx3yNYkK9wezrwKCoCQ4ptD2g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+tS2e9WqIUvSewiodMZ3iqCHlaaxfYp0IJgi/05g2hs=;
- b=OeOHU493OmSULHrH+PZpJVFlJHa0ZxWbKSEGWZi1JJ4i0tR1cgUVYjWZIn7VRWemjw3ertgRj0mOYqCS6I5GdvfU2vslU2oNnsKygwA7l+PR1aWm8uGK0O8l8SREkES0xF3fy4g7ytf2JswK06zbmNOwuQCVD5kV2bZGFwINVAo=
-Received: from DM5PR10MB1466.namprd10.prod.outlook.com (2603:10b6:3:b::7) by
- MN2PR10MB3311.namprd10.prod.outlook.com (2603:10b6:208:121::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Thu, 12 May
- 2022 21:47:14 +0000
-Received: from DM5PR10MB1466.namprd10.prod.outlook.com
- ([fe80::f81d:b8ef:c5a4:9c9b]) by DM5PR10MB1466.namprd10.prod.outlook.com
- ([fe80::f81d:b8ef:c5a4:9c9b%3]) with mapi id 15.20.5227.023; Thu, 12 May 2022
- 21:47:14 +0000
-From:   Mike Christie <michael.christie@oracle.com>
-To:     hch@infradead.org, stefanha@redhat.com, jasowang@redhat.com,
-        mst@redhat.com, sgarzare@redhat.com,
-        virtualization@lists.linux-foundation.org, brauner@kernel.org,
-        ebiederm@xmission.com, linux-kernel@vger.kernel.org
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH V9 4/8] fork: Add USER_WORKER flag to ignore signals
-Date:   Thu, 12 May 2022 16:47:00 -0500
-Message-Id: <20220512214704.104472-5-michael.christie@oracle.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220512214704.104472-1-michael.christie@oracle.com>
-References: <20220512214704.104472-1-michael.christie@oracle.com>
-Content-Transfer-Encoding: 8bit
+ bh=gC4BnA5XozkPwtYP0J1hwdFQ2ywZALTn131caBwFg/Q=;
+ b=zfGQcNBSiJj0bQnFAYeQz2vDBlZA4b2opVLMn+n9OktUKhYpouvxeO4YFZ9aIJNyb5o4iYSmvzETl0CBY6ezmZ16Plh7L8VDw8yeHpyJYUF+jabHHJPl/WZSgkNHWhmGRF9g+Mjk71CwQKJeaAqyNMz9ipgseyxhXbAMR060FZg=
+Received: from CH2PR10MB4166.namprd10.prod.outlook.com (2603:10b6:610:78::20)
+ by DM5PR10MB1564.namprd10.prod.outlook.com (2603:10b6:3:9::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5227.23; Thu, 12 May 2022 21:49:57 +0000
+Received: from CH2PR10MB4166.namprd10.prod.outlook.com
+ ([fe80::4421:897e:e867:679c]) by CH2PR10MB4166.namprd10.prod.outlook.com
+ ([fe80::4421:897e:e867:679c%7]) with mapi id 15.20.5250.014; Thu, 12 May 2022
+ 21:49:57 +0000
+From:   Stephen Brennan <stephen.s.brennan@oracle.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Len Baker <len.baker@gmx.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH] assoc_array: Fix BUG_ON during garbage collect
+In-Reply-To: <20220511225517.407935-1-stephen.s.brennan@oracle.com>
+References: <20220511225517.407935-1-stephen.s.brennan@oracle.com>
+Date:   Thu, 12 May 2022 14:49:54 -0700
+Message-ID: <87ee0ys9od.fsf@stepbren-lnx.us.oracle.com>
 Content-Type: text/plain
-X-ClientProxiedBy: DM5PR07CA0089.namprd07.prod.outlook.com
- (2603:10b6:4:ae::18) To DM5PR10MB1466.namprd10.prod.outlook.com
- (2603:10b6:3:b::7)
+X-ClientProxiedBy: SN7PR04CA0074.namprd04.prod.outlook.com
+ (2603:10b6:806:121::19) To CH2PR10MB4166.namprd10.prod.outlook.com
+ (2603:10b6:610:78::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1e8ce216-ca7e-4539-45ad-08da3460f9bc
-X-MS-TrafficTypeDiagnostic: MN2PR10MB3311:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR10MB33117BD4720B795CA24B2502F1CB9@MN2PR10MB3311.namprd10.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 1fd8f6d8-e694-4437-766b-08da34615b31
+X-MS-TrafficTypeDiagnostic: DM5PR10MB1564:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR10MB15645B15E0E7934A0141A4E7DBCB9@DM5PR10MB1564.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YT3GQ4/ksPmjMPlIrgtpIubkhd7o4+hhroLUQ9D7nZLIRVQ16n664rl/0FzPCoUEEUQkCFocJAjzhVkZ4oRABu4pl45amkjkc25bfteaJB9ULjv04TQLJCi7SEStyA554J855PC99SA4SIsbQbPvDMQMgSxLLXs7Pe4xr6zssBrn5XuL/1rFMiKoljwLUIMiVe4v58Ne5qvsIYLMHRU6DccqAngIJVTn5Kjv9KE3Awizun2AzNjSqTPBYGDRcU4VjZ7JzF0MicKNvBP4Gw8BT8z5opJYTsatd2AbqJ6/lh/YFSgH3kgAzxBazgMoblWBQid6bGgq+RcC68qUZUOeaEeP4/zChH5vidBYZCjIau/IlJ9EP/M7IHtVNfrLAk3ViyeAXEL0y4zeGWVzZsYHQvtHE2Um/NS4yemyawMrFK8HxZJcby4BN8+2vAaGOCRpojvhm2fnO58+/5pNSy60rkBg21du67SH5pfcAAw5ZGNDkdNJx24CM4MXsiFyFKKRlng3W0zVXHvZMuzEVZjmEfxA8bNHcig1J7EbGLJR9Gpm1Qp3PLBUkWx7ModueSgKCw/81+IlZBTigCTFSH5llv3ZlrXcvGklkZzpxr4NsC5UAjYZpKArw8e9/+1sAsv8bGZuAyc5vUKk64G1priORjOeOzBydM54EeCmwrPrhFvimv2r394U53UGfIK6e8jXYSRW/53PiipytcIJ2Hmcew==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR10MB1466.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(5660300002)(7416002)(2906002)(66556008)(66476007)(316002)(66946007)(508600001)(36756003)(6486002)(26005)(6512007)(4326008)(8676002)(6666004)(6506007)(186003)(38350700002)(54906003)(38100700002)(83380400001)(8936002)(2616005)(1076003)(52116002)(86362001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: LgUcvBQ95o0rGXFXYQClmAaz2ev7SAzdSbkl+8NF3r/9ZKSt1wEZZK4oFXeJ5b2Qu8+vb9tN4EFd8Vb0+x9URi1iKkTx9baItqdE0ulUS0NIcG2RHBizSElTD74DUAB1FJDqyUfY5eNNeijMB68QpJGaW2pZhn+zZQBlx6sDLb1e2NJY0Wjn1iFQMmePd4mBypdEeQC1wxtqh2qoeXG7Vw0I4xNNxKuFZY8GvqfEfsrE5fdX3HzRkyl5E5K4+HgpoTNDj3oZK+5DB/ehFXRtq3A7tlDMNBFScaSWNpbCnAIz7/1Mosa0IGn+4EJm5g5D32RpLYGEmQ9mYOM5QgNGUGizINFJ5N9JKQ0c7+RnX8DjOu0uIypm/D7VKuffPoeeZ/0qT4eQAhzNOc7Zf97dbnzXtpdFELKD4z0GNjwGg8RogiaOJkhnXxKcFgJVwcCTWs2RgjA9l1pGLwrtYDrGS4qRTX3u+H87HqCDYLbAIEDm90wElHScVOQH3wg2iReO7F4+XFGphxexSb3ql+xhETyeLDWi8e3UVV+zaySOwnSxKn9Q1MuFCYo05KuEi/StQPvYw/ZDL93Pe5ZQH0kZ0F65qeJLRcmrC3iDN9rdLWdaOR2T6YEGRRNcLo0FPqVYmofrLHEaBrXLfXCmJbnfV87e0gFfUJ1Ocz3rmj3iado0C7HSC8s+Y0ZUnCujA6lHlZCk3elLut+7sKktjHYsdmLkJplfG3u7BFJ1id6ZW9il0UqQGyJq1jH9DetEtyqi5DGFHI21m/tlHAV4AAsvUbGOVzAO2pOgWBcjKxVyZW8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4166.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(52116002)(6486002)(83380400001)(966005)(6506007)(508600001)(6512007)(2906002)(5660300002)(316002)(66556008)(66946007)(186003)(6666004)(86362001)(8936002)(6916009)(54906003)(38350700002)(38100700002)(66476007)(8676002)(26005)(4326008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/uzbiaMbe7WXbhT2T7b5TEhljHapy1QV9U+ZEnef9njEaytGFgzqH++T4lk4?=
- =?us-ascii?Q?6IM+6AgjAs/Bga+bpBFUYozujH1yy8gs62FhyIsyvvtscLjR49GY2RpqeFea?=
- =?us-ascii?Q?x/KtyK9WX0XzMvMOIfODbgKwaiu9m5HEpqvBnmC5GjMPfZQ1Yl6Lf9GfYbdz?=
- =?us-ascii?Q?Kx6GANMLJ0byZICcglD//snta+C8NXRJUamZgmhiIrTibLYuI7olo0DwElFT?=
- =?us-ascii?Q?66xD1iURY1TzC5ps/9On+58EyD/jrPE1B5MopHRYg0VBMLBPFE2koh6/KF75?=
- =?us-ascii?Q?L8UAS3BD7BPIevcmzK8ytIdgIur3pMmKXJNEBjI8d2lWzbUKPg3ezLbA7usF?=
- =?us-ascii?Q?Y1AWnFM6rqXCCmIUxERLnWZxT4KrcuGXBDrs11L2vbFR37xvPWYYe4MpVK3b?=
- =?us-ascii?Q?Pjy2eyLiWaFKdVarpfxb9nax3AHG0HtXmxlepcs3CG8w8kZuAPu6higc4qLk?=
- =?us-ascii?Q?rTnA+cO4RoOb41WnzQsPUu3BJJl5yPZwFr9wSL6P6o6VpDzJImCBmXbeprhs?=
- =?us-ascii?Q?p9vpaOQOsmiqMNOCvyAKS+XjdaXJJRNYBJely721cLcG67QIhtg11NfiQuDk?=
- =?us-ascii?Q?owAtL6uMIV5fJp53WZhlpwlZ2hU0bGpQ3Fx03brtQddEI1SgLuN6ay36En5l?=
- =?us-ascii?Q?g37gsGb+1JhzYJB0sOZd64sgPGAE3zJoX+cQKsSuIr8ijA4n59hllzocCvJJ?=
- =?us-ascii?Q?LyKS2NhwR+QjdwvNDNdwmfQ94EMViMvAtfcCoCo0EB4xEQdEgKqI9WLx5OlD?=
- =?us-ascii?Q?mLnlh0P9OKhXkEgz6JQngEkfSZBdldSSShbm/c9NNVjiz2qLik5CZ/Ux5+b/?=
- =?us-ascii?Q?Le0CYUucJKNnlzrWkf+z9mwZNBbrnspAlcU2fpf1YTbN29J5wP/4v/Mr0/qR?=
- =?us-ascii?Q?c0zogy//iiPo1eCfrI9zmRPxoKwZOERCrDAmXDA/yRN5X25c9WpyTN9aTtBd?=
- =?us-ascii?Q?4WqxXlYO/SgxAgvebUuVhHRPcIFByS+OdFQc5XMRdr/CTsMJFAPptGN7FJFx?=
- =?us-ascii?Q?GIRBFsW+kkbdAPzhuIvAFuR/EoXjXKqShHQDg/iiuMecwT9hMxEhw2DrzaeR?=
- =?us-ascii?Q?VzWoPz17G3jfp78liW1x9ra/JVplv2S8veMwRZxodvTAP8051HwJJNhI1/LT?=
- =?us-ascii?Q?jmF3RCl+zilI9sFc5Gi2guYzLsnVQl4vVaSl9HECM2314VUTdCVOQh04Wvoc?=
- =?us-ascii?Q?U1yKNoftc8bjUYfBwiKh36PbWM91T8+/fu59+3yiXq8B2BeRTtfZPCMVklVD?=
- =?us-ascii?Q?/Z41/PhzCnhaH5VwMGkrFxlovZhF2wVwAx6aaJFjFxYc6C5CEESPgstFiXVe?=
- =?us-ascii?Q?olKyxsvAW6BOhx5BE58uvz/sCx6oK2W/oRWe8kWIVWR6whWAxTKDssjimWT5?=
- =?us-ascii?Q?LDT4HGaE/g1JnURwcLqYXDGsCc1eFFWv29lv7m78Q9VXuY+lRw9/FM+6AAkD?=
- =?us-ascii?Q?TuRHegYil6aXXLDIqGv/IoQF8piqC5qsUVRjzny+3n/GuS83lVuFmqAfv265?=
- =?us-ascii?Q?XUySqXhxNWXnFe1KtjJTz84h5cF4AR134L863b33Z/aTZfFFLaYBUJuFLr2o?=
- =?us-ascii?Q?lpwKP9aNG8gQBeDz86Tf9nF3vHer5wglCFnfJCq6SGInSW585plQM4MCLqF6?=
- =?us-ascii?Q?Wmy03KkhhqMerz5GEOMLOt+sRwyFlO2A4FFfE5zuSqVtyhX+E54T1pj/BECt?=
- =?us-ascii?Q?+9tQdeZRUWdL1MMw++czbo1+ibQBzfn2VyQxbLGoXgO1HNMo+wgMGxNM15/3?=
- =?us-ascii?Q?KafpLqGykoZGr2T8B3gPQGowPiJbBuU=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GiIMmhzJvweWcpUn5RA/Bq8COgtP2VDD/6duiu25M3pYqsTHtvt80twKLg/T?=
+ =?us-ascii?Q?VQtOh4WSLUOPkkrnyLXTp6PgSMj+nHLEpyDkcezAQIPR+RBwLxsWhGaQNE2d?=
+ =?us-ascii?Q?VpsYG2p1Go32Gs/d6YSWyApLutQMq6DHrYAk65T01KYCNIACLDbBfB32prjF?=
+ =?us-ascii?Q?MPn1y6+pYCcISXWhhrUZ2WbT84ZYFWZTFs+pfWNZAXvc8lVCzQOcbcBwzzDX?=
+ =?us-ascii?Q?1eBV4PG5NINsNI3ixX82KbKIgSMLbIZwgomct6X0YpBSg2bQbBs4qgAsRj6s?=
+ =?us-ascii?Q?F5pdsh9nFcoNa0ACS4lFCCUd82GLlvfjjgZJcaNKmQo94yPQN3CuHIRZCYcM?=
+ =?us-ascii?Q?S8ti3l8LijGN8+IegYiP12zNuQvmt+dEOkMyrWr+tyBIlZWXgKYH0Vt/OJIg?=
+ =?us-ascii?Q?1KOadgswmMEjpc5hvu2ZZ8Qsuoqabv6PzHQnx+deh1OQ/hhUl6u5hnZmzc4E?=
+ =?us-ascii?Q?d+9LSd16ZSRgaX4Pco0UrOIgMxpT9tw8jIxKDlecHleSPw/VvwoD9mwA0Sb6?=
+ =?us-ascii?Q?XHgsx4J1R04dJHvKerQRJ8y3ZgOsp7N6MFa7X2edXDqoOYK8IZavWveBLaLu?=
+ =?us-ascii?Q?J84TGhwM2drmPBkaVteI8EXsgasyyF9LSB44efrz1nVLReEVK9KdgnsngIhP?=
+ =?us-ascii?Q?YLD/fDHQJDmOyCcoGPHFt4ug1768y8v++XG9J7yponUwHsMAaEOmua4ZwqDi?=
+ =?us-ascii?Q?FdAPERJ3DrPMBtRouJ2dYQwzciG4hPHwbNQ2+AXw86O+enDKUv2YXOdj3OLt?=
+ =?us-ascii?Q?H3lcUah+5EpSY91XAKXSqXwzc8zEi7+iCXpJ42wTtfaZsi6+5MGR1PIRck5U?=
+ =?us-ascii?Q?VbMdkpe1P+J2x/9kaT1rQmgOdCS2rN7RUJWHm3hYJFxmFMgqoTCJIFsDGT1s?=
+ =?us-ascii?Q?sHgIOOSTzS4D5vyINeR2nVmXZaQt9Lw/PWwFM2/5z8O1rPD7x3ZSRQjW5QDD?=
+ =?us-ascii?Q?Mt0+FHFqdlBowHN6484CMmw/88poC55ZtJx/rzFk+ljMPFdul1o93KmY5ocx?=
+ =?us-ascii?Q?bv8UsA+sVoTrv5ezlOnpLY2LmTpSCOUSkC/W3OtiPi8WV2Higj0VVvXDE5hY?=
+ =?us-ascii?Q?Egaka/+GWUXObOOCsKKUCtUwa2TuP39QX7WLuMFt4rwiN/pFhXr0QfmnH3Gp?=
+ =?us-ascii?Q?hLKbeqmrO25cfjYgqyX14KaLbGFbAOOjHmkztwRWDyxvfU1v9WTrqjt5gdSs?=
+ =?us-ascii?Q?Ap6+szIb2JDMfPA42auc6arNYy4e5pvqGFJlj1/4ZgQjpLV7ftk/fpcFczXZ?=
+ =?us-ascii?Q?WpOd+4WTmotpOAqvyTr/hcfIaMFI2SOweh0n7iwRC5HJfQaOjivbplbrhXpj?=
+ =?us-ascii?Q?AuecA3eDsWoJcAZeB2JwYI27Q5VnXHVMD8DVO2LtPmbfvJTCHNB2unpzp5nl?=
+ =?us-ascii?Q?+YzfAozqKadmg+893ytG87oYRLdFpsl4ZcQ3U2DEPOUC4YyQonn5nDbZJK/t?=
+ =?us-ascii?Q?2cI3mIYsvF6iuxQeAicqrScjVv+S8DvOeKAINx26Vc+daEk10j0TljHl+y9p?=
+ =?us-ascii?Q?3RG0kcvcle5VmbBDG8t2qHLiNZsMNVoHKAZPvhWCp2PxnsMhAae4+sEb0EKu?=
+ =?us-ascii?Q?p3koUmfzYvh3g1k2WFUQhk7pchb1GpAWM3+xFONwQiktIf1NhPJp3rUj9PJ2?=
+ =?us-ascii?Q?qPgmdybhCCUfF1DogEp1jVRe6sE4b7HVUHXsmah2p61ygHnrHPZISgt475jx?=
+ =?us-ascii?Q?XIAIJfyuAKPIT1iASa7mgxc+Ds2ZgcKNZuieWGb4w7cT2x8Sc0Htx7xFTa7H?=
+ =?us-ascii?Q?aaFYm53LH0DJJ+swXm4lyBjzC/Kx898=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e8ce216-ca7e-4539-45ad-08da3460f9bc
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR10MB1466.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fd8f6d8-e694-4437-766b-08da34615b31
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4166.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 21:47:13.9122
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 21:49:57.4661
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o6AcULeS/RHWFp6eQJj+lYXIU469NhzMuZswV/ivOL1lDZGQ4YC2f/9v/GYbLLH7TIi1jGdeRJpt4lxzcjXJZnB6GbNSD1i7WDiza293dMk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3311
+X-MS-Exchange-CrossTenant-UserPrincipalName: o0FXL7ulaiD94ut8iUEMns11X8Pg537grASk0fn+9XFcbEN+a9qyRMWeSbjBNIRsnrg9AoD1uOaU5k2o5uAvx5V7jjmTV33ODUTPsBDE4eQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1564
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
  definitions=2022-05-12_13:2022-05-12,2022-05-12 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
- spamscore=0 bulkscore=0 adultscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
+ suspectscore=0 phishscore=0 spamscore=0 bulkscore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2202240000 definitions=main-2205120091
-X-Proofpoint-ORIG-GUID: HwtyrMXhyJmy8mAqG9_7gsOGKnPEvjdA
-X-Proofpoint-GUID: HwtyrMXhyJmy8mAqG9_7gsOGKnPEvjdA
+X-Proofpoint-GUID: KhyFBkw0CGN4jKlK8-jz5KVN4hH0i9m9
+X-Proofpoint-ORIG-GUID: KhyFBkw0CGN4jKlK8-jz5KVN4hH0i9m9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <brauner@kernel.org>
+Stephen Brennan <stephen.s.brennan@oracle.com> writes:
+> A rare BUG_ON triggered in assoc_array_gc:
+>
+>     [3430308.818153] kernel BUG at lib/assoc_array.c:1609!
+>
+> Which corresponded to the statement currently at line 1593 upstream:
+>
+>     BUG_ON(assoc_array_ptr_is_meta(p));
+>
+> Using the data from the core dump, I was able to generate a userspace
+> reproducer[1] and determine the cause of the bug.
+>
+> [1]: https://github.com/brenns10/kernel_stuff/tree/master/assoc_array_gc
+>
+> After running the iterator on the entire branch, an internal tree node
+> looked like the following:
+>
+>     NODE (nr_leaves_on_branch: 3)
+>       SLOT [0] NODE (2 leaves)
+>       SLOT [1] NODE (1 leaf)
+>       SLOT [2..f] NODE (empty)
+>
+> In the userspace reproducer, the pr_devel output when compressing this
+> node was:
+>
+>     -- compress node 0x5607cc089380 --
+>     free=0, leaves=0
+>     [0] retain node 2/1 [nx 0]
+>     [1] fold node 1/1 [nx 0]
+>     [2] fold node 0/1 [nx 2]
+>     [3] fold node 0/2 [nx 2]
+>     [4] fold node 0/3 [nx 2]
+>     [5] fold node 0/4 [nx 2]
+>     [6] fold node 0/5 [nx 2]
+>     [7] fold node 0/6 [nx 2]
+>     [8] fold node 0/7 [nx 2]
+>     [9] fold node 0/8 [nx 2]
+>     [10] fold node 0/9 [nx 2]
+>     [11] fold node 0/10 [nx 2]
+>     [12] fold node 0/11 [nx 2]
+>     [13] fold node 0/12 [nx 2]
+>     [14] fold node 0/13 [nx 2]
+>     [15] fold node 0/14 [nx 2]
+>     after: 3
+>
+> At slot 0, an internal node with 2 leaves could not be folded into the
+> node, because there was only one available slot (slot 0). Thus, the
+> internal node was retained. At slot 1, the node had one leaf, and was
+> able to be folded in successfully. The remaining nodes had no leaves,
+> and so were removed. By the end of the compression stage, there were 14
+> free slots, and only 3 leaf nodes. The tree was ascended and then its
+> parent node was compressed. When this node was seen, it could not be
+> folded, due to the internal node it contained.
+>
+> The invariant for compression in this function is: whenever
+> nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT, the node should contain all
+> leaf nodes. The compression step currently cannot guarantee this, given
+> the corner case shown above.
+>
+> To fix this issue, retry compression whenever we have retained a node,
+> and yet nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT. This second
+> compression will then allow the node in slot 1 to be folded in,
+> satisfying the invariant. Below is the output of the reproducer once the
+> fix is applied:
+>
+>     -- compress node 0x560e9c562380 --
+>     free=0, leaves=0
+>     [0] retain node 2/1 [nx 0]
+>     [1] fold node 1/1 [nx 0]
+>     [2] fold node 0/1 [nx 2]
+>     [3] fold node 0/2 [nx 2]
+>     [4] fold node 0/3 [nx 2]
+>     [5] fold node 0/4 [nx 2]
+>     [6] fold node 0/5 [nx 2]
+>     [7] fold node 0/6 [nx 2]
+>     [8] fold node 0/7 [nx 2]
+>     [9] fold node 0/8 [nx 2]
+>     [10] fold node 0/9 [nx 2]
+>     [11] fold node 0/10 [nx 2]
+>     [12] fold node 0/11 [nx 2]
+>     [13] fold node 0/12 [nx 2]
+>     [14] fold node 0/13 [nx 2]
+>     [15] fold node 0/14 [nx 2]
+>     internal nodes remain despite enough space, retrying
+>     -- compress node 0x560e9c562380 --
+>     free=14, leaves=1
+>     [0] fold node 2/15 [nx 0]
+>     after: 3
+>
+> Fixes: 3cb989501c26 ("Add a generic associative array implementation.")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+> ---
+>
+> Hi Andrew,
+>
+> As far as I can tell, lib/assoc_array.c has no maintainer, so I'm
+> sending this bugfix to you. Hopefully David can take a look at this and
+> verify sure it's all sane. I tested it on my userspace reproducer, and
+> also by booting it and exercising the keyring_gc functions a bit.
+>
+> Thanks,
+> Stephen
+>
+>  lib/assoc_array.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/lib/assoc_array.c b/lib/assoc_array.c
+> index 079c72e26493..7ed20233a770 100644
+> --- a/lib/assoc_array.c
+> +++ b/lib/assoc_array.c
+> @@ -1462,6 +1462,7 @@ int assoc_array_gc(struct assoc_array *array,
+>  	struct assoc_array_ptr *new_root, *new_parent, **new_ptr_pp;
+>  	unsigned long nr_leaves_on_tree;
+>  	int keylen, slot, nr_free, next_slot, i;
+> +	bool retained;
+>  
+>  	pr_devel("-->%s()\n", __func__);
+>  
+> @@ -1536,6 +1537,7 @@ int assoc_array_gc(struct assoc_array *array,
+>  		goto descend;
+>  	}
+>  
+> +retry_compress:
+>  	pr_devel("-- compress node %p --\n", new_n);
+>  
+>  	/* Count up the number of empty slots in this node and work out the
+> @@ -1554,6 +1556,7 @@ int assoc_array_gc(struct assoc_array *array,
+>  
+>  	/* See what we can fold in */
+>  	next_slot = 0;
+> +	retained = 0;
+>  	for (slot = 0; slot < ASSOC_ARRAY_FAN_OUT; slot++) {
+>  		struct assoc_array_shortcut *s;
+>  		struct assoc_array_node *child;
+> @@ -1602,9 +1605,14 @@ int assoc_array_gc(struct assoc_array *array,
+>  			pr_devel("[%d] retain node %lu/%d [nx %d]\n",
+>  				 slot, child->nr_leaves_on_branch, nr_free + 1,
+>  				 next_slot);
+> +			retained = true;
+>  		}
+>  	}
+>  
+> +	if (retained && new_n->nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT) {
 
-Since:
+Hi Andrew,
 
-commit 10ab825bdef8 ("change kernel threads to ignore signals instead of
-blocking them")
+I'm sorry to ask this of you - but would you be willing to yank this
+patch out and replace it with the v2 I'll send in reply to this? The
+above test should be a "<=" condition, not a "<". And of course you
+caught my spelling mistake on the line below. Both will be corrected in
+the v2.
 
-kthreads have been ignoring signals by default, and the vhost layer has
-never had a need to change that. This patch adds an option flag,
-USER_WORKER_SIG_IGN, handled in copy_process() after copy_sighand()
-and copy_signals() so vhost_tasks added in the next patches can continue
-to ignore singals.
+thanks,
+Stephen
 
-Signed-off-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/sched/task.h | 1 +
- kernel/fork.c              | 3 +++
- 2 files changed, 4 insertions(+)
-
-diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
-index 7f6364e5aa1a..9fbb489b2512 100644
---- a/include/linux/sched/task.h
-+++ b/include/linux/sched/task.h
-@@ -21,6 +21,7 @@ struct css_set;
- #define USER_WORKER		BIT(0)
- #define USER_WORKER_IO		BIT(1)
- #define USER_WORKER_NO_FILES	BIT(2)
-+#define USER_WORKER_SIG_IGN	BIT(3)
- 
- struct kernel_clone_args {
- 	u64 flags;
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 43213bc926c6..84346fa6232e 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -2258,6 +2258,9 @@ static __latent_entropy struct task_struct *copy_process(
- 	if (retval)
- 		goto bad_fork_cleanup_io;
- 
-+	if (args->worker_flags & USER_WORKER_SIG_IGN)
-+		ignore_signals(p);
-+
- 	stackleak_task_init(p);
- 
- 	if (pid != &init_struct_pid) {
--- 
-2.25.1
-
+> +		pr_devel("internal nodes remain despite neough space, retrying\n");
+> +		goto retry_compress;
+> +	}
+>  	pr_devel("after: %lu\n", new_n->nr_leaves_on_branch);
+>  
+>  	nr_leaves_on_tree = new_n->nr_leaves_on_branch;
+> -- 
+> 2.30.2
