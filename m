@@ -2,108 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8624C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC4EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356790AbiELRCp (ORCPT
+        id S1356802AbiELREQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60862 "EHLO
+        Thu, 12 May 2022 13:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356570AbiELRCn (ORCPT
+        with ESMTP id S242193AbiELREO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:02:43 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1995E52AC
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652374961; x=1683910961;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sMZBofsExJ4XZ0XAXWwsuHVeTzHqA51EM19kzKk8154=;
-  b=BmrXD/tkfKrjq1P/QI23oQ3DDsGRuvgnFQZmuPWngE1gseGHyU/QJc9i
-   G0YRGnOR/tHkNazvzDb2NIn6zNrPLBJ9KxqVZfIbX1Y9EC6hzfbdSqGK9
-   Cgs5Uqjjx28oI4vKrWXrrTLcPfa1lMjTGpFm+QkcCbzcs4ovsV8iPCeiK
-   DWr5nG62daNKkrhUNY3BkaBfA36Yi6Ta8Lgo8XvEuTy686xf1S6rEfyRh
-   tHMnjsgjyDq/Uh6s8gpbc+0vjakykACL+/m/oUD6s9qrU3CCpCL6sR+du
-   MQTvM1ppWU/8W2+e7QpcvGMamicU8w2eaOpRg8SamttkPAlddzlMmcwog
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257612806"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="257612806"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:00:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="712002221"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 12 May 2022 10:00:02 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id C4A29CE; Thu, 12 May 2022 20:00:01 +0300 (EEST)
-Date:   Thu, 12 May 2022 20:00:01 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] x86: Implement Linear Address Masking support
-Message-ID: <20220512170001.6olwffikg4u3cke3@black.fi.intel.com>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511022751.65540-2-kirill.shutemov@linux.intel.com>
- <fc54d360620d436f93785ae5e9f8a23f@AcuMS.aculab.com>
+        Thu, 12 May 2022 13:04:14 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57016D4DA;
+        Thu, 12 May 2022 10:04:13 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 7EEC71F8EF;
+        Thu, 12 May 2022 17:04:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652375052; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8x6aPJt6yqRe+xxwaduylXqRn+TAS3mKV8QmNRMu74M=;
+        b=oqAeYgjoS/Yzrg0FlOaRvqUONZMeshLiVKHa5kE0tg7n3W/Qd8TjfD2+9mXN1PtCJP58R8
+        wnlHvNSmzK+5ejL8Fn0anZd7UdrYBDHqSDVzVTUq6+y9ZXzNhqW3be11YgM8I/tx3NwAfM
+        R0sJIrUtOa7NJDVEeM6pKGJS33DF4rc=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 453DB13ABE;
+        Thu, 12 May 2022 17:04:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 0BnrDww+fWIuHAAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Thu, 12 May 2022 17:04:12 +0000
+Date:   Thu, 12 May 2022 19:04:10 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     David Vernet <void@manifault.com>
+Cc:     akpm@linux-foundation.org, tj@kernel.org, roman.gushchin@linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
+        shakeelb@google.com, kernel-team@fb.com
+Subject: Re: [PATCH v2 0/5] Fix bugs in memcontroller cgroup tests
+Message-ID: <20220512170410.GA16096@blackbody.suse.cz>
+References: <20220423155619.3669555-1-void@manifault.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fc54d360620d436f93785ae5e9f8a23f@AcuMS.aculab.com>
+In-Reply-To: <20220423155619.3669555-1-void@manifault.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 01:01:07PM +0000, David Laight wrote:
-> From: Kirill A. Shutemov
-> > Sent: 11 May 2022 03:28
-> > 
-> > Linear Address Masking feature makes CPU ignore some bits of the virtual
-> > address. These bits can be used to encode metadata.
-> > 
-> > The feature is enumerated with CPUID.(EAX=07H, ECX=01H):EAX.LAM[bit 26].
-> > 
-> > CR3.LAM_U57[bit 62] allows to encode 6 bits of metadata in bits 62:57 of
-> > user pointers.
-> > 
-> > CR3.LAM_U48[bit 61] allows to encode 15 bits of metadata in bits 62:48
-> > of user pointers.
-> > 
-> > CR4.LAM_SUP[bit 28] allows to encode metadata of supervisor pointers.
-> > If 5-level paging is in use, 6 bits of metadata can be encoded in 62:57.
-> > For 4-level paging, 15 bits of metadata can be encoded in bits 62:48.
-> > 
-> ...
-> > +static vaddr clean_addr(CPUArchState *env, vaddr addr)
-> > +{
-> > +    CPUClass *cc = CPU_GET_CLASS(env_cpu(env));
-> > +
-> > +    if (cc->tcg_ops->do_clean_addr) {
-> > +        addr = cc->tcg_ops->do_clean_addr(env_cpu(env), addr);
-> 
-> The performance of a conditional indirect call will be horrid.
-> Over-engineered when there is only one possible function.
+Hello.
 
-It is QEMU patch. As I mentioned in the cover letter, it was rejected by
-upstream, but it is functional and can be used for testing before HW
-arrived.
+On Sat, Apr 23, 2022 at 08:56:15AM -0700, David Vernet <void@manifault.com> wrote:
+> tools/testing/selftests/cgroup/test_memcontrol.c contains a set of
+> testcases which validate expected behavior of the cgroup memory controller.
+> Roman Gushchin recently sent out a patchset that fixed a few issues in the
+> test.
 
-I may give it another try when I get time to look deeper at TCG.
+Link here
+https://lore.kernel.org/r/20220415000133.3955987-1-roman.gushchin@linux.dev/.
 
--- 
- Kirill A. Shutemov
+> This patchset continues that effort by fixing a few more issues that
+> were causing non-deterministic failures in the suite.
+
+Are the Roman's patches merged anywhere? (I ran into some issues when I
+was rebasing your (David's) series on top of master.) I'd like to put
+all sensible patches in one series or stack on existing branch (if
+there's any).
+
+For possible v3 of this series, I did:
+  - dropped the patch that allows non-zero memory.events:low for a sibling with
+    memory.low=0 when mounted with memory_recursiveprot (the case needs more
+    discussion),
+  - added few more cleanups, convenience for debugging,
+  - fixed comments in the first patch.
+
+Pushed here [1] before properly sending the v3 for discussion.
+
+Thanks,
+Michal
+
+[1] https://github.com/Werkov/linux/commits/cgroup-ml/memory.low-overreclaim-var2
+
