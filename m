@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34FFDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9077DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353095AbiELLQd (ORCPT
+        id S1352961AbiELLSF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 07:16:33 -0400
+        Thu, 12 May 2022 07:18:05 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353167AbiELLQI (ORCPT
+        with ESMTP id S1353193AbiELLQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 07:16:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2A012AB3;
-        Thu, 12 May 2022 04:16:02 -0700 (PDT)
+        Thu, 12 May 2022 07:16:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAC512AB3;
+        Thu, 12 May 2022 04:16:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FC10B82799;
-        Thu, 12 May 2022 11:16:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4DF9C385B8;
-        Thu, 12 May 2022 11:15:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CF31B82714;
+        Thu, 12 May 2022 11:16:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6F7DC385B8;
+        Thu, 12 May 2022 11:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652354159;
-        bh=MWbEkF9JhCm5bS61843/VGkIqBeDWarPhz6L02YoONg=;
+        s=korg; t=1652354167;
+        bh=BwOwfylEyy1bZCYFy6Fb5+HxC9y3BPeTdKfYl1OySl8=;
         h=From:To:Cc:Subject:Date:From;
-        b=Hn3eoVVW8xoiQAs9emCTmf81tomZbUzvhFobEUJoWZYjHZidknPA9JDHhrSTdHw3W
-         +jAY4SY8kNUHctQebY7NOoZWG0KXU1dun9snlVcR58AFjW/v4Ne4Rbkt/fWAK+SwhL
-         Ep+aL8cFfjsaDggBv8nIkXxB6zf77St7+rnRMnBE=
+        b=pH+kQbwl0IHDiZw9K0sAPTidVCeaCxTbYvnBrZnUZQG9fc11OveCGNxQcP7CL6VIV
+         01mgjoK9hWtYbiQBOufu1ibP4S6NfXVS0Hejr99EYkeYQHfRepEPTAQZj6STW7m6Sm
+         gIvmz3LY+4Vmtxv9f/D5nqNoeg26vwbOYETPKw8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.9.313
-Date:   Thu, 12 May 2022 13:15:55 +0200
-Message-Id: <165235415537233@kroah.com>
+Subject: Linux 4.14.278
+Date:   Thu, 12 May 2022 13:15:59 +0200
+Message-Id: <165235416010173@kroah.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.9.313 kernel.
+I'm announcing the release of the 4.14.278 kernel.
 
-All users of the 4.9 kernel series must upgrade.
+All users of the 4.14 kernel series must upgrade.
 
-The updated 4.9.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.9.y
+The updated 4.14.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
 and can be browsed at the normal kernel.org git web browser:
 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
@@ -70,6 +71,7 @@ greg k-h
  arch/x86/include/asm/microcode.h                    |    2 
  arch/x86/kernel/cpu/microcode/core.c                |    6 +-
  arch/x86/kvm/cpuid.c                                |    5 ++
+ arch/x86/lib/usercopy_64.c                          |    2 
  arch/x86/power/cpu.c                                |    8 +++
  drivers/block/Kconfig                               |   16 +++++++
  drivers/block/floppy.c                              |   43 ++++++++++++++------
@@ -80,6 +82,7 @@ greg k-h
  drivers/firewire/core-topology.c                    |    9 +---
  drivers/firewire/core-transaction.c                 |   30 +++++++------
  drivers/firewire/sbp2.c                             |   13 +++---
+ drivers/gpu/drm/vgem/vgem_drv.c                     |    9 ++--
  drivers/hwmon/adt7470.c                             |    4 -
  drivers/iio/dac/ad5446.c                            |    2 
  drivers/iio/dac/ad5592r-base.c                      |    2 
@@ -89,14 +92,17 @@ greg k-h
  drivers/mtd/nand/sh_flctl.c                         |   14 +++---
  drivers/net/can/grcan.c                             |    8 ++-
  drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c    |    9 ++--
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c      |    7 +++
  drivers/net/ethernet/smsc/smsc911x.c                |    2 
  drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c  |    8 +++
  drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h  |    4 -
  drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c |   13 +++---
  drivers/net/ethernet/xilinx/xilinx_emaclite.c       |   15 +++++-
+ drivers/net/hamradio/6pack.c                        |    5 +-
  drivers/net/hippi/rrunner.c                         |    2 
  drivers/nfc/nfcmrvl/main.c                          |    2 
- drivers/phy/phy-exynos5250-sata.c                   |   21 ++++++---
+ drivers/pci/host/pci-aardvark.c                     |   16 +++----
+ drivers/phy/samsung/phy-exynos5250-sata.c           |   21 ++++++---
  drivers/pinctrl/pinctrl-pistachio.c                 |    6 +-
  drivers/tty/n_gsm.c                                 |   40 +++++++++---------
  drivers/tty/serial/8250/8250_pci.c                  |    8 +--
@@ -104,12 +110,15 @@ greg k-h
  drivers/usb/core/quirks.c                           |    6 ++
  drivers/usb/gadget/configfs.c                       |    2 
  drivers/usb/gadget/function/uvc_queue.c             |    2 
+ drivers/usb/host/xhci-ring.c                        |    2 
  drivers/usb/host/xhci.c                             |   11 +++++
  drivers/usb/misc/uss720.c                           |    3 -
+ drivers/usb/mtu3/mtu3_dr.c                          |    6 --
  drivers/usb/serial/cp210x.c                         |    2 
  drivers/usb/serial/option.c                         |   12 +++++
  drivers/usb/serial/whiteheat.c                      |    5 --
  fs/btrfs/tree-log.c                                 |   14 ++++++
+ fs/cifs/smb2ops.c                                   |    8 +++
  include/linux/kernel.h                              |    2 
  include/net/tcp.h                                   |    1 
  lib/hexdump.c                                       |   41 ++++++++++++++-----
@@ -118,15 +127,17 @@ greg k-h
  net/ipv4/tcp_input.c                                |   12 +++++
  net/ipv4/tcp_output.c                               |    1 
  net/ipv6/addrconf.c                                 |    8 ++-
+ net/netfilter/ipvs/ip_vs_conn.c                     |    2 
  net/nfc/core.c                                      |   29 ++++++-------
  net/nfc/netlink.c                                   |    4 -
- net/sched/cls_api.c                                 |    5 +-
+ net/sched/cls_u32.c                                 |   18 +++++---
+ net/sctp/sm_sideeffect.c                            |    4 +
  net/sunrpc/xprtsock.c                               |    3 -
  sound/firewire/fireworks/fireworks_hwdep.c          |    1 
  sound/soc/codecs/wm8731.c                           |   19 +++++---
  sound/soc/codecs/wm8958-dsp2.c                      |    8 +--
  sound/soc/soc-generic-dmaengine-pcm.c               |    6 +-
- 66 files changed, 386 insertions(+), 193 deletions(-)
+ 76 files changed, 434 insertions(+), 219 deletions(-)
 
 Armin Wolf (1):
       hwmon: (adt7470) Fix warning on module removal
@@ -161,6 +172,9 @@ Daniel Starke (7):
       tty: n_gsm: fix wrong command frame length field encoding
       tty: n_gsm: fix incorrect UA handling
 
+Daniel Vetter (1):
+      drm/vgem: Close use-after-free race in vgem_gem_create
+
 Daniele Palmas (1):
       USB: serial: option: add Telit 0x1057, 0x1058, 0x1075 compositions
 
@@ -171,7 +185,8 @@ Duoming Zhou (5):
       nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
       NFC: netlink: fix sleep in atomic bug when firmware download timeout
 
-Eric Dumazet (2):
+Eric Dumazet (3):
+      net/sched: cls_u32: fix netns refcount changes in u32_change()
       tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
       net: igmp: respect RCU rules in ip_mc_source() and ip_mc_msfilter()
 
@@ -184,7 +199,7 @@ Filipe Manana (1):
 Greg Kroah-Hartman (3):
       Revert "net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link"
       lightnvm: disable the subsystem
-      Linux 4.9.313
+      Linux 4.14.278
 
 H. Nikolaus Schaller (1):
       ARM: dts: Fix mmc order for omap3-gta04
@@ -204,11 +219,18 @@ Jakob Koschel (1):
 Jiazi Li (1):
       dm: fix mempool NULL pointer race when completing IO
 
+Jonathan Lemon (1):
+      net: bcmgenet: hide status block before TX timestamping
+
 Kees Cook (1):
       USB: serial: whiteheat: fix heap overflow in WHITEHEAT_GET_DTR_RTS
 
 Krzysztof Kozlowski (1):
       phy: samsung: exynos5250-sata: fix missing device put in probe error paths
+
+Lin Ma (2):
+      hamradio: defer 6pack kfree after unregister_netdev
+      hamradio: remove needs_free_netdev to avoid UAF
 
 Lv Ruyi (1):
       pinctrl: pistachio: fix use of irq_of_parse_and_map()
@@ -217,6 +239,9 @@ Maciej W. Rozycki (3):
       serial: 8250: Also set sticky MCR bits in console restoration
       serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
       MIPS: Fix CP0 counter erratum detection for R4k CPUs
+
+Macpaul Lin (1):
+      usb: mtu3: fix USB 3.0 dual-role-switch from device to host
 
 Manish Chopra (1):
       bnx2x: fix napi API usage sequence
@@ -235,9 +260,10 @@ Michael Hennerich (1):
 Mike Snitzer (1):
       dm: interlock pending dm_io and dm_wait_for_bios_completion
 
-Mikulas Patocka (2):
+Mikulas Patocka (3):
       hex2bin: make the function hex_to_bin constant-time
       hex2bin: fix access beyond string end
+      x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
 
 Niels Dossche (1):
       firewire: core: extend card->lock in fw_core_handle_bus_reset
@@ -246,8 +272,18 @@ Oliver Neukum (2):
       USB: quirks: add a Realtek card reader
       USB: quirks: add STRING quirk for VCOM device
 
+Pali Rohár (2):
+      PCI: aardvark: Clear all MSIs at setup
+      PCI: aardvark: Fix reading MSI interrupt number
+
 Peilin Ye (1):
       ip_gre: Make o_seqno start from 0 in native mode
+
+Pengcheng Yang (1):
+      ipvs: correctly print the memory size of ip_vs_conn_tab
+
+Ronnie Sahlberg (1):
+      cifs: destage any unwritten data to the server before calling copychunk_write
 
 Sandipan Das (1):
       kvm: x86/cpuid: Only provide CPUID leaf 0xA if host has architectural PMU
@@ -264,17 +300,20 @@ Slark Xiao (1):
 Takashi Sakamoto (1):
       ALSA: fireworks: fix wrong return count shorter than expected by 4 bytes
 
-Thadeu Lima de Souza Cascardo (1):
-      net: sched: prevent UAF on tc_ctl_tfilter when temporarily dropping rtnl_lock
-
 Trond Myklebust (1):
       Revert "SUNRPC: attempt AF_LOCAL connect on setup"
 
 Vijayavardhan Vennapusa (1):
       usb: gadget: configfs: clear deactivation flag in configfs_composite_unbind()
 
+Weitao Wang (1):
+      USB: Fix xhci event ring dequeue pointer ERDP update issue
+
 Willy Tarreau (1):
       floppy: disable FDRAWCMD by default
+
+Xin Long (1):
+      sctp: check asoc strreset_chunk in sctp_generate_reconf_event
 
 Yang Yingliang (1):
       clk: sunxi: sun9i-mmc: check return value after calling platform_get_resource()
