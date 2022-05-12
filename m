@@ -2,85 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7D6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC38C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:36:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357094AbiELRdZ (ORCPT
+        id S1357097AbiELRgu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
+        Thu, 12 May 2022 13:36:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242790AbiELRdV (ORCPT
+        with ESMTP id S242790AbiELRgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:33:21 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7ACD17493E;
-        Thu, 12 May 2022 10:33:17 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id d6so7122576ede.8;
-        Thu, 12 May 2022 10:33:17 -0700 (PDT)
+        Thu, 12 May 2022 13:36:45 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F1D3326DC;
+        Thu, 12 May 2022 10:36:44 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id v59so11048420ybi.12;
+        Thu, 12 May 2022 10:36:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/GwikIGBuK4bG81kkPIa+hRmyKQvA3ptrXi1rwLFeHc=;
-        b=ZAaRdEGDaRO/NW2yXe77gSq0dF7apEh5WRdov42BEAPy8bhDXLKxWP9tzl2J/nYgn3
-         pYtRLfAHQeUZekK3Td3knEib+nTPgzy6Rc9AWMGWmCNrJxaTKTKhdbqh1sZuqul1HeIe
-         N3tPU5pz7DZ2wThGTb48QonK1TkrKpb0oQ/FtK66d2kizyCgXCUmH/L6MnoSHBvkUtuZ
-         D3er1GvyobJbydd9z7FfvxNN9H4mJjpuqePm4XPImgc985lhE1ilZBa0dtOg+tw3iLkK
-         T8TP/iX8XA7BlYgHRlBP957aDnP8ENLsb+pind6juwDYzJMpUrFt2N1xtg/qdql9HasI
-         j7sg==
+        bh=KciQs1/yGPFy4fqE//6Ur4aaE5S7VXUIcGW3EivMUbE=;
+        b=oyqcMoSqA9aJbw6tLEyAEmjGIo5MGdgCc178Lenc5EP96fr8XQpAKmLnA0r3Hi77nE
+         518JToT5uKJfGIh9i852Ija2MoD3hdQ0F14OmHn0ZLpw5B1kVXqS0UcIM0LtEGz+x6oo
+         03JwJm4oSNliaI7ciuuM594DUQEuyWnx1yxB2wCorI1NmSCMnJ03PtPwSrnZr9ZvLDlb
+         vYlrXeMT10Pp523tln1zkXiJX/Dj3pEjFBGWwisLCoohWK3vMh6RHb1quHAJzt/mSJzI
+         uwPM4GZI+j256eRqydeg/bRYI7p3Yqqeaq3DDxUqm/nqQirO/4B7kLiaBfaxE0WXlPLu
+         b7ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/GwikIGBuK4bG81kkPIa+hRmyKQvA3ptrXi1rwLFeHc=;
-        b=ld9ZtWPZyjRCEIR3SYCRvMuzkFBlB88kQjta/QDjBePqB58rfLLed9J7k/v/mNDfQl
-         TZTL+L5kPneuBPA8x6qIs0qZga1Exy69PmDvjdvf5FgMxj5dLOcRzPphN1zWdcQpf1oK
-         yNcU+c5NsgCEFXrFfb+tqAq4GyEUlzpiqWsmF15nsvVFlJxxjLDmeomlH0hSVwJ8GErn
-         Q2SPsiVwAQjHhMNCuGPKLvbX9b0Hi22xWyednyXA84miMZEdVCN4LOTJLOFFdqqnUd3A
-         O/4ff7DyEVKQ/Z2ZTBhbwBnscXYchELUWBF+ypyRyiyu0K1QL4SeVJA0eMuvU3+89F1f
-         s1Ow==
-X-Gm-Message-State: AOAM530IkqX2ptADeZLC1gy/lSxIx0x/G/gs/tf+YCq4O+iKRePD+zWI
-        RZ9ytIMnzAzry0/I/pmADffbAQBecPhUamrGzXo=
-X-Google-Smtp-Source: ABdhPJwQ1NcNzQ1+PUh2OZhu8eeOg+1zJPw/V6LLJtk/hQI58fNE6iljtevdytja6TV4O8RxNrkZSIji4ImpvFh2qhg=
-X-Received: by 2002:a50:e696:0:b0:419:998d:5feb with SMTP id
- z22-20020a50e696000000b00419998d5febmr37092088edm.122.1652376796281; Thu, 12
- May 2022 10:33:16 -0700 (PDT)
+        bh=KciQs1/yGPFy4fqE//6Ur4aaE5S7VXUIcGW3EivMUbE=;
+        b=QC/UqLAfrk9XGplj4Rm1tT02TGPvqt6umhPI8uPCbNen73fbFJ4MsDemg5K+QLgQTu
+         McR5kuj5AiPyWxB0wTSMDhB6OT2hYIML56kT5xr0CRwJB2hwWs0qvdBRiwG1dKP5DXJl
+         C2jqVjGmS4Fqr5Z6DJSweQvkSjqEThWdxm35ezjENdAXCGtPFYaH9pDN4lgzpL8+yCvn
+         bdMKBdKvSvaUispWWpBzyuQsKPM2Di0CeIXqvk2eTn0P+zCoYi1CamaYb4jzNZxCr4qn
+         folLg/uTnTtPc6okKc8nempP1NYobi0ffCgUGwBHhD9SRmZ+YajYVVl8wHsFFRMsynsa
+         GKoA==
+X-Gm-Message-State: AOAM531GeW1/WkHo9s2Fsh7OSeMuW7xRXQLgDE1lcycaSChAvUctmT3t
+        lOYW4AB2gV6XfTbIbVUGTF/vgxroC0r3XIOoLlezGyvxCiPfIg==
+X-Google-Smtp-Source: ABdhPJy7tamfWD3GzonlIuCs/c5Z8ME6ymOgP0txO82R0MNHZdWpF2nfgYrkTEGiVeSfyg5H1eLJ6i+GhPCdudBItZ8=
+X-Received: by 2002:a25:83d1:0:b0:648:725c:6a05 with SMTP id
+ v17-20020a2583d1000000b00648725c6a05mr915020ybm.218.1652377003238; Thu, 12
+ May 2022 10:36:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220512160312.3880433-1-Qing-wu.Li@leica-geosystems.com.cn> <20220512160312.3880433-5-Qing-wu.Li@leica-geosystems.com.cn>
-In-Reply-To: <20220512160312.3880433-5-Qing-wu.Li@leica-geosystems.com.cn>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 12 May 2022 19:32:39 +0200
-Message-ID: <CAHp75VdH5qNZ=P_Qg-vy=TgZ==1+b8K4-E_1UL8VKsMeyVm9XA@mail.gmail.com>
-Subject: Re: [PATCH V5 4/5] iio: accel: sca3300: Add support for SCL3300
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+References: <20220511183210.5248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220511183210.5248-6-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdXDQ+eECWwvAGOb-MaN16H17qm_v_1baZ7PdT8qx9McSw@mail.gmail.com>
+In-Reply-To: <CAMuHMdXDQ+eECWwvAGOb-MaN16H17qm_v_1baZ7PdT8qx9McSw@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Thu, 12 May 2022 18:36:16 +0100
+Message-ID: <CA+V-a8tNrJQtAQYoUKVwH9w4QOyA9JUWNjiYDPUPsj6UuJ4vaA@mail.gmail.com>
+Subject: Re: [PATCH v3 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to
+ handle GPIO interrupt
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Tomas Melin <tomas.melin@vaisala.com>,
-        devicetree <devicetree@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 6:03 PM LI Qingwu
-<Qing-wu.Li@leica-geosystems.com.cn> wrote:
+Hi Geert,
+
+Thank you for the review.
+
+On Thu, May 12, 2022 at 8:39 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 >
-> Add support for Murata SCL3300, a 3-axis MEMS accelerometer.
-> Same as SCA3300, it has the accelerometer and temperature output.
-
-> Datasheet:
-> www.murata.com/en-us/products/sensor/inclinometer/overview/lineup/scl3300
-
-Please, make it a proper tag, i.e. put on one line and attach to the
-tag block where you currently have a single SoB line.
-
+> Hi Prabhakar,
 >
-> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+> On Wed, May 11, 2022 at 8:32 PM Lad Prabhakar
+> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > Add IRQ domian to RZ/G2L pinctrl driver to handle GPIO interrupt.
+>
+> domain
+>
+ouch.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> > GPIO0-GPIO122 pins can be used as IRQ lines but only 32 pins can be
+> > used as IRQ lines at given time. Selection of pins as IRQ lines
+>
+> at a given time
+>
+will fix that.
+
+> > is handled by IA55 (which is the IRQC block) which sits in between the
+> > GPIO and GIC.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> Thanks for your patch!
+>
+> > --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> > +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+>
+> >  static int rzg2l_gpio_register(struct rzg2l_pinctrl *pctrl)
+> >  {
+> >         struct device_node *np = pctrl->dev->of_node;
+> >         struct gpio_chip *chip = &pctrl->gpio_chip;
+> >         const char *name = dev_name(pctrl->dev);
+> > +       struct irq_domain *parent_domain;
+> >         struct of_phandle_args of_args;
+> > +       struct device_node *parent_np;
+> > +       struct gpio_irq_chip *girq;
+> >         int ret;
+> >
+> > +       parent_np = of_irq_find_parent(np);
+> > +       if (!parent_np)
+> > +               return -ENXIO;
+> > +
+> > +       parent_domain = irq_find_host(parent_np);
+> > +       of_node_put(parent_np);
+> > +       if (!parent_domain)
+> > +               return -EPROBE_DEFER;
+> > +
+> >         ret = of_parse_phandle_with_fixed_args(np, "gpio-ranges", 3, 0, &of_args);
+> >         if (ret) {
+> >                 dev_err(pctrl->dev, "Unable to parse gpio-ranges\n");
+> > @@ -1138,6 +1330,15 @@ static int rzg2l_gpio_register(struct rzg2l_pinctrl *pctrl)
+> >         chip->base = -1;
+> >         chip->ngpio = of_args.args[2];
+> >
+> > +       girq = &chip->irq;
+> > +       girq->chip = &rzg2l_gpio_irqchip;
+> > +       girq->fwnode = of_node_to_fwnode(np);
+> > +       girq->parent_domain = parent_domain;
+> > +       girq->child_to_parent_hwirq = rzg2l_gpio_child_to_parent_hwirq;
+> > +       girq->populate_parent_alloc_arg = rzg2l_gpio_populate_parent_fwspec;
+> > +       girq->child_irq_domain_ops.free = rzg2l_gpio_irq_domain_free;
+> > +       girq->ngirq = RZG2L_TINT_MAX_INTERRUPT;
+> > +
+>
+> I think you need to provide a .init_valid_mask() callback, as
+> gpiochip_irqchip_remove() relies on that for destroying interrupts.
+Are you suggesting  the callback to avoid looping through all the GPIO pins?
+
+> However, the mask will need to be dynamic, as GPIO interrupts can be
+> mapped and unmapped to one of the 32 available interrupts dynamically,
+> right?
+Yep that's correct.
+
+> I'm not sure if that can be done easily: if gpiochip_irqchip_irq_valid()
+> is ever called too early, before the mapping is done, it would fail.
+>
+The mask initialization is a one time process and that is during
+adding the GPIO chip. At this stage we won't be knowing what will be
+the valid GPIO pins used as interrupts. Maybe the core needs to
+implement a callback which lands in the GPIO controller driver to tell
+if the gpio irq line is valid. This way we can handle dynamic
+interrupts.
+
+Cheers,
+Prabhakar
+
+> >         pctrl->gpio_range.id = 0;
+> >         pctrl->gpio_range.pin_base = 0;
+> >         pctrl->gpio_range.base = 0;
+>
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
