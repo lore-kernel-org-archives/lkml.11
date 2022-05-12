@@ -2,96 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC344C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1888DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352499AbiELKDM (ORCPT
+        id S1352346AbiELKKa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 06:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
+        Thu, 12 May 2022 06:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352464AbiELKB6 (ORCPT
+        with ESMTP id S1345766AbiELKK0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 06:01:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B3BD2FFCF
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:01:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652349716;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3arBzyEj0Y+10rY33HKP6mUUeQUbMaPvYDzVucF481c=;
-        b=Ei8vjMSEuzKei3VGnrrRA3cFxJ3KA4eFo9t6IDp7gbRzQ7tVTC7yFsUIDZy4hnsKMs3UJO
-        mBHqkZdhlZyCfvvMgAgqWfRV1tFdkj1vqPg/XjPN+tu97SpE1JvHVVLBOOQYEFUnDoMpPW
-        UUxpoFsJCqnPfksUowpw4edAJWKClsc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-349-fjNwgWJEMgOHIRArmFo3sQ-1; Thu, 12 May 2022 06:01:55 -0400
-X-MC-Unique: fjNwgWJEMgOHIRArmFo3sQ-1
-Received: by mail-wm1-f69.google.com with SMTP id m186-20020a1c26c3000000b003943e12185dso1435604wmm.7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:01:55 -0700 (PDT)
+        Thu, 12 May 2022 06:10:26 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A43B19C747;
+        Thu, 12 May 2022 03:10:25 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id x23so4352475pff.9;
+        Thu, 12 May 2022 03:10:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2IFiYfoIKlICTpTGvMOw6q9N3Q3vW+HIY5wMaOVljZc=;
+        b=ZS9+8YiztFlMOzLkLRbd3S2QaIvchP0IYmkI4QwtS2UX5aWkOX3kW9v5luy05CeE5U
+         m3Ns2rDEhxjuZj3AvCADV2PrDTS6u+zwRWkrdt4JoAAa1cIgRXTigPM9QSo48OnMdl0p
+         0N7VeiYFaOecenJjLxTl/Ai1cXGHxgfRhsvEHWREOlLCGAfMNL/g2FDT6TWF8r9VA1bi
+         2t9jjCvrYDZAckvV10bZhoYKhtEmh60T43DFvxQOdOddYLSfAZ2XBBMGnxzw6r//x2/1
+         RyuiMg6Vz1/MQ0jh7fKfvAuIhp1RnaHUHAxn6e22FzGfwp1tAMGKEcRU5+VrzHCErJbg
+         mINw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=3arBzyEj0Y+10rY33HKP6mUUeQUbMaPvYDzVucF481c=;
-        b=DdR99t6lEJwE3xxizsrwq/EH/5L2QIOT8wDLJkWTqBOgaFis5RoAB2ztNiqx+n/4O1
-         2kVNq3o2qNImxh2TuYQ21kqOSe0LhWYus4+yULyDLAvCQiUSyno+YHwj791H3y9OBxxt
-         zaDMr9qlp8C8YNssUwDG+xhwbtwJc33qb9fAKV0pk4thf8XlzJlbfLgGW0FOE0ej8XIA
-         1VCrf2s9vwXvrc9YxLEIJJEpnNlocAizSP+FHUKGb0OovI2w9Mf7HWBlahDW7YWMSjCG
-         5ie8A4jtsWdaTVTZpzHydtXKDIZTb9bL+7tq2ocqEnyr624XMtVvqCkn2OmjRtalCQAJ
-         3mRw==
-X-Gm-Message-State: AOAM533Ge6bf7udw+zolB+OYqvXeA1VGNXDQH6ELoC5gqkrK3zBSND6u
-        1TDbhCFKspRPoHxFMXeX0gxr/mYuY5Cf5RnkXk3RZD38/DV8H6qOh1OfPDFuJeSl9XngmxQE4O1
-        VFBmT3e6r4SGZwUvUuW8+eNoD
-X-Received: by 2002:a5d:4a0a:0:b0:20a:c899:cb7b with SMTP id m10-20020a5d4a0a000000b0020ac899cb7bmr27316347wrq.618.1652349714381;
-        Thu, 12 May 2022 03:01:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxRhDGBs9YTvxkam9DUV8EFQnoG6RsdfM4bAsBLkkDwQvHU5eaODpobFR9pjyP7q6gQhfIqPA==
-X-Received: by 2002:a5d:4a0a:0:b0:20a:c899:cb7b with SMTP id m10-20020a5d4a0a000000b0020ac899cb7bmr27316320wrq.618.1652349714148;
-        Thu, 12 May 2022 03:01:54 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c701:d200:ee5d:1275:f171:136d? (p200300cbc701d200ee5d1275f171136d.dip0.t-ipconnect.de. [2003:cb:c701:d200:ee5d:1275:f171:136d])
-        by smtp.gmail.com with ESMTPSA id w17-20020a05600018d100b0020c5253d90asm3878293wrq.86.2022.05.12.03.01.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 03:01:52 -0700 (PDT)
-Message-ID: <70a7d93c-c1b1-fa72-0eb4-02e3e2235f94@redhat.com>
-Date:   Thu, 12 May 2022 12:01:51 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2IFiYfoIKlICTpTGvMOw6q9N3Q3vW+HIY5wMaOVljZc=;
+        b=dhCpPNtZ4LBmD/74laIPNz1f9tNKGCAt2uObSrE3yzg6SPmJT2svk7vXqbxdoEsrcW
+         m8pX9vZ2x4tve8nwZhCc+vvVTaYPvc3adixPCdyGa8PtRE7OX6kjs8xPmA5uqDplPCGY
+         fI0mSdktmz82dHG4TM4NhkfdPVE9UfBjMwdtBi9eg/AkQd7mUz39Eh88am4kK/vO0wuX
+         YITpNyAf4plKYZLkgG+Jo92jzw5GlaZ9vVQMe6cU72h7eni1k+NfyuxJB50LizUlOczs
+         eFzCXTT3s+TDr+dhlJzljaPiOyp2dEJ9TYGRB4Ffy9MGQsGb7NzSwPXK4y6fQ6OGvJ5d
+         xMiw==
+X-Gm-Message-State: AOAM532G4eRQt9y+5bizLETbBWMRvAYz/IE+qyItfMDSIgE0ytgJnqsg
+        uBoAa2iI9ZIEq9uDe0+Luqc=
+X-Google-Smtp-Source: ABdhPJzDknA/eDpL7RTHehedtaKh6jrwFijU1Kxudu0qoCCpM9PmOpPk0MgEfMNQSrtTeIYg8P84dA==
+X-Received: by 2002:a62:61c6:0:b0:4bd:118:8071 with SMTP id v189-20020a6261c6000000b004bd01188071mr10719694pfb.28.1652350224466;
+        Thu, 12 May 2022 03:10:24 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:ad76:8fc:e2ba:172])
+        by smtp.gmail.com with ESMTPSA id u1-20020a626001000000b0050dc76281aesm3336599pfb.136.2022.05.12.03.10.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 03:10:23 -0700 (PDT)
+Date:   Thu, 12 May 2022 03:10:20 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <eballetbo@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Collabora Kernel ML <kernel@collabora.com>,
+        groeck@chromium.org, dtor@chromium.org, gwendal@chromium.org,
+        vbendeb@chromium.org, andy@infradead.org,
+        Ayman Bagabas <ayman.bagabas@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        =?utf-8?B?Qmxhxb4=?= Hrastnik <blaz@mxxn.io>,
+        Darren Hart <dvhart@infradead.org>,
+        Jeremy Soller <jeremy@system76.com>,
+        Mattias Jacobsson <2pi@mok.nu>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Rajat Jain <rajatja@google.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        chrome-platform@lists.linux.dev
+Subject: Re: [PATCH v12] platform/chrome: Add ChromeOS ACPI device driver
+Message-ID: <YnzdDMPR3qZ1waJW@google.com>
+References: <YnycZaoBPF89t/qF@debian-BULLSEYE-live-builder-AMD64>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v9 3/3] s390x: KVM: resetting the Topology-Change-Report
-Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     Pierre Morel <pmorel@linux.ibm.com>, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
-        thuth@redhat.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        wintera@linux.ibm.com, seiden@linux.ibm.com, nrb@linux.ibm.com
-References: <20220506092403.47406-1-pmorel@linux.ibm.com>
- <20220506092403.47406-4-pmorel@linux.ibm.com>
- <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
- <20220512115250.2e20bfdf@p-imbrenda>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220512115250.2e20bfdf@p-imbrenda>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnycZaoBPF89t/qF@debian-BULLSEYE-live-builder-AMD64>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>
->> I think we prefer something like u16 when copying to user space.
-> 
-> but then userspace also has to expect a u16, right?
+Hi Muhammad,
 
-Yep.
+On Thu, May 12, 2022 at 10:34:29AM +0500, Muhammad Usama Anjum wrote:
+> +static int chromeos_acpi_device_probe(struct platform_device *pdev)
+> +{
+> +	chromeos_acpi_gpio_groups = get_gpio_pkg_num(&pdev->dev);
+> +
+> +	/*
+> +	 * If the platform has more GPIO attribute groups than the number of
+> +	 * groups this driver supports, give out a warning message.
+> +	 */
+> +	if (chromeos_acpi_gpio_groups > ARRAY_SIZE(chromeos_acpi_all_groups) - 2)
+> +		dev_warn(&pdev->dev, "Only %zu GPIO attr groups supported by the driver out of total %u.\n",
+> +			 ARRAY_SIZE(chromeos_acpi_all_groups) - 2, chromeos_acpi_gpio_groups);
+
+I know that we can bikeshed this until dawn of time, but we are dealing
+here with data coming from the system firmware and a singleton device,
+so it should be all available pretty early in boot sequence. I
+understand we want to solve the "race" even though it is purely
+theoretical, but we should be able to figure out what gpios are
+supported and construct the groups array(s) before registering the
+platform driver. Or do we see that runtime costs of constricting groups
+dynamically outweigh space wasted by unused groups?
+
+Thanks.
 
 -- 
-Thanks,
-
-David / dhildenb
-
+Dmitry
