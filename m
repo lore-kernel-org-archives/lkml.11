@@ -2,116 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4FCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4317C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351198AbiELLU1 (ORCPT
+        id S1353151AbiELLUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 07:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
+        Thu, 12 May 2022 07:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353240AbiELLS5 (ORCPT
+        with ESMTP id S1353205AbiELLS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 07:18:57 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C41D369DB
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:17:11 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso7527518pjb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:17:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=6WezROkLudrlqv8GY4bLrfI4SSzTy6BukYeueDgyVAo=;
-        b=ZG4L8aWgWUMIdLTyMqlfwkAvbyFWFtdzShi8yQzpV4ha+8gdXHZZbgGM494CmV8pHZ
-         KUM31+rCVQ+f+rjslddzbgtjw3rn2C95dgsbihhOPl5X/XaYuU7/xuS7HEoVPL+MIk5u
-         2dGxoWbTHtMbwHgMC1tIngmH3I9TG8Ii0cpcFNvtmK1pBuJwOdRj5ivaKn72u2n//pOl
-         oslhRY2fn1Kt39pV7ZEAnqs6g27CqHEPGBSBrFvSVn2KaWTNymdXDZ/zeIJDVKHfydiw
-         kY/GrcdP6EysrjF/PAdFREfVaKlF+p9Bs81hJBKQDUh+Kftl4QmhGyooqZcSnMdtPjw7
-         skeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6WezROkLudrlqv8GY4bLrfI4SSzTy6BukYeueDgyVAo=;
-        b=H6wfPnMVrwT92P5WDml7DSyP71IjBqHHKVW957gGEhJRc+EsCkFcmpZ+uW9I+Py8Rg
-         1X3AsR+mwjzUsCePEgvFnVHNix8LWEzYezR/PY6bJMLHsnKm+rdThrclkIevD5sJFKK3
-         4bQh7XIUVbQKtLDSVJ0V6bI1kkgS8gf79693p4QBuhot5UjSbuxTmb704ikI++NR3vj7
-         jQU8F0itJDB7jjZ7OMXZPD5Z2JH84dgEmxAnxhmlKLSpYZ2DhSyDey979tSBgQM7sdTn
-         qjdTvF5+k6EYzlCOnMQBkTmnX3G9PUFjBPo28c50XJCw8Xx65U0SCxKdN0QgBRn8qqYI
-         giJw==
-X-Gm-Message-State: AOAM530VurABsQYELrhQOLcfEm5tY2EKcdFFgTmiQyjNZvggydOY60ZJ
-        XlV90uDvYcKBGKIycbWog0E=
-X-Google-Smtp-Source: ABdhPJxOk00NN95KoR0NkGvXDc/PUUEbhiITRueHgKA7v2vPBSykitNg4nZw/ehY2YRTSOAYec1gmg==
-X-Received: by 2002:a17:902:ea46:b0:15d:dbc:34f2 with SMTP id r6-20020a170902ea4600b0015d0dbc34f2mr29455881plg.60.1652354230773;
-        Thu, 12 May 2022 04:17:10 -0700 (PDT)
-Received: from [172.16.10.243] ([219.142.146.170])
-        by smtp.gmail.com with ESMTPSA id w15-20020a63474f000000b003c14af5060asm1663230pgk.34.2022.05.12.04.17.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 04:17:10 -0700 (PDT)
-Message-ID: <e778d50a-81c6-6dfa-a58b-73cda452f4e3@gmail.com>
-Date:   Thu, 12 May 2022 19:17:00 +0800
+        Thu, 12 May 2022 07:18:58 -0400
+Received: from smtp1.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A2F64BD0;
+        Thu, 12 May 2022 04:17:17 -0700 (PDT)
+Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 621ED3C04C0;
+        Thu, 12 May 2022 13:17:15 +0200 (CEST)
+Received: from localhost.localdomain (10.72.94.15) by hi2exch02.adit-jv.com
+ (10.72.92.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Thu, 12 May
+ 2022 13:17:14 +0200
+From:   Eugeniu Rosca <erosca@de.adit-jv.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Rajat Jain <rajatja@google.com>, Andrew Lunn <andrew@lunn.ch>,
+        Chris Chiu <chris.chiu@canonical.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Naveen kumar Sunkari <naveenkumar.sunkari@in.bosch.com>,
+        Bhuvanesh Surachari <Bhuvanesh_Surachari@mentor.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Eugeniu Rosca <rosca.eugeniu@gmail.com>
+Subject: [PATCH] usb: hub: Simplify error and success path in port_over_current_notify
+Date:   Thu, 12 May 2022 13:15:27 +0200
+Message-ID: <1652354127-3499-1-git-send-email-erosca@de.adit-jv.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] drm/meson: Fix refcount leak in meson_encoder_hdmi_init
-Content-Language: en-US
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220512092114.38426-1-linmq006@gmail.com>
- <a811a26e-ec34-f9ce-589f-82e96a975594@baylibre.com>
-From:   Miaoqian Lin <linmq006@gmail.com>
-In-Reply-To: <a811a26e-ec34-f9ce-589f-82e96a975594@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.72.94.15]
+X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
+ hi2exch02.adit-jv.com (10.72.92.28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Bhuvanesh Surachari <Bhuvanesh_Surachari@mentor.com>
 
-On 2022/5/12 17:32, Neil Armstrong wrote:
-> Hi,
->
-> On 12/05/2022 11:21, Miaoqian Lin wrote:
->> of_find_device_by_node() takes a reference to the embedded struct device,
->> we should use put_device() to release it when not need anymore.
->> Add missing put_device() in error path to avoid refcount leak.
->>
->> Fixes: 0af5e0b41110 ("drm/meson: encoder_hdmi: switch to bridge DRM_BRIDGE_ATTACH_NO_CONNECTOR")
->> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->
-> You already sent the same patch yesterday, please avoid this.
->
-Sorry for the mistake, I realized this after I sent it. I will be more careful.
+kasprintf() returns NULL or valid pointer. Since kfree() can handle
+NULL pointer condition, simplify error and success paths in function
+port_over_current_notify() by removing multiple error path labels.
 
+Signed-off-by: Bhuvanesh Surachari <Bhuvanesh_Surachari@mentor.com>
+Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+---
+ drivers/usb/core/hub.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-> Neil
->
->> ---
->>   drivers/gpu/drm/meson/meson_encoder_hdmi.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/gpu/drm/meson/meson_encoder_hdmi.c b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
->> index 5e306de6f485..de87f02cd388 100644
->> --- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
->> +++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
->> @@ -435,8 +435,10 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
->>           cec_fill_conn_info_from_drm(&conn_info, meson_encoder_hdmi->connector);
->>             notifier = cec_notifier_conn_register(&pdev->dev, NULL, &conn_info);
->> -        if (!notifier)
->> +        if (!notifier) {
->> +            put_device(&pdev->dev);
->>               return -ENOMEM;
->> +        }
->>             meson_encoder_hdmi->cec_notifier = notifier;
->>       }
->
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index 1460857026e0..9ab8abf14790 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -5511,7 +5511,7 @@ static void hub_port_connect_change(struct usb_hub *hub, int port1,
+ /* Handle notifying userspace about hub over-current events */
+ static void port_over_current_notify(struct usb_port *port_dev)
+ {
+-	char *envp[3];
++	char *envp[3] = { NULL, NULL, NULL };
+ 	struct device *hub_dev;
+ 	char *port_dev_path;
+ 
+@@ -5533,15 +5533,13 @@ static void port_over_current_notify(struct usb_port *port_dev)
+ 	envp[1] = kasprintf(GFP_KERNEL, "OVER_CURRENT_COUNT=%u",
+ 			port_dev->over_current_count);
+ 	if (!envp[1])
+-		goto exit;
++		goto exit_path;
+ 
+-	envp[2] = NULL;
+ 	kobject_uevent_env(&hub_dev->kobj, KOBJ_CHANGE, envp);
+ 
++exit_path:
+ 	kfree(envp[1]);
+-exit:
+ 	kfree(envp[0]);
+-exit_path:
+ 	kfree(port_dev_path);
+ }
+ 
+-- 
+2.36.0
+
