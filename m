@@ -2,173 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357438AbiELSBR (ORCPT
+        id S1357222AbiELSB0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 14:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        Thu, 12 May 2022 14:01:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357459AbiELSBD (ORCPT
+        with ESMTP id S1357488AbiELSBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 14:01:03 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDED629C80
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:01:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652378462; x=1683914462;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=DRH3fQ/9iwnvlaibsfCXMZRNs+oifcTzDl9VwxdX1mE=;
-  b=gl2onnycW6oBtpWWRN0h3hEIIke/rFDVKhiO3ri7/CrARKPH/sp9lEvQ
-   Cz3NP2Yv6aAe5y2FPCDlEjywkixzeoS1cT5Hh1gahNKWgw7UwGuSIUuUD
-   6yBnmDNJgJPsNutsHDIdH2UHlUv3K4pW5iL0YTw5VoE6DSm6VCej0yn3R
-   2GJ6a6q6nlLg0TgAURrgogxVv8vZrRV+UNeqVUkuhnjdEfbSnD+gS4tFn
-   xD84Tz3c0LSG72OiI8AgvEccVp7MXHSg8yoTTiGnRJqmdWGWmGmV6XuBj
-   GTYu3DyMJskV+xa2LtBm+ZSfE8NAsOkr/zyhBVcHd5fnz3t9XzH5unA2l
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="252143526"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="252143526"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 11:00:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="553882886"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 12 May 2022 11:00:43 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npD7D-000KmX-1j;
-        Thu, 12 May 2022 18:00:43 +0000
-Date:   Fri, 13 May 2022 01:59:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [frederic-dynticks:rcu/context-tracking-v2 17/21]
- kernel/context_tracking.c:91:25: error: implicit declaration of function
- 'rcu_irq_work_resched'
-Message-ID: <202205130127.Ew9k8Q7Q-lkp@intel.com>
+        Thu, 12 May 2022 14:01:13 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01612DAA8;
+        Thu, 12 May 2022 11:01:11 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id k2so8352544wrd.5;
+        Thu, 12 May 2022 11:01:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=cJnjugKrgdrJmqtsA8GvHLwluSC6FXfzUUPGSlEcivE=;
+        b=qPUMUcm/abZSYEgcqqyPZr0HgYbcfPxuQOzKdDv7kDhAL/1WUobxuxwqth5mbVsgSu
+         kvQj/IJtKdilmYRYJ4Jzc3ZPtbnGR8yIXwwD9KBSQilm7QlGIS3bgWIYQG9715seIuNb
+         82+3h9ftKyqS+TaNHxJQJeqcqM/pshT+bS3nIfsAky8JGKfOtSuTbChrPybD6qa4Rntj
+         C6kHT4meX/mmxIzRQKj3RHf8cjOLRJd56dI9VA8Gwc5dBlIdhMLZnoCkvUnPAm/tbM0W
+         GVMGILHKnlu7z0uSi2gi6++7xoTfFGMUO1qgccpSKAE64BFhzmri4nJwzkTXs8MVcEbT
+         PzFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=cJnjugKrgdrJmqtsA8GvHLwluSC6FXfzUUPGSlEcivE=;
+        b=3DV0JvKmK6nayK2Itl1zqxlTZUX8uMcpq5mJHpz3HzOfi3sSN6jWlIwJwc3AdYmwy6
+         bVMm7/E5WIPdTT5VLkX7s43CdhAu35FPsZ5n4pUX92Wzz9dguqVo64b8UeZlxQrcUTeJ
+         KWpWNQ/zlGRn2F/Vcf0hZbylukl233wAHRuOE0zQVYjKUmwYxjQ4sW6pRAcU6LReQ5/s
+         zc/KTjrWPqu7BiRLKE0SMWCal49+DS6ZU6m+rMWIGVzdTzqnfIm5ivxrUT/D3R8gYy/F
+         oYcbYIsNQlRQcwCwj2m+2Ae46nHVr5hwjg7/2QtbMw2m6x28npeZgQvNK3GNjCD8dMHQ
+         rfjA==
+X-Gm-Message-State: AOAM531W8Qj75fyw6u1SQwJ0h/LHrCBH47RysXOoqsPj5w9k1te+mwzs
+        TsJk595TUSXQ5EOfzJ9k8RUcTGnWnd5VnA==
+X-Google-Smtp-Source: ABdhPJxoToamSOfhGh9lH0yr5QWOZvlt8q07M4v3o1V4D5RWM1VFWqEEPS6QbYcg05kvZVU4IY9tPA==
+X-Received: by 2002:adf:d230:0:b0:20a:da1f:aaaf with SMTP id k16-20020adfd230000000b0020ada1faaafmr705729wrh.616.1652378470507;
+        Thu, 12 May 2022 11:01:10 -0700 (PDT)
+Received: from ?IPV6:2a04:241e:502:a09c:2fa1:a00:fe93:7863? ([2a04:241e:502:a09c:2fa1:a00:fe93:7863])
+        by smtp.gmail.com with ESMTPSA id d25-20020adf9b99000000b0020c5253d8c4sm217015wrc.16.2022.05.12.11.01.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 11:01:09 -0700 (PDT)
+Message-ID: <93323bba-476e-f821-045c-9fe942143da9@gmail.com>
+Date:   Thu, 12 May 2022 21:01:08 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Leonard Crestez <cdleonard@gmail.com>
+Subject: BUG: TCP timewait sockets survive across namespace creation in
+ net-next
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git rcu/context-tracking-v2
-head:   0364ddb8830db4d4b78f7bfd9344e12d22e9cd32
-commit: 0fe61091f9b097b9f0ccc4ffe3333d7e80093392 [17/21] rcu/context-tracking: Move deferred nocb resched to context tracking
-config: arm-randconfig-r006-20220512 (https://download.01.org/0day-ci/archive/20220513/202205130127.Ew9k8Q7Q-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=0fe61091f9b097b9f0ccc4ffe3333d7e80093392
-        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
-        git fetch --no-tags frederic-dynticks rcu/context-tracking-v2
-        git checkout 0fe61091f9b097b9f0ccc4ffe3333d7e80093392
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Hello,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+It appears that in recent net-next versions it is possible for sockets 
+in the timewait state to survive across namespace add/del. Timewait 
+sockets are inserted into a global hash and only the sock_net value is 
+compared when they are enumerated from interfaces like /proc/net/tcp and 
+inet_diag. Old TW sockets are not cleared after namespace delete and 
+namespaces are allocated from a slab and thus their pointers get reused 
+a lot, when that happens timewait sockets from an old namespace will 
+show up in the new one.
 
-All errors (new ones prefixed by >>):
+This can be reproduced by establishing a TCP connection over a veth pair 
+between two namespaces, closing and then recreating those namespaces. 
+Old timewait sockets will be visible and it happens quite reliably, 
+often on the first iteration. I can try to provide a script for this.
 
-   In file included from include/linux/vtime.h:5,
-                    from include/linux/context_tracking.h:6,
-                    from kernel/context_tracking.c:18:
-   include/linux/context_tracking_state.h: In function 'ct_dynticks_cpu_acquire':
-   include/linux/context_tracking_state.h:51:36: error: passing argument 1 of 'atomic_read_acquire' from incompatible pointer type [-Werror=incompatible-pointer-types]
-      51 |         return atomic_read_acquire(&ct->state);
-         |                                    ^~~~~~~~~~
-         |                                    |
-         |                                    enum ctx_state *
-   In file included from include/linux/atomic.h:82,
-                    from include/linux/rcupdate.h:25,
-                    from include/linux/rculist.h:11,
-                    from include/linux/pid.h:5,
-                    from include/linux/sched.h:14,
-                    from include/linux/context_tracking.h:5,
-                    from kernel/context_tracking.c:18:
-   include/linux/atomic/atomic-instrumented.h:32:37: note: expected 'const atomic_t *' but argument is of type 'enum ctx_state *'
-      32 | atomic_read_acquire(const atomic_t *v)
-         |                     ~~~~~~~~~~~~~~~~^
-   kernel/context_tracking.c: In function '__ct_user_enter':
->> kernel/context_tracking.c:91:25: error: implicit declaration of function 'rcu_irq_work_resched' [-Werror=implicit-function-declaration]
-      91 |                         rcu_irq_work_resched();
-         |                         ^~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+I can't point to specific bugs outside of tests that explicitly 
+enumerate timewait sockets but letting sk_net be a dangling pointer 
+seems very dangerous. It also violates the idea of network namespaces 
+being independent and isolated.
 
+This does not happen in 5.17, I bisected this behavior to commit 
+0dad4087a86a ("tcp/dccp: get rid of inet_twsk_purge()")
 
-vim +/rcu_irq_work_resched +91 kernel/context_tracking.c
-
-    51	
-    52	/**
-    53	 * __ct_user_enter - Inform the context tracking that the CPU is going
-    54	 *		     to enter user or guest space mode.
-    55	 *
-    56	 * This function must be called right before we switch from the kernel
-    57	 * to user or guest space, when it's guaranteed the remaining kernel
-    58	 * instructions to execute won't use any RCU read side critical section
-    59	 * because this function sets RCU in extended quiescent state.
-    60	 */
-    61	void noinstr __ct_user_enter(enum ctx_state state)
-    62	{
-    63		lockdep_assert_irqs_disabled();
-    64	
-    65		/* Kernel threads aren't supposed to go to userspace */
-    66		WARN_ON_ONCE(!current->mm);
-    67	
-    68		if (!context_tracking_recursion_enter())
-    69			return;
-    70	
-    71		if ( __this_cpu_read(context_tracking.state) != state) {
-    72			if (__this_cpu_read(context_tracking.active)) {
-    73				/*
-    74				 * At this stage, only low level arch entry code remains and
-    75				 * then we'll run in userspace. We can assume there won't be
-    76				 * any RCU read-side critical section until the next call to
-    77				 * user_exit() or ct_irq_enter(). Let's remove RCU's dependency
-    78				 * on the tick.
-    79				 */
-    80				if (state == CONTEXT_USER) {
-    81					instrumentation_begin();
-    82					trace_user_enter(0);
-    83					vtime_user_enter(current);
-    84					instrumentation_end();
-    85				}
-    86				/*
-    87				 * Other than generic entry implementation, we may be past the last
-    88				 * rescheduling opportunity in the entry code. Trigger a self IPI
-    89				 * that will fire and reschedule once we resume in user/guest mode.
-    90				 */
-  > 91				rcu_irq_work_resched();
-    92				rcu_user_enter();
-    93			}
-    94			/*
-    95			 * Even if context tracking is disabled on this CPU, because it's outside
-    96			 * the full dynticks mask for example, we still have to keep track of the
-    97			 * context transitions and states to prevent inconsistency on those of
-    98			 * other CPUs.
-    99			 * If a task triggers an exception in userspace, sleep on the exception
-   100			 * handler and then migrate to another CPU, that new CPU must know where
-   101			 * the exception returns by the time we call exception_exit().
-   102			 * This information can only be provided by the previous CPU when it called
-   103			 * exception_enter().
-   104			 * OTOH we can spare the calls to vtime and RCU when context_tracking.active
-   105			 * is false because we know that CPU is not tickless.
-   106			 */
-   107			__this_cpu_write(context_tracking.state, state);
-   108		}
-   109		context_tracking_recursion_exit();
-   110	}
-   111	EXPORT_SYMBOL_GPL(__ct_user_enter);
-   112	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--
+Regards,
+Leonard
