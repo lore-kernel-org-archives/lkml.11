@@ -2,165 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3984CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65674C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243109AbiELOxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
+        id S1355642AbiELOxw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 12 May 2022 10:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355626AbiELOw6 (ORCPT
+        with ESMTP id S1351615AbiELOxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:52:58 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACFF633A7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:52:56 -0700 (PDT)
-X-UUID: 96af9b9ea25a41f8acea661f3cb7e91d-20220512
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:71b91da7-93c8-42aa-b2bb-6f9fcfff5c4b,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:faefae9,CLOUDID:2309fff1-ab23-4aed-a67b-f96514452486,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 96af9b9ea25a41f8acea661f3cb7e91d-20220512
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1592903858; Thu, 12 May 2022 22:52:53 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 12 May 2022 22:52:52 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 May 2022 22:52:50 +0800
-From:   <yf.wang@mediatek.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will Deacon" <will@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
-        "moderated list:MEDIATEK IOMMU DRIVER" 
-        <linux-mediatek@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list" <linux-kernel@vger.kernel.org>
-CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
-        Yong Wu <Yong.Wu@mediatek.com>,
-        Yunfei Wang <yf.wang@mediatek.com>,
-        Ning Li <ning.li@mediatek.com>
-Subject: [PATCH v3 2/2] iomm/mediatek: Allow page table PA up to 35bit
-Date:   Thu, 12 May 2022 22:45:56 +0800
-Message-ID: <20220512144557.18025-3-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220512144557.18025-1-yf.wang@mediatek.com>
-References: <20220512144557.18025-1-yf.wang@mediatek.com>
+        Thu, 12 May 2022 10:53:50 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4476246DA0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:53:48 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id z2so10781839ejj.3
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:53:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+XvPMge8GrQx5gO2KcAEj9ecLQjDwShTO+vRI9VUWdM=;
+        b=AdeM+wd9VggiptdGj4RlKrq1Zoo5M7tYT3f+1hw3KBsuT0NlLz8HDkN9enALA6YUgM
+         4LmTl7YdtM6Gqknm6oJrxF86dlzGfvj0zhXoaViAfDDi91bMpxqQGpppi1RtNV3+Bavl
+         FrusBYZ2HYsLB4m2+WwRZe9HSPiWzO98UPRWijcCsYdvoM35T4aUbxfuk0l6jG51jn/q
+         J4504prHIlTda4/dbJzTvSV7M3SWPD5hrrWC5XbJ4MsJpphdrQG5C9LAlgURXMBUpgXp
+         HiY0kU18wRukU3+bOcjOXDVRb+F6bjRztYM6uHospU4WWRHfhqk+yJzHSThFRJ0QJcYN
+         Rb/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+XvPMge8GrQx5gO2KcAEj9ecLQjDwShTO+vRI9VUWdM=;
+        b=Qw0ssBRcznIZ8vTlmA1+XP4NH/hKtz1az+7Q80GYh1ubcE6O9ZytiXJujkZO5/6FRo
+         oSMs6azXwro2p/2xvOrerARYlziJNzctiZi0bHkRhzjF47x4IffFLZb9ndvn8JQA//fQ
+         X81Dtq4+ICgu+rXcxjzkB4AfsaosPo19AAydBiz8zeSF4YyUAQKSZcYN/IV5fDEWhX1o
+         CgrHnDFtLV1OMhyHbSSISeECxxeKq+1DwgA+l7fOcFxyVaSFU6wRz0qFoUaOulGkLfyN
+         xeD8a7sMreEX4c6KCEOlaptHGPztUC7RuiHtjxRzfqatP67IjINF8x9aEufnd4GUsSQE
+         SEeQ==
+X-Gm-Message-State: AOAM533Vzxbfh1rwGsY+W6EA4pJ69n8i+QOpA2FAZYfkvtooGJ+SDXn/
+        hXALq3N89NbgftehvfFGuObpGepYz1b/l6B6ShMLDQ==
+X-Google-Smtp-Source: ABdhPJz4KM01Q6WW2YJQ2mtQoa4n66n6UyZA8le0momIGBOrHbnlH9NMzSRAZfxRiY9E+0mGNck+N9MIeDV3c9P/z0U=
+X-Received: by 2002:a17:907:1b1f:b0:6f0:21ec:6051 with SMTP id
+ mp31-20020a1709071b1f00b006f021ec6051mr235589ejc.533.1652367228047; Thu, 12
+ May 2022 07:53:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220512083627.885338-1-tzungbi@kernel.org> <20220512083627.885338-2-tzungbi@kernel.org>
+In-Reply-To: <20220512083627.885338-2-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Thu, 12 May 2022 07:53:36 -0700
+Message-ID: <CABXOdTeBRz=TYdrXEERHek+QXtYi5f9+jCDnuZYdc5VDmGtwoA@mail.gmail.com>
+Subject: Re: [PATCH 1/6] platform/chrome: cros_ec_proto: drop unneeded
+ BUG_ON() in prepare_packet()
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Wang <yf.wang@mediatek.com>
+On Thu, May 12, 2022 at 1:36 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> prepare_packet() gets called if `ec_dev->proto_version` > 2.  For now, it
+> must be equivalent to EC_HOST_REQUEST_VERSION.
+>
+> Drop the BUG_ON().
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-Add the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT support, so that allows
-page table PA up to 35bit, not only in ZONE_DMA32.
+An alternative would be to return -EPROTO, but given the context this
+is just a waste of code space.
 
-Signed-off-by: Ning Li <ning.li@mediatek.com>
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6fd75a60abd6..1b9a876ef271 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -33,6 +33,7 @@
- 
- #define REG_MMU_PT_BASE_ADDR			0x000
- #define MMU_PT_ADDR_MASK			GENMASK(31, 7)
-+#define MMU_PT_ADDR_2_0_MASK			GENMASK(2, 0)
- 
- #define REG_MMU_INVALIDATE			0x020
- #define F_ALL_INVLD				0x2
-@@ -118,6 +119,7 @@
- #define WR_THROT_EN			BIT(6)
- #define HAS_LEGACY_IVRP_PADDR		BIT(7)
- #define IOVA_34_EN			BIT(8)
-+#define PGTABLE_PA_35_EN		BIT(9)
- 
- #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
- 		((((pdata)->flags) & (_x)) == (_x))
-@@ -401,6 +403,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
- 		.iommu_dev = data->dev,
- 	};
- 
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-+		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
-+
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
- 		dom->cfg.oas = data->enable_4GB ? 33 : 32;
- 	else
-@@ -450,6 +455,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	struct device *m4udev = data->dev;
- 	int ret, domid;
-+	u32 regval;
- 
- 	domid = mtk_iommu_get_domain_id(dev, data->plat_data);
- 	if (domid < 0)
-@@ -472,8 +478,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 			return ret;
- 		}
- 		data->m4u_dom = dom;
--		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
--		       data->base + REG_MMU_PT_BASE_ADDR);
-+
-+		/* Bits[6:3] are invalid for mediatek platform */
-+		if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-+			regval = (dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK) |
-+				 (dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_2_0_MASK);
-+		else
-+			regval = dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK;
-+		writel(regval, data->base + REG_MMU_PT_BASE_ADDR);
- 
- 		pm_runtime_put(m4udev);
- 	}
-@@ -987,6 +999,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 	struct mtk_iommu_suspend_reg *reg = &data->reg;
- 	struct mtk_iommu_domain *m4u_dom = data->m4u_dom;
- 	void __iomem *base = data->base;
-+	u32 regval;
- 	int ret;
- 
- 	ret = clk_prepare_enable(data->bclk);
-@@ -1010,7 +1023,14 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
- 	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
- 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
--	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK, base + REG_MMU_PT_BASE_ADDR);
-+
-+	/* Bits[6:3] are invalid for mediatek platform */
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-+		regval = (m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK) |
-+			 (m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_2_0_MASK);
-+	else
-+		regval = m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK;
-+	writel(regval, base + REG_MMU_PT_BASE_ADDR);
- 
- 	/*
- 	 * Users may allocate dma buffer before they call pm_runtime_get,
-@@ -1038,7 +1058,8 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- 
- static const struct mtk_iommu_plat_data mt6779_data = {
- 	.m4u_plat      = M4U_MT6779,
--	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN,
-+	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN |
-+			 PGTABLE_PA_35_EN,
- 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
- 	.iova_region   = single_domain,
- 	.iova_region_nr = ARRAY_SIZE(single_domain),
--- 
-2.18.0
-
+> ---
+>  drivers/platform/chrome/cros_ec_proto.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index ac1419881ff3..db1c8ba43171 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -60,7 +60,6 @@ static int prepare_packet(struct cros_ec_device *ec_dev,
+>         int i;
+>         u8 csum = 0;
+>
+> -       BUG_ON(ec_dev->proto_version != EC_HOST_REQUEST_VERSION);
+>         BUG_ON(msg->outsize + sizeof(*request) > ec_dev->dout_size);
+>
+>         out = ec_dev->dout;
+> --
+> 2.36.0.512.ge40c2bad7a-goog
+>
