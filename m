@@ -2,126 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DED5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 19:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93621C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 19:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357928AbiELTLf (ORCPT
+        id S1357910AbiELTK7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 15:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
+        Thu, 12 May 2022 15:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357922AbiELTLb (ORCPT
+        with ESMTP id S231944AbiELTK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 15:11:31 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFA83E0C8;
-        Thu, 12 May 2022 12:11:30 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CIRWY9013204;
-        Thu, 12 May 2022 19:11:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=erGBUJ07wNUJV+sPUuGngCGtTCXo+k3qkrV4vWOiECc=;
- b=NtTZRFqZFca0PWldtWwrZnnw6PSKA6IeSJWa5WxaOL29cn+bfUtYAWlPNhb187G9rzkw
- Y1twkCN3GyuH/qcxWx4MZfZsbruRaW5smW/+pJ/iIRfjevjhIMMC5lmsacw05HQVlPSH
- LiVuR0KlcroJg5R0dRjTKrn0AljJYOWUjaBIK0XOTFN1aTMy0lUHHR0Iaf85r/PnIrWH
- R6WZFN+y8Ubxm4hVXT2/Fg45s7kEkwR+JzUPm+A7kNg/hYFqk/nJTYEdp0cH++C2t0Ze
- ruuvdKioG75HVKv1AK19Nvm/apP0cNHEb5Nhmdn50TDpYlSRcAQNG8Y7ePc/nIc0Oq+m 9g== 
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g173b9f2a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 19:11:09 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CIvDkX019581;
-        Thu, 12 May 2022 19:11:08 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma01dal.us.ibm.com with ESMTP id 3fwgdb6jqv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 19:11:08 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CJB7wr23920930
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 19:11:07 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9BD8E2805E;
-        Thu, 12 May 2022 19:11:07 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C72CF28059;
-        Thu, 12 May 2022 19:11:06 +0000 (GMT)
-Received: from [9.211.56.168] (unknown [9.211.56.168])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 12 May 2022 19:11:06 +0000 (GMT)
-Message-ID: <c2f7b09d-e046-409e-b65e-153157f84b03@linux.ibm.com>
-Date:   Thu, 12 May 2022 14:11:06 -0500
+        Thu, 12 May 2022 15:10:56 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4C0129C84;
+        Thu, 12 May 2022 12:10:54 -0700 (PDT)
+Received: from kbox (unknown [98.59.227.103])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 702BF20EC9E0;
+        Thu, 12 May 2022 12:10:54 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 702BF20EC9E0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1652382654;
+        bh=joY3xeylWrrPHHqgJ1TYAOvU9x8yBrB9yzFzNddBXoY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VVnSSn3sQ2FyTvTwPUx5ZeAQHr3DzImypL/1wbrNPRylGxZ+t69M5kH8098lTH3uC
+         ocF0N82ZF8/MmnNecsJ5WH5EmSIPxZ3htxIK13N0wgHdPLlprbP9jTgSHAP9OGtPSV
+         sXNHSjpoLRQp9puE9oo+EZMXqF+MTazDPAwclfwE=
+Date:   Thu, 12 May 2022 12:10:47 -0700
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Primiano Tucci <primiano@google.com>
+Subject: Re: Feedback on user-events UAPI
+Message-ID: <20220512191047.GA2011@kbox>
+References: <1651771383.54437.1652370439159.JavaMail.zimbra@efficios.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2 0/2] iio: humidity: si7020: Check device property for
- skipping reset in probe
-Content-Language: en-US
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, lars@metafoo.de, jic23@kernel.org,
-        miltonm@us.ibm.com
-References: <20220512162020.33450-1-eajames@linux.ibm.com>
- <20220512174859.000042b6@Huawei.com>
-From:   Eddie James <eajames@linux.ibm.com>
-In-Reply-To: <20220512174859.000042b6@Huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: h0MVSw3yJcPGbeM8LBRXqFnnQ43eC3Tx
-X-Proofpoint-GUID: h0MVSw3yJcPGbeM8LBRXqFnnQ43eC3Tx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-12_16,2022-05-12_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- malwarescore=0 phishscore=0 mlxlogscore=999 priorityscore=1501
- clxscore=1015 impostorscore=0 spamscore=0 bulkscore=0 suspectscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205120083
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1651771383.54437.1652370439159.JavaMail.zimbra@efficios.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, May 12, 2022 at 11:47:19AM -0400, Mathieu Desnoyers wrote:
+> Hi Beau,
+> 
+> I have queued a few questions I would like to discuss with respect to the proposed
+> user events UAPI. I originally planned to expand further on them, but I now think it's
+> best if I ask away right now and we clarify things through discussion:
+> 
 
-On 5/12/22 11:48, Jonathan Cameron wrote:
-> On Thu, 12 May 2022 11:20:18 -0500
-> Eddie James <eajames@linux.ibm.com> wrote:
->
->> I2C commands issued after the SI7020 is starting up or after reset
->> can potentially upset the startup sequence. Therefore, the host
->> needs to wait for the startup sequence to finish before issuing
->> further i2c commands. This is impractical in cases where the SI7020
->> is on a shared bus or behind a mux, which may switch channels at
->> any time (generating I2C traffic). Therefore, check for a device
->> property that indicates that the driver should skip resetting the
->> device when probing.
-> Why not lock the bus?  It's not ideal, but then not resetting and hence
-> potentially ending up in an unknown state isn't great either.
+Sounds good, thanks for taking the time to write down your thoughts.
 
+> First, I find it odd that the event enable bitmask and the event ID and payload
+> type registration must be combined. I can think of various use-cases where other
+> tracers would be interested to use the event-enable bitmask facility without
+> polluting the event ID/payload registration data structures with useless data.
+> Can those be split into two distinct independent ABIs ?
+> 
 
-Also, I should mention that in our case we can rely on the power on 
-reset, so the device should be in a known state.
+If the ABI were to expand beyond kernel hosted trace_events, then I
+think these could be split out. However, I believe the question of other
+tracers was asked previously [1] and was out of scope for this work.
 
-Eddie
+I don't have a plan to use other tracers, but that doesn't mean I would
+close the door on the ability to have other tracers participate in the
+ABI.
 
+I believe Steven would ultimately own if something hosted in tracefs
+would allow non-kernel tracers to be involved. If the events don't
+follow the kernel format, I could see this being pretty hard to get
+right while still allowing the kernel to filter them via ftrace, etc.
 
->
-> Jonathan
->
->> Changes since v1:
->>   - Fix dt binding document
->>
->> Eddie James (2):
->>    dt-bindings: iio: humidity: Add si7020 bindings
->>    iio: humidity: si7020: Check device property for skipping reset in probe
->>
->>   .../bindings/iio/humidity/silabs,si7020.yaml  | 47 +++++++++++++++++++
->>   .../devicetree/bindings/trivial-devices.yaml  |  2 -
->>   drivers/iio/humidity/si7020.c                 | 14 +++---
->>   3 files changed, 55 insertions(+), 8 deletions(-)
->>   create mode 100644 Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
->>
+Masami should also have an opinion on this, regarding registering and
+formats within the ABI.
+
+Steven and Masami, do you mind giving your opinion/guidance here?
+
+> I can't help but notice that this new user-space instrumentation infrastructure/ABI
+> can only be used for tracing user-space through kernel tracers. Considering that
+> ABIs dictated by the kernel usually end up being de facto standards, I am concerned
+> that if it is unable to allow purely user-space tracers to use it, then all applications
+> will end up being statically instrumented in ways that prevent user-space tracers from
+> hooking efficiently on the static instrumentation. As I have replied in an earlier
+> thread, purely user-space tracers are not just marginally faster than kernel tracers
+> for tracing user-space. They are an order of magnitude faster as soon as all the proper
+> configuration steps are taken to ensure there are no system calls on the tracer
+> fast path. Therefore, it would be sad to effectively dismiss efficient tracer
+> implementations for the sake of easiness of implementation of today's user-event
+> ABI. This will cause a precedent we will be stuck with later.
+> 
+> Linux kernel developers involved in implementation of instrumentation within Linux
+> have spent a lot of effort to make sure the instrumentation is orthogonal to the
+> tracing technology (tracepoints, kprobe, kretprobe...). I understand that making
+> sure the user-space instrumentation ABI keeps this orthogonal is a lot more work,
+> but nobody said that exposing ABIs to user-space was easy. ;-)
+> 
+
+I agree on a lot of these points. This is why user_events uses
+trace_events instead of rolling something custom. It just hooks the
+probes already attached and acts as a bridge between a user buffer and
+the various probes that are attached.
+
+Since these are trace_events through the kernel we can re-use ways for
+grabbing the stack, hardware counters, etc. via perf. We can also apply
+filtering and debug things occurring very easily via ftrace (I do this
+all the time to help figure out if events are really registered and
+writing things out). Things just work without extra lines of code.
+
+User events is using all the common framework that has been put into the
+kernel to make this work, very little is specific to user mode (beside
+what absolutely needs to be, like mmap).
+
+Since the way to get data into user_events is via the write() syscall, I
+don't see how the data can be used purely on the user side (beside just
+the mmap part of it, which is likely why you want it split up, right?).
+
+If the ABI were to split up between a pure status map and a data emit
+mechanism, how do you envision the data emit mechanism to look? Would it
+be the same we have now, or would there be some way to have the ABI
+switch between kernel tracers and user tracers avoiding the write
+syscall?
+
+> The other point I would like to raise is container awareness. I can't help but
+> notice that the user events ABI is exposed to trace all containers, with the intent
+> to be used (consumed) from some privileged namespace (e.g. root pid namespace).
+> This works in use-cases where the user of the tracing data controls the entire
+> machine (all containers), but not so much if the user is a single tenant within
+> a multi-tenants systems. I would expect that a proper namespace-aware facility
+> would take care of making sure that a trace consumer could observe what is
+> instrumented within its own container, and within nested containers as well.
+> The fact that all container questions are entirely dismissed, thus keeping a
+> event-enable bitmask registry and event ID/type registry global to the entire
+> system, is not compatible with consuming traces from a non-privileged container,
+> and I suspect this may also be used as a side-channel to learn information about
+> what other containers are doing in a multi-tenant system.
+> 
+
+This is the same as uprobes/kprobes/tracefs today, right? This seems
+much wider than just user_events.
+
+We started a conversation [2] about getting tracefs more container/namespace
+aware. I think this would be a good thing, but I'm not sure it's ABI related.
+
+My understanding is that we would use the current users cgroup/namespace to
+determine which pages to give back to them once tracefs had it's own
+cgroup/namespace, ideally.
+
+> Thanks,
+> 
+> Mathieu
+> 
+> -- 
+> Mathieu Desnoyers
+> EfficiOS Inc.
+> http://www.efficios.com
+
+[1] https://lore.kernel.org/all/20220330153110.10c3f2236b1cd5759f0b5c79@kernel.org/
+[2] https://lore.kernel.org/all/20220316232009.7952988633787ef1003f13b0@kernel.org/
+
+Thanks,
+-Beau
