@@ -2,101 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02187C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357110AbiELRhc (ORCPT
+        id S1357115AbiELRiJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
+        Thu, 12 May 2022 13:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357102AbiELRh3 (ORCPT
+        with ESMTP id S1352513AbiELRiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:37:29 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0A35C35C;
-        Thu, 12 May 2022 10:37:29 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id D5FB41F8EF;
-        Thu, 12 May 2022 17:37:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652377047; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DH9tpcw8E7gD1BdV7gXzMqLXhRL92mNLWvekh2QazIs=;
-        b=e5lauj1ioX/B6JAxrXC2eoZA2jY2xWp5JbGyNUDSGprRWU8DiHDavrm1hiSrK8MBfA9iEy
-        Nm/oYCsbEgsoiJ+IfzGzvlqTQ5f/vrSVl7VTf/SmcthiK5jHd7urqTQr1Xa6kGgmEL5M0P
-        mawjT19n3QdnNCd9WMtDwpbhDyFYsWs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652377047;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DH9tpcw8E7gD1BdV7gXzMqLXhRL92mNLWvekh2QazIs=;
-        b=TFE29LzbBlLbfv/EmGCmvWuCO1sLfOHUNOIqRvqSI3N9lIwevpihIDOYX6qMWCcMmXxucQ
-        0geAxgLzfuzedlDA==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C04162C141;
-        Thu, 12 May 2022 17:37:27 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 6ACCEA062A; Thu, 12 May 2022 19:37:27 +0200 (CEST)
-Date:   Thu, 12 May 2022 19:37:27 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     tytso@mit.edu, jack@suse.com, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next] fs: Fix jbd2_journal_try_to_free_buffers()
- kernel-doc comment
-Message-ID: <20220512173727.azszrl272bxjxheb@quack3.lan>
-References: <20220512075432.31763-1-yang.lee@linux.alibaba.com>
+        Thu, 12 May 2022 13:38:07 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B69A5C35C
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:38:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652377085; x=1683913085;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=nEYj3OOQ3m648qxqkrIqIyY2ESb4SDyzBsyU91pQbJw=;
+  b=DiIeKgnJRnsB6c8jAZcd4x8FH4c4BsY1NTNXvig5PqY4UFvmUBlahPpC
+   3rWBVy4sxjCdbykthFA6iBsoHok8BcYV5Vwdeddy/5dJW08k+DBKf32Ba
+   NJEG6cqdAOfVHNizSEq3LtgtzoxupLdEY9Ri2PD4DyW6ocYS77bziOIjE
+   f5KecKGyQW/6bM3faovBwOhg9D+S19xvbr8jEfEb90hGymtYLeH1Ryj6v
+   dxNfcdzr45cM2FP/9elywXJu0m6H4RLmhXk8KXNuEMXDAk7X/tqYruzYY
+   VrT5E4HO8iVFeEEDmFvWo1s5mG1QI6IHOZWc4meTVEYuYFY7VwMTj8ZSz
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257632538"
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="257632538"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:32:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="624502461"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 12 May 2022 10:32:41 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1npCg4-000KkM-EI;
+        Thu, 12 May 2022 17:32:40 +0000
+Date:   Fri, 13 May 2022 01:32:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Palmer Dabbelt <palmerdabbelt@google.com>
+Subject: ld.lld: error: section .dynamic file range overlaps with .text
+Message-ID: <202205130116.ow8tWsMr-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220512075432.31763-1-yang.lee@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 12-05-22 15:54:32, Yang Li wrote:
-> Add the description of @folio and remove @page in function kernel-doc
-> comment to remove warnings found by running scripts/kernel-doc, which
-> is caused by using 'make W=1'.
-> 
-> fs/jbd2/transaction.c:2149: warning: Function parameter or member
-> 'folio' not described in 'jbd2_journal_try_to_free_buffers'
-> fs/jbd2/transaction.c:2149: warning: Excess function parameter 'page'
-> description in 'jbd2_journal_try_to_free_buffers'
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Hi Tong,
 
-OK, but isn't this on linux-next only? Because I don't see the 'folio'
-parameter in current Linus' tree yet.
+FYI, the error/warning still remains.
 
-								Honza
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   feb9c5e19e913b53cb536a7aa7c9f20107bb51ec
+commit: dffe11e280a42c2501e5b0cdebd85a77f539bb05 riscv/vdso: Add support for time namespaces
+date:   7 months ago
+config: riscv-randconfig-r035-20220512 (https://download.01.org/0day-ci/archive/20220513/202205130116.ow8tWsMr-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dffe11e280a42c2501e5b0cdebd85a77f539bb05
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout dffe11e280a42c2501e5b0cdebd85a77f539bb05
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv prepare
 
-> ---
->  fs/jbd2/transaction.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
-> index e49bb0938376..e9c308ae475f 100644
-> --- a/fs/jbd2/transaction.c
-> +++ b/fs/jbd2/transaction.c
-> @@ -2114,7 +2114,7 @@ __journal_try_to_free_buffer(journal_t *journal, struct buffer_head *bh)
->  /**
->   * jbd2_journal_try_to_free_buffers() - try to free page buffers.
->   * @journal: journal for operation
-> - * @page: to try and free
-> + * @folio: Folio to detach data from.
->   *
->   * For all the buffers on this page,
->   * if they are fully written out ordered data, move them onto BUF_CLEAN
-> -- 
-> 2.20.1.7.g153144c
-> 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> ld.lld: error: section .dynamic file range overlaps with .text
+   >>> .dynamic range is [0x710, 0x83F]
+   >>> .text range is [0x800, 0x11E7]
+--
+>> ld.lld: error: section .text file range overlaps with _ftrace_annotated_branch
+   >>> .text range is [0x800, 0x11E7]
+   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
+--
+>> ld.lld: error: section .dynamic virtual address range overlaps with .text
+   >>> .dynamic range is [0x710, 0x83F]
+   >>> .text range is [0x800, 0x11E7]
+--
+>> ld.lld: error: section .text virtual address range overlaps with _ftrace_annotated_branch
+   >>> .text range is [0x800, 0x11E7]
+   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
+--
+>> ld.lld: error: section .dynamic load address range overlaps with .text
+   >>> .dynamic range is [0x710, 0x83F]
+   >>> .text range is [0x800, 0x11E7]
+--
+>> ld.lld: error: section .text load address range overlaps with _ftrace_annotated_branch
+   >>> .text range is [0x800, 0x11E7]
+   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
+--
+>> ld.lld: error: section .text load address range overlaps with _ftrace_annotated_branch
+   >>> .text range is [0x800, 0x11E7]
+   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
+--
+   scripts/genksyms/parse.y: warning: 9 shift/reduce conflicts
+   scripts/genksyms/parse.y: warning: 5 reduce/reduce conflicts
+   scripts/genksyms/parse.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
+>> ld.lld: error: section .dynamic file range overlaps with .text
+   >>> .dynamic range is [0x710, 0x83F]
+   >>> .text range is [0x800, 0x11E7]
+--
+>> ld.lld: error: section .text load address range overlaps with _ftrace_annotated_branch
+   >>> .text range is [0x800, 0x11E7]
+   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
+   llvm-nm: error: arch/riscv/kernel/vdso/vdso.so.dbg: No such file or directory
+
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+0-DAY CI Kernel Test Service
+https://01.org/lkp
