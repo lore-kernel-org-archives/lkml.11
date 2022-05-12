@@ -2,160 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02885C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354547AbiELNmr (ORCPT
+        id S1354562AbiELNo2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 09:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
+        Thu, 12 May 2022 09:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354538AbiELNmo (ORCPT
+        with ESMTP id S1354431AbiELNoZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 09:42:44 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4176A62CD1;
-        Thu, 12 May 2022 06:42:43 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id i24so4830356pfa.7;
-        Thu, 12 May 2022 06:42:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
-         :from:to:references:in-reply-to;
-        bh=GgzNh++292NF+E5zmg+4OX55F9De/BlQIpudd+EXtLQ=;
-        b=LA63FLxYpym5WboTuUwi/wt+SGKurpEXYZQxiMDo+Xt5K5HxcMaroziFYgsNY4U/D0
-         jQcL2M6YnnnpxbMx8WO/l+dZr1XtXZXWlVn/uh428fXkeT5rbnonFqHo8E14tAdUQCsG
-         S4W8NZReOH65ZS3DdbfBwBp/s91Ypl8qzOshu5CcbA+6tpQzhSwJbzboU8awwQhvxwgb
-         prba+OJY/UDjw4SkwUk7eclm5IT7azw9CMmuZZvVGf9b0WPTP5FXARfsgIf7JDgzJOn7
-         lIPjXOuhF8ADfbty0dik/14V86WxCGBL/BSipDt5/OBSqXOfAIprdtTOEQ/LgxHdvchl
-         orRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:content-transfer-encoding:date
-         :message-id:cc:subject:from:to:references:in-reply-to;
-        bh=GgzNh++292NF+E5zmg+4OX55F9De/BlQIpudd+EXtLQ=;
-        b=rhUvVR81hmpNdc6UmCck84sIDZZLiq8moZevjrNdD0luwTRpxq3ZU6ls+nm/HnTbAW
-         32fyMt+pqmRye3BxMPOh2cfFmwykTi+MeQx5UDis5hdS1nq/XqBiY3JJMPB+HVvKZdqw
-         oNO5bOsI/+QzP+pEYmgGzAaOo6k8zGpVHtyd7AsgY92Lp75WB667MEbpuuLhejtvoCWS
-         kFOiREwWTUwiO19UP5zGwqD84RngzwDo9pakQvCABe9lgrGRmvdXa3GHotyvI21mUxbV
-         1sfnjVAfzlcvyNhb2DZKGugT437o6Et0v6Y3GQXmTomLqwQ2yA78TnS/gS6U/VGjh3/I
-         yTpQ==
-X-Gm-Message-State: AOAM532N7IwMdRRnxYZuhImr7DWfdmQw2HD761K9KfAW6wI7R1MDvOuj
-        8zkwzlLUwAY7c1TUbkFKKRg=
-X-Google-Smtp-Source: ABdhPJyhAuXqFsgoeseiRJPc84g3MKIgyF+aoWzOOmIUwQdQ7kGidEG8ONsSZ/Ofybzfz7Fr5YYarA==
-X-Received: by 2002:a05:6a00:234b:b0:510:4161:781a with SMTP id j11-20020a056a00234b00b005104161781amr30341812pfj.5.1652362962594;
-        Thu, 12 May 2022 06:42:42 -0700 (PDT)
-Received: from localhost ([49.204.239.218])
-        by smtp.gmail.com with ESMTPSA id x40-20020a056a000be800b0051082ab4de0sm3741051pfu.44.2022.05.12.06.42.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 06:42:41 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 12 May 2022 19:12:36 +0530
-Message-Id: <CJXTS6RN1T67.WNKK2FZKK9UB@skynet-linux>
-Cc:     <linux-arm-msm@vger.kernel.org>,
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        <bjorn.andersson@linaro.org>, <devicetree@vger.kernel.org>,
-        <phone-devel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Andy Gross" <agross@kernel.org>,
-        "Mathieu Poirier" <mathieu.poirier@linaro.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        "Loic Poulain" <loic.poulain@linaro.org>
-Subject: Re: [PATCH 4/9] dt-bindings: remoteproc: qcom: wcnss: Convert to
- YAML
-From:   "Sireesh Kodali" <sireeshkodali1@gmail.com>
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>
-X-Mailer: aerc 0.9.0
-References: <20220511161602.117772-1-sireeshkodali1@gmail.com>
- <20220511161602.117772-5-sireeshkodali1@gmail.com>
- <00234f36-9bae-31d5-5b83-ea238e7e3c11@linaro.org>
- <CJXL0SG2GHN1.1IO2JOR5ARNV8@skynet-linux>
- <a62822a4-a771-dfa9-f46d-586fdccedf66@linaro.org>
- <CJXOGJIR1ONQ.2ZT3JQGVWWHFB@skynet-linux>
- <58a6391b-b930-0095-4f50-618dee4f24e2@linaro.org>
-In-Reply-To: <58a6391b-b930-0095-4f50-618dee4f24e2@linaro.org>
+        Thu, 12 May 2022 09:44:25 -0400
+X-Greylist: delayed 323 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 06:44:23 PDT
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B615DE40;
+        Thu, 12 May 2022 06:44:23 -0700 (PDT)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4KzXtP5sJsz9scQ;
+        Thu, 12 May 2022 15:38:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mail.msdigital.de;
+        s=MBO0001; t=1652362736;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6cZLIKwXMZcfNRh7YQ7kuTKx6Fg9bbjG5TtEQMO/3Gw=;
+        b=C80xKZemj5G1+Pde0EHQsE6YZp5IaJh+4smg1LGJbcUw/Ozpp0bJ/U7v+JCnZyvqtg+WxR
+        3/Go4zNo1VKPg7wG4SpIrLe1wUIoTVmPT8ZbxQXnrovKs009IiG/egd4qWZYmhGsyrhJ1L
+        Yz5mwHArOgzk/MnavelS5jp8R8ILGgQYWx8Eq40SlBkfcj4JXYKREF3lFNFm4h8cZWlsd1
+        nJCksm1UdPrNn6yKJVtW/HWqqzGJKIMA0dJlf2sLpL8Tx+HzWSInYMckhDsZ663+BizNOk
+        KnoSskY2cPjyi5JrBjdRx+2KsBKcUVyiqrzmC+kLY7U7sjwd1PIPGbHvMFlvAA==
+Message-ID: <dfaa54ab-1b03-7aec-5927-d52a4233e56a@msdigital.de>
+Date:   Thu, 12 May 2022 15:38:47 +0200
+MIME-Version: 1.0
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Language: de-DE
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marian Postevca <posteuca@mutex.one>
+From:   Maximilian Senftleben <kernel@mail.msdigital.de>
+Subject: PROBLEM: No static MAC address for usb gadget ethernet via kernel
+ parameter any more.
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu May 12, 2022 at 4:32 PM IST, Krzysztof Kozlowski wrote:
-> On 12/05/2022 11:32, Sireesh Kodali wrote:
-> >>>>> +          - enum:
-> >>>>> +              - qcom,pronto-v2-pil
-> >>>>> +          - enum:
-> >>>>> +              - qcom,pronto
-> >>>>
-> >>>> This does not look correct. The fallback compatible should not chang=
-e.
-> >>>> What is more, it was not documented in original binding, so this sho=
-uld
-> >>>> be done in separate patch.
-> >>>>
-> >>>
-> >>> This was not a change to the fallback compatible.=20
-> >>
-> >> You made it an enum, so you expect it to use different fallback for
-> >> different cases.
-> >>
-> >>> msm8916.dtsi's wcnss
-> >>> node has "qcom,pronto" as the compatible string, which is why this wa=
-s
-> >>> added. It is however not documented in the txt file. Is it sufficient=
- to
-> >>> add a note in the commit message, or should it be split into a separa=
-te
-> >>> commit?
-> >>
-> >> Please split it, assuming that fallback is correct. Maybe the fallback
-> >> is wrong?
-> >=20
-> > The code doesn't recognize "qcom,pronto", so perhaps the best solution
-> > is to just remove that compatible from msm8916.dtsi?
->
-> Eh, I don't know. You need to check, maybe also in downstream sources.
->
+[1.] One line summary of the problem:
 
-I just checked, it seems "qcom,pronto" is used by the wcnss driver in
-/net. So both "qcom,pronto-v2-pil" and "qcom,pronto" need to be present,
-but the latter wasn't documented.
+No static MAC address for usb gadget ethernet via kernel boot parameter 
+any more.
 
-> (...)
->
-> >>>>
-> >>>>> +
-> >>>>> +  iris:
-> >>>>
-> >>>> Generic node name... what is "iris"?
-> >>>>
-> >>> Iris is the RF module, I'll make the description better
-> >>
-> >> RF like wifi? Then the property name should be "wifi".
-> >=20
-> > RF like wifi and bluetooth. However there are wifi and bt subnodes in
-> > the smd-edge subnode. Iris is just the antenna hardware if I understand
-> > correctly. Also this is just a documentation of the existing nodes that
-> > are present in msm8916.dtsi, but for whatever reason their documentatio=
-n
-> > was missing in the txt file. Without adding this node in the YAML
-> > dtb_check fails.
->
-> It seems commit fd52bdae9ab0 ("wcn36xx: Disable 5GHz for wcn3620")
->  added usage of "iris" property but did not document it in the bindings.
->
-> You can fix it by documenting (separate patch) existing practice or
-> document with changing the node name. I am not sure if it is worth the
-> effort, so just new patch please.
->
+[2.] Full description of the problem/report:
 
-I'll make a 2 separate patches, documenting the extra "qcom,pronto"
-compatible, and the iris subnode.
+In 5.15. and before we were able to set a static MAC address for the usb 
+gadget ethernet connection using kernel parameters "g_ether.dev_addr" 
+and "g_ether.host_addr".
+Since 5.16. and more concrete after commit 
+890d5b40908bfd1a79be018d2d297cf9df60f4ee, this is no longer possible, 
+and a random MAC address is assigned.
+(Possible Regression)
 
-Thanks,
-Sireesh
+[3.] Keywords (i.e., modules, networking, kernel):
+usb, gadget, mac, g_ether
 
-> Best regards,
-> Krzysztof
+[4.] Kernel information
+[4.1.] Kernel version (from /proc/version):
+Linux version 5.17.4-141174-ge11818a6ec02 (ms@local) 
+(arm-v7a-linux-gnueabihf-gcc (OSELAS.Toolchain-2020.08.0 10-20200822) 
+10.2.1 20200822, GNU ld (GNU Binutils) 2.35) #14 SMP Thu May 12 13:51:50 
+CEST 2022
+[4.2.] Kernel .config file:
+-
+
+[5.] Most recent kernel version which did not have the bug:
+5.15
+
+[6.] Output of Oops.. message (if applicable) with symbolic information 
+resolved (see Documentation/admin-guide/bug-hunting.rst)
+-
+
+[7.] A small shell script or example program which triggers the problem 
+(if possible)
+-
+
+[8.] Environment
+-
+
+[9.] Other notes, patches, fixes, workarounds:
+
+In 5.17.4 reverting said commit 890d5b40908bfd1a79be018d2d297cf9df60f4ee 
+did resolve the issue for me.
 
