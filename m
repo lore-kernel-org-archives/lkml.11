@@ -2,79 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC94AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86957C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356892AbiELRbT (ORCPT
+        id S1357087AbiELRbv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
+        Thu, 12 May 2022 13:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236997AbiELRbR (ORCPT
+        with ESMTP id S1357084AbiELRbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:31:17 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D445A369CE
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:31:12 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id c14so5444475pfn.2
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:31:12 -0700 (PDT)
+        Thu, 12 May 2022 13:31:47 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B8853E08
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:31:46 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id z12so4021492ilp.8
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:31:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XagNVcsAwDnVbGgXVumYIiRNd5WuMQl7uKWl2bVu0dY=;
-        b=RU+yCLmCHu7YQ0oeNJjyxZiB2tpfxTWnugc8GgBmz6zGe0kDVGYeSdv70Lti72Pryc
-         /U1IMOsYdoidXtp8AKDz86br+dWmvGdF05cbBppuqf5rfPXpY+2PRReX+Tokl/4gbY+o
-         S7ZH4Hm1oSHEBF16isFEUbPqiI8AXz7dPgzAFjX3KZaoSZ1BByz36PKAM0Ldj9AiYSrH
-         /MgCEcs+MyccnWme3JbG+iquh9rL0OqBSXd9fs6A//Aj5HoNWzsBHKLpwaHzluLlfh2x
-         7NQRB2h9Pk/VYYE45PmsSjhH0NSoJJyO+vIHIbzCqve2thjn+BY9Z31oPpxXPq3NNFBv
-         /nLA==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Jy6c2iz4pBZ4h+6A8F5x31O1bbz13zfB7+MvdwkltFQ=;
+        b=V5E2LbmUQEz+VqDpvO+TqhyA1VCGZZb3ILk4eW9F+NnQyIENOHalX+haeb7RBvqORn
+         jBh4SYWNLX6kNf7FdM/WCCwrR6Pefkq6GfBB1ON1K7lYr1k0jaN1QnNC4B3I1FZqj1Nz
+         A4Uhq6rzpkVVaHd2yzKh7gJ6MjwdWl3o6sNAk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=XagNVcsAwDnVbGgXVumYIiRNd5WuMQl7uKWl2bVu0dY=;
-        b=aT0Nb31S2gpoDLCiMZpa+KS2koPUaDU0mJo/mKscilXkK5/tIUk13wVf4SIK1egi/P
-         7cATgxpWlJZTOD9cUEodGJdLumq78ZHi9C4pwwgSfXsODSJZj5nUROMOJwZeqEZiyWdl
-         mc9khbTzY9++xNB8ejiwSOzFGPKV8bYIVE1/VEHZV/ND/BGRCXF1QWLmxXiOuLL3NgQQ
-         OR6V+Q7/KrJO+PmpJWNqvt6xkf2wVN81V54a5u8ANNkDrG2fjLi3aT2NefIoomF5RgD9
-         unEAlKB48pdOYk4ISbdwsF7c9n+gVVSXZMGFaFVHAfrAIEMCI8+bI5SKBXnjRf9jbZsU
-         Tc9w==
-X-Gm-Message-State: AOAM5332YqV9lnaPgvGoaqW1XcbUJxWAgfNqSnJbqhxrO/es2eJokxPS
-        4WgV40qVbFwkgGbw2ythSguPetVm8LA=
-X-Google-Smtp-Source: ABdhPJy6PeXOa2ttytOMkDQiQkDEzGbECMdtpHhT/MZ8eSVHruz7xyLgTq6k/GSn0L2PE0DiGo3Yqw==
-X-Received: by 2002:a63:d450:0:b0:3c6:e382:c13b with SMTP id i16-20020a63d450000000b003c6e382c13bmr587228pgj.138.1652376672213;
-        Thu, 12 May 2022 10:31:12 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:6c64])
-        by smtp.gmail.com with ESMTPSA id r7-20020a170902ea4700b0015e8d4eb289sm153095plg.211.2022.05.12.10.31.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 10:31:11 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 12 May 2022 07:31:10 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Phil Auld <pauld@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, mkoutny@suse.com, longman@redhat.com
-Subject: Re: [PATCH] kselftest/cgroup: fix test_stress.sh to use OUTPUT dir
-Message-ID: <Yn1EXjS+1FqAKkE6@slm.duckdns.org>
-References: <20220512143439.26104-1-pauld@redhat.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Jy6c2iz4pBZ4h+6A8F5x31O1bbz13zfB7+MvdwkltFQ=;
+        b=BRskMev2IWKOBeMRHSp8oR77F/wjB14u0F7DhmZdM3MJLBzgzEbabTl/zYBX+O8h8f
+         s4m2EWzyFlJy63Yqeo7GoTjv/h5LgSD1BwahuRw78mHV/QJqf41VDltxdR8B2pcgdYUR
+         G/xlXzJPzF7td+OE8TG/VNBdc1e7m7kW8jehjGPF/Pzt2frxu6+H7ZtqW0krUNWINlKm
+         Vr0OeVH+ee9zh6f9gBi+/v2qwJQ/AVa/14VgGjH9qTGskDjuUDOzLSXkoinb+9Cv3/j1
+         hZDbBz2ql6Waj7Sz2j5BqAS+4asaN37FpjQR925/x8dzoxKy85j1A5d65HbCSNjo4Wik
+         KrPg==
+X-Gm-Message-State: AOAM531gMyQFjJ6kdsYbeSXNMjHAg9RaBRkxNH2/gRgfnNg6+D0lsNli
+        H9QgxLvfO9nT4AM+onOxqs0b6Q==
+X-Google-Smtp-Source: ABdhPJxagzDS7W1MRsPhk0moVV2S6eg7NnFxnir3mVlj6mKNutZJdJBAswwbztf/bIkYcGF3exjiug==
+X-Received: by 2002:a05:6e02:1a44:b0:2cf:d085:949a with SMTP id u4-20020a056e021a4400b002cfd085949amr571164ilv.131.1652376705348;
+        Thu, 12 May 2022 10:31:45 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id x8-20020a056638034800b0032bee2b5acasm20650jap.165.2022.05.12.10.31.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 10:31:44 -0700 (PDT)
+Subject: Re: [RFC V2 PATCH 1/8] selftests: kvm: Fix inline assembly for
+ hypercall
+To:     Vishal Annapurve <vannapurve@google.com>, x86@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, shauh@kernel.org, yang.zhong@intel.com,
+        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
+        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
+        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
+        bfields@fieldses.org, akpm@linux-foundation.org,
+        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
+        jun.nakajima@intel.com, dave.hansen@intel.com,
+        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
+        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
+        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
+        pgonda@google.com, nikunj@amd.com, seanjc@google.com,
+        diviness@google.com, Shuah Khan <skhan@linuxfoundation.org>
+References: <20220511000811.384766-1-vannapurve@google.com>
+ <20220511000811.384766-2-vannapurve@google.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <506a2e59-eea5-8c1e-ee1b-fbb7a401bd8d@linuxfoundation.org>
+Date:   Thu, 12 May 2022 11:31:43 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220512143439.26104-1-pauld@redhat.com>
+In-Reply-To: <20220511000811.384766-2-vannapurve@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:34:39AM -0400, Phil Auld wrote:
-> Running cgroup kselftest with O= fails to run the with_stress test due
-> to hardcoded ./test_core. Find test_core binary using the OUTPUT directory.
+On 5/10/22 6:08 PM, Vishal Annapurve wrote:
+> Fix inline assembly for hypercall to explicitly set
+> eax with hypercall number to allow the implementation
+> to work even in cases where compiler would inline the
+> function.
 > 
-> Fixes: 1a99fcc035fb ("selftests: cgroup: Run test_core under interfering stress")
-> Signed-off-by: Phil Auld <pauld@redhat.com>
 
-Applied to cgroup/for-5.19.
+Please explain what happens without this change as well.
 
-Thanks.
+> Signed-off-by: Vishal Annapurve <vannapurve@google.com>
+> ---
+>   tools/testing/selftests/kvm/lib/x86_64/processor.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+> index 9f000dfb5594..4d88e1a553bf 100644
+> --- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
+> +++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+> @@ -1461,7 +1461,7 @@ uint64_t kvm_hypercall(uint64_t nr, uint64_t a0, uint64_t a1, uint64_t a2,
+>   
+>   	asm volatile("vmcall"
+>   		     : "=a"(r)
+> -		     : "b"(a0), "c"(a1), "d"(a2), "S"(a3));
+> +		     : "a"(nr), "b"(a0), "c"(a1), "d"(a2), "S"(a3));
+>   	return r;
+>   }
+>   
+> 
 
--- 
-tejun
+With the above change to commit log:
+
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
