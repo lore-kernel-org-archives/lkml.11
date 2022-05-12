@@ -2,110 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E17C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 06:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4184DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 06:58:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350602AbiELG5A (ORCPT
+        id S1350610AbiELG6E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 02:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46458 "EHLO
+        Thu, 12 May 2022 02:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238889AbiELG43 (ORCPT
+        with ESMTP id S1350613AbiELG4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 02:56:29 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2821836F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 23:56:27 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so4074250pjm.1
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 23:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WIZMHJ5xRJacnsB6/o2E9laJl0A/k8C1YscKZGNG7WM=;
-        b=CDwaq7yh1rz+5ZXUtvYAmjK5GoGl0YKf9usiA8Qr0ncf55O2ooNJCUldcC4OWNITMD
-         Bi54+J2lepaOCMCr7j49UhXpQm39vVkbhACXPmy7rxvh+A57/qp7gARCu767qWcqEPm4
-         cTsdp4sQDW5zjc9rzS1fFS/Z+EgC3Hyx1Zl9WQjJ6NXoFPPikQbKtGryud/o2IPcDC2C
-         bYTlLfyJSJjG+e1cmbp4TUxIn/Zvh82xBUn1cZLzwKSVuIYAwJ0ByDFq4L3TcG7dWypc
-         +jCHNYeum0ecMEPenZvIgJ4WTaRiv6AV0vpRaWJBuChT8Zts+6fIuLb2H0IpFrWLUjF/
-         bH4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WIZMHJ5xRJacnsB6/o2E9laJl0A/k8C1YscKZGNG7WM=;
-        b=sD81pLwBx8TQL0C10m67APx8pOJ+C1wdychVIjFfbi65baiyLJ0G/9jr4ZPdya9KsW
-         HmPYAZy1Ddwyo9nC8xOpcVM8gqvYE6NmIdBNP/x7WBD8eDylklDAs14CMzQ1geruZAdV
-         ClO45bFyYtBHb955wgu5eGbLJGYcHL0/6sU+jZLSzuOYUrRqXXYrJdZ1fSm580nhr4qc
-         XfIiTnm2WkeZw7nXEcAnXhnZUpIxkSC/pgmNmDUFIl9Gr+nMmtl75DisnYZMa4hU0er1
-         RAJnEqiqZt2jlFhrTMB+3AOH9DoRr8On5gJbSamOIRKT75y93TLSK/pEtTbZQ/FfS8eR
-         jpyA==
-X-Gm-Message-State: AOAM530s9XM8L4xv6Wf7rIoztF/+uFFBCsxgSt48lSQVc6NHw3qtKeoE
-        aTWmsCA7hyvM2jrHzQQH7Fk42w==
-X-Google-Smtp-Source: ABdhPJxLokG376TROJxhzuNTRoirq0Y+7oatotyBqsBFWqk0owd9epXW0o/dm8NXds7ePxSBgMFBGQ==
-X-Received: by 2002:a17:903:1108:b0:156:73a7:7c1 with SMTP id n8-20020a170903110800b0015673a707c1mr28578721plh.101.1652338586874;
-        Wed, 11 May 2022 23:56:26 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id e4-20020a636904000000b003db141a5f26sm1110175pgc.1.2022.05.11.23.56.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 23:56:25 -0700 (PDT)
-Date:   Thu, 12 May 2022 12:26:23 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Schspa Shi <schspa@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH v3] cpufreq: fix race on cpufreq online
-Message-ID: <20220512065623.q4aa6y52pst3zpxu@vireshk-i7>
-References: <20220510035259.5ep52sgahd2a6rie@vireshk-i7>
- <20220510154236.88753-1-schspa@gmail.com>
- <20220511043515.fn2gz6q3kcpdai5p@vireshk-i7>
- <CAMA88TpefB=rnqea2u1zEvNUJNE_kdj4mYito7SGCuMj-o071Q@mail.gmail.com>
- <20220511122114.wccgyur6g3qs6fps@vireshk-i7>
- <CAJZ5v0gN_yDFpvCXRXv8rN-i3TugCi-HKpBKK2z4eWU0Zm1GUg@mail.gmail.com>
- <CAJZ5v0id+7vkqMQEyVRe29oF_dRtzZ0EhoYUn8=yzeENDeABJw@mail.gmail.com>
+        Thu, 12 May 2022 02:56:44 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B751836F;
+        Wed, 11 May 2022 23:56:43 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id B75F51F91A;
+        Thu, 12 May 2022 06:56:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652338601; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ynfVyISLTocoM+sP5RWAS58Ty5c+joUC7e/SGWdE+18=;
+        b=Syw6WsqdVcqFLDaZzsl+SWMrTmcGh2z6NY7TO/vV5kDe7WWbv4h6m5eRAjbZxXkFqyJpUP
+        IhMfTLAvEruURlOP6Efk6CKIcuG4BpwSky4a2/uzHaw5VGw5XRTcMYYS9wajdkP6h685UQ
+        t/6rN5C7GiNlV/EVf1ZMiEoSAhDXGbc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652338601;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ynfVyISLTocoM+sP5RWAS58Ty5c+joUC7e/SGWdE+18=;
+        b=6kpqeVcGuGhqU/hg86ZGgh4ayDEm95Yjwg18QAMcWqXORog6QaFW56gKF4HdGhE+iJGnVs
+        2b/auzxAfL5wNMDA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9412713A97;
+        Thu, 12 May 2022 06:56:41 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id hprbI6mvfGJSWQAAMHmgww
+        (envelope-from <hare@suse.de>); Thu, 12 May 2022 06:56:41 +0000
+Message-ID: <5d7ae3e5-3f21-a610-7beb-274ede95850d@suse.de>
+Date:   Thu, 12 May 2022 08:56:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0id+7vkqMQEyVRe29oF_dRtzZ0EhoYUn8=yzeENDeABJw@mail.gmail.com>
-User-Agent: NeoMutt/20180716-391-311a52
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v3 12/23] dt-bindings: ata: ahci: Add platform capability
+ properties
+Content-Language: en-US
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
+ <20220511231810.4928-13-Sergey.Semin@baikalelectronics.ru>
+From:   Hannes Reinecke <hare@suse.de>
+In-Reply-To: <20220511231810.4928-13-Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11-05-22, 15:19, Rafael J. Wysocki wrote:
-> On Wed, May 11, 2022 at 2:59 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> > > Hmm, I don't think depending on the values of policy->cpus is a good idea to be
-> > > honest. This design is inviting bugs to come in at another place. We need a
-> > > clear flag for this, a new flag or something like policy_list.
+On 5/12/22 01:17, Serge Semin wrote:
+> In case if the platform doesn't have BIOS or a comprehensive firmware
+> installed then the HBA capability flags will be left uninitialized. As a
+> good alternative we can define a set AHCI DT-node properties to describe
+> all of HW-init capabilities flags. Luckily there aren't too many of them.
+> SSS - Staggered Spin-up support and MPS - Mechanical Presence Switch
+> support determine the corresponding feature availability for whole HBA by
+> means of the "hba-sss" and "hba-smps" properties.  Each port can have the
+> "hba-{hpcp,mpsp,cpd,esp,fbscp}" defined indicatating that the port
+> supports the next functionality: HPCP - HotPlug capable port, MPSP -
+> Mechanical Presence Switch attached to a port, CPD - Cold Plug detection,
+> ESP - External SATA Port (eSATA), FBSCP - FIS-based switching capable
+> port.
 > 
-> Why?
-
-Because it doesn't mean anything unless we have code elsewhere which checks this
-specifically. It should be fine though after using policy_is_inactive() in
-show/store as you suggested, which I too tried to do in a patch :)
-
-> > > Also I see the same bug happening while the policy is removed. The kobject is
-> > > put after the rwsem is dropped.
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 > 
-> This shouldn't be a problem because of the wait_for_completion() in
-> cpufreq_policy_put_kobj().  It is known that cpufreq_sysfs_release()
-> has run when cpufreq_policy_put_kobj() returns, so it is safe to free
-> the policy then.
+> ---
+> 
+> Alternatively we could define them as a bitfield, but having a set of
+> boolean properties seemed a better idea since in that case we can
+> implement a simple inter-dependency rules for them, which can't be done
+> should we take the bitfields path.
+> ---
+>   .../devicetree/bindings/ata/ahci-common.yaml  | 66 +++++++++++++++++++
+>   .../bindings/ata/ahci-platform.yaml           | 11 ++++
+>   2 files changed, 77 insertions(+)
+> 
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-I agree to that, but the destruction of stuff happens right in
-cpufreq_policy_free() where it starts removing the policy from the list and
-clears cpufreq_cpu_data. I don't know if it will break anything or not, but we
-should disallow any further sysfs operations once we have reached
-cpufreq_policy_free().
+Cheers,
 
-> TBH, I'm not sure why show() doesn't check policy_is_inactive() under the rwsem.
-
-I agree, both show/store should have it.
-
-> Moreover, I'm not sure why the locking dance in store() is necessary.
-
-commit fdd320da84c6 ("cpufreq: Lock CPU online/offline in cpufreq_register_driver()")
-
+Hannes
 -- 
-viresh
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
