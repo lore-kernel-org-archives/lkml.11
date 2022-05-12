@@ -2,217 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0224C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 05:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E26C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 05:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349843AbiELFX3 (ORCPT
+        id S1349900AbiELF0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 01:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
+        Thu, 12 May 2022 01:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238423AbiELFX1 (ORCPT
+        with ESMTP id S238423AbiELF0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 01:23:27 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037B166AF4;
-        Wed, 11 May 2022 22:23:24 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 1DB655FD06;
-        Thu, 12 May 2022 08:23:22 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1652333002;
-        bh=PmEc4Pwi+Le/+bdbdUbiEIApLyKor2XoQjIS3kLu5ng=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=hFHdhWAaQIf7R+kXW9+l9b9fFJkMqZoOSu9F8GRdQ2ihhhapKFdIK18nxtpMDzAua
-         scoiixfteCuiuUSOHUfvDXeFpzvFn8kqbz+MtcAcuH6JTfkd0XzYzPiFi5pGX+D4CC
-         B0H8OI923CoUL+z1yUOqCEQey2Xl60JC0Yb743bKNnsRIIkko4wJ43dZseaUPjzh/o
-         ve6B1BQCXpoOu1w/CaIE0130yYaBeEE1rDM4pde303xisYFYPY3tFLZsMNNlKo5oh7
-         9zwvOY1WwsBx64qYZKeKhlE/d2Srnngn/R95/jWesIQ/RABtMt/Cp7wCI39tCF3hOK
-         067hqTyuldu6Q==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 12 May 2022 08:23:21 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-Subject: [RFC PATCH v1 8/8] test/vsock: vsock rx zerocopy utility
-Thread-Topic: [RFC PATCH v1 8/8] test/vsock: vsock rx zerocopy utility
-Thread-Index: AQHYZcBLyUYWHYMAWk+cQqC3/CFMhg==
-Date:   Thu, 12 May 2022 05:22:38 +0000
-Message-ID: <e63b9d7f-e43b-cbef-7594-3e389a60906e@sberdevices.ru>
-In-Reply-To: <7cdcb1e1-7c97-c054-19cf-5caeacae981d@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F8171740D3B85140A9857D6CF6129316@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Thu, 12 May 2022 01:26:37 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87BF3C708
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 22:26:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652333196; x=1683869196;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=8V92TNSmtJ/th+9WHqd0K1I+YhEv+oyeIcZciouWzTU=;
+  b=TB6BYD94FWQDuggZOprttI4ZSQIJ4rmMKEBn+MDkgfmQ9vtSQvQY/cxp
+   2kvu9okuDJfM7mAfItpoU97fQymWra471iwzkgu9AiTSRW6i1v6fLwJia
+   +q/iq2HNibE3IoYhMmtGaWgByiSjA02jhh2blul5H8WEtrwqf+wje2THL
+   ZlWNMLyyIsVZ6WQokBYsF792kdQLBXd1Te8MvF6tD1uTPFAoFSi/hpsJn
+   EwkR1bXPG+7kb9R+usMQko1HjDuXtYbq8NPYFUqJ0N4qSAolHEmniBUNO
+   I7D+36LTTD9+AU303dNOGk6WyFCblzAkeQwtOFvNS8zQgbs0+dgvLT8IY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="295140962"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="295140962"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 22:26:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="658457239"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 11 May 2022 22:26:35 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1np1LO-000Jyb-QB;
+        Thu, 12 May 2022 05:26:34 +0000
+Date:   Thu, 12 May 2022 13:26:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mike Looijmans <mike.looijmans@topic.nl>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: drivers/power/supply/ltc4162-l-charger.c:912:34: warning:
+ 'ltc4162l_of_match' defined but not used
+Message-ID: <202205121341.cUtTcrOF-lkp@intel.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/12 02:55:00 #19424207
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGhpcyBhZGRzIHNpbXBsZSB1dGlsIGZvciB6ZXJvY29weSBiZW5jaG1hcmtpbmcuDQoNClNpZ25l
-ZC1vZmYtYnk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KLS0t
-DQogdG9vbHMvdGVzdGluZy92c29jay9NYWtlZmlsZSAgICAgIHwgICAxICsNCiB0b29scy90ZXN0
-aW5nL3Zzb2NrL3J4X3plcm9jb3B5LmMgfCAzNTYgKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrDQogMiBmaWxlcyBjaGFuZ2VkLCAzNTcgaW5zZXJ0aW9ucygrKQ0KIGNyZWF0ZSBtb2RlIDEw
-MDY0NCB0b29scy90ZXN0aW5nL3Zzb2NrL3J4X3plcm9jb3B5LmMNCg0KZGlmZiAtLWdpdCBhL3Rv
-b2xzL3Rlc3RpbmcvdnNvY2svTWFrZWZpbGUgYi90b29scy90ZXN0aW5nL3Zzb2NrL01ha2VmaWxl
-DQppbmRleCBmODI5M2M2OTEwYzkuLjJjYjU4MjBjYTJmMyAxMDA2NDQNCi0tLSBhL3Rvb2xzL3Rl
-c3RpbmcvdnNvY2svTWFrZWZpbGUNCisrKyBiL3Rvb2xzL3Rlc3RpbmcvdnNvY2svTWFrZWZpbGUN
-CkBAIC0zLDYgKzMsNyBAQCBhbGw6IHRlc3QNCiB0ZXN0OiB2c29ja190ZXN0IHZzb2NrX2RpYWdf
-dGVzdA0KIHZzb2NrX3Rlc3Q6IHZzb2NrX3Rlc3QubyB0aW1lb3V0Lm8gY29udHJvbC5vIHV0aWwu
-bw0KIHZzb2NrX2RpYWdfdGVzdDogdnNvY2tfZGlhZ190ZXN0Lm8gdGltZW91dC5vIGNvbnRyb2wu
-byB1dGlsLm8NCityeF96ZXJvY29weTogcnhfemVyb2NvcHkubyB0aW1lb3V0Lm8gY29udHJvbC5v
-IHV0aWwubw0KIA0KIENGTEFHUyArPSAtZyAtTzIgLVdlcnJvciAtV2FsbCAtSS4gLUkuLi8uLi9p
-bmNsdWRlIC1JLi4vLi4vLi4vdXNyL2luY2x1ZGUgLVduby1wb2ludGVyLXNpZ24gLWZuby1zdHJp
-Y3Qtb3ZlcmZsb3cgLWZuby1zdHJpY3QtYWxpYXNpbmcgLWZuby1jb21tb24gLU1NRCAtVV9GT1JU
-SUZZX1NPVVJDRSAtRF9HTlVfU09VUkNFDQogLlBIT05ZOiBhbGwgdGVzdCBjbGVhbg0KZGlmZiAt
-LWdpdCBhL3Rvb2xzL3Rlc3RpbmcvdnNvY2svcnhfemVyb2NvcHkuYyBiL3Rvb2xzL3Rlc3Rpbmcv
-dnNvY2svcnhfemVyb2NvcHkuYw0KbmV3IGZpbGUgbW9kZSAxMDA2NDQNCmluZGV4IDAwMDAwMDAw
-MDAwMC4uNGRiMWE3ZjNhMWFmDQotLS0gL2Rldi9udWxsDQorKysgYi90b29scy90ZXN0aW5nL3Zz
-b2NrL3J4X3plcm9jb3B5LmMNCkBAIC0wLDAgKzEsMzU2IEBADQorLy8gU1BEWC1MaWNlbnNlLUlk
-ZW50aWZpZXI6IEdQTC0yLjAtb25seQ0KKy8qDQorICogcnhfemVyb2NvcHkgLSBiZW5jaG1hcmsg
-dXRpbGl0eSBmb3IgemVyb2NvcHkNCisgKiByZWNlaXZlLg0KKyAqDQorICogQ29weXJpZ2h0IChD
-KSAyMDIyIFNiZXJEZXZpY2VzLg0KKyAqDQorICogQXV0aG9yOiBBcnNlbml5IEtyYXNub3YgPEFW
-S3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCisgKi8NCisjaW5jbHVkZSA8Z2V0b3B0Lmg+DQorI2lu
-Y2x1ZGUgPHN0ZGlvLmg+DQorI2luY2x1ZGUgPHN0ZGxpYi5oPg0KKyNpbmNsdWRlIDxzdGRib29s
-Lmg+DQorI2luY2x1ZGUgPHN0cmluZy5oPg0KKyNpbmNsdWRlIDxlcnJuby5oPg0KKyNpbmNsdWRl
-IDx1bmlzdGQuaD4NCisjaW5jbHVkZSA8dGltZS5oPg0KKyNpbmNsdWRlIDxzeXMvbW1hbi5oPg0K
-KyNpbmNsdWRlIDxzdGRpbnQuaD4NCisjaW5jbHVkZSA8cG9sbC5oPg0KKyNpbmNsdWRlIDx1YXBp
-L2xpbnV4L3ZpcnRpb192c29jay5oPg0KKyNpbmNsdWRlIDx1YXBpL2xpbnV4L3ZtX3NvY2tldHMu
-aD4NCisNCisjaW5jbHVkZSAidXRpbC5oIg0KKw0KKyNkZWZpbmUgUEFHRV9TSVpFCQk0MDk2DQor
-DQorI2RlZmluZSBERUZBVUxUX1RYX1NJWkUJCTEyOA0KKyNkZWZpbmUgREVGQVVMVF9SWF9TSVpF
-CQkxMjgNCisjZGVmaW5lIERFRkFVTFRfUE9SVAkJMTIzNA0KKw0KK3N0YXRpYyBpbnQgY2xpZW50
-X21vZGUgPSAxOw0KK3N0YXRpYyBpbnQgcGVlcl9jaWQgPSAtMTsNCitzdGF0aWMgaW50IHBvcnQg
-PSBERUZBVUxUX1BPUlQ7DQorc3RhdGljIHVuc2lnbmVkIGxvbmcgdHhfYnVmX3NpemU7DQorc3Rh
-dGljIHVuc2lnbmVkIGxvbmcgcnhfYnVmX3NpemU7DQorc3RhdGljIHVuc2lnbmVkIGxvbmcgbWJf
-dG9fc2VuZCA9IDQwOw0KKw0KK3N0YXRpYyB0aW1lX3QgY3VycmVudF9uc2VjKHZvaWQpDQorew0K
-KwlzdHJ1Y3QgdGltZXNwZWMgdHM7DQorDQorCWlmIChjbG9ja19nZXR0aW1lKENMT0NLX1JFQUxU
-SU1FLCAmdHMpKSB7DQorCQlwZXJyb3IoImNsb2NrX2dldHRpbWUiKTsNCisJCWV4aXQoRVhJVF9G
-QUlMVVJFKTsNCisJfQ0KKw0KKwlyZXR1cm4gKHRzLnR2X3NlYyAqIDEwMDAwMDAwMDBVTEwpICsg
-dHMudHZfbnNlYzsNCit9DQorDQorLyogU2VydmVyIGFjY2VwdHMgY29ubmVjdGlvbiBhbmQgKi8N
-CitzdGF0aWMgdm9pZCBydW5fc2VydmVyKHZvaWQpDQorew0KKwlpbnQgZmQ7DQorCWNoYXIgKmRh
-dGE7DQorCWludCBjbGllbnRfZmQ7DQorCXVuaW9uIHsNCisJCXN0cnVjdCBzb2NrYWRkciBzYTsN
-CisJCXN0cnVjdCBzb2NrYWRkcl92bSBzdm07DQorCX0gYWRkciA9IHsNCisJCS5zdm0gPSB7DQor
-CQkJLnN2bV9mYW1pbHkgPSBBRl9WU09DSywNCisJCQkuc3ZtX3BvcnQgPSBwb3J0LA0KKwkJCS5z
-dm1fY2lkID0gVk1BRERSX0NJRF9BTlksDQorCQl9LA0KKwl9Ow0KKwl1bmlvbiB7DQorCQlzdHJ1
-Y3Qgc29ja2FkZHIgc2E7DQorCQlzdHJ1Y3Qgc29ja2FkZHJfdm0gc3ZtOw0KKwl9IGNsaWVudGFk
-ZHI7DQorDQorCXNvY2tsZW5fdCBjbGllbnRhZGRyX2xlbiA9IHNpemVvZihjbGllbnRhZGRyLnN2
-bSk7DQorCXRpbWVfdCB0eF9iZWdpbl9uczsNCisJc3NpemVfdCB0b3RhbF9zZW5kID0gMDsNCisJ
-dW5zaWduZWQgbG9uZyBzdW07DQorDQorCWZwcmludGYoc3RkZXJyLCAiUnVubmluZyBzZXJ2ZXIs
-IGxpc3RlbiAlaSwgbWIgJWx1IHR4IGJ1ZiAlbHVcbiIsDQorCQkJcG9ydCwgbWJfdG9fc2VuZCwg
-dHhfYnVmX3NpemUpOw0KKw0KKwlmZCA9IHNvY2tldChBRl9WU09DSywgU09DS19TVFJFQU0sIDAp
-Ow0KKw0KKwlpZiAoZmQgPCAwKSB7DQorCQlwZXJyb3IoInNvY2tldCIpOw0KKwkJZXhpdChFWElU
-X0ZBSUxVUkUpOw0KKwl9DQorDQorCWlmIChiaW5kKGZkLCAmYWRkci5zYSwgc2l6ZW9mKGFkZHIu
-c3ZtKSkgPCAwKSB7DQorCQlwZXJyb3IoImJpbmQiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsN
-CisJfQ0KKw0KKwlpZiAobGlzdGVuKGZkLCAxKSA8IDApIHsNCisJCXBlcnJvcigibGlzdGVuIik7
-DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJY2xpZW50X2ZkID0gYWNjZXB0KGZk
-LCAmY2xpZW50YWRkci5zYSwgJmNsaWVudGFkZHJfbGVuKTsNCisNCisJaWYgKGNsaWVudF9mZCA8
-IDApIHsNCisJCXBlcnJvcigiYWNjZXB0Iik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0N
-CisNCisJZGF0YSA9IG1hbGxvYyh0eF9idWZfc2l6ZSk7DQorDQorCWlmIChkYXRhID09IE5VTEwp
-IHsNCisJCWZwcmludGYoc3RkZXJyLCAibWFsbG9jIGZhaWxlZFxuIik7DQorCQlleGl0KEVYSVRf
-RkFJTFVSRSk7DQorCX0NCisNCisJc3VtID0gMDsNCisJdHhfYmVnaW5fbnMgPSBjdXJyZW50X25z
-ZWMoKTsNCisNCisJd2hpbGUgKDEpIHsNCisJCWludCBpOw0KKwkJc3NpemVfdCBzZW50Ow0KKw0K
-KwkJaWYgKHRvdGFsX3NlbmQgPiBtYl90b19zZW5kICogMTAyNCAqIDEwMjRVTEwpDQorCQkJYnJl
-YWs7DQorDQorCQlmb3IgKGkgPSAwOyBpIDwgdHhfYnVmX3NpemU7IGkrKykgew0KKwkJCWRhdGFb
-aV0gPSByYW5kKCkgJSAweGZmOw0KKwkJCXN1bSArPSBkYXRhW2ldOw0KKwkJfQ0KKw0KKwkJc2Vu
-dCA9IHdyaXRlKGNsaWVudF9mZCwgZGF0YSwgdHhfYnVmX3NpemUpOw0KKw0KKwkJaWYgKHNlbnQg
-PD0gMCkgew0KKwkJCXBlcnJvcigid3JpdGUiKTsNCisJCQlleGl0KEVYSVRfRkFJTFVSRSk7DQor
-CQl9DQorDQorCQl0b3RhbF9zZW5kICs9IHNlbnQ7DQorCX0NCisNCisJZnJlZShkYXRhKTsNCisN
-CisJZnByaW50ZihzdGRlcnIsICJUb3RhbCAlemkgTUIsIHRpbWUgJWZcbiIsIG1iX3RvX3NlbmQs
-DQorCQkJKGZsb2F0KShjdXJyZW50X25zZWMoKSAtIHR4X2JlZ2luX25zKS8xMDAwLjAvMTAwMC4w
-LzEwMDAuMCk7DQorDQorCWNsb3NlKGZkKTsNCisJY2xvc2UoY2xpZW50X2ZkKTsNCit9DQorDQor
-c3RhdGljIHZvaWQgcnVuX2NsaWVudChpbnQgemVyb2NvcHkpDQorew0KKwlpbnQgZmQ7DQorCXVu
-aW9uIHsNCisJCXN0cnVjdCBzb2NrYWRkciBzYTsNCisJCXN0cnVjdCBzb2NrYWRkcl92bSBzdm07
-DQorCX0gYWRkciA9IHsNCisJCS5zdm0gPSB7DQorCQkJLnN2bV9mYW1pbHkgPSBBRl9WU09DSywN
-CisJCQkuc3ZtX3BvcnQgPSBwb3J0LA0KKwkJCS5zdm1fY2lkID0gcGVlcl9jaWQsDQorCQl9LA0K
-Kwl9Ow0KKwl1bnNpZ25lZCBsb25nIHN1bSA9IDA7DQorCXZvaWQgKnJ4X3ZhID0gTlVMTDsNCisN
-CisJcHJpbnRmKCJSdW5uaW5nIGNsaWVudCwgJXMgbW9kZSwgcGVlciAlaTolaSwgcnggYnVmICVs
-dVxuIiwNCisJCXplcm9jb3B5ID8gInplcm9jb3B5IiA6ICJjb3B5IiwgcGVlcl9jaWQsIHBvcnQs
-DQorCQlyeF9idWZfc2l6ZSk7DQorDQorCWZkID0gc29ja2V0KEFGX1ZTT0NLLCBTT0NLX1NUUkVB
-TSwgMCk7DQorDQorCWlmIChmZCA8IDApIHsNCisJCXBlcnJvcigic29ja2V0Iik7DQorCQlleGl0
-KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJaWYgKGNvbm5lY3QoZmQsICZhZGRyLnNhLCBzaXpl
-b2YoYWRkci5zdm0pKSkgew0KKwkJcGVycm9yKCJjb25uZWN0Iik7DQorCQlleGl0KEVYSVRfRkFJ
-TFVSRSk7DQorCX0NCisNCisJaWYgKHplcm9jb3B5KSB7DQorCQlyeF92YSA9IG1tYXAoTlVMTCwg
-cnhfYnVmX3NpemUsDQorCQkJCVBST1RfUkVBRCwgTUFQX1NIQVJFRCwgZmQsIDApOw0KKw0KKwkJ
-aWYgKHJ4X3ZhID09IE1BUF9GQUlMRUQpIHsNCisJCQlwZXJyb3IoIm1tYXAiKTsNCisJCQlleGl0
-KEVYSVRfRkFJTFVSRSk7DQorCQl9DQorCX0NCisNCisJd2hpbGUgKDEpIHsNCisJCXN0cnVjdCBw
-b2xsZmQgZmRzID0geyAwIH07DQorCQlpbnQgZG9uZSA9IDA7DQorDQorCQlmZHMuZmQgPSBmZDsN
-CisJCWZkcy5ldmVudHMgPSBQT0xMSU4gfCBQT0xMRVJSIHwgUE9MTEhVUCB8DQorCQkJICAgICBQ
-T0xMUkRIVVAgfCBQT0xMTlZBTDsNCisNCisJCWlmIChwb2xsKCZmZHMsIDEsIC0xKSA8IDApIHsN
-CisJCQlwZXJyb3IoInBvbGwiKTsNCisJCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCQl9DQorDQor
-CQlpZiAoZmRzLnJldmVudHMgJiAoUE9MTEhVUCB8IFBPTExSREhVUCkpDQorCQkJZG9uZSA9IDE7
-DQorDQorCQlpZiAoZmRzLnJldmVudHMgJiBQT0xMRVJSKSB7DQorCQkJZnByaW50ZihzdGRlcnIs
-ICJEb25lIGVycm9yXG4iKTsNCisJCQlicmVhazsNCisJCX0NCisNCisJCWlmIChmZHMucmV2ZW50
-cyAmIFBPTExJTikgew0KKwkJCWlmICh6ZXJvY29weSkgew0KKwkJCQlzdHJ1Y3QgdmlydGlvX3Zz
-b2NrX3Vzcl9oZHIgKmhkcjsNCisJCQkJdWludHB0cl90IHRtcF9yeF92YSA9ICh1aW50cHRyX3Qp
-cnhfdmE7DQorCQkJCXNvY2tsZW5fdCBsZW4gPSBzaXplb2YodG1wX3J4X3ZhKTsNCisNCisJCQkJ
-aWYgKGdldHNvY2tvcHQoZmQsIEFGX1ZTT0NLLCBTT19WTV9TT0NLRVRTX1pFUk9DT1BZLA0KKwkJ
-CQkJCSZ0bXBfcnhfdmEsICZsZW4pIDwgMCkgew0KKwkJCQkJcGVycm9yKCJnZXRzb2Nrb3B0Iik7
-DQorCQkJCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCQkJCX0NCisNCisJCQkJaGRyID0gKHN0cnVj
-dCB2aXJ0aW9fdnNvY2tfdXNyX2hkciAqKXRtcF9yeF92YTsNCisNCisJCQkJaWYgKCFoZHItPmxl
-bikgew0KKwkJCQkJaWYgKGRvbmUpIHsNCisJCQkJCQlmcHJpbnRmKHN0ZGVyciwgIkRvbmUsIHN1
-bSAlbHVcbiIsIHN1bSk7DQorCQkJCQkJYnJlYWs7DQorCQkJCQl9DQorCQkJCX0NCisNCisJCQkJ
-dG1wX3J4X3ZhICs9IFBBR0VfU0laRTsNCisNCisJCQkJaWYgKG1hZHZpc2UoKHZvaWQgKilyeF92
-YSwgcnhfYnVmX3NpemUsDQorCQkJCQkJTUFEVl9ET05UTkVFRCkpIHsNCisJCQkJCXBlcnJvcigi
-bWFkdmlzZSIpOw0KKwkJCQkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwkJCQl9DQorCQkJfSBlbHNl
-IHsNCisJCQkJY2hhciBkYXRhW3J4X2J1Zl9zaXplIC0gUEFHRV9TSVpFXTsNCisJCQkJc3NpemVf
-dCBieXRlc19yZWFkOw0KKw0KKwkJCQlieXRlc19yZWFkID0gcmVhZChmZCwgZGF0YSwgc2l6ZW9m
-KGRhdGEpKTsNCisNCisJCQkJaWYgKGJ5dGVzX3JlYWQgPD0gMCkNCisJCQkJCWJyZWFrOw0KKwkJ
-CX0NCisJCX0NCisJfQ0KK30NCisNCitzdGF0aWMgY29uc3QgY2hhciBvcHRzdHJpbmdbXSA9ICIi
-Ow0KK3N0YXRpYyBjb25zdCBzdHJ1Y3Qgb3B0aW9uIGxvbmdvcHRzW10gPSB7DQorCXsNCisJCS5u
-YW1lID0gIm1vZGUiLA0KKwkJLmhhc19hcmcgPSByZXF1aXJlZF9hcmd1bWVudCwNCisJCS52YWwg
-PSAnbScsDQorCX0sDQorCXsNCisJCS5uYW1lID0gInplcm9jb3B5IiwNCisJCS5oYXNfYXJnID0g
-bm9fYXJndW1lbnQsDQorCQkudmFsID0gJ3onLA0KKwl9LA0KKwl7DQorCQkubmFtZSA9ICJjaWQi
-LA0KKwkJLmhhc19hcmcgPSByZXF1aXJlZF9hcmd1bWVudCwNCisJCS52YWwgPSAnYycsDQorCX0s
-DQorCXsNCisJCS5uYW1lID0gInBvcnQiLA0KKwkJLmhhc19hcmcgPSByZXF1aXJlZF9hcmd1bWVu
-dCwNCisJCS52YWwgPSAncCcsDQorCX0sDQorCXsNCisJCS5uYW1lID0gIm1iIiwNCisJCS5oYXNf
-YXJnID0gcmVxdWlyZWRfYXJndW1lbnQsDQorCQkudmFsID0gJ3MnLA0KKwl9LA0KKwl7DQorCQku
-bmFtZSA9ICJ0eCIsDQorCQkuaGFzX2FyZyA9IHJlcXVpcmVkX2FyZ3VtZW50LA0KKwkJLnZhbCA9
-ICd0JywNCisJfSwNCisJew0KKwkJLm5hbWUgPSAicngiLA0KKwkJLmhhc19hcmcgPSByZXF1aXJl
-ZF9hcmd1bWVudCwNCisJCS52YWwgPSAncicsDQorCX0sDQorCXsNCisJCS5uYW1lID0gImhlbHAi
-LA0KKwkJLmhhc19hcmcgPSBub19hcmd1bWVudCwNCisJCS52YWwgPSAnPycsDQorCX0sDQorCXt9
-LA0KK307DQorDQoraW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKiphcmd2KQ0KK3sNCisJaW50IHpl
-cm9jb3B5ID0gMDsNCisNCisJZm9yICg7Oykgew0KKwkJaW50IG9wdCA9IGdldG9wdF9sb25nKGFy
-Z2MsIGFyZ3YsIG9wdHN0cmluZywgbG9uZ29wdHMsIE5VTEwpOw0KKw0KKwkJaWYgKG9wdCA9PSAt
-MSkNCisJCQlicmVhazsNCisNCisJCXN3aXRjaCAob3B0KSB7DQorCQljYXNlICdzJzoNCisJCQlt
-Yl90b19zZW5kID0gYXRvaShvcHRhcmcpOw0KKwkJCWJyZWFrOw0KKwkJY2FzZSAnYyc6DQorCQkJ
-cGVlcl9jaWQgPSBhdG9pKG9wdGFyZyk7DQorCQkJYnJlYWs7DQorCQljYXNlICdwJzoNCisJCQlw
-b3J0ID0gYXRvaShvcHRhcmcpOw0KKwkJCWJyZWFrOw0KKwkJY2FzZSAncic6DQorCQkJcnhfYnVm
-X3NpemUgPSBhdG9pKG9wdGFyZyk7DQorCQkJYnJlYWs7DQorCQljYXNlICd0JzoNCisJCQl0eF9i
-dWZfc2l6ZSA9IGF0b2kob3B0YXJnKTsNCisJCQlicmVhazsNCisJCWNhc2UgJ20nOg0KKwkJCWlm
-IChzdHJjbXAob3B0YXJnLCAiY2xpZW50IikgPT0gMCkNCisJCQkJY2xpZW50X21vZGUgPSAxOw0K
-KwkJCWVsc2UgaWYgKHN0cmNtcChvcHRhcmcsICJzZXJ2ZXIiKSA9PSAwKQ0KKwkJCQljbGllbnRf
-bW9kZSA9IDA7DQorCQkJZWxzZSB7DQorCQkJCWZwcmludGYoc3RkZXJyLCAiLS1tb2RlIG11c3Qg
-YmUgXCJjbGllbnRcIiBvciBcInNlcnZlclwiXG4iKTsNCisJCQkJcmV0dXJuIEVYSVRfRkFJTFVS
-RTsNCisJCQl9DQorCQkJYnJlYWs7DQorCQljYXNlICd6JzoNCisJCQl6ZXJvY29weSA9IDE7DQor
-CQkJYnJlYWs7DQorCQlkZWZhdWx0Og0KKwkJCWJyZWFrOw0KKwkJfQ0KKw0KKwl9DQorDQorCWlm
-ICghdHhfYnVmX3NpemUpDQorCQl0eF9idWZfc2l6ZSA9IERFRkFVTFRfVFhfU0laRTsNCisNCisJ
-aWYgKCFyeF9idWZfc2l6ZSkNCisJCXJ4X2J1Zl9zaXplID0gREVGQVVMVF9SWF9TSVpFOw0KKw0K
-Kwl0eF9idWZfc2l6ZSAqPSBQQUdFX1NJWkU7DQorCXJ4X2J1Zl9zaXplICo9IFBBR0VfU0laRTsN
-CisNCisJc3JhbmQodGltZShOVUxMKSk7DQorDQorCWlmIChjbGllbnRfbW9kZSkNCisJCXJ1bl9j
-bGllbnQoemVyb2NvcHkpOw0KKwllbHNlDQorCQlydW5fc2VydmVyKCk7DQorDQorCXJldHVybiAw
-Ow0KK30NCi0tIA0KMi4yNS4xDQo=
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   feb9c5e19e913b53cb536a7aa7c9f20107bb51ec
+commit: cd900f181ad6b548a8feded5dd224f789f09b1c6 power/supply: Add ltc4162-l-charger
+date:   1 year, 4 months ago
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220512/202205121341.cUtTcrOF-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cd900f181ad6b548a8feded5dd224f789f09b1c6
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout cd900f181ad6b548a8feded5dd224f789f09b1c6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/power/supply/ltc4162-l-charger.c:912:34: warning: 'ltc4162l_of_match' defined but not used [-Wunused-const-variable=]
+     912 | static const struct of_device_id ltc4162l_of_match[] = {
+         |                                  ^~~~~~~~~~~~~~~~~
+
+
+vim +/ltc4162l_of_match +912 drivers/power/supply/ltc4162-l-charger.c
+
+   911	
+ > 912	static const struct of_device_id ltc4162l_of_match[] = {
+   913		{ .compatible = "lltc,ltc4162-l", },
+   914		{ },
+   915	};
+   916	MODULE_DEVICE_TABLE(of, ltc4162l_of_match);
+   917	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
