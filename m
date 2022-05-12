@@ -2,116 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 140C9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD5C1C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354033AbiELMud (ORCPT
+        id S1353481AbiELMvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
+        Thu, 12 May 2022 08:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354040AbiELMuG (ORCPT
+        with ESMTP id S1354173AbiELMvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:50:06 -0400
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E348224F0D1;
-        Thu, 12 May 2022 05:50:00 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1652359798; bh=98g8YRRaj0MjLN/x5A3xUMwHLtbWASMbKhpV4ODYJwA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=tVMw0JJ/AyQIOHEqcRg0sX2VzH8JcEIEUEFPyZTAqBF/KNFfOb9TYTQhqrbYRJX92
-         7r19nB+YayrLVuGTlh7cRKVzsJG/wkjKtGGLNQIt/ioWaBq+/5R2BswduY/Hs7oV9c
-         3MDYLsMLqenk+6vV/bhh/KjlUYfg5SkXsKYvPinX9kaBCVpzqC7RnVL1C+E6GEhZRq
-         pfEsLCzv5SHOVs3RtrjEvPVZ9cVjVJtzJmME1LkbM3GDsdo79JgeQDzsUoseuH7JzY
-         3hOXBol2j40eMSZ+YhmdT21COCtvPD7V6ujeHGQg5BiIxtdapjwpEEhIAqOVzZ4HLw
-         p6rxsSECQBKzQ==
-To:     Pavel Skripkin <paskripkin@gmail.com>,
-        ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-In-Reply-To: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
-References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
-Date:   Thu, 12 May 2022 14:49:57 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87r14yhq4q.fsf@toke.dk>
+        Thu, 12 May 2022 08:51:01 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D442FFD6;
+        Thu, 12 May 2022 05:51:00 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id n8so4784701plh.1;
+        Thu, 12 May 2022 05:51:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=27EwMlbk53oJO3mj5MrkPCMTBgjzsri0OLoJeRdN+Xk=;
+        b=hwrCWIKn1lNQ5iP8cTprtxDiQdgsMreSVVUAyf+2m6lva9mk0B0WJgcFR1btdyKcAF
+         r5U9AETUU9dZQ+8otEPYCoyqsMDop7ywLHzo1YvBPwEdKZ/zDp8iJr6wRl6YPfsmBdUC
+         Tg25iaD2FO8Kil7UA+XBjE7bHdfOpyNwJStR2ZvBB4grxA0bRtC0/BQ69JxQlUB4ppCK
+         W5tMj2DMn5bbxGq7SbLEorDVyvLZ/+ezEShhhMqAj+63M+A33wTtbcVYXaLd8X3ds+bR
+         LLNM7GpiBk8YyYQYlHnQEGXpXbtTzLht72W359j/qNant5OaJfCnuZaAFpmGERFMpLPq
+         p8sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=27EwMlbk53oJO3mj5MrkPCMTBgjzsri0OLoJeRdN+Xk=;
+        b=3/5j2eGM5weaqer8NWU5kX1++O98vjMYTLbHkGRrQFbHEb7OK6tE6DcSucjg6w7KA+
+         WacC3pWOVZqyAHjMRblYAxI75fqif/3NGNjifky+gA6TPXb7zzK2PZLokDaBsSKVfcSO
+         G0fv+YTMoBDJ3PgeWMWU1YFnJYIYe1XAGekoEWsv3emBO3Ari/EAh7j+YZLb0M0nAquy
+         sImJiDqmmjMD5pjdyuMK2m47uvO+MOJ0RWetBvVWlfzvHViJQOk5mg6mHIJdtYGHmGDq
+         BcKdKk8jraqMDMGtbIyVIiPFqKXFnGcPMLk6uxlm/5qpPw5xcTwSmaI+VcbGdVx6F27J
+         uukA==
+X-Gm-Message-State: AOAM532b9A6zCTctmvx3g7//yHwUZZ5yMqoza9cwUVhRXJpsMcV29JQU
+        yMBg+bxOWEWDDGMQsgCNtMGjx1hza4AbRqbGWw==
+X-Google-Smtp-Source: ABdhPJxnxpgAp4wv1yi22WGwb29rdhwZR+gxdFpDHWtsY7kBvNH4oytzIcA1sPJ4IFbevGo+nmHRtWbths9+TvSAhPk=
+X-Received: by 2002:a17:90a:db45:b0:1d9:29d0:4c6e with SMTP id
+ u5-20020a17090adb4500b001d929d04c6emr10742419pjx.46.1652359859746; Thu, 12
+ May 2022 05:50:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220512112106.2356120-1-zheyuma97@gmail.com> <CAHp75Vfz-Qq3qo3Re7tsL0mfXNVYZYspGDFCDXhtZxwac7bEiw@mail.gmail.com>
+In-Reply-To: <CAHp75Vfz-Qq3qo3Re7tsL0mfXNVYZYspGDFCDXhtZxwac7bEiw@mail.gmail.com>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Thu, 12 May 2022 20:50:48 +0800
+Message-ID: <CAMhUBjkbLkA-aw4rUwFAsxZpGrOefUA515RnhXY0EjECi3hdLA@mail.gmail.com>
+Subject: Re: [PATCH] gpio: ml-ioh: Add devm_free_irq() call to remove flow
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pavel Skripkin <paskripkin@gmail.com> writes:
+On Thu, May 12, 2022 at 8:03 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Thu, May 12, 2022 at 1:21 PM Zheyu Ma <zheyuma97@gmail.com> wrote:
+> >
+> > When removing the module, we will get the following flaw:
+>
+> Thanks for the report and patch! My comments below.
+>
+> > [   14.204955] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'gpio_ml_ioh'
+> > [   14.205827] WARNING: CPU: 0 PID: 305 at fs/proc/generic.c:717 remove_proc_entry+0x389/0x3f0
+> > [   14.209994] RIP: 0010:remove_proc_entry+0x389/0x3f0
+> > [   14.217820] Call Trace:
+> > [   14.218057]  <TASK>
+> > [   14.218264]  unregister_irq_proc+0x14c/0x170
+> > [   14.218674]  irq_free_descs+0x94/0xe0
+> > [   14.219019]  mp_unmap_irq+0xb6/0x100
+> > [   14.219357]  acpi_unregister_gsi_ioapic+0x27/0x40
+> > [   14.219796]  acpi_pci_irq_disable+0x1d3/0x320
+> > [   14.220206]  pci_disable_device+0x1ad/0x380
+> > [   14.220613]  ioh_gpio_remove+0xc5/0xe0 [gpio_ml_ioh]
+> > [   14.221075]  pci_device_remove+0x92/0x240
+>
+> Can we remove not so important lines from the above? I guess ~3-4
+> selected ones would be enough.
+>
+> > Fix this bug by adding devm_free_irq() call to remove flow.
+>
+> Fixes tag?
+>
+> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+>
+> The code looks okay on the first glance.
+>
+> P.S. Do you have such hardware?
 
-> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb(). The
-> problem was in incorrect htc_handle->drv_priv initialization.
->
-> Probable call trace which can trigger use-after-free:
->
-> ath9k_htc_probe_device()
->   /* htc_handle->drv_priv = priv; */
->   ath9k_htc_wait_for_target()      <--- Failed
->   ieee80211_free_hw()		   <--- priv pointer is freed
->
-> <IRQ>
-> ...
-> ath9k_hif_usb_rx_cb()
->   ath9k_hif_usb_rx_stream()
->    RX_STAT_INC()		<--- htc_handle->drv_priv access
->
-> In order to not add fancy protection for drv_priv we can move
-> htc_handle->drv_priv initialization at the end of the
-> ath9k_htc_probe_device() and add helper macro to make
-> all *_STAT_* macros NULL save.
->
-> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-> Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
-> Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Thanks for your comments, I've resend the patch.
+Actually, I do not have the hardware. I test the driver with a virtual
+device instead.
 
-Could you link the original syzbot report in the commit message as well,
-please? Also that 'tested-by' implies that syzbot run-tested this? How
-does it do that; does it have ath9k_htc hardware?
-
-> ---
->
-> Changes since v2:
-> 	- My send-email script forgot, that mailing lists exist.
-> 	  Added back all related lists
->
-> Changes since v1:
-> 	- Removed clean-ups and moved them to 2/2
->
-> ---
->  drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
->  drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
->  2 files changed, 7 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-> index 6b45e63fae4b..141642e5e00d 100644
-> --- a/drivers/net/wireless/ath/ath9k/htc.h
-> +++ b/drivers/net/wireless/ath/ath9k/htc.h
-> @@ -327,11 +327,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
->  }
->  
->  #ifdef CONFIG_ATH9K_HTC_DEBUGFS
-> -
-> -#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-> -#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-> -#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-> -#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-> +#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
-> +#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-> +#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-> +#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-> +#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
->  #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
-
-s/SAVE/SAFE/ here and in the next patch (and the commit message).
-
--Toke
+Zheyu Ma
