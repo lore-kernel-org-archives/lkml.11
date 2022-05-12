@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8832C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 675AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353962AbiELMta (ORCPT
+        id S1353986AbiELMtj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
+        Thu, 12 May 2022 08:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353944AbiELMtR (ORCPT
+        with ESMTP id S1353989AbiELMtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:49:17 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961DC24D5BA
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:49:16 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id l18so10000749ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:49:16 -0700 (PDT)
+        Thu, 12 May 2022 08:49:31 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC8B24EA17
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:49:27 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id p4so6177561edx.0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:49:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sartura-hr.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JRHr7fdKzwvGcxbeg/0F2EjB5DJIbPSUWRot3RR3KEM=;
-        b=5qOD4m+rBHldN3nysblgLsH8WptxZXeWg5hx6uJu3cbY2IGpK+yqPo0D9LlT2NN16E
-         E4OyeFyGj8+nWQkxMG8rwSFnrfjUh5s8zg/81RhxraPhqufoajLtqieo5ayU+N7neqd3
-         etBerYcEppc3g1dczYesZFKENQWRT0NwCJaILKYNQLpJ/QQ/olSeXlsikKdYeDNNg77t
-         KiJVbi7iyF3TcBkZpDGTblA++wOYF3NOivBt+zUs7zdVvoJwilBBiCZ4WKeRj++svovi
-         ePsQubUWVxw1v87rHF1GKT/qmQtofag1Vpkn025cWjwVpPwnGVMOVE2SgThziS/AXCvu
-         qwgQ==
+        bh=ffQ4orED3aiUEBYoSxBZzhQ5xLKzp9tGr66X/MdgpYE=;
+        b=wwpR3bqanEewTxLg7wS9F7WsDB2jEc7163B2KtFP6RN2s3xUdnTsDuZSPQ2imwuA49
+         JdxEAusdOFqPwN4TG3gwvIsHBwnFJxk68POGam6rePgP3g2lGtA/Osr8JGlRmOTw0ETj
+         YzcMnr6f3x+s5xWsuvX9/QDjIEKPcVP6gxwFMVKqteQ/Wy0Q2Y+h4Vci3k8US261yDlH
+         I4tMNg4UeBH1BO7eBgnDgT8emwRm5GdGGCnf2ZYCLObez2XHOjzSfu750MvaX2eGRtat
+         YIp+59N7Qz/2PmS/D6Onpel4EIYhNvYaa6JAkx+lmyNMJtFkICXUnY0a5hkLR0MUr4dV
+         8+5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JRHr7fdKzwvGcxbeg/0F2EjB5DJIbPSUWRot3RR3KEM=;
-        b=02yPfOfG6iCINURCCzJ/WKEF9QIah65htVIXm6ASX9EXwPCE7Kec44OGLfeMd0TJuM
-         I7+rpcEuuE80lyemLl09QzB7WB5cHYhTSqycDFHku46TukUoOZr2V/ZxDREtsKmrQICY
-         EH5KGiWef/tXq04dBw5TTz9xMw3WCaORELYnq3f8v3ljDw+0XpL3mIak9xyTpP67++Lx
-         BTAr5IYZTHLHnMN/EByCYlxmQjo/9NXoNtPx/nuI2U9TWEaK8kzTfvEqVEk2qVhVNSW2
-         WQz5f3e24QV5yhHVH/FQ1FVYtxojfQJ5OAYA3ARU2H25oshnpQEkhttqe3kyXwx0w5A3
-         fmvA==
-X-Gm-Message-State: AOAM533ljYwsT5D0MT42vECpMYRL4YMedGGMJ1WC6oJLb1WE4Y5LpOAg
-        mJeO3YwLhypWdwWwvMl137ZLLw==
-X-Google-Smtp-Source: ABdhPJypzDPM2tzbDNyHxubPQ3WDgA0YQyMnGC3nOD27vkwpwtsGZKgEbnWRKML0sYHEC6aYdbAS5w==
-X-Received: by 2002:a17:907:7b89:b0:6f4:9b92:c2ac with SMTP id ne9-20020a1709077b8900b006f49b92c2acmr29566908ejc.409.1652359755126;
-        Thu, 12 May 2022 05:49:15 -0700 (PDT)
+        bh=ffQ4orED3aiUEBYoSxBZzhQ5xLKzp9tGr66X/MdgpYE=;
+        b=TU8nZWf2yEvW/triSmy9EDOCeEjlPCiHBFk5E+UdAoCEPjbrw0cgfnLfEQ2+spc4D2
+         Zr3VPUTuOYTvF6r5Guj3of2QaqzOoeGCTmOCITztN4dAUlF10IHpMt60e/dfvB5yjmKj
+         VbDKLDdJ5RSXqiq/osv5XwNFoYmzhft2RzfiWmG9IBCQ2IR0o/3WuuRA41nxApDK2Sl/
+         YhWVPlqo7jh4+Que4vPNMOIQOQ75tNLt+fNE0jafrGvCKQFf4f3f5B+CExGr3MofncHe
+         yql9ykEUMOQDkKaqQWlWUr7Ym7CM9/3pxqvntJYtdODRottisXN9rxsuDRkez3Xt+UE3
+         e+4w==
+X-Gm-Message-State: AOAM530yTYHxjrx+T0LZVpSnTOWJQnqt6cwfJoC0Q2Qbx0fPUzMD7/ZD
+        zb7RMbyfDb5PHltCdjXmgr963vtmQcB4hIq/
+X-Google-Smtp-Source: ABdhPJxNaBDvuq2EJfEryi0nCUHgYuhIDbfcTiJwRKQw413HGCsqeJ2CMmt/NO/XMXyqwU1QUeTMJQ==
+X-Received: by 2002:a05:6402:3590:b0:427:ba05:6f19 with SMTP id y16-20020a056402359000b00427ba056f19mr35666281edc.334.1652359766319;
+        Thu, 12 May 2022 05:49:26 -0700 (PDT)
 Received: from fedora.robimarko.hr (dh207-98-58.xnet.hr. [88.207.98.58])
-        by smtp.googlemail.com with ESMTPSA id h3-20020a170906828300b006f3ef214dc2sm2109475ejx.40.2022.05.12.05.49.14
+        by smtp.googlemail.com with ESMTPSA id h3-20020a170906828300b006f3ef214dc2sm2109475ejx.40.2022.05.12.05.49.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 05:49:14 -0700 (PDT)
+        Thu, 12 May 2022 05:49:25 -0700 (PDT)
 From:   Robert Marko <robert.marko@sartura.hr>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         andrew@lunn.ch, gregory.clement@bootlin.com,
@@ -56,9 +56,9 @@ To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 Cc:     Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH v3 03/11] arm64: dts: marvell: espressobin-ultra: add generic Espressobin compatible
-Date:   Thu, 12 May 2022 14:48:57 +0200
-Message-Id: <20220512124905.49979-3-robert.marko@sartura.hr>
+Subject: [PATCH v3 10/11] dt-bindings: marvell: armada-37xx: add Methode eDPU compatible
+Date:   Thu, 12 May 2022 14:49:04 +0200
+Message-Id: <20220512124905.49979-10-robert.marko@sartura.hr>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220512124905.49979-1-robert.marko@sartura.hr>
 References: <20220512124905.49979-1-robert.marko@sartura.hr>
@@ -68,30 +68,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Espressobin Ultra is part of the Espressobin family and shares the basic
-design, so add the generic "globalscale,espressobin" compatible to it as
-well.
+Document compatible for the Methode eDPU Armada 3720 based board.
 
 Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes in v3:
+* Alphabetical ordering
+---
+ Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-index 070725b81be5..1b2ed63ae6a2 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-@@ -12,8 +12,8 @@
- 
- / {
- 	model = "Globalscale Marvell ESPRESSOBin Ultra Board";
--	compatible = "globalscale,espressobin-ultra", "marvell,armada3720",
--		     "marvell,armada3710";
-+	compatible = "globalscale,espressobin-ultra", "globalscale,espressobin",
-+		     "marvell,armada3720", "marvell,armada3710";
- 
- 	aliases {
- 		/* ethernet1 is WAN port */
+diff --git a/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml
+index 4460608ac1e1..4ace605a8701 100644
+--- a/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml
++++ b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml
+@@ -20,6 +20,7 @@ properties:
+               - cznic,turris-mox
+               - globalscale,espressobin
+               - marvell,armada-3720-db
++              - methode,edpu
+               - methode,udpu
+           - const: marvell,armada3720
+           - const: marvell,armada3710
 -- 
 2.36.1
 
