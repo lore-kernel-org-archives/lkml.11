@@ -2,90 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19673C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:33:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 348EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352669AbiELKdU (ORCPT
+        id S1352667AbiELKd3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 06:33:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59090 "EHLO
+        Thu, 12 May 2022 06:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352667AbiELKdN (ORCPT
+        with ESMTP id S1352688AbiELKdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 06:33:13 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D51622308F
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:33:12 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ks9so9334798ejb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:33:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=1cXKpnTu/ZLXUfBczt5nbt9dexjJtFDU54PLSn0k7Lg=;
-        b=cInE4pzJ40MvUmXYRlgjXJyoRL41LQ3yButhtEWGFZ7/8Zd06i5srjA1TH9OefEwgW
-         sjq37wkE7jsBaKVh/jesKQeY2rrxD4nK7uylhVcSb7XGAmBCXSXwYFzeMgBP5kj0n9lF
-         1nv02uY15D5juyGK8jJx633QgbhqKnw6QBh7BDSVoLV6EOTSzscsvTjatbXONURJCAxB
-         tquSsQ5RhYnP0vCSEJeB1CnXLYkvfJTNdW4SJI9NYHfH5mEzHgj02Uh1XrpJsQ+I7XUL
-         AyTR0uqMagN5HtlXFV6ud1YWKdOoIAiF+OMTI3yDY8mGyMGxVulg9BgArlT/jUHxAT4a
-         b7lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1cXKpnTu/ZLXUfBczt5nbt9dexjJtFDU54PLSn0k7Lg=;
-        b=bsNMQpaDOY4jSaN8VeuOwxC2zC+UcL6q18pZ5Hvg0VLmpz5h44jj44AQB6zwRdG7Yv
-         dHF+7aE4nPiAPXuoQrydSQj82gM3egmJR+/DUqFr7h14PVrkQvfarHKOMcM4Xfc7fMuT
-         FbZJxOdXZlqjtTY/JsOYhNHe4ZHkzM1uii0zqALR3F8PXbG4qfFFGj7k53A/FriMx7Al
-         rz+1Bu5LJRWMFYt9lnsPsMbHiUk+03PXKixvta14ysM6C8doTM3nZpmYUSWahd86aWYG
-         Lm7ZXd5yW3qZa/mtYYjTBnDic0IzOnaXjaUHCqXfgapozmy2smUheYA9OZj0CkXsPyHE
-         FgPg==
-X-Gm-Message-State: AOAM533LuGg5G9YKMVKSp05gxUheQ2/GpabBZ2usmPfc/8G8Vl8sW9Bc
-        g4wgh6nnt42KaNiBb//kRNFtDA==
-X-Google-Smtp-Source: ABdhPJznRmMGMeNHo+cuaQf//fXNuvOGcK63Pv0Iq0mM3nOpz8Lcf1qQAMT/baMrFLmAsXXsbW0Dlw==
-X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id nd14-20020a170907628e00b006d9c6fa6168mr29025209ejc.132.1652351590726;
-        Thu, 12 May 2022 03:33:10 -0700 (PDT)
-Received: from [192.168.0.158] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id dx18-20020a170906a85200b006f3a8b81ff7sm2019506ejb.3.2022.05.12.03.33.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 03:33:10 -0700 (PDT)
-Message-ID: <eba74198-b78e-1577-846f-f58494fb09f1@linaro.org>
-Date:   Thu, 12 May 2022 12:33:09 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] ASoC: samsung: Fix refcount leak in aries_audio_probe
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Thu, 12 May 2022 06:33:21 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315F722384E;
+        Thu, 12 May 2022 03:33:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652351597; x=1683887597;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=j2jLl94ZVv6+GyAHgqDQMoLNb5is4/daKLdqORUvrdg=;
+  b=c8gsRy5vrkVgf5ltd4jkh27OZFBQbAjROQCHP1hb46tNjRnfIA1ouAFz
+   sIBlWfB43/C/oc5kT6TRCMomhblfCkLJzMTCtbTcSsQ4FWwzpy6YX1rVo
+   YphJ6sDG8AkBECaC6mJiu7oK6isTxjWjMb1+9hFeaXUbkUWhjO6u9kakB
+   1Vj0AT1bi876t577ACjpv4boZtolbHugcKX5IbPmMi1r5ztoY5dmcitxL
+   I9JJLhwgiPgomiG4SwQHLiFcQ278Bbfe9XkNfX4fjfpag1EIZa6O717N8
+   ZPuf3dR+DTErGSUn/Ailsd91AXdBtAeDswP53y7NRwCLnJKA+btXZRUMO
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269637629"
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="269637629"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 03:33:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="711867159"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 12 May 2022 03:33:11 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1np686-000KIM-T5;
+        Thu, 12 May 2022 10:33:10 +0000
+Date:   Thu, 12 May 2022 18:32:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jonathan Bakker <xc-racer2@live.ca>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-References: <20220512043828.496-1-linmq006@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220512043828.496-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] proximity: vl53l0x: Prefer already initialized
+ interrupt flags
+Message-ID: <202205121820.qRBa5PNP-lkp@intel.com>
+References: <20220511214718.50879-3-markuss.broks@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511214718.50879-3-markuss.broks@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/05/2022 06:38, Miaoqian Lin wrote:
-> of_parse_phandle() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when done.
-> If extcon_find_edev_by_node() fails, it doesn't call of_node_put()
-> Calling of_node_put() after extcon_find_edev_by_node() to fix this.
-> 
-> Fixes: 7a3a7671fa6c ("ASoC: samsung: Add driver for Aries boards")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Hi Markuss,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on robh/for-next linux/master linus/master v5.18-rc6 next-20220511]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Markuss-Broks/Add-support-for-ToF-sensor-on-Yoshino-platform/20220512-054917
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+config: s390-randconfig-r032-20220509 (https://download.01.org/0day-ci/archive/20220512/202205121820.qRBa5PNP-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/b4103f031e2c0265ae4f15f107341bcfc83008f0
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Markuss-Broks/Add-support-for-ToF-sensor-on-Yoshino-platform/20220512-054917
+        git checkout b4103f031e2c0265ae4f15f107341bcfc83008f0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/iio/proximity/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/iio/proximity/vl53l0x-i2c.c:60:18: error: call to undeclared function 'irq_get_trigger_type'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           int irq_flags = irq_get_trigger_type(client->irq);
+                           ^
+   1 error generated.
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+vim +/irq_get_trigger_type +60 drivers/iio/proximity/vl53l0x-i2c.c
 
+    56	
+    57	static int vl53l0x_configure_irq(struct i2c_client *client,
+    58					 struct iio_dev *indio_dev)
+    59	{
+  > 60		int irq_flags = irq_get_trigger_type(client->irq);
+    61		struct vl53l0x_data *data = iio_priv(indio_dev);
+    62		int ret;
+    63	
+    64		if (!irq_flags)
+    65			irq_flags = IRQF_TRIGGER_FALLING;
+    66	
+    67		ret = devm_request_irq(&client->dev, client->irq, vl53l0x_handle_irq,
+    68				irq_flags, indio_dev->name, indio_dev);
+    69		if (ret) {
+    70			dev_err(&client->dev, "devm_request_irq error: %d\n", ret);
+    71			return ret;
+    72		}
+    73	
+    74		ret = i2c_smbus_write_byte_data(data->client,
+    75				VL_REG_SYSTEM_INTERRUPT_CONFIG_GPIO,
+    76				VL_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
+    77		if (ret < 0)
+    78			dev_err(&client->dev, "failed to configure IRQ: %d\n", ret);
+    79	
+    80		return ret;
+    81	}
+    82	
 
-Best regards,
-Krzysztof
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
