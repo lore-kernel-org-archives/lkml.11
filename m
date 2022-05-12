@@ -2,132 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A480FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353599AbiELMVj (ORCPT
+        id S1353622AbiELMWS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
+        Thu, 12 May 2022 08:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353632AbiELMVb (ORCPT
+        with ESMTP id S1352944AbiELMWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:21:31 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D8D62235;
-        Thu, 12 May 2022 05:21:29 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CCJDnq014644;
-        Thu, 12 May 2022 12:21:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=bCU0bOeBXG5Y6DNauHOVFi5fNBXbyQkfeBK2dG8rdvw=;
- b=ZjvQU0ZHGwtBdLWlUg+S2cVl1S5V40JJA0RHaSjyZrAXWD5cDXPJTl2d5Qr51ZUKK3j3
- 8aNKwMtM0XLmdU10c8ANHjdStcRmShtDxnJanaiJQVZlv7W6n2TtbZadg5MVTVyl7w2W
- 0pB2Sg/EOxoPLKFR6QfQgMTBKzL3IOsbIsEKVLy7I2uPrfwHX2p/oqzlCyiMWNJPS+rK
- AaGjIy38aH6mHN+DWVpwohkxa89DYJX7EFcLefhyvw32iSz/gHkSON6heSI4J2GNu8VA
- T+wlisDnvWy8IzpyQ8ujNtKQQvZ7LnAOolXpoE+JYP1sLv9WaHI7jOWDdAJ3oyBlU3Ct PQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g124rg1u1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 12:21:24 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24CCKCMV019771;
-        Thu, 12 May 2022 12:21:24 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g124rg1sr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 12:21:23 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CCJdYr001036;
-        Thu, 12 May 2022 12:21:22 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma05fra.de.ibm.com with ESMTP id 3fwgd8wg5j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 12:21:21 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CCLJTo52560360
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 12:21:19 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9B378A4054;
-        Thu, 12 May 2022 12:21:19 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5ACD7A405B;
-        Thu, 12 May 2022 12:21:18 +0000 (GMT)
-Received: from sig-9-65-70-87.ibm.com (unknown [9.65.70.87])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 12 May 2022 12:21:18 +0000 (GMT)
-Message-ID: <99541f08e8b554dea59334005cafb0af978f9a05.camel@linux.ibm.com>
-Subject: Re: [PATCH] tpm: sleep at least <...> ms in tpm_msleep()
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Johannes Holland <johannes.holland@infineon.com>,
-        Nayna <nayna@linux.vnet.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        peterhuewe@gmx.de, jgg@ziepe.ca
-Date:   Thu, 12 May 2022 08:21:17 -0400
-In-Reply-To: <YnvTSqRgYkWu0qgp@kernel.org>
-References: <20220510112902.23213-1-johannes.holland@infineon.com>
-         <YnvTSqRgYkWu0qgp@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: zx-3t_x1YUzXSSJZt9EnPRcjXHiHQJ8i
-X-Proofpoint-ORIG-GUID: INxetDhYIMU4i4YGIGUtGGi-9gmPTIp5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-12_10,2022-05-12_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- lowpriorityscore=0 priorityscore=1501 adultscore=0 spamscore=0
- impostorscore=0 malwarescore=0 bulkscore=0 suspectscore=0 clxscore=1011
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205120056
+        Thu, 12 May 2022 08:22:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9554E61627
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:22:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B19461F33
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 12:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB047C385B8;
+        Thu, 12 May 2022 12:22:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652358130;
+        bh=xBvJ+NEzbcrMHgxSHTdgneNbEkOjaQal2OdHHEGDOnk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=e59s6kMe1C2DA3arRhPn7+PEEUUDfJ7eM4AXLvhOe5l/Y4xP4/2ZknknxkK9czXaV
+         QZbnTpuH5b96astiM/zo4pHLa7/6p7G1C1plRz10gio7sOiDeF2etWlVsmhDIadlHv
+         BmXtKhkPYJo3yWeuKJoQjKyVinV1MyngieJNjF9wYByT0u7x54KIJ2tR5uESGqHLxj
+         Qy+NwvBNx68vOHlS6qHhy7IOJHCvxKCKQp1vDIiX6ajwxxwj3rqNSPzpzjj3A5laCV
+         lyv17YPXUzU6jgzByAOijVoRl9Otdp/zxS+/8BUlCAx8oB+L01vrnKJl2XoCSLmBEC
+         tX7q/0frRHBLw==
+Date:   Thu, 12 May 2022 17:52:06 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Linux Phy <linux-phy@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL]: Generic phy updates for v5.19
+Message-ID: <Ynz77p8KWnLzSzK3@matsya>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="JeNhZ5GR7yUpIzDM"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-11 at 18:16 +0300, Jarkko Sakkinen wrote:
-> On Tue, May 10, 2022 at 01:29:03PM +0200, Johannes Holland wrote:
-> > To comply with protocol requirements, minimum polling times must often
-> > be adhered to. Therefore, a macro like tpm_msleep() should sleep at
-> > least the given amount of time (not up to the given period). Have
-> > tpm_msleep() sleep at least the given number of milliseconds.
-> > 
-> > Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
-> > ---
-> >  drivers/char/tpm/tpm.h | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/char/tpm/tpm.h b/drivers/char/tpm/tpm.h
-> > index 2163c6ee0d36..0971b55fffe3 100644
-> > --- a/drivers/char/tpm/tpm.h
-> > +++ b/drivers/char/tpm/tpm.h
-> > @@ -185,8 +185,8 @@ int tpm_pm_resume(struct device *dev);
-> >  
-> >  static inline void tpm_msleep(unsigned int delay_msec)
-> >  {
-> > -	usleep_range((delay_msec * 1000) - TPM_TIMEOUT_RANGE_US,
-> > -		     delay_msec * 1000);
-> > +	usleep_range(delay_msec * 1000, (delay_msec * 1000)
-> > +		     + TPM_TIMEOUT_RANGE_US);
-> >  };
-> >  
-> >  int tpm_chip_start(struct tpm_chip *chip);
-> > -- 
-> > 2.34.1
-> > 
-> 
-> For this I would really like to hear a 2nd opinion from Nayna and Mimi.
 
-This patch reverts commit 5ef924d9e2e8 ("tpm: use tpm_msleep() value as
-max delay").    Are you experiencing TPM issues that require it?
+--JeNhZ5GR7yUpIzDM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-thanks,
+Hello Greg,
 
-Mimi
+Please pull to receive the Generic phy updates for v5.19. This time no
+new driver, few driver with new chip support and driver updates. As
+usual the changes are already in linux-next.
 
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
 
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy.git tags/phy-=
+for-5.19
+
+for you to fetch changes up to d413a34932f98cc5bf0ffdd332884a8b63a1a7f9:
+
+  phy: qcom-qmp: rename error labels (2022-05-03 10:12:03 +0530)
+
+----------------------------------------------------------------
+phy-for-5.19
+
+  - New support:
+        - LVDS configuration support and implementation in fsl driver
+	- Qualcomm UFS phy support for SM6350 and USB PHY for SDX65
+	- Allwinner D-PHY Rx mode support
+	- Yamilfy Mixel mipi-dsi-phy
+
+  - Updates:
+	- Documentation for phy ops order
+        - Can transceiver mux support
+	- Qualcomm QMP phy updates
+	- Uniphier phy updates
+
+----------------------------------------------------------------
+AngeloGioacchino Del Regno (2):
+      phy: mediatek: phy-mtk-mipi-dsi: Simplify with dev_err_probe()
+      phy: mediatek: phy-mtk-hdmi: Simplify with dev_err_probe()
+
+Aswath Govindraju (1):
+      phy: phy-can-transceiver: Add support for setting mux
+
+Biju Das (1):
+      dt-bindings: phy: renesas,usb2-phy: Document RZ/G2UL phy bindings
+
+Jiapeng Chong (1):
+      phy: rockchip-inno-usb2: Clean up some inconsistent indenting
+
+Johan Hovold (6):
+      phy: qcom-qmp: fix phy-descriptor kernel-doc typo
+      phy: qcom-qmp: fix struct clk leak on probe errors
+      phy: qcom-qmp: fix reset-controller leak on probe errors
+      phy: qcom-qmp: switch to explicit reset helpers
+      phy: qcom-qmp: fix pipe-clock imbalance on power-on failure
+      phy: qcom-qmp: rename error labels
+
+Jules Maselbas (3):
+      phy: core: Add documentation of phy operation order
+      phy: core: Update documentation syntax
+      phy: core: Warn when phy_power_on is called before phy_init
+
+Kunihiko Hayashi (5):
+      dt-bindings: phy: uniphier-usb2: Add vbus-supply
+      dt-bindings: phy: uniphier-usb3ss: Treat vbus-supply as optional
+      dt-bindings: phy: uniphier-ahci: Fix missing reset-names
+      dt-bindings: phy: uniphier-usb3hs: Fix incorrect clock-names and rese=
+t-names
+      dt-bindings: phy: uniphier: Clean up clocks, resets, and their names =
+using compatible string
+
+Liu Ying (4):
+      phy: Add LVDS configuration options
+      dt-bindings: phy: Convert mixel,mipi-dsi-phy to json-schema
+      dt-bindings: phy: mixel: mipi-dsi-phy: Add Mixel combo PHY support fo=
+r i.MX8qxp
+      phy: freescale: phy-fsl-imx8-mipi-dphy: Add i.MX8qxp LVDS PHY mode su=
+pport
+
+Luca Weiss (2):
+      dt-bindings: phy: qcom,qmp: Add SM6350 UFS PHY bindings
+      phy: qcom-qmp: Add SM6350 UFS PHY support
+
+Marek Vasut (1):
+      phy: freescale: imx8m-pcie: Handle IMX8_PCIE_REFCLK_PAD_UNUSED
+
+Minghao Chi (CGEL ZTE) (2):
+      phy/rockchip: Use of_device_get_match_data()
+      phy/rockchip: Use of_device_get_match_data()
+
+Paul Kocialkowski (2):
+      dt-bindings: sun6i-a31-mipi-dphy: Add optional direction property
+      phy: allwinner: phy-sun6i-mipi-dphy: Support D-PHY Rx mode for MIPI C=
+SI-2
+
+Rob Herring (1):
+      dt-bindings: phy: marvell,armada-3700-utmi-host-phy: Fix incorrect co=
+mpatible in example
+
+Rohit Agarwal (2):
+      dt-bindings: phy: qcom,qmp: Add SDX65 USB PHY binding
+      phy: qcom-qmp: Add support for SDX65 QMP PHY
+
+Samuel Holland (6):
+      phy: rockchip-inno-usb2: Fix muxed interrupt support
+      phy: rockchip-inno-usb2: Do not check bvalid twice
+      phy: rockchip-inno-usb2: Do not lock in bvalid IRQ handler
+      phy: rockchip-inno-usb2: Support multi-bit mask properties
+      phy: rockchip-inno-usb2: Handle bvalid falling
+      phy: rockchip-inno-usb2: Handle ID IRQ
+
+Swapnil Jakhade (1):
+      phy: cadence: Sierra: Add TI J721E specific PCIe multilink lane confi=
+guration
+
+ .../phy/allwinner,sun6i-a31-mipi-dphy.yaml         |  12 +
+ .../bindings/phy/marvell,armada-3700-utmi-phy.yaml |   2 +-
+ .../devicetree/bindings/phy/mixel,mipi-dsi-phy.txt |  29 ---
+ .../bindings/phy/mixel,mipi-dsi-phy.yaml           | 107 ++++++++
+ .../devicetree/bindings/phy/qcom,qmp-phy.yaml      |   4 +
+ .../devicetree/bindings/phy/renesas,usb2-phy.yaml  |   1 +
+ .../bindings/phy/socionext,uniphier-ahci-phy.yaml  |  91 +++++--
+ .../bindings/phy/socionext,uniphier-pcie-phy.yaml  |  47 +++-
+ .../bindings/phy/socionext,uniphier-usb2-phy.yaml  |   3 +
+ .../phy/socionext,uniphier-usb3hs-phy.yaml         |  89 +++++--
+ .../phy/socionext,uniphier-usb3ss-phy.yaml         |  98 ++++++--
+ drivers/phy/Kconfig                                |   1 +
+ drivers/phy/allwinner/phy-sun6i-mipi-dphy.c        | 166 ++++++++++++-
+ drivers/phy/cadence/phy-cadence-sierra.c           | 193 +++++++++++++-
+ drivers/phy/freescale/phy-fsl-imx8-mipi-dphy.c     | 276 +++++++++++++++++=
++++-
+ drivers/phy/freescale/phy-fsl-imx8m-pcie.c         |  10 +-
+ drivers/phy/mediatek/phy-mtk-hdmi.c                |  50 ++--
+ drivers/phy/mediatek/phy-mtk-mipi-dsi.c            |  29 +--
+ drivers/phy/phy-can-transceiver.c                  |  24 +-
+ drivers/phy/phy-core.c                             |  44 +++-
+ drivers/phy/qualcomm/phy-qcom-qmp.c                | 124 +++++++--
+ drivers/phy/rockchip/phy-rockchip-dphy-rx0.c       |   7 +-
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c      | 129 ++++++++--
+ drivers/phy/rockchip/phy-rockchip-typec.c          |   6 +-
+ include/linux/phy/phy-lvds.h                       |  32 +++
+ include/linux/phy/phy.h                            |   4 +
+ 26 files changed, 1353 insertions(+), 225 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/phy/mixel,mipi-dsi-ph=
+y.txt
+ create mode 100644 Documentation/devicetree/bindings/phy/mixel,mipi-dsi-ph=
+y.yaml
+ create mode 100644 include/linux/phy/phy-lvds.h
+
+--=20
+~Vinod
+
+--JeNhZ5GR7yUpIzDM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE+vs47OPLdNbVcHzyfBQHDyUjg0cFAmJ8++4ACgkQfBQHDyUj
+g0cGzxAAgGr+s+6ht/6AAbizNY56JA2rElQpCaBVFfEqcXors8hOcqE8a6q6c9gI
+oagi0MxqZTDEaHLfqyfMZ0wGRYvJEcBZSM6TWBWzhXAefPWyIjm/8oxN6UQ0soZR
+ZBgmuG067K5hTE1fd43BAlc3SfDqdu2iPr3QBpi6dwNx7uvKs5qSqNtyDv14mNEP
+ElRS0ghnowZERYw6EYQ5JuD+YHJXCMkH6gIuT5/KT/ygMN/kC1evqgWiOV68Eh9r
+wjGo7QaFZYK+LCqARmSE7E7QTv6AZ4Uc71WK3wDyoI6pDJK10VLi3GHQntmoT6xR
+AXXR1i93+Wa8cv3O5coi/5/ers4EqYUZ5TOBpWDijG1Nk+beNlpgUjCsQzZloQMv
+9hH/QHKusm1HrV65XhozXOHXTQ+Mqy3hnEzqDfFK5/vDx9f2SMbA+NDewLUNlJ8S
+GOiKT1NS8ppJisS7Udxlvz6EO1jzEUNL2l3nxw+Ml5rNeywcgBwTkyBlr1yC/yiM
+MvNZD8xwyfrsfsEcZL6TZ1ZdenKuPwiv44ba80p013sPJZnv07lxzAwOJZxpw3ZT
+8KxEBVHoXlSVUsZZzp36j51jSsY4pFboSJS1YmMQOlvCGqptqvr/EdFHscYRfxqV
+NI3IyMKTFPuZBnRTTsujgYyoSIpdqooyxOn+Sr5WpMF2GDmVBAA=
+=3OAW
+-----END PGP SIGNATURE-----
+
+--JeNhZ5GR7yUpIzDM--
