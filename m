@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1759C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE26C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354999AbiELOEj (ORCPT
+        id S1355005AbiELOEo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
+        Thu, 12 May 2022 10:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354984AbiELOEb (ORCPT
+        with ESMTP id S1354991AbiELOEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:04:31 -0400
+        Thu, 12 May 2022 10:04:32 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3722025B06B
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:04:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969E35BE56
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:04:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652364269; x=1683900269;
+  t=1652364270; x=1683900270;
   h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=28GBTzbqAHkG8x0kb03T62upVHHfK7VX0kw01qI/hWo=;
-  b=Mib6EBfv+Sp1FC5bPqmiADGT36XKupoBu2ZYUtEg5dmoSO7L9uutjNps
-   3AbpZOQpkvUuZF+wcL6IGAmZ5EihNxWr93IYy6y1emiUIRhUwEz2kTPmw
-   u0cXGQ2rzMgjc9rvOj3YvWUzMg/Egjj+aj0goxUHEbDjTSovoJc2PkJRo
-   OXVK1cd/WmP0xUaNHXjB1G26qO74gxid5NIM/MHzZ+tlD9fy+YWvK9Iqm
-   37om4hqAgTDr5+4IjVi4BFp3ZK6XrpRWUR3K8S61NkS8MlHlNJS1o1qGO
-   77DP6LikDvtTCUF71bPKL5I1EftkFCUuiJ1TJwFKJGE78gAqTULEAqrTF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="252059999"
+  bh=/c1YbepBih0vkLrM63lr85JXA3lY6rhOF/GZ5wFOIh0=;
+  b=EUHWOOHEalkok22KdEFkvtfPZ+frprSVyBdF3ZNeRxxXTUftrneDy6jc
+   Ij4NgCk+K0FlYTYhN1R64T1TbtEAW8WUYijDxoyRwYHUrJ7iuvG4N8sqA
+   KI1npuvYLR+CHwcOvAz17nshzjYqiJy0hpBvDn+yK/Sj3ZDjViZQ7+IJ3
+   7qUiALLY/bpSdYnAmvF7id71DyJ2+rJSQYnr0kxhvFJul7vkUj9INPxto
+   QeALlMz/6+dyQzemIE2YxKh9tD9ZaslEgW39w4WtRc4/57Kga2hQy5/ZX
+   qAFPHO1Fyz6HAx8cDvJtqi6LOBnYPn6BrHwBmrCBlafEEENvL+oKaT6dk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="252060000"
 X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="252059999"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+   d="scan'208";a="252060000"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 07:04:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="636857618"
+   d="scan'208";a="670857348"
 Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 12 May 2022 07:04:27 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 12 May 2022 07:04:27 -0700
 Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1np9QY-000KXY-Hy;
+        id 1np9QY-000KXa-JM;
         Thu, 12 May 2022 14:04:26 +0000
-Date:   Thu, 12 May 2022 22:03:26 +0800
+Date:   Thu, 12 May 2022 22:04:17 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "x86-ml" <x86@kernel.org>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:sched/core] BUILD SUCCESS
- 734387ec2f9d77b00276042b1fa7c95f48ee879d
-Message-ID: <627d13ae.sVJITC1WervrtmKe%lkp@intel.com>
+Subject: [tip:sched/urgent] BUILD SUCCESS
+ 9c2136be0878c88c53dea26943ce40bb03ad8d8d
+Message-ID: <627d13e1.RodfRVU6wtHbMiCn%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -58,12 +58,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-branch HEAD: 734387ec2f9d77b00276042b1fa7c95f48ee879d  sched/deadline: Remove superfluous rq clock update in push_dl_task()
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/urgent
+branch HEAD: 9c2136be0878c88c53dea26943ce40bb03ad8d8d  sched/tracing: Append prev_state to tp args instead
 
-elapsed time: 1078m
+elapsed time: 861m
 
-configs tested: 228
+configs tested: 220
 configs skipped: 4
 
 The following configs have been built successfully.
@@ -75,8 +75,8 @@ arm64                            allyesconfig
 arm                              allmodconfig
 arm                                 defconfig
 arm                              allyesconfig
-i386                 randconfig-c001-20220509
 i386                          randconfig-c001
+i386                 randconfig-c001-20220509
 arm                         lpc18xx_defconfig
 sh                          rsk7269_defconfig
 mips                          rb532_defconfig
@@ -93,19 +93,15 @@ sh                          urquell_defconfig
 ia64                         bigsur_defconfig
 arm                            pleb_defconfig
 xtensa                          iss_defconfig
-arm                        mini2440_defconfig
-arm                        multi_v7_defconfig
-m68k                        m5272c3_defconfig
-sh                          rsk7201_defconfig
-arm                         at91_dt_defconfig
 arc                        nsim_700_defconfig
 powerpc                 linkstation_defconfig
 powerpc                       eiger_defconfig
+arm                           h3600_defconfig
 arm                          iop32x_defconfig
 arm                         cm_x300_defconfig
-arm                           h3600_defconfig
 um                               alldefconfig
 xtensa                  cadence_csp_defconfig
+arm                         at91_dt_defconfig
 sh                          r7785rp_defconfig
 sh                                  defconfig
 powerpc                  storcenter_defconfig
@@ -144,17 +140,13 @@ xtensa                    smp_lx200_defconfig
 sh                         microdev_defconfig
 arm                          simpad_defconfig
 xtensa                       common_defconfig
+m68k                        m5272c3_defconfig
 powerpc                 mpc837x_mds_defconfig
-h8300                            allyesconfig
-sh                          kfr2r09_defconfig
-sh                            migor_defconfig
-powerpc                     tqm8555_defconfig
 parisc                generic-32bit_defconfig
 alpha                            allyesconfig
 m68k                        mvme147_defconfig
 powerpc                        cell_defconfig
 ia64                                defconfig
-m68k                             alldefconfig
 openrisc                            defconfig
 sh                          lboxre2_defconfig
 sh                           se7722_defconfig
@@ -192,6 +184,7 @@ csky                                defconfig
 nios2                            allyesconfig
 alpha                               defconfig
 arc                                 defconfig
+h8300                            allyesconfig
 xtensa                           allyesconfig
 sh                               allmodconfig
 s390                                defconfig
@@ -206,9 +199,9 @@ i386                   debian-10.3-kselftests
 i386                              debian-10.3
 mips                             allyesconfig
 mips                             allmodconfig
+powerpc                          allyesconfig
 powerpc                           allnoconfig
 powerpc                          allmodconfig
-powerpc                          allyesconfig
 x86_64                        randconfig-a006
 x86_64                        randconfig-a004
 x86_64                        randconfig-a002
@@ -218,9 +211,9 @@ x86_64               randconfig-a016-20220509
 x86_64               randconfig-a014-20220509
 x86_64               randconfig-a013-20220509
 x86_64               randconfig-a011-20220509
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
 x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
 i386                 randconfig-a011-20220509
 i386                 randconfig-a013-20220509
 i386                 randconfig-a016-20220509
@@ -243,8 +236,8 @@ riscv                             allnoconfig
 riscv                            allmodconfig
 riscv                            allyesconfig
 x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
 um                           x86_64_defconfig
+um                             i386_defconfig
 x86_64                          rhel-8.3-func
 x86_64                           rhel-8.3-syz
 x86_64                                  kexec
@@ -273,7 +266,6 @@ mips                       rbtx49xx_defconfig
 mips                        maltaup_defconfig
 mips                      maltaaprp_defconfig
 mips                        omega2p_defconfig
-powerpc                 xes_mpc85xx_defconfig
 arm                  colibri_pxa300_defconfig
 arm                       versatile_defconfig
 powerpc                     ppa8548_defconfig
@@ -294,8 +286,8 @@ i386                 randconfig-a005-20220509
 i386                          randconfig-a002
 i386                          randconfig-a006
 i386                          randconfig-a004
-x86_64                        randconfig-a014
 x86_64                        randconfig-a012
+x86_64                        randconfig-a014
 x86_64                        randconfig-a016
 x86_64                        randconfig-a005
 x86_64                        randconfig-a003
