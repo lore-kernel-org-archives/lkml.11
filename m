@@ -2,144 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3922C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F493C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241672AbiELInM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40534 "EHLO
+        id S242899AbiELIno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 12 May 2022 04:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351728AbiELImo (ORCPT
+        with ESMTP id S1351713AbiELInf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:42:44 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2040.outbound.protection.outlook.com [40.107.94.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A5234504A;
-        Thu, 12 May 2022 01:42:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VJH6Q/9KUlo5RoSK75zGnL9j//xVm6Z+OlxhqzSACIO9FPckVzZzYPtdK8YMUswyXe1b+q+VE5dFlN5j0/pqDIFhwyAcF/5PHxWU+56M16uTUpW7toM56TvRDgqSfa4Z32lhRV2jgKE8G2Vt3a1lvx5ZZIY4N+ESTLoWe9xFIwKKxCyiydcjBfU0sMC0TtV/bpAr7geQpYn73aAWhKg9lcyscFsTLP92+xt6F2RY1/vKmsBKpKadkNXxkzHDzfr6HvTNOdSy/6D+ABBeyEQQC1IN8mgMWi09pnDUiViMc+/DwFRk1xCD5qG7lHuY2QXE/Pbeg3vcjo059XiCyu1viw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TYz0eM6fXd67zyrv4B2b+ZkmS2jAJPiEvLLUTnhSh3w=;
- b=i+5U1uTmUTCSnJqoD1nuwtORmsqbBkENM7xHYEipPgRw49PJE+2edVPJzhu6ZrTl/ftcdlCTet+triQf9p36mMO9KHdGTPR8cELpUXUS0t4cucIMr2BKz8zCun2vhgDh3/G+LIR1tAxp0ePr0O3T6lfUZlm8LSEFnAELVWTuKPQhhxDV0cDJiPz9PIZUxDR5834bhwvkjxnB97E/af8BuIAtyG7FzO66ziKRWINuNY44EYcdW6Lp5res1O3oOKMzOWqpQfU3otxjx6C9mm977lPRFEBUjC67YaRoWmrNghagZFZk4q37Pz0/2RX3BSc7Lilm71lYF2uiMgU9sdPBIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TYz0eM6fXd67zyrv4B2b+ZkmS2jAJPiEvLLUTnhSh3w=;
- b=lwm5JqgjkEqXy9vId0HdDHHK820D17xXG6IcHCGFfLsy/SWGTufiaAfk0Uco/HpWT2NSjHZr4BcaikxuKmtwFM0ktnCHckTxAj0+hmSEsZBQmUEgia7svlJT3V1RF2ZPT6xGXjGJklWkNw3xQf3EqDljJ+q3FTJt9WZGdxc5Im0yxLYndtPXsU6/3QeVNtDHWKqLVdD6Yw39wKZEZVSSsOcsR31LsE8+2W57UHXU8Jyfvzhrb+1jr0SQew5VXUwZce6LFWW6lnZXsAe5ClLYemrS02u+yQPNxUhC6eJYcYx0n74ZJTKhFYWf7db7RC4Bfhq4Fgz4FWY5h76CO1zegA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
- by MN0PR12MB5811.namprd12.prod.outlook.com (2603:10b6:208:377::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Thu, 12 May
- 2022 08:42:28 +0000
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5227.023; Thu, 12 May 2022
- 08:42:28 +0000
-Date:   Thu, 12 May 2022 01:42:26 -0700
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Coco Li <lixiaoyan@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH] fortify: Provide a memcpy trap door for sharp corners
-Message-ID: <20220512084226.id7jghqbadluze5k@LT-SAEEDM-5760.attlocal.net>
-References: <20220511025301.3636666-1-keescook@chromium.org>
- <20220511092417.3c1c60d9@kernel.org>
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220511092417.3c1c60d9@kernel.org>
-X-ClientProxiedBy: BYAPR11CA0037.namprd11.prod.outlook.com
- (2603:10b6:a03:80::14) To BY5PR12MB4209.namprd12.prod.outlook.com
- (2603:10b6:a03:20d::22)
+        Thu, 12 May 2022 04:43:35 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38D2473BB
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:43:25 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1np4Pb-0003PL-R8; Thu, 12 May 2022 10:43:07 +0200
+Message-ID: <3cf09576-66f2-b18c-0057-2635fc9452de@leemhuis.info>
+Date:   Thu, 12 May 2022 10:43:07 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7102d372-55c8-45d6-ab88-08da33f35866
-X-MS-TrafficTypeDiagnostic: MN0PR12MB5811:EE_
-X-Microsoft-Antispam-PRVS: <MN0PR12MB5811A97F6FD53A34F0EDFF90B3CB9@MN0PR12MB5811.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Oj7bOxfjEnagrL1Vk9FMxJdPBM3iNHqBgEp3jBQZvm9SAaT+8x92MX04SOQ5ECFKuiwHmuyFEEnL90fBBuYEOt0Ke3PSIvepU4nSlRR0PYV2I37CqAaOep4l5El+wHnVIQ1yNr3lHPs0Y49hMakixvLvTECPI5XLDht5qEGoZ1sd6C1LRoCUeKPJZXt/8JmNruhQuGLxCToTe6YXQjEaNI+e+HKYga9Dmm2apGz/JnETcMhTr4PR0SmdHuYkyNStluL6/8cUpZkMKgVadYQWlFtbSGn9SV8C1EcEOXSKpBYHQ2zMxEkMpsogtcXQqVLXL9GWLK10UweDWPBm9pdcYTv6hYHq0lHVYnweSpFWBETvGUuSkWO/Mk9X/qThRuewlpjQnR7un1kDbQDHUOoxW+m2EMXDr8d8RP+o+d3Pep55XW1hQhRjkP4ltcQGBuGdNhs3mMRkk6NYOLB4jbTFcd73QKPPt1nQ6aGotBYbQpYosYSY6e+ea1bIZudOcDR7wtDDm9erY8aj2HNuWvmSbvZTUG/AyXCJMnivdV0oWjG4KfubRt/BDRVvurzZugPo3RaTX6HVKI+PTGWT4jzqLfZemGzHcllXwssQulav3mz0j47dpWTGI7RbmHpzGXr8u/QQsklx3M+J1fUfYuo30lWvB8vAXRbTCuHvVMybZ5lRiKuDQxv7AudZG+bJdHt8o9qM2oqx70yoZGu24E6Q0WG1MOclqOSwAWb9mMArV1I=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(7416002)(38100700002)(508600001)(5660300002)(6486002)(966005)(9686003)(66946007)(316002)(6506007)(4326008)(66476007)(66556008)(54906003)(6916009)(8676002)(83380400001)(186003)(6512007)(1076003)(2906002)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MeglJ2F6pEYczcRzLaZbLhAcs+VKQmsRJKnprvCuT9TH/XBBj7uQMAZRJV9j?=
- =?us-ascii?Q?sJFCGRpCwdPLdtxhXh6C9mbBU51s1dI+6QtArPNrQyOgHKqyCgmGr4tyilmn?=
- =?us-ascii?Q?pJJ5R+WTBeR5fl0UufvD9sP9hn57YlxMl4XU4kb7CLUTa1ulPgRbXX4ea2wu?=
- =?us-ascii?Q?y+4Rul40MfcgVTAzJAi5sBn8moBA5nS0sRh2t2tM4skyyWO633mtaN+xFubk?=
- =?us-ascii?Q?ixk2dARC8J7w/v75w89IbViZFfOk1FQEr2u7ywifuRbAKgw4JmVIDgdHmUDy?=
- =?us-ascii?Q?eHUV2xvsSlYTwV+T0CFLcRjiR8Kh6EqPqXiFBJzFEs3UTr5O/vF/casoT4Vt?=
- =?us-ascii?Q?x3kAFX+OT5TwaYGvD7QKZl2EsOZ91PT0jT2HXqvI25khIUh96dDO1/6PY80G?=
- =?us-ascii?Q?nR6gZy3sGno5o9syX5BwchaEnhdhV+dI4ROkXN4Iofh7pdtdDl1ew1+acCKt?=
- =?us-ascii?Q?JpLkMkYVPUB+NZbBblI+ok/seAgbAxN3OFg/4wd3vLxMPBgOWzl7nUNCEJp4?=
- =?us-ascii?Q?ogZ5gxFJ0IJKa3WCnebDPnOluU4Bz8i+7mDA2o5+uv7UF+ITIRWBtecMf9Zo?=
- =?us-ascii?Q?vDLlhiKXuVr/mZSaDl0VWh++AIwZry514OIkENbR9RfWsdLj5ge+lY4IQiIF?=
- =?us-ascii?Q?IaBKqaG2fDxxYY3rR6wEDW0+lrxOHzl5GPktLBPbMnJQ4oYZ3rpcX+QBlfhx?=
- =?us-ascii?Q?sCkMoY9Rc2Olm1l4uyId1bs+kuIAjuw1gJLvyjpUfwhE0IdOUVZEXvIMoIS1?=
- =?us-ascii?Q?briJM/9ovEuF5ObjCSxDOjSHw/2nbENPmR+lxvc418rNDgv4HQzYIyakmmNp?=
- =?us-ascii?Q?FMys0smo+9zpd3B5mlekeI1Uu6cJYtZzHUROjT19HNAt6iR+cr5wihHWQwoL?=
- =?us-ascii?Q?bvcUtIs456FUxw8wYuGear8tdiw87qTB8b88+DxnWVC4KWzXTvYr2R3atAuY?=
- =?us-ascii?Q?3NRwhUrYQpxIHuUVD1lFI+oc1TCX2zExHnTI0Yo3iiovMhcrRMyxt5ZjSOE+?=
- =?us-ascii?Q?6J4ztJ06NbLOtUhzNOen59bLJZkz0Dxrku8bWsMQWkN4x+2CChc9pl/Yg/cX?=
- =?us-ascii?Q?oSoQsHf4XgWl6fId9CxipW4jfyugljDUJgw98NPIRHS1QP7TN0i1lMWKgsri?=
- =?us-ascii?Q?uZv+1fxG8UtLije8ksa9jFC5mOINCmD1fsoHku3u6Ppmx3K6t/2ClpVXltBN?=
- =?us-ascii?Q?Bk15IqB5tVlHvbuktoRBJ4NruwbivhevM6b1gulQBMm5LPZZHnj7cWr3tIvZ?=
- =?us-ascii?Q?zUbD6s2DBXTG0g4aAM5r/AF4m0WgDcZPsSzjQY/Qm2Ib8pMRp3WsgrGNg7FW?=
- =?us-ascii?Q?mTwia+toECPNKcPfMRYISStJHpLG2splad9/PcR0sahV+1ncQRC/61w0Ill+?=
- =?us-ascii?Q?Gh7ro8FrM2L5yGM8cTNNYBmQeJJQsLdT/YQXOFiGSlx0O3MEoA+IHNvIva5d?=
- =?us-ascii?Q?bFw+kD4jNfRdYdwvrudV1J/pFNX0j7NkCOmxrphKUim6QeRL6aut/qTSTsgV?=
- =?us-ascii?Q?7o53chlBxF5fnoJEe+Qi4nfCKnYMGV3ldkSMLdPCysyfdiT9t09FtZ0d+JFu?=
- =?us-ascii?Q?y+aur2rwvHociiuzR72YLZ9l2Bb77ldjG3O+iNxoV/NrfuQhDrio1zrzOkdv?=
- =?us-ascii?Q?mLlkqTER4E0jftAxVVmSjPF2vJ4j+4ZX9aLrrzFWVkhCmHwtyyMeJy+wiG8M?=
- =?us-ascii?Q?RMqGhXJUwlsVfAbZqXwAOADkp6PRcLDA1xnBjKXazLZmT0TrLctofkKOt2Kl?=
- =?us-ascii?Q?yZlZ77zhw8gYqC08SsOGCy7eY+InuGY=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7102d372-55c8-45d6-ab88-08da33f35866
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 08:42:28.0789
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Fhcm9rDDR4smXg2hEKew1g8Kf/I71sH2OPVz0rMkcikuC1LJn3qREge80SDDg2sbMwK7YC+dUNVbqvcLL3PLbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5811
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Theodore Ts'o <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Zhangfei Gao <zhangfei.gao@foxmail.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>
+References: <165201148069.536527.1960632033331546251.tglx@xen13>
+ <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com>
+ <ff841fdc-4db7-7a3d-8caf-d0cddd0dfa31@leemhuis.info>
+ <Ynt1z0eZ19eMqp8I@zn.tnic> <YnvbLx9FKgQwZJ/F@mit.edu>
+ <CAHk-=wgUVHucyjp6M7qmn8b=aqwucfS4SQpqOCR5sKr16zoO5g@mail.gmail.com>
+ <YnwP7QmPzyv5FhrZ@zn.tnic>
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+Subject: Re: Link: tag and links to submission and reports (was: Re: [GIT
+ pull] core/urgent for v5.18-rc6)
+In-Reply-To: <YnwP7QmPzyv5FhrZ@zn.tnic>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1652345008;381e7f98;
+X-HE-SMSGID: 1np4Pb-0003PL-R8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11 May 09:24, Jakub Kicinski wrote:
->On Tue, 10 May 2022 19:53:01 -0700 Kees Cook wrote:
->> As we continue to narrow the scope of what the FORTIFY memcpy() will
->> accept and build alternative APIs that give the compiler appropriate
->> visibility into more complex memcpy scenarios, there is a need for
->> "unfortified" memcpy use in rare cases where combinations of compiler
->> behaviors, source code layout, etc, result in cases where the stricter
->> memcpy checks need to be bypassed until appropriate solutions can be
->> developed (i.e. fix compiler bugs, code refactoring, new API, etc). The
->> intention is for this to be used only if there's no other reasonable
->> solution, for its use to include a justification that can be used
->> to assess future solutions, and for it to be temporary.
+On 11.05.22 21:35, Borislav Petkov wrote:
+> On Wed, May 11, 2022 at 08:55:34AM -0700, Linus Torvalds wrote:
+>> On Wed, May 11, 2022 at 8:50 AM Theodore Ts'o <tytso@mit.edu> wrote:
+>>>
+>>> I would argue that it should be the patch submitter's responsibility
+>>> to explicitly add a URL to the problem report.
 >>
->> Example usage included, based on analysis and discussion from:
->> https://lore.kernel.org/netdev/CANn89iLS_2cshtuXPyNUGDPaic=sJiYfvTb_wNLgWrZRyBxZ_g@mail.gmail.com
->
->Saeed, ack for taking this in directly? Or do you prefer to take this
->plus Eric's last BIG TCP patch via your tree?
+>> I agree in the perfect case.
+>>
+>> But in practice, we have a lot more patch submitters than we have
+>> maintainers, and not all "leaf developers" necessarily know how to do
+>> everything.
+>>
+>> So the maintainer should probably expect to fix things up. Not always,
+>> but also not a "the developer should have done this, so I won't do it"
+>>
+>> This isn't so different from the fact that not everybody writes
+>> English proficiently - people do hopefully end up fixing things up as
+>> they get passed onwards.
+> 
+> And, in addition, what happens most often in my experience is I
+> constantly get to point submitters to our process documentation -
+> submitting-patches especially - as not a small number of them are not
+> aware of different aspects of the whole patch dance: tags, SOB chains,
+> etc. And the Link tag is no exception here.
 
-Please take both, I asked Eric a question on the BIG TCP patch, but I
-won't block the series.
+Which leads to the question: can we (and do we want to) teach
+scripts/checkpatch.pl to point out when a Link: tag is missing and
+likely appropriate? If a "Reported-by:" is present there should be a
+"Link:" as well, unless the issue was reported privately, via IRC or
+something like that. A "Fixes:" tag is also a strong indicator that a
+link might be appropriate, but not as good.
 
-Thanks!
-
+Ciao, Thorsten
