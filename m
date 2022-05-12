@@ -2,114 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:05:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64338C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356830AbiELRFZ (ORCPT
+        id S1356843AbiELRFc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
+        Thu, 12 May 2022 13:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356824AbiELRFY (ORCPT
+        with ESMTP id S1356839AbiELRF3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:05:24 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07114269EE4;
-        Thu, 12 May 2022 10:05:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652375122; x=1683911122;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=6xFxG7MLoudi9o64Lr4POIQA3LoUtodJPfElK3mM7f0=;
-  b=mFy0kQCYN9R4A9RXFXzact5Pzvtnzdrld6Av2LQAItp1TJf0qNMjvetP
-   9DLjb+ZKKEUWxjt0UHSOkfjXCmaOp0ZvJNX0PwBCt1iYWtdi1rbaNz1dD
-   VDB2XnDkRbL5xezV9LxxGDuwxdJ558UJPgjHvKQxf9dVxv9f/Fh7PV24J
-   QbHQzvRDbtuzL/L+25ucaOne7AJGsVoHXpGrrQzHvi4A0fTVzqN8qlGjJ
-   HVCwLKOHNTGSMOkhlGS6+k7Si8XVZGGZXk/0R7OlIDv5gBFSo2ZJHcUdi
-   9iXaFGJfSTNp3AwQdFJbaouCWK0LXHlZQglS08v4IotYBl0TSkGaLLPOc
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="269741443"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="269741443"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:03:48 -0700
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="521038993"
-Received: from djiang5-mobl1.amr.corp.intel.com (HELO [10.212.68.97]) ([10.212.68.97])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:03:48 -0700
-Message-ID: <d1017a7a-4f3d-4218-13da-71f89cf81c81@intel.com>
-Date:   Thu, 12 May 2022 10:03:48 -0700
+        Thu, 12 May 2022 13:05:29 -0400
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA159269EFD;
+        Thu, 12 May 2022 10:05:26 -0700 (PDT)
+Received: by mail-qt1-f182.google.com with SMTP id p4so4906023qtq.12;
+        Thu, 12 May 2022 10:05:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+6B2p5x2MsdiGQqOHTdj/jEV/QOhWbmjHIG+C1y2HyI=;
+        b=HVddJcFC1vwFoH8Vz9W+YE8WP8SAZuUOcUt9Ej4BteJZh6FgiF99kmT/9ZYBL+usw1
+         qiib83DDdL3aaBc1OxTZz+gS8aZ9qYwWiW1KNbxaKdkB/MXSUYFvxRPawj61yo1s/iC3
+         sluENUT3lt3xWc2IrBI8zHt+VBLFlvb12a3nUADTZlDSRJXXpIwpjnuEx9z66IgpoB23
+         7fTqwO+QNedSMl6lLYFToYW9czCtAvOVIw7VzkJV5AHxSgCJ7OZpc8q0QZRDPNx+6NOC
+         nuDjbHKJID9PUeZ/iEIc4R6gYMsrYrahz6qxOI2IzDFXHNidQZvuYkxWCEdxdpHptsJK
+         jKpA==
+X-Gm-Message-State: AOAM5309LOmoBo9Dexjibc8PFz0yAGzNOXUne+5GZjtInjzPLxndkkib
+        9LLu6Oz6e3dwBoJbYmRuwws=
+X-Google-Smtp-Source: ABdhPJyerLlG0Vc9EMfOfjsIemvOVeJd5Nd6Zc4QkNV1NHFFQZtrSBUY2HOMiIDSb+A1DVnZY5rbVg==
+X-Received: by 2002:ac8:5896:0:b0:2f3:d231:58a9 with SMTP id t22-20020ac85896000000b002f3d23158a9mr741939qta.131.1652375125492;
+        Thu, 12 May 2022 10:05:25 -0700 (PDT)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-011.fbsv.net. [2a03:2880:20ff:b::face:b00c])
+        by smtp.gmail.com with ESMTPSA id t80-20020a374653000000b0069fc13ce231sm3183117qka.98.2022.05.12.10.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 10:05:25 -0700 (PDT)
+Date:   Thu, 12 May 2022 10:05:22 -0700
+From:   David Vernet <void@manifault.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] bpf: use 'error_xxx' tags in
+ bpf_kprobe_multi_link_attach
+Message-ID: <20220512170522.3e47hwj53plhr4qq@dev0025.ash9.facebook.com>
+References: <20220512141710.116135-1-wanjiabing@vivo.com>
+ <20220512141710.116135-2-wanjiabing@vivo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] dmaengine: ti: Fix refcount leak in
- ti_dra7_xbar_route_allocate
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220512051815.11946-1-linmq006@gmail.com>
-From:   Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <20220512051815.11946-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512141710.116135-2-wanjiabing@vivo.com>
+User-Agent: NeoMutt/20211029
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, May 12, 2022 at 10:17:08PM +0800, Wan Jiabing wrote:
+> Use 'error_addrs', 'error_cookies' and 'error_link' tags to make error
+> handling more efficient.
 
-On 5/11/2022 10:18 PM, Miaoqian Lin wrote:
-> 1. of_find_device_by_node() takes reference, we should use put_device()
-> to release it when not need anymore.
-> 2. of_parse_phandle() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not needed anymore.
->
-> Add put_device() and of_node_put() in some error paths to fix.
-Sounds like you need 2 patches for this? One just for the put_device() 
-and the other for the of_node_put()?
->
-> Fixes: ec9bfa1e1a79 ("dmaengine: ti-dma-crossbar: dra7: Use bitops instead of idr")
-> Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Can you add a bit more context to this commit summary? The added goto
+labels aren't what make the code more performant, it's the avoidance of
+unnecessary free calls on NULL pointers that (supposedly) does.
+
+> 
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 > ---
->   drivers/dma/ti/dma-crossbar.c | 5 +++++
->   1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/dma/ti/dma-crossbar.c b/drivers/dma/ti/dma-crossbar.c
-> index 71d24fc07c00..f744ddbbbad7 100644
-> --- a/drivers/dma/ti/dma-crossbar.c
-> +++ b/drivers/dma/ti/dma-crossbar.c
-> @@ -245,6 +245,7 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->   	if (dma_spec->args[0] >= xbar->xbar_requests) {
->   		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
->   			dma_spec->args[0]);
-> +		put_device(&pdev->dev);
->   		return ERR_PTR(-EINVAL);
->   	}
->   
-> @@ -252,12 +253,14 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->   	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
->   	if (!dma_spec->np) {
->   		dev_err(&pdev->dev, "Can't get DMA master\n");
-> +		put_device(&pdev->dev);
->   		return ERR_PTR(-EINVAL);
->   	}
->   
->   	map = kzalloc(sizeof(*map), GFP_KERNEL);
->   	if (!map) {
->   		of_node_put(dma_spec->np);
-> +		put_device(&pdev->dev);
->   		return ERR_PTR(-ENOMEM);
->   	}
->   
-> @@ -268,6 +271,8 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->   		mutex_unlock(&xbar->mutex);
->   		dev_err(&pdev->dev, "Run out of free DMA requests\n");
->   		kfree(map);
-> +		of_node_put(dma_spec->np);
-> +		put_device(&pdev->dev);
->   		return ERR_PTR(-ENOMEM);
->   	}
->   	set_bit(map->xbar_out, xbar->dma_inuse);
+>  kernel/trace/bpf_trace.c | 20 +++++++++++---------
+>  1 file changed, 11 insertions(+), 9 deletions(-)
+> 
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 2eaac094caf8..3a8b69ef9a0d 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -2467,20 +2467,20 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  	if (uaddrs) {
+>  		if (copy_from_user(addrs, uaddrs, size)) {
+>  			err = -EFAULT;
+> -			goto error;
+> +			goto error_addrs;
+>  		}
+>  	} else {
+>  		struct user_syms us;
+>  
+>  		err = copy_user_syms(&us, usyms, cnt);
+>  		if (err)
+> -			goto error;
+> +			goto error_addrs;
+>  
+>  		sort(us.syms, cnt, sizeof(*us.syms), symbols_cmp, NULL);
+>  		err = ftrace_lookup_symbols(us.syms, cnt, addrs);
+>  		free_user_syms(&us);
+>  		if (err)
+> -			goto error;
+> +			goto error_addrs;
+>  	}
+>  
+>  	ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
+> @@ -2488,18 +2488,18 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  		cookies = kvmalloc(size, GFP_KERNEL);
+>  		if (!cookies) {
+>  			err = -ENOMEM;
+> -			goto error;
+> +			goto error_addrs;
+>  		}
+>  		if (copy_from_user(cookies, ucookies, size)) {
+>  			err = -EFAULT;
+> -			goto error;
+> +			goto error_cookies;
+>  		}
+>  	}
+>  
+>  	link = kzalloc(sizeof(*link), GFP_KERNEL);
+>  	if (!link) {
+>  		err = -ENOMEM;
+> -		goto error;
+> +		goto error_cookies;
+>  	}
+>  
+>  	bpf_link_init(&link->link, BPF_LINK_TYPE_KPROBE_MULTI,
+> @@ -2507,7 +2507,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  
+>  	err = bpf_link_prime(&link->link, &link_primer);
+>  	if (err)
+> -		goto error;
+> +		goto error_link;
+>  
+>  	if (flags & BPF_F_KPROBE_MULTI_RETURN)
+>  		link->fp.exit_handler = kprobe_multi_link_handler;
+> @@ -2539,10 +2539,12 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  
+>  	return bpf_link_settle(&link_primer);
+>  
+> -error:
+> +error_link:
+>  	kfree(link);
+> -	kvfree(addrs);
+> +error_cookies:
+>  	kvfree(cookies);
+> +error_addrs:
+> +	kvfree(addrs);
+>  	return err;
+>  }
+>  #else /* !CONFIG_FPROBE */
+> -- 
+> 2.35.1
+> 
+
+Could you clarify what performance gains you observed from doing this? I
+wouldn't have expected avoiding a couple of calls and NULL checks to have a
+measurable impact on performance, and I'm wondering whether the complexity
+from having multiple goto labels is really worth any supposed performance
+gains.
+
+Thanks,
+David
