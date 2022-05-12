@@ -2,141 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26120C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244263AbiELDCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 23:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58128 "EHLO
+        id S244219AbiELDCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 23:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239781AbiELDCr (ORCPT
+        with ESMTP id S243403AbiELDCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 23:02:47 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB4B66ADE
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:02:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652324566; x=1683860566;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=CGKurnSeFsbLbVNz9r6t45Z5v3dxrNfQg/9bhybKC1Y=;
-  b=AJwda6R52G/KUs0pP+Igkc/su45zyJ46GXpTXycI7xit7woTJGm2LrqG
-   WAY/IgZnTOWAHHcy/pfLZHO8VoMFfPL7RWOXdy/fAxGO1vjuMjGMr4+sP
-   Ku7s6trrrJlXC27UDTMuPgwGlJsgfEupNFrjJGPgqjOqlEyusAKY3LaHR
-   SbHOr+2OLbJEcysWDNsYckOC6oS6HWLxcV85xDjXadKQYtVgQxl0EatrO
-   2BOGozSKWIAVkatojIW1bK9r87FPfZffrJr7qdVxKRYsnDl2qVDXqaZon
-   R3ukR6L99GG3qeSebI5rPTdLlRbPEh9jh6YgPMmMhF232kkMUErQq2xFV
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="332911936"
-X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="332911936"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 20:02:46 -0700
-X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="594449960"
-Received: from hezhu1-mobl1.ccr.corp.intel.com (HELO [10.255.29.168]) ([10.255.29.168])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 20:02:41 -0700
-Message-ID: <05a68e1e-8e18-5914-ebe7-d7b1a4aaa2ec@linux.intel.com>
-Date:   Thu, 12 May 2022 11:02:39 +0800
+        Wed, 11 May 2022 23:02:48 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2272E666B1
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:02:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=Q2yMx5x7K3+9k25ap2IGUEoyLrH07N7kDSErTWFX/a4=; b=q4feL1AMsF7OPJPBzZJXrWa5ua
+        NChwvuckN+i51dPr4Kra+u6e9DmxRRu7ulwy0Owc7JIjLSQJTGtjirbVIXLQdL1BiTiQkenbLamik
+        2C85uaGPm0zG9FXC7+mx48DvrSENAtJThctDIv5SwJp16cdPZpoD0n34EBKRNrXqGObcUw4Zka04z
+        9xz0vlrvzB6DOUCrYhoPLyDbjuV4I+HRwmjpVjkBqnE05CCgYGhprG0eUAb8hXayiybMisRO6cWj3
+        T+7VnSeIoargCVdpV4Q2z0tuw1ZieYMbS2wDaS3BNr10LcXoZoYdwlK8VunACbehon5Ua3tpkMuIu
+        bBq5RWGQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1noz5y-00DN97-4O; Thu, 12 May 2022 03:02:30 +0000
+Message-ID: <6a1a59cb-7184-5cad-e69c-fd3aa46c19f5@infradead.org>
+Date:   Wed, 11 May 2022 20:02:23 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 08/12] iommu/sva: Use attach/detach_pasid_dev in SVA
- interfaces
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] scripts:force conversion argument type
 Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
- <20220510061738.2761430-9-baolu.lu@linux.intel.com>
- <20220510152330.GG49344@nvidia.com>
- <749a7d62-3e6c-ef5c-beaf-6b7add495740@linux.intel.com>
- <20220511145319.GZ49344@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220511145319.GZ49344@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Dong Chuanjian <chuanjian@nfschina.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-kernel@vger.kernel.org
+References: <20220512023853.GA4018@localhost.localdomain>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220512023853.GA4018@localhost.localdomain>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/11 22:53, Jason Gunthorpe wrote:
->>> Assuming we leave room for multi-device groups this logic should just
->>> be
->>>
->>> 	group = iommu_group_get(dev);
->>> 	if (!group)
->>> 		return -ENODEV;
->>>
->>> 	mutex_lock(&group->mutex);
->>> 	domain = xa_load(&group->pasid_array, mm->pasid);
->>> 	if (!domain || domain->type != IOMMU_DOMAIN_SVA || domain->mm != mm)
->>> 		domain = iommu_sva_alloc_domain(dev, mm);
->>>
->>> ?
->> Agreed. As a helper in iommu core, how about making it more generic like
->> below?
-> IDK, is there more users of this? AFAIK SVA is the only place that
-> will be auto-sharing?
 
-The generic thing is that components, like SVA, want to fetch the
-attached domain from the iommu core.
 
+On 5/11/22 19:38, Dong Chuanjian wrote:
+> scripts:force conversion argument type
 > 
->> +       mutex_lock(&group->mutex);
->> +       domain = xa_load(&group->pasid_array, pasid);
->> +       if (domain && domain->type != type)
->> +               domain = NULL;
->> +       mutex_unlock(&group->mutex);
->> +       iommu_group_put(group);
->> +
->> +       return domain;
-> This is bad locking, group->pasid_array values cannot be taken outside
-> the lock.
-
-It's not iommu core, but SVA (or other feature components) that manage
-the life cycle of a domain. The iommu core only provides a place to
-store the domain pointer. The feature components are free to fetch their
-domain pointers from iommu core as long as they are sure that the domain
-is alive during use.
-
+> Signed-off-by: Dong Chuanjian <chuanjian@nfschina.com>
+> ---
+>  scripts/kallsyms.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
->>> And stick the refcount in the sva_domain
->>>
->>> Also, given the current arrangement it might make sense to have a
->>> struct iommu_domain_sva given that no driver is wrappering this in
->>> something else.
->> Fair enough. How about below wrapper?
->>
->> +struct iommu_sva_domain {
->> +       /*
->> +        * Common iommu domain header,*must*  be put at the top
->> +        * of the structure.
->> +        */
->> +       struct iommu_domain domain;
->> +       struct mm_struct *mm;
->> +       struct iommu_sva bond;
->> +}
->>
->> The refcount is wrapped in bond.
-> I'm still not sure that bond is necessary
+> diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> index 8caabddf817c..544ab1e1b5ca 100644
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -498,7 +498,7 @@ static void write_src(void)
+>  
+>  	output_label("kallsyms_token_index");
+>  	for (i = 0; i < 256; i++)
+> -		printf("\t.short\t%d\n", best_idx[i]);
+> +		printf("\t.short\t%d\n", (int)best_idx[i]);
 
-"bond" is the sva handle that the device drivers get through calling
-iommu_sva_bind().
+Or (better) you could use %u instead of %d to print the unsigned int value.
 
-> 
-> But yes, something like that
+>  	printf("\n");
+>  }
+>  
 
-Best regards,
-baolu
+-- 
+~Randy
