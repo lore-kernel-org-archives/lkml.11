@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D585C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358556AbiELU5v (ORCPT
+        id S1358573AbiELU6A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 16:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59614 "EHLO
+        Thu, 12 May 2022 16:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358537AbiELU5C (ORCPT
+        with ESMTP id S1358640AbiELU5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 16:57:02 -0400
+        Thu, 12 May 2022 16:57:05 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C296970B;
-        Thu, 12 May 2022 13:56:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA0D6A036;
+        Thu, 12 May 2022 13:56:49 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: nfraprado)
-        with ESMTPSA id 521881F45AAA
+        with ESMTPSA id 49C271F45AAC
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652389002;
-        bh=GrZDgZ5n77I8KtnjA2tOlTRA6mI8tLLdvbtiFZXUTG0=;
+        s=mail; t=1652389008;
+        bh=u3bgLWaqCDtC2cPlVcV31sMjvrL2SuIojgozTZcaWa0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RU7yVXKMRydUYzQRyyhaqN22pMIXICErdzLysumVSWsTvVh2ykx91P6ya5K1xuOr4
-         bnndX9h8DfFGC39p68a77R/glGAXwKjNVabl1xUHEWjIrwx19kB66OVmUUL2uAIbQ3
-         lGU3pB6s4hlRlofDYaM3MYL2TuzSjKFJZc1Oke3ZkEpE3qveHSmOnNvPxO8Pj8iuhF
-         h9reHCdOSEzjmHxQABet1e8eXIPOby31AH4CyaJlmIIaz3rQeYFmxSYnt0t6MjwXpX
-         E48kMIRmvxooddEfnOf5R1TMuMRuKrvg1J4Qxq8e2VTFMT+AkUIOwTTbdGI0iihdbX
-         J4l3W/In322LQ==
+        b=JBsnrd14WnmJAEI02AwFqisQMF9YA8XYqDzyAdJr46KoE/v/2XAsmbrVHng3EQzbJ
+         RFWIqYBWD+mV5oeOvMTYsBj9SVMaCmJdA7dujGMygxD8mkkeFUYn9GboiImLMHEQ8P
+         5yeItut/AoW9HDg/pfnhwopKp1MZrhyZGkdDGlDMndFWWVbRiPoYj6N6BVDR6RJCIB
+         ZLNqF5+oUV/sjp0Gclam+8rjVV/MPbWsmSAKEOkCHdxlPUDEpqeAoJkcG6Q0PNciY0
+         qvFmIfcR7vekar7Ka9Hpd4/kitSeLQZ0uFhN5DGOv/WeJal4TVCnPsbW3U8OdWuFGV
+         iwp3qLR3/JFqw==
 From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
         <nfraprado@collabora.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>
@@ -41,9 +41,9 @@ Cc:     Chen-Yu Tsai <wenst@chromium.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 13/16] arm64: dts: mediatek: asurada: Enable XHCI
-Date:   Thu, 12 May 2022 16:55:59 -0400
-Message-Id: <20220512205602.158273-14-nfraprado@collabora.com>
+Subject: [PATCH v3 16/16] arm64: dts: mediatek: asurada: Add SPMI regulators
+Date:   Thu, 12 May 2022 16:56:02 -0400
+Message-Id: <20220512205602.158273-17-nfraprado@collabora.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220512205602.158273-1-nfraprado@collabora.com>
 References: <20220512205602.158273-1-nfraprado@collabora.com>
@@ -54,9 +54,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable XHCI controller on the Asurada platform. This allows the use of
-the USB ports, and therefore a rootfs can be loaded and a usable shell
-reached from a live USB image.
+The Asurada platform uses regulators from MT6315 PMICs acessible through
+SPMI. Add support for them.
 
 Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
@@ -69,27 +68,76 @@ Tested-by: Chen-Yu Tsai <wenst@chromium.org>
 Changes in v2:
 - Added this patch
 
- arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ .../boot/dts/mediatek/mt8192-asurada.dtsi     | 49 +++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-index d9c9852339a8..ecae2730789e 100644
+index a53f7352f06e..d66b008c01ab 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -583,5 +583,13 @@ &uart0 {
- 	status = "okay";
+@@ -7,6 +7,7 @@
+ #include "mt8192.dtsi"
+ #include "mt6359.dtsi"
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/spmi/spmi.h>
+ 
+ / {
+ 	aliases {
+@@ -683,6 +684,54 @@ cr50@0 {
+ 	};
  };
  
-+&xhci {
-+	status = "okay";
++&spmi {
++	#address-cells = <2>;
++	#size-cells = <0>;
 +
-+	wakeup-source;
-+	vusb33-supply = <&pp3300_g>;
-+	vbus-supply = <&pp5000_a>;
++	mt6315_6: pmic@6 {
++		compatible = "mediatek,mt6315-regulator";
++		reg = <0x6 SPMI_USID>;
++
++		regulators {
++			mt6315_6_vbuck1: vbuck1 {
++				regulator-compatible = "vbuck1";
++				regulator-name = "Vbcpu";
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-enable-ramp-delay = <256>;
++				regulator-allowed-modes = <0 1 2>;
++				regulator-always-on;
++			};
++
++			mt6315_6_vbuck3: vbuck3 {
++				regulator-compatible = "vbuck3";
++				regulator-name = "Vlcpu";
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-enable-ramp-delay = <256>;
++				regulator-allowed-modes = <0 1 2>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	mt6315_7: pmic@7 {
++		compatible = "mediatek,mt6315-regulator";
++		reg = <0x7 SPMI_USID>;
++
++		regulators {
++			mt6315_7_vbuck1: vbuck1 {
++				regulator-compatible = "vbuck1";
++				regulator-name = "Vgpu";
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-enable-ramp-delay = <256>;
++				regulator-allowed-modes = <0 1 2>;
++			};
++		};
++	};
 +};
 +
- #include <arm/cros-ec-keyboard.dtsi>
- #include <arm/cros-ec-sbs.dtsi>
+ &uart0 {
+ 	status = "okay";
+ };
 -- 
 2.36.1
 
