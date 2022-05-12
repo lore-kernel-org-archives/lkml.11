@@ -2,114 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 904E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 629FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358665AbiELVR1 (ORCPT
+        id S1358676AbiELVSd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 17:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35330 "EHLO
+        Thu, 12 May 2022 17:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353619AbiELVRY (ORCPT
+        with ESMTP id S1358532AbiELVSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 17:17:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FB568F8D
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:17:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B41B1B82799
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 21:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 868CDC385B8;
-        Thu, 12 May 2022 21:17:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652390241;
-        bh=LqARVq2lcGKNOIxt7wFh53bt74j0X8rRusVOxvkYpqc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rZ3+EgEYyfYagLTq+TdC4pKBLiDez079XtAYlgTUYUFuMa0Ux2wykWoHakFcl66NP
-         DMM1LrO2Go1ZGCa7NvfLFPw1ZYpSvu+jnRIwlnyL0VtGR4+ZciJKYE6w8DA0kKhZzP
-         i/RzliIrkgPlOmyGRbUm3B8O/d+XccJEXp5059+ctKavd4qXTtyMJxGG/MRjQSCSHj
-         +1BIlMiDFc4YvnrGGbcyFsKig6kZVxRxf5RiDeSxoS1tj/Ye9jf4MBVpGltSCHdpN6
-         mqIJBjcYU+gvxi0cNXDsYkzK64SkUtAOPO0leSOiYbA1pQEMH3NmxuQ3j7Ao1SDAv+
-         jGYAbhzxC8eDg==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] drm/i915: Fix CFI violation with show_dynamic_id()
-Date:   Thu, 12 May 2022 14:17:04 -0700
-Message-Id: <20220512211704.3158759-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        Thu, 12 May 2022 17:18:30 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1297A45A
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:18:29 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id r9-20020a92ce89000000b002cfcfff298dso4006196ilo.19
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:18:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=OD+DJjg0IVnWKUjf9SiJctf3WNuUFGLwQrxYAzpgXbY=;
+        b=bzbw3s7qCnm2w6xvVyftH9ciEzEZGGLZzO54Y+skCQtEOiarynucUNwN43ffDoouMw
+         rDPNSMHvC6CmGjloZS4hFJ13vudIabYBCTu3cbTsTEW6X12bSVm2pAUSQC9RsfT65sQw
+         ZJbZaOWOQagOFL7ZOCVY1GiEqKarZSbtpbUBoIgHiaNQndaYTrEnRVYf7s+M8K+LD7cA
+         BI7ZuIbjKybsH5EmC6bW85I5nN9iYbCVKSge25glUfz6r+GWdiPYeBMm4xpigxspVTK+
+         /19wq7VsrxYRna8t7AqObch3aTMVhI9e7R5obc40AQ9pre1vjrWPHRfj8baVzQHDUxCX
+         9mNA==
+X-Gm-Message-State: AOAM532YR5oCJqo4t8VA+X+ugS6qgNJN/0vHO1dChYND+4EPiyw/nymw
+        9uBlqBYG+0oyg73ff8Uo/uvO3u3VM1UEGqiW+m9/aEaWHRGb
+X-Google-Smtp-Source: ABdhPJwC5eM42fGDTmMX5/gu/JoS0zMGHmicuAdhYE4t7bPkyifrzJ9L1lPr6G41pEJ+uFmJHyhw810wOPpQo+RcWbagA4M0NSVd
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:27c6:b0:657:7e7a:11f3 with SMTP id
+ l6-20020a05660227c600b006577e7a11f3mr937389ios.40.1652390308547; Thu, 12 May
+ 2022 14:18:28 -0700 (PDT)
+Date:   Thu, 12 May 2022 14:18:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005f1a8805ded719cc@google.com>
+Subject: [syzbot] UBSAN: shift-out-of-bounds in tcf_pedit_init
+From:   syzbot <syzbot+8ed8fc4c57e9dcf23ca6@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
+        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When an attribute group is created with sysfs_create_group(), the
-->sysfs_ops() callback is set to kobj_sysfs_ops, which sets the ->show()
-callback to kobj_attr_show(). kobj_attr_show() uses container_of() to
-get the ->show() callback from the attribute it was passed, meaning the
-->show() callback needs to be the same type as the ->show() callback in
-'struct kobj_attribute'.
+Hello,
 
-However, show_dynamic_id() has the type of the ->show() callback in
-'struct device_attribute', which causes a CFI violation when opening the
-'id' sysfs node under drm/card0/metrics. This happens to work because
-the layout of 'struct kobj_attribute' and 'struct device_attribute' are
-the same, so the container_of() cast happens to allow the ->show()
-callback to still work.
+syzbot found the following issue on:
 
-Change the type of show_dynamic_id() to match the ->show() callback in
-'struct kobj_attributes' and update the type of sysfs_metric_id to
-match, which resolves the CFI violation.
+HEAD commit:    810c2f0a3f86 mlxsw: Avoid warning during ip6gre device rem..
+git tree:       net
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=1448a599f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=331feb185f8828e0
+dashboard link: https://syzkaller.appspot.com/bug?extid=8ed8fc4c57e9dcf23ca6
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=104e9749f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15f913b9f00000
 
-Fixes: f89823c21224 ("drm/i915/perf: Implement I915_PERF_ADD/REMOVE_CONFIG interface")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8ed8fc4c57e9dcf23ca6@syzkaller.appspotmail.com
+
+netlink: 28 bytes leftover after parsing attributes in process `syz-executor151'.
+netlink: 28 bytes leftover after parsing attributes in process `syz-executor151'.
+================================================================================
+UBSAN: shift-out-of-bounds in net/sched/act_pedit.c:238:43
+shift exponent 1400735974 is too large for 32-bit type 'unsigned int'
+CPU: 0 PID: 3606 Comm: syz-executor151 Not tainted 5.18.0-rc5-syzkaller-00165-g810c2f0a3f86 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ ubsan_epilogue+0xb/0x50 lib/ubsan.c:151
+ __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x187 lib/ubsan.c:322
+ tcf_pedit_init.cold+0x1a/0x1f net/sched/act_pedit.c:238
+ tcf_action_init_1+0x414/0x690 net/sched/act_api.c:1367
+ tcf_action_init+0x530/0x8d0 net/sched/act_api.c:1432
+ tcf_action_add+0xf9/0x480 net/sched/act_api.c:1956
+ tc_ctl_action+0x346/0x470 net/sched/act_api.c:2015
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5993
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ ____sys_sendmsg+0x6e2/0x800 net/socket.c:2413
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2496
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fe36e9e1b59
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffef796fe88 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe36e9e1b59
+RDX: 0000000000000000 RSI: 0000000020000300 RDI: 0000000000000003
+RBP: 00007fe36e9a5d00 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fe36e9a5d90
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+================================================================================
+
+
 ---
- drivers/gpu/drm/i915/i915_perf.c       | 4 ++--
- drivers/gpu/drm/i915/i915_perf_types.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/gpu/drm/i915/i915_perf.c b/drivers/gpu/drm/i915/i915_perf.c
-index 0a9c3fcc09b1..1577ab6754db 100644
---- a/drivers/gpu/drm/i915/i915_perf.c
-+++ b/drivers/gpu/drm/i915/i915_perf.c
-@@ -4050,8 +4050,8 @@ static struct i915_oa_reg *alloc_oa_regs(struct i915_perf *perf,
- 	return ERR_PTR(err);
- }
- 
--static ssize_t show_dynamic_id(struct device *dev,
--			       struct device_attribute *attr,
-+static ssize_t show_dynamic_id(struct kobject *kobj,
-+			       struct kobj_attribute *attr,
- 			       char *buf)
- {
- 	struct i915_oa_config *oa_config =
-diff --git a/drivers/gpu/drm/i915/i915_perf_types.h b/drivers/gpu/drm/i915/i915_perf_types.h
-index 473a3c0544bb..05cb9a335a97 100644
---- a/drivers/gpu/drm/i915/i915_perf_types.h
-+++ b/drivers/gpu/drm/i915/i915_perf_types.h
-@@ -55,7 +55,7 @@ struct i915_oa_config {
- 
- 	struct attribute_group sysfs_metric;
- 	struct attribute *attrs[2];
--	struct device_attribute sysfs_metric_id;
-+	struct kobj_attribute sysfs_metric_id;
- 
- 	struct kref ref;
- 	struct rcu_head rcu;
-
-base-commit: 7ecc3cc8a7b39f08eee9aea7b718187583342a70
--- 
-2.36.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
