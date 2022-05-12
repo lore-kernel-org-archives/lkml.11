@@ -2,120 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADEAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353864AbiELMeb (ORCPT
+        id S1353833AbiELMfD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        Thu, 12 May 2022 08:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353844AbiELMeT (ORCPT
+        with ESMTP id S1353828AbiELMe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:34:19 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5C765D3B;
-        Thu, 12 May 2022 05:34:10 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id d22so4715541plr.9;
-        Thu, 12 May 2022 05:34:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4qRhse/EElRlNlt5CjLk1lxqck1AwLgnmQmAk8U8knE=;
-        b=C+xI6Uel5XoPC9VAdCee+cw2YQDuNTCtXZ9d5B2ntwHiDYMeajxivbXN5ptDz6lBML
-         hqjXHE+42UHaiNVz8CmKXL8sp//jlMPI1mtY1e8aTtMq9FXU0c70+3xMxpEwrQYeU2yZ
-         2w1pXUdnVUuu2HStV3QjU0QIMaCTX92Hs87KPCP0NWhYcZLpMOptflV1AUNEN7KkDmLc
-         aMYe4fDQpj/dLuB7SHr4oxXKKntQUgiRydr4qe9Gk1KWLZOnwIL1A5yIGdTLjNO8djfN
-         0hAaJtXfdcKkn8UfOfOQkEdqW2SPA9TOiLD6Fg8CnQi3WKNhXN2oUyjeywjECwOtsUXl
-         uBTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4qRhse/EElRlNlt5CjLk1lxqck1AwLgnmQmAk8U8knE=;
-        b=NeoSguKwc7tAFX/zrsjsnONre3Zjtg1DM1RX2bNyyikmRnpusytZaH6buxdfU/9kBN
-         1lY9NzUjxAP2OhUzh1rnhR1Rxkk2Wbyu3hxwAfGoc5UjQIDy9sjrb+41qsi8GP4+1aJl
-         iGoFGegSoDFGU+U6qQAmw0373CFCW7gNO7dwBsjLSCBjmjkjqzuOmiQSF5jqsppNNIOO
-         RZnNKNpoxdQbrIsS3fvLqVR9BpHcU9vRsyqjF1KZGqkjOrCgLnPeAqnoFwZU93jjdb44
-         3g6UHFMYc6qlXYT+IAR/ALb+GYZz1s4iZc6KQzFN53HSYgiSUfw/jM1zqZHutW217lgu
-         hy9g==
-X-Gm-Message-State: AOAM532u5qZtutZgZ0k5mm5qtGsVTmDz8nojbv0z0SrewOhWv5ImH1x1
-        Qja1d0UcyonQo1hJBQ7xgqE=
-X-Google-Smtp-Source: ABdhPJy+qLF/vwUaeC0vpFzsUXpOlPWIH1u4fK9KybQ0x/Y/yyc1GHdj/+XljeZC7HGYV/vePxcfSg==
-X-Received: by 2002:a17:902:b18e:b0:15f:b2c:6ca with SMTP id s14-20020a170902b18e00b0015f0b2c06camr20550250plr.84.1652358849787;
-        Thu, 12 May 2022 05:34:09 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.112])
-        by smtp.gmail.com with ESMTPSA id y24-20020a63de58000000b003c14af50643sm1738130pgi.91.2022.05.12.05.34.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 05:34:09 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        imagedong@tencent.com, kafai@fb.com, talalahmad@google.com,
-        keescook@chromium.org, asml.silence@gmail.com, willemb@google.com,
-        vasily.averin@linux.dev, ilias.apalodimas@linaro.org,
-        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v2 4/4] net: tcp: reset 'drop_reason' to NOT_SPCIFIED in tcp_v{4,6}_rcv()
-Date:   Thu, 12 May 2022 20:33:13 +0800
-Message-Id: <20220512123313.218063-5-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220512123313.218063-1-imagedong@tencent.com>
-References: <20220512123313.218063-1-imagedong@tencent.com>
+        Thu, 12 May 2022 08:34:57 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064176F484
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:34:56 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 9658F2223A;
+        Thu, 12 May 2022 14:34:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1652358895;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uGSqzt2IwevyC1nZjVg1zbzsKwHqQFbjkeSfynQ0Mno=;
+        b=IGtFsl6AnRFEwP6qV9E5VAF/zvs8akRinmrkYsNvL1wrySsQ3LNjmmBdXgaxjmvXDlduGH
+        +ecsCEx+Bd+LSK0yvafNlFzKm68iWmHy85hNOTydiy8zpn9sjeJdC4n2nyg0fCW+ZRQo3w
+        lgTz9ank2l4AzIlgeQfk8JOO67vKwD0=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 12 May 2022 14:34:54 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Pratyush Yadav <p.yadav@ti.com>
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] mtd: spi-nor: debugfs: fix format specifier
+In-Reply-To: <20220512123213.fzly4gollonlo27p@ti.com>
+References: <20220512112027.3771734-1-michael@walle.cc>
+ <20220512123213.fzly4gollonlo27p@ti.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <ea3a10d91129e4948eabc4bed8cf22fe@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Am 2022-05-12 14:32, schrieb Pratyush Yadav:
+> Hi Michael,
+> 
+> On 12/05/22 01:20PM, Michael Walle wrote:
+>> The intention was to print the JEDEC ID in the following format:
+>>   nn nn nn
+>> 
+>> In this case format specifier has to be "%*ph". Fix it.
+>> 
+>> Fixes: 0257be79fc4a ("mtd: spi-nor: expose internal parameters via 
+>> debugfs")
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>  drivers/mtd/spi-nor/debugfs.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/mtd/spi-nor/debugfs.c 
+>> b/drivers/mtd/spi-nor/debugfs.c
+>> index bf9fda5d4d0b..4b972bd4b80d 100644
+>> --- a/drivers/mtd/spi-nor/debugfs.c
+>> +++ b/drivers/mtd/spi-nor/debugfs.c
+>> @@ -81,7 +81,7 @@ static int spi_nor_params_show(struct seq_file *s, 
+>> void *data)
+>>  	int i;
+>> 
+>>  	seq_printf(s, "name\t\t%s\n", info->name);
+>> -	seq_printf(s, "id\t\t%*phn\n", SPI_NOR_MAX_ID_LEN, nor->id);
+>> +	seq_printf(s, "id\t\t%*ph\n", SPI_NOR_MAX_ID_LEN, nor->id);
+> 
+> Patch does not apply. Are you basing this on some other commits you
+> have? This line is different on my tree:
+> 
+> 	seq_printf(s, "id\t\t%*phn\n", info->id_len, info->id);
+> 
+> In fact, I do not have a nor->id at all in my tree. BTW, I have applied
+> https://lore.kernel.org/r/20220429102018.2361038-2-michael@walle.cc
+> 
+> I am going to apply the below patch. Please ACK/NACK. I did a quick
+> test, the output stays the same before and after this patch.
+> 
+> -- 8< --
+> From c47452194641b5d27c20e557c84a46c85fd7ce37 Mon Sep 17 00:00:00 2001
+> From: Michael Walle <michael@walle.cc>
+> Date: Thu, 12 May 2022 13:20:27 +0200
+> Subject: [PATCH] mtd: spi-nor: debugfs: fix format specifier
+> 
+> The intention was to print the JEDEC ID in the following format:
+>   nn nn nn
+> 
+> In this case format specifier has to be "%*ph". Fix it.
+> 
+> Fixes: 0257be79fc4a ("mtd: spi-nor: expose internal parameters via 
+> debugfs")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
+> Link: 
+> https://lore.kernel.org/r/20220512112027.3771734-1-michael@walle.cc
+> ---
+>  drivers/mtd/spi-nor/debugfs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/mtd/spi-nor/debugfs.c 
+> b/drivers/mtd/spi-nor/debugfs.c
+> index 1949905eefea..eaf84f7a0676 100644
+> --- a/drivers/mtd/spi-nor/debugfs.c
+> +++ b/drivers/mtd/spi-nor/debugfs.c
+> @@ -81,7 +81,7 @@ static int spi_nor_params_show(struct seq_file *s, 
+> void *data)
+>  	int i;
+> 
+>  	seq_printf(s, "name\t\t%s\n", info->name);
+> -	seq_printf(s, "id\t\t%*phn\n", info->id_len, info->id);
+> +	seq_printf(s, "id\t\t%*ph\n", info->id_len, info->id);
+>  	string_get_size(params->size, 1, STRING_UNITS_2, buf, sizeof(buf));
+>  	seq_printf(s, "size\t\t%s\n", buf);
+>  	seq_printf(s, "write size\t%u\n", params->writesize);
 
-The 'drop_reason' that passed to kfree_skb_reason() in tcp_v4_rcv()
-and tcp_v6_rcv() can be SKB_NOT_DROPPED_YET(0), as it is used as the
-return value of tcp_inbound_md5_hash().
+Ack. Thanks. My bad, there are some missing changes, which I didn't
+sent yet.
 
-And it can panic the kernel with NULL pointer in
-net_dm_packet_report_size() if the reason is 0, as drop_reasons[0]
-is NULL.
-
-Fixes: 1330b6ef3313 ("skb: make drop reason booleanable")
-
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
-v2:
-- consider tcp_v6_rcv()
----
- net/ipv4/tcp_ipv4.c | 1 +
- net/ipv6/tcp_ipv6.c | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 918816ec5dd4..24eb42497a71 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -2101,6 +2101,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	}
- 
- discard_it:
-+	SKB_DR_OR(drop_reason, NOT_SPECIFIED);
- 	/* Discard frame. */
- 	kfree_skb_reason(skb, drop_reason);
- 	return 0;
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 60bdec257ba7..636ed23d9af0 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1509,6 +1509,7 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- discard:
- 	if (opt_skb)
- 		__kfree_skb(opt_skb);
-+	SKB_DR_OR(reason, NOT_SPECIFIED);
- 	kfree_skb_reason(skb, reason);
- 	return 0;
- csum_err:
--- 
-2.36.1
-
+-michael
