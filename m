@@ -2,118 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72FFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B27C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:12:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353013AbiELLLf (ORCPT
+        id S1352996AbiELLMt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 07:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
+        Thu, 12 May 2022 07:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344515AbiELLL1 (ORCPT
+        with ESMTP id S1352988AbiELLMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 07:11:27 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A475372B
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:11:25 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id dk23so9482126ejb.8
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mU7DjZ6YdE5ZE6KKWVtlZVe9sgVvfea3+yMKl+vOnVo=;
-        b=Jz3TNB8Ix/xBZkbtD4X/DUmSq4yrvweuymYmhr87xqoKK5IUcCStHAl/E63TFW9yig
-         lcBfVAgG4F3Y70mg4qNIlVfbSyle/W6kkfNPBn3V53mF6wXoUvnWuh2G1uaOVPh2pNVZ
-         29PL1PqFKJ5Q17EoiAxRowAF6RaaQR7bHgXdonm7011jncH3ynSsle0eIJlA38q6o/gw
-         S1P4+n0yOKA0iDNxa2RRjZZt9ImKvr+7LHeXFbgqRiKSRfKwe7SKImD52XXg0ib0zhG6
-         D3sR9XXM3oS9fT4pT7hGWd8NX+8ZgSsFY/YN26HVof+qfy6t65+FRNetsjng4OXJYS5y
-         tVjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mU7DjZ6YdE5ZE6KKWVtlZVe9sgVvfea3+yMKl+vOnVo=;
-        b=XhQEKVPCAHrXLh8v+vjXdaeh71pQmCVSJX3MwiP/C31e2Tgnv27T0Ggv7JbNEXsWlp
-         +BkY/8HkMEKsA9SZu4M7C0WiWOpYML9EpO6C7V6+FDP2ViQCnO47Xn2+YxmDmqHp62lm
-         Wt2YArTAwSy2Iz7/2QY+fh+jkVpFU8PzcYvSBfn65lwwZyAh2L9okgDSwH1MYCLz2Dp9
-         CBPTf1AYet6bydYNeQgRsh1rJMHw6SiPuctNanG7RTWfHfQbGzzhN9n035b15J9pdGEa
-         cuMC9srTYoeGYkvoq5Lxugc8ZakJHZSBY+ixiuA2gurmcZdGx+Sap7/fFkA4L/QlM/gc
-         wy9g==
-X-Gm-Message-State: AOAM531pJ1KvxwaUiG/Y9pFRd56eKQXkja6VoMo1xYzD0xo+OuOzn6fq
-        qftG+/Ko235g5r93kr/hJyY=
-X-Google-Smtp-Source: ABdhPJyAzjR5uVZuKuZsiWODeTC6oFfxt4BJFSeN9J6FT/+zjzv4PUPDOISmQAZEk6erZEgvpK+x2A==
-X-Received: by 2002:a17:907:c28:b0:6f4:2a80:f355 with SMTP id ga40-20020a1709070c2800b006f42a80f355mr28999239ejc.101.1652353884087;
-        Thu, 12 May 2022 04:11:24 -0700 (PDT)
-Received: from archbook.localnet (ict-networks-195-176-112-051.fwd-v4.ethz.ch. [195.176.112.51])
-        by smtp.gmail.com with ESMTPSA id y17-20020a50f1d1000000b0042617ba6380sm2436781edl.10.2022.05.12.04.11.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 04:11:23 -0700 (PDT)
-From:   Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-To:     Cristian Marussi <cristian.marussi@arm.com>,
-        Etienne Carriere <etienne.carriere@linaro.org>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Liang Chen <cl@rock-chips.com>, linux-kernel@vger.kernel.org,
-        Kever Yang <kever.yang@rock-chips.com>,
-        Jeffy Chen <jeffy.chen@rock-chips.com>,
-        Peter Geis <pgwipeout@gmail.com>
-Subject: Re: [BUG] New arm scmi check in linux-next causing rk3568 not to boot due to firmware bug
-Date:   Thu, 12 May 2022 13:11:22 +0200
-Message-ID: <6587375.6lpfYT6tjA@archbook>
-In-Reply-To: <CAN5uoS_MgBiTVZCRSZyYCH4cnUZD_bHj2+mZu661bFV8TKWScw@mail.gmail.com>
-References: <1698297.NAKyZzlH2u@archbook> <YnOEwuuyO2/h7c1G@e120937-lin> <CAN5uoS_MgBiTVZCRSZyYCH4cnUZD_bHj2+mZu661bFV8TKWScw@mail.gmail.com>
+        Thu, 12 May 2022 07:12:45 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBED7527EC;
+        Thu, 12 May 2022 04:12:42 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VD-YkUJ_1652353959;
+Received: from 30.39.157.75(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VD-YkUJ_1652353959)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 12 May 2022 19:12:40 +0800
+Message-ID: <188f7cb2-ba21-a53a-828d-7242b17b0c72@linux.alibaba.com>
+Date:   Thu, 12 May 2022 19:13:18 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: linux-next: build failure after merge of the mm tree
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220512193855.4f6ce32f@canb.auug.org.au>
+ <YnzqffV7STYS24Yn@arm.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YnzqffV7STYS24Yn@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
 
-sorry for the late reply, completely missed that there was a question
-for me in this mail.
 
-On Donnerstag, 5. Mai 2022 11:40:09 CEST Etienne Carriere wrote:
-> Hello Nicolas, Cristian,
-> [...]
+On 5/12/2022 7:07 PM, Catalin Marinas wrote:
+> On Thu, May 12, 2022 at 07:38:55PM +1000, Stephen Rothwell wrote:
+>> After merging the mm tree, today's linux-next build (arm64 defconfig)
+>> failed like this:
+>>
+>> arch/arm64/mm/hugetlbpage.c: In function 'huge_ptep_clear_flush':
+>> arch/arm64/mm/hugetlbpage.c:493:16: error: implicit declaration of function 'get_clear_flush'; did you mean 'ptep_clear_flush'? [-Werror=implicit-function-declaration]
+>>    493 |         return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
+>>        |                ^~~~~~~~~~~~~~~
+>>        |                ptep_clear_flush
+>> arch/arm64/mm/hugetlbpage.c:493:16: error: incompatible types when returning type 'int' but 'pte_t' was expected
+>>    493 |         return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
+>>        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> arch/arm64/mm/hugetlbpage.c:494:1: error: control reaches end of non-void function [-Werror=return-type]
+>>    494 | }
+>>        | ^
+>>
+>> Caused by commit
+>>
+>>    00df1f1a133b ("mm: change huge_ptep_clear_flush() to return the original pte")
+>>
+>> interacting with commit
+>>
+>>    fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()")
+>>
+>> I have applied the following merg fix patch for today.
+>>
+>> From: Stephen Rothwell <sfr@canb.auug.org.au>
+>> Date: Thu, 12 May 2022 19:33:11 +1000
+>> Subject: [PATCH] fixup for "mm: change huge_ptep_clear_flush() to return the original pte"
+>>
+>> It interacts with commit
+>>
+>>    fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()")
+>>
+>> from the arm64 tree
+>>
+>> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+>> ---
+>>   arch/arm64/mm/hugetlbpage.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+>> index 5bdf913dedc7..30f5b76aabe9 100644
+>> --- a/arch/arm64/mm/hugetlbpage.c
+>> +++ b/arch/arm64/mm/hugetlbpage.c
+>> @@ -490,7 +490,7 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
+>>   		return ptep_clear_flush(vma, addr, ptep);
+>>   
+>>   	ncontig = find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
+>> -	return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
+>> +	return get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
+>>   }
 > 
-> Indeed the firmware implementation is wrong in TF-A.
-> And also in OP-TEE by the way:
-> https://github.com/OP-TEE/optee_os/blob/3.17.0/core/drivers/scmi-msg/base.c#L163-L166
+> Note that after the arm64 commit, get_clear_contig() no longer flushes
+> the TLB. So maybe something like:
 > 
-> @Nicoals, do you want to send a patch to TF-A, or do you want me to do it?
-
-I have no experience with TF-A, so I'd prefer if you could do it.
-
-In good news, Rockchip has confirmed they're preparing to release RK356x
-TF-A sources, so I'll be able to port the patch over to their sources once
-they are released, if they don't already apply it themselves.
-
+> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+> index 30f5b76aabe9..9a999550df8e 100644
+> --- a/arch/arm64/mm/hugetlbpage.c
+> +++ b/arch/arm64/mm/hugetlbpage.c
+> @@ -485,12 +485,15 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
+>   {
+>   	size_t pgsize;
+>   	int ncontig;
+> +	pte_t orig_pte;
 > 
-> I can fix the optee_os implementation. I'll tell you when I'll have
-> created a P-R.
-> The fix is the same for TF-A and OP-TEE.
-> Proposal from Cristian looks good to me, maybe simplified:
+>   	if (!pte_cont(READ_ONCE(*ptep)))
+>   		return ptep_clear_flush(vma, addr, ptep);
 > 
-> ```patch
->          memcpy(outargs, &p2a, sizeof(p2a));
->          memcpy(outargs + sizeof(p2a), list + a2p->skip, count);
-> 
-> -        scmi_write_response(msg, outargs, sizeof(outargs));
-> +        list_sz = (1 + (count - 1) / sizeof(uint32_t)) * sizeof(uint32_t);
-> +        scmi_write_response(msg, outargs, sizeof(p2a) + list_sz);
-> ```
-> [...]
-> 
-> BR,
-> Etienne
+>   	ncontig = find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
+> -	return get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
+> +	orig_pte = get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
+> +	flush_tlb_range(vma, addr, addr + pgsize * ncontig);
+> +	return orig_pte;
+>   }
 
-Regards,
-Nicolas Frattaroli
+Yes, after checking this fb396bb459c1 ("arm64/hugetlb: Drop TLB flush 
+from get_clear_flush()"), I also realized it will miss TLB flush.
 
+So I am not sure I need send a incremental patch to fix this issue? Or 
+resend my patch set [1] with rebasing on the arm64 changes?
 
+Catalin and Andrew, how do you think? Thanks.
 
+[1] 
+https://lore.kernel.org/all/cover.1652270205.git.baolin.wang@linux.alibaba.com/
