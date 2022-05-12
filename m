@@ -2,90 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD92C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1534BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353907AbiELMjg (ORCPT
+        id S1353921AbiELMli (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        Thu, 12 May 2022 08:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353908AbiELMjc (ORCPT
+        with ESMTP id S1353915AbiELMlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:39:32 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E95314CA12;
-        Thu, 12 May 2022 05:39:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=JDJLNxtzQmNv9ZM52zmyIFiZT5LJsi4aBhzMv6fNHmo=; b=jHvGd0Dw9Ky0KKv4tiTPpTLvRq
-        6Nrv82JqSu+/cX65x3e8B2HMj3jJ54HwHyKf2HyjZbsD0B+DrY8qtQDJ/SubeZAhKKc7Eo32KN4B/
-        UOSCwdM5E2d5cFG4EM7TcWJnPw19ZZqui8ZQulmJh+vrdA6LmwH10zKf9xRu5skS4lbE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1np861-002Ryk-2D; Thu, 12 May 2022 14:39:09 +0200
-Date:   Thu, 12 May 2022 14:39:09 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
-Message-ID: <Ynz/7Wh6vDjR7ljs@lunn.ch>
-References: <20220510094014.68440-1-nbd@nbd.name>
- <20220510123724.i2xqepc56z4eouh2@skbuf>
- <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
- <20220510165233.yahsznxxb5yq6rai@skbuf>
- <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
- <20220510222101.od3n7gk3cofwhbks@skbuf>
- <376b13ac-d90b-24e0-37ed-a96d8e5f80da@nbd.name>
- <20220511093245.3266lqdze2b4odh5@skbuf>
- <YnvJFmX+BRscJOtm@lunn.ch>
- <0ef1e0c2-1623-070d-fbf5-e7f09fc199ca@nbd.name>
+        Thu, 12 May 2022 08:41:23 -0400
+Received: from mail-4018.proton.ch (mail-4018.proton.ch [185.70.40.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546625799B
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:41:21 -0700 (PDT)
+Date:   Thu, 12 May 2022 12:41:16 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
+        s=protonmail2; t=1652359279;
+        bh=UqamLj4BJ8E9gSU1cyoMnFv0DQaZ7oKu0fpmqx4XkMU=;
+        h=Date:To:From:Reply-To:Subject:Message-ID:In-Reply-To:References:
+         Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+         Message-ID;
+        b=Er/8a6YP+4nfThL0mlkEjQDoMW+DqHzTUCotJgaVsuWUECGHKzWSOWmi/ZDsychbd
+         61BflP9DaK1qfGptv5nseL0+q8KBsaNOYQCPwyMaA6jTZKvn+IKFfG/DRA0xIELbsP
+         5tCItORkIZASbXFQ+3zQ913zO/MAnif9eutcMs38MRODYAEFojglFqJbRFxj6PiZvt
+         lMKuAlkXkQqcA5GtU+0wdAZaqDIePksoppnwkxBp+A8/DD26LoAY6qlsLc2/wMHt3+
+         1r2z22TxAI2w4wCZJcbwxpRavmTO0fRgX/zcm+hersRlbxIaaoQe4yqZegDJvaaVBX
+         X0V1oLSbxAf0Q==
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
+From:   Simon Ser <contact@emersion.fr>
+Reply-To: Simon Ser <contact@emersion.fr>
+Subject: Re: procfs: open("/proc/self/fd/...") allows bypassing O_RDONLY
+Message-ID: <03l0hfZIzD9KwSxSntGcmfFhvbIKiK45poGUhXtR7Qi0Av0-ZnqnSBPAP09GGpSrKGZWZNCTvme_Gpiuz0Bcg6ewDIXSH24SBx_tvfyZSWU=@emersion.fr>
+In-Reply-To: <lGo7a4qQABKb-u_xsz6p-QtLIy2bzciBLTUJ7-ksv7ppK3mRrJhXqFmCFU4AtQf6EyrZUrYuSLDMBHEUMe5st_iT9VcRuyYPMU_jVpSzoWg=@emersion.fr>
+References: <lGo7a4qQABKb-u_xsz6p-QtLIy2bzciBLTUJ7-ksv7ppK3mRrJhXqFmCFU4AtQf6EyrZUrYuSLDMBHEUMe5st_iT9VcRuyYPMU_jVpSzoWg=@emersion.fr>
+Feedback-ID: 1358184:user:proton
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0ef1e0c2-1623-070d-fbf5-e7f09fc199ca@nbd.name>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Felix
+On Thursday, May 12th, 2022 at 12:37, Simon Ser <contact@emersion.fr> wrote=
+:
 
-Thanks for the additional testing.
+> what would be a good way to share a FD to another
+> process without allowing it to write to the underlying file?
 
-> I just ran some more tests, here's what I found:
-> The switch automatically pads all forwarded packets to 64 bytes.
-> When packets are forwarded from one external port to another, the padding is
-> all zero.
-> Only when packets are sent from a CPU port to an external port, the last 4
-> bytes contain garbage. The garbage bytes are different for every packet, and
-> I can't tell if it's leaking contents of previous packets or what else is in
-> there.
-> Based on that, I'm pretty sure that the hardware simply has a quirk where it
-> does not account for the special tag when generating its own padding
-> internally.
-
-This does not yet explain why your receiver is dropping the frame. As
-Vladimir pointed out, the contents of the pad should not matter.
-
-Is it also getting the FCS wrong when it pads? That would cause the
-receiver to drop the frame.
-
-Or do we have an issue in the receiver where it is looking at the
-contents of the pad?
-
-	 Andrew
+(I'm reminded that memfd + seals exist for this purpose. Still, I'd be
+interested to know whether that O_RDONLY/O_RDWR behavior is intended,
+because it's pretty surprising. The motivation for using O_RDONLY over
+memfd seals is that it isn't Linux-specific.)
