@@ -2,89 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9742AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 05:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37ACFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 05:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349599AbiELFRv (ORCPT
+        id S1349629AbiELFS1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 01:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50060 "EHLO
+        Thu, 12 May 2022 01:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242790AbiELFRs (ORCPT
+        with ESMTP id S242790AbiELFSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 01:17:48 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527DE37A3B;
-        Wed, 11 May 2022 22:17:46 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 661C85FD06;
-        Thu, 12 May 2022 08:17:44 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1652332664;
-        bh=42jDnDX08klVXS7FSnmeXaJxIYwIwhgFNvH0ZzzZhLE=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=H+Ybw6Csrazqt4x432PVXOPb1J7Z9p40cNcLl/G30tF51yRo5IFBpaG14STYemCS4
-         VF4YZl/jWoIP2mE5IG/4kQJtj0cc89e2EK77UE32K3UIZX4hlp1X3smOFRWGYnY/tn
-         MKdMCs+FhxFFQ58Jv9USRedoShRaiqyq8VH9PEs0OsscwudIrXGPEe3VoST1T3l4yM
-         w1BsNcP78QoZa+viEBqwOKVVEgPrDMX332TmBWU9yYniO0keZg6RlJAL2vtuP4s3xF
-         g+JVAgg/CkFBR9B5f0Ff7ucgxwSe49wdZR1gndNncnS32KPl4HfjNRfWsZwQmpNBrE
-         2smAwEK1kGJdA==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 12 May 2022 08:17:44 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v1 5/8] vhost/vsock: enable zerocopy callback
-Thread-Topic: [RFC PATCH v1 5/8] vhost/vsock: enable zerocopy callback
-Thread-Index: AQHYZb+Chv+MF/2wWEaC/fTa33nAOg==
-Date:   Thu, 12 May 2022 05:17:01 +0000
-Message-ID: <cef192f7-45ce-839a-91a4-a6996f6a6f29@sberdevices.ru>
-In-Reply-To: <7cdcb1e1-7c97-c054-19cf-5caeacae981d@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E7F6E37C94EAD8439CE0EFD97F2AD119@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Thu, 12 May 2022 01:18:24 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7ED318C06D;
+        Wed, 11 May 2022 22:18:23 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so3900079pjq.2;
+        Wed, 11 May 2022 22:18:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1AQXk6YcsqGT6AZ+v5JCyurVPXvqkymIH55yTG/A3eU=;
+        b=c4XbLJExL24lVduVaKZbo3JXp16pMcuqHtm+S6s8epmqQBy+6+ronYZOvOHbS4+/ds
+         JUJmUFC1sZ0Az/UXjgllV9wcwhlAeXGx/4hBd6pbOtgn2veRZBDG2gGCteKtnveYn4Tp
+         OPlp6hSkcnWR5KwF/OGocWc4HckoPwcBdE88RACKV62nbbGbL+AeGLNJZ7+kdAE/D4WG
+         n+F3Hzztytq3MsZG6tDaXTq6nslw6FW+Bo5ODoSRj2Z3idf/9xv/S5XwUnq4W96k3Dch
+         G8tnCyRtoCSa1MIATCXZlRmimMbHzr4qrdfpb87sHbnSnY62bJseaLdiB1QTn9bN3+VF
+         d3zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1AQXk6YcsqGT6AZ+v5JCyurVPXvqkymIH55yTG/A3eU=;
+        b=4burRoblwZqTM7TYNbGGIMMIL1nAUVEyE5RK1qBwNh6ZIpSwOR5OdmwMIq+muZ0+RU
+         6y9/GIoF8o6XVRPPR7A3m8E3+JRh4EYabNWtzVpzp0un88oeU+9MwRlRCNLC9GB03pOf
+         z0k15L6LeJJKi5ujWVyGP44Z1exyhRXhdEbadBeiQ6d/cdn95BWKZhYxE7dR2b4WHdH0
+         igQiecRJ8i0Wzvt8o2r3OsXMEGbRhYgUPH2wrwa3f9iOPAZiySZ98tGISG8qBAcpU32h
+         XFoZ73RWfdw+H3XUO1CQdyzfIu4jSdNlGCMvhtXnGrpfOPdiFTR5V+w40xXXBkmaV4Xl
+         qlcg==
+X-Gm-Message-State: AOAM533Z8/VnL6JbDN1V2m5+T6zr45vw9AWNsIzwUsAKnrbO8NbKOqu4
+        H63QK0NzQ+wcB03d5DFuULVKGiJg4BhEsfisp4s=
+X-Google-Smtp-Source: ABdhPJy8usYAOKkyscc+PdxY19NHkSQ7NQZnqgW7jH9hOw/0P1A8c6rItZ0zRup4bEnRj2R/IPAjiw==
+X-Received: by 2002:a17:902:c14a:b0:15b:9c29:935a with SMTP id 10-20020a170902c14a00b0015b9c29935amr28603418plj.2.1652332702851;
+        Wed, 11 May 2022 22:18:22 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id c17-20020aa78811000000b0050dc7628135sm2786675pfo.15.2022.05.11.22.18.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 22:18:22 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] dmaengine: ti: Fix refcount leak in ti_dra7_xbar_route_allocate
+Date:   Thu, 12 May 2022 09:18:15 +0400
+Message-Id: <20220512051815.11946-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/12 02:55:00 #19424207
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGhpcyBhZGRzIHplcm9jb3B5IGNhbGxiYWNrIHRvIHZob3N0IHRyYW5zcG9ydC4NCg0KU2lnbmVk
-LW9mZi1ieTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRldmljZXMucnU+DQotLS0N
-CiBkcml2ZXJzL3Zob3N0L3Zzb2NrLmMgfCAxICsNCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRp
-b24oKykNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmhvc3QvdnNvY2suYyBiL2RyaXZlcnMvdmhv
-c3QvdnNvY2suYw0KaW5kZXggMTU3Nzk4OTg1Mzg5Li45MzExOWQ1MjlmYjAgMTAwNjQ0DQotLS0g
-YS9kcml2ZXJzL3Zob3N0L3Zzb2NrLmMNCisrKyBiL2RyaXZlcnMvdmhvc3QvdnNvY2suYw0KQEAg
-LTQ4NCw2ICs0ODQsNyBAQCBzdGF0aWMgc3RydWN0IHZpcnRpb190cmFuc3BvcnQgdmhvc3RfdHJh
-bnNwb3J0ID0gew0KIAkJLnN0cmVhbV9yY3ZoaXdhdCAgICAgICAgICA9IHZpcnRpb190cmFuc3Bv
-cnRfc3RyZWFtX3Jjdmhpd2F0LA0KIAkJLnN0cmVhbV9pc19hY3RpdmUgICAgICAgICA9IHZpcnRp
-b190cmFuc3BvcnRfc3RyZWFtX2lzX2FjdGl2ZSwNCiAJCS5zdHJlYW1fYWxsb3cgICAgICAgICAg
-ICAgPSB2aXJ0aW9fdHJhbnNwb3J0X3N0cmVhbV9hbGxvdywNCisJCS56ZXJvY29weV9kZXF1ZXVl
-CSAgPSB2aXJ0aW9fdHJhbnNwb3J0X3plcm9jb3B5X2RlcXVldWUsDQogDQogCQkuc2VxcGFja2V0
-X2RlcXVldWUgICAgICAgID0gdmlydGlvX3RyYW5zcG9ydF9zZXFwYWNrZXRfZGVxdWV1ZSwNCiAJ
-CS5zZXFwYWNrZXRfZW5xdWV1ZSAgICAgICAgPSB2aXJ0aW9fdHJhbnNwb3J0X3NlcXBhY2tldF9l
-bnF1ZXVlLA0KLS0gDQoyLjI1LjENCg==
+1. of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+2. of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not needed anymore.
+
+Add put_device() and of_node_put() in some error paths to fix.
+
+Fixes: ec9bfa1e1a79 ("dmaengine: ti-dma-crossbar: dra7: Use bitops instead of idr")
+Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/dma/ti/dma-crossbar.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/dma/ti/dma-crossbar.c b/drivers/dma/ti/dma-crossbar.c
+index 71d24fc07c00..f744ddbbbad7 100644
+--- a/drivers/dma/ti/dma-crossbar.c
++++ b/drivers/dma/ti/dma-crossbar.c
+@@ -245,6 +245,7 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
+ 	if (dma_spec->args[0] >= xbar->xbar_requests) {
+ 		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
+ 			dma_spec->args[0]);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+@@ -252,12 +253,14 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
+ 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
+ 	if (!dma_spec->np) {
+ 		dev_err(&pdev->dev, "Can't get DMA master\n");
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+ 	map = kzalloc(sizeof(*map), GFP_KERNEL);
+ 	if (!map) {
+ 		of_node_put(dma_spec->np);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 
+@@ -268,6 +271,8 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
+ 		mutex_unlock(&xbar->mutex);
+ 		dev_err(&pdev->dev, "Run out of free DMA requests\n");
+ 		kfree(map);
++		of_node_put(dma_spec->np);
++		put_device(&pdev->dev);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 	set_bit(map->xbar_out, xbar->dma_inuse);
+-- 
+2.25.1
+
