@@ -2,85 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31312C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 06:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B99FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 06:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242402AbiELGFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 02:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
+        id S1350133AbiELGJX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 12 May 2022 02:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350110AbiELGFr (ORCPT
+        with ESMTP id S1345148AbiELGJT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 02:05:47 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B02631D;
-        Wed, 11 May 2022 23:05:45 -0700 (PDT)
-X-UUID: 94997701536f472dbebcae6c7ba853c8-20220512
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:6e4b1bcc-5816-4e8c-b62b-de4f6de9f4ab,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.4,REQID:6e4b1bcc-5816-4e8c-b62b-de4f6de9f4ab,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:faefae9,CLOUDID:d7535448-e22d-4f1a-9d3f-55c4a2b00ea4,C
-        OID:cb026531e4b5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 94997701536f472dbebcae6c7ba853c8-20220512
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1604091499; Thu, 12 May 2022 14:05:40 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 12 May 2022 14:05:39 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 May 2022 14:05:38 +0800
-Message-ID: <ca85977bcff2e3de925d7ab834b8654ec5ddf8c1.camel@mediatek.com>
-Subject: Re: [PATCH v6 00/10] cpufreq: mediatek: Cleanup and support MT8183
- and MT8186
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-CC:     <rafael@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <khilman@baylibre.com>, <angelogioacchino.delregno@collabora.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 12 May 2022 14:05:39 +0800
-In-Reply-To: <20220512054825.aqe4g4lupuqj3rcq@vireshk-i7>
-References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
-         <20220506042004.hqzpb66shak4y7rz@vireshk-i7>
-         <86851bd03128cc61082d516ebff929d3637063cb.camel@mediatek.com>
-         <20220512052732.iqphgpveoyrqjlqg@vireshk-i7>
-         <af82434adea0b648d74ed5ffd123e0faaaac6508.camel@mediatek.com>
-         <20220512054825.aqe4g4lupuqj3rcq@vireshk-i7>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+        Thu, 12 May 2022 02:09:19 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1886D104C91
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 23:09:17 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCzTSIl_1652335751;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VCzTSIl_1652335751)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 12 May 2022 14:09:12 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     mick@ics.forth.gr, paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, anup@brainfault.org,
+        akpm@linux-foundation.org, wangkefeng.wang@huawei.com,
+        rppt@kernel.org, david@redhat.com, wangborong@cdjrlc.com,
+        twd2.me@gmail.com, seanjc@google.com, alex@ghiti.fr,
+        petr.pavlu@suse.com, atishp@rivosinc.com
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jianghuaming.jhm@alibaba-inc.com, guoren@kernel.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: [PATCH v2] RISC-V: Mark IORESOURCE_EXCLUSIVE for reserved mem instead of IORESOURCE_BUSY
+Date:   Thu, 12 May 2022 14:09:10 +0800
+Message-Id: <20220512060910.601832-1-xianting.tian@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-12 at 11:18 +0530, Viresh Kumar wrote:
-> On 12-05-22, 13:33, Rex-BC Chen wrote:
-> > Matthias is not the member of mediatek, so I think we still need
-> > his
-> > feedback for these three patches.
-> 
-> Please ping him and ask for his feedback then.
-> 
+Commit 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
+marked IORESOURCE_BUSY for reserved memory, which casued resource map
+failed in subsequent operations of related driver, so remove the
+IORESOURCE_BUSY flag. In order to prohibit userland mapping reserved
+memory, mark IORESOURCE_EXCLUSIVE for it.
 
-ok, I will do this.
-Thanks!
+The code to reproduce the issue,
+dts:
+        mem0: memory@a0000000 {
+                reg = <0x0 0xa0000000 0 0x1000000>;
+                no-map;
+        };
 
-BRs,
-Rex
+        &test {
+                status = "okay";
+                memory-region = <&mem0>;
+        };
+
+code:
+        np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
+        ret = of_address_to_resource(np, 0, &r);
+        base = devm_ioremap_resource(&pdev->dev, &r);
+        // base = -EBUSY
+
+Fixes: 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
+Reported-by: Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Nick Kossifidis <mick@ics.forth.gr>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+---
+ arch/riscv/kernel/setup.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
+index 834eb652a7b9..e0a00739bd13 100644
+--- a/arch/riscv/kernel/setup.c
++++ b/arch/riscv/kernel/setup.c
+@@ -189,7 +189,7 @@ static void __init init_resources(void)
+ 		res = &mem_res[res_idx--];
+ 
+ 		res->name = "Reserved";
+-		res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
++		res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
+ 		res->start = __pfn_to_phys(memblock_region_reserved_base_pfn(region));
+ 		res->end = __pfn_to_phys(memblock_region_reserved_end_pfn(region)) - 1;
+ 
+@@ -214,7 +214,7 @@ static void __init init_resources(void)
+ 
+ 		if (unlikely(memblock_is_nomap(region))) {
+ 			res->name = "Reserved";
+-			res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
++			res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
+ 		} else {
+ 			res->name = "System RAM";
+ 			res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
+-- 
+2.17.1
 
