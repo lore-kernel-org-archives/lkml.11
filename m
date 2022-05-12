@@ -2,160 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C64AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56462C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357200AbiELRmF (ORCPT
+        id S1356307AbiELRmr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
+        Thu, 12 May 2022 13:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357183AbiELRl5 (ORCPT
+        with ESMTP id S1353035AbiELRmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:41:57 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD2E60BAB;
-        Thu, 12 May 2022 10:41:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652377315; x=1683913315;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZJ1onh2Zr7lWF0ZhgH2Zhxb8WH3RUU0eJg8bTS9xfQg=;
-  b=Z0xXA5C3z34Lv+yU8ibYWBBBRG0AKvZUAActEIVby6AXVjQ1fbToYRix
-   UPNfgw3vkRHySAF/v5MEVhjz1dzEkoEvvSh3Swgrm38qoKlWRdIutnJZv
-   NpKFzNd4KmK757U8k446xdtrGsGMiZPwKzos1FggpJbXPxUq4/58Trlws
-   ldosR7vUB86qzD2D4FppIs3kum1fFU0P6SYkVaUVLR+6Vil8kgFi4bKw5
-   tTyV+ck/8cXWJibq7gLU08MWqCGRhvux8MPRUw/sfpEGi7unifcw4s/Rb
-   FSQRi8BhUt+vbaUngbqfrfo5vSDqQwDFzWmv2vLkF/oJ/BUvS12XH4Zye
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="270026663"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="270026663"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:39:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="712025245"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 12 May 2022 10:39:34 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4609A45; Thu, 12 May 2022 20:39:33 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 2/5] Documentation: gpio: Advertise irqd_to_hwirq() helper in the examples
-Date:   Thu, 12 May 2022 20:39:18 +0300
-Message-Id: <20220512173921.8210-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220512173921.8210-1-andriy.shevchenko@linux.intel.com>
-References: <20220512173921.8210-1-andriy.shevchenko@linux.intel.com>
+        Thu, 12 May 2022 13:42:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17465E743;
+        Thu, 12 May 2022 10:42:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CD6A620C3;
+        Thu, 12 May 2022 17:42:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87477C385B8;
+        Thu, 12 May 2022 17:42:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652377361;
+        bh=xqAM2tBdd1Wwr4gn7QuECIUH2WF1B4DBfO+9+uwWOHg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=SVzzxKHIsuL34zozU+8DhYbhZ3LXXYPiE3Zsc+HXJU1jfuV4JCoFBtqQ5ditBeGQd
+         QpC9UuVvAzwtWxBU+kBdBppCkolASzQ51OAVEsny3Lqk94Yusf2mMiWAzotA0PdPiA
+         XacNYIbUgC6EXvR8Xxmc2WoZ+PUVEW7t4EwPaPzEtK4xEzMTETbyyyxUBKqH53gx9k
+         Ueu8XN1G7pZwzMh/u2lmffCUmeCmB+eXaq4efTAwKtqTNqW+4k/OImiKr5DHdXIoMX
+         FAicIJPA7HrgaA+bh58lX00OYFTAE0GTChNZtPZTv8ObaZ53KdyE3KXtRHGkqrRM7t
+         GFoh44sm04XSA==
+Date:   Thu, 12 May 2022 12:42:39 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Rajvi Jingar <rajvi.jingar@intel.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        bhelgaas@google.com, david.e.box@linux.intel.com,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] PCI/PM: Fix pci_pm_suspend_noirq() to disable PTM
+Message-ID: <20220512174239.GA851224@bhelgaas>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <70d0c0d4-093f-ae8a-9654-5a433285ab12@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of direct dereferencing the IRQ data in order to get HW IRQ number
-use the irqd_to_hwirq() helper.
+Hi Rajvi,
 
-Fixes: 5644b66a9c63 ("Documentation: Update the recommended pattern for GPIO irqchips")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- Documentation/driver-api/gpio/driver.rst | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+I received your v1, v2, v3, v4, v5 postings because they were sent
+directly to bhelgaas@google.com, but for some reason vger doesn't like
+them so they don't show up on the mailing list:
 
-diff --git a/Documentation/driver-api/gpio/driver.rst b/Documentation/driver-api/gpio/driver.rst
-index 964d09118d17..70ff43ac4fcc 100644
---- a/Documentation/driver-api/gpio/driver.rst
-+++ b/Documentation/driver-api/gpio/driver.rst
-@@ -430,6 +430,7 @@ call into the core gpiolib code:
-   static void my_gpio_mask_irq(struct irq_data *d)
-   {
-       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+      irq_hw_number_t hwirq = irqd_to_hwirq(d);
- 
-       /*
-        * Perform any necessary action to mask the interrupt,
-@@ -437,14 +438,15 @@ call into the core gpiolib code:
-        * state.
-        */
- 
--      gpiochip_disable_irq(gc, d->hwirq);
-+      gpiochip_disable_irq(gc, hwirq);
-   }
- 
-   static void my_gpio_unmask_irq(struct irq_data *d)
-   {
-       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+      irq_hw_number_t hwirq = irqd_to_hwirq(d);
- 
--      gpiochip_enable_irq(gc, d->hwirq);
-+      gpiochip_enable_irq(gc, hwirq);
- 
-       /*
-        * Perform any necessary action to unmask the interrupt,
-@@ -502,6 +504,7 @@ the interrupt separately and go with it:
-   static void my_gpio_mask_irq(struct irq_data *d)
-   {
-       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+      irq_hw_number_t hwirq = irqd_to_hwirq(d);
- 
-       /*
-        * Perform any necessary action to mask the interrupt,
-@@ -509,14 +512,15 @@ the interrupt separately and go with it:
-        * state.
-        */
- 
--      gpiochip_disable_irq(gc, d->hwirq);
-+      gpiochip_disable_irq(gc, hwirq);
-   }
- 
-   static void my_gpio_unmask_irq(struct irq_data *d)
-   {
-       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+      irq_hw_number_t hwirq = irqd_to_hwirq(d);
- 
--      gpiochip_enable_irq(gc, d->hwirq);
-+      gpiochip_enable_irq(gc, hwirq);
- 
-       /*
-        * Perform any necessary action to unmask the interrupt,
-@@ -577,6 +581,7 @@ In this case the typical set-up will look like this:
-   static void my_gpio_mask_irq(struct irq_data *d)
-   {
-       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+      irq_hw_number_t hwirq = irqd_to_hwirq(d);
- 
-       /*
-        * Perform any necessary action to mask the interrupt,
-@@ -584,15 +589,16 @@ In this case the typical set-up will look like this:
-        * state.
-        */
- 
--      gpiochip_disable_irq(gc, d->hwirq);
-+      gpiochip_disable_irq(gc, hwirq);
-       irq_mask_mask_parent(d);
-   }
- 
-   static void my_gpio_unmask_irq(struct irq_data *d)
-   {
-       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+      irq_hw_number_t hwirq = irqd_to_hwirq(d);
- 
--      gpiochip_enable_irq(gc, d->hwirq);
-+      gpiochip_enable_irq(gc, hwirq);
- 
-       /*
-        * Perform any necessary action to unmask the interrupt,
--- 
-2.35.1
+  https://lore.kernel.org/all/?q=a%3Arajvi.jingar
 
+I looked at the ones I received directly and don't see an obvious
+problem.  Maybe there's a hint here?
+
+  http://vger.kernel.org/majordomo-info.html
+
+All patches should appear on the linux-pci mailing list before
+applying them, so we need to figure this out somehow.  In fact, I read
+and review patches from linux-pci, so I often don't even see things
+that are just sent directly to bhelgaas@google.com. 
+
+On Thu, May 12, 2022 at 03:49:18PM +0200, Rafael J. Wysocki wrote:
+> On 4/29/2022 11:05 PM, Rajvi Jingar wrote:
+> > For the PCIe devices (like nvme) that do not go into D3 state still need to
+> > disable PTM to allow the port to enter a lower-power PM state and the SoC
+> > to reach a lower-power idle state as a whole. Move the pci_disable_ptm()
+> > out of pci_prepare_to_sleep() as this code path is not followed for devices
+> > that do not go into D3. This fixes the issue seen on Dell XPS 9300 with
+> > Ice Lake CPU and Dell Precision 5530 with Coffee Lake CPU platforms to get
+> > improved residency in low power idle states.
+
+I think the paragraph above is a distraction, and the real reason is
+the paragraph below.
+
+> > Also, on receiving a PTM Request from a downstream device, if PTM is
+> > disabled on the root port, as per PCIe r6.0, sec 6.21.3, such a request
+> > would cause an Unsupported Request error. So it must first disable PTM in
+> > any downstream devices.
+> > 
+> > Fixes: a697f072f5da ("PCI: Disable PTM during suspend to save power")
+> > Signed-off-by: Rajvi Jingar <rajvi.jingar@intel.com>
+> > Suggested-by: David E. Box <david.e.box@linux.intel.com>
+> > ---
+> >   v1 -> v2: add Fixes tag in commit message
+> >   v2 -> v3: move changelog after "---" marker
+> >   v3 -> v4: add "---" marker after changelog
+> >   v4 -> v5: move pci_disable_ptm() out of the pci_dev->state_saved check.
+> > 	   disable PTM for all devices, not just root ports.
+> > ---
+> >   drivers/pci/pci-driver.c | 28 +++++++++++++++++++---------
+> >   drivers/pci/pci.c        | 10 ----------
+> >   2 files changed, 19 insertions(+), 19 deletions(-)
+> > 
+> > diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> > index 8b55a90126a2..400dd18a9cf5 100644
+> > --- a/drivers/pci/pci-driver.c
+> > +++ b/drivers/pci/pci-driver.c
+> > @@ -813,6 +813,7 @@ static int pci_pm_suspend_late(struct device *dev)
+> >   static int pci_pm_suspend_noirq(struct device *dev)
+> >   {
+> > +	unsigned int dev_state_saved;
+> >   	struct pci_dev *pci_dev = to_pci_dev(dev);
+> >   	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
+> > @@ -845,16 +846,25 @@ static int pci_pm_suspend_noirq(struct device *dev)
+> >   		}
+> >   	}
+> > -	if (!pci_dev->state_saved) {
+> > +	dev_state_saved = pci_dev->state_saved;
+> 
+> If pci_dev->state_saved is set here, the device may be in D3cold already and
+> disabling PTM for it will not work.  Of course, it is not necessary to
+> disable PTM for it then, but this case need to be taken care of.
+> 
+> > +	if (!dev_state_saved)
+> >   		pci_save_state(pci_dev);
+> > -		/*
+> > -		 * If the device is a bridge with a child in D0 below it, it needs to
+> > -		 * stay in D0, so check skip_bus_pm to avoid putting it into a
+> > -		 * low-power state in that case.
+> > -		 */
+> > -		if (!pci_dev->skip_bus_pm && pci_power_manageable(pci_dev))
+> > -			pci_prepare_to_sleep(pci_dev);
+> > -	}
+> > +
+> > +	/*
+> > +	 * There are systems (for example, Intel mobile chips since Coffee
+> > +	 * Lake) where the power drawn while suspended can be significantly
+> > +	 * reduced by disabling PTM as this allows the SoC to reach a
+> > +	 * lower-power idle state as a whole.
+
+I think the argument for disabling PTM is that:
+
+  - If a PTM Requester is put in a low-power state, a PTM Responder
+    upstream from it may also be put in a low-power state.
+
+  - Putting a Port in D1, D2, or D3hot does not prohibit it from
+    sending or responding to PTM Requests (I'd be glad to be corrected
+    about this).
+
+  - We want to disable PTM on Responders when they are in a low-power
+    state.
+
+  - Per 6.21.3, a PTM Requester must not be enabled when the upstream
+    PTM Responder is disabled.
+
+  - Therefore, we must disable all PTM on all downstream PTM
+    Requesters before disabling it on the PTM Responder, e.g., a Root
+    Port.
+
+This has nothing specifically to do with Coffee Lake or other Intel
+chips, so I think the comment should be merely something to the
+effect that "disabling PTM reduces power consumption."
+
+> Something like this should suffice IMV:
+> 
+> if (!dev_state_saved || pci_dev->current_state != PCI_D3cold)
+> 
+>         pci_disable_ptm(pci_dev);
+
+It makes sense to me that we needn't disable PTM if the device is in
+D3cold.  But the "!dev_state_saved" condition depends on what the
+driver did.  Why is that important?  Why should we not do the
+following?
+
+  if (pci_dev->current_state != PCI_D3cold)
+    pci_disable_ptm(pci_dev);
+
+Bjorn
