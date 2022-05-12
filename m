@@ -2,95 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31428C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354215AbiELNL6 (ORCPT
+        id S1354236AbiELNMn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 09:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33414 "EHLO
+        Thu, 12 May 2022 09:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354249AbiELNKy (ORCPT
+        with ESMTP id S1354223AbiELNMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 09:10:54 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2691DA51
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:10:49 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-edeb6c3642so6561556fac.3
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:10:49 -0700 (PDT)
+        Thu, 12 May 2022 09:12:36 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A579920F9F8
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:12:29 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id r1so6344876oie.4
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:12:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sdLATnA0kcPNoqu23cfiMLmFcXc/ybpMfIMW+RMWEMQ=;
-        b=WH/Yg/K2dHDjtYEYJw7pMyeqK00jg9PMsnBNd1pniF5ESO43pGuCO5fdpfXfdvg5GS
-         dXTx+tXrKuQ2bEym+hdoMu3ZiHpWZh8HoBecQMlgoxILQUx5GP3ns+53JGTVqz81nxHs
-         H8XCAbvLb1JMXpVlagB8O97aKBvYKmmLaiP9k1qxyXicWB1+cyUX/noBAfgX4Iwf+DWx
-         Q/0VY3i4K/tlbkd14LKewDJl+22Dflp2EotibMBNPrwppTqRJghkISNCNY5jVSXp71Xy
-         uYOFVcj6HHUiZvS0Sb2f8wEKmaPnVeXbBFwQS50AXuIsCdKGe5jPHfxGmCKc9rqrQBrU
-         +CwQ==
+        bh=Rz2PiOGCEL7PsJWor5rXsw1MmLIXNz9Ejq4MPyc3HFQ=;
+        b=FxDvRqha4P2uGeagQFfAYHPWIi9SSbRFQqL60OTV4e0N05SXAS5ixk7BlsASCsT5Wa
+         9jJX2vHxD1spL2NZiXZZVYsUiCzR/EQReGcybhe4G4Q7do1T9DVcCs0RXS3Klc9xgn+C
+         Si6Rn4VLiTmiZn/nYBglaZn2gL+jXlBDeWNyLUffr3oO/APP/+Pg+juVR23iENB/DulQ
+         Z43mZutHonjrRm2jipRw2J3VsaGA+Bb4AaibT9y3ZuaJU+cCBgvuSK9ywJs55ASpNSqL
+         +z2KoiaoizgGhV1o4BOgErsQ0j/djG/YlOfGod73Z64GF7C/YHPVgZwNQE4Y27V95Cyp
+         BHiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sdLATnA0kcPNoqu23cfiMLmFcXc/ybpMfIMW+RMWEMQ=;
-        b=lozOdndO/g+ve+NRH7xwGHm3IR7G7PWXW7d1er3kjZvMIyQsi0zJY4eahxZldZ0WSx
-         l0NYxmIosCK9FQOgh+A8huld4mGKUi7WPvmzHHgriYm6e9RWjrQ14GvnZr/tb/P8kgKN
-         dvMFFO2rPxBcPlhW5cQkpTaRZswOeTayDhm8bhNvhrzMo1Nia7nk2dj5QWCDCvv7d9WE
-         pBKmqHMZggn3fErXpaZ8ZicG9MTTXSocl+dXfohAms+64mRUpFqh/RjbzQ/1rHYqqo4C
-         IRnXsVJeWMrpSShUicvUQ0FZc0/2SmMpXRzzbiE372VMIeMDGgHBsZR/0+I9ByigcKL2
-         9qEA==
-X-Gm-Message-State: AOAM533NBwa1sULy9v58GjFHr5sppGQDrp4I07xvjMWyAYaGPw+2lyDd
-        Lqby5MtdTzgTj4lXWqSYCcoXPeCd2EEauDYS1QjjJw==
-X-Google-Smtp-Source: ABdhPJyS3tE3qF+JcU9MU6Fu4rHz6PDTLQJ7dBPcxrOf3QlhTSnRdWW6XbLBXQksgHFll5uPtYKXAL4qBCTjy5JTea8=
-X-Received: by 2002:a05:6870:d254:b0:db:12b5:da3 with SMTP id
- h20-20020a056870d25400b000db12b50da3mr5466937oac.211.1652361048752; Thu, 12
- May 2022 06:10:48 -0700 (PDT)
+        bh=Rz2PiOGCEL7PsJWor5rXsw1MmLIXNz9Ejq4MPyc3HFQ=;
+        b=MwptFh9ZCKicHRq1S7tg9+HvZgvjg87GO8QqzxHM+FGc6Nx1c55McZ4JGETh22yf03
+         OFSORMK9teSLaZNqjVRx1aky3c2LaK+RDZ0W+KsqqqkhlrCAUQtpZ31wZrmTJ+icwBxb
+         0M4oUrUBq3R6Tn0TEUuOKLQ/YOAXbY1PCTSMdixg6F0t0fpVCk+cynPvKfydt/2elh+U
+         y0YbpGvsI0x/GbCEjKImWCoxILSxQuF9FL6Uv1yeRdSlYUxZFkZ0vWCxHUzFtUvPeqfa
+         GXATzitUjJGWaGg5jO1TSsUj3j/JyB05A4qVIzBjlhz43p2RlJi8NMkT1fr90A0EWB0a
+         Mp9A==
+X-Gm-Message-State: AOAM532dZykhj5HclXi9NLPEQB5MrHKsJUJ3UdIvhqDOK9U2foe3pxJl
+        Do3sHjDUTgHzZ1XED9CaEl14M4lNXhMIPC96bpSB2g==
+X-Google-Smtp-Source: ABdhPJzEfwk4FlZsxuf8ufTZraPd57haaereC/38xN7Yn8dS20DhWKGc6/iTLeG1Wt9z/reNCWlWxoeQKkFbP0EmGRw=
+X-Received: by 2002:a05:6808:16a4:b0:2f7:1fd1:f48 with SMTP id
+ bb36-20020a05680816a400b002f71fd10f48mr5095017oib.163.1652361148815; Thu, 12
+ May 2022 06:12:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <0000000000008a7a1c05c9e53c87@google.com> <000000000000942c2205d6dc0896@google.com>
-In-Reply-To: <000000000000942c2205d6dc0896@google.com>
+References: <00000000000056c3e005b82689d1@google.com> <000000000000ed630705cb58a93b@google.com>
+In-Reply-To: <000000000000ed630705cb58a93b@google.com>
 From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 12 May 2022 15:10:37 +0200
-Message-ID: <CACT4Y+Yfw+SFqbjqkBFw9aN7PABEgJapr7M2iY-O3nBwrMHVfQ@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in drm_gem_shmem_vm_open
-To:     syzbot <syzbot+91525b2bd4b5dff71619@syzkaller.appspotmail.com>
-Cc:     airlied@linux.ie, bugs-a21@moonlit-rail.com,
-        christian.koenig@amd.com, daniel.vetter@ffwll.ch,
-        daniel.vetter@intel.com, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, javierm@redhat.com,
-        linaro-mm-sig-owner@lists.linaro.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, maarten.lankhorst@linux.intel.com,
-        maxime@cerno.tech, melissa.srw@gmail.com, mripard@kernel.org,
-        sumit.semwal@linaro.org, syzkaller-bugs@googlegroups.com,
-        tzimmermann@suse.de
+Date:   Thu, 12 May 2022 15:12:17 +0200
+Message-ID: <CACT4Y+a25frDABFk1Ra364UqgXLh=iUq8QbNmDr+ZsMEGpWZpQ@mail.gmail.com>
+Subject: Re: [syzbot] general protection fault in xfrm_user_rcv_msg_compat
+To:     syzbot <syzbot+5078fc2d7cf37d71de1c@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, dima@arista.com, herbert@gondor.apana.org.au,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, steffen.klassert@secunet.com,
+        syzkaller-bugs@googlegroups.com, tonymarislogistics@yandex.com,
+        xiyou.wangcong@gmail.com, zoe.byrne@bpchargemaster.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 31 Jan 2022 at 08:50, syzbot
-<syzbot+91525b2bd4b5dff71619@syzkaller.appspotmail.com> wrote:
+On Mon, 6 Sept 2021 at 21:29, syzbot
+<syzbot+5078fc2d7cf37d71de1c@syzkaller.appspotmail.com> wrote:
 >
 > syzbot suspects this issue was fixed by commit:
 >
-> commit 0499f419b76f94ede08304aad5851144813ac55c
-> Author: Javier Martinez Canillas <javierm@redhat.com>
-> Date:   Mon Jan 10 09:56:25 2022 +0000
+> commit 4e9505064f58d1252805952f8547a5b7dbc5c111
+> Author: Dmitry Safonov <dima@arista.com>
+> Date:   Sat Jul 17 15:02:21 2021 +0000
 >
->     video: vga16fb: Only probe for EGA and VGA 16 color graphic cards
+>     net/xfrm/compat: Copy xfrm_spdattr_type_t atributes
 >
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=126571e0700000
-> start commit:   5d6ab0bb408f Merge tag 'xtensa-20211008' of git://github.c..
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14b8aa69300000
+> start commit:   a99163e9e708 Merge tag 'devicetree-for-5.12' of git://git...
 > git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=32e6048063923b7b
-> dashboard link: https://syzkaller.appspot.com/bug?extid=91525b2bd4b5dff71619
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11073300b00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=7a875029a795d230
+> dashboard link: https://syzkaller.appspot.com/bug?extid=5078fc2d7cf37d71de1c
+> userspace arch: i386
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=167c1832d00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10214f12d00000
 >
 > If the result looks correct, please mark the issue as fixed by replying with:
 >
-> #syz fix: video: vga16fb: Only probe for EGA and VGA 16 color graphic cards
+> #syz fix: net/xfrm/compat: Copy xfrm_spdattr_type_t atributes
 
-Not sure, but maybe:
-
-#syz fix: video: vga16fb: Only probe for EGA and VGA 16 color graphic cards
+#syz fix: net/xfrm/compat: Copy xfrm_spdattr_type_t atributes
