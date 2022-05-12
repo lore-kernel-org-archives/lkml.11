@@ -2,179 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83EC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAF5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352151AbiELJjF (ORCPT
+        id S1352150AbiELJjI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 05:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38990 "EHLO
+        Thu, 12 May 2022 05:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352187AbiELJjB (ORCPT
+        with ESMTP id S1352156AbiELJjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 05:39:01 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A891F210B98;
-        Thu, 12 May 2022 02:38:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652348330; x=1683884330;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=Pc3XZR/BwKP8qFo+0/LRobvkz6pJ4jCAfKi/xt3D2KY=;
-  b=EDgbxqLv6ufvlSklnUHYb0j8sQST/39aaXruX24ecTfJz4dt2xuDdYAH
-   vaWJyr8KWg2R5cGbvteIrSUpA6uK0DYgXb+TG0JKiISUyHTdThgAtJtBi
-   Hv8aON0FhgrDnt3KOxqda2eusPuFarsZf7IPMkOGJ9OP3gGywpVxYOOek
-   c=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 12 May 2022 02:38:49 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 02:38:49 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 12 May 2022 02:38:48 -0700
-Received: from [10.79.43.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 12 May
- 2022 02:38:46 -0700
-Subject: Re: [PATCH v2] mailbox: qcom-ipcc: Log the pending interrupt during
- resume
-To:     Manivannan Sadhasivam <mani@kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <jassisinghbrar@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <agross@kernel.org>, Prasad Sodagudi <quic_psodagud@quicinc.com>
-References: <1652251404-30562-1-git-send-email-quic_sibis@quicinc.com>
- <20220512074312.GA35848@thinkpad>
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-Message-ID: <5b8aa653-5af8-a54f-b7bd-4d758eac9019@quicinc.com>
-Date:   Thu, 12 May 2022 15:08:43 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Thu, 12 May 2022 05:39:02 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE5022D60B;
+        Thu, 12 May 2022 02:38:59 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KzRYY42h5z4xXh;
+        Thu, 12 May 2022 19:38:57 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652348338;
+        bh=50YAFojEM6P2L//wBmsLp7eoAHSvAd8EVnRo2/Klrak=;
+        h=Date:From:To:Cc:Subject:From;
+        b=WTmzphnpz8YcS+UUtX3bUihS8Oequ7N5CFze2m0/+3Ez5RtA4rV9qRzZJ5/cLmtpw
+         A4RdwSBNsbLVQUFj7E5zCbMpzhnYAY/2t2kCWHJhGAXfl9LBVcjRW7RXgCOlrpydj9
+         +J1Td6pPIctLK59fQtru5snRWTO3T6ALKIpXgUhrNZFg9E7pejjGG9oRScYq+etmRx
+         TVmwoiG6Ap/7R08p3tysz1BNOT3F357lRrl1LaoRACYKt9xNFmmpqP6TaDS8ZCRFbt
+         wgWRgkwuPuKjwL3PG283siCrmi+fRvP63olpE5PcaiUZNl3SePWQ+q8e+RzcPGHJ+W
+         b4J8hdUdn1b1A==
+Date:   Thu, 12 May 2022 19:38:55 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the mm tree
+Message-ID: <20220512193855.4f6ce32f@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20220512074312.GA35848@thinkpad>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: multipart/signed; boundary="Sig_/Vt0kgeqzVmM8HOsbxNhvVRO";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Mani,
+--Sig_/Vt0kgeqzVmM8HOsbxNhvVRO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for taking time to review the patch.
+Hi all,
 
-On 5/12/22 1:13 PM, Manivannan Sadhasivam wrote:
-> On Wed, May 11, 2022 at 12:13:24PM +0530, Sibi Sankar wrote:
->> From: Prasad Sodagudi <quic_psodagud@quicinc.com>
->>
->> Enable logging of the pending interrupt that triggered device wakeup. This
->> logging information helps to debug IRQs that cause periodic device wakeups
->> and prints the detailed information of pending IPCC interrupts instead of
->> the generic "Resume caused by IRQ 17, ipcc".
->>
->> Scenario: Device wakeup caused by Modem crash
->> Logs:
->> qcom-ipcc mailbox: virq: 182 triggered client-id: 2; signal-id: 2
->>
->>  From the IPCC bindings it can further understood that the client here is
->> IPCC_CLIENT_MPSS and the signal was IPCC_MPROC_SIGNAL_SMP2P.
->>
->> Signed-off-by: Prasad Sodagudi <quic_psodagud@quicinc.com>
->> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
->> ---
->>
->> V2:
->>   * Fix build error when ipcc is a module [Kernel Test Bot]
->>
->>   drivers/mailbox/qcom-ipcc.c | 27 +++++++++++++++++++++++++++
->>   1 file changed, 27 insertions(+)
->>
->> diff --git a/drivers/mailbox/qcom-ipcc.c b/drivers/mailbox/qcom-ipcc.c
->> index c5d963222014..21c071ec119c 100644
->> --- a/drivers/mailbox/qcom-ipcc.c
->> +++ b/drivers/mailbox/qcom-ipcc.c
->> @@ -254,6 +254,28 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
->>   	return devm_mbox_controller_register(dev, mbox);
->>   }
->>   
->> +#ifdef CONFIG_PM_SLEEP
-> 
-> You don't need this guard anymore. Please see below.
+After merging the mm tree, today's linux-next build (arm64 defconfig)
+failed like this:
 
-ack
+arch/arm64/mm/hugetlbpage.c: In function 'huge_ptep_clear_flush':
+arch/arm64/mm/hugetlbpage.c:493:16: error: implicit declaration of function=
+ 'get_clear_flush'; did you mean 'ptep_clear_flush'? [-Werror=3Dimplicit-fu=
+nction-declaration]
+  493 |         return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncon=
+tig);
+      |                ^~~~~~~~~~~~~~~
+      |                ptep_clear_flush
+arch/arm64/mm/hugetlbpage.c:493:16: error: incompatible types when returnin=
+g type 'int' but 'pte_t' was expected
+  493 |         return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncon=
+tig);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~
+arch/arm64/mm/hugetlbpage.c:494:1: error: control reaches end of non-void f=
+unction [-Werror=3Dreturn-type]
+  494 | }
+      | ^
 
-> 
->> +static int qcom_ipcc_pm_resume(struct device *dev)
->> +{
->> +	struct qcom_ipcc *ipcc = dev_get_drvdata(dev);
->> +	u32 hwirq;
->> +	int virq;
->> +
->> +	hwirq = readl(ipcc->base + IPCC_REG_RECV_ID);
->> +	if (hwirq == IPCC_NO_PENDING_IRQ)
->> +		return 0;
->> +
->> +	virq = irq_find_mapping(ipcc->irq_domain, hwirq);
->> +
->> +	dev_info(dev, "virq: %d triggered client-id: %ld; signal-id: %ld\n", virq,
->> +		 FIELD_GET(IPCC_CLIENT_ID_MASK, hwirq), FIELD_GET(IPCC_SIGNAL_ID_MASK, hwirq));
->> +
-> 
-> Does this really need to be dev_info? This looks like a dev_dbg() material to
-> me.
+Caused by commit
 
-The whole point of the log is to catch sporadic issues like random
-wakeups caused by remoteprocs through ipcc. We would just end up with
-a single line identifying the client id during resume if ipcc had indeed
-caused the wakeup else it wouldn't print anything.
+  00df1f1a133b ("mm: change huge_ptep_clear_flush() to return the original =
+pte")
 
--Sibi
-> 
->> +	return 0;
->> +}
->> +#else
->> +#define qcom_ipcc_pm_resume NULL
->> +#endif
->> +
->>   static int qcom_ipcc_probe(struct platform_device *pdev)
->>   {
->>   	struct qcom_ipcc *ipcc;
->> @@ -324,6 +346,10 @@ static const struct of_device_id qcom_ipcc_of_match[] = {
->>   };
->>   MODULE_DEVICE_TABLE(of, qcom_ipcc_of_match);
->>   
->> +static const struct dev_pm_ops qcom_ipcc_dev_pm_ops = {
->> +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, qcom_ipcc_pm_resume)
->> +};
->> +
->>   static struct platform_driver qcom_ipcc_driver = {
->>   	.probe = qcom_ipcc_probe,
->>   	.remove = qcom_ipcc_remove,
->> @@ -331,6 +357,7 @@ static struct platform_driver qcom_ipcc_driver = {
->>   		.name = "qcom-ipcc",
->>   		.of_match_table = qcom_ipcc_of_match,
->>   		.suppress_bind_attrs = true,
->> +		.pm = &qcom_ipcc_dev_pm_ops,
-> 
-> You can use the new pm_sleep_ptr() macro to avoid the PM_SLEEP guard.
-> 
-> 		.pm = pm_sleep_ptr(&qcom_ipcc_dev_pm_ops),
+interacting with commit
 
-ack
+  fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()")
 
-> 
-> Thanks,
-> Mani
-> 
->>   	},
->>   };
->>   
->> -- 
->> 2.7.4
->>
-> 
+I have applied the following merg fix patch for today.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Thu, 12 May 2022 19:33:11 +1000
+Subject: [PATCH] fixup for "mm: change huge_ptep_clear_flush() to return th=
+e original pte"
+
+It interacts with commit
+
+  fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()")
+
+from the arm64 tree
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ arch/arm64/mm/hugetlbpage.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+index 5bdf913dedc7..30f5b76aabe9 100644
+--- a/arch/arm64/mm/hugetlbpage.c
++++ b/arch/arm64/mm/hugetlbpage.c
+@@ -490,7 +490,7 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
+ 		return ptep_clear_flush(vma, addr, ptep);
+=20
+ 	ncontig =3D find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
+-	return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
++	return get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
+ }
+=20
+ static int __init hugetlbpage_init(void)
+--=20
+2.35.1
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Vt0kgeqzVmM8HOsbxNhvVRO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ81a8ACgkQAVBC80lX
+0GzjMgf6AgRFefDeS1S3ZP0ouMb1S09btO6BDvfDpRwFbNPLiGTq9kR/LU7qF4Ej
+k8okIJtlRwvaabwhkLCXrOVkf+M4Dzpv5ZS3Tmm/0UW0i/lvMqVKMn/rM7f7ZfZ1
+2qQEVcNGSISXguePdeT78yzMrMLv1xLXYkSohmOQuac3ojUBbTPkHo984ubR4b07
+du8Wirfd109Uz3ln1Vhukp+iMZZLqkNk2P9ZI+Z99CfdCTf4fFLIFdN/j446Afbz
+a8o9yxd9ZFwYMNctGtN7ErHXwyaFNstTghSsUrk/phj76dSHjISoCH3SLsQ/6OG/
+DL7Oj/BKyzZ2YzQlEoL5jvL8KO4+/g==
+=C1S5
+-----END PGP SIGNATURE-----
+
+--Sig_/Vt0kgeqzVmM8HOsbxNhvVRO--
