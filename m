@@ -2,122 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF06BC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1319BC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349560AbiELAGB (ORCPT
+        id S1349577AbiELAMP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 20:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
+        Wed, 11 May 2022 20:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349552AbiELAFz (ORCPT
+        with ESMTP id S1349566AbiELAMN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 20:05:55 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CEC13F1F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 17:05:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652313954; x=1683849954;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iEGg3ZUCdx9uygbP/iQOaVPDEP0BAuMfZKqEQ1Cahnc=;
-  b=dnMGvaTXHWuuTExgra1KNQ/YaJWLXwDZY3IY2u2jTWDTSwzW0QOt+n9X
-   BuEEi3WZFEjOC/IyS9LoxDKm7dXgawfOGoW/q3SpaJpppFIk7aElieQQK
-   bAOOJgYlNPju5LEYICGrGMSHkYW411W0r5YR0lRIihzSKoSBTAr2/Eqij
-   76UIGnXl6+ousI702WdCErVxQPHfcncu6etVxZW+E1CtKSWA0EiU3AC2p
-   3a7EwE0C4bHrX5yXaP/B1KLHobxDi82IlpEhQ+7udj1rLpI/O2BLfCLd5
-   VEj6O8yRAswmaWI8WFVlYLVi4M57ugSw3PVPxsqZwAWTmrsGdFRPNMmOt
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="330448449"
-X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="330448449"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 17:05:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="658374063"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by FMSMGA003.fm.intel.com with ESMTP; 11 May 2022 17:05:53 -0700
-Date:   Wed, 11 May 2022 17:09:24 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>,
+        Wed, 11 May 2022 20:12:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843158B0A5
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 17:12:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB22261E0A
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C12C340EE;
+        Thu, 12 May 2022 00:12:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652314325;
+        bh=x80aVd3yLVAjF6xWo0HCUHHYskzQhdBCwzdwrac0c50=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=p7uG09Kv5Zco88w6Cr+BU70V05hjAQwEtq/8uZC0+esSxgDCADpYtuFNPVQ/ZcH28
+         /IZIb3noao/oVzU6Z/omNe8fdh/Dpxzjw0fCtlEQgt06K/+V+1dqwl6jn+Qn7r2Bp6
+         b24tKjpdx4AhKTA76FJuLqg773eYWOQ200a57d0BvWpPRFp6FCmI3HQU1WBtggk96d
+         AJfnWNGYK/VL3i7mam+KsSN0F2NfIDEk2gYVe4U2kt+HqYkpZx6er4GMYUFSVQFDIH
+         qnDt3CIiAAj9CYP6MVQjDIsoH4Ji2X3METgQgx6MGMDKOmGPLMr7LotgBizYYaB8S8
+         j+0UFsBpDb8vA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 940605C05FC; Wed, 11 May 2022 17:12:04 -0700 (PDT)
+Date:   Wed, 11 May 2022 17:12:04 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Minchan Kim <minchan@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 01/29] irq/matrix: Expose functions to allocate the
- best CPU for new vectors
-Message-ID: <20220512000924.GA16273@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-2-ricardo.neri-calderon@linux.intel.com>
- <878rreh27n.ffs@tglx>
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        John Dias <joaodias@google.com>,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
+Message-ID: <20220512001204.GI1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <Ynr+wTCQpyh8+vOD@google.com>
+ <2ffa7670-04ea-bb28-28f8-93a9b9eea7e8@nvidia.com>
+ <YnwupNzDNv7IbjRQ@google.com>
+ <54b5d177-f2f4-cef2-3a68-cd3b0b276f86@nvidia.com>
+ <Ynw6mauQuNhrOAHy@google.com>
+ <f7bcda22-8ffe-67be-36bc-fcde58d8884a@nvidia.com>
+ <YnxCCPZUfgQNXSg6@google.com>
+ <8f083802-7ab0-15ec-b37d-bc9471eea0b1@nvidia.com>
+ <20220511234534.GG1790663@paulmck-ThinkPad-P17-Gen-1>
+ <ea64b36c-ecc1-74db-dd2e-909e7e507ef8@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <878rreh27n.ffs@tglx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <ea64b36c-ecc1-74db-dd2e-909e7e507ef8@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 09:48:28PM +0200, Thomas Gleixner wrote:
-> Ricardo,
-
-Thank you very much for your feedback Thomas! I am sorry for my late reply, I
-had been out of office.
-
+On Wed, May 11, 2022 at 04:57:04PM -0700, John Hubbard wrote:
+> On 5/11/22 16:45, Paul E. McKenney wrote:
+> > > 
+> > > Well no, because the "&" operation is a single operation on the CPU, and
+> > > isn't going to get split up like that.
+> > 
+> > Chiming in a bit late...
 > 
-> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
-> > Certain types of interrupts, such as NMI, do not have an associated vector.
-> > They, however, target specific CPUs. Thus, when assigning the destination
-> > CPU, it is beneficial to select the one with the lowest number of
-> > vectors.
+> Much appreciated!
 > 
-> Why is that beneficial especially in the context of a NMI watchdog which
-> then broadcasts the NMI to all other CPUs?
-
-My intent was not the NMI watchdog specifically but potential use cases that do
-not involve NMI broadcasts. If the NMI targets a single CPU, it is best to
-select the CPU with the lowest vector allocation count.
-
+> > The usual way that this sort of thing causes trouble is if there is a
+> > single store instruction that changes the value from MIGRATE_ISOLATE
+> > to MIGRATE_CMA, and if the compiler decides to fetch twice, AND twice,
 > 
-> That's wishful thinking perhaps, but I don't see any benefit at all.
-> 
-> > Prepend the functions matrix_find_best_cpu_managed() and
-> > matrix_find_best_cpu_managed()
-> 
-> The same function prepended twice becomes two functions :)
-> 
+> Doing an AND twice for "x & constant" this definitely blows my mind. Is
+> nothing sacred? :)
 
-Sorry, I missed this.
+Apparently there is not much sacred to compiler writers in search of
+additional optimizations.  :-/
 
-> > with the irq_ prefix and expose them for
-> > IRQ controllers to use when allocating and activating vector-less IRQs.
+> > and then combine the results.  This could give a zero outcome where the
+> > underlying variable never had the value zero.
+> > 
+> > Is this sort of thing low probability?
+> > 
+> > Definitely.
+> > 
+> > Isn't this sort of thing prohibited?
+> > 
+> > Definitely not.
+> > 
+> > So what you have will likely work for at least a while longer, but it
+> > is not guaranteed and it forces you to think a lot harder about what
+> > the current implementations of the compiler can and cannot do to you.
+> > 
+> > The following LWN article goes through some of the possible optimizations
+> > (vandalisms?) in this area: https://lwn.net/Articles/793253/
 > 
-> There is no such thing like a vectorless IRQ. NMIs have a vector. Can we
-> please describe facts and not pulled out of thin air concepts which do
-> not exist?
+> hmm, I don't think we hit any of those  cases, do we? Because here, the
+> "write" side is via a non-inline function that I just don't believe the
+> compiler is allowed to call twice. Or is it?
 
-Thank you for the clarification. I see your point. I wrote this patch because
-maskable interrupts and NMIs have different entry points. As you state,
-however, the also have a vector.
+Not yet.  But if link-time optimizations (LTO) continue their march,
+I wouldn't feel safe ruling it out...
 
-I can drop this patch.
-
-BR,
-Ricardo
-
+> Minchan's earlier summary:
 > 
-> Thanks,
+> CPU 0                         CPU1
 > 
->         tglx
+> 
+>                               set_pageblock_migratetype(MIGRATE_ISOLATE)
+> 
+> if (get_pageblock_migrate(page) & MIGRATE_CMA)
+> 
+>                               set_pageblock_migratetype(MIGRATE_CMA)
+> 
+> if (get_pageblock_migrate(page) & MIGRATE_ISOLATE)
+> 
+> ...where set_pageblock_migratetype() is not inline.
+
+...especially if the code is reorganized for whatever reason.
+
+> thanks,
+> -- 
+> John Hubbard
+> NVIDIA
+
+But again:
+
+> > In the end, it is your code, so you get to decide how much you would
+> > like to keep track of what compilers get up to over time.  ;-)
+
+ 							Thanx, Paul
