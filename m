@@ -2,216 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7857BC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:46:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7793C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352808AbiELKqU (ORCPT
+        id S1352802AbiELKqx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 06:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44690 "EHLO
+        Thu, 12 May 2022 06:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352802AbiELKp7 (ORCPT
+        with ESMTP id S1352790AbiELKqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 06:45:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 955ABBE27
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:45:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652352350;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TCJLtBpkCpoNhytrPnBMMa+Df/U29oTQnuhtYLtN2Ho=;
-        b=Serh0A7BRRxe3aThqBtDQx8HZW2L6MTi6BUcITRn5MSdqq5sGfgKJs51qmNMJ6NvH2Q1fk
-        N7ugflFs9AejJ0PbHjXUivNSb7K7/0Rld8K2ZiFt5NceQGmEK5MuvhEd4pAkqNC1eMicYV
-        e/cMe8Q4ESrZU19YnqBQupF3c7Z+tmY=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-fMcKjyJnPyeL6IKzBHpwtQ-1; Thu, 12 May 2022 06:45:49 -0400
-X-MC-Unique: fMcKjyJnPyeL6IKzBHpwtQ-1
-Received: by mail-ed1-f71.google.com with SMTP id s24-20020a05640217d800b00425e19e7deaso2910227edy.3
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:45:48 -0700 (PDT)
+        Thu, 12 May 2022 06:46:49 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A2A6CA87
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:46:47 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id gh6so9462775ejb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:46:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mUztazuSyDgxN4IJuGsokHY/xl1xmIQV403RgKJ0d1A=;
+        b=exBhr0feoHxv67tzko0LaAbgsRFgF+WeYOI16AQIEIEA+ahzVeV229CoWiQggBp59T
+         HEQyurCaR6bbN3aFuckPLTxXF4rXreefHMr4uH8ds8t+qctxW1Mtui6o3phQUsXB74j3
+         q4Oc66AA9bzAfEhIFg1tjII/FI/mqUvxxmDeM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TCJLtBpkCpoNhytrPnBMMa+Df/U29oTQnuhtYLtN2Ho=;
-        b=icDh8LzedjLDBZ7n6hQVogOIeydfsGAK4pNG3Q2BxNbTaMj59OUtrBmpChI0iXnAHp
-         3NZ9+e1XsKCf8LamxBLWbVskjaZA7L0vyPcURxVpzNHo2XaBSjymfPg1oCfp23xY2+xP
-         8WEtipGNipyIF3ggh0AoEYQA/JNIZ4P7bsl1i5Cflh0HHH9dTT4rXrhYlGwgVztYDX2q
-         T2apXVvgewBnBQnnpkgf6SU74ipmFrgAALAABWM5JDGgyuXxsoiu+iMPT9Rz56JrLlA4
-         VIa6j2ev/HqBS3+u6ArE67AakZDkyMYvy8s7H5aSayS70uTY4IbNN6MjLRIxzTT+pjFJ
-         WH/A==
-X-Gm-Message-State: AOAM533LbK+s5KDN8KHplsjyhSDoNfiycxEnz93O83gm/YdA9+L1oMg9
-        +VyI3HMkpjTz+rOCxUI7vzypfndkvl7uMdtP7pLj/QsDGCKnqUx7pS2tg+cDhBZGk2EsStBCuEq
-        aHrrduwhpi1sfTVBWGxO8xFc7
-X-Received: by 2002:aa7:d916:0:b0:425:d75f:ae68 with SMTP id a22-20020aa7d916000000b00425d75fae68mr34154816edr.270.1652352347842;
-        Thu, 12 May 2022 03:45:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxECFOLs5RBdl3mHZa53gpKtF7VUFkt92t99kAnYQXrDSPfKSDLd1ZOUpb30VBwHJkpaK6kuQ==
-X-Received: by 2002:aa7:d916:0:b0:425:d75f:ae68 with SMTP id a22-20020aa7d916000000b00425d75fae68mr34154784edr.270.1652352347584;
-        Thu, 12 May 2022 03:45:47 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id bt10-20020a170906b14a00b006f3ef214e43sm1961957ejb.169.2022.05.12.03.45.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 03:45:47 -0700 (PDT)
-Message-ID: <196635f6-8215-d4e4-270e-7375af81136c@redhat.com>
-Date:   Thu, 12 May 2022 12:45:46 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mUztazuSyDgxN4IJuGsokHY/xl1xmIQV403RgKJ0d1A=;
+        b=0R8mkCC/kha3y8B2L/bThI+FCvxSV1u8JFBF73Y05MO6jw10rbR57yJw3KHrohcIZk
+         itnnbORV4/wpsqEdA+bnVBbFcWEpx+xhzRM2tFrwxMmO0bzfXw12LxxpfxBbpuGeQ2xe
+         EQe3GExLVW9TnXnQBBsN5bdNPfIlYyRXp8NQYdwzf2yCWU6oS/1A65GJ/VA7WitkmArA
+         tGr23SEsua4O5AU1Wf6+H1bBKyiD2rXwrrdHF206BVf3Ka86ouf4r9B4GrzQ9EvGJAWA
+         gOyuoQ+oik6zk9CA6OWshiFFzNOKrFkxtKLqL0PoTG76YqZWN/34t2aOu/Bv8RSESwc8
+         JJmw==
+X-Gm-Message-State: AOAM533+I4vTqSv+/tii+6onT8rGJoAqzdY8fk+vRym3+4/1zJ3h2tt6
+        tgz+vrkIxxw/tuW3rQECjs8+2Q==
+X-Google-Smtp-Source: ABdhPJysw+usrrjuAJ6WRTiu4TkZhjhOXkvdySgQAijN5gZxaVp50vUZYfUmATW2TmsDLvWo7vy+ww==
+X-Received: by 2002:a17:906:58d4:b0:6f4:cebd:c4b with SMTP id e20-20020a17090658d400b006f4cebd0c4bmr28988010ejs.492.1652352405476;
+        Thu, 12 May 2022 03:46:45 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-59-245.cust.vodafonedsl.it. [188.217.59.245])
+        by smtp.gmail.com with ESMTPSA id sa3-20020a170906eda300b006f3ef214ddasm1961028ejb.64.2022.05.12.03.46.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 03:46:45 -0700 (PDT)
+Date:   Thu, 12 May 2022 12:46:42 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: max98088: add support for reg_4a_cfg_bypass reg
+Message-ID: <20220512104642.GD649073@tom-ThinkPad-T14s-Gen-2i>
+References: <20220512074359.446999-1-tommaso.merciai@amarulasolutions.com>
+ <YnzdcubW7m+CwnvN@sirena.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v5 0/8] platform/x86: introduce p2sb_bar() helper
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Tony Luck <tony.luck@intel.com>, Wolfram Sang <wsa@kernel.org>,
-        Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        =?UTF-8?Q?=c5=81ukasz_Bartosik?= <lb@semihalf.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Peter Tyser <ptyser@xes-inc.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Gross <markgross@kernel.org>
-References: <20220510151451.85561-1-andriy.shevchenko@linux.intel.com>
- <YnzZpE4JOLlxsjVc@google.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YnzZpE4JOLlxsjVc@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnzdcubW7m+CwnvN@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 5/12/22 11:55, Lee Jones wrote:
-> On Tue, 10 May 2022, Andy Shevchenko wrote:
+On Thu, May 12, 2022 at 11:12:02AM +0100, Mark Brown wrote:
+> On Thu, May 12, 2022 at 09:43:58AM +0200, Tommaso Merciai wrote:
 > 
->> There are a few users and at least one more is coming (*1) that would
->> like to utilize P2SB mechanism of hiding and unhiding a device from
->> the PCI configuration space.
->>
->> Here is the series to consolidate p2sb handling code for existing users
->> and provide a generic way for new comer(s).
->>
->> It also includes a patch to enable GPIO controllers on Apollo Lake
->> when it's used with ABL bootloader w/o ACPI support (*2).
->>
->> The patch that brings the helper ("platform/x86/intel: Add Primary to
->> Sideband (P2SB) bridge support") has a commit message that sheds a light
->> on what the P2SB is and why this is needed.
->>
->> The changes made in v5 do not change the main idea and the functionality
->> in a big scale. What we need is probably one more retest done by Henning
->> (*3). I hope to have it merged to v5.19-rc1 that Siemens can develop
->> their changes based on this series (*4).
->>
->> I have tested this on Apollo Lake platform (I'm able to see SPI NOR and
->> since we have an ACPI device for GPIO I do not see any attempts to recreate
->> one).
->>
->> *1) One in this series, and one is a recent merge of the Simatic IPC drivers
->> *2) This patch can be postponed as Lee hasn't given his tag yet.
->> *3) Henning gave his tag and I dared to used it even against changed patch 1
->> *4) The changes were posted in between of v4 and v5 of this series, but need
->>     more work.
->>
->> Taking into account the *2) the series is ready to be merged via PDx86 tree.
+> > Add mixer controls support for M98088_REG_4A_CFG_BYPASS register
 > 
-> If that happens you need to do 2 things:
+> > +++ b/sound/soc/codecs/max98088.c
+> > @@ -486,6 +486,11 @@ static const struct snd_kcontrol_new max98088_snd_controls[] = {
+> >         SOC_SINGLE("EQ1 Switch", M98088_REG_49_CFG_LEVEL, 0, 1, 0),
+> >         SOC_SINGLE("EQ2 Switch", M98088_REG_49_CFG_LEVEL, 1, 1, 0),
+> >  
+> > +       SOC_SINGLE("SPK Bypass Switch", M98088_REG_4A_CFG_BYPASS, 0, 1, 0),
+> > +       SOC_SINGLE("REC Bypass Switch", M98088_REG_4A_CFG_BYPASS, 1, 1, 0),
+> > +       SOC_SINGLE("MIC2 Bypass Switch", M98088_REG_4A_CFG_BYPASS, 4, 1, 0),
+> > +       SOC_SINGLE("INA Bypass Switch", M98088_REG_4A_CFG_BYPASS, 7, 1, 0),
 > 
-> 1. Change all s/Acked-for-MFD-by/Acked-by/
-> 2. Submit a pull-request that we can all pull from
-> 
-> Alternatively, I can apply this via MFD and do the same.
+> These look like they should be DAPM controls since they're controlling
+> audio routing but they're being added as regular controls.
 
-Applying this via MFD is fine with me and probably is the
-logical thing to do since only 1/8 patches in the set is
-a pdx86 patch and 3 patches are MFD patches.
+Hi Mark,
+Sorry again. You suggest to create a new structure for these entries,
+for example:
 
-Patch 1/8 already has my Acked-by for merging it through
-the MFD tree.
+/* Out Bypass mixer switch */
+static const struct snd_kcontrol_new max98088_out_bypass_mixer_controls[] = {
+       SOC_DAPM_SINGLE("INA Switch", M98088_REG_4A_CFG_BYPASS, 7, 1, 0),
+       SOC_DAPM_SINGLE("MIC2 Switch", M98088_REG_4A_CFG_BYPASS, 4, 1, 0),
+       SOC_DAPM_SINGLE("REC Switch", M98088_REG_4A_CFG_BYPASS, 1, 1, 0),
+       SOC_DAPM_SINGLE("SPK Switch", M98088_REG_4A_CFG_BYPASS, 0, 1, 0),
+};
 
-Regards,
+Let me know.
 
-Hans
+Thanks in advance.
+Tommaso
 
+-- 
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
 
-> 
->> Changes in v5:
->> - rewritten patch 1 to use pci_scan_single_device() (Lukas, Bjorn)
->> - rebased patch 2 on top of the new Intel SPI NOR codebase
->> - fixed a potential bug and rewritten resource filling in patch 5 (Lee)
->> - added many different tags in a few patches (Jean, Wolfram, Henning)
->>
->> Changes in v4:
->> - added tag to the entire series (Hans)
->> - added tag to pin control patch (Mika)
->> - dropped PCI core changes (PCI core doesn't want modifications to be made)
->> - as a consequence of the above merged necessary bits into p2sb.c
->> - added a check that p2sb is really hidden (Hans)
->> - added EDAC patches (reviewed by maintainer internally)
->>
->> Changes in v3:
->> - resent with cover letter
->>
->> Changes in v2:
->> - added parentheses around bus in macros (Joe)
->> - added tag (Jean)
->> - fixed indentation and wrapping in the header (Christoph)
->> - moved out of PCI realm to PDx86 as the best common denominator (Bjorn)
->> - added a verbose commit message to explain P2SB thingy (Bjorn)
->> - converted first parameter from pci_dev to pci_bus
->> - made first two parameters (bus and devfn) optional (Henning, Lee)
->> - added Intel pin control patch to the series (Henning, Mika)
->> - fixed English style in the commit message of one of MFD patch (Lee)
->> - added tags to my MFD LPC ICH patches (Lee)
->> - used consistently (c) (Lee)
->> - made indexing for MFD cell and resource arrays (Lee)
->> - fixed the resource size in i801 (Jean)
->>
->> Andy Shevchenko (6):
->>   pinctrl: intel: Check against matching data instead of ACPI companion
->>   mfd: lpc_ich: Factor out lpc_ich_enable_spi_write()
->>   mfd: lpc_ich: Switch to generic p2sb_bar()
->>   i2c: i801: convert to use common P2SB accessor
->>   EDAC, pnd2: Use proper I/O accessors and address space annotation
->>   EDAC, pnd2: convert to use common P2SB accessor
->>
->> Jonathan Yong (1):
->>   platform/x86/intel: Add Primary to Sideband (P2SB) bridge support
->>
->> Tan Jui Nee (1):
->>   mfd: lpc_ich: Add support for pinctrl in non-ACPI system
->>
->>  drivers/edac/Kconfig                   |   1 +
->>  drivers/edac/pnd2_edac.c               |  62 +++-------
->>  drivers/i2c/busses/Kconfig             |   1 +
->>  drivers/i2c/busses/i2c-i801.c          |  39 ++----
->>  drivers/mfd/Kconfig                    |   1 +
->>  drivers/mfd/lpc_ich.c                  | 161 +++++++++++++++++++------
->>  drivers/pinctrl/intel/pinctrl-intel.c  |  14 +--
->>  drivers/platform/x86/intel/Kconfig     |  12 ++
->>  drivers/platform/x86/intel/Makefile    |   2 +
->>  drivers/platform/x86/intel/p2sb.c      | 133 ++++++++++++++++++++
->>  include/linux/platform_data/x86/p2sb.h |  28 +++++
->>  11 files changed, 338 insertions(+), 116 deletions(-)
->>  create mode 100644 drivers/platform/x86/intel/p2sb.c
->>  create mode 100644 include/linux/platform_data/x86/p2sb.h
->>
->>
->> base-commit: 3bf222d317a20170ee17f082626c1e0f83537e13
-> 
-
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
