@@ -2,83 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC433C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 19:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47831C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 19:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357896AbiELTKg (ORCPT
+        id S1357920AbiELTLV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 15:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        Thu, 12 May 2022 15:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231944AbiELTKe (ORCPT
+        with ESMTP id S1357906AbiELTLS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 15:10:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03A3274A29;
-        Thu, 12 May 2022 12:10:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D7ADB8290E;
-        Thu, 12 May 2022 19:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2972C385B8;
-        Thu, 12 May 2022 19:10:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1652382630;
-        bh=cnAMAMi9fYJo3US7em6lDWG28E0G0iYdwQhQjunOp9w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FnbPoU5nJ4fEo9AA3m5+U8zpLvDz2nxndZrtvgFI58X61AqiSUnnPn5yHypcsW635
-         o3iahGjneTuN3CgOqOYzep8qwU7DtC9zz/h25TCV4v3ebR97M//kpIQTK5eNucWfAf
-         iyMNWVicBC3FH7DznyHN+2KylEpp4tqPU37GNauk=
-Date:   Thu, 12 May 2022 12:10:29 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Will Deacon <will@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the mm tree
-Message-Id: <20220512121029.8157e99756b3172e85ccb474@linux-foundation.org>
-In-Reply-To: <Yn0LctZl8dTsezFu@arm.com>
-References: <20220512193855.4f6ce32f@canb.auug.org.au>
-        <YnzqffV7STYS24Yn@arm.com>
-        <188f7cb2-ba21-a53a-828d-7242b17b0c72@linux.alibaba.com>
-        <Yn0LctZl8dTsezFu@arm.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 12 May 2022 15:11:18 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECAE3915C
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 12:11:16 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id ch13so12037195ejb.12
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 12:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SLT11SGZSlspM3ztqa+Z4xJFeyllWtbNbH4XI/ki7KQ=;
+        b=Akos8r1uW3mKq93eO2Gh+RThomTvKQVXEIPNJLgU4e/OsWiyliXUyDvXM1KCZowBG5
+         iB8r5GxgdwJONwg8JLTbxiugmdxYSNQ3UZHr+t/+uKRqH4lkyjc4uv95+s+5+nQlfzSG
+         6pdmK4AOO1sJl6dZGjA/eOhr2a7EqbPThcB8Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SLT11SGZSlspM3ztqa+Z4xJFeyllWtbNbH4XI/ki7KQ=;
+        b=3kg1p7Kn0vfiO7Ys+V1WPmTt4dsgL1M6Qwf6aMTTt2OL8bTcGsRbSi4nNUsZ3WOr2B
+         1rjM8vdd1LmKSgPjsxue+5gKbOmBT4ww1XJilCSLebxzSqJZnFTm66/Wv0ZMEEsM0JBi
+         +XHo9+BznWvomlCLM8AzcRB5vSOQMuST+ILj8CoCpDNchViM82yIqtV3rD0/Lwc29evF
+         5uIXPoKuum2RB9uyANx9IsBk9mtQfGfGE0J9AooSgF/2nvwPr04sDOdvRYAPcoEWDBTS
+         ixNPGxnffkrAn0EQzkWmtDRER0KOxIWQJ5I0Zd6k5/+HgT7WvDpVBs8r412t6FL1OVlS
+         AkUQ==
+X-Gm-Message-State: AOAM530oHRym90pWIECXqNi+xXMqvYfDZe0NUlFq+qETKxoW+xHUOVuG
+        7m3+VhfU+XURsiFONQutCqqjFsEFMBtDOlZTu/c=
+X-Google-Smtp-Source: ABdhPJwSbUSyhpB/7pv3MC68HiBaX8TYqh4f+VuEUlFhsFphHpZfuxcVfzfVW2TLqf30q8YCZmaQDw==
+X-Received: by 2002:a17:907:3f8c:b0:6fa:8b15:66fe with SMTP id hr12-20020a1709073f8c00b006fa8b1566femr1264444ejc.142.1652382674266;
+        Thu, 12 May 2022 12:11:14 -0700 (PDT)
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
+        by smtp.gmail.com with ESMTPSA id p8-20020aa7cc88000000b0042617ba63d6sm33506edt.96.2022.05.12.12.11.12
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 12:11:12 -0700 (PDT)
+Received: by mail-wm1-f52.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso5709023wme.5
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 12:11:12 -0700 (PDT)
+X-Received: by 2002:a1c:4c06:0:b0:394:65c4:bd03 with SMTP id
+ z6-20020a1c4c06000000b0039465c4bd03mr1229662wmf.8.1652382672075; Thu, 12 May
+ 2022 12:11:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAOFRbGmGr2Z_sbYmE0SZT48CFkNAWVABnC_4V6x9PzZw-LJO4w@mail.gmail.com>
+In-Reply-To: <CAOFRbGmGr2Z_sbYmE0SZT48CFkNAWVABnC_4V6x9PzZw-LJO4w@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 12 May 2022 12:10:55 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh5E-xdc5P6SfN-ey6zvVri43rTj0g8kjUBWD3hhE-jiw@mail.gmail.com>
+Message-ID: <CAHk-=wh5E-xdc5P6SfN-ey6zvVri43rTj0g8kjUBWD3hhE-jiw@mail.gmail.com>
+Subject: Re: ERROR: drivers: iscsi: iscsi_target.c
+To:     Test Bot <zgrieee@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Mingzhe Zou <mingzhe.zou@easystack.cn>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        target-devel <target-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 14:28:18 +0100 Catalin Marinas <catalin.marinas@arm.com> wrote:
+On Thu, May 12, 2022 at 11:42 AM Test Bot <zgrieee@gmail.com> wrote:
+>
+> void iscsit_thread_get_cpumask(struct iscsi_conn *conn)
+> {
+>         int ord, cpu;
+>         cpumask_t conn_allowed_cpumask;
 
-> > > -	return get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
-> > > +	orig_pte = get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
-> > > +	flush_tlb_range(vma, addr, addr + pgsize * ncontig);
-> > > +	return orig_pte;
-> > >   }
-> > 
-> > Yes, after checking this fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from
-> > get_clear_flush()"), I also realized it will miss TLB flush.
-> > 
-> > So I am not sure I need send a incremental patch to fix this issue? Or
-> > resend my patch set [1] with rebasing on the arm64 changes?
-> > 
-> > Catalin and Andrew, how do you think? Thanks.
-> 
-> Andrew folding the diff in is fine by me. I presume the mm patches are
-> applied on top of the rest of linux-next (and the arm64 commits).
+Yeah, that's not how you are supposed to use 'cpumask_t'
 
-No, the mm patches are based on
-git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm master branch,
-which is -rc4 or thereabouts.
+This is why we have CONFIG_CPUMASK_OFFSTACK and 'cpumask_var_t', so
+that the pattern is
 
-So one of us needs to ensure that Linus gets that patch after the
-second of us merges up.  I can't test it so I nominate you ;) Against
-linux-next or the mm-everything branch at
-git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm?
+        cpumask_var_t mask;
 
+        if (!alloc_cpumask_var(&mask, GFP_KERNEL))
+                return -ENOMEM;
+        ... use 'mask' here as a  ...
+        free_cpumask_var(mask);
+
+and if the cpumask is small, it's allocated on the stack (and that
+'alloc_cpumask_var()' becomes a no-op) and if it's huge, it has a real
+allocation so that the stack frame doesn't grow too big.
+
+The problem seems to have been introduced in this merge window by
+commit d72d827f2f26 ("scsi: target: Add iscsi/cpus_allowed_list in
+configfs"), but I didn't really look any closer than a plain "git
+blame", so it might have happened before that too.
+
+I also didn't check whether there was some explicit reason why the
+code couldn't allocate the cpumask this way.
+
+Btw, it's worth noting that 'cpumask_t' is always the full static
+compile-time NR_CPUS bits in size, but a dynamically allocated
+'cpumask_var_t' is only nr_cpumask_bits in size (ie the actual maximum
+on that machine, as opposed to the theoretical maximum size). So they
+are *not* exactly the same kind of 'cpumask_t' pointer in the end, but
+no sane code should care (ie you have to do something else wrong for
+the alloc_cpumask_var() pattern to not work).
+
+           Linus
