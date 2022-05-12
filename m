@@ -2,92 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C82BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE098C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351458AbiELI2e (ORCPT
+        id S1351468AbiELI3U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
+        Thu, 12 May 2022 04:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351449AbiELI2a (ORCPT
+        with ESMTP id S1351449AbiELI3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:28:30 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95842181CD
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:28:28 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KzPwx4cDmzGpj2;
-        Thu, 12 May 2022 16:25:37 +0800 (CST)
-Received: from M910t (10.110.54.157) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 12 May 2022 04:29:18 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3118FF95
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:29:16 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KzQ0Y5r0XzgZ0D;
+        Thu, 12 May 2022 16:28:45 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 12 May 2022 16:29:03 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
- 2022 16:28:25 +0800
-Date:   Thu, 12 May 2022 16:28:20 +0800
-From:   Changbin Du <changbin.du@huawei.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-CC:     Changbin Du <changbin.du@huawei.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Steven Rostedt <rostedt@goodmis.org>, <hw.huiwang@huawei.com>,
-        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <llvm@lists.linux.dev>, <codegen-riscv@discourse.llvm.org>,
-        <llvmproject@discourse.llvm.org>, <craig.topper@sifive.com>,
-        <asb@asbradbury.org>
-Subject: Re: riscv: llvm-compiler: calling convention violation: temporary
- register $t2 is used to pass the ninth function parameter
-Message-ID: <20220512082820.7t2rwwo3fffgwoxn@M910t>
-References: <20220510065336.hlfjrc25ajed5zj4@M910t>
- <CAKwvOd=OnJ=ZhsbX+epzbhg3sWg9yOaR=zQ4jF_Deo=B8Nx9Og@mail.gmail.com>
+ 2022 16:29:02 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <perex@perex.cz>, <tiwai@suse.com>
+Subject: [PATCH -next] ALSA: ppc: tumbler: use for_each_child_of_node() macro
+Date:   Thu, 12 May 2022 16:40:30 +0800
+Message-ID: <20220512084030.1673970-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAKwvOd=OnJ=ZhsbX+epzbhg3sWg9yOaR=zQ4jF_Deo=B8Nx9Og@mail.gmail.com>
-X-Originating-IP: [10.110.54.157]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500013.china.huawei.com (7.221.188.120)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 11:39:07AM -0700, Nick Desaulniers wrote:
-> On Mon, May 9, 2022 at 11:54 PM Changbin Du <changbin.du@huawei.com> wrote:
-> >
-[snip]
-> > I also built a simple test function with 9 parameters by clang and same cflags,
-> > but cannot reproduce it. Maybe it is conditional?
-> >
-> > Simple test code:
-> > __attribute__ ((noinline))
-> > void test_func(int *a, int *b, int *c, int *d, int *e, int *f, int *g, int *h, int *i)
-> > {
-> >         printf("__find_rr_leaf: %d\n", *i);
-> > }
-> >
-> > int main(void)
-> > {
-> >         int a,b,c,d,e,f,g,h,i = 100;
-> >
-> >         test_func(&a,&b,&c,&d,&e,&f,&g,&h,&i);
-> >         return 0;
-> > }
-> 
-> Hmm...any chance you could come up with a more concise test case then
-> using creduce [0] or cvise [1]?
-> [0] https://embed.cs.utah.edu/creduce/
-> [1] https://github.com/marxin/cvise
-> 
->
-okay, let me try to reduce the orignal source with creduce.
+Use for_each_child_of_node() macro instead of open coding it.
 
-> 
-> 
-> -- 
-> Thanks,
-> ~Nick Desaulniers
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ sound/ppc/tumbler.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
+diff --git a/sound/ppc/tumbler.c b/sound/ppc/tumbler.c
+index c65e74d7cd0a..c7e150f82bcc 100644
+--- a/sound/ppc/tumbler.c
++++ b/sound/ppc/tumbler.c
+@@ -1060,8 +1060,7 @@ static struct device_node *find_audio_device(const char *name)
+ 	if (! gpiop)
+ 		return NULL;
+   
+-	for (np = of_get_next_child(gpiop, NULL); np;
+-			np = of_get_next_child(gpiop, np)) {
++	for_each_child_of_node(gpiop, np) {
+ 		const char *property = of_get_property(np, "audio-gpio", NULL);
+ 		if (property && strcmp(property, name) == 0)
+ 			break;
 -- 
-Cheers,
-Changbin Du
+2.25.1
+
