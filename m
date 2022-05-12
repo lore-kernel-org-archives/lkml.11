@@ -2,105 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:49:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347595AbiELNtx (ORCPT
+        id S1354668AbiELNuT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 09:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53542 "EHLO
+        Thu, 12 May 2022 09:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354651AbiELNte (ORCPT
+        with ESMTP id S1354649AbiELNuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 09:49:34 -0400
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB059169E04;
-        Thu, 12 May 2022 06:49:28 -0700 (PDT)
-Received: by mail-ot1-f41.google.com with SMTP id l9-20020a056830268900b006054381dd35so2719376otu.4;
-        Thu, 12 May 2022 06:49:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=PsCGzG6OjpoTr8MImm2vvJ+gTn0sgSx2eppfKofCUaY=;
-        b=zKafIk9s4ot87ctdlNXzXmmPe+udPbNKCqeMa9MOzFAFeyWArMUICydk+KorQOjQOl
-         CIH9C+djWcqS5WKi94YZWhH6ufserN/UXmtSazQaBm5ZlUwK2qQgV75RzJ2gZUynyBuX
-         Qd+97EHo2kVLJs5LHmvxiSh69uAy97mMa4WnqcL76Gq6LtoyyfpPmtS7eRIaROaecol6
-         EM4NFluJUctbeaSc0IyFjLqfF4mo5dDsHtjLX/CeRFWhxvcxSWIXjRg6YzIQZhb1eYmS
-         JFCudiXibtQvwpxaq3wAsHdY4EpuZma9lJEUBMB34kFpOGWGtmD0ySosDVXDndLVwVg3
-         LVUg==
-X-Gm-Message-State: AOAM5332CXcC8MFehbpy1lRyeA94URBncAQlNEa+0Dh+BJR+dBrZ/q8F
-        coNhmNbRNFx/DVBWyAP0UQ==
-X-Google-Smtp-Source: ABdhPJzcboMr7Lypqv9322MOEFtzV/4F5STDwvSQiYG1BRFrFhTD7H7K9oUOY1m7VKvCK4EEpssOGA==
-X-Received: by 2002:a9d:3b5:0:b0:603:f8ac:a780 with SMTP id f50-20020a9d03b5000000b00603f8aca780mr17467otf.26.1652363367956;
-        Thu, 12 May 2022 06:49:27 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id u4-20020a4a9704000000b0035eb4e5a6b5sm2188364ooi.11.2022.05.12.06.49.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 06:49:27 -0700 (PDT)
-Received: (nullmailer pid 2231013 invoked by uid 1000);
-        Thu, 12 May 2022 13:49:24 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Sireesh Kodali <sireeshkodali1@gmail.com>
-Cc:     devicetree@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        bjorn.andersson@linaro.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-remoteproc@vger.kernel.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-In-Reply-To: <20220511161602.117772-5-sireeshkodali1@gmail.com>
-References: <20220511161602.117772-1-sireeshkodali1@gmail.com> <20220511161602.117772-5-sireeshkodali1@gmail.com>
-Subject: Re: [PATCH 4/9] dt-bindings: remoteproc: qcom: wcnss: Convert to YAML
-Date:   Thu, 12 May 2022 08:49:24 -0500
-Message-Id: <1652363364.585757.2231012.nullmailer@robh.at.kernel.org>
+        Thu, 12 May 2022 09:50:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7255C18C5BD
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:50:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01902B82834
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 13:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49A66C385B8;
+        Thu, 12 May 2022 13:50:12 +0000 (UTC)
+Date:   Thu, 12 May 2022 09:50:10 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        cj.chengjian@huawei.com, huawei.libin@huawei.com,
+        xiexiuqi@huawei.com, liwei391@huawei.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
+ allocated trampolines
+Message-ID: <20220512095010.7b34fc78@gandalf.local.home>
+In-Reply-To: <20220512210231.f9178a98f20a37981b1e89e3@kernel.org>
+References: <YmFXrBG5AmX3+4f8@lakrids>
+        <20220421100639.03c0d123@gandalf.local.home>
+        <YmF0xYpTMoWOIl00@lakrids>
+        <20220421114201.21228eeb@gandalf.local.home>
+        <YmGF/OpIhAF8YeVq@lakrids>
+        <20220421130648.56b21951@gandalf.local.home>
+        <YmJ/l4vJoEpFt68l@FVFF77S0Q05N>
+        <20220422114541.34d71ad9@gandalf.local.home>
+        <YmLlmaXF00hPkOID@lakrids>
+        <20220426174749.b5372c5769af7bf901649a05@kernel.org>
+        <YnJUTuOIX9YoJq23@FVFF77S0Q05N>
+        <20220505121538.04773ac98e2a8ba17f675d39@kernel.org>
+        <20220509142203.6c4f2913@gandalf.local.home>
+        <20220510181012.d5cba23a2547f14d14f016b9@kernel.org>
+        <20220510104446.6d23b596@gandalf.local.home>
+        <20220511233450.40136cdf6a53eb32cd825be8@kernel.org>
+        <20220511111207.25d1a693@gandalf.local.home>
+        <20220512210231.f9178a98f20a37981b1e89e3@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 21:45:57 +0530, Sireesh Kodali wrote:
-> Convert the dt-bindings from txt to YAML. This is in preparation for
-> including the relevant bindings for the MSM8953 platform's wcnss pil.
-> 
-> Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-> ---
->  .../bindings/remoteproc/qcom,wcnss-pil.txt    | 177 --------------
->  .../bindings/remoteproc/qcom,wcnss-pil.yaml   | 228 ++++++++++++++++++
->  2 files changed, 228 insertions(+), 177 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,wcnss-pil.txt
->  create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,wcnss-pil.yaml
-> 
+On Thu, 12 May 2022 21:02:31 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+> BTW, "what register is saved" can be determined statically, thus I think
+> we just need the offset for checking (for fprobe usecase, since it will
+> set the ftrace_ops flag by itself.)
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+I'm not against that API, but I guess it would be useful to see how it
+would be used.
 
-Full log is available here: https://patchwork.ozlabs.org/patch/
-
-
-remoteproc@a21b000: 'qcom,state', 'qcom,state-names' do not match any of the regexes: 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/qcom/apq8016-sbc.dtb
-	arch/arm64/boot/dts/qcom/msm8916-alcatel-idol347.dtb
-	arch/arm64/boot/dts/qcom/msm8916-asus-z00l.dtb
-	arch/arm64/boot/dts/qcom/msm8916-huawei-g7.dtb
-	arch/arm64/boot/dts/qcom/msm8916-longcheer-l8150.dtb
-	arch/arm64/boot/dts/qcom/msm8916-longcheer-l8910.dtb
-	arch/arm64/boot/dts/qcom/msm8916-mtp.dtb
-	arch/arm64/boot/dts/qcom/msm8916-samsung-a3u-eur.dtb
-	arch/arm64/boot/dts/qcom/msm8916-samsung-a5u-eur.dtb
-	arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dtb
-	arch/arm64/boot/dts/qcom/msm8916-samsung-serranove.dtb
-	arch/arm64/boot/dts/qcom/msm8916-wingtech-wt88047.dtb
-	arch/arm/boot/dts/qcom-apq8016-sbc.dtb
-	arch/arm/boot/dts/qcom-msm8916-samsung-serranove.dtb
-
-remoteproc@fb21b000: 'power-domain-names' is a required property
-	arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dtb
-
-remoteproc@fb21b000: 'power-domains' is a required property
-	arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dtb
-
+-- Steve
