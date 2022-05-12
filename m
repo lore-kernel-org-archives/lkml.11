@@ -2,261 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 194F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BEFFC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347515AbiELEgc (ORCPT
+        id S1347533AbiELEhZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 00:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58154 "EHLO
+        Thu, 12 May 2022 00:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347286AbiELEgK (ORCPT
+        with ESMTP id S233429AbiELEhX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 00:36:10 -0400
-Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07C2115A25;
-        Wed, 11 May 2022 21:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Message-ID:Date:MIME-Version:Subject:From; bh=1d1tM
-        H+vnpjo4OFLZKcFG1r3ENVDriGXTVUEOuHNaZI=; b=d9n4eEEfilh7piLG7UENr
-        1Boj9hwQtUtl1CeaNiYFDlYuMRUTBDhRUZJGikc9OnvLgYlFR0xkvUp1YI9vtuJY
-        pgSoSaCc/Fi1/78Q5RTpzeje4bYF9ONLeZuBR5sU/jKzE4obNA4yLCs3sMrbB/bn
-        TY12O6FCtnLzkTlCi8bxIM=
-Received: from [192.168.3.102] (unknown [218.201.129.19])
-        by smtp9 (Coremail) with SMTP id DcCowABHmR9ejnxi3XKFCQ--.35242S2;
-        Thu, 12 May 2022 12:34:39 +0800 (CST)
-Message-ID: <01c2c11f-71fd-b735-b935-109865d62de5@163.com>
-Date:   Thu, 12 May 2022 12:34:38 +0800
+        Thu, 12 May 2022 00:37:23 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0861126135;
+        Wed, 11 May 2022 21:37:21 -0700 (PDT)
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 24C4b545004064;
+        Thu, 12 May 2022 13:37:06 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 24C4b545004064
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1652330226;
+        bh=tkmfQXshct+rM5sNv86ojAR4iOGgSUB8H7eo3J48fKg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=UDf+KO+3kbwc37QIFSTV9bWAie+41gj2MeWrvLn98PFJeT68eleeY1AM7wSMxRyjU
+         pPRvHVuTnkFix5D9kRIO45SdX/nvQQK1u5W7hb+YlXwaIc0eeRvA9RwDQSylp1+Rw0
+         tSiITqUwWvLrx8H7s02aElsbROkTZEgun44WETgkYURxTeWPvY7S+12mOG+cdcCD7G
+         q5xMLcI5JElKBcX3fWFRmxP+H0bOsKaLY1zOYZ3TWa6HI+pXOIz+m8XJYQLmoHFdl1
+         lqNwhC1lG914gG/BmaAp50Ceg3Mk0V74KjqxzZzakr8LRAdYV/3YtH2W2wFjIN4Xeu
+         pZDKO9J8l2e7Q==
+X-Nifty-SrcIP: [209.85.216.51]
+Received: by mail-pj1-f51.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso3865616pjg.0;
+        Wed, 11 May 2022 21:37:06 -0700 (PDT)
+X-Gm-Message-State: AOAM5316uxQIGld6VZmgJkqr2jA820EYKMY4fmV4O6TMMr7NeQ4ohFYR
+        zgqVBTtSfXRFdYWZfQNFiHgzG2oU6HOm/VNVMs4=
+X-Google-Smtp-Source: ABdhPJzNzRosrbp98/vX8YbqZjlsEylacSahmJ3sX4Wd7I5BkGLdD5OHiq8O2NX6qWNfI9oi2eO8MzjRgcclDO8j9pE=
+X-Received: by 2002:a17:902:7891:b0:15e:cae9:7620 with SMTP id
+ q17-20020a170902789100b0015ecae97620mr28744958pll.136.1652330225331; Wed, 11
+ May 2022 21:37:05 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2] drivers: cpufreq: sun8i-r40: Add cpufreq support
-Content-Language: en-US
-To:     =?UTF-8?Q?Jernej_=c5=a0krabec?= <jernej.skrabec@gmail.com>,
-        linux-sunxi@lists.linux.dev
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-References: <20220510003611.1812-1-qianfanguijin@163.com>
- <1902551.yKVeVyVuyW@kista>
-From:   qianfan <qianfanguijin@163.com>
-In-Reply-To: <1902551.yKVeVyVuyW@kista>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcCowABHmR9ejnxi3XKFCQ--.35242S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxKF17GFy3tFW5JFWxKr17Jrb_yoW7Zw15pr
-        1UCFZ5GF4fWr15t34aqw1DGrn7CFyv9FWY9ryUGa48tr1kZrykXr13tr93KrZ5Xr13J3yI
-        vrn5XryI9ws8JaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UXiSLUUUUU=
-X-Originating-IP: [218.201.129.19]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiGhn+7VaEBiT6wwABsY
+References: <20220508190631.2386038-1-masahiroy@kernel.org> <20220508190631.2386038-2-masahiroy@kernel.org>
+In-Reply-To: <20220508190631.2386038-2-masahiroy@kernel.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 12 May 2022 13:35:52 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAT3+rZTzt1Ed-V_pjA8wEFEVj7Uxo8PTtEhdyzFcqqM+g@mail.gmail.com>
+Message-ID: <CAK7LNAT3+rZTzt1Ed-V_pjA8wEFEVj7Uxo8PTtEhdyzFcqqM+g@mail.gmail.com>
+Subject: Re: [PATCH v4 01/14] modpost: remove left-over cross_compile declaration
+To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-modules <linux-modules@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, May 9, 2022 at 4:09 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> This is a remnant of commit 6543becf26ff ("mod/file2alias: make
+> modalias generation safe for cross compiling").
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+
+Applied to linux-kbuild.
 
 
-在 2022/5/12 4:13, Jernej Škrabec 写道:
-> Dne torek, 10. maj 2022 ob 02:36:11 CEST je qianfanguijin@163.com napisal(a):
->> From: qianfan Zhao <qianfanguijin@163.com>
->>
->> OPP table value is get from allwinner lichee 3.10 kernel.
->> And completed 'cpu-supply' on sun8i based board.
->>
->> Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
->> ---
->>   .../boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |  4 ++
->>   arch/arm/boot/dts/sun8i-r40-feta40i.dtsi      |  4 ++
->>   arch/arm/boot/dts/sun8i-r40.dtsi              | 47 +++++++++++++++++++
->>   arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts      |  4 ++
->>   .../boot/dts/sun8i-v40-bananapi-m2-berry.dts  |  4 ++
->>   drivers/cpufreq/cpufreq-dt-platdev.c          |  1 +
-> This patch needs to be split in two:
-> 1. driver change
-> 2. DT changes
 >
-> And please add change log here for next submission.
-Maybe there patch is better? one of driver, one of sun8i-r40.dtsi
-and the others is the board's changes.
+> Changes in v4:
+>   - New patch
 >
->>   6 files changed, 64 insertions(+)
->>
->> diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/
-> boot/dts/sun8i-r40-bananapi-m2-ultra.dts
->> index a6a1087a0c9b..4f30018ec4a2 100644
->> --- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
->> +++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
->> @@ -113,6 +113,10 @@ &ahci {
->>   	status = "okay";
->>   };
->>   
->> +&cpu0 {
->> +	cpu-supply = <&reg_dcdc2>;
->> +};
->> +
->>   &de {
->>   	status = "okay";
->>   };
->> diff --git a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi b/arch/arm/boot/dts/
-> sun8i-r40-feta40i.dtsi
->> index 265e0fa57a32..b872b51a346d 100644
->> --- a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
->> +++ b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
->> @@ -6,6 +6,10 @@
->>   
->>   #include "sun8i-r40.dtsi"
->>   
->> +&cpu0 {
->> +	cpu-supply = <&reg_dcdc2>;
->> +};
->> +
->>   &i2c0 {
->>   	status = "okay";
->>   
->> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-
-> r40.dtsi
->> index 291f4784e86c..90de119095fa 100644
->> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
->> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
->> @@ -54,6 +54,41 @@ / {
->>   	#size-cells = <1>;
->>   	interrupt-parent = <&gic>;
->>   
->> +	cpu0_opp_table: opp_table0 {
->> +		compatible = "operating-points-v2";
->> +		opp-shared;
->> +
->> +		opp-720000000 {
->> +			opp-hz = /bits/ 64 <720000000>;
->> +			opp-microvolt = <1000000 1000000 1300000>;
->> +			clock-latency-ns = <2000000>;
->> +		};
->> +
->> +		opp-912000000 {
->> +			opp-hz = /bits/ 64 <912000000>;
->> +			opp-microvolt = <1100000 1100000 1300000>;
->> +			clock-latency-ns = <2000000>;
->> +		};
->> +
->> +		opp-1008000000 {
->> +			opp-hz = /bits/ 64 <1008000000>;
->> +			opp-microvolt = <1160000 1160000 1300000>;
->> +			clock-latency-ns = <2000000>;
->> +		};
->> +
->> +		opp-1104000000 {
->> +			opp-hz = /bits/ 64 <1104000000>;
->> +			opp-microvolt = <1240000 1240000 1300000>;
->> +			clock-latency-ns = <2000000>;
->> +		};
->> +
->> +		opp-1200000000 {
->> +			opp-hz = /bits/ 64 <1200000000>;
->> +			opp-microvolt = <1300000 1300000 1300000>;
->> +			clock-latency-ns = <2000000>;
->> +		};
->> +	};
->> +
->>   	clocks {
->>   		#address-cells = <1>;
->>   		#size-cells = <1>;
->> @@ -84,24 +119,36 @@ cpu0: cpu@0 {
->>   			compatible = "arm,cortex-a7";
->>   			device_type = "cpu";
->>   			reg = <0>;
->> +			clocks = <&ccu CLK_CPU>;
->> +			clock-names = "cpu";
->> +			operating-points-v2 = <&cpu0_opp_table>;
->>   		};
->>   
->>   		cpu1: cpu@1 {
->>   			compatible = "arm,cortex-a7";
->>   			device_type = "cpu";
->>   			reg = <1>;
->> +			clocks = <&ccu CLK_CPU>;
->> +			clock-names = "cpu";
->> +			operating-points-v2 = <&cpu0_opp_table>;
->>   		};
->>   
->>   		cpu2: cpu@2 {
->>   			compatible = "arm,cortex-a7";
->>   			device_type = "cpu";
->>   			reg = <2>;
->> +			clocks = <&ccu CLK_CPU>;
->> +			clock-names = "cpu";
->> +			operating-points-v2 = <&cpu0_opp_table>;
->>   		};
->>   
->>   		cpu3: cpu@3 {
->>   			compatible = "arm,cortex-a7";
->>   			device_type = "cpu";
->>   			reg = <3>;
->> +			clocks = <&ccu CLK_CPU>;
->> +			clock-names = "cpu";
->> +			operating-points-v2 = <&cpu0_opp_table>;
->>   		};
->>   	};
->>   
->> diff --git a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts b/arch/arm/boot/dts/
-> sun8i-t3-cqa3t-bv3.dts
->> index 6931aaab2382..0eb1990742ff 100644
->> --- a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
->> +++ b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
->> @@ -88,6 +88,10 @@ &ahci {
->>   	status = "okay";
->>   };
->>   
->> +&cpu0 {
->> +	cpu-supply = <&reg_dcdc2>;
->> +};
->> +
->>   &de {
->>   	status = "okay";
->>   };
->> diff --git a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts b/arch/arm/
-> boot/dts/sun8i-v40-bananapi-m2-berry.dts
->> index 47954551f573..fdf8bd12faaa 100644
->> --- a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
->> +++ b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
->> @@ -107,6 +107,10 @@ &ahci {
->>   	status = "okay";
->>   };
->>   
->> +&cpu0 {
->> +	cpu-supply = <&reg_dcdc2>;
->> +};
->> +
->>   &de {
->>   	status = "okay";
->>   };
->> diff --git a/drivers/cpufreq/cpufreq-dt-platdev.c b/drivers/cpufreq/cpufreq-
-> dt-platdev.c
->> index ca1d103ec449..971a99219d4d 100644
->> --- a/drivers/cpufreq/cpufreq-dt-platdev.c
->> +++ b/drivers/cpufreq/cpufreq-dt-platdev.c
->> @@ -26,6 +26,7 @@ static const struct of_device_id allowlist[] __initconst =
-> {
->>   	{ .compatible = "allwinner,sun8i-a23", },
->>   	{ .compatible = "allwinner,sun8i-a83t", },
->>   	{ .compatible = "allwinner,sun8i-h3", },
->> +	{ .compatible = "allwinner,sun8i-r40", },
-> Why on allow list? Comment says operatings-point-v2 should be on block list,
-> just like H6.
-Actually I'm not make sure the difference, seems both of them can work.
-Most of allwinner device_id is added in allowlist, so I did this.
+>  scripts/mod/modpost.h | 1 -
+>  1 file changed, 1 deletion(-)
 >
-> Best regards,
-> Jernej
+> diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
+> index cfa127d2bb8f..d9daeff07b83 100644
+> --- a/scripts/mod/modpost.h
+> +++ b/scripts/mod/modpost.h
+> @@ -174,7 +174,6 @@ static inline unsigned int get_secindex(const struct elf_info *info,
+>  }
 >
->>   
->>   	{ .compatible = "apm,xgene-shadowcat", },
->>   
->> -- 
->> 2.25.1
->>
->>
+>  /* file2alias.c */
+> -extern unsigned int cross_build;
+>  void handle_moddevtable(struct module *mod, struct elf_info *info,
+>                         Elf_Sym *sym, const char *symname);
+>  void add_moddevtable(struct buffer *buf, struct module *mod);
+> --
+> 2.32.0
+>
+> --
+> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20220508190631.2386038-2-masahiroy%40kernel.org.
 
+
+
+-- 
+Best Regards
+Masahiro Yamada
