@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE8B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356919AbiELRMD (ORCPT
+        id S1356914AbiELRMN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
+        Thu, 12 May 2022 13:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356930AbiELRLB (ORCPT
+        with ESMTP id S1356909AbiELRMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:11:01 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F115727FD7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:10:56 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bv19so11524982ejb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=loonHWmCtVeGx4aWVVUzPzapZ1t+QIqGsKXmCgmw6z8=;
-        b=WD5qjD3n7PQ6Q1+OHYaSBYIXZyE3MSnd14hOsae1gMnqzXVow2TJFjREwN777Ig52q
-         V4qfULfCcQ86ni9aAhSi7LjMQHCPkFJi+glv65R1S+sQR6oFUNEhVyq5JADGgBm6h1kT
-         2hznSR7F9VZ12haH7nWz1Ev8hTm8abuX+I6D4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=loonHWmCtVeGx4aWVVUzPzapZ1t+QIqGsKXmCgmw6z8=;
-        b=fB21s0bz0sorJAx4QzsaITGMVTsVzPYWIo3BwbmRIjs8i/gM3pm0+k7VE3i8VO4+20
-         DSWiLsAWjdqcSWA+yaMq0KsP+AAddUfoWdWXnRw0jcyB604EpTfylc6vO6nE+jyDMRRu
-         rtUqhGf+Wp3BZm7igDvfFR+M6dg0BihkDtqif3Fa3I1d/ZknI5azujoPyfE2gZ27XANv
-         6kCHyXobeFJK/88Tqvy0Wfb+6qYWd9gafy5noQunOqYiQowLbtJwTItoLPRvhKhkbPO+
-         OLRykOPGcYpu0Xana8ddSPSJ55M0tkd3KHZ725a5cYJ4jHVDireogMheGoXcgno57I1S
-         Tcnw==
-X-Gm-Message-State: AOAM531RDlwWEHU8u0aO+th2kW3Aa6YfGuIKvqT95EhWys7sANMHCTwF
-        THAeU9ZE+QrFEUrJMpfzkZwfnnzrm/OGZcz5HpA=
-X-Google-Smtp-Source: ABdhPJxDN6Hwhpo+ubYFdrhDW/6nWDfS/q/cQEARq7g11BvGA9uxioGKI5LNxvmbneDAucdR+OsBnQ==
-X-Received: by 2002:a17:907:2159:b0:6f3:a307:d01d with SMTP id rk25-20020a170907215900b006f3a307d01dmr803565ejb.760.1652375454338;
-        Thu, 12 May 2022 10:10:54 -0700 (PDT)
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
-        by smtp.gmail.com with ESMTPSA id eg56-20020a05640228b800b00427ae00972dsm2892281edb.12.2022.05.12.10.10.51
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 10:10:52 -0700 (PDT)
-Received: by mail-wr1-f50.google.com with SMTP id d5so8169531wrb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:10:51 -0700 (PDT)
-X-Received: by 2002:a05:6000:2c2:b0:20c:7329:7c10 with SMTP id
- o2-20020a05600002c200b0020c73297c10mr557896wry.193.1652375451235; Thu, 12 May
- 2022 10:10:51 -0700 (PDT)
+        Thu, 12 May 2022 13:12:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56CE9E9C2
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:11:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 840F8B829B9
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 17:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034FBC385B8;
+        Thu, 12 May 2022 17:11:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652375517;
+        bh=ERf+o50ufn9OF177lvaoSS0BH6EvZkyDYDZBheKGLmA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MWFzDxPuDAn2wAaGjXuJGcHJwgfrmqcxlSznSQyChlPRrjLVqzRJIKcDWrbaDVN+k
+         iJCFmcoBtyPJsPUdkKprabhyMDon/HLfBZ6B5W2GWZjr0o5uhrkpeLEWo8kmzR/cUD
+         /0M1mFO7+/sB6r8VXn60VyIB4ithexRdtRJYvzIIIH+h6mw1fZHQDcstTPSIlHzjiR
+         lmYWoY/FwapGbzczOTkk/ZUO2dFNC3WnkZ95fUbkjQ6+j+/FIJDUBdRCP8P2fukrFU
+         uiYVRWS1NXQo4WhfsG8aqdPVZri0e9ukvoCtqMxl9cD7XlfJ2Z6L3SD9WH/J+KvDlP
+         uETXXJzfgUREA==
+Date:   Thu, 12 May 2022 10:11:55 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        Borislav Petkov <bp@suse.de>
+Subject: Re: [ammarfaizi2-block:stable/linux-stable-rc/queue/5.15 146/150]
+ kernel/futex.o: warning: objtool: futex_atomic_op_inuser()+0xb8: unreachable
+ instruction
+Message-ID: <20220512171155.53wc7z3tptixhsny@treble>
+References: <202205120956.qLpGQurX-lkp@intel.com>
+ <20220512081709.GD76023@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
- <87czgk8jjo.fsf@mpe.ellerman.id.au> <CAHk-=wj9zKJGA_6SJOMPiQEoYke6cKX-FV3X_5zNXOcFJX1kOQ@mail.gmail.com>
- <87mtfm7uag.fsf@mpe.ellerman.id.au>
-In-Reply-To: <87mtfm7uag.fsf@mpe.ellerman.id.au>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 12 May 2022 10:10:34 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgnYGY=10sRDzXCC2bmappjBTRNNbr8owvGLEW-xuV7Vw@mail.gmail.com>
-Message-ID: <CAHk-=wgnYGY=10sRDzXCC2bmappjBTRNNbr8owvGLEW-xuV7Vw@mail.gmail.com>
-Subject: Re: [GIT PULL] virtio: last minute fixup
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220512081709.GD76023@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 6:30 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
->
-> Links to other random places don't serve that function.
+On Thu, May 12, 2022 at 10:17:09AM +0200, Peter Zijlstra wrote:
+> On Thu, May 12, 2022 at 10:00:33AM +0800, kernel test robot wrote:
+> > tree:   https://github.com/ammarfaizi2/linux-block stable/linux-stable-rc/queue/5.15
+> > head:   305e905f70311e1b49cc730931a19c3e364f4d8c
+> > commit: 45dc9d706619a6814e4063d5431483f94badb5a1 [146/150] x86: Add straight-line-speculation mitigation
+> > config: x86_64-randconfig-m001-20220509 (https://download.01.org/0day-ci/archive/20220512/202205120956.qLpGQurX-lkp@intel.com/config)
+> > compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+> > reproduce (this is a W=1 build):
+> >         # https://github.com/ammarfaizi2/linux-block/commit/45dc9d706619a6814e4063d5431483f94badb5a1
+> >         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+> >         git fetch --no-tags ammarfaizi2-block stable/linux-stable-rc/queue/5.15
+> >         git checkout 45dc9d706619a6814e4063d5431483f94badb5a1
+> >         # save the config file
+> >         mkdir build_dir && cp config build_dir/.config
+> >         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> > 
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > 
+> > All warnings (new ones prefixed by >>):
+> > 
+> > >> kernel/futex.o: warning: objtool: futex_atomic_op_inuser()+0xb8: unreachable instruction
+> > --
+> > >> mm/madvise.o: warning: objtool: madvise_behavior()+0x69: unreachable instruction
+> > --
+> > >> kernel/bpf/btf.o: warning: objtool: __btf_resolve_size()+0x72: unreachable instruction
+> 
+> Would it be possible for the robot to include the output of this script:
+> 
+>   https://lkml.kernel.org/r/3eb3f091fd6bd9caba50392ceab98ce756804f3b.1650578171.git.jpoimboe@redhat.com
 
-What "function"?
+Ha, I already forgot about that script.  I'll drop it into my
+objtool/core branch (eventually for tip) unless anybody objects.
 
-This is my argument. Those Link: things need to have a *reason*.
-
-Saying "they are a change ID" is not a reason. That's just a random
-word-salad. You need to have an active reason that you can explain,
-not just say "look, I want to add a message ID to every commit".
-
-Here's the thing. There's a difference between "data" and "information".
-
-We should add information to the commits, not random data.
-
-And most definitely not just random data that can be trivially
-auto-generated after-the-fact.
-
-                Linus
+-- 
+Josh
