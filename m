@@ -2,149 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CBA8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352643AbiELKai (ORCPT
+        id S1352648AbiELKbm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 06:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49240 "EHLO
+        Thu, 12 May 2022 06:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352638AbiELKac (ORCPT
+        with ESMTP id S240099AbiELKbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 06:30:32 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B027622308F;
-        Thu, 12 May 2022 03:30:31 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2f7ca2ce255so50599887b3.7;
-        Thu, 12 May 2022 03:30:31 -0700 (PDT)
+        Thu, 12 May 2022 06:31:38 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62E84CD56
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:31:36 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id g6so9342502ejw.1
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5MXfcUrY9hOKURYsbrGhzUx93Mf/JygzWXuJTExiX6A=;
+        b=n3ojiDL8X/Z3JJpHeZ3KpwcIDtMK9lk+zxRPqOmiw9++VRYDa6HJvSv85Dym9DjNz3
+         vpLDn0kYSFCR9bYfcJJrSI+uNVEyPOt0o1tTX7zrbYh0nDoYjdbHZx3Vg8Dgp0W7FnYC
+         EAdWgVwLRyYTVlgCxl6Do4Hm0cuSFtuywRt2U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DznYDTXJFA0HssmMIscX0UQ6FL2uFsbT209IcQLUNKU=;
-        b=SUTLkiyhs72bcFVEodWWfJiz13zYpT5qMd8wfY9UPHmkztsAHknDLcgqaA88056QNb
-         Bc2y+2VIFbFITRlv9PiIqUGsLzNaMSZdzMsaE1ss+/hwRDgz+uvSUz1J4ZGrLojzqXeQ
-         M9UYmvm4cvNxg1lnJExjzUjYquNenBUO3SDvyRguhfxemGkvbivz5lrivKw8iZfBqj2M
-         Dqq2gUQWqKQ6koR/JC+eYUexZDk3cDM8Oip8gg5RsNLzIb8uhu+fDcJE/A+lSB24dWaM
-         f6eqUhkka8GWOm5Wpl9+Ccx4ZUU3Hbj8rryK8O2YfEjxo1AToT7elVMSYm1gnd2hru0p
-         CfoQ==
-X-Gm-Message-State: AOAM532Z5QFgpAsaHUkYVPGKyP0cf/RITldPeKNDmLsS9+y16VQ6R/c7
-        tYuB1YDE2Qmm3jJitA/gkVz3tyHaIHkK1bTcULw=
-X-Google-Smtp-Source: ABdhPJybiRZHO9cH0p8EVh00RpAoFILmE24SwCtaAYWKyhu93JjxbXApgUNEAhrWSeh26UHaJ/QdSG0pvm/JFs4TU8g=
-X-Received: by 2002:a0d:ddce:0:b0:2f8:c9f7:8f7c with SMTP id
- g197-20020a0dddce000000b002f8c9f78f7cmr30685978ywe.301.1652351430973; Thu, 12
- May 2022 03:30:30 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5MXfcUrY9hOKURYsbrGhzUx93Mf/JygzWXuJTExiX6A=;
+        b=d/0pNzbIRVFbxtGWFoRi2MwaOFFz3nnFLM9l5UOmgdW0NcHgYRA2VlSQCqiHxWBW/4
+         esp5fFdygKwiBiiVpH38gjxGjAfPERjkzuvukGQQErAOltJFewjJIGbjpPwzRxo76XDb
+         OpX5wT9BX4yutxUAoC5u6ScHVEvqYLDg7xebpaYYNirevVInV9a+VoAKwEkecp7FFH0V
+         /maTPnOMF7UEqcEaYyDqEfkDL51G3Tcn+2IjFGKpcpPrn6+cdsk4lOLjCXPOAjG5b2gZ
+         GaHPONF1wdoU6+wDpfd7ja5ACE7rYOxroAEieAgkeN4XlLBQDAv+/ztH93NtYKSIR0QM
+         DHig==
+X-Gm-Message-State: AOAM530s2RkR0ccIN3FQWSoeWkwM5yIRAsjz3CHfYcc+mnUZvJEQF0n+
+        4R0eWlgKbptBxr5IE5fD+NWKBw==
+X-Google-Smtp-Source: ABdhPJw3/7SDvQibZnzyAqVT3zem9hMR5ZS5pek6KBOHUgS3MH78W6+hF3SfMcrkHz6sUmfeCF/nXg==
+X-Received: by 2002:a17:907:960d:b0:6f4:3b68:8d55 with SMTP id gb13-20020a170907960d00b006f43b688d55mr29150808ejc.105.1652351495343;
+        Thu, 12 May 2022 03:31:35 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-59-245.cust.vodafonedsl.it. [188.217.59.245])
+        by smtp.gmail.com with ESMTPSA id n9-20020aa7c789000000b0042617ba63cbsm2370277eds.85.2022.05.12.03.31.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 03:31:35 -0700 (PDT)
+Date:   Thu, 12 May 2022 12:31:32 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: max98088: add support for reg_4a_cfg_bypass reg
+Message-ID: <20220512103132.GC649073@tom-ThinkPad-T14s-Gen-2i>
+References: <20220512074359.446999-1-tommaso.merciai@amarulasolutions.com>
+ <YnzdcubW7m+CwnvN@sirena.org.uk>
 MIME-Version: 1.0
-References: <20220510182221.3990256-1-srinivas.pandruvada@linux.intel.com>
- <CAJZ5v0hDN=iGBQei6XeJ1b3qLiRxPDm+ZFtKU1PcHbBcyxGpZw@mail.gmail.com> <408701ca2c7704c146c806740eabb5a99f30c945.camel@linux.intel.com>
-In-Reply-To: <408701ca2c7704c146c806740eabb5a99f30c945.camel@linux.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 12 May 2022 12:30:19 +0200
-Message-ID: <CAJZ5v0hT8UBDn3Lo5znFTao1bbjVUOgk8fPxkW9x4wC7XME1-A@mail.gmail.com>
-Subject: Re: [UPDATE][PATCH] thermal: int340x: Mode setting with new OS handshake
-To:     srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnzdcubW7m+CwnvN@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 9:56 PM srinivas pandruvada
-<srinivas.pandruvada@linux.intel.com> wrote:
->
-> On Wed, 2022-05-11 at 20:14 +0200, Rafael J. Wysocki wrote:
-> > On Tue, May 10, 2022 at 8:22 PM Srinivas Pandruvada
-> > <srinivas.pandruvada@linux.intel.com> wrote:
-> > >
-> > > With the new OS handshake introduced with the commit: "c7ff29763989
-> > > ("thermal: int340x: Update OS policy capability handshake")",
-> > > thermal zone mode "enabled" doesn't work in the same way as the
-> > > legacy
-> > > handshake. The mode "enabled" fails with -EINVAL using new
-> > > handshake.
-> > >
-> > > To address this issue, when the new OS UUID mask is set:
-> > > - When mode is "enabled", return 0 as the firmware already has the
-> > > latest policy mask.
-> > > - When mode is "disabled", update the firmware with UUID mask of
-> > > zero.
-> > > In this way firmware can take control of the thermal control. Also
-> > > reset the OS UUID mask. This allows user space to update with new
-> > > set of policies.
-> > >
-> > > Fixes: c7ff29763989 ("thermal: int340x: Update OS policy capability
-> > > handshake")
-> > > Signed-off-by: Srinivas Pandruvada
-> > > <srinivas.pandruvada@linux.intel.com>
-> > > Cc: stable@vger.kernel.org
-> >
-> > This is not -stable material yet.
-> I thought it will wait for 5.19 merge window.
+On Thu, May 12, 2022 at 11:12:02AM +0100, Mark Brown wrote:
+> On Thu, May 12, 2022 at 09:43:58AM +0200, Tommaso Merciai wrote:
+> 
+> > Add mixer controls support for M98088_REG_4A_CFG_BYPASS register
+> 
+> > +++ b/sound/soc/codecs/max98088.c
+> > @@ -486,6 +486,11 @@ static const struct snd_kcontrol_new max98088_snd_controls[] = {
+> >         SOC_SINGLE("EQ1 Switch", M98088_REG_49_CFG_LEVEL, 0, 1, 0),
+> >         SOC_SINGLE("EQ2 Switch", M98088_REG_49_CFG_LEVEL, 1, 1, 0),
+> >  
+> > +       SOC_SINGLE("SPK Bypass Switch", M98088_REG_4A_CFG_BYPASS, 0, 1, 0),
+> > +       SOC_SINGLE("REC Bypass Switch", M98088_REG_4A_CFG_BYPASS, 1, 1, 0),
+> > +       SOC_SINGLE("MIC2 Bypass Switch", M98088_REG_4A_CFG_BYPASS, 4, 1, 0),
+> > +       SOC_SINGLE("INA Bypass Switch", M98088_REG_4A_CFG_BYPASS, 7, 1, 0),
+> 
+> These look like they should be DAPM controls since they're controlling
+> audio routing but they're being added as regular controls.
 
-It is better to avoid making a major release with a known-broken
-interface if possible.
+Hi Mark,
+Thanks for the review, I'll send v2.
 
-> >
-> > > ---
-> > > update:
-> > > Added Fixes tag
-> > >
-> > >
->
-> [...]
->
-> > > +               if (priv->os_uuid_mask) {
-> > > +                       if (!enabled) {
-> > > +                               priv->os_uuid_mask = 0;
-> > > +                               result = set_os_uuid_mask(priv,
-> > > priv->os_uuid_mask);
-> >
-> > This change worries me a bit, because it means replaying an already
-> > established _OSC handshake which shouldn't be done by the spec.
-> >
-> I checked with the firmware team. The _OSC changes dynamically is
-> validated and is recommended when enable/disable user space thermal
-> control.
+Tommaso
 
-OK
+-- 
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
 
-> Looking at ACPI Spec
-> "OSPM may evaluate _OSC multiple times to indicate changes in OSPM
-> capability to the device but this may be precluded by specific device
-> requirements"
-
-Well, different paragraphs say different things, but it is fine as
-long as the firmware and the OS are on the same page in the given use
-case.
-
-> > But I suppose you have tested this?
-> I tested on TigerLake system.
-
-OK
-
-> >
-> > > +                       }
-> > > +
->
-> [...]
->
-> >
-> > Patch applied as 5.18-rc material, but I've removed some unneeded
-> > parens from the new code, so please double check the result in
-> > bleeding-edge.
-> I tested the patch from bleeding edge.
-> Works fine.
-
-Good.
-
-I'll queue it up for -rc7 then (I will be offline for the next few
-days, most likely, and I'm not ready to send a pull request today).
-
-Thanks!
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
