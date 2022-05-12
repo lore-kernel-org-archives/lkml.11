@@ -2,100 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D063AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357269AbiELRs3 (ORCPT
+        id S1357280AbiELRtq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42544 "EHLO
+        Thu, 12 May 2022 13:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357249AbiELRs1 (ORCPT
+        with ESMTP id S1357272AbiELRtp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:48:27 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A103E73543
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:48:26 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id y63so7299948oia.7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:48:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Cf74R0Wz1/uilLfLOdYpCYhNdODuzdJOYPzmmj2JrkQ=;
-        b=BomaR2ZB3It89qJzF/He6WjK6nzpMOXZbPnnKGIPFtclbTuI5Geun6Ys29DJd8oC7A
-         zFwMvbCb7UapaQRDnTNyYJx0Bht3w9fFxXs9CNDU4w+Z5Yaw8iRhHYxkKo6Of2gmaNUn
-         SfFKXx+q+g2q6wlMpqgLG2j3rDPCFkU0xdugk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Cf74R0Wz1/uilLfLOdYpCYhNdODuzdJOYPzmmj2JrkQ=;
-        b=dg9BIjThfDrLxWXka13Ce953tAUPagGy1euGet9p3BHbCRroh0FMfNt86LBfo8Q27J
-         xg9Oazqmj1ogLWs2e8PsmdBq9iI+c5RCTyKsliM3u0Dwf65uRD7LbLf/EW96HfE3Ya3M
-         zh5J/5ArBtAabOgbYNhk3euSG0fsUUvq8oA9M4Q6Ghxq1ZZTbT3irjYr75o9u4mbX7aE
-         RNRu9WCy8mFsSR9Btcd62Asi0LJNFIGpEcEYkTfNBsm4nnqpdoE2TFXId42gmOYbuOFt
-         NUtDdGsNpH5ck6554FNWb40TeV1yJrLdncPUGaQQ3Sn4EoMieXAq+OhQWk1WLTxwYDOt
-         NT1Q==
-X-Gm-Message-State: AOAM531F5YJwJt8hjLdCnAkt1nlfGGsmAlHNaZKoP+lDGUAsZNx23s9r
-        cUqYbYI8Am7GyircUrLGgzCxfw==
-X-Google-Smtp-Source: ABdhPJzihOYlXGwyw98+yvXr9su5BZdWeXWub3QGrmwoxYV3oIEofuRBckm809RDKkXYO9zEgp7kOg==
-X-Received: by 2002:a05:6808:16a1:b0:2f9:bfea:e5f3 with SMTP id bb33-20020a05680816a100b002f9bfeae5f3mr564892oib.28.1652377705871;
-        Thu, 12 May 2022 10:48:25 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id s124-20020aca5e82000000b00325cda1ffb8sm148096oib.55.2022.05.12.10.48.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 10:48:25 -0700 (PDT)
-Subject: Re: [RFC V2 PATCH 5/8] selftests: kvm: Add implicit memory conversion
- tests
-To:     Vishal Annapurve <vannapurve@google.com>, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, shauh@kernel.org, yang.zhong@intel.com,
-        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
-        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
-        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
-        bfields@fieldses.org, akpm@linux-foundation.org,
-        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
-        jun.nakajima@intel.com, dave.hansen@intel.com,
-        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
-        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
-        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
-        pgonda@google.com, nikunj@amd.com, seanjc@google.com,
-        diviness@google.com, Shuah Khan <skhan@linuxfoundation.org>
-References: <20220511000811.384766-1-vannapurve@google.com>
- <20220511000811.384766-6-vannapurve@google.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <a68283e4-f3a5-077c-95a9-c3a8f0ea3b60@linuxfoundation.org>
-Date:   Thu, 12 May 2022 11:48:23 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20220511000811.384766-6-vannapurve@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Thu, 12 May 2022 13:49:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFA41FC2DD;
+        Thu, 12 May 2022 10:49:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF66060C69;
+        Thu, 12 May 2022 17:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3FC3EC385B8;
+        Thu, 12 May 2022 17:49:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652377783;
+        bh=iACxMt1xiFoGjTQxV0SOqR7DmwQ6H5CFvzHBwVxGmO4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=ko+B8SI2SkMSxu6L5pFBBFqGKzamZBBLcH2nUltA8OdiDII666dS7KNwAo7qOWJm6
+         w2VJ8rXrIcrSRg9pMJeITXtUxoPifNSxIayi6pONLOHBEIJZZNv55STPraXh0/S+cp
+         CTValHPWB/vrJc+xEotMceUMhtfTKZZqPiuwF4OsgUGPBMnIxRNqn4KM///Ji0wrP7
+         yW6rccgGqOJ1qMN8m6mfIIc7CtB4VdHzbLLCi8GoRjZI1UgyS8C2luQLNgLu50GmIm
+         Be/+0SPB8UeVrqd5kXMPgjuQ2Wm/vrmKRg9Ff+f+U7SccNQ6EGtOOPBHqt68QmtgnM
+         E+5HlSlAV501A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 22105F0392C;
+        Thu, 12 May 2022 17:49:43 +0000 (UTC)
+Subject: Re: [GIT PULL] cgroup fixes for v5.18-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Yn1EFgZdbSSjTatf@slm.duckdns.org>
+References: <Yn1EFgZdbSSjTatf@slm.duckdns.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yn1EFgZdbSSjTatf@slm.duckdns.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.18-fixes
+X-PR-Tracked-Commit-Id: 2685027fca387b602ae565bff17895188b803988
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 0ac824f379fba2c2b17b75fd5ada69cd68c66348
+Message-Id: <165237778312.3166.15209946095490727314.pr-tracker-bot@kernel.org>
+Date:   Thu, 12 May 2022 17:49:43 +0000
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 6:08 PM, Vishal Annapurve wrote:
-> Add tests to exercise implicit memory conversion path.
-> 
+The pull request you sent on Thu, 12 May 2022 07:29:58 -1000:
 
-Too cryptic. Add more information on what kind of tests it runs
-and inlcude test example test output with how to run examples.
-   
-> Signed-off-by: Vishal Annapurve <vannapurve@google.com>
-> ---
+> git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.18-fixes
 
-Please see comments about coding style related comments on other
-patches in this series.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/0ac824f379fba2c2b17b75fd5ada69cd68c66348
 
-thanks,
--- Shuah
+Thank you!
 
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
