@@ -2,98 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D46C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEED5C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355410AbiELOgw (ORCPT
+        id S1355419AbiELOhI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
+        Thu, 12 May 2022 10:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236997AbiELOgu (ORCPT
+        with ESMTP id S1355416AbiELOhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:36:50 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5379549F29;
-        Thu, 12 May 2022 07:36:49 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id bo5so4974282pfb.4;
-        Thu, 12 May 2022 07:36:49 -0700 (PDT)
+        Thu, 12 May 2022 10:37:05 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE244F9F6
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:37:03 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id p189so3156285wmp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:37:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:from:content-transfer-encoding;
-        bh=vBCXkB1qSkIS16SbYowUF9XTh+lgeGc7WrxqFAqEQoI=;
-        b=eBimJOVi0jjQ+6pApezhKgthZsHwrX7D9plBjpPTiXj/EUp0KISAnLqaLVa/XsQzPp
-         4YQR0iUuMEGkifs4cR3ISAlXK26e3rdWYoyiqJ5626WmXqV/SUp6+FYgfQfkaxhclqYD
-         4pSyHHwkasI1X2uoRuDphQdXJwz1YbMQj61PqIzFwea02bPZ3JXbKXv6PTqOv30D/4en
-         iaRgVeC0sDAkpxrGjZwETPuZgi4tWTxCMkZhnak85iM1WizhLU7Gp5cGRQOvmL1q0eIY
-         eoxugRVI+yOoeuq8xArZLF+1zjjv2o24r6gcC5MBApFYZrsdCZRz5XIWcnjdvo0RB8Yl
-         nloQ==
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=398I+siT7kQxb7ToNmEqTjbhjJR5QW8v3WeVYoiUi18=;
+        b=LjM9msCI8O9qV0jOlCLZIr4ytuS+FR/3n43jLMsVo6PsQfVwpZsbw3B2V8ZpJ47Nic
+         Eacg4BKu6Wa1rXQD1r3Mc97pOu3Ti1D0yEO/6Px7fTkJgvkB9gAi0/KpU+GA712t3QQJ
+         ZBBb38aG1PSrTDrNxFJz+O9ms82rglnLBRI+GIiTawGOvMdqbhI9dORb+nopzg6YFzFi
+         MLNtWkx3pefZSGxM0KOTvwUZfUNIIDuh5WCCCOCFmzS9eAj5ay2IjoVUY1prDQh+kJFl
+         Y6oGRfYJ4L9c1+S8SIEySVeE80AEDd/YIV7UNAtSg8Xw0mqk41LKzbfvtKH+xKavsaO0
+         t1ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:from:content-transfer-encoding;
-        bh=vBCXkB1qSkIS16SbYowUF9XTh+lgeGc7WrxqFAqEQoI=;
-        b=IrLfUpr8l+KIgRuhU6sdRkJzQi4thugCRChRwR0T9NHtHqf228VmCOcI8inbExyNEj
-         7C4AWJwTEq0sNOuybLKZbTV2a7HPtAeszL4CqWdKxKLRhIxPzvB94AKi8u0V00LMYtvM
-         AzErfNYBrgKDrhCmn+Qwra2G5DQsKLzS3O2khnxKs1+9uZqcffOA+osfgjsUUIw9DqQy
-         wRPPpU0QpOiYiclt1N4CkNlSQ7/Qhx+OZQWJTAekkzeUznNz/clvJVegHSMGOyJpTvFW
-         5o4YFo0bgRJ1Z60kPOjkAq/A4uGKPyW1GsPcnFhyokxoz57ncW9SVJ6CFrOC9lUiD6xK
-         36DA==
-X-Gm-Message-State: AOAM533IW+1CpASUcU23vp5nhflSmW87z4iNNzjwd1KmqNQILYdqppvG
-        ye2CaiRArND7gXQ+fKOBzW+n7Yw9lkIkmQ==
-X-Google-Smtp-Source: ABdhPJxG5hF3kDe8iW+C+xsOfGGd5qLYzePD4+p24NcnZ2gfawl52ThXEi7FlM7pl2q3JeqAMBC7sw==
-X-Received: by 2002:a63:c057:0:b0:3db:2558:3ea with SMTP id z23-20020a63c057000000b003db255803eamr35829pgi.222.1652366208755;
-        Thu, 12 May 2022 07:36:48 -0700 (PDT)
-Received: from [192.168.0.107] ([103.249.234.205])
-        by smtp.gmail.com with ESMTPSA id a78-20020a621a51000000b0050dc76281easm3876334pfa.196.2022.05.12.07.36.46
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=398I+siT7kQxb7ToNmEqTjbhjJR5QW8v3WeVYoiUi18=;
+        b=DM/2W30nKa7EFAaMnynTrh8Eo5/Eyn4ReySoJu4xIzvVPKc5aHCJvDY3IcNPNHJu1j
+         siq7qE0+/ZRLCknLEQ2dsNMdrVLcRmZs0+UxoX9ynyKNmh7Jl/k+ellayW7xztDIiT/k
+         cwHGDOnLKQ6h42EZ5YltddfqTWs8hSl1HMWI694oJYoSb6kXE5p1lqmQlgs/Nl4J4S+a
+         cyxROcVC374YoYxwMCEXZZBhstC6utiSous1QcWFpSGuqZCSAcf6YF/pGVQJ7uwA4LDI
+         KC/kCyv8qVIck9FP1gCFHiibdAyQOh+qFCBCmWvp4VkXRnJ0N8bp9xQrg88GG+x9REmK
+         Uk4Q==
+X-Gm-Message-State: AOAM530ewBfGWDkTVO0BC9J8a3NdwxdFWXpVcuwi880EHsRhsQBmPYml
+        OX8VTaaGir+m/7YJ0MAIiHO6uQ==
+X-Google-Smtp-Source: ABdhPJyUyJvCmAGVIMf+AcMLEvqljsZojjnbmhouIwgq3Hc8CFxYnzi0slqW3aVLUOyCHPslUzwg6w==
+X-Received: by 2002:a05:600c:a4b:b0:37b:ea2b:5583 with SMTP id c11-20020a05600c0a4b00b0037bea2b5583mr10654441wmq.139.1652366222624;
+        Thu, 12 May 2022 07:37:02 -0700 (PDT)
+Received: from [192.168.0.161] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b11-20020adff24b000000b0020adc114136sm5525903wrp.0.2022.05.12.07.37.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 07:36:48 -0700 (PDT)
-Message-ID: <4e6187a4-d0f8-4750-e407-e09cc1c91789@gmail.com>
-Date:   Thu, 12 May 2022 20:06:45 +0530
+        Thu, 12 May 2022 07:37:02 -0700 (PDT)
+Message-ID: <4c35f605-4fa0-13d0-db09-229f718c5c7c@linaro.org>
+Date:   Thu, 12 May 2022 16:37:00 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: [PATCH] spi: Doc fix - Describe add_lock and dma_map_dev in
- spi_controller
+Subject: Re: [PATCH 9/9] arm64: dts: qcom: msm8953: Add remote processor nodes
 Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Shuah Khan (Linux)" <skhan@linuxfoundation.org>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-From:   Siddh Raman Pant <siddhpant.gh@gmail.com>
+To:     Sireesh Kodali <sireeshkodali1@gmail.com>,
+        linux-remoteproc@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+References: <20220511161602.117772-1-sireeshkodali1@gmail.com>
+ <20220511161602.117772-10-sireeshkodali1@gmail.com>
+ <2d68e610-e8ae-9e08-257a-3c94c3697334@linaro.org>
+ <CJXO6ZMZ454X.M3N9HDKNA5HB@skynet-linux>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CJXO6ZMZ454X.M3N9HDKNA5HB@skynet-linux>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This fixes the corresponding warnings during building the docs.
+On 12/05/2022 11:19, Sireesh Kodali wrote:
+> On Wed May 11, 2022 at 11:25 PM IST, Krzysztof Kozlowski wrote:
+>> On 11/05/2022 18:16, Sireesh Kodali wrote:
+>>> This commit adds the modem (q6v5_mss), WiFi (wcnss-pil) and audio DSP
+>>> (q6v5_pas) remote processor nodes for the MSM8953 platform. It also adds
+>>> the coresponding SMP2P, SMSM and pinctrl nodes that are needed by these
+>>> remote processors.
+>>>
+>>> Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+>>> +			};
+>>> +
+>>> +			wcnss_sleep: wcnss-sleep-pins {
+>>> +				wcss_wlan2 {
+>>
+>> No underscores in node names, unless something needs it?
+>>
+> 
+> wcnss_sleep is used by the pronto node defined below
 
-Signed-off-by: Siddh Raman Pant <siddhpant.gh@gmail.com>
----
- include/linux/spi/spi.h | 2 ++
- 1 file changed, 2 insertions(+)
+wcnss_sleep is not a node name and it is not in the line where I commented.
 
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index f0177f9b6..d361ba262 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -349,6 +349,7 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
-  * @max_message_size: function that returns the max message size for
-  *	a &spi_device; may be %NULL, so the default %SIZE_MAX will be used.
-  * @io_mutex: mutex for physical bus access
-+ * @add_lock: mutex to avoid adding devices to the same chipselect
-  * @bus_lock_spinlock: spinlock for SPI bus locking
-  * @bus_lock_mutex: mutex for exclusion of multiple callers
-  * @bus_lock_flag: indicates that the SPI bus is locked for exclusive use
-@@ -363,6 +364,7 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
-  * @transfer: adds a message to the controller's transfer queue.
-  * @cleanup: frees controller-specific state
-  * @can_dma: determine whether this controller supports DMA
-+ * @dma_map_dev: device which can be used for DMA mapping
-  * @queued: whether this controller is providing an internal message queue
-  * @kworker: pointer to thread struct for message pump
-  * @pump_messages: work struct for scheduling work to the message pump
--- 
-2.35.1
+Best regards,
+Krzysztof
