@@ -2,86 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7791BC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 02:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 02:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237206AbiELCIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 22:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47702 "EHLO
+        id S234973AbiELCIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 22:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234973AbiELCIA (ORCPT
+        with ESMTP id S237383AbiELCIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 22:08:00 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC476D38C;
-        Wed, 11 May 2022 19:07:58 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24C27abX015835
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 22:07:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1652321259; bh=N0RrHZICQeD+jMKffmiVOPCX1VOHVXkmF2unBxL2MJo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=ICSnAYgUceKKXsBKoRVPVEIQKsCW0KTrDhONUN31qeHKplZYIzPxqs8r+P+6YnX6x
-         abGDraN6I6t1+6cpTxV+pX/G3fEwMzr4yTmbUKBr0T0taRo1DJimXKf5Gg79Ohpl3X
-         JpMubQ0WlA6eF0LKDzQNgnOqe3puzHfHVqCXvtBW3+YG7uyHfHolbIovUtrn+rdOwy
-         JRr9Qa2HfVEUQ+aQ+EAp9AyaK7SPZhtHVsCbScLn15PNFhEYvE1xXltNl0sfjvJCFF
-         uoPI6+2MP/NnYrl1D9pLkyRIkK7Nn5W9/l5pldeyIP7y4GsgumtbbEERrnA1b/cRhh
-         9OGVUNr2s3ldg==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 0BBB915C3F2A; Wed, 11 May 2022 22:07:36 -0400 (EDT)
-Date:   Wed, 11 May 2022 22:07:36 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-Subject: Re: [GIT PULL] virtio: last minute fixup
-Message-ID: <Ynxr6JNczWFTwxVw@mit.edu>
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
- <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
- <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
- <20220511125140.ormw47yluv4btiey@meerkat.local>
- <87a6bo89w4.fsf@mpe.ellerman.id.au>
- <20220511163116.fpw2lvrkjbxmiesz@meerkat.local>
+        Wed, 11 May 2022 22:08:17 -0400
+Received: from esa4.hc1455-7.c3s2.iphmx.com (esa4.hc1455-7.c3s2.iphmx.com [68.232.139.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80846D85E
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 19:08:15 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="72336034"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647270000"; 
+   d="scan'208";a="72336034"
+Received: from unknown (HELO yto-r4.gw.nic.fujitsu.com) ([218.44.52.220])
+  by esa4.hc1455-7.c3s2.iphmx.com with ESMTP; 12 May 2022 11:08:13 +0900
+Received: from yto-m2.gw.nic.fujitsu.com (yto-nat-yto-m2.gw.nic.fujitsu.com [192.168.83.65])
+        by yto-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 7B5E0D3EB0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:08:12 +0900 (JST)
+Received: from m3002.s.css.fujitsu.com (msm3.b.css.fujitsu.com [10.128.233.104])
+        by yto-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id AF517F28A1
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:08:11 +0900 (JST)
+Received: from localhost.localdomain (unknown [10.125.5.220])
+        by m3002.s.css.fujitsu.com (Postfix) with ESMTP id 7629E200B383;
+        Thu, 12 May 2022 11:08:11 +0900 (JST)
+From:   Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+To:     linmiaohe@huawei.com
+Cc:     akpm@linux-foundation.org, aquini@redhat.com, ddutile@redhat.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        mgorman@techsingularity.net, vvghjk1234@gmail.com,
+        yamamoto.rei@jp.fujitsu.com
+Subject: Re: [PATCH] mm, compaction: fast_find_migrateblock() should return pfn in the target zone
+Date:   Thu, 12 May 2022 10:47:36 +0900
+Message-Id: <20220512014736.16376-1-yamamoto.rei@jp.fujitsu.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <07e0ceb8-a637-b011-bbf6-ba760a0b12e4@huawei.com>
+References: <07e0ceb8-a637-b011-bbf6-ba760a0b12e4@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511163116.fpw2lvrkjbxmiesz@meerkat.local>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 12:31:16PM -0400, Konstantin Ryabitsev wrote:
-> > But my mailer, editor and terminal don't know what to do with a Message-Id.
-> > 
-> > Whereas they can all open an https link.
-> > 
-> > Making people paste message ids into lore to see the original submission
-> > is not a win. People make enough fun of us already for still using email
-> > to submit patches, let's not make their job any easier :)
-> 
-> Okay, I'm fine with using a dedicated trailer for this purpose, perhaps an
-> "Archived-At"? That's a real header that was proposed by IETF for similar
-> purposes. E.g.:
-> 
->     Archived-at: https://lore.kernel.org/r/CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com
+On Wed, 11 May 2022 17:26:16 Miaohe Lin wrote:
+> On 2022/5/11 15:07, Rei Yamamoto wrote:
+>> On Wed, 11 May 2022 14:25:34 Miaohe Lin wrote:
+>>> On 2022/5/11 12:43, Rei Yamamoto wrote:
+>>>> Prevent returning a pfn outside the target zone in case that not
+>>>> aligned with pageblock boundary.
+>>>> Otherwise isolate_migratepages_block() would handle pages not in
+>>>> the target zone.
+>>>>
+>>>
+>>> IIUC, the sole caller isolate_migratepages will ensure the pfn won't outside
+>>> the target zone. So the below code change might not be necessary. Or am I miss
+>>> something ?
+>> 
+>> While block_start_pfn is ensured, this variable is not used as the argument for 
+>> isolate_migratepages_block():
+>>   -----
+>>   static isolate_migrate_t isolate_migratepages(struct compact_control *cc)
+>>   {
+>>   :
+>>           low_pfn = fast_find_migrateblock(cc);
+>>           block_start_pfn = pageblock_start_pfn(low_pfn);
+>>           if (block_start_pfn < cc->zone->zone_start_pfn)
+>>                   block_start_pfn = cc->zone->zone_start_pfn;  <--- block_start_pfn is ensured not outside 
+>>                                                                     the target zone
+>>   :
+>>           block_end_pfn = pageblock_end_pfn(low_pfn);
+>>   :
+>>           for (; block_end_pfn <= cc->free_pfn;
+>>                           fast_find_block = false,
+>>                           cc->migrate_pfn = low_pfn = block_end_pfn,
+>>                           block_start_pfn = block_end_pfn,
+>>                           block_end_pfn += pageblock_nr_pages) {
+>>   :
+>>                   if (isolate_migratepages_block(cc, low_pfn, block_end_pfn,  <--- low_pfn is passed as 
+>>                                                                                    the argument
 >
+> Sorry, I think you're right. And could you please add the runtime effect of this issue?
+>
+> Anyway, this patch looks good to me now. Thanks!
 
-I'd suggest is "Patch-Link".  Then we can also have "Bug-Link:",
-"Test-Link:", etc.
+Thank you for your review.
+The runtime effect is that compaction become unintended behavior.
+For example, pages not in the target zone are added to cc->migratepages list in isolate_migratepages_block().
+As a result, pages migrate between nodes unintentionally.
 
-"Patch-Link" is a tad bit shorter "Archived-at", and ultimately, it's
-not actually not the patch which is being archived.  It's the fact
-that it's a pointer to the patch review which is of most interest.
-
-					- Ted
+Thanks,
+Rei
