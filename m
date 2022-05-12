@@ -2,108 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B36AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85CF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351513AbiELIjs (ORCPT
+        id S1351544AbiELIlX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+        Thu, 12 May 2022 04:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240447AbiELIjo (ORCPT
+        with ESMTP id S1351556AbiELIlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:39:44 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AA126108;
-        Thu, 12 May 2022 01:39:43 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id q23so6214996wra.1;
-        Thu, 12 May 2022 01:39:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PCs+Ktha+vtmFq4XrExb1Mfp7UobjBZfKORd/6xUEnQ=;
-        b=iH0GrPY8XRZBVfl7obokvqEguSGfgHDNW8WAl7iOB+g/Tlurte7GKIvSy3OEiTVO04
-         eeh/9EJnTUt6gzmU0bJjxim8YpzFs4XRKTC8P/aVgEsfaam05KCZbdiKxj29+g1xkBf2
-         UswmbtAGRTFvqTtmGRyBTdOYcZ91J6QPLUDDL9SOMpFlBJobtcsSwimEIYKHDMDu7YNx
-         1BVEe5l3GsRKpiGKl6dB3pC9DEHDcu+83r0s6ZCjgVOR2/pWwazCqY3XbkZXfdcQz8RU
-         dWawCs8ihVRvFOIIN+xL2Nx6s/6O7CHzwkCSwJ30NXqCG6IpajUa2NASiP9w4dKNfVa3
-         GKXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PCs+Ktha+vtmFq4XrExb1Mfp7UobjBZfKORd/6xUEnQ=;
-        b=t2sofQsL+h0qfX2aL995CLH3Ot3hXpQZk3cvTslM2r9TcedqVezSbqd9Opa0GKCkdq
-         k/OSGvDRzc0nu5IMrp6cAPXkYtRoHxA/PCYqYygxQP4mzpl73nEoV1qwdgNrPYoJyxuq
-         6mRu4sGJscedyZkmtVQ0JjHg00YMukJynGi6Q06noiGDr35QP4IFLFbCsxwO67d4SLZD
-         XAg4WrHgoc5fVTscpIE8FihNR/BCUJEbxLTykqxaLz+Jcl2VvjIaRuMIWsBltomqFpcJ
-         /jHt0iCMEw3Gnzlve4GKCUYY0KpjZCWh1Z9noTLvKgSLbRRZ6MtZasQgPJyhi4ItXner
-         krNQ==
-X-Gm-Message-State: AOAM530a9+X1cI9LMeaux4/FZW7nld8IfbhLLCp7EtshR473yvr+L+R4
-        Yg7ZdiF2EXTSKa68xp8Hzu8=
-X-Google-Smtp-Source: ABdhPJy4QFCs5Y2zJviQsqFOIlBsNYoUoAruuqg+WA6gkEtBygBCD5Bsi3bVQffDIbA1Z2Vm9UAlEw==
-X-Received: by 2002:adf:f748:0:b0:20c:86d5:c343 with SMTP id z8-20020adff748000000b0020c86d5c343mr26423046wrp.477.1652344781737;
-        Thu, 12 May 2022 01:39:41 -0700 (PDT)
-Received: from [192.168.1.8] ([197.57.250.210])
-        by smtp.gmail.com with ESMTPSA id c1-20020a5d4cc1000000b0020c5253d8ccsm3584868wrt.24.2022.05.12.01.39.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 01:39:41 -0700 (PDT)
-Message-ID: <191b395a-996b-597e-4ee9-06722ac3c776@gmail.com>
-Date:   Thu, 12 May 2022 10:39:38 +0200
+        Thu, 12 May 2022 04:41:08 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C8031515;
+        Thu, 12 May 2022 01:41:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652344866; x=1683880866;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YB368LqUg4BrgfUK4oJ4xxCcsWnby6dXQHX9fMaGRUw=;
+  b=RtF2V6dNaCleVazNXT7kT5gHDjY2h7qy97MzFOjzRMoCV5K1FY8rts4t
+   PRm+o6D99spz+5RNIga01WAJzpqEKgLYLDAg2bGEEKXjdrfRUM8G0q1FM
+   OxCekgSrw5JlR5PHzF2N+CnTo98lNU6m9wQlgmuuZn4Jm9EVySMbeqYy/
+   Ravho2BF9o7UlEhlrRcU2N137zsVMS1H0jjLqpHl6LcDEeeRIy2sWzSky
+   hyj88jItqB5gWoeGogP20FHQ8hCDifz5ZBDJ932WDhrUZuDdHjDnFmtUV
+   OUrQ5DRB3rrJ+USItcgC5qkg/j0Vm8qbjqQEMX2aeihHxBLhyy1l0YF+Y
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="249831643"
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="249831643"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 01:41:05 -0700
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="542683032"
+Received: from embargo.jf.intel.com ([10.165.9.183])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 01:41:05 -0700
+From:   Yang Weijiang <weijiang.yang@intel.com>
+To:     pbonzini@redhat.com, likexu@tencent.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v2] KVM: selftests: x86: Fix test failure on arch lbr capable platforms
+Date:   Thu, 12 May 2022 04:40:46 -0400
+Message-Id: <20220512084046.105479-1-weijiang.yang@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next v6 2/2] net: vxlan: Add extack support to
- vxlan_fdb_delete
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, outreachy@lists.linux.dev,
-        roopa@nvidia.com, jdenham@redhat.com, sbrivio@redhat.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, pabeni@redhat.com, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        shshaikh@marvell.com, manishc@marvell.com, razor@blackwall.org,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, GR-Linux-NIC-Dev@marvell.com,
-        bridge@lists.linux-foundation.org
-References: <cover.1651762829.git.eng.alaamohamedsoliman.am@gmail.com>
- <ac4b6c650b6519cc56baa32ef20415460a5aa8ee.1651762830.git.eng.alaamohamedsoliman.am@gmail.com>
- <20220509154603.4a7b4243@kernel.org>
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-In-Reply-To: <20220509154603.4a7b4243@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Arch LBR capable platforms, LBR_FMT in perf capability msr is 0x3f,
+so the last format test will fail. Use a true invalid format(0x30) for
+the test if it's running on these platforms. Opportunistically change
+the file name to reflect the tests actually carried out.
 
-On ١٠‏/٥‏/٢٠٢٢ ٠٠:٤٦, Jakub Kicinski wrote:
-> On Thu,  5 May 2022 17:09:58 +0200 Alaa Mohamed wrote:
->> +			NL_SET_ERR_MSG(extack,
->> +						  "DST, VNI, ifindex and port are mutually exclusive with NH_ID");
-> This continuation line still does not align with the opening bracket.
-> Look here if your email client makes it hard to see:
->
-> https://lore.kernel.org/all/ac4b6c650b6519cc56baa32ef20415460a5aa8ee.1651762830.git.eng.alaamohamedsoliman.am@gmail.com/
->
-> Same story in patch 1:
->
->>   static int ocelot_port_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
->>   			       struct net_device *dev,
->> -			       const unsigned char *addr, u16 vid)
->> +			       const unsigned char *addr, u16 vid,
->> +				   struct netlink_ext_ack *extack)
-> and here:
->
->>   static int vxlan_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
->>   			    struct net_device *dev,
->> -			    const unsigned char *addr, u16 vid)
->> +			    const unsigned char *addr, u16 vid,
->> +				struct netlink_ext_ack *extack)
+v2:
+Select a true invalid format instead of skipping the test on arch lbr
+capable platforms.
 
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+---
+ tools/testing/selftests/kvm/Makefile           |  2 +-
+ ...vmx_pmu_msrs_test.c => vmx_pmu_caps_test.c} | 18 ++++++++++--------
+ 2 files changed, 11 insertions(+), 9 deletions(-)
+ rename tools/testing/selftests/kvm/x86_64/{vmx_pmu_msrs_test.c => vmx_pmu_caps_test.c} (83%)
 
-I will fix it, thanks.
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index 681b173aa87c..9a1a84803b01 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -81,7 +81,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/xapic_state_test
+ TEST_GEN_PROGS_x86_64 += x86_64/xss_msr_test
+ TEST_GEN_PROGS_x86_64 += x86_64/debug_regs
+ TEST_GEN_PROGS_x86_64 += x86_64/tsc_msrs_test
+-TEST_GEN_PROGS_x86_64 += x86_64/vmx_pmu_msrs_test
++TEST_GEN_PROGS_x86_64 += x86_64/vmx_pmu_caps_test
+ TEST_GEN_PROGS_x86_64 += x86_64/xen_shinfo_test
+ TEST_GEN_PROGS_x86_64 += x86_64/xen_vmcall_test
+ TEST_GEN_PROGS_x86_64 += x86_64/sev_migrate_tests
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_pmu_msrs_test.c b/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
+similarity index 83%
+rename from tools/testing/selftests/kvm/x86_64/vmx_pmu_msrs_test.c
+rename to tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
+index 2454a1f2ca0c..97b7fd4a9a3d 100644
+--- a/tools/testing/selftests/kvm/x86_64/vmx_pmu_msrs_test.c
++++ b/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
+@@ -1,15 +1,14 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /*
+- * VMX-pmu related msrs test
++ * Test for VMX-pmu perf capability msr
+  *
+  * Copyright (C) 2021 Intel Corporation
+  *
+- * Test to check the effect of various CPUID settings
+- * on the MSR_IA32_PERF_CAPABILITIES MSR, and check that
+- * whatever we write with KVM_SET_MSR is _not_ modified
+- * in the guest and test it can be retrieved with KVM_GET_MSR.
+- *
+- * Test to check that invalid LBR formats are rejected.
++ * Test to check the effect of various CPUID settings on
++ * MSR_IA32_PERF_CAPABILITIES MSR, and check that what
++ * we write with KVM_SET_MSR is _not_ modified by the guest
++ * and check it can be retrieved with KVM_GET_MSR, also test
++ * the invalid LBR formats are rejected.
+  */
+ 
+ #define _GNU_SOURCE /* for program_invocation_short_name */
+@@ -107,8 +106,11 @@ int main(int argc, char *argv[])
+ 	ASSERT_EQ(vcpu_get_msr(vm, VCPU_ID, MSR_IA32_PERF_CAPABILITIES), (u64)host_cap.lbr_format);
+ 
+ 	/* testcase 3, check invalid LBR format is rejected */
+-	ret = _vcpu_set_msr(vm, 0, MSR_IA32_PERF_CAPABILITIES, PMU_CAP_LBR_FMT);
++	/* Note, on Arch LBR capable platforms, LBR_FMT in perf capability msr is 0x3f,
++	 * to avoid the failure, use a true invalid format 0x30 for the test. */
++	ret = _vcpu_set_msr(vm, 0, MSR_IA32_PERF_CAPABILITIES, 0x30);
+ 	TEST_ASSERT(ret == 0, "Bad PERF_CAPABILITIES didn't fail.");
+ 
++	printf("Completed perf capability tests.\n");
+ 	kvm_vm_free(vm);
+ }
+
+base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+-- 
+2.27.0
 
