@@ -2,70 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C80C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349881AbiELBXo (ORCPT
+        id S1349907AbiELBZW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 21:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
+        Wed, 11 May 2022 21:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234242AbiELBXk (ORCPT
+        with ESMTP id S234242AbiELBZV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 21:23:40 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DD8EAD38
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:23:38 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KzDXb1pLjzfbH0;
-        Thu, 12 May 2022 09:22:23 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
- 2022 09:23:35 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <pierre-louis.bossart@linux.intel.com>, <lgirdwood@gmail.com>,
-        <ranjani.sridharan@linux.intel.com>,
-        <kai.vehmanen@linux.intel.com>, <daniel.baluta@nxp.com>,
-        <broonie@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
-        <sound-open-firmware@alsa-project.org>,
-        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
-Subject: [PATCH -next] ASoC: SOF: amd: add missing platform_device_unregister in acp_pci_rn_probe
-Date:   Thu, 12 May 2022 09:37:28 +0800
-Message-ID: <20220512013728.4128903-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 11 May 2022 21:25:21 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B50149171
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:25:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652318720; x=1683854720;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KAdCvO2a+1p4JnZfxOvuZ/9ABl5DPkTt0ZZjzHocw5A=;
+  b=gdWPTVd81/YPn38CGxMYt2Bp5C0K++5cNN5d7u7nQoO2NnMaOJc7VQ05
+   94bOG8SI7Kseaa+8q8651M8D4N5HCELgkWda7aENIcWIBZHvES1x5X9E+
+   frK3KifWEiygcWaK1jH26xD2D8PCxBN80fyxsoLA3thj0yBug2RCxONZg
+   SOQSDhv6WRl/Q+oa7KmUeLyanMSxGXsExHzpwfM6neFD97q0hdCG4c59f
+   AoTVlYccGL+5+DRQyNtoFiJd8pcuTHjiNNZ4fEgKFZd4cCRhYsuxu2OSQ
+   ueFOZx+sHhZUG96UgpZScMdlUz1cderMq27LK1QhOAlhmKKi1h9rvmi/G
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="249752016"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="249752016"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 18:25:20 -0700
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="739467249"
+Received: from mkmishra-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.36.168])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 18:25:19 -0700
+Date:   Wed, 11 May 2022 18:25:19 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V10 33/44] kmap: Make kmap work for devmap protected pages
+Message-ID: <Ynxh/5jewIuGwb5d@iweiny-desk3>
+References: <20220419170649.1022246-1-ira.weiny@intel.com>
+ <20220419170649.1022246-34-ira.weiny@intel.com>
+ <Ymq3yrQ3rmgnbX1o@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ymq3yrQ3rmgnbX1o@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-acp_pci_rn_probe misses a call platform_device_unregister in error path,
-this patch fixes that.
+On Thu, Apr 28, 2022 at 08:50:34AM -0700, Christoph Hellwig wrote:
+> On Tue, Apr 19, 2022 at 10:06:38AM -0700, ira.weiny@intel.com wrote:
+> > index a77be5630209..32ed07c2994b 100644
+> > --- a/include/linux/highmem-internal.h
+> > +++ b/include/linux/highmem-internal.h
+> > @@ -151,6 +151,8 @@ static inline void totalhigh_pages_add(long count)
+> >  
+> >  #else /* CONFIG_HIGHMEM */
+> >  
+> > +#include <linux/memremap.h>
+> 
+> Uuuh, I'd really prefer to avoid having to pull in memremap.h into
+> basically the whole kernel build.
+> 
 
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
- sound/soc/sof/amd/pci-rn.c | 1 +
- 1 file changed, 1 insertion(+)
+Fair enough.  What should I call a header to store the new pgmap_set_*() calls?
 
-diff --git a/sound/soc/sof/amd/pci-rn.c b/sound/soc/sof/amd/pci-rn.c
-index b8910bb7f27c..d5d9bcc2c997 100644
---- a/sound/soc/sof/amd/pci-rn.c
-+++ b/sound/soc/sof/amd/pci-rn.c
-@@ -101,6 +101,7 @@ static int acp_pci_rn_probe(struct pci_dev *pci, const struct pci_device_id *pci
- 	res = devm_kzalloc(&pci->dev, sizeof(struct resource) * ARRAY_SIZE(renoir_res), GFP_KERNEL);
- 	if (!res) {
- 		sof_pci_remove(pci);
-+		platform_device_unregister(dmic_dev);
- 		return -ENOMEM;
- 	}
+devmap_prot.h
 
---
-2.31.1
+?
 
+Or I could just add the calls into highmem-internal.h.  That might be more
+appropriate given the new direction of that interface.
+
+I think I'm leaning toward that vs adding another header.
+
+Ira
