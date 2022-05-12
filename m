@@ -2,155 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8866BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F47C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350858AbiELLYo (ORCPT
+        id S1353162AbiELLYu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 07:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
+        Thu, 12 May 2022 07:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353318AbiELLYd (ORCPT
+        with ESMTP id S1353389AbiELLY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 07:24:33 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34755F8C8
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:24:02 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id n10so4855061pjh.5
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:24:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MZUxzSSA16jHPMfnNIZTNFIVQ87TLhFgxWJeE4kOIcw=;
-        b=NVvHhWxDmgEveY5XgTLMjhIN/WeC0dzORtcZU3yCriRugu10mhKnK39HtzfAbTtN2o
-         iTVG1JQXh2n/X+jJAU4pj0uySBGDeX2s2D+lpkjOrWSfKfhn7Li5DghUPhuszF+nwR0F
-         VT2gwv11WrI1YC/ZgMVbvCXz/JjHJkQBVijSWSGx+f01HGzThnuMDodZg1Zy34ZxB8Vb
-         l/dz8CCbvhk1RsxOldgZRAxNnNZ9Y1JGkLSnSWPcwhvU8TWBNiL05dTLFK1VgEpig6In
-         SkTeNFO2cYNJivVnR9WfdodW2GCkT4hEY/rBMOAeRJRIJlxkALKvur8dnFx7gAeqDsa5
-         XGCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MZUxzSSA16jHPMfnNIZTNFIVQ87TLhFgxWJeE4kOIcw=;
-        b=bg30KZNK+iCQnAaloSXs20rMzdeaajxC8dp55WLm2ZWqLoZicS9/qVqUjaY9GCmiXs
-         Yy/SSM7ZfkH0BAVysO4P5PZFhaOmLcY1gXyqxZJLtp+lFDnXf45gISudvqnv6/1FuzI7
-         yYDRgGk8tVsJ5wtJp8Dth6z6bGnOFVuVvNbCvfGdnx9ktkSR54efOcqGse7xdlUyzOvf
-         t4or5T/ODyhYMbv+z0t8gaQS/jKwoilX6a9Hud62KRjee7rAtq2DpEJX5NP/43nZPx9u
-         WGRyZnXCZJa3PD/j9HHm6gN9+IasHcgdyHUjtqY/ntCoRUnPhnNMDXTrGtew6eAfzusF
-         wARQ==
-X-Gm-Message-State: AOAM533XgijAb3zVIX82Ls46PXYTnRvE3epjX2wclRbKb0KnkHZAQ/9C
-        A+VqiKQZozKs01wvhnNkxobCoA==
-X-Google-Smtp-Source: ABdhPJyBo8Ppm/uMJMgFCgqLtFjWMfuMu1xs6L5wv/MOpVS/NoFV+EHTkKVoWQCFUfvxY8GXBnDZcw==
-X-Received: by 2002:a17:90a:4803:b0:1dc:b4c9:1958 with SMTP id a3-20020a17090a480300b001dcb4c91958mr10259315pjh.61.1652354642336;
-        Thu, 12 May 2022 04:24:02 -0700 (PDT)
-Received: from localhost ([139.177.225.250])
-        by smtp.gmail.com with ESMTPSA id 23-20020aa79157000000b0050dc76281cbsm3506108pfi.165.2022.05.12.04.24.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 04:24:01 -0700 (PDT)
-Date:   Thu, 12 May 2022 19:23:49 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        osalvador@suse.de, masahiroy@kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com
-Subject: Re: [PATCH v10 3/4] mm: hugetlb_vmemmap: use kstrtobool for
- hugetlb_vmemmap param parsing
-Message-ID: <YnzuRV4LLRNykDtO@FVFYT0MHHV2J.usts.net>
-References: <20220509062703.64249-1-songmuchun@bytedance.com>
- <20220509062703.64249-4-songmuchun@bytedance.com>
- <21aae898-d54d-cc4b-a11f-1bb7fddcfffa@redhat.com>
+        Thu, 12 May 2022 07:24:28 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D26246DB1
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:23:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652354601; x=1683890601;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=JzFCeH6/9PxY/SD8fyT3PicTWBDSHnH16ews2+Zyo+U=;
+  b=IbkkgqcmUi8KF2CxHIghUoHWhQxtKDzRz9wK75cdZcJIX7XHlrrgPqLQ
+   nt5fC6paR2oZIS7UbeCdwtZE1jZSRH5k8RmA3PLBX+Lm+pMl7kwyUjB7L
+   2vXgJptjEsS5vqeUdhiVDarJ6hLlV/n/3OVDh4Te4cZIlMT5brxlc2m7o
+   vxD+YHFDrYXINkeKVDXeNirZ6TWv0ustl4t3iUBBW1ACQ+EdaGcO2gD5O
+   K+0T9/qzv/5e1ueqVlnH6DCqAioBj9nCk2HcDnNYvr3FgMXmYkXtpJv6f
+   TYnOnOLQCULnBTIN2KFTzXprL4j7FRzXzK/4UAC58BLQxl4NnuZLGM2ny
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="295220048"
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="295220048"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 04:23:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="895755253"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 12 May 2022 04:23:19 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1np6uX-000KLT-Ik;
+        Thu, 12 May 2022 11:23:13 +0000
+Date:   Thu, 12 May 2022 19:23:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     kbuild-all@lists.01.org,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [cxl:preview 40/67] drivers/cxl/core/pci.c:137:21: error: implicit
+ declaration of function 'readq'; did you mean 'readl'?
+Message-ID: <202205121947.4e1h4uZF-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <21aae898-d54d-cc4b-a11f-1bb7fddcfffa@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 09:41:22AM +0200, David Hildenbrand wrote:
-> On 09.05.22 08:27, Muchun Song wrote:
-> > Use kstrtobool rather than open coding "on" and "off" parsing in
-> > mm/hugetlb_vmemmap.c,  which is more powerful to handle all kinds
-> > of parameters like 'Yy1Nn0' or [oO][NnFf] for "on" and "off".
-> > 
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-> > ---
-> >  Documentation/admin-guide/kernel-parameters.txt |  6 +++---
-> >  mm/hugetlb_vmemmap.c                            | 10 +++++-----
-> >  2 files changed, 8 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> > index 308da668bbb1..43b8385073ad 100644
-> > --- a/Documentation/admin-guide/kernel-parameters.txt
-> > +++ b/Documentation/admin-guide/kernel-parameters.txt
-> > @@ -1703,10 +1703,10 @@
-> >  			enabled.
-> >  			Allows heavy hugetlb users to free up some more
-> >  			memory (7 * PAGE_SIZE for each 2MB hugetlb page).
-> > -			Format: { on | off (default) }
-> > +			Format: { [oO][Nn]/Y/y/1 | [oO][Ff]/N/n/0 (default) }
-> 
-> Really? Can we make the syntax even harder to parse for human beings?! :)
-> 
-> Not to mention that it's partially wrong? What about "oFf" ? That would
-> have to be [oO][Ff][Ff]
-> 
-> Honestly, "on | off" is good enough. That "oN" and friends work is just
-> a "nice to have" IMHO. No need to over-complicate this description.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
+head:   9c642abd8b31d895f34186bd72b7360083b58492
+commit: e7ed4a0688738b1f47a6b500444942d4dfa1035d [40/67] cxl/pci: Move cxl_await_media_ready() to the core
+config: powerpc-buildonly-randconfig-r003-20220509 (https://download.01.org/0day-ci/archive/20220512/202205121947.4e1h4uZF-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=e7ed4a0688738b1f47a6b500444942d4dfa1035d
+        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
+        git fetch --no-tags cxl preview
+        git checkout e7ed4a0688738b1f47a6b500444942d4dfa1035d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/cxl/core/
 
-Got it. How about also telling users "on/1 | off/0"? Because 0 and
-1 are also widely used to disable/enable a knob.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> >  
-> > -			on:  enable the feature
-> > -			off: disable the feature
-> > +			[oO][Nn]/Y/y/1: enable the feature
-> > +			[oO][Ff]/N/n/0: disable the feature
-> >  
-> >  			Built with CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON=y,
-> >  			the default is on.
-> > diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-> > index 6254bb2d4ae5..cc4ec752ec16 100644
-> > --- a/mm/hugetlb_vmemmap.c
-> > +++ b/mm/hugetlb_vmemmap.c
-> > @@ -28,15 +28,15 @@ EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
-> >  
-> >  static int __init hugetlb_vmemmap_early_param(char *buf)
-> >  {
-> > -	if (!buf)
-> > +	bool enable;
-> > +
-> > +	if (kstrtobool(buf, &enable))
-> >  		return -EINVAL;
-> >  
-> > -	if (!strcmp(buf, "on"))
-> > +	if (enable)
-> >  		static_branch_enable(&hugetlb_optimize_vmemmap_key);
-> > -	else if (!strcmp(buf, "off"))
-> > -		static_branch_disable(&hugetlb_optimize_vmemmap_key);
-> >  	else
-> > -		return -EINVAL;
-> > +		static_branch_disable(&hugetlb_optimize_vmemmap_key);
-> >  
-> >  	return 0;
-> >  }
-> 
-> 
-> Apart from that
-> 
-> Acked-by: David Hildenbrand <david@redhat.com>
->
+All errors (new ones prefixed by >>):
 
-Thanks.
+   drivers/cxl/core/pci.c: In function 'cxl_await_media_ready':
+>> drivers/cxl/core/pci.c:137:21: error: implicit declaration of function 'readq'; did you mean 'readl'? [-Werror=implicit-function-declaration]
+     137 |         md_status = readq(cxlds->regs.memdev + CXLMDEV_STATUS_OFFSET);
+         |                     ^~~~~
+         |                     readl
+   cc1: some warnings being treated as errors
 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
-> 
-> 
+
+vim +137 drivers/cxl/core/pci.c
+
+   103	
+   104	/*
+   105	 * Wait up to @media_ready_timeout for the device to report memory
+   106	 * active.
+   107	 */
+   108	int cxl_await_media_ready(struct cxl_dev_state *cxlds)
+   109	{
+   110		struct pci_dev *pdev = to_pci_dev(cxlds->dev);
+   111		int d = cxlds->cxl_dvsec;
+   112		bool active = false;
+   113		u64 md_status;
+   114		int rc, i;
+   115	
+   116		for (i = media_ready_timeout; i; i--) {
+   117			u32 temp;
+   118	
+   119			rc = pci_read_config_dword(
+   120				pdev, d + CXL_DVSEC_RANGE_SIZE_LOW(0), &temp);
+   121			if (rc)
+   122				return rc;
+   123	
+   124			active = FIELD_GET(CXL_DVSEC_MEM_ACTIVE, temp);
+   125			if (active)
+   126				break;
+   127			msleep(1000);
+   128		}
+   129	
+   130		if (!active) {
+   131			dev_err(&pdev->dev,
+   132				"timeout awaiting memory active after %d seconds\n",
+   133				media_ready_timeout);
+   134			return -ETIMEDOUT;
+   135		}
+   136	
+ > 137		md_status = readq(cxlds->regs.memdev + CXLMDEV_STATUS_OFFSET);
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
