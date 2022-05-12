@@ -2,86 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2918C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 23:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD9EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 23:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359427AbiELXXU (ORCPT
+        id S1359436AbiELXXm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 19:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
+        Thu, 12 May 2022 19:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351389AbiELXXR (ORCPT
+        with ESMTP id S1359444AbiELXXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 19:23:17 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088E512699C
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 16:23:16 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id s18-20020a056830149200b006063fef3e17so3803228otq.12
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 16:23:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DdarBLYiMi2x7VgSAd/PCBnk6aZfFSV1j4amo34R1lo=;
-        b=apzVBSTvVnFdVTUoPIDKPGqyCmAjRvkf6rI3Tktq7k7wvOuqA+G57qzpEtiK76kJmf
-         LUfv77v/SDogQR8NwrwveKgXXJpK7D0bcaC5ELR0Er6I1I+oVXefpFegbV9MdH63NtrY
-         d0AzRSpIqHI/VYzyuba4+NehsoFz6Q8QQGZLz4xBEBBgunNH75/CQBqk/gnedfzNSJmm
-         wC6X3AtnEhrMqeMt4kQPSUJVdlZdwmzk5x0RZ/g1Nk4iVLMeEcA3mKSaAE0DiML+G0EG
-         TBJ9BA1BCYReA9MHPJlqM4wSoQ2Nt072zGgOT7b/M8eqTe50EC8CB1bwLeI0NnEgLzcF
-         eoIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DdarBLYiMi2x7VgSAd/PCBnk6aZfFSV1j4amo34R1lo=;
-        b=W31fkQLLTpRVE40qMuN5ZPwX+/qQlBAFnPUYwWlTbNcsemfX1sHeUVVBQO5RxyNJTo
-         kQd1c9jiVQWmVS69mML6upHIy6hpuf6vhBBTwEZ51/PYCNzDSM4CIX1THZZMZ8wb6oQd
-         Ktp33zpUyEJPlpLI9rMuBKMfydAztJug6/UIi3rdh9/ERHFKYxz8+bLX9sz1UFzkIH1r
-         ms+0qdrpOJ542je2MJDFjYlO7kmkym3o+c1Z+VeB383uZnG5TjUBk+QblfHuNJUC+V5Y
-         q3I7hD7X96ViAJxxRzpF2uv9zvwRQCRYS8mRpR5YakwI8JL+ztQJWovuWJ/O/nOynmH7
-         4J6g==
-X-Gm-Message-State: AOAM533qWXBo7I0mbD/Q4N7fIyQ6eRR1JuQt6HGfEnV1Q+Tiea/yMunZ
-        3L9j9ZaouifnWQ6npQRvBv0LmSwekmQHXL2nCZY1pQ==
-X-Google-Smtp-Source: ABdhPJxR83dsw2D24e4NsRpwGRgwD6lMR3f1zsIUpSEV4D3/p9QeXVVifJHVHC3rS+x5S68Pt26SfdlwVssdYLtQ/N8=
-X-Received: by 2002:a05:6830:1c65:b0:606:3cc:862 with SMTP id
- s5-20020a0568301c6500b0060603cc0862mr875905otg.75.1652397795090; Thu, 12 May
- 2022 16:23:15 -0700 (PDT)
+        Thu, 12 May 2022 19:23:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D16E1D6750;
+        Thu, 12 May 2022 16:23:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B09960F5D;
+        Thu, 12 May 2022 23:23:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A167C385B8;
+        Thu, 12 May 2022 23:23:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652397816;
+        bh=1+VKeKmeev1IPlg54X6Ohnlzj3mt4SWjDIWp2UZ8ZYo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FA1sjBTUgB8e/ET0IAKIpJMhlUsNa7YIlaMA9o/UTKyLGHBzs1HgM7rwapg4zRl+n
+         vkcB7Kokd0u7vw+rHli0ndid/ODTu7B0wRs5x/31yvfqvaV5KmJGe/14blXoWCy36g
+         cQCGJdYU/CFaXbbseoWbqZSUOAMLQPKUXOwoPwSD7vCyvucQp4AKJjdnhG8dEcD4Vj
+         5sIZWaPI0RLOrSDPDP+eAaibaYHEzRvbjyKttowFfYtaXZsS/qRjMp+kmryeb4maGn
+         ZEc2swUI4xU8iq7RQ/DqZGczO8GKTQ6tBw8bIsDU7OSvHPE2NGjYxlle3DMO88Wse+
+         WEC0OoIyi2ibw==
+Date:   Thu, 12 May 2022 16:23:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Rolf Eike Beer <eike-kernel@sf-tec.de>
+Cc:     linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        netdev@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        davem@davemloft.net, edumazet@google.com
+Subject: Re: [PATCH] net: tulip: convert to devres
+Message-ID: <20220512162334.6e669feb@kernel.org>
+In-Reply-To: <2240900.ElGaqSPkdT@daneel.sf-tec.de>
+References: <2240900.ElGaqSPkdT@daneel.sf-tec.de>
 MIME-Version: 1.0
-References: <20220512222716.4112548-1-seanjc@google.com> <20220512222716.4112548-3-seanjc@google.com>
-In-Reply-To: <20220512222716.4112548-3-seanjc@google.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Thu, 12 May 2022 16:23:04 -0700
-Message-ID: <CALMp9eTRw+AsN5u73bDzOJ_Pzvh-tLFsg7Zzm0viB_EQcFrvnA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] KVM: x86: Use explicit case-statements for MCx banks
- in {g,s}et_msr_mce()
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jue Wang <juew@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 3:27 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> Use an explicit case statement to grab the full range of MCx bank MSRs
-> in {g,s}et_msr_mce(), and manually check only the "end" (the number of
-> banks configured by userspace may be less than the max).  The "default"
-> trick works, but is a bit odd now, and will be quite odd if/when support
-> for accessing MCx_CTL2 MSRs is added, which has near identical logic.
->
-> Hoist "offset" to function scope so as to avoid curly braces for the case
-> statement, and because MCx_CTL2 support will need the same variables.
->
-> Opportunstically clean up the comment about allowing bit 10 to be cleared
-> from bank 4.
->
-> No functional change intended.
->
-> Cc: Jue Wang <juew@google.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
-Reviewed-by: Jim Mattson <jmattson@google.com>
+On Wed, 11 May 2022 23:57:30 +0200 Rolf Eike Beer wrote:
+> Works fine on my HP C3600:
+> 
+> [  274.452394] tulip0: no phy info, aborting mtable build
+> [  274.499041] tulip0:  MII transceiver #1 config 1000 status 782d advertising 01e1
+> [  274.750691] net eth0: Digital DS21142/43 Tulip rev 65 at MMIO 0xf4008000, 00:30:6e:08:7d:21, IRQ 17
+> [  283.104520] net eth0: Setting full-duplex based on MII#1 link partner capability of c1e1
+> 
+> Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
+
+Does not apply cleanly any more since the fix came in thru net.
+Please rebase / repost.
