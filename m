@@ -2,107 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D85C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D80C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351426AbiELIYa (ORCPT
+        id S1351429AbiELI1F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
+        Thu, 12 May 2022 04:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237176AbiELIY1 (ORCPT
+        with ESMTP id S237176AbiELI06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:24:27 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03326633B1;
-        Thu, 12 May 2022 01:24:26 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id q130so5543122ljb.5;
-        Thu, 12 May 2022 01:24:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Dp5RjKDsRorlt15Q842QS1oD3zaqmbFzxKTc/+h/+tQ=;
-        b=MneGklh48zNq8AAwN3ifgUtyhXr9lX5z/oy2m6O2tLieaDN9QE+UD3cbj/bsLZUqZa
-         DBg6dcCXwHX1uivRZQF8U3eNzSq1Rj0c01fLeNNE6Nt6My9U8l8UZamKDZ+5j4LeVNFL
-         OiAsbqlMfzpEro0I/bv5Jw/jg7gg4kWIK5B29d1fMMh4YmJJs+uPM/UWHy7L73jAnfL1
-         9tgx9SPSIM0cDU4qJuOmj71Hh8eq/jwMXe0wkcF1XIBSTCTa5SUjFewve6xDBBaIfT46
-         G14Xxr+ZfnSxKCISOaFW2d2eAEmTCO85yVFmSz0zsHKgDAjFKQtJ8y9BW7GPwXTy3EoJ
-         OGUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Dp5RjKDsRorlt15Q842QS1oD3zaqmbFzxKTc/+h/+tQ=;
-        b=nj7gP7bbvSfHbxFpHbrjfJcMpmC5YgWxj7FzN7hrCKqmPXjPZfQD61Jx0fdcDB0d7t
-         ArdJoOZVjikgn/FdIX3WFe1l8cUl6RBgn6zkSMylWA9NRMY8juPxN+XcnPJAPRWhfmsa
-         m8Q7f4oYg77s93TaNY4Ua8LV4iAX6nFJVRrHgyEXavYNmhfKJMYsL1vliBu8tf4x0t/w
-         eQccWhe1Ov7mk7P3nRIcmPQT/C8u8lCBxeHvgDRkthhcsh+jXTWXn/Kp3arsnmgbP9Rx
-         V9Osbx6KTOWiDIjW6dVrFKJVETYzxHaNBOhVfqGToRZB/eFCSWe/01bnOvbGmBSHv0rg
-         6lSA==
-X-Gm-Message-State: AOAM5316d9adEm34j631djJFYbtwOLtyNwqA3dgq4asGU/957hWBn14U
-        sZRCkWYcCkg2XOe0/UK5IiMq4n5UxGQ=
-X-Google-Smtp-Source: ABdhPJyWBOKLTrjc+R7ofT+rL175Kzj+uFEU5bmAzeiLls7z8qDKjLUGSKaVXf2V9tHgoktYGQFqgQ==
-X-Received: by 2002:a2e:bb8e:0:b0:250:76dd:3bd9 with SMTP id y14-20020a2ebb8e000000b0025076dd3bd9mr20340342lje.71.1652343863752;
-        Thu, 12 May 2022 01:24:23 -0700 (PDT)
-Received: from [192.168.1.103] ([31.173.83.174])
-        by smtp.gmail.com with ESMTPSA id u17-20020a05651206d100b00474018dfb76sm673110lff.157.2022.05.12.01.24.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 01:24:23 -0700 (PDT)
-Subject: Re: [PATCH v3 09/23] ata: libahci_platform: Sanity check the DT child
- nodes number
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
- <20220511231810.4928-10-Sergey.Semin@baikalelectronics.ru>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <42dfc76f-a9d9-8e63-874d-b7459cef326c@gmail.com>
-Date:   Thu, 12 May 2022 11:24:22 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Thu, 12 May 2022 04:26:58 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CEA70919;
+        Thu, 12 May 2022 01:26:56 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KzPyM29mXz4xLR;
+        Thu, 12 May 2022 18:26:51 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652344012;
+        bh=ezYpyKBBhFLLjyJM6tczei2LbXIhmGczbMevqER6udk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Yj9sLx2JoQbXp2jFooa1LXS2Oxg1GytqJJHF2Wl0Sxo7C8ZptBYLkUY5Kqlzbp8HO
+         KQ7Cz596VjQe3DxzsTCHFvFPRezBhS5vxMl6M1VXREadNkyhlm7TGKVIYFPoVQbtnN
+         vGqxWWBq29bfTF+Tfe45YKrimibwJiiF6z0NgrO6p37IGts7A9h2uPJGK+rqE0/dDa
+         RB5EeQczTNeqe4bL0r1dF3raPPuW7h/7WemKDvZ4rOb1DUUV0TJ7ZBOfx8ewLb5Xd7
+         RYVgXXWBx6LWzIK6nvJhy4+nUMjSM5u6VCs0O3XA9uyjXwjz7qM565tKwsEgy/M4aa
+         yVvvKrC7E5tjg==
+Date:   Thu, 12 May 2022 18:26:50 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        Yang Li <yang.lee@linux.alibaba.com>
+Subject: linux-next: manual merge of the mm tree with the folio tree
+Message-ID: <20220512182650.7d1a94c7@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20220511231810.4928-10-Sergey.Semin@baikalelectronics.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/heYDsmh6dhCMvkcDGvlpdP9";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/12/22 2:17 AM, Serge Semin wrote:
+--Sig_/heYDsmh6dhCMvkcDGvlpdP9
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> Having greater than (AHCI_MAX_PORTS = 32) ports detected isn't that
+Hi all,
 
-   Having greater than AHCI_MAX_PORTS (32) ports detected?
+Today's linux-next merge of the mm tree got a conflict in:
 
-> critical from the further AHCI-platform initialization point of view since
-> exceeding the ports upper limit will cause allocating more resources than
-> will be used afterwards. But detecting too many child DT-nodes doesn't
-> seem right since it's very unlikely to have it on an ordinary platform. In
-> accordance with the AHCI specification there can't be more than 32 ports
-> implemented at least due to having the CAP.NP field of 4 bits wide and the
+  fs/nilfs2/inode.c
 
-   It's 5 bits wide, actually...
+between commit:
 
-> PI register of dword size. Thus if such situation is found the DTB must
-> have been corrupted and the data read from it shouldn't be reliable. Let's
-> consider that as an erroneous situation and halt further resources
-> allocation.
-> 
-> Note it's logically more correct to have the nports set only after the
-> initialization value is checked for being sane. So while at it let's make
-> sure nports is assigned with a correct value.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+  f132ab7d3ab0 ("fs: Convert mpage_readpage to mpage_read_folio")
 
-[...]
+from the folio tree and commit:
 
-MBR, Sergey
+  e38ed506c42f ("nilfs2: Fix some kernel-doc comments")
+
+from the mm tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc fs/nilfs2/inode.c
+index 538ca5473b0d,6a00cf324cbd..000000000000
+--- a/fs/nilfs2/inode.c
++++ b/fs/nilfs2/inode.c
+@@@ -140,14 -140,14 +140,14 @@@ int nilfs_get_block(struct inode *inode
+  }
+ =20
+  /**
+ - * nilfs_readpage() - implement readpage() method of nilfs_aops {}
+ + * nilfs_read_folio() - implement read_folio() method of nilfs_aops {}
+   * address_space_operations.
+-  * @file - file struct of the file to be read
+-  * @folio - the folio to be read
++  * @file: file struct of the file to be read
+ - * @page: the page to be read
+++ * @folio: the folio to be read
+   */
+ -static int nilfs_readpage(struct file *file, struct page *page)
+ +static int nilfs_read_folio(struct file *file, struct folio *folio)
+  {
+ -	return mpage_readpage(page, nilfs_get_block);
+ +	return mpage_read_folio(folio, nilfs_get_block);
+  }
+ =20
+  static void nilfs_readahead(struct readahead_control *rac)
+
+--Sig_/heYDsmh6dhCMvkcDGvlpdP9
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ8xMoACgkQAVBC80lX
+0Gx6hggAlCZKb3CYe0EHnxg/AYS/i/aRkfSDLt0dsos3/bIcyloVI5mUy4AQOzoK
+xdX6N8AhkOAHtjwpq/2ZJMc349jaRjxdkptjWto6q4m351zCnxU5N+jZRc3BgElg
+dkYPQj8OpS9l1ipktLqYAZLw+AXcZivyolnJzJ+9Q93wQM+ltjPRgGZC5E13pKeS
+9l3EyEdxI3DexuNauyhgSlVgXJYRsifEjZKIb73RCTrQYgT0i9Tim5AVVzReowJh
+mmJyl3Et4Mhfm1nXsmGyZKf9Q65vFbiBWswvYehyKppAYFgdfyJVDKFwuzuS3pCu
+hOUj90rccGrbCftC107J8Qzfd3HSwA==
+=7gtm
+-----END PGP SIGNATURE-----
+
+--Sig_/heYDsmh6dhCMvkcDGvlpdP9--
