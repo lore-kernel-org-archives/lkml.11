@@ -2,136 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3A6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8070BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:16:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349822AbiELBPe (ORCPT
+        id S1349830AbiELBQ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 21:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
+        Wed, 11 May 2022 21:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349810AbiELBPc (ORCPT
+        with ESMTP id S1343712AbiELBQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 21:15:32 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA9976291
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:15:30 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id k126-20020a1ca184000000b003943fd07180so2131366wme.3
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:15:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y2A0EBKn71mKby0gJZVmQ9LYT/Q3ibTennNPxPhFKz4=;
-        b=BhsNfnjMuykg2rURTpjphNVbp0mbBupv+C7OqP7Vj4RURQ0i0JS2M2qvTXYveHfc9d
-         REq3DhhkgUB7dMO61c3hXm8NYbNFkFHOhMWjZqw5UFpRUm9Hvd6FV0aehpWYcuml7zeK
-         agQ7uygQ8AllM7IIHh+de0M7Cv+1Na5rTv0GCbqiMT02HwRhJk+HOXZBZXTvh5Y7zKY3
-         YW9W7+qVpS3VSfuD85xgCSXipgQBL1jkHeroBTmPMclUVY30U4NYPXnAZtOkjtFZEB3E
-         UgkT9ioKvvWRKBcTsbvPBLwo22PqFYXLdQBCU1N2irg4Aa8zDBbNt0+5oBMbk4RRZvrN
-         8yPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y2A0EBKn71mKby0gJZVmQ9LYT/Q3ibTennNPxPhFKz4=;
-        b=Ub83zTtm6OXPxqmNBqmn0Hy0EYVWNYiSO3GcCEv+QIF57BgKlcheXTN/C2Owu+CvS5
-         0fEeDSUkq+KD5L503phamuz2TZBYLig6UQeErvJljO3ycQiicBmnsnhoHDITxgzKC5Qh
-         yPavbsFGTdG92kfC5TwEqCliWJh+dc9dOMTIq0n9V4aci6E1dMWGGfSaI1IWqHSfeWAO
-         hI6lD7xh4F79V8ehrL5DmGfeGqTzppCExOAdNie16JhzTtUmpRHXUu+XyqVSZ3UcoXxZ
-         5dQ/Tqm5kAfJzvZwQIyLzqU/+IeK/1fXkEBTf61ij5B3wKgSgnFaA407ZehTnVw3tdqd
-         gaDg==
-X-Gm-Message-State: AOAM532fRtzCeeF/E9pokCbGgegqGuDQBdbzBJ8lut/9OkBB1pfbEJwG
-        XxmRqS6byy4QW6kQQKPJJCv6DbKQIC1kX/2Nn0KjJjn5qGjDxw==
-X-Google-Smtp-Source: ABdhPJy7UDUuVaNfoFpYjbdNMJfbbAZ8dx+pDby5a3aABdQb9g97tsYsKyiDviy1vULG5cN2+2xA9htqI5Kf602Ppt0=
-X-Received: by 2002:a1c:19c1:0:b0:393:a19f:8f95 with SMTP id
- 184-20020a1c19c1000000b00393a19f8f95mr7508353wmz.149.1652318128439; Wed, 11
- May 2022 18:15:28 -0700 (PDT)
+        Wed, 11 May 2022 21:16:24 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A4224969;
+        Wed, 11 May 2022 18:16:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652318183; x=1683854183;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PjnwnCvMOfrROyLyIiruOlckwW/nR8ozbPMZ/HEaMUk=;
+  b=B+V4rsi0p0Vghm9os1P9g36voYpMeU+xMuvye8zQKfa1MmgxAxgRzEBM
+   QvbAjm/uEp5+RS89pIKfeoiSvFwek1MofmUaZvLPPNMkeKbZMkD53BKXl
+   JpetGhPGSVY6Z6FGK3K7h9MywXlzjRxfn0zwdj7QIek85iiKXJwyve/fR
+   UepxPxzGRiMUX7cOWNCU92vXMa4TgyZ3Xis0EjQ79qVjR0eTfbc7yb8su
+   y82jD0rW/j0mCnzb8dsJEDAESyYfZgrP0+MAkP2ZBb2XVJY7gXSs/Hg6d
+   DrPuu7D/3+70usi6ev2+HSIc4YFwSJC9A+RrQQfgWl7/NZxNd2N+hVa93
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269986305"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="269986305"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 18:16:23 -0700
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="594415841"
+Received: from hezhu1-mobl1.ccr.corp.intel.com (HELO [10.255.29.168]) ([10.255.29.168])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 18:16:19 -0700
+Message-ID: <00a972f4-1fe2-2eb0-fcf5-d454f3b9dcc6@linux.intel.com>
+Date:   Thu, 12 May 2022 09:16:17 +0800
 MIME-Version: 1.0
-References: <20220511211526.1021908-1-irogers@google.com> <20220511211526.1021908-6-irogers@google.com>
- <96ad6825-7607-92ef-566c-3e7a54c397bb@linux.intel.com>
-In-Reply-To: <96ad6825-7607-92ef-566c-3e7a54c397bb@linux.intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 11 May 2022 18:15:13 -0700
-Message-ID: <CAP-5=fWRRZsyJZ-gky-FOFz79zW_3r78d_0APpj5sf66HqTpLw@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] perf jevents: Add python converter script
-To:     Andi Kleen <ak@linux.intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Felix Fietkau <nbd@nbd.name>, Qi Liu <liuqi115@huawei.com>,
-        Like Xu <likexu@tencent.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Nick Forrington <nick.forrington@arm.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>,
-        "Paul A . Clarke" <pc@us.ibm.com>, Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        ananth.narayan@amd.com, ravi.bangoria@amd.com,
-        santosh.shukla@amd.com, sandipan.das@amd.com,
-        Caleb Biggers <caleb.biggers@intel.com>,
-        Perry Taylor <perry.taylor@intel.com>,
-        Kshipra Bopardikar <kshipra.bopardikar@intel.com>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Cc:     baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        vkoul@kernel.org, robin.murphy@arm.com, will@kernel.org,
+        Yi Liu <yi.l.liu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>
+Subject: Re: [PATCH v3 1/4] iommu/vt-d: Implement domain ops for
+ attach_dev_pasid
+Content-Language: en-US
+To:     Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
+ <20220510210704.3539577-2-jacob.jun.pan@linux.intel.com>
+ <20220510232121.GP49344@nvidia.com> <20220510172309.3c4e7512@jacob-builder>
+ <20220511115427.GU49344@nvidia.com> <20220511082958.79d5d8ee@jacob-builder>
+ <20220511161237.GB49344@nvidia.com> <20220511100216.7615e288@jacob-builder>
+ <20220511170025.GF49344@nvidia.com> <20220511102521.6b7c578c@jacob-builder>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220511102521.6b7c578c@jacob-builder>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 2:47 PM Andi Kleen <ak@linux.intel.com> wrote:
->
->
-> On 5/11/2022 2:15 PM, Ian Rogers wrote:
-> > jevents.c is large, has a dependency on an old forked version of jsmn,
-> > and is challenging to work upon. A lot of jevents.c's complexity comes
-> > from needing to write json and csv parsing from first principles. In
-> > contrast python has this functionality in standard libraries and is
-> > already a build pre-requisite for tools like asciidoc (that builds all
-> > of the perf man pages).
->
->
-> Well I was still hoping at some point we could have run time loading of
-> events. But yes if that's not
->
-> happening then this probably the right approach.
+On 2022/5/12 01:25, Jacob Pan wrote:
+> Hi Jason,
+> 
+> On Wed, 11 May 2022 14:00:25 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+>> On Wed, May 11, 2022 at 10:02:16AM -0700, Jacob Pan wrote:
+>>>>> If not global, perhaps we could have a list of pasids (e.g. xarray)
+>>>>> attached to the device_domain_info. The TLB flush logic would just
+>>>>> go through the list w/o caring what the PASIDs are for. Does it
+>>>>> make sense to you?
+>>>>
+>>>> Sort of, but we shouldn't duplicate xarrays - the group already has
+>>>> this xarray - need to find some way to allow access to it from the
+>>>> driver.
+>>>>    
+>>> I am not following,  here are the PASIDs for devTLB flush which is per
+>>> device. Why group?
+>>
+>> Because group is where the core code stores it.
+> I see, with singleton group. I guess I can let dma-iommu code call
+> 
+> iommu_attach_dma_pasid {
+> 	iommu_attach_device_pasid();
+> Then the PASID will be stored in the group xa.
+> The flush code can retrieve PASIDs from device_domain_info.device -> group
+> -> pasid_array.
+> Thanks for pointing it out, I missed the new pasid_array.
+>>
+>>> We could retrieve PASIDs from the device PASID table but xa would be
+>>> more efficient.
+>>>    
+>>>>>>> Are you suggesting the dma-iommu API should be called
+>>>>>>> iommu_set_dma_pasid instead of iommu_attach_dma_pasid?
+>>>>>>
+>>>>>> No that API is Ok - the driver ops API should be 'set' not
+>>>>>> attach/detach
+>>>>> Sounds good, this operation has little in common with
+>>>>> domain_ops.dev_attach_pasid() used by SVA domain. So I will add a
+>>>>> new domain_ops.dev_set_pasid()
+>>>>
+>>>> What? No, their should only be one operation, 'dev_set_pasid' and it
+>>>> is exactly the same as the SVA operation. It configures things so that
+>>>> any existing translation on the PASID is removed and the PASID
+>>>> translates according to the given domain.
+>>>>
+>>>> SVA given domain or UNMANAGED given domain doesn't matter to the
+>>>> higher level code. The driver should implement per-domain ops as
+>>>> required to get the different behaviors.
+>>> Perhaps some code to clarify, we have
+>>> sva_domain_ops.dev_attach_pasid() = intel_svm_attach_dev_pasid;
+>>> default_domain_ops.dev_attach_pasid() = intel_iommu_attach_dev_pasid;
+>>
+>> Yes, keep that structure
+>>   
+>>> Consolidate pasid programming into dev_set_pasid() then called by both
+>>> intel_svm_attach_dev_pasid() and intel_iommu_attach_dev_pasid(), right?
+>>>   
+>>
+>> I was only suggesting that really dev_attach_pasid() op is misnamed,
+>> it should be called set_dev_pasid() and act like a set, not a paired
+>> attach/detach - same as the non-PASID ops.
+>>
+> Got it. Perhaps another patch to rename, Baolu?
 
-Thanks Andi, some thinking out loud below:
+Yes. I can rename it in my sva series if others are also happy with this
+naming.
 
-The perf tool already discovers events from sysfs, so could we have
-runtime loading by turning the sysfs mount point into a list of
-directories?
-
-I'm thinking that for consistency the jevents API inside of the perf
-code should look more like sysfs. There's then a question of how we
-resolve events, perhaps we can have a config value something like
-"sysfs,runtime=/home/me/my-events,jevents" where we treat the list as
-setting up something like a unionfs in the tool. So if you ask for
-instructions.retired, the tool would first check sysfs, then any
-runtime events specified sysfs like directories, then jevents (or a
-different order if you set a different config value). If the event is
-defined more than once for the same PMU then the ordering says which
-one has priority. If a PMU isn't specified for an event then we search
-all PMUs and for jevents you'd only see PMUs relevant to the cpuid(s).
-
-I'm hoping something like this will allow hybrid to work without all
-the "if...hybrid" code that's getting added, and with a behavior
-that's obvious and will allow us to debug errors. Maybe a runtime
-sysfs like directory implies too many files so we could make a json
-file to replace that directory, or use a zip file, etc. I'd prefer it
-if the mappings were as 1-to-1 as possible (ie have a new json format
-whose structure matches sysfs) and so I wouldn't like to use the
-current jevents.c code for it.
-
-Thanks,
-Ian
-
-> -Andi
->
->
+Best regards,
+baolu
