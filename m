@@ -2,97 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3374BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:44:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354562AbiELNo2 (ORCPT
+        id S1354570AbiELNoq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 09:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35140 "EHLO
+        Thu, 12 May 2022 09:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354431AbiELNoZ (ORCPT
+        with ESMTP id S1354574AbiELNoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 09:44:25 -0400
-X-Greylist: delayed 323 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 06:44:23 PDT
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B615DE40;
-        Thu, 12 May 2022 06:44:23 -0700 (PDT)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 12 May 2022 09:44:39 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C987248E36;
+        Thu, 12 May 2022 06:44:37 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4KzXtP5sJsz9scQ;
-        Thu, 12 May 2022 15:38:53 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mail.msdigital.de;
-        s=MBO0001; t=1652362736;
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C7E1B1EC06DA;
+        Thu, 12 May 2022 15:44:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1652363071;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6cZLIKwXMZcfNRh7YQ7kuTKx6Fg9bbjG5TtEQMO/3Gw=;
-        b=C80xKZemj5G1+Pde0EHQsE6YZp5IaJh+4smg1LGJbcUw/Ozpp0bJ/U7v+JCnZyvqtg+WxR
-        3/Go4zNo1VKPg7wG4SpIrLe1wUIoTVmPT8ZbxQXnrovKs009IiG/egd4qWZYmhGsyrhJ1L
-        Yz5mwHArOgzk/MnavelS5jp8R8ILGgQYWx8Eq40SlBkfcj4JXYKREF3lFNFm4h8cZWlsd1
-        nJCksm1UdPrNn6yKJVtW/HWqqzGJKIMA0dJlf2sLpL8Tx+HzWSInYMckhDsZ663+BizNOk
-        KnoSskY2cPjyi5JrBjdRx+2KsBKcUVyiqrzmC+kLY7U7sjwd1PIPGbHvMFlvAA==
-Message-ID: <dfaa54ab-1b03-7aec-5927-d52a4233e56a@msdigital.de>
-Date:   Thu, 12 May 2022 15:38:47 +0200
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=lPa7c9dHOHhN02kSSI97I/I6ysdJlQQ6rMlomVLCERk=;
+        b=YpiYrIZyQx5NoGQ+fa+ZGRYPALgsEYRnvYQzOR7kwTe7p+yMa7bBgvE5/SF71E+fdAB1Sk
+        jxMPlLLMyoMJthAGP4FvTQEc8uGEfIIOMoUmvBbXMOHt43tIxciJs1rGNhJE5/cIijH0p9
+        lAyx3JfL5RPHB/mtRr7Ir8IywoWI3bQ=
+Date:   Thu, 12 May 2022 15:44:33 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Jon Kohler <jon@nutanix.com>, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Balbir Singh <sblbir@amazon.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Waiman Long <longman@redhat.com>
+Subject: Re: [PATCH v3] x86/speculation, KVM: only IBPB for
+ switch_mm_always_ibpb on vCPU load
+Message-ID: <Yn0PQe48qczUMZoL@zn.tnic>
+References: <YmxRnwSUBIkOIjLA@zn.tnic>
+ <Ymxf2Jnmz5y4CHFN@google.com>
+ <YmxlHBsxcIy8uYaB@zn.tnic>
+ <YmxzdAbzJkvjXSAU@google.com>
+ <Ym0GcKhPZxkcMCYp@zn.tnic>
+ <4E46337F-79CB-4ADA-B8C0-009E7500EDF8@nutanix.com>
+ <Ym1fGZIs6K7T6h3n@zn.tnic>
+ <Ynp6ZoQUwtlWPI0Z@google.com>
+ <520D7CBE-55FA-4EB9-BC41-9E8D695334D1@nutanix.com>
+ <YnqJx/5hos0lKqI9@google.com>
 MIME-Version: 1.0
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Language: de-DE
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marian Postevca <posteuca@mutex.one>
-From:   Maximilian Senftleben <kernel@mail.msdigital.de>
-Subject: PROBLEM: No static MAC address for usb gadget ethernet via kernel
- parameter any more.
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YnqJx/5hos0lKqI9@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[1.] One line summary of the problem:
+On Tue, May 10, 2022 at 03:50:31PM +0000, Sean Christopherson wrote:
+> >     x86/speculation, KVM: remove IBPB on vCPU load
+> > 
+> >     Remove IBPB that is done on KVM vCPU load, as the guest-to-guest
+> >     attack surface is already covered by switch_mm_irqs_off() ->
+> >     cond_mitigation().
+> > 
+> >     The original 15d45071523d ("KVM/x86: Add IBPB support") was simply wrong in
+> >     its guest-to-guest design intention. There are three scenarios at play
+> >     here:
+> > 
+> >     1. If the vCPUs belong to the same VM, they are in the same security 
+> >     domain and do not need an IPBP.
+> >     2. If the vCPUs belong to different VMs, and each VM is in its own mm_struct,
+> >     switch_mm_irqs_off() will handle IBPB as an mm switch is guaranteed to
+> >     occur prior to loading a vCPU belonging to a different VMs.
+> >     3. If the vCPUs belong to different VMs, but multiple VMs share an mm_struct,
+> >     then the security benefits of an IBPB when switching vCPUs are dubious, 
+> >     at best.
+> > 
+> >     Issuing IBPB from KVM vCPU load would only cover #3, but there are no
+> 
+> Just to hedge, there are no _known_ use cases.
+> 
+> >     real world tangible use cases for such a configuration.
+> 
+> and I would further qualify this with:
+> 
+>       but there are no known real world, tangible use cases for running multiple
+>       VMs belonging to different security domains in a shared address space.
+> 
+> Running multiple VMs in a single address space is plausible and sane, _if_ they
+> are all in the same security domain or security is not a concern.  That way the
+> statement isn't invalidated if someone pops up with a use case for running multiple
+> VMs but has no security story.
+> 
+> Other than that, LGTM.
+> 
+> >     If multiple VMs
+> >     are sharing an mm_structs, prediction attacks are the least of their
+> >     security worries.
+> > 
+> >     Fixes: 15d45071523d ("KVM/x86: Add IBPB support")
+> >     (Reviewedby/signed of by people here)
+> >     (Code change simply whacks IBPB in KVM vmx/svm and thats it)
 
-No static MAC address for usb gadget ethernet via kernel boot parameter 
-any more.
+I agree with all that I've read so far - the only thing that's missing is:
 
-[2.] Full description of the problem/report:
+	(Documentation in Documentation/admin-guide/hw-vuln/spectre.rst about what the use
+	 cases are and what we're protecting against and what we're *not* protecting
+	 against because <raisins>).
 
-In 5.15. and before we were able to set a static MAC address for the usb 
-gadget ethernet connection using kernel parameters "g_ether.dev_addr" 
-and "g_ether.host_addr".
-Since 5.16. and more concrete after commit 
-890d5b40908bfd1a79be018d2d297cf9df60f4ee, this is no longer possible, 
-and a random MAC address is assigned.
-(Possible Regression)
+Thx.
 
-[3.] Keywords (i.e., modules, networking, kernel):
-usb, gadget, mac, g_ether
+-- 
+Regards/Gruss,
+    Boris.
 
-[4.] Kernel information
-[4.1.] Kernel version (from /proc/version):
-Linux version 5.17.4-141174-ge11818a6ec02 (ms@local) 
-(arm-v7a-linux-gnueabihf-gcc (OSELAS.Toolchain-2020.08.0 10-20200822) 
-10.2.1 20200822, GNU ld (GNU Binutils) 2.35) #14 SMP Thu May 12 13:51:50 
-CEST 2022
-[4.2.] Kernel .config file:
--
-
-[5.] Most recent kernel version which did not have the bug:
-5.15
-
-[6.] Output of Oops.. message (if applicable) with symbolic information 
-resolved (see Documentation/admin-guide/bug-hunting.rst)
--
-
-[7.] A small shell script or example program which triggers the problem 
-(if possible)
--
-
-[8.] Environment
--
-
-[9.] Other notes, patches, fixes, workarounds:
-
-In 5.17.4 reverting said commit 890d5b40908bfd1a79be018d2d297cf9df60f4ee 
-did resolve the issue for me.
-
+https://people.kernel.org/tglx/notes-about-netiquette
