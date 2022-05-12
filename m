@@ -2,108 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BEFFC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347533AbiELEhZ (ORCPT
+        id S1347622AbiELEh5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 00:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33984 "EHLO
+        Thu, 12 May 2022 00:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233429AbiELEhX (ORCPT
+        with ESMTP id S1347548AbiELEht (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 00:37:23 -0400
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0861126135;
-        Wed, 11 May 2022 21:37:21 -0700 (PDT)
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 24C4b545004064;
-        Thu, 12 May 2022 13:37:06 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 24C4b545004064
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652330226;
-        bh=tkmfQXshct+rM5sNv86ojAR4iOGgSUB8H7eo3J48fKg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UDf+KO+3kbwc37QIFSTV9bWAie+41gj2MeWrvLn98PFJeT68eleeY1AM7wSMxRyjU
-         pPRvHVuTnkFix5D9kRIO45SdX/nvQQK1u5W7hb+YlXwaIc0eeRvA9RwDQSylp1+Rw0
-         tSiITqUwWvLrx8H7s02aElsbROkTZEgun44WETgkYURxTeWPvY7S+12mOG+cdcCD7G
-         q5xMLcI5JElKBcX3fWFRmxP+H0bOsKaLY1zOYZ3TWa6HI+pXOIz+m8XJYQLmoHFdl1
-         lqNwhC1lG914gG/BmaAp50Ceg3Mk0V74KjqxzZzakr8LRAdYV/3YtH2W2wFjIN4Xeu
-         pZDKO9J8l2e7Q==
-X-Nifty-SrcIP: [209.85.216.51]
-Received: by mail-pj1-f51.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso3865616pjg.0;
-        Wed, 11 May 2022 21:37:06 -0700 (PDT)
-X-Gm-Message-State: AOAM5316uxQIGld6VZmgJkqr2jA820EYKMY4fmV4O6TMMr7NeQ4ohFYR
-        zgqVBTtSfXRFdYWZfQNFiHgzG2oU6HOm/VNVMs4=
-X-Google-Smtp-Source: ABdhPJzNzRosrbp98/vX8YbqZjlsEylacSahmJ3sX4Wd7I5BkGLdD5OHiq8O2NX6qWNfI9oi2eO8MzjRgcclDO8j9pE=
-X-Received: by 2002:a17:902:7891:b0:15e:cae9:7620 with SMTP id
- q17-20020a170902789100b0015ecae97620mr28744958pll.136.1652330225331; Wed, 11
- May 2022 21:37:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220508190631.2386038-1-masahiroy@kernel.org> <20220508190631.2386038-2-masahiroy@kernel.org>
-In-Reply-To: <20220508190631.2386038-2-masahiroy@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 12 May 2022 13:35:52 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT3+rZTzt1Ed-V_pjA8wEFEVj7Uxo8PTtEhdyzFcqqM+g@mail.gmail.com>
-Message-ID: <CAK7LNAT3+rZTzt1Ed-V_pjA8wEFEVj7Uxo8PTtEhdyzFcqqM+g@mail.gmail.com>
-Subject: Re: [PATCH v4 01/14] modpost: remove left-over cross_compile declaration
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
+        Thu, 12 May 2022 00:37:49 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A23286C0
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:37:48 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id x4-20020a1709028ec400b0015e84d42eaaso2146923plo.7
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:37:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=rc/b171eEbEHOcZ7/65TQW8GF+vL+OBn1WLQqFshNME=;
+        b=Dc8S7aaRKMlDer6zT72Yq6vWe2t3Mq53+blU/I4gv0bMRmn+5rx/JqZmKkcleUXrKz
+         R38rBX7mdy/ho+yWIPY/2vqvH/geclVvPd3FleGn2jf79tXm5aPpOBiddmPlvM74/otT
+         7c/QXDAjLGEM7m8boPKze/sT+FgHHPZlmX3ercRPeG+3X/Vy1M/FgYuZoHil3VrbbhbR
+         k8iJYy+xf6nOa6NtRlpKOtzWi+0m7C9g1owr7IG4tVbFJgX2hG5hA08QihzctvkocFqH
+         jcBxpHBKPfSsqP5+1YKp/KrxXYtiQD9lvvRMoqhp1lJmUMnC+rpn9kEXrnOQHoxQOCBb
+         U05Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=rc/b171eEbEHOcZ7/65TQW8GF+vL+OBn1WLQqFshNME=;
+        b=6cIJxwbPpntXROxgO1cyE2SmYyIZspeKZSbgK9WQQ7CNyTxs0Jhv//xKpRX63aRo95
+         Z2UDuEmJsbhyVmMYugQLxzMwvah3apfgfJCTAnp30xEHtQu/YemsvXzcmR4m5L9Xnn60
+         /aMng9NGYyC5+WTVYFWoskYIvvJd8CdrY9NGdFUk5243EIkcWGQd6nOEIqjuaZ2PrDBf
+         qoUOMD5ftYON05wgSdFasESLmm7nxz11zT3AJE13wHNTb4ZmDnk/Dvzi7bAsdcIG7k2z
+         CKBvG2tGO41iAKzjUa6e5KaKrD36pySdHGzY5Z6eQ0avrskJHJZ9Qah/xVRWwRn7wAXh
+         IY0A==
+X-Gm-Message-State: AOAM530Tjns90T5NgV0jvpYw8/CTWmNMg+DTZZJFoEm2kBeVnVy8Ksu4
+        kJcReiUMi2x3i859PnFg3WtBtrUVarrex2k3Y8o=
+X-Google-Smtp-Source: ABdhPJxPx8NE9mhNjd9A52lMRPB9i6nr6yPV75/2jKbabGX6KHDl4XgMws2oMFSoQx8N9KeM8zKZyZCRPaK3IT3k3MA=
+X-Received: from albertccwang.ntc.corp.google.com ([2401:fa00:fc:202:8983:2d2c:f62b:626])
+ (user=albertccwang job=sendgmr) by 2002:a62:e819:0:b0:510:693e:b20c with SMTP
+ id c25-20020a62e819000000b00510693eb20cmr28178767pfi.60.1652330266640; Wed,
+ 11 May 2022 21:37:46 -0700 (PDT)
+Date:   Thu, 12 May 2022 12:37:39 +0800
+Message-Id: <20220512043739.1234857-1-albertccwang@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+Subject: [PATCH v2] usb: dwc3: gadget: Move null pinter check after window closed
+From:   Albert Wang <albertccwang@google.com>
+To:     balbi@kernel.org, gregkh@linuxfoundation.org,
+        quic_jackp@quicinc.com
+Cc:     badhri@google.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Albert Wang <albertccwang@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 9, 2022 at 4:09 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> This is a remnant of commit 6543becf26ff ("mod/file2alias: make
-> modalias generation safe for cross compiling").
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+After inspecting further, we do see the locking is implicit, with the
+main gotcha being the unlock/re-lock. That creates a window for a race
+to happen. This change moves the NULL check to be adjacent to where
+to it's used and after the window is "closed".
 
-Applied to linux-kbuild.
+Fixes: 26288448120b ("usb: dwc3: gadget: Fix null pointer exception")
 
+Signed-off-by: Albert Wang <albertccwang@google.com>
+---
+ drivers/usb/dwc3/gadget.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
->
-> Changes in v4:
->   - New patch
->
->  scripts/mod/modpost.h | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
-> index cfa127d2bb8f..d9daeff07b83 100644
-> --- a/scripts/mod/modpost.h
-> +++ b/scripts/mod/modpost.h
-> @@ -174,7 +174,6 @@ static inline unsigned int get_secindex(const struct elf_info *info,
->  }
->
->  /* file2alias.c */
-> -extern unsigned int cross_build;
->  void handle_moddevtable(struct module *mod, struct elf_info *info,
->                         Elf_Sym *sym, const char *symname);
->  void add_moddevtable(struct buffer *buf, struct module *mod);
-> --
-> 2.32.0
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20220508190631.2386038-2-masahiroy%40kernel.org.
-
-
-
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index 19477f4bbf54..fda58951cf27 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -3366,14 +3366,19 @@ static bool dwc3_gadget_endpoint_trbs_complete(struct dwc3_ep *dep,
+ 	struct dwc3		*dwc = dep->dwc;
+ 	bool			no_started_trb = true;
+ 
+-	if (!dep->endpoint.desc)
+-		return no_started_trb;
+-
++	/*
++	 * This function eventually leads to dwc3_giveback() which unlocks
++	 * the dwc->lock and relocks afterwards. This actually creates a
++	 * a window for a race to happen.
++	 */
+ 	dwc3_gadget_ep_cleanup_completed_requests(dep, event, status);
+ 
+ 	if (dep->flags & DWC3_EP_END_TRANSFER_PENDING)
+ 		goto out;
+ 
++	if (!dep->endpoint.desc)
++		return no_started_trb;
++
+ 	if (usb_endpoint_xfer_isoc(dep->endpoint.desc) &&
+ 		list_empty(&dep->started_list) &&
+ 		(list_empty(&dep->pending_list) || status == -EXDEV))
 -- 
-Best Regards
-Masahiro Yamada
+2.36.0.550.gb090851708-goog
+
