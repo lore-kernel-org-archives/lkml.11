@@ -2,179 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31367C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353935AbiELMsy (ORCPT
+        id S1353947AbiELMtR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
+        Thu, 12 May 2022 08:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353943AbiELMss (ORCPT
+        with ESMTP id S234486AbiELMtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:48:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0183E24D60A
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:48:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D873361F8C
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 12:48:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE96AC385B8;
-        Thu, 12 May 2022 12:48:44 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DaXEsJsE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652359723;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Fw6XqJOjx/gL+0IgPDG0uG9L5ijZCTo506iJQ00IxOk=;
-        b=DaXEsJsEk+k02LLyni6k07+hHVt0HDDe67XEqRCf2JlnQQ7MHneRyxB46iU8nQ9t+URkSR
-        AICihYfqgDujJYeTaNheDY/E0Bh+KISJw9ka94D6dAqTya8Px0YN4VKtRys+oqvcaF3Vrk
-        Zwa4qKqstugQxRgxaK5HjAj9WG+SBAk=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d102ee5a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 12 May 2022 12:48:42 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH] random: handle latent entropy and command line from random_init()
-Date:   Thu, 12 May 2022 14:48:39 +0200
-Message-Id: <20220512124839.20755-1-Jason@zx2c4.com>
+        Thu, 12 May 2022 08:49:14 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBEF1EA1AB
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:49:13 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id k27so6108075edk.4
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:49:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OkJdI54e0iw+j0SubUNETqHu76mK4u9Bb+TpmNhQfJk=;
+        b=5AH6OdJ8/7PGETtqZMiwsMZWXZ7N4nlX8jouevOtzvsnUJjRKZDNJtLVY6HoIKVEkN
+         DIS3klLgpeuPFnptRUwR3rEbg96G16KW2nPviZgQhm67LQo9crkOT+zA1KDtoTXXkh3I
+         hjrxddMOPH3LniNH4vOiY6ijjojvoT2GaHpO2okq9+e9m+ivt+/QC8QW4tPtGO+Ah4MM
+         lgK88So696bwTfaEyCciOolMh3PgdWNAKQ8DdH14Pk9LyAp8cL1ldXMOoRTeMS5DSK5j
+         pIvbglftdK6/Fuw5oGXALYbzuPbZsq+q1fnapqZ+28EI4qy9rGQ7bA/YtRvgbRbMYODD
+         T3+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OkJdI54e0iw+j0SubUNETqHu76mK4u9Bb+TpmNhQfJk=;
+        b=Em4BOz2k8rqTHgvXJrKYZZx7kaW8oAebWprV5CzMuIBJnKxVbEkeTXfBKBL/1sJWSI
+         3ddCeb8sc6rwqk/6VRdXr8Hv4TTsPfCruJKoykpQLCr0HNhVFpmzwZrugr8+NQ+vRLB/
+         Qz5GZD730Zfyzg4TVlBU8SvWa4sxlo8dqBy1hRFdcHRARJ14zlEC1kekvd1a05H+SCQn
+         fHyXhCKjdd7sQVhHCbbQR4df3uCcEefz28/C0Za6cKv2kWuiCxf8d6wSkePxvJmVBYNn
+         CTzxx694Yiwd78QMxANzgzpY22KJSKBbLruX3ouQuLeiAPWYJuL5lTu3IO4KzSZadtCV
+         KNcw==
+X-Gm-Message-State: AOAM530WseevSF19Vo0nHR7rChPkRNQbDXTrxkYRIna5VPL5dvUGr+od
+        4j3k2ictz+Kg6D0lBOVBsQkLVg==
+X-Google-Smtp-Source: ABdhPJzxVrYLYC3lVbzm9aZhSephxmDvcoy6S1KPUezJTndXZMpKg7QfDSPH1WKpMombddvHHiRZmw==
+X-Received: by 2002:a05:6402:294e:b0:425:f016:24e7 with SMTP id ed14-20020a056402294e00b00425f01624e7mr34667684edb.111.1652359751807;
+        Thu, 12 May 2022 05:49:11 -0700 (PDT)
+Received: from fedora.robimarko.hr (dh207-98-58.xnet.hr. [88.207.98.58])
+        by smtp.googlemail.com with ESMTPSA id h3-20020a170906828300b006f3ef214dc2sm2109475ejx.40.2022.05.12.05.49.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 05:49:11 -0700 (PDT)
+From:   Robert Marko <robert.marko@sartura.hr>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        andrew@lunn.ch, gregory.clement@bootlin.com,
+        sebastian.hesselbarth@gmail.com, kostap@marvell.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Robert Marko <robert.marko@sartura.hr>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 01/11] dt-bindings: vendor-prefixes: add Methode Electronics
+Date:   Thu, 12 May 2022 14:48:55 +0200
+Message-Id: <20220512124905.49979-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, start_kernel() adds latent entropy and the command line to
-the entropy bool *after* the RNG has been initialized, deferring when
-it's actually used by things like stack canaries until the next time
-the pool is seeded. This surely is not intended.
+Add vendor prefix for Methode Electronics, Inc. (https://www.methode.com)
 
-Rather than splitting up which entropy gets added where and when between
-start_kernel() and random_init(), just do everything in random_init(),
-which should eliminate these kinds of bugs in the future.
-
-While we're at it, rename the awkwardly titled "rand_initialize()" to
-the more standard "random_init()" nomenclature.
-
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/char/random.c  | 17 ++++++++++-------
- include/linux/random.h | 17 ++++++++---------
- init/main.c            |  8 ++------
- 3 files changed, 20 insertions(+), 22 deletions(-)
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index d4bc9beaed2c..bd80d74a7f8c 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -926,12 +926,13 @@ static struct notifier_block pm_notifier = { .notifier_call = random_pm_notifica
- 
- /*
-  * The first collection of entropy occurs at system boot while interrupts
-- * are still turned off. Here we push in RDSEED, a timestamp, and utsname().
-- * Depending on the above configuration knob, RDSEED may be considered
-- * sufficient for initialization. Note that much earlier setup may already
-- * have pushed entropy into the input pool by the time we get here.
-+ * are still turned off. Here we push in latent entropy, RDSEED, a timestamp,
-+ * utsname(), and the command line. Depending on the above configuration knob,
-+ * RDSEED may be considered sufficient for initialization. Note that much
-+ * earlier setup may already have pushed entropy into the input pool by the
-+ * time we get here.
-  */
--int __init rand_initialize(void)
-+int __init random_init(const char *command_line)
- {
- 	size_t i;
- 	ktime_t now = ktime_get_real();
-@@ -953,6 +954,8 @@ int __init rand_initialize(void)
- 	}
- 	_mix_pool_bytes(&now, sizeof(now));
- 	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
-+	_mix_pool_bytes(command_line, strlen(command_line));
-+	add_latent_entropy();
- 
- 	if (crng_ready()) {
- 		/*
-@@ -1703,8 +1706,8 @@ static struct ctl_table random_table[] = {
- };
- 
- /*
-- * rand_initialize() is called before sysctl_init(),
-- * so we cannot call register_sysctl_init() in rand_initialize()
-+ * random_init() is called before sysctl_init(),
-+ * so we cannot call register_sysctl_init() in random_init()
-  */
- static int __init random_sysctls_init(void)
- {
-diff --git a/include/linux/random.h b/include/linux/random.h
-index f673fbb838b3..6eabea6697d0 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -14,22 +14,21 @@ struct notifier_block;
- 
- extern void add_device_randomness(const void *, size_t);
- extern void add_bootloader_randomness(const void *, size_t);
-+extern void add_input_randomness(unsigned int type, unsigned int code,
-+				 unsigned int value) __latent_entropy;
-+extern void add_interrupt_randomness(int irq) __latent_entropy;
-+extern void add_hwgenerator_randomness(const void *buffer, size_t count,
-+				       size_t entropy);
- 
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
- {
--	add_device_randomness((const void *)&latent_entropy,
--			      sizeof(latent_entropy));
-+	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
- }
- #else
--static inline void add_latent_entropy(void) {}
-+static inline void add_latent_entropy(void) { }
- #endif
- 
--extern void add_input_randomness(unsigned int type, unsigned int code,
--				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq) __latent_entropy;
--extern void add_hwgenerator_randomness(const void *buffer, size_t count,
--				       size_t entropy);
- #if IS_ENABLED(CONFIG_VMGENID)
- extern void add_vmfork_randomness(const void *unique_vm_id, size_t size);
- extern int register_random_vmfork_notifier(struct notifier_block *nb);
-@@ -41,7 +40,7 @@ static inline int unregister_random_vmfork_notifier(struct notifier_block *nb) {
- 
- extern void get_random_bytes(void *buf, size_t nbytes);
- extern int wait_for_random_bytes(void);
--extern int __init rand_initialize(void);
-+extern int __init random_init(const char *command_line);
- extern bool rng_is_initialized(void);
- extern int register_random_ready_notifier(struct notifier_block *nb);
- extern int unregister_random_ready_notifier(struct notifier_block *nb);
-diff --git a/init/main.c b/init/main.c
-index 92783732a36f..4aec8a69301c 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -1042,13 +1042,9 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
- 	 * - timekeeping_init() for ktime entropy used in rand_initialize()
- 	 * - time_init() for making random_get_entropy() work on some platforms
--	 * - rand_initialize() to get any arch-specific entropy like RDRAND
--	 * - add_latent_entropy() to get any latent entropy
--	 * - adding command line entropy
-+	 * - random_init() to initialize the RNG from from early entropy sources
- 	 */
--	rand_initialize();
--	add_latent_entropy();
--	add_device_randomness(command_line, strlen(command_line));
-+	random_init(command_line);
- 	boot_init_stack_canary();
- 
- 	perf_event_init();
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 01430973ecec..e5ec476f54cd 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -764,6 +764,8 @@ patternProperties:
+     description: Cisco Meraki, LLC
+   "^merrii,.*":
+     description: Merrii Technology Co., Ltd.
++  "^methode,.*":
++    description: Methode Electronics, Inc.
+   "^micrel,.*":
+     description: Micrel Inc.
+   "^microchip,.*":
 -- 
-2.35.1
+2.36.1
 
