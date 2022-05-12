@@ -2,244 +2,381 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCE4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CDE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350873AbiELHvf (ORCPT
+        id S1350193AbiELHvr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 03:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
+        Thu, 12 May 2022 03:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351176AbiELHvP (ORCPT
+        with ESMTP id S1351181AbiELHvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 03:51:15 -0400
-X-Greylist: delayed 372 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 00:51:09 PDT
-Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6841838F;
-        Thu, 12 May 2022 00:51:08 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id DB9CC2B059AE;
-        Thu, 12 May 2022 03:44:50 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 12 May 2022 03:44:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1652341490; x=
-        1652348690; bh=F/3C1V38ahUzifyHzEs+CWDQJfKIOWf16zUshCZyYK4=; b=f
-        oyo14B5q77HWBztYyB6jy0JiEQ9Ii/BiEb6AG0JsU2fDxdZqUcK68yNGAC7EoaS0
-        MLdiGoW2wTpmdb51vgwhwQiNWtPftgTIU60n5uuzPE360fUVgjTUAya9IPqnwNKb
-        BnviiRI1bsbrEa+UsHZFVi+kJ9LICkw7R3oWYCMgAfhrwml2d5eev3yTn9skCxBg
-        VH8/RSJY4M5b81xtpsc+F9ey0/umPWOxbsk7XMP+7d9G9PDaBbhhl/f5taTsz5RB
-        6dmN6bGq0hhSJ7jW2s6IqG39WvMgsRgpCq0P2vXnglINSYJVGREHl0DALEPDRllK
-        ioGt2OrO1hw7MXf06E+fg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1652341490; x=1652348690; bh=F/3C1V38ahUzi
-        fyHzEs+CWDQJfKIOWf16zUshCZyYK4=; b=PwYCoCpllwsaeQDZ/UbNYqufIcU3D
-        ZUWgY8F7k7Saqv2O6zyjaOoYF5xcDIWEnLSGiwdoo9z8lCBMr/tHJh5b0zfeFWE6
-        /Z2RCJLc+r2pnrvNhImcW02ht7w/mv4bgobAnb9k0gXLDcWXAQYuz3K1z9POKN/y
-        S/eqJzDh+501oGPp9exuG3dzomL2dp5vuGlGULmmWXC8cqRqYHf4z9q8S2BE/UHo
-        6LyF8q2ZC7+aDXKLXASdRi94nP7is08wABRLovnl/szz04ritVADLELl1cAAm1+2
-        90qcou1rCuxePxCOn11vTIOW78qBQGe0KsUAxnEyD9NN9GYZScntiuXrg==
-X-ME-Sender: <xms:8bp8YqcK-fdwBudEcm5H1P_35GB8Y7LkLxZ4zJkH7TKJFPY--ts9wQ>
-    <xme:8bp8YkOvhUAnmlQU_F1xaAbi92HOEjaEU2MhKVss9NVtJC1EMVj_Hk3wd-nXqt7XK
-    R68JXUE9Mg8QkPMOf4>
-X-ME-Received: <xmr:8bp8Yrgphjel3L9AUZeENPZqw0iDm42eTLMqQ_jugzMVv5Ex1vLAqdXFGcdo-J9RZVw2IZo3EkihHmK8LVQqL50inCCR6S8SR81EWos>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgeeigdduvdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggugfgjsehtqhertddttddvnecuhfhrohhmpeforgig
-    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
-    grthhtvghrnhepheejffefgefgieevjedvfffgvdfghedtgfdvueejvdejgfffvdeuteei
-    vedufedvnecuffhomhgrihhnpegsohhothhlihhnrdgtohhmnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordht
-    vggthh
-X-ME-Proxy: <xmx:8bp8Yn9_Hnhd8voI202NNd_FlS4bmUHGt3SBFFkI5a5B-1Sfmlps8Q>
-    <xmx:8bp8Ymsn4HLY6Dqe7h0m9lGhr8Ulxluora9B7319zC42M3vRgIlJhg>
-    <xmx:8bp8YuGGZe5sCyNbypDOt_k8OycLAKInPJrliLcAmGL5wufwJB_p0w>
-    <xmx:8rp8Yu2wRlaVZOp8yBGYU65RItWFtHlRMmFrvZtBCrOu7SA0hzrdwpMFxjs>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 12 May 2022 03:44:48 -0400 (EDT)
-Date:   Thu, 12 May 2022 09:44:46 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Guillaume Ranquet <granquet@baylibre.com>
-Cc:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
-        chunfeng.yun@mediatek.com, chunkuang.hu@kernel.org,
-        ck.hu@mediatek.com, daniel@ffwll.ch, deller@gmx.de,
-        jitao.shi@mediatek.com, kishon@ti.com, krzk+dt@kernel.org,
-        maarten.lankhorst@linux.intel.com, matthias.bgg@gmail.com,
-        p.zabel@pengutronix.de, robh+dt@kernel.org, tzimmermann@suse.de,
-        vkoul@kernel.org, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-phy@lists.infradead.org, markyacoub@google.com,
-        Markus Schneider-Pargmann <msp@baylibre.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v9 18/22] drm/mediatek: Add mt8195 Embedded DisplayPort
- driver
-Message-ID: <20220512074446.ihilbbnbuwesxbbg@houat>
-References: <20220327223927.20848-1-granquet@baylibre.com>
- <20220327223927.20848-19-granquet@baylibre.com>
- <20220429083933.q3w75q3zuyyuvo4w@houat>
- <CABnWg9tzhZjrdKT4chkDrY-uH8BMUoxyNLUSwfuG6Sv1J+8ddg@mail.gmail.com>
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2044.outbound.protection.outlook.com [40.107.237.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF2E252B4
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:51:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oEQhy2D5IteO27hj912u1u1pAsWAMzNIzLJuK5ZCYSfLoiJ9pnxB8vBWPvC2bT0AO6qRqEZb2Xbw4zCSy9eSy4YOyQCPkrGoeEl8alACRBMfrQ3YIDBQeoHQRHFqTENTZFpBXYMURhX39DRsSvtf8Hgu3IWJmiezwzWHwm1XmYH+xOGzHYqNDDtGqY5MOztD/ELbL0ChPQCG7cFrOqbSgdFa6M/f3Abf8lX2aXHosG9ScIqFGLOOz0J0P+JvxnwUYtJVD+nzOGdrcwe3CKOyg7FRYN4Q6HlyGE+WoW2fGPs0zQKkSkkPeMa69fxHEmSXgrWPHRR1RhgDkPMeQq9IAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gboDTsKE01o1+b2sLmGkXtuDr3NFEN8qVqRx+iYtE58=;
+ b=ZaEcu4U6xZQlXmxeXIKErlRkvKhm/lIMdmalfGJYgOX9LuSSgiO5ZINPm1conFp1nSWfqt2xP9/vCusGdUJzeM9MJ5kbnJj/JLvW9TRRsNUyogv1roSQ5KgHpcjviUv3sRi5QD82Ef6qpZMKflZPfFiQh3jqRrvDwD0SnWnmG+fT6qAEAJ0lIwnPGAZXAMX9MZFciUKNxRAIIraURJ2QKSlQMkOwvVLPdUADmQq4yUD7/NdiHnOOrATEe1+0uSaJF4myfCU9Zk+r7l9JToa0ZESy3VeXUOB5JkH+zFbjC86Ta8ALu88IN6OGTMh2GXYXOEd47HUq0FSYCJaemv4TCg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gboDTsKE01o1+b2sLmGkXtuDr3NFEN8qVqRx+iYtE58=;
+ b=pX2DT2I7WIC85+R9eoriPDyMbIYUnaS1hypL/w0TwAZClfAGhzdICKGc5ifrBt7j9L+yLDVMCJ1cuwbzakE23K1o5xcOnwfu57LGhaRNRdG61pv4oH7NcAoz3yf6XrNHunZcAc9S16z6+jokUylkvfO6vX6pvTY5J1aEp8Nd1NDKhXXRIbutbb0PP5ofYuYyCr3hRo15NFxhbmZi9e9Eftiwl/vK1RoCAzr+hrRbDh1I2OlQD3stoIL+G8rd0Op44+Uzqzqjrmjczy7AYqeV6RXMenquOy5QmMhq3WjxfuGhKdIngbIdXKKM46hVdUi7bnQFJdFPAwaE/VWXIE4PNg==
+Received: from BN0PR04CA0163.namprd04.prod.outlook.com (2603:10b6:408:eb::18)
+ by BY5PR12MB3779.namprd12.prod.outlook.com (2603:10b6:a03:1a7::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Thu, 12 May
+ 2022 07:51:10 +0000
+Received: from BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:eb:cafe::a5) by BN0PR04CA0163.outlook.office365.com
+ (2603:10b6:408:eb::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
+ Transport; Thu, 12 May 2022 07:51:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ BN8NAM11FT056.mail.protection.outlook.com (10.13.177.26) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5250.13 via Frontend Transport; Thu, 12 May 2022 07:51:09 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Thu, 12 May 2022 07:51:08 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 12 May 2022 00:51:08 -0700
+Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Thu, 12 May 2022 00:51:06 -0700
+From:   Eli Cohen <elic@nvidia.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>
+CC:     <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <si-wei.liu@oracle.com>,
+        Eli Cohen <elic@nvidia.com>
+Subject: [PATCH v6 2/4] vdpa: Add support for querying vendor statistics
+Date:   Thu, 12 May 2022 10:50:58 +0300
+Message-ID: <20220512075100.1715286-3-elic@nvidia.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220512075100.1715286-1-elic@nvidia.com>
+References: <20220512075100.1715286-1-elic@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CABnWg9tzhZjrdKT4chkDrY-uH8BMUoxyNLUSwfuG6Sv1J+8ddg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cb790163-e69d-455d-c917-08da33ec2d8f
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3779:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB37799C4E13326A5420569601ABCB9@BY5PR12MB3779.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hC4h5K6WexvypT13W1rwgp2eJEBirts0GwW9l8DGg7Kb7WKWpnPF9lCRSjc80QvGWh0Rq1WsxFSKhaPH81ETUVqCxLf7Ku+K7ZGz+xohxZjFa0hcWziX5/VKC1HcN+ZbTO/EICDU7myk4VNw9MDbwomeagFa8rSgthPEqPgdJweax0CekYAigzVv+E4VpcnLzeqqDbcol8SbOe8XKmcJK7q3YKLPtqLXPjbhINIKveJgSRlLwY6rzpJCEX6Niq0vIjfgPqKmnJTvYo08XDWOJUpsRIF71y2L7mjQepFkdFcpm1VGdVeV7NgDG9LXSOCSmVXmBjrYgLLKQXd9twxQdTpx/x6ZQ0xxFSSjoYI83yBW7Gj1YTVJvbmhPZ58AkjlWV71aZXdAvcGeNV5fDevxXzZWyPKANbyvUCkkGXkBiP7BbR9Gw4/bzBxYT3EkxEjtE5GNRnNS2FdC9+maod+VZOHW3O47xdITrMPoEcG4Bzrgm7bNJx81CaJRm6QdLAuhQVeSjAqn/fitmnwmeeBaNR9QyrRi8j/vGUGJOsqohaU1gAuanbO28A0i1q6v6uF6GtI7CscmnRyKWEGX70OwjUFSyFPSp9DdQ4qDWGDmGfOUrUuXzgTyn3p5C09nRegGVAU2buPJ493ic62avzNFGh9aqw5yXDFAG/FfxLQq9KpswGcuqIwZgfPejOw8Cyecv2LxjWx598rbyFJdRf8Ig==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(70206006)(356005)(86362001)(6666004)(4326008)(70586007)(110136005)(8676002)(36860700001)(426003)(47076005)(54906003)(336012)(316002)(508600001)(40460700003)(186003)(1076003)(107886003)(81166007)(7696005)(2616005)(5660300002)(26005)(8936002)(83380400001)(82310400005)(2906002)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 07:51:09.4011
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb790163-e69d-455d-c917-08da33ec2d8f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3779
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Allows to read vendor statistics of a vdpa device. The specific
+statistics data are received from the upstream driver in the form of an
+(attribute name, attribute value) pairs.
 
-On Wed, May 11, 2022 at 05:59:13AM -0700, Guillaume Ranquet wrote:
-> >> +#include <drm/drm_atomic_helper.h>
-> >> +#include <drm/drm_bridge.h>
-> >> +#include <drm/drm_crtc.h>
-> >> +#include <drm/dp/drm_dp_helper.h>
-> >> +#include <drm/drm_edid.h>
-> >> +#include <drm/drm_of.h>
-> >> +#include <drm/drm_panel.h>
-> >> +#include <drm/drm_print.h>
-> >> +#include <drm/drm_probe_helper.h>
-> >> +#include <linux/arm-smccc.h>
-> >> +#include <linux/clk.h>
-> >> +#include <linux/delay.h>
-> >> +#include <linux/errno.h>
-> >> +#include <linux/kernel.h>
-> >> +#include <linux/mfd/syscon.h>
-> >> +#include <linux/nvmem-consumer.h>
-> >> +#include <linux/of.h>
-> >> +#include <linux/of_irq.h>
-> >> +#include <linux/of_platform.h>
-> >> +#include <linux/phy/phy.h>
-> >> +#include <linux/platform_device.h>
-> >> +#include <linux/pm_runtime.h>
-> >> +#include <linux/regmap.h>
-> >> +#include <sound/hdmi-codec.h>
-> >> +#include <video/videomode.h>
-> >> +
-> >> +#include "mtk_dp_reg.h"
-> >> +
-> >> +#define MTK_DP_AUX_WAIT_REPLY_COUNT 20
-> >> +#define MTK_DP_CHECK_SINK_CAP_TIMEOUT_COUNT 3
-> >> +
-> >> +//TODO: platform/device data or dts?
-> >
-> >DTS :)
->=20
-> It's probably going to be a platform_data struct for v10...
-> If I have time, I'll change it to a dts property for v10.
+An example of statistics for mlx5_vdpa device are:
 
-I can't really imagine a case where we would need platform_data
-nowadays. If you have a device tree, then it should be part of the
-binding.
+received_desc - number of descriptors received by the virtqueue
+completed_desc - number of descriptors completed by the virtqueue
 
-What issue would you like to address by using a platform_data?
+A descriptor using indirect buffers is still counted as 1. In addition,
+N chained descriptors are counted correctly N times as one would expect.
 
-> >> +static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge =
-*bridge)
-> >> +{
-> >> +	return connector_status_connected;
-> >> +}
-> >
-> >I'm not quite sure what's going on there. You seem to have some support
-> >for HPD interrupts above, but you always report the display as
-> >connected?
-> >
-> >I'd assume that either you don't have HPD support and then always report
-> >it as connected, or you have HPD support and report the current status
-> >in detect, but that combination seems weird.
->=20
-> The HPD logic needs more work, some things have been broken when I split
-> the driver into three patches eDP - DP - Audio
-> The assumption at first was that eDP didn't need any HPD handling... but =
-it
-> seems I was wrong and the eDP driver needs to be reworked.
+A new callback was added to vdpa_config_ops which provides the means for
+the vdpa driver to return statistics results.
 
-That can be made into a patch of its own if you prefer.
+The interface allows for reading all the supported virtqueues, including
+the control virtqueue if it exists.
 
-You first introduce the driver without status reporting (always
-returning connected or unknown), and then add the needed bits for HPD.
+Below are some examples taken from mlx5_vdpa which are introduced in the
+following patch:
 
-However, that first patch shouldn't contain the interrupt plumbing and
-so on, it's just confusing.
+1. Read statistics for the virtqueue at index 1
 
-> >> +static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
-> >> +				    struct drm_connector *connector)
-> >> +{
-> >> +	struct mtk_dp *mtk_dp =3D mtk_dp_from_bridge(bridge);
-> >> +	bool enabled =3D mtk_dp->enabled;
-> >> +	struct edid *new_edid =3D NULL;
-> >> +
-> >> +	if (!enabled)
-> >> +		drm_bridge_chain_pre_enable(bridge);
-> >> +
-> >> +	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D0);
-> >> +	usleep_range(2000, 5000);
-> >> +
-> >> +	if (mtk_dp_plug_state(mtk_dp))
-> >> +		new_edid =3D drm_get_edid(connector, &mtk_dp->aux.ddc);
-> >> +
-> >> +	if (!enabled)
-> >> +		drm_bridge_chain_post_disable(bridge);
-> >
-> >Are you sure we can't get a mode set while get_edid is called?
-> >
-> >If we can, then you could end up disabling the device while it's being
-> >powered on.
->=20
-> I'm a bit unsure, I need to spend more time in the drm stack to make sure.
-> I'll get back to you when I have a definitive answer.
+$ vdpa dev vstats show vdpa-a qidx 1
+vdpa-a:
+queue_type tx queue_index 1 received_desc 3844836 completed_desc 3844836
 
-So, it looks like it's ok.
+2. Read statistics for the virtqueue at index 32
+$ vdpa dev vstats show vdpa-a qidx 32
+vdpa-a:
+queue_type control_vq queue_index 32 received_desc 62 completed_desc 62
 
-get_edid is your implementation of get_modes, which is called by
-drm_helper_probe_single_connector_modes
+3. Read statisitics for the virtqueue at index 0 with json output
+$ vdpa -j dev vstats show vdpa-a qidx 0
+{"vstats":{"vdpa-a":{
+"queue_type":"rx","queue_index":0,"name":"received_desc","value":417776,\
+ "name":"completed_desc","value":417548}}}
 
-https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/drm_probe_he=
-lper.c#L416
+4. Read statistics for the virtqueue at index 0 with preety json output
+$ vdpa -jp dev vstats show vdpa-a qidx 0
+{
+    "vstats": {
+        "vdpa-a": {
 
-This is the standard implemantion of fill_modes, which is called
-whenever the get_connector ioctl is called (or similar paths, like
-drm_client_modeset_probe)
+            "queue_type": "rx",
+            "queue_index": 0,
+            "name": "received_desc",
+            "value": 417776,
+            "name": "completed_desc",
+            "value": 417548
+        }
+    }
+}
 
-drm_helper_probe_single_connector_modes is under the assumption that the
-mode_config.mutex is held though, and that the big lock. So it should be
-serialized there.
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+---
+ drivers/vdpa/vdpa.c       | 153 ++++++++++++++++++++++++++++++++++++++
+ include/linux/vdpa.h      |   3 +
+ include/uapi/linux/vdpa.h |   6 ++
+ 3 files changed, 162 insertions(+)
 
-Just for future proofing though, it would be better to use refcounting
-there. Would runtime_pm work for you there?
+diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+index fac89a0d8178..7ce417ff0ea8 100644
+--- a/drivers/vdpa/vdpa.c
++++ b/drivers/vdpa/vdpa.c
+@@ -914,6 +914,99 @@ vdpa_dev_config_fill(struct vdpa_device *vdev, struct sk_buff *msg, u32 portid,
+ 	return err;
+ }
+ 
++static int vdpa_fill_stats_rec(struct vdpa_device *vdev, struct sk_buff *msg,
++			       struct genl_info *info, u32 index)
++{
++	u64 features;
++	u8 status;
++	int err;
++
++	status = vdev->config->get_status(vdev);
++	if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
++		NL_SET_ERR_MSG_MOD(info->extack, "feature negotiation not complete");
++		return -EAGAIN;
++	}
++
++	features = vdev->config->get_driver_features(vdev);
++	if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES,
++			      features, VDPA_ATTR_PAD))
++		return -EMSGSIZE;
++
++	err = vdev->config->get_vendor_vq_stats(vdev, index, msg, info->extack);
++	if (err)
++		return err;
++
++	if (nla_put_u32(msg, VDPA_ATTR_DEV_QUEUE_INDEX, index))
++		return -EMSGSIZE;
++
++	return 0;
++}
++
++static int vendor_stats_fill(struct vdpa_device *vdev, struct sk_buff *msg,
++			     struct genl_info *info, u32 index)
++{
++	int err;
++
++	if (!vdev->config->get_vendor_vq_stats)
++		return -EOPNOTSUPP;
++
++	err = vdpa_fill_stats_rec(vdev, msg, info, index);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int vdpa_dev_vendor_stats_fill(struct vdpa_device *vdev,
++				      struct sk_buff *msg,
++				      struct genl_info *info, u32 index)
++{
++	u32 device_id;
++	void *hdr;
++	int err;
++	u32 portid = info->snd_portid;
++	u32 seq = info->snd_seq;
++	u32 flags = 0;
++
++	hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family, flags,
++			  VDPA_CMD_DEV_VSTATS_GET);
++	if (!hdr)
++		return -EMSGSIZE;
++
++	if (nla_put_string(msg, VDPA_ATTR_DEV_NAME, dev_name(&vdev->dev))) {
++		err = -EMSGSIZE;
++		goto undo_msg;
++	}
++
++	device_id = vdev->config->get_device_id(vdev);
++	if (nla_put_u32(msg, VDPA_ATTR_DEV_ID, device_id)) {
++		err = -EMSGSIZE;
++		goto undo_msg;
++	}
++
++	switch (device_id) {
++	case VIRTIO_ID_NET:
++		if (index > VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX) {
++			NL_SET_ERR_MSG_MOD(info->extack, "queue index excceeds max value");
++			err = -ERANGE;
++			break;
++		}
++
++		err = vendor_stats_fill(vdev, msg, info, index);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++	genlmsg_end(msg, hdr);
++
++	return err;
++
++undo_msg:
++	genlmsg_cancel(msg, hdr);
++	return err;
++}
++
+ static int vdpa_nl_cmd_dev_config_get_doit(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct vdpa_device *vdev;
+@@ -995,6 +1088,60 @@ vdpa_nl_cmd_dev_config_get_dumpit(struct sk_buff *msg, struct netlink_callback *
+ 	return msg->len;
+ }
+ 
++static int vdpa_nl_cmd_dev_stats_get_doit(struct sk_buff *skb,
++					  struct genl_info *info)
++{
++	struct vdpa_device *vdev;
++	struct sk_buff *msg;
++	const char *devname;
++	struct device *dev;
++	u32 index;
++	int err;
++
++	if (!info->attrs[VDPA_ATTR_DEV_NAME])
++		return -EINVAL;
++
++	if (!info->attrs[VDPA_ATTR_DEV_QUEUE_INDEX])
++		return -EINVAL;
++
++	devname = nla_data(info->attrs[VDPA_ATTR_DEV_NAME]);
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	index = nla_get_u32(info->attrs[VDPA_ATTR_DEV_QUEUE_INDEX]);
++	mutex_lock(&vdpa_dev_mutex);
++	dev = bus_find_device(&vdpa_bus, NULL, devname, vdpa_name_match);
++	if (!dev) {
++		NL_SET_ERR_MSG_MOD(info->extack, "device not found");
++		err = -ENODEV;
++		goto dev_err;
++	}
++	vdev = container_of(dev, struct vdpa_device, dev);
++	if (!vdev->mdev) {
++		NL_SET_ERR_MSG_MOD(info->extack, "unmanaged vdpa device");
++		err = -EINVAL;
++		goto mdev_err;
++	}
++	err = vdpa_dev_vendor_stats_fill(vdev, msg, info, index);
++	if (err)
++		goto mdev_err;
++
++	err = genlmsg_reply(msg, info);
++
++	put_device(dev);
++	mutex_unlock(&vdpa_dev_mutex);
++
++	return err;
++
++mdev_err:
++	put_device(dev);
++dev_err:
++	nlmsg_free(msg);
++	mutex_unlock(&vdpa_dev_mutex);
++	return err;
++}
++
+ static const struct nla_policy vdpa_nl_policy[VDPA_ATTR_MAX + 1] = {
+ 	[VDPA_ATTR_MGMTDEV_BUS_NAME] = { .type = NLA_NUL_STRING },
+ 	[VDPA_ATTR_MGMTDEV_DEV_NAME] = { .type = NLA_STRING },
+@@ -1035,6 +1182,12 @@ static const struct genl_ops vdpa_nl_ops[] = {
+ 		.doit = vdpa_nl_cmd_dev_config_get_doit,
+ 		.dumpit = vdpa_nl_cmd_dev_config_get_dumpit,
+ 	},
++	{
++		.cmd = VDPA_CMD_DEV_VSTATS_GET,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = vdpa_nl_cmd_dev_stats_get_doit,
++		.flags = GENL_ADMIN_PERM,
++	},
+ };
+ 
+ static struct genl_family vdpa_nl_family __ro_after_init = {
+diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+index 8943a209202e..2ae8443331e1 100644
+--- a/include/linux/vdpa.h
++++ b/include/linux/vdpa.h
+@@ -276,6 +276,9 @@ struct vdpa_config_ops {
+ 			    const struct vdpa_vq_state *state);
+ 	int (*get_vq_state)(struct vdpa_device *vdev, u16 idx,
+ 			    struct vdpa_vq_state *state);
++	int (*get_vendor_vq_stats)(struct vdpa_device *vdev, u16 idx,
++				   struct sk_buff *msg,
++				   struct netlink_ext_ack *extack);
+ 	struct vdpa_notification_area
+ 	(*get_vq_notification)(struct vdpa_device *vdev, u16 idx);
+ 	/* vq irq is not expected to be changed once DRIVER_OK is set */
+diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
+index 1061d8d2d09d..25c55cab3d7c 100644
+--- a/include/uapi/linux/vdpa.h
++++ b/include/uapi/linux/vdpa.h
+@@ -18,6 +18,7 @@ enum vdpa_command {
+ 	VDPA_CMD_DEV_DEL,
+ 	VDPA_CMD_DEV_GET,		/* can dump */
+ 	VDPA_CMD_DEV_CONFIG_GET,	/* can dump */
++	VDPA_CMD_DEV_VSTATS_GET,
+ };
+ 
+ enum vdpa_attr {
+@@ -46,6 +47,11 @@ enum vdpa_attr {
+ 	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
+ 	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,		/* u32 */
+ 	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
++
++	VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
++	VDPA_ATTR_DEV_VENDOR_ATTR_NAME,		/* string */
++	VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
++
+ 	/* new attributes must be added above here */
+ 	VDPA_ATTR_MAX,
+ };
+-- 
+2.35.1
 
-> >> +static void mtk_dp_parse_drm_mode_timings(struct mtk_dp *mtk_dp,
-> >> +					  struct drm_display_mode *mode)
-> >> +{
-> >> +	struct mtk_dp_timings *timings =3D &mtk_dp->info.timings;
-> >> +
-> >> +	drm_display_mode_to_videomode(mode, &timings->vm);
-> >> +	timings->frame_rate =3D mode->clock * 1000 / mode->htotal / mode->vt=
-otal;
-> >
-> >drm_mode_vrefresh()
-> >
-> >> +	timings->htotal =3D mode->htotal;
-> >> +	timings->vtotal =3D mode->vtotal;
-> >> +}
-> >
-> >It's not really clear to me why you need to duplicate drm_display_mode
-> >here?
-> >
-> It's saved to be re-used in mtk_dp_set_msa().
-> It's not ideal, I'll check if I can get the mode directly from mtk_dp_set=
-_msa()
-
-Yeah, it looks like mtk_dp_set_msa() uses fairly straightforward values,
-this will be just as easy with drm_display_mode.
-
-Maxime
