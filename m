@@ -2,91 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5077AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19CA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355438AbiELOh1 (ORCPT
+        id S1355433AbiELOjC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
+        Thu, 12 May 2022 10:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355439AbiELOhV (ORCPT
+        with ESMTP id S1355071AbiELOi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:37:21 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2F953B4B
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M6wXwKLlbJ5QPgqxQHjWz14n+naV6OjfbCxLRHepeE4=; b=CEvLUGZgVRlxnfeYt0yODEx8dw
-        fztgH10apfgqAyyBrCeYiBrr8HG7phdnEu3WjfH+uotCIcfTix5lzv03h3/59NlBGDQa9LsHGTRXI
-        I23fo0wbTxxXPpx5Qnw+0/5ycYRx5wXGMUHbo/iM+oaygezE6yzujEfxFj9HvjByqcdYw95CLn93/
-        lUpgbB/aosEEle66JyKNYRGMbvJ9RwvqZ4vVm2OGwjt0h1ew6kjkoPOmF0KI+7xL+rCOwoT+dkGPB
-        YvE18Eu0OBtX6GlYWf90asw3xHOZiLTUHZiZ6pKq8pXR/ZrcwJgY37zDNKDouRk4VDZ6Qx6xQd31/
-        d/ISVUoQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1np9w6-00DWlm-8Q; Thu, 12 May 2022 14:37:02 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A64DC30047E;
-        Thu, 12 May 2022 16:37:00 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 92825201E235B; Thu, 12 May 2022 16:37:00 +0200 (CEST)
-Date:   Thu, 12 May 2022 16:37:00 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFCv2 04/10] x86/mm: Introduce X86_THREAD_LAM_U48 and
- X86_THREAD_LAM_U57
-Message-ID: <Yn0bjINOR9d/2/27@hirez.programming.kicks-ass.net>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511022751.65540-6-kirill.shutemov@linux.intel.com>
- <20220511070211.GS76023@worktop.programming.kicks-ass.net>
- <87ee0zvszt.ffs@tglx>
+        Thu, 12 May 2022 10:38:58 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92197EAD0C;
+        Thu, 12 May 2022 07:38:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652366337; x=1683902337;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=bOl39S9FUmv+PaeqjC4lbDx3yxwJ/hYZ3cBKJY/+ajA=;
+  b=RvP0CBa4ZRZHDHc2avOxh0+3JNStlH32AOk2QvM88ccYI57GNx0gSgpe
+   jSLHaIPy97Tn1IkE7fHu8vELjCTL7/t+CuEFn/sgI69CDgaRWyNRx+Vmm
+   bOHGVg2DyE4NfdQQLEC7fo918TcgR3EmMsrHsRPvskYoe+W3ymZqy8gFt
+   Nf4KgglF+bx6I3Bm35JTs2Fb3T/biP6Ks6kRydRQtfCJNDzBoCXJjChFp
+   nEGs3avJDuT8K+3BvOx7e42LEPBlczTF5ZJfp5rTdYV65J+sgSd7PBV73
+   hOq5BH5BPn5/qYaBYsREmN5oNynjZxxRl0h/BefbHO73nOhmNPUH00bHN
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269957370"
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="269957370"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 07:38:56 -0700
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="594692886"
+Received: from yangweij-mobl.ccr.corp.intel.com (HELO [10.255.28.40]) ([10.255.28.40])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 07:38:53 -0700
+Message-ID: <7a8eb4a3-c58a-fd32-4419-4e799870c757@intel.com>
+Date:   Thu, 12 May 2022 22:38:42 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ee0zvszt.ffs@tglx>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v11 14/16] KVM: x86/vmx: Flip Arch LBREn bit on guest
+ state change
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "kan.liang@linux.intel.com" <kan.liang@linux.intel.com>,
+        "like.xu.linux@gmail.com" <like.xu.linux@gmail.com>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "Wang, Wei W" <wei.w.wang@intel.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220506033305.5135-1-weijiang.yang@intel.com>
+ <20220506033305.5135-15-weijiang.yang@intel.com>
+ <9f19a5eb-3eb0-58a2-e4ee-612f3298ba82@redhat.com>
+ <9e2b5e9f-25a2-b724-c6d7-282dc987aa99@intel.com>
+ <8a15c4b4-cabe-7bc3-bd98-bd669d586616@redhat.com>
+From:   "Yang, Weijiang" <weijiang.yang@intel.com>
+In-Reply-To: <8a15c4b4-cabe-7bc3-bd98-bd669d586616@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 02:24:22PM +0200, Thomas Gleixner wrote:
-> On Wed, May 11 2022 at 09:02, Peter Zijlstra wrote:
-> > On Wed, May 11, 2022 at 05:27:45AM +0300, Kirill A. Shutemov wrote:
-> >
-> >> +#define LAM_NONE	0
-> >> +#define LAM_U57		1
-> >> +#define LAM_U48		2
-> >
-> >> +#define X86_THREAD_LAM_U48		0x1
-> >> +#define X86_THREAD_LAM_U57		0x2
-> >
-> > Seriously pick an order and stick with it. I would suggest keeping the
-> > hardware order and then you can do:
-> >
-> >> +static inline unsigned long lam_to_cr3(u8 lam)
-> >> +{
-> >
-> > 	return (lam & 0x3) << X86_CR3_LAM_U57;
-> 
-> This "works" because the hardware ignores LAM_U48 if LAM_U57 is set, but
-> I'd rather make that exclusive in the prctl() as setting both does not
-> make any sense.
 
-Yes, I was very much assuming the interface would not allow setting
-both, that would be daft.
+On 5/12/2022 9:18 PM, Paolo Bonzini wrote:
+> On 5/11/22 09:43, Yang, Weijiang wrote:
+>>> Instead of using flip_arch_lbr_ctl, SMM should save the value of the MSR
+>>> in kvm_x86_ops->enter_smm, and restore it in kvm_x86_ops->leave_smm
+>>> (feel free to do it only if guest_cpuid_has(vcpu, X86_FEATURE_LM), i.e.
+>>> the 32-bit case can be ignored).
+>> In the case of migration in SMM, I assume kvm_x86_ops->enter_smm()
+>> called in source side
+>>
+>> and kvm_x86_ops->leave_smm() is called at destination, then should the
+>> saved LBREn be transferred
+>>
+>> to destination too? The destination can rely on the bit to defer setting
+>> LBREn bit in
+> Hi, it's transferred automatically if the MSR is saved in the SMM save
+> state area.  Both enter_smm and leave_smm can access the save state area.
+>
+> The enter_smm callback is called after saving "normal" state, and it has
+> to save the state + clear the bit; likewise, the leave_smm callback is
+> called before saving "normal" state and will restore the old value of
+> the MSR.
+
+Got it thanks!
+
+But there's no such slot for MSR_ARCH_LBR_CTL in SMRAM, do you still suggest
+
+using this mechanism to implement the LBREn clear/restore logic?
+
+> Thanks,
+>
+> Paolo
+>
+>> VMCS until kvm_x86_ops->leave_smm() is called. is it good? thanks!
