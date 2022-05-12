@@ -2,139 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6425C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353359AbiELLWr (ORCPT
+        id S1353292AbiELLWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 07:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
+        Thu, 12 May 2022 07:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353502AbiELLVX (ORCPT
+        with ESMTP id S1353434AbiELLVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 07:21:23 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D85F37015
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:21:14 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 12 May 2022 07:21:17 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D69C243104
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:20:34 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1BAD51EC06D9;
-        Thu, 12 May 2022 13:21:09 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1652354469;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 035B222249;
+        Thu, 12 May 2022 13:20:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1652354432;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=3af80NoShEJeVK3bKiOGXNISWp5953FppXTqOHZIyWE=;
-        b=cksWcvnBT88mXlZX++f6bki9H++RpxKakk9PxHEgEIkeXo4rHOsLACLRIw2NJzR0j66JYg
-        +8hW7jZSEZG69gbVMO1PoYFqQsI9Zd0n0cscr1UCq7mXCQWdXXk8lojz8z3Ifl57ruNu0W
-        Qb0eGvd+pIvYRvhz5WEn2WwwYmvafP0=
-Date:   Thu, 12 May 2022 13:21:12 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Baskov Evgeniy <baskov@ispras.ru>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] x86: Parse CONFIG_CMDLINE in compressed kernel
-Message-ID: <YnztqAtNEvnF5YcX@zn.tnic>
-References: <20220505103224.21667-1-baskov@ispras.ru>
- <20220505103224.21667-3-baskov@ispras.ru>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=afkJX7Cvem/WO0jznzGUUKL5imd13N9V0sdXQ0gf+3Q=;
+        b=oifvKZEFSeM1JFyaN/jJ/jlQXViRPnY/I6e4F50GXiltvpKQkZCIjDkwYpr/D500uwmlmX
+        eryzl0s5NkWK9zPzZvBhcE8fsw4n3PuirvL9FqadMaFx/ILsefabG4J0ukxIBIsgkjcHJP
+        QCKVd/IxHGZiQS+StBYBsFsHh6A2A0k=
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Michael Walle <michael@walle.cc>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] mtd: spi-nor: debugfs: fix format specifier
+Date:   Thu, 12 May 2022 13:20:27 +0200
+Message-Id: <20220512112027.3771734-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220505103224.21667-3-baskov@ispras.ru>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 01:32:24PM +0300, Baskov Evgeniy wrote:
+The intention was to print the JEDEC ID in the following format:
+  nn nn nn
 
-Same note on the subject format as for your previous patch.
+In this case format specifier has to be "%*ph". Fix it.
 
-> CONFIG_CMDLINE, CONFIG_CMDLINE_BOOL, and CONFIG_CMDLINE_OVERRIDE were
-> ignored during options lookup in compressed kernel.
-> 
-> Parse CONFIG_CMDLINE-related options correctly in compressed kernel
-> code.
-> 
-> cmd_line_ptr_init is explicitly placed in .data section since it is
-> used and expected to be equal to zero before .bss section is cleared.
+Fixes: 0257be79fc4a ("mtd: spi-nor: expose internal parameters via debugfs")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/mtd/spi-nor/debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-What I'm missing in this commit message is the use case which you have
-in your 0/2 mail.
-
-Also, to the tone of your commit messages, from
-Documentation/process/submitting-patches.rst:
-
- "Describe your changes in imperative mood, e.g. "make xyzzy do frotz"
-  instead of "[This patch] makes xyzzy do frotz" or "[I] changed xyzzy
-  to do frotz", as if you are giving orders to the codebase to change
-  its behaviour."
-
-Also, do not talk about what your patch does - that should hopefully be
-visible in the diff itself. Rather, talk about *why* you're doing what
-you're doing.
-
-> Signed-off-by: Baskov Evgeniy <baskov@ispras.ru>
-> 
-> diff --git a/arch/x86/boot/compressed/cmdline.c b/arch/x86/boot/compressed/cmdline.c
-> index f1add5d85da9..261f53ad395a 100644
-> --- a/arch/x86/boot/compressed/cmdline.c
-> +++ b/arch/x86/boot/compressed/cmdline.c
-> @@ -1,6 +1,8 @@
->  // SPDX-License-Identifier: GPL-2.0
->  #include "misc.h"
->  
-> +#define COMMAND_LINE_SIZE 2048
-> +
->  static unsigned long fs;
->  static inline void set_fs(unsigned long seg)
->  {
-> @@ -12,12 +14,32 @@ static inline char rdfs8(addr_t addr)
->  	return *((char *)(fs + addr));
->  }
->  #include "../cmdline.c"
-> +
-> +#ifdef CONFIG_CMDLINE_BOOL
-> +static char builtin_cmdline[COMMAND_LINE_SIZE] = CONFIG_CMDLINE;
-> +static bool builtin_cmdline_init __section(".data");
-> +#endif
-> +
->  unsigned long get_cmd_line_ptr(void)
->  {
->  	unsigned long cmd_line_ptr = boot_params->hdr.cmd_line_ptr;
-> -
->  	cmd_line_ptr |= (u64)boot_params->ext_cmd_line_ptr << 32;
->  
-> +#ifdef CONFIG_CMDLINE_BOOL
-> +	if (!builtin_cmdline_init) {
-> +		if (!IS_ENABLED(CONFIG_CMDLINE_OVERRIDE)) {
-> +			strlcat(builtin_cmdline, " ", COMMAND_LINE_SIZE);
-> +			strlcat(builtin_cmdline,
-> +				(char *)cmd_line_ptr,
-> +				COMMAND_LINE_SIZE);
-> +		}
-> +
-> +		builtin_cmdline_init = 1;
-> +	}
-> +
-> +	cmd_line_ptr = (unsigned long)builtin_cmdline;
-> +#endif
-
-I had asked this already but let me try again: instead of copying this
-from kernel proper, why don't you add a common helper which you call
-from both locations?
-
-And it is not like this is going to be a huge function so you can stick
-it into a shared header in arch/x86/include/asm/shared/ and it'll get
-inlined into both locations...
-
-Thx.
-
+diff --git a/drivers/mtd/spi-nor/debugfs.c b/drivers/mtd/spi-nor/debugfs.c
+index bf9fda5d4d0b..4b972bd4b80d 100644
+--- a/drivers/mtd/spi-nor/debugfs.c
++++ b/drivers/mtd/spi-nor/debugfs.c
+@@ -81,7 +81,7 @@ static int spi_nor_params_show(struct seq_file *s, void *data)
+ 	int i;
+ 
+ 	seq_printf(s, "name\t\t%s\n", info->name);
+-	seq_printf(s, "id\t\t%*phn\n", SPI_NOR_MAX_ID_LEN, nor->id);
++	seq_printf(s, "id\t\t%*ph\n", SPI_NOR_MAX_ID_LEN, nor->id);
+ 	string_get_size(params->size, 1, STRING_UNITS_2, buf, sizeof(buf));
+ 	seq_printf(s, "size\t\t%s\n", buf);
+ 	seq_printf(s, "write size\t%u\n", params->writesize);
 -- 
-Regards/Gruss,
-    Boris.
+2.30.2
 
-https://people.kernel.org/tglx/notes-about-netiquette
