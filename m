@@ -2,125 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FFE6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6266C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356819AbiELRBJ (ORCPT
+        id S1356789AbiELRBF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
+        Thu, 12 May 2022 13:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356779AbiELRAs (ORCPT
+        with ESMTP id S1356771AbiELRAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:00:48 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3777518371
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:00:45 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id c1-20020a17090a558100b001dca2694f23so5435367pji.3
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:00:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3RAHC5JpxAqYMofiRYRDeUYE27k98N5i2YcPubXjat4=;
-        b=Kp2ewZZ7jM6je0FurBjkAcOhWg+K3mqCf6/7sECa/dyp9+QcEVVrLmlWMucY2w9zBC
-         3tGKT+Y6R0t9+WJ3KSwOB2g/ixEYJxKFAXEyDp9qMw6pbh9O6birSpyxGrfwEsJT0hs3
-         g1qqCfCFaBWUcWxL7jroDSotYs04G8sFsdMW90CwgQux6Up8ib5gtnEVT7L6g2o/o7UT
-         CM2mNk3AbZNJ+qqrfoW9NwA84Z3j3po/UAhhdEOoSPQVLI/U8kHMlhyVrk8ABxB8rArd
-         PCze8gD82Di2lYn15FUQ6NlphUNdx0TpT1vAUGKBcIIKK8kz6tmmcOSi8sYDX9scwrgl
-         Hiuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3RAHC5JpxAqYMofiRYRDeUYE27k98N5i2YcPubXjat4=;
-        b=A2Qg5gBzrpTipBeAWjLjmXwYuPnVqiZxJgOepg9rC5hFRev+wUKzGDSmL09N+jW4lL
-         9tKLGRzKcZWJY/U5VPTiHIyLjtBn+bc714RT7A6VDc1vqlSZjCp2IDjAkWDGdSAOs0Cy
-         a62hIqohcIQXuNOsmhFEBpQl+xPBCKrYg8zZu80lSA5aKySXw4NIcLBEJrR7arLZnKD1
-         alrxAFeVSZFYO8x8JNTRUSna6xnM2SYd9txiB4uWqj3lFRfxMyODyQ191QZ36rYpLniD
-         AdBRsq68INfat+r/iBDSBjzgQIDwjFP6L+WsQrYGTk4y3Zr9zyXjHsNVFkV6gXzRtu3P
-         n4HQ==
-X-Gm-Message-State: AOAM531zBn3pDuTnYkBr9EvtFN112OgpD+2kH05JstTHkqpagZglKPLm
-        LHv34PqfExrb3pe0opbJNP0=
-X-Google-Smtp-Source: ABdhPJw6EGY9mVef3FyirMIkj3RwU13aMifVKqL62ml09g6/aRIqjuA0Q/cqLfgICKzJ732bbSxgVw==
-X-Received: by 2002:a17:90b:4b01:b0:1dc:7405:dd62 with SMTP id lx1-20020a17090b4b0100b001dc7405dd62mr523509pjb.160.1652374844528;
-        Thu, 12 May 2022 10:00:44 -0700 (PDT)
-Received: from localhost.localdomain (li567-56.members.linode.com. [192.155.81.56])
-        by smtp.gmail.com with ESMTPSA id u10-20020a63234a000000b003c14af50605sm2119374pgm.29.2022.05.12.10.00.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 10:00:43 -0700 (PDT)
-From:   Jeff Xie <xiehuan09@gmail.com>
-To:     rostedt@goodmis.org
-Cc:     mingo@redhat.com, mhiramat@kernel.org, zanussi@kernel.org,
-        linux-kernel@vger.kernel.org, Jeff Xie <xiehuan09@gmail.com>
-Subject: [PATCH v10 3/4] trace/objtrace: Add testcases for objtrace
-Date:   Fri, 13 May 2022 01:00:07 +0800
-Message-Id: <20220512170008.1301613-4-xiehuan09@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220512170008.1301613-1-xiehuan09@gmail.com>
-References: <20220512170008.1301613-1-xiehuan09@gmail.com>
+        Thu, 12 May 2022 13:00:47 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E812E9D1
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:00:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652374842; x=1683910842;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=apo30zA37N3jdlCWH2sDbDBKNYM+43W8+OjQdalfpgs=;
+  b=TkhwrMBe1efd5vcgmKGRzOBG4HJUs1Sl2n5rlPB8ZQaPxaIKR6P4wB73
+   AAvfANYYQgdRUkSVRw0iKfy+4n1q24cUmahvhJ2QN+7+1XBKuu2Ydz1tO
+   tcqcyr/RRp2QUEXz30cXgpXS+JAhSivYiiftgG21FPwv8E6Ar63MkOD3N
+   n5F5JjSpIvGVKnb0oU764naTJJm3MHkI7EK95edTY/K2aXqfKcMLofh6R
+   ewLm3tH1RONy1KMmZOro/awBJ5STpTqkRmf3526SkoDYXsbEI5+v16ZMh
+   oobrQjorhj66q9mB1QgUu6onlb3Pnvm1EOUBoeJEQCaCBdROCK43ylXdi
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="250588890"
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="250588890"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 09:56:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="895869323"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga005.fm.intel.com with ESMTP; 12 May 2022 09:56:13 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 54ED0CE; Thu, 12 May 2022 19:56:12 +0300 (EEST)
+Date:   Thu, 12 May 2022 19:56:12 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Dmitry Vyukov <dvyukov@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        Andrey Ryabinin <aryabinin@virtuozzo.com>,
+        Alexander Potapenko <glider@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFCv2 00/10] Linear Address Masking enabling
+Message-ID: <20220512165612.gizedzgtpzbi7jbl@black.fi.intel.com>
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+ <20220511064943.GR76023@worktop.programming.kicks-ass.net>
+ <87pmkivjst.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87pmkivjst.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a series of testcases to illustrate correct and incorrect usage of
-objtrace trigger.
+On Thu, May 12, 2022 at 05:42:58PM +0200, Thomas Gleixner wrote:
+> On Wed, May 11 2022 at 08:49, Peter Zijlstra wrote:
+> > On Wed, May 11, 2022 at 05:27:40AM +0300, Kirill A. Shutemov wrote:
+> >> Hi all. Here's long overdue update on LAM enabling.
+> >> 
+> >> # Description #
+> >> 
+> >> Linear Address Masking[1] (LAM) modifies the checking that is applied to
+> >> 64-bit linear addresses, allowing software to use of the untranslated
+> >> address bits for metadata.
+> >> 
+> >> The patchset brings support for LAM for userspace addresses.
+> >> 
+> >> The most sensitive part of enabling is change in tlb.c, where CR3 flags
+> >> get set. Please take a look that what I'm doing makes sense.
+> >> 
+> >> The feature competes for bits with 5-level paging: LAM_U48 makes it
+> >> impossible to map anything about 47-bits. The patchset made these
+> >> capability mutually exclusive: whatever used first wins. LAM_U57 can be
+> >> combined with mappings above 47-bits.
+> >
+> > So aren't we creating a problem with LAM_U48 where programs relying on
+> > it are of limited sustainability?
+> >
+> > Any such program simply *cannot* run on 5 level pagetables. Why do we
+> > want to do this?
+> 
+> More bits are better :)
+> 
+> Seriously, I agree that restricting it to LAM57, which gives us 6 bits,
+> makes a lot of sense _and_ makes the whole thing way simpler.
+> 
+> So supporting both needs a truly good justification and a real world use
+> case.
 
-Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
----
- .../ftrace/test.d/trigger/trigger-objtrace.tc | 41 +++++++++++++++++++
- 1 file changed, 41 insertions(+)
- create mode 100644 tools/testing/selftests/ftrace/test.d/trigger/trigger-objtrace.tc
+I asked the question before[1]. Basically, more bits more better:
 
-diff --git a/tools/testing/selftests/ftrace/test.d/trigger/trigger-objtrace.tc b/tools/testing/selftests/ftrace/test.d/trigger/trigger-objtrace.tc
-new file mode 100644
-index 000000000000..d894442b6a30
---- /dev/null
-+++ b/tools/testing/selftests/ftrace/test.d/trigger/trigger-objtrace.tc
-@@ -0,0 +1,41 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+# description: event trigger - test objtrace-trigger
-+# requires: kprobe_events "objtrace":README
-+
-+fail() { #msg
-+    echo $1
-+    exit_fail
-+}
-+
-+echo 'p bio_add_page arg1=$arg1 arg2=$arg2' > kprobe_events
-+
-+FEATURE=`grep objtrace events/kprobes/p_bio_add_page_0/trigger`
-+if [ -z "$FEATURE" ]; then
-+    echo "objtrace trigger is not supported"
-+    exit_unsupported
-+fi
-+
-+echo "Test objtrace trigger"
-+echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > \
-+	events/kprobes/p_bio_add_page_0/trigger
-+if [ -z $? ]; then
-+	fail "objtrace trigger syntax error"
-+fi
-+
-+echo "Test objtrace semantic errors"
-+
-+# Being lack of objtrace command
-+! echo 'objtrace:arg1,0x28:u32:1' > events/kprobes/p_bio_add_page_0/trigger
-+# Bad parameter name
-+! echo 'objtrace:add:argx:u32:1' > events/kprobes/p_bio_add_page_0/trigger
-+# The parameter existed on event
-+! echo 'objtrace:add:arg2:u32:1' > events/kprobes/p_bio_add_page_0/trigger
-+
-+echo "reset objtrace trigger"
-+
-+echo '!objtrace:add:arg1,0x28:u32' > \
-+	events/kprobes/p_bio_add_page_0/trigger
-+echo '-:p_bio_add_page_0' >> ./kprobe_events
-+
-+exit 0
+	For HWASAN #bits == detection probability.
+	For MarkUS #bits == exponential cost reduction
+
+I would really like to have only LAM_U57, but IIUC 6 bits is not always
+enough.
+
+Dmitry, could you elaborate?
+
+[1] https://mobile.twitter.com/dvyukov/status/1342019823400837120
 -- 
-2.25.1
-
+ Kirill A. Shutemov
