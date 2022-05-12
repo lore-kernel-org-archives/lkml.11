@@ -2,66 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E25FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A97C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356330AbiELQMC (ORCPT
+        id S1356336AbiELQMG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
+        Thu, 12 May 2022 12:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356319AbiELQLr (ORCPT
+        with ESMTP id S1356317AbiELQLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 12:11:47 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB3236668D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC249666AD;
         Thu, 12 May 2022 09:11:42 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1npBPf-0001Vm-00; Thu, 12 May 2022 18:11:39 +0200
+        id 1npBPg-0001Vm-00; Thu, 12 May 2022 18:11:40 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 402D2C01D7; Thu, 12 May 2022 18:08:27 +0200 (CEST)
-Date:   Thu, 12 May 2022 18:08:27 +0200
+        id 001AAC01DC; Thu, 12 May 2022 18:11:27 +0200 (CEST)
+Date:   Thu, 12 May 2022 18:11:27 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Huacai Chen <chenhuacai@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, Zhi Li <lizhi01@loongson.cn>
-Subject: Re: [PATCH] MIPS: Loongson: Use hwmon_device_register_with_groups()
- to register hwmon
-Message-ID: <20220512160827.GA14475@alpha.franken.de>
-References: <20220511145659.2976950-1-linux@roeck-us.net>
+To:     Mao Bibo <maobibo@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MIPS: smp: optimization for flush_tlb_mm when exiting
+Message-ID: <20220512161127.GF14475@alpha.franken.de>
+References: <20220510114441.2959886-1-maobibo@loongson.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220511145659.2976950-1-linux@roeck-us.net>
+In-Reply-To: <20220510114441.2959886-1-maobibo@loongson.cn>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 07:56:59AM -0700, Guenter Roeck wrote:
-> Calling hwmon_device_register_with_info() with NULL dev and/or chip
-> information parameters is an ABI abuse and not a real conversion to
-> the new API. Also, the code creates sysfs attributes _after_ creating
-> the hwmon device, which is racy and unsupported to start with. On top
-> of that, the removal code tries to remove the name attribute which is
-> owned by the hwmon core.
+On Tue, May 10, 2022 at 07:44:41PM +0800, Mao Bibo wrote:
+> When process exits or execute new binary, it will call function
+> exit_mmap with old mm, there is such function call trace:
+>   exit_mmap(struct mm_struct *mm)
+>       --> tlb_finish_mmu(&tlb, 0, -1)
+>          --> arch_tlb_finish_mmu(tlb, start, end, force)
+> 	    --> tlb_flush_mmu(tlb);
+>                --> tlb_flush(struct mmu_gather *tlb)
+>                   --> flush_tlb_mm(tlb->mm)
 > 
-> Use hwmon_device_register_with_groups() to register the hwmon device
-> instead.
+> It is not necessary to flush tlb since oldmm is not used anymore
+> by the process, there is similar operations on IA64/ARM64 etc,
+> this patch adds such optimization on MIPS.
 > 
-> In the future, the hwmon subsystem will reject calls to
-> hwmon_device_register_with_info with NULL dev or chip/info parameters.
-> Without this patch, the hwmon device will fail to register.
-> 
-> Fixes: f59dc5119192 ("MIPS: Loongson: Fix boot warning about hwmon_device_register()")
-> Cc: Zhi Li <lizhi01@loongson.cn>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> Signed-off-by: Mao Bibo <maobibo@loongson.cn>
 > ---
->  drivers/platform/mips/cpu_hwmon.c | 127 ++++++++++--------------------
->  1 file changed, 41 insertions(+), 86 deletions(-)
+>  arch/mips/kernel/smp.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
 applied to mips-next.
 
