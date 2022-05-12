@@ -2,172 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6491AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AD0C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:35:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355378AbiELOfD (ORCPT
+        id S1355382AbiELOfY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:35:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
+        Thu, 12 May 2022 10:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355361AbiELOes (ORCPT
+        with ESMTP id S1354452AbiELOfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:34:48 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7D0260878;
-        Thu, 12 May 2022 07:34:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hJIXD85Rllb64mDm9/fPf17Utw5cNFKgPtBRQM7anK3h6No0K3GpIaOODM2UB00PTORPkpK9Re9+fl1dU3HiapDRf3D0UtC7IAYeUaxj0GlCoOMIHr2DtNflU4xbWijUCyIIrCdquHU7BRhYhbROJSBqbPjbUjb5mPjJCmJF/KQVcAqopWnpWrdv4qEKEd9Mb7SylLmlQz+xPp3h2u81JFqA7WXVBgBN/S4pgXLBUHOEOIwu9cNUdZT2cj9GvgQUSyEqXGKGe7WZAWL88PeMDA0hfVgeuqfgUCfvLfYH2hXhN3X8yeyrWP1xR8KHitrC0LBeYNigvbXr8icFu+HKXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xvYobhNqO2p4rWepGr/hnx8nUwOd+JzXXLKLH+XUD6E=;
- b=MqeT6uX6OuBAlPWLpF8HxLfj75TgwKaW7EP5B9lewT0uU4DSWg5C97IuoGISA7JxgRsJhXnS7vTBLWARjuSXUx4qsiHZE6YIMEwaCXJseIS8a8zdpS7MppOfq5ju7t6drcOc2aA/FJiccvIRulE2OzVL5YsVrIYhMhcK43VCEgH7xFtWCaJu4a4KLEgKUjRsaVf6LuUfw+hKBZcFQmzY+i7aKcZVbCJV0SruEgUthniCeF+L1JpM/cDGS1NgHsnf6dCzjnZ63fmjG/hPn7TN9U6etkhD81GjVFdnjWQoymFO7QERPpy+XG5+jRxUTLYYeLEYrZ+h9NdLWf0GA0WzPQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xvYobhNqO2p4rWepGr/hnx8nUwOd+JzXXLKLH+XUD6E=;
- b=CEycAi1O08BSku1LZJjrI08Jqvn7F4yb//Om3ctfC6p4ZayYXofP8rtKtYaTJIym+MlI146RyIB0xwkAblU8FL+5LYOkdyAxgvMBZLgPZUPnBe5XLiLtyLNweLvFzCT06542RlU/89+3hOQex6Jiqb4CASgno6PlnJMXLeaEDjs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3108.namprd12.prod.outlook.com (2603:10b6:408:40::20)
- by DM6PR12MB2700.namprd12.prod.outlook.com (2603:10b6:5:4d::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Thu, 12 May
- 2022 14:34:37 +0000
-Received: from BN8PR12MB3108.namprd12.prod.outlook.com
- ([fe80::6c8e:2b32:b8fb:6928]) by BN8PR12MB3108.namprd12.prod.outlook.com
- ([fe80::6c8e:2b32:b8fb:6928%2]) with mapi id 15.20.5250.014; Thu, 12 May 2022
- 14:34:37 +0000
-Date:   Thu, 12 May 2022 14:34:29 +0000
-From:   Yazen Ghannam <yazen.ghannam@amd.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Smita.KoralahalliChannabasappa@amd.com, muralidhara.mk@amd.com,
-        naveenkrishna.chatradhi@amd.com
-Subject: Re: [PATCH 04/18] EDAC/amd64: Remove PCI Function 0
-Message-ID: <Yn0a9T9xqAkWnPWt@yaz-fattaah>
-References: <20220509145534.44912-1-yazen.ghannam@amd.com>
- <20220509145534.44912-5-yazen.ghannam@amd.com>
- <YnuRUsAcnzT4Advm@zn.tnic>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnuRUsAcnzT4Advm@zn.tnic>
-X-ClientProxiedBy: MN2PR07CA0013.namprd07.prod.outlook.com
- (2603:10b6:208:1a0::23) To BN8PR12MB3108.namprd12.prod.outlook.com
- (2603:10b6:408:40::20)
+        Thu, 12 May 2022 10:35:22 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E9225D130;
+        Thu, 12 May 2022 07:35:20 -0700 (PDT)
+Received: from mail-yw1-f171.google.com ([209.85.128.171]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MJn8J-1nV91L1dyj-00K7ib; Thu, 12 May 2022 16:35:18 +0200
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2f16645872fso58979727b3.4;
+        Thu, 12 May 2022 07:35:17 -0700 (PDT)
+X-Gm-Message-State: AOAM531uf/IF/eWxzCferfvFQ6nIMHB2lfFsJRRwsc+S2dpF7nYzmX0X
+        XxBk2ONLjbID075LmHgnLUw4L2odBO2eNk5CZp8=
+X-Google-Smtp-Source: ABdhPJzfbhwoFr1q9juMntgIfHM+m3U1nWpSEbsdjudirAmgYnzjhj8eMLGYhy6XgarB5vhSiUly3q7lBnc1N2pSqgQ=
+X-Received: by 2002:a81:ad7:0:b0:2e6:84de:3223 with SMTP id
+ 206-20020a810ad7000000b002e684de3223mr331249ywk.209.1652366117032; Thu, 12
+ May 2022 07:35:17 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3089e193-493f-4c64-c96e-08da34248a63
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2700:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB2700CCDAEAA05E570DA6FE95F8CB9@DM6PR12MB2700.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZhShIRdA6Sw+tnIVVEV4/N476+sMN34G91oj4BB5q5lKgxfZaXyG5PfblboiHBwsYrzZhb2/Vb+c9N+MohQSxbHeQwN3Bry23bErmeSvT1CPhcPsyMY5Rtthg33xusSBm8wvuUpUjGF/lmd/yZi5V8XR+H3J91rW6Noh/nCBHh7EKNc4ZanTDnI/qZJqqCu3HYy06kJgxLPQ7BCy37R2EHQmuPtE00Bok8dSj8ntskvNUC5maoUfMLISFMAz+6F0F/GDTOoZsZDxpnV3i+LU2dMZMs0JdmKulCEEJUFK3jB9Y8flLp/4CaUWXt0VIFzZR49ovftctAsSsGI44ax/sDhX1J6HnBKR8FVNJJw0QJeKgViqbCB4CYM4CoscCu8nXL08s35sogMNX3Rs3TQqNJX1M5XsbgqSwrwxQLEYh5QA3K8p/Bl+A4ZzusxbOnU2kDegKE6fE48M8TtlbdiDY48kI3tN7lzuE0t8Ehq6j8+JQejmmAywzlzxemSFuTEp7JuOnpmfxN28nYq08HjboOCtlkK9AVZOSgRG/60+lacz+3n5UaeGQolOYYSrr2DZfbuzkaRlVE9wKRjnI+uFH/cBYwFXW5YQvXi4heTmlgPMLa1bwauUcMyNZp0zU9EorbUAqlngX2gSoPBU2PFkWg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3108.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(38100700002)(86362001)(5660300002)(6486002)(508600001)(8936002)(6506007)(9686003)(316002)(6916009)(66946007)(66476007)(66556008)(4326008)(8676002)(6666004)(186003)(33716001)(26005)(2906002)(6512007)(44832011);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FD51GGKFwOvdChhg/qxyk/+mF1NdhPbP/5q8HAi3dxs5YC5Arpte0OCYjEuS?=
- =?us-ascii?Q?agUxQt6xQCRy3jybm8bd/Mut9COUwAXtinZZFJq2eeQFe+ba7N7ZYt41n7N1?=
- =?us-ascii?Q?/TbbWxXfMDNGvMyqYUaqhkyotuxTq0OopGKZrd2OQawzE0N6nW2qJH5XcDE5?=
- =?us-ascii?Q?Yqr872rhYXSjoHEOwpzjuab6m7DPDqIAULG29d2HliprovIfGARpgSHk4G92?=
- =?us-ascii?Q?YhOQJvlw/mBmMQWfYvQErnRMJVYRIbycBagJVJEH26rnVC93unBgWXjrKlN7?=
- =?us-ascii?Q?SxsxVwg2I0L0qqytp0onKy6+PXiL2w+bAOFeFxfySY/KzClXQiTBG6ffr1qA?=
- =?us-ascii?Q?tRi9q0VW/6wsOht2OckoqJuShse4pCBwwKNJdQXXZiF9JPyT1lBh60ycTzOl?=
- =?us-ascii?Q?iO9f/+R73Ni2Xl6L/ssCYZo3k6cSOct+R0/mmPvFze1V4r6YSEKTjsRAvrs1?=
- =?us-ascii?Q?lqIksEOxUCxVVfAHsVI+44jWEg+b9MSY2U4ziV2M0fvFtRGuNTQuJHtODO9g?=
- =?us-ascii?Q?A3WzwaXPi+oFywaQzgsZgAMgxFIDGDMjhPVs3C6JTQyf7xTJY0fpp3L+eytn?=
- =?us-ascii?Q?UKd9kvKOyHNCs3SeeTe5MVR408dKVqrUTrbTbQTs34ub1gqKKSSOjF0lZDhr?=
- =?us-ascii?Q?EAYJ3cQSBeREhW5aLc/bwVV7DH4lNChFBHBQ/eWA+cTBAYl02nfzIRO2ad0I?=
- =?us-ascii?Q?tPrXaXWhz+6fYlceapb84eBN4DKgPUwJ7jX29389zHf5vzVKrDuE0M/hp0FE?=
- =?us-ascii?Q?JnHCX2XAYVi4Hj/buh5j3E4PYCvz9sI72Qr4+P0wifXVumNVaezBQjpuo4Jx?=
- =?us-ascii?Q?8NkvHSNdh3bEZxo1IY/Mv94V6RiiKy/33vGkFDY3HWgYdQUqOzedk+FR0v5F?=
- =?us-ascii?Q?VbEFwpx7qBIxtMt4HCNqPgLIIWCSmMmdUaBY0JxcYX7h+gFKzWOkw5gNmiZC?=
- =?us-ascii?Q?UZpKpUn3GlOBBrNmQHwdoH0DBHfe2tTQ9DwfA57boynd/BwGEapEKLEflMW4?=
- =?us-ascii?Q?AC2Uze2vB2+2vI4ANjKwRPPB3otdi382ngJit19AFfisSci3g7FgThaAkuEB?=
- =?us-ascii?Q?g3dbKNwA3vNIbxzI4ZSA3dm3FTHC1XLNX12sNElgkkYfQqJryr0QiZ8IivyA?=
- =?us-ascii?Q?2+gEfqtt7LvNVHbBChPdzUFWVxhStgxdGk0xxNyWK8QKoD/19sTyTi5LueZ3?=
- =?us-ascii?Q?liNfxbIhHKeyGBwxs2sqdQPQ5La+56kAuIMA4dX37fKTL4WlL+ztnhZhMCwy?=
- =?us-ascii?Q?WeHkDHY7e/+q3aJZZv2gLiA16opQaipdz4/oC+QB5lYzFT8g53wigAjUegdV?=
- =?us-ascii?Q?ZIFrtKo7p7rJTtTiNZXQJ0NbB5F4NAgCGkKWo4d+N6c+b3HnaVWKXT25C9Hq?=
- =?us-ascii?Q?iOac7jj5rSYmn1JyXskM603rBOmw2VeRLcwgGS8VUadpR0jrcmBxNc7+hT9w?=
- =?us-ascii?Q?vTO82fLdqYx7PoNQxfyQdS9wOCSZLw7qTzfLaOK0LHRlsG+YVsoQi+hrbTpv?=
- =?us-ascii?Q?u1an7ikNGHk9FjYvhEgGrT/RAWKxowJnSv/aBXP9qvMV6TbNZUzFdNihI+6W?=
- =?us-ascii?Q?kLrQWNYBuy3BngNxdEMObazGH5r+CtRiRarkLnTzQIMBcxQqLo/1cjadaYaQ?=
- =?us-ascii?Q?GaeRczyVhk4lNSXPifoT05EH5H2f6IeWLX6VH3DZiOTaplh9VQhqL1CprRTy?=
- =?us-ascii?Q?up+vcCcXTWa7KzhsD2liIg2gyQDEu8hjAF6dlxkMkw2taqkPYi4Ja3NixCYb?=
- =?us-ascii?Q?Oc/l9qKmJQ=3D=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3089e193-493f-4c64-c96e-08da34248a63
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3108.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 14:34:37.3796
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: axBiQ2dQGRBF4DRRBk/w8TbkqYSvKH+3r3lucmhXGS02Qvw97xQmGuDyyhtFC0l0QVsmAgggspUtw/ckRqYAPw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2700
+References: <20220510032558.10304-1-ychuang3@nuvoton.com> <CAK8P3a1k8y8U99bBmqBYE1vYAc0q-UeaM0oLP4tTHZCpyYNOgA@mail.gmail.com>
+ <8be62b40-077a-7634-7d34-7776909a2abe@linaro.org>
+In-Reply-To: <8be62b40-077a-7634-7d34-7776909a2abe@linaro.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 12 May 2022 16:35:00 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3=YD7WV+Www8pf+JTv14DwcnSjD+f=YFCNMxXYT9FAZA@mail.gmail.com>
+Message-ID: <CAK8P3a3=YD7WV+Www8pf+JTv14DwcnSjD+f=YFCNMxXYT9FAZA@mail.gmail.com>
+Subject: Re: [PATCH V4 0/5] Add initial support for MA35D1 SoC
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Jacky Huang <ychuang3@nuvoton.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        ychuang570808@gmail.com, Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, SoC Team <soc@kernel.org>,
+        cfli0@nuvoton.com
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:f35I4VQN5HrjLu+f35ruvI1eR5T9g+bS8hIxq67YP8hU7et8GXq
+ 6/ga5BEAuNysl5lffjUoLFn5i77YASqLm+x0rtNCuyggX++caLY3Lbm2HsCugCp3hMCY4pQ
+ GzzJ+3KwbzZaF4Mjb5Rzfx5AtpBzCIZUdIBhT+5xL2soYf++YgqAUeGSxv91EoCtsvutHh6
+ Nm+mInPbNTW1RvP4obUXQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:fkt0tv7tA1I=:UI38Qzf7Hgmuu3pdwo8Sza
+ FIDnSMv87Ew1LeBfkAnGiv96fAvynAjx7G455b/zjgpTOBoAzfHzoWrPpTWD35lL5mjfyVQ2V
+ 3mtXsArw+VU4KZQkllqM+NjGPy06D1Nxc4pcD3EgvrnQVV9G3/1VtFHcjcZRraf1/X1txz+RJ
+ 2cFvvs/zLtqNfHx/z2lmHriraxorAeZipIjhu7s52OgNer4igR3/RZZsUn4N5MKYghbYXbsgN
+ ffCcCy/YR4TOVPT8SRSju9xHnuzSIUxW7P0yfgyfPGo5b2G9PQDC/A5wZ4teKOy0wjXKhbBJm
+ t9zMJJbEz7heT7jMAFuc6p5moRal+sYfFDsvxNIPrjYEA/zLd0mdNoKdhWlE6hPZNkw8B+9wI
+ HIw4cO3rundVs9CHfm3Aq3uSGxT1KvIF6sfEP99SrKjsHf71WIcC3Eka4nhoXi+2S80GbCKPH
+ lvgNvShwFowIcNXg6Qug4Z2bWYVmp0Q67Bg9h1v+JsiGrNt0S+II/l1kUtq3BYP8RplgjJhfj
+ 6rYZVFfKh+7v561mukU2a6Y7gAoD1xDSeDrrDZYiuz6yE/F5zZZQn345YpIAUP03nxjcA6NJR
+ R5BXdcFbeQbQzx+UbeolBUk7+IpjUSZsOGXncmK3sSaenEgUmbLvO/4qkYGp9Fxg7UuRtCOcI
+ u+iMksTTQH++kmbPHfTQKLBEfIc2Tsfn423KoptDxCWPna+ibMYT/5BN+g91V/dR+Hq1NlsMY
+ aF1wrvqsm4xICty0OOHSaRE9MrsaSJYeASF8OA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 12:34:58PM +0200, Borislav Petkov wrote:
-> On Mon, May 09, 2022 at 02:55:20PM +0000, Yazen Ghannam wrote:
-> > @@ -3287,26 +3276,12 @@ static void decode_umc_error(int node_id, struct mce *m)
-> >  /*
-> >   * Use pvt->F3 which contains the F3 CPU PCI device to get the related
-> >   * F1 (AddrMap) and F2 (Dct) devices. Return negative value on error.
-> > - * Reserve F0 on systems with a UMC.
-> >   */
-> >  static int
-> >  reserve_mc_sibling_devs(struct amd64_pvt *pvt, u16 pci_id1, u16 pci_id2)
-> >  {
-> > -	if (pvt->umc) {
-> > -		pvt->F0 = pci_get_related_function(pvt->F3->vendor, pci_id1, pvt->F3);
-> > -		if (!pvt->F0) {
-> > -			edac_dbg(1, "F0 not found, device 0x%x\n", pci_id1);
-> > -			return -ENODEV;
-> > -		}
-> > -
-> > -		if (!pci_ctl_dev)
-> > -			pci_ctl_dev = &pvt->F0->dev;
-> > -
-> > -		edac_dbg(1, "F0: %s\n", pci_name(pvt->F0));
-> > -		edac_dbg(1, "F3: %s\n", pci_name(pvt->F3));
-> > -
-> > +	if (pvt->umc)
-> 
-> I don't like the sprinkling of those checks everywhere. And
-> hw_info_get() has those checks too. I think it would be cleaner if
-> hw_info_get() would call a df-specific function for fam 0x17 and later
-> and do the setup there cleanly:
-> 
-> hw_info_get:
-> 
-> 	if (pvt->fam >= 0x17)
-> 		return hw_info_get_df(pvt);
-> 
-> and so on.
-> 
-> Btw, I completely agree with leaving the old code as it is.
-> 
-> And I obviously like the code removal, ofc.
-> 
-> :-)
+On Thu, May 12, 2022 at 4:11 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 >
+> On 10/05/2022 09:07, Arnd Bergmann wrote:
+> > On Tue, May 10, 2022 at 5:25 AM Jacky Huang <ychuang3@nuvoton.com> wrote:
+> >>
+> >> This patch series adds initial support for Nuvoton MA35D1 SoC,
+> >> include initial dts and clock controller binding.
+> >>
+> >
+> > This looks fine in principle, but we are getting close to the merge window and
+> > should finalize this quickly to make it into v5.19. I see that you don't have a
+> > console device, as commented in the .dts patch. Normally I prefer merging
+> > platforms only when there is at least rudimentary support for booting into
+> > an initramfs with a serial console, but this is a flexible rule.
+>
+> I disagree. It does not look fine - does not pass `make dtbs_check` even
+> with Nuvoton bindings...
 
-Okay, will do.
+Ok, thanks for taking a look. It was already late for 5.19 and missing the uart
+driver, so it was clear it had not seen actual runtime testing. Let's try
+aiming for 5.20 then.
 
-Also, there are five function pointers that are created in this patchset and
-called from hw_info_get(). I think those pointers can be dropped and the
-helper functions called from hw_info_get(). So I think it'd be good to make
-hw_info_get() into a function pointer which gets set to a functoin that calls
-the right collection of legacy, modern, and GPU helper functions. How does
-that sound?
-
-Thanks!
-
--Yazen
+        Arnd
