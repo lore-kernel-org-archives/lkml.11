@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A483FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27785C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358666AbiELU5G (ORCPT
+        id S1358614AbiELU5M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 16:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
+        Thu, 12 May 2022 16:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358563AbiELU47 (ORCPT
+        with ESMTP id S1358571AbiELU5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 16:56:59 -0400
+        Thu, 12 May 2022 16:57:00 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0678367D14;
-        Thu, 12 May 2022 13:56:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9055A68FA3;
+        Thu, 12 May 2022 13:56:37 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: nfraprado)
-        with ESMTPSA id 013401F458B5
+        with ESMTPSA id C44701F45948
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652388992;
-        bh=+BNmslGrnrGfRi8LVBnEQQZU/Jy/1MkC2zZ90CW0O9U=;
+        s=mail; t=1652388996;
+        bh=j9EKFrnbOZbyTcEQCEWfG2IS74kguTTzKhClb3b7Sbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jFenFtbJ2sxBVbR3/dCRYNnEyOsAL0pk33JR7lrgpapqt36vF8TSialS7z6NWcaW0
-         7H9ARGjN/EY0/A/9VaStOLRsu9rmTtWYH56mxvpThdyno6OAFgsGJQbpl4HXDUJ6bv
-         dgS8TS+iOc7CIzhfmWfVn3aAkrnwKA2Oid04a8yTj18ZkM8s9DRGCs6a6quYLfY0mp
-         luU/cEcSnRVHTId/EnzTt69JWX4WPfCc2UClI7+6Tm/hUAkA8Ow0dqJutktKOdgyGe
-         NDr2kI/+99glCa4h/8BYJWz6HkK716Ca5O44blCpZcBVf9frO+DG+rj381JsYCBJCB
-         nmDaqaigz5jdQ==
+        b=HJ8wu6AYCA+FpIEs9q8u7ovvjzcuuduExswm/0ZNchZ7YXJhw1nHCIZxRFBTtOveS
+         w/DZz7DRShWZ3LLaz17T1ZF8srgWgCZIrAa4J6y6OSgItZ8CRewkgRcwiml6Qb/ojd
+         UFw3SZ9bt3tsf2Tg89pbOZ5zhsjExbmuRzukLJKBSijxb1p/JDQ3zUfZ69+jOaRaIJ
+         gTOulhx+Rpkr/vtFoz3gSEggfsbBJBw1dJM+m6TTSoY7oVZ+gkAkiW53Cps09kMH4n
+         WNOZtYFsETBGGHwOBzDHpG3yUwHXdHRjfLSaMb2nVY4pDnj6GGG6Rg6mB28mlx89hW
+         cycLiWuUtha9w==
 From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
         <nfraprado@collabora.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>
@@ -41,9 +41,9 @@ Cc:     Chen-Yu Tsai <wenst@chromium.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 08/16] arm64: dts: mediatek: asurada: Add keyboard mapping for the top row
-Date:   Thu, 12 May 2022 16:55:54 -0400
-Message-Id: <20220512205602.158273-9-nfraprado@collabora.com>
+Subject: [PATCH v3 10/16] arm64: dts: mediatek: asurada: Add Elan eKTH3000 I2C trackpad
+Date:   Thu, 12 May 2022 16:55:56 -0400
+Message-Id: <20220512205602.158273-11-nfraprado@collabora.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220512205602.158273-1-nfraprado@collabora.com>
 References: <20220512205602.158273-1-nfraprado@collabora.com>
@@ -54,105 +54,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Chromebooks' embedded keyboards differ from standard layouts for the
-top row in that they have shortcuts in place of the standard function
-keys. Map these keys to achieve the functionality that is pictured on
-the printouts.
-
-There's a minor difference between the keys present on Hayato, which
-uses an older layout, and Spherion, which uses a newer one.
+Add support for the Elan eKTH3000 i2c trackpad present on Asurada. It is
+connected to the I2C2 bus and has address 0x15.
 
 Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Tested-by: Chen-Yu Tsai <wenst@chromium.org>
-
 ---
 
-Changes in v3:
-- Moved keyboard layout definition to hayato and spherion dts files,
-  instead of common one in asurada dtsi
-- Changed hayato layout to be the same as older Chromebooks like Kevin
-- Switched KEY_ZOOM for KEY_FULL_SCREEN, just for semantics
-- Updated commit message
+(no changes since v1)
 
- .../dts/mediatek/mt8192-asurada-hayato-r1.dts | 29 +++++++++++++++++++
- .../mediatek/mt8192-asurada-spherion-r0.dts   | 29 +++++++++++++++++++
- 2 files changed, 58 insertions(+)
+ .../boot/dts/mediatek/mt8192-asurada.dtsi      | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts b/arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts
-index 00c76709a055..ca18fcf2ad4f 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada-hayato-r1.dts
-@@ -9,3 +9,32 @@ / {
- 	model = "Google Hayato rev1";
- 	compatible = "google,hayato-rev1", "google,hayato", "mediatek,mt8192";
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
+index ddf18861edad..a63b3c86d650 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
+@@ -109,6 +109,16 @@ &i2c2 {
+ 	clock-stretch-ns = <12600>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c2_pins>;
++
++	trackpad@15 {
++		compatible = "elan,ekth3000";
++		reg = <0x15>;
++		interrupts-extended = <&pio 15 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&trackpad_pins>;
++		vcc-supply = <&pp3300_u>;
++		wakeup-source;
++	};
  };
+ 
+ &i2c3 {
+@@ -440,6 +450,14 @@ pins-bus {
+ 			bias-disable;
+ 		};
+ 	};
 +
-+&keyboard_controller {
-+	function-row-physmap = <
-+		MATRIX_KEY(0x00, 0x02, 0)	/* T1 */
-+		MATRIX_KEY(0x03, 0x02, 0)	/* T2 */
-+		MATRIX_KEY(0x02, 0x02, 0)	/* T3 */
-+		MATRIX_KEY(0x01, 0x02, 0)	/* T4 */
-+		MATRIX_KEY(0x03, 0x04, 0)	/* T5 */
-+		MATRIX_KEY(0x02, 0x04, 0)	/* T6 */
-+		MATRIX_KEY(0x01, 0x04, 0)	/* T7 */
-+		MATRIX_KEY(0x02, 0x09, 0)	/* T8 */
-+		MATRIX_KEY(0x01, 0x09, 0)	/* T9 */
-+		MATRIX_KEY(0x00, 0x04, 0)	/* T10 */
-+	>;
-+	linux,keymap = <
-+		MATRIX_KEY(0x00, 0x02, KEY_BACK)
-+		MATRIX_KEY(0x03, 0x02, KEY_FORWARD)
-+		MATRIX_KEY(0x02, 0x02, KEY_REFRESH)
-+		MATRIX_KEY(0x01, 0x02, KEY_FULL_SCREEN)
-+		MATRIX_KEY(0x03, 0x04, KEY_SCALE)
-+		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)
-+		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)
-+		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
-+		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
-+		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
-+
-+		CROS_STD_MAIN_KEYMAP
-+	>;
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts b/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
-index d384d584bbcf..30b03895de41 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
-@@ -11,3 +11,32 @@ / {
- 		     "google,spherion-rev1", "google,spherion-rev0",
- 		     "google,spherion", "mediatek,mt8192";
++	trackpad_pins: trackpad-default-pins {
++		pins-int-n {
++			pinmux = <PINMUX_GPIO15__FUNC_GPIO15>;
++			input-enable;
++			mediatek,pull-up-adv = <3>;
++		};
++	};
  };
-+
-+&keyboard_controller {
-+	function-row-physmap = <
-+		MATRIX_KEY(0x00, 0x02, 0)	/* T1 */
-+		MATRIX_KEY(0x03, 0x02, 0)	/* T2 */
-+		MATRIX_KEY(0x02, 0x02, 0)	/* T3 */
-+		MATRIX_KEY(0x01, 0x02, 0)	/* T4 */
-+		MATRIX_KEY(0x03, 0x04, 0)	/* T5 */
-+		MATRIX_KEY(0x02, 0x04, 0)	/* T6 */
-+		MATRIX_KEY(0x01, 0x04, 0)	/* T7 */
-+		MATRIX_KEY(0x02, 0x09, 0)	/* T8 */
-+		MATRIX_KEY(0x01, 0x09, 0)	/* T9 */
-+		MATRIX_KEY(0x00, 0x04, 0)	/* T10 */
-+	>;
-+	linux,keymap = <
-+		MATRIX_KEY(0x00, 0x02, KEY_BACK)
-+		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
-+		MATRIX_KEY(0x02, 0x02, KEY_FULL_SCREEN)
-+		MATRIX_KEY(0x01, 0x02, KEY_SCALE)
-+		MATRIX_KEY(0x03, 0x04, KEY_SYSRQ)
-+		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)
-+		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)
-+		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
-+		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
-+		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
-+
-+		CROS_STD_MAIN_KEYMAP
-+	>;
-+};
+ 
+ &spi1 {
 -- 
 2.36.1
 
