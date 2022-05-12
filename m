@@ -2,94 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37FC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353740AbiELMan (ORCPT
+        id S1353761AbiELMbe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
+        Thu, 12 May 2022 08:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353746AbiELMad (ORCPT
+        with ESMTP id S1353748AbiELMba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:30:33 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D521F218
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:30:29 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 69A631F460;
-        Thu, 12 May 2022 12:30:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1652358628; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DoM2S+8jiCWaZnDZKbaWw6MEK0h9xXTciJ7KPHK3e+g=;
-        b=xhG1swfamE+GSab+AKwK+gq3d6fYDdraOp9xCEgGeH0/FKxebsRYhxbKZ5dNqJDfJanrFY
-        y7Gb28crUwl+XNY3MrXYuoRO3rbMP/Yk7imczzF63gGsXF9SZkCY4NWG7fNq9dmThnUd42
-        qyjgSkuyhZTFtB0jzCrYQbvI5qaj8HI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1652358628;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DoM2S+8jiCWaZnDZKbaWw6MEK0h9xXTciJ7KPHK3e+g=;
-        b=NNn8/t8R75BS2bAgRQcNY47L651YbitkKtJ4dfgyxMyCtAsjRvbb8GkWQ1oMr8DyGGcBzh
-        1Se+nA5Uo/2NgwAw==
-Received: from suse.de (mgorman.tcp.ovpn2.nue.suse.de [10.163.32.246])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 03BE22C141;
-        Thu, 12 May 2022 12:30:25 +0000 (UTC)
-Date:   Thu, 12 May 2022 13:30:21 +0100
-From:   Mel Gorman <mgorman@suse.de>
-To:     Wonhyuk Yang <vvghjk1234@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Baik Song An <bsahn@etri.re.kr>,
-        Hong Yeon Kim <kimhy@etri.re.kr>,
-        Taeung Song <taeung@reallinux.co.kr>, linuxgeek@linuxgeek.io,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [Patch v2] [PATCH] mm/page_alloc: Fix tracepoint
- mm_page_alloc_zone_locked()
-Message-ID: <20220512123021.GP20579@suse.de>
-References: <20220512025307.57924-1-vvghjk1234@gmail.com>
+        Thu, 12 May 2022 08:31:30 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25C644A34;
+        Thu, 12 May 2022 05:31:27 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id ba17so6059451edb.5;
+        Thu, 12 May 2022 05:31:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Bq27qi36uNFUZk8ZL5NHNoP0jxC4Lj73Ft3Qq22TL74=;
+        b=Qk8rV4hBpcnrZIIFrzc/vy+LEr0x/YF0jGYVH/2JoeLnlhcEkoEyW6u7MCYVLBpTwW
+         0UumpuhBgXYujASXv6zPNQZE/t+l0dy7fEFjfdVJgM4hX1FP1FiLxVdPW93dDS05NOz9
+         Va5lU5hHPLCevXlTLXD7RuJ4W/qoEQU3bPLWhxTP3kEnRp8HN8hdzpZm3j+WsSWN8R2S
+         yFH9GuhpHb3xXHpWdtMMIUuPlFhk8sajKQ2vum+CAhDPwsEtrkmP3SiIxzTHM/dkjixI
+         MzjhrM/YG+Brra4Rn5sGf0fpAa545XCgKJEwAuQu/gWEx4/k2Ou5DzGO5noNhyqVxsX3
+         Gh+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Bq27qi36uNFUZk8ZL5NHNoP0jxC4Lj73Ft3Qq22TL74=;
+        b=NtvvU7Oe2c80eFjC3Rqz5Q2IjDljxviiXkUaBlJzY5kILB2chNJCLxUSjXisKKBNg1
+         vfa3Qf3mEEAJgi58y3wzeej4RkJ/8aFC3RV5i11Ie+0FNSAQjErz94GIsq7bVEt4QdyI
+         ZCJHrGRLnQ/WdDwl9dbgT/mYhKZYUhdPUpT7g7LHSQacbUsWvH3G5+UTk4gI1w8R1w99
+         QDz+AYeX2kUcfyXAAKyYOYlsTXndd73Z0WiqsW01T5UY5N3mAxCece8dJcZcuaFx1pfM
+         UuXwX6AAThrZFf4oVTv9jZfTjDQBRS3uDP/uwjDTgvMMpWrUfyPIDhTGKbdLZnI81I5x
+         uvZQ==
+X-Gm-Message-State: AOAM531TTTht5FCHOq4dd4aGewwPNWSevE4X7fgeP21XotR/Jth5RQQD
+        pxF604HFBvE9kBXH0N38kE7hOmv6K/nAgRsDTAE=
+X-Google-Smtp-Source: ABdhPJxgS+gzIYhIWSduRKTHnDYBo2Hhbf1EvSfO1rLZIPmd6sXvnqror3k4ncBq1qt3HJCjLcuDwDS5zZN3zQDyQPM=
+X-Received: by 2002:a05:6402:1f0b:b0:427:b390:2020 with SMTP id
+ b11-20020a0564021f0b00b00427b3902020mr34676701edb.70.1652358686409; Thu, 12
+ May 2022 05:31:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20220512025307.57924-1-vvghjk1234@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220512062629.10286-1-imagedong@tencent.com>
+In-Reply-To: <20220512062629.10286-1-imagedong@tencent.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Thu, 12 May 2022 20:31:14 +0800
+Message-ID: <CADxym3Zqe=9TA_JBYCEX2tqeVxLN_LbH_F_zQuoXBG4XK=mc7g@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/4] net: skb: check the boundrary of skb drop reason
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Martin Lau <kafai@fb.com>, Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>, asml.silence@gmail.com,
+        Willem de Bruijn <willemb@google.com>,
+        vasily.averin@linux.dev,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 11:53:07AM +0900, Wonhyuk Yang wrote:
-> Currently, trace point mm_page_alloc_zone_locked() doesn't show
-> correct information.
-> 
-> First, when alloc_flag has ALLOC_HARDER/ALLOC_CMA, page can
-> be allocated from MIGRATE_HIGHATOMIC/MIGRATE_CMA. Nevertheless,
-> tracepoint use requested migration type not MIGRATE_HIGHATOMIC and
-> MIGRATE_CMA.
-> 
-> Second, after Commit 44042b4498728 ("mm/page_alloc: allow high-order
-> pages to be stored on the per-cpu lists") percpu-list can store
-> high order pages. But trace point determine whether it is a refiil
-> of percpu-list by comparing requested order and 0.
-> 
-> To handle these problems, make mm_page_alloc_zone_locked() only be
-> called by __rmqueue_smallest with correct migration type. With a
-> new argument called percpu_refill, it can show roughly whether it
-> is a refill of percpu-list.
-> 
-> Cc: Baik Song An <bsahn@etri.re.kr>
-> Cc: Hong Yeon Kim <kimhy@etri.re.kr>
-> Cc: Taeung Song <taeung@reallinux.co.kr>
-> Cc: linuxgeek@linuxgeek.io
-> Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
+On Thu, May 12, 2022 at 2:26 PM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> In the commit 1330b6ef3313 ("skb: make drop reason booleanable"),
+> SKB_NOT_DROPPED_YET is added to the enum skb_drop_reason, which makes
+> the invalid drop reason SKB_NOT_DROPPED_YET can leak to the kfree_skb
+> tracepoint. Once this happen (it happened, as 4th patch says), it can
+> cause NULL pointer in drop monitor and result in kernel panic.
+>
+> Therefore, check the boundrary of drop reason in both kfree_skb_reason
+> (2th patch) and drop monitor (1th patch).
+>
+> Meanwhile, fix the invalid drop reason passed to kfree_skb_reason() in
+> tcp_v4_rcv().
+>
 
-Acked-by: Mel Gorman <mgorman@suse.de>
+tcp_v6_rcv() is forgeted, I'll send a V2 :/
 
--- 
-Mel Gorman
-SUSE Labs
+> Menglong Dong (4):
+>   net: dm: check the boundary of skb drop reasons
+>   net: skb: check the boundrary of drop reason in kfree_skb_reason()
+>   net: skb: change the definition SKB_DR_SET()
+>   net: tcp: reset skb drop reason to NOT_SPCIFIED in tcp_v4_rcv()
+>
+>  include/linux/skbuff.h  | 3 ++-
+>  net/core/drop_monitor.c | 2 +-
+>  net/core/skbuff.c       | 5 +++++
+>  net/ipv4/tcp_ipv4.c     | 1 +
+>  4 files changed, 9 insertions(+), 2 deletions(-)
+>
+> --
+> 2.36.1
+>
