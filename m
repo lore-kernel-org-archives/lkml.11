@@ -2,140 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C8EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 19:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 19:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358039AbiELTOe (ORCPT
+        id S1355459AbiELTPA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 15:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
+        Thu, 12 May 2022 15:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357957AbiELTOD (ORCPT
+        with ESMTP id S1357982AbiELTOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 15:14:03 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE0E2764F8;
-        Thu, 12 May 2022 12:13:56 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id y32so10771408lfa.6;
-        Thu, 12 May 2022 12:13:56 -0700 (PDT)
+        Thu, 12 May 2022 15:14:47 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E12F277354
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 12:14:45 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id s11so3607754edy.6
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 12:14:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=X00UxJiG29OHM/sXI3MtHY1xp0KAlUMcsiInYqLUawo=;
-        b=BIKhjkc/C+VlfYqtLCW9ohNhtcCKeCQweZnR2uH0wugGjxrsFSJrs/FjI+W6x3LX2E
-         3ivLWd6Zs+MInoXNgFYJ10yBVZvp/yJjVFe7vh9DcR1Wkyy1hlT4/OzFMItwuvmmg2Pg
-         eQ6biVBl6ql72Ws9Y6RKy6+Y0hFlMFSa9z9Vdsc7usd7CiXZEMSGQA2Gc2NpPqcBrkAS
-         NasDtBrKDTu4rJRAXAF2y5lsCwJ311qyhiXv/1a9cf+1asrI7sph7KrPztrafa/je2KH
-         s2QhY4lgBPU2H7InDDI5lYAiGIipvvAUJjrsD+J0yH9TRBYPNwMrWizW+HeLA6t6Wxd/
-         KoMA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eQl455nL/+t4GF7KFide8lwaMGt8O2+EUU3s2IHb/vo=;
+        b=LYDyEMm4xsLfBWSK5S607nWBmcd7sEliCz22UkCN2XL8UFcgz/HIXuwd8y8dSnGXP7
+         jcCm0WBYyR2vYJx8pKQSjQdMYeC/WnGRWEVbmxT/CNLqdP4baBWcOrTDTkhw591nsUQi
+         pRxMzvl40mP8CEsxjCdJzBNfA0tk3aAhWMiCDyKBEu+3iH9gCD9zpu6c5IewsTgRbkXh
+         Fl6Gf1eTnGO7saVpvyBPlrQ8NgVEJLcZYQtk5X1vMmiYOFFZTO19gE+JGb2BAS5UojKl
+         ilpYuI1CTzA3i+aP75YGXmNBoAy1huJh91vUsERjfH0sEgYHdMOZy96RSTPrLDVgJ8Hv
+         dXxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=X00UxJiG29OHM/sXI3MtHY1xp0KAlUMcsiInYqLUawo=;
-        b=3FeedqigRfU+OC8Bz6U7Imq/dpB6PKxeyJM7J2lrWJXYF80n6jFIx5VQ5q5R2iedN+
-         Y82Kegbc6pB1RcaQc/eBHeH8lvbaSjw4CrSVNfJyEbroACUYX6hhiMF4bR/kEXpatdD/
-         cmDZxHdol3eyOllOpjJnYQ//xs69KD5nOkoPLvpbcNNVZbGUmvfMJt8NmfKPH30r4VwN
-         kxALPA+vJcGgJb1xaivBZ1FCBIzV/AvMdeqdCCpD7TzQxDFbPOFZmXQLMgbe50Ix9glJ
-         6RW4vIHetqsFsPQ8VQy6LO8+jzYkCxKGcHybUIkKbk/oT42bNKXR5mhI8GdNXNDPGt9o
-         pSRw==
-X-Gm-Message-State: AOAM533Gt9vfWi/PcS6Zei01o1kFldqw7icUZ671/JjnqjQ674QOY24c
-        o2TEBeXhDVneOFPhYgc1ABO6sndqDx1Vfw==
-X-Google-Smtp-Source: ABdhPJzbLYaREDLCv/6XHTqaOAnSDI2vNV6DtnXOAyj3WhVSEfhl+++h6q1bPxZIxDG79hKpdh2s/Q==
-X-Received: by 2002:a05:6512:2988:b0:473:f41d:567d with SMTP id du8-20020a056512298800b00473f41d567dmr865986lfb.384.1652382834237;
-        Thu, 12 May 2022 12:13:54 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id y26-20020ac255ba000000b0047255d210f4sm62146lfg.35.2022.05.12.12.13.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 12:13:53 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v4 4/5] proximity: vl53l0x: Handle the reset GPIO
-Date:   Thu, 12 May 2022 22:13:32 +0300
-Message-Id: <20220512191334.61804-5-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220512191334.61804-1-markuss.broks@gmail.com>
-References: <20220512191334.61804-1-markuss.broks@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eQl455nL/+t4GF7KFide8lwaMGt8O2+EUU3s2IHb/vo=;
+        b=z1f2jz3BFyJx62RQV/5KFd5BRXmY8qnlfrFNcNz2/VxlogyxKgkOfexBwgjVbO9FNj
+         ayl06GzpRVo+xuzn4ZJQbv6SeHRKb/mBCix/8SkE4UgBtw9bZ6xs2u/IDpg4ort33YCu
+         qENMWpTsNgWPAB4f+HTPTZLEqmmXpU57gljJ2gWpqRN0m4JBV9G2w2IBx0VSlSm8sL7U
+         V/HX+N0ObcZ2olSE9yAjoe8oAxAJHbwEkCHus65Ar2vgkID96ed6sokJGjxe6OAgtFWm
+         9yQQmxwX7lLi23uwN2rApWN9BujntXbegOEiKdyZipbh1sQTY8rZsLG3n729NEYlfvQV
+         IrVA==
+X-Gm-Message-State: AOAM5338o0DHirxPmOf61hOb3U/i1ZOHoyzaBs0mJwA4JYDVfO6kS3AE
+        opZILQLRviZWYRBw73qqBP2WoHh/46FqT3ZP70RwDw==
+X-Google-Smtp-Source: ABdhPJwBeC1Yop5olsPnHIZN8v1YqjWkMp3/7KdfX/JS1nfyh1kinC/sR/CGl7CW1dkBbcX6oqPyxUd0orVU6ZZ7wEE=
+X-Received: by 2002:a05:6402:90d:b0:428:bda9:3e6b with SMTP id
+ g13-20020a056402090d00b00428bda93e6bmr14000351edz.132.1652382883395; Thu, 12
+ May 2022 12:14:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220430045639.839186-1-davidgow@google.com> <CAGS_qxrVnDnUD=0f8vX5C2SWG2mxxXdAWU9A+P7h-K2Y1nm88A@mail.gmail.com>
+ <CABVgOS=W8ub72D2LWwDsbfNBO6mFpceZWm+r+8Ct53pUcFJ_4g@mail.gmail.com> <CAGS_qxpOFQ-ZpV2Jw1VEfggxKDqA57zRTY2LWZiK=iNMMo5QLA@mail.gmail.com>
+In-Reply-To: <CAGS_qxpOFQ-ZpV2Jw1VEfggxKDqA57zRTY2LWZiK=iNMMo5QLA@mail.gmail.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Thu, 12 May 2022 15:14:32 -0400
+Message-ID: <CAFd5g46bP=ugO4O7TTcQ_szM=3L03a-k4NHgVwkAqxgQqVd5JA@mail.gmail.com>
+Subject: Re: [PATCH] kunit: tool: Add list of all valid test configs on UML
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     David Gow <davidgow@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Handle the GPIO connected to the XSHUT/RST_N pin of VL53L0X.
+On Tue, May 3, 2022 at 2:49 PM Daniel Latypov <dlatypov@google.com> wrote:
+>
+> On Tue, May 3, 2022 at 1:37 AM David Gow <davidgow@google.com> wrote:
+> >
+> > On Tue, May 3, 2022 at 6:37 AM Daniel Latypov <dlatypov@google.com> wrote:
+> > >
+> > > On Fri, Apr 29, 2022 at 11:56 PM David Gow <davidgow@google.com> wrote:
+> > > >
+> > > > It's often desirable (particularly in test automation) to run as many
+> > > > tests as possible. This config enables all the tests which work as
+> > > > builtins under UML at present, increasing the total tests run from 156
+> > > > to 342 (not counting 36 'skipped' tests).
+> > >
+> > > Just to clear up potential confusion for others, I'll note that these
+> > > aren't counting test cases.
+> > > This is from kunit.py's output, so it counts each parameter from
+> > > parameterized tests as "subtests."
+> > >
+> > > Copying my command from
+> > > https://kunit-review.googlesource.com/c/linux/+/5249, one can use this
+> > > to count the # of test cases.
+> > > $ ./tools/testing/kunit/kunit.py run --kunitconfig=...
+> > > --raw_output=kunit --kernel_args=kunit.action=list | egrep
+> > > '^[a-z0-9_-]+\.[a-z0-9_-]+'
+> > >
+> > > I see this enabling a total of 260 test _cases_ (including skipped).
+> > >
+> > > The default (basically just CONFIG_KUNIT_ALL_TESTS=y) gives 192
+> > > (including skipped).
+> > >
+> >
+> > Yup, that's definitely the case. I guess I still was thinking in KTAP
+> > terms, where all subtests are effectively tests.
+> >
+> > That being said, I do think the total (sub)test (including parameters,
+> > etc) number is the one that's more visible: not only does kunit_tool
+> > print it, but it's also what we've been using as our go to "number of
+> > tests" generally.
+>
+> Yes, I agree it's the number to use here.
+> If there's a v2 of this patch, we could also reword the commit message
+> a bit to make it more explicit.
+> If not, this seems fine as-is. The only issue I saw was a minor typo.
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- drivers/iio/proximity/vl53l0x-i2c.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Agreed. Change is fine, but if you do a v2, please fix the wording.
 
-diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-index 8581a873919f..36c48a824725 100644
---- a/drivers/iio/proximity/vl53l0x-i2c.c
-+++ b/drivers/iio/proximity/vl53l0x-i2c.c
-@@ -15,6 +15,7 @@
-  */
- 
- #include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/irq.h>
- #include <linux/interrupt.h>
-@@ -44,6 +45,7 @@ struct vl53l0x_data {
- 	struct i2c_client *client;
- 	struct completion completion;
- 	struct regulator *vdd_supply;
-+	struct gpio_desc *reset_gpio;
- };
- 
- static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
-@@ -197,6 +199,8 @@ static void vl53l0x_power_off(void *_data)
- {
- 	struct vl53l0x_data *data = _data;
- 
-+	gpiod_set_value_cansleep(data->reset_gpio, 1);
-+
- 	regulator_disable(data->vdd_supply);
- }
- 
-@@ -208,6 +212,8 @@ static int vl53l0x_power_on(struct vl53l0x_data *data)
- 	if (ret)
- 		return ret;
- 
-+	gpiod_set_value_cansleep(data->reset_gpio, 0);
-+
- 	usleep_range(3200, 5000);
- 
- 	return 0;
-@@ -237,6 +243,11 @@ static int vl53l0x_probe(struct i2c_client *client)
- 		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
- 				     "Unable to get VDD regulator\n");
- 
-+	data->reset_gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(data->reset_gpio))
-+		return dev_err_probe(&client->dev, PTR_ERR(data->reset_gpio),
-+				     "Cannot get reset GPIO\n");
-+
- 	error = vl53l0x_power_on(data);
- 	if (error)
- 		return dev_err_probe(&client->dev, error,
--- 
-2.36.1
-
+> Re goto for "number of tests."
+> Reminder, we've also been using this to count "# tests" :P
+> $ git grep 'KUNIT_CASE' | grep -Ev
+> '^Documentation/|get_metrics.sh|include/kunit/test.h' | wc -l
+> This avoids us having to figure out how to build all the tests,
+> sidesteps the problem that subtests can be dynamically generated via
+> parameterized testing, etc.
+>
+> >
+> > > >
+> > > > They can be run with:
+> > > > ./tools/testing/kunit/kunit.py run
+> > > > --kunitconfig=./tools/testing/kunit/configs/all_tests_uml.config
+> > > >
+> > > > This acts as an in-between point between the KUNIT_ALL_TESTS config
+> > > > (which enables only tests whose dependencies are already enabled), and
+> > > > the kunit_tool --alltests option, which tries to use allyesconfig,
+> > > > taking a very long time to build and breaking very often.
+> > > >
+> > > > Signed-off-by: David Gow <davidgow@google.com>
+> > >
+> > > Tested-by: Daniel Latypov <dlatypov@google.com>
+> > >
+> > > Looks good to me, some small comments below.
+> > >
+> > > > ---
+> > > >  .../kunit/configs/all_tests_uml.config        | 37 +++++++++++++++++++
+> > > >  1 file changed, 37 insertions(+)
+> > > >  create mode 100644 tools/testing/kunit/configs/all_tests_uml.config
+> > > >
+> > > > diff --git a/tools/testing/kunit/configs/all_tests_uml.config b/tools/testing/kunit/configs/all_tests_uml.config
+> > > > new file mode 100644
+> > > > index 000000000000..bdee36bef4a3
+> > > > --- /dev/null
+> > > > +++ b/tools/testing/kunit/configs/all_tests_uml.config
+> > > > @@ -0,0 +1,37 @@
+> > > > +# This config enables as many tests as possible under UML.
+> > > > +# It is intended for use in continuous integration systems and similar for
+> > > > +# automated testing of as much as possible.
+> > > > +# The config is manually maintained, though it uses KUNIT_ALL_TESTS=y to enable
+> > > > +# any tests whose dependencies are already satisfied. Please feel free to add
+> > > > +# more options if they any new tests.
+> > >
+> > > missing: "enable"?
+> > > "if they enable any new tests"
+> > >
+> > Whoops, I was switching from "there are any" to "if they enable any"
+> > and clearly got distracted halfway through. :-)
+> >
+> > > Hmm, should we state a preference for how heavy (time or
+> > > resource-wise) tests should be?
+> > > Because the comment says it's meant for automation, but I can imagine
+> > > humans wanting to run it.
+> > > (I'm completely fine with us not stating one, just throwing the idea
+> > > out there for discussion)
+> >
+> > I think we're probably okay with being a little bit lenient on test
+> > times. The time_test_cases.time64_to_tm_test_date_range and similar
+> > tests take quite a long time in some situations already (older hw,
+> > running under some emulators), but is generally pretty close to
+> > instant under most UML setups. Particularly given that not building
+> > with allyesconfig already saves us many, many minutes of time.
+>
+> Agreed on all points.
+> I personally think it's reasonable to leave things as-is.
+>
+> We don't have any problematic tests that work on UML yet.
