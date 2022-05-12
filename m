@@ -2,87 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 410C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 05:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 05:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350014AbiELFzO (ORCPT
+        id S1350029AbiELF4I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 01:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38984 "EHLO
+        Thu, 12 May 2022 01:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237798AbiELFzJ (ORCPT
+        with ESMTP id S237798AbiELF4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 01:55:09 -0400
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A543612B0;
-        Wed, 11 May 2022 22:55:08 -0700 (PDT)
-Received: by mail-ej1-f43.google.com with SMTP id i27so8009271ejd.9;
-        Wed, 11 May 2022 22:55:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qgyCuAw9lKPrflWuWL0pXVFKUm286YeJTWO3N/9SWMg=;
-        b=gj2XUln6V3YvjnQVr9nsSudOa4SknYlEGKFR5yP5D3YWAxmyZY9hsffEK0PjAjhrlD
-         2u67hrLvy0Uurz+YM8nxrLM8pLdDAxRQj/rRcpr9F1iukpuaHfwxd5Jaz4Ywvk8Ba/RK
-         bahoLxs624M6wfFAGrKngBZNLvMvoxc4XIm4VTnPmGLJD7estBuOOjwF9u+KKe0MdqwU
-         ptLM8UeEg7/bCpfErnLpQ2ZL5Bzm7SkiwNS3qgdJs3BPsf6PgKPMbWd/5+FRC3AhkIVG
-         FI3XYeA8UpAQSbcqzZf+PVZmiEGnvEoj+dFeVax8XYyaQdKtxjE+YZTM+FH4qgNcWzGK
-         HM7Q==
-X-Gm-Message-State: AOAM533253XGmyFp4w5LiptMdCLMzv3JLG2FpI98lA/Mh3zGNtQwkB//
-        1/hiwDVEXnyjJzQ1jSts7iE=
-X-Google-Smtp-Source: ABdhPJwo3cwjeGHQ5xRGdA3EB/ZRgGK4/CGZrFamiC+y+cVjfMzrcPiZs/z7H9hN90W4H7KJOe0NkA==
-X-Received: by 2002:a17:906:29c2:b0:6f3:da29:8304 with SMTP id y2-20020a17090629c200b006f3da298304mr29191280eje.569.1652334906641;
-        Wed, 11 May 2022 22:55:06 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id rk6-20020a170907214600b006f3ef214dd9sm1711643ejb.63.2022.05.11.22.55.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 22:55:06 -0700 (PDT)
-Message-ID: <6d7750e9-bfb9-9b2f-4152-8e0d693ba22e@kernel.org>
-Date:   Thu, 12 May 2022 07:55:04 +0200
+        Thu, 12 May 2022 01:56:06 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B17A20F4C
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 22:56:04 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R391e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VCzTOIt_1652334961;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCzTOIt_1652334961)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 12 May 2022 13:56:01 +0800
+From:   Jeffle Xu <jefflexu@linux.alibaba.com>
+To:     xiang@kernel.org, chao@kernel.org, linux-erofs@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH v2] erofs: scan devices from device table
+Date:   Thu, 12 May 2022 13:56:01 +0800
+Message-Id: <20220512055601.106109-1-jefflexu@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 5.17 000/140] 5.17.7-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220510130741.600270947@linuxfoundation.org>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10. 05. 22, 15:06, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.7 release.
-> There are 140 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 12 May 2022 13:07:16 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.7-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> and the diffstat can be found below.
+When "-o device" mount option is not specified, scan the device table
+and instantiate the devices if there's any in the device table. In this
+case, the tag field of each device slot uniquely specifies a device.
 
-openSUSE configs¹⁾ all green.
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+---
+changes since v1:
+  tweak the error warning when device tag is empty
+---
+ fs/erofs/erofs_fs.h |   9 ++--
+ fs/erofs/super.c    | 102 ++++++++++++++++++++++++++++++--------------
+ 2 files changed, 72 insertions(+), 39 deletions(-)
 
-Tested-by: Jiri Slaby <jirislaby@kernel.org>
-
-¹⁾ armv6hl armv7hl arm64 i386 ppc64 ppc64le riscv64 s390x x86_64
-
+diff --git a/fs/erofs/erofs_fs.h b/fs/erofs/erofs_fs.h
+index 1238ca104f09..1adde3a813b4 100644
+--- a/fs/erofs/erofs_fs.h
++++ b/fs/erofs/erofs_fs.h
+@@ -37,12 +37,9 @@
+ #define EROFS_SB_EXTSLOT_SIZE	16
+ 
+ struct erofs_deviceslot {
+-	union {
+-		u8 uuid[16];		/* used for device manager later */
+-		u8 userdata[64];	/* digest(sha256), etc. */
+-	} u;
+-	__le32 blocks;			/* total fs blocks of this device */
+-	__le32 mapped_blkaddr;		/* map starting at mapped_blkaddr */
++	u8 tag[64];		/* digest(sha256), etc. */
++	__le32 blocks;		/* total fs blocks of this device */
++	__le32 mapped_blkaddr;	/* map starting at mapped_blkaddr */
+ 	u8 reserved[56];
+ };
+ #define EROFS_DEVT_SLOT_SIZE	sizeof(struct erofs_deviceslot)
+diff --git a/fs/erofs/super.c b/fs/erofs/super.c
+index 4a623630e1c4..7f0082cb4361 100644
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@ -219,7 +219,52 @@ static int erofs_load_compr_cfgs(struct super_block *sb,
+ }
+ #endif
+ 
+-static int erofs_init_devices(struct super_block *sb,
++static int erofs_init_device(struct erofs_buf *buf, struct super_block *sb,
++			     struct erofs_device_info *dif, erofs_off_t *pos)
++{
++	struct erofs_sb_info *sbi = EROFS_SB(sb);
++	struct erofs_deviceslot *dis;
++	struct block_device *bdev;
++	void *ptr;
++	int ret;
++
++	ptr = erofs_read_metabuf(buf, sb, erofs_blknr(*pos), EROFS_KMAP);
++	if (IS_ERR(ptr))
++		return PTR_ERR(ptr);
++	dis = ptr + erofs_blkoff(*pos);
++
++	if (!dif->path) {
++		if (!dis->tag[0]) {
++			erofs_err(sb, "empty device tag @ pos %llu", *pos);
++			return -EINVAL;
++		}
++		dif->path = kmemdup_nul(dis->tag, sizeof(dis->tag), GFP_KERNEL);
++		if (!dif->path)
++			return -ENOMEM;
++	}
++
++	if (erofs_is_fscache_mode(sb)) {
++		ret = erofs_fscache_register_cookie(sb, &dif->fscache,
++				dif->path, false);
++		if (ret)
++			return ret;
++	} else {
++		bdev = blkdev_get_by_path(dif->path, FMODE_READ | FMODE_EXCL,
++					  sb->s_type);
++		if (IS_ERR(bdev))
++			return PTR_ERR(bdev);
++		dif->bdev = bdev;
++		dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
++	}
++
++	dif->blocks = le32_to_cpu(dis->blocks);
++	dif->mapped_blkaddr = le32_to_cpu(dis->mapped_blkaddr);
++	sbi->total_blocks += dif->blocks;
++	*pos += EROFS_DEVT_SLOT_SIZE;
++	return 0;
++}
++
++static int erofs_scan_devices(struct super_block *sb,
+ 			      struct erofs_super_block *dsb)
+ {
+ 	struct erofs_sb_info *sbi = EROFS_SB(sb);
+@@ -227,8 +272,6 @@ static int erofs_init_devices(struct super_block *sb,
+ 	erofs_off_t pos;
+ 	struct erofs_buf buf = __EROFS_BUF_INITIALIZER;
+ 	struct erofs_device_info *dif;
+-	struct erofs_deviceslot *dis;
+-	void *ptr;
+ 	int id, err = 0;
+ 
+ 	sbi->total_blocks = sbi->primarydevice_blocks;
+@@ -237,7 +280,8 @@ static int erofs_init_devices(struct super_block *sb,
+ 	else
+ 		ondisk_extradevs = le16_to_cpu(dsb->extra_devices);
+ 
+-	if (ondisk_extradevs != sbi->devs->extra_devices) {
++	if (sbi->devs->extra_devices &&
++	    ondisk_extradevs != sbi->devs->extra_devices) {
+ 		erofs_err(sb, "extra devices don't match (ondisk %u, given %u)",
+ 			  ondisk_extradevs, sbi->devs->extra_devices);
+ 		return -EINVAL;
+@@ -248,39 +292,31 @@ static int erofs_init_devices(struct super_block *sb,
+ 	sbi->device_id_mask = roundup_pow_of_two(ondisk_extradevs + 1) - 1;
+ 	pos = le16_to_cpu(dsb->devt_slotoff) * EROFS_DEVT_SLOT_SIZE;
+ 	down_read(&sbi->devs->rwsem);
+-	idr_for_each_entry(&sbi->devs->tree, dif, id) {
+-		struct block_device *bdev;
+-
+-		ptr = erofs_read_metabuf(&buf, sb, erofs_blknr(pos),
+-					 EROFS_KMAP);
+-		if (IS_ERR(ptr)) {
+-			err = PTR_ERR(ptr);
+-			break;
+-		}
+-		dis = ptr + erofs_blkoff(pos);
+-
+-		if (erofs_is_fscache_mode(sb)) {
+-			err = erofs_fscache_register_cookie(sb, &dif->fscache,
+-							    dif->path, false);
++	if (sbi->devs->extra_devices) {
++		idr_for_each_entry(&sbi->devs->tree, dif, id) {
++			err = erofs_init_device(&buf, sb, dif, &pos);
+ 			if (err)
+ 				break;
+-		} else {
+-			bdev = blkdev_get_by_path(dif->path,
+-						  FMODE_READ | FMODE_EXCL,
+-						  sb->s_type);
+-			if (IS_ERR(bdev)) {
+-				err = PTR_ERR(bdev);
++		}
++	} else {
++		for (id = 0; id < ondisk_extradevs; id++) {
++			dif = kzalloc(sizeof(*dif), GFP_KERNEL);
++			if (!dif) {
++				err = -ENOMEM;
+ 				break;
+ 			}
+-			dif->bdev = bdev;
+-			dif->dax_dev = fs_dax_get_by_bdev(bdev,
+-							  &dif->dax_part_off);
+-		}
+ 
+-		dif->blocks = le32_to_cpu(dis->blocks);
+-		dif->mapped_blkaddr = le32_to_cpu(dis->mapped_blkaddr);
+-		sbi->total_blocks += dif->blocks;
+-		pos += EROFS_DEVT_SLOT_SIZE;
++			err = idr_alloc(&sbi->devs->tree, dif, 0, 0, GFP_KERNEL);
++			if (err < 0) {
++				kfree(dif);
++				break;
++			}
++			++sbi->devs->extra_devices;
++
++			err = erofs_init_device(&buf, sb, dif, &pos);
++			if (err)
++				break;
++		}
+ 	}
+ 	up_read(&sbi->devs->rwsem);
+ 	erofs_put_metabuf(&buf);
+@@ -367,7 +403,7 @@ static int erofs_read_superblock(struct super_block *sb)
+ 		goto out;
+ 
+ 	/* handle multiple devices */
+-	ret = erofs_init_devices(sb, dsb);
++	ret = erofs_scan_devices(sb, dsb);
+ 
+ 	if (erofs_sb_has_ztailpacking(sbi))
+ 		erofs_info(sb, "EXPERIMENTAL compressed inline data feature in use. Use at your own risk!");
 -- 
-js
-suse labs
+2.27.0
+
