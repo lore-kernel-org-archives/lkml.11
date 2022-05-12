@@ -2,97 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B678AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351379AbiELIF6 (ORCPT
+        id S1351298AbiELIKu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32778 "EHLO
+        Thu, 12 May 2022 04:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351298AbiELIFi (ORCPT
+        with ESMTP id S230017AbiELIKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:05:38 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3410B21089D;
-        Thu, 12 May 2022 01:05:33 -0700 (PDT)
-X-UUID: 207c2fe1f09a4c99a913b302ca87d276-20220512
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:42ea20ca-315a-4083-be47-db7937daa3c1,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:95
-X-CID-INFO: VERSION:1.1.4,REQID:42ea20ca-315a-4083-be47-db7937daa3c1,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:95
-X-CID-META: VersionHash:faefae9,CLOUDID:f989f3f1-ab23-4aed-a67b-f96514452486,C
-        OID:9788cbe1af47,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 207c2fe1f09a4c99a913b302ca87d276-20220512
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 394341360; Thu, 12 May 2022 16:05:26 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 12 May 2022 16:05:25 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 12 May 2022 16:05:25 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 May 2022 16:05:24 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>
-CC:     <airlied@linux.ie>, <matthias.bgg@gmail.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <jason-jh.lin@mediatek.com>, <nancy.lin@mediatek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v3 0/3] MediaTek MT8195 display binding
-Date:   Thu, 12 May 2022 16:05:20 +0800
-Message-ID: <20220512080523.25082-1-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Thu, 12 May 2022 04:10:44 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FAEE4C
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:10:40 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id cu23-20020a17090afa9700b001d98d8e53b7so5602221pjb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fYxJzIlygzVtOu994zXNVLK64i/sa8H3L0sgERB2T50=;
+        b=VRctKcDXv9xMu5JW5m0qsoBjvlr3ctTf+JhmvcxaOLPYGBFDbyPQTnhV8u6eCg0Mqu
+         6qQkxwkHtaZTTNk082+S62OFf9aslJZ8cS6p4tgPjg0b9poI3dONCo9PTXjzF7a1A1Mf
+         7e7oUKAomP3KFVPzcZRTWzSAFWaabh+xmnKYSF6f2Kvu53YJTzYJUpTnZrMVu0YU7jAN
+         80umIx2HFePbizdbEd9F2ldCh81iII5aJLrdwyZPDAFbJkDI6p/tkfJBxBbV1GjTozL5
+         tlGx9NyS8LtN7qltNMpZlcR9RKZ9Ya94NrIWmPc1Bo8Y4ROSmV6B2RFdWee4ItFk8Ymp
+         BlhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fYxJzIlygzVtOu994zXNVLK64i/sa8H3L0sgERB2T50=;
+        b=gxQjUDWFwGyuJuZDSxgUWTJGx97cAbY+Zcgc7vp2n3bcDE4G23mjsHo7+NIoZ70Mfz
+         NX8FLfZSEVFDpRYk+VrYmsA9Hi6iVAKih4BPJSuPf+k2x+K4sCz+tnZEbsj0smo1zeRs
+         5pNqAhT8gM4cNqgUB6iiE626z3KVYM9FrzqVl4sa4SIhEMbzOmv83vJDN7uVpyK+7foq
+         uuVEWuZ+qwAsuQOeU9e3O+9L0BFxiVz+CREVHnt9UXTyo64Zl7nvUq6qBLBfMY5fYNMf
+         CMk9/rxVxO2KNXqaExHWaTDk0hha++cGJf+O3QjCKgXRNP758v+hkRtL+8sUhFfOvf1g
+         x3tA==
+X-Gm-Message-State: AOAM5311LNfxCl+ORJfb6jylpssZ912VMTtiDemI5z4yWyjnf9kz5GXu
+        WXAk3y1oloUQ8vk7sGamDgg=
+X-Google-Smtp-Source: ABdhPJxWOE6dWlMK0mfC4ikh55aYQppXtqMkDNX4jcU8cX+Jt/bJ6LBoJnZyFghyC//BgxhUM1KKXA==
+X-Received: by 2002:a17:90a:e38c:b0:1de:b43f:f969 with SMTP id b12-20020a17090ae38c00b001deb43ff969mr9691861pjz.126.1652343040255;
+        Thu, 12 May 2022 01:10:40 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id 10-20020a17090a174a00b001d5f22845bdsm1737745pjm.1.2022.05.12.01.10.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 01:10:39 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Wei Xu <xuwei5@hisilicon.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Haojian Zhuang <haojian.zhuang@linaro.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] ARM: hisi: Fix refcount leak in hip04_smp_init
+Date:   Thu, 12 May 2022 12:10:31 +0400
+Message-Id: <20220512081031.24301-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add this series to present MediaTek display binding for MT8195.
-The reason I send this series is Jason and Nancy's binding patches are
-never received by devicetree mail server.
-Therefore, I help them to resend binding patches.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Changes for v3:
-1. Fix rdma and ethdr binding doc.
-2. Nancy's series: [1].
-3. This series is based on linux-next: next-20220511.
+Fixes: 9cdc99919a95 ("ARM: hisi: enable MCPM implementation")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ arch/arm/mach-hisi/platmcpm.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-Changes for v2:
-1. This patch is based on linux next-20220506.
-2. Jason's patches are accepted and I drop them.
-
-[1]: https://lore.kernel.org/all/20220512053128.31415-1-nancy.lin@mediatek.com/
-
-Nancy.Lin (3):
-  dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
-  dt-bindings: reset: mt8195: add vdosys1 reset control bit
-  dt-bindings: mediatek: add ethdr definition for mt8195
-
- .../display/mediatek/mediatek,ethdr.yaml      | 188 ++++++++++++++++++
- .../display/mediatek/mediatek,mdp-rdma.yaml   |  88 ++++++++
- include/dt-bindings/reset/mt8195-resets.h     |  45 +++++
- 3 files changed, 321 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
-
+diff --git a/arch/arm/mach-hisi/platmcpm.c b/arch/arm/mach-hisi/platmcpm.c
+index 258586e31333..e9b5d63ecf4c 100644
+--- a/arch/arm/mach-hisi/platmcpm.c
++++ b/arch/arm/mach-hisi/platmcpm.c
+@@ -274,6 +274,7 @@ static int __init hip04_smp_init(void)
+ 		goto err;
+ 	ret = of_property_read_u32_array(np, "boot-method",
+ 					 &hip04_boot_method[0], 4);
++	of_node_put(np);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -283,11 +284,11 @@ static int __init hip04_smp_init(void)
+ 		goto err;
+ 	np_fab = of_find_compatible_node(NULL, NULL, "hisilicon,hip04-fabric");
+ 	if (!np_fab)
+-		goto err;
++		goto err_put_sctl;
+ 
+ 	ret = memblock_reserve(hip04_boot_method[0], hip04_boot_method[1]);
+ 	if (ret)
+-		goto err;
++		goto err_put_fab;
+ 
+ 	relocation = ioremap(hip04_boot_method[2], hip04_boot_method[3]);
+ 	if (!relocation) {
+@@ -329,6 +330,8 @@ static int __init hip04_smp_init(void)
+ 	writel_relaxed(__pa_symbol(secondary_startup), relocation + 8);
+ 	writel_relaxed(0, relocation + 12);
+ 	iounmap(relocation);
++	of_node_put(np_fab);
++	of_node_put(np_sctl);
+ 
+ 	smp_set_ops(&hip04_smp_ops);
+ 	return ret;
+@@ -340,6 +343,10 @@ static int __init hip04_smp_init(void)
+ 	iounmap(relocation);
+ err_reloc:
+ 	memblock_phys_free(hip04_boot_method[0], hip04_boot_method[1]);
++err_put_fab:
++	of_node_put(np_fab);
++err_put_sctl:
++	of_node_put(np_sctl);
+ err:
+ 	return ret;
+ }
 -- 
-2.18.0
+2.25.1
 
