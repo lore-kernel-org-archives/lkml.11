@@ -2,145 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC51C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:51:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351210AbiELHvX (ORCPT
+        id S1350873AbiELHvf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 03:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
+        Thu, 12 May 2022 03:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351179AbiELHvP (ORCPT
+        with ESMTP id S1351176AbiELHvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 03:51:15 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2076.outbound.protection.outlook.com [40.107.236.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEA023BD7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:51:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TWx0ViBsm7Fo5OTKWhYFnzu3VVDTy48XomEB+yHj5/CNvtk3gms8s2r4cPTl8pYUUfGSJR2flQ3/ba2Tz7OrSI4xBjz6Ytjd5II+Z+UUPyhKkJr1P6XIfNPPigmgGOLDgDmkYQTh2wWQTAkLldHCobL7DRlGhVR2no/1IOZG5PtoP6hH4azwXzggiMh7/W8SFm0OpSCSqrslvMp2AJq5x+8A5ZIJ0I7ZUkJKtj3G0HZUxr2JG7C6v5Cs03M1TEiSu2foGGa6ZJwS/LSDoR7AJzZcRP0LM3kmPI9cem2PeXMWN+Xuy0ICaAODxBwoJ/W9/7THF5qzZOE6amsgjXKDIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hp2CQkeKufDpXiu33CxbPm9FCMw4CDft+U6WNmlxzc8=;
- b=mqMzXv153SvP5KdOOPtX25UoqzaDZtwSvKhupcF6IYHhr84uzQSBJHeMfRqX5gZutkmWxOIjbpz1cNoMKytytHgslGWwV/Ddo0ksyX1GCHvce4dibU3JyerRLzAlAy8a2kZWLbUSY28F6YiSBHF+zvN+v//ZbHMFduDmA3tI8ycunnghmbvQ6ohMrpiHU2KgVvCJEnwaYlazPWvW1aJXRLOgcCpobr0Hc2qnxBj4D2xpLUCT+RbTqy+Z5RuacdA3kBz91mKP4H5ojEGSBZ8MErdhbUniXjy1cqUYAdeUsRksXQ4fJQ/3FYG6di+3SDz1pJN5W9xm/7YelSDQRfCfTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hp2CQkeKufDpXiu33CxbPm9FCMw4CDft+U6WNmlxzc8=;
- b=BdtMjX0yGSPZ1XbQdeVmsAVlWxncqZbOGWjPad79VMBwNuzLXHPUeQXBKUlrnmKcW4dxb0PC5K8hf34ULSftGB1jovydEEuH/PTExZu/49b5qhTMAEOaa2gan0sJpWmETBVa8P7nJj2XYARImlSEaQVnhQUjG5tZEnZYwJZ2H8N65oc40TmBELRHFdpUIjogs2VFmdQzged4Vx9Rq8GszeTWlRAEuyCI4nLN3AyfSFGBTaoKUZJosSvhlWcc2l4Sh+bS+0IPRinUxTmicY+9N3p/FD4KOYwlsHvvbdCkG8Ppdt6pOC8uLtkwSrNtSBM6oiXvLiB6h0BLSd/e2M8sQA==
-Received: from MW4PR04CA0248.namprd04.prod.outlook.com (2603:10b6:303:88::13)
- by BY5PR12MB3906.namprd12.prod.outlook.com (2603:10b6:a03:1a9::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Thu, 12 May
- 2022 07:51:07 +0000
-Received: from CO1NAM11FT011.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:88:cafe::b1) by MW4PR04CA0248.outlook.office365.com
- (2603:10b6:303:88::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14 via Frontend
- Transport; Thu, 12 May 2022 07:51:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT011.mail.protection.outlook.com (10.13.175.186) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5250.13 via Frontend Transport; Thu, 12 May 2022 07:51:07 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Thu, 12 May 2022 07:51:06 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 12 May 2022 00:51:06 -0700
-Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Thu, 12 May 2022 00:51:04 -0700
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, <si-wei.liu@oracle.com>,
-        Eli Cohen <elic@nvidia.com>
-Subject: [PATCH v6 1/4] vdpa: Fix error logic in vdpa_nl_cmd_dev_get_doit
-Date:   Thu, 12 May 2022 10:50:57 +0300
-Message-ID: <20220512075100.1715286-2-elic@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220512075100.1715286-1-elic@nvidia.com>
-References: <20220512075100.1715286-1-elic@nvidia.com>
+X-Greylist: delayed 372 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 00:51:09 PDT
+Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6841838F;
+        Thu, 12 May 2022 00:51:08 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id DB9CC2B059AE;
+        Thu, 12 May 2022 03:44:50 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 12 May 2022 03:44:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1652341490; x=
+        1652348690; bh=F/3C1V38ahUzifyHzEs+CWDQJfKIOWf16zUshCZyYK4=; b=f
+        oyo14B5q77HWBztYyB6jy0JiEQ9Ii/BiEb6AG0JsU2fDxdZqUcK68yNGAC7EoaS0
+        MLdiGoW2wTpmdb51vgwhwQiNWtPftgTIU60n5uuzPE360fUVgjTUAya9IPqnwNKb
+        BnviiRI1bsbrEa+UsHZFVi+kJ9LICkw7R3oWYCMgAfhrwml2d5eev3yTn9skCxBg
+        VH8/RSJY4M5b81xtpsc+F9ey0/umPWOxbsk7XMP+7d9G9PDaBbhhl/f5taTsz5RB
+        6dmN6bGq0hhSJ7jW2s6IqG39WvMgsRgpCq0P2vXnglINSYJVGREHl0DALEPDRllK
+        ioGt2OrO1hw7MXf06E+fg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1652341490; x=1652348690; bh=F/3C1V38ahUzi
+        fyHzEs+CWDQJfKIOWf16zUshCZyYK4=; b=PwYCoCpllwsaeQDZ/UbNYqufIcU3D
+        ZUWgY8F7k7Saqv2O6zyjaOoYF5xcDIWEnLSGiwdoo9z8lCBMr/tHJh5b0zfeFWE6
+        /Z2RCJLc+r2pnrvNhImcW02ht7w/mv4bgobAnb9k0gXLDcWXAQYuz3K1z9POKN/y
+        S/eqJzDh+501oGPp9exuG3dzomL2dp5vuGlGULmmWXC8cqRqYHf4z9q8S2BE/UHo
+        6LyF8q2ZC7+aDXKLXASdRi94nP7is08wABRLovnl/szz04ritVADLELl1cAAm1+2
+        90qcou1rCuxePxCOn11vTIOW78qBQGe0KsUAxnEyD9NN9GYZScntiuXrg==
+X-ME-Sender: <xms:8bp8YqcK-fdwBudEcm5H1P_35GB8Y7LkLxZ4zJkH7TKJFPY--ts9wQ>
+    <xme:8bp8YkOvhUAnmlQU_F1xaAbi92HOEjaEU2MhKVss9NVtJC1EMVj_Hk3wd-nXqt7XK
+    R68JXUE9Mg8QkPMOf4>
+X-ME-Received: <xmr:8bp8Yrgphjel3L9AUZeENPZqw0iDm42eTLMqQ_jugzMVv5Ex1vLAqdXFGcdo-J9RZVw2IZo3EkihHmK8LVQqL50inCCR6S8SR81EWos>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgeeigdduvdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggugfgjsehtqhertddttddvnecuhfhrohhmpeforgig
+    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
+    grthhtvghrnhepheejffefgefgieevjedvfffgvdfghedtgfdvueejvdejgfffvdeuteei
+    vedufedvnecuffhomhgrihhnpegsohhothhlihhnrdgtohhmnecuvehluhhsthgvrhfuih
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordht
+    vggthh
+X-ME-Proxy: <xmx:8bp8Yn9_Hnhd8voI202NNd_FlS4bmUHGt3SBFFkI5a5B-1Sfmlps8Q>
+    <xmx:8bp8Ymsn4HLY6Dqe7h0m9lGhr8Ulxluora9B7319zC42M3vRgIlJhg>
+    <xmx:8bp8YuGGZe5sCyNbypDOt_k8OycLAKInPJrliLcAmGL5wufwJB_p0w>
+    <xmx:8rp8Yu2wRlaVZOp8yBGYU65RItWFtHlRMmFrvZtBCrOu7SA0hzrdwpMFxjs>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 12 May 2022 03:44:48 -0400 (EDT)
+Date:   Thu, 12 May 2022 09:44:46 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Guillaume Ranquet <granquet@baylibre.com>
+Cc:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
+        chunfeng.yun@mediatek.com, chunkuang.hu@kernel.org,
+        ck.hu@mediatek.com, daniel@ffwll.ch, deller@gmx.de,
+        jitao.shi@mediatek.com, kishon@ti.com, krzk+dt@kernel.org,
+        maarten.lankhorst@linux.intel.com, matthias.bgg@gmail.com,
+        p.zabel@pengutronix.de, robh+dt@kernel.org, tzimmermann@suse.de,
+        vkoul@kernel.org, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-phy@lists.infradead.org, markyacoub@google.com,
+        Markus Schneider-Pargmann <msp@baylibre.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v9 18/22] drm/mediatek: Add mt8195 Embedded DisplayPort
+ driver
+Message-ID: <20220512074446.ihilbbnbuwesxbbg@houat>
+References: <20220327223927.20848-1-granquet@baylibre.com>
+ <20220327223927.20848-19-granquet@baylibre.com>
+ <20220429083933.q3w75q3zuyyuvo4w@houat>
+ <CABnWg9tzhZjrdKT4chkDrY-uH8BMUoxyNLUSwfuG6Sv1J+8ddg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a28aac7e-7631-41f1-c3ea-08da33ec2c22
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3906:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB39060C43DC5D78DD6D6AB3AEABCB9@BY5PR12MB3906.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1VNnOp9VNDR7JUer9MYmWILcuOldMNSEkYYitX00rNOUsu/HpoZPlyBtc9My1TqkuDams02nS7hvLFdiB9azhZQoKMcGXP2wQeousKSbUUHISVV4tBkzouedYENjQKvqWCKKaUY4FBjC+EQ/AYLy5/WS0glbTbf4SuIkuYo1Rs5A8pNDf4+x9vqyMkZqBYlo361xkINWedGLtSVCSkptu134F84tCBzrCzxdnSqwl1ccaEG9bANjczZW+UGt/FyS+7O+Mv3ojx1GUtfnZuM62cB4JdUqtox7BccbjoXChsXNL4t2y1QBPTXMM5gYwMVyWjoKniNZp/Uf77gasSRxOkPBvEj83+iPNCOmyczpOK+V54fhg7Q0vTb1FvAe0VYcZqLhQNTHCCLNEEpOokEqEEAPUjmGZtzTc/hrZo3SpRCkM5QhgFRA99AEkVkmXkN23vggFz6Xrk3k9P3niMm38auKgd0coResNBRBxPcE0lFYMPOrrjkM6zLhBghEWhoE7NDhRtNJ1YgSzZj0lCbpr6+ppceDp1Kgddo6otlrt2XhAa+NHUhwv8y526FSkYwpT95fuPyk1Eyz4ZbcBDLWqUsJ1QAthM/RkmGtWvfEHzBT49UwORq3J/9XAE+F94aEDNs7cIDgb7fS0na0b39wHmN064b9e5LHj4zwhRxNy1exz+Ib5sq3acU724xhKv87W0Gy5eT1bK7iHgho93zPZQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(26005)(2616005)(40460700003)(107886003)(36860700001)(8676002)(36756003)(4326008)(82310400005)(47076005)(186003)(1076003)(426003)(336012)(110136005)(316002)(70586007)(54906003)(70206006)(2906002)(5660300002)(6666004)(86362001)(508600001)(8936002)(7696005)(81166007)(356005)(83380400001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 07:51:07.0870
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a28aac7e-7631-41f1-c3ea-08da33ec2c22
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT011.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3906
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CABnWg9tzhZjrdKT4chkDrY-uH8BMUoxyNLUSwfuG6Sv1J+8ddg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In vdpa_nl_cmd_dev_get_doit(), if the call to genlmsg_reply() fails we
-must not call nlmsg_free() since this is done inside genlmsg_reply().
+Hi,
 
-Fix it.
+On Wed, May 11, 2022 at 05:59:13AM -0700, Guillaume Ranquet wrote:
+> >> +#include <drm/drm_atomic_helper.h>
+> >> +#include <drm/drm_bridge.h>
+> >> +#include <drm/drm_crtc.h>
+> >> +#include <drm/dp/drm_dp_helper.h>
+> >> +#include <drm/drm_edid.h>
+> >> +#include <drm/drm_of.h>
+> >> +#include <drm/drm_panel.h>
+> >> +#include <drm/drm_print.h>
+> >> +#include <drm/drm_probe_helper.h>
+> >> +#include <linux/arm-smccc.h>
+> >> +#include <linux/clk.h>
+> >> +#include <linux/delay.h>
+> >> +#include <linux/errno.h>
+> >> +#include <linux/kernel.h>
+> >> +#include <linux/mfd/syscon.h>
+> >> +#include <linux/nvmem-consumer.h>
+> >> +#include <linux/of.h>
+> >> +#include <linux/of_irq.h>
+> >> +#include <linux/of_platform.h>
+> >> +#include <linux/phy/phy.h>
+> >> +#include <linux/platform_device.h>
+> >> +#include <linux/pm_runtime.h>
+> >> +#include <linux/regmap.h>
+> >> +#include <sound/hdmi-codec.h>
+> >> +#include <video/videomode.h>
+> >> +
+> >> +#include "mtk_dp_reg.h"
+> >> +
+> >> +#define MTK_DP_AUX_WAIT_REPLY_COUNT 20
+> >> +#define MTK_DP_CHECK_SINK_CAP_TIMEOUT_COUNT 3
+> >> +
+> >> +//TODO: platform/device data or dts?
+> >
+> >DTS :)
+>=20
+> It's probably going to be a platform_data struct for v10...
+> If I have time, I'll change it to a dts property for v10.
 
-Fixes: bc0d90ee021f ("vdpa: Enable user to query vdpa device info")
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- drivers/vdpa/vdpa.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+I can't really imagine a case where we would need platform_data
+nowadays. If you have a device tree, then it should be part of the
+binding.
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 2b75c00b1005..fac89a0d8178 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -756,14 +756,19 @@ static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info *info)
- 		goto mdev_err;
- 	}
- 	err = vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info->extack);
--	if (!err)
--		err = genlmsg_reply(msg, info);
-+	if (err)
-+		goto mdev_err;
-+
-+	err = genlmsg_reply(msg, info);
-+	put_device(dev);
-+	mutex_unlock(&vdpa_dev_mutex);
-+	return err;
-+
- mdev_err:
- 	put_device(dev);
- err:
- 	mutex_unlock(&vdpa_dev_mutex);
--	if (err)
--		nlmsg_free(msg);
-+	nlmsg_free(msg);
- 	return err;
- }
- 
--- 
-2.35.1
+What issue would you like to address by using a platform_data?
 
+> >> +static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge =
+*bridge)
+> >> +{
+> >> +	return connector_status_connected;
+> >> +}
+> >
+> >I'm not quite sure what's going on there. You seem to have some support
+> >for HPD interrupts above, but you always report the display as
+> >connected?
+> >
+> >I'd assume that either you don't have HPD support and then always report
+> >it as connected, or you have HPD support and report the current status
+> >in detect, but that combination seems weird.
+>=20
+> The HPD logic needs more work, some things have been broken when I split
+> the driver into three patches eDP - DP - Audio
+> The assumption at first was that eDP didn't need any HPD handling... but =
+it
+> seems I was wrong and the eDP driver needs to be reworked.
+
+That can be made into a patch of its own if you prefer.
+
+You first introduce the driver without status reporting (always
+returning connected or unknown), and then add the needed bits for HPD.
+
+However, that first patch shouldn't contain the interrupt plumbing and
+so on, it's just confusing.
+
+> >> +static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
+> >> +				    struct drm_connector *connector)
+> >> +{
+> >> +	struct mtk_dp *mtk_dp =3D mtk_dp_from_bridge(bridge);
+> >> +	bool enabled =3D mtk_dp->enabled;
+> >> +	struct edid *new_edid =3D NULL;
+> >> +
+> >> +	if (!enabled)
+> >> +		drm_bridge_chain_pre_enable(bridge);
+> >> +
+> >> +	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D0);
+> >> +	usleep_range(2000, 5000);
+> >> +
+> >> +	if (mtk_dp_plug_state(mtk_dp))
+> >> +		new_edid =3D drm_get_edid(connector, &mtk_dp->aux.ddc);
+> >> +
+> >> +	if (!enabled)
+> >> +		drm_bridge_chain_post_disable(bridge);
+> >
+> >Are you sure we can't get a mode set while get_edid is called?
+> >
+> >If we can, then you could end up disabling the device while it's being
+> >powered on.
+>=20
+> I'm a bit unsure, I need to spend more time in the drm stack to make sure.
+> I'll get back to you when I have a definitive answer.
+
+So, it looks like it's ok.
+
+get_edid is your implementation of get_modes, which is called by
+drm_helper_probe_single_connector_modes
+
+https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/drm_probe_he=
+lper.c#L416
+
+This is the standard implemantion of fill_modes, which is called
+whenever the get_connector ioctl is called (or similar paths, like
+drm_client_modeset_probe)
+
+drm_helper_probe_single_connector_modes is under the assumption that the
+mode_config.mutex is held though, and that the big lock. So it should be
+serialized there.
+
+Just for future proofing though, it would be better to use refcounting
+there. Would runtime_pm work for you there?
+
+> >> +static void mtk_dp_parse_drm_mode_timings(struct mtk_dp *mtk_dp,
+> >> +					  struct drm_display_mode *mode)
+> >> +{
+> >> +	struct mtk_dp_timings *timings =3D &mtk_dp->info.timings;
+> >> +
+> >> +	drm_display_mode_to_videomode(mode, &timings->vm);
+> >> +	timings->frame_rate =3D mode->clock * 1000 / mode->htotal / mode->vt=
+otal;
+> >
+> >drm_mode_vrefresh()
+> >
+> >> +	timings->htotal =3D mode->htotal;
+> >> +	timings->vtotal =3D mode->vtotal;
+> >> +}
+> >
+> >It's not really clear to me why you need to duplicate drm_display_mode
+> >here?
+> >
+> It's saved to be re-used in mtk_dp_set_msa().
+> It's not ideal, I'll check if I can get the mode directly from mtk_dp_set=
+_msa()
+
+Yeah, it looks like mtk_dp_set_msa() uses fairly straightforward values,
+this will be just as easy with drm_display_mode.
+
+Maxime
