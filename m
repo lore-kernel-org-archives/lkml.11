@@ -2,83 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1700DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD62CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353891AbiELMjE (ORCPT
+        id S1353892AbiELMjZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        Thu, 12 May 2022 08:39:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353881AbiELMjB (ORCPT
+        with ESMTP id S1347397AbiELMjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:39:01 -0400
-Received: from mail-40136.proton.ch (mail-40136.proton.ch [185.70.40.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D5162216
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:38:59 -0700 (PDT)
-Date:   Thu, 12 May 2022 12:38:50 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
-        s=protonmail2; t=1652359137;
-        bh=1bDLbtT4qPpVkhxVZ9YG4YTO1unO0O6HGenM4HeSJ2w=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
-         Feedback-ID:Message-ID;
-        b=V/DCcifQUB+ddK2jWtHHqRxmowantA3oMaNHU+uKPhjqqLt6tXyrgZW4uvCwzGWGs
-         mcVXVzWdls/yeWPWw2De+EDnLCRZZrlIv08C+k6RhSoClPywTIj6cq8xmZduXGi5ve
-         mpp7X6yxALpSdESq4dF54JDghdDOstCFvQh7nPDlyKSMXmIL2B2OxoPO53I9n8QHEh
-         6TYcH6NNSVwP0iVt6jpeZpotvM1iYIhNDmmpX/HEHJjuKtIThAMldkSlTfHE5S8Gwm
-         Lj+dUjv2xBdSF2pJ4e/G8pjv1Gw0mjNFQCPAugKLUMDRQuBe2VDxPCRemFBfubUlFH
-         G7Dp3F3RJY2VQ==
-To:     Amir Goldstein <amir73il@gmail.com>
-From:   Simon Ser <contact@emersion.fr>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
-Reply-To: Simon Ser <contact@emersion.fr>
-Subject: Re: procfs: open("/proc/self/fd/...") allows bypassing O_RDONLY
-Message-ID: <Uc-5mYLV3EgTlSFyEEzmpLvNdXKVJSL9pOSCiNylGIONHoljlV9kKizN2bz6lHsTDPDR_4ugSxLYNCO7xjdSeF3daahq8_kvxWhpIvXcuHA=@emersion.fr>
-In-Reply-To: <CAOQ4uxjOOe0aouDYNdkVyk7Mu1jQ-eY-6XoW=FrVRtKyBd2KFg@mail.gmail.com>
-References: <lGo7a4qQABKb-u_xsz6p-QtLIy2bzciBLTUJ7-ksv7ppK3mRrJhXqFmCFU4AtQf6EyrZUrYuSLDMBHEUMe5st_iT9VcRuyYPMU_jVpSzoWg=@emersion.fr> <CAOQ4uxjOOe0aouDYNdkVyk7Mu1jQ-eY-6XoW=FrVRtKyBd2KFg@mail.gmail.com>
-Feedback-ID: 1358184:user:proton
+        Thu, 12 May 2022 08:39:23 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3F462136
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:39:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652359162; x=1683895162;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ylfevFr8DAKKlnOWSQ7Fkq7Eg5B5wM7FmiEl79rW8r0=;
+  b=TlovMbEELLo704acggZyaGg5gKM1b0Cxno8mmr5dmO5xauAjEDbuQ5a6
+   Cp+sZt3+oQtqMO3sJdsBiEa6iEggcQt/UZz/URyAoCvVFvjO0jS7XoBrQ
+   KtCaqg19enT38srfFJaKiB+qZRlOUTyiz26fu4kkfW9xQkaSwUuVawsNb
+   QyLOsolhJrgLV7iDNY/xcbVZ5LDFO4z221xK5oD1IYQuUGKJl9l4Sm96+
+   glNaUkEKtJA61CV9iFXLVygPj/lM9bfsdpiowlV4Z8CiozRh6jMWqSTYD
+   0X4P1c+/Un1GQE5mk4GVDpd+t+t/4QszJJTm5yEJ/hnc9MVDYOHU8m+oJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="249886272"
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="249886272"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 05:39:22 -0700
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="594647779"
+Received: from hezhu1-mobl1.ccr.corp.intel.com (HELO [10.255.29.168]) ([10.255.29.168])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 05:39:18 -0700
+Message-ID: <bf79924a-2501-c835-6bf8-ab2810df8e92@linux.intel.com>
+Date:   Thu, 12 May 2022 20:39:16 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 08/12] iommu/sva: Use attach/detach_pasid_dev in SVA
+ interfaces
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
+ <20220510061738.2761430-9-baolu.lu@linux.intel.com>
+ <20220510152330.GG49344@nvidia.com>
+ <749a7d62-3e6c-ef5c-beaf-6b7add495740@linux.intel.com>
+ <20220511145319.GZ49344@nvidia.com>
+ <05a68e1e-8e18-5914-ebe7-d7b1a4aaa2ec@linux.intel.com>
+ <20220512115136.GV49344@nvidia.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220512115136.GV49344@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday, May 12th, 2022 at 14:30, Amir Goldstein <amir73il@gmail.com> w=
-rote:
+On 2022/5/12 19:51, Jason Gunthorpe wrote:
+> On Thu, May 12, 2022 at 11:02:39AM +0800, Baolu Lu wrote:
+>>>> +       mutex_lock(&group->mutex);
+>>>> +       domain = xa_load(&group->pasid_array, pasid);
+>>>> +       if (domain && domain->type != type)
+>>>> +               domain = NULL;
+>>>> +       mutex_unlock(&group->mutex);
+>>>> +       iommu_group_put(group);
+>>>> +
+>>>> +       return domain;
+>>> This is bad locking, group->pasid_array values cannot be taken outside
+>>> the lock.
+>>
+>> It's not iommu core, but SVA (or other feature components) that manage
+>> the life cycle of a domain. The iommu core only provides a place to
+>> store the domain pointer. The feature components are free to fetch their
+>> domain pointers from iommu core as long as they are sure that the domain
+>> is alive during use.
+> 
+> I'm not convinced.
 
-> Clients can also readlink("/proc/self/fd/<fd>") to get the path of the fi=
-le
-> and open it from its path (if path is accessible in their mount namespace=
-).
+I'm sorry, I may not have explained it clearly. :-)
 
-What the compositor does is:
+This helper is safe for uses inside the IOMMU subsystem. We could trust
+ourselves that nobody will abuse this helper to obtain domains belonging
+to others as the pasid has been allocated for SVA code. No other code
+should be able to setup another type of domain for this pasid. The SVA
+code has its own lock mechanism to avoid using after free.
 
-- shm_open with O_RDWR
-- Write the kyeboard keymap
-- shm_open again the same file with O_RDONLY
-- shm_unlink
-- Send the O_RDONLY FD to clients
+Please correct me if I missed anything. :-) By the way, I can see some
+similar helpers in current IOMMU core. For example,
 
-Thus, the file doesn't exist anymore when clients get the FD.
+struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+{
+         struct iommu_domain *domain;
+         struct iommu_group *group;
 
-> Would the clients typically have write permission to those files?
-> Do they need to?
+         group = iommu_group_get(dev);
+         if (!group)
+                 return NULL;
 
-Compositors need to disallow clients from writing to the shared files.
-If a client gets write access to the shared file, they can corrupt the
-keyboard keymap (and other data) used by all other clients.
+         domain = group->domain;
 
-> > intended behavior, what would be a good way to share a FD to another
-> > process without allowing it to write to the underlying file?
->
-> If wayland can use a read-only bind mount to the location of the files th=
-at it
-> needs to share, then re-open will get EROFS.
+         iommu_group_put(group);
 
-Wayland just uses FD passing via Unix sockets to share memory. It
-doesn't (and can't) assume anything regarding the filesystem layout,
-because the clients might be running in a separate namespace with a
-completely different layout (e.g. Flatpak).
+         return domain;
+}
+EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
+
+Best regards,
+baolu
