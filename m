@@ -2,96 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D839C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289A1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355673AbiELO6i (ORCPT
+        id S1355669AbiELO7t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
+        Thu, 12 May 2022 10:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355658AbiELO6d (ORCPT
+        with ESMTP id S1343585AbiELO7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:58:33 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE9F61623
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:58:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652367512; x=1683903512;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=HHQyiwPlqk0e9BRwZTAegPJZgZasFfmx8ffD3LYyccQ=;
-  b=Er4UBdiokcqyiXkD3m3Yr8jxXMXpysaL312K0iQEoUnPrfojOydwaXc9
-   HJxDzUNcGHu/E8YrGNayk46edeFkYhzbZnYjiLTX/+70xgyVCr0NXZQKN
-   iXzLCtzXQmtP91Ew+mH/z/W8UjlNrhG+VTt8JwOi/ArTDDyOC90mUX81E
-   sDVGh+LxwRZ/hw5ztXhdeYNiAbgCLmeJlglaITZJA8IVHCojg2nBFAKqK
-   bHR+eqeUY0XBGyAXfhI7XocopjeYilknYnCJyUboKbGWWtcrezRz6ta6H
-   ET4H1dSOZUobpyHjwzHtFVsfvvXP+EAMD3oD5w4re9CMfcHVfrEjkweow
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="269697173"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="269697173"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 07:58:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="698057289"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 12 May 2022 07:58:30 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npAGr-000KbM-QC;
-        Thu, 12 May 2022 14:58:29 +0000
-Date:   Thu, 12 May 2022 22:57:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [linux-stable-rc:linux-5.15.y 2544/6451]
- drivers/mfd/atmel-flexcom.c:108:32: warning: 'atmel_flexcom_pm_ops' defined
- but not used
-Message-ID: <202205122255.WcGtKiOs-lkp@intel.com>
+        Thu, 12 May 2022 10:59:47 -0400
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6495DD1A;
+        Thu, 12 May 2022 07:59:46 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id r11so10256083ybg.6;
+        Thu, 12 May 2022 07:59:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fjYn5CDwHEMqMskpcbiPZayzeTiT7uRz4ad7VPAKrRw=;
+        b=7j2R32O3Dwq/dWERL615t6d09AukLIrkrdhJt+P3Z3sJT736FMZW6HsVqzIjNzWOAH
+         FsZ0SjDS+ETvS0ET06Uk8bpDWh0CjHzzLq/fMGVVoEgIgtHFXvA1bv3J91T4OPJtEYek
+         PcEnU5F34egDtiYW5k6poaXjEg0r7jKSBcLrj5f84wvudRTlz7TTJh6ttKb6VMIlWZDI
+         gDsfqg+kSf6EfCl1fvPs0qY8VOCSWIsapjdQ4y0f37JMyKmG78olWP+pGvAMDyzsFRRs
+         fXp7CXLO0QIoUYkWSgZI5SsTWYCZhdcww7byG49Cz0TZMy9JLUfpKUceh+LvzzCZoSjt
+         QcrA==
+X-Gm-Message-State: AOAM531G6O5POnXPhDgf8Nw0fEIDm5lS2tZwnLt7rGaO24dlqzvqdkH6
+        g9CTUtiQY7UMYIPFK4l9e99I0urNCT5tyNIWikI=
+X-Google-Smtp-Source: ABdhPJxLwnU63w6zP3WMO3aOxg4t3ua4oFQ4Kt1pfaTnUynnFHIXlWHPpXsuUZNrYLHVMK32NvXshFVQYG6Uzb/vnI0=
+X-Received: by 2002:a25:c0d5:0:b0:64a:c6dd:1a00 with SMTP id
+ c204-20020a25c0d5000000b0064ac6dd1a00mr166815ybf.365.1652367585477; Thu, 12
+ May 2022 07:59:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220506204731.330378-1-ian@linux.cowan.aero>
+In-Reply-To: <20220506204731.330378-1-ian@linux.cowan.aero>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 12 May 2022 16:59:34 +0200
+Message-ID: <CAJZ5v0jStNBSPJoRPdY4NggwO5qr7oh1Wg2hauz084H_kyXQnw@mail.gmail.com>
+Subject: Re: [PATCH v2] drivers: acpi: clean up spaces to be consistent
+To:     Ian Cowan <ian@linux.cowan.aero>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-head:   c9e18547cc55752d0ff283cfeb47d2c556560b17
-commit: 6b6e7150c18becf39038245123ee07931149a105 [2544/6451] mfd: atmel-flexcom: Use .resume_noirq
-config: x86_64-randconfig-m001-20220509 (https://download.01.org/0day-ci/archive/20220512/202205122255.WcGtKiOs-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=6b6e7150c18becf39038245123ee07931149a105
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-5.15.y
-        git checkout 6b6e7150c18becf39038245123ee07931149a105
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/mfd/
+On Fri, May 6, 2022 at 10:54 PM Ian Cowan <ian@linux.cowan.aero> wrote:
+>
+> This cleans up a few line spaces so that it is consistent with the rest
+> of the file. There are a few places where a space was added before a
+> return and two spots where a double line space was made into one line
+> space.
+>
+> Signed-off-by: Ian Cowan <ian@linux.cowan.aero>
+> ---
+>  drivers/acpi/ac.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/acpi/ac.c b/drivers/acpi/ac.c
+> index db487ff9dd1b..f8ec48cd7659 100644
+> --- a/drivers/acpi/ac.c
+> +++ b/drivers/acpi/ac.c
+> @@ -32,7 +32,6 @@ MODULE_AUTHOR("Paul Diefenbaugh");
+>  MODULE_DESCRIPTION("ACPI AC Adapter Driver");
+>  MODULE_LICENSE("GPL");
+>
+> -
+>  static int acpi_ac_add(struct acpi_device *device);
+>  static int acpi_ac_remove(struct acpi_device *device);
+>  static void acpi_ac_notify(struct acpi_device *device, u32 event);
+> @@ -125,6 +124,7 @@ static int get_ac_property(struct power_supply *psy,
+>         default:
+>                 return -EINVAL;
+>         }
+> +
+>         return 0;
+>  }
+>
+> @@ -286,6 +288,7 @@ static int acpi_ac_resume(struct device *dev)
+>                 return 0;
+>         if (old_state != ac->state)
+>                 kobject_uevent(&ac->charger->dev.kobj, KOBJ_CHANGE);
+> +
+>         return 0;
+>  }
+>  #else
+> @@ -296,7 +299,6 @@ static int acpi_ac_remove(struct acpi_device *device)
+>  {
+>         struct acpi_ac *ac = NULL;
+>
+> -
+>         if (!device || !acpi_driver_data(device))
+>                 return -EINVAL;
+>
+> --
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/mfd/atmel-flexcom.c:108:32: warning: 'atmel_flexcom_pm_ops' defined but not used [-Wunused-const-variable=]
-     108 | static const struct dev_pm_ops atmel_flexcom_pm_ops = {
-         |                                ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +/atmel_flexcom_pm_ops +108 drivers/mfd/atmel-flexcom.c
-
-   107	
- > 108	static const struct dev_pm_ops atmel_flexcom_pm_ops = {
-   109		.resume_noirq = atmel_flexcom_resume_noirq,
-   110	};
-   111	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Applied with adjusted subject as 5.19 material, thanks!
