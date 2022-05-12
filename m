@@ -2,80 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F31C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 06:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07810C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 06:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350291AbiELGXS (ORCPT
+        id S1350287AbiELGXr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 02:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
+        Thu, 12 May 2022 02:23:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350280AbiELGXM (ORCPT
+        with ESMTP id S1350286AbiELGXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 02:23:12 -0400
-Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B79CA5710D;
-        Wed, 11 May 2022 23:23:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Message-ID:Date:MIME-Version:Subject:From; bh=rhTME
-        NYSOsfI37FnghuXHxFoK+Ars+jOQTa9yaXuOxs=; b=eiqZCGRM9VBFw9tZNbSX8
-        JOIN4cqZ2ifVSM1VYGY+nbxBerFd0SXYdWsmnimlAfIXl4ksZJZcweuSM1P8jTsT
-        bNUmRYgjys0dQjrJoJhlbTq4XK5FkXkScKOD9ubt2doiAlR57+2aUobiFYAqmgmb
-        Xcm+Dtw5tAVLaNEQcVqgMI=
-Received: from [192.168.3.102] (unknown [218.201.129.19])
-        by smtp7 (Coremail) with SMTP id C8CowACXlHmpp3xit+KCCA--.5483S2;
-        Thu, 12 May 2022 14:22:34 +0800 (CST)
-Message-ID: <4e5a263d-462b-b17a-d4c2-2b8b02faa589@163.com>
-Date:   Thu, 12 May 2022 14:22:33 +0800
+        Thu, 12 May 2022 02:23:43 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154AA57128;
+        Wed, 11 May 2022 23:23:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652336612;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:References:Cc:To:From:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=ZkBIc6Q0gdXP/pnup3PEDcuxEaaZqb9pnmXBD1pB/hs=;
+    b=E3yNUkKGbNwForlz0XMhl2Eb4xLzU299V/ZfyWT6DFFir7OT3n/nU4bpVZfQpnXvaT
+    Of1ObQ5uHY0/f4vKiW1t523oUUqRrZSGVUXjhNjFEuRhHSVdWM3yk6GNgQY7GoRZjO+W
+    Ho4mXXS4iyIxFOlQM28vlRfG2SdA2ITosBw69RHs92ufSMO/0v47Vjqq71pDbBAlDPyU
+    z2/JMO9zkJ/IDJTeBNg1cMcauCQO+4gqEeA9a12QgXY3zFfP9XC2eVQI3h/meik48IZC
+    lfaRFBPgFRZ/GqOP6Bdg8i4rwDvxTn7L97PSwHTrtaxjitIT+O3v3wk9YJ3K9DSWv5S4
+    8N6g==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00::b82]
+    by smtp.strato.de (RZmta 47.42.2 AUTH)
+    with ESMTPSA id 4544c9y4C6NWzZI
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 12 May 2022 08:23:32 +0200 (CEST)
+Message-ID: <f6cb7e44-226b-cffb-d907-9014075cdcb5@hartkopp.net>
+Date:   Thu, 12 May 2022 08:23:26 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2] drivers: cpufreq: sun8i-r40: Add cpufreq support
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
 Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     =?UTF-8?Q?Jernej_=c5=a0krabec?= <jernej.skrabec@gmail.com>,
-        linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-References: <20220510003611.1812-1-qianfanguijin@163.com>
- <1902551.yKVeVyVuyW@kista> <01c2c11f-71fd-b735-b935-109865d62de5@163.com>
- <20220512045838.tvixosxbey5ksp6j@vireshk-i7>
-From:   qianfan <qianfanguijin@163.com>
-In-Reply-To: <20220512045838.tvixosxbey5ksp6j@vireshk-i7>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Jander <david@protonic.nl>
+References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
+ <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
+ <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
+ <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
+ <002d234f-a7d6-7b1a-72f4-157d7a283446@hartkopp.net>
+ <20220511145437.oezwkcprqiv5lfda@pengutronix.de>
+ <3c6bf83c-0d91-ea43-1a5d-27df7db1fb08@hartkopp.net>
+In-Reply-To: <3c6bf83c-0d91-ea43-1a5d-27df7db1fb08@hartkopp.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8CowACXlHmpp3xit+KCCA--.5483S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKF4DCw4xJFykuF43Cr1UAwb_yoW3CFc_Gr
-        Z8Zry0y392qF1rtayfKrn7G39rGa9rCrWUAryrJFs3t3yFva45XayDCa1qqa4UKw409F9r
-        Xw1Yyr4UWFZ09jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjiFxUUUUUU==
-X-Originating-IP: [218.201.129.19]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiGgr+7VaEBicASAAAs4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Marc,
+
+On 11.05.22 16:57, Oliver Hartkopp wrote:
+> 
+> 
+> On 5/11/22 16:54, Marc Kleine-Budde wrote:
+>> On 11.05.2022 16:50:06, Oliver Hartkopp wrote:
+>>>
+>>>
+>>> On 5/11/22 16:36, Marc Kleine-Budde wrote:
+>>>> On 11.05.2022 15:24:21, Marc Kleine-Budde wrote:
+>>>>> On 11.05.2022 14:38:32, Oliver Hartkopp wrote:
+>>>>>> IMO this patch does not work as intended.
+>>>>>>
+>>>>>> You probably need to revisit every place where can_skb_reserve() 
+>>>>>> is used,
+>>>>>> e.g. in raw_sendmsg().
+>>>>>
+>>>>> And the loopback for devices that don't support IFF_ECHO:
+>>>>>
+>>>>> | https://elixir.bootlin.com/linux/latest/source/net/can/af_can.c#L257
+>>>>
+>>>> BTW: There is a bug with interfaces that don't support IFF_ECHO.
+>>>>
+>>>> Assume an invalid CAN frame is passed to can_send() on an interface 
+>>>> that
+>>>> doesn't support IFF_ECHO. The above mentioned code does happily 
+>>>> generate
+>>>> an echo frame and it's send, even if the driver drops it, due to
+>>>> can_dropped_invalid_skb(dev, skb).
+>>>>
+>>>> The echoed back CAN frame is treated in raw_rcv() as if the headroom 
+>>>> is valid:
+I double checked that code and when I didn't miss anything all the 
+callers of can_send() (e.g. raw_sendmsg()) are creating valid skbs.
+
+https://elixir.bootlin.com/linux/v5.17.6/A/ident/can_send
+
+>>>>
+>>>> | https://elixir.bootlin.com/linux/v5.17.6/source/net/can/raw.c#L138
+>>>>
+>>>> But as far as I can see the can_skb_headroom_valid() check never has
+>>>> been done. What about this patch?
+>>>>
+>>>> index 1fb49d51b25d..fda4807ad165 100644
+>>>> --- a/net/can/af_can.c
+>>>> +++ b/net/can/af_can.c
+>>>> @@ -255,6 +255,9 @@ int can_send(struct sk_buff *skb, int loop)
+>>>>                    */
+>>>>                   if (!(skb->dev->flags & IFF_ECHO)) {
+>>>> +                       if (can_dropped_invalid_skb(dev, skb))
+>>>> +                               return -EINVAL;
+>>>> +
+
+That would make this change unnecessary, right?
+
+IIRC the reason for can_dropped_invalid_skb() is to prove valid skbs for 
+CAN interface drivers when CAN frame skbs are created e.g. with 
+PF_PACKET sockets.
+
+Best,
+Oliver
 
 
-在 2022/5/12 12:58, Viresh Kumar 写道:
-> On 12-05-22, 12:34, qianfan wrote:
->> Actually I'm not make sure the difference, seems both of them can work.
->> Most of allwinner device_id is added in allowlist, so I did this.
-> For OPP V1 the cpufreq device isn't created by default and hence the allowlist
-> allows us to know the devices for which the device shall be created.
->
-> For OPP V2, we have the compatible string available and with help of that we
-> create a device without need of any entry to any list. The blocklist however
-> allows us to skip creating the device for some platforms, which don't want it.
->
-> As your case is opp-v2 and you want the device, you aren't required to add entry
-> anywhere.
-I read the source code again and understand the behaivors.
-And I will it from allowlist.
-
-Thanks
->
-
+>>>
+>>> Good point!
+>>>
+>>> But please check the rest of the code.
+>>> You need 'goto inval_skb;' instead of the return ;-)
+>>
+>> Why? To free the skb? That's what can_dropped_invalid_skb() does, too:
+>>
+>> | 
+>> https://elixir.bootlin.com/linux/v5.17.6/source/include/linux/can/skb.h#L130 
+>>
+>>
+> 
+> My bad!
+> 
+> Pointing you not reading the code ... should better have looked myself :-D
+> 
