@@ -2,77 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B864C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358438AbiELUtw (ORCPT
+        id S1358443AbiELUuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 16:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34476 "EHLO
+        Thu, 12 May 2022 16:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbiELUtr (ORCPT
+        with ESMTP id S1358434AbiELUuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 16:49:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630A42685FE
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 13:49:47 -0700 (PDT)
+        Thu, 12 May 2022 16:50:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097982689DB
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 13:50:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0626561E7B
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 20:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DAE5C385B8;
-        Thu, 12 May 2022 20:49:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1652388586;
-        bh=91VwTcfIVQV9Sz36/J5iHoSXXfz2kqY+YsPiS9hgpKw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kWHMC6thcR1FBN59YemuXc54h/x9NO4z9+BWWzBZNTMnXLhaooqT+XMZQsOXdkBWz
-         teoLtuDKR3/Cs+bZDFjyv7kWH0nYCtOpoO/rlZ6UM4nTnSGTn85Smh2LhB8sixw+ZH
-         Xt2TZu8t4U23f4TpogUiMt+bh4J6jXbiaYDs7TxI=
-Date:   Thu, 12 May 2022 13:49:45 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-Cc:     linmiaohe@huawei.com, aquini@redhat.com, ddutile@redhat.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        mgorman@techsingularity.net, vvghjk1234@gmail.com
-Subject: Re: [PATCH] mm, compaction: fast_find_migrateblock() should return
- pfn in the target zone
-Message-Id: <20220512134945.fe74df5e322b98ae4046ce15@linux-foundation.org>
-In-Reply-To: <20220512042733.17976-1-yamamoto.rei@jp.fujitsu.com>
-References: <4cf33f9c-89bc-f845-10d7-2aa62a20f5e5@huawei.com>
-        <20220512042733.17976-1-yamamoto.rei@jp.fujitsu.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F3AC61E7A
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 20:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E93C8C385B8;
+        Thu, 12 May 2022 20:50:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652388621;
+        bh=s6aW6e11wP98+FSUafeJLEk+hn3qZAdUCOod1nr9YxM=;
+        h=Date:From:To:Subject:References:In-Reply-To:From;
+        b=q/lqGLktXhJSyaNmkh061WnB/Mg8XM1/+GKfi+xFJWWfRXJ1DFuT2I8Plt7e/z5ow
+         FR9P2Qtj8RMHzjF8dlfE26Xn7+pGC/QnaZ0IdBXBbhVe3wQme++KIQOH03OuZTPEd1
+         9eN6ISBOXB5LViOtNCqzb7inke1dCJwhW7g4y2oX5Oiih2WP3f5WmCR/FyH2eylweb
+         JIBZNnDkfSD8NIoKEkSUImhTk1NQlcfFnuv4UTcr2NIoLzuGKhHB6ypq8fWHtvNNgd
+         ugWNsc2S/aHW1w4wPRBDIOfIHgqbJ/2b7/yktJrk0eSSYN2ak74EpzJJLGwww0z4hf
+         x6pnfF0eojnHA==
+Date:   Thu, 12 May 2022 13:50:19 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: Re: [PATCH 4/5 v2] f2fs: do not stop GC when requiring a free section
+Message-ID: <Yn1zC6MUZOEbSlWK@google.com>
+References: <20220506232032.1264078-1-jaegeuk@kernel.org>
+ <20220506232032.1264078-4-jaegeuk@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220506232032.1264078-4-jaegeuk@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 13:27:33 +0900 Rei Yamamoto <yamamoto.rei@jp.fujitsu.com> wrote:
+The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
+chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
+segment as a victim all the time, resulting in checkpoint=disable failure,
+for example. Let's pick another one, if we fail to collect it.
 
-> >> Thank you for your review.
-> >> The runtime effect is that compaction become unintended behavior.
-> >> For example, pages not in the target zone are added to cc->migratepages list in isolate_migratepages_block().
-> >> As a result, pages migrate between nodes unintentionally.
-> >
-> > Many thanks for clarifying. :) Is this worth a Fixes tag or even CC stable?
-> >
-> > Thanks!
-> 
-> Thank you for your reply.
-> 
-> If add a Fixes tag, I think the following commit:
->   Fixes: 70b4459 ("mm, compaction: use free lists to quickly locate a migration source")
-> 
-> Andrew, how do you think about this? 
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+---
 
-Thanks, I added that and also a paragraph describing the effect of the bug:
+ Change log from v1:
+  - refactor the code path to avoid ambiguous condition like BG_GC/sec_freed
 
-https://git.kernel.org/pub/scm/linux/kernel/git/akpm/25-new.git/tree/patches/mm-compaction-fast_find_migrateblock-should-return-pfn-in-the-target-zone.patch
+ fs/f2fs/f2fs.h              |  1 +
+ fs/f2fs/file.c              | 12 ++++++++----
+ fs/f2fs/gc.c                | 14 +++++++++-----
+ fs/f2fs/segment.c           |  3 ++-
+ fs/f2fs/super.c             |  3 ++-
+ include/trace/events/f2fs.h | 11 ++++++++---
+ 6 files changed, 30 insertions(+), 14 deletions(-)
 
-I assume this problem isn't sufficiently serious to require a -stable
-backport of the fix?
-
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 9920b2d6af8f..492af5b96de1 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -1271,6 +1271,7 @@ struct f2fs_gc_control {
+ 	bool no_bg_gc;			/* check the space and stop bg_gc */
+ 	bool should_migrate_blocks;	/* should migrate blocks */
+ 	bool err_gc_skipped;		/* return EAGAIN if GC skipped */
++	unsigned int nr_free_secs;	/* # of free sections to do GC */
+ };
+ 
+ /* For s_flag in struct f2fs_sb_info */
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index d0547bef0851..216081ea8c81 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1650,7 +1650,8 @@ static int expand_inode_data(struct inode *inode, loff_t offset,
+ 	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
+ 			.init_gc_type = FG_GC,
+ 			.should_migrate_blocks = false,
+-			.err_gc_skipped = true };
++			.err_gc_skipped = true,
++			.nr_free_secs = 0 };
+ 	pgoff_t pg_start, pg_end;
+ 	loff_t new_size = i_size_read(inode);
+ 	loff_t off_end;
+@@ -2350,7 +2351,8 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
+ 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+ 	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
+ 			.no_bg_gc = false,
+-			.should_migrate_blocks = false };
++			.should_migrate_blocks = false,
++			.nr_free_secs = 0 };
+ 	__u32 sync;
+ 	int ret;
+ 
+@@ -2391,7 +2393,8 @@ static int __f2fs_ioc_gc_range(struct file *filp, struct f2fs_gc_range *range)
+ 			.init_gc_type = range->sync ? FG_GC : BG_GC,
+ 			.no_bg_gc = false,
+ 			.should_migrate_blocks = false,
+-			.err_gc_skipped = range->sync };
++			.err_gc_skipped = range->sync,
++			.nr_free_secs = 0 };
+ 	u64 end;
+ 	int ret;
+ 
+@@ -2837,7 +2840,8 @@ static int f2fs_ioc_flush_device(struct file *filp, unsigned long arg)
+ 	struct f2fs_gc_control gc_control = {
+ 			.init_gc_type = FG_GC,
+ 			.should_migrate_blocks = true,
+-			.err_gc_skipped = true };
++			.err_gc_skipped = true,
++			.nr_free_secs = 0 };
+ 	int ret;
+ 
+ 	if (!capable(CAP_SYS_ADMIN))
+diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+index e275b72bc65f..10b24b0f13a5 100644
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -147,6 +147,7 @@ static int gc_thread_func(void *data)
+ 
+ 		gc_control.init_gc_type = sync_mode ? FG_GC : BG_GC;
+ 		gc_control.no_bg_gc = foreground;
++		gc_control.nr_free_secs = foreground ? 1 : 0;
+ 
+ 		/* if return value is not zero, no victim was selected */
+ 		if (f2fs_gc(sbi, &gc_control))
+@@ -1761,6 +1762,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
+ 	unsigned int skipped_round = 0, round = 0;
+ 
+ 	trace_f2fs_gc_begin(sbi->sb, gc_type, gc_control->no_bg_gc,
++				gc_control->nr_free_secs,
+ 				get_pages(sbi, F2FS_DIRTY_NODES),
+ 				get_pages(sbi, F2FS_DIRTY_DENTS),
+ 				get_pages(sbi, F2FS_DIRTY_IMETA),
+@@ -1823,12 +1825,13 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
+ 	if (gc_type == FG_GC)
+ 		sbi->cur_victim_sec = NULL_SEGNO;
+ 
+-	if (gc_control->init_gc_type == FG_GC)
+-		goto stop;
+-
+-	if (!has_not_enough_free_secs(sbi,
+-			(gc_type == FG_GC) ? sec_freed : 0, 0))
++	if (gc_control->init_gc_type == FG_GC ||
++	    !has_not_enough_free_secs(sbi,
++				(gc_type == FG_GC) ? sec_freed : 0, 0)) {
++		if (gc_mode == FG_GC && sec_freed < gc_control->nr_free_secs)
++			goto go_gc_more;
+ 		goto stop;
++	}
+ 
+ 	/* FG_GC stops GC by skip_count */
+ 	if (gc_type == FG_GC) {
+@@ -1849,6 +1852,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
+ 		if (ret)
+ 			goto stop;
+ 	}
++go_gc_more:
+ 	segno = NULL_SEGNO;
+ 	goto gc_more;
+ 
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 8b4f2b1d2cca..0a4180f64291 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -404,7 +404,8 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
+ 				.init_gc_type = BG_GC,
+ 				.no_bg_gc = true,
+ 				.should_migrate_blocks = false,
+-				.err_gc_skipped = false };
++				.err_gc_skipped = false,
++				.nr_free_secs = 1 };
+ 			f2fs_down_write(&sbi->gc_lock);
+ 			f2fs_gc(sbi, &gc_control);
+ 		}
+diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+index a28c27eed6d0..63daae67a9d9 100644
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -2080,7 +2080,8 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
+ 			.victim_segno = NULL_SEGNO,
+ 			.init_gc_type = FG_GC,
+ 			.should_migrate_blocks = false,
+-			.err_gc_skipped = true };
++			.err_gc_skipped = true,
++			.nr_free_secs = 1 };
+ 
+ 		f2fs_down_write(&sbi->gc_lock);
+ 		err = f2fs_gc(sbi, &gc_control);
+diff --git a/include/trace/events/f2fs.h b/include/trace/events/f2fs.h
+index 54ec9e543f09..16c67ede85b6 100644
+--- a/include/trace/events/f2fs.h
++++ b/include/trace/events/f2fs.h
+@@ -645,18 +645,21 @@ TRACE_EVENT(f2fs_background_gc,
+ TRACE_EVENT(f2fs_gc_begin,
+ 
+ 	TP_PROTO(struct super_block *sb, int gc_type, bool no_bg_gc,
++			unsigned int nr_free_secs,
+ 			long long dirty_nodes, long long dirty_dents,
+ 			long long dirty_imeta, unsigned int free_sec,
+ 			unsigned int free_seg, int reserved_seg,
+ 			unsigned int prefree_seg),
+ 
+-	TP_ARGS(sb, gc_type, no_bg_gc, dirty_nodes, dirty_dents, dirty_imeta,
++	TP_ARGS(sb, gc_type, no_bg_gc, nr_free_secs, dirty_nodes,
++		dirty_dents, dirty_imeta,
+ 		free_sec, free_seg, reserved_seg, prefree_seg),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(dev_t,		dev)
+ 		__field(int,		gc_type)
+ 		__field(bool,		no_bg_gc)
++		__field(unsigned int,	nr_free_secs)
+ 		__field(long long,	dirty_nodes)
+ 		__field(long long,	dirty_dents)
+ 		__field(long long,	dirty_imeta)
+@@ -670,6 +673,7 @@ TRACE_EVENT(f2fs_gc_begin,
+ 		__entry->dev		= sb->s_dev;
+ 		__entry->gc_type	= gc_type;
+ 		__entry->no_bg_gc	= no_bg_gc;
++		__entry->nr_free_secs	= nr_free_secs;
+ 		__entry->dirty_nodes	= dirty_nodes;
+ 		__entry->dirty_dents	= dirty_dents;
+ 		__entry->dirty_imeta	= dirty_imeta;
+@@ -679,12 +683,13 @@ TRACE_EVENT(f2fs_gc_begin,
+ 		__entry->prefree_seg	= prefree_seg;
+ 	),
+ 
+-	TP_printk("dev = (%d,%d), gc_type = %s, no_background_GC = %d, nodes = %lld, "
+-		"dents = %lld, imeta = %lld, free_sec:%u, free_seg:%u, "
++	TP_printk("dev = (%d,%d), gc_type = %s, no_background_GC = %d, nr_free_secs = %u, "
++		"nodes = %lld, dents = %lld, imeta = %lld, free_sec:%u, free_seg:%u, "
+ 		"rsv_seg:%d, prefree_seg:%u",
+ 		show_dev(__entry->dev),
+ 		show_gc_type(__entry->gc_type),
+ 		(__entry->gc_type == BG_GC) ? __entry->no_bg_gc : -1,
++		__entry->nr_free_secs,
+ 		__entry->dirty_nodes,
+ 		__entry->dirty_dents,
+ 		__entry->dirty_imeta,
+-- 
+2.36.0.550.gb090851708-goog
 
