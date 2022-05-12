@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08ADEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:02:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E3DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352413AbiELKCH (ORCPT
+        id S1347744AbiELKCO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 06:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57354 "EHLO
+        Thu, 12 May 2022 06:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352420AbiELKA2 (ORCPT
+        with ESMTP id S1352439AbiELKAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 06:00:28 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615F122EA74
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:00:25 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id g23so5532396edy.13
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:00:25 -0700 (PDT)
+        Thu, 12 May 2022 06:00:48 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF112230228
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:00:28 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ks9so9169692ejb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:00:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=E5YORnDcbWOJgrpTz/qSCG6/YYMuC3Z8T9fT4bh9Wds=;
-        b=tag+9P2t6thmYxjj7J1BOojXQX1tCri+O11NqGILYUOWqcJ6jw3hpWb5QYILy+FXSY
-         nVdSdVSlhuTRTt/G0wrrozxzJJYIocRWYwpQ2yl3pMhtK5TED1puBrNRuH/6tI5yd093
-         znrmOPCCYUkJ5S+QP4BKUibf0nHpXYo6Abif6Qu8Ut+slVG7r1CIJBW6c1SIhWMX4CsA
-         WIk7F4HqLztUuuHN7zEk55VZZQXN49NeZUYwY83ti4PMfp55YgIOPxoFzEcRpJK5jUte
-         WWjvXkp1lmDFlmppaHxmRRnKPPRqeslms0nimycPHaZylLR2EkJaESCw8YHQUeCG5uI2
-         nmmw==
+        bh=a0nTM6qsq4GtGJkoH4nf0Q+TnkSQuyFZioVt/ZR1zw4=;
+        b=oQtJ1P1ICxbjuMvyKGc4PrOAjOYiXbWwf9h50atcRuWJ3tVM+EDUHiZUwhHWJRX3oH
+         KkcXY+UDJL4iCFU+LPkUAwmbiW0xc+fR53Z7Tiyc7BmzupNQSbNqNvoikVrwctwew9HN
+         Evnr3mYbJv2yxkkoUTsjSqEKXAiSWHn2z/D1ZGnSjJ7t0U90qwvUsieqTIvlMRLXydhP
+         jBIwSBQAMGT4icJxcJZRrjFhYoUGwlzQpiIZF8qmEgXBBmeRvXOiw/tISK7utNTNxYaD
+         /IexxpPTLBnJzv0kUIAMI66JSMoKjOCrK/CUS7LMU6FdtR7L2u/+E/ZLOl4OFWhZXrvu
+         3MOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=E5YORnDcbWOJgrpTz/qSCG6/YYMuC3Z8T9fT4bh9Wds=;
-        b=llcbo5aloWYnsQif/cwckwNRKJAQqCIDuQu3s/mC1gEXDGqLaxJnuQUswansZ4cEz2
-         rUxePgJCYD5qaGTOgvPTPaMZV8yyAqulqFUc+OaoEUchz8R5M+mFZiQX0FJTc7N9KsTO
-         QAs7TN6F20glHZbgTu2aHxs9k/4g1TgITKC13+F5zd3oOhyObGO6FoIbO822tHi7tjBv
-         DlPhBwgdtcNU8OdTvdFfNQ70V7JkC6uGyY3pQZJY6/pcyzALJdT2QehzBOqkVJjS7F9O
-         QIeG33cIexQlTfNR38lrPNHktXeuQfIGT09R8myvKJDALX2U3EI2XfawSdzkVPGxcdnC
-         hNgA==
-X-Gm-Message-State: AOAM533vh0qKW59rx5adthC4Wxu4GE6ECprzGcRPeVtFAE/5Mn//b6XM
-        SK+reWXS7BTZFUijEYc/GPFrUw==
-X-Google-Smtp-Source: ABdhPJwazH+uuaXS24OcpT4IwHOvZL8EGifCrtq+KeCqc3EgGbj2G01XYvk7XHbqVVh8hkxFIwYzaQ==
-X-Received: by 2002:aa7:c306:0:b0:428:414d:e216 with SMTP id l6-20020aa7c306000000b00428414de216mr33733082edq.394.1652349621242;
-        Thu, 12 May 2022 03:00:21 -0700 (PDT)
+        bh=a0nTM6qsq4GtGJkoH4nf0Q+TnkSQuyFZioVt/ZR1zw4=;
+        b=XLwNijy63ASJlgCwrylazphi6SdAvYMEtKyuimNFQjaUyPzjRxmHLCLltsPot0culr
+         kVMgjxSQXcQ5kS51tjJv3yrkP2WoKobeZ86YIE4hNilEyC8yvJd5b+PfxfZrFOzPTIHN
+         YR+WJqlctN5/cfdGy/Pg3HXEUKh8tQtvYDvwuTnLMLCt14pC98Axe3eA2H35mnJ+YHQN
+         +5uwqsGP2K1J6AcVywFo6DhGj9WdGEvhIoVIoaXNRLgTy7275XpzN/EzvdBBa0pmMmoa
+         8jnj2X6x+kOdE37aZPpk9oZDcZP4VpydDey1IwBMozXTdmpBVQ2vAbIOhgAhO6LsTD+J
+         e47A==
+X-Gm-Message-State: AOAM531gjqKmj9JNFqayBscKjVoIVmHMLsyt0MIdZLOyEpcEDsLuAP+v
+        R4IjM+E7f4JgVHCiPSImKXFQIg==
+X-Google-Smtp-Source: ABdhPJztglS/DsrXYvgSkRA9NmYg98rfTUoXDYryxBoafF/ogKr7ATiW2uZke/W9R/xOYWc7cKdl7g==
+X-Received: by 2002:a17:907:62a9:b0:6da:7953:4df0 with SMTP id nd41-20020a17090762a900b006da79534df0mr29302869ejc.316.1652349627443;
+        Thu, 12 May 2022 03:00:27 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id d17-20020a170906641100b006f3ef214da1sm1970287ejm.7.2022.05.12.03.00.20
+        by smtp.gmail.com with ESMTPSA id d17-20020a170906641100b006f3ef214da1sm1970287ejm.7.2022.05.12.03.00.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 03:00:20 -0700 (PDT)
+        Thu, 12 May 2022 03:00:26 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -61,9 +61,9 @@ To:     Andy Gross <agross@kernel.org>,
 Cc:     Sireesh Kodali <sireeshkodali1@gmail.com>,
         Sibi Sankar <quic_sibis@quicinc.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 04/12] dt-bindings: remoteproc: qcom,adsp: simplify interrupts
-Date:   Thu, 12 May 2022 11:59:58 +0200
-Message-Id: <20220512100006.99695-5-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 09/12] arm64: dts: qcom: ipq6018: add label to remoteproc node
+Date:   Thu, 12 May 2022 12:00:03 +0200
+Message-Id: <20220512100006.99695-10-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220512100006.99695-1-krzysztof.kozlowski@linaro.org>
 References: <20220512100006.99695-1-krzysztof.kozlowski@linaro.org>
@@ -73,90 +73,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Interrupts between variants differ only with presence of last optional
-interrupt, so the constraints can be simplified.
+glink-edge bindings require label:
+
+  ipq6018-cp01-c1.dtb: glink-edge: 'label' is a required property
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../bindings/remoteproc/qcom,adsp.yaml        | 46 ++++++++-----------
- 1 file changed, 18 insertions(+), 28 deletions(-)
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-index 6e1fdfe91043..0b2db36e5d14 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-@@ -72,11 +72,23 @@ properties:
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index c89499e366d3..9db30e7da7bd 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -621,6 +621,7 @@ q6v5_wcss: remoteproc@cd00000 {
  
-   interrupts:
-     minItems: 5
--    maxItems: 6
-+    items:
-+      - description: Watchdog interrupt
-+      - description: Fatal interrupt
-+      - description: Ready interrupt
-+      - description: Handover interrupt
-+      - description: Stop acknowledge interrupt
-+      - description: Shutdown acknowledge interrupt
+ 			glink-edge {
+ 				interrupts = <GIC_SPI 321 IRQ_TYPE_EDGE_RISING>;
++				label = "rtr";
+ 				qcom,remote-pid = <1>;
+ 				mboxes = <&apcs_glb 8>;
  
-   interrupt-names:
-     minItems: 5
--    maxItems: 6
-+    items:
-+      - const: wdog
-+      - const: fatal
-+      - const: ready
-+      - const: handover
-+      - const: stop-ack
-+      - const: shutdown-ack
- 
-   resets:
-     minItems: 1
-@@ -317,19 +329,9 @@ allOf:
-     then:
-       properties:
-         interrupts:
--          items:
--            - description: Watchdog interrupt
--            - description: Fatal interrupt
--            - description: Ready interrupt
--            - description: Handover interrupt
--            - description: Stop acknowledge interrupt
-+          maxItems: 5
-         interrupt-names:
--          items:
--            - const: wdog
--            - const: fatal
--            - const: ready
--            - const: handover
--            - const: stop-ack
-+          maxItems: 5
- 
-   - if:
-       properties:
-@@ -347,21 +349,9 @@ allOf:
-     then:
-       properties:
-         interrupts:
--          items:
--            - description: Watchdog interrupt
--            - description: Fatal interrupt
--            - description: Ready interrupt
--            - description: Handover interrupt
--            - description: Stop acknowledge interrupt
--            - description: Shutdown acknowledge interrupt
-+          minItems: 6
-         interrupt-names:
--          items:
--            - const: wdog
--            - const: fatal
--            - const: ready
--            - const: handover
--            - const: stop-ack
--            - const: shutdown-ack
-+          minItems: 6
- 
-   - if:
-       properties:
 -- 
 2.32.0
 
