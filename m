@@ -2,244 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA011C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 193CCC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351665AbiELImm (ORCPT
+        id S1351560AbiELInF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
+        Thu, 12 May 2022 04:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351553AbiELIlz (ORCPT
+        with ESMTP id S1351692AbiELIm5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:41:55 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0787C3E5FC;
-        Thu, 12 May 2022 01:41:51 -0700 (PDT)
-X-UUID: a190ac26de6645f2972a864db00bf56a-20220512
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:36b5c883-ad2d-48be-b109-cee842af1a2a,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:7e300ba7-eab7-4b74-a74d-5359964535a9,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: a190ac26de6645f2972a864db00bf56a-20220512
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <moudy.ho@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 140287465; Thu, 12 May 2022 16:41:43 +0800
-Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 12 May 2022 16:41:41 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 12 May 2022 16:41:40 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 May 2022 16:41:40 +0800
-From:   Moudy Ho <moudy.ho@mediatek.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        <tfiga@chromium.org>, <drinkcat@chromium.org>,
-        <pihsun@chromium.org>, <hsinyi@google.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
-        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
-        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
-        <river.cheng@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <cellopoint.kai@gmail.com>
-Subject: [PATCH v18 1/6] soc: mediatek: mutex: add common interface for modules setting
-Date:   Thu, 12 May 2022 16:41:34 +0800
-Message-ID: <20220512084139.15086-2-moudy.ho@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220512084139.15086-1-moudy.ho@mediatek.com>
-References: <20220512084139.15086-1-moudy.ho@mediatek.com>
+        Thu, 12 May 2022 04:42:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5AAF41320
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652344970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TL296SryyvFIzUKAgvAx0DbiXeRdrRfvIeuhT1ztCEc=;
+        b=Y7/X+9KxonqUFDVXCsVfPVDsjyFP4vl6drQ1eXYnLdiGSS+/s5x8g1SARf/BW4iALTuLJS
+        +I4NiP6A3D58cye1KRj4tSvV6SUh3rVFLOlNKxYUX8+vFCOmUPOwYgI2onGSPJVNa5KBT2
+        PdwA3Vkl9FJ29+fvQ7z4pWa6SHk1fP8=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-17-Of_QDZGKM3ih64jI1pM8kQ-1; Thu, 12 May 2022 04:42:49 -0400
+X-MC-Unique: Of_QDZGKM3ih64jI1pM8kQ-1
+Received: by mail-wr1-f71.google.com with SMTP id o11-20020adfca0b000000b0020adc114131so1795002wrh.8
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:42:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=TL296SryyvFIzUKAgvAx0DbiXeRdrRfvIeuhT1ztCEc=;
+        b=OTtr3h2xz20LW8Pkuzd0FO5TauwLXlWF1dxpaADep1K6yCq3WnKy1eMnd64UVt/gMY
+         /uX7ECM9gauImvySPr/jcrEUNvMNwCL6A/4379K/lCeAnEWTShsHuN2oA/DUlzQphEaB
+         R4BJEOroao1yU58vfSkiLz3zmH/H405QH0eyqE7LzI0lP7WUol+aGEqK/YU0l2McVOnX
+         mOgT8gYS5bQkBfXziJvx12IwySKr9u0KM4SqIONfFU58S0OOElSOGVWHhTVQHpFyizoV
+         JWXM9gMyMZfp5MOuEMnlHByRzzp+9OFG7DWRKlo8HUvt6k2f7HYK+2Jk4n8ckm6yn1YO
+         G1xQ==
+X-Gm-Message-State: AOAM533AMO22U3yXiLmpTqcre1CXDkXaTIrqmMTcYP2bl63r6pVSWmxF
+        /grJmp7lCld2F9vCth0Ko4PlvWKrxtw/pwe5nB8f7KFaW2WfSAyinjoz26bnXzfE/fXyGRNTYHy
+        8RkkqT9+9Mze3+nTYpINjxUtc
+X-Received: by 2002:a1c:2b86:0:b0:392:ae97:2fec with SMTP id r128-20020a1c2b86000000b00392ae972fecmr8712603wmr.165.1652344968570;
+        Thu, 12 May 2022 01:42:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwbQjWVKCg/mTM5M+UooSQiAqm2pFe5GDlwzn/9BE6+Xp7XBA0IvVggvyUtSDCdR3aT9tTh/g==
+X-Received: by 2002:a1c:2b86:0:b0:392:ae97:2fec with SMTP id r128-20020a1c2b86000000b00392ae972fecmr8712585wmr.165.1652344968305;
+        Thu, 12 May 2022 01:42:48 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c701:d200:ee5d:1275:f171:136d? (p200300cbc701d200ee5d1275f171136d.dip0.t-ipconnect.de. [2003:cb:c701:d200:ee5d:1275:f171:136d])
+        by smtp.gmail.com with ESMTPSA id z1-20020a5d6541000000b0020ac8c19ecfsm3647938wrv.3.2022.05.12.01.42.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 01:42:47 -0700 (PDT)
+Message-ID: <c26a28cc-9955-9724-3271-602c9bddf8a2@redhat.com>
+Date:   Thu, 12 May 2022 10:42:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v8 2/7] crash: prototype change for
+ crash_prepare_elf64_headers
+Content-Language: en-US
+To:     Eric DeVolder <eric.devolder@oracle.com>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+References: <20220505184603.1548-1-eric.devolder@oracle.com>
+ <20220505184603.1548-3-eric.devolder@oracle.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220505184603.1548-3-eric.devolder@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to allow multiple modules to operate MUTEX hardware through
-a common interfrace, a flexible index "mtk_mutex_table_index" needs to
-be added to replace original component ID so that like DDP and MDP
-can add their own MUTEX table settings independently.
+On 05.05.22 20:45, Eric DeVolder wrote:
+> From within crash_prepare_elf64_headers() there is a need to
+> reference the struct kimage hotplug members. As such, this
+> change passes the struct kimage as a parameter to the
+> crash_prepare_elf64_headers().
 
-In addition, 4 generic interface "mtk_mutex_set_mod", "mtk_mutex_set_sof",
-"mtk_mutex_clear_mod" and "mtk_mutex_clear_sof" have been added, which is
-expected to replace the "mtk_mutex_add_comp" and "mtk_mutex_remove_comp"
-pair originally dedicated to DDP in the future.
+You should make it clearer that the hotplug members will be added by
+successive patches.
 
-Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/soc/mediatek/mtk-mutex.c       | 88 ++++++++++++++++++++++++++
- include/linux/soc/mediatek/mtk-mutex.h | 22 +++++++
- 2 files changed, 110 insertions(+)
+> 
+> This is preparation for later patch, no functionality change.
+> 
+> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
+> Acked-by: Baoquan He <bhe@redhat.com>
 
-diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
-index aaf8fc1abb43..a62ac1811419 100644
---- a/drivers/soc/mediatek/mtk-mutex.c
-+++ b/drivers/soc/mediatek/mtk-mutex.c
-@@ -156,6 +156,8 @@ struct mtk_mutex_data {
- 	const unsigned int *mutex_sof;
- 	const unsigned int mutex_mod_reg;
- 	const unsigned int mutex_sof_reg;
-+	const unsigned int *mutex_table_mod;
-+	const unsigned int *mutex_table_sof;
- 	const bool no_clk;
- };
- 
-@@ -530,6 +532,92 @@ void mtk_mutex_release(struct mtk_mutex *mutex)
- }
- EXPORT_SYMBOL_GPL(mtk_mutex_release);
- 
-+static int mtk_mutex_write_mod(struct mtk_mutex *mutex,
-+			       enum mtk_mutex_table_index idx, bool clear)
-+{
-+	struct mtk_mutex_ctx *mtx = container_of(mutex, struct mtk_mutex_ctx,
-+						 mutex[mutex->id]);
-+	unsigned int reg;
-+	unsigned int offset;
-+
-+	WARN_ON(&mtx->mutex[mutex->id] != mutex);
-+
-+	if (idx < MUTEX_TABLE_IDX_MDP_RDMA0 ||
-+	    idx >= MUTEX_TABLE_IDX_MAX) {
-+		dev_err(mtx->dev, "Not supported MOD table index : %d", idx);
-+		return -EINVAL;
-+	}
-+
-+	offset = DISP_REG_MUTEX_MOD(mtx->data->mutex_mod_reg,
-+				    mutex->id);
-+	reg = readl_relaxed(mtx->regs + offset);
-+
-+	if (clear)
-+		reg &= ~BIT(mtx->data->mutex_table_mod[idx]);
-+	else
-+		reg |= BIT(mtx->data->mutex_table_mod[idx]);
-+
-+	writel_relaxed(reg, mtx->regs + offset);
-+
-+	return 0;
-+}
-+
-+int mtk_mutex_set_mod(struct mtk_mutex *mutex,
-+		      enum mtk_mutex_table_index idx)
-+{
-+	return mtk_mutex_write_mod(mutex, idx, false);
-+}
-+EXPORT_SYMBOL_GPL(mtk_mutex_set_mod);
-+
-+int mtk_mutex_clear_mod(struct mtk_mutex *mutex,
-+			enum mtk_mutex_table_index idx)
-+{
-+	return mtk_mutex_write_mod(mutex, idx, true);
-+}
-+EXPORT_SYMBOL_GPL(mtk_mutex_clear_mod);
-+
-+int mtk_mutex_write_sof(struct mtk_mutex *mutex,
-+			enum mtk_mutex_table_index idx, bool clear)
-+{
-+	struct mtk_mutex_ctx *mtx = container_of(mutex, struct mtk_mutex_ctx,
-+						 mutex[mutex->id]);
-+	unsigned int sof_id, val;
-+
-+	WARN_ON(&mtx->mutex[mutex->id] != mutex);
-+
-+	if (idx < MUTEX_TABLE_IDX_MDP_RDMA0 ||
-+	    idx >= MUTEX_TABLE_IDX_MAX) {
-+		dev_err(mtx->dev, "Not supported SOF table index : %d", idx);
-+		return -EINVAL;
-+	}
-+
-+	sof_id = mtx->data->mutex_table_sof[idx];
-+
-+	if (clear)
-+		val = MUTEX_SOF_SINGLE_MODE;
-+	else
-+		val = mtx->data->mutex_sof[sof_id];
-+
-+	writel_relaxed(val, mtx->regs +
-+		       DISP_REG_MUTEX_SOF(mtx->data->mutex_sof_reg, mutex->id));
-+
-+	return 0;
-+}
-+
-+int mtk_mutex_set_sof(struct mtk_mutex *mutex,
-+		      enum mtk_mutex_table_index idx)
-+{
-+	return mtk_mutex_write_sof(mutex, idx, false);
-+}
-+EXPORT_SYMBOL_GPL(mtk_mutex_set_sof);
-+
-+int mtk_mutex_clear_sof(struct mtk_mutex *mutex,
-+			enum mtk_mutex_table_index idx)
-+{
-+	return mtk_mutex_write_sof(mutex, idx, true);
-+}
-+EXPORT_SYMBOL_GPL(mtk_mutex_clear_sof);
-+
- static int mtk_mutex_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-diff --git a/include/linux/soc/mediatek/mtk-mutex.h b/include/linux/soc/mediatek/mtk-mutex.h
-index 6fe4ffbde290..f174452212d6 100644
---- a/include/linux/soc/mediatek/mtk-mutex.h
-+++ b/include/linux/soc/mediatek/mtk-mutex.h
-@@ -10,6 +10,20 @@ struct regmap;
- struct device;
- struct mtk_mutex;
- 
-+enum mtk_mutex_table_index {
-+	/* MDP table index */
-+	MUTEX_TABLE_IDX_MDP_RDMA0,
-+	MUTEX_TABLE_IDX_MDP_RSZ0,
-+	MUTEX_TABLE_IDX_MDP_RSZ1,
-+	MUTEX_TABLE_IDX_MDP_TDSHP0,
-+	MUTEX_TABLE_IDX_MDP_WROT0,
-+	MUTEX_TABLE_IDX_MDP_WDMA,
-+	MUTEX_TABLE_IDX_MDP_AAL0,
-+	MUTEX_TABLE_IDX_MDP_CCORR0,
-+
-+	MUTEX_TABLE_IDX_MAX		/* ALWAYS keep at the end */
-+};
-+
- struct mtk_mutex *mtk_mutex_get(struct device *dev);
- int mtk_mutex_prepare(struct mtk_mutex *mutex);
- void mtk_mutex_add_comp(struct mtk_mutex *mutex,
-@@ -22,5 +36,13 @@ void mtk_mutex_unprepare(struct mtk_mutex *mutex);
- void mtk_mutex_put(struct mtk_mutex *mutex);
- void mtk_mutex_acquire(struct mtk_mutex *mutex);
- void mtk_mutex_release(struct mtk_mutex *mutex);
-+int mtk_mutex_set_mod(struct mtk_mutex *mutex,
-+		      enum mtk_mutex_table_index idx);
-+int mtk_mutex_clear_mod(struct mtk_mutex *mutex,
-+			enum mtk_mutex_table_index idx);
-+int mtk_mutex_set_sof(struct mtk_mutex *mutex,
-+		      enum mtk_mutex_table_index idx);
-+int mtk_mutex_clear_sof(struct mtk_mutex *mutex,
-+			enum mtk_mutex_table_index idx);
- 
- #endif /* MTK_MUTEX_H */
+Acked-by: David Hildenbrand <david@redhat.com>
+
 -- 
-2.18.0
+Thanks,
+
+David / dhildenb
 
