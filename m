@@ -2,126 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9327C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 481C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349719AbiELAjG (ORCPT
+        id S1349725AbiELAkH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 20:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36804 "EHLO
+        Wed, 11 May 2022 20:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236511AbiELAjF (ORCPT
+        with ESMTP id S241922AbiELAkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 20:39:05 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D223166C89
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 17:38:59 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 69AEE2C0184;
-        Thu, 12 May 2022 00:38:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1652315937;
-        bh=44qKdZ5IbRae6ZHizTaAjO+S5j+7XqQaA6XQHAP1Nc4=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=mqVvTL0u0g6RUHW9033wC7aNznZsTNbXmNcJY6kL9g+n8r6wW+39ow0xHHeRZGYFi
-         3j0rwbW7l+GYiLPagOVXXFcCsprLPkCrT08S5wqGB2JWtKfXSX5H8jsMQpV8u6oMQv
-         THAWIitckqjOShibtmn2Ci7OMNWkf21oVcVCgp8KDGEdLwpUMnisvl7WHOQJWLZKpQ
-         KwMql6ACep6zTIOdIRoQsnOMv362F+ShmKoSWkWQV5ZiWc51CS0kbgohJ3bUg18yXo
-         mjlW54UTj3pIGgZCkIjEdtqv25IGt78QjgI7dZbfzi1SMD8NnAyQcpa+MslJBo02L9
-         pROG9doOTu61w==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B627c57210001>; Thu, 12 May 2022 12:38:57 +1200
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
- svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
- (TLS) id 15.0.1497.32; Thu, 12 May 2022 12:38:57 +1200
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.033; Thu, 12 May 2022 12:38:57 +1200
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
+        Wed, 11 May 2022 20:40:05 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09A6227B62;
+        Wed, 11 May 2022 17:40:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=VPmFxMFfmvVw5yiFsxLNXQm15IP1H299vGKa55VJwbI=; b=kOTQ3TBmqwKkErYBCRGSHezqOM
+        CHsRC8aiA0+RS7doj4IbMGal84S1oM6URBpRwRhWjvS5+zbH3qesJjRKTFvZ85bArWT8fkIBq5/b5
+        eeAkzzk/RgjmGd4tPWb1rQ9w8OQY4hVmCXYpIOFhTeBOpP1m5W011YiRP//XTR/l9XuQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nowrw-002ND2-Qh; Thu, 12 May 2022 02:39:52 +0200
+Date:   Thu, 12 May 2022 02:39:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
         "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
         "will@kernel.org" <will@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
         "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
         "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
         "kostap@marvell.com" <kostap@marvell.com>,
         "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v6 1/3] dt-bindings: marvell: Document the AC5/AC5X
- compatibles
-Thread-Topic: [PATCH v6 1/3] dt-bindings: marvell: Document the AC5/AC5X
- compatibles
-Thread-Index: AQHYZMMYWG5Tfvy6g0WGHR9i+piz6K0ZHxYAgABn74CAABRpAIAAAzQA
-Date:   Thu, 12 May 2022 00:38:56 +0000
-Message-ID: <d9663aa1-e574-f12f-a330-79d984af107e@alliedtelesis.co.nz>
-References: <20220510231002.1160798-1-chris.packham@alliedtelesis.co.nz>
- <20220510231002.1160798-2-chris.packham@alliedtelesis.co.nz>
- <YnvsInrh03BVh7lN@lunn.ch>
- <608a7d9d-9238-281a-8770-aa20feb7e6be@alliedtelesis.co.nz>
- <YnxUcB2e+Y9gtwI7@lunn.ch>
-In-Reply-To: <YnxUcB2e+Y9gtwI7@lunn.ch>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.32.1.11]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7B23BDB1AA2629468C6B7A20622F89AE@atlnz.lc>
-Content-Transfer-Encoding: base64
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Elad Nachman <enachman@marvell.com>
+Subject: Re: [PATCH v5 1/2] arm64: dts: marvell: Add Armada 98DX2530 SoC and
+ RD-AC5X board
+Message-ID: <YnxXWIloDzfg8bh0@lunn.ch>
+References: <20220504044624.951841-1-chris.packham@alliedtelesis.co.nz>
+ <20220511161003.GE10145@plvision.eu>
+ <YnviMOtXX+us+IA4@lunn.ch>
+ <c781f7eb-86f2-16c4-1380-b08b974900ff@alliedtelesis.co.nz>
 MIME-Version: 1.0
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=U+Hs8tju c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=IkcTkHD0fZMA:10 a=oZkIemNP1mAA:10 a=9s5BO7W635n2Z5SboxQA:9 a=QEXdDO2ut3YA:10
-X-SEG-SpamProfiler-Score: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c781f7eb-86f2-16c4-1380-b08b974900ff@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQpPbiAxMi8wNS8yMiAxMjoyNywgQW5kcmV3IEx1bm4gd3JvdGU6DQo+IE9uIFdlZCwgTWF5IDEx
-LCAyMDIyIGF0IDExOjE0OjI1UE0gKzAwMDAsIENocmlzIFBhY2toYW0gd3JvdGU6DQo+PiBPbiAx
-Mi8wNS8yMiAwNTowMiwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+Pj4gT24gV2VkLCBNYXkgMTEsIDIw
-MjIgYXQgMTE6MTA6MDBBTSArMTIwMCwgQ2hyaXMgUGFja2hhbSB3cm90ZToNCj4+Pj4gRGVzY3Jp
-YmUgdGhlIGNvbXBhdGlibGUgcHJvcGVydGllcyBmb3IgdGhlIE1hcnZlbGwgQWxsZXljYXQ1LzVY
-IHN3aXRjaGVzDQo+Pj4+IHdpdGggaW50ZWdyYXRlZCBDUFVzLg0KPj4+Pg0KPj4+PiBBbGxleWNh
-dDU6DQo+Pj4+ICogOThEWDI1Mzg6IDI0eDFHICsgMngxMEcgKyAyeDEwRyBTdGFjaw0KPj4+PiAq
-IDk4RFgyNTM1OiAyNHgxRyArIDR4MUcgU3RhY2sNCj4+Pj4gKiA5OERYMjUzMjogOHgxRyArIDJ4
-MTBHICsgMngxRyBTdGFjaw0KPj4+PiAqIDk4RFgyNTMxOiA4eDFHICsgNHgxRyBTdGFjaw0KPj4+
-PiAqIDk4RFgyNTI4OiAyNHgxRyArIDJ4MTBHICsgMngxMEcgU3RhY2sNCj4+Pj4gKiA5OERYMjUy
-NTogMjR4MUcgKyA0eDFHIFN0YWNrDQo+Pj4+ICogOThEWDI1MjI6IDh4MUcgKyAyeDEwRyArIDJ4
-MUcgU3RhY2sNCj4+Pj4gKiA5OERYMjUyMTogOHgxRyArIDR4MUcgU3RhY2sNCj4+Pj4gKiA5OERY
-MjUxODogMjR4MUcgKyAyeDEwRyArIDJ4MTBHIFN0YWNrDQo+Pj4+ICogOThEWDI1MTU6IDI0eDFH
-ICsgNHgxRyBTdGFjaw0KPj4+PiAqIDk4RFgyNTEyOiA4eDFHICsgMngxMEcgKyAyeDFHIFN0YWNr
-DQo+Pj4+ICogOThEWDI1MTE6IDh4MUcgKyA0eDFHIFN0YWNrDQo+Pj4+DQo+Pj4+IEFsbGV5Y2F0
-NVg6DQo+Pj4+ICogOThEWDM1MDA6IDI0eDFHICsgNngyNUcNCj4+Pj4gKiA5OERYMzUwMTogMTZ4
-MUcgKyA2eDEwRw0KPj4+PiAqIDk4RFgzNTEwOiA0OHgxRyArIDZ4MjVHDQo+Pj4+ICogOThEWDM1
-MjA6IDI0eDIuNUcgKyA2eDI1Rw0KPj4+PiAqIDk4RFgzNTMwOiA0OHgyLjVHICsgNngyNUcNCj4+
-Pj4gKiA5OERYMzU0MDogMTJ4NUcvNngxMEcgKyA2eDI1Rw0KPj4+PiAqIDk4RFgzNTUwOiAyNHg1
-Ry8xMngxMEcgKyA2eDI1Rw0KPj4+IEhpIENocmlzDQo+Pj4NCj4+PiBXaGVuIGxvb2tpbmcgYXQg
-dGhpcyBsaXN0LCBpcyBpdCBqdXN0IHRoZSBzd2l0Y2ggd2hpY2ggY2hhbmdlcywgYW5kDQo+Pj4g
-ZXZlcnl0aGluZyBlbHNlIGluIHRoZSBwYWNrYWdlIHN0YXlzIHRoZSBzYW1lPw0KPj4gQ1BVIHdp
-c2UgSSd2ZSBiZWVuIHRvbGQgZXZlcnl0aGluZyBpcyBpZGVudGljYWwuIFRoZSBkaWZmZXJlbmNl
-cyBhcmUgYWxsDQo+PiBpbiB0aGUgc3dpdGNoIHNpZGUuDQo+IE8uSy4gVGhhdCBoZWxwcyBhIGxv
-dCB3aXRoIHRoaXMgZGVzY3JpcHRpb24uDQo+DQo+Pj4gYXJtYWRhLTk4RFgyNTM4LmR0c2kgd2hp
-Y2ggZXh0ZW5kcyBhcm1hZGEtOThEWDI1eHguZHRzaQ0KPj4gVGhlcmUgd291bGRuJ3QgYmUgYW55
-dGhpbmcgdG8gYWRkIGluIDk4RFgyNTM4IChhdCBsZWFzdCBub3QgdW50aWwgd2UNCj4+IGhhdmUg
-YSBwcm9wZXIgc3dpdGNoZGV2IGRyaXZlcikuDQo+IERvZXMgdGhlIHN3aXRjaC9Tb0MgaGF2ZSBJ
-RCByZWdpc3RlcnM/IEZvciBtdjg4ZTZ4eHgsIHRoZSBzd2l0Y2ggaXMNCj4gaWRlbnRpZmllZCBi
-eSBpdHMgSUQgcmVnaXN0ZXJzLCBzbyB3ZSBkb24ndCBoYXZlIHN3aXRjaCBzcGVjaWZpYw0KPiBj
-b21wYXRpYmxlIHZhbHVlIGluIERULiBIb3BlZnVsbHkgaXQgaXMgdGhlIHNhbWUgaGVyZS4gQWxs
-IHdlIG5lZWQgdG8NCj4gc2F5IGlzIHRoYXQgdGhlcmUgaXMgYSBzd2l0Y2ggaW4gdGhlIG1haW4g
-LmR0c2kgZmlsZSwgYW5kIHRoZSAuZHRzDQo+IGZpbGUgd291bGQgdGhlbiBpbmRpY2F0ZSB3aGlj
-aCBwb3J0cyBhcmUgYWN0dWFsbHkgdXNlZC4NCg0KWWVzIHRoZXJlIGFyZSByZWdpc3RlcnMgdGhh
-dCB5b3UgY2FuIHJlYWQgdG8gaWRlbnRpZnkgdGhlIHNwZWNpZmljIGNoaXAuDQoNCkl0IHN0aWxs
-IG1pZ2h0IGJlIHVzZWZ1bCB0byBoYXZlIGEgZXhwZWN0ZWQgdnMgYWN0dWFsIGNoZWNrIGFzIHRo
-b3NlIElEIA0KdmFsdWVzIGFyZSBkZXRlcm1pbmVkIGJ5IHBpbiBzdHJhcHBpbmcgcmVzaXN0b3Jz
-LiBJdCBjb3VsZCBhbHNvIGJlIHVzZWQgDQp0byB2YWxpZGF0ZSB0aGUgZHRzIChlLmcuIHBvcnQg
-MjAgd291bGQgYmUgaW52YWxpZCBvbiBhIDk4RFgzNTAxKS4gQnV0IA0KdGhvc2UgYXJlIGNvbnNp
-ZGVyYXRpb25zIGZvciBmdXJ0aGVyIGRvd24gdGhlIHRyYWNrLg0KDQo+ICAgICBBbmRyZXc=
+On Wed, May 11, 2022 at 10:59:37PM +0000, Chris Packham wrote:
+> 
+> On 12/05/22 04:20, Andrew Lunn wrote:
+> > On Wed, May 11, 2022 at 07:10:03PM +0300, Vadym Kochan wrote:
+> >> Hi Chris,
+> >>
+> >>> arch/arm64/boot/dts/marvell/Makefile          |   1 +
+> >>> .../boot/dts/marvell/armada-98dx2530.dtsi     | 310 ++++++++++++++++++
+> >>> arch/arm64/boot/dts/marvell/rd-ac5x.dts       |  90 +++++
+> >>> 3 files changed, 401 insertions(+)
+> >> Marvell is going to start the upstreaming of AC5X boards support,
+> That's good news. I'm probably the customer that's been nagging the 
+> Marvell support team. But I'm also impatient hence I started working on 
+> this series. The pinctrl and mvneta changes have already been accepted.
+> >>   we have also patches with similar .dts(i) files
+> >> but with different naming:
+> >>
+> >>      ac5.dtsi
+> >>      ac5_rd.dts
+> >>      ac5_db.dts
+> >>      ac5x_db.dts
+> >>
+> >> What do you think about to use these naming scheme ?
+> 
+> Personally I thought they'd be rejected upstream as being too vague and 
+> generic.
+
+Agreed.
+
+> I'm not against changing if there is a consensus. On another thread the 
+> idea of armada-98dx25xx/armada-98dx35xx was mentioned. That might be a 
+> reasonable compromise (although technically there's no difference in the 
+> CPU block between the 25xx and 35xx).
+
+Until we find there is a difference. Marvell, can you confirm that the
+switch really is the only difference?
+
+This might also come down to ID registers. The DT could be enough to
+find the ID of the device, the rest is then done in the drivers, not
+DT.
+
+> > However, now that i come to look in arch/arm64/boot/dts/marvell, i
+> > think most of the current filenames proposed don't match the current names.
+> >
+> > armada-98dx2530.dtsi fits the current pattern.
+> >
+> > However, Chris's board files should probably be
+> >
+> > armada-98dx2530-rd.dts
+> >
+> > and the other files should be
+> >
+> > armada-98dx2530-db.dts
+> >
+> > armada-98dx2530-x-db.dts
+> >
+> > What does the x in x_db mean? Does that refer to the board or the SoC?
+> 
+> The x is from AC5X so we'd actually have armada-98dx25xx-db.dts and 
+> armada-98dx35xx-db.dts. My board would be called armada-98dx35xx-rd.dts 
+> or perhaps armada-98dx3550-rd.dts.
+
+armada-98dx25xx and armada-98dx35xx does help with the naming.  So it
+probably is worth having armada-98dx35xx which simply includes
+armada-98d25xx.
+
+	Andrew
