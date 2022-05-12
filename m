@@ -2,197 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A484C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8866BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:24:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353305AbiELLXG (ORCPT
+        id S1350858AbiELLYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 07:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
+        Thu, 12 May 2022 07:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353374AbiELLVG (ORCPT
+        with ESMTP id S1353318AbiELLYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 07:21:06 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB56915E604;
-        Thu, 12 May 2022 04:19:40 -0700 (PDT)
+        Thu, 12 May 2022 07:24:33 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34755F8C8
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:24:02 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id n10so4855061pjh.5
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:24:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652354380; x=1683890380;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=ihAXayEBD4iXMJjgukB0dh5EYYszTi17H0GSx6sI52o=;
-  b=qzOgoxhtmMiBU+QfM/dBlwEPPaXH8WkRer7uGslkdLQbnGrZ+uOzGfWz
-   vwf2ARWiISLCeGlJutCu0InXxFzXrOjyTiIbQx8bsiWp3ByZiH7w9W7Cn
-   v0tHl+Z7iuxK8w+NPzXpPJb1qBhl0v20r/b/AzmpxsppVCmn+k3XPKgPP
-   o=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 May 2022 04:19:40 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 04:19:40 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 12 May 2022 04:19:39 -0700
-Received: from [10.79.43.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 12 May
- 2022 04:19:36 -0700
-Subject: Re: [PATCH v2] mailbox: qcom-ipcc: Log the pending interrupt during
- resume
-To:     Manivannan Sadhasivam <mani@kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <jassisinghbrar@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <agross@kernel.org>, Prasad Sodagudi <quic_psodagud@quicinc.com>
-References: <1652251404-30562-1-git-send-email-quic_sibis@quicinc.com>
- <20220512074312.GA35848@thinkpad>
- <5b8aa653-5af8-a54f-b7bd-4d758eac9019@quicinc.com>
- <20220512095952.GB35848@thinkpad>
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-Message-ID: <76a15747-b06e-e869-078f-ac4ad2e4a5ec@quicinc.com>
-Date:   Thu, 12 May 2022 16:49:30 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MZUxzSSA16jHPMfnNIZTNFIVQ87TLhFgxWJeE4kOIcw=;
+        b=NVvHhWxDmgEveY5XgTLMjhIN/WeC0dzORtcZU3yCriRugu10mhKnK39HtzfAbTtN2o
+         iTVG1JQXh2n/X+jJAU4pj0uySBGDeX2s2D+lpkjOrWSfKfhn7Li5DghUPhuszF+nwR0F
+         VT2gwv11WrI1YC/ZgMVbvCXz/JjHJkQBVijSWSGx+f01HGzThnuMDodZg1Zy34ZxB8Vb
+         l/dz8CCbvhk1RsxOldgZRAxNnNZ9Y1JGkLSnSWPcwhvU8TWBNiL05dTLFK1VgEpig6In
+         SkTeNFO2cYNJivVnR9WfdodW2GCkT4hEY/rBMOAeRJRIJlxkALKvur8dnFx7gAeqDsa5
+         XGCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MZUxzSSA16jHPMfnNIZTNFIVQ87TLhFgxWJeE4kOIcw=;
+        b=bg30KZNK+iCQnAaloSXs20rMzdeaajxC8dp55WLm2ZWqLoZicS9/qVqUjaY9GCmiXs
+         Yy/SSM7ZfkH0BAVysO4P5PZFhaOmLcY1gXyqxZJLtp+lFDnXf45gISudvqnv6/1FuzI7
+         yYDRgGk8tVsJ5wtJp8Dth6z6bGnOFVuVvNbCvfGdnx9ktkSR54efOcqGse7xdlUyzOvf
+         t4or5T/ODyhYMbv+z0t8gaQS/jKwoilX6a9Hud62KRjee7rAtq2DpEJX5NP/43nZPx9u
+         WGRyZnXCZJa3PD/j9HHm6gN9+IasHcgdyHUjtqY/ntCoRUnPhnNMDXTrGtew6eAfzusF
+         wARQ==
+X-Gm-Message-State: AOAM533XgijAb3zVIX82Ls46PXYTnRvE3epjX2wclRbKb0KnkHZAQ/9C
+        A+VqiKQZozKs01wvhnNkxobCoA==
+X-Google-Smtp-Source: ABdhPJyBo8Ppm/uMJMgFCgqLtFjWMfuMu1xs6L5wv/MOpVS/NoFV+EHTkKVoWQCFUfvxY8GXBnDZcw==
+X-Received: by 2002:a17:90a:4803:b0:1dc:b4c9:1958 with SMTP id a3-20020a17090a480300b001dcb4c91958mr10259315pjh.61.1652354642336;
+        Thu, 12 May 2022 04:24:02 -0700 (PDT)
+Received: from localhost ([139.177.225.250])
+        by smtp.gmail.com with ESMTPSA id 23-20020aa79157000000b0050dc76281cbsm3506108pfi.165.2022.05.12.04.24.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 04:24:01 -0700 (PDT)
+Date:   Thu, 12 May 2022 19:23:49 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        osalvador@suse.de, masahiroy@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v10 3/4] mm: hugetlb_vmemmap: use kstrtobool for
+ hugetlb_vmemmap param parsing
+Message-ID: <YnzuRV4LLRNykDtO@FVFYT0MHHV2J.usts.net>
+References: <20220509062703.64249-1-songmuchun@bytedance.com>
+ <20220509062703.64249-4-songmuchun@bytedance.com>
+ <21aae898-d54d-cc4b-a11f-1bb7fddcfffa@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20220512095952.GB35848@thinkpad>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <21aae898-d54d-cc4b-a11f-1bb7fddcfffa@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/12/22 3:29 PM, Manivannan Sadhasivam wrote:
-> On Thu, May 12, 2022 at 03:08:43PM +0530, Sibi Sankar wrote:
->> Hey Mani,
->>
->> Thanks for taking time to review the patch.
->>
->> On 5/12/22 1:13 PM, Manivannan Sadhasivam wrote:
->>> On Wed, May 11, 2022 at 12:13:24PM +0530, Sibi Sankar wrote:
->>>> From: Prasad Sodagudi <quic_psodagud@quicinc.com>
->>>>
->>>> Enable logging of the pending interrupt that triggered device wakeup. This
->>>> logging information helps to debug IRQs that cause periodic device wakeups
->>>> and prints the detailed information of pending IPCC interrupts instead of
->>>> the generic "Resume caused by IRQ 17, ipcc".
->>>>
->>>> Scenario: Device wakeup caused by Modem crash
->>>> Logs:
->>>> qcom-ipcc mailbox: virq: 182 triggered client-id: 2; signal-id: 2
->>>>
->>>>   From the IPCC bindings it can further understood that the client here is
->>>> IPCC_CLIENT_MPSS and the signal was IPCC_MPROC_SIGNAL_SMP2P.
->>>>
->>>> Signed-off-by: Prasad Sodagudi <quic_psodagud@quicinc.com>
->>>> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
->>>> ---
->>>>
->>>> V2:
->>>>    * Fix build error when ipcc is a module [Kernel Test Bot]
->>>>
->>>>    drivers/mailbox/qcom-ipcc.c | 27 +++++++++++++++++++++++++++
->>>>    1 file changed, 27 insertions(+)
->>>>
->>>> diff --git a/drivers/mailbox/qcom-ipcc.c b/drivers/mailbox/qcom-ipcc.c
->>>> index c5d963222014..21c071ec119c 100644
->>>> --- a/drivers/mailbox/qcom-ipcc.c
->>>> +++ b/drivers/mailbox/qcom-ipcc.c
->>>> @@ -254,6 +254,28 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
->>>>    	return devm_mbox_controller_register(dev, mbox);
->>>>    }
->>>> +#ifdef CONFIG_PM_SLEEP
->>>
->>> You don't need this guard anymore. Please see below.
->>
->> ack
->>
->>>
->>>> +static int qcom_ipcc_pm_resume(struct device *dev)
->>>> +{
->>>> +	struct qcom_ipcc *ipcc = dev_get_drvdata(dev);
->>>> +	u32 hwirq;
->>>> +	int virq;
->>>> +
->>>> +	hwirq = readl(ipcc->base + IPCC_REG_RECV_ID);
->>>> +	if (hwirq == IPCC_NO_PENDING_IRQ)
->>>> +		return 0;
->>>> +
->>>> +	virq = irq_find_mapping(ipcc->irq_domain, hwirq);
->>>> +
->>>> +	dev_info(dev, "virq: %d triggered client-id: %ld; signal-id: %ld\n", virq,
->>>> +		 FIELD_GET(IPCC_CLIENT_ID_MASK, hwirq), FIELD_GET(IPCC_SIGNAL_ID_MASK, hwirq));
->>>> +
->>>
->>> Does this really need to be dev_info? This looks like a dev_dbg() material to
->>> me.
->>
->> The whole point of the log is to catch sporadic issues like random
->> wakeups caused by remoteprocs through ipcc. We would just end up with
->> a single line identifying the client id during resume if ipcc had indeed
->> caused the wakeup else it wouldn't print anything.
->>
+On Thu, May 12, 2022 at 09:41:22AM +0200, David Hildenbrand wrote:
+> On 09.05.22 08:27, Muchun Song wrote:
+> > Use kstrtobool rather than open coding "on" and "off" parsing in
+> > mm/hugetlb_vmemmap.c,  which is more powerful to handle all kinds
+> > of parameters like 'Yy1Nn0' or [oO][NnFf] for "on" and "off".
+> > 
+> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> > Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+> > ---
+> >  Documentation/admin-guide/kernel-parameters.txt |  6 +++---
+> >  mm/hugetlb_vmemmap.c                            | 10 +++++-----
+> >  2 files changed, 8 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> > index 308da668bbb1..43b8385073ad 100644
+> > --- a/Documentation/admin-guide/kernel-parameters.txt
+> > +++ b/Documentation/admin-guide/kernel-parameters.txt
+> > @@ -1703,10 +1703,10 @@
+> >  			enabled.
+> >  			Allows heavy hugetlb users to free up some more
+> >  			memory (7 * PAGE_SIZE for each 2MB hugetlb page).
+> > -			Format: { on | off (default) }
+> > +			Format: { [oO][Nn]/Y/y/1 | [oO][Ff]/N/n/0 (default) }
 > 
-> Right but that information is only required for debugging the periodic wakeups.
-> And that's not going to be useful for an end user.
-
-I would consider this an extension to "Resume caused by IRQ xx, xxxx"
-print that we get to identify the wake up source. That's the reasoning
-behind marking it as dev_info (being able to nail down random wakeups is
-just an added advantage). That said I'll re-spin it with dbg if that's
-the consensus.
-
+> Really? Can we make the syntax even harder to parse for human beings?! :)
 > 
+> Not to mention that it's partially wrong? What about "oFf" ? That would
+> have to be [oO][Ff][Ff]
+> 
+> Honestly, "on | off" is good enough. That "oN" and friends work is just
+> a "nice to have" IMHO. No need to over-complicate this description.
+
+Got it. How about also telling users "on/1 | off/0"? Because 0 and
+1 are also widely used to disable/enable a knob.
+
+> >  
+> > -			on:  enable the feature
+> > -			off: disable the feature
+> > +			[oO][Nn]/Y/y/1: enable the feature
+> > +			[oO][Ff]/N/n/0: disable the feature
+> >  
+> >  			Built with CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON=y,
+> >  			the default is on.
+> > diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
+> > index 6254bb2d4ae5..cc4ec752ec16 100644
+> > --- a/mm/hugetlb_vmemmap.c
+> > +++ b/mm/hugetlb_vmemmap.c
+> > @@ -28,15 +28,15 @@ EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
+> >  
+> >  static int __init hugetlb_vmemmap_early_param(char *buf)
+> >  {
+> > -	if (!buf)
+> > +	bool enable;
+> > +
+> > +	if (kstrtobool(buf, &enable))
+> >  		return -EINVAL;
+> >  
+> > -	if (!strcmp(buf, "on"))
+> > +	if (enable)
+> >  		static_branch_enable(&hugetlb_optimize_vmemmap_key);
+> > -	else if (!strcmp(buf, "off"))
+> > -		static_branch_disable(&hugetlb_optimize_vmemmap_key);
+> >  	else
+> > -		return -EINVAL;
+> > +		static_branch_disable(&hugetlb_optimize_vmemmap_key);
+> >  
+> >  	return 0;
+> >  }
+> 
+> 
+> Apart from that
+> 
+> Acked-by: David Hildenbrand <david@redhat.com>
+>
+
+Thanks.
+
+> -- 
 > Thanks,
-> Mani
 > 
->> -Sibi
->>>
->>>> +	return 0;
->>>> +}
->>>> +#else
->>>> +#define qcom_ipcc_pm_resume NULL
->>>> +#endif
->>>> +
->>>>    static int qcom_ipcc_probe(struct platform_device *pdev)
->>>>    {
->>>>    	struct qcom_ipcc *ipcc;
->>>> @@ -324,6 +346,10 @@ static const struct of_device_id qcom_ipcc_of_match[] = {
->>>>    };
->>>>    MODULE_DEVICE_TABLE(of, qcom_ipcc_of_match);
->>>> +static const struct dev_pm_ops qcom_ipcc_dev_pm_ops = {
->>>> +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, qcom_ipcc_pm_resume)
->>>> +};
->>>> +
->>>>    static struct platform_driver qcom_ipcc_driver = {
->>>>    	.probe = qcom_ipcc_probe,
->>>>    	.remove = qcom_ipcc_remove,
->>>> @@ -331,6 +357,7 @@ static struct platform_driver qcom_ipcc_driver = {
->>>>    		.name = "qcom-ipcc",
->>>>    		.of_match_table = qcom_ipcc_of_match,
->>>>    		.suppress_bind_attrs = true,
->>>> +		.pm = &qcom_ipcc_dev_pm_ops,
->>>
->>> You can use the new pm_sleep_ptr() macro to avoid the PM_SLEEP guard.
->>>
->>> 		.pm = pm_sleep_ptr(&qcom_ipcc_dev_pm_ops),
->>
->> ack
->>
->>>
->>> Thanks,
->>> Mani
->>>
->>>>    	},
->>>>    };
->>>> -- 
->>>> 2.7.4
->>>>
->>>
+> David / dhildenb
+> 
 > 
