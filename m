@@ -2,95 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AD0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355382AbiELOfY (ORCPT
+        id S1355396AbiELOf3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
+        Thu, 12 May 2022 10:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354452AbiELOfW (ORCPT
+        with ESMTP id S1355370AbiELOfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:35:22 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E9225D130;
-        Thu, 12 May 2022 07:35:20 -0700 (PDT)
-Received: from mail-yw1-f171.google.com ([209.85.128.171]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MJn8J-1nV91L1dyj-00K7ib; Thu, 12 May 2022 16:35:18 +0200
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2f16645872fso58979727b3.4;
-        Thu, 12 May 2022 07:35:17 -0700 (PDT)
-X-Gm-Message-State: AOAM531uf/IF/eWxzCferfvFQ6nIMHB2lfFsJRRwsc+S2dpF7nYzmX0X
-        XxBk2ONLjbID075LmHgnLUw4L2odBO2eNk5CZp8=
-X-Google-Smtp-Source: ABdhPJzfbhwoFr1q9juMntgIfHM+m3U1nWpSEbsdjudirAmgYnzjhj8eMLGYhy6XgarB5vhSiUly3q7lBnc1N2pSqgQ=
-X-Received: by 2002:a81:ad7:0:b0:2e6:84de:3223 with SMTP id
- 206-20020a810ad7000000b002e684de3223mr331249ywk.209.1652366117032; Thu, 12
- May 2022 07:35:17 -0700 (PDT)
+        Thu, 12 May 2022 10:35:24 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B91E25F78E
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:35:23 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id q4so5034038plr.11
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:35:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VH9CtAWZfBNkMc4PV6ciArAbPEDFzOy6nzMqxMfXdx4=;
+        b=TERBj7B9rvyTZG2Q0bQuEMyTj2MR4W/RGaFMvts5duvroI3qHRNJKDSQWLOhpa7+Ih
+         fzeOVVFH0fbM8yikGZPXqdumhDkz9q+M2NUQMu1oN+96zcZpUiyhtjVNtJyqMp3Qw46f
+         UTd8kP7R1wzL5oc4QzkBLDkHViFDqyMnUBiYYDpTgnqmkPvO1pJK9R1AqVDzCu1UDCy4
+         +jKnr4sLzdRKjfSk5aC/zViNOcYcOS3sdxV1g4oQOzwcIbFsKP+xJ6hePlAXF3O/cSs/
+         ZrxwEsk9tfx2P0PAmdWggL5eqJI+J2TY6/IThrN5jFnbZRubUxBDU5lrrVMgZ+QcQDVu
+         kUlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VH9CtAWZfBNkMc4PV6ciArAbPEDFzOy6nzMqxMfXdx4=;
+        b=VnhdWkVLpHYwHT8wI/q6HZOusOIBnGivHhubyYr1Q3Rq7bJrVt2qeWpaiaZNUDBFZ9
+         S2WBcpD+A2fqCJtP/oKBXr6KhkG6BzZSLojurETdwoEg0pbbMOEWUl7h3S4ZS/oAjdkU
+         qSZJRaA+VTzKikE53Ye2vDAzDmwhHemQE+FCGXCn6lMb2nFQEZflzXaq9lQ7hjVCY7PX
+         hHnScS1yKe0xopx9HorvN/6os+FMcY7UF6iCAbnKJvK9/auJoBHvH0wFsfbBb89nxU8I
+         d2MucIhjYFY3dM77LCLuCxLvvhv/uD/E5WMEdLUcMkkQBkc51K1TWPzgpR6bsKedNGdx
+         4j3w==
+X-Gm-Message-State: AOAM533dVKIxqVaqyJuhaMA/I2wK8AhjjIKSf4EqtQ0g53LoyragWHAz
+        QTSEUq8z3Rh+xt/Iauh3YyAGRw==
+X-Google-Smtp-Source: ABdhPJyS+Wi6JIuFyAQjmiQNaTN9bTfS194VeoCwFkeNs/R1+Uj29i2lj82ARrJqGtQzOxeoQwH9kg==
+X-Received: by 2002:a17:903:234e:b0:15e:d63f:973e with SMTP id c14-20020a170903234e00b0015ed63f973emr241023plh.47.1652366122444;
+        Thu, 12 May 2022 07:35:22 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id ij14-20020a170902ab4e00b0015e8d4eb1c2sm8661plb.12.2022.05.12.07.35.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 07:35:21 -0700 (PDT)
+Date:   Thu, 12 May 2022 14:35:18 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH 1/2] x86/crash: Disable virt in core NMI crash handler to
+ avoid double list_add
+Message-ID: <Yn0bJkjgDOxPxDU4@google.com>
+References: <20220511234332.3654455-1-seanjc@google.com>
+ <20220511234332.3654455-2-seanjc@google.com>
+ <87wnervxb7.ffs@tglx>
+ <Yn0WPBGGI4VcbM4S@google.com>
 MIME-Version: 1.0
-References: <20220510032558.10304-1-ychuang3@nuvoton.com> <CAK8P3a1k8y8U99bBmqBYE1vYAc0q-UeaM0oLP4tTHZCpyYNOgA@mail.gmail.com>
- <8be62b40-077a-7634-7d34-7776909a2abe@linaro.org>
-In-Reply-To: <8be62b40-077a-7634-7d34-7776909a2abe@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 12 May 2022 16:35:00 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3=YD7WV+Www8pf+JTv14DwcnSjD+f=YFCNMxXYT9FAZA@mail.gmail.com>
-Message-ID: <CAK8P3a3=YD7WV+Www8pf+JTv14DwcnSjD+f=YFCNMxXYT9FAZA@mail.gmail.com>
-Subject: Re: [PATCH V4 0/5] Add initial support for MA35D1 SoC
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Jacky Huang <ychuang3@nuvoton.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        ychuang570808@gmail.com, Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, SoC Team <soc@kernel.org>,
-        cfli0@nuvoton.com
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:f35I4VQN5HrjLu+f35ruvI1eR5T9g+bS8hIxq67YP8hU7et8GXq
- 6/ga5BEAuNysl5lffjUoLFn5i77YASqLm+x0rtNCuyggX++caLY3Lbm2HsCugCp3hMCY4pQ
- GzzJ+3KwbzZaF4Mjb5Rzfx5AtpBzCIZUdIBhT+5xL2soYf++YgqAUeGSxv91EoCtsvutHh6
- Nm+mInPbNTW1RvP4obUXQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:fkt0tv7tA1I=:UI38Qzf7Hgmuu3pdwo8Sza
- FIDnSMv87Ew1LeBfkAnGiv96fAvynAjx7G455b/zjgpTOBoAzfHzoWrPpTWD35lL5mjfyVQ2V
- 3mtXsArw+VU4KZQkllqM+NjGPy06D1Nxc4pcD3EgvrnQVV9G3/1VtFHcjcZRraf1/X1txz+RJ
- 2cFvvs/zLtqNfHx/z2lmHriraxorAeZipIjhu7s52OgNer4igR3/RZZsUn4N5MKYghbYXbsgN
- ffCcCy/YR4TOVPT8SRSju9xHnuzSIUxW7P0yfgyfPGo5b2G9PQDC/A5wZ4teKOy0wjXKhbBJm
- t9zMJJbEz7heT7jMAFuc6p5moRal+sYfFDsvxNIPrjYEA/zLd0mdNoKdhWlE6hPZNkw8B+9wI
- HIw4cO3rundVs9CHfm3Aq3uSGxT1KvIF6sfEP99SrKjsHf71WIcC3Eka4nhoXi+2S80GbCKPH
- lvgNvShwFowIcNXg6Qug4Z2bWYVmp0Q67Bg9h1v+JsiGrNt0S+II/l1kUtq3BYP8RplgjJhfj
- 6rYZVFfKh+7v561mukU2a6Y7gAoD1xDSeDrrDZYiuz6yE/F5zZZQn345YpIAUP03nxjcA6NJR
- R5BXdcFbeQbQzx+UbeolBUk7+IpjUSZsOGXncmK3sSaenEgUmbLvO/4qkYGp9Fxg7UuRtCOcI
- u+iMksTTQH++kmbPHfTQKLBEfIc2Tsfn423KoptDxCWPna+ibMYT/5BN+g91V/dR+Hq1NlsMY
- aF1wrvqsm4xICty0OOHSaRE9MrsaSJYeASF8OA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yn0WPBGGI4VcbM4S@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 4:11 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 10/05/2022 09:07, Arnd Bergmann wrote:
-> > On Tue, May 10, 2022 at 5:25 AM Jacky Huang <ychuang3@nuvoton.com> wrote:
-> >>
-> >> This patch series adds initial support for Nuvoton MA35D1 SoC,
-> >> include initial dts and clock controller binding.
-> >>
-> >
-> > This looks fine in principle, but we are getting close to the merge window and
-> > should finalize this quickly to make it into v5.19. I see that you don't have a
-> > console device, as commented in the .dts patch. Normally I prefer merging
-> > platforms only when there is at least rudimentary support for booting into
-> > an initramfs with a serial console, but this is a flexible rule.
->
-> I disagree. It does not look fine - does not pass `make dtbs_check` even
-> with Nuvoton bindings...
+On Thu, May 12, 2022, Sean Christopherson wrote:
+> On Thu, May 12, 2022, Thomas Gleixner wrote:
+> > Sean,
+> > 
+> > On Wed, May 11 2022 at 23:43, Sean Christopherson wrote:
+> > > @@ -840,6 +858,20 @@ void nmi_shootdown_cpus(nmi_shootdown_cb callback)
+> > >  	unsigned long msecs;
+> > >  	local_irq_disable();
+> > >  
+> > > +	/*
+> > > +	 * Invoking multiple callbacks is not currently supported, registering
+> > > +	 * the NMI handler twice will cause a list_add() double add BUG().
+> > > +	 * The exception is the "nop" handler in the emergency reboot path,
+> > > +	 * which can run after e.g. kdump's shootdown.  Do nothing if the crash
+> > > +	 * handler has already run, i.e. has already prepared other CPUs, the
+> > > +	 * reboot path doesn't have any work of its to do, it just needs to
+> > > +	 * ensure all CPUs have prepared for reboot.
+> > 
+> > This is confusing at best. The double list add is just one part of the
+> > problem, which would be trivial enough to fix.
+> > 
+> > The real point is that after the first shoot down all other CPUs are
+> > stuck in crash_nmi_callback() and won't respond to the second NMI.
+> 
+> Well that's embarrasingly obvious in hindsight.
+> 
+> > 
+> > So trying to run this twice is completely pointless and guaranteed to
+> > run into the timeout.
+> > 
+> > > +	 */
+> > > +	if (shootdown_callback) {
+> > > +		WARN_ON_ONCE(callback != nmi_shootdown_nop);
+> > > +		return;
+> > 
+> > Instead of playing games with the callback pointer, I prefer to make
+> > this all explicit. Delta patch below.
+> 
+> Much better.  If you're planning on doing fixup, can you also include a comment
+> tweak about why the callback is left set?  If not, I'll do it in v2.  A bit
+> overkill, but it's another thing that for me was obvious only once I realized "why".
 
-Ok, thanks for taking a look. It was already late for 5.19 and missing the uart
-driver, so it was clear it had not seen actual runtime testing. Let's try
-aiming for 5.20 then.
-
-        Arnd
+Actually, I'll send a v2, there's some more cleanup that can be done if patch 2
+uses cpu_crash_disable_virtualization().
