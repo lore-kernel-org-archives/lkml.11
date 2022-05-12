@@ -2,108 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E82CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2749BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351292AbiELIBo (ORCPT
+        id S1351297AbiELIDU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47158 "EHLO
+        Thu, 12 May 2022 04:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242321AbiELIBl (ORCPT
+        with ESMTP id S1350732AbiELIDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:01:41 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4706D3B0
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:01:39 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id p12so4150636pfn.0
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:01:39 -0700 (PDT)
+        Thu, 12 May 2022 04:03:15 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34D82016C7
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:03:13 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id n24so5483906oie.12
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:03:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9dj+MY7TVUG7YYlF96sOIX1/Xkd2WTjl3qbMNcTVGbY=;
-        b=CZkFRbSp/Rk60f9tno8+etGpGRKD6OMbn89hoACWVv3BOba1v0jPFWrqwYtyJEwGng
-         VLwqj9OEw0yrmisT7WJf1Dq2zqzWy4Qsb8Ul3UxTQs00v1j8c514SQeJYUtVO8yrI1KP
-         SfSYhdoGLzoreN/tJWsnhx+Sx64LKDNMKD4UoNjjLbyYRj/grXgnF3QuPnP+m8LEFVsA
-         k6tf4cEqHNrGzbzZXDcjpxz/5CFuxzM0lnOz0WlCGcdgtIiTQmH4aO053/cG7Y/uIaqi
-         Vhor7zAzngp9g4EOjNq/JklGerSkhP93GD3x0QRFWxX0Je9KPrNDfZNKcNDPy3lcNNT0
-         ddAA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Ow3N/Wt3SjcXP2XMyxq5Q92GuEvGsl/1ipojjcBl5+8=;
+        b=S1WtSL3bYyWs8HcGVZnIZ0MYBrIQB6thgqa2Nr6B9NSnnXspGr5wNa8llV9dvbFoCb
+         RDGPz9qzI/W0a8x7keH53oOK/fXQHp+cWXIlIxz2G1OauMh25+xmagfmsqllJlNF0Np4
+         kL8znIwyld7pa6aE+HxO64gT0sStjPa3pk3b6AX3zjyR8FJtmOmOsLKt0+urWblJjTqX
+         kTXBUE2DLHCxpXXV1Z3tJgaIaYGMsHFl2M5K4lSfT2YyyX7DvBS0D5zJ0p2cmuEguXDT
+         d2pONBe7tYaNDyns3NiDMYSneziSiVrma65fLIrZ1mg+S1CmjmHicuH1XcF/q1v1piIg
+         Bqfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9dj+MY7TVUG7YYlF96sOIX1/Xkd2WTjl3qbMNcTVGbY=;
-        b=lh4mXTVgUn/yavrb/OCTdH0meIUs015ANlntMQiqoUSquFcal8GyPkKAIgghV7plYB
-         FoGhotRcAISXgLqfpsJhtn+ckUR/emQY4rxTZ3Pv4M0jsF7/h8j3L+6zMuKuFKpdEQz2
-         EP1AWvCgk/Pcvvx01dI51LBcmdz4HUH82j5Gn/U/E4vBp/eeP4jEPBA0yJySoymLA9xW
-         ZTdOVMQRkZ2DzGnqstl17EdTkKgQKp7IcQBnmszVZ+y+MlKA66qX9Mpdm1idft4UCMif
-         +3kbBbTE7ZMZ+FqE0vvjNO4PwN5tO5T/MBW+5LS3skIo87NSUksDayFPY0HANiPJDzQA
-         WEgg==
-X-Gm-Message-State: AOAM531I1n7rYr0otimDGodDnxvagcNnCBpp0KUA3pGMcbgkfcIJsy7t
-        qt0HursB47zv2raSNJ9ar4I=
-X-Google-Smtp-Source: ABdhPJzF7pwE1O6H64JMb4XxkQaRnY+MhwNvbklpsOaM71M6o4JTk9mqHUlzFKCq6GwZKMTlSusRPg==
-X-Received: by 2002:a63:5211:0:b0:3db:1c36:fc37 with SMTP id g17-20020a635211000000b003db1c36fc37mr6384919pgb.572.1652342498793;
-        Thu, 12 May 2022 01:01:38 -0700 (PDT)
-Received: from localhost.localdomain ([116.128.244.169])
-        by smtp.gmail.com with ESMTPSA id az9-20020a170902a58900b0015e8d4eb1bcsm3264531plb.6.2022.05.12.01.01.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 01:01:38 -0700 (PDT)
-From:   Genjian Zhang <zhanggenjian123@gmail.com>
-X-Google-Original-From: Genjian Zhang <zhanggenjian@kylinos.cn>
-To:     hsweeten@visionengravers.com, alexander.sverdlin@gmail.com,
-        linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Genjian Zhang <zhanggenjian@kylinos.cn>
-Subject: [PATCH] ep93xx: clock: Do not return the address of the freed memory
-Date:   Thu, 12 May 2022 15:59:43 +0800
-Message-Id: <20220512075943.2397833-1-zhanggenjian@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Ow3N/Wt3SjcXP2XMyxq5Q92GuEvGsl/1ipojjcBl5+8=;
+        b=jPi6tjbc37oaLaIdy1IzEcHj/TjBqevJHA7PxGxhcdhcqIUs6nfQM1iju5dTcohPAO
+         RFWD+zfOjZE51IHix94DlirOwm31hHQzfYxtR9ObRC4So7rGC+HsNi1+hgNAlQYmIQed
+         fNDrv0LNIqPyyCnzHxHOhrr3akeux67fr1y45X8+s6lwsJpmqSqHW35fk+qnkpAbWwk0
+         P6ZsLllvWx4jsFwSPsoh3+zEgKS4opzCDimgY7QSbk3tDNbtKefk8ennQURVXg8kGrEt
+         CbxJ+RbzO7WPT+d9q0OX+ytiwjCrgG9ly5SEvFHYFKcLIk33MRbhStL7+LoxMT12WIvV
+         dnTQ==
+X-Gm-Message-State: AOAM5317r1Me9qKPXRY0yLRERk6UQsl/fIUUesz+1xCKLzGRoABQ04+Q
+        tVElNKGMomW0h+zUysBSB/srvP8Tz2JSu8avbnad8Q==
+X-Google-Smtp-Source: ABdhPJxxyn4CuW2shuA+dA8BmKhULsK5X1UjrwEngz4hZeTipgbkYH5ob75IqgwtRmfTpGVUe7f8mgkHfT1WhGFP0ss=
+X-Received: by 2002:a05:6808:a93:b0:326:4a90:5e2a with SMTP id
+ q19-20020a0568080a9300b003264a905e2amr4511379oij.211.1652342592843; Thu, 12
+ May 2022 01:03:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220505155745.1690906-1-dvyukov@google.com> <CAP-5=fVDs-AQvhXbZM9ksRqMdfS00Mpn8LDRZUppJb76TCkrAg@mail.gmail.com>
+ <Ynv7gkbBVd9dlJRh@kernel.org> <Ynv9mm4w9YfEU5j8@kernel.org>
+In-Reply-To: <Ynv9mm4w9YfEU5j8@kernel.org>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 12 May 2022 10:03:01 +0200
+Message-ID: <CACT4Y+YQ==eY6B264Sdugf-RH8EOtywzD=4qLxwcYkJfSXT21Q@mail.gmail.com>
+Subject: Re: [PATCH] tools/perf: add breakpoint benchmarks
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Ian Rogers <irogers@google.com>, peterz@infradead.org,
+        mingo@redhat.com, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, elver@google.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although there will be basic judgments of IS_ERR() on this return value
-elsewhere,but I think it can be replaced by the actual error return
-value of clk_register.
+On Wed, 11 May 2022 at 20:17, Arnaldo Carvalho de Melo <acme@kernel.org> wr=
+ote:
+> > >
+> > > Acked-by: Ian Rogers <irogers@google.com>
+> >
+> > Thanks, applied.
+>
+> But I'll add some error checks, etc, running as !root, in a toolbox in
+> Fedora Silverblue produces:
 
-Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
----
- arch/arm/mach-ep93xx/clock.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+Thanks!
 
-diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
-index 4fa6ea5461b7..762328de4bce 100644
---- a/arch/arm/mach-ep93xx/clock.c
-+++ b/arch/arm/mach-ep93xx/clock.c
-@@ -345,9 +345,10 @@ static struct clk_hw *clk_hw_register_ddiv(const char *name,
- 	psc->hw.init = &init;
- 
- 	clk = clk_register(NULL, &psc->hw);
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
- 		kfree(psc);
--
-+		return (struct clk_hw *)clk;
-+	}
- 	return &psc->hw;
- }
- 
-@@ -452,9 +453,10 @@ static struct clk_hw *clk_hw_register_div(const char *name,
- 	psc->hw.init = &init;
- 
- 	clk = clk_register(NULL, &psc->hw);
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
- 		kfree(psc);
--
-+		return (struct clk_hw *)clk;
-+	}
- 	return &psc->hw;
- }
- 
--- 
-2.25.1
-
+> =E2=AC=A2[acme@toolbox perf]$ perf bench breakpoint all
+> # Running breakpoint/thread benchmark...
+> # Created/joined 10 threads with 1 breakpoints and 1 parallelism
+>      Total time: 0.000 [sec]
+>
+>       54.600000 usecs/op
+>       54.600000 usecs/op/cpu
+>
+> # Running breakpoint/enable benchmark...
+> # Enabled/disabled breakpoint 10 time with 0 passive and 0 active threads
+>      Total time: 0.000 [sec]
+>
+>        1.100000 usecs/op
+>
+> =E2=AC=A2[acme@toolbox perf]$
+>
+> =E2=AC=A2[acme@toolbox perf]$ perf bench --repeat=3D20000 breakpoint enab=
+le --passive=3D224 --active=3D0
+> # Running 'breakpoint/enable' benchmark:
+> # Enabled/disabled breakpoint 20000 time with 224 passive and 0 active th=
+reads
+>      Total time: 8.933 [sec]
+>
+>      446.674950 usecs/op
+> =E2=AC=A2[acme@toolbox perf]$
+>
+> $ grep -m1 "model name" /proc/cpuinfo
+> model name      : AMD Ryzen 9 5950X 16-Core Processor
+>
+> Diff:
+>
+> diff --git a/tools/perf/bench/breakpoint.c b/tools/perf/bench/breakpoint.=
+c
+> index 56936fea246d73c2..d2c074bba06a3d1f 100644
+> --- a/tools/perf/bench/breakpoint.c
+> +++ b/tools/perf/bench/breakpoint.c
+> @@ -83,6 +83,9 @@ static void *breakpoint_thread(void *arg)
+>         pthread_t *threads;
+>
+>         threads =3D calloc(thread_params.nthreads, sizeof(threads[0]));
+> +       if (!threads)
+> +               exit((perror("calloc"), EXIT_FAILURE));
+> +
+>         while (__atomic_fetch_sub(repeat, 1, __ATOMIC_RELAXED) > 0) {
+>                 done =3D 0;
+>                 for (i =3D 0; i < thread_params.nthreads; i++) {
+> @@ -114,6 +117,9 @@ int bench_breakpoint_thread(int argc, const char **ar=
+gv)
+>         }
+>         breakpoints =3D calloc(thread_params.nbreakpoints, sizeof(breakpo=
+ints[0]));
+>         parallel =3D calloc(thread_params.nparallel, sizeof(parallel[0]))=
+;
+> +       if (!breakpoints || !parallel)
+> +               exit((perror("calloc"), EXIT_FAILURE));
+> +
+>         for (i =3D 0; i < thread_params.nbreakpoints; i++) {
+>                 breakpoints[i].fd =3D breakpoint_setup(&breakpoints[i].wa=
+tched);
+>                 if (breakpoints[i].fd =3D=3D -1)
+> @@ -194,6 +200,9 @@ int bench_breakpoint_enable(int argc, const char **ar=
+gv)
+>                 exit((perror("perf_event_open"), EXIT_FAILURE));
+>         nthreads =3D enable_params.npassive + enable_params.nactive;
+>         threads =3D calloc(nthreads, sizeof(threads[0]));
+> +       if (!threads)
+> +               exit((perror("calloc"), EXIT_FAILURE));
+> +
+>         for (i =3D 0; i < nthreads; i++) {
+>                 if (pthread_create(&threads[i], NULL,
+>                         i < enable_params.npassive ? passive_thread : act=
+ive_thread, &done))
