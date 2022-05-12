@@ -2,142 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81132C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353309AbiELLdf (ORCPT
+        id S1353275AbiELLdo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 07:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60150 "EHLO
+        Thu, 12 May 2022 07:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353245AbiELLdZ (ORCPT
+        with ESMTP id S1353244AbiELLdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 07:33:25 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E021D0404
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:33:22 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id t25so8493035lfg.7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:33:22 -0700 (PDT)
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECF41CEEDE
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:33:21 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id o22so5207479ljp.8
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:33:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vWGmhmweV+dNU5jtCxsxI3a+Zh1xPCMPOBO82/gmlT8=;
-        b=LKUD1yC32xjbxmkSjCnpvuGV+8W7U4BU65WpHJE3jq3pkQpn1jtn6WIi0hBwFbvO1H
-         A9TSVFsVVQfZbvcjeW13k4cH6GFbrI5hb0Z4djPSZd1N6bBC67YPH452ep4LQwsk0WV8
-         y2YzdhmWiMSLQZFLeedNKlvsJGIR0oAkoC9fTPqx1xNStO2xj0HGxgNgfWCkuf0BTSfB
-         zhM0kGiyzLSCjeiQgbzY7bjCBK+FcgdMsz0UnP4Zgpjnb4SOX3/4bMiKLkJGKbXTrlDO
-         KzFWIsuWwK6BVT0/jE4YaTxGKFY00f6wvNeNPO/Rek5sOuC08PXqLalP/n9r+2F1I/L+
-         TFPg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tAEF+dbAnD48BnBbAU0BUAa+dO/2WAcVo20DYQ9S6dE=;
+        b=UECWek238lb5RAmbHwzkIpgTNSdQ11Yfb8ASl/tP0D+HQl0Nqfix/MsfOtRNoHmEoS
+         pYBiTFYwqDnkFF343Jlt3myrxbowelTAS5vAFp0X7RR2jW5QCI2kbGW96q+UKMSumJNJ
+         PEJfOawrzMY/t1idHbgtWH70hLVne5s81XWksgpHJcGY3C9FjeD67VdEw6HQFbr+WXH0
+         xSf6hh+TNj7Dn0ymg9FSV7zWtFdX4X4bqBplo0p+zej1/q35zQV5l9nrAfOLPIslbS8J
+         XNFEy2vMChSbY1nrUdDWMiOuZ/0wXzvOBejBKQ9CHEY++XqhZiqizqEV4u8BCPclfeW+
+         beMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vWGmhmweV+dNU5jtCxsxI3a+Zh1xPCMPOBO82/gmlT8=;
-        b=s4nSyAfycj5gtmgfOVHClCthQyUTYwHymllJXioig7JzSuOmzd8kaI60XCMqQWCsQr
-         MhdWYU7ExLp2O9ZoxJ5u6I8c3gXgBaXfoT/N92ecg2UYTu3ffikiWJQ8oiG0fu3DaxBH
-         aq5XTtU0pdzRdp4cvjpjgH8uw51fHyKbjE2DuK7uaI+OpKud2NZPTB266bq95braUJQ9
-         FPkyAO4pQi4SfN+wpHJjarrfBCtHYy/xRJM38Q5bA95gm/e5ZtjAqw0fyYib0xOYJw3b
-         yTkOy80oSfc9fiVxhM+KAa46VKLSfsNlhatzr7IzV4U1b8ukbFymZLfyfJUuCNgXqMrd
-         tcMQ==
-X-Gm-Message-State: AOAM531d+osgBYzHB/zae5AdF1VbIUIHcZkaWC5SzKLSYbyXEF89cRHQ
-        DYgEy1YxOI6p0d4imtzUjO+v6Q==
-X-Google-Smtp-Source: ABdhPJxbWkbMoHZx9vnNhaWMQsFMmMpNbbKEDn9qoqWTiVezpVArTwZqGvvEio/w1aBmU0O0mXLwOg==
-X-Received: by 2002:a05:6512:3e17:b0:473:205d:a3d5 with SMTP id i23-20020a0565123e1700b00473205da3d5mr23770800lfv.80.1652355200800;
-        Thu, 12 May 2022 04:33:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tAEF+dbAnD48BnBbAU0BUAa+dO/2WAcVo20DYQ9S6dE=;
+        b=JxP2DJBlglEIoCMyzGWoNntaK1VvIFokK42U/IiBDk1ZeGczq3vArjtvSZThlwexWv
+         d6Tcgrdg0ys5uoR36Ejk/anLXDTHwaqsjGHkekGtnld22NYOfUsv2QYW3UjtMsGTWY0R
+         aEGXCkR7AR62pMrdMyzLqmd3ML1InRcaQ1VutuScK64lRqMPnW+47ytseX2Ed0kRYmXl
+         pf2ECfYl6Ro1H/OiEtdkhf2LRR9rL4MsZYryzx23yrVeQmWVsBBdSUWecg0yHArXVBZ2
+         zXdCXyEDBGRNqRQODh0VHZ949tNJDbdNQZieXPTUUre+bkkh4K8j9yyXw4yDUljSgGi2
+         LFcw==
+X-Gm-Message-State: AOAM531hVSMzDbgIi4lUHnvCJkpTNt/Tz5hKYpaT5dHHgYeLjAtw1Pj1
+        uOyUMS/fzAI73V7K6t7zB+9mZA==
+X-Google-Smtp-Source: ABdhPJxbMhTJ/x3wO6IIZjV3v1LV5Xd7J4V3uaASWzpb6lVcAwwLrn2oTVIUr8sq/9IvOQe5/iJWbQ==
+X-Received: by 2002:a2e:9645:0:b0:24f:2e6f:f931 with SMTP id z5-20020a2e9645000000b0024f2e6ff931mr20426742ljh.466.1652355198391;
+        Thu, 12 May 2022 04:33:18 -0700 (PDT)
 Received: from localhost.localdomain (host-188-190-49-235.la.net.ua. [188.190.49.235])
-        by smtp.gmail.com with ESMTPSA id r29-20020ac25a5d000000b0047255d211a6sm741758lfn.213.2022.05.12.04.33.19
+        by smtp.gmail.com with ESMTPSA id r29-20020ac25a5d000000b0047255d211a6sm741758lfn.213.2022.05.12.04.33.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 04:33:20 -0700 (PDT)
+        Thu, 12 May 2022 04:33:17 -0700 (PDT)
 From:   Andrew Melnychenko <andrew@daynix.com>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, mst@redhat.com, jasowang@redhat.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org
 Cc:     yan@daynix.com, yuri.benditovich@daynix.com
-Subject: [RFC PATCH v2 2/5] driver/net/tun: Added features for USO.
-Date:   Thu, 12 May 2022 14:23:44 +0300
-Message-Id: <20220512112347.18717-3-andrew@daynix.com>
+Subject: [RFC PATCH v2 0/5] TUN/VirtioNet USO features support.
+Date:   Thu, 12 May 2022 14:23:42 +0300
+Message-Id: <20220512112347.18717-1-andrew@daynix.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220512112347.18717-1-andrew@daynix.com>
-References: <20220512112347.18717-1-andrew@daynix.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added support for USO4 and USO6.
-For now, to "enable" USO, it's required to set both USO4 and USO6 simultaneously.
-USO enables NETIF_F_GSO_UDP_L4.
+Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
+Technically they enable NETIF_F_GSO_UDP_L4
+(and only if USO4 & USO6 are set simultaneously).
+It allows to transmission of large UDP packets.
 
-Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
----
- drivers/net/tap.c | 10 ++++++++--
- drivers/net/tun.c |  8 +++++++-
- 2 files changed, 15 insertions(+), 3 deletions(-)
+Different features USO4 and USO6 are required for qemu where Windows guests can
+enable disable USO receives for IPv4 and IPv6 separately.
+On the other side, Linux can't really differentiate USO4 and USO6, for now.
+For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
+In the future, there would be a mechanism to control UDP_L4 GSO separately.
 
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index c3d42062559d..eae7c2c13713 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -955,6 +955,10 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
- 			if (arg & TUN_F_TSO6)
- 				feature_mask |= NETIF_F_TSO6;
- 		}
-+
-+		/* TODO: for now USO4 and USO6 should work simultaneously */
-+		if ((arg & (TUN_F_USO4 | TUN_F_USO6)) == (TUN_F_USO4 | TUN_F_USO6))
-+			features |= NETIF_F_GSO_UDP_L4;
- 	}
- 
- 	/* tun/tap driver inverts the usage for TSO offloads, where
-@@ -965,7 +969,8 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
- 	 * When user space turns off TSO, we turn off GSO/LRO so that
- 	 * user-space will not receive TSO frames.
- 	 */
--	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6))
-+	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6) ||
-+	    (feature_mask & (TUN_F_USO4 | TUN_F_USO6)) == (TUN_F_USO4 | TUN_F_USO6))
- 		features |= RX_OFFLOADS;
- 	else
- 		features &= ~RX_OFFLOADS;
-@@ -1089,7 +1094,8 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
- 	case TUNSETOFFLOAD:
- 		/* let the user check for future flags */
- 		if (arg & ~(TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
--			    TUN_F_TSO_ECN | TUN_F_UFO))
-+			    TUN_F_TSO_ECN | TUN_F_UFO |
-+			    TUN_F_USO4 | TUN_F_USO6))
- 			return -EINVAL;
- 
- 		rtnl_lock();
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index dbe4c0a4be2c..ecad1bdee717 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -185,7 +185,7 @@ struct tun_struct {
- 	struct net_device	*dev;
- 	netdev_features_t	set_features;
- #define TUN_USER_FEATURES (NETIF_F_HW_CSUM|NETIF_F_TSO_ECN|NETIF_F_TSO| \
--			  NETIF_F_TSO6)
-+			  NETIF_F_TSO6 | NETIF_F_GSO_UDP_L4)
- 
- 	int			align;
- 	int			vnet_hdr_sz;
-@@ -2861,6 +2861,12 @@ static int set_offload(struct tun_struct *tun, unsigned long arg)
- 		}
- 
- 		arg &= ~TUN_F_UFO;
-+
-+		/* TODO: for now USO4 and USO6 should work simultaneously */
-+		if (arg & TUN_F_USO4 && arg & TUN_F_USO6) {
-+			features |= NETIF_F_GSO_UDP_L4;
-+			arg &= ~(TUN_F_USO4 | TUN_F_USO6);
-+		}
- 	}
- 
- 	/* This gives the user a way to test for new features in future by
+Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
+
+New types for VirtioNet already on mailing:
+https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
+
+Also, there is a known issue with transmitting packages between two guests.
+Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
+
+Andrew (5):
+  uapi/linux/if_tun.h: Added new offload types for USO4/6.
+  driver/net/tun: Added features for USO.
+  uapi/linux/virtio_net.h: Added USO types.
+  linux/virtio_net.h: Support USO offload in vnet header.
+  drivers/net/virtio_net.c: Added USO support.
+
+ drivers/net/tap.c               | 10 ++++++++--
+ drivers/net/tun.c               |  8 +++++++-
+ drivers/net/virtio_net.c        | 19 +++++++++++++++----
+ include/linux/virtio_net.h      |  9 +++++++++
+ include/uapi/linux/if_tun.h     |  2 ++
+ include/uapi/linux/virtio_net.h |  4 ++++
+ 6 files changed, 45 insertions(+), 7 deletions(-)
+
 -- 
 2.35.1
 
