@@ -2,106 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F398C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E195C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357327AbiELRvl (ORCPT
+        id S1357359AbiELRvt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55140 "EHLO
+        Thu, 12 May 2022 13:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357343AbiELRvi (ORCPT
+        with ESMTP id S1357346AbiELRve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:51:38 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82732387B2
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:51:34 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id i20so6241995ion.0
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:51:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6zJtowkNav+j8c99jQGawGovDBowhLxY1bWFnapGg24=;
-        b=CiEjvxp7OBwBNNMimrdjh6JcHnxJcPPB6GZXoTvudqsWA1RnZMgrx8hgOxLNRgyrTu
-         sAh2UyxTfXvlC9uAtD+5RCbdWQ/Phi+G8G/3wmcx2yMv+B8LGax4UmLFRVPzVAQmTwPw
-         QZS1vtWrQED8t1c1f1fDcmfZKDJSfCpzqSsuo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6zJtowkNav+j8c99jQGawGovDBowhLxY1bWFnapGg24=;
-        b=fUOpeZALYNOMread+BXWju7pfGOIrxmogHt2ZlfWhypQPlKymztIIaO5a4FpQbeVe4
-         ywmSQ3nMhf0Yi+kBi9wmhZgMEgcQHhXO5JbKHd8X8T8YS7p95kn0/v0EaThSgsDNZUbb
-         EgqD8EulXjaT1Oxs1pOAesXg6Y6r2JOUBrCwjTdbladFW/IKlFoFtTk9qRxIDJInjCbq
-         MsKFb7deVYXf0GMrpZpUeBAbrTzE1uxzu3uPXzn72Pw68VjZcLuzVHNIkhlYPVbCCsGZ
-         pMzqn8SAku7/JKnuJyzKP8jjuQuEtY9ZIH+X7U+ilL2nF0FcihGgBwHOzWgXHsYVXGMS
-         fwuA==
-X-Gm-Message-State: AOAM531WHNI4vnC/vgOQh1O6eJZOiTatyBmD2ijC6cWo/+pTJ6lGBbQ/
-        cBi21bBGfZu8eF9btozl8cpdRQ==
-X-Google-Smtp-Source: ABdhPJzGJ3oE9fRz9MvUu+SHXJDyvxY5C8WQoZUCS7zIhcGZgdHf351/z+GJnK7omiHdcv58EQa1VA==
-X-Received: by 2002:a05:6638:3804:b0:32b:8eeb:da96 with SMTP id i4-20020a056638380400b0032b8eebda96mr625746jav.71.1652377893344;
-        Thu, 12 May 2022 10:51:33 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id x4-20020a056602210400b0065a47e16f4dsm124620iox.31.2022.05.12.10.51.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 10:51:33 -0700 (PDT)
-Subject: Re: [RFC V2 PATCH 7/8] selftests: kvm: Add hugepage support to
- priv_memfd_test suite.
-To:     Vishal Annapurve <vannapurve@google.com>, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, shauh@kernel.org, yang.zhong@intel.com,
-        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
-        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
-        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
-        bfields@fieldses.org, akpm@linux-foundation.org,
-        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
-        jun.nakajima@intel.com, dave.hansen@intel.com,
-        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
-        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
-        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
-        pgonda@google.com, nikunj@amd.com, seanjc@google.com,
-        diviness@google.com, Shuah Khan <skhan@linuxfoundation.org>
-References: <20220511000811.384766-1-vannapurve@google.com>
- <20220511000811.384766-8-vannapurve@google.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <2a9ffa3d-cc74-a2e8-54c5-3f5321556c13@linuxfoundation.org>
-Date:   Thu, 12 May 2022 11:51:31 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Thu, 12 May 2022 13:51:34 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6BC93630F;
+        Thu, 12 May 2022 10:51:26 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="295343453"
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="295343453"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:36:06 -0700
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="566808809"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:36:00 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1npCjE-00FIF6-8R;
+        Thu, 12 May 2022 20:35:56 +0300
+Date:   Thu, 12 May 2022 20:35:55 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com
+Subject: Re: [PATCH v3 00/10] gpiolib: Handle immutable irq_chip structures
+Message-ID: <Yn1Fe4WPp3ZaUERj@smile.fi.intel.com>
+References: <20220419141846.598305-1-maz@kernel.org>
+ <Yn0/DIl3+i/heRH6@smile.fi.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220511000811.384766-8-vannapurve@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yn0/DIl3+i/heRH6@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 6:08 PM, Vishal Annapurve wrote:
-> From: Austin Diviness <diviness@google.com>
+On Thu, May 12, 2022 at 08:08:28PM +0300, Andy Shevchenko wrote:
+> On Tue, Apr 19, 2022 at 03:18:36PM +0100, Marc Zyngier wrote:
+> > This is a followup from [2].
+> > 
+> > I recently realised that the gpiolib play ugly tricks on the
+> > unsuspecting irq_chip structures by patching the callbacks.
+> > 
+> > Not only this breaks when an irq_chip structure is made const (which
+> > really should be the default case), but it also forces this structure
+> > to be copied at nauseam for each instance of the GPIO block, which is
+> > a waste of memory.
 > 
-> Adds ability to run priv_memfd_test test suite across various sizes of pages
-> for shared/private memory. Shared and private memory can be allocated
-> with different sized pages. In order to verify that there isn't a
-> behavior change based on different page sizes, this change runs the
-> tests using the currently supported permutations.
+> Is this brings us to the issue with IRQ chip name?
 > 
-> Adds command line flags to adjust whether the tests should run with
-> hugepages backing the test memory.
+> The use case in my mind is the following:
+> 1) we have two or more GPIO chips that supports IRQ;
+> 2) the user registers two IRQs of the same (by number) pin on different chips;
+> 3) cat /proc/interrupt will show 'my_gpio_chip XX', where XX is the number.
 > 
-> Signed-off-by: Austin Diviness <diviness@google.com>
-> Signed-off-by: Vishal Annapurve <vannapurve@google.com>
-> ---
+> So, do I understand correct current state of affairs?
+> 
+> If so, we have to fix this to have any kind of ID added to the chip name that
+> we can map /proc/interrupts output correctly.
 
-Please see comments about coding style related comments on other
-patches in this series.
+Hmm... Some drivers are using static names, some -- dynamically prepared (one
+way or another). Either way I think the ID is good to have if we still miss it.
 
-thanks,
--- Shuah
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
