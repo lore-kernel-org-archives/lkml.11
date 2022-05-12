@@ -2,152 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DADC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F70C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344758AbiELDpC (ORCPT
+        id S1344892AbiELDqp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 23:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
+        Wed, 11 May 2022 23:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233136AbiELDo7 (ORCPT
+        with ESMTP id S238144AbiELDqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 23:44:59 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB58C9B1B8
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:44:57 -0700 (PDT)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220512034451epoutp01476e7a4d99a97329d42ca78e1a514c54~uPrw_1jPE1701217012epoutp01V
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:44:51 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220512034451epoutp01476e7a4d99a97329d42ca78e1a514c54~uPrw_1jPE1701217012epoutp01V
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1652327091;
-        bh=GirDdQEslfbySicVoQGet6fAqxxqlgyh1Y0KbsS0OHc=;
-        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
-        b=dipO9DyK5Y2LnxICuGJXTPAXXgOMfQhlp31I0B7TWf2kEr9KZ864kscO/OlOU57pk
-         0HOtdp+YUv+5PGxYP5THCBFwBMlU3M9ZbiJkJRPlCXuvdYvS3MTwENOuaZjTutD9hM
-         wXlP8kC0XiEEA0Ql4doCsWEKGmCemrTp0BUfsxyM=
-Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20220512034450epcas5p3b74892a315c8163c6065b65e62ce1a08~uPrwRjVv12876328763epcas5p3E;
-        Thu, 12 May 2022 03:44:50 +0000 (GMT)
-X-AuditID: b6c32a49-4b5ff7000000274f-09-627c82b29056
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        01.C2.10063.2B28C726; Thu, 12 May 2022 12:44:50 +0900 (KST)
-Mime-Version: 1.0
-Subject: RE: [PATCH modules-next 1/1] kallsyms: enhance %pS/s/b printing
- when KALLSYSMS is disabled
-Reply-To: maninder1.s@samsung.com
-Sender: Maninder Singh <maninder1.s@samsung.com>
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     Kees Cook <keescook@chromium.org>
-CC:     "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
-        Vaneet Narang <v.narang@samsung.com>,
-        "swboyd@chromium.org" <swboyd@chromium.org>,
-        "ojeda@kernel.or" <ojeda@kernel.or>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "avimalin@gmail.com" <avimalin@gmail.com>,
-        "atomlin@redhat.com" <atomlin@redhat.com>,
-        Onkarnath <onkarnath.1@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <202205111513.3AD646936@keescook>
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220512034437epcms5p1b384e18e75f0f56ee70f67e62f7ab0ce@epcms5p1>
-Date:   Thu, 12 May 2022 09:14:37 +0530
-X-CMS-MailID: 20220512034437epcms5p1b384e18e75f0f56ee70f67e62f7ab0ce
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrOKsWRmVeSWpSXmKPExsWy7bCmlu6mppokgxU9WhZz1q9hs+htms5k
-        cWT+GlaLBwevs1uc6c61uLxrDptFw+zvrBaPZ81js7gx4SmjxcwvQBUrej6wWvx//JXVYl/H
-        AyaL3RsXsVkcv/OUyeLQybmMFo2f7zM6CHrMbrjI4rFz1l12j5Z9t4DEkbesHl+un2f02LSq
-        k83jxIzfLB7zTgZ6XOjK9ni/7yqbR9+WVYwe67dcZfH4vEkugDeKyyYlNSezLLVI3y6BK2Nz
-        x03Wgtk8Fb2bDjA2ME7l7GLk5JAQMJFYvOIVWxcjF4eQwG5GiUfLtzB3MXJw8AoISvzdIQxS
-        IyyQKrFk91sWEFtIQFHiwow1jCAlwgIGEr+2aoCE2QT0JFbt2gNWIiKgKvH9UjMzyEhmga1s
-        Etf3nmOF2MUrMaP9KQuELS2xfflWRhCbE6j56PH7UDWiEjdXv2WHsd8fm88IYYtItN47ywxh
-        C0o8+LkbKi4jsXpzL9TMaomnr8+B/SIh0MIosW83TJG5xPolq8CG8gr4SjT3LgGLswBdOufC
-        czaIGheJ8xcWgw1iFpCX2P52DjgcmAU0Jdbv0ocokZWYemodE0QJn0Tv7ydMMH/tmAdjq0q0
-        3NzACvPj548foW7zkGj684gJEs7LGSW+HDjLPIFRYRYiqGch2TwLYfMCRuZVjJKpBcW56anF
-        pgWGeanlesWJucWleel6yfm5mxjBaVHLcwfj3Qcf9A4xMnEwHmKU4GBWEuHd31eRJMSbklhZ
-        lVqUH19UmpNafIhRmoNFSZz3dPqGRCGB9MSS1OzU1ILUIpgsEwenVAPTpLpWnXdtnU9lTOy7
-        ZbbznGoQmbd8o8Xb8gsGt/4vM7P85b7BR9dmsc3yvb8u6LvWsgaKlv54JNqxoHMS6wzHwMNO
-        nxfx3J6uIeD1MennvzntPxOMRR4Y3fbXOMx6iVMgTuOOduK+1AX3HU+WdJ5X+uMYUmr2dP2P
-        onWeZe3s8h84VnUaV89//j/LZQ/D9i9365dc7lziYqT9wmJPzM/Ajx3f+otYnioc2XtDSON1
-        5IEWC5crH7b/LWKcNOutmoxWb4Dkm93TCti2mfTZ+J3SnpBl+vF7srKR8LQ2AT7dOY3n279n
-        H5/4ZUfvn4sT/lfwNk/QOMNhkJW7/kNaRZaOxXUxTWfPo4vYtac1eOQrsRRnJBpqMRcVJwIA
-        NBwmvPoDAAA=
-X-CMS-RootMailID: 20220421041604epcas5p414cf2e851d1bd828a151dc6b2b004680
-References: <202205111513.3AD646936@keescook>
-        <20220421041542.9195-1-maninder1.s@samsung.com>
-        <CGME20220421041604epcas5p414cf2e851d1bd828a151dc6b2b004680@epcms5p1>
+        Wed, 11 May 2022 23:46:36 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FCE4CD6C;
+        Wed, 11 May 2022 20:46:30 -0700 (PDT)
+X-UUID: ed3a86f459da4cc1ab7026898bc0aef9-20220512
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:c0c65a50-86e2-43d6-a206-905d35b673f3,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:0c1a24f6-13a6-4067-b017-3b2864319134,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: ed3a86f459da4cc1ab7026898bc0aef9-20220512
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1994183550; Thu, 12 May 2022 11:46:25 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 12 May 2022 11:46:24 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 12 May 2022 11:46:22 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Steve Cho <stevecho@chromium.org>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v4, 1/3] dt-bindings: media: mediatek: vcodec: Adds decoder dt-bindings for mt8186
+Date:   Thu, 12 May 2022 11:46:18 +0800
+Message-ID: <20220512034620.30500-2-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220512034620.30500-1-yunfei.dong@mediatek.com>
+References: <20220512034620.30500-1-yunfei.dong@mediatek.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Adds decoder dt-bindings for mt8186.
 
-> On Wed, May 11, 2022 at 01:36:56PM +0530, Maninder Singh wrote:
-> > kallsyms_show_value return false if KALLSYMS is disabled,
-> > but its usage is done by module.c also.
-> > Thus when KALLSYMS is disabled, system will not print module
-> > load address:
-> 
-> Eek, I hadn't see the other changes this depends on. I think those
-> changes need to be reworked first. Notably in the other patch, this is
-> no good:
-> 
->         /* address belongs to module */
->         if (add_offset)
->                 len = sprintf(buf, "0x%p+0x%lx", base, offset);
->         else
->                 len = sprintf(buf, "0x%lx", value);
-> 
-> This is printing raw kernel addresses with no hashing, as far as I can
-> tell. That's not okay at all.
->
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/media/mediatek,vcodec-subdev-decoder.yaml        | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-yes same was suggested by Petr also, because earlier we were printing base address also as raw address.
+diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+index d587fc3e39fb..6415c9f29130 100644
+--- a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
++++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+@@ -47,7 +47,9 @@ description: |
+ 
+ properties:
+   compatible:
+-    const: mediatek,mt8192-vcodec-dec
++    enum:
++      - mediatek,mt8192-vcodec-dec
++      - mediatek,mt8186-vcodec-dec
+ 
+   reg:
+     maxItems: 1
+-- 
+2.18.0
 
-https://lkml.org/lkml/2022/2/28/847
-
-but then modified approach to print base address as hash when we are going to show offset of module address,
-but when we print complete address then we thought of keeping it same as it was:
-
-original:
- [12.487424] ps 0xffff800000eb008c
-with patch:
- [9.624152] ps 0xffff800001bd008c [crash]
-
-But if its has to be hashed, will fix that also.
-
-> Once that other patch gets fixed, this one then can be revisited.
-> 
-
-I will check detailed comments on that also
-
-> And just on naming: "kallsyms_tiny" is a weird name: it's just "ksyms"
-> -- there's no "all".  :)
-
-Ok :)
-
-Will name it as knosyms.c (if it seems ok).
-
-
-
-Thanks,
-Maninder Singh
