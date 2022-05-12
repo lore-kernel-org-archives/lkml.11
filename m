@@ -2,76 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A010C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2B8C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357201AbiELRng (ORCPT
+        id S1357211AbiELRoM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
+        Thu, 12 May 2022 13:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353035AbiELRnb (ORCPT
+        with ESMTP id S1353035AbiELRoF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:43:31 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87F95E743;
-        Thu, 12 May 2022 10:43:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=GDncwLKphn/XZKopA1l8aEKODmu6Bj+8jDWkzig0Mlc=; b=v5VORm6ydKBJVYTVx2qzPm0X4n
-        YQfDJBSgMcZYJuWgHmve2wHpzkb0hCvcXqAo7doJHNBfw7BwNSzleBoKEu3ZRjnsyEO8TmQseSYpr
-        jr6EOX90POYPE6pFppucFilLWH3RLL3yef5L5pSGRsAOvN7Wr6z/XSKq2UXVdUq4w4/JS2Ho1+eK1
-        YNvheGtOLSp8qWZsMMcHYnt8JKjGs2Xjk51K8yQrNQxUqezHKSoAhP8aCL8XnptqeifSCgzwREEdH
-        NK4AimkTNmKo7O8d4Eq1S7YBMIwMHCw+jzLHNDyN8/AcO44bQ3FuND+JbHuJ6xsqZWnyc3vTkbeb1
-        fKhOzEKA==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1npCqT-00D1fT-5d; Thu, 12 May 2022 17:43:25 +0000
-Date:   Thu, 12 May 2022 10:43:25 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        fnovak@us.ibm.com, linuxppc-dev@ozlabs.org,
-        christophe.leroy@csgroup.eu
-Subject: Re: request_module DoS
-Message-ID: <Yn1HPSvyT4kAW7I/@bombadil.infradead.org>
-References: <YnXiuhdZ49pKL/dK@gondor.apana.org.au>
- <874k1zt0ec.fsf@mpe.ellerman.id.au>
- <Ynk9j6DQmVGAA3Jf@bombadil.infradead.org>
- <Ynvl6wCQRFdYsHar@bombadil.infradead.org>
- <871qwz8aot.fsf@mpe.ellerman.id.au>
- <87v8ub6jk1.fsf@mpe.ellerman.id.au>
+        Thu, 12 May 2022 13:44:05 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FF06E8DD;
+        Thu, 12 May 2022 10:44:05 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id y76so11170553ybe.1;
+        Thu, 12 May 2022 10:44:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8dV6HUB7SxpjK+7mBEuOiLof9qR8uoa5I2hxfC6B+U0=;
+        b=V0BWORNUjzvdj7VCoVnOtF+BzEUkQT/FPg3TIY4oQR/ngKTsDne6/7cO1iY7svOI/c
+         J3vw05flqg8wbznzwHXi8paRcDRGowDTt0vkoicwau9AWyFe1p4je/pJyOW8gaDDyl7B
+         nbHkFN25tMl0xIij0PQsyFekN/u4+4n4oer8I+2t6TeWF8OGPT8FcV2D7JpQg1iPdC3a
+         ihAM/FPGEUlJ6N3Zrl3QGIsOCAfqy2l7ZBIzYAtrOZjf1ZswvQZ/iiRL27rC0XkRP3l1
+         6JwoGxlp+ZZ3VwxLdH0PXb05IvXvlRYQCLdJ7vaZvFDKRGjN5rgumo/TqjW1WR2cWAOw
+         nAAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8dV6HUB7SxpjK+7mBEuOiLof9qR8uoa5I2hxfC6B+U0=;
+        b=VQ9834yQ3jglJPEpdosW9Xok+O+gRNHz8OBVRHZatB2fiRpanOBh3p8yROWJL8Ui5V
+         Bhf1VBxXQGl+ru/oq8SDbyP4HRyXsWA8+IOV5HysADH0OduCTZMHxbYkzG+LASZn178F
+         4auwaaJH4wLBHtYtm1JdvEKPd9NIkUyYXmtRYCMgpV39TqXz3Y7Vl3BWyrVDkrVg+M5y
+         39jFab5wyiCwEcpKkQPSEuFGQEBoaOYr/G+2nSigKRe7VViEV+KeMw9EI0SHGDD8vKLM
+         SH1mRAWw6JP2Z2aWLEghcML8Nyq1SolWyBNSX0y2xHT7GtOFiA3uy2pXOZlS+T8o+SVM
+         y6Xg==
+X-Gm-Message-State: AOAM533MulTvnb/BPoTJdFfb4OmnhapnL+G2CKcWHUxwZOr/Ln714aLs
+        rxzvaQ4YV1T9QIZXGREAJaUw5ny8m9yrB+f1J2I=
+X-Google-Smtp-Source: ABdhPJy1WwkC5EbZMV5JPFIASaM/e60AvOA4texGRaJe7EsXmlzHKWzVwopGa+RtsniYx0rlTvcvSI8zzJwoVRF4llo=
+X-Received: by 2002:a25:bfce:0:b0:648:963b:1ccb with SMTP id
+ q14-20020a25bfce000000b00648963b1ccbmr951675ybm.417.1652377444242; Thu, 12
+ May 2022 10:44:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87v8ub6jk1.fsf@mpe.ellerman.id.au>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+References: <20220511183210.5248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220511183210.5248-6-prabhakar.mahadev-lad.rj@bp.renesas.com> <OS0PR01MB59221ADFC86483FE2C8765C486CB9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB59221ADFC86483FE2C8765C486CB9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Thu, 12 May 2022 18:43:37 +0100
+Message-ID: <CA+V-a8s4RfNSXCHG5xo4LhkHw09aj2wFnH0iCDos_ysunV1+5g@mail.gmail.com>
+Subject: Re: [PATCH v3 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to
+ handle GPIO interrupt
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:07:26PM +1000, Michael Ellerman wrote:
-> Michael Ellerman <mpe@ellerman.id.au> writes:
-> > Luis Chamberlain <mcgrof@kernel.org> writes:
-> ...
-> >
-> >> Can someone try this on ppc64le system? At this point I am not convinced
-> >> this issue is generic.
-> >
-> > Does your x86 system have at least 784 CPUs?
-> >
-> > I don't know where the original report came from, but the trace shows
-> > "CPU 784", which would usually indicate a system with at least that many
-> > CPUs.
-> 
-> Update, apparently the report originally came from IBM, so I'll chase it
-> up internally.
-> 
-> I think you're right that there's probably no issue in the module code,
-> sorry to waste your time.
+Hi Biju,
 
-It gives me testing happiness to know that may be the case :)
+Thank you for the review.
 
-  Luis
+On Thu, May 12, 2022 at 6:35 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+>
+> Hi Prabhakar,
+>
+> Thanks for the patch.
+>
+> > Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > Subject: [PATCH v3 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to
+> > handle GPIO interrupt
+> >
+> > Add IRQ domian to RZ/G2L pinctrl driver to handle GPIO interrupt.
+> >
+> > GPIO0-GPIO122 pins can be used as IRQ lines but only 32 pins can be used as
+> > IRQ lines at given time. Selection of pins as IRQ lines is handled by IA55
+> > (which is the IRQC block) which sits in between the GPIO and GIC.
+>
+> Do we need to update bindings with interrupt-cells on [1] like [2] as it act as parent for GPIO interrupts?
+>
+Yes interrupt-controller and interrupt-parent needs to be added. I'm
+wondering if "interrupt-cells" is not required. If the pin is an
+interrupt it will be passed as an GPIO.
+
+@Geert - your thoughts ?
+
+Cheers,
+Prabhakar
