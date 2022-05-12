@@ -2,146 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D98CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 331E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354915AbiELOBl (ORCPT
+        id S1354904AbiELOBx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41558 "EHLO
+        Thu, 12 May 2022 10:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354904AbiELOBf (ORCPT
+        with ESMTP id S1354964AbiELOBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:01:35 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7A854014
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:01:33 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n8so4975864plh.1
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:01:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=LuitxF/LxlyDzAJ6WiMHBPYI6+2/9TqSBGYdKA4Kdbk=;
-        b=hXQKiSvErap40hy+dXmzuEfIjSuO7mQ4+LF6SI7ROCaq0cCea+dX7+6p0kYgipc7r7
-         fAg178C7ZxY+IqXATlnRL/PWrtggp5bfkNR5xPTvVlNa8oMEWEDqlRGJ9oJMB6ZXe86z
-         +ZQrfP6/9HOrmnkiutVcL7IbUW00wvqgViWkgP9Mcuun52KPbP9NdRaRFFz6gO9kwvAS
-         V4NwrLQnBi/ClLHsSCYEj+e1J6kqvb3kHPR7cjYWZv1HP/PkLOMnuG8CwLyhC3AxTRzn
-         A7NZBi+LXLeFf9kCkxUTUpaFh8abRrajqDJZoLIreRRPDK9m4TUh6DTMkeNw4lt/rXF8
-         WQ6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=LuitxF/LxlyDzAJ6WiMHBPYI6+2/9TqSBGYdKA4Kdbk=;
-        b=w7cE4GfDcsqZbZxJh5zp3YOIPhuV1m2Df3JSVvY9vvQ2XlDMBYIbWDcs4zKjOKTVgG
-         gprO72mtfhnoasE7NVDCcLzSez5GyctGMj6Ww+y5AzpRe3phCDP0GN1BQB0cpmNdzZ3Q
-         FZm0yeeMtPg77iolftVd2HyIDWq9YKF3DE0RrpT5Wd8c6IyqKZj8HGLkQzPLFgpzebhs
-         YdYr8rPlQ10i+YT7V+loWiqX/5GPKE3s40SRXL6OM05SP7qv6A4BKMRls+fsiYoR5AQL
-         FKJY3K5H4rkt/G4OPi8ZMtnQY6Lkhy8U1AEuqv+vyP3f1G8AYbBoSPHpFrS6g78y0NVn
-         GFJA==
-X-Gm-Message-State: AOAM532W9+72fqnBGjfaljCV1hzhvQ6BAs15nB3pD6EouBQAyARA9ERp
-        630K4/DcD0XYLSrMZ59lQxjw
-X-Google-Smtp-Source: ABdhPJxaAVTBu9QCUOg7jBzjc3IVOzl4NbzJYJxeufqURrOTTpDV1PE/u6pG6jCUU+sYZ0fh/cw2LQ==
-X-Received: by 2002:a17:90a:fcb:b0:1dc:f0ce:69fb with SMTP id 69-20020a17090a0fcb00b001dcf0ce69fbmr11084857pjz.198.1652364092878;
-        Thu, 12 May 2022 07:01:32 -0700 (PDT)
-Received: from thinkpad ([117.202.184.202])
-        by smtp.gmail.com with ESMTPSA id ch9-20020a056a00288900b0050dc76281c2sm3683732pfb.156.2022.05.12.07.01.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 07:01:32 -0700 (PDT)
-Date:   Thu, 12 May 2022 19:31:24 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 11/17] PCI: dwc: Simplify in/outbound iATU setup
- methods
-Message-ID: <20220512140124.GD35848@thinkpad>
-References: <20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru>
- <20220503214638.1895-12-Sergey.Semin@baikalelectronics.ru>
+        Thu, 12 May 2022 10:01:51 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0972655238
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:01:43 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CC1wn2004224;
+        Thu, 12 May 2022 14:01:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=PZKeUa51MnK6JBOqFyls3O7ght9z6gRfDZMSkyjlB54=;
+ b=BXRgERzMIxLm/scsT3BPr0w/UG1SxHJPDqG50kbAvqSAXBWbX2p7KoSS2kZemsg/fWCK
+ /EYxrJGAsgGo8X1NYMBNpRwvh8+OtiPeLC3X049bqc3l7ZencIQwxwqFWIdGb6sV8u5B
+ S/L7EwmuDkOpHZ0TKZa+ZI1UQs3dRQ7NlvMjyhjMFZdc7xdPopfENlh+tcC9Efy4qXbL
+ boCeBfq9IbosNGQuQZ0FgnRbbFidbj2pAuTRBT4VNBnRzoDJjXwAvO2O2pTS0HXWEOno
+ hIeBKwa3W9+QRQqGF2TievLb7nQNeVijoQaNW5wWq3B/baoxuWt2IiajNzZ1PZMDjibO Ig== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g11vr313y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 14:01:36 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CDwSM0029524;
+        Thu, 12 May 2022 14:01:36 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma03dal.us.ibm.com with ESMTP id 3fwgdacfvy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 14:01:35 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CE1YnN30278062
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 12 May 2022 14:01:34 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D069DC605F;
+        Thu, 12 May 2022 14:01:34 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ADD80C6059;
+        Thu, 12 May 2022 14:01:34 +0000 (GMT)
+Received: from [9.211.56.168] (unknown [9.211.56.168])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 12 May 2022 14:01:34 +0000 (GMT)
+Message-ID: <08e04659-2d06-2eb0-0ba8-8717a2d2bd48@linux.ibm.com>
+Date:   Thu, 12 May 2022 09:01:34 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220503214638.1895-12-Sergey.Semin@baikalelectronics.ru>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] mm: Add config option for default panic_on_oom value
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220511183400.47940-1-eajames@linux.ibm.com>
+ <20220511145648.3c421ff592df32766319ea2d@linux-foundation.org>
+ <b597cc79-0f8a-c32d-397e-0c04777e9491@linux.ibm.com>
+ <20220511153616.9298d246adb1c7fea9ab453b@linux-foundation.org>
+From:   Eddie James <eajames@linux.ibm.com>
+In-Reply-To: <20220511153616.9298d246adb1c7fea9ab453b@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: HzQyKlLHrsOPuOBNQonRFQ1qjIg6Mk27
+X-Proofpoint-ORIG-GUID: HzQyKlLHrsOPuOBNQonRFQ1qjIg6Mk27
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-12_10,2022-05-12_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 suspectscore=0 bulkscore=0 mlxscore=0 impostorscore=0
+ spamscore=0 clxscore=1015 malwarescore=0 lowpriorityscore=0
+ mlxlogscore=927 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2205120067
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 12:46:32AM +0300, Serge Semin wrote:
-> From maintainability and scalability points of view it has been wrong to
-> use different iATU inbound and outbound regions accessors for the viewport
-> and unrolled versions of the iATU CSRs mapping. Seeing the particular iATU
-> region-wise registers layout is almost fully compatible for different
-> IP-core versions, there were no much points in splitting the code up that
-> way since it was possible to implement a common windows setup methods for
-> both viewport and unrolled iATU CSRs spaces. While what we can observe in
-> the current driver implementation of these methods, is a lot of code
-> duplication, which consequently worsen the code readability,
-> maintainability and scalability. Note the current implementation is a bit
-> more performant than the one suggested in this commit since it implies
-> having less MMIO accesses. But the gain just doesn't worth having the
-> denoted difficulties especially seeing the iATU setup methods are mainly
-> called on the DW PCIe controller and peripheral devices initialization
-> stage.
-> 
-> Here we suggest to move the iATU viewport and unrolled CSR access
-> specifics in the dw_pcie_readl_atu() and dw_pcie_writel_atu() method, and
-> convert the dw_pcie_prog_outbound_atu() and
-> dw_pcie_prog_{ep_}inbound_atu() functions to being generic instead of
-> having a different methods for each viewport and unrolled types of iATU
-> CSRs mapping. Nothing complex really. First of all the dw_pcie_readl_atu()
-> and dw_pcie_writel_atu() are converted to accept relative iATU CSRs
-> address together with the iATU region direction (inbound or outbound) and
-> region index. If DW PCIe controller doesn't have the unrolled iATU CSRs
-> space, then the accessors will need to activate a iATU viewport based on
-> the specified direction and index, otherwise a base address for the
-> corresponding region CSRs will be calculated by means of the
-> PCIE_ATU_UNROLL_BASE() macro. The CSRs macro have been modified in
-> accordance with that logic in the pcie-designware.h header file.
-> 
-> The rest of the changes in this commit just concern converting the iATU
-> in-/out-bound setup methods and iATU regions detection procedure to be
-> compatible with the new accessors semantics. As a result we've dropped the
-> no more required dw_pcie_prog_outbound_atu_unroll(),
-> dw_pcie_prog_inbound_atu_unroll() and dw_pcie_iatu_detect_regions_unroll()
-> methods.
-> 
-> Note aside with the denoted code improvements, there is an additional
-> positive side effect of this change. If at some point an atomic iATU
-> configs setup procedure is required, it will be possible to be done with
-> no much effort just by adding the synchronization into the
-> dw_pcie_readl_atu() and dw_pcie_writel_atu() accessors.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
-> ---
-> 
-> Changelog v2:
-> - Move the iATU region selection procedure into a helper function (@Rob).
-> - Simplify the iATU region selection procedure by recalculating the base
->   address only if the space is unrolled. The iATU viewport base address
->   is saved in the pci->atu_base field from now.
-> ---
->  drivers/pci/controller/dwc/pcie-designware.c | 293 ++++++-------------
->  drivers/pci/controller/dwc/pcie-designware.h |  48 ++-
 
-In this patch, you also need to fix "pcie-tegra194-acpi.c" driver that makes
-use of the removed macros.
+On 5/11/22 17:36, Andrew Morton wrote:
+> On Wed, 11 May 2022 17:06:35 -0500 Eddie James <eajames@linux.ibm.com> wrote:
+>
+>> On 5/11/22 16:56, Andrew Morton wrote:
+>>> On Wed, 11 May 2022 13:34:00 -0500 Eddie James <eajames@linux.ibm.com> wrote:
+>>>
+>>>> Add the option to kconfig and set the default panic_on_value.
+>>> Why?  What are the use-cases and how does this benefit our users?
+>> If a distribution (for example some embedded system distribution) wants
+>> the system to always panic when OOM, they may as well configure their
+>> kernel to do it by default, rather than writing to
+>> /proc/sys/vm/panic_on_oom every boot. Maybe I'm missing another way to
+>> do what I want here?
+> Presumably such a distribution would do this in initramfs initscripts
+> and forget about it.
 
-Thanks,
-Mani
 
--- 
-மணிவண்ணன் சதாசிவம்
+Yes, my thinking was that it was either a line in an init script or a 
+system service. It seems more efficient to configure it in the kernel 
+instead.
+
+
+>
+> What inspired the patch?  Have you seen a situation which was best
+> solved with this change?
+
+
+Yes, our distro, OpenBMC, uses systemd, so I thought we'd need a new 
+service. However after a little more research, I see now that that the 
+existing systemd-sysctl can do what you suggest and set it during early 
+boot. So that is probably the right way to go, and this change can be 
+dropped.
+
+Thanks for your feedback!
+
+Eddie
+
+
+>
