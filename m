@@ -2,129 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF07C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357115AbiELRiJ (ORCPT
+        id S1357122AbiELRio (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34280 "EHLO
+        Thu, 12 May 2022 13:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352513AbiELRiH (ORCPT
+        with ESMTP id S1356959AbiELRim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:38:07 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B69A5C35C
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:38:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652377085; x=1683913085;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nEYj3OOQ3m648qxqkrIqIyY2ESb4SDyzBsyU91pQbJw=;
-  b=DiIeKgnJRnsB6c8jAZcd4x8FH4c4BsY1NTNXvig5PqY4UFvmUBlahPpC
-   3rWBVy4sxjCdbykthFA6iBsoHok8BcYV5Vwdeddy/5dJW08k+DBKf32Ba
-   NJEG6cqdAOfVHNizSEq3LtgtzoxupLdEY9Ri2PD4DyW6ocYS77bziOIjE
-   f5KecKGyQW/6bM3faovBwOhg9D+S19xvbr8jEfEb90hGymtYLeH1Ryj6v
-   dxNfcdzr45cM2FP/9elywXJu0m6H4RLmhXk8KXNuEMXDAk7X/tqYruzYY
-   VrT5E4HO8iVFeEEDmFvWo1s5mG1QI6IHOZWc4meTVEYuYFY7VwMTj8ZSz
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257632538"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="257632538"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:32:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="624502461"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 12 May 2022 10:32:41 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npCg4-000KkM-EI;
-        Thu, 12 May 2022 17:32:40 +0000
-Date:   Fri, 13 May 2022 01:32:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmerdabbelt@google.com>
-Subject: ld.lld: error: section .dynamic file range overlaps with .text
-Message-ID: <202205130116.ow8tWsMr-lkp@intel.com>
+        Thu, 12 May 2022 13:38:42 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68AD5DA7E;
+        Thu, 12 May 2022 10:38:40 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id p26so10333018lfh.10;
+        Thu, 12 May 2022 10:38:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=vZvTlrJYt+b8R7ehZmMqdHwToDN9FaTAo0nb7F19JWE=;
+        b=QU3BtwylRmSLrk4v/VGxeLSkgCsMMGlmA5r2K4qPM0Wzt6sURVzXDprRsrWGiMqMQO
+         XGO1WjSvN/dUlsnbZxXBjp4yO1Pe+yMdgE33W+Non+Cu2Z4gfFW2gd1g0NXIL3lCU2As
+         GkzzWRpQtUekBVZHMZNaaAR2DgbUYZjwx4S1WUVbCKzdWmEBv+tqxLZGW/F+ObonyFx/
+         39b5EOR5ruO8IMhHdfD5mpdTq5+Tcsy64UDrcnMFTsuRDMJsSh+H58X5xgMwnrh/Nae7
+         YmecFrv2Mb1HAcvo+SpW0Xxr/xypXAtnYZ4C/IzHiqBROeofyk7uAE9gqfSx33UcxV7E
+         XLPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=vZvTlrJYt+b8R7ehZmMqdHwToDN9FaTAo0nb7F19JWE=;
+        b=ZrVSF2xrHJ0CLtIK8G69TgqPCPuTXWLEOHdosKTLI3M7gNRZL+WTz+sTSMN3mMS4V+
+         UMMGzbsDIl8I4rYcWYtMbwVWCMf6Gj2Tmi/MYe5U2gAUBjQwFyWWbLOusVC7Btqmo9NG
+         /RiVkNTENznVkBnSme9W9Wpku3ya/PvTvKKGIfVkRqD0uYLvbm/41jQwAPcemSp+WDZN
+         VF+YEzatRo2MW3aSQORBtS915zrL+CajqWGFNbSMfy9pAQ3FvRJ1vbPNeavuj1a9i8ix
+         VNhTfsUDghHagFYVJWce9zj9MJmouoKxd/AsGsAfqXlyJcgXOP1EYPWKuMIFhHyRmTsI
+         saDQ==
+X-Gm-Message-State: AOAM5313iCbEV3+k24WkoqmUqUYe+J/Gzez11L4yjE7VyVVps6jWwt5W
+        cU0qKU/AHrq41VnBQ7GHTtY=
+X-Google-Smtp-Source: ABdhPJyxmuiydmPxJbQNTIGcdclos+z6jvgx8M/o9YDj+8rLLVPMLo1zvWIGcOV6oUiNnHazYn1dTg==
+X-Received: by 2002:a19:ae0a:0:b0:472:d3e:8312 with SMTP id f10-20020a19ae0a000000b004720d3e8312mr645513lfc.176.1652377119219;
+        Thu, 12 May 2022 10:38:39 -0700 (PDT)
+Received: from mobilestation ([95.79.189.214])
+        by smtp.gmail.com with ESMTPSA id w8-20020a2e3008000000b00250664c906asm6673ljw.133.2022.05.12.10.38.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 10:38:38 -0700 (PDT)
+Date:   Thu, 12 May 2022 20:38:35 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 24/26] dmaengine: dw-edma: Skip cleanup procedure if
+ no private data found
+Message-ID: <20220512173835.ffboven6wbtswkek@mobilestation>
+References: <20220503225104.12108-1-Sergey.Semin@baikalelectronics.ru>
+ <20220503225104.12108-25-Sergey.Semin@baikalelectronics.ru>
+ <20220512152354.GO35848@thinkpad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220512152354.GO35848@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tong,
+On Thu, May 12, 2022 at 08:53:54PM +0530, Manivannan Sadhasivam wrote:
+> On Wed, May 04, 2022 at 01:51:02AM +0300, Serge Semin wrote:
+> > DW eDMA driver private data is preserved in the passed DW eDMA chip info
+> > structure. If either probe procedure failed or for some reason the passed
+> > info object doesn't have private data pointer initialized we need to halt
+> > the DMA device cleanup procedure in order to prevent possible system
+> > crashes.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
 
-FYI, the error/warning still remains.
+> As I said in the previous iteration, I'm not sure we will hit this issue.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   feb9c5e19e913b53cb536a7aa7c9f20107bb51ec
-commit: dffe11e280a42c2501e5b0cdebd85a77f539bb05 riscv/vdso: Add support for time namespaces
-date:   7 months ago
-config: riscv-randconfig-r035-20220512 (https://download.01.org/0day-ci/archive/20220513/202205130116.ow8tWsMr-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dffe11e280a42c2501e5b0cdebd85a77f539bb05
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout dffe11e280a42c2501e5b0cdebd85a77f539bb05
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv prepare
+It's unlikely but still not impossible. Consider the case when your DW
+PCIe controller has eDMA capability, but the platform code isn't ready
+to have it properly utilized. In that case dw_edma_probe() will fail
+at some point while the rest of the DW PCIe code will go on executing
+ignoring that error. In that case calling the dw_edma_remove() will
+cause the system crash since the dw_edma_chip.dw pointer will be left
+uninitialized. For instance possible circumstances can be as follows:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+dw_pcie_host_init()
++-> dw_pcie_edma_detect() FAIL ignored.
++-> pci_host_probe() FAIL goto err_stop_link
+                      |
+                      +-> dw_pcie_edma_remove() CRASH !!!
 
-All errors (new ones prefixed by >>):
+So to be on a safe side we need to make sure the DW eDMA descriptor
+cleanup is skipped in case if it hasn't been properly initialized. The
+proper initialization is indicated by having the dw_edma_chip.dw set
+with the valid pointer to the private data.
 
->> ld.lld: error: section .dynamic file range overlaps with .text
-   >>> .dynamic range is [0x710, 0x83F]
-   >>> .text range is [0x800, 0x11E7]
---
->> ld.lld: error: section .text file range overlaps with _ftrace_annotated_branch
-   >>> .text range is [0x800, 0x11E7]
-   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
---
->> ld.lld: error: section .dynamic virtual address range overlaps with .text
-   >>> .dynamic range is [0x710, 0x83F]
-   >>> .text range is [0x800, 0x11E7]
---
->> ld.lld: error: section .text virtual address range overlaps with _ftrace_annotated_branch
-   >>> .text range is [0x800, 0x11E7]
-   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
---
->> ld.lld: error: section .dynamic load address range overlaps with .text
-   >>> .dynamic range is [0x710, 0x83F]
-   >>> .text range is [0x800, 0x11E7]
---
->> ld.lld: error: section .text load address range overlaps with _ftrace_annotated_branch
-   >>> .text range is [0x800, 0x11E7]
-   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
---
->> ld.lld: error: section .text load address range overlaps with _ftrace_annotated_branch
-   >>> .text range is [0x800, 0x11E7]
-   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
---
-   scripts/genksyms/parse.y: warning: 9 shift/reduce conflicts
-   scripts/genksyms/parse.y: warning: 5 reduce/reduce conflicts
-   scripts/genksyms/parse.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
->> ld.lld: error: section .dynamic file range overlaps with .text
-   >>> .dynamic range is [0x710, 0x83F]
-   >>> .text range is [0x800, 0x11E7]
---
->> ld.lld: error: section .text load address range overlaps with _ftrace_annotated_branch
-   >>> .text range is [0x800, 0x11E7]
-   >>> _ftrace_annotated_branch range is [0x840, 0xB9F]
-   llvm-nm: error: arch/riscv/kernel/vdso/vdso.so.dbg: No such file or directory
+> But I don't object the patch. So,
+> 
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks.
+
+-Sergey
+
+> 
+> Thanks,
+> Mani
+> 
+> > ---
+> >  drivers/dma/dw-edma/dw-edma-core.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+> > index 908607785401..561686b51915 100644
+> > --- a/drivers/dma/dw-edma/dw-edma-core.c
+> > +++ b/drivers/dma/dw-edma/dw-edma-core.c
+> > @@ -1035,6 +1035,10 @@ int dw_edma_remove(struct dw_edma_chip *chip)
+> >  	struct dw_edma *dw = chip->dw;
+> >  	int i;
+> >  
+> > +	/* Skip removal if no private data found */
+> > +	if (!dw)
+> > +		return -ENODEV;
+> > +
+> >  	/* Disable eDMA */
+> >  	dw_edma_v0_core_off(dw);
+> >  
+> > -- 
+> > 2.35.1
+> > 
+> 
+> -- 
+> மணிவண்ணன் சதாசிவம்
