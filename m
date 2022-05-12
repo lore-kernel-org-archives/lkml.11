@@ -2,75 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBBF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C82BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351474AbiELI2L (ORCPT
+        id S1351458AbiELI2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48356 "EHLO
+        Thu, 12 May 2022 04:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351438AbiELI17 (ORCPT
+        with ESMTP id S1351449AbiELI2a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:27:59 -0400
+        Thu, 12 May 2022 04:28:30 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1064E9B18E;
-        Thu, 12 May 2022 01:27:58 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KzPwL5cztzGpSV;
-        Thu, 12 May 2022 16:25:06 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95842181CD
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:28:28 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KzPwx4cDmzGpj2;
+        Thu, 12 May 2022 16:25:37 +0800 (CST)
+Received: from M910t (10.110.54.157) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
- 2022 16:27:55 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
-Subject: [PATCH -next] net: hinic: add missing destroy_workqueue in hinic_pf_to_mgmt_init
-Date:   Thu, 12 May 2022 16:41:48 +0800
-Message-ID: <20220512084148.1027481-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
+ 2022 16:28:25 +0800
+Date:   Thu, 12 May 2022 16:28:20 +0800
+From:   Changbin Du <changbin.du@huawei.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+CC:     Changbin Du <changbin.du@huawei.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Steven Rostedt <rostedt@goodmis.org>, <hw.huiwang@huawei.com>,
+        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <llvm@lists.linux.dev>, <codegen-riscv@discourse.llvm.org>,
+        <llvmproject@discourse.llvm.org>, <craig.topper@sifive.com>,
+        <asb@asbradbury.org>
+Subject: Re: riscv: llvm-compiler: calling convention violation: temporary
+ register $t2 is used to pass the ninth function parameter
+Message-ID: <20220512082820.7t2rwwo3fffgwoxn@M910t>
+References: <20220510065336.hlfjrc25ajed5zj4@M910t>
+ <CAKwvOd=OnJ=ZhsbX+epzbhg3sWg9yOaR=zQ4jF_Deo=B8Nx9Og@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500015.china.huawei.com (7.221.188.92)
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKwvOd=OnJ=ZhsbX+epzbhg3sWg9yOaR=zQ4jF_Deo=B8Nx9Og@mail.gmail.com>
+X-Originating-IP: [10.110.54.157]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hinic_pf_to_mgmt_init misses destroy_workqueue in error path,
-this patch fixes that.
+On Wed, May 11, 2022 at 11:39:07AM -0700, Nick Desaulniers wrote:
+> On Mon, May 9, 2022 at 11:54 PM Changbin Du <changbin.du@huawei.com> wrote:
+> >
+[snip]
+> > I also built a simple test function with 9 parameters by clang and same cflags,
+> > but cannot reproduce it. Maybe it is conditional?
+> >
+> > Simple test code:
+> > __attribute__ ((noinline))
+> > void test_func(int *a, int *b, int *c, int *d, int *e, int *f, int *g, int *h, int *i)
+> > {
+> >         printf("__find_rr_leaf: %d\n", *i);
+> > }
+> >
+> > int main(void)
+> > {
+> >         int a,b,c,d,e,f,g,h,i = 100;
+> >
+> >         test_func(&a,&b,&c,&d,&e,&f,&g,&h,&i);
+> >         return 0;
+> > }
+> 
+> Hmm...any chance you could come up with a more concise test case then
+> using creduce [0] or cvise [1]?
+> [0] https://embed.cs.utah.edu/creduce/
+> [1] https://github.com/marxin/cvise
+> 
+>
+okay, let me try to reduce the orignal source with creduce.
 
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
- drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 2 ++
- 1 file changed, 2 insertions(+)
+> 
+> 
+> -- 
+> Thanks,
+> ~Nick Desaulniers
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-index ebc77771f5da..4aa1f433ed24 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-@@ -643,6 +643,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = alloc_msg_buf(pf_to_mgmt);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to allocate msg buffers\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
-@@ -650,6 +651,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = hinic_api_cmd_init(pf_to_mgmt->cmd_chain, hwif);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to initialize cmd chains\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
---
-2.31.1
-
+-- 
+Cheers,
+Changbin Du
