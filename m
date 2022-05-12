@@ -2,107 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2B8C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 776EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357211AbiELRoM (ORCPT
+        id S1357214AbiELRo6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57732 "EHLO
+        Thu, 12 May 2022 13:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353035AbiELRoF (ORCPT
+        with ESMTP id S240506AbiELRo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:44:05 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FF06E8DD;
-        Thu, 12 May 2022 10:44:05 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id y76so11170553ybe.1;
-        Thu, 12 May 2022 10:44:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8dV6HUB7SxpjK+7mBEuOiLof9qR8uoa5I2hxfC6B+U0=;
-        b=V0BWORNUjzvdj7VCoVnOtF+BzEUkQT/FPg3TIY4oQR/ngKTsDne6/7cO1iY7svOI/c
-         J3vw05flqg8wbznzwHXi8paRcDRGowDTt0vkoicwau9AWyFe1p4je/pJyOW8gaDDyl7B
-         nbHkFN25tMl0xIij0PQsyFekN/u4+4n4oer8I+2t6TeWF8OGPT8FcV2D7JpQg1iPdC3a
-         ihAM/FPGEUlJ6N3Zrl3QGIsOCAfqy2l7ZBIzYAtrOZjf1ZswvQZ/iiRL27rC0XkRP3l1
-         6JwoGxlp+ZZ3VwxLdH0PXb05IvXvlRYQCLdJ7vaZvFDKRGjN5rgumo/TqjW1WR2cWAOw
-         nAAA==
+        Thu, 12 May 2022 13:44:56 -0400
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D61226C4DA;
+        Thu, 12 May 2022 10:44:55 -0700 (PDT)
+Received: by mail-qv1-f53.google.com with SMTP id kk28so4928327qvb.3;
+        Thu, 12 May 2022 10:44:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8dV6HUB7SxpjK+7mBEuOiLof9qR8uoa5I2hxfC6B+U0=;
-        b=VQ9834yQ3jglJPEpdosW9Xok+O+gRNHz8OBVRHZatB2fiRpanOBh3p8yROWJL8Ui5V
-         Bhf1VBxXQGl+ru/oq8SDbyP4HRyXsWA8+IOV5HysADH0OduCTZMHxbYkzG+LASZn178F
-         4auwaaJH4wLBHtYtm1JdvEKPd9NIkUyYXmtRYCMgpV39TqXz3Y7Vl3BWyrVDkrVg+M5y
-         39jFab5wyiCwEcpKkQPSEuFGQEBoaOYr/G+2nSigKRe7VViEV+KeMw9EI0SHGDD8vKLM
-         SH1mRAWw6JP2Z2aWLEghcML8Nyq1SolWyBNSX0y2xHT7GtOFiA3uy2pXOZlS+T8o+SVM
-         y6Xg==
-X-Gm-Message-State: AOAM533MulTvnb/BPoTJdFfb4OmnhapnL+G2CKcWHUxwZOr/Ln714aLs
-        rxzvaQ4YV1T9QIZXGREAJaUw5ny8m9yrB+f1J2I=
-X-Google-Smtp-Source: ABdhPJy1WwkC5EbZMV5JPFIASaM/e60AvOA4texGRaJe7EsXmlzHKWzVwopGa+RtsniYx0rlTvcvSI8zzJwoVRF4llo=
-X-Received: by 2002:a25:bfce:0:b0:648:963b:1ccb with SMTP id
- q14-20020a25bfce000000b00648963b1ccbmr951675ybm.417.1652377444242; Thu, 12
- May 2022 10:44:04 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=dZue0UTlrDAnzvGcVBrv1iRqhh3n5waeAxQ9q+USOtQ=;
+        b=Gv57DeQaEkdbNb43vErQwHisTY4EFi4IlVkqhcDPwz4JFBCY9jBiRdWozh5IUzhq7A
+         mhATukbX5S/Vep9q2cjMSTBodY6msqCyQG812EJxdTEkmxbRq0oC2HlkGLqHGG69l/YJ
+         7bZRepQySnWLRfEx39e4Czs7jzog+f0osWVRGhxHuKTp5fDt+0shiQYSi5BbSfRmExNS
+         6VkMPRNbMFoZrNC7pAcFUr/Y+tVuMOGYAGtn/Fr7pFoGglEnAumC11E9y0GrD1kh0wgZ
+         cPOJU/pg3irF9pWmkQrlwF6JFtgydXSgSWDUa/SiFgyIp6lEBa6zqfFQRTVQF5hTrqEF
+         ud5Q==
+X-Gm-Message-State: AOAM530oVCQKXx2CqsNYL75GSmZPG0Adj+/2QKKowG+jBu66sUC1Y//a
+        yw10Fp9/lWCDLlvxKm+iHMxe653swrrryQ==
+X-Google-Smtp-Source: ABdhPJywll+nIbOZcCNCeFmLnIqwiQprWlxHUY6UCR89jqS67IVxJjUv50+ELL2s5a/gSS3T90c1ZA==
+X-Received: by 2002:a05:6214:b11:b0:456:446e:a6c1 with SMTP id u17-20020a0562140b1100b00456446ea6c1mr888381qvj.28.1652377494352;
+        Thu, 12 May 2022 10:44:54 -0700 (PDT)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-013.fbsv.net. [2a03:2880:20ff:d::face:b00c])
+        by smtp.gmail.com with ESMTPSA id fu37-20020a05622a5da500b002f39b99f67bsm121960qtb.21.2022.05.12.10.44.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 10:44:54 -0700 (PDT)
+Date:   Thu, 12 May 2022 10:44:52 -0700
+From:   David Vernet <void@manifault.com>
+To:     Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
+Cc:     akpm@linux-foundation.org, tj@kernel.org, roman.gushchin@linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
+        shakeelb@google.com, kernel-team@fb.com
+Subject: Re: [PATCH v2 0/5] Fix bugs in memcontroller cgroup tests
+Message-ID: <20220512174452.tr34tuh4k5jm6qjs@dev0025.ash9.facebook.com>
+References: <20220423155619.3669555-1-void@manifault.com>
+ <20220512170410.GA16096@blackbody.suse.cz>
+ <20220512173018.3pqlfwfigbbkoh4u@dev0025.ash9.facebook.com>
 MIME-Version: 1.0
-References: <20220511183210.5248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220511183210.5248-6-prabhakar.mahadev-lad.rj@bp.renesas.com> <OS0PR01MB59221ADFC86483FE2C8765C486CB9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB59221ADFC86483FE2C8765C486CB9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Thu, 12 May 2022 18:43:37 +0100
-Message-ID: <CA+V-a8s4RfNSXCHG5xo4LhkHw09aj2wFnH0iCDos_ysunV1+5g@mail.gmail.com>
-Subject: Re: [PATCH v3 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to
- handle GPIO interrupt
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220512173018.3pqlfwfigbbkoh4u@dev0025.ash9.facebook.com>
+User-Agent: NeoMutt/20211029
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Biju,
+On Thu, May 12, 2022 at 10:30:18AM -0700, David Vernet wrote:
+> Hi Michal,
+> 
+> On Thu, May 12, 2022 at 07:04:10PM +0200, Michal Koutný wrote:
+> > Are the Roman's patches merged anywhere? (I ran into some issues when I
+> > was rebasing your (David's) series on top of master.) I'd like to put
+> > all sensible patches in one series or stack on existing branch (if
+> > there's any).
+> 
+> Roman's patches are present on master on the linux-mm tree. See
+> b7dbfd6553d..a131b1ed12c6.
+> 
+> > For possible v3 of this series, I did:
+> >   - dropped the patch that allows non-zero memory.events:low for a sibling with
+> >     memory.low=0 when mounted with memory_recursiveprot (the case needs more
+> >     discussion),
+> 
+> Ack, and thanks for keeping us steered in the right direction here. I don't
+> see this in the patch set you linked, but I agree this commit should be
+> reverted and the reclaim logic instead fixed.
+> 
+> >   - added few more cleanups, convenience for debugging,
+> 
+> Are you referring to the FAIL() macro you added? I would love to Ack that,
+> but unfortunately checkpatch.pl will probably yell at you for having a goto
+> in that macro, per the point about avoiding macros that affect control flow
+> [0].
+> 
+> I tried to do the same thing when sending out my patch set and had to
+> revert it before sending it to upstream.
+> 
+> Thanks,
+> David
+> 
+> [0] https://github.com/Werkov/linux/commit/a076339cc4825af2f22f58c1347a572b104b8221
 
-Thank you for the review.
+Sorry, I meant to link this:
 
-On Thu, May 12, 2022 at 6:35 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
->
-> Hi Prabhakar,
->
-> Thanks for the patch.
->
-> > Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Subject: [PATCH v3 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to
-> > handle GPIO interrupt
-> >
-> > Add IRQ domian to RZ/G2L pinctrl driver to handle GPIO interrupt.
-> >
-> > GPIO0-GPIO122 pins can be used as IRQ lines but only 32 pins can be used as
-> > IRQ lines at given time. Selection of pins as IRQ lines is handled by IA55
-> > (which is the IRQC block) which sits in between the GPIO and GIC.
->
-> Do we need to update bindings with interrupt-cells on [1] like [2] as it act as parent for GPIO interrupts?
->
-Yes interrupt-controller and interrupt-parent needs to be added. I'm
-wondering if "interrupt-cells" is not required. If the pin is an
-interrupt it will be passed as an GPIO.
-
-@Geert - your thoughts ?
-
-Cheers,
-Prabhakar
+https://www.kernel.org/doc/html/latest/process/coding-style.html#macros-enums-and-rtl
