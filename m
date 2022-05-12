@@ -2,162 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44817C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E92DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353924AbiELMrt (ORCPT
+        id S1353940AbiELMsR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58304 "EHLO
+        Thu, 12 May 2022 08:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353917AbiELMre (ORCPT
+        with ESMTP id S1353882AbiELMsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:47:34 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F471CE60C
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:47:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652359652; x=1683895652;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=TZMqMvMmQoQX5FpgkY8+5sOYtRKyNEg9CK8KlsRcL5o=;
-  b=Lou3h+drQI2ft6tiXaiLbygIbW0eZe8nzwKIOP5Yu9DgiHVLXWQrAeY3
-   VSR6FbYdtoU9jWL7SJfwyjkI7ZjMfzn7IfipdW/+YqsYDOljYgyrWcaNC
-   UfQWOoilLo/7HaM1WuheYkyA3mNXjPNVmoSICRS3LgnIbxDiubRkk3+/f
-   d8r/mcvd4uKZyGNGI5VS9cg5eZwi0VLs+cMJhxBcbMvPvig2bTrtgrGrr
-   M0apLaApaotTAqUsfhi1Sf9G47XF51Oy4Ti5VRhjuYULQzsY5FOmgr/oD
-   sco5t939P/BzRgOB1PVOH8Lb2G9XQcovfFf7ZtYbfHHB6PLSodEl4Q5XQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="252040723"
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
-   d="scan'208";a="252040723"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 05:47:32 -0700
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
-   d="scan'208";a="594650645"
-Received: from hezhu1-mobl1.ccr.corp.intel.com (HELO [10.255.29.168]) ([10.255.29.168])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 05:47:28 -0700
-Message-ID: <f463fb9d-8edc-7b7d-b109-d3f5d0dcabd9@linux.intel.com>
-Date:   Thu, 12 May 2022 20:47:26 +0800
+        Thu, 12 May 2022 08:48:10 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63301E0584
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:48:08 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id e194so5132945iof.11
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:48:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vNd3Gm8nUZ7PICSGljzFyVVDd1hZA/GzEUARiHu8reA=;
+        b=P+s6nn3BAqL09cTQZHN1ewg0v6vl8jrsEONJYK8CKGpgYe3lx+uzP9HwD3eQJqN577
+         3pqtxxiCI6YXx6P3O6QUpst4SV+8tyUqwfZWxep4F/+Ifhbf+6pdODLAAHQDQaz4Z3TF
+         x5+2iqnQ9zyy8BDIvOatJegOBDMBt0yT0Y5TRrtUcWrqCnlNmM8flPTXWexwbfuf/dmK
+         b6jyhgL61F6EeHqpnxc3rVnOKTkZzjMACalpFZ1OxT88LKcBij/OTYDUZRf95ZRMqFJs
+         PabNAO8NU0/APnsHy6LFbcCvDl5IDaUR2wsB5mTWC3dOVNMIlrAVj9oZpbRQD3Gki5P7
+         igPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vNd3Gm8nUZ7PICSGljzFyVVDd1hZA/GzEUARiHu8reA=;
+        b=l27hKly4CndXY9lQMwCzjBQMqTOegxmG2bXnlOAWDVZf/Cm2r/nyolJtKw2QNq07Dy
+         yT3guv6Coebofj0Fd0Z/Vna+8A1c4lngAdHn2CizjOqJRKVq78y5h6bykO96IimgCJ10
+         dG2Rx0+ZAEI4zNMn4/f+XZoDqSd5bkqAu7RNJBaXkN2jCzlCLfArbzO/TupqRpxT6+jK
+         vsWp7Pppjp5ayBQ/VoRzpy4mvrngmSx9BHc0BbELdpmsCuQsyDMyz9VGYAkP8YGjd5an
+         zFygIYyhFjL7H+AzQ8pSSaBhVEuD3A9Ym3E2jRPgsn0s3B2PlpOvcrWRzW73v4BnRl+W
+         TFPQ==
+X-Gm-Message-State: AOAM532xshMSR2C2lwiZMRWjJA9xOEk178tOuu3BiNK7p1hHjjzaFshq
+        kqk008mvwdWBVzH0BiXpkTWvydHrru/IPiULHfyGsw==
+X-Google-Smtp-Source: ABdhPJxmHajQAtmeAOa2hqK9jIE6Fvj7k4Q2daHftWuREJvjw97wdOFcHX4vJ74gWyi2jlegcsdeaAeZ+9EvNgHAy2U=
+X-Received: by 2002:a5d:9e17:0:b0:657:b212:c97e with SMTP id
+ h23-20020a5d9e17000000b00657b212c97emr13187580ioh.176.1652359688147; Thu, 12
+ May 2022 05:48:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Cc:     baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 08/12] iommu/sva: Use attach/detach_pasid_dev in SVA
- interfaces
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
- <20220510061738.2761430-9-baolu.lu@linux.intel.com>
- <20220510152330.GG49344@nvidia.com>
- <749a7d62-3e6c-ef5c-beaf-6b7add495740@linux.intel.com>
- <20220511145319.GZ49344@nvidia.com>
- <05a68e1e-8e18-5914-ebe7-d7b1a4aaa2ec@linux.intel.com>
- <BN9PR11MB5276C03134A898CA9EFEE9258CCB9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <64954f2d-2274-410e-269c-84efc0635633@linux.intel.com>
- <20220512114844.GT49344@nvidia.com>
- <1a78418a-8637-e8dd-d1de-5529f20058fd@linux.intel.com>
- <20220512120303.GY49344@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220512120303.GY49344@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220510124929.91000-1-robert.marko@sartura.hr>
+ <20220510124929.91000-2-robert.marko@sartura.hr> <0815f581-ca5b-6fb6-a59e-f5d0a3686caa@linaro.org>
+ <CA+HBbNFnXoEghSdhTYoC-VvCMkiEuuee9p8SuNGubYCeLWoYfA@mail.gmail.com> <41cc4506-57be-a831-57d5-e539e8a95610@linaro.org>
+In-Reply-To: <41cc4506-57be-a831-57d5-e539e8a95610@linaro.org>
+From:   Robert Marko <robert.marko@sartura.hr>
+Date:   Thu, 12 May 2022 14:47:57 +0200
+Message-ID: <CA+HBbNGvXtGhuxRgz-7VSPh1HJwdeTOD1fU7rWV2xBEvhf2WYA@mail.gmail.com>
+Subject: Re: [PATCH v2 02/11] dt-bindings: marvell: convert Armada 37xx
+ compatibles to YAML
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Andrew Lunn <andrew@lunn.ch>,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        kostap@marvell.com, devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <marek.behun@nic.cz>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/12 20:03, Jason Gunthorpe wrote:
-> On Thu, May 12, 2022 at 07:59:41PM +0800, Baolu Lu wrote:
->> On 2022/5/12 19:48, Jason Gunthorpe wrote:
->>> On Thu, May 12, 2022 at 01:17:08PM +0800, Baolu Lu wrote:
->>>> On 2022/5/12 13:01, Tian, Kevin wrote:
->>>>>> From: Baolu Lu <baolu.lu@linux.intel.com>
->>>>>> Sent: Thursday, May 12, 2022 11:03 AM
->>>>>>
->>>>>> On 2022/5/11 22:53, Jason Gunthorpe wrote:
->>>>>>>>> Also, given the current arrangement it might make sense to have a
->>>>>>>>> struct iommu_domain_sva given that no driver is wrappering this in
->>>>>>>>> something else.
->>>>>>>> Fair enough. How about below wrapper?
->>>>>>>>
->>>>>>>> +struct iommu_sva_domain {
->>>>>>>> +       /*
->>>>>>>> +        * Common iommu domain header,*must*  be put at the top
->>>>>>>> +        * of the structure.
->>>>>>>> +        */
->>>>>>>> +       struct iommu_domain domain;
->>>>>>>> +       struct mm_struct *mm;
->>>>>>>> +       struct iommu_sva bond;
->>>>>>>> +}
->>>>>>>>
->>>>>>>> The refcount is wrapped in bond.
->>>>>>> I'm still not sure that bond is necessary
->>>>>>
->>>>>> "bond" is the sva handle that the device drivers get through calling
->>>>>> iommu_sva_bind().
->>>>>>
->>>>>
->>>>> 'bond' was required before because we didn't have a domain to wrap
->>>>> the page table at that time.
->>>>>
->>>>> Now we have a domain and it is 1:1 associated to bond. Probably
->>>>> make sense now by just returning the domain as the sva handle
->>>>> instead?
->>>>
->>>> It also includes the device information that the domain has been
->>>> attached. So the sva_unbind() looks like this:
->>>>
->>>> /**
->>>>    * iommu_sva_unbind_device() - Remove a bond created with
->>>> iommu_sva_bind_device
->>>>    * @handle: the handle returned by iommu_sva_bind_device()
->>>>    *
->>>>    * Put reference to a bond between device and address space. The device
->>>> should
->>>>    * not be issuing any more transaction for this PASID. All outstanding page
->>>>    * requests for this PASID must have been flushed to the IOMMU.
->>>>    */
->>>> void iommu_sva_unbind_device(struct iommu_sva *handle)
->>>>
->>>> It's fine to replace the iommu_sva with iommu_sva_domain for sva handle,
->>>> if we can include the device in the unbind() interface.
->>>
->>> Why would we have a special unbind for SVA?
->>
->> It's about SVA kAPI for device drivers. The existing kAPIs include:
->>
->> struct iommu_sva *iommu_sva_bind_device(struct device *dev,
->>                                          struct mm_struct *mm,
->>                                          void *drvdata);
->> void iommu_sva_unbind_device(struct iommu_sva *handle);
->> u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-> 
-> This is not what we agreed the API should be. We agreed:
-> 
->   iommu_sva_domain_alloc()
->   iommu_attach_device_pasid()
->   iommu_detach_device_pasid()
-> 
-> Again, SVA should not be different from normal domain stuff.
+On Thu, May 12, 2022 at 2:36 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 12/05/2022 14:26, Robert Marko wrote:
+> > On Wed, May 11, 2022 at 6:52 PM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 10/05/2022 14:49, Robert Marko wrote:
+> >>
+> >> Thank you for your patch. There is something to discuss/improve.
+> >>
+> >>> -
+> >>> - - compatible: must contain "cznic,turris-mox"
+> >>> diff --git a/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml
+> >>> new file mode 100644
+> >>> index 000000000000..3f41ef2c6f3e
+> >>> --- /dev/null
+> >>> +++ b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml
+> >>> @@ -0,0 +1,50 @@
+> >>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >>> +%YAML 1.2
+> >>> +---
+> >>> +$id: http://devicetree.org/schemas/arm/marvell/armada-37xx.yaml#
+> >>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>> +
+> >>> +title: Marvell Armada 37xx Platforms Device Tree Bindings
+> >>> +
+> >>> +maintainers:
+> >>> +  - Robert Marko <robert.marko@sartura.hr>
+> >>> +
+> >>> +properties:
+> >>> +  $nodename:
+> >>> +    const: '/'
+> >>> +  compatible:
+> >>> +    oneOf:
+> >>> +      - description: Armada 3710 SoC
+> >>> +        items:
+> >>> +          - const: marvell,armada3710
+> >>
+> >> This does not look correct. The SoC usually cannot be used by itself,
+> >> it's always a part of some product, SoM, board.
+> >
+> > Hi Krzysztof,
+> > Currently, there are no Armada 3710 boards present in Linux, so I just
+> > put the SoC compatible.
+> > If that is not appropriate, I can drop it.
+>
+> Yes, please drop it.
+>
+> It seems several Marvel boards and bindings use wrong convention for
+> compatibles. We discussed it here:
+> https://lore.kernel.org/all/1ed03960-77f6-1a9e-2378-07a6c51f42f7@linaro.org/
+> AC5 and CN9130 have the same wrong patterns.
+>
+> >
+> >>
+> >>> +
+> >>> +      - description: Armada 3720 SoC
+> >>> +        items:
+> >>> +          - enum:
+> >>> +              - marvell,armada-3720-db
+> >>> +              - globalscale,espressobin
+> >>> +              - cznic,turris-mox
+> >>> +              - methode,udpu
+> >>
+> >> Order by name.
+> > Will fixup in v3.
+> >
+> >>
+> >>> +          - const: marvell,armada3720
+> >>> +          - const: marvell,armada3710
+> >>> +
+> >>> +      - description: Globalscale Espressobin boards
+> >>> +        items:
+> >>> +          - enum:
+> >>> +              - globalscale,espressobin-emmc
+> >>> +              - globalscale,espressobin-ultra
+> >>> +              - globalscale,espressobin-v7
+> >>> +          - const: globalscale,espressobin
+> >>> +          - const: marvell,armada3720
+> >>> +          - const: marvell,armada3710
+> > Do these const compatibles also need to be in alphabetical ordering,
+> > cause I ported them as they are meant to be used with the board and
+> > then 3720 compatibles being in front of 3710 one as required by the current
+> > text bindings.
+>
+> Entries in enum should be ordered alphabetically. Then the entire set "-
+> description: Globalscale Espressobin boards" should have some logical
+> order, not necessarily by name.
+>
+> Anyway this is not a requirement but rather suggestion because having
+> things ordered reduces amount of conflicts when two people add new
+> boards (because they add it not at the end, but somewhere in the middle
+> following some order).
 
-Yes, agreed.
+Hi,
+understood, will send a v3 soon.
 
-I am trying to achieve this in two steps. This first step focuses on
-internal iommu implementation and keep the driver kAPI untouched. Then,
-the second step focus on the driver APIs.
+Regards,
+Robert
+>
+>
+> Best regards,
+> Krzysztof
 
-Best regards,
-baolu
+
+
+-- 
+Robert Marko
+Staff Embedded Linux Engineer
+Sartura Ltd.
+Lendavska ulica 16a
+10000 Zagreb, Croatia
+Email: robert.marko@sartura.hr
+Web: www.sartura.hr
