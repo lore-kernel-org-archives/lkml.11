@@ -2,158 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B716AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A533EC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355088AbiELOLu (ORCPT
+        id S1355065AbiELOMA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53470 "EHLO
+        Thu, 12 May 2022 10:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355060AbiELOLr (ORCPT
+        with ESMTP id S1355066AbiELOKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:11:47 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4929A62113;
-        Thu, 12 May 2022 07:11:46 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id g6so10550838ejw.1;
-        Thu, 12 May 2022 07:11:46 -0700 (PDT)
+        Thu, 12 May 2022 10:10:53 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5823818A
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:10:51 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id k126so3115479wme.2
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:10:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vDfWle9etWMCmQNVGzMruoXlBGLrPBNQ0jQnmtdNAT4=;
-        b=lbH/a60vTfH0YMoCYxaNMx4khmhaEAiJpnijLbVIse7l464HPTBpnDgXMA3JP0r5Zt
-         wosR3ndq5qim2RZCTPu15TxZ5hOjBgq2gI+dbLdqRNPJFrNBbNDZ1GDDkXaJZC8ZkFyg
-         h085ul/kM5bnupa0Vp1/NjiqfAykEL8jTgvW1M2lep43rtLzaH+edEFfPes6jgt1rzhb
-         /JIbNkYBko57rbX8wxKrIjTF8NLorE6v8/iwHl1/1fFP/LmB33ed7DIedW1PHl60rXvm
-         M07TS+SjmrfIWG7Qpcxb+Hsbko/YzMQs3XMGN53QPKWe1IFwIj6OnjZOsXq1cAocONFN
-         S46A==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vn7/TcXZx/YPKou36lJ5SmtraXVwL0/BIRBykC2c2Cc=;
+        b=ELpy5XjveqTbQ4ADroA70GtG1vEajwTq8gcfIQB+I1nxFpX931aWSnoFQx+h571n++
+         yd0fNUi9/fTlPLS57mNb59AkoMA/W5Smp2uJvCki/46uvU7xFFsMClq736XF2e1XJviL
+         MD6+7e02pF6Tw628pSOEZ0yseQBub9uk0RL/FDLTgufH/y0UqUqRhS6ai6wpdbu6PmqP
+         VMgi8+Pnybu4Af6vZydhwDMbp9dGPytUTX1ZqhhOECd7IWbhgpoobOCYR9dZhMGrRaw1
+         eAwZ+6aiNmdIlnsQ+7Vsj6sARBD/c8mN+DrlJuG4arrQto4jDONePgcfP6b7weDDAFov
+         TJug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=vDfWle9etWMCmQNVGzMruoXlBGLrPBNQ0jQnmtdNAT4=;
-        b=EPf3Z0NG7KrGIprZkKT9Lf4gE7z5RIpJjJ4Gstyz7WjNNerlVGJYi5APUNhb95kHoc
-         /FxY1Jb0EMFct3ihj6bM9HzL0/oj57Q1wDgJTh8aEk72CEa9K14egzVllsme6bmUgMTG
-         eQ39TG1RUU04k1COM44obYv1Qx9GYeFDqK3AQNH3vhg+v89+iReayakGXcHLH9KkQlka
-         sGC810qYrdyJrV8CcIavNSTIS2A3OHjnOAYDW41KakYUkXPwpGXzq5fvWIAaoOTZfaL4
-         ur/2zO1945Bx3Jds3mFn2SdfujPHWPXQ4o/3mil2GGWt8HqlhycsgbeuNW3DxS4N3pKt
-         56cQ==
-X-Gm-Message-State: AOAM531I2Y07T2UTbdZoVexOxBziUI7LG0qyVOcyJDMEEU1GMArMYY5s
-        4WJWOnBabehAxiiz8CAE+DI=
-X-Google-Smtp-Source: ABdhPJy4SV46Fw946eFm0yov5HwLW2Bb91us5NM7wZC9tAYmquJgB+/RwuH491Qkvgkl0aY1W35C5Q==
-X-Received: by 2002:a17:906:1b1b:b0:6f3:9044:5fb4 with SMTP id o27-20020a1709061b1b00b006f390445fb4mr50087ejg.763.1652364704686;
-        Thu, 12 May 2022 07:11:44 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id y18-20020aa7ccd2000000b0042617ba6394sm2565060edt.30.2022.05.12.07.11.41
+        bh=vn7/TcXZx/YPKou36lJ5SmtraXVwL0/BIRBykC2c2Cc=;
+        b=qUbtZH4c8dTsqNQBBkOhV+x511A28xbOgiaKxi8/l6gQGt4MSAgqie8so+inYvjqn+
+         tiDsv6G6CgPlGZtlhb7wyQUTmApzaEy3j8XbAywYm/DmEIcVKZ0Siq3Vc3Eask4vEfm7
+         dTHy7HwQBEvYYSGQuXlsV/Ftqr1aim3Jl4OUpZBOnFW+8W7X6vmWdkQsX9HqOeWfCSZY
+         jIKVLqv1R6YL+Chm0BzzeIRQ6rahb6P7L861YhFIq0uevtcB2uApB0Koh+oU38goOA82
+         Egp5nddcrjgNA9ixS0TdivMpwlQA1m0Zh4onFePcT5gRDPjIzJQZV3+1esdNeaZrUY92
+         qiWg==
+X-Gm-Message-State: AOAM5317Xn4ZZqrhtpzbMU1dibRiNQBarb/H8kFkqy8D/1Se1wCWXalN
+        sC3b7CoqopmQs4Fpky76CJxpKA==
+X-Google-Smtp-Source: ABdhPJwsTL8QgcQKZq0wtbtNwGv44FIHOTOX3N5Tmf13Z//DkzY60DPj3KlFflGFpzZV2EIzFfLy5A==
+X-Received: by 2002:a1c:f30b:0:b0:37b:b5de:c804 with SMTP id q11-20020a1cf30b000000b0037bb5dec804mr10411340wmq.166.1652364650173;
+        Thu, 12 May 2022 07:10:50 -0700 (PDT)
+Received: from [192.168.0.160] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id w17-20020a05600018d100b0020c5253d90asm4503374wrq.86.2022.05.12.07.10.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 07:11:44 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <c21a5891-06fa-1d0b-360f-54b8711fd23b@redhat.com>
-Date:   Thu, 12 May 2022 16:11:40 +0200
+        Thu, 12 May 2022 07:10:49 -0700 (PDT)
+Message-ID: <03ac0a67-bd1f-12ca-74f7-8d5b05857ea7@linaro.org>
+Date:   Thu, 12 May 2022 16:10:48 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3] KVM: x86/mmu: Update number of zapped pages even if
- page list is stable
+ Thunderbird/91.8.1
+Subject: Re: [PATCH V4 3/5] arm64: dts: nuvoton: Add initial support for
+ MA35D1
 Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>
-References: <20220511145122.3133334-1-seanjc@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220511145122.3133334-1-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Jacky Huang <ychuang3@nuvoton.com>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, ychuang570808@gmail.com
+Cc:     robh+dt@kernel.org, sboyd@kernel.org, krzk+dt@kernel.org,
+        arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
+        will@kernel.org, soc@kernel.org, cfli0@nuvoton.com
+References: <20220510032558.10304-1-ychuang3@nuvoton.com>
+ <20220510032558.10304-4-ychuang3@nuvoton.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220510032558.10304-4-ychuang3@nuvoton.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/11/22 16:51, Sean Christopherson wrote:
-> When zapping obsolete pages, update the running count of zapped pages
-> regardless of whether or not the list has become unstable due to zapping
-> a shadow page with its own child shadow pages.  If the VM is backed by
-> mostly 4kb pages, KVM can zap an absurd number of SPTEs without bumping
-> the batch count and thus without yielding.  In the worst case scenario,
-> this can cause a soft lokcup.
+On 10/05/2022 05:25, Jacky Huang wrote:
+> Add the initial device tree files for Nuvoton MA35D1 Soc.
 > 
->   watchdog: BUG: soft lockup - CPU#12 stuck for 22s! [dirty_log_perf_:13020]
->     RIP: 0010:workingset_activation+0x19/0x130
->     mark_page_accessed+0x266/0x2e0
->     kvm_set_pfn_accessed+0x31/0x40
->     mmu_spte_clear_track_bits+0x136/0x1c0
->     drop_spte+0x1a/0xc0
->     mmu_page_zap_pte+0xef/0x120
->     __kvm_mmu_prepare_zap_page+0x205/0x5e0
->     kvm_mmu_zap_all_fast+0xd7/0x190
->     kvm_mmu_invalidate_zap_pages_in_memslot+0xe/0x10
->     kvm_page_track_flush_slot+0x5c/0x80
->     kvm_arch_flush_shadow_memslot+0xe/0x10
->     kvm_set_memslot+0x1a8/0x5d0
->     __kvm_set_memory_region+0x337/0x590
->     kvm_vm_ioctl+0xb08/0x1040
-> 
-> Fixes: fbb158cb88b6 ("KVM: x86/mmu: Revert "Revert "KVM: MMU: zap pages in batch""")
-> Reported-by: David Matlack <dmatlack@google.com>
-> Reviewed-by: Ben Gardon <bgardon@google.com>
-> Reviewed-by: David Matlack <dmatlack@google.com>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
 > ---
+>  arch/arm64/boot/dts/Makefile               |   1 +
+>  arch/arm64/boot/dts/nuvoton/Makefile       |   2 +
+>  arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts |  24 +++++
+>  arch/arm64/boot/dts/nuvoton/ma35d1.dtsi    | 120 +++++++++++++++++++++
+>  4 files changed, 147 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/nuvoton/Makefile
+>  create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
+>  create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
 > 
-> v3:
->   - Collect David's review.
->   - "Rebase".  The v2 patch still applies cleanly, but Paolo apparently has
->     a filter configured to ignore all emails related to the v2 submission.
-> 
-> v2:
->   - https://lore.kernel.org/all/20211129235233.1277558-1-seanjc@google.com
->   - Rebase to kvm/master, commit 30d7c5d60a88 ("KVM: SEV: expose...")
->   - Collect Ben's review, modulo bad splat.
->   - Copy+paste the correct splat and symptom. [David].
-> 
->   arch/x86/kvm/mmu/mmu.c | 10 ++++++----
->   1 file changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 909372762363..7429ae1784af 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -5665,6 +5665,7 @@ static void kvm_zap_obsolete_pages(struct kvm *kvm)
->   {
->   	struct kvm_mmu_page *sp, *node;
->   	int nr_zapped, batch = 0;
-> +	bool unstable;
->   
->   restart:
->   	list_for_each_entry_safe_reverse(sp, node,
-> @@ -5696,11 +5697,12 @@ static void kvm_zap_obsolete_pages(struct kvm *kvm)
->   			goto restart;
->   		}
->   
-> -		if (__kvm_mmu_prepare_zap_page(kvm, sp,
-> -				&kvm->arch.zapped_obsolete_pages, &nr_zapped)) {
-> -			batch += nr_zapped;
-> +		unstable = __kvm_mmu_prepare_zap_page(kvm, sp,
-> +				&kvm->arch.zapped_obsolete_pages, &nr_zapped);
-> +		batch += nr_zapped;
+> diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+> index 1ba04e31a438..7b107fa7414b 100644
+> --- a/arch/arm64/boot/dts/Makefile
+> +++ b/arch/arm64/boot/dts/Makefile
+> @@ -19,6 +19,7 @@ subdir-y += lg
+>  subdir-y += marvell
+>  subdir-y += mediatek
+>  subdir-y += microchip
+> +subdir-y += nuvoton
+>  subdir-y += nvidia
+>  subdir-y += qcom
+>  subdir-y += realtek
+> diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuvoton/Makefile
+> new file mode 100644
+> index 000000000000..e1e0c466bf5e
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/nuvoton/Makefile
+> @@ -0,0 +1,2 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +dtb-$(CONFIG_ARCH_NUVOTON) += ma35d1-evb.dtb
+> diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts b/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
+> new file mode 100644
+> index 000000000000..95f0facb0476
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
+> @@ -0,0 +1,24 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +/*
+> + * Device Tree Source for MA35D1 Evaluation Board (EVB)
+> + *
+> + * Copyright (C) 2022 Nuvoton Technology Corp.
+> + */
 > +
-> +		if (unstable)
->   			goto restart;
-> -		}
->   	}
->   
->   	/*
-> 
-> base-commit: 2764011106d0436cb44702cfb0981339d68c3509
+> +/dts-v1/;
+> +#include "ma35d1.dtsi"
+> +
+> +/ {
+> +	model = "Nuvoton MA35D1-EVB";
+> +	compatible = "nuvoton,ma35d1-evb", "nuvoton,ma35d1";
+> +
+> +	chosen {
+> +		stdout-path = "serial0:115200n8";
+> +	};
+> +
+> +	memory@80000000 {
+> +		device_type = "memory";
+> +		reg = <0x0 0x80000000 0x0 0x10000000>;
+> +	};
+> +};
+> +
 
-Queued, thanks.
 
-Paolo
+.git/rebase-apply/patch:60: new blank line at EOF.
+
++
+
+warning: 1 line adds whitespace errors.
+
+
+
+> diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+> new file mode 100644
+> index 000000000000..7212f8de6906
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+> @@ -0,0 +1,120 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +/*
+> + * Copyright (c) 2022 Nuvoton Technology Corp.
+> + */
+> +
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/input/input.h>
+> +#include <dt-bindings/gpio/gpio.h>
+> +#include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
+> +
+> +/ {
+> +	compatible = "nuvoton,ma35d1";
+> +	interrupt-parent = <&gic>;
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +
+> +	cpus {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		cpu-map {
+> +			cluster0 {
+> +				core0 {
+> +					cpu = <&cpu0>;
+> +				};
+> +				core1 {
+> +					cpu = <&cpu1>;
+> +				};
+> +			};
+> +		};
+> +
+> +		cpu0: cpu@0 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a35";
+> +			reg = <0x0>;
+> +			enable-method = "psci";
+> +			next-level-cache = <&L2_0>;
+> +		};
+> +
+> +		cpu1: cpu@1 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a35";
+> +			reg = <0x1>;
+> +			enable-method = "psci";
+> +			next-level-cache = <&L2_0>;
+> +		};
+> +
+> +		L2_0: l2-cache0 {
+> +			compatible = "cache";
+> +			cache-level = <2>;
+> +		};
+> +	};
+> +
+> +	psci {
+> +		compatible = "arm,psci-0.2";
+> +		method = "smc";
+> +	};
+> +
+> +	hxt_24m: hxt_24mhz {
+
+No underscores in node name. Generic node names, so "clock-X" or
+"clock-some-suffix"
+
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <24000000>;
+
+This does not look like property of SoC. Where is this clock defined? In
+the SoC or on the board?
+
+> +		clock-output-names = "HXT_24MHz";
+> +	};
+> +
+> +	timer {
+> +		compatible = "arm,armv8-timer";
+> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) |
+> +					  IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) |
+> +					  IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) |
+> +					  IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) |
+> +					  IRQ_TYPE_LEVEL_LOW)>;
+> +		clock-frequency = <12000000>;
+> +	};
+> +
+> +	sys: system-controller@40460000 {
+> +		compatible = "nuvoton,ma35d1-sys", "syscon", "simple-mfd";
+
+Why is this a simple-mfd if there are no children here? What do you want
+to instantiate here?
+
+Where is the nuvoton,ma35d1-sys compatible documented?
+
+> +		reg = <0x0 0x40460000 0x0 0x400>;
+> +	};
+> +
+> +	reset: reset-controller {
+> +		compatible = "nuvoton,ma35d1-reset";
+
+Also not documented.
+
+> +		nuvoton,ma35d1-sys = <&sys>;
+> +		#reset-cells = <1>;
+> +	};
+> +
+> +	clk: clock-controller@40460200 {
+> +		compatible = "nuvoton,ma35d1-clk";
+> +		reg = <0x0 0x40460200 0x0 0x100>;
+> +		#clock-cells = <1>;
+> +		clocks = <&hxt_24m>;
+> +		clock-names = "HXT_24MHz";
+
+Please test your DTS with make dtbs_check.
+
+Don't send DTS which does not pass the checks. It is unnecessary use of
+reviewers time when the same job can be done by automated tools.
+
+Best regards,
+Krzysztof
