@@ -2,97 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB341C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4864BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356381AbiELQRE (ORCPT
+        id S1356368AbiELQRU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
+        Thu, 12 May 2022 12:17:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356360AbiELQQv (ORCPT
+        with ESMTP id S1356377AbiELQRP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:16:51 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB61689B0
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:16:51 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id i38so10625823ybj.13
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:16:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w7wTiXZa6qZi+HuOeJOMfyweTiYDquNYmgNLPQKJ4no=;
-        b=GEVkY8kLTlT3Zy8fuo/W1ScuRvPz67G/Ak9nk9vrqHlwVlQdbmYVORGQ0loita8kIW
-         itcV+avbnkCZGJ++sfsBPqncwNp+TByA22jLgIe+QDW2nNo8e2kjxpwARrUecL95MFwx
-         P8rFf44fate+74wX19swxBtY9pkFwIygNInH5B/kYFpeML071eBRea9GYDUm0dnUOGpd
-         mE8nYc/etwptKy04i9rivVhNdkB7CeRR78jmTlQD+Li+JpUsIbbn/tB+uIUExhB/9V7A
-         IM+NsA0rCEy/a9/Lx1Ryw3rs8i2Hy74RKxdoapJstrbZENaWdy6APZiT3KT1p9ueqiUK
-         QBLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w7wTiXZa6qZi+HuOeJOMfyweTiYDquNYmgNLPQKJ4no=;
-        b=KqZokWO/xufnR45Q5L4C1sLgmbqU906M/fYAO171+2H/p3QX1kJwOFgZEw00Pk22LI
-         re/XYH3HU1Z+WxVe2zTNv9tscbhWwylh5FKQgd/JIx57nr/MlKY3HisXze/Qvr+yalO4
-         4XIyXcP2Ubs9UI2oY7IpywO48bre0lcepxRuquOW/6pHczW264bYxCGrv4h2kaQC8UyR
-         mBJ+6Z39+JJyyd4tyDrbdNQCTEwMRBvwUH/iSrnxDvOmnzdyhf8puWhflQV/wIB052SW
-         7tfDIpBHK4V7Sm+WnNuqNTfJLUIMlNdp8LaDmuMoSSbJ8KUd/MIDGPjeqUuvS2h6vZVt
-         RO8g==
-X-Gm-Message-State: AOAM532UseXH//z0jHX37AEOWp1aL7UKzoWe/VqZ0JJsJ10N6DX1vLw3
-        e+lnCqxnluEzGuU8CjA+kZO5+08R0IjHEaf64/QJKA==
-X-Google-Smtp-Source: ABdhPJx5oca/jxocNO5zQOTpuEEq6nsI4kR18n5qlHJZYFRK/0yDJXKbyWMk3qgxNIwVCl2vX4j6nbmRDS9hDaAYB7I=
-X-Received: by 2002:a25:230a:0:b0:64b:49c:c67c with SMTP id
- j10-20020a25230a000000b0064b049cc67cmr604298ybj.598.1652372210156; Thu, 12
- May 2022 09:16:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220512123313.218063-1-imagedong@tencent.com>
- <20220512123313.218063-3-imagedong@tencent.com> <20220512091558.350899ff@kernel.org>
-In-Reply-To: <20220512091558.350899ff@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 12 May 2022 09:16:38 -0700
-Message-ID: <CANn89iLEkgat-es15Sb2naWn8VProMK1_wr7jBe4L4bXs4JVWA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/4] net: skb: check the boundrary of drop
- reason in kfree_skb_reason()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Menglong Dong <menglong8.dong@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Talal Ahmad <talalahmad@google.com>,
+        Thu, 12 May 2022 12:17:15 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F3510B3CF;
+        Thu, 12 May 2022 09:17:13 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652372231;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=P3WA7a2LKBsvGjpHAfwHZrsdX5lPf+mXnzFb/W6CTG4=;
+        b=M2SNi8xRlFNsaTf4EnM632IULRDzo8Lh9IAaPhgFV1fYK8RqrQDWoPkNTF2vcwphpIqR8c
+        lM0WdyegTuvPqzbzdNjo6FXwZOVH8SYmYie3wSCTCbQt9OAVR7VhT7snHk7EZZ4HSMiVNh
+        YB6rIykaXznfefVPXXp55XmG4NMpCtoasCHoeWXHQQc1U4QPsS6pDRFmQhfG47a2QFvPyf
+        dI5VgqJPpF8of7FJfUD/7R0i2q2kDJXELWPTg4fefEI0EW2vgMFIuYLFfWOSCQR2pwVJdS
+        dHD2sTWVhsHJlsB4lAPZZ1xHYuEFG+ILoVEz5I7pb4/IbxyTZsCtAjyIp12QpA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652372231;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=P3WA7a2LKBsvGjpHAfwHZrsdX5lPf+mXnzFb/W6CTG4=;
+        b=W90ZtdXlwRF+/ciwbpXvb7TIXlmhwJBIcwThOHIJql1Ajmtg8N8/gWVkSg1avC7iab1Fs1
+        rtsKmNIz8W8ezIAw==
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
         Kees Cook <keescook@chromium.org>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Vasily Averin <vasily.averin@linux.dev>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 28/46] kmsan: entry: handle register passing from
+ uninstrumented code
+In-Reply-To: <CAG_fn=VtQw1gL_UVONHi=OJakOuMa3wKfkzP0jWcuvGQEmV9Vw@mail.gmail.com>
+References: <20220426164315.625149-1-glider@google.com>
+ <20220426164315.625149-29-glider@google.com> <87a6c6y7mg.ffs@tglx>
+ <CAG_fn=U7PPBmmkgxFcWFQUCqZitzMizr1e69D9f26sGGzeitLQ@mail.gmail.com>
+ <87y1zjlhmj.ffs@tglx>
+ <CAG_fn=XxAhBEBP2KJvahinbaxLAd1xvqTfRJdAu1Tk5r8=01jw@mail.gmail.com>
+ <878rrfiqyr.ffs@tglx>
+ <CAG_fn=XVchXCcOhFt+rP=vinRhkyrXJSP46cyvcZeHJWaDquGg@mail.gmail.com>
+ <87k0ayhc43.ffs@tglx>
+ <CAG_fn=UpcXMqJiZvho6_G3rjvjQA-3Ax6X8ONVO0D+4Pttc9dA@mail.gmail.com>
+ <87h762h5c2.ffs@tglx>
+ <CAG_fn=UroTgp0jt77X_E-b1DPJ+32Cye6dRL4DOZ8MRf+XSokg@mail.gmail.com>
+ <871qx2r09k.ffs@tglx>
+ <CAG_fn=VtQw1gL_UVONHi=OJakOuMa3wKfkzP0jWcuvGQEmV9Vw@mail.gmail.com>
+Date:   Thu, 12 May 2022 18:17:11 +0200
+Message-ID: <87h75uvi7s.ffs@tglx>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 9:16 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu, May 12 2022 at 14:24, Alexander Potapenko wrote:
+> On Mon, May 9, 2022 at 9:09 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+>> > So in the case when `hardirq_count()>>HARDIRQ_SHIFT` is greater than
+>> > 1, kmsan_in_runtime() becomes a no-op, which leads to false positives.
+>>
+>> But, that'd only > 1 when there is a nested interrupt, which is not the
+>> case. Interrupt handlers keep interrupts disabled. The last exception from
+>> that rule was some legacy IDE driver which is gone by now.
 >
-> On Thu, 12 May 2022 20:33:11 +0800 menglong8.dong@gmail.com wrote:
-> > +     if (unlikely(reason <= 0 || reason >= SKB_DROP_REASON_MAX)) {
-> > +             DEBUG_NET_WARN_ON_ONCE(1);
-> > +             reason = SKB_DROP_REASON_NOT_SPECIFIED;
-> > +     }
+> That's good to know, then we probably don't need this hardirq_count()
+> check anymore.
 >
-> With drop_monitor fixes sending an invalid reason to the tracepoint
-> should be a minor bug, right?
+>> So no, not a good explanation either.
 >
-> Can we just have a:
->
->         DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >= SKB_DROP_REASON_MAX);
->
-> and avoid having this branch on non-debug builds?
+> After looking deeper I see that unpoisoning was indeed skipped because
+> kmsan_in_runtime() returned true, but I was wrong about the root
+> cause.
+> The problem was not caused by a nested hardirq, but rather by the fact
+> that the KMSAN hook in irqentry_enter() was called with in_task()==1.
 
-Exactly what I was going to say.
+Argh, the preempt counter increment happens _after_ irqentry_enter().
+
+> I think the best that can be done here is (as suggested above) to
+> provide some kmsan_unpoison_pt_regs() function that will only be
+> called from the entry points and won't be doing reentrancy checks.
+> It should be safe, because unpoisoning boils down to calculating
+> shadow/origin addresses and calling memset() on them, no instrumented
+> code will be involved.
+
+If you keep them where I placed them, then there is no need for a
+noinstr function. It's already instrumentable.
+
+> We could try to figure out the places in idtentry code where normal
+> kmsan_unpoison_memory() can be called in IRQ context, but as far as I
+> can see it will depend on the type of the entry point.
+
+NMI is covered as it increments before it invokes the unpoison().
+
+Let me figure out why we increment the preempt count late for
+interrupts. IIRC it's for symmetry reasons related to softirq processing
+on return, but let me double check.
+
+> Another way to deal with the problem is to not rely on in_task(), but
+> rather use some per-cpu counter in irqentry_enter()/irqentry_exit() to
+> figure out whether we are in IRQ code already.
+
+Well, if you have a irqentry() specific unpoison, then you know the
+context, right?
+
+> However this is only possible irqentry_enter() itself guarantees that
+> the execution cannot be rescheduled to another CPU - is that the case?
+
+Obviously. It runs with interrupts disabled and eventually on a
+separate interrupt stack.
+
+Thanks,
+
+        tglx
