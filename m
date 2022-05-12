@@ -2,253 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F776C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4802C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:36:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347321AbiELEd7 (ORCPT
+        id S1347298AbiELEgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 00:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
+        Thu, 12 May 2022 00:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346463AbiELEdu (ORCPT
+        with ESMTP id S1346868AbiELEf7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 00:33:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1385C218FCE
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:33:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652330018;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9m59m31zWjI88PU/fkJ+2jBtK+MMPKzeFSYoFIaJt9c=;
-        b=hFs+QH3VSLYLL+GcmLe23/y/SpLzyLPJZ5L07aosfy/pP+dWAun4JpNi6wDojZwELAoaSS
-        aHh7X6QXmnmVJDwwJmyYs1rAWKf7ra++PJ1iV7TMSz2Jmgnw3tsg7lR663+l1/fnIIWoxE
-        kCR6GmUfy2Jr+3/ITsO3Sc5yQmWaJhY=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-X0LD5W0KNH6Ml8ysa-8SJQ-1; Thu, 12 May 2022 00:33:36 -0400
-X-MC-Unique: X0LD5W0KNH6Ml8ysa-8SJQ-1
-Received: by mail-pf1-f199.google.com with SMTP id u25-20020aa78499000000b0050d328e2f6bso2067100pfn.7
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:33:36 -0700 (PDT)
+        Thu, 12 May 2022 00:35:59 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B088A645E;
+        Wed, 11 May 2022 21:35:55 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso3808482pjb.5;
+        Wed, 11 May 2022 21:35:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HYujfKEE4FRBcffvvm/ENwPqr1+X2EgAq7QQ3ImY+bQ=;
+        b=jHNmqQtI3JjAQf13WCLhhUg/GhvEmfOIM1kfRhBNBgNtmAi51zl+XJnGjcL7McS6Ar
+         LMPr3XQlMh4JzZi1rdWCZAhI5l6Uv75+2ApXs/spGXnT1ggSZHiU+55cGnCngn8WuC7a
+         iqwyqc8GO4v2p8VDLew+kKz0NybCB6ZqT0P6zdu72hakXr8XvtfpAj5QfIb+hd3C3PQd
+         lxsAOJ2j7YonNfXBAVbpqRLMmL/JGPRt1TtVwU2BeRfPEqRLnolMs/lT1golpwTxKWZy
+         unZtCk7SkTT8aMzo2xP30tsjDyU52WBzQfyh7KpKe6ECaApQHggr0x0IuXbuXHCIZ9mV
+         XRtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9m59m31zWjI88PU/fkJ+2jBtK+MMPKzeFSYoFIaJt9c=;
-        b=ZULrBOr694FTYN1lOXTxvja1uMAEXzy+Aj7GTZe4XpLkXsGLfIjGihdaOeZIUUyEAd
-         kmzgw/raZcj3TgXRyb15dwHGY11ONbqx88hwubRAzNYa3IFDj4OtZg+JcstURA7zvghS
-         Z1qYKYbqk55PahuxYhj6jfHU86rQMvSwRA9ZehBe+Jlm/s/VupDHE8ylI98DGcSLvf82
-         cTfXUHqiJmeL/3OdyZYhr/s852wMPfIoyi1Jw1HwHjUBxXrCr34M/Mg8s6TcANCIdYRK
-         W/G2eLMauFGFecHOQ6aopm555xIi6bYI54fMqPACU0X6V5/9esz71R/he4CbBULMUqjq
-         JGAQ==
-X-Gm-Message-State: AOAM532//zlBi13kInD3jiiOp7AZI4NXxxIUc2MGqNz6X0FytP4ASOGl
-        K82c7PgheciUtNDQFpu0LWmJlXyluUX78VQmEHpqxFEOZ07GtZ+i2lOiwNPNn+DZB47BXl43qu/
-        E0vqTGVILFbKWy0YQTut3N7bg
-X-Received: by 2002:a17:903:32d0:b0:15e:8cbc:fd39 with SMTP id i16-20020a17090332d000b0015e8cbcfd39mr29480055plr.95.1652330015204;
-        Wed, 11 May 2022 21:33:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwywe5Nh4a9dE8q7MbA+N0sqO4+GFmGOMSIJl/Vpj8aBpEmmVY8aRc6/9wvIdpdBGVwqi/Qbw==
-X-Received: by 2002:a17:903:32d0:b0:15e:8cbc:fd39 with SMTP id i16-20020a17090332d000b0015e8cbcfd39mr29480024plr.95.1652330014959;
-        Wed, 11 May 2022 21:33:34 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p3-20020a170902780300b0015e8d4eb293sm2755119pll.221.2022.05.11.21.33.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 21:33:34 -0700 (PDT)
-Date:   Thu, 12 May 2022 12:33:10 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Mimi Zohar <zohar@linux.ibm.com>, Chun-Yi Lee <jlee@suse.com>,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 2/4] kexec, KEYS: make the code in
- bzImage64_verify_sig generic
-Message-ID: <20220512043310.v3e22423ybe4z65e@Rk>
-References: <20220512023402.9913-1-coxu@redhat.com>
- <20220512023402.9913-3-coxu@redhat.com>
- <Ynx1DUvDTL1R4Pj5@MiWiFi-R3L-srv>
- <YnyEafqEcSh/wRRN@MiWiFi-R3L-srv>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HYujfKEE4FRBcffvvm/ENwPqr1+X2EgAq7QQ3ImY+bQ=;
+        b=471YYjuUEqKmHdLqZiXCMpnAhFSdFUP6/KHddyFLxwicnhKiTGSG40r1HmTMarSDCi
+         uZkA6oohJOIanthFT+JaWq8N2M00yK7OJ5h0KcIgBno4zbJeZcmTCGHFpHj2XawJAN8G
+         1TsJ9yCmi9nRp/8cvfbzsxtfpIkUkcnMKnjpgtK0OgBXd3IYExpCZSPAl7tfQtGwIfvD
+         xr00WQBd5dFzlkMrQEmDNdPeHLDqkICPpiT+wR7vzfSFU+zjqv/NBZYPLIyEuGOPVd00
+         uY+M7ym52Nr09/Kcyt1I6LlP3GhROEhEOuAtfNscjZ+xy4eSewrOj96GEgY/nbHBmKoY
+         p5vw==
+X-Gm-Message-State: AOAM530LFaGt4eck6CO+9+1ZajWAXfQYvFhUoO5ptVYOjMGuAQmVVbSq
+        bFKQgwtj2oEHbkr8x01AwlrdE4xr7rWhpfN/nMQ=
+X-Google-Smtp-Source: ABdhPJxE1V9btljZ/t5/qYQ28xGw+YiKTMw49we5zx+AI0AipeCM011JF7Jcpuq8Ml06bzMykWZ5YQyq6i+Rpf0FXGc=
+X-Received: by 2002:a17:902:7487:b0:15f:330:5022 with SMTP id
+ h7-20020a170902748700b0015f03305022mr21498706pll.18.1652330155178; Wed, 11
+ May 2022 21:35:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YnyEafqEcSh/wRRN@MiWiFi-R3L-srv>
+References: <20220509140403.1.I28d2ec514ad3b612015b28b8de861b8955033a19@changeid>
+ <CABBYNZ+qpWTX-FQ8QCiey0kf_rghDMnfQi3tt8zsv-5cuudbtg@mail.gmail.com> <CAGPPCLBTec4SuL+UiFPkvq9=Bz8UY_3nQa5JjjHZ_415yt7KjA@mail.gmail.com>
+In-Reply-To: <CAGPPCLBTec4SuL+UiFPkvq9=Bz8UY_3nQa5JjjHZ_415yt7KjA@mail.gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Wed, 11 May 2022 21:35:44 -0700
+Message-ID: <CABBYNZKU5TFYv14bNLksWV7Y5fOdLxdWPWm-bv7qeq0uXApiXg@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Fix Adv Monitor msft_add/remove_monitor_sync()
+To:     Manish Mandlik <mmandlik@google.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 11:52:09AM +0800, Baoquan He wrote:
->On 05/12/22 at 10:46am, Baoquan He wrote:
->> On 05/12/22 at 10:34am, Coiby Xu wrote:
->> > commit 278311e417be ("kexec, KEYS: Make use of platform keyring for
->> > signature verify") adds platform keyring support on x86 kexec but not
->> > arm64.
->> >
->> > The code in bzImage64_verify_sig makes use of system keyrings including
->> > .buitin_trusted_keys, .secondary_trusted_keys and .platform keyring to
->> > verify signed kernel image as PE file. Make it generic so both x86_64
->> > and arm64 can use it.
->> >
->> > Note this patch is needed by a later patch so Cc it to the stable tree
->> > as well.
+Hi Manish,
+
+On Wed, May 11, 2022 at 5:56 PM Manish Mandlik <mmandlik@google.com> wrote:
+>
+> Hi Luiz,
+>
+> On Wed, May 11, 2022 at 2:23 PM Luiz Augusto von Dentz <luiz.dentz@gmail.=
+com> wrote:
 >>
->> This note should not be added in log.
+>> Hi Manish,
 >>
+>> On Mon, May 9, 2022 at 2:05 PM Manish Mandlik <mmandlik@google.com> wrot=
+e:
 >> >
->> > Cc: kexec@lists.infradead.org
->> > Cc: keyrings@vger.kernel.org
->> > Cc: linux-security-module@vger.kernel.org
->> > Cc: stable@vger.kernel.org # 34d5960af253: kexec: clean up arch_kexec_kernel_verify_sig
->
->Hold on, should we CC stable when it's not fixing an issue?
->
->Hi Coiby,
-
-Hi Baoquan,
-
->
->Just to make clear , is this patch fixing an issue, or it's just an
->preparation for later patch's use?
->
->Or I should ask in another way, any problem is solved with this patch?
-
-At least it doesn't fix an issue that satisfy the criteria listed in 
-https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-
->
->
->> > Reviewed-by: Michal Suchanek <msuchanek@suse.de>
->> > Signed-off-by: Coiby Xu <coxu@redhat.com>
+>> > Do not call skb_pull() in msft_add_monitor_sync() as
+>> > msft_le_monitor_advertisement_cb() expects 'status' to be
+>> > part of the skb.
+>> >
+>> > Same applies for msft_remove_monitor_sync().
+>> >
+>> > Signed-off-by: Manish Mandlik <mmandlik@google.com>
 >> > ---
+>> >
+>> >  net/bluetooth/msft.c | 2 --
+>> >  1 file changed, 2 deletions(-)
+>> >
+>> > diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+>> > index f43994523b1f..9990924719aa 100644
+>> > --- a/net/bluetooth/msft.c
+>> > +++ b/net/bluetooth/msft.c
+>> > @@ -387,7 +387,6 @@ static int msft_remove_monitor_sync(struct hci_dev=
+ *hdev,
+>> >                 return PTR_ERR(skb);
+>> >
+>> >         status =3D skb->data[0];
+>> > -       skb_pull(skb, 1);
+>> >
+>> >         msft_le_cancel_monitor_advertisement_cb(hdev, status, hdev->ms=
+ft_opcode,
+>> >                                                 skb);
+>> > @@ -506,7 +505,6 @@ static int msft_add_monitor_sync(struct hci_dev *h=
+dev,
+>> >                 return PTR_ERR(skb);
+>> >
+>> >         status =3D skb->data[0];
+>> > -       skb_pull(skb, 1);
 >>
->> You can put the note here, it won't be added to commit log when merged.
->> Maybe it can be removed when merged.
-
-Thanks for the suggestion! Shall I send a version to fix this problem or
-can I just bother the maintainer to remove it?
-
-
->>
->> Otherwise, LGTM
->>
->> Acked-by: Baoquan He <bhe@redhat.com>
->>
->> >  arch/x86/kernel/kexec-bzimage64.c | 20 +-------------------
->> >  include/linux/kexec.h             |  7 +++++++
->> >  kernel/kexec_file.c               | 17 +++++++++++++++++
->> >  3 files changed, 25 insertions(+), 19 deletions(-)
->> >
->> > diff --git a/arch/x86/kernel/kexec-bzimage64.c b/arch/x86/kernel/kexec-bzimage64.c
->> > index 170d0fd68b1f..f299b48f9c9f 100644
->> > --- a/arch/x86/kernel/kexec-bzimage64.c
->> > +++ b/arch/x86/kernel/kexec-bzimage64.c
->> > @@ -17,7 +17,6 @@
->> >  #include <linux/kernel.h>
->> >  #include <linux/mm.h>
->> >  #include <linux/efi.h>
->> > -#include <linux/verification.h>
->> >
->> >  #include <asm/bootparam.h>
->> >  #include <asm/setup.h>
->> > @@ -528,28 +527,11 @@ static int bzImage64_cleanup(void *loader_data)
->> >  	return 0;
->> >  }
->> >
->> > -#ifdef CONFIG_KEXEC_BZIMAGE_VERIFY_SIG
->> > -static int bzImage64_verify_sig(const char *kernel, unsigned long kernel_len)
->> > -{
->> > -	int ret;
->> > -
->> > -	ret = verify_pefile_signature(kernel, kernel_len,
->> > -				      VERIFY_USE_SECONDARY_KEYRING,
->> > -				      VERIFYING_KEXEC_PE_SIGNATURE);
->> > -	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING)) {
->> > -		ret = verify_pefile_signature(kernel, kernel_len,
->> > -					      VERIFY_USE_PLATFORM_KEYRING,
->> > -					      VERIFYING_KEXEC_PE_SIGNATURE);
->> > -	}
->> > -	return ret;
->> > -}
->> > -#endif
->> > -
->> >  const struct kexec_file_ops kexec_bzImage64_ops = {
->> >  	.probe = bzImage64_probe,
->> >  	.load = bzImage64_load,
->> >  	.cleanup = bzImage64_cleanup,
->> >  #ifdef CONFIG_KEXEC_BZIMAGE_VERIFY_SIG
->> > -	.verify_sig = bzImage64_verify_sig,
->> > +	.verify_sig = kexec_kernel_verify_pe_sig,
->> >  #endif
->> >  };
->> > diff --git a/include/linux/kexec.h b/include/linux/kexec.h
->> > index 413235c6c797..da83abfc628b 100644
->> > --- a/include/linux/kexec.h
->> > +++ b/include/linux/kexec.h
->> > @@ -19,6 +19,7 @@
->> >  #include <asm/io.h>
->> >
->> >  #include <uapi/linux/kexec.h>
->> > +#include <linux/verification.h>
->> >
->> >  /* Location of a reserved region to hold the crash kernel.
->> >   */
->> > @@ -202,6 +203,12 @@ int arch_kexec_apply_relocations(struct purgatory_info *pi,
->> >  				 const Elf_Shdr *relsec,
->> >  				 const Elf_Shdr *symtab);
->> >  int arch_kimage_file_post_load_cleanup(struct kimage *image);
->> > +#ifdef CONFIG_KEXEC_SIG
->> > +#ifdef CONFIG_SIGNED_PE_FILE_VERIFICATION
->> > +int kexec_kernel_verify_pe_sig(const char *kernel,
->> > +				    unsigned long kernel_len);
->> > +#endif
->> > +#endif
->> >  int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf);
->> >
->> >  extern int kexec_add_buffer(struct kexec_buf *kbuf);
->> > diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
->> > index 3720435807eb..754885b96aab 100644
->> > --- a/kernel/kexec_file.c
->> > +++ b/kernel/kexec_file.c
->> > @@ -165,6 +165,23 @@ void kimage_file_post_load_cleanup(struct kimage *image)
->> >  }
->> >
->> >  #ifdef CONFIG_KEXEC_SIG
->> > +#ifdef CONFIG_SIGNED_PE_FILE_VERIFICATION
->> > +int kexec_kernel_verify_pe_sig(const char *kernel, unsigned long kernel_len)
->> > +{
->> > +	int ret;
->> > +
->> > +	ret = verify_pefile_signature(kernel, kernel_len,
->> > +				      VERIFY_USE_SECONDARY_KEYRING,
->> > +				      VERIFYING_KEXEC_PE_SIGNATURE);
->> > +	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING)) {
->> > +		ret = verify_pefile_signature(kernel, kernel_len,
->> > +					      VERIFY_USE_PLATFORM_KEYRING,
->> > +					      VERIFYING_KEXEC_PE_SIGNATURE);
->> > +	}
->> > +	return ret;
->> > +}
->> > +#endif
->> > +
->> >  static int kexec_image_verify_sig(struct kimage *image, void *buf,
->> >  		unsigned long buf_len)
->> >  {
->> > --
->> > 2.35.3
->> >
->>
+>> Well if it expects it to be part of the skb then there is no reason to
+>> pass it as argument in addition to the skb itself.
 >
+> The problem is msft_le_monitor_advertisement_cb() is invoked directly via=
+ msft_add_monitor_sync() and also from __msft_add_monitor_pattern() as a ca=
+llback from hci_req_run_skb(). So, when it is invoked from hci_req_run_skb(=
+) it sends status separately as an argument along with the skb and that's w=
+hy that argument is required.
+>
+> Looks like some parts of msft.c still use the old way i.e. hci_req_run_sk=
+b() instead of __hci_cmd_sync() after hci_sync related refactoring. I am wo=
+ndering if it was left like this intentionally? If not, then we probably ne=
+ed to refactor msft.c to use __hci_cmd_sync() for all hci requests. In that=
+ case, I can work on refactoring and we can discard this patch altogether. =
+Please let me know.
 
--- 
-Best regards,
-Coiby
+Yes, if you have time please convert it to use hci_sync.c since we
+would like to completely deprecate/remove hci_request.c eventually, if
+you think that will take some time we can perhaps merge this changes
+first though.
 
+>>
+>> >         msft_le_monitor_advertisement_cb(hdev, status, hdev->msft_opco=
+de, skb);
+>> >
+>> > --
+>> > 2.36.0.512.ge40c2bad7a-goog
+>> >
+>>
+>>
+>> --
+>> Luiz Augusto von Dentz
+>
+> Regards,
+> Manish.
+
+
+
+--=20
+Luiz Augusto von Dentz
