@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2445C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D585C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355546AbiELU5q (ORCPT
+        id S1358556AbiELU5v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 16:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
+        Thu, 12 May 2022 16:57:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358625AbiELU5E (ORCPT
+        with ESMTP id S1358537AbiELU5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 16:57:04 -0400
+        Thu, 12 May 2022 16:57:02 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771F06A002;
-        Thu, 12 May 2022 13:56:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C296970B;
+        Thu, 12 May 2022 13:56:43 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: nfraprado)
-        with ESMTPSA id 7F2681F45AAD
+        with ESMTPSA id 521881F45AAA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652389006;
-        bh=xtfilwAIz+kMj8zKckclhyx6wIdcdbRqk0LZq8rnQiA=;
+        s=mail; t=1652389002;
+        bh=GrZDgZ5n77I8KtnjA2tOlTRA6mI8tLLdvbtiFZXUTG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Abu7N6UN4djRf/QA0Fn7tWwjX/sAtenySEuU9whrXjRORmTGZp/ZL1nNoOXWN2Yum
-         tP4ONGcRvmo4hiIvCMzCtakmZvNtMivAmMsFzhFGyoN0tNL31oovKI7HzvrkvOnIY4
-         CppJfqkIqV3dFmgV80Nyeo4agPTE+WtXG+Qw5AoChe3QgG5sSMAJsXNmdOBuRW5uLC
-         dl4cdpIM0zfXx3pwNMJ0s27/zdhNTZdcOmnxiq2jJknl2Nl4xZ+ZlK3j8SIVvdHrUx
-         5xKePN8uXpF7L6f05wmdQFv9HcM+KLqVJu+hpICh1DC2jlSB8wM8j+KpL3hWaqFbkt
-         u0xqCC6as48Fw==
+        b=RU7yVXKMRydUYzQRyyhaqN22pMIXICErdzLysumVSWsTvVh2ykx91P6ya5K1xuOr4
+         bnndX9h8DfFGC39p68a77R/glGAXwKjNVabl1xUHEWjIrwx19kB66OVmUUL2uAIbQ3
+         lGU3pB6s4hlRlofDYaM3MYL2TuzSjKFJZc1Oke3ZkEpE3qveHSmOnNvPxO8Pj8iuhF
+         h9reHCdOSEzjmHxQABet1e8eXIPOby31AH4CyaJlmIIaz3rQeYFmxSYnt0t6MjwXpX
+         E48kMIRmvxooddEfnOf5R1TMuMRuKrvg1J4Qxq8e2VTFMT+AkUIOwTTbdGI0iihdbX
+         J4l3W/In322LQ==
 From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
         <nfraprado@collabora.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>
@@ -41,9 +41,9 @@ Cc:     Chen-Yu Tsai <wenst@chromium.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 15/16] arm64: dts: mediatek: asurada: Add MT6359 PMIC
-Date:   Thu, 12 May 2022 16:56:01 -0400
-Message-Id: <20220512205602.158273-16-nfraprado@collabora.com>
+Subject: [PATCH v3 13/16] arm64: dts: mediatek: asurada: Enable XHCI
+Date:   Thu, 12 May 2022 16:55:59 -0400
+Message-Id: <20220512205602.158273-14-nfraprado@collabora.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220512205602.158273-1-nfraprado@collabora.com>
 References: <20220512205602.158273-1-nfraprado@collabora.com>
@@ -54,8 +54,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MT6359 is the primary PMIC present on the Asurada platform. Include its
-dtsi and configure properties specific for the platform.
+Enable XHCI controller on the Asurada platform. This allows the use of
+the USB ports, and therefore a rootfs can be loaded and a usable shell
+reached from a live USB image.
 
 Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
@@ -68,64 +69,27 @@ Tested-by: Chen-Yu Tsai <wenst@chromium.org>
 Changes in v2:
 - Added this patch
 
- .../boot/dts/mediatek/mt8192-asurada.dtsi     | 30 +++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-index dde4de27ec61..a53f7352f06e 100644
+index d9c9852339a8..ecae2730789e 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -5,6 +5,7 @@
-  */
- /dts-v1/;
- #include "mt8192.dtsi"
-+#include "mt6359.dtsi"
- #include <dt-bindings/gpio/gpio.h>
- 
- / {
-@@ -168,6 +169,31 @@ &i2c7 {
- 	pinctrl-0 = <&i2c7_pins>;
- };
- 
-+/* for CORE */
-+&mt6359_vgpu11_buck_reg {
-+	regulator-always-on;
-+};
-+
-+&mt6359_vgpu11_sshub_buck_reg {
-+	regulator-always-on;
-+	regulator-min-microvolt = <575000>;
-+	regulator-max-microvolt = <575000>;
-+};
-+
-+&mt6359_vrf12_ldo_reg {
-+	regulator-always-on;
-+};
-+
-+&mt6359_vufs_ldo_reg {
-+	regulator-always-on;
-+};
-+
-+&mt6359codec {
-+	mediatek,dmic-mode = <1>; /* one-wire */
-+	mediatek,mic-type-0 = <2>; /* DMIC */
-+	mediatek,mic-type-2 = <2>; /* DMIC */
-+};
-+
- &pcie {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pcie_pins>;
-@@ -559,6 +585,10 @@ pins-report-sw {
- 	};
- };
- 
-+&pmic {
-+	interrupts-extended = <&pio 214 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
- &spi1 {
+@@ -583,5 +583,13 @@ &uart0 {
  	status = "okay";
+ };
  
++&xhci {
++	status = "okay";
++
++	wakeup-source;
++	vusb33-supply = <&pp3300_g>;
++	vbus-supply = <&pp5000_a>;
++};
++
+ #include <arm/cros-ec-keyboard.dtsi>
+ #include <arm/cros-ec-sbs.dtsi>
 -- 
 2.36.1
 
