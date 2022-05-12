@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 02:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72BF6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 02:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235581AbiELCBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 22:01:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49404 "EHLO
+        id S235517AbiELCBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 22:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234184AbiELCBK (ORCPT
+        with ESMTP id S234184AbiELCBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 22:01:10 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F318C36E3A
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 19:01:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652320868; x=1683856868;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GsRj3Tw/Y+iM4xxRr6AIFhOLcxZVs59DJKNOXzVPb2I=;
-  b=hm3BhYLDbtQEDhTAUvhyLW94cvXzub+6kmdMHK6Hp11NQE1zIyQ7yLPF
-   vc703LLk4YM5hh4VwS9R/sreU+l9KAifJ4+jM8jBhXzkKYn4Ot6ixm4Tk
-   JYkhJ1dDe95xq+lSb4mGtypP/2QrSf58wJG6WSh9KnvMGI88iyncQ7gl5
-   tJ3WUQvfWWOXJuL3PWThmt11njtmTU3sZQQ6OGst0iZvdzbUJ2RXcx/hd
-   LDWRrDXR7gKVLuRSQkWz+VMjmvwmFuFMbMYUzbU8NXNXHCHAAU0b1TOxY
-   7PeJdcZsQbLXYscyH2OFZ0OUkhSMVxss5bwTdlz3X6bYRQSFasB98rv5p
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="249757355"
-X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="249757355"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 19:01:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="895595043"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 11 May 2022 19:01:06 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noy8X-000JpQ-Ii;
-        Thu, 12 May 2022 02:01:05 +0000
-Date:   Thu, 12 May 2022 10:00:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Borislav Petkov <bp@suse.de>
-Subject: [ammarfaizi2-block:stable/linux-stable-rc/queue/5.15 146/150]
- kernel/futex.o: warning: objtool: futex_atomic_op_inuser()+0xb8: unreachable
- instruction
-Message-ID: <202205120956.qLpGQurX-lkp@intel.com>
+        Wed, 11 May 2022 22:01:33 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0514C432;
+        Wed, 11 May 2022 19:01:27 -0700 (PDT)
+X-UUID: d9385e84e31444dfae259bba4c41b9f5-20220512
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:33386eec-26ac-493e-a459-34ec10e4aa16,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:faefae9,CLOUDID:da5a8727-a01c-4223-8f5a-12d972216e7b,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: d9385e84e31444dfae259bba4c41b9f5-20220512
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1040162746; Thu, 12 May 2022 10:00:44 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 12 May 2022 10:00:42 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 12 May 2022 10:00:40 +0800
+Message-ID: <40c12cdf833113405fce1146234db26e883eaf35.camel@mediatek.com>
+Subject: Re: [PATCH v4] dt-bindings: nvmem: convert mtk-efuse.txt to YAML
+ schema
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        Eddie Hung <eddie.hung@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>
+Date:   Thu, 12 May 2022 10:00:40 +0800
+In-Reply-To: <20220511151733.GA313710-robh@kernel.org>
+References: <20220509014521.10248-1-chunfeng.yun@mediatek.com>
+         <20220511151733.GA313710-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block stable/linux-stable-rc/queue/5.15
-head:   305e905f70311e1b49cc730931a19c3e364f4d8c
-commit: 45dc9d706619a6814e4063d5431483f94badb5a1 [146/150] x86: Add straight-line-speculation mitigation
-config: x86_64-randconfig-m001-20220509 (https://download.01.org/0day-ci/archive/20220512/202205120956.qLpGQurX-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/45dc9d706619a6814e4063d5431483f94badb5a1
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block stable/linux-stable-rc/queue/5.15
-        git checkout 45dc9d706619a6814e4063d5431483f94badb5a1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Wed, 2022-05-11 at 10:17 -0500, Rob Herring wrote:
+> On Mon, May 09, 2022 at 09:45:21AM +0800, Chunfeng Yun wrote:
+> > Convert mtk-efuse.txt to YAML schema mediatek,efuse.yaml
+> > 
+> > Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> > ---
+> > v4: fix duplicated unit-address in example;
+> >     drop reviewed-by Rob, due to changes;
+> > 
+> > v3: add reviewed-by Rob
+> > 
+> > v2:
+> >    1. remove description of subnodes which is covered by nvmem.yaml
+> > suggested by Rob
+> >    2. change the example which is commoner than mt8173's
+> 
+> I'm assuming this will be resent with all the changes from the other 
+> conversion posted[1].
+Yes, I'm doing it now, thanks
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> 
+> Rob
+> 
+> [1] 
+> https://lore.kernel.org/all/73b1feab3ecb20fef0339b322a61d63146b5790a.camel@mediatek.com/
 
-All warnings (new ones prefixed by >>):
-
->> kernel/futex.o: warning: objtool: futex_atomic_op_inuser()+0xb8: unreachable instruction
---
->> mm/madvise.o: warning: objtool: madvise_behavior()+0x69: unreachable instruction
---
->> kernel/bpf/btf.o: warning: objtool: __btf_resolve_size()+0x72: unreachable instruction
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
