@@ -2,109 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6289C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 15:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9304C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 15:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356028AbiELPhw (ORCPT
+        id S1356033AbiELPij (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 11:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
+        Thu, 12 May 2022 11:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356023AbiELPhu (ORCPT
+        with ESMTP id S1349137AbiELPih (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 11:37:50 -0400
-Received: from smtp1.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F9325B07C;
-        Thu, 12 May 2022 08:37:49 -0700 (PDT)
-Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id BA68B3C04C0;
-        Thu, 12 May 2022 17:37:47 +0200 (CEST)
-Received: from localhost.localdomain (10.72.94.11) by hi2exch02.adit-jv.com
- (10.72.92.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Thu, 12 May
- 2022 17:37:47 +0200
-From:   Eugeniu Rosca <erosca@de.adit-jv.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Rajat Jain <rajatja@google.com>, Andrew Lunn <andrew@lunn.ch>,
-        Chris Chiu <chris.chiu@canonical.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Naveen kumar Sunkari <naveenkumar.sunkari@in.bosch.com>,
-        Bhuvanesh Surachari <Bhuvanesh_Surachari@mentor.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Eugeniu Rosca <rosca.eugeniu@gmail.com>
-Subject: [PATCH v2] usb: hub: Simplify error and success path in port_over_current_notify
-Date:   Thu, 12 May 2022 17:37:14 +0200
-Message-ID: <1652369834-4480-1-git-send-email-erosca@de.adit-jv.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 12 May 2022 11:38:37 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B739525C2A8
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 08:38:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652369916; x=1683905916;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+C+zcQ9OMsRKzfxB09v5LYFDyAjdAYn83xmW14cew7Y=;
+  b=cY75drnqwgOWz3yXBUOhok/yZI5coV+KMl3APqIwOsyUQy0Wfz5N3Iyi
+   QCMQtclB16AGjQUi8GVJ/V2ibneH+AxQNSBPndaWcTBq0OfhU18/ch5aw
+   4myzp5DmP8ZFJB72gcyt9xtfXPklNiI43cqyh3KgrmKYOTlfxjGVxHo9e
+   evnH/IwW1PVwL2BPz9yoVKcGhtAnszHP9niE/SMJGX9nGIGajYijPvsVO
+   15PfZqpipGwzmv6RadFOXsAYIXKvlPtUVbg05ClOGQXt50CrbNrQf0XTc
+   q7T/FGWm0sJCWeldKs0KJu3EfybbSQawwMGfDV4XQuapdovynbwgaXTU1
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="269974072"
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="269974072"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 08:38:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="553814387"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 12 May 2022 08:38:33 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1npAtc-000Kd0-SB;
+        Thu, 12 May 2022 15:38:32 +0000
+Date:   Thu, 12 May 2022 23:38:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
+        Wei Fu <wefu@redhat.com>,
+        Liu Shaohua <liush@allwinnertech.com>,
+        Guo Ren <guoren@kernel.org>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>
+Subject: [ammarfaizi2-block:palmer/linux/riscv-d1 9/12]
+ arch/riscv/kernel/cpufeature.c:292:6: warning: variable 'cpu_apply_feature'
+ set but not used
+Message-ID: <202205122310.HMWyrLx7-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.72.94.11]
-X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
- hi2exch02.adit-jv.com (10.72.92.28)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bhuvanesh Surachari <Bhuvanesh_Surachari@mentor.com>
+tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-d1
+head:   a35707c3d850dda0ceefb75b1b3bd191921d5765
+commit: ff689fd21cb13098305bae3f8d0c0065df2e2fc1 [9/12] riscv: add RISC-V Svpbmt extension support
+config: riscv-randconfig-r033-20220512 (https://download.01.org/0day-ci/archive/20220512/202205122310.HMWyrLx7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 9519dacab7b8afd537811fc2abaceb4d14f4e16a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/ff689fd21cb13098305bae3f8d0c0065df2e2fc1
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-d1
+        git checkout ff689fd21cb13098305bae3f8d0c0065df2e2fc1
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
 
-kasprintf() returns NULL or valid pointer. Since kfree() can handle
-NULL pointer condition, simplify error and success paths in function
-port_over_current_notify() by removing multiple error path labels.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Bhuvanesh Surachari <Bhuvanesh_Surachari@mentor.com>
-Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
----
+All warnings (new ones prefixed by >>):
 
-v2:
- - [Greg Kroah-Hartman] Drop 'exit_path' and keep 'exit' instead
+>> arch/riscv/kernel/cpufeature.c:292:6: warning: variable 'cpu_apply_feature' set but not used [-Wunused-but-set-variable]
+           u32 cpu_apply_feature = 0;
+               ^
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   error: A dwo section may not contain relocations
+   fatal error: too many errors emitted, stopping now [-ferror-limit=]
+   1 warning and 20 errors generated.
 
-v1: https://lore.kernel.org/linux-usb/1652354127-3499-1-git-send-email-erosca@de.adit-jv.com/
----
- drivers/usb/core/hub.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 1460857026e0..4a06892f9774 100644
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -5511,7 +5511,7 @@ static void hub_port_connect_change(struct usb_hub *hub, int port1,
- /* Handle notifying userspace about hub over-current events */
- static void port_over_current_notify(struct usb_port *port_dev)
- {
--	char *envp[3];
-+	char *envp[3] = { NULL, NULL, NULL };
- 	struct device *hub_dev;
- 	char *port_dev_path;
- 
-@@ -5528,20 +5528,18 @@ static void port_over_current_notify(struct usb_port *port_dev)
- 
- 	envp[0] = kasprintf(GFP_KERNEL, "OVER_CURRENT_PORT=%s", port_dev_path);
- 	if (!envp[0])
--		goto exit_path;
-+		goto exit;
- 
- 	envp[1] = kasprintf(GFP_KERNEL, "OVER_CURRENT_COUNT=%u",
- 			port_dev->over_current_count);
- 	if (!envp[1])
- 		goto exit;
- 
--	envp[2] = NULL;
- 	kobject_uevent_env(&hub_dev->kobj, KOBJ_CHANGE, envp);
- 
--	kfree(envp[1]);
- exit:
-+	kfree(envp[1]);
- 	kfree(envp[0]);
--exit_path:
- 	kfree(port_dev_path);
- }
- 
+vim +/cpu_apply_feature +292 arch/riscv/kernel/cpufeature.c
+
+   286	
+   287	void __init_or_module riscv_cpufeature_patch_func(struct alt_entry *begin,
+   288							  struct alt_entry *end,
+   289							  unsigned int stage)
+   290	{
+   291		u32 cpu_req_feature = cpufeature_probe(stage);
+ > 292		u32 cpu_apply_feature = 0;
+
 -- 
-2.36.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
