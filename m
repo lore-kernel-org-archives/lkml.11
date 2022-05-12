@@ -2,135 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BCEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356873AbiELRKa (ORCPT
+        id S1356890AbiELRKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
+        Thu, 12 May 2022 13:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349317AbiELRK2 (ORCPT
+        with ESMTP id S1356888AbiELRKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:10:28 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522C2269EE3;
-        Thu, 12 May 2022 10:10:27 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 12AA91F38C;
-        Thu, 12 May 2022 17:10:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652375426; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/9XAcRo+E2h3CTio5LOn32n4GFy+zXlhWLwgRN3/9n8=;
-        b=juGeGmWI5D/vC/Yy/fmA8IV+naKTrFWfTQxB7lDgG1rqPrZV2erbm76n3Po3TwcPYWVk4Q
-        F/KfzgtkQzT5/v2OrVJ1MQHTJDVf966rNOuSNMt91kWppLpcDyrQl3lWWR627330+0cbbF
-        em6T9V4IefCmIxUh+GGL9mKN6CkD/4o=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652375426;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/9XAcRo+E2h3CTio5LOn32n4GFy+zXlhWLwgRN3/9n8=;
-        b=aqqg2OameJ2jGwEdBptM+puRW+2mj5eziSKcu1DbMb5SnbDNg+8lihAebI3AR6LI+7pGSs
-        WIgDYz8xRBexHUCw==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DB9FA2C141;
-        Thu, 12 May 2022 17:10:25 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 31752A062A; Thu, 12 May 2022 19:10:25 +0200 (CEST)
-Date:   Thu, 12 May 2022 19:10:25 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     "yukuai (C)" <yukuai3@huawei.com>
-Cc:     Jan Kara <jack@suse.cz>, paolo.valente@linaro.org, axboe@kernel.dk,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH -next 2/2] block, bfq: make bfq_has_work() more accurate
-Message-ID: <20220512171025.blstxod6aphulctm@quack3.lan>
-References: <20220510131629.1964415-1-yukuai3@huawei.com>
- <20220510131629.1964415-3-yukuai3@huawei.com>
- <20220511140832.w6eqphw5uepre5ws@quack3.lan>
- <67425a7b-f9e1-d7a9-9ec8-158f9f8ce13e@huawei.com>
+        Thu, 12 May 2022 13:10:42 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A036021B5
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:10:40 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 35B681E80D6B;
+        Fri, 13 May 2022 01:05:03 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id VMlKyIXNQHXH; Fri, 13 May 2022 01:05:00 +0800 (CST)
+Received: from [172.30.21.106] (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id AB25F1E80D22;
+        Fri, 13 May 2022 01:05:00 +0800 (CST)
+Subject: Re: [PATCH] mm: change "char *bdi_unknown_name" to "char
+ bdi_unknown_name[]"
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220512082637.24649-1-liqiong@nfschina.com>
+ <Yn0n23MRQ+wD1ZWN@FVFYT0MHHV2J.usts.net>
+From:   liqiong <liqiong@nfschina.com>
+Message-ID: <f4317b85-0a7b-913c-6d45-9f8b7c65e40b@nfschina.com>
+Date:   Fri, 13 May 2022 01:10:36 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <67425a7b-f9e1-d7a9-9ec8-158f9f8ce13e@huawei.com>
+In-Reply-To: <Yn0n23MRQ+wD1ZWN@FVFYT0MHHV2J.usts.net>
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 12-05-22 09:30:16, yukuai (C) wrote:
-> On 2022/05/11 22:08, Jan Kara wrote:
-> > On Tue 10-05-22 21:16:29, Yu Kuai wrote:
-> > > bfq_has_work() is using busy_queues currently, which is not accurate
-> > > because bfq_queue is busy doesn't represent that it has requests. Since
-> > > bfqd aready has a counter 'queued' to record how many requests are in
-> > > bfq, use it instead of busy_queues.
-> > > 
-> > > Noted that bfq_has_work() can be called with 'bfqd->lock' held, thus the
-> > > lock can't be held in bfq_has_work() to protect 'bfqd->queued'.
-> > > 
-> > > Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> > 
-> > So did you find this causing any real problem? Because bfq queue is
-> > accounted among busy queues once bfq_add_bfqq_busy() is called. And that
-> > happens once a new request is inserted into the queue so it should be very
-> > similar to bfqd->queued.
-> > 
-> > 								Honza
-> 
-> Hi,
-> 
-> The related problem is described here:
-> 
-> https://lore.kernel.org/all/20220510112302.1215092-1-yukuai3@huawei.com/
-> 
-> The root cause of the panic is a linux-block problem, however, it can
-> be bypassed if bfq_has_work() is accurate. On the other hand,
-> unnecessary run_work will be triggered if bfqq stays busy:
-> 
-> __blk_mq_run_hw_queue
->  __blk_mq_sched_dispatch_requests
->   __blk_mq_do_dispatch_sched
->    if (!bfq_has_work())
->     break;
->    blk_mq_delay_run_hw_queues -> run again after 3ms
 
-Ah, I see. So it is the other way around than I thought. Due to idling
-bfq_tot_busy_queues() can be greater than 0 even if there are no requests
-to dispatch. Indeed. OK, the patch makes sense. But please use WRITE_ONCE
-for the updates of bfqd->queued. Otherwise the READ_ONCE does not really
-make sense (it can still result in some bogus value due to compiler
-optimizations on the write side).
 
-								Honza
+在 2022年05月12日 23:29, Muchun Song 写道:
+> On Thu, May 12, 2022 at 04:26:37PM +0800, liqiong wrote:
+>> "char bdi_unknown_nam[]" string form declares a single variable.
+>> It is better then "char *bdi_unknown_name" which creates two
+>> variables.
+>>
+> Sorry, I do not understand what you are saying here.  Creating
+> two variables means what?
+>
+> Thanks.
 
-> > > ---
-> > >   block/bfq-iosched.c | 4 ++--
-> > >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-> > > index 61750696e87f..1d2f8110c26b 100644
-> > > --- a/block/bfq-iosched.c
-> > > +++ b/block/bfq-iosched.c
-> > > @@ -5063,11 +5063,11 @@ static bool bfq_has_work(struct blk_mq_hw_ctx *hctx)
-> > >   	struct bfq_data *bfqd = hctx->queue->elevator->elevator_data;
-> > >   	/*
-> > > -	 * Avoiding lock: a race on bfqd->busy_queues should cause at
-> > > +	 * Avoiding lock: a race on bfqd->queued should cause at
-> > >   	 * most a call to dispatch for nothing
-> > >   	 */
-> > >   	return !list_empty_careful(&bfqd->dispatch) ||
-> > > -		bfq_tot_busy_queues(bfqd) > 0;
-> > > +		READ_ONCE(bfqd->queued);
-> > >   }
-> > >   static struct request *__bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
-> > > -- 
-> > > 2.31.1
-> > > 
+Hi there，
+
+The string form of "char *" creates two variables in the final assembly output, 
+a static string, and a char pointer to the static string.
+
+Use "objdump -S -D *.o", can find out the static string occurring at 
+"Contents of section .rodata".
+
+
+>  
+>> Signed-off-by: liqiong <liqiong@nfschina.com>
+>> ---
+>>  mm/backing-dev.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/mm/backing-dev.c b/mm/backing-dev.c
+>> index 7176af65b103..4982ccc63536 100644
+>> --- a/mm/backing-dev.c
+>> +++ b/mm/backing-dev.c
+>> @@ -20,7 +20,7 @@ struct backing_dev_info noop_backing_dev_info;
+>>  EXPORT_SYMBOL_GPL(noop_backing_dev_info);
+>>  
+>>  static struct class *bdi_class;
+>> -static const char *bdi_unknown_name = "(unknown)";
+>> +static const char bdi_unknown_name[] = "(unknown)";
+>>  
+>>  /*
+>>   * bdi_lock protects bdi_tree and updates to bdi_list. bdi_list has RCU
+>> -- 
+>> 2.11.0
+>>
+>>
+
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+李力琼 <13524287433>
+上海市浦东新区海科路99号中科院上海高等研究院3号楼3楼
+
