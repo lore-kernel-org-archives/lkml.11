@@ -2,396 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF8EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:00:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E39DBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354875AbiELOAs (ORCPT
+        id S1354881AbiELOBS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
+        Thu, 12 May 2022 10:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354887AbiELOAl (ORCPT
+        with ESMTP id S1354932AbiELOBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:00:41 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193E925AFBA
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:00:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652364029; x=1683900029;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=MnBBuPlzlcmYGLUURRcUQR/B+Xu86mdNzBeu/09swZY=;
-  b=dyJXTjOAb57ExbJz8yIVH5sP8nqh13W3mfUs39cL4zaicFBJ6Ln7jyTo
-   1yoVK0Rt9ND+0xII+rKfyBGsZQhtIZc5B2Dc8v7TbL+zqpcnPo18l9y6i
-   6gKgMWMvioRifIw8cXMPns3fw+rDMLGRupNcKPJ3wgks3qNUPGm0azuMy
-   xhRl7JYnmtmVuZHkRG8q203PRs6OE+xsSvOQMZ9mQA9PgDGOl1Y93aBac
-   XlQnLvFu0vSzTgZzjrYQbo5IPpggmW1U5YEvcA0EcEQ6yayGiatsKSN+7
-   Q9KIeBCN7JNvmgVm2wnh+xsGgubcordK4wZbm9vI2SELKXHEh/G7HVcym
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="330610872"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="330610872"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 07:00:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="572534828"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 12 May 2022 07:00:26 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1np9Mf-000KVd-9s;
-        Thu, 12 May 2022 14:00:25 +0000
-Date:   Thu, 12 May 2022 21:59:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:irq/urgent] BUILD SUCCESS
- 792ea6a074ae7ea5ab6f1b8b31f76bb0297de66c
-Message-ID: <627d12d3.iJyEzJSNEqq43nQ6%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 12 May 2022 10:01:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7D92FFC7;
+        Thu, 12 May 2022 07:01:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 500D2B82833;
+        Thu, 12 May 2022 14:01:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E1EBC385B8;
+        Thu, 12 May 2022 14:01:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652364062;
+        bh=vG0c5NdOF8Y08/Dxnr4xnnOdio+reSdLGOl6h5nExNw=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=K1mXObEY11mAWpCV7a6Aahlj/2UZ+KVxVjlSXY7WmHIkR7dBAp9XvpRiw/ouNfIka
+         tRn7sOrb/ervDy459RSe4ddukj6B5Cwkhu2VrWe3UPSje2B6o1WCoJTj4EkIr8AGdW
+         XOtdX7ggwmJETB3sYiPhyF1lQSvNN0J2qU92IFPzk5jIcMFCrpXxt8J2iF1zS+BJrs
+         tnrLcXgOyupU8WgzLHoagRXsag5cZSJZsVSq8Om3zJvK28CBXcT6vY2xuGElbrheNx
+         iPR/wIhDvXmmtAC1jvFhWEqTFfdoWLEjbK2aj7WdwCnbm5Tb505WMmCy3Q++pV+rIs
+         NjTMs1Xj0dGig==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 999C85C032C; Thu, 12 May 2022 07:01:01 -0700 (PDT)
+Date:   Thu, 12 May 2022 07:01:01 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
+Subject: Re: [PATCH v2 1/1] rcu/nocb: Add an option to ON/OFF an offloading
+ from RT context
+Message-ID: <20220512140101.GM1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220511085703.101596-1-urezki@gmail.com>
+ <Ynx61yH8RFkaXG6M@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <Ynx61yH8RFkaXG6M@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/urgent
-branch HEAD: 792ea6a074ae7ea5ab6f1b8b31f76bb0297de66c  genirq: Remove WARN_ON_ONCE() in generic_handle_domain_irq()
+On Thu, May 12, 2022 at 03:11:19AM +0000, Joel Fernandes wrote:
+> On Wed, May 11, 2022 at 10:57:03AM +0200, Uladzislau Rezki (Sony) wrote:
+> > Introduce a RCU_NOCB_CPU_CB_BOOST kernel option. So a user can
+> > decide if an offloading has to be done in a high-prio context or
+> > not. Please note an option depends on RCU_NOCB_CPU and RCU_BOOST
+> > parameters. For CONFIG_PREEMPT_RT kernel both RCU_BOOST and the
+> > RCU_NOCB_CPU_CB_BOOST are active by default.
+> > 
+> > This patch splits the CONFIG_RCU_BOOST config into two peaces:
+> > a) boosting preempted RCU readers and the kthreads which are
+> >    directly responsible for driving expedited grace periods
+> >    forward;
+> > b) boosting offloading-kthreads in a way that their scheduling
+> >    class are changed from SCHED_NORMAL to SCHED_FIFO.
+> > 
+> > The main reason of such split is, for example on Android there
+> > are some workloads which require fast expedited grace period to
+> > be done whereas offloading in RT context can lead to starvation
+> > and hogging a CPU for a long time what is not acceptable for
+> > latency sensitive environment. For instance:
+> > 
+> > <snip>
+> > <...>-60 [006] d..1 2979.028717: rcu_batch_start: rcu_preempt CBs=34619 bl=270
+> > <snip>
+> > 
+> > invoking 34 619 callbacks will take time thus making other CFS
+> > tasks waiting in run-queue to be starved due to such behaviour.
+> > 
+> > v1 -> v2:
+> > - fix the comment about the rcuc/rcub/rcuop;
+> > - check the kthread_prio against zero value;
+> > - by default the RCU_NOCB_CPU_CB_BOOST is ON for PREEMPT_RT.
+> > 
+> > Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+> 
+> Acked-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 
-elapsed time: 2215m
+Thank you both, and I will apply Joel's ack on the next rebase.
 
-configs tested: 313
-configs skipped: 4
+						Thanx, Paul
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-arm64                               defconfig
-i386                 randconfig-c001-20220509
-i386                          randconfig-c001
-sh                               j2_defconfig
-sh                         ap325rxa_defconfig
-sh                      rts7751r2d1_defconfig
-arm                       imx_v6_v7_defconfig
-powerpc                       ppc64_defconfig
-xtensa                  cadence_csp_defconfig
-sh                           se7705_defconfig
-ia64                            zx1_defconfig
-arm                         lpc18xx_defconfig
-sh                          rsk7269_defconfig
-mips                          rb532_defconfig
-powerpc                 mpc834x_mds_defconfig
-powerpc64                           defconfig
-sh                        edosk7760_defconfig
-arc                          axs101_defconfig
-h8300                       h8s-sim_defconfig
-xtensa                generic_kc705_defconfig
-mips                       capcella_defconfig
-xtensa                         virt_defconfig
-um                                  defconfig
-m68k                       m5249evb_defconfig
-sh                          urquell_defconfig
-ia64                         bigsur_defconfig
-arm                            pleb_defconfig
-xtensa                          iss_defconfig
-powerpc                       eiger_defconfig
-mips                           xway_defconfig
-powerpc                      pasemi_defconfig
-arm                        mini2440_defconfig
-arm                        multi_v7_defconfig
-m68k                        m5272c3_defconfig
-sh                          rsk7201_defconfig
-arm                         at91_dt_defconfig
-arc                        nsim_700_defconfig
-powerpc                 linkstation_defconfig
-arm                       omap2plus_defconfig
-ia64                             alldefconfig
-sh                          rsk7203_defconfig
-arm                        spear6xx_defconfig
-h8300                            allyesconfig
-arm                           h3600_defconfig
-arm                          iop32x_defconfig
-arm                         cm_x300_defconfig
-um                               alldefconfig
-parisc64                         alldefconfig
-m68k                            mac_defconfig
-powerpc                        warp_defconfig
-powerpc                     taishan_defconfig
-sh                          r7785rp_defconfig
-sh                                  defconfig
-powerpc                  storcenter_defconfig
-sparc                       sparc64_defconfig
-arm                       aspeed_g5_defconfig
-ia64                        generic_defconfig
-xtensa                  nommu_kc705_defconfig
-arm                           stm32_defconfig
-powerpc                    sam440ep_defconfig
-sh                           se7619_defconfig
-sparc64                             defconfig
-arm                            zeus_defconfig
-nios2                            alldefconfig
-sh                           se7721_defconfig
-sh                           sh2007_defconfig
-i386                                defconfig
-m68k                             allmodconfig
-powerpc                     sequoia_defconfig
-sh                          polaris_defconfig
-sh                            hp6xx_defconfig
-sparc                            alldefconfig
-arc                         haps_hs_defconfig
-arm                        keystone_defconfig
-openrisc                            defconfig
-arm                          pxa910_defconfig
-riscv             nommu_k210_sdcard_defconfig
-sh                        sh7763rdp_defconfig
-sh                   sh7724_generic_defconfig
-powerpc                mpc7448_hpc2_defconfig
-h8300                    h8300h-sim_defconfig
-nios2                            allyesconfig
-m68k                          multi_defconfig
-sh                          sdk7780_defconfig
-s390                             allyesconfig
-nios2                         10m50_defconfig
-openrisc                 simple_smp_defconfig
-sh                         ecovec24_defconfig
-mips                  maltasmvp_eva_defconfig
-powerpc                 mpc8540_ads_defconfig
-sparc                       sparc32_defconfig
-sh                           se7750_defconfig
-arm                          exynos_defconfig
-s390                                defconfig
-arm                         lubbock_defconfig
-csky                                defconfig
-s390                       zfcpdump_defconfig
-arc                          axs103_defconfig
-sh                           se7751_defconfig
-parisc                           alldefconfig
-arc                      axs103_smp_defconfig
-m68k                       m5208evb_defconfig
-powerpc                      pcm030_defconfig
-arc                    vdk_hs38_smp_defconfig
-arm                           sunxi_defconfig
-sh                         apsh4a3a_defconfig
-xtensa                    xip_kc705_defconfig
-mips                         tb0226_defconfig
-powerpc                 canyonlands_defconfig
-mips                            ar7_defconfig
-xtensa                    smp_lx200_defconfig
-sh                         microdev_defconfig
-nios2                               defconfig
-powerpc                      tqm8xx_defconfig
-mips                           gcw0_defconfig
-arm                          simpad_defconfig
-xtensa                       common_defconfig
-powerpc                 mpc837x_mds_defconfig
-sh                          kfr2r09_defconfig
-sh                            migor_defconfig
-powerpc                     tqm8555_defconfig
-powerpc                      cm5200_defconfig
-arm                            mps2_defconfig
-parisc                generic-32bit_defconfig
-alpha                            allyesconfig
-m68k                        mvme147_defconfig
-powerpc                        cell_defconfig
-ia64                                defconfig
-powerpc                      ppc6xx_defconfig
-m68k                          amiga_defconfig
-m68k                             alldefconfig
-sh                          lboxre2_defconfig
-mips                        bcm47xx_defconfig
-arm                         axm55xx_defconfig
-arm                           tegra_defconfig
-sh                        sh7757lcr_defconfig
-sh                           se7722_defconfig
-openrisc                  or1klitex_defconfig
-m68k                        m5407c3_defconfig
-riscv                               defconfig
-xtensa                           alldefconfig
-powerpc                   currituck_defconfig
-sh                     sh7710voipgw_defconfig
-sh                          r7780mp_defconfig
-m68k                        stmark2_defconfig
-m68k                       bvme6000_defconfig
-sh                           se7206_defconfig
-sh                            shmin_defconfig
-ia64                          tiger_defconfig
-sh                        apsh4ad0a_defconfig
-arm                         assabet_defconfig
-mips                            gpr_defconfig
-microblaze                          defconfig
-powerpc                      ep88xc_defconfig
-powerpc                    adder875_defconfig
-powerpc                         ps3_defconfig
-ia64                      gensparse_defconfig
-arm                          lpd270_defconfig
-arc                           tb10x_defconfig
-arc                            hsdk_defconfig
-powerpc                  iss476-smp_defconfig
-powerpc                 mpc834x_itx_defconfig
-arm                             rpc_defconfig
-riscv                    nommu_k210_defconfig
-sh                           se7724_defconfig
-powerpc                     tqm8548_defconfig
-openrisc                         alldefconfig
-powerpc                     tqm8541_defconfig
-powerpc                       maple_defconfig
-sh                           se7712_defconfig
-x86_64               randconfig-c001-20220509
-arm                  randconfig-c002-20220509
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220512
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                             allyesconfig
-m68k                                defconfig
-arc                              allyesconfig
-alpha                               defconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64               randconfig-a015-20220509
-x86_64               randconfig-a012-20220509
-x86_64               randconfig-a016-20220509
-x86_64               randconfig-a014-20220509
-x86_64               randconfig-a013-20220509
-x86_64               randconfig-a011-20220509
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                 randconfig-a011-20220509
-i386                 randconfig-a013-20220509
-i386                 randconfig-a016-20220509
-i386                 randconfig-a015-20220509
-i386                 randconfig-a014-20220509
-i386                 randconfig-a012-20220509
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220509
-s390                 randconfig-r044-20220509
-riscv                randconfig-r042-20220509
-s390                 randconfig-r044-20220512
-riscv                randconfig-r042-20220512
-arc                  randconfig-r043-20220512
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-x86_64               randconfig-c007-20220509
-i386                 randconfig-c001-20220509
-powerpc              randconfig-c003-20220509
-riscv                randconfig-c006-20220509
-mips                 randconfig-c004-20220509
-arm                  randconfig-c002-20220509
-s390                 randconfig-c005-20220509
-powerpc              randconfig-c003-20220510
-x86_64                        randconfig-c007
-riscv                randconfig-c006-20220510
-mips                 randconfig-c004-20220510
-i386                          randconfig-c001
-arm                  randconfig-c002-20220510
-s390                 randconfig-c005-20220510
-s390                 randconfig-c005-20220512
-powerpc              randconfig-c003-20220512
-riscv                randconfig-c006-20220512
-mips                 randconfig-c004-20220512
-arm                  randconfig-c002-20220512
-mips                        bcm63xx_defconfig
-arm                           omap1_defconfig
-mips                     cu1830-neo_defconfig
-powerpc                      acadia_defconfig
-powerpc                    mvme5100_defconfig
-arm                                 defconfig
-arm                       imx_v4_v5_defconfig
-powerpc                     ppa8548_defconfig
-powerpc                 mpc836x_mds_defconfig
-arm                         socfpga_defconfig
-powerpc                     akebono_defconfig
-powerpc                     powernv_defconfig
-powerpc                          allmodconfig
-mips                       rbtx49xx_defconfig
-mips                        maltaup_defconfig
-mips                      maltaaprp_defconfig
-mips                        omega2p_defconfig
-arm                       netwinder_defconfig
-powerpc                          g5_defconfig
-powerpc                     tqm8560_defconfig
-hexagon                             defconfig
-powerpc                 xes_mpc85xx_defconfig
-mips                          ath79_defconfig
-powerpc                     skiroot_defconfig
-arm                          ixp4xx_defconfig
-arm                  colibri_pxa300_defconfig
-arm                       versatile_defconfig
-arm                         shannon_defconfig
-arm                       aspeed_g4_defconfig
-powerpc                 mpc836x_rdk_defconfig
-arm                          collie_defconfig
-arm                          pxa168_defconfig
-x86_64               randconfig-a006-20220509
-x86_64               randconfig-a002-20220509
-x86_64               randconfig-a001-20220509
-x86_64               randconfig-a004-20220509
-x86_64               randconfig-a005-20220509
-x86_64               randconfig-a003-20220509
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                 randconfig-a004-20220509
-i386                 randconfig-a006-20220509
-i386                 randconfig-a002-20220509
-i386                 randconfig-a003-20220509
-i386                 randconfig-a001-20220509
-i386                 randconfig-a005-20220509
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220509
-hexagon              randconfig-r041-20220509
-hexagon              randconfig-r045-20220512
-hexagon              randconfig-r041-20220512
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> thanks,
+> 
+>  - Joel
+> 
+> 
+> > ---
+> >  kernel/rcu/Kconfig     | 14 ++++++++++++++
+> >  kernel/rcu/tree.c      |  6 +++++-
+> >  kernel/rcu/tree_nocb.h |  3 ++-
+> >  3 files changed, 21 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+> > index 27aab870ae4c..a4ed7b5e2b75 100644
+> > --- a/kernel/rcu/Kconfig
+> > +++ b/kernel/rcu/Kconfig
+> > @@ -275,6 +275,20 @@ config RCU_NOCB_CPU_DEFAULT_ALL
+> >  	  Say Y here if you want offload all CPUs by default on boot.
+> >  	  Say N here if you are unsure.
+> >  
+> > +config RCU_NOCB_CPU_CB_BOOST
+> > +	bool "Offload RCU callback from real-time kthread"
+> > +	depends on RCU_NOCB_CPU && RCU_BOOST
+> > +	default y if PREEMPT_RT
+> > +	help
+> > +	  Use this option to offload callbacks from the SCHED_FIFO context
+> > +	  to make the process faster. As a side effect of this approach is
+> > +	  a latency especially for the SCHED_OTHER tasks which will not be
+> > +	  able to preempt an offloading kthread. That latency depends on a
+> > +	  number of callbacks to be invoked.
+> > +
+> > +	  Say Y here if you want to set RT priority for offloading kthreads.
+> > +	  Say N here if you are unsure.
+> > +
+> >  config TASKS_TRACE_RCU_READ_MB
+> >  	bool "Tasks Trace RCU readers use memory barriers in user and idle"
+> >  	depends on RCU_EXPERT && TASKS_TRACE_RCU
+> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> > index 9dc4c4e82db6..1c3852b1e0c8 100644
+> > --- a/kernel/rcu/tree.c
+> > +++ b/kernel/rcu/tree.c
+> > @@ -154,7 +154,11 @@ static void sync_sched_exp_online_cleanup(int cpu);
+> >  static void check_cb_ovld_locked(struct rcu_data *rdp, struct rcu_node *rnp);
+> >  static bool rcu_rdp_is_offloaded(struct rcu_data *rdp);
+> >  
+> > -/* rcuc/rcub/rcuop kthread realtime priority */
+> > +/*
+> > + * rcuc/rcub/rcuop kthread realtime priority. The "rcuop"
+> > + * real-time priority(enabling/disabling) is controlled by
+> > + * the extra CONFIG_RCU_NOCB_CPU_CB_BOOST configuration.
+> > + */
+> >  static int kthread_prio = IS_ENABLED(CONFIG_RCU_BOOST) ? 1 : 0;
+> >  module_param(kthread_prio, int, 0444);
+> >  
+> > diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> > index 60cc92cc6655..fa8e4f82e60c 100644
+> > --- a/kernel/rcu/tree_nocb.h
+> > +++ b/kernel/rcu/tree_nocb.h
+> > @@ -1315,8 +1315,9 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
+> >  	if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo CB kthread, OOM is now expected behavior\n", __func__))
+> >  		goto end;
+> >  
+> > -	if (kthread_prio)
+> > +	if (IS_ENABLED(CONFIG_RCU_NOCB_CPU_CB_BOOST) && kthread_prio)
+> >  		sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
+> > +
+> >  	WRITE_ONCE(rdp->nocb_cb_kthread, t);
+> >  	WRITE_ONCE(rdp->nocb_gp_kthread, rdp_gp->nocb_gp_kthread);
+> >  	return;
+> > -- 
+> > 2.30.2
+> > 
