@@ -2,109 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8923FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345273AbiELDrO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 23:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
+        id S239900AbiELDrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 23:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235557AbiELDqg (ORCPT
+        with ESMTP id S1345052AbiELDrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 23:46:36 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2708F4CD58;
-        Wed, 11 May 2022 20:46:30 -0700 (PDT)
-X-UUID: e0461275fb874a39a4565019260ace91-20220512
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:b219b1be-cc66-49f6-a9af-1ab19be213d4,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:bc1924f6-13a6-4067-b017-3b2864319134,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: e0461275fb874a39a4565019260ace91-20220512
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 795297249; Thu, 12 May 2022 11:46:24 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 12 May 2022 11:46:22 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 May 2022 11:46:20 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v4, 0/3] add h264 decoder driver for mt8186
-Date:   Thu, 12 May 2022 11:46:17 +0800
-Message-ID: <20220512034620.30500-1-yunfei.dong@mediatek.com>
+        Wed, 11 May 2022 23:47:07 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F389D8083
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:47:01 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id c9so3730269plh.2
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:47:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D+CQFJULOsaKE0QcIymzWY3BtTqWCy7rPPABpYb/J1M=;
+        b=V6m4b5QbEyPqUQT952TkN1fe+g3GgOV+kFIWzyY1oMQFKHkfgfWQ58fT8E71UzAcOj
+         B9JH5Yr0uQcRlS0LXngocF3ZB9ajfdAme9gnHDfq+9muG0Uh08SKbteTOT+CEmTJT5QB
+         ospSG9tr2GCwhOtZEcIeTdfxuNz96J+LTxGcV705LlSSTWc0xs5++KBKJfpaIPTAKbuJ
+         iuUMgNZ9pDXRlgaKmEulgnyJqbTdIMGUFwn86XnnbguMoqKPwAiHAKzfxEC0mC8ErYw2
+         cJj7A/zyW+zeddcQbUE1lJv/yw1tY69DPKXdakQYe4f14GAze66j6k21R3jbBN7DzWWL
+         bY3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D+CQFJULOsaKE0QcIymzWY3BtTqWCy7rPPABpYb/J1M=;
+        b=hMvKxLIdMHqyN4h/4xV6HPSYTp+xeO+rNKCMAxiRRBzzyK43Jfsz1NxfKrove0+kIO
+         eOwU6d0QAfeS6CX++hwphzz8miDWyJtIex37j8h9Pd1VBDm1icxL8QmV9FprWVEa3IjF
+         DMHw9J+LaoRcUODZ3ZDJcN9xR8bE1KdQfQMxhtqsdXeQKGcFglXCoYbwTVt5UY8m+ZWc
+         QZSCguKhr2v1GUIegwefdBhf4IRN+XYdoBSyBQBTcOKN/DmiCNIYC0/gqCdZsyfOKZeM
+         DTfU/kPAOalbmPk8s7kWBiYOKOZAN1KA1uw+beortec5q6VI7kBQm3wG/JKuahQVOAK0
+         1VWw==
+X-Gm-Message-State: AOAM533icaevs/gWGnln4nTip8VBI+WX7O5M1i6YrYOcdgo0CsaPkCQg
+        vhDPh7BLVkksYX0KbnB9y0A=
+X-Google-Smtp-Source: ABdhPJxJ0fEoJq+s06+6zSP/2UThvmCVCffCFNC9l/cXRG01NkbOeVNWx/SjxNS3bito8G0wUcOMLw==
+X-Received: by 2002:a17:902:b698:b0:158:faee:442f with SMTP id c24-20020a170902b69800b00158faee442fmr29203392pls.75.1652327220523;
+        Wed, 11 May 2022 20:47:00 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id 10-20020a17090a174a00b001d5f22845bdsm962677pjm.1.2022.05.11.20.46.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 20:47:00 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Daniel Palmer <daniel@thingy.jp>,
+        Romain Perier <romain.perier@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] ARM: mstar: Fix refcount leaks
+Date:   Thu, 12 May 2022 07:46:51 +0400
+Message-Id: <20220512034652.61134-1-linmq006@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Firstly, add mt8186 compatible and private data, then add document for
-compatible "mediatek,mt8186-vcodec-dec". For mt8186 is single core
-architecture, need to add new interface for h264 hardware decoder.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Patche 1 add mt8186 compatible and private data.
-Patche 2 add mt8186 compatible document.
-Patche 3 add h264 single core driver.
+Fixes: 5919eec0f092 ("ARM: mstar: SMP support")
+Fixes: 312b62b6610c ("ARM: mstar: Add machine for MStar/Sigmastar Armv7 SoCs")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
-This patch depends on "support for MT8192 decoder"[1]
+ arch/arm/mach-mstar/mstarv7.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-[1]  https://patchwork.kernel.org/project/linux-mediatek/cover/20220512021950.29087-1-yunfei.dong@mediatek.com/
----
-changed with v3:
-- fix __iomem not reasonable, align share memory to dram.
-changed with v2:
-- fix sparse and smatch check fail for patch 3
-changed with v1:
-- rebase driver to the latest media_stage.
----
-Yunfei Dong (3):
-  dt-bindings: media: mediatek: vcodec: Adds decoder dt-bindings for
-    mt8186
-  media: mediatek: vcodec: Support MT8186
-  media: mediatek: vcodec: add h264 decoder driver for mt8186
-
- .../media/mediatek,vcodec-subdev-decoder.yaml |   4 +-
- .../platform/mediatek/vcodec/mtk_vcodec_dec.h |   1 +
- .../mediatek/vcodec/mtk_vcodec_dec_drv.c      |   4 +
- .../vcodec/mtk_vcodec_dec_stateless.c         |  19 ++
- .../vcodec/vdec/vdec_h264_req_multi_if.c      | 177 +++++++++++++++++-
- 5 files changed, 203 insertions(+), 2 deletions(-)
-
+diff --git a/arch/arm/mach-mstar/mstarv7.c b/arch/arm/mach-mstar/mstarv7.c
+index 274c4f0df270..3176998817d2 100644
+--- a/arch/arm/mach-mstar/mstarv7.c
++++ b/arch/arm/mach-mstar/mstarv7.c
+@@ -86,6 +86,7 @@ static int mstarv7_boot_secondary(unsigned int cpu, struct task_struct *idle)
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "mstar,smpctrl");
+ 	smpctrl = of_iomap(np, 0);
++	of_node_put(np);
+ 
+ 	if (!smpctrl)
+ 		return -ENODEV;
+@@ -120,6 +121,7 @@ static void __init mstarv7_init(void)
+ 		soc_mb = mstarv7_mb;
+ 	else
+ 		pr_warn("Failed to install memory barrier, DMA will be broken!\n");
++	of_node_put(np);
+ }
+ 
+ DT_MACHINE_START(MSTARV7_DT, "MStar/Sigmastar Armv7 (Device Tree)")
 -- 
-2.18.0
+2.25.1
 
