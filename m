@@ -2,190 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EAEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B97C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379467AbiEMKYF (ORCPT
+        id S1379485AbiEMKYI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 06:24:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
+        Fri, 13 May 2022 06:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379423AbiEMKXi (ORCPT
+        with ESMTP id S1379422AbiEMKXi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 06:23:38 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFD9179082;
-        Fri, 13 May 2022 03:23:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652437400; x=1683973400;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1j3mQDFzHkRtao/qz9fQguS4i6C5ShtEta7nphXQdnc=;
-  b=R0Ln0GrKzG3V28azowEzuagtCsgsAYEqelXkn2GaITY1EGd3UsBi7gOw
-   VZi8AdQiN+Xal9TYxPPL359AvGzZhJVj0khVAnvBL9Vj2v/7B20sWslAk
-   dU81uGcJCKNi/AkSLM2Xm5nIMZUFqS30CDK3iKyAa0tHFKpn9rmjGyKZ5
-   9LY/YQNW8uACd2gTbZipJy/YYHUO09Ud6KPD5h3ZfG4PQsXcUbO4G0Y4J
-   BlST3rkJh5M5MR7GcVbUftpj8HaaZm6kNGOLdIZKq5jUo3Z2UqXK0jkyw
-   lZmDslR3DizBkwB68iIh1gpMQx7ZdvtoEu+tH46w6+LJB2WAAN0usceJq
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="158946903"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 May 2022 03:23:18 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 13 May 2022 03:23:18 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 13 May 2022 03:23:13 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Russell King <linux@armlinux.org.uk>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Marek Vasut <marex@denx.de>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [RFC Patch net-next v2 6/9] net: dsa: microchip: move get_strings to ksz_common
-Date:   Fri, 13 May 2022 15:52:16 +0530
-Message-ID: <20220513102219.30399-7-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220513102219.30399-1-arun.ramadoss@microchip.com>
-References: <20220513102219.30399-1-arun.ramadoss@microchip.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E99D178560
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 03:23:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D61AB82D74
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:23:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E211C34100;
+        Fri, 13 May 2022 10:23:16 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="p0hyA9bC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1652437394;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8oam4uQpj40FXUylUvCQDj4pkGlt2TutOpdMK9XnVVA=;
+        b=p0hyA9bCLfWirBqsLr28cFLNt3fvOgsRbfypam++KexYG4fYHBEQXjs4DgkYpD99uIgxLB
+        A/7U+xhG6rJIo3gSiJrFkEs0Eo7ZkM37oJyvmva5U5696Mixq9D104yuY1Xfov3+I84mVZ
+        5ym9BWS+x7TtUwImc3qt+GcgfNQ91kQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4506914a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 13 May 2022 10:23:14 +0000 (UTC)
+Date:   Fri, 13 May 2022 12:23:13 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Dominik Brodowski <linux@dominikbrodowski.net>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] random: avoid init'ing twice in credit race
+Message-ID: <Yn4xke0zvIU3bmsu@zx2c4.com>
+References: <20220509121409.529788-1-Jason@zx2c4.com>
+ <Yn35bNS6RlElAGYh@owl.dominikbrodowski.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yn35bNS6RlElAGYh@owl.dominikbrodowski.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ksz8795 and ksz9477 uses the same algorithm for copying the ethtool
-strings. Hence moved to ksz_common to remove the redundant code.
+Hi Dominik,
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c    | 14 +-------------
- drivers/net/dsa/microchip/ksz9477.c    | 17 +----------------
- drivers/net/dsa/microchip/ksz_common.c | 16 ++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h |  2 ++
- 4 files changed, 20 insertions(+), 29 deletions(-)
+On Fri, May 13, 2022 at 08:23:40AM +0200, Dominik Brodowski wrote:
+> Am Mon, May 09, 2022 at 02:14:08PM +0200 schrieb Jason A. Donenfeld:
+> > Since all changes of crng_init now go through credit_init_bits(), we can
+> > fix a long standing race in which two concurrent callers of
+> > credit_init_bits() have the new bit count >= some threshold, but are
+> > doing so with crng_init as a lower threshold, checked outside of a lock,
+> > resulting in crng_reseed() or similar being called twice.
+> 
+> Sidenote: crng_reseed() did manage quite fine if called twice in short
+> order.
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 3490b6072641..251048ffd3d4 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -923,18 +923,6 @@ static u32 ksz8_sw_get_phy_flags(struct dsa_switch *ds, int port)
- 	return 0;
- }
- 
--static void ksz8_get_strings(struct dsa_switch *ds, int port,
--			     u32 stringset, uint8_t *buf)
--{
--	struct ksz_device *dev = ds->priv;
--	int i;
--
--	for (i = 0; i < dev->info->mib_cnt; i++) {
--		memcpy(buf + i * ETH_GSTRING_LEN,
--		       dev->info->mib_names[i].string, ETH_GSTRING_LEN);
--	}
--}
--
- static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
- {
- 	u8 data;
-@@ -1424,7 +1412,7 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.phylink_get_caps	= ksz8_get_caps,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
- 	.port_enable		= ksz_enable_port,
--	.get_strings		= ksz8_get_strings,
-+	.get_strings		= ksz_get_strings,
- 	.get_ethtool_stats	= ksz_get_ethtool_stats,
- 	.get_sset_count		= ksz_sset_count,
- 	.port_bridge_join	= ksz_port_bridge_join,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index d4729f0dd831..7cffc3388106 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -358,21 +358,6 @@ static int ksz9477_phy_write16(struct dsa_switch *ds, int addr, int reg,
- 	return 0;
- }
- 
--static void ksz9477_get_strings(struct dsa_switch *ds, int port,
--				u32 stringset, uint8_t *buf)
--{
--	struct ksz_device *dev = ds->priv;
--	int i;
--
--	if (stringset != ETH_SS_STATS)
--		return;
--
--	for (i = 0; i < dev->info->mib_cnt; i++) {
--		memcpy(buf + i * ETH_GSTRING_LEN,
--		       dev->info->mib_names[i].string, ETH_GSTRING_LEN);
--	}
--}
--
- static void ksz9477_cfg_port_member(struct ksz_device *dev, int port,
- 				    u8 member)
- {
-@@ -1341,7 +1326,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.phy_write		= ksz9477_phy_write16,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
- 	.port_enable		= ksz_enable_port,
--	.get_strings		= ksz9477_get_strings,
-+	.get_strings		= ksz_get_strings,
- 	.get_ethtool_stats	= ksz_get_ethtool_stats,
- 	.get_sset_count		= ksz_sset_count,
- 	.port_bridge_join	= ksz_port_bridge_join,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index bca9f3823cdf..18160543090c 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -418,6 +418,22 @@ void ksz_get_stats64(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(ksz_get_stats64);
- 
-+void ksz_get_strings(struct dsa_switch *ds, int port,
-+		     u32 stringset, uint8_t *buf)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	int i;
-+
-+	if (stringset != ETH_SS_STATS)
-+		return;
-+
-+	for (i = 0; i < dev->info->mib_cnt; i++) {
-+		memcpy(buf + i * ETH_GSTRING_LEN,
-+		       dev->info->mib_names[i].string, ETH_GSTRING_LEN);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(ksz_get_strings);
-+
- void ksz_update_port_member(struct ksz_device *dev, int port)
- {
- 	struct ksz_port *p = &dev->ports[port];
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 6b968369bf49..0c1dc87c8176 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -209,6 +209,8 @@ int ksz_port_mdb_del(struct dsa_switch *ds, int port,
- 		     const struct switchdev_obj_port_mdb *mdb,
- 		     struct dsa_db db);
- int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy);
-+void ksz_get_strings(struct dsa_switch *ds, int port,
-+		     u32 stringset, uint8_t *buf);
- 
- /* Common register access functions */
- 
--- 
-2.33.0
+With regards to crng_finialize, it did, but not with regards to
+prematurely emptying patches and all that. IOW, buggy but not that bad.
 
+> 
+> > In order to fix this, we can use the original cmpxchg value of the bit
+> > count, and only change crng_init when the bit count transitions from
+> > below a threshold to meeting the threshold.
+> > 
+> > Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> 
+> 	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+> 
+> Thanks,
+> 	Dominik
+
+Jason
