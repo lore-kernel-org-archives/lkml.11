@@ -2,87 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A30CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89066C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378618AbiEMIv0 (ORCPT
+        id S1378672AbiEMIva (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 04:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50534 "EHLO
+        Fri, 13 May 2022 04:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378638AbiEMIvQ (ORCPT
+        with ESMTP id S1378617AbiEMIv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 04:51:16 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7405B54684
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:51:15 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb7d137101so67053217b3.12
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:51:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Ogkiciib/RsRhAqfGoo2vDrriNiFsttxrZQ5YNjWEI0=;
-        b=bS7n+AukRnAUU513mYC294Cf8qvSX1SGa68AIFAl5nnKbMaGMrmcUWkFzGuq6QJeFk
-         YXDecED/n95KUg1dN68x1KMI1x53SW/LH/ZgWDeajbJritTOGvlNUzurd3lRPsyajMY9
-         exDSZW3rBh1iyWpuh2HR7GNmoWXUqhP4Z2PpxuhD/oQPGG9WOX3pXoUBjgMo6UUz/KmE
-         CWEnsqnrskHLoY2Pg5xdCVgF/xeDms6Vo18FGIKzqK0wDGxB5fTeQDRR2gs3FliVvP6R
-         bNjdnXN8+7yn6gywt/PlIVqlH35RTwcqAs2A2QVEg27yfTabnZ9JOc7fOmyoAdFWaViA
-         myqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Ogkiciib/RsRhAqfGoo2vDrriNiFsttxrZQ5YNjWEI0=;
-        b=lCWAyK4YSv1WSLShBvlym1UdTNCwQdSec+UyJbc02eJ3AQV629NS19Rzb3CVPEZfS8
-         gPAgbY2OPPtO0UO/53IW99/+Jr4sh1Jkoe73dx6q7gOZGR1flsuSVl3po3ZJG+v6nei6
-         yiPWbrq/bjBvFAFJYRzuWMJMXuN+otb3aoaIgT+DKj7KIs9VRo4vsYZ1SBXAsa1mfcAz
-         9T0Zt+vtmUUnedLBXBDDkYznGnFOOL4nzvLdH752kEHD26IpKc2UmCKx5i6XUSwSo3xd
-         urCkPIwgFZJlyQ2ZjupB9JD4U11qfRzWnZ8MW+UhNXUc9suS+AaT58/n/b2BsoMNhzgX
-         F/CQ==
-X-Gm-Message-State: AOAM532u+14vV7PI10PHvTBD3PikL13fGtaT+88OvsP7Mau8moIlSEqZ
-        em8j+b7sfDuHBYvyXneSH9vqLW+xyz2XmQ==
-X-Google-Smtp-Source: ABdhPJzp3yI7OZJ/tfM4kGbjDbgboSKe10uoAItfLbvfPEIl5FDcs9Sc0+JzktHJQETpmgVJHY7TnMtLUffYQg==
-X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
- (user=davidgow job=sendgmr) by 2002:a81:4bd5:0:b0:2fb:8277:98d8 with SMTP id
- y204-20020a814bd5000000b002fb827798d8mr4518250ywa.376.1652431874729; Fri, 13
- May 2022 01:51:14 -0700 (PDT)
-Date:   Fri, 13 May 2022 16:51:08 +0800
-Message-Id: <20220513085108.3567310-1-davidgow@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [PATCH] kunit: tool: Use qemu-system-i386 for i386 runs
-From:   David Gow <davidgow@google.com>
-To:     Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Cc:     David Gow <davidgow@google.com>, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 13 May 2022 04:51:26 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C74E13CA27;
+        Fri, 13 May 2022 01:51:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652431884; x=1683967884;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vbiwJ3oECFneiZfDrZnlastQvaXlmzzrksRp4lU3pjo=;
+  b=IacgqthOW9r1NQKGQfu7ejX5X0s/xDrhPRDzRaCVSpePnbOPFG04c7fW
+   FBHarerNP1HCaQ2AKy2ALtla4qn3a2dnVOIVTuAiSEuUDT/cFy23SkSVZ
+   Q51qr+/kyTTNpZ2cvIHxxPyi+n0Xxv4eTonbK2qgdWP+a4pZZXRcbCUy9
+   Xbp1lFNENva0T/sgEFGyqbZuKrSc/PDZjcMYjGNuTwPCw2RgQSXr83odV
+   fz79C66cJntyodHc9JK73YZuT/TCXDPoeV4hqM+4OUrfxzHUkoeQCvdRu
+   OajucK3g658sbWbOs1t7rnpOezJkQ35+6gk+M5HSY7uPioeoJN+nP9RNZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="333290234"
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="333290234"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 01:51:22 -0700
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="740078163"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 01:51:18 -0700
+Received: by lahna (sSMTP sendmail emulation); Fri, 13 May 2022 11:51:16 +0300
+Date:   Fri, 13 May 2022 11:51:16 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
+        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 3/5] pinctrl: baytrail: make irq_chip immutable
+Message-ID: <Yn4cBK1/F9VhNZ1I@lahna>
+References: <20220512173921.8210-1-andriy.shevchenko@linux.intel.com>
+ <20220512173921.8210-3-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512173921.8210-3-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We're currently using the x86_64 qemu for i386 builds. While this is not
-incorrect, it's probably more sensible to use the i386 one, which will
-at least fail properly if we accidentally were to build a 64-bit kernel.
+On Thu, May 12, 2022 at 08:39:19PM +0300, Andy Shevchenko wrote:
+> Since recently, the kernel is nagging about mutable irq_chips:
+> 
+>    "not an immutable chip, please consider fixing it!"
+> 
+> Drop the unneeded copy, flag it as IRQCHIP_IMMUTABLE, add the new
+> helper functions and call the appropriate gpiolib functions.
+> 
+> While at it, switch to use hwirq variable instead of offset for
+> the sake of consistency.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Signed-off-by: David Gow <davidgow@google.com>
----
- tools/testing/kunit/qemu_configs/i386.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/kunit/qemu_configs/i386.py b/tools/testing/kunit/qemu_configs/i386.py
-index 52b80be40e4b..4463ebefd567 100644
---- a/tools/testing/kunit/qemu_configs/i386.py
-+++ b/tools/testing/kunit/qemu_configs/i386.py
-@@ -4,7 +4,7 @@ QEMU_ARCH = QemuArchParams(linux_arch='i386',
- 			   kconfig='''
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y''',
--			   qemu_arch='x86_64',
-+			   qemu_arch='i386',
- 			   kernel_path='arch/x86/boot/bzImage',
- 			   kernel_command_line='console=ttyS0',
- 			   extra_qemu_params=[])
--- 
-2.36.0.550.gb090851708-goog
-
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
