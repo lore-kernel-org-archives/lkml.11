@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D83CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381166AbiEMOcs (ORCPT
+        id S1381172AbiEMOc4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
+        Fri, 13 May 2022 10:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380867AbiEMO2X (ORCPT
+        with ESMTP id S1380989AbiEMO31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:28:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145EF5EBEB;
-        Fri, 13 May 2022 07:27:36 -0700 (PDT)
+        Fri, 13 May 2022 10:29:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72CB66AF1;
+        Fri, 13 May 2022 07:27:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 961EF62154;
-        Fri, 13 May 2022 14:27:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F965C34117;
-        Fri, 13 May 2022 14:27:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53234B8306F;
+        Fri, 13 May 2022 14:27:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D834C34100;
+        Fri, 13 May 2022 14:27:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452055;
-        bh=l0wXDFVrQkp+DaaqJRFPdaUiGUGaqXl4hB6va4+NAQs=;
+        s=korg; t=1652452061;
+        bh=LhGzbSLV3+nIk8fIqT3DC2GjdY5oWA403ZV6ONLDG9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTSFOvf4OPMwD/MNeMApfgwb4P1pRKDPBoaHtvWRkmUX6mxf4Gzu+8v1nJjXOx2Le
-         8MfLtrJ/fabmYNvdZn3TT3WPoIUEN7zKA80OiP0AfJwPpFXr1uTyX7P6lGXyFE2Wj6
-         096O/lDWMBOT0IRo10IA4rULOqZJ8UalUXn80l/4=
+        b=IYdhuQu19d6yA9EMfHJTc4x7LOF9EpkPcviIbzIvf8qNxYwZ4VnV6Q/3dJAu/pTDe
+         lKm72utyPeNLW1cFrP3cTNuis0nsBu+VvBNfGCF03K1/vwI/NvVgSuVAXJ6ybjjQY1
+         ApJJozDuGVh5NWwdbB76MVpRXIo+VaGXQA/BaHj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 05/10] nfp: bpf: silence bitwise vs. logical OR warning
-Date:   Fri, 13 May 2022 16:23:49 +0200
-Message-Id: <20220513142228.464257127@linuxfoundation.org>
+        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.10 07/10] Bluetooth: Fix the creation of hdev->name
+Date:   Fri, 13 May 2022 16:23:51 +0200
+Message-Id: <20220513142228.523314007@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142228.303546319@linuxfoundation.org>
 References: <20220513142228.303546319@linuxfoundation.org>
@@ -50,61 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Itay Iellin <ieitayie@gmail.com>
 
-commit 8a64ef042eab8a6cec04a6c79d44d1af79b628ca upstream.
+commit 103a2f3255a95991252f8f13375c3a96a75011cd upstream.
 
-A new warning in clang points out two places in this driver where
-boolean expressions are being used with a bitwise OR instead of a
-logical one:
+Set a size limit of 8 bytes of the written buffer to "hdev->name"
+including the terminating null byte, as the size of "hdev->name" is 8
+bytes. If an id value which is greater than 9999 is allocated,
+then the "snprintf(hdev->name, sizeof(hdev->name), "hci%d", id)"
+function call would lead to a truncation of the id value in decimal
+notation.
 
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
-        reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                             ||
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: note: cast one or both operands to int to silence this warning
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
-        reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                             ||
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: note: cast one or both operands to int to silence this warning
-2 errors generated.
+Set an explicit maximum id parameter in the id allocation function call.
+The id allocation function defines the maximum allocated id value as the
+maximum id parameter value minus one. Therefore, HCI_MAX_ID is defined
+as 10000.
 
-The motivation for the warning is that logical operations short circuit
-while bitwise operations do not. In this case, it does not seem like
-short circuiting is harmful so implement the suggested fix of changing
-to a logical operation to fix the warning.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1479
-Reported-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Link: https://lore.kernel.org/r/20211018193101.2340261-1-nathan@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Itay Iellin <ieitayie@gmail.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_asm.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/bluetooth/hci_core.h |    3 +++
+ net/bluetooth/hci_core.c         |    6 +++---
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/netronome/nfp/nfp_asm.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_asm.c
-@@ -196,7 +196,7 @@ int swreg_to_unrestricted(swreg dst, swr
- 	}
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -35,6 +35,9 @@
+ /* HCI priority */
+ #define HCI_PRIO_MAX	7
  
- 	reg->dst_lmextn = swreg_lmextn(dst);
--	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-+	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
++/* HCI maximum id value */
++#define HCI_MAX_ID 10000
++
+ /* HCI Core structures */
+ struct inquiry_data {
+ 	bdaddr_t	bdaddr;
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3718,10 +3718,10 @@ int hci_register_dev(struct hci_dev *hde
+ 	 */
+ 	switch (hdev->dev_type) {
+ 	case HCI_PRIMARY:
+-		id = ida_simple_get(&hci_index_ida, 0, 0, GFP_KERNEL);
++		id = ida_simple_get(&hci_index_ida, 0, HCI_MAX_ID, GFP_KERNEL);
+ 		break;
+ 	case HCI_AMP:
+-		id = ida_simple_get(&hci_index_ida, 1, 0, GFP_KERNEL);
++		id = ida_simple_get(&hci_index_ida, 1, HCI_MAX_ID, GFP_KERNEL);
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -3730,7 +3730,7 @@ int hci_register_dev(struct hci_dev *hde
+ 	if (id < 0)
+ 		return id;
  
- 	return 0;
- }
-@@ -277,7 +277,7 @@ int swreg_to_restricted(swreg dst, swreg
- 	}
+-	sprintf(hdev->name, "hci%d", id);
++	snprintf(hdev->name, sizeof(hdev->name), "hci%d", id);
+ 	hdev->id = id;
  
- 	reg->dst_lmextn = swreg_lmextn(dst);
--	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-+	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
- 
- 	return 0;
- }
+ 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
 
 
