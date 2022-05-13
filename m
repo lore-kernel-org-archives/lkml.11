@@ -2,104 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16AC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D5CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379310AbiEMKOa convert rfc822-to-8bit (ORCPT
+        id S1379324AbiEMKQt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 06:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
+        Fri, 13 May 2022 06:16:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbiEMKO3 (ORCPT
+        with ESMTP id S1379055AbiEMKQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 06:14:29 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FB3F880EC
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 03:14:26 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-320-3fGZbADZPVKzjU4bvG8Wfg-1; Fri, 13 May 2022 11:14:24 +0100
-X-MC-Unique: 3fGZbADZPVKzjU4bvG8Wfg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Fri, 13 May 2022 11:14:23 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Fri, 13 May 2022 11:14:23 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Thomas Gleixner' <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-CC:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Rick Edgecombe" <rick.p.edgecombe@intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [RFCv2 05/10] x86/mm: Provide untagged_addr() helper
-Thread-Topic: [RFCv2 05/10] x86/mm: Provide untagged_addr() helper
-Thread-Index: AQHYZlYbkN98ikiNG0u1ah6OjFcYAq0ck+jA
-Date:   Fri, 13 May 2022 10:14:23 +0000
-Message-ID: <6f206d410f5b49789e986166ea473a6a@AcuMS.aculab.com>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511022751.65540-7-kirill.shutemov@linux.intel.com>
- <87a6bmx5lt.ffs@tglx> <Yn0YdPNG/Q3lf+4G@hirez.programming.kicks-ass.net>
- <87sfpevl1g.ffs@tglx> <87wneqtkb8.ffs@tglx>
-In-Reply-To: <87wneqtkb8.ffs@tglx>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Fri, 13 May 2022 06:16:47 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC73E21265;
+        Fri, 13 May 2022 03:16:45 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3AQNL8NaA205LTVBVW/8Lhw5YqxClBgxIJ4g17XOL?=
+ =?us-ascii?q?fUwHt1j131D0GnDFNWGiPPveKamr3e4xwat+1/EkP7JGAx9UxeLYW3SszFioV8?=
+ =?us-ascii?q?6IpJjg4wn/YZnrUdouaJK5ex512huLocYZkHhcwmj/3auK79SMkjPnRLlbBILW?=
+ =?us-ascii?q?s1h5ZFFYMpBgJ2UoLd94R2uaEsPDha++/kYqaT/73ZDdJ7wVJ3lc8sMpvnv/AU?=
+ =?us-ascii?q?MPa41v0tnRmDRxCUcS3e3M9VPrzLonpR5f0rxU9IwK0ewrD5OnREmLx9BFrBM6?=
+ =?us-ascii?q?nk6rgbwsBRbu60Qqm0yIQAvb9xEMZ4HFaPqUTbZLwbW9GgjOGj5Zz2f1DqJ6xV?=
+ =?us-ascii?q?Rw0eKbLnYzxVjEBSX0kZPYfp+SvzX+X9Jb7I1f9W2fjx+VGCEAwIJEC/eB2ESd?=
+ =?us-ascii?q?C+JQwLT8XaQuYr+a3xq+rDOhqmsknasLsOes3sGlI1izCALAqTPjrR6TM+M8d0?=
+ =?us-ascii?q?DA7rt5BEOyYZMcDbzdrKhPabHVnPlYRFYJ7n+qygHT7WyNXpUjTpqct5WXXigt?=
+ =?us-ascii?q?r39DQ3HD9EjCRbZwN2B/G+SSdpCKkaiz2/ee3kVKtmk9ATMeW9c8jZL8vKQ=3D?=
+ =?us-ascii?q?=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A52oAfqGdTyWl+cNApLqE1MeALOsnbusQ8zAX?=
+ =?us-ascii?q?PiFKOHhom6mj+vxG88506faKslwssR0b+OxoW5PwJE80l6QFgrX5VI3KNGbbUQ?=
+ =?us-ascii?q?CTXeNfBOXZowHIKmnX8+5x8eNaebFiNduYNzNHpPe/zA6mM9tI+rW6zJw=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="124213173"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 13 May 2022 18:16:44 +0800
+Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
+        by cn.fujitsu.com (Postfix) with ESMTP id 0A2454D1716F;
+        Fri, 13 May 2022 18:16:39 +0800 (CST)
+Received: from G08CNEXCHPEKD08.g08.fujitsu.local (10.167.33.83) by
+ G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Fri, 13 May 2022 18:16:39 +0800
+Received: from localhost.localdomain (10.167.215.54) by
+ G08CNEXCHPEKD08.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Fri, 13 May 2022 18:16:38 +0800
+From:   Xiao Yang <yangx.jy@fujitsu.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
+CC:     <mgross@linux.intel.com>, <bp@suse.de>, <tglx@linutronix.de>,
+        Xiao Yang <yangx.jy@fujitsu.com>
+Subject: [PATCH] x86/speculation: Add missing srbds=off in the document of 'mitigations='
+Date:   Fri, 13 May 2022 18:16:37 +0800
+Message-ID: <20220513101637.216487-1-yangx.jy@fujitsu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 0A2454D1716F.A79BC
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: yangx.jy@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner
-> Sent: 13 May 2022 00:15
-...
-> But whatever we chose, it's sad, that we need to have support for
-> interfaces which swallow any pointer (user or kernel) because otherwise
-> this really boils down to a single OR resp. AND operation plus the
-> according mov to retrieve the mask.
+Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-Are there any of those left?
-Most will have gone with setfs(KERNEL_DS) removal.
-Almost all code has to know whether an address is user
-or kernel - the value can't be used because of architectures
-that use the same address values in user and kernel.
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 3f1cc5e317ed..93e9b15f1cf4 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3103,6 +3103,7 @@
+ 					       mds=off [X86]
+ 					       tsx_async_abort=off [X86]
+ 					       kvm.nx_huge_pages=off [X86]
++					       srbds=off [X86,INTEL]
+ 					       no_entry_flush [PPC]
+ 					       no_uaccess_flush [PPC]
+ 
+-- 
+2.21.0
 
-How often do addresses actually need de-tagging?
-Probably only code that is looking for page table
-entries for virtual addresses?
-How often does that happen for user addresses?
 
-If the hardware is ignoring the bits then you don't
-need to remove them before memory accesses.
-That would include all userspace accesses.
-Clearly access_ok() has to work with tagged addresses,
-but that doesn't require the tag be masked off.
-It can just check the transfer doesn't cross 1u<<63.
-It (probably) just requires the fault handler to treat
-non-canonical address faults as page faults.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
 
