@@ -2,120 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 025DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378164AbiEMIXC (ORCPT
+        id S1378169AbiEMIXv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 04:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33724 "EHLO
+        Fri, 13 May 2022 04:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378091AbiEMIWw (ORCPT
+        with ESMTP id S1378091AbiEMIXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 04:22:52 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC5B262672;
-        Fri, 13 May 2022 01:22:49 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id c24so3730149lfv.11;
-        Fri, 13 May 2022 01:22:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bHr/LN3gH4J18SZqSPlyS5LBwKeIhV3WXsMlgOi6f+4=;
-        b=XMgBiIJSaZ7yHO4F9FFyh4HHsDzgwZIc4ROUHt/XnJTZwDoCGLlUf0jmBOhMlJUneq
-         PdynIO8s2ISkn1/WAhVMYiuz1CIU/JH64vo0cGEkqvx2d8tJM7M3aY+P2guwTeVDqq2e
-         aDs9vLoKwGFgLXH7VFbdoRofSmEdjAg9pXXuBy2rJ0JQDJzRw28lrMb0HWdW69GBG7Ro
-         PbB42o+ip83alHR8cSOYN5OlMKVp3LwEM2klfmNpRUABn+3nLswfeRyvIJLRM3kQnMWe
-         FAm89zG5JnMnPy8tRcReAxncvZ4huoqs7gjMBERp2M9AWUJj5ANU37+rxoItLT6jq0Yz
-         pIdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bHr/LN3gH4J18SZqSPlyS5LBwKeIhV3WXsMlgOi6f+4=;
-        b=uN6KQaUXbtPmKI9zmAaV5tBMxYqf9SJ4jI73Db0qGXU16Q74YuYyA5BWJrIHktcXRH
-         Xuxa9YBFtLcTHDLLY5Qvqb9Zr5RxT8KSqbGaA0NvWPfS/4sF/1mv6RfSok8r+/LiNl/I
-         HnQibfPEHHuRCHOaNwReTzD/r5YxRvN1TFT0+/T/B0d/lrVQ4qLkY7blhopKxA6ZJicg
-         rqtMS5RPDSx5QNOdNHzU0AnStkb/bZ2QEvTwcA9k9aXkb7zM65mnIWpZtibdT3NBOa8V
-         Eb1s7HO4sl2ti0heKO1ju+Ck+76dTGB5+DVKAo8PPEssT/Rt3Sy2r5Z1oQsXqBH5qME7
-         +fyg==
-X-Gm-Message-State: AOAM5332KAGSY/BbTddvNPc7Y+HyXODZV0K+f+w3E2spRBpxgcaVaHuq
-        5bWeLDk5vYYROA+rjbSGxKi4ftWsjoM=
-X-Google-Smtp-Source: ABdhPJx1GDgivsFZ/N+yg7hu65wIxi09RSSRjKzQnH/8QUBVM9jo2ssm4vEaZeluX4loQWBMs2fudg==
-X-Received: by 2002:ac2:5f84:0:b0:471:fd0f:a6e7 with SMTP id r4-20020ac25f84000000b00471fd0fa6e7mr2589134lfe.41.1652430167053;
-        Fri, 13 May 2022 01:22:47 -0700 (PDT)
-Received: from [192.168.1.103] ([31.173.80.171])
-        by smtp.gmail.com with ESMTPSA id n2-20020a195502000000b0047255d21164sm286121lfe.147.2022.05.13.01.22.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 01:22:46 -0700 (PDT)
-Subject: Re: [PATCH v3 13/23] ata: libahci: Extend port-cmd flags set with
- port capabilities
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
- <20220511231810.4928-14-Sergey.Semin@baikalelectronics.ru>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <887a7537-5400-f3e2-235c-033871d413bc@gmail.com>
-Date:   Fri, 13 May 2022 11:22:44 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Fri, 13 May 2022 04:23:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05B025B076;
+        Fri, 13 May 2022 01:23:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ED1562010;
+        Fri, 13 May 2022 08:23:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7369C34114;
+        Fri, 13 May 2022 08:23:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652430226;
+        bh=VdFOgS93MTxgXl8MYQIAwcaYqU9bLXsKmrW93/ntJg4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PfQaWywtP3MmwhELVywMZUOkmEL1ASj8IdxGcQw4A2AK8y9PTl2RpYUycHBziE6oZ
+         cfkbD35954X0w5scVzxeuNVU1Rr/4C1Qe9uFsQfSmcvBEJIuRk8mPRpHaQIJMLTqFu
+         5PCYI3bam5smrDfPvBAjEN0zYO3IyeYQPaR1Blco1qIoBjRZDME7+NyYPBK1ckpyGZ
+         Z2tjR6wNNnsVyJTMzOI31w4Sz2l8+yhRHqOYOzBWL1g2qqDLP4G3pW9Gb3RRDKmObm
+         PNW2e2G+67QipmYeuIZKfOh1qikOHSFLcwR09yvtIG0MaUtlL6lxODo20wuyNhDdeL
+         nW68QlqAnl4Qg==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1npQaO-003DpF-F4;
+        Fri, 13 May 2022 10:23:44 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Subject: [PATCH] media: atomisp: don't pass a pointer to a local variable
+Date:   Fri, 13 May 2022 10:23:43 +0200
+Message-Id: <671749e03ec7b4d7adf044745c0c55acf1a02358.1652430219.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-In-Reply-To: <20220511231810.4928-14-Sergey.Semin@baikalelectronics.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/12/22 2:18 AM, Serge Semin wrote:
+As warned by gcc 12.1:
 
-> Currently not all of the Port-specific capabilities listed in the
-> PORT_CMD-enumeration. Let's extend that set with the Cold Presence
-> Detection and Mechanical Presence Switch attached to the Port flags [1] so
-> to closeup the set of the platform-specific port-capabilities flags.  Note
-> these flags are supposed to be set by the platform firmware if there is
-> one. Alternatively as we are about to do they can be set by means of the
-> OF properties.
-> 
-> While at it replace PORT_IRQ_DEV_ILCK with PORT_IRQ_DEV_MPS and fix the
+	drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c: In function 'ia_css_rmgr_acq_vbuf':
+	drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c:275:33: error: storing the address of local variable 'h' in '*handle' [-Werror=dangling-pointer=]
+	  275 |                         *handle = &h;
+	      |                         ~~~~~~~~^~~~
+	drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c:257:40: note: 'h' declared here
+	  257 |         struct ia_css_rmgr_vbuf_handle h;
+	      |                                        ^
+	drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c:257:40: note: 'handle' declared here
+	cc1: all warnings being treated as errors
 
-   Your code has PORT_IRQ_DMPS instead...
+The logic uses a temporary struct to update the handler, but,
+instead of copying the value to the pointer sent by the caller, it
+replaces it with the content with a local variable. That's wrong, and
+may lead the caller to use a weird value.
 
-> comment there. In accordance with [2] that IRQ flag is supposed to
-> indicate the state of the signal coming from the Mechanical Presence
-> Switch.
-> 
-> [1] Serial ATA AHCI 1.3.1 Specification, p.27
-> [2] Serial ATA AHCI 1.3.1 Specification, p.7
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> ---
->  drivers/ata/ahci.h | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-> index 7d834deefeb9..f501531bd1b3 100644
-> --- a/drivers/ata/ahci.h
-> +++ b/drivers/ata/ahci.h
-> @@ -138,7 +138,7 @@ enum {
->  	PORT_IRQ_BAD_PMP	= (1 << 23), /* incorrect port multiplier */
->  
->  	PORT_IRQ_PHYRDY		= (1 << 22), /* PhyRdy changed */
-> -	PORT_IRQ_DEV_ILCK	= (1 << 7), /* device interlock */
-> +	PORT_IRQ_DMPS		= (1 << 7), /* mechanical presence status */
->  	PORT_IRQ_CONNECT	= (1 << 6), /* port connect change status */
->  	PORT_IRQ_SG_DONE	= (1 << 5), /* descriptor processed */
->  	PORT_IRQ_UNK_FIS	= (1 << 4), /* unknown FIS rx'd */
-[...]
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
+ .../staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c    | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-MBR, Sergey
+diff --git a/drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c b/drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c
+index d96aaa4bc75d..39604752785b 100644
+--- a/drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c
++++ b/drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr_vbuf.c
+@@ -254,7 +254,7 @@ void rmgr_pop_handle(struct ia_css_rmgr_vbuf_pool *pool,
+ void ia_css_rmgr_acq_vbuf(struct ia_css_rmgr_vbuf_pool *pool,
+ 			  struct ia_css_rmgr_vbuf_handle **handle)
+ {
+-	struct ia_css_rmgr_vbuf_handle h;
++	struct ia_css_rmgr_vbuf_handle h = { 0 };
+ 
+ 	if ((!pool) || (!handle) || (!*handle)) {
+ 		IA_CSS_LOG("Invalid inputs");
+@@ -272,7 +272,7 @@ void ia_css_rmgr_acq_vbuf(struct ia_css_rmgr_vbuf_pool *pool,
+ 			h.size = (*handle)->size;
+ 			/* release ref to current buffer */
+ 			ia_css_rmgr_refcount_release_vbuf(handle);
+-			*handle = &h;
++			**handle = h;
+ 		}
+ 		/* get new buffer for needed size */
+ 		if ((*handle)->vptr == 0x0) {
+-- 
+2.36.1
+
