@@ -2,159 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7788C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E191C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378010AbiEMIDL (ORCPT
+        id S1378050AbiEMIGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 04:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55530 "EHLO
+        Fri, 13 May 2022 04:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239375AbiEMIDE (ORCPT
+        with ESMTP id S1378045AbiEMIGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 04:03:04 -0400
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2123.outbound.protection.outlook.com [40.107.117.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BC23DDC5;
-        Fri, 13 May 2022 01:03:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DtBi8XOKOALn7oLnqKtttlVVFQUUiJUs74CmtOP2VzdyV9lEY13hvzGbp9mskIZ8tP5irdokXjl2aKlL9F95KqiOdTOwwk0ZmrKhRpNusTLX9rFLDNpPms31rfpwI5wIBTBnqLo/X/x03Fsjrs6dmYJHFbNnefy4IowYwiW3rfPkvMVEdKjw6JUYDXek5UhDIzQnT85/A09sNHOCp1xdB9yViC/9KBOCmYUO8K5hOTlGT+OQlxkqrApfGrXodZ3Dy3sCgkRm4fj8i1CPaoUfrNItdiw+aesDQqYJkZgmAB61AkdRB3XfdeBl1Cl9jf/+UGs+f0vmb2+pVbjRcmc1xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ftuoKR8cFbjd9A3d19hoFCCkwTdPeGOIEhXGq0fmT4s=;
- b=FNRTk2zo2Kmo7DkdD6LY9srWjRakS+cKzPxCop0BSxtkBPxM6utuJ57Ex3sB6PEwMRi/XeuYhvzQl1xwHS7hGz+vbQskxZE1+na5v3kDmhI8n43+kJxta1Ui+AzkAh76HBH5B1571EsXddJg9ftvHFI2EdH459zk8FNxqoITKf1EDehWQthcoCSPul33eHBMd8OxxwrCMhlpfFXIgg4EpGzEj4C+9f1mPecHnD0yqL/VGmjMIlu2dbwiotl+IDD+MNsL8OQFILDRcPzG/MVrY46RKNendqBqvVANbDP/MpWlSG4XohnABcPWByyijaxkuzQEyxWTpVk3cKArWQhEUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ftuoKR8cFbjd9A3d19hoFCCkwTdPeGOIEhXGq0fmT4s=;
- b=bZ5xrHy/V3aGtEf4X7uuhTlr2DqEzUYFNRm1oa5dKpEibEhjGHw+4RviGrA46x/KyYRzRkcxZzBO+nMnVH0mUtFpwlfwwXP7Q8zyg0izybdXZ0ZnLO8hYaUifv3hJ+f2o75KG2qqKAbCy6AXcj4gf6jVqgl81j1nKnZ2SyLe6fs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
- by SEYPR06MB5159.apcprd06.prod.outlook.com (2603:1096:101:5b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Fri, 13 May
- 2022 08:02:58 +0000
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::88e1:dc04:6851:ad08]) by HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::88e1:dc04:6851:ad08%7]) with mapi id 15.20.5227.027; Fri, 13 May 2022
- 08:02:58 +0000
-From:   Guo Zhengkui <guozhengkui@vivo.com>
-To:     Nilesh Javali <njavali@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com (supporter:QLOGIC QLA2XXX
-        FC-SCSI DRIVER), "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org (open list:QLOGIC QLA2XXX FC-SCSI DRIVER),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     zhengkui_guo@outlook.com, Guo Zhengkui <guozhengkui@vivo.com>
-Subject: [PATCH] scsi: qla2xxx: fix minmax.cocci warnings
-Date:   Fri, 13 May 2022 16:02:10 +0800
-Message-Id: <20220513080210.53143-1-guozhengkui@vivo.com>
-X-Mailer: git-send-email 2.20.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR04CA0071.apcprd04.prod.outlook.com
- (2603:1096:202:15::15) To HK2PR06MB3492.apcprd06.prod.outlook.com
- (2603:1096:202:2f::10)
+        Fri, 13 May 2022 04:06:37 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455844ECFC;
+        Fri, 13 May 2022 01:06:31 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 35F7D1F45D41
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652429190;
+        bh=ZI6wzdoqnJpZaI9O6789OwrBHqpXwo3joMPdEwRzXpE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ACtYtZm3nPrQX/Loy48UlYk9vfJa6ETK0abgly3cu3X1tgHT4OAB6CB5d/CRTQpt9
+         amrdAsrm1WJYGlgpG8/QXPiOAjouDNqPgaHb59GExHJF59kKCNgEq+lvOmHyxdDmn7
+         GHYK9+YR+WLcrEGAVRO9nb8GVAY804GUvcmp97D/+aAGvZsb2MJJzef27r1xgWwSPT
+         5DGPxF+xTZzMKyEjhIGAQG0oslLH3OWuaxcLOl9WD8Q413A7HQT52wNJSDZG0fxPM4
+         OYmbKoUAV3eksDMqPfUJ/1Jif8l5KxMuoa8WwThc2ilHAhip097IVnqOGpE2p8JkdA
+         wztwinkpeFDGQ==
+Message-ID: <d015e667-f7a6-d635-a2ea-c0638881af10@collabora.com>
+Date:   Fri, 13 May 2022 10:06:26 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0c2406fa-5f9c-49a2-1996-08da34b6fe0c
-X-MS-TrafficTypeDiagnostic: SEYPR06MB5159:EE_
-X-Microsoft-Antispam-PRVS: <SEYPR06MB51599BE4C81CD51005DA2C45C7CA9@SEYPR06MB5159.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: myoS/tqp+AyI/bhyJBP9OKBmrR6niwH3m/UgKkm7DV5q1+bINu7b0jHEilJNWRyX169oTU3FOs5cEAb0cAHRoIs3z8y9hKyDnWBAeRNLZxghPN+tc7Bex+GoqfNMHp1Vxhe7H9OiSwUNdP7Fopj6W3VpeJUZ0Cs/saA5O7OxJDySp6DTYXzvZ6my/6lphuilknf0788/XOFf4pnEx5etLyRskenwDo24gisPisgANM9/T8LZ2ZIq1O/VliDVv7wJh+FiRzUCUuol+GKnIIJD9hq6NkvIwl0itFA+MArnRhtA8D7hVFNALMct2V2IZk/pJgaxKGsZDKB5QkJKGul5nddvbcKtRQbWY8VAqxYSV5jPy76MJjMa4Qd/bKIBtdOicuy23x39qr/8jmWWwzM9Yxn4Vf3JeH0xtfffmD/Y9ltdDhyNn+EZLCoaX80sD+qrVS5nejcoSULyCnrgi/r7uu8M10T+qWishThkkxaNrjfNBje8IGLv2k0T2KTFXuiPxy7nbreDs5eIQptk/6Anm5FZDsYvaROGU+RaQhoao1auWP2//cL6cD0JOy4fqOoheZg4NAdnuh61tg922U9QyH1FaDbeELAyaiaa4+MXX6ek16MtYOEqPtE5wXvYizuHSyrJ7UsDWPPmHS8ggcK8r1oXchyQNzBRckMJtbLEcp46kcdoIMs/im1Qx5mtk79gkLAubXgoB5o5yocDZ/B7cQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(186003)(316002)(38350700002)(38100700002)(6506007)(6666004)(86362001)(52116002)(2616005)(107886003)(110136005)(1076003)(8936002)(5660300002)(66946007)(66556008)(2906002)(66476007)(26005)(6512007)(4326008)(8676002)(6486002)(508600001)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bEsKHtY4cFtMVrif0x/f4hdtyJwlSExM+cRan81bBVOru5KDGOS+m8qQWbtz?=
- =?us-ascii?Q?1v1HnJjgFONe2mk/CoEuHENmN/cm7jJa7K0Of9upuUynefksOheVWmHzLJqH?=
- =?us-ascii?Q?V9BmKrQCAR4K6UisYfu8mciFwhcv13jDi5qD0xX1T5RxUY8UQ4i/qfgNmViQ?=
- =?us-ascii?Q?rNaNFuMgJLIzgTtEuNZCoX5GpCZfiC6IHwhoq3XRoF7Gsnc5WpTCVbAZdjfr?=
- =?us-ascii?Q?OZYJ1qed6innpMLs2v7gzKxHwBiUO88t3ea5CfAytsaygY+bOyDXO7Dh3pLA?=
- =?us-ascii?Q?q7SToX2/NcTm7GrKIB1KAidjfOgUjuN/hNLA57o7CpwQHHXrw5O+z7dq+5UK?=
- =?us-ascii?Q?iMHYTg/S79Og+txfmOtOBGFHD1T2FaIwiYIhnwD4i7qUwGniLOl+yXcHEgFR?=
- =?us-ascii?Q?nx6FMejRq5Rn3eD1fQUKcWHpoDNiBHnznkMMwCvGF1+r9ncl7DyNh71bo5fp?=
- =?us-ascii?Q?oMhGF20RCaf5jOMN4LyGZ+VVow+gNvISBPrr4jXEE1eRC97c6tOagwLvFhCr?=
- =?us-ascii?Q?NmUyc18JatDsJ7x+LFhBuXzQtFNKcs5N9fHSATiV8WsGUuMLM6f6GmD6qSYi?=
- =?us-ascii?Q?TnyFwIoWuROwAMPBQWzmwLCJPfoLVbDf9m6IoBlbWiHlPnh7HVoWCBXgrs7O?=
- =?us-ascii?Q?sBXGkR6POOpWiBTb5dRZik8EJODSXlUCH5ktB9gQNm+vxFy5vY2fYqcDFGz6?=
- =?us-ascii?Q?LkD9yVd4uO+02zMhLAwZ7ngf8dZ7LSOccaWXR7G3aqPkGXpycpIydXlimgOM?=
- =?us-ascii?Q?3oMfiRFWdDsDcuseQUvRRLYh+7+f8GqsE0h6SHk9T0pk5zQFPlLAYfIzeegP?=
- =?us-ascii?Q?LPSpTlkaZh7sdyIwmG/axLZHDCxCLPIGSRCUQdo+fqkr0HBUkkagITqIUM/Z?=
- =?us-ascii?Q?zgF+tgIVHk90OYApWMBCJmv+1zXBz5x6VgO06yyMPvaGbOPpbos/Z+hTFrGp?=
- =?us-ascii?Q?InNGOZWL9kXtrsI0wDGqCjG+GJYshEhnKGQEvynzs8tRX0+JZjZ51gs3Oy4K?=
- =?us-ascii?Q?eWV4OJYh8n/lS635PUC3uQRpN0PI8oxZ63GBdc9r91cIeq0xAn67QQuyzCXK?=
- =?us-ascii?Q?MtI2qHacOD+K4jAMiyTUCQSJawu2MJOCNM5c+g64H0AdElAjhtFDl5MY5Wux?=
- =?us-ascii?Q?ujMQLoKKgONy2z2dzOfCrrVpcLGM8Q1TR2EXUjIalECieVYToFdUIMDvKSQW?=
- =?us-ascii?Q?4/aOpK9btDIdsfwDszcZoKq3X9rGjJAiWyN4oN4jI2gj2Qbqo2WmY5KoJPEn?=
- =?us-ascii?Q?/vrwi4KscZeUM0tIlUQS5A6qJHArQTrHQxpd7F5xTfY6BnfsVPjLJCaKz+u6?=
- =?us-ascii?Q?XpJTGvJolhMimMHzk+Q0EOoiQ9k8AlFfblqe4+68Lf22aRZ17nki9ijWeemJ?=
- =?us-ascii?Q?9uuVjsTqpxk5f0RzvLPFOaThRqAJMNIYMQDoNTobWgOjlOUPu/6Df5NVEdx4?=
- =?us-ascii?Q?2LMSV/h9NEkwmQ3z+hljZ/q0ZZVqTaEHJTQ+K6zsacsE2ARUaac75wAclxif?=
- =?us-ascii?Q?waNIydGsHXPh4T6TAJ6im5UARFkubhcLJozQt4VMnCIvZqExIraGr+TFlmf6?=
- =?us-ascii?Q?bDiTFdDWw1qABcLHdsj394oo0WzfGE4Fu4qR7nlAko12+11tGrNi9ehNAjC/?=
- =?us-ascii?Q?jmpuG6jJUTAbdQsGhvzC/Fzukp9aIgX8tFxBOe3OCZkM8iN7uLJUys5TI5aQ?=
- =?us-ascii?Q?810XHjAenSnUOBdoL9e7TlRu28CinrYs74zT7EeZZ5zl9CaXr5S+T1MxlLCG?=
- =?us-ascii?Q?cfBLP7skFQ=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c2406fa-5f9c-49a2-1996-08da34b6fe0c
-X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 08:02:57.9900
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: w4XNDYQZhKZS2FiT4hjlNF3kjVUBniglZAnPBe7BcPofoQgYowXaQJkYNdANMzF/dvQDC5O74LwR8uJpSyJSGg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR06MB5159
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v4] pwrap: mediatek: fix FSM timeout issue
+Content-Language: en-US
+To:     Zhiyong Tao <zhiyong.tao@mediatek.com>, lee.jones@linaro.org,
+        robh+dt@kernel.org, matthias.bgg@gmail.com, lgirdwood@gmail.com,
+        broonie@kernel.org, eddie.huang@mediatek.com, a.zummo@towertech.it,
+        alexandre.belloni@bootlin.com, fshao@chromium.org
+Cc:     srv_heupstream@mediatek.com, hui.liu@mediatek.com,
+        tinghan.shen@mediatek.com, hsin-hsiung.wang@mediatek.com,
+        sean.wang@mediatek.com, macpaul.lin@mediatek.com,
+        wen.su@mediatek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220513034356.5268-1-zhiyong.tao@mediatek.com>
+ <20220513034356.5268-2-zhiyong.tao@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220513034356.5268-2-zhiyong.tao@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warnings:
+Il 13/05/22 05:43, Zhiyong Tao ha scritto:
+> From: "Zhiyong.Tao" <zhiyong.tao@mediatek.com>
+> 
+> Fix pwrap FSM timeout issue which leads the system crash on GFX VSRAM
+> power on.
+> The crash log:
+> [ 3986.543401] mediatek-drm-dp 1c500000.edp_tx: drm_helper_hpd_irq_event
+> [ 3986.670756] vsram_others: is_enabled() failed: -ETIMEDOUT
+> [ 3986.670765] mali 13000000.mali: Power on reg 1 failed error = -110
+> [ 3986.670768] ------------[ cut here ]------------
+> [ 3986.670770] unbalanced disables for vsram_others
+> [ 3986.670783] WARNING: CPU: 7 PID: 4125 at drivers/regulator/core.c:2761 _regulator_disable+0x194/0x1a0
+> [ 3986.670785] Modules linked in: rfcomm algif_hash algif_skcipher af_alg veth uinput btusb btmtk btintel btbcm btrtl xt_cgroup bluetooth uvcvideo videobuf2_vmalloc ecdh_generic ecc mtk_vcodec_dec mtk_vcodec_enc mtk_mdp3 v4l2_h264 mtk_vcodec_common videobuf2_dma_contig mtk_vpu videobuf2_memops v4l2_mem2mem xt_MASQUERADE videobuf2_v4l2 videobuf2_common cros_ec_rpmsg mtk_scp mtk_rpmsg rpmsg_core mtk_scp_ipi ip6table_nat fuse 8021q iio_trig_sysfs cros_ec_sensors cros_ec_lid_angle cros_ec_sensors_core industrialio_triggered_buffer kfifo_buf cros_ec_sensorhub mt7921e mt7921_common mt76_connac_lib lzo_rle mt76 lzo_compress mac80211 cfg80211 zram r8152 mii joydev
+> [ 3986.670830] CPU: 7 PID: 4125 Comm: mali-cmar-backe Not tainted 5.10.78-CL2781499-v287 #1 b899b40a63da40d4767c6c0e96b6700d2f3eb242
+> [ 3986.670832] Hardware name: MediaTek Tomato board (DT)
+> [ 3986.670835] pstate: 60400009 (nZCv daif +PAN -UAO -TCO BTYPE=--)
+> [ 3986.670838] pc : _regulator_disable+0x194/0x1a0
+> [ 3986.670840] lr : _regulator_disable+0x194/0x1a0
+> [ 3986.670842] sp : ffffffc016203a10
+> [ 3986.670843] x29: ffffffc016203a10 x28: ffffffb7c3186b28
+> [ 3986.670846] x27: 0000000000000002 x26: fffffffffffffdc8
+> [ 3986.670848] x25: ffffffc017225000 x24: ffffffb7c0e94880
+> [ 3986.670851] x23: ffffffb7c31840f0 x22: ffffffd6b4f3e275
+> [ 3986.670853] x21: ffffffb7c3181a00 x20: ffffffb7c27e7800
+> [ 3986.670855] x19: ffffffb7c27e7800 x18: 00000000ffff0a10
+> [ 3986.670857] x17: 0000000000000020 x16: 00000000000000ec
+> [ 3986.670860] x15: ffffffd6b44fa17c x14: 0000000000000003
+> [ 3986.670862] x13: 0000000000000004 x12: 0000000000fd8318
+> [ 3986.670864] x11: c000000100029ccd x10: 00000000ffffffff
+> [ 3986.670866] x9 : 7dd6d080afd6f400 x8 : 7dd6d080afd6f400
+> [ 3986.670868] x7 : 0000000000000000 x6 : ffffffd6b5459f0c
+> [ 3986.670871] x5 : ffffffc016203a58 x4 : 0000000000000000
+> [ 3986.670873] x3 : ffffffc016203668 x2 : ffffffc016203670
+> [ 3986.670875] x1 : 0000000100029ccd x0 : 0000000000000024
+> [ 3986.670878] Call trace:
+> [ 3986.670880]  _regulator_disable+0x194/0x1a0
+> [ 3986.670883]  regulator_disable+0x4c/0x8c
+> 
+> Add a usleep delay to avoid busy read for the H/W status.
+> If (time_after()) be turn first, it maybe cause the system behavior
+> crash problem like above. so we change it after sleep delay.
+> 
+> Fixes: 1f022d84bd19 ("soc: mediatek: Add PMIC wrapper for MT8135 and
+> MT8173 SoCs")
+> 
+> Signed-off-by: Zhiyong.Tao <zhiyong.tao@mediatek.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-drivers/scsi/qla2xxx/qla_dbg.c:689:30-31: WARNING opportunity for max()
-drivers/scsi/qla2xxx/qla_sup.c:3628:28-29: WARNING opportunity for min()
-
-min() and max() macros are defined in include/linux/minmax.h.
-
-Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
----
- drivers/scsi/qla2xxx/qla_dbg.c | 3 +--
- drivers/scsi/qla2xxx/qla_sup.c | 2 +-
- 2 files changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/scsi/qla2xxx/qla_dbg.c b/drivers/scsi/qla2xxx/qla_dbg.c
-index 7cf1f78cbaee..9dfe1782634b 100644
---- a/drivers/scsi/qla2xxx/qla_dbg.c
-+++ b/drivers/scsi/qla2xxx/qla_dbg.c
-@@ -686,8 +686,7 @@ qla25xx_copy_mq(struct qla_hw_data *ha, void *ptr, __be32 **last_chain)
- 	mq->type = htonl(DUMP_CHAIN_MQ);
- 	mq->chain_size = htonl(sizeof(struct qla2xxx_mq_chain));
- 
--	que_cnt = ha->max_req_queues > ha->max_rsp_queues ?
--		ha->max_req_queues : ha->max_rsp_queues;
-+	que_cnt = max(ha->max_req_queues, ha->max_rsp_queues);
- 	mq->count = htonl(que_cnt);
- 	for (cnt = 0; cnt < que_cnt; cnt++) {
- 		reg = ISP_QUE_REG(ha, cnt);
-diff --git a/drivers/scsi/qla2xxx/qla_sup.c b/drivers/scsi/qla2xxx/qla_sup.c
-index c092a6b1ced4..2703408c60e7 100644
---- a/drivers/scsi/qla2xxx/qla_sup.c
-+++ b/drivers/scsi/qla2xxx/qla_sup.c
-@@ -3625,7 +3625,7 @@ qla24xx_read_fcp_prio_cfg(scsi_qla_host_t *vha)
- 	max_len = FCP_PRIO_CFG_SIZE - FCP_PRIO_CFG_HDR_SIZE;
- 
- 	ha->isp_ops->read_optrom(vha, &ha->fcp_prio_cfg->entry[0],
--			fcp_prio_addr << 2, (len < max_len ? len : max_len));
-+			fcp_prio_addr << 2, min(len, max_len));
- 
- 	/* revalidate the entire FCP priority config data, including entries */
- 	if (!qla24xx_fcp_prio_cfg_valid(vha, ha->fcp_prio_cfg, 1))
--- 
-2.20.1
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
