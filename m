@@ -2,136 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381960AbiEMPZX (ORCPT
+        id S1381171AbiEMP03 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51050 "EHLO
+        Fri, 13 May 2022 11:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233504AbiEMPZT (ORCPT
+        with ESMTP id S233504AbiEMP0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 11:25:19 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C46E0CD;
-        Fri, 13 May 2022 08:25:18 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24DFBouj023613;
-        Fri, 13 May 2022 15:24:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=Rs/HrYaFsVOG7pHzpWHMzkvZ8QnbJVdvVi9OpbPAeQ8=;
- b=XquKzgjsrizj4CfhcryNFVGqew5wyyd7HPiDR9cLxA/QDQCBSyzQ3d4A+o5zkXiaJAUX
- uYdgcRXvAXKhfn14LipL3IDS6QPy1nl0ZpHRDmTYSdxaIsp+oDlqKWhgnTlhW0H0VegT
- 6f0XP/GtHdx6033jI2pf54HAI+TZSN4C3+345s1KBUw6ygzjiQtQ9G12DROr/KIURWcp
- D8q/7hu9aO6VxzekJS98QeVeeVOaIr4tucAriBBjecxgt93rSWsQKCL+HGFo3ASZMOGY
- TW1XRuw2FsM1iiOi/3UQZqTFaiytFNegAdnmqbnOuPgqG7yextuGnwf6US7V4/aJuhsp DA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g1srpr8pk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 13 May 2022 15:24:54 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24DFFQbg008263;
-        Fri, 13 May 2022 15:24:53 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g1srpr8nk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 13 May 2022 15:24:53 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24DFOp4I014120;
-        Fri, 13 May 2022 15:24:51 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fyrkk4r9r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 13 May 2022 15:24:50 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24DFOOJ914549438
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 13 May 2022 15:24:24 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 96179A4053;
-        Fri, 13 May 2022 15:24:48 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2D701A404D;
-        Fri, 13 May 2022 15:24:46 +0000 (GMT)
-Received: from sig-9-65-91-25.ibm.com (unknown [9.65.91.25])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 13 May 2022 15:24:46 +0000 (GMT)
-Message-ID: <06062b288d675dc060f33041e9b2009c151698e6.camel@linux.ibm.com>
-Subject: Re: [PATCH v7] efi: Do not import certificates from UEFI Secure
- Boot for T2 Macs
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Aditya Garg <gargaditya08@live.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>,
-        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        "admin@kodeit.net" <admin@kodeit.net>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Date:   Fri, 13 May 2022 11:24:45 -0400
-In-Reply-To: <958B8D22-F11E-4B5D-9F44-6F0626DBCB63@live.com>
-References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
-         <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
-         <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
-         <E9C28706-2546-40BF-B32C-66A047BE9EFB@live.com>
-         <02125722-91FC-43D3-B63C-1B789C2DA8C3@live.com>
-         <958B8D22-F11E-4B5D-9F44-6F0626DBCB63@live.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: nSTyBu9TLw378bJvOtb7YdyATbWM_IHn
-X-Proofpoint-ORIG-GUID: cEKFVC3VVbEMtznL2Syom3um3gN35hor
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-13_04,2022-05-13_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- suspectscore=0 bulkscore=0 adultscore=0 spamscore=0 clxscore=1011
- phishscore=0 mlxlogscore=793 impostorscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205130067
+        Fri, 13 May 2022 11:26:23 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6807215803
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:26:22 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0AB9A113E;
+        Fri, 13 May 2022 08:26:22 -0700 (PDT)
+Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3D19A3F73D;
+        Fri, 13 May 2022 08:26:19 -0700 (PDT)
+Date:   Fri, 13 May 2022 16:26:16 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+Subject: Re: [PATCH -next v4 3/7] arm64: add support for machine check error
+ safe
+Message-ID: <Yn54mA7KnlAs1dER@lakrids>
+References: <20220420030418.3189040-1-tongtiangen@huawei.com>
+ <20220420030418.3189040-4-tongtiangen@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220420030418.3189040-4-tongtiangen@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aditya,
-
-On Fri, 2022-04-15 at 17:02 +0000, Aditya Garg wrote:
-> From: Aditya Garg <gargaditya08@live.com>
+On Wed, Apr 20, 2022 at 03:04:14AM +0000, Tong Tiangen wrote:
+> During the processing of arm64 kernel hardware memory errors(do_sea()), if
+> the errors is consumed in the kernel, the current processing is panic.
+> However, it is not optimal.
 > 
-> On Apple T2 Macs, when Linux attempts to read the db and dbx efi variables
-> at early boot to load UEFI Secure Boot certificates, a page fault occurs
-> in Apple firmware code and EFI runtime services are disabled with the
-> following logs:
+> Take uaccess for example, if the uaccess operation fails due to memory
+> error, only the user process will be affected, kill the user process
+> and isolate the user page with hardware memory errors is a better choice.
 
-Are there directions for installing Linux on a Mac with Apple firmware
-code?  Are you dual booting Linux and Mac, or just Linux?  While in
-secure boot mode, without being able to read the keys to verify the
-kernel image signature, the signature verification should fail.
+Conceptually, I'm fine with the idea of constraining what we do for a
+true uaccess, but I don't like the implementation of this at all, and I
+think we first need to clean up the arm64 extable usage to clearly
+distinguish a uaccess from another access.
 
-Has anyone else tested this patch?
+> This patch only enable machine error check framework, it add exception
+> fixup before kernel panic in do_sea() and only limit the consumption of
+> hardware memory errors in kernel mode triggered by user mode processes.
+> If fixup successful, panic can be avoided.
+> 
+> Consistent with PPC/x86, it is implemented by CONFIG_ARCH_HAS_COPY_MC.
+> 
+> Also add copy_mc_to_user() in include/linux/uaccess.h, this helper is
+> called when CONFIG_ARCH_HAS_COPOY_MC is open.
+> 
+> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+> ---
+>  arch/arm64/Kconfig               |  1 +
+>  arch/arm64/include/asm/extable.h |  1 +
+>  arch/arm64/mm/extable.c          | 17 +++++++++++++++++
+>  arch/arm64/mm/fault.c            | 27 ++++++++++++++++++++++++++-
+>  include/linux/uaccess.h          |  9 +++++++++
+>  5 files changed, 54 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index d9325dd95eba..012e38309955 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -19,6 +19,7 @@ config ARM64
+>  	select ARCH_ENABLE_SPLIT_PMD_PTLOCK if PGTABLE_LEVELS > 2
+>  	select ARCH_ENABLE_THP_MIGRATION if TRANSPARENT_HUGEPAGE
+>  	select ARCH_HAS_CACHE_LINE_SIZE
+> +	select ARCH_HAS_COPY_MC if ACPI_APEI_GHES
+>  	select ARCH_HAS_CURRENT_STACK_POINTER
+>  	select ARCH_HAS_DEBUG_VIRTUAL
+>  	select ARCH_HAS_DEBUG_VM_PGTABLE
+> diff --git a/arch/arm64/include/asm/extable.h b/arch/arm64/include/asm/extable.h
+> index 72b0e71cc3de..f80ebd0addfd 100644
+> --- a/arch/arm64/include/asm/extable.h
+> +++ b/arch/arm64/include/asm/extable.h
+> @@ -46,4 +46,5 @@ bool ex_handler_bpf(const struct exception_table_entry *ex,
+>  #endif /* !CONFIG_BPF_JIT */
+>  
+>  bool fixup_exception(struct pt_regs *regs);
+> +bool fixup_exception_mc(struct pt_regs *regs);
+>  #endif
+> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
+> index 489455309695..4f0083a550d4 100644
+> --- a/arch/arm64/mm/extable.c
+> +++ b/arch/arm64/mm/extable.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <asm/asm-extable.h>
+>  #include <asm/ptrace.h>
+> +#include <asm/esr.h>
+>  
+>  static inline unsigned long
+>  get_ex_fixup(const struct exception_table_entry *ex)
+> @@ -84,3 +85,19 @@ bool fixup_exception(struct pt_regs *regs)
+>  
+>  	BUG();
+>  }
+> +
+> +bool fixup_exception_mc(struct pt_regs *regs)
+> +{
+> +	const struct exception_table_entry *ex;
+> +
+> +	ex = search_exception_tables(instruction_pointer(regs));
+> +	if (!ex)
+> +		return false;
+> +
+> +	/*
+> +	 * This is not complete, More Machine check safe extable type can
+> +	 * be processed here.
+> +	 */
+> +
+> +	return false;
+> +}
 
-thanks,
+This is at best misnamed; It doesn't actually apply the fixup, it just
+searches for one.
 
-Mimi
+> diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+> index 77341b160aca..a9e6fb1999d1 100644
+> --- a/arch/arm64/mm/fault.c
+> +++ b/arch/arm64/mm/fault.c
+> @@ -695,6 +695,29 @@ static int do_bad(unsigned long far, unsigned int esr, struct pt_regs *regs)
+>  	return 1; /* "fault" */
+>  }
+>  
+> +static bool arm64_do_kernel_sea(unsigned long addr, unsigned int esr,
+> +				     struct pt_regs *regs, int sig, int code)
+> +{
+> +	if (!IS_ENABLED(CONFIG_ARCH_HAS_COPY_MC))
+> +		return false;
+> +
+> +	if (user_mode(regs) || !current->mm)
+> +		return false;
+> +
+> +	if (apei_claim_sea(regs) < 0)
+> +		return false;
+> +
+> +	if (!fixup_exception_mc(regs))
+> +		return false;
+> +
+> +	set_thread_esr(0, esr);
+> +
+> +	arm64_force_sig_fault(sig, code, addr,
+> +		"Uncorrected hardware memory error in kernel-access\n");
+> +
+> +	return true;
+> +}
+> +
+>  static int do_sea(unsigned long far, unsigned int esr, struct pt_regs *regs)
+>  {
+>  	const struct fault_info *inf;
+> @@ -720,7 +743,9 @@ static int do_sea(unsigned long far, unsigned int esr, struct pt_regs *regs)
+>  		 */
+>  		siaddr  = untagged_addr(far);
+>  	}
+> -	arm64_notify_die(inf->name, regs, inf->sig, inf->code, siaddr, esr);
+> +
+> +	if (!arm64_do_kernel_sea(siaddr, esr, regs, inf->sig, inf->code))
+> +		arm64_notify_die(inf->name, regs, inf->sig, inf->code, siaddr, esr);
+>  
+>  	return 0;
+>  }
+> diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+> index 546179418ffa..884661b29c17 100644
+> --- a/include/linux/uaccess.h
+> +++ b/include/linux/uaccess.h
+> @@ -174,6 +174,15 @@ copy_mc_to_kernel(void *dst, const void *src, size_t cnt)
+>  }
+>  #endif
+>  
+> +#ifndef copy_mc_to_user
+> +static inline unsigned long __must_check
+> +copy_mc_to_user(void *dst, const void *src, size_t cnt)
+> +{
+> +	check_object_size(src, cnt, true);
+> +	return raw_copy_to_user(dst, src, cnt);
+> +}
+> +#endif
 
+Why do we need a special copy_mc_to_user() ?
 
+Why are we not making *every* true uaccess recoverable? That way the
+regular copy_to_user() would just work.
+
+Thanks,
+Mark.
