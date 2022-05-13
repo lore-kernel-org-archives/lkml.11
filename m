@@ -2,92 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 335D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E89BBC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381961AbiEMQcg (ORCPT
+        id S1382403AbiEMQcv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 12:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41670 "EHLO
+        Fri, 13 May 2022 12:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381898AbiEMQcW (ORCPT
+        with ESMTP id S1382399AbiEMQcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 12:32:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8EBFC635E
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:32:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652459539;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uO6U74szUS3EMQ0vAs41/itY3d7xTijwR9U6DhLEJMQ=;
-        b=V9q+vqH+CL5ZKdN7GrHB9vYAD7XNrhn0L4EVDRVMzj7VCzHQDXpC9gb0NXDsiuZfpsfkFc
-        08PvAVy+D22DywB8V+RhAHU+iUoghwanD/KDhkEHufSeqxbpas6g7Zl7JhxiSpumwPuN7o
-        oGblppNuKQkvPx9X9nlW4cadKwd1fu4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-459-wMI-x-GzPfeDnMY4eNy2CQ-1; Fri, 13 May 2022 12:32:16 -0400
-X-MC-Unique: wMI-x-GzPfeDnMY4eNy2CQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B2A8E101AA44;
-        Fri, 13 May 2022 16:32:15 +0000 (UTC)
-Received: from lorien.usersys.redhat.com (unknown [10.22.16.240])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 811072166B4E;
-        Fri, 13 May 2022 16:32:12 +0000 (UTC)
-Date:   Fri, 13 May 2022 12:32:10 -0400
-From:   Phil Auld <pauld@redhat.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, mkoutny@suse.com, tj@kernel.org
-Subject: Re: [PATCH] kselftest/cgroup: fix test_stress.sh to use OUTPUT dir
-Message-ID: <Yn6ICiu58nllccYx@lorien.usersys.redhat.com>
-References: <20220512143439.26104-1-pauld@redhat.com>
- <f819f288-7f67-77d1-5d92-f0a5545c1c48@redhat.com>
+        Fri, 13 May 2022 12:32:45 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEBE27B16;
+        Fri, 13 May 2022 09:32:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652459559; x=1683995559;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=U6WzUxm0JtOTfGtV8TvoUE97Z4mNZz3hrq5oCQNY4O8=;
+  b=Fxmoy5yRV/X9RUK1SmnWbZRAVMQb1B73IZAY50Q0ZQdnuyUuaFBeg6bH
+   IsYtan/cjeJO2n8a5mW2PBW07mewaajbH0Tis53xapyMgUyD1tWRZtzS2
+   MnMxcLK9Gn1Q7cGPhsie4f94cgibwTl6ZA2bRB00oohQXtPVrHuxmaT/J
+   c=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 13 May 2022 09:32:37 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 09:32:37 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 13 May 2022 09:32:36 -0700
+Received: from [10.38.247.112] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 13 May
+ 2022 09:32:33 -0700
+Message-ID: <56d13f56-bf66-93c3-b7e6-08d491d302de@quicinc.com>
+Date:   Fri, 13 May 2022 09:32:31 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f819f288-7f67-77d1-5d92-f0a5545c1c48@redhat.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] arm64: qcom: sc7280-herobrine: Enable DP
+Content-Language: en-US
+To:     Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     <quic_aravindh@quicinc.com>, <quic_khsieh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, Matthias Kaehlcke <mka@chromium.org>,
+        "Stephen Boyd" <swboyd@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220513065704.1.I9b9b9d4d1a3e0350a89221892261881a1771ad15@changeid>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <20220513065704.1.I9b9b9d4d1a3e0350a89221892261881a1771ad15@changeid>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 12:19:24PM -0400 Waiman Long wrote:
+
+
+On 5/13/2022 6:57 AM, Douglas Anderson wrote:
+> This enables DisplayPort for herobrine boards.
 > 
-> On 5/12/22 10:34, Phil Auld wrote:
-> > Running cgroup kselftest with O= fails to run the with_stress test due
-> > to hardcoded ./test_core. Find test_core binary using the OUTPUT directory.
-> > 
-> > Fixes: 1a99fcc035fb ("selftests: cgroup: Run test_core under interfering stress")
-> > Signed-off-by: Phil Auld <pauld@redhat.com>
-> > ---
-> >   tools/testing/selftests/cgroup/test_stress.sh | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/testing/selftests/cgroup/test_stress.sh b/tools/testing/selftests/cgroup/test_stress.sh
-> > index 15d9d5896394..109c044f715f 100755
-> > --- a/tools/testing/selftests/cgroup/test_stress.sh
-> > +++ b/tools/testing/selftests/cgroup/test_stress.sh
-> > @@ -1,4 +1,4 @@
-> >   #!/bin/bash
-> >   # SPDX-License-Identifier: GPL-2.0
-> > -./with_stress.sh -s subsys -s fork ./test_core
-> > +./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> ---
 > 
+>   arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 9 +++++++++
+>   1 file changed, 9 insertions(+)
 > 
-> I would suggest using "${OUTPUT:-.}" as the variable OUTPUT may not be
-> defined if test_stress.sh is run interactively.
->
-
-I worked both ways as is.
-
-
-> Cheers,
-> Longman
-> 
-
--- 
-
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> index 9cb1bc8ed6b5..709b7aa02101 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> @@ -429,6 +429,15 @@ &mdss {
+>   	status = "okay";
+>   };
+>   
+> +&mdss_dp {
+> +	status = "okay";
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&dp_hot_plug_det>;
+> +	data-lanes = <0 1>;
+> +	vdda-1p2-supply = <&vdd_a_usbssdp_0_1p2>;
+> +	vdda-0p9-supply = <&vdd_a_usbssdp_0_core>;
+> +};
+> +
+>   &mdss_mdp {
+>   	status = "okay";
+>   };
