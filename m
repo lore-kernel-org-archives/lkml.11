@@ -2,88 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BCD4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:14:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378925AbiEMJMK (ORCPT
+        id S1378914AbiEMJOU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        Fri, 13 May 2022 05:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231523AbiEMJMJ (ORCPT
+        with ESMTP id S231523AbiEMJOS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:12:09 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7893D484
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:12:07 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id j25so9539517wrc.9
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:12:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FgorTPbnFvVixyR8EXfPPsDvCseGItjIY4UCOJ+wbp8=;
-        b=os8I3KHn5Lu7+abAV1auwe2u9XMcOJElEI12ti+iHbGswucuLcHhRoY3UB+gEYtS9C
-         zwREa+Fa0CzA/sSSDTxBHU1x/i+BLMHjolY9XfHp+WYn/hRgdn+gBBX7X/vftjNxeV5s
-         txWsCT6ORZm9Ly8xfbWn8SGPlrAlFlZNiOelarOqArD/LOzXqRPC7I55srgkwIacwPCL
-         YO9NnPFbYmXtomkuUIzZNNQAJ3BZ7HJjBw5BAvz5lBDWiYoMfYc7gcIMmRnbeOE6/Cm+
-         m/Bqqaq7GxMQkIOKlynmX+uRMyFSW52jawwkw0CrVeEGKR4yl7B1KzANfVrh/kzz9Si5
-         90Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FgorTPbnFvVixyR8EXfPPsDvCseGItjIY4UCOJ+wbp8=;
-        b=kugKeaLX7ymV8M5azMtyx+c25ckqU6d/RRULM4nUCC03N3zyKvO+o5ANdX4cdi+w2n
-         PYztjfGAasT2CyIJ4I8YohPgmgOJ3p3F3o+vl3G+OiI39r3yrawM17jA+ps4pmT0k3vx
-         fZdRqGgdpKVtLZgaJqzxMi0ZP1/ZwOwL14hhymtOMhuCKbMQw/zsiUJgarvsL85pEMN0
-         Ne95Bw1+T9ftZAdPSDRQ2Nj5Mq6UcSoSHSOo4Bd1UXLVTbnUztWAlLasW2YcM14rl6A9
-         a2tLoEZSdD5YAA6bg8wJ03MLryciLrUDDPXCb4cnUme65E7tVgqzfCsu+6vz11zgFghn
-         zgpQ==
-X-Gm-Message-State: AOAM532JgbAUFJX0n14TK4A2HteErt9jIDEByTYPhypM542B4r718dmh
-        vnretZfGsh+IuJjDD0BhRQiryQ==
-X-Google-Smtp-Source: ABdhPJyW9FzscuEPUGlS7ChUMHGjRxjtug2/EnQzJ/+FjnbBd7cqELKWMnSCuHntRMfk6p2pp72A7g==
-X-Received: by 2002:a05:6000:1d98:b0:20c:c29d:76db with SMTP id bk24-20020a0560001d9800b0020cc29d76dbmr3107683wrb.710.1652433126624;
-        Fri, 13 May 2022 02:12:06 -0700 (PDT)
-Received: from [192.168.0.169] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id z23-20020a1c4c17000000b0039456fb80b3sm4711757wmf.43.2022.05.13.02.12.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 02:12:06 -0700 (PDT)
-Message-ID: <dc1e8f4e-08d5-09a9-95ee-c292a61561b9@linaro.org>
-Date:   Fri, 13 May 2022 11:12:05 +0200
+        Fri, 13 May 2022 05:14:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1F31882BE
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:14:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F3CD621AF
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:14:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CD1C34113;
+        Fri, 13 May 2022 09:14:13 +0000 (UTC)
+Date:   Fri, 13 May 2022 10:14:09 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFCv2 00/10] Linear Address Masking enabling
+Message-ID: <Yn4hYSVSHvWGZCOo@arm.com>
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+ <20220511064943.GR76023@worktop.programming.kicks-ass.net>
+ <20bada85-9203-57f4-2502-57a6fd11f3ea@intel.com>
+ <875ymav8ul.ffs@tglx>
+ <55176b79-90af-4a47-dc06-9f5f2f2c123d@intel.com>
+ <CAMe9rOqb6ZnAZYe4uAWDt-vmhhP=z_+uZwi5fBURqyUWxCX9Cg@mail.gmail.com>
+ <87o802tjd7.ffs@tglx>
+ <CAMe9rOpXOLEMcir9zMq_UJe08Y-kM+9zok6gDicqAhPySV+3NA@mail.gmail.com>
+ <67aef839-0757-37b1-a42d-154c0116cbf5@intel.com>
+ <878rr6te6b.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v7 1/3] dt-bindings: marvell: Document the AC5/AC5X
- compatibles
-Content-Language: en-US
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        kostap@marvell.com, robert.marko@sartura.hr,
-        vadym.kochan@plvision.eu
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220512042501.3339775-1-chris.packham@alliedtelesis.co.nz>
- <20220512042501.3339775-2-chris.packham@alliedtelesis.co.nz>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220512042501.3339775-2-chris.packham@alliedtelesis.co.nz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <878rr6te6b.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/05/2022 06:24, Chris Packham wrote:
-> Describe the compatible properties for the Marvell Alleycat5/5X switches
-> with integrated CPUs.
+On Fri, May 13, 2022 at 03:27:24AM +0200, Thomas Gleixner wrote:
+> On Thu, May 12 2022 at 17:46, Dave Hansen wrote:
+> > On 5/12/22 17:08, H.J. Lu wrote:
+> > If I had to take a shot at this today, I think I'd opt for:
+> >
+> > 	mask = sys_enable_masking(bits=6, flags=FUZZY_NR_BITS);
+> >
+> > although I'm not super confident about the "fuzzy" flag.  I also don't
+> > think I'd totally hate the "blind" interface where the kernel just gets
+> > to pick unilaterally and takes zero input from userspace.
 > 
+> That's the only sane choice and you can make it simple for userspace:
+> 
+>        ret = prctl(GET_XXX_MASK, &mask);
+> 
+> and then let it decide based on @ret and @mask whether to use it or not.
 
+Getting the mask would work for arm64 as well (it's always 0xffUL << 56,
+top-byte-ignore). Setting the mask from user space won't be of any use
+to us, it's baked in hardware.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> But of course nobody thought about this as a generic feature and so we
+> have the ARM64 TBI muck as a precedence.
+> 
+> So much for coordination and portability...
 
+Well, we had TBI in the architecture and enabled for user-space since
+the first arm64 kernel port (2012), no ABI controls needed. It had some
+specific uses like JITs to avoid masking out type bits encoded in
+pointers.
 
-Best regards,
-Krzysztof
+In 2019 sanitisers appeared and we relaxed the TBI at the syscall level
+but, to avoid potentially confusing some programs, we added a control
+which only changes the behaviour of access_ok(). More of a safety thing,
+we might have as well skipped it. There is no hardware configuration
+toggled by this control, nor is the user address space layout (max
+52-bit on arm64). Since sanitisers require compiler instrumentation (or,
+with MTE, arm64-specific libc changes), it's pretty much all within the
+arm64-specific user codebase. MTE came along and we added some more bits
+on top which, again, are hardware specific and contained within the
+arm64 libc startup code (tag checking modes etc).
+
+Dave indeed mentioned passing a mask to allow a more flexible control
+but, as already mentioned in the old thread, for arm64 the feature was
+already on, so it didn't make much sense, it seemed more like
+over-engineering. Had we known that Intel is pursing something similar,
+maybe we'd have designed the interface differently (we didn't get the
+hint).
+
+Intel's LAM has more flexibility but I don't see the arm64 TBI getting
+in the way. Just don't use it as an example because they evolved in
+different ways. I'm happy for arm64 to adopt a more flexible interface
+while keeping the current one around for backwards compatibility). But
+on arm64 we can't control the masking, not even disable it per process
+since it has always been on.
+
+> I'm so tired of this short sighted 'cram my feature in' approach of
+> _all_ involved parties.
+
+Unfortunately it happens occasionally, especially when developers can't
+disclose that their companies work on similar features (resctrl is a
+good example where arm64 would have benefited from a more generic
+approach but at the time MPAM was not public).
+
+-- 
+Catalin
