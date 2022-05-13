@@ -2,86 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 496C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 18:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8E1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 18:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383504AbiEMS6P (ORCPT
+        id S1383498AbiEMS6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 14:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47514 "EHLO
+        Fri, 13 May 2022 14:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383484AbiEMS6E (ORCPT
+        with ESMTP id S1383566AbiEMS61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 14:58:04 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506A76BFD3
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 11:58:03 -0700 (PDT)
+        Fri, 13 May 2022 14:58:27 -0400
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B4B6CAB6;
+        Fri, 13 May 2022 11:58:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652468283; x=1684004283;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rCKiBLo5JPRevaGfzEi2/7NKS4ODTjaZmZIfll5payA=;
-  b=bzXOv8Ur/Dyf8IXM97WGcM9FqyG5GYI/5yKQLxTPRg1MyXvYEDYjJNle
-   GoN3oq+HczowEHatVndBVNgBOntiLZSvquPTV8/3Mut8GSfrnHpjsI70u
-   aRe9WuWThsbVxdBv/ACmhIH+PoE3IxRFuL2tT79rSbnLnK7mzVwB5ytz7
-   eAArfZMO3EpXxVUq+q0rJLtjL987Y6N1nB0hcxsGVqE0o4mqlqY22ffuf
-   LOdN8l8cIeZK3G4npHuVaqZRsK7VdtuLom1wSMrDVU5YJmsx8gXs46pym
-   lSvfLsrB8C6qDHBCg4naPPljwWsN5x+SEZmIBxnaVTfTxw4wnWBcvUT8H
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="295647410"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="295647410"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 11:58:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="521535494"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga003.jf.intel.com with ESMTP; 13 May 2022 11:58:02 -0700
-Date:   Fri, 13 May 2022 12:01:37 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 12/29] iommu/amd: Enable NMIPass when allocating an
- NMI irq
-Message-ID: <20220513190137.GC22683@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-13-ricardo.neri-calderon@linux.intel.com>
- <87tua2fj41.ffs@tglx>
+        d=hansenpartnership.com; s=20151216; t=1652468302;
+        bh=Gm4rcTcYc28VXYvmDWwLQXWJgZTozo/KYQQ4R8gbqIU=;
+        h=Message-ID:Subject:From:To:Date:From;
+        b=iXuZYSJL7e/7J3suwK4wtD1hV5KnEQzgPRK13DbTi9aXiRyn8jBKXxslhil0Mr8um
+         C0POie0O4o3ZobxvQXDuz5vg7/6lqhwurFTGBYFmv7obsgv78iNoixClw1VmljcJzs
+         eB1SXd5xTgt3PRuDNsmc61oaXOL2I2fUpekegkRY=
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id AF8C7128796B;
+        Fri, 13 May 2022 14:58:22 -0400 (EDT)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id hNgfgQ_5ON96; Fri, 13 May 2022 14:58:22 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1652468302;
+        bh=Gm4rcTcYc28VXYvmDWwLQXWJgZTozo/KYQQ4R8gbqIU=;
+        h=Message-ID:Subject:From:To:Date:From;
+        b=iXuZYSJL7e/7J3suwK4wtD1hV5KnEQzgPRK13DbTi9aXiRyn8jBKXxslhil0Mr8um
+         C0POie0O4o3ZobxvQXDuz5vg7/6lqhwurFTGBYFmv7obsgv78iNoixClw1VmljcJzs
+         eB1SXd5xTgt3PRuDNsmc61oaXOL2I2fUpekegkRY=
+Received: from [IPv6:2601:5c4:4300:c551:a71:90ff:fec2:f05b] (unknown [IPv6:2601:5c4:4300:c551:a71:90ff:fec2:f05b])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 10A8D12878F7;
+        Fri, 13 May 2022 14:58:21 -0400 (EDT)
+Message-ID: <892647cabbe1e3b2134f4667c3edadd853d51602.camel@HansenPartnership.com>
+Subject: [GIT PULL] SCSI fixes for 5.18-rc6
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Date:   Fri, 13 May 2022 14:58:20 -0400
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tua2fj41.ffs@tglx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 11:26:22PM +0200, Thomas Gleixner wrote:
-> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
-> >  
-> > +	if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
-> > +		/* Only one IRQ per NMI */
-> > +		if (nr_irqs != 1)
-> > +			return -EINVAL;
-> 
-> See previous reply.
+Four fixes, all in drivers.  These patches mosly fix error legs and
+exceptional conditions (scsi_dh_alua, qla2xxx).  The lpfc fixes are for
+coding issues with lpfc features.
 
-I remove this check.
+The patch is available here:
 
-Thanks and BR,
-Ricardo
-> 
+git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-fixes
+
+The short changelog is:
+
+Brian Bunker (1):
+      scsi: scsi_dh_alua: Properly handle the ALUA transitioning state
+
+Gleb Chesnokov (1):
+      scsi: qla2xxx: Fix missed DMA unmap for aborted commands
+
+James Smart (2):
+      scsi: lpfc: Correct BDE DMA address assignment for GEN_REQ_WQE
+      scsi: lpfc: Fix split code for FLOGI on FCoE
+
+And the diffstat:
+
+ drivers/scsi/device_handler/scsi_dh_alua.c | 3 +--
+ drivers/scsi/lpfc/lpfc_els.c               | 2 +-
+ drivers/scsi/lpfc/lpfc_sli.c               | 6 +++---
+ drivers/scsi/qla2xxx/qla_target.c          | 3 +++
+ 4 files changed, 8 insertions(+), 6 deletions(-)
+
+With full diff below.
+
+James
+
+---
+
+diff --git a/drivers/scsi/device_handler/scsi_dh_alua.c b/drivers/scsi/device_handler/scsi_dh_alua.c
+index 37d06f993b76..1d9be771f3ee 100644
+--- a/drivers/scsi/device_handler/scsi_dh_alua.c
++++ b/drivers/scsi/device_handler/scsi_dh_alua.c
+@@ -1172,9 +1172,8 @@ static blk_status_t alua_prep_fn(struct scsi_device *sdev, struct request *req)
+ 	case SCSI_ACCESS_STATE_OPTIMAL:
+ 	case SCSI_ACCESS_STATE_ACTIVE:
+ 	case SCSI_ACCESS_STATE_LBA:
+-		return BLK_STS_OK;
+ 	case SCSI_ACCESS_STATE_TRANSITIONING:
+-		return BLK_STS_AGAIN;
++		return BLK_STS_OK;
+ 	default:
+ 		req->rq_flags |= RQF_QUIET;
+ 		return BLK_STS_IOERR;
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index ef6e8cd8c26a..872a26376ccb 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -1330,7 +1330,7 @@ lpfc_issue_els_flogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ 		if (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) ==
+ 		    LPFC_SLI_INTF_IF_TYPE_0) {
+ 			/* FLOGI needs to be 3 for WQE FCFI */
+-			ct = ((SLI4_CT_FCFI >> 1) & 1) | (SLI4_CT_FCFI & 1);
++			ct = SLI4_CT_FCFI;
+ 			bf_set(wqe_ct, &wqe->els_req.wqe_com, ct);
+ 
+ 			/* Set the fcfi to the fcfi we registered with */
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index bda2a7ba4e77..6adaf79e67cc 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -10720,10 +10720,10 @@ __lpfc_sli_prep_gen_req_s4(struct lpfc_iocbq *cmdiocbq, struct lpfc_dmabuf *bmp,
+ 
+ 	/* Words 0 - 2 */
+ 	bde = (struct ulp_bde64_le *)&cmdwqe->generic.bde;
+-	bde->addr_low = cpu_to_le32(putPaddrLow(bmp->phys));
+-	bde->addr_high = cpu_to_le32(putPaddrHigh(bmp->phys));
++	bde->addr_low = bpl->addr_low;
++	bde->addr_high = bpl->addr_high;
+ 	bde->type_size = cpu_to_le32(xmit_len);
+-	bde->type_size |= cpu_to_le32(ULP_BDE64_TYPE_BLP_64);
++	bde->type_size |= cpu_to_le32(ULP_BDE64_TYPE_BDE_64);
+ 
+ 	/* Word 3 */
+ 	cmdwqe->gen_req.request_payload_len = xmit_len;
+diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
+index 85dbf81f3204..6dfcfd8e7337 100644
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -3826,6 +3826,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+ 
+ 	spin_lock_irqsave(&cmd->cmd_lock, flags);
+ 	if (cmd->aborted) {
++		if (cmd->sg_mapped)
++			qlt_unmap_sg(vha, cmd);
++
+ 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
+ 		/*
+ 		 * It's normal to see 2 calls in this path:
+
