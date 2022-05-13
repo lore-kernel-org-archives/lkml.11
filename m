@@ -2,81 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8C8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F97C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 13:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381519AbiEMNhm (ORCPT
+        id S1381543AbiEMNh6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 09:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
+        Fri, 13 May 2022 09:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381294AbiEMNe2 (ORCPT
+        with ESMTP id S1381353AbiEMNfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 09:34:28 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BA310F0;
-        Fri, 13 May 2022 06:34:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=/2J4OgJGpc1Cb3jgc4qYyZLCbL55xwunzKlfyYoeZdw=; b=H5fwWH/CF298SAz3ALbH2c5z7A
-        ciR7XVfqLP2R9vBz+MM7Tt7mIzVpVGIazQK/SwfeM03Y1CMw+rot1fB6EqfwRCpmMCQQ3db4Og1wr
-        +oAMRjAqnC6qW6GJxg8gPUVzb1RuKngei/SmD1m8Rqcjv8kfpENiIDCoVIBAdx73tJrXHSNVzGJYe
-        LjhjRPpxho7i5tuSUy8poYWdnn32VWijCYNYgtnFyJq/MkMMEIGFvfKSEH/F67s/49q5/+1VpduK1
-        SZhzVCB6wwKCqQzkqPS90HVCD6vA9M4EWHmUrceGEpByaycBWTM6Ct1rX8qPS6FNZTawPPDcnVbGK
-        ZVKrN0DA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1npVQo-00Do81-V4; Fri, 13 May 2022 13:34:11 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B3984981018; Fri, 13 May 2022 15:34:08 +0200 (CEST)
-Date:   Fri, 13 May 2022 15:34:08 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Rik van Riel <riel@fb.com>,
-        "song@kernel.org" <song@kernel.org>,
-        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>
-Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
-Message-ID: <20220513133408.GI76023@worktop.programming.kicks-ass.net>
-References: <20220510165244.ikfh64ertnvodxb4@treble>
- <1bd15361edfd4db9fc9271d35e7bbe5edad1b87a.camel@fb.com>
- <20220510184213.l3gjweeleyg7obca@treble>
- <47440502-930F-4CBD-B859-3AC9BBFF8FC6@fb.com>
- <20220510230402.e5ymkwt45sg7bd35@treble>
- <D298A3F1-43A5-4FD5-B198-906364BF4B79@fb.com>
- <20220511003331.clfvwfgpmbr5yx6n@treble>
- <20220511092433.GA26047@pathway.suse.cz>
- <78DFED12-571B-489C-A662-DA333555266B@fb.com>
- <Yn5QHpc9YlAbP1li@alley>
+        Fri, 13 May 2022 09:35:33 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D954662CB
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:35:30 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 1B5322224E;
+        Fri, 13 May 2022 15:35:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1652448929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lh+U1nOda0NfWwmDOTPUquxb7TCGhj6x58ZzYRjPX6s=;
+        b=pVZMQFzcRU2XQkzbBw/yFO4g/TsrQlIiyZqHFvWyN2BqYIFDIlaTr9gs3/u1OANW56hJO/
+        WojOnHdh5g7uhlcv9d3Xo82vkmNsHiKWlrEd0pwBc8KDuaSEXlLMBfwDoJ4IKo0JYJ1K5x
+        uwu7/caqzng7tXPCASG4krs2f+q6Hks=
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+Subject: [PATCH 4/6] mtd: spi-nor: move function declaration out of sfdp.h
+Date:   Fri, 13 May 2022 15:35:18 +0200
+Message-Id: <20220513133520.3945820-5-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220513133520.3945820-1-michael@walle.cc>
+References: <20220513133520.3945820-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yn5QHpc9YlAbP1li@alley>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 02:33:34PM +0200, Petr Mladek wrote:
+sfdp.h should only contain constants related to the JEDEC SFDP
+specification(s).
 
-> My concern is that klp_try_complete_transition() checks all processes
-> under read_lock(&tasklist_lock). It might create some contention
-> on this lock. I am not sure if this lock is fair. It might slow down
-> block writers (creating/deleting tasks).
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/mtd/spi-nor/core.h | 2 ++
+ drivers/mtd/spi-nor/sfdp.h | 2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-rwlock_t is sorta fair. Is it fair for process contect usage, but
-in-interrupt use will have a reader bias.
+diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+index 61886868cd02..3a19b8092ab8 100644
+--- a/drivers/mtd/spi-nor/core.h
++++ b/drivers/mtd/spi-nor/core.h
+@@ -694,6 +694,8 @@ int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
+ int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
+ 				     const u8 *buf, size_t len);
+ 
++int spi_nor_parse_sfdp(struct spi_nor *nor);
++
+ static inline struct spi_nor *mtd_to_spi_nor(struct mtd_info *mtd)
+ {
+ 	return container_of(mtd, struct spi_nor, mtd);
+diff --git a/drivers/mtd/spi-nor/sfdp.h b/drivers/mtd/spi-nor/sfdp.h
+index bbf80d2990ab..c1969f0a2f46 100644
+--- a/drivers/mtd/spi-nor/sfdp.h
++++ b/drivers/mtd/spi-nor/sfdp.h
+@@ -107,6 +107,4 @@ struct sfdp_parameter_header {
+ 	u8		id_msb;
+ };
+ 
+-int spi_nor_parse_sfdp(struct spi_nor *nor);
+-
+ #endif /* __LINUX_MTD_SFDP_H */
+-- 
+2.30.2
 
-That said; contention on tasklist_lock is a real scalability concern.
-
-Can't you use RCU here? With RCU traversal of the tasklist you can miss
-new entry (which should already run the new code) or miss exits (which
-will stop running code).
