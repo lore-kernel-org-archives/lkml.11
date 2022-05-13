@@ -2,49 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 119B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D82C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381187AbiEMOdF (ORCPT
+        id S1381192AbiEMOdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46666 "EHLO
+        Fri, 13 May 2022 10:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381029AbiEMO3j (ORCPT
+        with ESMTP id S1380999AbiEMO3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:29:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2908F94195;
-        Fri, 13 May 2022 07:28:00 -0700 (PDT)
+        Fri, 13 May 2022 10:29:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0001E6FD29;
+        Fri, 13 May 2022 07:27:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACF68B82F64;
-        Fri, 13 May 2022 14:27:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19D12C34100;
-        Fri, 13 May 2022 14:27:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90EB562154;
+        Fri, 13 May 2022 14:27:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A5E9C34100;
+        Fri, 13 May 2022 14:27:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452077;
-        bh=CK9ESpUewkYPRLnbksj4dIPMDcbWiGN7TsRN/0dGpVY=;
+        s=korg; t=1652452069;
+        bh=Nsl3c4EPwB+iES/gV4zHk3txJ0MAEytWCtBQqbVe0Nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2mOq/vXkfMT0uH4iDMlovCTQEWguM/+XX8rUfYI7Bjnq6sbBh1Ai/2GyfUK1QBAT
-         CcXq7jQPQ+pfa39rgLblm49yliJuBiA3FVJkYWw2tS/QGD3xbub7rak3oIMUwAo887
-         SlgQSdP0DZkTeaWs9D7nF0O+M9gLIE1ahfxDajJc=
+        b=Lp6+ylO2wpf8N1FhrslkwQJsRdwvikG706mTChGqfdEBcrEJoUXXs7B+44oQQrOl/
+         u7/B7XlY4d2lvpGyZmruY/d95W5EMAONCRntrC5hNBcJXA2yGpWYVIEH2VyT+HgSsK
+         D+PQdixoLn+sEjQ94K7MyiooUNPgykf8YDfmFfAc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 01/21] x86/lib/atomic64_386_32: Rename things
-Date:   Fri, 13 May 2022 16:23:43 +0200
-Message-Id: <20220513142229.919525583@linuxfoundation.org>
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Zi Yan <ziy@nvidia.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Lars Persson <lars.persson@axis.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Xu <peterx@redhat.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 08/10] mm: fix missing cache flush for all tail pages of compound page
+Date:   Fri, 13 May 2022 16:23:52 +0200
+Message-Id: <20220513142228.552417320@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142229.874949670@linuxfoundation.org>
-References: <20220513142229.874949670@linuxfoundation.org>
+In-Reply-To: <20220513142228.303546319@linuxfoundation.org>
+References: <20220513142228.303546319@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,246 +59,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit 22da5a07c75e1104caf6a42f189c97b83d070073 ]
+commit 2771739a7162782c0aa6424b2e3dd874e884a15d upstream.
 
-Principally, in order to get rid of #define RET in this code to make
-place for a new RET, but also to clarify the code, rename a bunch of
-things:
+The D-cache maintenance inside move_to_new_page() only consider one
+page, there is still D-cache maintenance issue for tail pages of
+compound page (e.g. THP or HugeTLB).
 
-  s/UNLOCK/IRQ_RESTORE/
-  s/LOCK/IRQ_SAVE/
-  s/BEGIN/BEGIN_IRQ_SAVE/
-  s/\<RET\>/RET_IRQ_RESTORE/
-  s/RET_ENDP/\tRET_IRQ_RESTORE\rENDP/
+THP migration is only enabled on x86_64, ARM64 and powerpc, while
+powerpc and arm64 need to maintain the consistency between I-Cache and
+D-Cache, which depends on flush_dcache_page() to maintain the
+consistency between I-Cache and D-Cache.
 
-which then leaves RET unused so it can be removed.
+But there is no issues on arm64 and powerpc since they already considers
+the compound page cache flushing in their icache flush function.
+HugeTLB migration is enabled on arm, arm64, mips, parisc, powerpc,
+riscv, s390 and sh, while arm has handled the compound page cache flush
+in flush_dcache_page(), but most others do not.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211204134907.841623970@infradead.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In theory, the issue exists on many architectures.  Fix this by not
+using flush_dcache_folio() since it is not backportable.
+
+Link: https://lkml.kernel.org/r/20220210123058.79206-3-songmuchun@bytedance.com
+Fixes: 290408d4a250 ("hugetlb: hugepage migration core")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Zi Yan <ziy@nvidia.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Fam Zheng <fam.zheng@bytedance.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Lars Persson <lars.persson@axis.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/lib/atomic64_386_32.S |   84 ++++++++++++++++++++++-------------------
- 1 file changed, 46 insertions(+), 38 deletions(-)
+ mm/migrate.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/arch/x86/lib/atomic64_386_32.S
-+++ b/arch/x86/lib/atomic64_386_32.S
-@@ -9,81 +9,83 @@
- #include <asm/alternative.h>
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -1010,9 +1010,12 @@ static int move_to_new_page(struct page
+ 		if (!PageMappingFlags(page))
+ 			page->mapping = NULL;
  
- /* if you want SMP support, implement these with real spinlocks */
--.macro LOCK reg
-+.macro IRQ_SAVE reg
- 	pushfl
- 	cli
- .endm
+-		if (likely(!is_zone_device_page(newpage)))
+-			flush_dcache_page(newpage);
++		if (likely(!is_zone_device_page(newpage))) {
++			int i, nr = compound_nr(newpage);
  
--.macro UNLOCK reg
-+.macro IRQ_RESTORE reg
- 	popfl
- .endm
- 
--#define BEGIN(op) \
-+#define BEGIN_IRQ_SAVE(op) \
- .macro endp; \
- SYM_FUNC_END(atomic64_##op##_386); \
- .purgem endp; \
- .endm; \
- SYM_FUNC_START(atomic64_##op##_386); \
--	LOCK v;
-+	IRQ_SAVE v;
- 
- #define ENDP endp
- 
--#define RET \
--	UNLOCK v; \
-+#define RET_IRQ_RESTORE \
-+	IRQ_RESTORE v; \
- 	ret
- 
--#define RET_ENDP \
--	RET; \
--	ENDP
--
- #define v %ecx
--BEGIN(read)
-+BEGIN_IRQ_SAVE(read)
- 	movl  (v), %eax
- 	movl 4(v), %edx
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %esi
--BEGIN(set)
-+BEGIN_IRQ_SAVE(set)
- 	movl %ebx,  (v)
- 	movl %ecx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v  %esi
--BEGIN(xchg)
-+BEGIN_IRQ_SAVE(xchg)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	movl %ebx,  (v)
- 	movl %ecx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %ecx
--BEGIN(add)
-+BEGIN_IRQ_SAVE(add)
- 	addl %eax,  (v)
- 	adcl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %ecx
--BEGIN(add_return)
-+BEGIN_IRQ_SAVE(add_return)
- 	addl  (v), %eax
- 	adcl 4(v), %edx
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %ecx
--BEGIN(sub)
-+BEGIN_IRQ_SAVE(sub)
- 	subl %eax,  (v)
- 	sbbl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %ecx
--BEGIN(sub_return)
-+BEGIN_IRQ_SAVE(sub_return)
- 	negl %edx
- 	negl %eax
- 	sbbl $0, %edx
-@@ -91,47 +93,52 @@ BEGIN(sub_return)
- 	adcl 4(v), %edx
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %esi
--BEGIN(inc)
-+BEGIN_IRQ_SAVE(inc)
- 	addl $1,  (v)
- 	adcl $0, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %esi
--BEGIN(inc_return)
-+BEGIN_IRQ_SAVE(inc_return)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	addl $1, %eax
- 	adcl $0, %edx
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %esi
--BEGIN(dec)
-+BEGIN_IRQ_SAVE(dec)
- 	subl $1,  (v)
- 	sbbl $0, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %esi
--BEGIN(dec_return)
-+BEGIN_IRQ_SAVE(dec_return)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	subl $1, %eax
- 	sbbl $0, %edx
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
- 
- #define v %esi
--BEGIN(add_unless)
-+BEGIN_IRQ_SAVE(add_unless)
- 	addl %eax, %ecx
- 	adcl %edx, %edi
- 	addl  (v), %eax
-@@ -143,7 +150,7 @@ BEGIN(add_unless)
- 	movl %edx, 4(v)
- 	movl $1, %eax
- 2:
--	RET
-+	RET_IRQ_RESTORE
- 3:
- 	cmpl %edx, %edi
- 	jne 1b
-@@ -153,7 +160,7 @@ ENDP
- #undef v
- 
- #define v %esi
--BEGIN(inc_not_zero)
-+BEGIN_IRQ_SAVE(inc_not_zero)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	testl %eax, %eax
-@@ -165,7 +172,7 @@ BEGIN(inc_not_zero)
- 	movl %edx, 4(v)
- 	movl $1, %eax
- 2:
--	RET
-+	RET_IRQ_RESTORE
- 3:
- 	testl %edx, %edx
- 	jne 1b
-@@ -174,7 +181,7 @@ ENDP
- #undef v
- 
- #define v %esi
--BEGIN(dec_if_positive)
-+BEGIN_IRQ_SAVE(dec_if_positive)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	subl $1, %eax
-@@ -183,5 +190,6 @@ BEGIN(dec_if_positive)
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
- 1:
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
++			for (i = 0; i < nr; i++)
++				flush_dcache_page(newpage + i);
++		}
+ 	}
+ out:
+ 	return rc;
 
 
