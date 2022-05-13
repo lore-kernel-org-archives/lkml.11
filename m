@@ -2,52 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C56F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1029DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381419AbiEMOgE (ORCPT
+        id S1381627AbiEMOgT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
+        Fri, 13 May 2022 10:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381030AbiEMOdY (ORCPT
+        with ESMTP id S1381055AbiEMOda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:33:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB745E748;
-        Fri, 13 May 2022 07:29:34 -0700 (PDT)
+        Fri, 13 May 2022 10:33:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C1760B88;
+        Fri, 13 May 2022 07:29:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 041F062159;
-        Fri, 13 May 2022 14:29:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 407DFC34100;
-        Fri, 13 May 2022 14:29:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB00D621C6;
+        Fri, 13 May 2022 14:29:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05F92C34100;
+        Fri, 13 May 2022 14:29:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452173;
-        bh=ovDcXZKFP6/Q28vqbQAc3j9wHd64tfumZlesJ/Lzcus=;
+        s=korg; t=1652452179;
+        bh=8X+WJYGX4evt7FwMn+Tpb8JS2iA8r3USKECBfnlZTls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NhS70CLOuphqKfjiJqEfalIZ50r0UnMmgT0YwPG7FVFEeqTA9XRQwVslj8bKcA0bo
-         1n8lGR0u5jQ+EVaY6g5ciRHSOddfiDS7/PrQGaHA1DewxmU7hEctCtb4JTSPZSZyZJ
-         F66FFqGIJegkv2nO7c8qazWjrS37OhnzEr/Lttak=
+        b=zxBJD5RAxT/5t346gFWOXRx9UoLu5eBO89B7LKtourwxKuo3aKy/xKTqIPowM7IDX
+         I6t6/GPGtE28NPA2w1V0fAjla02AIZFfLNMaciYh2zd3QcLuLWT8xatOGZuW4NwFXb
+         ehhkpDnq1IbZHY82hAzM/qay/7KtbhV0u3QfTWYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Peter Xu <peterx@redhat.com>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Zi Yan <ziy@nvidia.com>,
+        stable@vger.kernel.org, Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Youquan Song <youquan.song@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 07/12] mm: shmem: fix missing cache flush in shmem_mfill_atomic_pte()
-Date:   Fri, 13 May 2022 16:24:07 +0200
-Message-Id: <20220513142228.870480590@linuxfoundation.org>
+Subject: [PATCH 5.17 09/12] mm/hwpoison: fix error page recovered but reported "not recovered"
+Date:   Fri, 13 May 2022 16:24:09 +0200
+Message-Id: <20220513142228.928817865@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142228.651822943@linuxfoundation.org>
 References: <20220513142228.651822943@linuxfoundation.org>
@@ -59,51 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-commit 19b482c29b6f3805f1d8e93015847b89e2f7f3b1 upstream.
+commit 046545a661af2beec21de7b90ca0e35f05088a81 upstream.
 
-userfaultfd calls shmem_mfill_atomic_pte() which does not do any cache
-flushing for the target page.  Then the target page will be mapped to
-the user space with a different address (user address), which might have
-an alias issue with the kernel address used to copy the data from the
-user to.  Insert flush_dcache_page() in non-zero-page case.  And replace
-clear_highpage() with clear_user_highpage() which already considers the
-cache maintenance.
+When an uncorrected memory error is consumed there is a race between the
+CMCI from the memory controller reporting an uncorrected error with a
+UCNA signature, and the core reporting and SRAR signature machine check
+when the data is about to be consumed.
 
-Link: https://lkml.kernel.org/r/20220210123058.79206-6-songmuchun@bytedance.com
-Fixes: 8d1039634206 ("userfaultfd: shmem: add shmem_mfill_zeropage_pte for userfaultfd support")
-Fixes: 4c27fe4c4c84 ("userfaultfd: shmem: add shmem_mcopy_atomic_pte for userfaultfd support")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Fam Zheng <fam.zheng@bytedance.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Lars Persson <lars.persson@axis.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Zi Yan <ziy@nvidia.com>
+If the CMCI wins that race, the page is marked poisoned when
+uc_decode_notifier() calls memory_failure() and the machine check
+processing code finds the page already poisoned.  It calls
+kill_accessing_process() to make sure a SIGBUS is sent.  But returns the
+wrong error code.
+
+Console log looks like this:
+
+  mce: Uncorrected hardware memory error in user-access at 3710b3400
+  Memory failure: 0x3710b3: recovery action for dirty LRU page: Recovered
+  Memory failure: 0x3710b3: already hardware poisoned
+  Memory failure: 0x3710b3: Sending SIGBUS to einj_mem_uc:361438 due to hardware memory corruption
+  mce: Memory error not recovered
+
+kill_accessing_process() is supposed to return -EHWPOISON to notify that
+SIGBUS is already set to the process and kill_me_maybe() doesn't have to
+send it again.  But current code simply fails to do this, so fix it to
+make sure to work as intended.  This change avoids the noise message
+"Memory error not recovered" and skips duplicate SIGBUSs.
+
+[tony.luck@intel.com: reword some parts of commit message]
+
+Link: https://lkml.kernel.org/r/20220113231117.1021405-1-naoya.horiguchi@linux.dev
+Fixes: a3f5d80ea401 ("mm,hwpoison: send SIGBUS with error virutal address")
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reported-by: Youquan Song <youquan.song@intel.com>
+Cc: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/shmem.c |    4 +++-
+ mm/memory-failure.c |    4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -2357,8 +2357,10 @@ int shmem_mfill_atomic_pte(struct mm_str
- 				/* don't free the page */
- 				goto out_unacct_blocks;
- 			}
-+
-+			flush_dcache_page(page);
- 		} else {		/* ZEROPAGE */
--			clear_highpage(page);
-+			clear_user_highpage(page, dst_addr);
- 		}
- 	} else {
- 		page = *pagep;
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -707,8 +707,10 @@ static int kill_accessing_process(struct
+ 			      (void *)&priv);
+ 	if (ret == 1 && priv.tk.addr)
+ 		kill_proc(&priv.tk, pfn, flags);
++	else
++		ret = 0;
+ 	mmap_read_unlock(p->mm);
+-	return ret ? -EFAULT : -EHWPOISON;
++	return ret > 0 ? -EHWPOISON : -EFAULT;
+ }
+ 
+ static const char *action_name[] = {
 
 
