@@ -2,252 +2,342 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F276C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234047AbiEMOMY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38792 "EHLO
+        id S235718AbiEMOM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 10:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbiEMOMW (ORCPT
+        with ESMTP id S233786AbiEMOM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:12:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF1711B407;
-        Fri, 13 May 2022 07:12:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 13 May 2022 10:12:57 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E79118006
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 07:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652451175; x=1683987175;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9RB8YEFemfc9Ft2Syyd/ar9wHxstk0TYERrFHLIB7ZA=;
+  b=MW7xHxS6fLIa1H0QusYvrcKYYtL3pcDU8eLKgqMj9ONwyJYb4xy1/WUd
+   ghXFvtGUpzYwzVxv9zXWvqM/AHRGu6ZSntdDrZoDxPl/0yyomRDIV209Z
+   /ZsS3kLs0A57r1e+ntRw1OE70gGHFkEzs6RGHC3+a+FLgBoVC2AWgfDZy
+   BBzq5irDRO51papagmlU3UrwqgoX2x3m3D3ywz6FcOLaSb3KwI7aQ85sQ
+   5qjMCIN+Rls6div3tBmbbNlUDXGmH/7k08ss3qfh9L0oEbF9DJtxuZ+GR
+   eP2vpEr0JIP3chIg5PFxbSA929vJc27egtoAo6JhrZqp/XhjGLTg+1QBR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="250843817"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="250843817"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 07:12:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="624877720"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga008.fm.intel.com with ESMTP; 13 May 2022 07:12:53 -0700
+Received: from [10.252.212.211] (kliang2-MOBL.ccr.corp.intel.com [10.252.212.211])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EC29ACE31D0;
-        Fri, 13 May 2022 14:12:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C3FC36AE2;
-        Fri, 13 May 2022 14:12:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652451136;
-        bh=HH8tNT9tiA04dQ017qbO5zw1boylBuCKHFJ18ZzpEak=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Eib47AkMoPF7BqMS44TXNr/Sb5I8nP9hWEW6zRqn4kgspquC20kYTnbleoo8k9y7T
-         +vnVjOmzZ8wqn3u3gEeurUvpAXXjeSip1CmmN6tUc17tazWrj5HYk+YGDHxkHgx6T1
-         oCC99JK/rLK22zA3ZxSGOpWKvKvYaZwww6KEg1nsSdZdaEhAIAro9RpTHrFb1ZeKLt
-         72wMfCtEykfYU7Yg8jrCOQENE6Bgj21L8wsgbR1MrqHD6Zj67qNOvZJHCzBAlR2H35
-         +btUXJqjS95dm/IgPPj6yT99QDPQpP5NoTneduoPqPyERVUbZMTy5GTP+Xmt9bVNG4
-         XEdQpVMQ8qbwg==
-Received: by mail-pl1-f175.google.com with SMTP id d17so8096565plg.0;
-        Fri, 13 May 2022 07:12:16 -0700 (PDT)
-X-Gm-Message-State: AOAM530VEaJnGtkzkRTuvxGQeBOvFbmRDMfg7990yOBfpYUlQR7rYqYo
-        wOk11ooH8l5YdUsEQREtisObhCRhv+bXqJL7NA==
-X-Google-Smtp-Source: ABdhPJzGHUonLHvG6hKoTi4AF+1mrFCq3b0a+Wh3ckhTTSIpB3yo+xQVszOl5Lgx7P2zMAIOmB1dmkCFkM2VM4GaRz0=
-X-Received: by 2002:a17:90a:fd83:b0:1de:d6fd:d552 with SMTP id
- cx3-20020a17090afd8300b001ded6fdd552mr10599841pjb.32.1652451135585; Fri, 13
- May 2022 07:12:15 -0700 (PDT)
+        by linux.intel.com (Postfix) with ESMTPS id B38F25807E7;
+        Fri, 13 May 2022 07:12:51 -0700 (PDT)
+Message-ID: <9ae6d64e-a935-94f0-d2a9-cc49a578ba1c@linux.intel.com>
+Date:   Fri, 13 May 2022 10:12:50 -0400
 MIME-Version: 1.0
-References: <20220503155007.2339847-1-csharper2005@gmail.com> <20220512152725.244872-1-miquel.raynal@bootlin.com>
-In-Reply-To: <20220512152725.244872-1-miquel.raynal@bootlin.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 13 May 2022 09:12:03 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJdUm4p9qAq9dLeVTVC9PA2q2SP01kG2jyEb_f=Fo=bEQ@mail.gmail.com>
-Message-ID: <CAL_JsqJdUm4p9qAq9dLeVTVC9PA2q2SP01kG2jyEb_f=Fo=bEQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] dt-bindings: mtd: partitions: Extend
- fixed-partitions binding
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Mikhail Zhilkin <csharper2005@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Karim <Karimdplay@gmail.com>, M <x1@disroot.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH V2 22/23] perf tools: Allow system-wide events to keep
+ their own CPUs
+Content-Language: en-US
+To:     Adrian Hunter <adrian.hunter@intel.com>,
+        Namhyung Kim <namhyung@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+References: <20220506122601.367589-1-adrian.hunter@intel.com>
+ <20220506122601.367589-23-adrian.hunter@intel.com>
+ <CAM9d7cg8JRK2oVUvmWit=F5zhLhpqP=gD6iYBAa8_O-+c=EjPQ@mail.gmail.com>
+ <52f201d4-4fab-c2f4-9c4d-af887900732f@intel.com>
+ <CAM9d7cgDCd2uUJbWcvqmCDGMoPc9kppx--_rcO2OVp_GarLJkg@mail.gmail.com>
+ <f92a7681-30ca-eaf5-6f3e-de54bc19adec@intel.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <f92a7681-30ca-eaf5-6f3e-de54bc19adec@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:27 AM Miquel Raynal
-<miquel.raynal@bootlin.com> wrote:
+
+
+On 5/13/2022 12:48 AM, Adrian Hunter wrote:
+> On 12/05/22 21:53, Namhyung Kim wrote:
+>> On Thu, May 12, 2022 at 3:35 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>>>
+>>> On 12/05/22 08:27, Namhyung Kim wrote:
+>>>> On Fri, May 6, 2022 at 5:27 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>>>>>
+>>>>> Currently, user_requested_cpus supplants system-wide CPUs when the evlist
+>>>>> has_user_cpus. Change that so that system-wide events retain their own
+>>>>> CPUs and they are added to all_cpus.
+>>>>>
+>>>>> Acked-by: Ian Rogers <irogers@google.com>
+>>>>> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+>>>>> ---
+>>>>>   tools/lib/perf/evlist.c | 11 +++++------
+>>>>>   1 file changed, 5 insertions(+), 6 deletions(-)
+>>>>>
+>>>>> diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
+>>>>> index 1c801f8da44f..9a6801b53274 100644
+>>>>> --- a/tools/lib/perf/evlist.c
+>>>>> +++ b/tools/lib/perf/evlist.c
+>>>>> @@ -40,12 +40,11 @@ static void __perf_evlist__propagate_maps(struct perf_evlist *evlist,
+>>>>>           * We already have cpus for evsel (via PMU sysfs) so
+>>>>>           * keep it, if there's no target cpu list defined.
+>>>>>           */
+>>>>> -       if (!evsel->own_cpus || evlist->has_user_cpus) {
+>>>>> -               perf_cpu_map__put(evsel->cpus);
+>>>>> -               evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
+>>>>> -       } else if (!evsel->system_wide &&
+>>>>> -                  !evsel->requires_cpu &&
+>>>>> -                  perf_cpu_map__empty(evlist->user_requested_cpus)) {
+>>>>> +       if (!evsel->own_cpus ||
+>>>>> +           (!evsel->system_wide && evlist->has_user_cpus) ||
+>>>>> +           (!evsel->system_wide &&
+>>>>> +            !evsel->requires_cpu &&
+>>>>> +            perf_cpu_map__empty(evlist->user_requested_cpus))) {
+>>>>
+>>>> This is getting hard to understand.  IIUC this propagation basically
+>>>> sets user requested cpus to evsel unless it has its own cpus, right?
+>>>
+>>> I put the conditional logic altogether because that is kernel style but
+>>> it does make it practically unreadable.
+>>>
+>>> If we start with the original logic:
+>>>
+>>>          if (!evsel->own_cpus || evlist->has_user_cpus) {
+>>>                  perf_cpu_map__put(evsel->cpus);
+>>>                  evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
+>>>          } else if (!evsel->system_wide && perf_cpu_map__empty(evlist->user_requested_cpus)) {
+>>>                  perf_cpu_map__put(evsel->cpus);
+>>>                  evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
+>>>          } else if (evsel->cpus != evsel->own_cpus) {
+>>>                  perf_cpu_map__put(evsel->cpus);
+>>>                  evsel->cpus = perf_cpu_map__get(evsel->own_cpus);
+>>>          }
+>>>
+>>> Then make it more readable, i.e. same functionality
+>>>
+>>>          struct perf_cpu_map *cpus;
+>>>
+>>>          if (!evsel->own_cpus || evlist->has_user_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else if (!evsel->system_wide && perf_cpu_map__empty(evlist->user_requested_cpus))
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else
+>>>                  cpus = evsel->own_cpus;
+>>>
+>>>          if (evsel->cpus != cpus) {
+>>>                  perf_cpu_map__put(evsel->cpus);
+>>>                  evsel->cpus = perf_cpu_map__get(cpus);
+>>>          }
+>>>
+>>> Then separate out the conditions, i.e. still same functionality
+>>>
+>>>          if (!evsel->own_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else if (evlist->has_user_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else if (evsel->system_wide)
+>>>                  cpus = evsel->own_cpus;
+>>>          else if (perf_cpu_map__empty(evlist->user_requested_cpus)) /* per-thread */
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else
+>>>                  cpus = evsel->own_cpus;
+>>>
+>>> Then add the new requires_cpu flag:
+>>>
+>>>          if (!evsel->own_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else if (evlist->has_user_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else if (evsel->system_wide)
+>>>                  cpus = evsel->own_cpus;
+>>> -       else if (perf_cpu_map__empty(evlist->user_requested_cpus)) /* per-thread */
+>>> +       else if (!evsel->requres_cpu && perf_cpu_map__empty(evlist->user_requested_cpus)) /* per-thread */
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else
+>>>                  cpus = evsel->own_cpus;
+>>>
+>>> Then make system_wide keep own_cpus even if has_user_cpus:
+>>>
+>>>          if (!evsel->own_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>> +       else if (evsel->system_wide)
+>>> +               cpus = evsel->own_cpus;
+>>>          else if (evlist->has_user_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>> -       else if (evsel->system_wide)
+>>> -               cpus = evsel->own_cpus;
+>>>          else if (!evsel->requres_cpu && perf_cpu_map__empty(evlist->user_requested_cpus)) /* per-thread */
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else
+>>>                  cpus = evsel->own_cpus;
+>>>
+>>> Which leaves:
+>>>
+>>>          if (!evsel->own_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else if (evsel->system_wide)
+>>>                  cpus = evsel->own_cpus;
+>>>          else if (evlist->has_user_cpus)
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else if (!evsel->requres_cpu && perf_cpu_map__empty(evlist->user_requested_cpus)) /* per-thread */
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else
+>>>                  cpus = evsel->own_cpus;
+>>>
+>>> And putting it back together:
+>>>
+>>>          if (!evsel->own_cpus ||
+>>>              (!evsel->system_wide && evlist->has_user_cpus) ||
+>>>              (!evsel->system_wide &&
+>>>               !evsel->requires_cpu &&
+>>>               perf_cpu_map__empty(evlist->user_requested_cpus))) {
+>>>                  cpus = evlist->user_requested_cpus;
+>>>          else
+>>>                  cpus = evsel->own_cpus;
+>>>
+>>> Perhaps I shouldn't put it together?
+>>
+>> Cool, thanks a lot for explaining it in detail.
+>> I do not oppose your change but little worried about the
+>> complexity.  And I think we have some issues with uncore
+>> events already.
+> 
+> Yes it is a bit complicated because we are handling
+> many different use cases.
+> 
+>>
+>> So do you have any idea where evsel->own_cpus
+>> doesn't propagate to evsel->cpus?
+> 
+> We let the user's list of CPUs override it i.e. the
+> evlist->has_user_cpus case.  Essentially we are expecting
+> the user to know what they are doing.
+> 
+>>
+>> I think evsel->system_wide and evsel->requires_cpu
+>> can be replaced to check evsel->own_cpus instead.
+> 
+> Not at the moment because we let the user override
+> own_cpus.
+
+Do we check whether the user's input is valid (match the PMU's cpumask) 
+before the override?
+
+I think we know the PMU name. The cpumask of the PMU can be found in the 
+sysfs. So we should have enough information for a sanity check.
+
+
+> 
+>>
+>> Actually evlist->has_user_cpus is checked first so
+>> uncore events' own_cpus might not be used.
+> 
+> Yes
+> 
+>>
+>> In my laptop, perf stat -a -A -e imc/data_reads/
+>> will use cpu 0 as it's listed in the pmu cpumask.
+>> But when I use -C1,2 it'll use the both cpus and
+>> returns the similar values each (so the sum is 2x).
+> 
+> We expect the user to understand the uncore PMU they
+> are using.  AFAICT an uncore PMU cpu mask with only
+> CPU 0 typically means a single PMU that counts events
+> that could be indrectly caused by any CPU.  When the
+> cpu mask has more than one CPU, it means a PMU for
+> each of a group of CPU's (e.g. a core or socket)
+> 
+> So in the example you gave above, there is only 1 PMU
+> and reading from any CPU will give it's value.
+> 
+> A user providing a list of CPUs for uncore events
+> is useful only in certain cases.  For example when
+> each core has an uncore PMU and you only want to get
+> values from one core.
 >
-> On Tue, 2022-05-03 at 15:50:07 UTC, Mikhail Zhilkin wrote:
-> > Extend fixed-partitions binding for support of Sercomm partition parser
-> > (add "sercomm,sc-partitions" compatible).
-> >
-> > Signed-off-by: Mikhail Zhilkin <csharper2005@gmail.com>
-> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->
-> Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git mtd/next, thanks.
+>>
+>> I'm not sure if it's intended.  I expect it runs on
+>> cpu 0 or one of the given cpus.  Or it runs on both
+>> cpus and returns value in half so that the sum is
+>> the same as the original value (from a cpu).
 
-Patch 1 is a dependency, please apply it too. Without it, we now get
-in linux-next:
+It runs on CPU0. The kernel will correct the CPU when initializing the 
+event. The uncore is per-die (For the most current platforms, die is the 
+same as socket.). Usually, it runs on the first CPU of a die.
+For the -C 1,2 uncore/event/ case, the current tool creates two events. 
+One for each CPU. The kernel will find the die ID of the input CPU 
+first, then correct it to the first CPU of the die, which is 0.
+So from the kernel's perspective, the perf command turns to -C0 
+uncore/event/ -C0 uncore/event/. That's why you see similar values each. 
+(They should not be exactly the same. That's because they are not in a 
+group.)
 
-/builds/robherring/linux-dt/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.example.dtb:
-partition@0: 'sercomm,scpart-id' does not match any of the regexes:
-'^#.*', '^(at25|bm|devbus|dmacap|dsa|exynos|fsi[ab]|gpio-fan|gpio-key|gpio|gpmc|hdmi|i2c-gpio),.*',
-'^(keypad|m25p|max8952|max8997|max8998|mpmc),.*',
-'^(pinctrl-single|#pinctrl-single|PowerPC),.*',
-'^(pl022|pxa-mmc|rcar_sound|rotary-encoder|s5m8767|sdhci),.*',
-'^(simple-audio-card|st-plgpio|st-spics|ts),.*', '^100ask,.*',
-'^70mai,.*', '^8dev,.*', '^GEFanuc,.*', '^ORCL,.*', '^SUNW,.*',
-'^[a-zA-Z0-9#_][a-zA-Z0-9+\\-._@]{0,63}$',
-'^[a-zA-Z0-9+\\-._]*@[0-9a-zA-Z,]*$', '^abb,.*', '^abilis,.*',
-'^abracon,.*', '^abt,.*', '^acer,.*', '^acme,.*', '^actions,.*',
-'^active-semi,.*', '^ad,.*', '^adafruit,.*', '^adapteva,.*',
-'^adaptrum,.*', '^adh,.*', '^adi,.*', '^advantech,.*',
-'^aeroflexgaisler,.*', '^aesop,.*', '^airoha,.*', '^al,.*',
-'^alcatel,.*', '^allegro,.*', '^allo,.*', '^allwinner,.*',
-'^alphascale,.*', '^alps,.*', '^alt,.*', '^altr,.*', '^amarula,.*',
-'^amazon,.*', '^amcc,.*', '^amd,.*', '^amediatech,.*', '^amlogic,.*',
-'^ampere,.*', '^ampire,.*', '^ams,.*', '^amstaos,.*', '^analogix,.*',
-'^andestech,.*', '^anvo,.*', '^apm,.*', '^apple,.*', '^aptina,.*',
-'^arasan,.*', '^archermind,.*', '^arctic,.*', '^arcx,.*', '^aries,.*',
-'^arm,.*', '^armadeus,.*', '^arrow,.*', '^artesyn,.*',
-'^asahi-kasei,.*', '^asc,.*', '^asix,.*', '^aspeed,.*', '^asus,.*',
-'^atlas,.*', '^atmel,.*', '^auo,.*', '^auvidea,.*', '^avago,.*',
-'^avia,.*', '^avic,.*', '^avnet,.*', '^awinic,.*', '^axentia,.*',
-'^axis,.*', '^azoteq,.*', '^azw,.*', '^baikal,.*', '^bananapi,.*',
-'^beacon,.*', '^beagle,.*', '^bhf,.*', '^bitmain,.*', '^blutek,.*',
-'^boe,.*', '^bosch,.*', '^boundary,.*', '^brcm,.*', '^broadmobi,.*',
-'^bsh,.*', '^bticino,.*', '^buffalo,.*', '^bur,.*', '^calamp,.*',
-'^calaosystems,.*', '^calxeda,.*', '^canaan,.*', '^caninos,.*',
-'^capella,.*', '^cascoda,.*', '^catalyst,.*', '^cavium,.*',
-'^cdns,.*', '^cdtech,.*', '^cellwise,.*', '^ceva,.*',
-'^checkpoint,.*', '^chefree,.*', '^chipidea,.*', '^chipone,.*',
-'^chipspark,.*', '^chrontel,.*', '^chrp,.*', '^chunghwa,.*',
-'^chuwi,.*', '^ciaa,.*', '^cirrus,.*', '^cisco,.*',
-'^cloudengines,.*', '^cnm,.*', '^cnxt,.*', '^colorfly,.*',
-'^compulab,.*', '^congatec,.*', '^coreriver,.*', '^corpro,.*',
-'^cortina,.*', '^cosmic,.*', '^crane,.*', '^creative,.*',
-'^crystalfontz,.*', '^csky,.*', '^csq,.*', '^ctera,.*', '^ctu,.*',
-'^cubietech,.*', '^cui,.*', '^cypress,.*', '^cyx,.*', '^cznic,.*',
-'^dallas,.*', '^dataimage,.*', '^davicom,.*', '^dell,.*', '^delta,.*',
-'^denx,.*', '^devantech,.*', '^dfi,.*', '^dh,.*', '^difrnce,.*',
-'^digi,.*', '^digilent,.*', '^dioo,.*', '^dlc,.*', '^dlg,.*',
-'^dlink,.*', '^dmo,.*', '^domintech,.*', '^dongwoon,.*',
-'^dptechnics,.*', '^dragino,.*', '^ds,.*', '^dserve,.*',
-'^dynaimage,.*', '^ea,.*', '^ebang,.*', '^ebs-systart,.*', '^ebv,.*',
-'^eckelmann,.*', '^edimax,.*', '^edt,.*', '^eeti,.*',
-'^einfochips,.*', '^eink,.*', '^elan,.*', '^element14,.*',
-'^elgin,.*', '^elida,.*', '^elimo,.*', '^elpida,.*', '^embest,.*',
-'^emlid,.*', '^emmicro,.*', '^empire-electronix,.*', '^emtrion,.*',
-'^enclustra,.*', '^endless,.*', '^ene,.*', '^energymicro,.*',
-'^engicam,.*', '^engleder,.*', '^epcos,.*', '^epfl,.*', '^epson,.*',
-'^esp,.*', '^est,.*', '^ettus,.*', '^eukrea,.*', '^everest,.*',
-'^everspin,.*', '^evervision,.*', '^exar,.*', '^excito,.*',
-'^exegin,.*', '^ezchip,.*', '^facebook,.*', '^fairphone,.*',
-'^faraday,.*', '^fastrax,.*', '^fcs,.*', '^feixin,.*', '^feiyang,.*',
-'^fii,.*', '^firefly,.*', '^focaltech,.*', '^forlinx,.*', '^frida,.*',
-'^friendlyarm,.*', '^fsl,.*', '^fujitsu,.*', '^fxtec,.*',
-'^gardena,.*', '^gateworks,.*', '^gcw,.*', '^ge,.*', '^geekbuying,.*',
-'^gef,.*', '^gemei,.*', '^geniatech,.*', '^giantec,.*',
-'^giantplus,.*', '^globalscale,.*', '^globaltop,.*', '^gmt,.*',
-'^goodix,.*', '^google,.*', '^grinn,.*', '^grmn,.*', '^gumstix,.*',
-'^gw,.*', '^hannstar,.*', '^haochuangyi,.*', '^haoyu,.*',
-'^hardkernel,.*', '^hideep,.*', '^himax,.*', '^hirschmann,.*',
-'^hisi,.*', '^hisilicon,.*', '^hit,.*', '^hitex,.*', '^holt,.*',
-'^holtek,.*', '^honestar,.*', '^honeywell,.*', '^hoperun,.*',
-'^hp,.*', '^hpe,.*', '^hsg,.*', '^huawei,.*', '^hugsun,.*',
-'^hwacom,.*', '^hycon,.*', '^hydis,.*', '^hynix,.*', '^hyundai,.*',
-'^i2se,.*', '^ibm,.*', '^icplus,.*', '^idt,.*', '^ifi,.*',
-'^ilitek,.*', '^imagis,.*', '^img,.*', '^imi,.*', '^incircuit,.*',
-'^inet-tek,.*', '^infineon,.*', '^inforce,.*', '^ingenic,.*',
-'^injoinic,.*', '^innolux,.*', '^inside-secure,.*', '^insignal,.*',
-'^inspur,.*', '^intel,.*', '^intercontrol,.*', '^invensense,.*',
-'^inversepath,.*', '^iom,.*', '^isee,.*', '^isil,.*', '^issi,.*',
-'^ite,.*', '^itead,.*', '^itian,.*', '^ivo,.*', '^iwave,.*',
-'^jdi,.*', '^jedec,.*', '^jesurun,.*', '^jethome,.*', '^jianda,.*',
-'^joz,.*', '^kam,.*', '^karo,.*', '^keithkoep,.*', '^keymile,.*',
-'^khadas,.*', '^kiebackpeter,.*', '^kinetic,.*', '^kingdisplay,.*',
-'^kingnovel,.*', '^kionix,.*', '^kobo,.*', '^kobol,.*', '^koe,.*',
-'^kontron,.*', '^kosagi,.*', '^kvg,.*', '^kyo,.*', '^lacie,.*',
-'^laird,.*', '^lamobo,.*', '^lantiq,.*', '^lattice,.*', '^leadtek,.*',
-'^leez,.*', '^lego,.*', '^lemaker,.*', '^lenovo,.*', '^lg,.*',
-'^lgphilips,.*', '^libretech,.*', '^licheepi,.*', '^linaro,.*',
-'^linksprite,.*', '^linksys,.*', '^linutronix,.*', '^linux,.*',
-'^linx,.*', '^liteon,.*', '^litex,.*', '^lltc,.*', '^logicpd,.*',
-'^logictechno,.*', '^longcheer,.*', '^lontium,.*', '^loongson,.*',
-'^lsi,.*', '^lwn,.*', '^lxa,.*', '^m5stack,.*', '^macnica,.*',
-'^mantix,.*', '^mapleboard,.*', '^marvell,.*', '^maxbotix,.*',
-'^maxim,.*', '^mbvl,.*', '^mcube,.*', '^meas,.*', '^mecer,.*',
-'^mediatek,.*', '^megachips,.*', '^mele,.*', '^melexis,.*',
-'^melfas,.*', '^mellanox,.*', '^memsic,.*', '^menlo,.*', '^mentor,.*',
-'^meraki,.*', '^merrii,.*', '^micrel,.*', '^microchip,.*',
-'^microcrystal,.*', '^micron,.*', '^microsoft,.*', '^microsys,.*',
-'^mikroe,.*', '^mikrotik,.*', '^miniand,.*', '^minix,.*',
-'^miramems,.*', '^mitsubishi,.*', '^miyoo,.*', '^mntre,.*',
-'^modtronix,.*', '^mosaixtech,.*', '^motorola,.*', '^moxa,.*',
-'^mpl,.*', '^mps,.*', '^mqmaker,.*', '^mrvl,.*', '^mscc,.*',
-'^msi,.*', '^mstar,.*', '^mti,.*', '^multi-inno,.*',
-'^mundoreader,.*', '^murata,.*', '^mxic,.*', '^mxicy,.*', '^myir,.*',
-'^national,.*', '^nec,.*', '^neonode,.*', '^netgear,.*',
-'^netlogic,.*', '^netron-dy,.*', '^netronix,.*', '^netxeon,.*',
-'^neweast,.*', '^newhaven,.*', '^nexbox,.*', '^nextthing,.*',
-'^ni,.*', '^nintendo,.*', '^nlt,.*', '^nokia,.*', '^nordic,.*',
-'^novtech,.*', '^nutsboard,.*', '^nuvoton,.*', '^nvd,.*',
-'^nvidia,.*', '^nxp,.*', '^oceanic,.*', '^ocs,.*', '^oct,.*',
-'^okaya,.*', '^oki,.*', '^olimex,.*', '^olpc,.*', '^oneplus,.*',
-'^onion,.*', '^onnn,.*', '^ontat,.*', '^opalkelly,.*',
-'^opencores,.*', '^openembed,.*', '^openrisc,.*', '^option,.*',
-'^oranth,.*', '^orisetech,.*', '^ortustech,.*', '^osddisplays,.*',
-'^osmc,.*', '^ouya,.*', '^overkiz,.*', '^ovti,.*', '^oxsemi,.*',
-'^ozzmaker,.*', '^panasonic,.*', '^parade,.*', '^parallax,.*',
-'^pda,.*', '^pericom,.*', '^pervasive,.*', '^phicomm,.*',
-'^phytec,.*', '^picochip,.*', '^pine64,.*', '^pineriver,.*',
-'^pixcir,.*', '^plantower,.*', '^plathome,.*', '^plda,.*', '^plx,.*',
-'^ply,.*', '^pni,.*', '^pocketbook,.*', '^polaroid,.*',
-'^portwell,.*', '^poslab,.*', '^pov,.*', '^powertip,.*',
-'^powervr,.*', '^primux,.*', '^probox2,.*', '^prt,.*',
-'^pulsedlight,.*', '^purism,.*', '^qca,.*', '^qcom,.*', '^qemu,.*',
-'^qi,.*', '^qiaodian,.*', '^qihua,.*', '^qishenglong,.*', '^qnap,.*',
-'^radxa,.*', '^raidsonic,.*', '^ralink,.*', '^ramtron,.*',
-'^raspberrypi,.*', '^raydium,.*', '^rda,.*', '^realtek,.*',
-'^remarkable,.*', '^renesas,.*', '^rervision,.*', '^revotics,.*',
-'^rex,.*', '^richtek,.*', '^ricoh,.*', '^rikomagic,.*', '^riot,.*',
-'^riscv,.*', '^rockchip,.*', '^rocktech,.*', '^rohm,.*', '^ronbo,.*',
-'^roofull,.*', '^roseapplepi,.*', '^samsung,.*', '^samtec,.*',
-'^sancloud,.*', '^sandisk,.*', '^satoz,.*', '^sbs,.*',
-'^schindler,.*', '^seagate,.*', '^seeed,.*', '^seirobotics,.*',
-'^semtech,.*', '^senseair,.*', '^sensirion,.*', '^sensortek,.*',
-'^sff,.*', '^sgd,.*', '^sgmicro,.*', '^sgx,.*', '^sharp,.*',
-'^shimafuji,.*', '^shiratech,.*', '^si-en,.*', '^si-linux,.*',
-'^siemens,.*', '^sifive,.*', '^sigma,.*', '^sii,.*', '^sil,.*',
-'^silabs,.*', '^silan,.*', '^silead,.*', '^silergy,.*',
-'^silex-insight,.*', '^siliconfile,.*', '^siliconmitus,.*',
-'^silvaco,.*', '^simtek,.*', '^sinlinx,.*', '^sinovoip,.*',
-'^sinowealth,.*', '^sipeed,.*', '^sirf,.*', '^sis,.*', '^sitronix,.*',
-'^skov,.*', '^skyworks,.*', '^smartlabs,.*', '^smsc,.*', '^snps,.*',
-'^sochip,.*', '^socionext,.*', '^solidrun,.*', '^solomon,.*',
-'^sony,.*', '^spansion,.*', '^sparkfun,.*', '^spinalhdl,.*',
-'^sprd,.*', '^ssi,.*', '^sst,.*', '^sstar,.*', '^st,.*',
-'^st-ericsson,.*', '^starfive,.*', '^starry,.*', '^startek,.*',
-'^ste,.*', '^stericsson,.*', '^storlink,.*', '^storm,.*',
-'^storopack,.*', '^summit,.*', '^sunchip,.*', '^sunplus,.*',
-'^supermicro,.*', '^swir,.*', '^syna,.*', '^synology,.*',
-'^synopsys,.*', '^tbs,.*', '^tbs-biometrics,.*', '^tcg,.*', '^tcl,.*',
-'^tcs,.*', '^tdo,.*', '^team-source-display,.*', '^technexion,.*',
-'^technologic,.*', '^techstar,.*', '^teltonika,.*', '^tempo,.*',
-'^terasic,.*', '^tesla,.*', '^tfc,.*', '^thead,.*', '^thine,.*',
-'^thingyjp,.*', '^thundercomm,.*', '^ti,.*', '^tianma,.*', '^tlm,.*',
-'^tmt,.*', '^topeet,.*', '^topic,.*', '^toppoly,.*', '^topwise,.*',
-'^toradex,.*', '^toshiba,.*', '^toumaz,.*', '^tpk,.*', '^tplink,.*',
-'^tpo,.*', '^tq,.*', '^traverse,.*', '^tronfy,.*', '^tronsmart,.*',
-'^truly,.*', '^tsd,.*', '^tyan,.*', '^u-blox,.*', '^u-boot,.*',
-'^ubnt,.*', '^ucrobotics,.*', '^udoo,.*', '^ugoos,.*', '^uniwest,.*',
-'^upisemi,.*', '^urt,.*', '^usi,.*', '^utoo,.*', '^v3,.*',
-'^vaisala,.*', '^vamrs,.*', '^variscite,.*', '^vdl,.*',
-'^vertexcom,.*', '^via,.*', '^vicor,.*', '^videostrong,.*',
-'^virtio,.*', '^virtual,.*', '^vishay,.*', '^visionox,.*',
-'^vitesse,.*', '^vivante,.*', '^vivax,.*', '^vocore,.*', '^voipac,.*',
-'^vot,.*', '^vxt,.*', '^wanchanglong,.*', '^wand,.*', '^waveshare,.*',
-'^wd,.*', '^we,.*', '^welltech,.*', '^wetek,.*', '^wexler,.*',
-'^whwave,.*', '^wi2wi,.*', '^wiligear,.*', '^willsemi,.*',
-'^winbond,.*', '^wingtech,.*', '^winlink,.*', '^winstar,.*',
-'^wirelesstag,.*', '^wits,.*', '^wlf,.*', '^wm,.*', '^wobo,.*',
-'^x-powers,.*', '^xen,.*', '^xes,.*', '^xiaomi,.*', '^xillybus,.*',
-'^xingbangda,.*', '^xinpeng,.*', '^xiphera,.*', '^xlnx,.*',
-'^xnano,.*', '^xunlong,.*', '^xylon,.*', '^yadro,.*', '^yamaha,.*',
-'^yes-optoelectronics,.*', '^yic,.*', '^ylm,.*', '^yna,.*',
-'^yones-toptech,.*', '^ys,.*', '^ysoft,.*', '^zarlink,.*',
-'^zealz,.*', '^zeitec,.*', '^zidoo,.*', '^zii,.*', '^zinitix,.*',
-'^zkmagic,.*', '^zte,.*', '^zyxel,.*'
-  From schema: /builds/robherring/linux-dt/Documentation/devicetree/bindings/vendor-prefixes.yaml
 
-Rob
+> 
+> I don't know if there is anything wrong with the way
+> we are handling uncore PMUs, except that I don't know
+> if it is documented anywhere.
+
+Right, we are lacking of the document for the cpumask. I guess I can 
+update it in the 
+Documentation/ABI/testing/sysfs-bus-event_source-devices-uncore. But 
+it's only for the developer.
+
+At the meantime, I think it may be better to show an error/warning if 
+the user inputs are not matched with the cpumask of the requested PMU. 
+That's for the end users.
+
+> 
+>>
+>>>
+>>>>
+>>>> But the hybrid pmus make this complex.  Maybe we can move the
+>>>> logic in evlist__fix_hybrid_cpus() here and simplify it like below
+>>>>
+>>>> if (evsel->own_cpus) {
+>>>>     if (evsel->pmu->is_hybrid)
+>>>>        evsel->cpus = fixup_hybrid_cpus(evsel>own_cpus,
+>>>>                                        evlist->user_requested_cpus);  //?
+>>>>     else
+>>>>        evsel->cpus = evlist->own_cpus;  // put + get
+>>>> } else {
+>>>>     evsel->cpus = evlist->user_requested_cpus;  // put + get
+>>>> }
+>>>>
+>>>> Then we need to make sure evsel->pmu is set properly.
+>>>>
+>>>> What do you think?
+>>>
+>>> Hybrid handling looks complicated.  I would have to spend time
+>>> better understanding it.
+>>>
+>>> So, in the context of this patch set, I don't want to look at
+>>> issues with hybrid CPUs, except that there should be no change
+>>> to how they are handled.
+>>
+
+I think we should at least run perf test on a hybrid machine. We already 
+have some backlog to handle. It's better not to bring more regression issue.
+
+Thanks,Kan
+
+
+
