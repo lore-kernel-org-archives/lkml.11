@@ -2,95 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D111C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0551C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380270AbiEMMaw (ORCPT
+        id S1380276AbiEMMd1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 08:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
+        Fri, 13 May 2022 08:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350172AbiEMMar (ORCPT
+        with ESMTP id S1350172AbiEMMdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 08:30:47 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3645F33;
-        Fri, 13 May 2022 05:30:40 -0700 (PDT)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2819A200002;
-        Fri, 13 May 2022 12:30:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652445037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wfIZfPF0PPO2o8Rv7WWbDVcJ48+Oi7T4hGnm7JBXGCU=;
-        b=cTMZuuLBflU3IvfP3AHQkWSlhNlLdeqsxtIxfaqKJOLT7MeF6Rk7URV47KS/+mYQSWGmCZ
-        Q7pgRXyJUxZlfh2Cae6/RTbGjQqJONZyZ7QjEpP1dSJY6eBAPSj5IHWal04SR4pk9pL2C9
-        lZcA0h4WmC9IB2UccQXTlcaoD9BIvZkUW4NuC2OacMIIYo1DhBf06060X+/S/1L9RoWe6F
-        VfpVsvh4vsWaOwHm62YTKzI4ncziEZKC3HZu+RJSSAgu6FwDhsBiYmiJay1zEJ6QZcjxha
-        ZmojSV6psVY61zwNDNZOvcLebROO4oRm1UC8iiIekyEe93XbKHOUY6evtj4bAA==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     linux-spdx@vger.kernel.org,
-        Gregory Clement <gregory.clement@free-electrons.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [patch 04/10] clocksource/drivers/armada-370-xp: Convert to
- SPDX identifier
-In-Reply-To: <20220510171254.592781786@linutronix.de>
-References: <20220510171003.952873904@linutronix.de>
- <20220510171254.592781786@linutronix.de>
-Date:   Fri, 13 May 2022 14:30:30 +0200
-Message-ID: <87wnepr4wp.fsf@BL-laptop>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Fri, 13 May 2022 08:33:25 -0400
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0C666AC3;
+        Fri, 13 May 2022 05:33:24 -0700 (PDT)
+Received: by mail-oi1-f171.google.com with SMTP id w130so10010174oig.0;
+        Fri, 13 May 2022 05:33:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=buZCjK/zEXixkrBZxaDQw6YBg7oqOrxcHQhY9x47DBY=;
+        b=0Ydr2WIdaX/24jjhjChfjM+iK/3LVoVr7ZUjKqo69C6JUebUy+J9ewXCyik0EKpWXv
+         UigQ/yBCTh0cw5pj1wWTG+vWH3b8A/Vv7q1WsJ/DSLmub0FDuj0L48rTdw5lPMOdLhO+
+         VMjf2EprOUIexqFdiHmTQ0xv5g0tqZmBOp60Bq+LvhkQ2NQgZrydGMNJwj8DXZt3F4AL
+         SmBqmbF6eDRr5X5SjvaSCExQr+9LT1kemPtyXBb4stWTOzCVQBleb+5SaMKff3Uq/6BL
+         DqSAxEAA+PYTUzX7KymKYkdw2t7/bl04dKWUGP20hI2oKrmOxtLTqLJKJLRnAdO57h+A
+         2nTQ==
+X-Gm-Message-State: AOAM533LwuJ7aQfeDIAibbovSo1hgj74v1P7OCy3CtIrWPkFwk0SyWck
+        TzODVbaVWkSJsmHbo+hSfFijMH8zcA==
+X-Google-Smtp-Source: ABdhPJw7upKKDoDgfZ+8DZ0CWGKjhxTuOLrapQu7ccyksWW8Kk1fXfQ/lZ4uAKurnleTew8Xzr+gOw==
+X-Received: by 2002:a05:6808:1206:b0:2d7:65a8:65e with SMTP id a6-20020a056808120600b002d765a8065emr2225633oil.107.1652445202398;
+        Fri, 13 May 2022 05:33:22 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id c24-20020a9d6858000000b00606ad72bdcbsm880686oto.38.2022.05.13.05.33.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 05:33:21 -0700 (PDT)
+Received: (nullmailer pid 85827 invoked by uid 1000);
+        Fri, 13 May 2022 12:33:21 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        p.zabel@pengutronix.de, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        angelogioacchino.delregno@collabora.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        airlied@linux.ie, nancy.lin@mediatek.com,
+        dri-devel@lists.freedesktop.org, chunkuang.hu@kernel.org,
+        jason-jh.lin@mediatek.com
+In-Reply-To: <20220512080523.25082-2-rex-bc.chen@mediatek.com>
+References: <20220512080523.25082-1-rex-bc.chen@mediatek.com> <20220512080523.25082-2-rex-bc.chen@mediatek.com>
+Subject: Re: [PATCH v3 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
+Date:   Fri, 13 May 2022 07:33:21 -0500
+Message-Id: <1652445201.069924.85826.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thomas Gleixner <tglx@linutronix.de> writes:
-
-> The license information clearly states GPL version 2 only. The extra text
-> which excludes warranties is an excerpt of the corresponding GPLv2 clause
-> 11.
->
-> So the SPDX identifier covers it completely.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Gregory Clement <gregory.clement@free-electrons.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-
-Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-
-Thanks,
-
-Gregory
+On Thu, 12 May 2022 16:05:21 +0800, Rex-BC Chen wrote:
+> From: "Nancy.Lin" <nancy.lin@mediatek.com>
+> 
+> Add vdosys1 RDMA definition.
+> 
+> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  drivers/clocksource/timer-armada-370-xp.c |    5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> --- a/drivers/clocksource/timer-armada-370-xp.c
-> +++ b/drivers/clocksource/timer-armada-370-xp.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Marvell Armada 370/XP SoC timer handling.
->   *
-> @@ -7,10 +8,6 @@
->   * Gregory CLEMENT <gregory.clement@free-electrons.com>
->   * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
->   *
-> - * This file is licensed under the terms of the GNU General Public
-> - * License version 2.  This program is licensed "as is" without any
-> - * warranty of any kind, whether express or implied.
-> - *
->   * Timer 0 is used as free-running clocksource, while timer 1 is
->   * used as clock_event_device.
->   *
->
+>  .../display/mediatek/mediatek,mdp-rdma.yaml   | 88 +++++++++++++++++++
+>  1 file changed, 88 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+> 
 
--- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml: properties:compatible: [{'const': 'mediatek,mt8195-vdo1-rdma'}] is not of type 'object', 'boolean'
+	from schema $id: http://json-schema.org/draft-07/schema#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml: ignoring, error in schema: properties: compatible
+Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.example.dts:25:18: fatal error: dt-bindings/memory/mt8195-memory-port.h: No such file or directory
+   25 |         #include <dt-bindings/memory/mt8195-memory-port.h>
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
