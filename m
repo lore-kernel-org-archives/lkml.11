@@ -2,108 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8780DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA56DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:14:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377190AbiEMGNx (ORCPT
+        id S1377251AbiEMGO2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 02:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
+        Fri, 13 May 2022 02:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350874AbiEMGNt (ORCPT
+        with ESMTP id S232866AbiEMGON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 02:13:49 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD3826CC7D
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:13:46 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso6930792pjg.0
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:13:46 -0700 (PDT)
+        Fri, 13 May 2022 02:14:13 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D9A26CC7D
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:14:11 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id i20-20020a05600c355400b0039456976dcaso4739856wmq.1
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:14:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kUZ2JsyK3ZUZK31g+pozQdNwm9zwv4kOdXsDjmRgytw=;
-        b=b/B7oTtsYLzf9v+BgX7A5Op62ccI59r0/Gjhdo9XmmKLpZcCFvpRLYh0T1diKGFssq
-         +D1oFMpGEgS3dedSc1hx7m+97/PBP5klDt+XFKkZOa+SOzIrkbz1GdHO++9ofGkrxJ8X
-         OBDyJBz9lVt6T0PwBvZcESLXtdeww0QiyN1QSBOVKTRVdoug+uWnUXaqBTcI+SLZlGxW
-         d/wFh1WGoXM3hXFZh7/R2JE+MWVpg8YQJxBo/MMDlZxsxswQtP3iucxs3+7+Pc7+G1bj
-         VpvgDRFalC1lZluL98subl2H3sTFs2PpA4Lk0apLT2FNL5FZHn4AE6GtfzHwPMSkRun1
-         p1Vw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uAJqhZC1C/Q9FHKuHNivRCwHP2aLTusrcVUMg5OeoKQ=;
+        b=pZngk5SldFVYgLXXBUjf0GnPLvqAwiuSj5OAwlHA/Uxop92U+gROcpDiOQyfUuKnFw
+         KbgJnN7J55/tJMwkSCFuRws/4gbAvRxvUu8liqkyvPsMl15NtCNkftbBtlhimy1bV0X+
+         i0K0JzbRIzik9Xqp93oD7s1lz3p7emwy6ZYeysit21s3N+1+eRzORU6c2bSldwf8VrJJ
+         8QuNlBFUejvRkavEs+Hsxh3WnY097JhjmuzSPH4vLx3EDvd95ESyOiY6LuqlJerFQXJN
+         mJUz2934SH6RwTS3GSKaQENADo94uF9B7WtrIB3jPzdntgoPx/Mr1hJgsVykZk847+VP
+         SI6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kUZ2JsyK3ZUZK31g+pozQdNwm9zwv4kOdXsDjmRgytw=;
-        b=C1hWLyrHx0gTMUcMtvHsdtt1Upbd0hrZF0CzrAuEq9wupubSEVAIGuDDKzuHDkfiCo
-         jmV++TIYV7zQzFgHAb4i8J63zICK9ydXcoF/P5HqllsllUrtEjEdaE1Vk1QDKnzMKITT
-         nHt0d4SZf0E48l+kAD6IbPdAMK4K79W+BHSrErjOqCFlI9bQGzoin7EWef99/SNCigfa
-         wIpt7cbM+J0RLBzU2SwIU+J41saw/8VGwVjMDKO+0jf4pzra4RH7cHaOKLZc+bhdk8pp
-         T4hrHit9Xk4YRd14B8RIf+8q7RxfhpjHtk77681WNJT5PAaH10QarMSDw9vyHDTju0Bv
-         rHdA==
-X-Gm-Message-State: AOAM532zNECOwlx9kJSnQ+ABn8LL5BPVI4Yy12PjRfX9bxTM4p6aCVFs
-        IGwLer83PYVS1hX7/g6z0CQWzw==
-X-Google-Smtp-Source: ABdhPJwtZ+ZrOvv/RBk2TLd92omy7V3a10rbbih+EthlQBwXfimJ1ehIKFYHeBwhoactNuDqC2MxdQ==
-X-Received: by 2002:a17:90a:e517:b0:1d7:5bbd:f9f0 with SMTP id t23-20020a17090ae51700b001d75bbdf9f0mr3233860pjy.77.1652422426455;
-        Thu, 12 May 2022 23:13:46 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id u11-20020a17090341cb00b0015e8d4eb219sm941603ple.99.2022.05.12.23.13.45
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uAJqhZC1C/Q9FHKuHNivRCwHP2aLTusrcVUMg5OeoKQ=;
+        b=0/4ZCoPh18hMZGqhv1KSxAmt6LCUroQPUdL/g5NjLNssy14sO0DuJ0aGARxNdvp0xb
+         erjeR9C/4GR4yOImO4xxl+Mlga8e+ThyPtg4/cx3ArtOB+WN/T2XTMx2Eqk5F4CGVIfi
+         PyPitYckX5UV679E3QXN29MZ2YxeXKrQCcbMoe8ri4Pl2m0HtRWz2CoFzQ0Y6yzDCBND
+         w9BbXlLFl67vankpw3a/HiBPzf3RKIy1Wvcs/EXs6VpTc2Z8OFA7sNBHGDRpTFsGXrrw
+         b2Uw76sJGuEeAcDj3UkyKFhqrSe55tvXR/UxqKeOTQZot4aSDYRAySwj4vJMMtDT/SIf
+         joBQ==
+X-Gm-Message-State: AOAM532WW5yBaiXAKkEbXIwcOXthxGO5cCERjODv7SdYWI0mI2UpqAcv
+        yVi0mK196T62g3nokBhiSn9DHw==
+X-Google-Smtp-Source: ABdhPJxSoqFZu5xWQFZQMJH5obw3FV3uE+uXkptGPzvYlWeY5QI75GpqhfaoLqhsUfXF3WXIIQ9wjQ==
+X-Received: by 2002:a7b:cbc2:0:b0:388:faec:2036 with SMTP id n2-20020a7bcbc2000000b00388faec2036mr3031170wmi.190.1652422449908;
+        Thu, 12 May 2022 23:14:09 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id g4-20020adfbc84000000b0020c5253d8f3sm1477760wrh.63.2022.05.12.23.14.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 23:13:45 -0700 (PDT)
-Date:   Fri, 13 May 2022 11:43:43 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 1/2] cpufreq: fix race on cpufreq online
-Message-ID: <20220513061343.wndyhjeehoqmfofp@vireshk-i7>
-References: <20220512135231.10076-1-schspa@gmail.com>
- <20220513041833.mcubozfhl2qd2rps@vireshk-i7>
- <CAMA88Tpjms4HEos0GJHmQR5YZd4hhdqpgMO7JmxTxVpF0oMUCg@mail.gmail.com>
+        Thu, 12 May 2022 23:14:09 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v3 0/7] ufs: set power domain performance state when scaling gears
+Date:   Fri, 13 May 2022 08:13:40 +0200
+Message-Id: <20220513061347.46480-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMA88Tpjms4HEos0GJHmQR5YZd4hhdqpgMO7JmxTxVpF0oMUCg@mail.gmail.com>
-User-Agent: NeoMutt/20180716-391-311a52
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13-05-22, 14:06, Schspa Shi wrote:
-> Viresh Kumar <viresh.kumar@linaro.org> writes:
-> > On 12-05-22, 21:52, Schspa Shi wrote:
-> >> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-> >> index 80f535cc8a75..35dffd738580 100644
-> >> --- a/drivers/cpufreq/cpufreq.c
-> >> +++ b/drivers/cpufreq/cpufreq.c
-> >> @@ -953,7 +953,10 @@ static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
-> >>              return -EIO;
-> >>
-> >>      down_read(&policy->rwsem);
-> >> -    ret = fattr->show(policy, buf);
-> >> +    if (unlikely(policy_is_inactive(policy)))
-> >> +            ret = -EBUSY;
-> >> +    else
-> >> +            ret = fattr->show(policy, buf);
-> >
-> > I like it the way I have done earlier, initialize ret to -EBUSY and
-> > get rid of the else part and call show/store in if itself. Same for
-> > below.
-> >
-> 
-> I add a unlikely here, to avoid branch prediction failed.
+Hi,
 
-I am not asking you to drop it, I also added the unlikely within the
-implementation of policy_is_inactive() then. It can be written as:
+Changes since v2
+================
+1. PM: Split PM OPP patch into two - getting clocks and rates. (Viresh)
+2. PM: Do not set clock rates from PM OPPs but rely on set_opp helper. (Viresh)
+3. PM: Use clk bulk operations in PM OPP for getting/releasing the clocks. (Bjorn)
+4. UFS: Rework clock scalling to be called in the same place as old method, so
+   pre/post changes notification will work. (Mani)
+5. UFS: Bail out if both freq-table-hz and operating-points are provided. (Mani)
+6. Add review tags.
 
-if (likely(!policy_is_inactive(policy)))
-        ret = fattr->show(policy, buf);
+Changes since v1
+================
+1. Patch #1 qcom,gcc-sdm845: fix typo (Stephen).
+2. Patch #2 ufs dt-bindings: not adding Rob's review because patch
+   changed significantly.
+3. PM: add new code for handling multiple clocks.
+4. UFS: deprecate freq-table-hz property and use PM opps instead.
 
-> And move the
-> to the fail path to avoid a register assignment to -EBUSY.
+Dependencies
+============
+The UFS patch depends on PM OPP patches adding multiple clocks/rates support.
 
-We don't care about such assignments for performance to be honest.
-This makes the code smaller by few lines, that's enough.
+Best regards,
+Krzysztof
+
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+Krzysztof Kozlowski (7):
+  dt-bindings: clock: qcom,gcc-sdm845: add parent power domain
+  dt-bindings: opp: accept array of frequencies
+  dt-bindings: ufs: common: add OPP table
+  arm64: dts: qcom: sdm845: control RPMHPD performance states with UFS
+  PM: opp: allow control of multiple clocks
+  PM: opp: parse multiple frequencies in each OPP
+  ufs: use PM OPP when scaling gears
+
+ .../bindings/clock/qcom,gcc-sdm845.yaml       |   3 +
+ .../devicetree/bindings/opp/opp-v2-base.yaml  |  10 +
+ .../devicetree/bindings/ufs/ufs-common.yaml   |  34 ++-
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          |  43 +++-
+ drivers/opp/core.c                            | 207 +++++++++++++-----
+ drivers/opp/of.c                              |  47 ++++
+ drivers/opp/opp.h                             |   9 +-
+ drivers/opp/ti-opp-supply.c                   |   6 +-
+ drivers/scsi/ufs/ufshcd-pltfrm.c              |  73 ++++++
+ drivers/scsi/ufs/ufshcd.c                     | 150 ++++++++++---
+ drivers/scsi/ufs/ufshcd.h                     |   6 +
+ include/linux/pm_opp.h                        |  32 ++-
+ 12 files changed, 518 insertions(+), 102 deletions(-)
 
 -- 
-viresh
+2.32.0
+
