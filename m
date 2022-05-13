@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB04AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5891C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380938AbiEMO27 (ORCPT
+        id S1380944AbiEMO3B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40356 "EHLO
+        Fri, 13 May 2022 10:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381051AbiEMO02 (ORCPT
+        with ESMTP id S1381060AbiEMO03 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE778B0A8;
-        Fri, 13 May 2022 07:26:05 -0700 (PDT)
+        Fri, 13 May 2022 10:26:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA95060AB2;
+        Fri, 13 May 2022 07:26:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB8DE62122;
-        Fri, 13 May 2022 14:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0954C34100;
-        Fri, 13 May 2022 14:26:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 954D5B83068;
+        Fri, 13 May 2022 14:26:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0E62C34117;
+        Fri, 13 May 2022 14:26:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451964;
-        bh=Uc2tIDHiFzBQONuh97aDBwrWdOkXOiTES2GizRPUqH8=;
+        s=korg; t=1652451967;
+        bh=QF88le2UwZdYFdKhakOikXNGtWetoJ79BBE9pUZFl9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rx+8XR/BoRBengrxMXOQgj7gnKgGY4mdnpjqBcXzzGydiF9ZRI/fh1yHMSzEwl01y
-         enWTzkkvVVLqYFT3F6cH8MBzn87JLf4vmPk5UeFQYgDQjTJy4em1mgRx/MK/wP7c45
-         slc7U5GcIPlBx87CQ/xnohTLJyNlgsJ2Z67PsaVE=
+        b=gUNMzpalOt5WUmBxrykZjzFIl8hjiH/ZJi3uTyVG1Q/x2EM007d1OCJEDD+1fleoW
+         Ji7rO1b8AP3n8RM6WrgkI6+6dshidjZWRb9MhMQ/A3zsrLSqhBhCF6iWCj+20Zbg47
+         fJisTTBIJuYpvgSREsNfRw8EzjsVGp9nPaHp+hm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 4.19 05/15] can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
-Date:   Fri, 13 May 2022 16:23:27 +0200
-Message-Id: <20220513142228.055226183@linuxfoundation.org>
+Subject: [PATCH 4.19 06/15] can: grcan: only use the NAPI poll budget for RX
+Date:   Fri, 13 May 2022 16:23:28 +0200
+Message-Id: <20220513142228.083549373@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
 References: <20220513142227.897535454@linuxfoundation.org>
@@ -51,59 +51,85 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andreas Larsson <andreas@gaisler.com>
 
-commit 1e93ed26acf03fe6c97c6d573a10178596aadd43 upstream.
+commit 2873d4d52f7c52d60b316ba6c47bd7122b5a9861 upstream.
 
-The systemid property was checked for in the wrong place of the device
-tree and compared to the wrong value.
+The previous split budget between TX and RX made it return not using
+the entire budget but at the same time not having calling called
+napi_complete. This sometimes led to the poll to not be called, and at
+the same time having TX and RX interrupts disabled resulting in the
+driver getting stuck.
 
 Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
-Link: https://lore.kernel.org/all/20220429084656.29788-3-andreas@gaisler.com
+Link: https://lore.kernel.org/all/20220429084656.29788-4-andreas@gaisler.com
 Cc: stable@vger.kernel.org
 Signed-off-by: Andreas Larsson <andreas@gaisler.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/grcan.c |   16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/net/can/grcan.c |   22 +++++++---------------
+ 1 file changed, 7 insertions(+), 15 deletions(-)
 
 --- a/drivers/net/can/grcan.c
 +++ b/drivers/net/can/grcan.c
-@@ -245,7 +245,7 @@ struct grcan_device_config {
- 		.rxsize		= GRCAN_DEFAULT_BUFFER_SIZE,	\
- 		}
+@@ -1141,7 +1141,7 @@ static int grcan_close(struct net_device
+ 	return 0;
+ }
  
--#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	0x4100
-+#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	4100
- #define GRLIB_VERSION_MASK		0xffff
- 
- /* GRCAN private data structure */
-@@ -1660,6 +1660,7 @@ exit_free_candev:
- static int grcan_probe(struct platform_device *ofdev)
+-static int grcan_transmit_catch_up(struct net_device *dev, int budget)
++static void grcan_transmit_catch_up(struct net_device *dev)
  {
- 	struct device_node *np = ofdev->dev.of_node;
-+	struct device_node *sysid_parent;
- 	struct resource *res;
- 	u32 sysid, ambafreq;
- 	int irq, err;
-@@ -1669,10 +1670,15 @@ static int grcan_probe(struct platform_d
- 	/* Compare GRLIB version number with the first that does not
- 	 * have the tx bug (see start_xmit)
- 	 */
--	err = of_property_read_u32(np, "systemid", &sysid);
--	if (!err && ((sysid & GRLIB_VERSION_MASK)
--		     >= GRCAN_TXBUG_SAFE_GRLIB_VERSION))
--		txbug = false;
-+	sysid_parent = of_find_node_by_path("/ambapp0");
-+	if (sysid_parent) {
-+		of_node_get(sysid_parent);
-+		err = of_property_read_u32(sysid_parent, "systemid", &sysid);
-+		if (!err && ((sysid & GRLIB_VERSION_MASK) >=
-+			     GRCAN_TXBUG_SAFE_GRLIB_VERSION))
-+			txbug = false;
-+		of_node_put(sysid_parent);
-+	}
+ 	struct grcan_priv *priv = netdev_priv(dev);
+ 	unsigned long flags;
+@@ -1149,7 +1149,7 @@ static int grcan_transmit_catch_up(struc
  
- 	err = of_property_read_u32(np, "freq", &ambafreq);
- 	if (err) {
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+-	work_done = catch_up_echo_skb(dev, budget, true);
++	work_done = catch_up_echo_skb(dev, -1, true);
+ 	if (work_done) {
+ 		if (!priv->resetting && !priv->closing &&
+ 		    !(priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
+@@ -1163,8 +1163,6 @@ static int grcan_transmit_catch_up(struc
+ 	}
+ 
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+-
+-	return work_done;
+ }
+ 
+ static int grcan_receive(struct net_device *dev, int budget)
+@@ -1246,19 +1244,13 @@ static int grcan_poll(struct napi_struct
+ 	struct net_device *dev = priv->dev;
+ 	struct grcan_registers __iomem *regs = priv->regs;
+ 	unsigned long flags;
+-	int tx_work_done, rx_work_done;
+-	int rx_budget = budget / 2;
+-	int tx_budget = budget - rx_budget;
++	int work_done;
+ 
+-	/* Half of the budget for receiveing messages */
+-	rx_work_done = grcan_receive(dev, rx_budget);
++	work_done = grcan_receive(dev, budget);
+ 
+-	/* Half of the budget for transmitting messages as that can trigger echo
+-	 * frames being received
+-	 */
+-	tx_work_done = grcan_transmit_catch_up(dev, tx_budget);
++	grcan_transmit_catch_up(dev);
+ 
+-	if (rx_work_done < rx_budget && tx_work_done < tx_budget) {
++	if (work_done < budget) {
+ 		napi_complete(napi);
+ 
+ 		/* Guarantee no interference with a running reset that otherwise
+@@ -1275,7 +1267,7 @@ static int grcan_poll(struct napi_struct
+ 		spin_unlock_irqrestore(&priv->lock, flags);
+ 	}
+ 
+-	return rx_work_done + tx_work_done;
++	return work_done;
+ }
+ 
+ /* Work tx bug by waiting while for the risky situation to clear. If that fails,
 
 
