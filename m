@@ -2,74 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384670AbiEMV11 (ORCPT
+        id S1384673AbiEMVd6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 17:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57952 "EHLO
+        Fri, 13 May 2022 17:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384666AbiEMV1W (ORCPT
+        with ESMTP id S232968AbiEMVdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 17:27:22 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA6A12772
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:27:19 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id j84so6578357ybc.3
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:27:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b5AthED04DvJKPgqpu7aFbZJ2so3QAiqmWJHWR8vFaU=;
-        b=SNOrvzyPthgcBhIMLJS++HW5z0GuyJwLjXKA2K73VDB2hRg8mgC5kpEFN2SCEnd1Df
-         4ong9e7mtL3QvvmbZfeYOkfP7zjFdGiXsDr8pNUVP8ruCyC0GAvvABFcM/flbrIfwkmJ
-         +SU9AJVBfzn832ahOfi/isu4j3EiNvZMPjijck2vsQyf7wrqX4L1mHp+CReHtG9LdfsW
-         Fw/44ZL4wpHMDWrxPNcstCK0H8jSytBPUykESvjqyxxNONcdqivkWlJKJP2SOmOtoysg
-         bjgTmKZKsW/9Moq5W7iicISLpsdgVHTKlIlpaPIzzSAUSTMtwu0+giE5bOrsFTZsuOlm
-         4AUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b5AthED04DvJKPgqpu7aFbZJ2so3QAiqmWJHWR8vFaU=;
-        b=rA9DbLe8z2dhosvoqX4+fjlMhNxg2LFwT38Ke6NOFKQyQb9+fbYydN+E1myLD8rcQS
-         eER+JqXDVwxGLcevmASBMXwVyWSlzQZJdrYOvWO+gx3ntWVCFgtLdF3K3tAK02eKzD0n
-         OR/7cV1XusW2yPto9HhFydGbp1ksyUEHY428XJJ4+uykb4VBkrqdwN/rx2ohgZJ/mqVk
-         okv1mn7ZNkeep+6aJ9iJeggN34qpYLvIhWBHykf1fokZGYXkpL/kxiFG3Xbp7YciWfyi
-         wyVKIWzBfuqfaThDsZ1InmGaoete+P/gOAg7qb1mVki/QGJPh7c7OHtqu3kBb8HUWE1l
-         fyKA==
-X-Gm-Message-State: AOAM531oBp7aIRSm2zXK6ODcsR5FctjWuw7dRhqoywTvpZLor/2U/p8P
-        HlKKI5QlSnu8gLXqhBftuulx84Mj33hBacRmH49Ufw==
-X-Google-Smtp-Source: ABdhPJw+o49OaFd2ww+QOMWIlJs0P4szqp/cOcXcZhsilvmGlEbkOYSY3aBHnBUbtfc19fSqMxxlocvLPmva7WBZNes=
-X-Received: by 2002:a25:1f85:0:b0:64b:a5fc:e881 with SMTP id
- f127-20020a251f85000000b0064ba5fce881mr3984163ybf.514.1652477238724; Fri, 13
- May 2022 14:27:18 -0700 (PDT)
+        Fri, 13 May 2022 17:33:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EF8BF42;
+        Fri, 13 May 2022 14:33:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E2262328;
+        Fri, 13 May 2022 21:33:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C11FC34100;
+        Fri, 13 May 2022 21:33:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652477631;
+        bh=VSnJXZ8+t+dZhN43aAd+oFkMmOxWgx8f608mCX7Qpxk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=f2y2Ri8QAGC6zXWCiKrh1aKBiD3mWKOFS2UQhb+teqMzdNPZ5p8MxOYPYtszZxcAO
+         LyjGW6Bu61+gEB3FCoJJA8Xb5dPfrS9f6u7cNTc2dhZ0zL1P+ceplnbrOIcg42//px
+         FAuKZEdup/uXNGlU5sKaoyEz7AZanWeCQQgMcxuuX6TGWMFhktE3Fc5MWY564ra+XW
+         j/CAuU9NKKX4/87WURtYAbhIqvKLPMsJtryeOgfT2ZJcW2L7eqYKSmPx9HCHMDFStN
+         TkxBan8ZpJewNDuG//A4WqWGD3CSXjLYp7t9vsjLTaXCZC9LwI0sn+NDXLX2W0ZT4s
+         +8ZwbaOmmHtwg==
+Date:   Fri, 13 May 2022 14:33:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Min Li <min.li.xe@renesas.com>
+Cc:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v5 3/3] ptp: clockmatrix: miscellaneous cosmetic
+ change
+Message-ID: <20220513143349.1483fcf8@kernel.org>
+In-Reply-To: <TYCPR01MB6608DC38FC74BB484E2B6079BACA9@TYCPR01MB6608.jpnprd01.prod.outlook.com>
+References: <1652279114-25939-1-git-send-email-min.li.xe@renesas.com>
+        <1652279114-25939-3-git-send-email-min.li.xe@renesas.com>
+        <20220511173732.7988807e@kernel.org>
+        <OS3PR01MB659312F189453925868225B2BACB9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+        <20220512090300.162e5441@kernel.org>
+        <TYCPR01MB6608DC38FC74BB484E2B6079BACA9@TYCPR01MB6608.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220513075554.127677-1-wanjiabing@vivo.com>
-In-Reply-To: <20220513075554.127677-1-wanjiabing@vivo.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 13 May 2022 23:27:07 +0200
-Message-ID: <CACRpkdaLArmZc5Zwi-2r3kvBgWHDJ6tbY5o-=qLAG=8B70Hfag@mail.gmail.com>
-Subject: Re: [PATCH] ata: Remove unneeded ERROR check before clk_disable_unprepare
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 9:56 AM Wan Jiabing <wanjiabing@vivo.com> wrote:
+On Fri, 13 May 2022 19:57:26 +0000 Min Li wrote:
+> There are multiple places where "no empty line between call and error
+> check" and "return directly" like you pointed out before. Some are
+> related to this change and some are not. Do you prefer to fix only
+> the related ones in this patch or do them all in another patch to
+> net-next
 
-> ERROR check is already in clk_disable() and clk_unprepare() by using
-> IS_ERR_OR_NULL. Remove unneeded ERROR check for ftide->pclk here.
->
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Let's forget cleaning up the code not touched by patches 1 and 2.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+Within the lines of code patches 1 and 2 touch - by which I mean the
+lines listed with a '+' at the start - please make sure there are
+no instances of the formatting issues there.
