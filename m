@@ -2,34 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DEECC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF28C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381060AbiEMOag (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
+        id S241872AbiEMOak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 10:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381123AbiEMO0s (ORCPT
+        with ESMTP id S1380735AbiEMOZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:48 -0400
+        Fri, 13 May 2022 10:25:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC155047F;
-        Fri, 13 May 2022 07:26:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AEA6B67A;
+        Fri, 13 May 2022 07:25:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C81E61F99;
-        Fri, 13 May 2022 14:26:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F34C34100;
-        Fri, 13 May 2022 14:26:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0E6662198;
+        Fri, 13 May 2022 14:25:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFAC7C36AF6;
+        Fri, 13 May 2022 14:25:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452006;
-        bh=kqoxQWtH066PDRm6w7VJ+b83/v0ARHrZecCKzDyrcSk=;
+        s=korg; t=1652451921;
+        bh=5bib3ZlM1WmxHuZRocWWOlskoPQq6BEw+c52UWjFo70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bL2mcex8cWyUfuKF5PrL3gFcKQlSLRB1sLASKySPaM/cDZaAj55p/tdW7Q1aO675O
-         gs2wAgb2YiZqz2q4NF0kETPf3prW7TdSZjFJ6FXpslKnsIc1uF0685cEEk5xnc4uzO
-         RIleWdZlKdlhGmkbFqOIdTWignOLkvZTZfkTZvwI=
+        b=Rr3hmb0G4sAt63ozbC/GrwwKcvK5WnhBcxE//DpR229O4ZigS2dpkiYMQbN/iEh4W
+         jlga90oTVKWx5rjZTYdGoxRgqJOMxWWMTz7SpjRQlsAuYN/R227kcegB5Zf4xH30z6
+         ZdywT8YsRYjHscej2V+es0gXSp4iEyBTseQgzEHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -45,12 +44,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Zi Yan <ziy@nvidia.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 17/18] mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
-Date:   Fri, 13 May 2022 16:23:43 +0200
-Message-Id: <20220513142229.653982980@linuxfoundation.org>
+Subject: [PATCH 4.14 07/14] mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
+Date:   Fri, 13 May 2022 16:23:23 +0200
+Message-Id: <20220513142227.599609402@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
-References: <20220513142229.153291230@linuxfoundation.org>
+In-Reply-To: <20220513142227.381154244@linuxfoundation.org>
+References: <20220513142227.381154244@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -92,7 +91,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -4801,6 +4801,8 @@ long copy_huge_page_from_user(struct pag
+@@ -4836,6 +4836,8 @@ long copy_huge_page_from_user(struct pag
  		if (rc)
  			break;
  
