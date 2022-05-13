@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F59C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59363C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380752AbiEMO1Y (ORCPT
+        id S1380856AbiEMO1c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
+        Fri, 13 May 2022 10:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380785AbiEMOZt (ORCPT
+        with ESMTP id S1380701AbiEMOZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:25:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6933A60AB2;
-        Fri, 13 May 2022 07:25:16 -0700 (PDT)
+        Fri, 13 May 2022 10:25:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241F66B659;
+        Fri, 13 May 2022 07:25:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8EB062122;
-        Fri, 13 May 2022 14:25:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5280C3411A;
-        Fri, 13 May 2022 14:25:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8D5BB83068;
+        Fri, 13 May 2022 14:25:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E688C34100;
+        Fri, 13 May 2022 14:25:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451915;
-        bh=F0lQZuEbHNF1sktmVC4G2CljFHeN7ha9IWcPPtrc6MU=;
+        s=korg; t=1652451918;
+        bh=CiGNaB9PdFEDjJaiY6qic2eYiJtF5CwjFMm9j/i3FFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kAW2alSQDHU75ca92ZG1T7s+RlF+Qf9YhLI3i2MSIgml+wbXXFDrW5XFGwI6WBf52
-         GIYplKLrs8tG6xYu8n0ZGnfOF+tyLog+MnkBvXtUQEehkJNItQsT5evjsIKPuBq9Mg
-         yA+XLXPTFAM5Na6OCEZMi2pR1A5bS+AsfdGHzTFg=
+        b=gjXd8tyISen/rl/lMkBxTLUre+54S3BhBDpytA+lhI2s9X4u+T75Sa7xf8U/W2/jd
+         YL84r0GV8RmGAJJ5+jnptjCHiJ9l3tjOZFVbzs5YwVAcNzbbE2R2K/Zx8DZvmP64Wl
+         2uiZMEh0SFUcJHOsT5CZR4/isRNxgR4ALQ102U7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 4.14 05/14] Bluetooth: Fix the creation of hdev->name
-Date:   Fri, 13 May 2022 16:23:21 +0200
-Message-Id: <20220513142227.541945502@linuxfoundation.org>
+        stable@vger.kernel.org, Ricky Wu <ricky_wu@realtek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Christian Loehle <cloehle@hyperstone.com>
+Subject: [PATCH 4.14 06/14] mmc: rtsx: add 74 Clocks in power on flow
+Date:   Fri, 13 May 2022 16:23:22 +0200
+Message-Id: <20220513142227.571293193@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142227.381154244@linuxfoundation.org>
 References: <20220513142227.381154244@linuxfoundation.org>
@@ -49,65 +50,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Itay Iellin <ieitayie@gmail.com>
+From: Ricky WU <ricky_wu@realtek.com>
 
-commit 103a2f3255a95991252f8f13375c3a96a75011cd upstream.
+commit 1f311c94aabdb419c28e3147bcc8ab89269f1a7e upstream.
 
-Set a size limit of 8 bytes of the written buffer to "hdev->name"
-including the terminating null byte, as the size of "hdev->name" is 8
-bytes. If an id value which is greater than 9999 is allocated,
-then the "snprintf(hdev->name, sizeof(hdev->name), "hci%d", id)"
-function call would lead to a truncation of the id value in decimal
-notation.
+SD spec definition:
+"Host provides at least 74 Clocks before issuing first command"
+After 1ms for the voltage stable then start issuing the Clock signals
 
-Set an explicit maximum id parameter in the id allocation function call.
-The id allocation function defines the maximum allocated id value as the
-maximum id parameter value minus one. Therefore, HCI_MAX_ID is defined
-as 10000.
+if POWER STATE is
+MMC_POWER_OFF to MMC_POWER_UP to issue Clock signal to card
+MMC_POWER_UP to MMC_POWER_ON to stop issuing signal to card
 
-Signed-off-by: Itay Iellin <ieitayie@gmail.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Ricky Wu <ricky_wu@realtek.com>
+Link: https://lore.kernel.org/r/1badf10aba764191a1a752edcbf90389@realtek.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Ricky Wu <ricky_wu@realtek.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/bluetooth/hci_core.h |    3 +++
- net/bluetooth/hci_core.c         |    6 +++---
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/mmc/host/rtsx_pci_sdmmc.c |   30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
 
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -34,6 +34,9 @@
- /* HCI priority */
- #define HCI_PRIO_MAX	7
+--- a/drivers/mmc/host/rtsx_pci_sdmmc.c
++++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
+@@ -49,10 +49,7 @@ struct realtek_pci_sdmmc {
+ 	bool			double_clk;
+ 	bool			eject;
+ 	bool			initial_mode;
+-	int			power_state;
+-#define SDMMC_POWER_ON		1
+-#define SDMMC_POWER_OFF		0
+-
++	int			prev_power_state;
+ 	int			sg_count;
+ 	s32			cookie;
+ 	int			cookie_sg_count;
+@@ -913,14 +910,21 @@ static int sd_set_bus_width(struct realt
+ 	return err;
+ }
  
-+/* HCI maximum id value */
-+#define HCI_MAX_ID 10000
+-static int sd_power_on(struct realtek_pci_sdmmc *host)
++static int sd_power_on(struct realtek_pci_sdmmc *host, unsigned char power_mode)
+ {
+ 	struct rtsx_pcr *pcr = host->pcr;
+ 	int err;
+ 
+-	if (host->power_state == SDMMC_POWER_ON)
++	if (host->prev_power_state == MMC_POWER_ON)
+ 		return 0;
+ 
++	if (host->prev_power_state == MMC_POWER_UP) {
++		rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, 0);
++		goto finish;
++	}
 +
- /* HCI Core structures */
- struct inquiry_data {
- 	bdaddr_t	bdaddr;
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3100,10 +3100,10 @@ int hci_register_dev(struct hci_dev *hde
- 	 */
- 	switch (hdev->dev_type) {
- 	case HCI_PRIMARY:
--		id = ida_simple_get(&hci_index_ida, 0, 0, GFP_KERNEL);
-+		id = ida_simple_get(&hci_index_ida, 0, HCI_MAX_ID, GFP_KERNEL);
- 		break;
- 	case HCI_AMP:
--		id = ida_simple_get(&hci_index_ida, 1, 0, GFP_KERNEL);
-+		id = ida_simple_get(&hci_index_ida, 1, HCI_MAX_ID, GFP_KERNEL);
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -3112,7 +3112,7 @@ int hci_register_dev(struct hci_dev *hde
- 	if (id < 0)
- 		return id;
++	msleep(100);
++
+ 	rtsx_pci_init_cmd(pcr);
+ 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SELECT, 0x07, SD_MOD_SEL);
+ 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SHARE_MODE,
+@@ -939,11 +943,17 @@ static int sd_power_on(struct realtek_pc
+ 	if (err < 0)
+ 		return err;
  
--	sprintf(hdev->name, "hci%d", id);
-+	snprintf(hdev->name, sizeof(hdev->name), "hci%d", id);
- 	hdev->id = id;
++	mdelay(1);
++
+ 	err = rtsx_pci_write_register(pcr, CARD_OE, SD_OUTPUT_EN, SD_OUTPUT_EN);
+ 	if (err < 0)
+ 		return err;
  
- 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
+-	host->power_state = SDMMC_POWER_ON;
++	/* send at least 74 clocks */
++	rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, SD_CLK_TOGGLE_EN);
++
++finish:
++	host->prev_power_state = power_mode;
+ 	return 0;
+ }
+ 
+@@ -952,7 +962,7 @@ static int sd_power_off(struct realtek_p
+ 	struct rtsx_pcr *pcr = host->pcr;
+ 	int err;
+ 
+-	host->power_state = SDMMC_POWER_OFF;
++	host->prev_power_state = MMC_POWER_OFF;
+ 
+ 	rtsx_pci_init_cmd(pcr);
+ 
+@@ -978,7 +988,7 @@ static int sd_set_power_mode(struct real
+ 	if (power_mode == MMC_POWER_OFF)
+ 		err = sd_power_off(host);
+ 	else
+-		err = sd_power_on(host);
++		err = sd_power_on(host, power_mode);
+ 
+ 	return err;
+ }
+@@ -1416,7 +1426,7 @@ static int rtsx_pci_sdmmc_drv_probe(stru
+ 	host->mmc = mmc;
+ 	host->pdev = pdev;
+ 	host->cookie = -1;
+-	host->power_state = SDMMC_POWER_OFF;
++	host->prev_power_state = MMC_POWER_OFF;
+ 	INIT_WORK(&host->work, sd_request);
+ 	platform_set_drvdata(pdev, host);
+ 	pcr->slots[RTSX_SD_CARD].p_dev = pdev;
 
 
