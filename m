@@ -2,71 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2686C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 20:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A60A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 20:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384276AbiEMUYK (ORCPT
+        id S1384328AbiEMUYQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 16:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44596 "EHLO
+        Fri, 13 May 2022 16:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384164AbiEMUWv (ORCPT
+        with ESMTP id S1384163AbiEMUWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 16:22:51 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE08515EA7D
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:22:50 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f8be9326fcso81334967b3.18
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:22:50 -0700 (PDT)
+        Fri, 13 May 2022 16:22:42 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D518B1654B7
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:22:18 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id o7-20020a17090a0a0700b001d93c491131so6680005pjo.6
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:22:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=dlbVbF+zSH65SmcGkXw1HXEqEtfYUZQQn63+I2niGUI=;
-        b=suo26qtPRItoyTwDfbbz3LASboBjKdoSMFI8aXUKdlLp7CvixfOiS0uW8H0gGPFal2
-         ufgd4A/bFbLLb35MHsIFdaYntoAIZwz2uyf3z8bMRt81n9k1SU3nJTLVFvOQgb2SG8Fu
-         bxKBgJRrvLFgiFjcPBc5Ql/tiiDyCHMFHdMWHyl55ksvDj3IxU5xl8BS15jw7IGglpoD
-         rCWQ6dehGYNUVVdSLJleQQBFDeVcxeS2wdMj89py0SHeVj1/phR+9VxOKeAhx/R3o0y3
-         dxmzZBsr6Kb5ReKmsDe4eAPOCfkU7q2HMZmt2/P07pSpGYOWb8T5SJmlzQByOBASF86u
-         WdkQ==
+        bh=f+v85zCmompJWMzZo0Lo44MXyCG4blaViTEubU7Q5pk=;
+        b=MESMouEFY2G4SFqcafmefQWoFCP7ps3QB1tZ46af/jtYe6cn5zcxOwxTwft4N8E1NQ
+         +UuIHuj5VEcDhbnPdN1c0OsP0m7BBsr8MIip1QKYnYg6zeoMy088Pl9eVtEl5uK0saGo
+         XtR42j6pIymFijnyo6XcDzAed95J3W7UJ8IviGf6zqWy//NvXfkBj+GJVwnuCt9lcOFH
+         Z4nLVMl3mKjxxgvlkFCBZewyyE5+nMu5wsw21EWC3AA96x/4tIfvIZsY75Roh12akrho
+         avQ626Wx3RZtmrx/IEAGQSI1UB2H2FZgt4JgCTLLjEpfu6Qdx7RMgQixkMV7q4jIt2ca
+         yN7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=dlbVbF+zSH65SmcGkXw1HXEqEtfYUZQQn63+I2niGUI=;
-        b=2ehx6WxYpXDm3cbd9J2MC+zUVXXGbnVNsZRaY5GSBvvO3noaDxtcMxcaVeWAlCpP4v
-         cFNp97mKD/JHcUE+pCjB1FARlsiEutCEFZvPM5ci2HDd8bG14pDUF8ZbUf6z9kUDdw6p
-         LauHxcR52MIL1Y3sASWZa9Mr0PJuMTc9Ge6hsdUEFzT2u0lsOrvtaL7b7U3p7FpHy/d1
-         YKM7enJ5+9M/i3NvS5MiEEP4fVp0TIKjyswpJOFz/TJxGSiZpK7sj9DwTPAVlj6TKGTj
-         JSUhLdSQqm0qgOBUhOUMmewI+qHc7MJUCATiXA9HK7qtF3tNye/sgdrneWTVYq4q9XA4
-         71hw==
-X-Gm-Message-State: AOAM531Omun+yuZmToanlcvDJZntQgl1Ieck90K4c+L/wON2XxxdI8yX
-        Mm/MkbFNyaA1saOmnxmslI7CxHNRxYiybGMGaXF15CPbOjnCn7vVWHdKcg89Up9wl6DGa5ndW/Z
-        S2/7/kqYIxPk1DZ87wMfc0gg8dVNvSrKAucsOwFZ4CINRPnLiut9KeQvD/iUF/S5+LFSa6xawTs
-        wzeY+6KTkWgQ==
-X-Google-Smtp-Source: ABdhPJzFM48oKh50rHebCrOHf34tcszegLHZxSEku5WBt1TgwOcHyEAQ0+hAqjBZ97NekznHKYIzAU+Im42Yn+P0SW0=
+        bh=f+v85zCmompJWMzZo0Lo44MXyCG4blaViTEubU7Q5pk=;
+        b=2iMiZ14QobL71K1BOQqdcfSxiJn5OeHgtNcqh+h9vKmo/Q0XTPbAqUnrtjG3WBCdMC
+         bjL7EJPKlXhdnsCJBITf0tOJy9W355B4Y0hltK8uJNtEhjCoLo/AHYpIzd8spTc7mr1i
+         QuwHndpFrAcMtNOShZarfxBMextiUxNOgxWAMXf8JlNARSXhHMt5fhIdXZy9PxyJmiyR
+         PWEjkC1+BOUAhhj2DuynZomxsUGZX324GKKZMofcYv6AYstHgT6tXGd6KD69wSAz/Bhu
+         vvVfDk2W3JukKX6OKawUwh4bLwVq0KLlivKR/5jG8rhzr+l2nUouCMfj6kGhRrJfCGuQ
+         bR5g==
+X-Gm-Message-State: AOAM530/nlEKu5FdWHyJA8fd0JCLlI+BkEVvKkU2BR04NOFU2AjOPz4Z
+        rabfrduUohBxNJqv4bQNzFAlL9yxNBvKuQ+zOmXTlVMFqQdfdC9IsnSYr22cEd929o9T4tNchVK
+        I6alykGaA87Ztas0nuwk2gMSd7mqw+Cpnkb8pvOOzxS22iLclVbTZFFb1rzDaOuU/+NRyD4TRju
+        fMcZt8K5lZrw==
+X-Google-Smtp-Source: ABdhPJwfcFjFJSZbXy4dFXWlYx0UTPoVmJGQDFAqlwZxMLFtphKEHH2VS3sWnVMuhcTFKwv+pj6ccI88tY8WuVvcx7E=
 X-Received: from samitolvanen1.mtv.corp.google.com ([2620:15c:201:2:e0:c17e:c2dc:13eb])
- (user=samitolvanen job=sendgmr) by 2002:a25:3441:0:b0:64b:dc55:bdd2 with SMTP
- id b62-20020a253441000000b0064bdc55bdd2mr2715370yba.75.1652473369915; Fri, 13
- May 2022 13:22:49 -0700 (PDT)
-Date:   Fri, 13 May 2022 13:21:59 -0700
+ (user=samitolvanen job=sendgmr) by 2002:aa7:88d1:0:b0:510:3ee2:3f25 with SMTP
+ id k17-20020aa788d1000000b005103ee23f25mr6048858pff.41.1652473338024; Fri, 13
+ May 2022 13:22:18 -0700 (PDT)
+Date:   Fri, 13 May 2022 13:21:45 -0700
 In-Reply-To: <20220513202159.1550547-1-samitolvanen@google.com>
-Message-Id: <20220513202159.1550547-22-samitolvanen@google.com>
+Message-Id: <20220513202159.1550547-8-samitolvanen@google.com>
 Mime-Version: 1.0
 References: <20220513202159.1550547-1-samitolvanen@google.com>
 X-Developer-Key: i=samitolvanen@google.com; a=openpgp; fpr=35CCFB63B283D6D3AEB783944CB5F6848BBC56EE
-X-Developer-Signature: v=1; a=openpgp-sha256; l=873; h=from:subject;
- bh=EnKTZWbwTuwhGtVwGe8P9VjRM8gy1nwr12ORzB61S+o=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBifr3mfZ8/2S8lWN4wX+IbgzR7T53VLtyDzI5tt2rz
- WJL+EaaJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYn695gAKCRBMtfaEi7xW7pVmC/
- 9a3zu00Ju5TXxz0xiUJonHs8P0BGs4hr5NmWM2GMbyFjujv8hZeNGa4mbYKHKM5PCQQ5gvZgix8xN7
- pycP7Dh2F7rK9HP2Fk6aH55ONw1ChCEHEzVNMB01KLR5+6/b4c4y7TCE3ZD3mF3h76hXjR8das2Zy8
- /l8yvdEZQEHquOWm1zBiS8yJvQi3QiroJFJv29MfZwGqv77y80QGHlf3OYSNsl1cli2prx6ZgDNeja
- U700rcBs2hsB/3Idgu5rWH2o1LwNQhhLXRSSPCJ+RDTgVj3o3z2qnQbJNcqWpzelCvO9OedQQVoUBc
- ijxVLEzzl1xpeBdNk1MBk5Yt1djJtfSIXAccu2h/e8gme3qYn4dkUdt/4mtjccvvFGzy5KZnCTFIAk
- UTsfhTj2V9f+6fyGCQ3hu/sQOzwh7XJUzd+IyJINOyFAw+0gRm/XHYEstiM2STE6izuoI7QWPXRpM3
- 9+1GAAvAXf8upx6jl7Yk6dH45w3SkswkAp7IP4wLfr7Y4=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2369; h=from:subject;
+ bh=TboG0ryIg4JgbMTsV2OXgx0SX/UFOnu1UldMJxVt8Po=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBifr3j4WY4BkbqYI6dC/ZfJbPOV8T4fFdqndEpsBM/
+ hV5fbI2JAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYn694wAKCRBMtfaEi7xW7gMxC/
+ 4pxFRx4HmL+KUme/ZjGLLUnoT9FbQCcyon3/8qR0GI2jddZNW3zIDnAihW+p9AayVGcFBw/cucqeD6
+ aXfUmw4i5Efc8tn7VJtIfgwBMJEeT97CO0koKO1cJfqhLgyPXQDEp5x3qbmJIPEvXkFbMwd9T0no37
+ HPRxilpeC2rxuO4N07WfXvHHMyvz873twQyminhgkImNDn8LWrzNZD2TYLXYTmCSbYCFGu5tXSDEhw
+ ZHK28QweaPZFMYbk0wN8AvV4LKrTN0/LJoOuYP485lixfm/DeCd/25TzV57VDBt4ZfW/VlEHh4RkgX
+ cFHax638u12jlXDQHJK2SS7MLmlojw27IhKgnEszme11T0yFry4yEqhhcfa1m4PMtHA6DBWFAZjYwA
+ CCw/0R+hbTncTA8X3SMH0fWDvX+13ZsaiGA+rH7eLAG+M6F+T6JF6K+96BK3G6xvoablbMV270wlb8
+ +GZCYAV3P1rotvaWrcFV5saGNcr9RR12T6hfVDEQ+LtAA=
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [RFC PATCH v2 21/21] init: Drop __nocfi from __init
+Subject: [RFC PATCH v2 07/21] cfi: Add type helper macros
 From:   Sami Tolvanen <samitolvanen@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -88,27 +88,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's no longer necessary to disable CFI checking for all __init
-functions. Drop the __nocfi attribute.
+With CONFIG_CFI_CLANG, assembly functions called indirectly
+from C code must be annotated with type identifiers to pass CFI
+checking. The compiler emits a __kcfi_typeid_<function> symbol for
+each address-taken function declaration in C, which contains the
+expected type identifier. Add typed versions of SYM_FUNC_START and
+SYM_FUNC_START_ALIAS, which emit the type identifier before the
+function.
 
 Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
 ---
- include/linux/init.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/cfi_types.h | 57 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 57 insertions(+)
+ create mode 100644 include/linux/cfi_types.h
 
-diff --git a/include/linux/init.h b/include/linux/init.h
-index 76058c9e0399..a0a90cd73ebe 100644
---- a/include/linux/init.h
-+++ b/include/linux/init.h
-@@ -47,7 +47,7 @@
- 
- /* These are for everybody (although not all archs will actually
-    discard it in modules) */
--#define __init		__section(".init.text") __cold  __latent_entropy __noinitretpoline __nocfi
-+#define __init		__section(".init.text") __cold  __latent_entropy __noinitretpoline
- #define __initdata	__section(".init.data")
- #define __initconst	__section(".init.rodata")
- #define __exitdata	__section(".exit.data")
+diff --git a/include/linux/cfi_types.h b/include/linux/cfi_types.h
+new file mode 100644
+index 000000000000..dd16e755a197
+--- /dev/null
++++ b/include/linux/cfi_types.h
+@@ -0,0 +1,57 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Clang Control Flow Integrity (CFI) type definitions.
++ */
++#ifndef _LINUX_CFI_TYPES_H
++#define _LINUX_CFI_TYPES_H
++
++#ifdef CONFIG_CFI_CLANG
++#include <linux/linkage.h>
++
++#ifdef __ASSEMBLY__
++/*
++ * Use the __kcfi_typeid_<function> type identifier symbol to
++ * annotate indirectly called assembly functions. The compiler emits
++ * these symbols for all address-taken function declarations in C
++ * code.
++ */
++#ifndef __CFI_TYPE
++#define __CFI_TYPE(name)				\
++	.4byte __kcfi_typeid_##name
++#endif
++
++#define SYM_TYPED_ENTRY(name, fname, linkage, align...)	\
++	linkage(name) ASM_NL				\
++	align ASM_NL					\
++	__CFI_TYPE(fname) ASM_NL			\
++	name:
++
++#define __SYM_TYPED_FUNC_START_ALIAS(name, fname) \
++	SYM_TYPED_ENTRY(name, fname, SYM_L_GLOBAL, SYM_A_ALIGN)
++
++#define __SYM_TYPED_FUNC_START(name, fname) \
++	SYM_TYPED_ENTRY(name, fname, SYM_L_GLOBAL, SYM_A_ALIGN)
++
++#endif /* __ASSEMBLY__ */
++
++#else /* CONFIG_CFI_CLANG */
++
++#ifdef __ASSEMBLY__
++#define __SYM_TYPED_FUNC_START_ALIAS(name, fname) \
++	SYM_FUNC_START_ALIAS(name)
++
++#define __SYM_TYPED_FUNC_START(name, fname) \
++	SYM_FUNC_START(name)
++#endif /* __ASSEMBLY__ */
++
++#endif /* CONFIG_CFI_CLANG */
++
++#ifdef __ASSEMBLY__
++#define SYM_TYPED_FUNC_START_ALIAS(name) \
++	__SYM_TYPED_FUNC_START_ALIAS(name, name)
++
++#define SYM_TYPED_FUNC_START(name) \
++	__SYM_TYPED_FUNC_START(name, name)
++#endif /* __ASSEMBLY__ */
++
++#endif /* _LINUX_CFI_TYPES_H */
 -- 
 2.36.0.550.gb090851708-goog
 
