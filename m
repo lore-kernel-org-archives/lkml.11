@@ -2,127 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D2EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 22:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 22:09:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384824AbiEMWBW (ORCPT
+        id S1384828AbiEMWJt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 18:01:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
+        Fri, 13 May 2022 18:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384812AbiEMWBT (ORCPT
+        with ESMTP id S1384803AbiEMWJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 18:01:19 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA9335A2DA;
-        Fri, 13 May 2022 15:01:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652479278; x=1684015278;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6W9kIUxVEytkIlePIUvHWEfOUUtB7d0gmWYOO/wGDro=;
-  b=aP2t8BWuwkeAcPC7AcyyWSJRv87h0bYuTsPbdZ7klNzaL/th89pvjCc6
-   2aGOUGVSHmjvoTQZ2QohpS+0QHQFTXGhy+8v0BysRYV1IgZ9OHuig3qP2
-   ZF8S/lrQ0wo3Juxb6FMApSd8+7wiHuLd9Kga79tD7KM1BP7KuDXSuxD9m
-   UC31ioGh++HqSmOJpyT1cUmgj2jnr0nl8+qubYcTz/G2FOop3jDGlEbtE
-   EvYjahQGAlOLDhQ0vNJF3oJnrNB0d6YJhBXMB3ErxJxv2GQ5apdIudQrp
-   o0cEDTxcDEAJqZ4tv4Kso9eLBb70fyd4QmQyclDq7gQCjBCXrBIjfGFLe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270355995"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="270355995"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 15:01:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="625042653"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 13 May 2022 15:01:10 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npdLS-000M9U-0W;
-        Fri, 13 May 2022 22:01:10 +0000
-Date:   Sat, 14 May 2022 06:00:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        y.oudjana@protonmail.com, angelogioacchino.delregno@collabora.com,
-        jason-jh.lin@mediatek.com, ck.hu@mediatek.com,
-        fparent@baylibre.com, rex-bc.chen@mediatek.com,
-        tinghan.shen@mediatek.com, chun-jie.chen@mediatek.com,
-        weiyi.lu@mediatek.com, ikjn@chromium.org, miles.chen@mediatek.com,
-        sam.shih@mediatek.com, wenst@chromium.org,
-        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org
-Subject: Re: [PATCH 5/5] clk: mediatek: Add MediaTek Helio X10 MT6795 clock
- drivers
-Message-ID: <202205140535.hQjmJtwR-lkp@intel.com>
-References: <20220513165050.500831-6-angelogioacchino.delregno@collabora.com>
+        Fri, 13 May 2022 18:09:45 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E34765F
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:09:44 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id i17so9184716pla.10
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:09:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Mip6GB+UOxs40OE0wM8HSHN4JOWEcgh6ZJadFhE8R6M=;
+        b=hG3F2MTWmspdKtHcKZJp220fMBZM5LR050BELG+dE11wxITHxXRC2n6V/hGuI8s7cw
+         QQUImjQd8ydkGgqgaukb8rYw7e3mZMpVFGPbeXyQGY1/8AacuRbrw7a4IIJbkhjy9ABs
+         RcyurlmuizIBp/nznhwbdGMyz1Bqfy2HL52+ZIR3nRRevvBxLNUS35/FRrYyN0s81m9u
+         kpx1NbfR49gssH4i1uI9kJGSfPuCJZ9Tem2zirzgiuyF6NSu/PKBurU0pvg9yz0fgn+U
+         r7r1IXiOoDuVmW26Q9XgEDFebIoZbKA+aFEsq5Fy/o0aEzpdXM3iMmJHCSL3LZ0S/l47
+         HxNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Mip6GB+UOxs40OE0wM8HSHN4JOWEcgh6ZJadFhE8R6M=;
+        b=iNFPTCRn7BK9LT+S8t8co/rTfsGGBz6fqU6TAY6jXJeNFqSidPtNjb9pRp+svx2LS0
+         lXGnHAOdAeQ4BLqibBEeT0O5tgW2SpxxwG+Gq9zFHUHjWEtC1uNIQBCC6xguIwQb4XAK
+         1jhNa+kOIpEadmCsyvspkokIIIXBmoHVmUIXc5SEN/OWdV3nXKhK0+uj6eB2AClzDFJw
+         78Y0lnpjyZJ7A6oDmaqmEPS8ovFDsFYGBupMrAQIQZBLkx3NhQ3/2N2SGfCIBHbvi3F9
+         8l0MsmZkx82i6NDk1xjReMSzmRGGhHYZHK+MB64HvCslUIY15ej6JFshuwxaXZ9EPTzj
+         7pew==
+X-Gm-Message-State: AOAM533afkXRBHryFAelC0Q9QnvUof/uv5EGLKjvoA5SuGbeUtR0iCMa
+        PddURTIS9IdH+cO3UzzyyOnt+fgXgRKDyoLmla2dOMU0zdkX8g==
+X-Google-Smtp-Source: ABdhPJzpfY8MlgI5f++tvopz4LYKd5ilu/z06Js/hnaOsL1+374Mzjwb83UO8JaxESRupngEQCtjfZyPDj2zPFQAv3s=
+X-Received: by 2002:a17:90b:3845:b0:1dc:a733:2ece with SMTP id
+ nl5-20020a17090b384500b001dca7332ecemr6990831pjb.220.1652479783256; Fri, 13
+ May 2022 15:09:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513165050.500831-6-angelogioacchino.delregno@collabora.com>
+References: <20220422224508.440670-5-jane.chu@oracle.com> <165247892149.4131000.9240706498758561525.stgit@dwillia2-desk3.amr.corp.intel.com>
+In-Reply-To: <165247892149.4131000.9240706498758561525.stgit@dwillia2-desk3.amr.corp.intel.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Fri, 13 May 2022 15:09:32 -0700
+Message-ID: <CAPcyv4g8Tkx_b_Rs1WeAeV1knxV-z2r7Gmf56b8XN=CTyj6RVQ@mail.gmail.com>
+Subject: Re: [PATCH v10 4/7] dax: introduce DAX_RECOVERY_WRITE dax access mode
+To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Jane Chu <jane.chu@oracle.com>, Christoph Hellwig <hch@lst.de>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        device-mapper development <dm-devel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi AngeloGioacchino,
+On Fri, May 13, 2022 at 2:56 PM Dan Williams <dan.j.williams@intel.com> wro=
+te:
+>
+> From: Jane Chu <jane.chu@oracle.com>
+>
+> Up till now, dax_direct_access() is used implicitly for normal
+> access, but for the purpose of recovery write, dax range with
+> poison is requested.  To make the interface clear, introduce
+>         enum dax_access_mode {
+>                 DAX_ACCESS,
+>                 DAX_RECOVERY_WRITE,
+>         }
+> where DAX_ACCESS is used for normal dax access, and
+> DAX_RECOVERY_WRITE is used for dax recovery write.
+>
+> Suggested-by: Dan Williams <dan.j.williams@intel.com>
+> Signed-off-by: Jane Chu <jane.chu@oracle.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Cc: Vivek Goyal <vgoyal@redhat.com>
+> Cc: Mike Snitzer <snitzer@redhat.com>
+> Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+[..]
+> diff --git a/tools/testing/nvdimm/pmem-dax.c b/tools/testing/nvdimm/pmem-=
+dax.c
+> index af19c85558e7..dcc328eba811 100644
+> --- a/tools/testing/nvdimm/pmem-dax.c
+> +++ b/tools/testing/nvdimm/pmem-dax.c
+> @@ -8,7 +8,8 @@
+>  #include <nd.h>
+>
+>  long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
+> -               long nr_pages, void **kaddr, pfn_t *pfn)
+> +               long nr_pages, enum dax_access_mode mode, void **kaddr,
+> +               pfn_t *pfn)
 
-Thank you for the patch! Yet something to improve:
+Local build test reports:
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on next-20220513]
-[cannot apply to clk/clk-next pza/reset/next mbgg-mediatek/for-next v5.18-rc6]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/AngeloGioacchino-Del-Regno/MediaTek-Helio-X10-MT6795-Clock-drivers/20220514-005314
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arm64-buildonly-randconfig-r004-20220512 (https://download.01.org/0day-ci/archive/20220514/202205140535.hQjmJtwR-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 38189438b69ca27b4c6ce707c52dbd217583d046)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/991f92f26cc545a1836a3120408ce27ba7ddadab
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review AngeloGioacchino-Del-Regno/MediaTek-Helio-X10-MT6795-Clock-drivers/20220514-005314
-        git checkout 991f92f26cc545a1836a3120408ce27ba7ddadab
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/clk/mediatek/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/clk/mediatek/clk-mt6795-infracfg.c:14:10: fatal error: 'reset.h' file not found
-   #include "reset.h"
-            ^~~~~~~~~
-   1 error generated.
---
->> drivers/clk/mediatek/clk-mt6795-pericfg.c:13:10: fatal error: 'reset.h' file not found
-   #include "reset.h"
-            ^~~~~~~~~
-   1 error generated.
+tools/testing/nvdimm/pmem-dax.c:11:53: error: parameter 4 (=E2=80=98mode=E2=
+=80=99) has
+incomplete type
+   11 |                 long nr_pages, enum dax_access_mode mode, void **ka=
+ddr,
+      |                                ~~~~~~~~~~~~~~~~~~~~~^~~~
 
 
-vim +14 drivers/clk/mediatek/clk-mt6795-infracfg.c
-
-  > 14	#include "reset.h"
-    15	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+...so need to include linux/dax.h in this file now for that definition.
