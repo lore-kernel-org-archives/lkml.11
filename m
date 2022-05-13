@@ -2,129 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00441C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AEF5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378998AbiEMJZn (ORCPT
+        id S1379005AbiEMJZs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36258 "EHLO
+        Fri, 13 May 2022 05:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378920AbiEMJZg (ORCPT
+        with ESMTP id S1378985AbiEMJZi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:25:36 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5DF2A28D4;
-        Fri, 13 May 2022 02:25:35 -0700 (PDT)
-X-UUID: 6bada44bb66542f2bb8134204929bfc5-20220513
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:83ad1d57-ae0f-4dfc-8eeb-64bf0eea7f5d,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:2a19b09,CLOUDID:11891cf2-ab23-4aed-a67b-f96514452486,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 6bada44bb66542f2bb8134204929bfc5-20220513
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 899157921; Fri, 13 May 2022 17:25:29 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 13 May 2022 17:25:28 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 13 May 2022 17:25:28 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 13 May 2022 17:25:26 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v6, 0/7] support mt8195 decoder
-Date:   Fri, 13 May 2022 17:25:19 +0800
-Message-ID: <20220513092526.9670-1-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 13 May 2022 05:25:38 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F3E2A28CB
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652433938; x=1683969938;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=7lONoJE0pI/mqPtOMCm6iSirbPlA0ZWBn6ql3BY1kUg=;
+  b=mSIvswrEzuEf8aPRDQBW+jPSsayJrINpb3C+ODcKfTOIbMG2IbLg0PT8
+   DXiABBRM2l+V0+YTreGoZG9uMZGlVszEHO216uQeKgEWPAWNnajarDPqp
+   F0NEx7RkV3eFvd5iBCvuc7+IsivYJqWyD7B6N/xFUe5/oRfjaE8eKKtQw
+   jghduSH3QCvhnS7wUQBnS9idxVRqR0p8mjET2vARy/rrjvx0St0FmX9MP
+   g1TLZu0WabA37Gs5YC5ZKFVPHCKW0uWusGFUIFQsF4dFxpUQNA8j4i9KV
+   u0XRaTWQtz/ssV1MiGSgxfmSZsktvq/J8LENpfXlfrn/uY4tOUwStDDca
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="163546220"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 May 2022 02:25:37 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 13 May 2022 02:25:36 -0700
+Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 13 May 2022 02:25:32 -0700
+From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+To:     <linux@armlinux.org.uk>, <linus.walleij@linaro.org>,
+        <alexandre.belloni@bootlin.com>, <michael@walle.cc>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Kavyasree.Kotagiri@microchip.com>, <Manohar.Puri@microchip.com>
+Subject: [PATCH v4] ARM: at91: debug: add lan966 support
+Date:   Fri, 13 May 2022 14:55:30 +0530
+Message-ID: <20220513092530.19213-1-kavyasree.kotagiri@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Firstly, add mt8195 soc lat hardware and compatible, then add documents.
-For vp8 only support MM21 mode, H264/vp9 support MT21C, need to separate
-them. Lastly, enable H264 inner racing mode to reduce hardware latency.
+Add support for low-level debugging on FLEXCOM USART of
+LAN966 SoC.
 
-Patch 1~4 add mt8195 soc lat hardware and compatible, then add documents.
-Patch 5 using different format for different codecs.
-Patch 6 prevent kernel crash when scp reboot.
-Patch 7 enable H264 inner racing mode to reduce hardware latency.
+Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
 ---
-This patch depends on "add h264 decoder driver for mt8186"[1]
+v3 -> v4:
+- changed SOC_LAN966x to SOC_LAN966.
 
-[1]  https://patchwork.kernel.org/project/linux-mediatek/cover/20220512034620.30500-1-yunfei.dong@mediatek.com/
----
-changed with v5:
-- fix __iomem not reasonable, align share memory to dram.
-changed with v4:
-- fix sparse and smatch check fail for patch 7.
-changed with v3:
-- rebase driver to the latest media_stage.
-changed with v2:
-- add detail explanation for lat soc hardware for patch 1.
-changed with v1:
-- separate "Init VP9 stateless decode params" patch and remove it to another one.
-- add reviewed-by in patch v3/v4/v6
----
-Yunfei Dong (7):
-  dt-bindings: media: mediatek: vcodec: Adds decoder dt-bindings for lat
-    soc
-  media: mediatek: vcodec: Add to support lat soc hardware
-  dt-bindings: media: mediatek: vcodec: Adds decoder dt-bindings for
-    mt8195
-  media: mediatek: vcodec: Adds compatible for mt8195
-  media: mediatek: vcodec: Different codec using different capture
-    format
-  media: mediatek: vcodec: prevent kernel crash when scp ipi timeout
-  media: mediatek: vcodec: Add to support H264 inner racing mode
+ arch/arm/Kconfig.debug | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
- .../media/mediatek,vcodec-subdev-decoder.yaml | 52 +++++++++++++------
- .../platform/mediatek/vcodec/mtk_vcodec_dec.c | 41 +++++++++++++++
- .../mediatek/vcodec/mtk_vcodec_dec_drv.c      |  8 +++
- .../mediatek/vcodec/mtk_vcodec_dec_hw.c       | 12 +++--
- .../mediatek/vcodec/mtk_vcodec_dec_hw.h       |  2 +
- .../mediatek/vcodec/mtk_vcodec_dec_pm.c       | 50 ++++++++++++++++++
- .../platform/mediatek/vcodec/mtk_vcodec_drv.h | 12 +++++
- .../vcodec/vdec/vdec_h264_req_multi_if.c      | 25 +++++++--
- .../platform/mediatek/vcodec/vdec_vpu_if.c    |  5 ++
- 9 files changed, 183 insertions(+), 24 deletions(-)
-
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index 0c9497d549e3..77b2db882e75 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -210,6 +210,26 @@ choice
+ 		  Say Y here if you want kernel low-level debugging support
+ 		  on the FLEXCOM3 port of SAMA7G5.
+ 
++	config DEBUG_AT91_LAN966_FLEXCOM
++		bool "Kernel low-level debugging on LAN966 FLEXCOM USART"
++		select DEBUG_AT91_UART
++		depends on SOC_LAN966
++		help
++		Say Y here if you want kernel low-level debugging support
++		on the FLEXCOM port of LAN966.
++
++		DEBUG_UART_PHYS | DEBUG_UART_VIRT
++
++		0xe0040200      | 0xfd040200     | FLEXCOM0
++		0xe0044200      | 0xfd044200     | FLEXCOM1
++		0xe0060200      | 0xfd060200     | FLEXCOM2
++		0xe0064200      | 0xfd064200     | FLEXCOM3
++		0xe0070200      | 0xfd070200     | FLEXCOM4
++
++		By default, enabling FLEXCOM3 port. Based on requirement, use
++		DEBUG_UART_PHYS and DEBUG_UART_VIRT configurations from above
++		table.
++
+ 	config DEBUG_BCM2835
+ 		bool "Kernel low-level debugging on BCM2835 PL011 UART"
+ 		depends on ARCH_BCM2835 && ARCH_MULTI_V6
+@@ -1685,6 +1705,7 @@ config DEBUG_UART_PHYS
+ 	default 0xd4017000 if DEBUG_MMP_UART2
+ 	default 0xd4018000 if DEBUG_MMP_UART3
+ 	default 0xe0000000 if DEBUG_SPEAR13XX
++	default 0xe0064200 if DEBUG_AT91_LAN966_FLEXCOM
+ 	default 0xe1824200 if DEBUG_AT91_SAMA7G5_FLEXCOM3
+ 	default 0xe4007000 if DEBUG_HIP04_UART
+ 	default 0xe6c40000 if DEBUG_RMOBILE_SCIFA0
+@@ -1805,6 +1826,7 @@ config DEBUG_UART_VIRT
+ 	default 0xfb10c000 if DEBUG_REALVIEW_PB1176_PORT
+ 	default 0xfcfe8600 if DEBUG_BCM63XX_UART
+ 	default 0xfd000000 if DEBUG_SPEAR3XX || DEBUG_SPEAR13XX
++	default 0xfd064200 if DEBUG_AT91_LAN966_FLEXCOM
+ 	default 0xfd531000 if DEBUG_STIH41X_SBC_ASC1
+ 	default 0xfd883000 if DEBUG_ALPINE_UART0
+ 	default 0xfdd32000 if DEBUG_STIH41X_ASC2
 -- 
-2.18.0
+2.17.1
 
