@@ -2,87 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 015D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AE0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345309AbiEMIp1 (ORCPT
+        id S1378537AbiEMIqJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 04:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
+        Fri, 13 May 2022 04:46:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378510AbiEMIpS (ORCPT
+        with ESMTP id S1378524AbiEMIpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 04:45:18 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECF22AC0CC;
-        Fri, 13 May 2022 01:45:17 -0700 (PDT)
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 24D8inc8008984;
-        Fri, 13 May 2022 17:44:49 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 24D8inc8008984
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652431490;
-        bh=9eAHLsfIBIOaVsxfyDkUkCcn4KH4T6JIzksZgbEKTD8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jGNuZob53bNFNxhx8NeeoPd8HMc6tay3prv3JJOGahRjQKbEcN8v0eUdQbNH7n6ZS
-         zlbiFTB48M8s23G9NZjb4owJnt784q5ZqGiydctKSPpOumLjTTn0m2TJvePa6km5tC
-         IH2UOYYdAgHlgUtf59FUp5amxb7ZdZ/qCx9e9YF0gLnKX1confJypLtbRkaouSnJPx
-         QVvNLkCZDrKmq8n6cnnmuhEasLdQ1AmwEDcNibEwC34XE4IsgDNCnRt5VWAZLvBqF2
-         gwgTVF5MtnUVX89w5VnPjgtuzWOebmSIbkP4B04/7m/8TdW+aZkBNGUFJ57TVon02r
-         DTXrK3tqB/gkA==
-X-Nifty-SrcIP: [209.85.216.52]
-Received: by mail-pj1-f52.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so10216345pju.2;
-        Fri, 13 May 2022 01:44:49 -0700 (PDT)
-X-Gm-Message-State: AOAM531BYfg6GMjzD7lP8VoEfT2n2xMxEysE/sz4fW6kZ5GMAO5s0eFY
-        BI+pH2Y3WLTMwn8UjiUdDGUJkYjm8RGzw70M2mk=
-X-Google-Smtp-Source: ABdhPJwA2t5OI6nAtm9Un+hubZNmwvMRSWcBSE+7aGQkjmqDqI1E7a/Uw6stY+Rm0GeVbwNt9q6TVG2kK+dW1r7mHps=
-X-Received: by 2002:a17:903:1205:b0:15e:8cbc:fd2b with SMTP id
- l5-20020a170903120500b0015e8cbcfd2bmr3852931plh.99.1652431488849; Fri, 13 May
- 2022 01:44:48 -0700 (PDT)
+        Fri, 13 May 2022 04:45:54 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698059FD7
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:45:50 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso6551371wma.0
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:45:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=RZ8yTIuVwipuvbXpKbDAO+yIaNvj7+8XD8hFioYNFl4=;
+        b=qEjAs6KRQY3PArkmVwn+6xihr+K0c+GcFb2R40zv5/choYpPpcDdnkHtGwzdqSmurE
+         AF1wiYK+vF+cKow4n7LOSxJJYIbv69D3gjVC4j+SBX+uW3DdSt+pl3Dag/QkREqHwlUp
+         YhryStObqiMZIYWxPO1NS7H/G2JRUpKbpPpdvpalr/WcbFnJ13Cu4MB92RQ8DItjwFq8
+         T8F0fVYXfnFuigT8revG9IJbur2s/9X75U3HXlMxEw6cEYx+ohvmbNhYXg2LPnlKXkUs
+         IOdrM/NQa2IIZYZIpV1/hJNlFUweVKLk7KbW/BHKFdgTUOO7DRyYmLdOXJk9FDuRMRD3
+         x5Zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RZ8yTIuVwipuvbXpKbDAO+yIaNvj7+8XD8hFioYNFl4=;
+        b=wMnOGBh+nnbBttAXywodIhhaLOyDLGY95ddwllq7fD3KjJ3MFc+j0LplYwL1g0nKJd
+         uHIzP+bkcF3+jtZnno3WdMbvmYn9PBHXyNsHjqdJKcYpqx9XcJUHESWcHhauI8vAjyHF
+         lAEV0yuqlzacwe3t9hRfaAXkSRv5IOiu/UjFDNffLS9KTBRWxvS6uUx/KiL0BBq2mCTu
+         4n3LakrQNrIC5aIrAS+CbHvbd54tdSn5ftiK3CjHdXcHAw1pwduk9jO1+prEDR9wLHyt
+         X3mk8H16J2lYsgKaTfx8X+pQi5owq8BIWAdsHsmnAM0lvN9yXc1wBQ8aHQHVLD7tpdGy
+         MrPg==
+X-Gm-Message-State: AOAM533kI4m1nHyLeTvSuyI9jaSHFk6SxQGi/u6zQRgP3TsmXF2Z04k6
+        yfYjRMma03HEbzovltp+XhO6SA==
+X-Google-Smtp-Source: ABdhPJy4/fTItdUhko//AscP+mK3Y8qnApfYBgO5e0+J/cdShWpSgBIOR5L1JhNXonhyJ4RxcOsseg==
+X-Received: by 2002:a7b:c199:0:b0:394:26d0:a6a9 with SMTP id y25-20020a7bc199000000b0039426d0a6a9mr13990355wmi.116.1652431548987;
+        Fri, 13 May 2022 01:45:48 -0700 (PDT)
+Received: from [192.168.0.169] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id r15-20020a7bc08f000000b00394615cf468sm4809214wmh.28.2022.05.13.01.45.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 01:45:48 -0700 (PDT)
+Message-ID: <8ec8905c-3eb5-c2d1-f5f5-b5949d42fcf1@linaro.org>
+Date:   Fri, 13 May 2022 10:45:47 +0200
 MIME-Version: 1.0
-References: <20220404061948.2111820-1-masahiroy@kernel.org> <CAK8P3a3RWypZ2H6zRTdEWMvg608VFVAoNAQZbUM4GbW7uAWk8A@mail.gmail.com>
-In-Reply-To: <CAK8P3a3RWypZ2H6zRTdEWMvg608VFVAoNAQZbUM4GbW7uAWk8A@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 13 May 2022 17:43:35 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASxCvbqTLaUmVmmp_cKFNCj8hfVUA2kzEBYRf+u45Y3TQ@mail.gmail.com>
-Message-ID: <CAK7LNASxCvbqTLaUmVmmp_cKFNCj8hfVUA2kzEBYRf+u45Y3TQ@mail.gmail.com>
-Subject: Re: [PATCH 0/8] UAPI: make more exported headers self-contained, and
- put them into test coverage
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 09/11] arm64: dts: marvell: split Methode uDPU DTS
+Content-Language: en-US
+To:     Robert Marko <robert.marko@sartura.hr>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        kostap@marvell.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220512124905.49979-1-robert.marko@sartura.hr>
+ <20220512124905.49979-9-robert.marko@sartura.hr>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220512124905.49979-9-robert.marko@sartura.hr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
-
-On Mon, Apr 4, 2022 at 4:35 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Mon, Apr 4, 2022 at 8:19 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> >
-> > Here are more efforts to put more headers to UAPI compile testing
-> > (CONFIG_UAPI_HEADER_TEST).
-> >
-> > I am sending this series to Arnd because he has deep knowledge for the
-> > kernel APIs and manages asm-generic pull requests.
->
-> These all look good to me, I can apply them for 5.19 but would wait
-> a few days for others to comment.
->
->        Arnd
+On 12/05/2022 14:49, Robert Marko wrote:
+> Split the Methode uDPU DTS into a common DTSI as preparation for adding
+> support for Methode eDPU which is based on the uDPU to avoid duplication.
+> 
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
 
-Can you apply 01-06 for the next MW?
-
-I got a 0-day bot report for 07, but
-I may not have time to come back to it
-in this development cycle.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
--- 
-Best Regards
-Masahiro Yamada
+Best regards,
+Krzysztof
