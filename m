@@ -2,121 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67FC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3678C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380687AbiEMOZR (ORCPT
+        id S1380695AbiEMOZ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
+        Fri, 13 May 2022 10:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359425AbiEMOYs (ORCPT
+        with ESMTP id S1358971AbiEMOYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:24:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE10C51E5D;
-        Fri, 13 May 2022 07:24:46 -0700 (PDT)
+        Fri, 13 May 2022 10:24:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFBE50E31;
+        Fri, 13 May 2022 07:24:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA14C61F99;
-        Fri, 13 May 2022 14:24:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A451C34100;
-        Fri, 13 May 2022 14:24:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 245C7B83066;
+        Fri, 13 May 2022 14:24:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E76C34115;
+        Fri, 13 May 2022 14:24:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451885;
-        bh=ats/HlYQpYgQ6ICGJ9t9YHpljthNM6r50J6d/zvOAn8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=F91V7vJfsslOiz2t2/AjSgvZEm8GFdW8bw/2tJZHzRK6AcGw0Q7uvmJJ1UY0ccrRd
-         7OrWxswAzlRpiOzrXykcZzyn7L3TOnYkPHTiKoANUmPClBKf6aqepgvBt6Yz6Du5QY
-         IeuDxYWhBuOlQS9SCTbXQO2rTOR8bMheTdJUUImI=
+        s=korg; t=1652451881;
+        bh=nTYea53HYuP4kedeJer8CmVbpRnWXst8mre0wEVLpSU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Fozv3JNeUbkWVCvli9YNcVQs9TZnttpQslj3qXGogFf+nknebaHaXwtfVdhh074df
+         kMkigW/OjSqWxUlMoHju7AVxye+WhU6sm2ehVnt5ZFpqbCVfBARkxesePu7FKqEbYd
+         1QyeFNoQCJhRbjPQOKQNuDXVOpSCaTToZY4tV2jE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.9 0/7] 4.9.314-rc1 review
-Date:   Fri, 13 May 2022 16:23:15 +0200
-Message-Id: <20220513142225.909697091@linuxfoundation.org>
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Lars Persson <lars.persson@axis.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Xu <peterx@redhat.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Zi Yan <ziy@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.9 7/7] mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
+Date:   Fri, 13 May 2022 16:23:22 +0200
+Message-Id: <20220513142226.131430745@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220513142225.909697091@linuxfoundation.org>
+References: <20220513142225.909697091@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.314-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.314-rc1
-X-KernelTest-Deadline: 2022-05-15T14:22+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.314 release.
-There are 7 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Muchun Song <songmuchun@bytedance.com>
 
-Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
-Anything received after that time might be too late.
+commit 7c25a0b89a487878b0691e6524fb5a8827322194 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.314-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
+userfaultfd calls mcopy_atomic_pte() and __mcopy_atomic() which do not
+do any cache flushing for the target page.  Then the target page will be
+mapped to the user space with a different address (user address), which
+might have an alias issue with the kernel address used to copy the data
+from the user to.  Fix this by insert flush_dcache_page() after
+copy_from_user() succeeds.
 
-thanks,
+Link: https://lkml.kernel.org/r/20220210123058.79206-7-songmuchun@bytedance.com
+Fixes: b6ebaedb4cb1 ("userfaultfd: avoid mmap_sem read recursion in mcopy_atomic")
+Fixes: c1a4de99fada ("userfaultfd: mcopy_atomic|mfill_zeropage: UFFDIO_COPY|UFFDIO_ZEROPAGE preparation")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Fam Zheng <fam.zheng@bytedance.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Lars Persson <lars.persson@axis.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ mm/userfaultfd.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.314-rc1
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-
-Ricky WU <ricky_wu@realtek.com>
-    mmc: rtsx: add 74 Clocks in power on flow
-
-Itay Iellin <ieitayie@gmail.com>
-    Bluetooth: Fix the creation of hdev->name
-
-Andreas Larsson <andreas@gaisler.com>
-    can: grcan: only use the NAPI poll budget for RX
-
-Andreas Larsson <andreas@gaisler.com>
-    can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
-
-Lee Jones <lee.jones@linaro.org>
-    block: drbd: drbd_nl: Make conversion to 'enum drbd_ret_code' explicit
-
-Nathan Chancellor <natechancellor@gmail.com>
-    MIPS: Use address-of operator on section symbols
-
-
--------------
-
-Diffstat:
-
- Makefile                          |  4 ++--
- arch/mips/bmips/setup.c           |  2 +-
- arch/mips/lantiq/prom.c           |  2 +-
- arch/mips/pic32/pic32mzda/init.c  |  2 +-
- drivers/block/drbd/drbd_nl.c      | 13 ++++++++-----
- drivers/mmc/host/rtsx_pci_sdmmc.c | 30 ++++++++++++++++++++----------
- drivers/net/can/grcan.c           | 38 ++++++++++++++++++--------------------
- include/net/bluetooth/hci_core.h  |  3 +++
- mm/userfaultfd.c                  |  3 +++
- net/bluetooth/hci_core.c          |  6 +++---
- 10 files changed, 60 insertions(+), 43 deletions(-)
+--- a/mm/userfaultfd.c
++++ b/mm/userfaultfd.c
+@@ -50,6 +50,8 @@ static int mcopy_atomic_pte(struct mm_st
+ 			/* don't free the page */
+ 			goto out;
+ 		}
++
++		flush_dcache_page(page);
+ 	} else {
+ 		page = *pagep;
+ 		*pagep = NULL;
+@@ -267,6 +269,7 @@ retry:
+ 				err = -EFAULT;
+ 				goto out;
+ 			}
++			flush_dcache_page(page);
+ 			goto retry;
+ 		} else
+ 			BUG_ON(page);
 
 
