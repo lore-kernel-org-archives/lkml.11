@@ -2,121 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:24:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE925C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:24:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356695AbiEMOY3 (ORCPT
+        id S1357293AbiEMOYe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:24:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
+        Fri, 13 May 2022 10:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355654AbiEMOYZ (ORCPT
+        with ESMTP id S1355954AbiEMOY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:24:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D200050B1C;
+        Fri, 13 May 2022 10:24:26 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF37850E09;
+        Fri, 13 May 2022 07:24:25 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso7973428pjg.0;
+        Fri, 13 May 2022 07:24:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mTM/kX6SVqsh/584K0OxOVMxJNbBbJojAc06+3q+noc=;
+        b=THHZJjXytAJZclhK0bpp/StN56jpSkHFqNU6fPOgzPAjO/HrVdWtKojjDJYmdwTpqH
+         JedTnC6qF6skZiX1SQBOsq9DcZs0dbUd6u0gAOMGVVTOAdG7o8qKOR6oUjko+P+nX1Bt
+         b7aRDLYP93M4BlUq85TAI4QzsYw01Ediw8szmlSpX/hBmbceGozMkjSUPdmTWaclXWxv
+         yPQuHRleIJU/1MoYGRMfJ00al1+QilC2ZQyR0ZSyzY70fjJ6GAWSZB5t3Xkg4oOWiu/O
+         nIDz8Sfbh5ur/W6wcoyntdbbw3BCMIvuvqagkxKvUGVGGWzqI9SREy2yLm4tn7TurkTc
+         MYbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=mTM/kX6SVqsh/584K0OxOVMxJNbBbJojAc06+3q+noc=;
+        b=iC4CFiGGCJcC5BGi9GRMbMbrR1j+e5w16qzMtIprdqe5+eJ554L0JE3GsSX2Kq2x7E
+         iWeYm+4dYmlVnc9Pm7RygEq6cRN9Z6U1vNxSaqJ1223PRGuBoFOjjBMnRPDqxaC/3yOw
+         C5rJF2cTiOopNrKZdWZco4ZwrLULkF8o7ALy8CaQrlzCFLDsyDmEbh/IxwM6nxf3e2nf
+         85ghl+iS4f/vMLGzUA0hOH1u1otkvhqdtF8bsbMf+QI/V6duzlYmSfZ8YSmlmbs4k4Y3
+         9XYo8Ac4LV7J9Rkd/owI0jqP7kXPXEo0qFMjWt6885RO66HcsOitOhlxInhTpxD5Si8T
+         S6lw==
+X-Gm-Message-State: AOAM531iQe3b6dAK9tZg8pnJgSDk8LGz/kA3rXmZ2iUpJrDGO4Pf9yV3
+        AYu4Cj9p9jl9tRpYe9uAi5E=
+X-Google-Smtp-Source: ABdhPJyX8XhNTJuqpdaLK2CBnxji9ZIZ3WOnDPmRsky4JKsie/lRiYbynXtG+lsWAfSfL6cs76jHHA==
+X-Received: by 2002:a17:902:e811:b0:15e:b27b:92ef with SMTP id u17-20020a170902e81100b0015eb27b92efmr4988168plg.142.1652451865060;
+        Fri, 13 May 2022 07:24:25 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id jj10-20020a170903048a00b0015e8d4eb2ccsm1684488plb.278.2022.05.13.07.24.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 13 May 2022 07:24:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6110761F99;
-        Fri, 13 May 2022 14:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05119C34100;
-        Fri, 13 May 2022 14:24:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451863;
-        bh=pgmlDEK3VnwrJoM5kMd8UWT5gPluDNUCz7SRYnTdRcU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qd2Kh6VOAWqO+zYcvoXVvN9kZWS83xjYFNAAdLRfNZkbco799CEukeTukycr87qSU
-         uXwU2y4ziqS9c0hc9wuJslU5LTGE8XjAJlfySGNptFSvPc5CQhJ0sHANnn7ZYEK3RO
-         RL/RWGGANOqVgJUFuGKOL23PosakMsPrZ/g/5ivY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.9 1/7] MIPS: Use address-of operator on section symbols
-Date:   Fri, 13 May 2022 16:23:16 +0200
-Message-Id: <20220513142225.953417330@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142225.909697091@linuxfoundation.org>
-References: <20220513142225.909697091@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH 1/2] can: move can_dropped_invalid_skb from skb.h to dev.h
+Date:   Fri, 13 May 2022 23:23:54 +0900
+Message-Id: <20220513142355.250389-2-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <natechancellor@gmail.com>
+This is a preparation patch for next change.
 
-commit d422c6c0644bccbb1ebeefffa51f35cec3019517 upstream.
+We want to introduce a check towards CAN_CTRLMODE_LISTENONLY in
+can_dopped_invalid_skb(). To do so, we would need to include
+linux/can/dev.h (for struct can_priv) and uapi/linux/can/netlink.h
+(for the definition of CAN_CTRLMODE_LISTEONLY). Instead of adding
+those header and contributing to the include hell, we prever to
+relocate can_dropped_invalid_skb() to linux/can/dev.h where all the
+needed headers are already present.
 
-When building xway_defconfig with clang:
+While doing so, do a small cleanup: re-indent the second line of the
+function argument and add brackets around the else block.
 
-arch/mips/lantiq/prom.c:82:23: error: array comparison always evaluates
-to true [-Werror,-Wtautological-compare]
-        else if (__dtb_start != __dtb_end)
-                             ^
-1 error generated.
-
-These are not true arrays, they are linker defined symbols, which are
-just addresses. Using the address of operator silences the warning
-and does not change the resulting assembly with either clang/ld.lld
-or gcc/ld (tested with diff + objdump -Dr). Do the same thing across
-the entire MIPS subsystem to ensure there are no more warnings around
-this type of comparison.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1232
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- arch/mips/bmips/setup.c          |    2 +-
- arch/mips/lantiq/prom.c          |    2 +-
- arch/mips/pic32/pic32mzda/init.c |    2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ include/linux/can/dev.h | 29 +++++++++++++++++++++++++++++
+ include/linux/can/skb.h | 28 ----------------------------
+ 2 files changed, 29 insertions(+), 28 deletions(-)
 
---- a/arch/mips/bmips/setup.c
-+++ b/arch/mips/bmips/setup.c
-@@ -174,7 +174,7 @@ void __init plat_mem_setup(void)
- 		dtb = phys_to_virt(fw_arg2);
- 	else if (fw_passed_dtb) /* UHI interface */
- 		dtb = (void *)fw_passed_dtb;
--	else if (__dtb_start != __dtb_end)
-+	else if (&__dtb_start != &__dtb_end)
- 		dtb = (void *)__dtb_start;
- 	else
- 		panic("no dtb found");
---- a/arch/mips/lantiq/prom.c
-+++ b/arch/mips/lantiq/prom.c
-@@ -76,7 +76,7 @@ void __init plat_mem_setup(void)
+diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
+index c2ea47f30046..bbe27e22c7a7 100644
+--- a/include/linux/can/dev.h
++++ b/include/linux/can/dev.h
+@@ -156,6 +156,35 @@ static inline u32 can_get_static_ctrlmode(struct can_priv *priv)
+ 	return priv->ctrlmode & ~priv->ctrlmode_supported;
+ }
  
- 	if (fw_passed_dtb) /* UHI interface */
- 		dtb = (void *)fw_passed_dtb;
--	else if (__dtb_start != __dtb_end)
-+	else if (&__dtb_start != &__dtb_end)
- 		dtb = (void *)__dtb_start;
- 	else
- 		panic("no dtb found");
---- a/arch/mips/pic32/pic32mzda/init.c
-+++ b/arch/mips/pic32/pic32mzda/init.c
-@@ -36,7 +36,7 @@ static ulong get_fdtaddr(void)
- 	if (fw_passed_dtb && !fw_arg2 && !fw_arg3)
- 		return (ulong)fw_passed_dtb;
++/* Drop a given socketbuffer if it does not contain a valid CAN frame. */
++static inline bool can_dropped_invalid_skb(struct net_device *dev,
++					   struct sk_buff *skb)
++{
++	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
++
++	if (skb->protocol == htons(ETH_P_CAN)) {
++		if (unlikely(skb->len != CAN_MTU ||
++			     cfd->len > CAN_MAX_DLEN))
++			goto inval_skb;
++	} else if (skb->protocol == htons(ETH_P_CANFD)) {
++		if (unlikely(skb->len != CANFD_MTU ||
++			     cfd->len > CANFD_MAX_DLEN))
++			goto inval_skb;
++	} else {
++		goto inval_skb;
++	}
++
++	if (!can_skb_headroom_valid(dev, skb))
++		goto inval_skb;
++
++	return false;
++
++inval_skb:
++	kfree_skb(skb);
++	dev->stats.tx_dropped++;
++	return true;
++}
++
+ void can_setup(struct net_device *dev);
  
--	if (__dtb_start < __dtb_end)
-+	if (&__dtb_start < &__dtb_end)
- 		ftaddr = (ulong)__dtb_start;
+ struct net_device *alloc_candev_mqs(int sizeof_priv, unsigned int echo_skb_max,
+diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
+index fdb22b00674a..985791c84a8d 100644
+--- a/include/linux/can/skb.h
++++ b/include/linux/can/skb.h
+@@ -126,34 +126,6 @@ static inline bool can_skb_headroom_valid(struct net_device *dev,
+ 	return true;
+ }
  
- 	return ftaddr;
-
+-/* Drop a given socketbuffer if it does not contain a valid CAN frame. */
+-static inline bool can_dropped_invalid_skb(struct net_device *dev,
+-					  struct sk_buff *skb)
+-{
+-	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
+-
+-	if (skb->protocol == htons(ETH_P_CAN)) {
+-		if (unlikely(skb->len != CAN_MTU ||
+-			     cfd->len > CAN_MAX_DLEN))
+-			goto inval_skb;
+-	} else if (skb->protocol == htons(ETH_P_CANFD)) {
+-		if (unlikely(skb->len != CANFD_MTU ||
+-			     cfd->len > CANFD_MAX_DLEN))
+-			goto inval_skb;
+-	} else
+-		goto inval_skb;
+-
+-	if (!can_skb_headroom_valid(dev, skb))
+-		goto inval_skb;
+-
+-	return false;
+-
+-inval_skb:
+-	kfree_skb(skb);
+-	dev->stats.tx_dropped++;
+-	return true;
+-}
+-
+ static inline bool can_is_canfd_skb(const struct sk_buff *skb)
+ {
+ 	/* the CAN specific type of skb is identified by its data length */
+-- 
+2.35.1
 
