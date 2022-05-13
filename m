@@ -2,154 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0390EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377774AbiEMHSv (ORCPT
+        id S1377783AbiEMHUC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        Fri, 13 May 2022 03:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377778AbiEMHSq (ORCPT
+        with ESMTP id S1356223AbiEMHT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:18:46 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D3B2878E2;
-        Fri, 13 May 2022 00:18:44 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L00PC5x3qz4xXn;
-        Fri, 13 May 2022 17:18:39 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652426320;
-        bh=Ry7ba0ogTE6yHlJj3l0xHb6hRYa9Yi7LeK2WldUvqjI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LMvGYq67D6ahXcnoUHOHm1PO12WuhH6R7N1fnv28ycEig7IUeUPkwL4gsbiAEPv55
-         0BCk4caofxYiqno6As1KeRz8osntqfimRz5/9YpW4Nxv7Dr1xnwhTDM2dV4H+pfNaQ
-         28TSac5dp+B3RYpKd2LleNuy7n8dn5hQsLt6qst6Y4MRodQlXqTceD2gVo1f5nygOx
-         1FebmXFr6R2BSKZQZZdJe7xPpOkAxP3dYjV4ef+m5wjVUjxMsPXVyZ7dtLMwo5eh1I
-         vnSnuRukd+UqqiWErJVzv8jYRn2MWJZUlR16gIdGLO55wuTv5NOj2Xy+fRzKSqCvsv
-         Vk2AE4USvmbeQ==
-Date:   Fri, 13 May 2022 17:18:38 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Will Deacon <will@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the mm tree
-Message-ID: <20220513171838.627ccc86@canb.auug.org.au>
-In-Reply-To: <YnzqffV7STYS24Yn@arm.com>
-References: <20220512193855.4f6ce32f@canb.auug.org.au>
-        <YnzqffV7STYS24Yn@arm.com>
+        Fri, 13 May 2022 03:19:57 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12902AACC1
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:19:55 -0700 (PDT)
+X-UUID: 43d5697e530f41e095fe965a3f140368-20220513
+X-GW-Reason: 11101
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
+X-Content-Feature: ica/max.line-size 116
+        audit/email.address 1
+        meta/cnt.alert 1
+X-UUID: 43d5697e530f41e095fe965a3f140368-20220513
+Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
+        (envelope-from <pengfuyuan@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 482741696; Fri, 13 May 2022 14:24:51 +0800
+X-ns-mid: postfix-627DF8EE-8540214981
+Received: from localhost.localdomain (unknown [172.20.4.120])
+        by cs2c.com.cn (NSMail) with ESMTPA id 87CC6383C640;
+        Fri, 13 May 2022 06:21:34 +0000 (UTC)
+From:   pengfuyuan <pengfuyuan@kylinos.cn>
+To:     Harry Wentland <harry.wentland@amd.com>
+Cc:     Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        pengfuyuan <pengfuyuan@kylinos.cn>
+Subject: [PATCH] drm/amd/display: Remove macro DC_DEFAULT_LOG_MASK
+Date:   Fri, 13 May 2022 14:20:45 +0800
+Message-Id: <20220513062045.840780-1-pengfuyuan@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/S6tyXvo/95AbDqwnih9JeJ8";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/S6tyXvo/95AbDqwnih9JeJ8
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+[Why]
+The DC_DEFAULT_LOG_MASK macro has not been used for a long time, so remove it.
 
-Hi Catalin,
-
-On Thu, 12 May 2022 12:07:41 +0100 Catalin Marinas <catalin.marinas@arm.com=
-> wrote:
->
-> Note that after the arm64 commit, get_clear_contig() no longer flushes
-> the TLB. So maybe something like:
->=20
-> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-> index 30f5b76aabe9..9a999550df8e 100644
-> --- a/arch/arm64/mm/hugetlbpage.c
-> +++ b/arch/arm64/mm/hugetlbpage.c
-> @@ -485,12 +485,15 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *=
-vma,
->  {
->  	size_t pgsize;
->  	int ncontig;
-> +	pte_t orig_pte;
->=20
->  	if (!pte_cont(READ_ONCE(*ptep)))
->  		return ptep_clear_flush(vma, addr, ptep);
->=20
->  	ncontig =3D find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
-> -	return get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
-> +	orig_pte =3D get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
-> +	flush_tlb_range(vma, addr, addr + pgsize * ncontig);
-> +	return orig_pte;
->  }
->=20
->  static int __init hugetlbpage_init(void)
-
-I have modified my merge resolution patch to as in the above so it
-looks like this now:
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Fri, 13 May 2022 17:08:07 +1000
-Subject: [PATCH] fixup for "mm: change huge_ptep_clear_flush() to return th=
-e original pte"
-
-It interacts with commit
-
-  fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()")
-
-from the arm64 tree
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: pengfuyuan <pengfuyuan@kylinos.cn>
 ---
- arch/arm64/mm/hugetlbpage.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ .../drm/amd/display/include/logger_types.h    | 33 -------------------
+ 1 file changed, 33 deletions(-)
 
-diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-index 5bdf913dedc7..10b4a19ed6a2 100644
---- a/arch/arm64/mm/hugetlbpage.c
-+++ b/arch/arm64/mm/hugetlbpage.c
-@@ -485,12 +485,15 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *vm=
-a,
- {
- 	size_t pgsize;
- 	int ncontig;
-+	pte_t orig_pte;
-=20
- 	if (!pte_cont(READ_ONCE(*ptep)))
- 		return ptep_clear_flush(vma, addr, ptep);
-=20
- 	ncontig =3D find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
--	return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
-+	orig_pte =3D get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
-+	flush_tlb_range(vma, addr, addr + pgsize * ncontig);
-+	return orig_pte;
- }
-=20
- static int __init hugetlbpage_init(void)
---=20
-2.35.1
+diff --git a/drivers/gpu/drm/amd/display/include/logger_types.h b/drivers/gpu/drm/amd/display/include/logger_types.h
+index f093b49c5e6e..1b38cfc41718 100644
+--- a/drivers/gpu/drm/amd/display/include/logger_types.h
++++ b/drivers/gpu/drm/amd/display/include/logger_types.h
+@@ -131,37 +131,4 @@ enum dc_log_type {
+ #define DC_MIN_LOG_MASK ((1 << LOG_ERROR) | \
+ 		(1 << LOG_DETECTION_EDID_PARSER))
+ 
+-#define DC_DEFAULT_LOG_MASK ((1ULL << LOG_ERROR) | \
+-		(1ULL << LOG_WARNING) | \
+-		(1ULL << LOG_EVENT_MODE_SET) | \
+-		(1ULL << LOG_EVENT_DETECTION) | \
+-		(1ULL << LOG_EVENT_LINK_TRAINING) | \
+-		(1ULL << LOG_EVENT_LINK_LOSS) | \
+-		(1ULL << LOG_EVENT_UNDERFLOW) | \
+-		(1ULL << LOG_RESOURCE) | \
+-		(1ULL << LOG_FEATURE_OVERRIDE) | \
+-		(1ULL << LOG_DETECTION_EDID_PARSER) | \
+-		(1ULL << LOG_DC) | \
+-		(1ULL << LOG_HW_HOTPLUG) | \
+-		(1ULL << LOG_HW_SET_MODE) | \
+-		(1ULL << LOG_HW_RESUME_S3) | \
+-		(1ULL << LOG_HW_HPD_IRQ) | \
+-		(1ULL << LOG_SYNC) | \
+-		(1ULL << LOG_BANDWIDTH_VALIDATION) | \
+-		(1ULL << LOG_MST) | \
+-		(1ULL << LOG_DETECTION_DP_CAPS) | \
+-		(1ULL << LOG_BACKLIGHT)) | \
+-		(1ULL << LOG_I2C_AUX) | \
+-		(1ULL << LOG_IF_TRACE) | \
+-		(1ULL << LOG_HDMI_FRL) | \
+-		(1ULL << LOG_SCALER) | \
+-		(1ULL << LOG_DTN) /* | \
+-		(1ULL << LOG_DEBUG) | \
+-		(1ULL << LOG_BIOS) | \
+-		(1ULL << LOG_SURFACE) | \
+-		(1ULL << LOG_DML) | \
+-		(1ULL << LOG_HW_LINK_TRAINING) | \
+-		(1ULL << LOG_HW_AUDIO)| \
+-		(1ULL << LOG_BANDWIDTH_CALCS)*/
+-
+ #endif /* __DAL_LOGGER_TYPES_H__ */
+-- 
+2.25.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/S6tyXvo/95AbDqwnih9JeJ8
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ+Bk4ACgkQAVBC80lX
-0GxnEQgAnmB5YyNJxCEZkMLv9LEMvl/mtMzQAG9P53jT6S9/ghNP4Cs5Nu5WL3is
-CZPmCdZe6kH7svVzjWxZeVykPaAvDmDFcGG8wCE/aZBIRrz7gFRGZVh+ewMSxhUf
-PE2/WaBVTKCZbk/MmATYrTJN4/sepWyHqS7HNtfNjCwtLrdU2a4Xiogtxy78gmJe
-BOLaH9qtKuonXrbVpLwpd0ulHZSqd3jF8fY8k8S0YJF1eM+rmjbGVMMqP7OBudre
-AaE+hCIX/nTXltbJkyB1FZvqLqgws36enZiQNjWcrBsivbc259HyJPIHXDWJ1BaG
-NHs2eiCsXVXoEthvnnBcwtaMgq454Q==
-=xeD6
------END PGP SIGNATURE-----
-
---Sig_/S6tyXvo/95AbDqwnih9JeJ8--
