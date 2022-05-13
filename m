@@ -2,240 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C165C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F38EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381272AbiEMOeO (ORCPT
+        id S1381116AbiEMOeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46476 "EHLO
+        Fri, 13 May 2022 10:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381235AbiEMObL (ORCPT
+        with ESMTP id S1381278AbiEMObP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:31:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A7619CECC;
-        Fri, 13 May 2022 07:28:46 -0700 (PDT)
+        Fri, 13 May 2022 10:31:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BAE1AB7B4;
+        Fri, 13 May 2022 07:29:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5ED4B82C9D;
-        Fri, 13 May 2022 14:28:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A8D6C34115;
-        Fri, 13 May 2022 14:28:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5CECB82F64;
+        Fri, 13 May 2022 14:29:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D01DEC34100;
+        Fri, 13 May 2022 14:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452124;
-        bh=Ie+eHcCaTSHoGvHxsjKpqq2s83j3y+ckD62izrJ50SI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X3vXDnsnVs7utCQ0EA6Tj+QEZTL3SiYiITuDat7l9tYaf0JHaE+7gMZYp3zj8B7DM
-         qzoAa+aynqesSgVSJrBckHBHR/uuwZZEWjuBbA/A1XhINSIug4c7cKX4KOU/R1gJv0
-         8NrNJtJHCStfNdm2szsr/hHQ/HRqSSPBHyQOnZBk=
+        s=korg; t=1652452146;
+        bh=z9GmZZIrI8Ekfpz76cjKYYfFFX50TIWlwptiScaqNsM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mOGRKufGLiBolgimhTpskiR3XPlvJKrp6cAf14Zr2etUI93gmAXf3d12AAdl6jUDB
+         ikcvMmTH5owSndhxseT9Y+OKwp8RoiyxhjB9E2XYIu8N67IV8EeuHIxqMypSzlGV6M
+         JW3j3aaq16TNAevsgrA+VGWh62iEvvBCzK/7Il1g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 07/21] x86: Add straight-line-speculation mitigation
-Date:   Fri, 13 May 2022 16:23:49 +0200
-Message-Id: <20220513142230.090384168@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.17 00/12] 5.17.8-rc1 review
+Date:   Fri, 13 May 2022 16:24:00 +0200
+Message-Id: <20220513142228.651822943@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142229.874949670@linuxfoundation.org>
-References: <20220513142229.874949670@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.8-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.17.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.17.8-rc1
+X-KernelTest-Deadline: 2022-05-15T14:22+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+This is the start of the stable review cycle for the 5.17.8 release.
+There are 12 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit e463a09af2f0677b9485a7e8e4e70b396b2ffb6f ]
+Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
+Anything received after that time might be too late.
 
-Make use of an upcoming GCC feature to mitigate
-straight-line-speculation for x86:
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.8-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+and the diffstat can be found below.
 
-  https://gcc.gnu.org/g:53a643f8568067d7700a9f2facc8ba39974973d3
-  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102952
-  https://bugs.llvm.org/show_bug.cgi?id=52323
+thanks,
 
-It's built tested on x86_64-allyesconfig using GCC-12 and GCC-11.
+greg k-h
 
-Maintenance overhead of this should be fairly low due to objtool
-validation.
+-------------
+Pseudo-Shortlog of commits:
 
-Size overhead of all these additional int3 instructions comes to:
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.17.8-rc1
 
-     text	   data	    bss	    dec	    hex	filename
-  22267751	6933356	2011368	31212475	1dc43bb	defconfig-build/vmlinux
-  22804126	6933356	1470696	31208178	1dc32f2	defconfig-build/vmlinux.sls
+Peter Xu <peterx@redhat.com>
+    mm: fix invalid page pointer returned with FOLL_PIN gups
 
-Or roughly 2.4% additional text.
+Huang Ying <ying.huang@intel.com>
+    mm,migrate: fix establishing demotion target
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211204134908.140103474@infradead.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/Kconfig                   |   12 ++++++++++++
- arch/x86/Makefile                  |    4 ++++
- arch/x86/include/asm/linkage.h     |   10 ++++++++++
- arch/x86/include/asm/static_call.h |    2 +-
- arch/x86/kernel/ftrace.c           |    2 +-
- arch/x86/kernel/static_call.c      |    5 +++--
- arch/x86/lib/memmove_64.S          |    2 +-
- arch/x86/lib/retpoline.S           |    2 +-
- scripts/Makefile.build             |    3 ++-
- scripts/link-vmlinux.sh            |    3 +++
- 10 files changed, 38 insertions(+), 7 deletions(-)
+Miaohe Lin <linmiaohe@huawei.com>
+    mm/mlock: fix potential imbalanced rlimit ucounts adjustment
 
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -468,6 +468,18 @@ config RETPOLINE
- 	  branches. Requires a compiler with -mindirect-branch=thunk-extern
- 	  support for full protection. The kernel may run slower.
- 
-+config CC_HAS_SLS
-+	def_bool $(cc-option,-mharden-sls=all)
-+
-+config SLS
-+	bool "Mitigate Straight-Line-Speculation"
-+	depends on CC_HAS_SLS && X86_64
-+	default n
-+	help
-+	  Compile the kernel with straight-line-speculation options to guard
-+	  against straight line speculation. The kernel image might be slightly
-+	  larger.
-+
- config X86_CPU_RESCTRL
- 	bool "x86 CPU resource control support"
- 	depends on X86 && (CPU_SUP_INTEL || CPU_SUP_AMD)
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -179,6 +179,10 @@ ifdef CONFIG_RETPOLINE
-   endif
- endif
- 
-+ifdef CONFIG_SLS
-+  KBUILD_CFLAGS += -mharden-sls=all
-+endif
-+
- KBUILD_LDFLAGS += -m elf_$(UTS_MACHINE)
- 
- ifdef CONFIG_LTO_CLANG
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -18,9 +18,19 @@
- #define __ALIGN_STR	__stringify(__ALIGN)
- #endif
- 
-+#ifdef CONFIG_SLS
-+#define RET	ret; int3
-+#else
-+#define RET	ret
-+#endif
-+
- #else /* __ASSEMBLY__ */
- 
-+#ifdef CONFIG_SLS
-+#define ASM_RET	"ret; int3\n\t"
-+#else
- #define ASM_RET	"ret\n\t"
-+#endif
- 
- #endif /* __ASSEMBLY__ */
- 
---- a/arch/x86/include/asm/static_call.h
-+++ b/arch/x86/include/asm/static_call.h
-@@ -35,7 +35,7 @@
- 	__ARCH_DEFINE_STATIC_CALL_TRAMP(name, ".byte 0xe9; .long " #func " - (. + 4)")
- 
- #define ARCH_DEFINE_STATIC_CALL_NULL_TRAMP(name)			\
--	__ARCH_DEFINE_STATIC_CALL_TRAMP(name, "ret; nop; nop; nop; nop")
-+	__ARCH_DEFINE_STATIC_CALL_TRAMP(name, "ret; int3; nop; nop; nop")
- 
- 
- #define ARCH_ADD_TRAMP_KEY(name)					\
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -308,7 +308,7 @@ union ftrace_op_code_union {
- 	} __attribute__((packed));
- };
- 
--#define RET_SIZE		1
-+#define RET_SIZE		1 + IS_ENABLED(CONFIG_SLS)
- 
- static unsigned long
- create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
---- a/arch/x86/kernel/static_call.c
-+++ b/arch/x86/kernel/static_call.c
-@@ -16,6 +16,8 @@ enum insn_type {
-  */
- static const u8 xor5rax[] = { 0x2e, 0x2e, 0x2e, 0x31, 0xc0 };
- 
-+static const u8 retinsn[] = { RET_INSN_OPCODE, 0xcc, 0xcc, 0xcc, 0xcc };
-+
- static void __ref __static_call_transform(void *insn, enum insn_type type, void *func)
- {
- 	const void *emulate = NULL;
-@@ -41,8 +43,7 @@ static void __ref __static_call_transfor
- 		break;
- 
- 	case RET:
--		code = text_gen_insn(RET_INSN_OPCODE, insn, func);
--		size = RET_INSN_SIZE;
-+		code = &retinsn;
- 		break;
- 	}
- 
---- a/arch/x86/lib/memmove_64.S
-+++ b/arch/x86/lib/memmove_64.S
-@@ -40,7 +40,7 @@ SYM_FUNC_START(__memmove)
- 	/* FSRM implies ERMS => no length checks, do the copy directly */
- .Lmemmove_begin_forward:
- 	ALTERNATIVE "cmp $0x20, %rdx; jb 1f", "", X86_FEATURE_FSRM
--	ALTERNATIVE "", "movq %rdx, %rcx; rep movsb; RET", X86_FEATURE_ERMS
-+	ALTERNATIVE "", __stringify(movq %rdx, %rcx; rep movsb; RET), X86_FEATURE_ERMS
- 
- 	/*
- 	 * movsq instruction have many startup latency
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -34,7 +34,7 @@ SYM_FUNC_START(__x86_indirect_thunk_\reg
- 
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
- 		      __stringify(RETPOLINE \reg), X86_FEATURE_RETPOLINE, \
--		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_LFENCE
-+		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg; int3), X86_FEATURE_RETPOLINE_LFENCE
- 
- SYM_FUNC_END(__x86_indirect_thunk_\reg)
- 
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -232,7 +232,8 @@ objtool_args =								\
- 	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
- 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
- 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
--	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)
-+	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
-+	$(if $(CONFIG_SLS), --sls)
- 
- ifndef CONFIG_LTO_CLANG
- 
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -139,6 +139,9 @@ objtool_link()
- 		if [ -n "${CONFIG_X86_SMAP}" ]; then
- 			objtoolopt="${objtoolopt} --uaccess"
- 		fi
-+		if [ -n "${CONFIG_SLS}" ]; then
-+			objtoolopt="${objtoolopt} --sls"
-+		fi
- 		info OBJTOOL ${1}
- 		tools/objtool/objtool ${objtoolcmd} ${objtoolopt} ${1}
- 	fi
+Naoya Horiguchi <naoya.horiguchi@nec.com>
+    mm/hwpoison: fix error page recovered but reported "not recovered"
+
+Muchun Song <songmuchun@bytedance.com>
+    mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
+
+Muchun Song <songmuchun@bytedance.com>
+    mm: shmem: fix missing cache flush in shmem_mfill_atomic_pte()
+
+Muchun Song <songmuchun@bytedance.com>
+    mm: hugetlb: fix missing cache flush in hugetlb_mcopy_atomic_pte()
+
+Muchun Song <songmuchun@bytedance.com>
+    mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
+
+Muchun Song <songmuchun@bytedance.com>
+    mm: fix missing cache flush for all tail pages of compound page
+
+Jan Kara <jack@suse.cz>
+    udf: Avoid using stale lengthOfImpUse
+
+Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
+    rfkill: uapi: fix RFKILL_IOCTL_MAX_SIZE ioctl request definition
+
+Itay Iellin <ieitayie@gmail.com>
+    Bluetooth: Fix the creation of hdev->name
+
+
+-------------
+
+Diffstat:
+
+ Makefile                         |  4 ++--
+ fs/udf/namei.c                   |  8 ++++----
+ include/net/bluetooth/hci_core.h |  3 +++
+ include/uapi/linux/rfkill.h      |  2 +-
+ mm/gup.c                         |  2 +-
+ mm/hugetlb.c                     |  3 ++-
+ mm/memory-failure.c              |  4 +++-
+ mm/memory.c                      |  2 ++
+ mm/migrate.c                     | 14 ++++++++++----
+ mm/mlock.c                       |  1 +
+ mm/shmem.c                       |  4 +++-
+ mm/userfaultfd.c                 |  3 +++
+ net/bluetooth/hci_core.c         |  6 +++---
+ 13 files changed, 38 insertions(+), 18 deletions(-)
 
 
