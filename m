@@ -2,116 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E9EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E70C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229562AbiEMO14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
+        id S1380764AbiEMO2F (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 10:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380857AbiEMO0L (ORCPT
+        with ESMTP id S1380843AbiEMO0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 10:26:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F7A8CCD2;
-        Fri, 13 May 2022 07:25:39 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53FD8B0B8;
+        Fri, 13 May 2022 07:25:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 342896214D;
-        Fri, 13 May 2022 14:25:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45F7FC34100;
-        Fri, 13 May 2022 14:25:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63103B83065;
+        Fri, 13 May 2022 14:25:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E15C34100;
+        Fri, 13 May 2022 14:25:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451938;
-        bh=zqVNRAyJ1B/WfOlab3usNivBJq6d+QjR9nvrIzyMpYc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O1zFmxILpfIwu57/WlXVBgjmDgCkq4q+nG5NdaU/w78DJtW+ZHv4DCa9Inlch8G0y
-         xxcP7jq2Hzsf1hYopk3ndJNTO6bnO/3cVYrm2+1fNffLLVHvsM/lFDFRebHSCSRO7H
-         dM3rhvieI3c7ftPfkFG4IawBKoJTTg/0dgT6tenk=
+        s=korg; t=1652451930;
+        bh=Hly+lARfDC8uLVSZIqd+anVrMasE0OzPrfMTH751wCs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mW7hFO3zqDdF06Y2XOOIw3rMvaIoba7w7RpVQoP4IpSmHo6fkz/biNmWomSXcXxr6
+         kI4Akks/UBbEKvBQCC6602fNPORM92OvYZqi+EXZsNbqyGQFI6GvIzZzl6ybimb0jY
+         opA7TL/XM+HNKuhTZc4Ohe0VuD6L86CQdXOt3/IU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.19 11/15] ALSA: pcm: Fix races among concurrent prealloc proc writes
-Date:   Fri, 13 May 2022 16:23:33 +0200
-Message-Id: <20220513142228.230689107@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.14 00/14] 4.14.279-rc1 review
+Date:   Fri, 13 May 2022 16:23:16 +0200
+Message-Id: <20220513142227.381154244@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
-References: <20220513142227.897535454@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.279-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.14.279-rc1
+X-KernelTest-Deadline: 2022-05-15T14:22+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+This is the start of the stable review cycle for the 4.14.279 release.
+There are 14 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 69534c48ba8ce552ce383b3dfdb271ffe51820c3 upstream.
+Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
+Anything received after that time might be too late.
 
-We have no protection against concurrent PCM buffer preallocation
-changes via proc files, and it may potentially lead to UAF or some
-weird problem.  This patch applies the PCM open_mutex to the proc
-write operation for avoiding the racy proc writes and the PCM stream
-open (and further operations).
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.279-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+and the diffstat can be found below.
 
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322170720.3529-5-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-[OP: backport to 4.19: adjusted context]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/core/pcm_memory.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+thanks,
 
---- a/sound/core/pcm_memory.c
-+++ b/sound/core/pcm_memory.c
-@@ -160,19 +160,20 @@ static void snd_pcm_lib_preallocate_proc
- 	size_t size;
- 	struct snd_dma_buffer new_dmab;
- 
-+	mutex_lock(&substream->pcm->open_mutex);
- 	if (substream->runtime) {
- 		buffer->error = -EBUSY;
--		return;
-+		goto unlock;
- 	}
- 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
- 		snd_info_get_str(str, line, sizeof(str));
- 		size = simple_strtoul(str, NULL, 10) * 1024;
- 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
- 			buffer->error = -EINVAL;
--			return;
-+			goto unlock;
- 		}
- 		if (substream->dma_buffer.bytes == size)
--			return;
-+			goto unlock;
- 		memset(&new_dmab, 0, sizeof(new_dmab));
- 		new_dmab.dev = substream->dma_buffer.dev;
- 		if (size > 0) {
-@@ -180,7 +181,7 @@ static void snd_pcm_lib_preallocate_proc
- 						substream->dma_buffer.dev.dev,
- 						size, &new_dmab) < 0) {
- 				buffer->error = -ENOMEM;
--				return;
-+				goto unlock;
- 			}
- 			substream->buffer_bytes_max = size;
- 		} else {
-@@ -192,6 +193,8 @@ static void snd_pcm_lib_preallocate_proc
- 	} else {
- 		buffer->error = -EINVAL;
- 	}
-+ unlock:
-+	mutex_unlock(&substream->pcm->open_mutex);
- }
- 
- static inline void preallocate_info_init(struct snd_pcm_substream *substream)
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.14.279-rc1
+
+ChenXiaoSong <chenxiaosong2@huawei.com>
+    VFS: Fix memory leak caused by concurrently mounting fs with subtype
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: pcm: Fix potential AB/BA lock with buffer_mutex and mmap_lock
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: pcm: Fix races among concurrent prealloc proc writes
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: pcm: Fix races among concurrent read/write and buffer changes
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
+
+Muchun Song <songmuchun@bytedance.com>
+    mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
+
+Muchun Song <songmuchun@bytedance.com>
+    mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
+
+Ricky WU <ricky_wu@realtek.com>
+    mmc: rtsx: add 74 Clocks in power on flow
+
+Itay Iellin <ieitayie@gmail.com>
+    Bluetooth: Fix the creation of hdev->name
+
+Andreas Larsson <andreas@gaisler.com>
+    can: grcan: only use the NAPI poll budget for RX
+
+Andreas Larsson <andreas@gaisler.com>
+    can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
+
+Lee Jones <lee.jones@linaro.org>
+    block: drbd: drbd_nl: Make conversion to 'enum drbd_ret_code' explicit
+
+Nathan Chancellor <natechancellor@gmail.com>
+    MIPS: Use address-of operator on section symbols
+
+
+-------------
+
+Diffstat:
+
+ Makefile                          |   4 +-
+ arch/mips/bmips/setup.c           |   2 +-
+ arch/mips/lantiq/prom.c           |   2 +-
+ arch/mips/pic32/pic32mzda/init.c  |   2 +-
+ arch/mips/ralink/of.c             |   2 +-
+ drivers/block/drbd/drbd_nl.c      |  13 +++--
+ drivers/mmc/host/rtsx_pci_sdmmc.c |  30 +++++++----
+ drivers/net/can/grcan.c           |  38 +++++++------
+ fs/namespace.c                    |   9 ++--
+ include/net/bluetooth/hci_core.h  |   3 ++
+ include/sound/pcm.h               |   2 +
+ mm/memory.c                       |   2 +
+ mm/userfaultfd.c                  |   3 ++
+ net/bluetooth/hci_core.c          |   6 +--
+ sound/core/pcm.c                  |   3 ++
+ sound/core/pcm_lib.c              |   5 ++
+ sound/core/pcm_memory.c           |  11 ++--
+ sound/core/pcm_native.c           | 110 +++++++++++++++++++++++++++-----------
+ 18 files changed, 164 insertions(+), 83 deletions(-)
 
 
