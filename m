@@ -2,239 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 116D6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F82C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377980AbiEMH63 (ORCPT
+        id S1377992AbiEMIBm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:58:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
+        Fri, 13 May 2022 04:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356176AbiEMH60 (ORCPT
+        with ESMTP id S238439AbiEMIBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:58:26 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D34A66699
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:58:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652428705; x=1683964705;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mDNirvnpVg2EfPx5OXhFvMMp2oytvT3AbVi8k5j5ehU=;
-  b=Do0k0dkgTR6o7/3MF0G/cyH+t3fvDffbXqbzOu9CMwiZTaYiaCvkhUZa
-   fq35webwVuhL5H9X4Olqe+i/S00HjcQSoJpCuVxy9EyTi9d9lgWC8Evpm
-   W5KqFULF6imvO2JTq+rNd3CNIppxxpATTF4gKAwsOGNoEc9757Wl3thSl
-   SetkOJ3s2B3LkRllvS/yBS4q9DPGl1plQZE8slaJw0oQph/1H4wo/rYZj
-   8BQtgUTzc4bdqN45yPppevRfdr8rF6OLNt4poi2kilnrggB3XErVQUw41
-   cWVfOPRZpUvRwD47ZvKVOGo6vpIEeS+BGwKWfWh/VrvNrrTZkITbkV7ID
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257792323"
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="257792323"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 00:58:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="624774609"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 13 May 2022 00:58:20 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npQBn-000LW2-Rk;
-        Fri, 13 May 2022 07:58:19 +0000
-Date:   Fri, 13 May 2022 15:58:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     pengfuyuan <pengfuyuan@kylinos.cn>,
-        Harry Wentland <harry.wentland@amd.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        pengfuyuan <pengfuyuan@kylinos.cn>
-Subject: Re: [PATCH] drm/amd/display: Remove macro DC_DEFAULT_LOG_MASK
-Message-ID: <202205131519.0PPhVMxz-lkp@intel.com>
-References: <20220512084851.104099-1-pengfuyuan@kylinos.cn>
+        Fri, 13 May 2022 04:01:39 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715802D1EB;
+        Fri, 13 May 2022 01:01:38 -0700 (PDT)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L01Ky5HDNzgYjF;
+        Fri, 13 May 2022 16:00:54 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 13 May 2022 16:01:36 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
+ 2022 16:01:36 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
+Subject: [PATCH] crypto: hisilicon/sec - delele the flag CRYPTO_ALG_ALLOCATES_MEMORY
+Date:   Fri, 13 May 2022 15:55:42 +0800
+Message-ID: <20220513075542.16227-1-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220512084851.104099-1-pengfuyuan@kylinos.cn>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi pengfuyuan,
+Should not to uses the CRYPTO_ALG_ALLOCATES_MEMORY in SEC2. The SEC2
+driver uses the pre-allocated buffers, including the src sgl pool, dst
+sgl pool and other qp ctx resources. (e.g. IV buffer, mac buffer, key
+buffer). The SEC2 driver doesn't allocate memory during request processing.
+The driver only maps software sgl to allocated hardware sgl during I/O. So
+here is fix it.
 
-Thank you for the patch! Yet something to improve:
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ drivers/crypto/hisilicon/sec2/sec_crypto.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-[auto build test ERROR on drm/drm-next]
-[also build test ERROR on v5.18-rc6 next-20220512]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/pengfuyuan/drm-amd-display-Remove-macro-DC_DEFAULT_LOG_MASK/20220512-185320
-base:   git://anongit.freedesktop.org/drm/drm drm-next
-config: arm-randconfig-r016-20220512 (https://download.01.org/0day-ci/archive/20220513/202205131519.0PPhVMxz-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 9519dacab7b8afd537811fc2abaceb4d14f4e16a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/94b3092ea272cf77105cc7b19fcffc44b49e1a71
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review pengfuyuan/drm-amd-display-Remove-macro-DC_DEFAULT_LOG_MASK/20220512-185320
-        git checkout 94b3092ea272cf77105cc7b19fcffc44b49e1a71
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:30:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:31:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:30:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:40:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/hw_sequencer.h:29:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/clock_source.h:31:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/bios_parser_types.h:30:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services.h:36:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/logger_interface.h:29:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:35:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dmub/dmub_srv.h:67:
-   drivers/gpu/drm/amd/amdgpu/../display/dmub/inc/dmub_cmd.h:862:18: warning: field cursor_copy_src within 'struct dmub_rb_cmd_mall' is less aligned than 'union dmub_addr' and is usually due to 'struct dmub_rb_cmd_mall' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           union dmub_addr cursor_copy_src; /**< Cursor copy address */
-                           ^
-   drivers/gpu/drm/amd/amdgpu/../display/dmub/inc/dmub_cmd.h:863:18: warning: field cursor_copy_dst within 'struct dmub_rb_cmd_mall' is less aligned than 'union dmub_addr' and is usually due to 'struct dmub_rb_cmd_mall' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           union dmub_addr cursor_copy_dst; /**< Cursor copy destination */
-                           ^
-   2 warnings and 2 errors generated.
---
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_irq.c:27:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:31:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_irq.c:27:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:40:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/hw_sequencer.h:29:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/clock_source.h:31:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/bios_parser_types.h:30:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services.h:36:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/logger_interface.h:29:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   2 errors generated.
---
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_pp_smu.c:29:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services.h:36:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/logger_interface.h:29:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   1 error generated.
---
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link.c:28:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services.h:36:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/logger_interface.h:29:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link.c:30:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_helpers.h:34:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:31:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link.c:3685:25: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-           enum act_return_status ret;
-                                  ^
-   1 warning and 2 errors generated.
---
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_resource.c:28:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services.h:36:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/logger_interface.h:29:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_resource.c:30:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/resource.h:28:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/core_types.h:29:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:31:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_resource.c:1642:6: warning: no previous prototype for function 'is_timing_changed' [-Wmissing-prototypes]
-   bool is_timing_changed(struct dc_stream_state *cur_stream,
-        ^
-   drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_resource.c:1642:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   bool is_timing_changed(struct dc_stream_state *cur_stream,
-   ^
-   static 
-   1 warning and 2 errors generated.
---
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_enc_cfg.c:25:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/link_enc_cfg.h:33:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/core_types.h:29:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:31:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_enc_cfg.c:25:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/link_enc_cfg.h:33:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/core_types.h:29:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:40:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/hw_sequencer.h:29:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/clock_source.h:31:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/bios_parser_types.h:30:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services.h:36:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/logger_interface.h:29:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_enc_cfg.c:570:6: warning: variable 'matching_stream_ptrs' set but not used [-Wunused-but-set-variable]
-           int matching_stream_ptrs = 0;
-               ^
-   1 warning and 2 errors generated.
---
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/modules/freesync/freesync.c:28:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services.h:36:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/include/logger_interface.h:29:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/modules/freesync/freesync.c:29:
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc.h:31:
->> drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h:26:2: error: unterminated conditional directive
-   #ifndef __DAL_LOGGER_TYPES_H__
-    ^
-   drivers/gpu/drm/amd/amdgpu/../display/modules/freesync/freesync.c:1179:15: warning: variable 'average_render_time_in_us' set but not used [-Wunused-but-set-variable]
-           unsigned int average_render_time_in_us = 0;
-                        ^
-   1 warning and 2 errors generated.
-
-
-vim +26 drivers/gpu/drm/amd/amdgpu/../display/include/logger_types.h
-
-4562236b3bc0a28 Harry Wentland 2017-09-12 @26  #ifndef __DAL_LOGGER_TYPES_H__
-4562236b3bc0a28 Harry Wentland 2017-09-12  27  #define __DAL_LOGGER_TYPES_H__
-4562236b3bc0a28 Harry Wentland 2017-09-12  28  
-
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+index a91635c348b5..6eebe739893c 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+@@ -2113,7 +2113,6 @@ static int sec_skcipher_decrypt(struct skcipher_request *sk_req)
+ 		.cra_driver_name = "hisi_sec_"sec_cra_name,\
+ 		.cra_priority = SEC_PRIORITY,\
+ 		.cra_flags = CRYPTO_ALG_ASYNC |\
+-		 CRYPTO_ALG_ALLOCATES_MEMORY |\
+ 		 CRYPTO_ALG_NEED_FALLBACK,\
+ 		.cra_blocksize = blk_size,\
+ 		.cra_ctxsize = sizeof(struct sec_ctx),\
+@@ -2366,7 +2365,6 @@ static int sec_aead_decrypt(struct aead_request *a_req)
+ 		.cra_driver_name = "hisi_sec_"sec_cra_name,\
+ 		.cra_priority = SEC_PRIORITY,\
+ 		.cra_flags = CRYPTO_ALG_ASYNC |\
+-		 CRYPTO_ALG_ALLOCATES_MEMORY |\
+ 		 CRYPTO_ALG_NEED_FALLBACK,\
+ 		.cra_blocksize = blk_size,\
+ 		.cra_ctxsize = sizeof(struct sec_ctx),\
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.33.0
+
