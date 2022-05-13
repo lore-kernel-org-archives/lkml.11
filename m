@@ -2,98 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75AA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 17:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D20C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 17:05:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382713AbiEMREB (ORCPT
+        id S1382730AbiEMRFT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 13:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
+        Fri, 13 May 2022 13:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354115AbiEMRD7 (ORCPT
+        with ESMTP id S1356197AbiEMRFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 13:03:59 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEFA4969F;
-        Fri, 13 May 2022 10:03:58 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 940361F41739
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652461437;
-        bh=Wh5LQZ8ySmvO8IXpMu/GG9iqNwxWpEjWpdkHdKriJ+Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=R+V3I2Jh5vL98BYzEHGYtDZrsY0+WfwU5DEvBB6aM6vpV3PqRCu4oWmkkDdVf1Je1
-         0i+HP0hGqGAW/tRKgjCP/Fw37ogEjErmonDLuPT3oA8u2xQJAhWjNNKxiQFHHxeNNe
-         XXxMOUp46bTVcN7ZAthwmwzEqeTAC3xi1BsenusTQhnjYzQTO3HOS6/ZjXyv8Vy0Ok
-         m5gB3atNx5oZ100UtNxr/MF8hWVDzsj9C9CST5TBFvrp8jOIpfyjTtlK/QaJHD8lqp
-         m0XKj5aKTMN7e83r6itASd2qoHl/aaRdzIJRJKCEE/jZgIkT1EI9bNVreAr1DXoiUM
-         Zjp7PGebW2gCQ==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     matthias.bgg@gmail.com
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH] soc: mediatek: mtk-mmsys: Add support for MT6795 Helio X10
-Date:   Fri, 13 May 2022 19:03:50 +0200
-Message-Id: <20220513170350.502501-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 13 May 2022 13:05:17 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A555A174
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:05:16 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id l11so8035813pgt.13
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:05:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VxUbVIJfDPKovOH85qumbwINB246mdu93fA8EKGD0Q4=;
+        b=r9DxuHYSlxU+T16xfaZ3O/UPZmGzM29cDZT+o/GKLRYX58IeBo5mKJFhPcJ+6+KWLp
+         kvkNJkaYVRprSwjfb8+qiP02Wk3RKfR/H5hjqjvqW3JA+7y3GZS92EQwwN3P8gRXWBXS
+         3Zq0QNUhjQsOag72nAT3p33sJCbeOhnM3BiHpu0FSomwUvLVeUHsqz6Mu0XbdNijm/ap
+         cPyTZWNnlwB+lPMjq8kK2xk7tvK/FtX1MZtWh2AjOFY+CqIfct7ZJxqTsrflvVCvRHY3
+         AuXsDly1u4YGbFr4mMBJ7m1mYdmp2G5zjA+2ilP2tX4daUN1AIht2wNMa/KvruK9krJq
+         LCzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VxUbVIJfDPKovOH85qumbwINB246mdu93fA8EKGD0Q4=;
+        b=C0FnLoCG4ufYKjyM1HkBZOrH2ad1IkvITewL1tOYyeH4yacwUZPZY8gbSW1JkC6kx4
+         FvkVrOhIg1CvHy9OzQfRTIZOb9wP0l1N5h39lyxZ1g0CioC4lLsLW5tO4nn7TU93dF8D
+         Pg/iH3WJJMizjJ1qTFcjnlcLC/I/UFOXEoJ2keI9vYp6WWV9nt2BcrWia/RJPvy3/fXW
+         l1ypcXZwcsQ6aaHncCyR3JZ2aEIjN4qB8b/TvRXrGaPm1BdFg2kKPof9UVKGUQx34tLc
+         KFjgTPKBghk5BNAQKseTuh/ldBRYQnrVK7MdFzHz6ttosiZPrfcj5CPrExKyZRh5gucG
+         jR0g==
+X-Gm-Message-State: AOAM530fxWSeyIFOlTONAv/sNMLKJGzP5SrxeIGetAzBid3o8nohEzuf
+        adcyg5pwtE+jIGAnBDG1W76o7Q==
+X-Google-Smtp-Source: ABdhPJwdRXoorZL9b6hOiDqo5sleRd9CEftCksC+uwX4Yxr3B8G/og8vtC/wYi+5Gmu3sUpc0Wb98A==
+X-Received: by 2002:a05:6a00:e8e:b0:4fa:a52f:59cf with SMTP id bo14-20020a056a000e8e00b004faa52f59cfmr5394126pfb.84.1652461515669;
+        Fri, 13 May 2022 10:05:15 -0700 (PDT)
+Received: from p14s.cg.shawcable.net (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id fr2-20020a17090ae2c200b001d94c194a67sm1821748pjb.18.2022.05.13.10.05.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 10:05:14 -0700 (PDT)
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     gregkh@linuxfoundation.org
+Cc:     coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Suzuki.Poulose@arm.com
+Subject: [GIT PULL] Coresight changes for v5.19
+Date:   Fri, 13 May 2022 11:05:13 -0600
+Message-Id: <20220513170513.3276002-1-mathieu.poirier@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MM support for the MT6795 SoC, using the mmsys default routing
-table.
+The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
+  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
 
-In order for this patch to have any meaning and functionality, it is
-required to also have in-tree the [1] MT6795 clocks series, even
-though that's not required to actually compile this code.
+are available in the Git repository at:
 
-[1] https://patchwork.kernel.org/project/linux-mediatek/list/?series=641493
+  git@gitolite.kernel.org:pub/scm/linux/kernel/git/coresight/linux.git tags/coresight-next-v5.19
 
- drivers/soc/mediatek/mtk-mmsys.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+for you to fetch changes up to 1adff542d67a2ed1120955cb219bfff8a9c53f59:
 
-diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
-index 06d8e83a2cb5..38b36b881a3b 100644
---- a/drivers/soc/mediatek/mtk-mmsys.c
-+++ b/drivers/soc/mediatek/mtk-mmsys.c
-@@ -57,6 +57,13 @@ static const struct mtk_mmsys_match_data mt6779_mmsys_match_data = {
- 	},
- };
- 
-+static const struct mtk_mmsys_driver_data mt6795_mmsys_driver_data = {
-+	.clk_driver = "clk-mt6795-mm",
-+	.routes = mmsys_default_routing_table,
-+	.num_routes = ARRAY_SIZE(mmsys_default_routing_table),
-+	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
-+};
-+
- static const struct mtk_mmsys_driver_data mt6797_mmsys_driver_data = {
- 	.clk_driver = "clk-mt6797-mm",
- };
-@@ -363,6 +370,10 @@ static const struct of_device_id of_match_mtk_mmsys[] = {
- 		.compatible = "mediatek,mt6779-mmsys",
- 		.data = &mt6779_mmsys_match_data,
- 	},
-+	{
-+		.compatible = "mediatek,mt6795-mmsys",
-+		.data = &mt6795_mmsys_driver_data,
-+	},
- 	{
- 		.compatible = "mediatek,mt6797-mmsys",
- 		.data = &mt6797_mmsys_match_data,
--- 
-2.35.1
+  coresight: cpu-debug: Replace mutex with mutex_trylock on panic notifier (2022-05-09 16:03:24 +0100)
 
+----------------------------------------------------------------
+Coresight changes for v5.19
+
+Good day Greg,
+
+Please consider those for the the upcoming v5.19 merge window when you have time.
+
+This pull request includes:
+
+- Work to uniformise access to the ETMv4 registers, making it easier to
+look for and change register accesses.
+
+- A correction to a probing failure when looking for links between devices.
+
+- The replacement of a call to mutex_lock() with a mutex_trylock() in the panic
+notifier of the cpu-debug infrastructure to avoid a possible deadlock.
+
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+
+----------------------------------------------------------------
+Guilherme G. Piccoli (1):
+      coresight: cpu-debug: Replace mutex with mutex_trylock on panic notifier
+
+James Clark (15):
+      coresight: etm4x: Cleanup TRCIDR0 register accesses
+      coresight: etm4x: Cleanup TRCIDR2 register accesses
+      coresight: etm4x: Cleanup TRCIDR3 register accesses
+      coresight: etm4x: Cleanup TRCIDR4 register accesses
+      coresight: etm4x: Cleanup TRCIDR5 register accesses
+      coresight: etm4x: Cleanup TRCCONFIGR register accesses
+      coresight: etm4x: Cleanup TRCEVENTCTL1R register accesses
+      coresight: etm4x: Cleanup TRCSTALLCTLR register accesses
+      coresight: etm4x: Cleanup TRCVICTLR register accesses
+      coresight: etm3x: Cleanup ETMTECR1 register accesses
+      coresight: etm4x: Cleanup TRCACATRn register accesses
+      coresight: etm4x: Cleanup TRCSSCCRn and TRCSSCSRn register accesses
+      coresight: etm4x: Cleanup TRCSSPCICRn register accesses
+      coresight: etm4x: Cleanup TRCBBCTLR register accesses
+      coresight: etm4x: Cleanup TRCRSCTLRn register accesses
+
+Mao Jinlong (1):
+      coresight: core: Fix coresight device probe failure issue
+
+ drivers/hwtracing/coresight/coresight-core.c       |  33 ++--
+ drivers/hwtracing/coresight/coresight-cpu-debug.c  |   7 +-
+ drivers/hwtracing/coresight/coresight-etm3x-core.c |   2 +-
+ .../hwtracing/coresight/coresight-etm3x-sysfs.c    |   2 +-
+ drivers/hwtracing/coresight/coresight-etm4x-core.c | 136 +++++-----------
+ .../hwtracing/coresight/coresight-etm4x-sysfs.c    | 180 +++++++++++----------
+ drivers/hwtracing/coresight/coresight-etm4x.h      | 120 +++++++++++---
+ 7 files changed, 268 insertions(+), 212 deletions(-)
