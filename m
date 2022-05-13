@@ -2,121 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED352C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0640FC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381832AbiEMPQo (ORCPT
+        id S1352951AbiEMPS4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
+        Fri, 13 May 2022 11:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381173AbiEMPQH (ORCPT
+        with ESMTP id S243126AbiEMPSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 11:16:07 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC2C5A141;
-        Fri, 13 May 2022 08:16:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652454966; x=1683990966;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WaaPZTGXGvvrIUYYvLuGheNzDThV1e0SRqk9uhMThso=;
-  b=XHLubT2k7LVqpMqjG5th6UYYjvI7PXog8AEIZp3dqYCTJ4qugsFLh2BG
-   EcQzBqPnPV41rmFK2TgRv9Mr9a0yYAWg6aOVWxi2lF6A38cpWIP3PfauP
-   NJclxEdsgo0FALOFRSbmqFWVAZiTjoKU6liYjdxBSqiXN80fo3UykobBK
-   x9z/QnnTUb+YT4vnClpxsrYCeaEK7VMONMwhSPRqLwBbpgaL8dhgV7YaY
-   pWgD7g0s8VsRFKYBiE2vvvNOy1+piFNAmgFpAEf9Mr/Q53iUEnU754Cvy
-   fBZV9Bip2RiF5naH8t1ui2WWZCFG7ztdOyROmPcEos9+Gog0TfUTvt/I3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="269160154"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="269160154"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 08:16:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="698518059"
-Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
-  by orsmga004.jf.intel.com with ESMTP; 13 May 2022 08:16:02 -0700
-From:   kan.liang@linux.intel.com
-To:     acme@kernel.org, mingo@redhat.com, irogers@google.com,
-        jolsa@kernel.org, namhyung@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc:     peterz@infradead.org, zhengjun.xing@linux.intel.com,
-        adrian.hunter@intel.com, ak@linux.intel.com, eranian@google.com,
-        Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH 3/4] perf parse-events: Support different format of the topdown event name
-Date:   Fri, 13 May 2022 08:15:53 -0700
-Message-Id: <20220513151554.1054452-4-kan.liang@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220513151554.1054452-1-kan.liang@linux.intel.com>
-References: <20220513151554.1054452-1-kan.liang@linux.intel.com>
+        Fri, 13 May 2022 11:18:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 918726542F
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652455130;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type;
+        bh=1YJK3rkS91YvoNmjA4LBMQnHgA69centlKUM/qUyG8U=;
+        b=PokCW6/DphUuaPVS4qf8/w4eCFx7DAYZT1JHMp1QPWZtMl0qouXH0vqcILe5kD3ifdCXKC
+        sVe/KGGLSAzbGvX4KMgSAmsMvtzWmTRjbUuYf1P7hdSjaXafUnCqRxB8Yf/I7HMfOkNcCY
+        wEE3KjwsRnf8WPhvv/GlE4L7pikNbCo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-395-AYzxX1wZMQu8eolhkP4aMw-1; Fri, 13 May 2022 11:18:47 -0400
+X-MC-Unique: AYzxX1wZMQu8eolhkP4aMw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0B284101AA46;
+        Fri, 13 May 2022 15:18:47 +0000 (UTC)
+Received: from localhost (unknown [10.22.32.87])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4818F14609D5;
+        Fri, 13 May 2022 15:18:46 +0000 (UTC)
+Date:   Fri, 13 May 2022 12:18:45 -0300
+From:   "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        stable-rt <stable-rt@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Wagner <daniel.wagner@suse.com>,
+        Tom Zanussi <tom.zanussi@linux.intel.com>,
+        Clark Williams <williams@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Luis Goncalves <lgoncalv@redhat.com>
+Subject: [ANNOUNCE] 4.14.278-rt133
+Message-ID: <Yn521Wdskq1gaV2X@uudg.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+Hello RT-list!
 
-The evsel->name may have a different format for a topdown event, a pure
-topdown name (e.g., topdown-fe-bound), or a PMU name + a topdown name
-(e.g., cpu/topdown-fe-bound/). The cpu/topdown-fe-bound/ kind format
-isn't supported by the arch_evlist__leader(). This format is a very
-common format for a hybrid platform, which requires specifying the PMU
-name for each event.
+I'm pleased to announce the 4.14.278-rt133 stable release.
 
-Without the patch,
+You can get this release via the git tree at:
 
-$perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
+  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 
- Performance counter stats for 'system wide':
+  branch: v4.14-rt
+  Head SHA1: b8e7ae3cd1ec41001223c466a5696eebbd4e6066
 
-     <not counted>      instructions
-     <not counted>      slots
-   <not supported>      cpu/topdown-fe-bound/
+Or to build 4.14.278-rt133 directly, the following patches should be applied:
 
-       1.003482041 seconds time elapsed
+  https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.14.tar.xz
 
-Some events weren't counted. Try disabling the NMI watchdog:
-        echo 0 > /proc/sys/kernel/nmi_watchdog
-        perf stat ...
-        echo 1 > /proc/sys/kernel/nmi_watchdog
-The events in group usually have to be from the same PMU. Try reorganizing the group.
+  https://www.kernel.org/pub/linux/kernel/v4.x/patch-4.14.278.xz
 
+  https://www.kernel.org/pub/linux/kernel/projects/rt/4.14/older/patch-4.14.278-rt133.patch.xz
 
-With the patch,
+Signing key fingerprint:
 
-perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
+  9354 0649 9972 8D31 D464  D140 F394 A423 F8E6 7C26
 
- Performance counter stats for 'system wide':
+All keys used for the above files and repositories can be found on the
+following git repository:
 
-       157,383,996      slots
-        25,011,711      instructions
-        27,441,686      cpu/topdown-fe-bound/
+   git://git.kernel.org/pub/scm/docs/kernel/pgpkeys.git
 
-       1.003530890 seconds time elapsed
-
-Fixes: bc355822f0d9 ("perf parse-events: Move slots only with topdown")
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
----
- tools/perf/arch/x86/util/evlist.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
-index cfc208d71f00..75564a7df15b 100644
---- a/tools/perf/arch/x86/util/evlist.c
-+++ b/tools/perf/arch/x86/util/evlist.c
-@@ -36,7 +36,7 @@ struct evsel *arch_evlist__leader(struct list_head *list)
- 				if (slots == first)
- 					return first;
- 			}
--			if (!strncasecmp(evsel->name, "topdown", 7))
-+			if (strcasestr(evsel->name, "topdown"))
- 				has_topdown = true;
- 			if (slots && has_topdown)
- 				return slots;
--- 
-2.35.1
+Enjoy!
+Luis
 
