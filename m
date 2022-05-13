@@ -2,99 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78138C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B74C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377702AbiEMHMG (ORCPT
+        id S1377716AbiEMHMZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48520 "EHLO
+        Fri, 13 May 2022 03:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377700AbiEMHL4 (ORCPT
+        with ESMTP id S1377711AbiEMHMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:11:56 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE293A199;
-        Fri, 13 May 2022 00:11:51 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L00Ct4pc9z1JBmB;
-        Fri, 13 May 2022 15:10:34 +0800 (CST)
-Received: from container.huawei.com (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 13 May 2022 15:11:48 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <vburru@marvell.com>, <aayarekar@marvell.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] octeon_ep: delete unnecessary NULL check
-Date:   Fri, 13 May 2022 15:29:28 +0800
-Message-ID: <20220513072928.3713739-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 13 May 2022 03:12:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411AE26FA53;
+        Fri, 13 May 2022 00:12:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3D37B82C44;
+        Fri, 13 May 2022 07:12:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56728C34100;
+        Fri, 13 May 2022 07:12:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652425939;
+        bh=Efly38ojSC+2X+o+BwIM7NdLaXlX8jtPOhcOnIOteXA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G9FfP9WB1HTWb4GUFWG07bcH6hGMuS4e/umt/T/vWdhgoh07vL27cWDLwn4bh+bUp
+         KKhvBQ/dfrs9VsQdOpwFjQqt/GIDp0hIsDddpnVCyfgizwHF7qEmrdItpKc4PWjsvZ
+         LddMS9YkQ7pEsX8FLzcKUMc5WpzXG33UGt/WsFc0=
+Date:   Fri, 13 May 2022 09:12:17 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Albert Wang <albertccwang@google.com>
+Cc:     balbi@kernel.org, quic_jackp@quicinc.com, badhri@google.com,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] usb: dwc3: gadget: Move null pinter check after
+ window closed
+Message-ID: <Yn4E0XHlsPjaEgMw@kroah.com>
+References: <20220513065709.1606634-1-albertccwang@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513065709.1606634-1-albertccwang@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vfree(NULL) is safe. NULL check before vfree() is not needed.
-Delete them to simplify the code.
+On Fri, May 13, 2022 at 02:57:09PM +0800, Albert Wang wrote:
+> After inspecting further, we do see the locking is implicit, with the
+> main gotcha being the unlock/re-lock.
 
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 3 +--
- drivers/net/ethernet/marvell/octeon_ep/octep_rx.c   | 3 +--
- drivers/net/ethernet/marvell/octeon_ep/octep_tx.c   | 3 +--
- 3 files changed, 3 insertions(+), 6 deletions(-)
+This sentance makes no sense at all.
 
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-index e020c81f3455..7e590c572d58 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-@@ -980,8 +980,7 @@ static void octep_device_cleanup(struct octep_device *oct)
- 	dev_info(&oct->pdev->dev, "Cleaning up Octeon Device ...\n");
- 
- 	for (i = 0; i < OCTEP_MAX_VF; i++) {
--		if (oct->mbox[i])
--			vfree(oct->mbox[i]);
-+		vfree(oct->mbox[i]);
- 		oct->mbox[i] = NULL;
- 	}
- 
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c b/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
-index 945947ec7723..d9ae0937d17a 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
-@@ -230,8 +230,7 @@ static int octep_free_oq(struct octep_oq *oq)
- 
- 	octep_oq_free_ring_buffers(oq);
- 
--	if (oq->buff_info)
--		vfree(oq->buff_info);
-+	vfree(oq->buff_info);
- 
- 	if (oq->desc_ring)
- 		dma_free_coherent(oq->dev,
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_tx.c b/drivers/net/ethernet/marvell/octeon_ep/octep_tx.c
-index 511552bc3e87..5a520d37bea0 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_tx.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_tx.c
-@@ -270,8 +270,7 @@ static void octep_free_iq(struct octep_iq *iq)
- 
- 	desc_ring_size = OCTEP_IQ_DESC_SIZE * CFG_GET_IQ_NUM_DESC(oct->conf);
- 
--	if (iq->buff_info)
--		vfree(iq->buff_info);
-+	vfree(iq->buff_info);
- 
- 	if (iq->desc_ring)
- 		dma_free_coherent(iq->dev, desc_ring_size,
--- 
-2.25.1
+Who is "we"?  What is the gotcha?  What is the subject of the sentance?
+What is going on?
 
+> That creates a window for a race to happen.
+
+What is "that"?
+
+> This change moves the NULL check to be adjacent to where
+> to it's used and after the window is "closed".
+
+What is "this"?
+
+Please read Documentation/process/submitting-patches.rst for how to
+properly write a changelog text so that others can understand what is
+going on.
+
+thanks,
+
+greg k-h
+
+
+> 
+> Fixes: 26288448120b ("usb: dwc3: gadget: Fix null pointer exception")
+> Signed-off-by: Albert Wang <albertccwang@google.com>
+> ---
+>  v3: Add change log to be compliant with the canonical patch format
+>  v2: Remove redundant 'else' and add additional comments and more
+>      descriptive commit text
+> 
+>  drivers/usb/dwc3/gadget.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+> index 19477f4bbf54..fda58951cf27 100644
+> --- a/drivers/usb/dwc3/gadget.c
+> +++ b/drivers/usb/dwc3/gadget.c
+> @@ -3366,14 +3366,19 @@ static bool dwc3_gadget_endpoint_trbs_complete(struct dwc3_ep *dep,
+>  	struct dwc3		*dwc = dep->dwc;
+>  	bool			no_started_trb = true;
+>  
+> -	if (!dep->endpoint.desc)
+> -		return no_started_trb;
+> -
+> +	/*
+> +	 * This function eventually leads to dwc3_giveback() which unlocks
+> +	 * the dwc->lock and relocks afterwards. This actually creates a
+> +	 * a window for a race to happen.
+
+What race?  Why mention it here?  Why not fix it instead of documenting
+it?
+
+this comment does not make sense, sorry.
+
+thanks,
+
+greg k-h
