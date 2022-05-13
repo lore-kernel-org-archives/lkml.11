@@ -2,68 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE27C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379239AbiEMJ4S (ORCPT
+        id S1379271AbiEMJ42 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
+        Fri, 13 May 2022 05:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355353AbiEMJ4O (ORCPT
+        with ESMTP id S1379223AbiEMJ4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:56:14 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D5C1402C;
+        Fri, 13 May 2022 05:56:15 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 608AE19029
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:56:14 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 369B31515;
+        Fri, 13 May 2022 02:56:14 -0700 (PDT)
+Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EB67F3F5A1;
         Fri, 13 May 2022 02:56:12 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C6FDC1EC069A;
-        Fri, 13 May 2022 11:56:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1652435766;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=qZU+VowKBrdGf3U5Q1GiT7jwO9RXiaZ1Fk4oM0FeUKk=;
-        b=WlWppcm86nod9C3ir0FTP3z78QRW/KpU7UHINYTa+cp6idwyvSqu4+vvcCY1i6q3etuV/8
-        zVAS2BbTXLELLnPrtM5wXQ5+CSYrfiAXG3e0wck2uSb9gCg88OyZhHdX0ItNXV3eGk3n3D
-        QkY9X5XWzlKLKtDDjAAWN/1aM6ZPD80=
-Date:   Fri, 13 May 2022 11:56:08 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Smita.KoralahalliChannabasappa@amd.com, muralidhara.mk@amd.com,
-        naveenkrishna.chatradhi@amd.com
-Subject: Re: [PATCH 04/18] EDAC/amd64: Remove PCI Function 0
-Message-ID: <Yn4rOD9CS9LFxzhx@zn.tnic>
-References: <20220509145534.44912-1-yazen.ghannam@amd.com>
- <20220509145534.44912-5-yazen.ghannam@amd.com>
- <YnuRUsAcnzT4Advm@zn.tnic>
- <Yn0a9T9xqAkWnPWt@yaz-fattaah>
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Atish Patra <atishp@atishpatra.org>,
+        Atish Patra <atishp@rivosinc.com>, linux-kernel@vger.kernel.org
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Qing Wang <wangqing@vivo.com>
+Subject: [PATCH 2/4] arch_topology: Set thread and core siblings only within the cluster
+Date:   Fri, 13 May 2022 10:55:57 +0100
+Message-Id: <20220513095559.1034633-3-sudeep.holla@arm.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220513095559.1034633-1-sudeep.holla@arm.com>
+References: <20220513095559.1034633-1-sudeep.holla@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yn0a9T9xqAkWnPWt@yaz-fattaah>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 02:34:29PM +0000, Yazen Ghannam wrote:
-> Also, there are five function pointers that are created in this patchset and
-> called from hw_info_get(). I think those pointers can be dropped and the
-> helper functions called from hw_info_get(). So I think it'd be good to make
-> hw_info_get() into a function pointer which gets set to a functoin that calls
-> the right collection of legacy, modern, and GPU helper functions. How does
-> that sound?
+Currently the cluster identifier is not set on the DT based platforms.
+The reset or default value is -1 for all the CPUs. Once we assign the
+cluster identifier values correctly that may result in getting the core
+siblings wrongs as the core identifiers can be same for 2 different CPUs
+belonging to 2 different cluster.
 
-Makes sense.
+So, in order to get the core and thread sibling masks correct, we need to
+update them only if they belong to same cluster within the socket. Let
+us skip updation of the thread and core sibling cpumaks if the socket
+and the cluster identifier doesn't match.
 
-Thx.
+This change won't affect even if the cluster identifiers are not set
+currently but will avoid any breakage once we set the same correctly.
 
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+---
+ drivers/base/arch_topology.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+index 44f733b365cc..5812428253d8 100644
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -694,11 +694,11 @@ void update_siblings_masks(unsigned int cpuid)
+ 			cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
+ 		}
+ 
+-		if (cpuid_topo->package_id != cpu_topo->package_id)
++		if (cpuid_topo->package_id != cpu_topo->package_id ||
++		    cpuid_topo->cluster_id != cpu_topo->cluster_id)
+ 			continue;
+ 
+-		if (cpuid_topo->cluster_id == cpu_topo->cluster_id &&
+-		    cpuid_topo->cluster_id != -1) {
++		if (cpuid_topo->cluster_id != -1) {
+ 			cpumask_set_cpu(cpu, &cpuid_topo->cluster_sibling);
+ 			cpumask_set_cpu(cpuid, &cpu_topo->cluster_sibling);
+ 		}
 -- 
-Regards/Gruss,
-    Boris.
+2.36.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
