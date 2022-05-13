@@ -2,140 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC71C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 22:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9395C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 22:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384904AbiEMWxO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 18:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42774 "EHLO
+        id S233414AbiEMW40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 18:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233036AbiEMWxL (ORCPT
+        with ESMTP id S1384919AbiEMW4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 18:53:11 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CBB179080
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:53:11 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id m12so9287581plb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:53:11 -0700 (PDT)
+        Fri, 13 May 2022 18:56:16 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8390C36B58
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:56:14 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id ks9so18821852ejb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:56:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GQcrUD+iS10OWB2IhvHVYLyHQumXXSUypBIwcEyZKqA=;
-        b=hmGpvhMrmjZTe82jZGMH34s8ZMK8DhjPEZsAWOIQX9kjLF/JR9LLibbajKK2uSWBAV
-         k7MAl1nQC1idFIml998Iqf/rm2g6m3cQEgWR5E+KPYi2/g0ady2z994cjhEJpIx1iGPR
-         QpLYejtbBl7CTS1JQ0bl8F9YrlzAuGqHis3QNjm7uvX+78r1dB2QgxAxASqWX0gyfQLa
-         qID4GVM+faLlv94xLNqQwFa20TwYQT2zjodjB00qnsZqgczQHzdNKQzpY96X/w4VEOQI
-         hgxRO+mMyd9/kFJmj55nYOkqvt2QpcTsJ77Hyw8yOBRTdD0kKorFtKGmmtnbZD4NW2kc
-         12wQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=yHYjKyDImi3l5dDyx9DR+vuao9yWufvS15O7CLzoC40=;
+        b=cZh8FuRrzbQ1mOiYZTVxKh0ixLrtkMDJFWe6Sw1usjrJiAl5VRA0sAKlrUSLyc/QLx
+         ADCbPxnI7oAyAwl//Ks/Iop8AnNmLxW2msVsfk950kX8BNheJhferrNLXBBPt6B7UADW
+         gln+ly61FX3/OPch/MOjKDSVn2w+h8EJRJmJV4wAtQOkQ/eceKgidFphTwG8JygwCqH7
+         m2bJckksP0ymgFooHLSBl9T8Pk7ehWILO65+5H/HuGKgNMSThraC44B/T5VSOywvVJYl
+         rTdShpbqsux2Nruse0Hz42OOt0SEiO2jqfKsk7j0y22gbkr1za+20yMoHyr+7aWTix6A
+         WmFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GQcrUD+iS10OWB2IhvHVYLyHQumXXSUypBIwcEyZKqA=;
-        b=4B4cpH/X2x6GizZbGt8eWTbg0Zg9cYfPh/rK91Wni7owkoFYEVRudZD9vEnAsAg5Iy
-         JDFoY+2zpw1bFDZouUhf0L3KCSbDz500fox/Wfykq+0t8BbrAlSr0O48ySo7GlM+Cq2I
-         /cHWP5lThl2LrDoN6NZW82T+BVn3VnrKxr4ZCmtGcuvm8zUR6pIuegJT/Egi23Dwis8d
-         6SZovbNLXuHweSc1BMbm9MS+eT4/0LcUaVTssJSm6tZqKHIu+bRlfoIH9PGmT0lC+hK9
-         XVLwj7DXbOUbK4mbYONfwrdM4ozLMFtGQMgrLdF+RffF5+T8WZFmLfSvnmH66XjPeIk4
-         G9rg==
-X-Gm-Message-State: AOAM531HdLZBMOq9DBXht/bzMmWNH9JjZre1tg2JemHqjyMiodeoUp0J
-        qRib7OSTqE2s36ITon4SMdDfWw==
-X-Google-Smtp-Source: ABdhPJxJVbTMNcQuqiRTOOsbpuFUv31e2qxiTCyjhM4qde2iDexBVBq/3c+M5f5uikLi6Un4GqFQvQ==
-X-Received: by 2002:a17:90b:3445:b0:1d6:91a5:29fe with SMTP id lj5-20020a17090b344500b001d691a529femr18230208pjb.138.1652482390246;
-        Fri, 13 May 2022 15:53:10 -0700 (PDT)
-Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
-        by smtp.gmail.com with ESMTPSA id b10-20020a170902650a00b0015e8d4eb269sm2289156plk.179.2022.05.13.15.53.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 15:53:09 -0700 (PDT)
-Date:   Fri, 13 May 2022 22:53:05 +0000
-From:   David Matlack <dmatlack@google.com>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH V2 1/7] KVM: X86/MMU: Add using_special_root_page()
-Message-ID: <Yn7hUe9nyey/CS3J@google.com>
-References: <20220503150735.32723-1-jiangshanlai@gmail.com>
- <20220503150735.32723-2-jiangshanlai@gmail.com>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=yHYjKyDImi3l5dDyx9DR+vuao9yWufvS15O7CLzoC40=;
+        b=20dPzkXOPTueJlG2IxDBWUmHLkYwydCCNTLlo+fSKVMZsseJk11AgOC6JYrnJ6UGOD
+         xost2vdlwQrUQqJk6g6/M3Ky+tQTew3+0lJ0jdDhsGPM/Ul8dcnhQGOn3nOynpX6qC2d
+         XsYmPm/2hdbkYq7Oo7EA9VQOQUBbodbxsfkNFq75viywe6bTFms2UdOSxAeoTPv/u/+8
+         BFqi92b0WOF2TKFF3n746vW7tAxpZfNpB9f2W4TTuIMyXTiOF9fsk7q0TzN5lBOnMiPO
+         p6BHXXvnvU/dLN9lM6Jj63rhbg843HV628KxXo1FIFO3wY+4bVWLGaXAnQuaY1288gQo
+         gQJw==
+X-Gm-Message-State: AOAM5330D4w9gppxTZBotcSPomQQSmlB74ierWRcFvePqXHBfGKuDKit
+        jMfRMad6p01wpl+OmB/fUWrZAzLYITRQlqY/dtI=
+X-Google-Smtp-Source: ABdhPJwJz/KBfqCWxJah+sFmFhNu0NNxcgima/D1cUeGVRvZtfdArdmTyYR5uMA5inyXdFvXN46H3XZNY9BtKBg9lDE=
+X-Received: by 2002:a17:906:6bd7:b0:6f4:e6e4:1d41 with SMTP id
+ t23-20020a1709066bd700b006f4e6e41d41mr6295534ejs.770.1652482572925; Fri, 13
+ May 2022 15:56:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503150735.32723-2-jiangshanlai@gmail.com>
+From:   Dave Airlie <airlied@gmail.com>
+Date:   Sat, 14 May 2022 08:56:01 +1000
+Message-ID: <CAPM=9txpYhzyZtd60LEuBYYN+AVyeEQ8=h43bK=ZY8QCQpY5mg@mail.gmail.com>
+Subject: [git pull] drm fixes for 5.18-rc7 (follow up)
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 11:07:29PM +0800, Lai Jiangshan wrote:
-> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> 
-> In some case, special roots are used in mmu.  It is often using
-> to_shadow_page(mmu->root.hpa) to check if special roots are used.
-> 
-> Add using_special_root_page() to directly check if special roots are
-> used or needed to be used even mmu->root.hpa is not set.
-> 
-> Prepare for making to_shadow_page(mmu->root.hpa) return non-NULL via
-> using special shadow pages.
-> 
-> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 909372762363..7f20796af351 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -1711,6 +1711,14 @@ static void drop_parent_pte(struct kvm_mmu_page *sp,
->  	mmu_spte_clear_no_track(parent_pte);
->  }
->  
-> +static bool using_special_root_page(struct kvm_mmu *mmu)
+Hey Linus,
 
-Could you enumerate all the scenarios that use special roots and which
-roots are the special ones? I think that would help a lot with reviewing
-this series and would be useful to encode in a comment, probably above
-this function here, for future readers.
+Turns out I was right, some fixes hadn't made it to me yet. The vmwgfx
+ones also popped up later, but all seem like bad enough things to fix.
+The dma-buf, vc4 and nouveau ones are all pretty small.
 
-Also the term "special" is really vague. Maybe once you enumerate all
-the scenarios a common theme will arise and we can pick a better name,
-unless you have any ideas off the top of your head.
+The fbdev fixes are a bit more complicated, a fix to cleanup fbdev
+devices properly, uncovered some use-after-free bugs in existing
+drivers. Then the fix for those bugs wasn't correct. This reverts that
+fix, and puts the proper fixes in place in the drivers to avoid the
+use-after-frees. This has had a fair number of eyes on it at this
+stage, and I'm confident enough that it puts things in the right
+place, and is less dangerous than reverting our way out of the initial
+change at this stage.
 
-> +{
-> +	if (mmu->root_role.direct)
-> +		return mmu->root_role.level == PT32E_ROOT_LEVEL;
-> +	else
-> +		return mmu->cpu_role.base.level <= PT32E_ROOT_LEVEL;
-> +}
-> +
->  static struct kvm_mmu_page *kvm_mmu_alloc_page(struct kvm_vcpu *vcpu, int direct)
->  {
->  	struct kvm_mmu_page *sp;
-> @@ -4241,10 +4249,10 @@ static bool fast_pgd_switch(struct kvm *kvm, struct kvm_mmu *mmu,
->  {
->  	/*
->  	 * For now, limit the caching to 64-bit hosts+VMs in order to avoid
-> -	 * having to deal with PDPTEs. We may add support for 32-bit hosts/VMs
-> -	 * later if necessary.
-> +	 * having to deal with PDPTEs.  Special roots can not be put into
-> +	 * mmu->prev_roots[].
->  	 */
-> -	if (VALID_PAGE(mmu->root.hpa) && !to_shadow_page(mmu->root.hpa))
-> +	if (VALID_PAGE(mmu->root.hpa) && using_special_root_page(mmu))
->  		kvm_mmu_free_roots(kvm, mmu, KVM_MMU_ROOT_CURRENT);
->  
->  	if (VALID_PAGE(mmu->root.hpa))
-> -- 
-> 2.19.1.6.gb485710b
-> 
+Let me know if you want more details, the commit msgs are quite verbose.
+
+Dave.
+
+drm-fixes-2022-05-14:
+drm fixes for 5.18-rc7 (part two)
+
+fbdev:
+- revert NULL deref fix that turned into a use-after-free
+- prevent use-after-free in fbdev
+- efifb/simplefb/vesafb: fix cleanup paths to avoid use-after-frees
+
+dma-buf:
+- fix panic in stats setup
+
+vc4:
+- fix hdmi build
+
+nouveau:
+- tegra iommu present fix
+- fix leak in backlight name
+
+vmwgfx:
+- Black screen due to fences using FIFO checks on SVGA3
+- Random black screens on boot due to uninitialized drm_mode_fb_cmd2
+- Hangs on SVGA3 due to command buffers being used with gbobjects
+The following changes since commit 5005e9814698f47c5a3698fcc56c9f5e6f1d4644:
+
+  Merge tag 'amd-drm-fixes-5.18-2022-05-11' of
+https://gitlab.freedesktop.org/agd5f/linux into drm-fixes (2022-05-13
+10:40:56 +1000)
+
+are available in the Git repository at:
+
+  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-05-14
+
+for you to fetch changes up to eb7bac3973d209e5227d1783676362ee5a8a7127:
+
+  Merge tag 'drm-misc-fixes-2022-05-13' of
+git://anongit.freedesktop.org/drm/drm-misc into drm-fixes (2022-05-14
+08:34:07 +1000)
+
+----------------------------------------------------------------
+drm fixes for 5.18-rc7 (part two)
+
+fbdev:
+- revert NULL deref fix that turned into a use-after-free
+- prevent use-after-free in fbdev
+- efifb/simplefb/vesafb: fix cleanup paths to avoid use-after-frees
+
+dma-buf:
+- fix panic in stats setup
+
+vc4:
+- fix hdmi build
+
+nouveau:
+- tegra iommu present fix
+- fix leak in backlight name
+
+vmwgfx:
+- Black screen due to fences using FIFO checks on SVGA3
+- Random black screens on boot due to uninitialized drm_mode_fb_cmd2
+- Hangs on SVGA3 due to command buffers being used with gbobjects
+
+----------------------------------------------------------------
+Charan Teja Reddy (1):
+      dma-buf: call dma_buf_stats_setup after dmabuf is in valid list
+
+Christophe JAILLET (1):
+      drm/nouveau: Fix a potential theorical leak in
+nouveau_get_backlight_name()
+
+Daniel Vetter (1):
+      fbdev: Prevent possible use-after-free in fb_release()
+
+Dave Airlie (2):
+      Merge tag 'vmwgfx-drm-fixes-5.18-2022-05-13' of
+https://gitlab.freedesktop.org/zack/vmwgfx into drm-fixes
+      Merge tag 'drm-misc-fixes-2022-05-13' of
+git://anongit.freedesktop.org/drm/drm-misc into drm-fixes
+
+Hui Tang (1):
+      drm/vc4: hdmi: Fix build error for implicit function declaration
+
+Javier Martinez Canillas (5):
+      Revert "fbdev: Make fb_release() return -ENODEV if fbdev was unregistered"
+      fbdev: simplefb: Cleanup fb_info in .fb_destroy rather than .remove
+      fbdev: efifb: Cleanup fb_info in .fb_destroy rather than .remove
+      fbdev: vesafb: Cleanup fb_info in .fb_destroy rather than .remove
+      fbdev: efifb: Fix a use-after-free due early fb_info cleanup
+
+Maarten Lankhorst (1):
+      Merge remote-tracking branch 'drm/drm-fixes' into drm-misc-fixes
+
+Robin Murphy (1):
+      drm/nouveau/tegra: Stop using iommu_present()
+
+Zack Rusin (3):
+      drm/vmwgfx: Fix fencing on SVGAv3
+      drm/vmwgfx: Initialize drm_mode_fb_cmd2
+      drm/vmwgfx: Disable command buffers on svga3 without gbobjects
+
+ drivers/dma-buf/dma-buf.c                          |  8 +++----
+ drivers/gpu/drm/nouveau/nouveau_backlight.c        |  9 +++----
+ drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c |  2 +-
+ drivers/gpu/drm/vc4/vc4_hdmi.c                     |  1 +
+ drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c                | 13 ++++++----
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.h                |  8 +++++++
+ drivers/gpu/drm/vmwgfx/vmwgfx_fb.c                 |  2 +-
+ drivers/gpu/drm/vmwgfx/vmwgfx_fence.c              | 28 ++++++++++++++++------
+ drivers/gpu/drm/vmwgfx/vmwgfx_irq.c                | 26 +++++++++++++-------
+ drivers/gpu/drm/vmwgfx/vmwgfx_kms.c                |  8 ++++---
+ drivers/video/fbdev/core/fbmem.c                   |  5 +---
+ drivers/video/fbdev/core/fbsysfs.c                 |  4 ++++
+ drivers/video/fbdev/efifb.c                        |  9 ++++++-
+ drivers/video/fbdev/simplefb.c                     |  8 ++++++-
+ drivers/video/fbdev/vesafb.c                       |  8 ++++++-
+ 15 files changed, 99 insertions(+), 40 deletions(-)
