@@ -2,104 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 471C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC45C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382627AbiEMQwi (ORCPT
+        id S1382623AbiEMQyY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 12:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
+        Fri, 13 May 2022 12:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382552AbiEMQue (ORCPT
+        with ESMTP id S1382670AbiEMQyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 12:50:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81C4E54FAC
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:50:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652460613;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=33oKxA4Na7t/dSRQE6iTTpYQb3oMGj6G5wXczQ6on5U=;
-        b=HgzI0KNdDK+GaLqXXntnFdmsTtCrzBTsA1x4LoxshCzVb2GT7YfPciupJxRsyYvW6Sfav+
-        W5XFtqCxtjDAppwGCFQcsfV2gKK0yhZOsc/J4NKpJDbCuIkHQbocYL3wX17jyHWnKAqxhK
-        6RBtqwYE6CCNDhP2MF123EVttIFKxqc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-182-E_epyNm9N-Gqr5RiMsj8Zg-1; Fri, 13 May 2022 12:50:10 -0400
-X-MC-Unique: E_epyNm9N-Gqr5RiMsj8Zg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DCFA7294EDF4;
-        Fri, 13 May 2022 16:50:09 +0000 (UTC)
-Received: from [10.22.11.63] (unknown [10.22.11.63])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AE6ED438BD9;
-        Fri, 13 May 2022 16:50:09 +0000 (UTC)
-Message-ID: <151959a6-e691-c905-fe05-c6fd3f616f25@redhat.com>
-Date:   Fri, 13 May 2022 12:50:09 -0400
+        Fri, 13 May 2022 12:54:04 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69FE57B11
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:52:27 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id kq17so17391999ejb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:52:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KlZ655wjZRJj4mJWbjrP+r9jazGcbcjqjX0zPmHpUq4=;
+        b=Ls5t4pqoVKGHgrd6A+s5IkGGCqmLswFOLWmLzqrrdHhayo0QWp89kB5PFE8lvBbqBb
+         CsP2kGQpIy4lp19vDS/h/A2x8Mo0xqHAHQPZZKiH3hZB2SVr+wAiMIEmT0wGec94sd1G
+         iHS0DpgtbOLcwdN2oxGA3k71Sws7icodZaZsY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KlZ655wjZRJj4mJWbjrP+r9jazGcbcjqjX0zPmHpUq4=;
+        b=O19T0xwKnHxHhDblOaM3NTQmfPsN3d6bT2vmReB6dTbp0BEPOHxEtrlBLfwtMUO9fr
+         kiVEr3OYqMO9/U7UUd64M86sZuwiTKnKppaib+svnMqsA2EKxNpiDCDgi2Qd3PKkQ32X
+         +OontHOaic8KfoRB3sqLSdMEvn3xG9ueAyelVBGLm8zWN3+Py3r28K4qKKe0FGn5yUIv
+         FeaP6q3Zkv0pXX8oCyNuMe4HrZA42SOI0LDI2G4kZKaudNc8L279MLu0Xy5Rj2J8JeDn
+         ybHVq9N7Ok2+DzyA50EcZaKa4QIvZXkVCun2QyUORCeSzymyTrDfjJJssIyvAAzHcASA
+         0ZFg==
+X-Gm-Message-State: AOAM533zT9WkShtQeKJeR4GJ3F5RxjIcLpLaLO1x/ik1zOBBgRSzNJaT
+        8mnFUEItvcze+5KNVWzGP370dSvYFIsH0dkCpTo=
+X-Google-Smtp-Source: ABdhPJyT3noJUbIo4B9ghZn0lcUXUJD2TUTKiJQIsWvodwhHeyYGf1ImSUzHCuyL06EIjx01tM0jeA==
+X-Received: by 2002:a17:906:4787:b0:6f4:2f25:f9ff with SMTP id cw7-20020a170906478700b006f42f25f9ffmr5304126ejc.116.1652460745959;
+        Fri, 13 May 2022 09:52:25 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id em8-20020a170907288800b006f3ef214e34sm912878ejc.154.2022.05.13.09.52.24
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 09:52:25 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id h16so11509985wrb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:52:24 -0700 (PDT)
+X-Received: by 2002:a5d:6d0b:0:b0:20c:4ec7:8e84 with SMTP id
+ e11-20020a5d6d0b000000b0020c4ec78e84mr4633805wrq.281.1652460744446; Fri, 13
+ May 2022 09:52:24 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] kselftest/cgroup: fix test_stress.sh to use OUTPUT dir
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Phil Auld <pauld@redhat.com>, lkml <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-References: <20220512143439.26104-1-pauld@redhat.com>
- <f819f288-7f67-77d1-5d92-f0a5545c1c48@redhat.com>
- <CAOS58YNYoFQy9gv9qiUX-PDkhEJ0CAwKeNibUghrT68vSSckYQ@mail.gmail.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <CAOS58YNYoFQy9gv9qiUX-PDkhEJ0CAwKeNibUghrT68vSSckYQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+References: <20220513085455.GB21013@xsang-OptiPlex-9020>
+In-Reply-To: <20220513085455.GB21013@xsang-OptiPlex-9020>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 13 May 2022 09:52:08 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjDE7tWc5k81P41AKw9b13ehrTX8XawgnP-wa6fA57kuA@mail.gmail.com>
+Message-ID: <CAHk-=wjDE7tWc5k81P41AKw9b13ehrTX8XawgnP-wa6fA57kuA@mail.gmail.com>
+Subject: Re: [x86/uaccess] 9c5743dff4: WARNING:at_arch/x86/mm/extable.c:#ex_handler_fprestore
+To:     kernel test robot <oliver.sang@intel.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        kernel test robot <lkp@intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/13/22 12:20, Tejun Heo wrote:
-> Can you send a quick patch?
-
-Will do.
-
-Cheers,
-Longman
-
+On Fri, May 13, 2022 at 1:55 AM kernel test robot <oliver.sang@intel.com> wrote:
 >
-> Thanks.
+> FYI, we noticed the following commit (built with gcc-11): commit
+> 9c5743dff415 ("x86/uaccess: fix code generation in put_user()")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 >
-> On Fri, May 13, 2022 at 6:19 AM Waiman Long <longman@redhat.com> wrote:
->>
->> On 5/12/22 10:34, Phil Auld wrote:
->>> Running cgroup kselftest with O= fails to run the with_stress test due
->>> to hardcoded ./test_core. Find test_core binary using the OUTPUT directory.
->>>
->>> Fixes: 1a99fcc035fb ("selftests: cgroup: Run test_core under interfering stress")
->>> Signed-off-by: Phil Auld <pauld@redhat.com>
->>> ---
->>>    tools/testing/selftests/cgroup/test_stress.sh | 2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/tools/testing/selftests/cgroup/test_stress.sh b/tools/testing/selftests/cgroup/test_stress.sh
->>> index 15d9d5896394..109c044f715f 100755
->>> --- a/tools/testing/selftests/cgroup/test_stress.sh
->>> +++ b/tools/testing/selftests/cgroup/test_stress.sh
->>> @@ -1,4 +1,4 @@
->>>    #!/bin/bash
->>>    # SPDX-License-Identifier: GPL-2.0
->>>
->>> -./with_stress.sh -s subsys -s fork ./test_core
->>> +./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
->>
->> I would suggest using "${OUTPUT:-.}" as the variable OUTPUT may not be
->> defined if test_stress.sh is run interactively.
->>
->> Cheers,
->> Longman
->>
+> in testcase: boot
 >
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
 
+Hmm. It sounds unlikely that _that_ commit caused the problem,
+although tweaks to generate different code can obviously always expose
+anything..
+
+But considering that the fail:runs thing is 41:52, I suspect it's
+something very timing-dependent and who knows how reliable the
+bisection has been.
+
+That commit did have some discussion about how to possibly do it more
+nicely without the "register asm" thing, but I'm not finding anything
+else about it, so I don't think it caused any actual real code
+generation problems.
+
+As such, it seems unlikely to then cause this FP state restore issue..
+
+> [ 266.823123][ T1] WARNING: CPU: 0 PID: 1 at arch/x86/mm/extable.c:65 ex_handler_fprestore (??:?)
+
+This is just
+
+    65          WARN_ONCE(1, "Bad FPU state detected at %pB,
+reinitializing FPU registers.",
+    66                    (void *)instruction_pointer(regs));
+
+which isn't great, in that it implies that there was bad fp state to
+restore in the first place.
+
+But that can technically happen when user space does something bad
+too, notably when it has used ptrace to change the FP state.
+
+See commit d5c8028b4788 ("x86/fpu: Reinitialize FPU registers if
+restoring FPU state fails") for more details.
+
+And *this* part:
+
+> [ 266.879246][ T1] RIP: 0010:copy_kernel_to_fpregs (core.c:?)
+> [ 266.880748][ T1] Code: 05 31 84 1e 0b 48 c7 c7 50 47 2b 8c 48 8d 58 01 e8 c1 80 5c 00 b8 ff ff ff ff 48 89 1d 15 84 1e 0b 4c 89 e7 89 c2 48 0f ae 2f <48> c7 c7 58 47 2b 8c e8 60 82 5c 00 48 8b 05 01 84 1e 0b 48 c7 c7
+> All code
+> ========
+>    0:   05 31 84 1e 0b          add    $0xb1e8431,%eax
+>    5:   48 c7 c7 50 47 2b 8c    mov    $0xffffffff8c2b4750,%rdi
+>    c:   48 8d 58 01             lea    0x1(%rax),%rbx
+>   10:   e8 c1 80 5c 00          callq  0x5c80d6
+>   15:   b8 ff ff ff ff          mov    $0xffffffff,%eax
+>   1a:   48 89 1d 15 84 1e 0b    mov    %rbx,0xb1e8415(%rip)        # 0xb1e8436
+>   21:   4c 89 e7                mov    %r12,%rdi
+>   24:   89 c2                   mov    %eax,%edx
+>   26:   48 0f ae 2f             xrstor64 (%rdi)
+>   2a:*  48 c7 c7 58 47 2b 8c    mov    $0xffffffff8c2b4758,%rdi         <-- trapping instruction
+
+Seems to be just the exception stack chain (ie notice how it's
+pointing to the instruction after the xrstor64, it's not that the
+immediate register move really trapped).
+
+> [ 266.899210][ T1] __fpregs_load_activate (core.c:?)
+> [ 266.900418][ T1] copy_fpstate_to_sigframe (??:?)
+> [ 266.901947][ T1] get_sigframe+0x196/0x360
+> [ 266.903138][ T1] __setup_rt_frame (signal.c:?)
+> [ 266.904162][ T1] setup_rt_frame (signal.c:?)
+> [ 266.905386][ T1] handle_signal (signal.c:?)
+> [ 266.906423][ T1] arch_do_signal (??:?)
+
+.. and it is in the signal handling path when returning to user space. Hmm.
+
+And then again, we have the exception stack entry all the way to user space:
+
+> [  266.914026][    T1] RIP: 0033:0x7f32488b5700
+> [ 266.915046][ T1] Code: 76 05 e9 f3 fd ff ff 48 8b 05 3c f7 37 00 64 c7 00 16 00 00 00 83 c8 ff c3 90 41 ba 08 00 00 00 48 63 ff b8 0e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 02 f3 c3 48 8b 15 0f f7 37 00 f7 d8 64 89 02
+> All code
+> ========
+>    0:   76 05                   jbe    0x7
+>    2:   e9 f3 fd ff ff          jmpq   0xfffffffffffffdfa
+>    7:   48 8b 05 3c f7 37 00    mov    0x37f73c(%rip),%rax        # 0x37f74a
+>    e:   64 c7 00 16 00 00 00    movl   $0x16,%fs:(%rax)
+>   15:   83 c8 ff                or     $0xffffffff,%eax
+>   18:   c3                      retq
+>   19:   90                      nop
+>   1a:   41 ba 08 00 00 00       mov    $0x8,%r10d
+>   20:   48 63 ff                movslq %edi,%rdi
+>   23:   b8 0e 00 00 00          mov    $0xe,%eax
+>   28:   0f 05                   syscall
+>   2a:*  48 3d 00 f0 ff ff       cmp    $0xfffffffffffff000,%rax         <-- trapping instruction
+
+and again, it's just pointing back to after the 'syscall' instruction
+that caused this whole chain of events.
+
+Anyway, I *think* that what may be going on is some ptrace thing, but
+let's bring in other people. Because I don't think that "x86/uaccess:
+fix code generation in put_user()" commit is what triggered this, but
+who knows.. The x86 FP code can be very grotty.
