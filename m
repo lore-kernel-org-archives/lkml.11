@@ -2,111 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9550CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbiENCxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53338 "EHLO
+        id S230217AbiENCyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiENCx2 (ORCPT
+        with ESMTP id S230484AbiENCyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:53:28 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCE835B1F7;
-        Fri, 13 May 2022 17:59:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=qyZsoJknrWOVDvtpNszTIIAof3pgi3xfB+EMxclimb4=; b=YUKlqPWGIDZvhXATbELAlppcVk
-        92/7Q/rIwsA0xahE9uRHrV3gPbUEYEv1caC2w8u4thxI4DZV33oa7K1SUXBsSPdiaPrKdyPix/5QH
-        oYl1lWBxbSzo2oFcsrRYadLQzEMPbCWhroO2ghC15gjxxUxR5c16PCzSrzvjpeagk87c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1npfZX-002hd6-UG; Sat, 14 May 2022 02:23:51 +0200
-Date:   Sat, 14 May 2022 02:23:51 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Saravana Kannan <saravanak@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        John Stultz <jstultz@google.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC PATCH net 0/2] Make phylink and DSA wait for PHY driver
- that defers probe
-Message-ID: <Yn72l3O6yI7YstMf@lunn.ch>
-References: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
+        Fri, 13 May 2022 22:54:40 -0400
+X-Greylist: delayed 5901 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 13 May 2022 18:11:27 PDT
+Received: from outgoing-stata.csail.mit.edu (outgoing-stata.csail.mit.edu [128.30.2.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6591E37B8CB
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:11:27 -0700 (PDT)
+Received: from [128.177.82.146] (helo=srivatsab-a02.vmware.com)
+        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:RSA_AES_128_CBC_SHA1:128)
+        (Exim 4.82)
+        (envelope-from <srivatsa@csail.mit.edu>)
+        id 1npemM-000Vex-0L; Fri, 13 May 2022 19:33:02 -0400
+To:     Elliot Berman <quic_eberman@quicinc.com>,
+        Juergen Gross <jgross@suse.com>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>,
+        virtualization@lists.linux-foundation.org, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Murali Nalajala <quic_mnalajal@quicinc.com>
+References: <20220513174654.362169-1-quic_eberman@quicinc.com>
+From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+Subject: Re: [PATCH v3] arm64: paravirt: Use RCU read locks to guard
+ stolen_time
+Message-ID: <c24e405e-b5f9-d2f7-a629-1ee1beab3681@csail.mit.edu>
+Date:   Fri, 13 May 2022 16:32:53 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220513174654.362169-1-quic_eberman@quicinc.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 02:36:38AM +0300, Vladimir Oltean wrote:
-> This patch set completes the picture described by
-> '[RFC,devicetree] of: property: mark "interrupts" as optional for fw_devlink'
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220513201243.2381133-1-vladimir.oltean@nxp.com/
+On 5/13/22 10:46 AM, Elliot Berman wrote:
+> From: Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>
 > 
-> I've CCed non-networking maintainers just in case they want to gain a
-> better understanding. If not, apologies and please ignore the rest.
+> During hotplug, the stolen time data structure is unmapped and memset.
+> There is a possibility of the timer IRQ being triggered before memset
+> and stolen time is getting updated as part of this timer IRQ handler. This
+> causes the below crash in timer handler -
 > 
+>   [ 3457.473139][    C5] Unable to handle kernel paging request at virtual address ffffffc03df05148
+>   ...
+>   [ 3458.154398][    C5] Call trace:
+>   [ 3458.157648][    C5]  para_steal_clock+0x30/0x50
+>   [ 3458.162319][    C5]  irqtime_account_process_tick+0x30/0x194
+>   [ 3458.168148][    C5]  account_process_tick+0x3c/0x280
+>   [ 3458.173274][    C5]  update_process_times+0x5c/0xf4
+>   [ 3458.178311][    C5]  tick_sched_timer+0x180/0x384
+>   [ 3458.183164][    C5]  __run_hrtimer+0x160/0x57c
+>   [ 3458.187744][    C5]  hrtimer_interrupt+0x258/0x684
+>   [ 3458.192698][    C5]  arch_timer_handler_virt+0x5c/0xa0
+>   [ 3458.198002][    C5]  handle_percpu_devid_irq+0xdc/0x414
+>   [ 3458.203385][    C5]  handle_domain_irq+0xa8/0x168
+>   [ 3458.208241][    C5]  gic_handle_irq.34493+0x54/0x244
+>   [ 3458.213359][    C5]  call_on_irq_stack+0x40/0x70
+>   [ 3458.218125][    C5]  do_interrupt_handler+0x60/0x9c
+>   [ 3458.223156][    C5]  el1_interrupt+0x34/0x64
+>   [ 3458.227560][    C5]  el1h_64_irq_handler+0x1c/0x2c
+>   [ 3458.232503][    C5]  el1h_64_irq+0x7c/0x80
+>   [ 3458.236736][    C5]  free_vmap_area_noflush+0x108/0x39c
+>   [ 3458.242126][    C5]  remove_vm_area+0xbc/0x118
+>   [ 3458.246714][    C5]  vm_remove_mappings+0x48/0x2a4
+>   [ 3458.251656][    C5]  __vunmap+0x154/0x278
+>   [ 3458.255796][    C5]  stolen_time_cpu_down_prepare+0xc0/0xd8
+>   [ 3458.261542][    C5]  cpuhp_invoke_callback+0x248/0xc34
+>   [ 3458.266842][    C5]  cpuhp_thread_fun+0x1c4/0x248
+>   [ 3458.271696][    C5]  smpboot_thread_fn+0x1b0/0x400
+>   [ 3458.276638][    C5]  kthread+0x17c/0x1e0
+>   [ 3458.280691][    C5]  ret_from_fork+0x10/0x20
 > 
+> As a fix, introduce rcu lock to update stolen time structure.
 > 
-> My use case is to migrate a PHY driver from poll mode to interrupt mode
-> without breaking compatibility between new device trees and old kernels
-> which did not have a driver for that IRQ parent, and therefore (for
-> things to work) did not even have that interrupt listed in the "vintage
-> correct" DT blobs. Note that current kernels as of today are also
-> "old kernels" in this description.
-> 
-> Creating some degree of compatibility has multiple components.
-> 
-> 1. A PHY driver must eventually give up waiting for an IRQ provider,
->    since the dependency is optional and it can fall back to poll mode.
->    This is currently supported thanks to commit 74befa447e68 ("net:
->    mdio: don't defer probe forever if PHY IRQ provider is missing").
-> 
-> 2. Before it finally gives up, the PHY driver has a transient phase of
->    returning -EPROBE_DEFER. That transient phase causes some breakage
->    which is handled by this patch set, details below.
-> 
-> 3. PHY device probing and Ethernet controller finding it and connecting
->    to it are async events. When both happen during probing, the problem
->    is that finding the PHY fails if the PHY defers probe, which results
->    in a missing PHY rather than waiting for it. Unfortunately there is
->    no universal way to address this problem, because the majority of
->    Ethernet drivers do not connect to the PHY during probe. So the
->    problem is fixed only for the driver that is of interest to me in
->    this context, DSA, and with special API exported by phylink
->    specifically for this purpose, to limit the impact on other drivers.
+> Suggested-by: Will Deacon <will@kernel.org>
+> Signed-off-by: Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>
+> Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
+> ---
 
-There is a very different approach, which might be simpler.
+Looks good to me, but one quick question though (see below).
 
-We know polling will always work. And it should be possible to
-transition between polling and interrupt at any point, so long as the
-phylock is held. So if you get -EPROBE_DEFFER during probe, mark some
-state in phydev that there should be an irq, but it is not around yet.
-When the phy is started, and phylib starts polling, look for the state
-and try getting the IRQ again. If successful, swap to interrupts, if
-not, keep polling. Maybe after 60 seconds of polling and trying, give
-up trying to find the irq and stick with polling.
+Reviewed-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 
-     Andrew
+>  
+>  static int stolen_time_cpu_down_prepare(unsigned int cpu)
+>  {
+> +	struct pvclock_vcpu_stolen_time *kaddr = NULL;
+>  	struct pv_time_stolen_time_region *reg;
+>  
+>  	reg = this_cpu_ptr(&stolen_time_region);
+>  	if (!reg->kaddr)
+>  		return 0;
+>  
+> -	memunmap(reg->kaddr);
+> -	memset(reg, 0, sizeof(*reg));
+> +	kaddr = rcu_replace_pointer(reg->kaddr, NULL, true);
+> +	synchronize_rcu();
+> +	memunmap(kaddr);
+>  
+
+The original code used to memset the stolen time region, but this
+patch seems to drop it. Was that change intentional?
+
+Regards,
+Srivatsa
