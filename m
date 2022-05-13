@@ -2,112 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3678C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86948C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380695AbiEMOZ0 (ORCPT
+        id S1353017AbiEMOZg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        Fri, 13 May 2022 10:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358971AbiEMOYu (ORCPT
+        with ESMTP id S1359467AbiEMOYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:24:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFBE50E31;
+        Fri, 13 May 2022 10:24:48 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1AD527D1;
+        Fri, 13 May 2022 07:24:45 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id c11so8064090plg.13;
+        Fri, 13 May 2022 07:24:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=EXVXiPbk+krY68vv3JVFR+K7ANBpW2/j7bjI9Co2KDw=;
+        b=Lily5PBWVzsRsoKTheNp++BxMUwyzfse43IwxdM4KdKiwxr22BTE2kx3Ow2wxjOf+C
+         lH4YXnDCqazomi/ap9qEmHZRTELee86xvEOnQBuPbC8Az508qFAxZGEmkWFu97uiTAZD
+         Q6lTJx4RBjBKMO9cRXZBmzzUdoywVD62Du3xLaMjBYbgESWo9VJZ1XX4GG6o1WF0IzLM
+         6hwHVRGorDIVDB8N7Nn/c5KQO8pCIHWtYUabYbddkqX0UtY+Sl8ux8FjnuGi5vh3CnFU
+         My8cQRNntwUUEpSChBTx6GdqGKcYGwkc3mlOfz2lTrdHx+nCauRiSDnRfL3gYSbgX7YK
+         11cQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=EXVXiPbk+krY68vv3JVFR+K7ANBpW2/j7bjI9Co2KDw=;
+        b=cRoqmhZNvnKkFlkfiEyeBjVxTQ9nZKLrnRU5N+sYwh46qw9nbVr8B0C5Hs6zc9kecQ
+         3zkjAJCQYT2T0PTroKODoudpv6R+fMBGPWeeAZm6qn9td4xNvgp2fGAtbAu1TcN+l9ht
+         cE9/Nc/+ApTgLvSeDg4cuOrV5KfpNFmFfOCBpVOZKnndcLNg7e1qyYg7SlgKakKmvFPs
+         dhq5noQ9WkT5X/+JfNYSybEO6wuHHZv+whkRcKTuSgmfEvzdrwfFyXPLy8qy3XQpaG9Y
+         z68YhfptSMaMQIfKlSb+u2qGAGyvOEwvcq55Bi9xfYl29MeydBcA4sEcqNyYecW3jxZ5
+         OBEg==
+X-Gm-Message-State: AOAM531M0v7egKx92aRkBv9BGtP96QWnkZXC3LTFJ7IJQ4lNs3THYS75
+        dBQWiJM5ERPgfjJGdoMEOj0=
+X-Google-Smtp-Source: ABdhPJwP14hRxwH8tjUgqDpmuXMdXTYtmj77UCtxNmry5UzcQ8PKGLOciYn4wKhQnTKfIIfZgjlOZA==
+X-Received: by 2002:a17:902:f542:b0:15e:b6d2:88d9 with SMTP id h2-20020a170902f54200b0015eb6d288d9mr4934948plf.128.1652451884713;
         Fri, 13 May 2022 07:24:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 245C7B83066;
-        Fri, 13 May 2022 14:24:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E76C34115;
-        Fri, 13 May 2022 14:24:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451881;
-        bh=nTYea53HYuP4kedeJer8CmVbpRnWXst8mre0wEVLpSU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fozv3JNeUbkWVCvli9YNcVQs9TZnttpQslj3qXGogFf+nknebaHaXwtfVdhh074df
-         kMkigW/OjSqWxUlMoHju7AVxye+WhU6sm2ehVnt5ZFpqbCVfBARkxesePu7FKqEbYd
-         1QyeFNoQCJhRbjPQOKQNuDXVOpSCaTToZY4tV2jE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Peter Xu <peterx@redhat.com>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Zi Yan <ziy@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 7/7] mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-Date:   Fri, 13 May 2022 16:23:22 +0200
-Message-Id: <20220513142226.131430745@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142225.909697091@linuxfoundation.org>
-References: <20220513142225.909697091@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id jj10-20020a170903048a00b0015e8d4eb2ccsm1684488plb.278.2022.05.13.07.24.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 07:24:44 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH 2/2] can: dev: drop tx skb if in listen only mode
+Date:   Fri, 13 May 2022 23:23:55 +0900
+Message-Id: <20220513142355.250389-3-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+Frames can be directly injected to a can driver via the packet
+socket. By doing that, it is possible to reach the
+net_device_ops::ndo_start_xmit function even if the driver is
+configure in listen only mode.
 
-commit 7c25a0b89a487878b0691e6524fb5a8827322194 upstream.
+Add a check in can_dropped_invalid_skb() and to discard the skb if
+CAN_CTRLMODE_LISTENONLY is set.
 
-userfaultfd calls mcopy_atomic_pte() and __mcopy_atomic() which do not
-do any cache flushing for the target page.  Then the target page will be
-mapped to the user space with a different address (user address), which
-might have an alias issue with the kernel address used to copy the data
-from the user to.  Fix this by insert flush_dcache_page() after
-copy_from_user() succeeds.
-
-Link: https://lkml.kernel.org/r/20220210123058.79206-7-songmuchun@bytedance.com
-Fixes: b6ebaedb4cb1 ("userfaultfd: avoid mmap_sem read recursion in mcopy_atomic")
-Fixes: c1a4de99fada ("userfaultfd: mcopy_atomic|mfill_zeropage: UFFDIO_COPY|UFFDIO_ZEROPAGE preparation")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Fam Zheng <fam.zheng@bytedance.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Lars Persson <lars.persson@axis.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- mm/userfaultfd.c |    3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/can/dev.h | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/mm/userfaultfd.c
-+++ b/mm/userfaultfd.c
-@@ -50,6 +50,8 @@ static int mcopy_atomic_pte(struct mm_st
- 			/* don't free the page */
- 			goto out;
- 		}
-+
-+		flush_dcache_page(page);
- 	} else {
- 		page = *pagep;
- 		*pagep = NULL;
-@@ -267,6 +269,7 @@ retry:
- 				err = -EFAULT;
- 				goto out;
- 			}
-+			flush_dcache_page(page);
- 			goto retry;
- 		} else
- 			BUG_ON(page);
-
+diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
+index bbe27e22c7a7..c3ed48e54c29 100644
+--- a/include/linux/can/dev.h
++++ b/include/linux/can/dev.h
+@@ -161,6 +161,7 @@ static inline bool can_dropped_invalid_skb(struct net_device *dev,
+ 					   struct sk_buff *skb)
+ {
+ 	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
++	struct can_priv *priv = netdev_priv(dev);
+ 
+ 	if (skb->protocol == htons(ETH_P_CAN)) {
+ 		if (unlikely(skb->len != CAN_MTU ||
+@@ -174,8 +175,13 @@ static inline bool can_dropped_invalid_skb(struct net_device *dev,
+ 		goto inval_skb;
+ 	}
+ 
+-	if (!can_skb_headroom_valid(dev, skb))
++	if (!can_skb_headroom_valid(dev, skb)) {
++		goto inval_skb;
++	} else if (priv->ctrlmode & CAN_CTRLMODE_LISTENONLY) {
++		netdev_info_once(dev,
++				 "interface in listen only mode, dropping skb\n");
+ 		goto inval_skb;
++	}
+ 
+ 	return false;
+ 
+-- 
+2.35.1
 
