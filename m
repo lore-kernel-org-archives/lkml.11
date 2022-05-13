@@ -2,123 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC49DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2784FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:25:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384646AbiEMVS0 (ORCPT
+        id S1384655AbiEMVY5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 17:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
+        Fri, 13 May 2022 17:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240772AbiEMVSY (ORCPT
+        with ESMTP id S1358795AbiEMVYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 17:18:24 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1792B522E5
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:18:23 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id x18so9107158plg.6
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:18:23 -0700 (PDT)
+        Fri, 13 May 2022 17:24:55 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9022663FA
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:24:52 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id j84so6569975ybc.3
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:24:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=o0kVmjdcMUKYVM5DrVqgurkhzcUKhblSSgNmYbuiRRg=;
-        b=CcTeCWOYH5IP5w44cu7dNo2TnZ/9Jx/DeJm8b0kUpZgsy3l9UnRTVQ62bBl7e+LpPY
-         uTdOP+qtH8CxKFdV2hEA9fdjzPRETXryPhxAhm2mbvT25s0H8e5hfRE9HbHgjjFvBC1e
-         3BemwWOw7u583NKe+1Yuls4TqwcQRtR0N9ZLSR/motIt3kq9nTk4lxphNAvqQkzq43aw
-         HhEA8WBEupPU7Uu95wWDZaGYEYzVGLa/9rBljxZ6OaVeYVZsD9/dsJHcR949/J/TWQTE
-         eAdD0/JMKMNyAUIfnZ0iKXk3F4e/fiGixPeE9DWiMjcAxji6GevP3vM2aTiyzhHwPM9K
-         bVfg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0ueDaSsTErmQolYj/n89FuDLYTxrI+xxTPOLBk1HDOg=;
+        b=XvprDXkDP/fuPYLrBoI4hnZYfwqDXbJPAroGtexlcSuJlDruxai6ShoTfhn7sxb4C5
+         iZlmgndunl0Hw27N+ZimYysy3vyVRSfqc6FMBeWqre2N6FyL0pBjDjIGLhQgQ206Nvw2
+         Oq9nfla9Z0DMWaJkFf/k3obDJKp2edaLrq/zqi7t0zFH/XMOxP1ndGdLjg1RIDpHb9Y0
+         ky8J5D1ObPqIIwJKcn6eat+nhChP11h/FM9WjQvdChQIgY0D4VDL1UsPSVZZocgyR5aq
+         N7ZS/EvualRlqgh+jJJvouLCgjCiP23rbWgVTlOCHvr+s/DyYLSIl8B1nHBlm7o4gUTy
+         nXhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=o0kVmjdcMUKYVM5DrVqgurkhzcUKhblSSgNmYbuiRRg=;
-        b=xQHfSbBCcKHZcKHSbYjPotzLMTU2iMUDCW8L8EDURtFuqfnIv9WiIgw6op10slYsIb
-         Vyx0mgmUeNEUt2CMVPPzEmZpaqzL7NMVDltYwxws/oqNxdvDhd3E1zCDutnRemaSXCQ4
-         K/N2D5FxpCLJYpMH73gaFXDAq7DHU0HywiO7cQwCTuf43wZ/0Bel4qIwSi8SN0Uw+on9
-         3ICcqJ2CKi4o5GUBbjdBfBl0joIE34KN7BUlWNNTxSMxBdr1k9uZCEY+FRolBnV5iU7E
-         MyTUbizGBbo97o5PsuHrUUAn9Pmw78oMNpnw/18AQHnY4ANPuGwNWtQU9B4Iac1KxRtF
-         85hw==
-X-Gm-Message-State: AOAM531evYVrnaoldloXjZ9cspkp3MBMPsQ4vNf80gtUIsSyRTbpzfRo
-        CO70BmGLV3AMGp6Ko8XzF/Lxcl0UFpA=
-X-Google-Smtp-Source: ABdhPJylH80zUax/Bff44bHOHv24DhDjZB72DDduOGylPZmRgW3vOHvN+YkNJC2dl5gyEI0/w2z6vw==
-X-Received: by 2002:a17:90b:1291:b0:1db:eab7:f165 with SMTP id fw17-20020a17090b129100b001dbeab7f165mr18071902pjb.74.1652476702383;
-        Fri, 13 May 2022 14:18:22 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id v8-20020a1709028d8800b0015e8d4eb1f3sm2304845plo.61.2022.05.13.14.18.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 14:18:21 -0700 (PDT)
-Date:   Sat, 14 May 2022 06:18:19 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] init: call time_init() before rand_initialize()
-Message-ID: <Yn7LG3zlcKPaOXkp@antec>
-References: <20220505003114.177552-1-Jason@zx2c4.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0ueDaSsTErmQolYj/n89FuDLYTxrI+xxTPOLBk1HDOg=;
+        b=R3rleVBa0IpbCdKO8ltR7CrqVXYc+Mez5ibUd7d20aF0EqCTyQXxFNcbsBcGju8Q6p
+         Co7J+A5YOlzEXsEozT8/NonCbdnyGVdbohl2Nt51DHUzQ9+PaFy4ldHG9gagEeiwGP0H
+         M2WVk98ANxahmptNrDNHOnFIkVIMXbCLRgZOMFRfueGev3eqnzZynycDE+WmzEpCHEDH
+         IAEF461YnswUkOqxDetRRpqeCAngMYc8U19FD25vNddzMnnjUI0ihBfEr9rxIxwnMdKV
+         Xt/bjDroTxvTMjwas9Vg+foySaeGpXTJ7wrGxd92dQvDOR0KJJeQccV3+0Hxg3VA7yFQ
+         mX7w==
+X-Gm-Message-State: AOAM533bA3PLTOTD8bgZVWZQf3AFN595tyNJumhpZgIOuOdFgvZzLJMx
+        /LJg4aWH1OM0DhhIrtkyzDLp2w95lzvelLJDqGsFhg==
+X-Google-Smtp-Source: ABdhPJxa1oQfaDAJgT6dUGne1j3ZUOM3aJOd/CmIcNBzgc1KHFgeiv/kBZmlxZpM00Uxg4d1zxDYWRbjBIZAHDoUxjk=
+X-Received: by 2002:a25:2c82:0:b0:64d:62a1:850b with SMTP id
+ s124-20020a252c82000000b0064d62a1850bmr273160ybs.291.1652477091802; Fri, 13
+ May 2022 14:24:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505003114.177552-1-Jason@zx2c4.com>
+References: <20220512162320.2213488-1-maz@kernel.org>
+In-Reply-To: <20220512162320.2213488-1-maz@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 13 May 2022 23:24:40 +0200
+Message-ID: <CACRpkdajTCS5CmQLY8hffVe1x4WzWuC_myQVGZNKV3sRzLPa=w@mail.gmail.com>
+Subject: Re: [PATCH] gpio: Remove dynamic allocation from populate_parent_alloc_arg()
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com,
+        Daniel Palmer <daniel@thingy.jp>,
+        Romain Perier <romain.perier@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Robert Richter <rric@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 02:31:14AM +0200, Jason A. Donenfeld wrote:
-> Currently time_init() is called before rand_initialize(), but
-> rand_initialize() makes use of the timer on various platforms, and
-> sometimes this timer needs to be initialized by time_init() first. In
-> order to not return zero, reverse the order of these two calls. The
-> block doing random initialization was right before time_init() before,
-> so changing the order shouldn't have any complicated effects.
-> 
-> Cc: Stafford Horne <shorne@gmail.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+On Thu, May 12, 2022 at 6:23 PM Marc Zyngier <maz@kernel.org> wrote:
 
-I was thinking along the same lines when I looked into the OpenRISC issue
-that we fixed discussed here:
+> The gpiolib is unique in the way it uses intermediate fwspecs
+> when feeding an interrupt specifier to the parent domain, as it
+> relies on the populate_parent_alloc_arg() callback to perform
+> a dynamic allocation.
+>
+> THis is pretty inefficient (we free the structure almost immediately),
+> and the only reason this isn't a stack allocation is that our
+> ThunderX friend uses MSIs rather than a FW-constructed structure.
+>
+> Let's solve it by providing a new type composed of the union
+> of a struct irq_fwspec and a msi_info_t, which satisfies both
+> requirements. This allows us to use a stack allocation, and we
+> can move the handful of users to this new scheme.
+>
+> Also perform some additional cleanup, such as getting rid of the
+> stub versions of the irq_domain_translate_*cell helpers, which
+> are never used when CONFIG_IRQ_DOMAIN_HIERARCHY isn't selected.
+>
+> Tested on a Tegra186.
+>
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+> Cc: Daniel Palmer <daniel@thingy.jp>
+> Cc: Romain Perier <romain.perier@gmail.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Jonathan Hunter <jonathanh@nvidia.com>
+> Cc: Robert Richter <rric@kernel.org>
+> Cc: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+> Cc: Andy Gross <agross@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 
- - https://lore.kernel.org/all/Ym27sFdFZEt5QV0i@antec/
+This looks very appetizing to me but:
 
-Though, I was not sure as to any dependency issues caused by changing the
-order.  Having it in -next and testing for a while should be able to
-bring out any bug.
+drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 15 ++++-----
 
-As for this patch:
+This seems to have some changes to
+->populate_parent_alloc_arg not even in linux-next,
+so I get confused, what are the prerequisites? (Probably
+something I already reviewed, but...)
 
-Reviewed-by: Stafford Horne <shorne@gmail.com>
+Also: don't you also need to fix something in
+drivers/pinctrl/qcom/pinctrl-ssbi-mpp.c?
+the way I remember it it was quite similar to spmi-gpio
+but I may be mistaken.
 
-> ---
-> Andrew - this file has no formal maintainer, but you've signed the most
-> commits, so I'm CC'ing you. This has some interactions with my
-> random.git tree, so unless there are objections, I'll queue it up there.
-> -Jason
-> 
->  init/main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/init/main.c b/init/main.c
-> index 98182c3c2c4b..e37ec99cf56d 100644
-> --- a/init/main.c
-> +++ b/init/main.c
-> @@ -1035,6 +1035,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
->  	softirq_init();
->  	timekeeping_init();
->  	kfence_init();
-> +	time_init();
->  
->  	/*
->  	 * For best initial stack canary entropy, prepare it after:
-> @@ -1049,7 +1050,6 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
->  	add_device_randomness(command_line, strlen(command_line));
->  	boot_init_stack_canary();
->  
-> -	time_init();
->  	perf_event_init();
->  	profile_init();
->  	call_function_init();
-> -- 
-> 2.35.1
-> 
+Yours,
+Linus Walleij
