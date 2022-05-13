@@ -2,358 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F709C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 621B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382507AbiEMQuL (ORCPT
+        id S1382550AbiEMQud (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 12:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47014 "EHLO
+        Fri, 13 May 2022 12:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382498AbiEMQtx (ORCPT
+        with ESMTP id S1382538AbiEMQuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 12:49:53 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF5D12616;
-        Fri, 13 May 2022 09:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=pK4LNOu0dNF72SqjQq/fZ0CC1SRAhwR3nAlwafK6YXk=;
-        b=g7enWkJFoZNZoXwF9779ATvxh//5GEd7+jr3bIRroZqPtEIPC3bkjgjfso35U8u+9hUyG8bGsa9qG
-         Rjk86tDfbsaJj9+5VYc05ikVhUzh87z1eSr3VrDSkEhzItO5uaGh8PvZ03boLixnNSXJbvaNFnTbTY
-         YICaddh3DwnBnznsg0imt/FLBpK3mhHnHLvdDQwCOn7mEa1IzrR3yf/6YrdMREkAl88VMcSbTESY1N
-         7bTJmq1FuCt4gqguH10EdWbULNNbiu4xRA7wd9FFL27PGLObss81vgYalCdre0Q1nhofPGZ8Qehv2l
-         xsq6Aaym7tUoie8At06T9qaFgIu46rw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.031141)], BW: [Enabled, t: (0.000022,0.000001)], RTDA: [Enabled, t: (0.076255), Hit: No, Details: v2.39.0; Id: 15.52k2va.1g2v56gc5.q38v; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from localhost.localdomain ([178.70.36.174])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Fri, 13 May 2022 19:49:28 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, Conor.Dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru, Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Subject: [PATCH v12 1/3] fpga: fpga-mgr: support bitstream offset in image buffer
-Date:   Fri, 13 May 2022 19:27:53 +0300
-Message-Id: <20220513162755.16201-2-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220513162755.16201-1-i.bornyakov@metrotek.ru>
-References: <20220513162755.16201-1-i.bornyakov@metrotek.ru>
+        Fri, 13 May 2022 12:50:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADE6D527E7
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:49:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652460598;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bi+uH/wZS5AkNpz5xFa5gSB6zQd3C6hwa/ddsG2FtDA=;
+        b=Y7mtLE1Z5rpi0vAiCioUn7j0sGI25Xf5MnciZKBFjkhce54ue15Sr+MT/Na7DZo/a4RYDX
+        Tck8bwT7Mm0ACk+Qf+rVgi6TGnEBpUYkBBJHR3ZdXQz/kYvegxIMsTy0BDDMWGYl76EoZr
+        MbGyx5+N+OJItBMrp7zOSrxMr87FEqo=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-146-pYjAnWixPTmtiKzVFmuVJw-1; Fri, 13 May 2022 12:49:55 -0400
+X-MC-Unique: pYjAnWixPTmtiKzVFmuVJw-1
+Received: by mail-qk1-f200.google.com with SMTP id y140-20020a376492000000b0069f7e985c95so6740142qkb.15
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:49:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Bi+uH/wZS5AkNpz5xFa5gSB6zQd3C6hwa/ddsG2FtDA=;
+        b=iCUK1Hapws4ODXM7uP0Wba4JZn9NnFljlnkCQ5H87SDUMOKfkzRr7gMHP9pw1bHW3+
+         AF07Z0oIi6XBOGZ+SJuFthpOGrVPoitgSi7bFLeZmsXX3y0fFRH5LVrsGU83oyGKclDn
+         qGBl683tKQQbDadnnpS7A6+B7ZIcklq5Vcl9nzuwfXT38pbKQHqxuPjy0puBrV4vl43r
+         Pv5Aijo1NQu2QxgOJisKYlvOxZe8xGgbkIn6JDKJcmwPIP9snldGDytbRwYbZhssdaNb
+         pDMs1l4RQhvYb70iQINBw5DAoByT7MhZ4ftzhJ3iQ/qEKXhKpz/QWnwC5jN/ABGn2fzK
+         hR9w==
+X-Gm-Message-State: AOAM5307C7nn7wsjAPivCJ9QPB+bebsbM2/Hwm2f/1d68eKTt6XcxXGm
+        L9wwbEyMbTo+jWinxXjEtlYUc4I8AO1FSYb5PZ1rtkAtqa2Se0p6LefVyQAwDMmKySvkXvHhTub
+        qygRtnCYaWZHRQCZs7+pisg0R
+X-Received: by 2002:a05:6214:2ae:b0:456:31d0:c934 with SMTP id m14-20020a05621402ae00b0045631d0c934mr5225762qvv.45.1652460595249;
+        Fri, 13 May 2022 09:49:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxI2ye9002PK1A/FFBokk0XBX5unmGHGn9kZdogb2kLQ6lGa3MMkjD6ex9Rgz46yWo7gXRvmA==
+X-Received: by 2002:a05:6214:2ae:b0:456:31d0:c934 with SMTP id m14-20020a05621402ae00b0045631d0c934mr5225747qvv.45.1652460594963;
+        Fri, 13 May 2022 09:49:54 -0700 (PDT)
+Received: from [192.168.98.18] ([107.15.110.69])
+        by smtp.gmail.com with ESMTPSA id bj31-20020a05620a191f00b0069fc13ce22asm1750937qkb.91.2022.05.13.09.49.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 09:49:54 -0700 (PDT)
+Message-ID: <1d52f228-ea8c-6d97-13b6-8ec912188e07@redhat.com>
+Date:   Fri, 13 May 2022 12:49:52 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v2] bond: add mac filter option for balance-xor
+Content-Language: en-US
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     Long Xin <lxin@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+References: <6227427ef3b57d7de6d4d95e9dd7c9b222a37bf6.1651689665.git.jtoppins@redhat.com>
+ <f85a0a66-d3b8-9d20-9abb-fc9fa5e84eab@blackwall.org>
+ <d2696dab-2490-feb5-ccb2-96906fc652f0@redhat.com>
+ <e29f8d2a-f9b3-36d3-13aa-d5bec16cf61b@blackwall.org>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <e29f8d2a-f9b3-36d3-13aa-d5bec16cf61b@blackwall.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At the moment FPGA manager core loads to the device entire image
-provided to fpga_mgr_load(). But it is not always whole FPGA image
-buffer meant to be written to the device. In particular, .dat formatted
-image for Microchip MPF contains meta info in the header that is not
-meant to be written to the device. This is issue for those low level
-drivers that loads data to the device with write() fpga_manager_ops
-callback, since write() can be called in iterator over scatter-gather
-table, not only linear image buffer. On the other hand, write_sg()
-callback is provided with whole image in scatter-gather form and can
-decide itself which part should be sent to the device.
+On 5/13/22 12:19, Nikolay Aleksandrov wrote:
+> On 13/05/2022 18:42, Jonathan Toppins wrote:
+>> Hi Nik, thanks for the review. Responses below.
+>>
+>> On 5/5/22 08:14, Nikolay Aleksandrov wrote:
+>>> On 04/05/2022 21:47, Jonathan Toppins wrote:
+>>>> Implement a MAC filter that prevents duplicate frame delivery when
+>>>> handling BUM traffic. This attempts to partially replicate OvS SLB
+>>>> Bonding[1] like functionality without requiring significant change
+>>>> in the Linux bridging code.
+>>>>
+>>>> A typical network setup for this feature would be:
+>>>>
+>>>>               .--------------------------------------------.
+>>>>               |         .--------------------.             |
+>>>>               |         |                    |             |
+>>>>          .-------------------.               |             |
+>>>>          |    | Bond 0  |    |               |             |
+>>>>          | .--'---. .---'--. |               |             |
+>>>>     .----|-| eth0 |-| eth1 |-|----.    .-----+----.   .----+------.
+>>>>     |    | '------' '------' |    |    | Switch 1 |   | Switch 2  |
+>>>>     |    '---,---------------'    |    |          +---+           |
+>>>>     |       /                     |    '----+-----'   '----+------'
+>>>>     |  .---'---.    .------.      |         |              |
+>>>>     |  |  br0  |----| VM 1 |      |      ~~~~~~~~~~~~~~~~~~~~~
+>>>>     |  '-------'    '------'      |     (                     )
+>>>>     |      |        .------.      |     ( Rest of Network     )
+>>>>     |      '--------| VM # |      |     (_____________________)
+>>>>     |               '------'      |
+>>>>     |  Host 1                     |
+>>>>     '-----------------------------'
+>>>>
+>>>> Where 'VM1' and 'VM#' are hosts connected to a Linux bridge, br0, with
+>>>> bond0 and its associated links, eth0 & eth1, provide ingress/egress. One
+>>>> can assume bond0, br1, and hosts VM1 to VM# are all contained in a
+>>>> single box, as depicted. Interfaces eth0 and eth1 provide redundant
+>>>> connections to the data center with the requirement to use all bandwidth
+>>>> when the system is functioning normally. Switch 1 and Switch 2 are
+>>>> physical switches that do not implement any advanced L2 management
+>>>> features such as MLAG, Cisco's VPC, or LACP.
+>>>>
+>>>> Combining this feature with vlan+srcmac hash policy allows a user to
+>>>> create an access network without the need to use expensive switches that
+>>>> support features like Cisco's VCP.
+>>>>
+>>>> [1] https://docs.openvswitch.org/en/latest/topics/bonding/#slb-bonding
+>>>>
+>>>> Co-developed-by: Long Xin <lxin@redhat.com>
+>>>> Signed-off-by: Long Xin <lxin@redhat.com>
+>>>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>>>> ---
+>>>>
+>>>> Notes:
+>>>>       v2:
+>>>>        * dropped needless abstraction functions and put code in module init
+>>>>        * renamed variable "rc" to "ret" to stay consistent with most of the
+>>>>          code
+>>>>        * fixed parameter setting management, when arp-monitor is turned on
+>>>>          this feature will be turned off similar to how miimon and arp-monitor
+>>>>          interact
+>>>>        * renamed bond_xor_recv to bond_mac_filter_recv for a little more
+>>>>          clarity
+>>>>        * it appears the implied default return code for any bonding recv probe
+>>>>          must be `RX_HANDLER_ANOTHER`. Changed the default return code of
+>>>>          bond_mac_filter_recv to use this return value to not break skb
+>>>>          processing when the skb dev is switched to the bond dev:
+>>>>            `skb->dev = bond->dev`
+>>>>
+>>>>    Documentation/networking/bonding.rst  |  19 +++
+>>>>    drivers/net/bonding/Makefile          |   2 +-
+>>>>    drivers/net/bonding/bond_mac_filter.c | 201 ++++++++++++++++++++++++++
+>>>>    drivers/net/bonding/bond_mac_filter.h |  39 +++++
+>>>>    drivers/net/bonding/bond_main.c       |  27 ++++
+>>>>    drivers/net/bonding/bond_netlink.c    |  13 ++
+>>>>    drivers/net/bonding/bond_options.c    |  86 ++++++++++-
+>>>>    drivers/net/bonding/bonding_priv.h    |   1 +
+>>>>    include/net/bond_options.h            |   1 +
+>>>>    include/net/bonding.h                 |   3 +
+>>>>    include/uapi/linux/if_link.h          |   1 +
+>>>>    11 files changed, 390 insertions(+), 3 deletions(-)
+>>>>    create mode 100644 drivers/net/bonding/bond_mac_filter.c
+>>>>    create mode 100644 drivers/net/bonding/bond_mac_filter.h
+>>>>
+>>>
+>>> Hi Jonathan,
+>>> I must mention that this is easily solvable with two very simple ebpf programs, one on egress
+>>> to track source macs and one on ingress to filter them, it can also easily be solved by a
+>>> user-space agent that adds macs for filtering in many different ways, after all these VMs
+>>> run on the host and you don't need bond-specific knowledge to do this. Also you have no visibility
+>>> into what is currently being filtered, so it will be difficult to debug. With the above solutions
+>>> you already have that. I don't think the bond should be doing any learning or filtering, this is
+>>> deviating a lot from its purpose and adds unnecessary complexity.
+>>> That being said, if you decide to continue with the set, comments are below...
+>>
+>> This is an excellent observation, it does appear this could likely be done with eBPF. However, the delivery of such a solution to a user would be the difficult part. There appears to be no standard way for attaching a program to an interface, it still seems customary to write your own custom loader. Where would the user run this loader? In Debian likely in a post up hook with ifupdown, in Fedora one would have to write a locally custom dispatcher script (assuming Network Manager) that only ran the loader for a given interface. In short I do not see a reasonably appropriate way to deploy an eBPF program to users with the current infrastructure. Also, I am not aware of the bpf syscall supporting signed program loading. Signing kernel modules seems popular with some distros to identify limits of support and authentication of an unmodified system. I suspect similar bpf support might be needed to identify support and authentication for deployed programs.
+>>
+> 
+> A great deal of the distributions (almost all major ones) out there already use eBPF for various tasks, so I can't see
+> how any of these arguments apply nowadays. There are standard ways to load eBPF programs that have been around
+> for quite some time and most of the different software needed to achieve that is already packaged
+> for all major distributions (and has been for a long time). Anyway getting into the details of "how" the user would load the program
+> is not really pertinent to the discussion, that doesn't warrant adding so much new complexity in the bonding driver
+> which will have to be maintained forever. Honestly, I don't like the idea of adding learning to the bonding at all,
+> I think it's the wrong place for it, especially when the solution can easily be achieved with already available means.
+> It might not even be eBPF, you can do it with a user-space agent that uses nftables or some other filtering mechanism,
+> I'm sure you can think of many other ways to solve it which don't require this new infrastructure. All of these ways
+> to solve it have many advantages over this (e.g. visibility into the current entries being filtered, control over them and so on).
+> 
+> That's my opinion of course, it'd be nice to get feedback from others as well.
 
-Add header_size and data_size to the fpga_image_info struct and adjust
-fpga_mgr_write() callers with respect to them.
+Input from others would be helpful, I cannot claim eBPF is an inferior 
+technical solution to this proposed solution. So if this bonding option 
+approach is the wrong path, would like to know sooner rather than later 
+to attempt another path. I am by no means an expert on eBPF, I know how 
+to spell it, I do know there were support issues when considering the 
+eBPF option.
 
-  * info->header_size indicates part at the beginning of image buffer
-    that is *not* meant to be written to the device. It is optional and
-    can be 0.
+I will post my v3 to continue the technical review, but I think the 
+"should we even do this" review should be continued here.
 
-  * info->data_size is the size of actual bitstream data that *is* meant
-    to be written to the device, starting at info->header_size from the
-    beginning of image buffer. It is also optional and can be 0, which
-    means bitstream data is up to the end of image buffer.
-
-Also add parse_header() callback to fpga_manager_ops, which purpose is
-to set info->header_size and info->data_size. At least
-initial_header_size bytes of image buffer will be passed into
-parse_header() first time. If it is not enough, parse_header() should
-set desired size into info->header_size and return -EAGAIN, than it will
-be called again with greater part of image buffer on the input.
-
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
- drivers/fpga/fpga-mgr.c       | 150 ++++++++++++++++++++++++++--------
- include/linux/fpga/fpga-mgr.h |  13 ++-
- 2 files changed, 127 insertions(+), 36 deletions(-)
-
-diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-index a3595ecc3f79..c6ca395909a0 100644
---- a/drivers/fpga/fpga-mgr.c
-+++ b/drivers/fpga/fpga-mgr.c
-@@ -74,6 +74,15 @@ static inline int fpga_mgr_write_complete(struct fpga_manager *mgr,
- 	return 0;
- }
- 
-+static inline int fpga_mgr_parse_header(struct fpga_manager *mgr,
-+					struct fpga_image_info *info,
-+					const char *buf, size_t count)
-+{
-+	if (buf && mgr->mops->parse_header)
-+		return mgr->mops->parse_header(mgr, info, buf, count);
-+	return 0;
-+}
-+
- static inline int fpga_mgr_write_init(struct fpga_manager *mgr,
- 				      struct fpga_image_info *info,
- 				      const char *buf, size_t count)
-@@ -136,32 +145,61 @@ void fpga_image_info_free(struct fpga_image_info *info)
- EXPORT_SYMBOL_GPL(fpga_image_info_free);
- 
- /*
-- * Call the low level driver's write_init function.  This will do the
-- * device-specific things to get the FPGA into the state where it is ready to
-- * receive an FPGA image. The low level driver only gets to see the first
-- * initial_header_size bytes in the buffer.
-+ * Call the low level driver's parse_header then write_init functions.
-+ * This will do the device-specific things to get the FPGA into the state
-+ * where it is ready to receive an FPGA image. If parse_header sets
-+ * info->header_size, the low level driver's write_init only gets to see the
-+ * first info->header_size bytes in the buffer, mgr->mops->initial_header_size
-+ * otherwise. If neither initial_header_size nor header_size are not set,
-+ * write_init will not get any bytes of image buffer.
-  */
- static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
- 				   struct fpga_image_info *info,
- 				   const char *buf, size_t count)
- {
-+	size_t header_size;
- 	int ret;
- 
- 	mgr->state = FPGA_MGR_STATE_WRITE_INIT;
--	if (!mgr->mops->initial_header_size) {
--		ret = fpga_mgr_write_init(mgr, info, NULL, 0);
--	} else {
--		count = min(mgr->mops->initial_header_size, count);
--		ret = fpga_mgr_write_init(mgr, info, buf, count);
-+	ret = fpga_mgr_parse_header(mgr, info, buf, count);
-+	if (ret) {
-+		if (ret != -EAGAIN)
-+			dev_err(&mgr->dev,
-+				"Error while parsing FPGA image header\n");
-+
-+		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-+		return ret;
- 	}
- 
-+	header_size = mgr->mops->initial_header_size;
-+	if (info->header_size)
-+		header_size = info->header_size;
-+
-+	ret = fpga_mgr_write_init(mgr, info, header_size ? buf : NULL, header_size);
- 	if (ret) {
- 		dev_err(&mgr->dev, "Error preparing FPGA for writing\n");
- 		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
--		return ret;
- 	}
- 
--	return 0;
-+	return ret;
-+}
-+
-+static void *fpga_mgr_sgt_bounce_buf(struct sg_table *sgt, size_t count)
-+{
-+	size_t len;
-+	void *buf;
-+
-+	buf = kmalloc(count, GFP_KERNEL);
-+	if (!buf)
-+		return ERR_PTR(-ENOMEM);
-+
-+	len = sg_copy_to_buffer(sgt->sgl, sgt->nents, buf, count);
-+	if (len != count) {
-+		kfree(buf);
-+		return ERR_PTR(-EFAULT);
-+	}
-+
-+	return buf;
- }
- 
- static int fpga_mgr_write_init_sg(struct fpga_manager *mgr,
-@@ -169,37 +207,46 @@ static int fpga_mgr_write_init_sg(struct fpga_manager *mgr,
- 				  struct sg_table *sgt)
- {
- 	struct sg_mapping_iter miter;
--	size_t len;
-+	size_t header_size;
- 	char *buf;
--	int ret;
-+	int ret = -EAGAIN;
- 
--	if (!mgr->mops->initial_header_size)
-+	header_size = mgr->mops->initial_header_size;
-+	if (!header_size)
- 		return fpga_mgr_write_init_buf(mgr, info, NULL, 0);
- 
--	/*
--	 * First try to use miter to map the first fragment to access the
--	 * header, this is the typical path.
--	 */
- 	sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
--	if (sg_miter_next(&miter) &&
--	    miter.length >= mgr->mops->initial_header_size) {
--		ret = fpga_mgr_write_init_buf(mgr, info, miter.addr,
--					      miter.length);
--		sg_miter_stop(&miter);
--		return ret;
-+	if (!sg_miter_next(&miter)) {
-+		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-+		ret = -EFAULT;
- 	}
--	sg_miter_stop(&miter);
- 
--	/* Otherwise copy the fragments into temporary memory. */
--	buf = kmalloc(mgr->mops->initial_header_size, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
-+	while (ret == -EAGAIN) {
-+		/*
-+		 * First try to use miter to map the first fragment to access
-+		 * the header, this is the typical path.
-+		 */
-+		if (miter.length >= header_size) {
-+			ret = fpga_mgr_write_init_buf(mgr, info, miter.addr,
-+						      miter.length);
-+		} else {
-+			/*
-+			 * Otherwise copy the fragments into temporary memory.
-+			 */
-+			buf = fpga_mgr_sgt_bounce_buf(sgt, header_size);
-+			if (IS_ERR(buf)) {
-+				mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-+				ret = PTR_ERR(buf);
-+				break;
-+			}
- 
--	len = sg_copy_to_buffer(sgt->sgl, sgt->nents, buf,
--				mgr->mops->initial_header_size);
--	ret = fpga_mgr_write_init_buf(mgr, info, buf, len);
-+			ret = fpga_mgr_write_init_buf(mgr, info, buf, header_size);
-+			kfree(buf);
-+		}
- 
--	kfree(buf);
-+		header_size = info->header_size;
-+	}
-+	sg_miter_stop(&miter);
- 
- 	return ret;
- }
-@@ -236,13 +283,33 @@ static int fpga_mgr_buf_load_sg(struct fpga_manager *mgr,
- 	if (mgr->mops->write_sg) {
- 		ret = fpga_mgr_write_sg(mgr, sgt);
- 	} else {
-+		size_t offset, count, length, data_size;
- 		struct sg_mapping_iter miter;
- 
-+		offset = info->header_size;
-+		data_size = info->data_size;
-+		count = 0;
-+
- 		sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
- 		while (sg_miter_next(&miter)) {
--			ret = fpga_mgr_write(mgr, miter.addr, miter.length);
--			if (ret)
-+			if (offset >= miter.length) {
-+				offset -= miter.length;
-+				continue;
-+			}
-+
-+			if (data_size)
-+				length = min(miter.length - offset,
-+					     data_size - count);
-+			else
-+				length = miter.length - offset;
-+
-+			count += length;
-+
-+			ret = fpga_mgr_write(mgr, miter.addr + offset, length);
-+			if (ret || count == data_size)
- 				break;
-+
-+			offset = 0;
- 		}
- 		sg_miter_stop(&miter);
- 	}
-@@ -266,6 +333,19 @@ static int fpga_mgr_buf_load_mapped(struct fpga_manager *mgr,
- 	if (ret)
- 		return ret;
- 
-+	if (info->header_size + info->data_size > count) {
-+		dev_err(&mgr->dev, "Bitsream data outruns FPGA image\n");
-+		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-+		return -EINVAL;
-+	}
-+
-+	if (info->data_size)
-+		count = info->data_size;
-+	else
-+		count -= info->header_size;
-+
-+	buf += info->header_size;
-+
- 	/*
- 	 * Write the FPGA image to the FPGA.
- 	 */
-diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
-index 0f9468771bb9..a49b97bccfa2 100644
---- a/include/linux/fpga/fpga-mgr.h
-+++ b/include/linux/fpga/fpga-mgr.h
-@@ -85,6 +85,8 @@ enum fpga_mgr_states {
-  * @sgt: scatter/gather table containing FPGA image
-  * @buf: contiguous buffer containing FPGA image
-  * @count: size of buf
-+ * @header_size: offset in image buffer where bitstream data starts
-+ * @data_size: size of bitstream. If 0, (count - header_size) will be used.
-  * @region_id: id of target region
-  * @dev: device that owns this
-  * @overlay: Device Tree overlay
-@@ -98,6 +100,8 @@ struct fpga_image_info {
- 	struct sg_table *sgt;
- 	const char *buf;
- 	size_t count;
-+	size_t header_size;
-+	size_t data_size;
- 	int region_id;
- 	struct device *dev;
- #ifdef CONFIG_OF
-@@ -137,9 +141,13 @@ struct fpga_manager_info {
- 
- /**
-  * struct fpga_manager_ops - ops for low level fpga manager drivers
-- * @initial_header_size: Maximum number of bytes that should be passed into write_init
-+ * @initial_header_size: minimum number of bytes that should be passed into
-+ *	parse_header and write_init.
-  * @state: returns an enum value of the FPGA's state
-  * @status: returns status of the FPGA, including reconfiguration error code
-+ * @parse_header: parse FPGA image header to set info->header_size and
-+ *	info->data_size. In case the input buffer is not large enough, set
-+ *	requierd size to info->header_size and return -EAGAIN.
-  * @write_init: prepare the FPGA to receive configuration data
-  * @write: write count bytes of configuration data to the FPGA
-  * @write_sg: write the scatter list of configuration data to the FPGA
-@@ -155,6 +163,9 @@ struct fpga_manager_ops {
- 	size_t initial_header_size;
- 	enum fpga_mgr_states (*state)(struct fpga_manager *mgr);
- 	u64 (*status)(struct fpga_manager *mgr);
-+	int (*parse_header)(struct fpga_manager *mgr,
-+			    struct fpga_image_info *info,
-+			    const char *buf, size_t count);
- 	int (*write_init)(struct fpga_manager *mgr,
- 			  struct fpga_image_info *info,
- 			  const char *buf, size_t count);
--- 
-2.35.1
-
+-Jon
 
