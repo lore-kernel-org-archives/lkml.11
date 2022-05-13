@@ -2,85 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B264C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:58:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:04:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379164AbiEMJ62 (ORCPT
+        id S1378941AbiEMKEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
+        Fri, 13 May 2022 06:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379240AbiEMJ6Y (ORCPT
+        with ESMTP id S229458AbiEMKEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:58:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7EB2A9CCD;
-        Fri, 13 May 2022 02:58:23 -0700 (PDT)
+        Fri, 13 May 2022 06:04:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC865DA31
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 03:04:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0128362212;
-        Fri, 13 May 2022 09:58:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1B15C34100;
-        Fri, 13 May 2022 09:58:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652435902;
-        bh=geXCIWlkv+OlijzBTHXYxcV6pNiY0Up+Vp3bfhyaJJU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aH1Dfntm87x1wiZBLLaTYTEEDS0pFYEPM9XGeAJDbpIGPy93alwWKx0qA7fMShBJ7
-         L6pZ98Pa7wdLEUkiolkgot55ptGmQPqsrAT9VfNbJMTSqRaCJBqN/xRQCMiz/14KXY
-         t+MkFBI+A4ZWYENR+pG9DkF499tfT8YdlkUgN7OsjUnwU+iWfMi2E9ryi4/qg5mm2I
-         tqAe6oD5h3ko1mHVAlrs6oyaTBOW8N/Cq6fcvuCU0nqigE6YOuku9ZDtzjQxTJwU1Q
-         ReGP3jNzoYLV1m5S8WB1tbO+2zzAIx1whsfhojPU13Fc/75kJDGbqO5WFBxqO7rU3y
-         aOFeKr897J43A==
-Date:   Fri, 13 May 2022 11:58:17 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Miklos Szeredi <miklos@szeredi.hu>,
-        Amir Goldstein <amir73il@gmail.com>
-Cc:     Simon Ser <contact@emersion.fr>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
-Subject: Re: procfs: open("/proc/self/fd/...") allows bypassing O_RDONLY
-Message-ID: <20220513095817.622gcrgx3fffwk4h@wittgenstein>
-References: <lGo7a4qQABKb-u_xsz6p-QtLIy2bzciBLTUJ7-ksv7ppK3mRrJhXqFmCFU4AtQf6EyrZUrYuSLDMBHEUMe5st_iT9VcRuyYPMU_jVpSzoWg=@emersion.fr>
- <03l0hfZIzD9KwSxSntGcmfFhvbIKiK45poGUhXtR7Qi0Av0-ZnqnSBPAP09GGpSrKGZWZNCTvme_Gpiuz0Bcg6ewDIXSH24SBx_tvfyZSWU=@emersion.fr>
- <CAJfpegs4GVirNVtf4OqunzNwbXQywZVkxpGPtpN=ZonHU2SpiA@mail.gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 906FFB82D69
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:04:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B1EC34113;
+        Fri, 13 May 2022 10:04:28 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="o456yJyb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1652436267;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7N6xB4W6thqhcdDfV4PV2FXKnzYMTtVOVwyux6OehkY=;
+        b=o456yJybAwDr76wPvhcATttE/rOtmbhc00u1hq6MoEYo621wVNvBnLGFk0nVszOj9xU/7j
+        qJcHRUOOQJoUpsQgtwImiiLmtbEwjvaGUHp+83yDazhqftj+B6FsIr+NRk3vWPJM+IY1Qv
+        RlYr0KTDrQGNqzf+xyg+FBfBoDyAkIo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b32beb18 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 13 May 2022 10:04:26 +0000 (UTC)
+Date:   Fri, 13 May 2022 12:04:24 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Dominik Brodowski <linux@dominikbrodowski.net>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] random: handle latent entropy and command line from
+ random_init()
+Message-ID: <Yn4tKA3VqJVeV9KH@zx2c4.com>
+References: <20220512124839.20755-1-Jason@zx2c4.com>
+ <Yn34RROzSQtHP/rZ@owl.dominikbrodowski.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAJfpegs4GVirNVtf4OqunzNwbXQywZVkxpGPtpN=ZonHU2SpiA@mail.gmail.com>
+In-Reply-To: <Yn34RROzSQtHP/rZ@owl.dominikbrodowski.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 02:56:22PM +0200, Miklos Szeredi wrote:
-> On Thu, 12 May 2022 at 14:41, Simon Ser <contact@emersion.fr> wrote:
-> >
-> > On Thursday, May 12th, 2022 at 12:37, Simon Ser <contact@emersion.fr> wrote:
-> >
-> > > what would be a good way to share a FD to another
-> > > process without allowing it to write to the underlying file?
-> >
-> > (I'm reminded that memfd + seals exist for this purpose. Still, I'd be
-> > interested to know whether that O_RDONLY/O_RDWR behavior is intended,
-> > because it's pretty surprising. The motivation for using O_RDONLY over
-> > memfd seals is that it isn't Linux-specific.)
+On Fri, May 13, 2022 at 08:18:45AM +0200, Dominik Brodowski wrote:
+> > -static inline void add_latent_entropy(void) {}
+> > +static inline void add_latent_entropy(void) { }
 > 
-> Yes, this is intended.   The /proc/$PID/fd/$FD file represents the
-> inode pointed to by $FD.   So the open flags for $FD are irrelevant
-> when operating on the proc fd file.
+> Stray change here, which doesn't seem necessary...
 
-Fwiw, the original openat2() patchset contained upgrade masks which we
-decided to split it out into a separate patchset.
+Will remove from this commit. I plan to cleanup random.h anyway and
+might change it back then.
 
-The idea is that struct open_how would be extended with an upgrade mask
-field which allows the opener to specify with which permissions a file
-descriptor is allowed to be re-opened. This has quite a lot of
-use-cases, especially in container runtimes. So one could open an fd and
-restrict it from being re-opened with O_WRONLY. For container runtimes
-this is a huge security win and for userspace in general it would
-provide a backwards compatible way of e.g., making O_PATH fds
-non-upgradable. The plan is to resend the extension at some point in the
-not too distant future.
-
-Christian
+Jason
