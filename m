@@ -2,189 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CACB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59526C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381098AbiEMOcE (ORCPT
+        id S1381138AbiEMOcO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
+        Fri, 13 May 2022 10:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380874AbiEMO1c (ORCPT
+        with ESMTP id S1380950AbiEMO1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:27:32 -0400
+        Fri, 13 May 2022 10:27:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A2152B03;
-        Fri, 13 May 2022 07:27:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D16951E5B;
+        Fri, 13 May 2022 07:27:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5AC7B82C9D;
-        Fri, 13 May 2022 14:27:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15710C34118;
-        Fri, 13 May 2022 14:27:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EF62B82C9D;
+        Fri, 13 May 2022 14:27:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D9EC34100;
+        Fri, 13 May 2022 14:27:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452036;
-        bh=pcIxy5YNkTrj36jxGeFlMJcSFdAeZ1inj3nyLG9iOOs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dr2rLjngEFZFw3t4ODccsavAgPyrDRn+0aCJAJTDd/VRoAo2n9k0y5oehWvdHXz6P
-         rOhJMSrIrcHQHfS5/jAIbPuO51XMWlJqB43/zH6cIJ5d7QlN4FG3qz1yyrZ6qMSFAq
-         4U3eFeo/tJZle0ANpnpc2yWkj7/8zW3h9GgeVogU=
+        s=korg; t=1652452046;
+        bh=YlDEhlXBGYtbdJUL3Q03K95zPl+30yat+t0Bqzl5I2o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=p4Mrgb1CWrj0dhvRk4GSXKILfzZe/FwVKXl2HqFkqT4S2ofZ9zrsarr0X2hQ1daNQ
+         S4noEaRJdcaCN7H4xQWgOojv2kd6w5cALTarO1g3QtUlXzf1YioHUWPXBibmmMpIwr
+         /W1TS8l3iIHQe6/U2ric5tifPxh7i8Rms4QJS+3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.4 00/18] 5.4.194-rc1 review
-Date:   Fri, 13 May 2022 16:23:26 +0200
-Message-Id: <20220513142229.153291230@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.10 02/10] regulator: consumer: Add missing stubs to regulator/consumer.h
+Date:   Fri, 13 May 2022 16:23:46 +0200
+Message-Id: <20220513142228.377014996@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220513142228.303546319@linuxfoundation.org>
+References: <20220513142228.303546319@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.194-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.4.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.4.194-rc1
-X-KernelTest-Deadline: 2022-05-15T14:22+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.4.194 release.
-There are 18 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Dmitry Osipenko <digetx@gmail.com>
 
-Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
-Anything received after that time might be too late.
+commit 51dfb6ca3728bd0a0a3c23776a12d2a15a1d2457 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.194-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-and the diffstat can be found below.
+Add missing stubs to regulator/consumer.h in order to fix COMPILE_TEST
+of the kernel. In particular this should fix compile-testing of OPP core
+because of a missing stub for regulator_sync_voltage().
 
-thanks,
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Link: https://lore.kernel.org/r/20210120205844.12658-1-digetx@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: Bjørn Mork <bjorn@mork.no>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/regulator/consumer.h |   30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.4.194-rc1
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: fix missing cache flush for all tail pages of compound page
-
-Itay Iellin <ieitayie@gmail.com>
-    Bluetooth: Fix the creation of hdev->name
-
-Kyle Huey <me@kylehuey.com>
-    KVM: x86/svm: Account for family 17h event renumberings in amd_pmc_perf_hw_id
-
-Masami Hiramatsu <mhiramat@kernel.org>
-    x86: kprobes: Prohibit probing on instruction which has emulate prefix
-
-Masami Hiramatsu <mhiramat@kernel.org>
-    x86: xen: insn: Decode Xen and KVM emulate-prefix signature
-
-Masami Hiramatsu <mhiramat@kernel.org>
-    x86: xen: kvm: Gather the definition of emulate prefixes
-
-Masami Hiramatsu <mhiramat@kernel.org>
-    x86/asm: Allow to pass macros to __ASM_FORM()
-
-Like Xu <likexu@tencent.com>
-    KVM: x86/pmu: Refactoring find_arch_event() to pmc_perf_hw_id()
-
-Mike Rapoport <rppt@linux.ibm.com>
-    arm: remove CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
-
-Andreas Larsson <andreas@gaisler.com>
-    can: grcan: only use the NAPI poll budget for RX
-
-Andreas Larsson <andreas@gaisler.com>
-    can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
-
-Nathan Chancellor <nathan@kernel.org>
-    nfp: bpf: silence bitwise vs. logical OR warning
-
-Nathan Chancellor <natechancellor@gmail.com>
-    drm/i915: Cast remain to unsigned long in eb_relocate_vma
-
-Lee Jones <lee.jones@linaro.org>
-    drm/amd/display/dc/gpio/gpio_service: Pass around correct dce_{version, environment} types
-
-Lee Jones <lee.jones@linaro.org>
-    block: drbd: drbd_nl: Make conversion to 'enum drbd_ret_code' explicit
-
-Nathan Chancellor <natechancellor@gmail.com>
-    MIPS: Use address-of operator on section symbols
-
-
--------------
-
-Diffstat:
-
- Documentation/vm/memory-model.rst                  |  3 +-
- Makefile                                           |  4 +--
- arch/arm/Kconfig                                   |  8 ++---
- arch/arm/mach-bcm/Kconfig                          |  1 -
- arch/arm/mach-davinci/Kconfig                      |  1 -
- arch/arm/mach-exynos/Kconfig                       |  1 -
- arch/arm/mach-highbank/Kconfig                     |  1 -
- arch/arm/mach-omap2/Kconfig                        |  2 +-
- arch/arm/mach-s5pv210/Kconfig                      |  1 -
- arch/arm/mach-tango/Kconfig                        |  1 -
- arch/mips/bmips/setup.c                            |  2 +-
- arch/mips/lantiq/prom.c                            |  2 +-
- arch/mips/pic32/pic32mzda/init.c                   |  2 +-
- arch/mips/ralink/of.c                              |  2 +-
- arch/x86/include/asm/asm.h                         |  8 +++--
- arch/x86/include/asm/emulate_prefix.h              | 14 ++++++++
- arch/x86/include/asm/insn.h                        |  6 ++++
- arch/x86/include/asm/xen/interface.h               | 11 +++----
- arch/x86/kernel/kprobes/core.c                     |  4 +++
- arch/x86/kvm/pmu.c                                 |  8 +----
- arch/x86/kvm/pmu.h                                 |  3 +-
- arch/x86/kvm/pmu_amd.c                             | 36 ++++++++++++++++----
- arch/x86/kvm/vmx/pmu_intel.c                       |  9 ++---
- arch/x86/kvm/x86.c                                 |  4 ++-
- arch/x86/lib/insn.c                                | 34 +++++++++++++++++++
- drivers/block/drbd/drbd_nl.c                       | 13 +++++---
- drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c | 12 +++----
- .../amd/display/include/gpio_service_interface.h   |  4 +--
- drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c     |  2 +-
- drivers/net/can/grcan.c                            | 38 ++++++++++------------
- drivers/net/ethernet/netronome/nfp/nfp_asm.c       |  4 +--
- fs/proc/kcore.c                                    |  2 --
- include/linux/mmzone.h                             | 31 ------------------
- include/net/bluetooth/hci_core.h                   |  3 ++
- mm/memory.c                                        |  2 ++
- mm/migrate.c                                       |  7 ++--
- mm/mmzone.c                                        | 14 --------
- mm/userfaultfd.c                                   |  3 ++
- mm/vmstat.c                                        |  4 ---
- net/bluetooth/hci_core.c                           |  6 ++--
- tools/arch/x86/include/asm/emulate_prefix.h        | 14 ++++++++
- tools/arch/x86/include/asm/insn.h                  |  6 ++++
- tools/arch/x86/lib/insn.c                          | 34 +++++++++++++++++++
- tools/objtool/sync-check.sh                        |  3 +-
- tools/perf/check-headers.sh                        |  3 +-
- 45 files changed, 227 insertions(+), 146 deletions(-)
+--- a/include/linux/regulator/consumer.h
++++ b/include/linux/regulator/consumer.h
+@@ -332,6 +332,12 @@ regulator_get_exclusive(struct device *d
+ }
+ 
+ static inline struct regulator *__must_check
++devm_regulator_get_exclusive(struct device *dev, const char *id)
++{
++	return ERR_PTR(-ENODEV);
++}
++
++static inline struct regulator *__must_check
+ regulator_get_optional(struct device *dev, const char *id)
+ {
+ 	return ERR_PTR(-ENODEV);
+@@ -486,6 +492,11 @@ static inline int regulator_get_voltage(
+ 	return -EINVAL;
+ }
+ 
++static inline int regulator_sync_voltage(struct regulator *regulator)
++{
++	return -EINVAL;
++}
++
+ static inline int regulator_is_supported_voltage(struct regulator *regulator,
+ 				   int min_uV, int max_uV)
+ {
+@@ -578,6 +589,25 @@ static inline int devm_regulator_unregis
+ 	return 0;
+ }
+ 
++static inline int regulator_suspend_enable(struct regulator_dev *rdev,
++					   suspend_state_t state)
++{
++	return -EINVAL;
++}
++
++static inline int regulator_suspend_disable(struct regulator_dev *rdev,
++					    suspend_state_t state)
++{
++	return -EINVAL;
++}
++
++static inline int regulator_set_suspend_voltage(struct regulator *regulator,
++						int min_uV, int max_uV,
++						suspend_state_t state)
++{
++	return -EINVAL;
++}
++
+ static inline void *regulator_get_drvdata(struct regulator *regulator)
+ {
+ 	return NULL;
 
 
