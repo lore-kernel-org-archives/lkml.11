@@ -2,94 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D178C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 02:43:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 02:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376535AbiEMCnb (ORCPT
+        id S1376570AbiEMCng (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 22:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58314 "EHLO
+        Thu, 12 May 2022 22:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355770AbiEMCn2 (ORCPT
+        with ESMTP id S1376539AbiEMCnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 22:43:28 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0285A4EA2B
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 19:43:27 -0700 (PDT)
+        Thu, 12 May 2022 22:43:32 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C270E52B0B
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 19:43:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652409807; x=1683945807;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=l3BCk6lW9ybCyFfKvlLTHJ6W4VLheEvqw3Z+jvigiF4=;
-  b=O+dvmgYNzL1fn7wMYPuIB8Y/Qjj96qJq7K83nE4WbD9fuexMeG1d4tvF
-   xn7L5aM965ktikCvLWfLx27P32l5audgduZIh/QdrmgarrYhUq2Qt4bVb
-   00PxiOrCVubqvdT0x16/cxi104w86/b9SZIsTu4xkliHrQJsp+kw6kwB5
-   KD+oBrcBGTtMgBogLyXZcETrCMOJJaO1oOWo3SfVNFv/H7h+T7KDpt5yx
-   UyKZ+pvJDWsGorgvIykrznaiQuVn8FiNj82KLkptmMmEDu0X7fS+S/xUD
-   h+E8z9fsfyrChuwsVdaRMAsswuFgn1wEcqJmlLGp2Ja4Ho6qgtmNXc0S3
+  t=1652409810; x=1683945810;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+cUtYQK4Km2C++rGq/ah79HG9mDpGf2y1yRstGxDmSo=;
+  b=FwEJtlF+S7TN5FFzpbJjdgpGGPkoL/l3VZTOzV1FZx5AR8JlNAxOMJnR
+   Y/eogD/Xk+wTMKdLBY+GzmUoIQDEDXCkoTQL6PrR9A2aHq+X18qk8edG0
+   1qQu3Kd/Ohv3tjEDQQ4W17KwBczWEkOKcTPKQC8Z6d1zeRad877TrovVJ
+   WlMpSnxh5uizFHtSfFKVdCugG/916eH4cAcjEZ9vkheB32rlCqxpCZEaZ
+   GDCxBzdI+jtuOTVlVvNTRQeymTSMBJmiv+iOP4KG48Xz0uWI2vMN8U28K
+   l5GO152vkhfpRHdbow2p6cLh8CEXJpiilpXkNZGK964EzaFNYZ5A6ufI2
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="270329513"
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="333230777"
 X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="270329513"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 19:43:27 -0700
+   d="scan'208";a="333230777"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 19:43:30 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="739975544"
+   d="scan'208";a="566987110"
 Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 12 May 2022 19:43:25 -0700
+  by orsmga007.jf.intel.com with ESMTP; 12 May 2022 19:43:26 -0700
 Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1npLH3-000LCu-9n;
+        id 1npLH3-000LCz-Bl;
         Fri, 13 May 2022 02:43:25 +0000
-Date:   Fri, 13 May 2022 10:42:48 +0800
+Date:   Fri, 13 May 2022 10:43:03 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Nick Terrell <terrelln@fb.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: ERROR: modpost: "__st_r13_to_r18" [lib/zstd/zstd_decompress.ko]
- undefined!
-Message-ID: <202205131059.nbXxnXaV-lkp@intel.com>
+To:     yf.wang@mediatek.com, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+        Georgi Djakov <quic_c_gdjako@quicinc.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        "moderated list:ARM SMMU DRIVERS" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Cc:     kbuild-all@lists.01.org, wsd_upstream@mediatek.com,
+        Libo Kang <Libo.Kang@mediatek.com>,
+        Yong Wu <Yong.Wu@mediatek.com>, Ning Li <ning.li@mediatek.com>
+Subject: Re: [PATCH v3 1/2] iommu/io-pgtable-arm-v7s: Add a quirk to allow
+ pgtable PA up to 35bit
+Message-ID: <202205131021.3GskEbg2-lkp@intel.com>
+References: <20220512144557.18025-2-yf.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220512144557.18025-2-yf.wang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   f3f19f939c11925dadd3f4776f99f8c278a7017b
-commit: 7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8 lib: zstd: Don't add -O3 to cflags
-date:   6 months ago
-config: arc-randconfig-r015-20220512 (https://download.01.org/0day-ci/archive/20220513/202205131059.nbXxnXaV-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
+Hi,
+
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on arm-perf/for-next/perf]
+[also build test WARNING on linus/master v5.18-rc6]
+[cannot apply to joro-iommu/next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/yf-wang-mediatek-com/iommu-io-pgtable-arm-v7s-Add-a-quirk-to-allow-pgtable-PA-up-to-35bit/20220512-234603
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-next/perf
+config: arm-qcom_defconfig (https://download.01.org/0day-ci/archive/20220513/202205131021.3GskEbg2-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8
+        # https://github.com/intel-lab-lkp/linux/commit/916a5fc41cbb8ddfe343193598f250d06b09e3fa
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review yf-wang-mediatek-com/iommu-io-pgtable-arm-v7s-Add-a-quirk-to-allow-pgtable-PA-up-to-35bit/20220512-234603
+        git checkout 916a5fc41cbb8ddfe343193598f250d06b09e3fa
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/iommu/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+All warnings (new ones prefixed by >>):
 
->> ERROR: modpost: "__st_r13_to_r18" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__ld_r13_to_r18_ret" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__ld_r13_to_r24_ret" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__st_r13_to_r23" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__st_r13_to_r19" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__st_r13_to_r21" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__ld_r13_to_r17_ret" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__st_r13_to_r24" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__ld_r13_to_r19_ret" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__ld_r13_to_r21_ret" [lib/zstd/zstd_decompress.ko] undefined!
-WARNING: modpost: suppressed 2 unresolved symbol warnings because there were too many)
+   In file included from include/linux/ratelimit_types.h:5,
+                    from include/linux/ratelimit.h:5,
+                    from include/linux/dev_printk.h:16,
+                    from include/linux/device.h:15,
+                    from include/linux/dma-mapping.h:7,
+                    from drivers/iommu/io-pgtable-arm-v7s.c:25:
+   drivers/iommu/io-pgtable-arm-v7s.c: In function 'arm_v7s_alloc_pgtable':
+   include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
+      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
+         |                             ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/iommu/io-pgtable-arm-v7s.c:154:46: note: in expansion of macro 'GENMASK'
+     154 |         ((ttbr & ((u32)(~0U << 3))) | ((pa & GENMASK(34, 32)) >> 32))
+         |                                              ^~~~~~~
+   drivers/iommu/io-pgtable-arm-v7s.c:886:25: note: in expansion of macro 'ARM_V7S_TTBR_35BIT_PA'
+     886 |                         ARM_V7S_TTBR_35BIT_PA(cfg->arm_v7s_cfg.ttbr, paddr);
+         |                         ^~~~~~~~~~~~~~~~~~~~~
+   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
+      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+         |                  ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/iommu/io-pgtable-arm-v7s.c:154:46: note: in expansion of macro 'GENMASK'
+     154 |         ((ttbr & ((u32)(~0U << 3))) | ((pa & GENMASK(34, 32)) >> 32))
+         |                                              ^~~~~~~
+   drivers/iommu/io-pgtable-arm-v7s.c:886:25: note: in expansion of macro 'ARM_V7S_TTBR_35BIT_PA'
+     886 |                         ARM_V7S_TTBR_35BIT_PA(cfg->arm_v7s_cfg.ttbr, paddr);
+         |                         ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/iommu/io-pgtable-arm-v7s.c:154:63: warning: right shift count >= width of type [-Wshift-count-overflow]
+     154 |         ((ttbr & ((u32)(~0U << 3))) | ((pa & GENMASK(34, 32)) >> 32))
+         |                                                               ^~
+   drivers/iommu/io-pgtable-arm-v7s.c:886:25: note: in expansion of macro 'ARM_V7S_TTBR_35BIT_PA'
+     886 |                         ARM_V7S_TTBR_35BIT_PA(cfg->arm_v7s_cfg.ttbr, paddr);
+         |                         ^~~~~~~~~~~~~~~~~~~~~
+
+
+vim +154 drivers/iommu/io-pgtable-arm-v7s.c
+
+   145	
+   146	#define ARM_V7S_TTBR_S			BIT(1)
+   147	#define ARM_V7S_TTBR_NOS		BIT(5)
+   148	#define ARM_V7S_TTBR_ORGN_ATTR(attr)	(((attr) & 0x3) << 3)
+   149	#define ARM_V7S_TTBR_IRGN_ATTR(attr)					\
+   150		((((attr) & 0x1) << 6) | (((attr) & 0x2) >> 1))
+   151	
+   152	/* Mediatek extend ttbr bits[2:0] for PA bits[34:32] */
+   153	#define ARM_V7S_TTBR_35BIT_PA(ttbr, pa)					\
+ > 154		((ttbr & ((u32)(~0U << 3))) | ((pa & GENMASK(34, 32)) >> 32))
+   155	
 
 -- 
 0-DAY CI Kernel Test Service
