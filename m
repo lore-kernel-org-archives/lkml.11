@@ -2,137 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37911C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 01:00:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D1DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 01:01:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359849AbiEMBAu (ORCPT
+        id S1376268AbiEMBB0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 21:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60660 "EHLO
+        Thu, 12 May 2022 21:01:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359829AbiEMBAm (ORCPT
+        with ESMTP id S1376259AbiEMBBD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 21:00:42 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FA1111;
-        Thu, 12 May 2022 18:00:40 -0700 (PDT)
+        Thu, 12 May 2022 21:01:03 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740EF2CDDF
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 18:00:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652403640; x=1683939640;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a+1Fqogl6MRxCjd5uyzI3/s5nb7F3MKz0w+tdYBiDPk=;
-  b=OmX+wI+5AJDMrbystAAwy0A1NGM7/L9FcFjZf+Q+YyA4CdyDO7DoiIZX
-   IjJOX7o8QGDWa2uqO/fR3Oz8iZpXXvyzjUe1VFSUbc5lJyMP+GZi2QYnv
-   efI+y21O77sLU9OdAZ34EcPbtRjYTtKY9qcXo50ikd1MZBdCoHIjxwh7F
-   B4hQ0p5pKIIvUmVUEv/K8a/dRz+54bqhiS+vGogQWZE+lVC0YhCvHgn81
-   scXzbv45z3PdliTPWbqq4TqVmJsP/pCqO/O+Vi56MG1DxEM/Z1+afxJRJ
-   grR4KeHPe1Hexjf6x5HJfMJMoDbz2h8z6xfcMsxQ46TRgawTklNXdCP8m
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="269014047"
+  t=1652403657; x=1683939657;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EHcERrF0j/OvQc+pqRKI7/bHYA2rsQ4m4GRL6qj0iQU=;
+  b=e+aGAY2Jfq7D0eLwnIWQWpQifU5WDbKXfG5ptEWhx3L66oZXjDkM1P/i
+   lRoIvEL+EW+DLuoEreHDchyTJEK9nIt+eVeJ9DtCAslo0F2qczovrRybK
+   3ivFqdnwB+nTq0NmzHrDwts6EV5ih80hherYh9y+N1OVkgkDGawzaJZm0
+   yGJhF8r+ELL1Mjgz6QZ1ccgX+uOiQcYRV+qWyeoezGY7L2gQFsAqXVDSI
+   aL/jf7RC4t6hhrFbi2P4Kpym1a1yv7o0txNpFEBR1F6wQFRB4/3UW7nub
+   hIStEW7dsnYyoB21xNY9zyTl+TfvbKT+4njk4KI2ctXVY/R5QkPNeDHuc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="295436727"
 X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="269014047"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 18:00:27 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="295436727"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 18:00:53 -0700
 X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="603623377"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 12 May 2022 18:00:24 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npJfH-000L7m-5u;
-        Fri, 13 May 2022 01:00:19 +0000
-Date:   Fri, 13 May 2022 09:00:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>, jic23@kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
-        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH V5 3/5] iio: accel: sca3300: modified to support multi
- chips
-Message-ID: <202205130824.ObRAkagG-lkp@intel.com>
-References: <20220512160312.3880433-4-Qing-wu.Li@leica-geosystems.com.cn>
+   d="scan'208";a="566956523"
+Received: from jainamit-mobl.amr.corp.intel.com (HELO [10.212.194.29]) ([10.212.194.29])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 18:00:52 -0700
+Message-ID: <54dc371f-27ed-1b24-1e16-d80c01322f4a@linux.intel.com>
+Date:   Thu, 12 May 2022 20:00:51 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220512160312.3880433-4-Qing-wu.Li@leica-geosystems.com.cn>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: kismet: WARNING: unmet direct dependencies detected for
+ SND_SOC_RT1015P when selected by SND_SOC_INTEL_SOF_RT5682_MACH
+Content-Language: en-US
+To:     kernel test robot <yujie.liu@intel.com>
+Cc:     kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        paul@pgazz.com, fazilyildiran@gmail.com,
+        Mark Brown <broonie@kernel.org>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>
+References: <202205112305.8RPNXfIy-lkp@intel.com>
+ <d637dacd-4afc-81b7-7776-c298c87c94ac@intel.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <d637dacd-4afc-81b7-7776-c298c87c94ac@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi LI,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on v5.18-rc6 next-20220512]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/LI-Qingwu/iio-accel-sca3300-add-compatible-for-scl3300/20220513-000857
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-config: hexagon-randconfig-r041-20220512 (https://download.01.org/0day-ci/archive/20220513/202205130824.ObRAkagG-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 9519dacab7b8afd537811fc2abaceb4d14f4e16a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/15579266e58d7cdf4ff8e7ad7a4fa30a0bd3a589
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review LI-Qingwu/iio-accel-sca3300-add-compatible-for-scl3300/20220513-000857
-        git checkout 15579266e58d7cdf4ff8e7ad7a4fa30a0bd3a589
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/iio/accel/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/iio/accel/sca3300.c:288:54: warning: & has lower precedence than ==; == will be evaluated first [-Wparentheses]
-                   if (sca_data->chip->avail_modes_table[i] == reg_val&0x03)
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-   drivers/iio/accel/sca3300.c:288:54: note: place parentheses around the '==' expression to silence this warning
-                   if (sca_data->chip->avail_modes_table[i] == reg_val&0x03)
-                                                                      ^
-                       (                                              )
-   drivers/iio/accel/sca3300.c:288:54: note: place parentheses around the & expression to evaluate it first
-                   if (sca_data->chip->avail_modes_table[i] == reg_val&0x03)
-                                                                      ^
-                                                               (           )
-   1 warning generated.
 
 
-vim +288 drivers/iio/accel/sca3300.c
+On 5/12/22 11:57, kernel test robot wrote:
+> tree:  
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   feb9c5e19e913b53cb536a7aa7c9f20107bb51ec
+> commit: 32666b866f55a224d2f07f83594fcf37a922b6c9 ASoC: Intel: boards:
+> remove explicit dependency on GPIOLIB when DMIC is used"
+> date:   9 weeks ago
+> config: (attached as .config)
+> reproduce:
+>         #
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=32666b866f55a224d2f07f83594fcf37a922b6c9
+> 
+>         git remote add linus
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 32666b866f55a224d2f07f83594fcf37a922b6c9
+>         # 1. reproduce by kismet
+>            # install kmax per https://github.com/paulgazz/kmax/README.md
+>            kismet --linux-ksrc=linux --selectees CONFIG_SND_SOC_RT1015P
+> --selectors CONFIG_SND_SOC_INTEL_SOF_RT5682_MACH -a=x86_64
+>         # 2. reproduce by make
+>            # save the config file to linux source tree
+>            cd linux
+>            make ARCH=x86_64 olddefconfig
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <yujie.liu@intel.com>
+> 
+> 
+> kismet warnings: (new ones prefixed by >>)
+>>> kismet: WARNING: unmet direct dependencies detected for
+> SND_SOC_RT1015P when selected by SND_SOC_INTEL_SOF_RT5682_MACH
+> 
+>    WARNING: unmet direct dependencies detected for SND_SOC_RT1015P
+>      Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] &&
+> GPIOLIB [=n]
+>      Selected by [y]:
+>      - SND_SOC_INTEL_SOF_RT5682_MACH [=y] && SOUND [=y] && !UML && SND
+> [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] && (SND_SOC_SOF_HDA_LINK
+> [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C [=y] && ACPI [=y] &&
+> (SND_HDA_CODEC_HDMI [=y] && SND_SOC_SOF_HDA_AUDIO_CODEC [=y] &&
+> (MFD_INTEL_LPSS [=y] || COMPILE_TEST [=y]) || SND_SOC_SOF_BAYTRAIL [=n]
+> && (X86_INTEL_LPSS [=n] || COMPILE_TEST [=y]))
 
-   276	
-   277	static int sca3300_get_op_mode(struct sca3300_data *sca_data, int *index)
-   278	{
-   279		int reg_val;
-   280		int ret;
-   281		int i;
-   282	
-   283		ret = sca3300_read_reg(sca_data, SCA3300_REG_MODE, &reg_val);
-   284		if (ret)
-   285			return ret;
-   286	
-   287		for (i = 0; i < sca_data->chip->num_avail_modes; i++) {
- > 288			if (sca_data->chip->avail_modes_table[i] == reg_val&0x03)
-   289				break;
-   290		}
-   291	
-   292		if (i >= sca_data->chip->num_avail_modes)
-   293			return -EINVAL;
-   294	
-   295		*index = i;
-   296		return 0;
-   297	}
-   298	
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+This seems to be a generic problem in codecs to use 'depends on GPIOLIB'
+even when the gpio is optional
+
+I'll send another patch for this.
