@@ -2,95 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 23:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4869AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 23:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233366AbiEMXOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 19:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51558 "EHLO
+        id S234463AbiEMXOn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 19:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiEMXOe (ORCPT
+        with ESMTP id S229572AbiEMXOg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 19:14:34 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A093320CB5
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:14:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652483661; x=1684019661;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+wjfqOqIYe6TZTMHFU68r4+WktU+l0Y6oPd5aHItbaM=;
-  b=Mah62wU8ASEQE1z70AZpSnzFUBLvtPJuqVJ3Mt1gQrhJ0/84a7PfWviq
-   Z/PSEKxIFaRpTOhB0xC5aLD03avu4vapzKtH79L4cD1wh/t3ZnrSgQ0rP
-   v45JYY77S8659Q+VqAMwPf/+bAs+/6Li/f2cAYa5GfWX5OnILlnGJffFh
-   00ZcySfLIbavc65EiwxIlsF99jcxopppAk5zo4b8gO1ax9AdUwIMgqARZ
-   7f6TSfcLqohQjZgg/tBnxCVy7jorN7GYBiW6r+2CamyYfi8PXEc2/3fyO
-   its2hLyPXkNvRBXEt0whNg4jnnjGctQJbR+fQ/hcNlOeLmuJBAZxITPTe
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="356855218"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="356855218"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 16:14:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="815594245"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by fmsmga006.fm.intel.com with ESMTP; 13 May 2022 16:14:19 -0700
-Date:   Fri, 13 May 2022 16:17:54 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Nicholas Piggin <npiggin@gmail.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Andi Kleen <ak@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        Tony Luck <tony.luck@intel.com>
-Subject: Re: [PATCH v6 24/29] watchdog/hardlockup: Use parse_option_str() to
- handle "nmi_watchdog"
-Message-ID: <20220513231754.GB9074@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-25-ricardo.neri-calderon@linux.intel.com>
- <1652179333.fnu2fjiffn.astroid@bobo.none>
+        Fri, 13 May 2022 19:14:36 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C016D3211D1
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:14:22 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id e12so17669482ybc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uJjCKmIV0+PUlw1yN8LzGGtdpY7JQRJT83F9A+chaFQ=;
+        b=THiP8XlKeuATd+sFBtOcYrkM4vfQtgO4vnzZ0czrpsdPkpjchMTT4P/obyYS2u/Ph0
+         +d4NGAg/jxClzjL8HVJs1YAUDTNGgJWRecVdDws5TTDi+gv0iwTmpz+MkqCaUpeAV5AA
+         yF3lhT3KSxCLDQJ9FmJNtviqrwf/aWE8xllwdNkP73HSFcu2JxZfzQwraA3ZMJaktL2/
+         OkzTNpuZEQcIWaejl7sk/YJRrshWH/IN8sd7qW08KjeWOtRqJdYH5DbIBGNlQDidczW+
+         6kEBBpSeOhUtIg4JxlmhyKAglB0MmRs+oQnBntEgiBPniHirdlTfg443BTKKz6xnZr/V
+         JO8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uJjCKmIV0+PUlw1yN8LzGGtdpY7JQRJT83F9A+chaFQ=;
+        b=13ZeXUy47Vx5YHYM5y7zFje5K2yafsmjcOrYYvosCjXUTdYiRtdluo4C9d2yihgk6M
+         DjVS1NkJnhOwP7Y3K+arFywG5Ayk4Xxvd+e+UVWTVapA79R+YIBuW4bobIuQ3u41KDq7
+         7wFFpgE135CGBcocKnWNXzXwC5vcviY4d8w6Eog+2jPQaOroaLt45zAQDowTYNPBTotv
+         gxOC6QM0I6A8+Pl+09slutlNRYTCzK5q7z+4zD6Xgj/arKcF6dMfhDdlS6wMAQB/a38X
+         qYy2d+WESjzxCUabUaW4DIYlo4fnY5Jr+mE1aygtBTG1HzLR/1OX/RiCoeorSu67f22f
+         PluQ==
+X-Gm-Message-State: AOAM5321QWKaaCi7Am8ulAmtXjT9S5M1F8dKU5xR6ZfMFOUP4Uqt1Boc
+        mmhz1juf0yHwbPJ37tGFUHI//lPLFeM8Necj4tI0+w==
+X-Google-Smtp-Source: ABdhPJyqJOHYby5B4zPz7I69RNcSghbBdax44/7CJOKXFMx9IaAQOi+fUTHLPntFEHAMZ9z/gSOi5OooYyzthLTILkw=
+X-Received: by 2002:a25:aa94:0:b0:648:62f2:ef4e with SMTP id
+ t20-20020a25aa94000000b0064862f2ef4emr6931589ybi.626.1652483661584; Fri, 13
+ May 2022 16:14:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1652179333.fnu2fjiffn.astroid@bobo.none>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20220507102257.26414-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220507102257.26414-1-andriy.shevchenko@linux.intel.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 14 May 2022 01:14:10 +0200
+Message-ID: <CACRpkdYjmAKPb9sHvC+Y0goDBmGXDthJDmgbG2CZ6VO_Y1zEmQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] pinctrl: stm32: Unshadow np variable in stm32_pctl_probe()
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        linux-gpio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 08:46:41PM +1000, Nicholas Piggin wrote:
-> Excerpts from Ricardo Neri's message of May 6, 2022 10:00 am:
-> > Prepare hardlockup_panic_setup() to handle a comma-separated list of
-> > options. Thus, it can continue parsing its own command-line options while
-> > ignoring parameters that are relevant only to specific implementations of
-> > the hardlockup detector. Such implementations may use an early_param to
-> > parse their own options.
-> 
-> It can't really handle comma separated list though, until the next
-> patch. nmi_watchdog=panic,0 does not make sense, so you lost error
-> handling of that.
+On Sat, May 7, 2022 at 12:23 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 
-Yes that is true. All possible combinations need to be checked.
+> The np variable is used globally for stm32_pctl_probe() and in one of
+> its code branches. cppcheck is not happy with that:
+>
+>   pinctrl-stm32.c:1530:23: warning: Local variable 'np' shadows outer variable [shadowVariable]
+>
+> Instead of simply renaming one of the variables convert some code to
+> use a device pointer directly.
+>
+> Fixes: bb949ed9b16b ("pinctrl: stm32: Switch to use for_each_gpiochip_node() helper")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-> 
-> And is it kosher to double handle options like this? I'm sure it
-> happens but it's ugly.
-> 
-> Would you consider just add a new option for x86 and avoid changing
-> this? Less code and patches.
+Patch applied!
 
-Sure, I can not modify this code and add a x86-specific command-line
-option.
-
-Thanks and BR,
-Ricardo
+Yours,
+Linus Walleij
