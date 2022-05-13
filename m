@@ -2,95 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 768B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 11:14:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5633CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 11:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379811AbiEMLOk (ORCPT
+        id S1379714AbiEMLOo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 07:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53410 "EHLO
+        Fri, 13 May 2022 07:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379714AbiEMLOh (ORCPT
+        with ESMTP id S1379809AbiEMLOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 07:14:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C7505DE78
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:14:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652440475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type;
-        bh=UtAsxq3Qkf8Wt0Jj3FXIUlE2DcUWlIqSV3K+8PGgj7Y=;
-        b=E4Hd0j4n1QKd04vWBXiJE7QKa3dFcF+QXbACxZpg+y9eiJGxQwoKwDGJ40eHp2Z+3bfMky
-        pPE3bl/msfqZwympYoUSI5Nzg4Ysd2J2jHu5NTSTGK4OhN81fcPvvNtAHtKX8O0Fjx+2qa
-        G6H3xxkxEVmd6Lc8EuBCADq7vqqn61A=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-448-2_uyHM0jMb-lhFwXfuBINw-1; Fri, 13 May 2022 07:14:32 -0400
-X-MC-Unique: 2_uyHM0jMb-lhFwXfuBINw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 40E281C0897F;
-        Fri, 13 May 2022 11:14:31 +0000 (UTC)
-Received: from localhost (unknown [10.22.32.87])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7CF67416148;
-        Fri, 13 May 2022 11:14:30 +0000 (UTC)
-Date:   Fri, 13 May 2022 08:14:29 -0300
-From:   "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        stable-rt <stable-rt@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Wagner <daniel.wagner@suse.com>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>,
-        Clark Williams <williams@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Pavel Machek <pavel@denx.de>,
-        Jeff Brady <jeffreyjbrady@gmail.com>,
-        Luis Goncalves <lgoncalv@redhat.com>
-Subject: [ANNOUNCE] 5.10.115-rt67
-Message-ID: <Yn49lbCpmpNHazAa@uudg.org>
+        Fri, 13 May 2022 07:14:39 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8FBFC5DE78
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:14:38 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-181-0C1zEWiPPjqMic9fvV5MTA-1; Fri, 13 May 2022 12:14:35 +0100
+X-MC-Unique: 0C1zEWiPPjqMic9fvV5MTA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Fri, 13 May 2022 12:14:34 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Fri, 13 May 2022 12:14:34 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Daniel Borkmann' <daniel@iogearbox.net>,
+        liqiong <liqiong@nfschina.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>, Song Liu <songliubraving@fb.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "hukun@nfschina.com" <hukun@nfschina.com>,
+        "qixu@nfschina.com" <qixu@nfschina.com>,
+        "yuzhe@nfschina.com" <yuzhe@nfschina.com>,
+        "renyu@nfschina.com" <renyu@nfschina.com>
+Subject: RE: [PATCH 1/2] kernel/bpf: change "char *" string form to "char []"
+Thread-Topic: [PATCH 1/2] kernel/bpf: change "char *" string form to "char []"
+Thread-Index: AQHYZkM1stWiUR1QcEWMGKEEx9wika0cp5sg
+Date:   Fri, 13 May 2022 11:14:34 +0000
+Message-ID: <017900c07229451085f82ae1e71cd825@AcuMS.aculab.com>
+References: <20220512142814.26705-1-liqiong@nfschina.com>
+ <bd3d4379-e4aa-79c7-85b8-cc930a04f267@fb.com>
+ <223f19c0-70a7-3b1f-6166-22d494b62b6e@nfschina.com>
+ <92cc4844-5815-c3b0-63be-2e54dc36e1d9@iogearbox.net>
+In-Reply-To: <92cc4844-5815-c3b0-63be-2e54dc36e1d9@iogearbox.net>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello RT-list!
-
-I'm pleased to announce the 5.10.115-rt67 stable release.
-
-You can get this release via the git tree at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
-
-  branch: v5.10-rt
-  Head SHA1: 257a02c9ef99f2e39abc79205a481582177ce685
-
-Or to build 5.10.115-rt67 directly, the following patches should be applied:
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.10.tar.xz
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.10.115.xz
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.10/older/patch-5.10.115-rt67.patch.xz
-
-Signing key fingerprint:
-
-  9354 0649 9972 8D31 D464  D140 F394 A423 F8E6 7C26
-
-All keys used for the above files and repositories can be found on the
-following git repository:
-
-   git://git.kernel.org/pub/scm/docs/kernel/pgpkeys.git
-
-Enjoy!
-Luis
+RnJvbTogRGFuaWVsIEJvcmttYW5uDQo+IFNlbnQ6IDEyIE1heSAyMDIyIDIyOjAwDQo+IA0KPiBP
+biA1LzEyLzIyIDc6MDggUE0sIGxpcWlvbmcgd3JvdGU6DQo+ID4g5ZyoIDIwMjLlubQwNeaciDEy
+5pelIDIzOjE2LCBZb25naG9uZyBTb25nIOWGmemBkzoNCj4gPj4NCj4gPj4gT24gNS8xMi8yMiA3
+OjI4IEFNLCBsaXFpb25nIHdyb3RlOg0KPiA+Pj4gVGhlIHN0cmluZyBmb3JtIG9mICJjaGFyIFtd
+IiBkZWNsYXJlcyBhIHNpbmdsZSB2YXJpYWJsZS4gSXQgaXMgYmV0dGVyDQo+ID4+PiB0aGFuICJj
+aGFyICoiIHdoaWNoIGNyZWF0ZXMgdHdvIHZhcmlhYmxlcy4NCj4gPj4NCj4gPj4gQ291bGQgeW91
+IGV4cGxhaW4gaW4gZGV0YWlscyBhYm91dCB3aHkgaXQgaXMgYmV0dGVyIGluIGdlbmVyYXRlZCBj
+b2Rlcz8NCj4gPj4gSXQgaXMgbm90IGNsZWFyIHRvIG1lIHdoeSB5b3VyIHBhdGNoIGlzIGJldHRl
+ciB0aGFuIHRoZSBvcmlnaW5hbCBjb2RlLg0KPiA+DQo+ID4gVGhlICBzdHJpbmcgZm9ybSBvZiAi
+Y2hhciAqIiBjcmVhdGVzIHR3byB2YXJpYWJsZXMgaW4gdGhlIGZpbmFsIGFzc2VtYmx5IG91dHB1
+dCwNCj4gPiBhIHN0YXRpYyBzdHJpbmcsIGFuZCBhIGNoYXIgcG9pbnRlciB0byB0aGUgc3RhdGlj
+IHN0cmluZy4gIFVzZSAgIm9iamR1bXAgLVMgLUQgICoubyIsDQo+ID4gY2FuIGZpbmQgb3V0IHRo
+ZSBzdGF0aWMgc3RyaW5nICBvY2N1cnJpbmcgIGF0ICJDb250ZW50cyBvZiBzZWN0aW9uIC5yb2Rh
+dGEiLg0KPiANCj4gVGhlcmUgYXJlIH4zNjAgaW5zdGFuY2VzIG9mIHRoaXMgdHlwZSBpbiB0aGUg
+dHJlZSBmcm9tIGEgcXVpY2sgZ3JlcCwgZG8geW91DQo+IHBsYW4gdG8gY29udmVydCBhbGwgdGhl
+bSA/DQoNClRoZXJlIGFyZSBhbHNvIGFsbCB0aGUgcGxhY2VzIHdpdGggY29uc3QgY2hhciAqbmFt
+ZXNbXSA9IC4uLjsNCndoZXJlIHRoZSBhY3R1YWwgbmFtZXMgYXJlIGFsbCBzaW1pbGFyIGxlbmd0
+aCBzbyByZXBsYWNpbmcgd2l0aA0KY29uc3QgY2hhciBuYW1lc1tdW25dIHNhdmVzIHNwYWNlLg0K
+DQpBbHRob3VnaCB0aGF0IHRyYW5zZm9ybWF0aW9uIGhhcyBhIGJpZ2dlciBlZmZlY3Qgb24gc2hh
+cmVkIGxpYnMuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJy
+YW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lz
+dHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
