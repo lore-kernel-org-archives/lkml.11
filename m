@@ -2,82 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4740EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 23:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 872E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 23:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229984AbiEMXUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 19:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
+        id S229891AbiEMXb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 19:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiEMXUN (ORCPT
+        with ESMTP id S229485AbiEMXbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 19:20:13 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3231CBC6C9
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:18:42 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id g28so17717959ybj.10
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:18:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=peFPtL0ZhzsJZHNucBDtSwt3F1izphFO+BREPiZmQjc=;
-        b=neoc4bliNIEuwITc3td2ZW08qZUSbSxEOpHqeR4p8ZRBmPCnGFYguhLglAwZ+Zg7GD
-         IHiTKfAwBSBXj7zRbP+cFmi6g6NOO26eqWMaoEdHKOEqxwwVH7Sas76I3p9g5NJHnV3j
-         UTZnJJHhKUxrjf/+krI5Du+FGuy3MSr/HUPLfnZYZCf4sLJsQUT6O/jh9YTkbrBQBBP6
-         6ukMi/1/AukIUqqMlEqPnDoE25XZyk57RvDoJOxucC5Qln8wTzBuHoUXMac9Pc7evjuq
-         ou0AQn4ZteR4wxH0ZzwnY4OpDeFAx58uf/pZ59dN0BdDBLIQayLelu0NaoS8mxsQKyZp
-         /WMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=peFPtL0ZhzsJZHNucBDtSwt3F1izphFO+BREPiZmQjc=;
-        b=LxmDwV1RqkJtGb0fBnuzYAdgNjnkHut9PWwCIvoS50clm1LFuxoadnzhsjFWnLMJJT
-         jrDn7sq5/gDvUa3PJvGH6ko+bZKCsDTST0nBlk/8LySeb+I0sBrxQpfrjUC1PgmH4dEL
-         IKNzRM/4E8lbCJRhd+kNbWRfhB5E0AgnOxtfVlOzg9Vx93MlZDMcnt6jxxdcxd0pauJs
-         dQcp0DTKYVnZeM1B7/Sh9ByC76hiqsjCeAW2nWO8JazGbN0g9iPYwv3sVIDe+xEgy24+
-         ozW+tBLBPAULWY0fvS4j8zU4Wkg1Mh0kHTF0VXhrqvzXNn7Cp4wjG78YHY/bnPJDsNAO
-         GTqw==
-X-Gm-Message-State: AOAM533EBf7YyycQ11cqcQHo8ahWBKPQ5j+s/W9DXh5HRIWpP06UUv05
-        pNFskWdsFkm2nlW6l/E2pke5m4GwhzdOsi5kAPg5Kbto9t8=
-X-Google-Smtp-Source: ABdhPJzq/anb8INHniF8SiNul15kIbegKtWUZLQxaVHXqzCkz8MczW1Rtjm+OV0/55vE2qrtnxfGrJFNvmZgkA2MHhQ=
-X-Received: by 2002:a25:bcc3:0:b0:648:7360:8e75 with SMTP id
- l3-20020a25bcc3000000b0064873608e75mr7252850ybm.533.1652483921333; Fri, 13
- May 2022 16:18:41 -0700 (PDT)
+        Fri, 13 May 2022 19:31:55 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC6530BCFD
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:22:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652484167; x=1684020167;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KyCPdSxq6CFmcl2pjIuOEIvI0ilyCrZM3eYSgEPizRA=;
+  b=Xue7+2qe/l0+NRfQOz/51GXcktB4EWOCG3KiI/y1l3jHtk0cpF+iW3oH
+   Q3psj6eb74Fuax6hlNYDz7mt4EveTp+TvTb06TlsXDefY63MsUmUsVFy6
+   l0sXaK5B0v8djl4AQaYtzuo3i2+993/2j6Ez36KRv1rIDHLX1DcU3jn3a
+   /N8mBDx+V0R/r7kXApChYqnSsytezuyeGBNcplV2i/biYGKmCDY47ILFe
+   50ba7+SKe8tWYLNQXV8yyfxXoG1l4lLEpGkd6f2SH8fY0nd6jijgMHSTI
+   AIS892DUGvjALFyPmvRJrYQCVbFWlxvvFvIrcg+rngluV/APl2uLVRzjB
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="268023276"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="268023276"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 16:22:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="815595889"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 13 May 2022 16:22:43 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id EBD60A8; Sat, 14 May 2022 02:22:42 +0300 (EEST)
+Date:   Sat, 14 May 2022 02:22:42 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        Andrey Ryabinin <aryabinin@virtuozzo.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFCv2 08/10] x86/mm: Make LAM_U48 and mappings above 47-bits
+ mutually exclusive
+Message-ID: <20220513232242.7ac7herw7iyfkd2h@black.fi.intel.com>
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+ <20220511022751.65540-10-kirill.shutemov@linux.intel.com>
+ <875ymax480.ffs@tglx>
 MIME-Version: 1.0
-References: <20220508135932.132378-1-krzysztof.kozlowski@linaro.org> <20220508135932.132378-2-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220508135932.132378-2-krzysztof.kozlowski@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 14 May 2022 01:18:30 +0200
-Message-ID: <CACRpkdZLsw7rU113x88MKxTUEPgueLHf+7Pu4FevCAQLP2jBqg@mail.gmail.com>
-Subject: Re: [PATCH 1/4] dt-bindings: pinctrl: qcom,pmic-gpio: add 'gpio-reserved-ranges'
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Luca Weiss <luca@z3ntu.xyz>, David Heidelberg <david@ixit.cz>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <875ymax480.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 8, 2022 at 3:59 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+On Thu, May 12, 2022 at 03:36:31PM +0200, Thomas Gleixner wrote:
+> On Wed, May 11 2022 at 05:27, Kirill A. Shutemov wrote:
+> > LAM_U48 steals bits above 47-bit for tags and makes it impossible for
+> > userspace to use full address space on 5-level paging machine.
+> 
+> > Make these features mutually exclusive: whichever gets enabled first
+> > blocks the othe one.
+> 
+> So this patch prevents a mapping above 47bit when LAM48 is enabled, but
+> I fail to spot how an already existing mapping above 47bit would prevent
+> LAM48 from being enabled.
+> 
+> Maybe I'm missing something which makes this magically mutually
+> exclusive.
 
-> 'gpio-reserved-ranges' property is already used and supported by common pinctrl
-> bindings, so add it also here to fix warnings like:
->
->   qrb5165-rb5.dtb: gpio@c000: 'gpio-reserved-ranges' does not match any of the regexes: '-state$', 'pinctrl-[0-9]+'
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+It is in 09/10. See lam_u48_allowed()
 
-This does not apply on top of pinctrl's devel branch, am I doing
-something wrong?
-
-Yours,
-Linus Walleij
+-- 
+ Kirill A. Shutemov
