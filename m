@@ -2,51 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED08C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380788AbiEMO3d (ORCPT
+        id S1381009AbiEMO3g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40284 "EHLO
+        Fri, 13 May 2022 10:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381094AbiEMO0c (ORCPT
+        with ESMTP id S1381095AbiEMO0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 10:26:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046FA5E742;
-        Fri, 13 May 2022 07:26:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E827506E3;
+        Fri, 13 May 2022 07:26:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AECC3B83068;
-        Fri, 13 May 2022 14:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 028C7C34100;
-        Fri, 13 May 2022 14:26:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3FB3B82C9D;
+        Fri, 13 May 2022 14:26:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E49D0C34115;
+        Fri, 13 May 2022 14:26:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451982;
-        bh=DZThhwGH7bPrN9WSWnDNPcHaOWX86Na7gdrSEz4sffU=;
+        s=korg; t=1652451985;
+        bh=LAW3oRY7WSoDZ6V/paLZpl/L6DCV49O7Hv7830ybxPM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uIHZzJh9BDTXAu8fAhgipYx/tgymHOQ+Ev39dCG5UqkF56U8KbjlPuNO4QazxUhs+
-         rUO705G2DD0Jtfnk98EdNQxi5pUtJYzSJE3b6sjJUq1AqV2F3rZaG09kn4CdLeZgMF
-         gfl0FVR+dNKaIqC13K+4s/PrRd5GouNINrg+ObOg=
+        b=GXyDhOiiJRccrS99PCIsAaKHP9Sfl/W3GtF8OHGZsFeNJgYw2vkdj9lmReCuZSkNW
+         25YoqfN66gr42evUIl7QNmeNuCH8IypHBLMZpk/+Qzxuxtc4VAsZSMj+3y3daylWvL
+         POShwnNedeIhzgznHSIRDIqrnyaAvDkMlZKy4y9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 01/18] MIPS: Use address-of operator on section symbols
-Date:   Fri, 13 May 2022 16:23:27 +0200
-Message-Id: <20220513142229.196868410@linuxfoundation.org>
+        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Juergen Gross <jgross@suse.com>, x86@kernel.org,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Borislav Petkov <bp@alien8.de>, xen-devel@lists.xenproject.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Maximilian Heyne <mheyne@amazon.de>
+Subject: [PATCH 5.4 10/18] x86/asm: Allow to pass macros to __ASM_FORM()
+Date:   Fri, 13 May 2022 16:23:36 +0200
+Message-Id: <20220513142229.456082257@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
 References: <20220513142229.153291230@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -54,81 +58,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <natechancellor@gmail.com>
+From: Masami Hiramatsu <mhiramat@kernel.org>
 
-commit d422c6c0644bccbb1ebeefffa51f35cec3019517 upstream.
+commit f7919fd943abf0c77aed4441ea9897a323d132f5 upstream.
 
-When building xway_defconfig with clang:
+Use __stringify() at __ASM_FORM() so that user can pass
+code including macros to __ASM_FORM().
 
-arch/mips/lantiq/prom.c:82:23: error: array comparison always evaluates
-to true [-Werror,-Wtautological-compare]
-        else if (__dtb_start != __dtb_end)
-                             ^
-1 error generated.
-
-These are not true arrays, they are linker defined symbols, which are
-just addresses. Using the address of operator silences the warning
-and does not change the resulting assembly with either clang/ld.lld
-or gcc/ld (tested with diff + objdump -Dr). Do the same thing across
-the entire MIPS subsystem to ensure there are no more warnings around
-this type of comparison.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1232
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: x86@kernel.org
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Stefano Stabellini <sstabellini@kernel.org>
+Cc: Andrew Cooper <andrew.cooper3@citrix.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: xen-devel@lists.xenproject.org
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/156777562873.25081.2288083344657460959.stgit@devnote2
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/bmips/setup.c          |    2 +-
- arch/mips/lantiq/prom.c          |    2 +-
- arch/mips/pic32/pic32mzda/init.c |    2 +-
- arch/mips/ralink/of.c            |    2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/include/asm/asm.h |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/arch/mips/bmips/setup.c
-+++ b/arch/mips/bmips/setup.c
-@@ -167,7 +167,7 @@ void __init plat_mem_setup(void)
- 		dtb = phys_to_virt(fw_arg2);
- 	else if (fw_passed_dtb) /* UHI interface or appended dtb */
- 		dtb = (void *)fw_passed_dtb;
--	else if (__dtb_start != __dtb_end)
-+	else if (&__dtb_start != &__dtb_end)
- 		dtb = (void *)__dtb_start;
- 	else
- 		panic("no dtb found");
---- a/arch/mips/lantiq/prom.c
-+++ b/arch/mips/lantiq/prom.c
-@@ -79,7 +79,7 @@ void __init plat_mem_setup(void)
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -7,9 +7,11 @@
+ # define __ASM_FORM_RAW(x)     x
+ # define __ASM_FORM_COMMA(x) x,
+ #else
+-# define __ASM_FORM(x)	" " #x " "
+-# define __ASM_FORM_RAW(x)     #x
+-# define __ASM_FORM_COMMA(x) " " #x ","
++#include <linux/stringify.h>
++
++# define __ASM_FORM(x)	" " __stringify(x) " "
++# define __ASM_FORM_RAW(x)     __stringify(x)
++# define __ASM_FORM_COMMA(x) " " __stringify(x) ","
+ #endif
  
- 	if (fw_passed_dtb) /* UHI interface */
- 		dtb = (void *)fw_passed_dtb;
--	else if (__dtb_start != __dtb_end)
-+	else if (&__dtb_start != &__dtb_end)
- 		dtb = (void *)__dtb_start;
- 	else
- 		panic("no dtb found");
---- a/arch/mips/pic32/pic32mzda/init.c
-+++ b/arch/mips/pic32/pic32mzda/init.c
-@@ -28,7 +28,7 @@ static ulong get_fdtaddr(void)
- 	if (fw_passed_dtb && !fw_arg2 && !fw_arg3)
- 		return (ulong)fw_passed_dtb;
- 
--	if (__dtb_start < __dtb_end)
-+	if (&__dtb_start < &__dtb_end)
- 		ftaddr = (ulong)__dtb_start;
- 
- 	return ftaddr;
---- a/arch/mips/ralink/of.c
-+++ b/arch/mips/ralink/of.c
-@@ -77,7 +77,7 @@ void __init plat_mem_setup(void)
- 	 */
- 	if (fw_passed_dtb)
- 		dtb = (void *)fw_passed_dtb;
--	else if (__dtb_start != __dtb_end)
-+	else if (&__dtb_start != &__dtb_end)
- 		dtb = (void *)__dtb_start;
- 
- 	__dt_setup_arch(dtb);
+ #ifndef __x86_64__
 
 
