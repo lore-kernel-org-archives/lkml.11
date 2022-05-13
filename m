@@ -2,76 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4FEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FCAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:44:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349233AbiEMOi4 (ORCPT
+        id S1381243AbiEMOoE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:38:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        Fri, 13 May 2022 10:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381862AbiEMOgj (ORCPT
+        with ESMTP id S1382845AbiEMOnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:36:39 -0400
+        Fri, 13 May 2022 10:43:18 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A272A980B0
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 07:31:08 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9E72127A
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 07:42:34 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <afa@pengutronix.de>)
-        id 1npWJe-0006ho-W9; Fri, 13 May 2022 16:30:51 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <afa@pengutronix.de>)
-        id 1npWJe-0026EN-V9; Fri, 13 May 2022 16:30:49 +0200
-Received: from afa by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <afa@pengutronix.de>)
-        id 1npWJc-008fPg-Ku; Fri, 13 May 2022 16:30:48 +0200
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-To:     hpa@zytor.com, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     barebox@lists.infradead.org,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: [PATCH] Documentation: x86: boot: reserve type_of_loader=13 for barebox
-Date:   Fri, 13 May 2022 16:30:39 +0200
-Message-Id: <20220513143039.2065756-1-a.fatoum@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        (envelope-from <mkl@pengutronix.de>)
+        id 1npWUy-00006s-Jy; Fri, 13 May 2022 16:42:32 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2CB777DB54;
+        Fri, 13 May 2022 14:42:31 +0000 (UTC)
+Date:   Fri, 13 May 2022 16:42:30 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>
+Subject: Re: [PATCH 0/2] can: drop tx skb if the device is in listen only mode
+Message-ID: <20220513144230.upuirv4ufebxvfbq@pengutronix.de>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: afa@pengutronix.de
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gqifvyadwdcbjat7"
+Content-Disposition: inline
+In-Reply-To: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-barebox built as EFI payload has been booting Linux on x86 with
-type_of_loader=0xff since v2015.09.0.
 
-Reserve 13, the next free id, so this can be used instead.
+--gqifvyadwdcbjat7
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
----
- Documentation/x86/boot.rst | 1 +
- 1 file changed, 1 insertion(+)
+On 13.05.2022 23:23:53, Vincent Mailhol wrote:
+> In listen only mode, tx CAN frames can still reach the driver if
+> injected via the packet socket. This series add a check toward
+> CAN_CTRLMODE_LISTENONLY in can_dropped_invalid_skb() to discard such
+> skb. The first patch does some preparation work and migrates
+> can_dropped_invalid_skb() from skb.h to dev.h. The second and last
+> patch is the actual change.
 
-diff --git a/Documentation/x86/boot.rst b/Documentation/x86/boot.rst
-index 894a19897005..240d084782a6 100644
---- a/Documentation/x86/boot.rst
-+++ b/Documentation/x86/boot.rst
-@@ -455,6 +455,7 @@ Protocol:	2.00+
- 	11 Minimal Linux Bootloader
- 	   <http://sebastian-plotz.blogspot.de>
- 	12 OVMF UEFI virtualization stack
-+	13 barebox
- 	== =======================================
- 
-   Please contact <hpa@zytor.com> if you need a bootloader ID value assigned.
--- 
-2.30.2
+Thanks for your quick patch!
 
+What about moving the function to a .c file? The
+can_dropped_invalid_skb() grew a lot over the years, since it was added
+to the header as a static inline function.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--gqifvyadwdcbjat7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ+blQACgkQrX5LkNig
+012Bigf+OBMnCULTQxKU9B8Mkb6CCPhadQ7XNbJ+RbQVPcOSTdDHr1dK3PslcrGE
+dBtCKgNBXwKAPNyv6Xkv7WgcDcXXlHbik92UexT3q3dm8By1DtymBQ3SoK+jZ6Aa
+CANx8blpS7Pv+GFqS3gl4F/1s9/Uoq6k5oLEhp/ZCbfSuJD9VaQxgMzDFWWU0SRC
+eWoB790kCRAS7SqPUyfuPM1NCrvCSMKVoU0slhCiz2GS78sTWzxVJ4x05K5GqUTt
+yd0+zimmi/LFZ75ou2UqWtzbXtxav/35+N3lOotJMLCDkddyYHd15dOB0T2qULPk
+rCDvBHYOsHzQqXHssnoBmkFoYC55pQ==
+=PMY2
+-----END PGP SIGNATURE-----
+
+--gqifvyadwdcbjat7--
