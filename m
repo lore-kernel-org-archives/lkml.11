@@ -2,55 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33692C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380814AbiEMOba (ORCPT
+        id S1380858AbiEMObg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
+        Fri, 13 May 2022 10:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380910AbiEMO0P (ORCPT
+        with ESMTP id S1380898AbiEMO0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279D951318;
-        Fri, 13 May 2022 07:25:48 -0700 (PDT)
+        Fri, 13 May 2022 10:26:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05DD8B0A5;
+        Fri, 13 May 2022 07:25:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7D3962159;
-        Fri, 13 May 2022 14:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90954C34115;
-        Fri, 13 May 2022 14:25:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC9DD62154;
+        Fri, 13 May 2022 14:25:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFFFEC34100;
+        Fri, 13 May 2022 14:25:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451947;
-        bh=uzEHjHDWLguBXYjfTqs0u3kFAhT29DbpDmBLr/hjc1E=;
+        s=korg; t=1652451927;
+        bh=ErWX4RJqUIUprDkK5KKNv9V6lo90Z8oK1HFTJCY2wiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IGVnrf/GlZMe7iJJQfNwZKoSAcurS94cL0Q0NSXFikZYZMjjtGLWjAI2izu/+hFA8
-         OmJMZQ173EiICKYeukNCCTQmqKCNM4/8w8PmPyW7e3K9o1w0IKXLMAh/mT7MSiEk17
-         qOzOdB7UQ7kiPd9wssUf+e3UzgOMtdouGMlxxnlI=
+        b=sZQB7UZD+r+kcYDfIAuoRcLbIk4Q4KEiqjTk37MZvf+Nf8HbVzdX1skCfycQHEveB
+         stDS3ZT7IsotVYMS6Z9+o3QNZxhCrP868lehSScdztWIgGVDlPpr/CvQx5jHhtTtNX
+         EYUZ9W0SjhsBy2DepYFO3wfFlXUaMMx1vGm/dApQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Peter Xu <peterx@redhat.com>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Zi Yan <ziy@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 14/15] mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-Date:   Fri, 13 May 2022 16:23:36 +0200
-Message-Id: <20220513142228.318854560@linuxfoundation.org>
+        Hu Jiahui <kirin.say@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.14 09/14] ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
+Date:   Fri, 13 May 2022 16:23:25 +0200
+Message-Id: <20220513142227.657909717@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
-References: <20220513142227.897535454@linuxfoundation.org>
+In-Reply-To: <20220513142227.381154244@linuxfoundation.org>
+References: <20220513142227.381154244@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -59,55 +50,172 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 7c25a0b89a487878b0691e6524fb5a8827322194 upstream.
+commit 92ee3c60ec9fe64404dc035e7c41277d74aa26cb upstream.
 
-userfaultfd calls mcopy_atomic_pte() and __mcopy_atomic() which do not
-do any cache flushing for the target page.  Then the target page will be
-mapped to the user space with a different address (user address), which
-might have an alias issue with the kernel address used to copy the data
-from the user to.  Fix this by insert flush_dcache_page() after
-copy_from_user() succeeds.
+Currently we have neither proper check nor protection against the
+concurrent calls of PCM hw_params and hw_free ioctls, which may result
+in a UAF.  Since the existing PCM stream lock can't be used for
+protecting the whole ioctl operations, we need a new mutex to protect
+those racy calls.
 
-Link: https://lkml.kernel.org/r/20220210123058.79206-7-songmuchun@bytedance.com
-Fixes: b6ebaedb4cb1 ("userfaultfd: avoid mmap_sem read recursion in mcopy_atomic")
-Fixes: c1a4de99fada ("userfaultfd: mcopy_atomic|mfill_zeropage: UFFDIO_COPY|UFFDIO_ZEROPAGE preparation")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Fam Zheng <fam.zheng@bytedance.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Lars Persson <lars.persson@axis.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+This patch introduced a new mutex, runtime->buffer_mutex, and applies
+it to both hw_params and hw_free ioctl code paths.  Along with it, the
+both functions are slightly modified (the mmap_count check is moved
+into the state-check block) for code simplicity.
+
+Reported-by: Hu Jiahui <kirin.say@gmail.com>
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Link: https://lore.kernel.org/r/20220322170720.3529-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+[OP: backport to 4.14: adjusted context]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/userfaultfd.c |    3 +++
- 1 file changed, 3 insertions(+)
+ include/sound/pcm.h     |    1 
+ sound/core/pcm.c        |    2 +
+ sound/core/pcm_native.c |   55 +++++++++++++++++++++++++++++++-----------------
+ 3 files changed, 39 insertions(+), 19 deletions(-)
 
---- a/mm/userfaultfd.c
-+++ b/mm/userfaultfd.c
-@@ -55,6 +55,8 @@ static int mcopy_atomic_pte(struct mm_st
- 			/* don't free the page */
- 			goto out;
- 		}
+--- a/include/sound/pcm.h
++++ b/include/sound/pcm.h
+@@ -396,6 +396,7 @@ struct snd_pcm_runtime {
+ 	wait_queue_head_t sleep;	/* poll sleep */
+ 	wait_queue_head_t tsleep;	/* transfer sleep */
+ 	struct fasync_struct *fasync;
++	struct mutex buffer_mutex;	/* protect for buffer changes */
+ 
+ 	/* -- private section -- */
+ 	void *private_data;
+--- a/sound/core/pcm.c
++++ b/sound/core/pcm.c
+@@ -1032,6 +1032,7 @@ int snd_pcm_attach_substream(struct snd_
+ 	init_waitqueue_head(&runtime->tsleep);
+ 
+ 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
++	mutex_init(&runtime->buffer_mutex);
+ 
+ 	substream->runtime = runtime;
+ 	substream->private_data = pcm->private_data;
+@@ -1063,6 +1064,7 @@ void snd_pcm_detach_substream(struct snd
+ 	substream->runtime = NULL;
+ 	if (substream->timer)
+ 		spin_unlock_irq(&substream->timer->lock);
++	mutex_destroy(&runtime->buffer_mutex);
+ 	kfree(runtime);
+ 	put_pid(substream->pid);
+ 	substream->pid = NULL;
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -634,33 +634,40 @@ static int snd_pcm_hw_params_choose(stru
+ 	return 0;
+ }
+ 
++#if IS_ENABLED(CONFIG_SND_PCM_OSS)
++#define is_oss_stream(substream)	((substream)->oss.oss)
++#else
++#define is_oss_stream(substream)	false
++#endif
 +
-+		flush_dcache_page(page);
- 	} else {
- 		page = *pagep;
- 		*pagep = NULL;
-@@ -574,6 +576,7 @@ retry:
- 				err = -EFAULT;
- 				goto out;
- 			}
-+			flush_dcache_page(page);
- 			goto retry;
- 		} else
- 			BUG_ON(page);
+ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
+ 			     struct snd_pcm_hw_params *params)
+ {
+ 	struct snd_pcm_runtime *runtime;
+-	int err, usecs;
++	int err = 0, usecs;
+ 	unsigned int bits;
+ 	snd_pcm_uframes_t frames;
+ 
+ 	if (PCM_RUNTIME_CHECK(substream))
+ 		return -ENXIO;
+ 	runtime = substream->runtime;
++	mutex_lock(&runtime->buffer_mutex);
+ 	snd_pcm_stream_lock_irq(substream);
+ 	switch (runtime->status->state) {
+ 	case SNDRV_PCM_STATE_OPEN:
+ 	case SNDRV_PCM_STATE_SETUP:
+ 	case SNDRV_PCM_STATE_PREPARED:
++		if (!is_oss_stream(substream) &&
++		    atomic_read(&substream->mmap_count))
++			err = -EBADFD;
+ 		break;
+ 	default:
+-		snd_pcm_stream_unlock_irq(substream);
+-		return -EBADFD;
++		err = -EBADFD;
++		break;
+ 	}
+ 	snd_pcm_stream_unlock_irq(substream);
+-#if IS_ENABLED(CONFIG_SND_PCM_OSS)
+-	if (!substream->oss.oss)
+-#endif
+-		if (atomic_read(&substream->mmap_count))
+-			return -EBADFD;
++	if (err)
++		goto unlock;
+ 
+ 	params->rmask = ~0U;
+ 	err = snd_pcm_hw_refine(substream, params);
+@@ -737,14 +744,19 @@ static int snd_pcm_hw_params(struct snd_
+ 	if ((usecs = period_to_usecs(runtime)) >= 0)
+ 		pm_qos_add_request(&substream->latency_pm_qos_req,
+ 				   PM_QOS_CPU_DMA_LATENCY, usecs);
+-	return 0;
++	err = 0;
+  _error:
+-	/* hardware might be unusable from this time,
+-	   so we force application to retry to set
+-	   the correct hardware parameter settings */
+-	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+-	if (substream->ops->hw_free != NULL)
+-		substream->ops->hw_free(substream);
++	if (err) {
++		/* hardware might be unusable from this time,
++		 * so we force application to retry to set
++		 * the correct hardware parameter settings
++		 */
++		snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
++		if (substream->ops->hw_free != NULL)
++			substream->ops->hw_free(substream);
++	}
++ unlock:
++	mutex_unlock(&runtime->buffer_mutex);
+ 	return err;
+ }
+ 
+@@ -777,22 +789,27 @@ static int snd_pcm_hw_free(struct snd_pc
+ 	if (PCM_RUNTIME_CHECK(substream))
+ 		return -ENXIO;
+ 	runtime = substream->runtime;
++	mutex_lock(&runtime->buffer_mutex);
+ 	snd_pcm_stream_lock_irq(substream);
+ 	switch (runtime->status->state) {
+ 	case SNDRV_PCM_STATE_SETUP:
+ 	case SNDRV_PCM_STATE_PREPARED:
++		if (atomic_read(&substream->mmap_count))
++			result = -EBADFD;
+ 		break;
+ 	default:
+-		snd_pcm_stream_unlock_irq(substream);
+-		return -EBADFD;
++		result = -EBADFD;
++		break;
+ 	}
+ 	snd_pcm_stream_unlock_irq(substream);
+-	if (atomic_read(&substream->mmap_count))
+-		return -EBADFD;
++	if (result)
++		goto unlock;
+ 	if (substream->ops->hw_free)
+ 		result = substream->ops->hw_free(substream);
+ 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+ 	pm_qos_remove_request(&substream->latency_pm_qos_req);
++ unlock:
++	mutex_unlock(&runtime->buffer_mutex);
+ 	return result;
+ }
+ 
 
 
