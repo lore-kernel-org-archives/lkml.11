@@ -2,120 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EBDC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA2A9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380892AbiEMO2f (ORCPT
+        id S1380899AbiEMO2j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        Fri, 13 May 2022 10:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380911AbiEMO0P (ORCPT
+        with ESMTP id S1380962AbiEMO0S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:15 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB644506E3;
-        Fri, 13 May 2022 07:25:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652451944; x=1683987944;
-  h=message-id:date:mime-version:from:subject:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=9MO4Cg9SWuQ3cY0TApzliKOPUlU3hZ6Zqzm0n1CSgmQ=;
-  b=jH37YUvTNIG8JhrJm8Z5bHHrMhGG/C7fJaIw75GrtL1ASiVim3V4mbLn
-   BpF3DnCuXgwuskJ4XhVD6zj1RW4Bc6NjJoKL5AN9hzatXhzBkOlKbx2an
-   t4RT5HLnFqrb+23ZNBavV/3aUNrP4p7awv9z5ZXxkHOGvp1reY0WVBrDn
-   oAaESy5EpiTfmvpDowcqWJKwgyplXT9ypGro8QKpZ0ihWDVxaTtQml3y5
-   +j5lDjEH68foidrwCH77ZL47L8NWWPYM/aostHFyyI7hLKZWb+SIH0MFt
-   Uw30eyXx7PtXvSekBMEsB0FPitpZXNlXA7ZIYHDmlaNsObziLrW/jmB4V
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="295575088"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="295575088"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 07:25:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="659107033"
-Received: from linux.intel.com ([10.54.29.200])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 May 2022 07:25:43 -0700
-Received: from [10.252.212.211] (kliang2-MOBL.ccr.corp.intel.com [10.252.212.211])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Fri, 13 May 2022 10:26:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4FA527D1;
+        Fri, 13 May 2022 07:25:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id C7C4C580A88;
-        Fri, 13 May 2022 07:25:40 -0700 (PDT)
-Message-ID: <8ba20985-8116-c7f7-a082-ec30152d9adb@linux.intel.com>
-Date:   Fri, 13 May 2022 10:25:39 -0400
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FD0AB8306F;
+        Fri, 13 May 2022 14:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD4A8C36AEB;
+        Fri, 13 May 2022 14:25:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652451954;
+        bh=1rAX63CmmlAyCcvSdcrn1qcybbMifvjTCNBFWxMoBnI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hNdcslPLPKaKCeMF8yJjz4ItHNWUwxdbqvZnv5P2SUlvq3RKvwUY2zbCWmXXgReOD
+         CFHYSHNOX9fmnbdjqkAUwfR0gNjO/p30/sGNy0WTlaUuXg7TTuqo4vxUEaMBtn68KF
+         usRH3SgrPYPlbVumvGd2RswcCvG9kMBrewRron5A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Jens Axboe <axboe@kernel.dk>, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 4.19 02/15] block: drbd: drbd_nl: Make conversion to enum drbd_ret_code explicit
+Date:   Fri, 13 May 2022 16:23:24 +0200
+Message-Id: <20220513142227.970166768@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
+References: <20220513142227.897535454@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-Subject: Re: [PATCH v2 0/2] Fix topdown event weak grouping
-To:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        James Clark <james.clark@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>
-References: <20220512061308.1152233-1-irogers@google.com>
-Content-Language: en-US
-In-Reply-To: <20220512061308.1152233-1-irogers@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Lee Jones <lee.jones@linaro.org>
+
+commit 1f1e87b4dc4598eac57a69868534b92d65e47e82 upstream.
+
+Fixes the following W=1 kernel build warning(s):
+
+ from drivers/block/drbd/drbd_nl.c:24:
+ drivers/block/drbd/drbd_nl.c: In function ‘drbd_adm_set_role’:
+ drivers/block/drbd/drbd_nl.c:793:11: warning: implicit conversion from ‘enum drbd_state_rv’ to ‘enum drbd_ret_code’ [-Wenum-conversion]
+ drivers/block/drbd/drbd_nl.c:795:11: warning: implicit conversion from ‘enum drbd_state_rv’ to ‘enum drbd_ret_code’ [-Wenum-conversion]
+ drivers/block/drbd/drbd_nl.c: In function ‘drbd_adm_attach’:
+ drivers/block/drbd/drbd_nl.c:1965:10: warning: implicit conversion from ‘enum drbd_state_rv’ to ‘enum drbd_ret_code’ [-Wenum-conversion]
+ drivers/block/drbd/drbd_nl.c: In function ‘drbd_adm_connect’:
+ drivers/block/drbd/drbd_nl.c:2690:10: warning: implicit conversion from ‘enum drbd_state_rv’ to ‘enum drbd_ret_code’ [-Wenum-conversion]
+ drivers/block/drbd/drbd_nl.c: In function ‘drbd_adm_disconnect’:
+ drivers/block/drbd/drbd_nl.c:2803:11: warning: implicit conversion from ‘enum drbd_state_rv’ to ‘enum drbd_ret_code’ [-Wenum-conversion]
+
+Cc: Philipp Reisner <philipp.reisner@linbit.com>
+Cc: Lars Ellenberg <lars.ellenberg@linbit.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: drbd-dev@lists.linbit.com
+Cc: linux-block@vger.kernel.org
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20210312105530.2219008-8-lee.jones@linaro.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/block/drbd/drbd_nl.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+--- a/drivers/block/drbd/drbd_nl.c
++++ b/drivers/block/drbd/drbd_nl.c
+@@ -774,9 +774,11 @@ int drbd_adm_set_role(struct sk_buff *sk
+ 	mutex_lock(&adm_ctx.resource->adm_mutex);
+ 
+ 	if (info->genlhdr->cmd == DRBD_ADM_PRIMARY)
+-		retcode = drbd_set_role(adm_ctx.device, R_PRIMARY, parms.assume_uptodate);
++		retcode = (enum drbd_ret_code)drbd_set_role(adm_ctx.device,
++						R_PRIMARY, parms.assume_uptodate);
+ 	else
+-		retcode = drbd_set_role(adm_ctx.device, R_SECONDARY, 0);
++		retcode = (enum drbd_ret_code)drbd_set_role(adm_ctx.device,
++						R_SECONDARY, 0);
+ 
+ 	mutex_unlock(&adm_ctx.resource->adm_mutex);
+ 	genl_lock();
+@@ -1941,7 +1943,7 @@ int drbd_adm_attach(struct sk_buff *skb,
+ 	drbd_flush_workqueue(&connection->sender_work);
+ 
+ 	rv = _drbd_request_state(device, NS(disk, D_ATTACHING), CS_VERBOSE);
+-	retcode = rv;  /* FIXME: Type mismatch. */
++	retcode = (enum drbd_ret_code)rv;
+ 	drbd_resume_io(device);
+ 	if (rv < SS_SUCCESS)
+ 		goto fail;
+@@ -2671,7 +2673,8 @@ int drbd_adm_connect(struct sk_buff *skb
+ 	}
+ 	rcu_read_unlock();
+ 
+-	retcode = conn_request_state(connection, NS(conn, C_UNCONNECTED), CS_VERBOSE);
++	retcode = (enum drbd_ret_code)conn_request_state(connection,
++					NS(conn, C_UNCONNECTED), CS_VERBOSE);
+ 
+ 	conn_reconfig_done(connection);
+ 	mutex_unlock(&adm_ctx.resource->adm_mutex);
+@@ -2777,7 +2780,7 @@ int drbd_adm_disconnect(struct sk_buff *
+ 	mutex_lock(&adm_ctx.resource->adm_mutex);
+ 	rv = conn_try_disconnect(connection, parms.force_disconnect);
+ 	if (rv < SS_SUCCESS)
+-		retcode = rv;  /* FIXME: Type mismatch. */
++		retcode = (enum drbd_ret_code)rv;
+ 	else
+ 		retcode = NO_ERROR;
+ 	mutex_unlock(&adm_ctx.resource->adm_mutex);
 
 
-On 5/12/2022 2:13 AM, Ian Rogers wrote:
-> Keep topdown events within a group when a weak group is broken. This
-> is a requirement as topdown events must form a group.
-> 
-> Add perf stat testing including for required topdown event group
-> behaviors.
-> 
-> Note: as with existing topdown evsel/evlist code topdown events are
-> assumed to be on the PMU "cpu". On Alderlake the PMU "cpu_core" should
-> also be tested. Future changes can fix Alderlake.
-
-I will send a follow-up patch to fix the weak grouping for the hybrid 
-platform shortly.
-
-For the non-hybrid platform, the patch set looks good to me.
-
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-
-Thanks,
-Kan
-
-> 
-> v2. Correct behavior wrt pmu prefixed events and avoid the test using
->      deprecated events: Suggested-by: Liang, Kan <kan.liang@linux.intel.com>
-> 
-> Ian Rogers (2):
->    perf evlist: Keep topdown counters in weak group
->    perf test: Add basic stat and topdown group test
-> 
->   tools/perf/arch/x86/util/evsel.c | 12 ++++++
->   tools/perf/tests/shell/stat.sh   | 67 ++++++++++++++++++++++++++++++++
->   tools/perf/util/evlist.c         | 16 +++++++-
->   tools/perf/util/evsel.c          | 10 +++++
->   tools/perf/util/evsel.h          |  3 ++
->   5 files changed, 106 insertions(+), 2 deletions(-)
->   create mode 100755 tools/perf/tests/shell/stat.sh
-> 
