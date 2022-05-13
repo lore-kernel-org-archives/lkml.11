@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2687C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24794C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358857AbiEMOY7 (ORCPT
+        id S1380675AbiEMOZH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
+        Fri, 13 May 2022 10:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377289AbiEMOYm (ORCPT
+        with ESMTP id S1356878AbiEMOYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:24:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61B75EBD1;
-        Fri, 13 May 2022 07:24:39 -0700 (PDT)
+        Fri, 13 May 2022 10:24:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADCE50B24;
+        Fri, 13 May 2022 07:24:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C2D66215A;
-        Fri, 13 May 2022 14:24:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55273C34100;
-        Fri, 13 May 2022 14:24:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B9B0B83066;
+        Fri, 13 May 2022 14:24:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF9B3C34100;
+        Fri, 13 May 2022 14:24:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451878;
-        bh=WrtSnC9ElmgIEbQerXZBPCxouw+fQ4cO0pntLGU/bfU=;
+        s=korg; t=1652451870;
+        bh=fHimoKp/mXL+UxFA5uk5tI0L5eJ2S8lPXohgxQuYI1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QqMy8jOZqY+ho8LNRsXTVylrTIcysg62G28vnu5g1Ycx8B14V+uJJqxAQmAkD0jHO
-         MXyw9JPABkW77q/P2v7zNJE2JMmZqZWuMERKcsw7JO+xTN30k2bzZ5j7HQtVqsfX89
-         78u7dcDUe5VPRRQczO7DqMuDEko0YGmV6LM+Fiqs=
+        b=LA2tCaDDc27LI0fL/D/FqiHVrC1jjwQhSyyQ6+sGfEaRS2bwTvGnX9+NPT5rWufDL
+         KzxvMY8OG6oOXhkzJ1Nd9qoVWPucC2XobL12u+BDUesWB15vTqZSxB9glHHxlx2Ag+
+         97ISMop1FPc6XOpUH4+2lHRY5nEBfFOJOxBaAeNM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ricky Wu <ricky_wu@realtek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Christian Loehle <cloehle@hyperstone.com>
-Subject: [PATCH 4.9 6/7] mmc: rtsx: add 74 Clocks in power on flow
-Date:   Fri, 13 May 2022 16:23:21 +0200
-Message-Id: <20220513142226.100940342@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.9 3/7] can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
+Date:   Fri, 13 May 2022 16:23:18 +0200
+Message-Id: <20220513142226.012724219@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142225.909697091@linuxfoundation.org>
 References: <20220513142225.909697091@linuxfoundation.org>
@@ -50,112 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ricky WU <ricky_wu@realtek.com>
+From: Andreas Larsson <andreas@gaisler.com>
 
-commit 1f311c94aabdb419c28e3147bcc8ab89269f1a7e upstream.
+commit 1e93ed26acf03fe6c97c6d573a10178596aadd43 upstream.
 
-SD spec definition:
-"Host provides at least 74 Clocks before issuing first command"
-After 1ms for the voltage stable then start issuing the Clock signals
+The systemid property was checked for in the wrong place of the device
+tree and compared to the wrong value.
 
-if POWER STATE is
-MMC_POWER_OFF to MMC_POWER_UP to issue Clock signal to card
-MMC_POWER_UP to MMC_POWER_ON to stop issuing signal to card
-
-Signed-off-by: Ricky Wu <ricky_wu@realtek.com>
-Link: https://lore.kernel.org/r/1badf10aba764191a1a752edcbf90389@realtek.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Ricky Wu <ricky_wu@realtek.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
+Link: https://lore.kernel.org/all/20220429084656.29788-3-andreas@gaisler.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Andreas Larsson <andreas@gaisler.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/rtsx_pci_sdmmc.c |   30 ++++++++++++++++++++----------
- 1 file changed, 20 insertions(+), 10 deletions(-)
+ drivers/net/can/grcan.c |   16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
---- a/drivers/mmc/host/rtsx_pci_sdmmc.c
-+++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
-@@ -49,10 +49,7 @@ struct realtek_pci_sdmmc {
- 	bool			double_clk;
- 	bool			eject;
- 	bool			initial_mode;
--	int			power_state;
--#define SDMMC_POWER_ON		1
--#define SDMMC_POWER_OFF		0
--
-+	int			prev_power_state;
- 	int			sg_count;
- 	s32			cookie;
- 	int			cookie_sg_count;
-@@ -914,14 +911,21 @@ static int sd_set_bus_width(struct realt
- 	return err;
- }
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -245,7 +245,7 @@ struct grcan_device_config {
+ 		.rxsize		= GRCAN_DEFAULT_BUFFER_SIZE,	\
+ 		}
  
--static int sd_power_on(struct realtek_pci_sdmmc *host)
-+static int sd_power_on(struct realtek_pci_sdmmc *host, unsigned char power_mode)
+-#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	0x4100
++#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	4100
+ #define GRLIB_VERSION_MASK		0xffff
+ 
+ /* GRCAN private data structure */
+@@ -1665,6 +1665,7 @@ exit_free_candev:
+ static int grcan_probe(struct platform_device *ofdev)
  {
- 	struct rtsx_pcr *pcr = host->pcr;
- 	int err;
- 
--	if (host->power_state == SDMMC_POWER_ON)
-+	if (host->prev_power_state == MMC_POWER_ON)
- 		return 0;
- 
-+	if (host->prev_power_state == MMC_POWER_UP) {
-+		rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, 0);
-+		goto finish;
+ 	struct device_node *np = ofdev->dev.of_node;
++	struct device_node *sysid_parent;
+ 	struct resource *res;
+ 	u32 sysid, ambafreq;
+ 	int irq, err;
+@@ -1674,10 +1675,15 @@ static int grcan_probe(struct platform_d
+ 	/* Compare GRLIB version number with the first that does not
+ 	 * have the tx bug (see start_xmit)
+ 	 */
+-	err = of_property_read_u32(np, "systemid", &sysid);
+-	if (!err && ((sysid & GRLIB_VERSION_MASK)
+-		     >= GRCAN_TXBUG_SAFE_GRLIB_VERSION))
+-		txbug = false;
++	sysid_parent = of_find_node_by_path("/ambapp0");
++	if (sysid_parent) {
++		of_node_get(sysid_parent);
++		err = of_property_read_u32(sysid_parent, "systemid", &sysid);
++		if (!err && ((sysid & GRLIB_VERSION_MASK) >=
++			     GRCAN_TXBUG_SAFE_GRLIB_VERSION))
++			txbug = false;
++		of_node_put(sysid_parent);
 +	}
-+
-+	msleep(100);
-+
- 	rtsx_pci_init_cmd(pcr);
- 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SELECT, 0x07, SD_MOD_SEL);
- 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SHARE_MODE,
-@@ -940,11 +944,17 @@ static int sd_power_on(struct realtek_pc
- 	if (err < 0)
- 		return err;
  
-+	mdelay(1);
-+
- 	err = rtsx_pci_write_register(pcr, CARD_OE, SD_OUTPUT_EN, SD_OUTPUT_EN);
- 	if (err < 0)
- 		return err;
- 
--	host->power_state = SDMMC_POWER_ON;
-+	/* send at least 74 clocks */
-+	rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, SD_CLK_TOGGLE_EN);
-+
-+finish:
-+	host->prev_power_state = power_mode;
- 	return 0;
- }
- 
-@@ -953,7 +963,7 @@ static int sd_power_off(struct realtek_p
- 	struct rtsx_pcr *pcr = host->pcr;
- 	int err;
- 
--	host->power_state = SDMMC_POWER_OFF;
-+	host->prev_power_state = MMC_POWER_OFF;
- 
- 	rtsx_pci_init_cmd(pcr);
- 
-@@ -979,7 +989,7 @@ static int sd_set_power_mode(struct real
- 	if (power_mode == MMC_POWER_OFF)
- 		err = sd_power_off(host);
- 	else
--		err = sd_power_on(host);
-+		err = sd_power_on(host, power_mode);
- 
- 	return err;
- }
-@@ -1417,7 +1427,7 @@ static int rtsx_pci_sdmmc_drv_probe(stru
- 	host->mmc = mmc;
- 	host->pdev = pdev;
- 	host->cookie = -1;
--	host->power_state = SDMMC_POWER_OFF;
-+	host->prev_power_state = MMC_POWER_OFF;
- 	INIT_WORK(&host->work, sd_request);
- 	platform_set_drvdata(pdev, host);
- 	pcr->slots[RTSX_SD_CARD].p_dev = pdev;
+ 	err = of_property_read_u32(np, "freq", &ambafreq);
+ 	if (err) {
 
 
