@@ -2,86 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 984ECC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A357CC35296
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380285AbiEMMda (ORCPT
+        id S1380339AbiEMMdm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 08:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
+        Fri, 13 May 2022 08:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380264AbiEMMd0 (ORCPT
+        with ESMTP id S1380282AbiEMMd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 08:33:26 -0400
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10C466FB0;
-        Fri, 13 May 2022 05:33:25 -0700 (PDT)
-Received: by mail-oi1-f173.google.com with SMTP id i66so9905324oia.11;
-        Fri, 13 May 2022 05:33:25 -0700 (PDT)
+        Fri, 13 May 2022 08:33:29 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96D1674C8;
+        Fri, 13 May 2022 05:33:28 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-e5e433d66dso10334831fac.5;
+        Fri, 13 May 2022 05:33:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=OpfAUEQTkPwhvM/zr3ZGgNzzj7N1HTqD0nu98IltT+0=;
-        b=Kc+CV+yng3bZELY3qrBklJt7FhXbPIlXOTlemvuGKNF3v2sYu3vlbkJAD9+cta8blt
-         FWIGkvd93vgGbjzjStelyVvhb5AUFAIJHT5Ov+B2kCrUjDEg93Y7V/ZOyOvnw13HTURL
-         g+OSt57axrJYgieP51/NefPoPcfCKsp7pnFU1wnCD2q43qJ4h1WI2iSavAyTj9T+CJTO
-         0WJYsyNFNap01GsGHgFQUInvjW/3aaQpgFccfAyXNs5w6zW8ZwgyQlBv4f/rHEcGuxBb
-         cTXb7nvoOd10v+TJaHf9N9aSwHPZBoYrfUHtkq755PD9j5gS7ssEBT54PQ7bP2KflwAS
-         JGaA==
-X-Gm-Message-State: AOAM530nZHpfUEn3o6VSGjVvK8Q7YXvu9U1sumzxUtdz56S7469wBEvq
-        BxbgcbJfkZWQs4Z5ddWXZA==
-X-Google-Smtp-Source: ABdhPJyk2WjJ8yZT/KInI0FPITOZxMlS0onLUUNtxPFWmgDFaotQBnCJsXFAv8AsaGq3vmWLkJAX4w==
-X-Received: by 2002:a05:6808:2121:b0:326:7593:45b6 with SMTP id r33-20020a056808212100b00326759345b6mr7568460oiw.181.1652445203763;
-        Fri, 13 May 2022 05:33:23 -0700 (PDT)
+        bh=Y6SXqHq4jVINYnWAPbjFMrHoSh+02pvk+f0QJ78bs+8=;
+        b=j4UJDfGay9yf9mS/NV8zIV1ypV/n4rDuCSd9dfl7uhoJTo7kT6O+VowgQQgHqcu22H
+         DrY2OnGyBPirfwWkI2FYblm82nGRt4iHNNHuDJpb6slEe+kVOurBjzkkUsDDV4TS1Smc
+         KHisXUiOBivQbn6w91dh3Bmnp8kHeY22bT7DN8xvLcvmVBgQ9z8fymMY9xlifhe47nBt
+         CQxiNChj1sntFM6Q9cJm6Q74d+Ii2FvUS3tnjYLqDXQxRlReGlwmqfpkT3fFrH+yJ5sH
+         ViEJc9RQHUwzcNg2LOV4yChxuPsJpSEsp8bRGhHGOjypiTM49bloAUHeet1lpoTy7Hd3
+         QLxg==
+X-Gm-Message-State: AOAM5312Nz8zbKDFueUp75Dl1LcXtGjgpabVbQCCgohXTGBEaBuPJecG
+        gvy+YJ3la561ocOR07hB7A==
+X-Google-Smtp-Source: ABdhPJyPZn3Xgpi1f5vxZ52Fd5aXo/LxlG8R5JGXBiXK/g/Fud6q3u5VC0bItDo8dFuPlwtasN2xFg==
+X-Received: by 2002:a05:6870:a1a0:b0:dd:e471:8baf with SMTP id a32-20020a056870a1a000b000dde4718bafmr8054392oaf.40.1652445206767;
+        Fri, 13 May 2022 05:33:26 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id g18-20020a9d6212000000b0060603221260sm905703otj.48.2022.05.13.05.33.22
+        by smtp.gmail.com with ESMTPSA id v3-20020a05683011c300b0060603221278sm866823otq.72.2022.05.13.05.33.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 05:33:23 -0700 (PDT)
-Received: (nullmailer pid 85850 invoked by uid 1000);
+        Fri, 13 May 2022 05:33:26 -0700 (PDT)
+Received: (nullmailer pid 85833 invoked by uid 1000);
         Fri, 13 May 2022 12:33:21 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-remoteproc@vger.kernel.org,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>,
-        devicetree@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sireesh Kodali <sireeshkodali1@gmail.com>
-In-Reply-To: <20220512100006.99695-7-krzysztof.kozlowski@linaro.org>
-References: <20220512100006.99695-1-krzysztof.kozlowski@linaro.org> <20220512100006.99695-7-krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH 06/12] dt-bindings: remoteproc: qcom,adsp: use GIC_SPI defines in example
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        nancy.lin@mediatek.com, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org, airlied@linux.ie, robh+dt@kernel.org,
+        p.zabel@pengutronix.de, matthias.bgg@gmail.com,
+        chunkuang.hu@kernel.org, angelogioacchino.delregno@collabora.com,
+        jason-jh.lin@mediatek.com, linux-mediatek@lists.infradead.org,
+        dri-devel@lists.freedesktop.org
+In-Reply-To: <20220512080523.25082-4-rex-bc.chen@mediatek.com>
+References: <20220512080523.25082-1-rex-bc.chen@mediatek.com> <20220512080523.25082-4-rex-bc.chen@mediatek.com>
+Subject: Re: [PATCH v3 3/3] dt-bindings: mediatek: add ethdr definition for mt8195
 Date:   Fri, 13 May 2022 07:33:21 -0500
-Message-Id: <1652445201.107710.85849.nullmailer@robh.at.kernel.org>
+Message-Id: <1652445201.080121.85831.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 12:00:00 +0200, Krzysztof Kozlowski wrote:
-> Use GIC_SPI defines instead of raw value in the DTS example.
+On Thu, 12 May 2022 16:05:23 +0800, Rex-BC Chen wrote:
+> From: "Nancy.Lin" <nancy.lin@mediatek.com>
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Add vdosys1 ETHDR definition.
+> 
+> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>  .../display/mediatek/mediatek,ethdr.yaml      | 188 ++++++++++++++++++
+>  1 file changed, 188 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
 > 
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+yamllint warnings/errors:
 
-Full log is available here: https://patchwork.ozlabs.org/patch/
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml: properties:compatible: [{'const': 'mediatek,mt8195-disp-ethdr'}] is not of type 'object', 'boolean'
+	from schema $id: http://json-schema.org/draft-07/schema#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml: ignoring, error in schema: properties: compatible
+Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.example.dts:24:18: fatal error: dt-bindings/memory/mt8195-memory-port.h: No such file or directory
+   24 |         #include <dt-bindings/memory/mt8195-memory-port.h>
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
 
+doc reference errors (make refcheckdocs):
 
-remoteproc@b00000: qcom,halt-regs:0: [28, 102404] is too short
-	arch/arm64/boot/dts/qcom/qcs404-evb-1000.dtb
-	arch/arm64/boot/dts/qcom/qcs404-evb-4000.dtb
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
