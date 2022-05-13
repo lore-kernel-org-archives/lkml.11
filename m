@@ -2,93 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CFC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9428C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:26:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377304AbiEMG0c (ORCPT
+        id S1377353AbiEMG0j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 02:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34998 "EHLO
+        Fri, 13 May 2022 02:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377305AbiEMG0U (ORCPT
+        with ESMTP id S1377292AbiEMG0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 02:26:20 -0400
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5E1289BD;
-        Thu, 12 May 2022 23:26:07 -0700 (PDT)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id A6A482013B0;
-        Fri, 13 May 2022 06:26:05 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 03B6B80980; Fri, 13 May 2022 08:19:14 +0200 (CEST)
-Date:   Fri, 13 May 2022 08:19:13 +0200
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Thomas Ristenpart <ristenpart@cornell.edu>,
-        Yevgeniy Dodis <dodis@cs.nyu.edu>, tytso <tytso@mit.edu>,
-        Nadia Heninger <nadiah@cs.ucsd.edu>,
-        Noah Stephens-Dawidowitz <noahsd@gmail.com>,
-        Stefano Tessaro <tessaro@cs.washington.edu>,
-        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "D. J. Bernstein" <djb@cr.yp.to>,
-        "jeanphilippe.aumasson@gmail.com" <jeanphilippe.aumasson@gmail.com>,
-        "jann@thejh.net" <jann@thejh.net>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Peter Schwabe <peter@cryptojedi.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: is "premature next" a real world rng concern, or just an
- academic exercise?
-Message-ID: <Yn34YWhH1nSa8O8K@owl.dominikbrodowski.net>
-References: <YmlMGx6+uigkGiZ0@zx2c4.com>
- <Ym3ZM1P+uYYABtRm@mit.edu>
- <Ym5sICj5iBMn2w/E@zx2c4.com>
- <CAMvzKsiA52Si=PzOJXYwGSA1WUz-1S0A8cpgRJWDzpMkfFbX+Q@mail.gmail.com>
- <CAMvzKsiMY_+8HZqeFqD3tR65a3-JB0LG=+0jBBy1zF4GanrsGA@mail.gmail.com>
- <7EB51D84-90A4-4C97-9A81-14A8C32990F7@cornell.edu>
- <YnzzuuLPssc3/tVe@zx2c4.com>
+        Fri, 13 May 2022 02:26:22 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2925427FDA;
+        Thu, 12 May 2022 23:26:01 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 5B9611C80D8E;
+        Fri, 13 May 2022 14:25:59 +0800 (CST)
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 13
+ May 2022 14:25:58 +0800
+Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS04.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Fri, 13 May 2022 14:25:58 +0800
+Message-ID: <2786221c-d0a5-9bce-70d3-385dc419591a@nuvoton.com>
+Date:   Fri, 13 May 2022 14:25:59 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnzzuuLPssc3/tVe@zx2c4.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH V4 2/5] dt-bindings: clock: Document MA35D1 clock
+ controller bindings
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <ychuang570808@gmail.com>
+CC:     <robh+dt@kernel.org>, <sboyd@kernel.org>, <krzk+dt@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <soc@kernel.org>, <cfli0@nuvoton.com>
+References: <20220510032558.10304-1-ychuang3@nuvoton.com>
+ <20220510032558.10304-3-ychuang3@nuvoton.com>
+ <f0969769-9f24-7e48-6a60-adeea94404e1@linaro.org>
+From:   Jacky Huang <ychuang3@nuvoton.com>
+In-Reply-To: <f0969769-9f24-7e48-6a60-adeea94404e1@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Thu, May 12, 2022 at 01:47:06PM +0200 schrieb Jason A. Donenfeld:
-> But on the other hand, it appears that none of us really thinks that
-> premature next is a real problem worth complicating designs over. So
-> maybe we can just say that it is nice when the silicon in one way or
-> another helps with premature next, but maybe not an explicit must have.
-> So where does that leave us?
-> 
-> - Systems with RDSEED/RDRAND don't have premature next, due to the above
->   KDF salt. This is probably the majority of systems out there these
->   days. This also applies to the sleep resumption notification (and the
->   vmgenid one), and I suspect that most systems with S3 or S0ix or
->   whatever else these days also probably have RDRAND.
 
-... and most of these systems have TPM chips with a RNG, which is (alas)
-usually only used at system startup, as that hw_rng device sets its quality
-to 0 (meaning untrusted). So there's also room for improvement involving
-these hw rng devices.
 
-Thanks,
-	Dominik
+On 2022/5/12 下午 10:04, Krzysztof Kozlowski wrote:
+> On 10/05/2022 05:25, Jacky Huang wrote:
+>> Add documentation to describe Nuvoton MA35D1 clock driver bindings.
+>>
+>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
+>> +
+>> +    clk: clock-controller@40460200 {
+>> +        compatible = "nuvoton,ma35d1-clk";
+>> +        reg = <0x0 0x40460200 0x0 0x100>;
+> I don't think you tested your bindings. This fails.
+>
+> clock-names below as well. Please do not send untested code.
+>
+> Testing is explained here:
+> https://apc01.safelinks.protection.outlook.com/?url=https%3A%2F%2Felixir.bootlin.com%2Flinux%2Fv5.18-rc6%2Fsource%2FDocumentation%2Fdevicetree%2Fbindings%2Fwriting-schema.rst%23L111&amp;data=05%7C01%7Cychuang3%40nuvoton.com%7C7f9b081f94a642e8b40b08da34204e53%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637879610603173566%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=kqInjscLvZpOSWtsN%2BPW3s%2BPeaK5KCD1weTH2JiHqxg%3D&amp;reserved=0
+>
+> Best regards,
+> Krzysztof
+
+I run the test  make DT_CHECKER_FLAGS=-m dt_binding_check, but not run 
+dtbs_check.
+I will fix it. Thank you.
+
+Sincerely,
+Jacky Huang
+
+
+
+
+
+
