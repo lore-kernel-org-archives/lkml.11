@@ -2,187 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C925C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380170AbiEMM1E (ORCPT
+        id S1380227AbiEMM1I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 08:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36310 "EHLO
+        Fri, 13 May 2022 08:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiEMM0x (ORCPT
+        with ESMTP id S232530AbiEMM04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 08:26:53 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24868E7A;
-        Fri, 13 May 2022 05:26:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652444812; x=1683980812;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=JzsGeBssR2YonK6spqkj4DYYmCy1pfIl6z6FfG0gbLY=;
-  b=fhOyQhnX9huVW3xhj2s3wwUlFqBiG8vdnLs11/MvVdcGXT6uLW9p9Etx
-   q/qMIAAXYvWIkmYH/GkLnTuR0gF7A56PZ0moPsZ+7qX5zmrjZCfL6f6iW
-   a4qXnNvkkxKItB/hya7uRsXa8gr8FDFM+dLb93NBEqJ2J9jJPNScozcy2
-   f8r2Vnu4o84cju69NiGdfY8c3pM12gtPWmQeOIejM+yfhqn9qeyIz+PI1
-   v438E8SLsLScapRR6dDEsp/tFGlBmRPrE129GkNgJEO2fo3fE2jEjbxwc
-   lV2SduVhZ6IJCRydbg4gl0pZau4dYEVEDIkt0MBSFoqMrVvkEexiPRxUH
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="270228370"
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="270228370"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 05:26:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="624848359"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga008.fm.intel.com with ESMTP; 13 May 2022 05:26:48 -0700
-Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 24DCQkFI015654;
-        Fri, 13 May 2022 13:26:46 +0100
-From:   Larysa Zaremba <larysa.zaremba@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH bpf-next v3] bpftool: Use sysfs vmlinux when dumping BTF by ID
-Date:   Fri, 13 May 2022 14:17:43 +0200
-Message-Id: <20220513121743.12411-1-larysa.zaremba@intel.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 13 May 2022 08:26:56 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C3AA5BD2A
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:26:52 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id r1so15017888ybo.7
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:26:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=CNColVrvzT2paTadmJx7QmfVUH99VFUNC4FwQajaX30=;
+        b=fgZoCr+P0YLHIt9difJEkBctiHZD1TAZ4VGl1Wdxe0wL43HKeppNRKfFFjEBzHoTnK
+         X+MZTjD/NYV3m2WKlRYDIDK4kxl+KQpDnmBj/jy9Dg8Eik7KJSbnbSNAkWfJnCfPiYaE
+         YT6Ub7aOFoQlbMYGV3qFBVQlH3ltkUMH0gg9bamWReNzk4Od8Zs8ONqgWu+RAIgBcEVP
+         ip6TDNYvIzo1zGJJAY6MeVnFjQ01/JDpYdLjBMMmZ3R/2EQyGNHgHPllV7CXm9HiKljk
+         Fd9YqC1JwP3smDlGcgXwmG+aVIBPAw1mOzEQp7jeg7GdE9GId7CWZgnSCciUhAsAC/P3
+         6JpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CNColVrvzT2paTadmJx7QmfVUH99VFUNC4FwQajaX30=;
+        b=AxoPb+kKK2Bnv2wXnUHuslAjiaIZxPTj7VN5DZW3yX7IdaVuntoPo1amv9iYhygon2
+         OX5WBHvr7lgWnyjKBGoe6DL9sIDZiHIncenEt0s5si4kNuf4uxrW2YjDaEomOeSdIWJV
+         i+oGILr0YBm22oQQmjH7uVKk7WuGhr1VILiz6B0tAiFg2JVwNw1fh6fo2EbJjDamexAp
+         0wcfdkteqxq47gp4bA3bsgT1gTiG3YFpmY84Jbl57r0NYAEFLInrsJIT2ujQHS3LitxE
+         zVPQcyBcx+hwkExc7m24zGJJI7gMI60mSxNFfdomt7H/tFK1wlkti58MJxyLu0zWMsd2
+         gmAA==
+X-Gm-Message-State: AOAM532545KCnkRQoooiurMFSSuzCQAqHOCk/hvJKdGle0vCDrpYb3tH
+        0hXZYli0aJKZVJudRwloS6qlPI/mWGvUHy+vJE05qg==
+X-Google-Smtp-Source: ABdhPJxoTL2jX3zw7FK7Qs22T64RPExXJjGiprH1kOuNLfotTjSS/RWHWRl6vMXtyRXLS4ogUW95JldzIV+mEZZTr6o=
+X-Received: by 2002:a25:8706:0:b0:64b:4657:d2e1 with SMTP id
+ a6-20020a258706000000b0064b4657d2e1mr4492719ybl.147.1652444811517; Fri, 13
+ May 2022 05:26:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+ <20220511064943.GR76023@worktop.programming.kicks-ass.net>
+ <20bada85-9203-57f4-2502-57a6fd11f3ea@intel.com> <875ymav8ul.ffs@tglx>
+ <55176b79-90af-4a47-dc06-9f5f2f2c123d@intel.com> <CAG_fn=URUve59ZPWRawW+BN-bUy7U3QmFsfOz_7L8ndsL4kQFQ@mail.gmail.com>
+ <8a47d0ee50b44520a6f26177e6fe7ec5@AcuMS.aculab.com>
+In-Reply-To: <8a47d0ee50b44520a6f26177e6fe7ec5@AcuMS.aculab.com>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Fri, 13 May 2022 14:26:15 +0200
+Message-ID: <CAG_fn=XUqzBWzuU0cmjUoSfHTv6pN=LCqGh7Ns8kgR6L169bPw@mail.gmail.com>
+Subject: Re: [RFCv2 00/10] Linear Address Masking enabling
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, dumping almost all BTFs specified by id requires
-using the -B option to pass the base BTF. For kernel module
-BTFs the vmlinux BTF sysfs path should work.
+On Fri, May 13, 2022 at 1:28 PM David Laight <David.Laight@aculab.com> wrot=
+e:
+>
+> ...
+> > Once we have the possibility to store tags in the pointers, we don't
+> > need redzones for heap/stack objects anymore, which saves quite a bit
+> > of memory.
+>
+> You still need redzones.
+> The high bits are ignored for actual memory accesses.
+>
+> To do otherwise you'd need the high bits to be in the PTE,
+> copied to the TLB and finally get into the cache tag.
+>
+> Then you'd have to use the correct tags for each page.
 
-This patch simplifies dumping by ID usage by loading
-vmlinux BTF from sysfs as base, if base BTF was not specified
-and the ID corresponds to a kernel module BTF.
+Sorry, I don't understand how this is relevant to HWASan in the userspace.
+Like in ASan, we have a custom allocator that assigns tags to heap
+objects. The assigned tag is stored in both the shadow memory for the
+object and the pointer returned by the allocator.
+Instrumentation inserted by the compiler checks the pointer before
+every memory access and ensures that its tag matches the tag of the
+object in the shadow memory.
+A tag mismatch is reported as an out-of-bounds or a use-after-free,
+depending on whether the accessed memory is still considered
+allocated.
+Because objects with different tags follow each other, there is no
+need to add extra redzones to the objects to detect buffer overflows.
+(We might need to increase the object alignment though, but that's a
+different story).
 
-Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
-From v2[0]:
-- instead of using vmlinux as base only after the first unsuccessful
-  attempt, set base to vmlinux before loading in applicable cases, precisely
-  if no base was provided by user and id belongs to a kernel module BTF.
+>
+>         David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1=
+ 1PT, UK
+> Registration No: 1397386 (Wales)
 
-From v1[1]:
-- base BTF is assumed to be vmlinux only for kernel BTFs.
 
-[0] https://lore.kernel.org/bpf/20220505130507.130670-1-larysa.zaremba@intel.com/
-[1] https://lore.kernel.org/bpf/20220428111442.111805-1-larysa.zaremba@intel.com/
----
- tools/bpf/bpftool/btf.c | 65 +++++++++++++++++++++++++++++++++++------
- 1 file changed, 56 insertions(+), 9 deletions(-)
 
-diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-index a2c665beda87..0eb105c416fc 100644
---- a/tools/bpf/bpftool/btf.c
-+++ b/tools/bpf/bpftool/btf.c
-@@ -459,6 +459,54 @@ static int dump_btf_c(const struct btf *btf,
- 	return err;
- }
- 
-+static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
-+
-+static struct btf *get_vmlinux_btf_from_sysfs(void)
-+{
-+	struct btf *base;
-+
-+	base = btf__parse(sysfs_vmlinux, NULL);
-+	if (libbpf_get_error(base)) {
-+		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
-+		      sysfs_vmlinux, libbpf_get_error(base));
-+		base = NULL;
-+	}
-+
-+	return base;
-+}
-+
-+#define BTF_NAME_BUFF_LEN 64
-+
-+static bool btf_is_kernel_module(__u32 btf_id)
-+{
-+	struct bpf_btf_info btf_info = {};
-+	char btf_name[BTF_NAME_BUFF_LEN];
-+	int btf_fd;
-+	__u32 len;
-+	int err;
-+
-+	btf_fd = bpf_btf_get_fd_by_id(btf_id);
-+	if (btf_fd < 0) {
-+		p_err("can't get BTF object by id (%u): %s",
-+		      btf_id, strerror(errno));
-+		return false;
-+	}
-+
-+	len = sizeof(btf_info);
-+	btf_info.name = ptr_to_u64(btf_name);
-+	btf_info.name_len = sizeof(btf_name);
-+	err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
-+	close(btf_fd);
-+
-+	if (err) {
-+		p_err("can't get BTF (ID %u) object info: %s",
-+		      btf_id, strerror(errno));
-+		return false;
-+	}
-+
-+	return strncmp(btf_name, "vmlinux", sizeof(btf_name)) && btf_info.kernel_btf;
-+}
-+
- static int do_dump(int argc, char **argv)
- {
- 	struct btf *btf = NULL, *base = NULL;
-@@ -536,18 +584,11 @@ static int do_dump(int argc, char **argv)
- 		NEXT_ARG();
- 	} else if (is_prefix(src, "file")) {
- 		const char sysfs_prefix[] = "/sys/kernel/btf/";
--		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
- 
- 		if (!base_btf &&
- 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
--		    strcmp(*argv, sysfs_vmlinux) != 0) {
--			base = btf__parse(sysfs_vmlinux, NULL);
--			if (libbpf_get_error(base)) {
--				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
--				      sysfs_vmlinux, libbpf_get_error(base));
--				base = NULL;
--			}
--		}
-+		    strcmp(*argv, sysfs_vmlinux))
-+			base = get_vmlinux_btf_from_sysfs();
- 
- 		btf = btf__parse_split(*argv, base ?: base_btf);
- 		err = libbpf_get_error(btf);
-@@ -591,6 +632,12 @@ static int do_dump(int argc, char **argv)
- 	}
- 
- 	if (!btf) {
-+		if (!base_btf && btf_is_kernel_module(btf_id)) {
-+			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (%s)",
-+			       sysfs_vmlinux);
-+			base_btf = get_vmlinux_btf_from_sysfs();
-+		}
-+
- 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
- 		err = libbpf_get_error(btf);
- 		if (err) {
--- 
-2.35.1
+--=20
+Alexander Potapenko
+Software Engineer
 
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
+
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
+
+Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
+erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
+weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
+mich
+bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
+
+
+This e-mail is confidential. If you received this communication by
+mistake, please don't forward it to anyone else, please erase all
+copies and attachments, and please let me know that it has gone to the
+wrong person.
