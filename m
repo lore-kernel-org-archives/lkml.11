@@ -2,346 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53351C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382042AbiEMPbY (ORCPT
+        id S1382087AbiEMPbb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
+        Fri, 13 May 2022 11:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382133AbiEMPbT (ORCPT
+        with ESMTP id S1382132AbiEMPbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 11:31:19 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F2B77A800
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 602F66F4AB
         for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:31:17 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5BB171424;
-        Fri, 13 May 2022 08:31:17 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8E3743F73D;
-        Fri, 13 May 2022 08:31:14 -0700 (PDT)
-Date:   Fri, 13 May 2022 16:31:07 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+Received: by mail-ej1-x62a.google.com with SMTP id ks9so16987750ejb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:31:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KXuxsvvmzObesTCgGUdp3DjkR6F9yj2J25L79TJ+yVs=;
+        b=aXWfHMALpGfKhmrHrc/L4dv2J+Gp58oc75+F7mRYLtgpTkhkNDsbFFBigLbuyvjJjV
+         IAw8zNjauvMxIqDCXFWAgkCxENedb90d2PKTxvvlaH82wv2drHpkq2BIJWfuWyUFTWTx
+         fF9h3wmDRUEDcp1PNzBueNP1WPRK3an9B3T826qVc6OkkFibUhKaqtqFWtAT3UXDpY4a
+         JG6wovGRwx75OLtX4en6r5HHU1cT59pHu+BKWSSVluKuxxddL3/cHVESAyfylqtSdp1K
+         vohsEbeyS89HBT7UuR1rYoIoOeMLWxGQoC27irR0SsVp/JN6KDbKETR8em9TFXBXxWHb
+         jTEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KXuxsvvmzObesTCgGUdp3DjkR6F9yj2J25L79TJ+yVs=;
+        b=kfcVtE+otw1yPEXQnJ33tr3EV08JV6ikjFJH/hF5gcLsUgJWPCioYkZUlvKtto9fR+
+         +6PZCRIhVgjFzvzh90R/d0uZdJK/efD2Djuo1qrs+QQmvMZtlOJL18mUJhlXDrNwtH0Z
+         jyTQAW9EN8BLgU9n/svM57txTHJcEXstFISPc2hjVhsbE1wqS+/o1fzrBrIQUA8vYFL2
+         igJyeglpGi0l2o66r13tNFquFlbYkG0lPAFwiBT40qlrDEv5uNIINgYy/Qn3AW8Weol4
+         r1RlaGAjyfl78n4a3JIrmFIhGLNDG27ss2t9b1sGRfr8WnqN2hOdcLv9NEP6ZAR9UALs
+         NN7w==
+X-Gm-Message-State: AOAM531GhVQC3dW7W38NfkoCLBcRVuq9210x9ls7yqJaE58XVGG9zjA/
+        fyczZWIQTwIbC5pND/0qrtY=
+X-Google-Smtp-Source: ABdhPJx7eYHdJ0ONJxZKP1JzGM3vzvvj/Gwx5mHue0RCmDN2ejLLc4U4ZxaUUkOBjDrog8CHBPigWA==
+X-Received: by 2002:a17:906:19c6:b0:6ce:98a4:5ee6 with SMTP id h6-20020a17090619c600b006ce98a45ee6mr4757605ejd.567.1652455875913;
+        Fri, 13 May 2022 08:31:15 -0700 (PDT)
+Received: from localhost.localdomain (93-103-18-160.static.t-2.net. [93.103.18.160])
+        by smtp.gmail.com with ESMTPSA id h9-20020a50cdc9000000b0042617ba63d5sm1075706edj.95.2022.05.13.08.31.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 08:31:15 -0700 (PDT)
+From:   Uros Bizjak <ubizjak@gmail.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Uros Bizjak <ubizjak@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-Subject: Re: [PATCH -next v4 4/7] arm64: add copy_{to, from}_user to machine
- check safe
-Message-ID: <Yn55uz52Hn3gF9Xe@lakrids>
-References: <20220420030418.3189040-1-tongtiangen@huawei.com>
- <20220420030418.3189040-5-tongtiangen@huawei.com>
+        "H. Peter Anvin" <hpa@zytor.com>, Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Marco Elver <elver@google.com>
+Subject: [PATCH v2 1/2] locking/atomic: Add generic try_cmpxchg64 support
+Date:   Fri, 13 May 2022 17:30:08 +0200
+Message-Id: <20220513153009.228282-2-ubizjak@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220513153009.228282-1-ubizjak@gmail.com>
+References: <20220513153009.228282-1-ubizjak@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420030418.3189040-5-tongtiangen@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 03:04:15AM +0000, Tong Tiangen wrote:
-> Add copy_{to, from}_user() to machine check safe.
-> 
-> If copy fail due to hardware memory error, only the relevant processes are
-> affected, so killing the user process and isolate the user page with
-> hardware memory errors is a more reasonable choice than kernel panic.
-> 
-> Add new extable type EX_TYPE_UACCESS_MC which can be used for uaccess that
-> can be recovered from hardware memory errors.
+Add generic support for try_cmpxchg64{,_acquire,_release,_relaxed}
+and their falbacks involving cmpxchg64.
 
-I don't understand why we need this.
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Marco Elver <elver@google.com>
+---
+ include/linux/atomic/atomic-arch-fallback.h | 72 ++++++++++++++++++++-
+ include/linux/atomic/atomic-instrumented.h  | 40 +++++++++++-
+ scripts/atomic/gen-atomic-fallback.sh       | 31 +++++----
+ scripts/atomic/gen-atomic-instrumented.sh   |  2 +-
+ 4 files changed, 129 insertions(+), 16 deletions(-)
 
-If we apply EX_TYPE_UACCESS consistently to *all* user accesses, and
-*only* to user accesses, that would *always* indicate that we can
-recover, and that seems much simpler to deal with.
+diff --git a/include/linux/atomic/atomic-arch-fallback.h b/include/linux/atomic/atomic-arch-fallback.h
+index 6db58d180866..77bc5522e61c 100644
+--- a/include/linux/atomic/atomic-arch-fallback.h
++++ b/include/linux/atomic/atomic-arch-fallback.h
+@@ -147,6 +147,76 @@
+ 
+ #endif /* arch_try_cmpxchg_relaxed */
+ 
++#ifndef arch_try_cmpxchg64_relaxed
++#ifdef arch_try_cmpxchg64
++#define arch_try_cmpxchg64_acquire arch_try_cmpxchg64
++#define arch_try_cmpxchg64_release arch_try_cmpxchg64
++#define arch_try_cmpxchg64_relaxed arch_try_cmpxchg64
++#endif /* arch_try_cmpxchg64 */
++
++#ifndef arch_try_cmpxchg64
++#define arch_try_cmpxchg64(_ptr, _oldp, _new) \
++({ \
++	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
++	___r = arch_cmpxchg64((_ptr), ___o, (_new)); \
++	if (unlikely(___r != ___o)) \
++		*___op = ___r; \
++	likely(___r == ___o); \
++})
++#endif /* arch_try_cmpxchg64 */
++
++#ifndef arch_try_cmpxchg64_acquire
++#define arch_try_cmpxchg64_acquire(_ptr, _oldp, _new) \
++({ \
++	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
++	___r = arch_cmpxchg64_acquire((_ptr), ___o, (_new)); \
++	if (unlikely(___r != ___o)) \
++		*___op = ___r; \
++	likely(___r == ___o); \
++})
++#endif /* arch_try_cmpxchg64_acquire */
++
++#ifndef arch_try_cmpxchg64_release
++#define arch_try_cmpxchg64_release(_ptr, _oldp, _new) \
++({ \
++	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
++	___r = arch_cmpxchg64_release((_ptr), ___o, (_new)); \
++	if (unlikely(___r != ___o)) \
++		*___op = ___r; \
++	likely(___r == ___o); \
++})
++#endif /* arch_try_cmpxchg64_release */
++
++#ifndef arch_try_cmpxchg64_relaxed
++#define arch_try_cmpxchg64_relaxed(_ptr, _oldp, _new) \
++({ \
++	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
++	___r = arch_cmpxchg64_relaxed((_ptr), ___o, (_new)); \
++	if (unlikely(___r != ___o)) \
++		*___op = ___r; \
++	likely(___r == ___o); \
++})
++#endif /* arch_try_cmpxchg64_relaxed */
++
++#else /* arch_try_cmpxchg64_relaxed */
++
++#ifndef arch_try_cmpxchg64_acquire
++#define arch_try_cmpxchg64_acquire(...) \
++	__atomic_op_acquire(arch_try_cmpxchg64, __VA_ARGS__)
++#endif
++
++#ifndef arch_try_cmpxchg64_release
++#define arch_try_cmpxchg64_release(...) \
++	__atomic_op_release(arch_try_cmpxchg64, __VA_ARGS__)
++#endif
++
++#ifndef arch_try_cmpxchg64
++#define arch_try_cmpxchg64(...) \
++	__atomic_op_fence(arch_try_cmpxchg64, __VA_ARGS__)
++#endif
++
++#endif /* arch_try_cmpxchg64_relaxed */
++
+ #ifndef arch_atomic_read_acquire
+ static __always_inline int
+ arch_atomic_read_acquire(const atomic_t *v)
+@@ -2386,4 +2456,4 @@ arch_atomic64_dec_if_positive(atomic64_t *v)
+ #endif
+ 
+ #endif /* _LINUX_ATOMIC_FALLBACK_H */
+-// 8e2cc06bc0d2c0967d2f8424762bd48555ee40ae
++// b5e87bdd5ede61470c29f7a7e4de781af3770f09
+diff --git a/include/linux/atomic/atomic-instrumented.h b/include/linux/atomic/atomic-instrumented.h
+index 5d69b143c28e..7a139ec030b0 100644
+--- a/include/linux/atomic/atomic-instrumented.h
++++ b/include/linux/atomic/atomic-instrumented.h
+@@ -2006,6 +2006,44 @@ atomic_long_dec_if_positive(atomic_long_t *v)
+ 	arch_try_cmpxchg_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+ })
+ 
++#define try_cmpxchg64(ptr, oldp, ...) \
++({ \
++	typeof(ptr) __ai_ptr = (ptr); \
++	typeof(oldp) __ai_oldp = (oldp); \
++	kcsan_mb(); \
++	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
++	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
++	arch_try_cmpxchg64(__ai_ptr, __ai_oldp, __VA_ARGS__); \
++})
++
++#define try_cmpxchg64_acquire(ptr, oldp, ...) \
++({ \
++	typeof(ptr) __ai_ptr = (ptr); \
++	typeof(oldp) __ai_oldp = (oldp); \
++	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
++	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
++	arch_try_cmpxchg64_acquire(__ai_ptr, __ai_oldp, __VA_ARGS__); \
++})
++
++#define try_cmpxchg64_release(ptr, oldp, ...) \
++({ \
++	typeof(ptr) __ai_ptr = (ptr); \
++	typeof(oldp) __ai_oldp = (oldp); \
++	kcsan_release(); \
++	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
++	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
++	arch_try_cmpxchg64_release(__ai_ptr, __ai_oldp, __VA_ARGS__); \
++})
++
++#define try_cmpxchg64_relaxed(ptr, oldp, ...) \
++({ \
++	typeof(ptr) __ai_ptr = (ptr); \
++	typeof(oldp) __ai_oldp = (oldp); \
++	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
++	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
++	arch_try_cmpxchg64_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
++})
++
+ #define cmpxchg_local(ptr, ...) \
+ ({ \
+ 	typeof(ptr) __ai_ptr = (ptr); \
+@@ -2045,4 +2083,4 @@ atomic_long_dec_if_positive(atomic_long_t *v)
+ })
+ 
+ #endif /* _LINUX_ATOMIC_INSTRUMENTED_H */
+-// 87c974b93032afd42143613434d1a7788fa598f9
++// 764f741eb77a7ad565dc8d99ce2837d5542e8aee
+diff --git a/scripts/atomic/gen-atomic-fallback.sh b/scripts/atomic/gen-atomic-fallback.sh
+index 8e2da71f1d5f..3a07695e3c89 100755
+--- a/scripts/atomic/gen-atomic-fallback.sh
++++ b/scripts/atomic/gen-atomic-fallback.sh
+@@ -164,41 +164,44 @@ gen_xchg_fallbacks()
+ 
+ gen_try_cmpxchg_fallback()
+ {
++	local cmpxchg="$1"; shift;
+ 	local order="$1"; shift;
+ 
+ cat <<EOF
+-#ifndef arch_try_cmpxchg${order}
+-#define arch_try_cmpxchg${order}(_ptr, _oldp, _new) \\
++#ifndef arch_try_${cmpxchg}${order}
++#define arch_try_${cmpxchg}${order}(_ptr, _oldp, _new) \\
+ ({ \\
+ 	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \\
+-	___r = arch_cmpxchg${order}((_ptr), ___o, (_new)); \\
++	___r = arch_${cmpxchg}${order}((_ptr), ___o, (_new)); \\
+ 	if (unlikely(___r != ___o)) \\
+ 		*___op = ___r; \\
+ 	likely(___r == ___o); \\
+ })
+-#endif /* arch_try_cmpxchg${order} */
++#endif /* arch_try_${cmpxchg}${order} */
+ 
+ EOF
+ }
+ 
+ gen_try_cmpxchg_fallbacks()
+ {
+-	printf "#ifndef arch_try_cmpxchg_relaxed\n"
+-	printf "#ifdef arch_try_cmpxchg\n"
++	local cmpxchg="$1"; shift;
+ 
+-	gen_basic_fallbacks "arch_try_cmpxchg"
++	printf "#ifndef arch_try_${cmpxchg}_relaxed\n"
++	printf "#ifdef arch_try_${cmpxchg}\n"
+ 
+-	printf "#endif /* arch_try_cmpxchg */\n\n"
++	gen_basic_fallbacks "arch_try_${cmpxchg}"
++
++	printf "#endif /* arch_try_${cmpxchg} */\n\n"
+ 
+ 	for order in "" "_acquire" "_release" "_relaxed"; do
+-		gen_try_cmpxchg_fallback "${order}"
++		gen_try_cmpxchg_fallback "${cmpxchg}" "${order}"
+ 	done
+ 
+-	printf "#else /* arch_try_cmpxchg_relaxed */\n"
++	printf "#else /* arch_try_${cmpxchg}_relaxed */\n"
+ 
+-	gen_order_fallbacks "arch_try_cmpxchg"
++	gen_order_fallbacks "arch_try_${cmpxchg}"
+ 
+-	printf "#endif /* arch_try_cmpxchg_relaxed */\n\n"
++	printf "#endif /* arch_try_${cmpxchg}_relaxed */\n\n"
+ }
+ 
+ cat << EOF
+@@ -218,7 +221,9 @@ for xchg in "arch_xchg" "arch_cmpxchg" "arch_cmpxchg64"; do
+ 	gen_xchg_fallbacks "${xchg}"
+ done
+ 
+-gen_try_cmpxchg_fallbacks
++for cmpxchg in "cmpxchg" "cmpxchg64"; do
++	gen_try_cmpxchg_fallbacks "${cmpxchg}"
++done
+ 
+ grep '^[a-z]' "$1" | while read name meta args; do
+ 	gen_proto "${meta}" "${name}" "atomic" "int" ${args}
+diff --git a/scripts/atomic/gen-atomic-instrumented.sh b/scripts/atomic/gen-atomic-instrumented.sh
+index 68f902731d01..77c06526a574 100755
+--- a/scripts/atomic/gen-atomic-instrumented.sh
++++ b/scripts/atomic/gen-atomic-instrumented.sh
+@@ -166,7 +166,7 @@ grep '^[a-z]' "$1" | while read name meta args; do
+ done
+ 
+ 
+-for xchg in "xchg" "cmpxchg" "cmpxchg64" "try_cmpxchg"; do
++for xchg in "xchg" "cmpxchg" "cmpxchg64" "try_cmpxchg" "try_cmpxchg64"; do
+ 	for order in "" "_acquire" "_release" "_relaxed"; do
+ 		gen_xchg "${xchg}" "${order}" ""
+ 		printf "\n"
+-- 
+2.35.1
 
-Today we use EX_TYPE_UACCESS_ERR_ZERO for kernel accesses in a couple of
-cases, which we should clean up, and we user EX_TYPE_FIXUP for a couple
-of user accesses, but those could easily be converted over.
-
-> The x16 register is used to save the fixup type in copy_xxx_user which
-> used extable type EX_TYPE_UACCESS_MC.
-
-Why x16?
-
-How is this intended to be consumed, and why is that behaviour different
-from any *other* fault?
-
-Mark.
-
-> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-> ---
->  arch/arm64/include/asm/asm-extable.h | 14 ++++++++++++++
->  arch/arm64/include/asm/asm-uaccess.h | 15 ++++++++++-----
->  arch/arm64/lib/copy_from_user.S      | 18 +++++++++++-------
->  arch/arm64/lib/copy_to_user.S        | 18 +++++++++++-------
->  arch/arm64/mm/extable.c              | 18 ++++++++++++++----
->  5 files changed, 60 insertions(+), 23 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
-> index c39f2437e08e..75b2c00e9523 100644
-> --- a/arch/arm64/include/asm/asm-extable.h
-> +++ b/arch/arm64/include/asm/asm-extable.h
-> @@ -2,12 +2,18 @@
->  #ifndef __ASM_ASM_EXTABLE_H
->  #define __ASM_ASM_EXTABLE_H
->  
-> +#define FIXUP_TYPE_NORMAL		0
-> +#define FIXUP_TYPE_MC			1
-> +
->  #define EX_TYPE_NONE			0
->  #define EX_TYPE_FIXUP			1
->  #define EX_TYPE_BPF			2
->  #define EX_TYPE_UACCESS_ERR_ZERO	3
->  #define EX_TYPE_LOAD_UNALIGNED_ZEROPAD	4
->  
-> +/* _MC indicates that can fixup from machine check errors */
-> +#define EX_TYPE_UACCESS_MC		5
-> +
->  #ifdef __ASSEMBLY__
->  
->  #define __ASM_EXTABLE_RAW(insn, fixup, type, data)	\
-> @@ -27,6 +33,14 @@
->  	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
->  	.endm
->  
-> +/*
-> + * Create an exception table entry for `insn`, which will branch to `fixup`
-> + * when an unhandled fault(include sea fault) is taken.
-> + */
-> +	.macro          _asm_extable_uaccess_mc, insn, fixup
-> +	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_UACCESS_MC, 0)
-> +	.endm
-> +
->  /*
->   * Create an exception table entry for `insn` if `fixup` is provided. Otherwise
->   * do nothing.
-> diff --git a/arch/arm64/include/asm/asm-uaccess.h b/arch/arm64/include/asm/asm-uaccess.h
-> index 0557af834e03..6c23c138e1fc 100644
-> --- a/arch/arm64/include/asm/asm-uaccess.h
-> +++ b/arch/arm64/include/asm/asm-uaccess.h
-> @@ -63,6 +63,11 @@ alternative_else_nop_endif
->  9999:	x;					\
->  	_asm_extable	9999b, l
->  
-> +
-> +#define USER_MC(l, x...)			\
-> +9999:	x;					\
-> +	_asm_extable_uaccess_mc	9999b, l
-> +
->  /*
->   * Generate the assembly for LDTR/STTR with exception table entries.
->   * This is complicated as there is no post-increment or pair versions of the
-> @@ -73,8 +78,8 @@ alternative_else_nop_endif
->  8889:		ldtr	\reg2, [\addr, #8];
->  		add	\addr, \addr, \post_inc;
->  
-> -		_asm_extable	8888b,\l;
-> -		_asm_extable	8889b,\l;
-> +		_asm_extable_uaccess_mc	8888b, \l;
-> +		_asm_extable_uaccess_mc	8889b, \l;
->  	.endm
->  
->  	.macro user_stp l, reg1, reg2, addr, post_inc
-> @@ -82,14 +87,14 @@ alternative_else_nop_endif
->  8889:		sttr	\reg2, [\addr, #8];
->  		add	\addr, \addr, \post_inc;
->  
-> -		_asm_extable	8888b,\l;
-> -		_asm_extable	8889b,\l;
-> +		_asm_extable_uaccess_mc	8888b,\l;
-> +		_asm_extable_uaccess_mc	8889b,\l;
->  	.endm
->  
->  	.macro user_ldst l, inst, reg, addr, post_inc
->  8888:		\inst		\reg, [\addr];
->  		add		\addr, \addr, \post_inc;
->  
-> -		_asm_extable	8888b,\l;
-> +		_asm_extable_uaccess_mc	8888b, \l;
->  	.endm
->  #endif
-> diff --git a/arch/arm64/lib/copy_from_user.S b/arch/arm64/lib/copy_from_user.S
-> index 34e317907524..480cc5ac0a8d 100644
-> --- a/arch/arm64/lib/copy_from_user.S
-> +++ b/arch/arm64/lib/copy_from_user.S
-> @@ -25,7 +25,7 @@
->  	.endm
->  
->  	.macro strb1 reg, ptr, val
-> -	strb \reg, [\ptr], \val
-> +	USER_MC(9998f, strb \reg, [\ptr], \val)
->  	.endm
->  
->  	.macro ldrh1 reg, ptr, val
-> @@ -33,7 +33,7 @@
->  	.endm
->  
->  	.macro strh1 reg, ptr, val
-> -	strh \reg, [\ptr], \val
-> +	USER_MC(9998f, strh \reg, [\ptr], \val)
->  	.endm
->  
->  	.macro ldr1 reg, ptr, val
-> @@ -41,7 +41,7 @@
->  	.endm
->  
->  	.macro str1 reg, ptr, val
-> -	str \reg, [\ptr], \val
-> +	USER_MC(9998f, str \reg, [\ptr], \val)
->  	.endm
->  
->  	.macro ldp1 reg1, reg2, ptr, val
-> @@ -49,11 +49,12 @@
->  	.endm
->  
->  	.macro stp1 reg1, reg2, ptr, val
-> -	stp \reg1, \reg2, [\ptr], \val
-> +	USER_MC(9998f, stp \reg1, \reg2, [\ptr], \val)
->  	.endm
->  
-> -end	.req	x5
-> -srcin	.req	x15
-> +end		.req	x5
-> +srcin		.req	x15
-> +fixup_type	.req	x16
->  SYM_FUNC_START(__arch_copy_from_user)
->  	add	end, x0, x2
->  	mov	srcin, x1
-> @@ -62,7 +63,10 @@ SYM_FUNC_START(__arch_copy_from_user)
->  	ret
->  
->  	// Exception fixups
-> -9997:	cmp	dst, dstin
-> +	// x16: fixup type written by ex_handler_uaccess_mc
-> +9997:	cmp 	fixup_type, #FIXUP_TYPE_MC
-> +	b.eq	9998f
-> +	cmp	dst, dstin
->  	b.ne	9998f
->  	// Before being absolutely sure we couldn't copy anything, try harder
->  USER(9998f, ldtrb tmp1w, [srcin])
-> diff --git a/arch/arm64/lib/copy_to_user.S b/arch/arm64/lib/copy_to_user.S
-> index 802231772608..021a7d27b3a4 100644
-> --- a/arch/arm64/lib/copy_to_user.S
-> +++ b/arch/arm64/lib/copy_to_user.S
-> @@ -20,7 +20,7 @@
->   *	x0 - bytes not copied
->   */
->  	.macro ldrb1 reg, ptr, val
-> -	ldrb  \reg, [\ptr], \val
-> +	USER_MC(9998f, ldrb  \reg, [\ptr], \val)
->  	.endm
->  
->  	.macro strb1 reg, ptr, val
-> @@ -28,7 +28,7 @@
->  	.endm
->  
->  	.macro ldrh1 reg, ptr, val
-> -	ldrh  \reg, [\ptr], \val
-> +	USER_MC(9998f, ldrh  \reg, [\ptr], \val)
->  	.endm
->  
->  	.macro strh1 reg, ptr, val
-> @@ -36,7 +36,7 @@
->  	.endm
->  
->  	.macro ldr1 reg, ptr, val
-> -	ldr \reg, [\ptr], \val
-> +	USER_MC(9998f, ldr \reg, [\ptr], \val)
->  	.endm
->  
->  	.macro str1 reg, ptr, val
-> @@ -44,15 +44,16 @@
->  	.endm
->  
->  	.macro ldp1 reg1, reg2, ptr, val
-> -	ldp \reg1, \reg2, [\ptr], \val
-> +	USER_MC(9998f, ldp \reg1, \reg2, [\ptr], \val)
->  	.endm
->  
->  	.macro stp1 reg1, reg2, ptr, val
->  	user_stp 9997f, \reg1, \reg2, \ptr, \val
->  	.endm
->  
-> -end	.req	x5
-> -srcin	.req	x15
-> +end		.req	x5
-> +srcin		.req	x15
-> +fixup_type	.req	x16
->  SYM_FUNC_START(__arch_copy_to_user)
->  	add	end, x0, x2
->  	mov	srcin, x1
-> @@ -61,7 +62,10 @@ SYM_FUNC_START(__arch_copy_to_user)
->  	ret
->  
->  	// Exception fixups
-> -9997:	cmp	dst, dstin
-> +	// x16: fixup type written by ex_handler_uaccess_mc
-> +9997:	cmp 	fixup_type, #FIXUP_TYPE_MC
-> +	b.eq	9998f
-> +	cmp	dst, dstin
->  	b.ne	9998f
->  	// Before being absolutely sure we couldn't copy anything, try harder
->  	ldrb	tmp1w, [srcin]
-> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
-> index 4f0083a550d4..525876c3ebf4 100644
-> --- a/arch/arm64/mm/extable.c
-> +++ b/arch/arm64/mm/extable.c
-> @@ -24,6 +24,14 @@ static bool ex_handler_fixup(const struct exception_table_entry *ex,
->  	return true;
->  }
->  
-> +static bool ex_handler_uaccess_type(const struct exception_table_entry *ex,
-> +			     struct pt_regs *regs,
-> +			     unsigned long fixup_type)
-> +{
-> +	regs->regs[16] = fixup_type;
-> +	return ex_handler_fixup(ex, regs);
-> +}
-> +
->  static bool ex_handler_uaccess_err_zero(const struct exception_table_entry *ex,
->  					struct pt_regs *regs)
->  {
-> @@ -75,6 +83,8 @@ bool fixup_exception(struct pt_regs *regs)
->  	switch (ex->type) {
->  	case EX_TYPE_FIXUP:
->  		return ex_handler_fixup(ex, regs);
-> +	case EX_TYPE_UACCESS_MC:
-> +		return ex_handler_uaccess_type(ex, regs, FIXUP_TYPE_NORMAL);
->  	case EX_TYPE_BPF:
->  		return ex_handler_bpf(ex, regs);
->  	case EX_TYPE_UACCESS_ERR_ZERO:
-> @@ -94,10 +104,10 @@ bool fixup_exception_mc(struct pt_regs *regs)
->  	if (!ex)
->  		return false;
->  
-> -	/*
-> -	 * This is not complete, More Machine check safe extable type can
-> -	 * be processed here.
-> -	 */
-> +	switch (ex->type) {
-> +	case EX_TYPE_UACCESS_MC:
-> +		return ex_handler_uaccess_type(ex, regs, FIXUP_TYPE_MC);
-> +	}
->  
->  	return false;
->  }
-> -- 
-> 2.25.1
-> 
