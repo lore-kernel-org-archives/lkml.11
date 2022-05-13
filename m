@@ -2,87 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA8A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B88C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380160AbiEMMOW (ORCPT
+        id S1380166AbiEMMPI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 08:14:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
+        Fri, 13 May 2022 08:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380167AbiEMMOG (ORCPT
+        with ESMTP id S232430AbiEMMPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 08:14:06 -0400
-X-Greylist: delayed 392 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 13 May 2022 05:14:00 PDT
-Received: from mout-u-204.mailbox.org (mout-u-204.mailbox.org [IPv6:2001:67c:2050:101:465::204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CFE3299565
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:14:00 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [10.196.197.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-u-204.mailbox.org (Postfix) with ESMTPS id 4L06pL2502z9sQZ;
-        Fri, 13 May 2022 14:07:22 +0200 (CEST)
-Message-ID: <f6a6a581-638f-2ddf-5104-f52f11ff7dd3@denx.de>
-Date:   Fri, 13 May 2022 14:07:20 +0200
+        Fri, 13 May 2022 08:15:06 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1E4297400;
+        Fri, 13 May 2022 05:15:05 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id v59so14938434ybi.12;
+        Fri, 13 May 2022 05:15:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JQBMCnWhUkmS1Kvmb7DagHvvpamIAXWmn0NMCx3+qLA=;
+        b=GYf9h9piH6G12ar91nqPCTRlr6yJynVcbP33qKmbHRyPrWuO4KWr7iqH4zA25HI6zp
+         Jl5WHZy8jblsxp30bwYfSRnHwOPgMFyWEF2nmwx5t3LyY4+bHpasADyOcHn77B+A6B9J
+         dsDusq1CZqFN1dSWkeWbVxNX2X2zA3z6ReOAPQTRmPoghmKn5X6ju+Z1f+sBFlK7HGNF
+         E7tHCyqSPBSXwS/Z6V1Aos0C5kAHDJckxI2VwKBDZbuy4ZBWqN7xmaaBmc5SojqWHnWJ
+         zqLt5uq3wwPA/gPX5o1KRoP/ObmtM7xz+fe/G++foVTf2ofwMxqq+r52mrFXl9QNBIrC
+         DWzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JQBMCnWhUkmS1Kvmb7DagHvvpamIAXWmn0NMCx3+qLA=;
+        b=JjlNt55BcVCrJTbZ7UKtuVSp7G1/wEY32U3mfPGFQfruQSWUjbFlqKiA81kHw0GTGy
+         pVXoCRCa7x5TanocaudWiT11CDU9D7lNtdHs/p0np8cZOz+TDE5enyazGPbNp3ief1MX
+         e9nYsAISZy5ub3/s7472+ecvQ3tsLy+1HM7S3YzeoDYQQBN/LHpiNn2B9TiEhPIB3JBw
+         66Z1+R7cIsLmNS90o9YrOIbn5z7zVVzPMthJW7cTXedXNQIecqZbNh3nti0TpBAH2bks
+         3XryOsG7tD7IaT5uhH0EfeGkFKWYdxGbOo/wnvZmYiJtx70wu0cexgLErTJInjTA01qI
+         XjZQ==
+X-Gm-Message-State: AOAM531+QgMDqqrqNOwV2dBKo/CX73f+S0OA8hdj2xeNexLjwsap278A
+        y5ittpoU+frxr7g3Wzj0rRYR0ehQd9dgqbgF6YUP4g85RmH2/Q==
+X-Google-Smtp-Source: ABdhPJyPrLdCxQo2uPtlVdz/whujA+8NET4MY+DVwW7tY6kWx1Eec1UV29J9Gzd4jUhlRo19CMrG4KrzHgGXV1fWEEE=
+X-Received: by 2002:a25:6906:0:b0:64a:8266:cedd with SMTP id
+ e6-20020a256906000000b0064a8266ceddmr4411072ybc.151.1652444104483; Fri, 13
+ May 2022 05:15:04 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: [PATCH -next 1/2] i2c: mt7621: fix missing
- clk_disable_unprepare() on error in mtk_i2c_probe()
-Content-Language: en-US
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org
-Cc:     matthias.bgg@gmail.com, wsa@the-dreams.de
-References: <20220513100819.2711845-1-yangyingliang@huawei.com>
-From:   Stefan Roese <sr@denx.de>
-In-Reply-To: <20220513100819.2711845-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220512182921.193462-1-max@enpas.org> <CAMZ6Rq+BwL1NPTLtC5sQAd4z1Kc1TFJPPoW-i+0RZ5dnFaWYiw@mail.gmail.com>
+ <20220513115223.b56etkaejphldjok@pengutronix.de>
+In-Reply-To: <20220513115223.b56etkaejphldjok@pengutronix.de>
+From:   Vincent Mailhol <vincent.mailhol@gmail.com>
+Date:   Fri, 13 May 2022 21:14:53 +0900
+Message-ID: <CAMZ6RqLZXyiW0CZg0spocXie+2-cnyS0Ai_9qTA6UiEHdH99bA@mail.gmail.com>
+Subject: Re: [PATCH v6] can, tty: can327 CAN/ldisc driver for ELM327 based
+ OBD-II adapters
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Max Staudt <max@enpas.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.05.22 12:08, Yang Yingliang wrote:
-> Fix the missing clk_disable_unprepare() before return
-> from mtk_i2c_probe() in the error handling case.
-> 
-> Fixes: d04913ec5f89 ("i2c: mt7621: Add MediaTek MT7621/7628/7688 I2C driver")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->   drivers/i2c/busses/i2c-mt7621.c | 8 ++++++--
->   1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/i2c/busses/i2c-mt7621.c b/drivers/i2c/busses/i2c-mt7621.c
-> index 45fe4a7fe0c0..f117c3d9ca19 100644
-> --- a/drivers/i2c/busses/i2c-mt7621.c
-> +++ b/drivers/i2c/busses/i2c-mt7621.c
-> @@ -304,7 +304,8 @@ static int mtk_i2c_probe(struct platform_device *pdev)
->   
->   	if (i2c->bus_freq == 0) {
->   		dev_warn(i2c->dev, "clock-frequency 0 not supported\n");
-> -		return -EINVAL;
-> +		ret = -EINVAL;
-> +		goto err_disable_clk;
->   	}
->   
->   	adap = &i2c->adap;
-> @@ -322,10 +323,13 @@ static int mtk_i2c_probe(struct platform_device *pdev)
->   
->   	ret = i2c_add_adapter(adap);
->   	if (ret < 0)
-> -		return ret;
-> +		goto err_disable_clk;
->   
->   	dev_info(&pdev->dev, "clock %u kHz\n", i2c->bus_freq / 1000);
->   
-> +err_disable_clk:
-> +	clk_disable_unprepare(i2c->clk);
-> +
->   	return ret;
->   }
->   
+On Fri 13 May 2022 at 20:52, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 13.05.2022 11:38:31, Vincent Mailhol wrote:
+> > > +
+> > > +       /* We shouldn't get here after a hardware fault:
+> > > +        * can_bus_off() calls netif_carrier_off()
+> > > +        */
+> > > +       WARN_ON_ONCE(elm->uart_side_failure);
+> > > +
+> > > +       if (!elm->tty ||
+> > > +           elm->uart_side_failure ||
+> > > +           elm->can.ctrlmode & CAN_CTRLMODE_LISTENONLY) {
+> >
+> > Can the xmit function get called when CAN_CTRLMODE_LISTENONLY is on?
+>
+> I think yes. You can skip the whole CAN stack by injecting CAN frames in
+> the kernel via the packet socket. Maybe we should add a check to
+> can_dropped_invalid_skb().
 
-Reviewed-by: Stefan Roese <sr@denx.de>
+Ack. Most of the drivers do not check for it (my doesn't). So better
+to put it in can_dropped_invalid_skb().
+I can do the patch for this.
 
-Thanks,
-Stefan
+And also noted for your previous comment on lockdep_assert_held().
+@Max: please ignore this particular remark.
