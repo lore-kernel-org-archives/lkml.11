@@ -2,132 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C749C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF81EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353406AbiEMGR7 (ORCPT
+        id S1377100AbiEMGUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 02:17:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54758 "EHLO
+        Fri, 13 May 2022 02:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377284AbiEMGPp (ORCPT
+        with ESMTP id S234634AbiEMGUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 02:15:45 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0225E2A18B7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:14:53 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so6901356pjq.2
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:14:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=09p7puOxbl364x9rMUnNG+V2yt+v411dIb0qKr8MrfI=;
-        b=XMCp5eiDtw1mJXaYFYG+/zix8O+6KymmJULuyfdG8wYvDwPCn7st9fjSEoBaBl3qKg
-         SzAtFTqmwAvdZx6+0+RLUxeL/rGVaIHXlLLCrG+5Hf0ppvs4XcqpRZ1F56cvpbtQG0j+
-         uHk7XFltnPkUxClIgZLSNpCkyCH+fQiDYOaolzT89R9VwxiXTrid/5FnUDixkSgIgBOI
-         FStfcsZkMEfbHdZYU4lyL64I08mmaeGtGLVuXgInkcrnXpMRm40GRXXSY59e9uLDXMsD
-         Us/JkNOa9MSdPh1TH+7TxCTXauF1lYt1iSUP3epgO2Mw+5oT+paNntn94eAkoUk+qb0Z
-         AnTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=09p7puOxbl364x9rMUnNG+V2yt+v411dIb0qKr8MrfI=;
-        b=4GOtXMUFM7sFiUIBwaW8DxoUbqaxFrok8uH3xKiNAjX69Hl28Xz0+oRwMI4BMj9fs2
-         QA8cH3xgCJMLQ/WLJHsFugLp5PSQ5j1kQVlKOqFsbq0ZbolxE8CEsICpE09bf89yEwmn
-         GCUU1OIdaLWtyqVwf8uWB273EHDCrC1GXcUXYzdhtTP7bCDr4lHcqGOtijOhjUCvKBzD
-         YgLmQnPRd7b45/p7DpF7VYysUzkgyH/PDcOfYBwvCJd2zuX5CgbdAehBjTm7hMqJ0Eth
-         s9N/fHBWFDww0w5FAKMVMbzJShJjzu+oliUSVL3y/WR6Ucb7co2gpmlyLvh8xL72Zm2X
-         OnXw==
-X-Gm-Message-State: AOAM530WISrE/Ncy8J61oqqNcZCotrfuf6qKu3RJXl95XRYssgHLGOzR
-        4AqZiUoQJuFxMRQ/DHFbXQEvfPhsmuBgDQ==
-X-Google-Smtp-Source: ABdhPJw8jWPAzXwgSTN9HipBgH/eqkNTXmGvE/cpxZfY6fx4m9/fL2hYV47k+w7y9Kw+aynwsZ5Zag==
-X-Received: by 2002:a17:902:854c:b0:159:a70:deca with SMTP id d12-20020a170902854c00b001590a70decamr3439541plo.142.1652422492484;
-        Thu, 12 May 2022 23:14:52 -0700 (PDT)
-Received: from localhost ([103.220.76.197])
-        by smtp.gmail.com with ESMTPSA id b7-20020a1709027e0700b0015e8d4eb1c7sm980557plm.17.2022.05.12.23.14.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 12 May 2022 23:14:52 -0700 (PDT)
-Date:   Fri, 13 May 2022 14:14:44 +0800
-From:   Yue Hu <zbestahu@gmail.com>
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>
-Cc:     linux-erofs@lists.ozlabs.org, Chao Yu <chao@kernel.org>,
-        Yue Hu <huyue2@yulong.com>,
-        LKML <linux-kernel@vger.kernel.org>, zhangwen@coolpad.com,
-        huyue2@coolpad.com
-Subject: Re: [PATCH] erofs: fix buffer copy overflow of ztailpacking feature
-Message-ID: <20220513141444.00001a6d.zbestahu@gmail.com>
-In-Reply-To: <20220512115833.24175-1-hsiangkao@linux.alibaba.com>
-References: <20220512115833.24175-1-hsiangkao@linux.alibaba.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+        Fri, 13 May 2022 02:20:01 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD93F280E2C
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652422800; x=1683958800;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=udY4Q9TqJXaY/BvCVp8tIfaechv4h4aAvzUAyPZxRRA=;
+  b=Q9OD5ms5GI2UvQWlqIoEB1yYRx/v4KlfnidbE1jofZaZ47aZel9hizBG
+   jblxxb4GBw90PbQngyK/Ivd4+CBnYqT0797JuvM88MneBzfdXed9Aoj7n
+   tCte7BKKw7PshJKgpa7uD8DVmgFQx2c3soDMaJ9nP+z7jYMUdlLBsPmyp
+   fMtrplsbzVWxCwdW5Cl9Bea+SKKHAW+hqe/3MFHbyx3wYGEibG9cL09zH
+   QK7Z36tEsTaE69aS+KP3mD9NgpNQFcKL/WYm9CAhQI0HLLMQAVjHDMzZe
+   EvKCIc2efIp68TDl2kkWJQrm+F3VLIMg37+M3hgCKROJX8uRLI6nKOoAb
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="267822816"
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="267822816"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 23:19:41 -0700
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="595068461"
+Received: from jliu69-mobl.ccr.corp.intel.com ([10.254.212.158])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 23:19:36 -0700
+Message-ID: <b6c74d994828a56485308e82f0598243cf0744a5.camel@intel.com>
+Subject: Re: [mm/page_alloc] f26b3fa046: netperf.Throughput_Mbps -18.0%
+ regression
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Aaron Lu <aaron.lu@intel.com>, Feng Tang <feng.tang@intel.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        kernel test robot <oliver.sang@intel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        kernel test robot <lkp@intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        fengwei.yin@intel.com, linux-mm@kvack.org
+Date:   Fri, 13 May 2022 14:19:32 +0800
+In-Reply-To: <CAHk-=whmeWNC-YH_cGRofdW3Spt8Y5nfWpoX=CipQ5pBYgnt2g@mail.gmail.com>
+References: <YnXnLuYjmEWdVyBP@ziqianlu-desk1>
+         <ae763d63e50d14650c5762103d113934412bef57.camel@intel.com>
+         <ba83270a-4f37-7d5a-b37a-0b7a6df5f5b4@intel.com>
+         <d13688d1483e9d87ec477292893f2916832b3bdc.camel@intel.com>
+         <c11ae803-cea7-8b7f-9992-2f640c90f104@intel.com>
+         <37dac785a08e3a341bf05d9ee35f19718ce83d26.camel@intel.com>
+         <CAHk-=wjguW5nxjagV99GHvc_-E_7mSg+LMvGtFjJ9LUSx4Skig@mail.gmail.com>
+         <41c08a5371957acac5310a2e608b2e42bd231558.camel@intel.com>
+         <YnuYV3J2ljY88DyQ@ziqianlu-desk1>
+         <dfc98503b11e2e54a5a82c21b8ef6afa10eda9b7.camel@intel.com>
+         <Yn0BeRaUC9ailyzz@ziqianlu-desk1>
+         <CAHk-=whmeWNC-YH_cGRofdW3Spt8Y5nfWpoX=CipQ5pBYgnt2g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 19:58:33 +0800
-Gao Xiang <hsiangkao@linux.alibaba.com> wrote:
-
-> I got some KASAN report as below:
+On Thu, 2022-05-12 at 10:42 -0700, Linus Torvalds wrote:
+> On Thu, May 12, 2022 at 5:46 AM Aaron Lu <aaron.lu@intel.com> wrote:
+> > 
+> > When nr_process=16, zone lock contention increased about 21% from 6% to
+> > 27%, performance dropped 17.8%, overall lock contention increased 14.3%:
 > 
-> [   46.959738] ==================================================================
-> [   46.960430] BUG: KASAN: use-after-free in z_erofs_shifted_transform+0x2bd/0x370
-> [   46.960430] Read of size 4074 at addr ffff8880300c2f8e by task fssum/188
-> ...
-> [   46.960430] Call Trace:
-> [   46.960430]  <TASK>
-> [   46.960430]  dump_stack_lvl+0x41/0x5e
-> [   46.960430]  print_report.cold+0xb2/0x6b7
-> [   46.960430]  ? z_erofs_shifted_transform+0x2bd/0x370
-> [   46.960430]  kasan_report+0x8a/0x140
-> [   46.960430]  ? z_erofs_shifted_transform+0x2bd/0x370
-> [   46.960430]  kasan_check_range+0x14d/0x1d0
-> [   46.960430]  memcpy+0x20/0x60
-> [   46.960430]  z_erofs_shifted_transform+0x2bd/0x370
-> [   46.960430]  z_erofs_decompress_pcluster+0xaae/0x1080
+> So the contention issue seems real and nasty, and while the queued
+> locks may have helped a bit, I don't think they ended up making a
+> *huge* change: the queued locks help make sure the lock itself doesn't
+> bounce all over the place, but clearly if the lock holder writes close
+> to the lock, it will still bounce with at least *one* lock waiter.
 > 
-> The root cause is that the tail pcluster won't be a complete filesystem
-> block anymore. So if ztailpacking is used, the second part of an
-> uncompresed tail pcluster may not be ``rq->pageofs_out``.
-
-Yeah, since we have a 'pageofs_in' to the 'src' for ztailpacking.
-
-Reviewed-by: Yue Hu <huyue2@coolpad.com>
-
+> And having looked at the qspinlock code, I have to agree with Waiman
+> and PeterZ that I don't think the locking code can reasonably eb
+> changed - I'm sure this particular case could be improved, but the
+> downsides for other cases would be quite large enough to make that a
+> bad idea.
 > 
-> Fixes: ab749badf9f4 ("erofs: support unaligned data decompression")
-> Fixes: cecf864d3d76 ("erofs: support inline data decompression")
-> Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-> ---
->  fs/erofs/decompressor.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+> So I think the issue is that
 > 
-> diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
-> index 0f445f7e1df8..6dca1900c733 100644
-> --- a/fs/erofs/decompressor.c
-> +++ b/fs/erofs/decompressor.c
-> @@ -320,6 +320,7 @@ static int z_erofs_shifted_transform(struct z_erofs_decompress_req *rq,
->  		PAGE_ALIGN(rq->pageofs_out + rq->outputsize) >> PAGE_SHIFT;
->  	const unsigned int righthalf = min_t(unsigned int, rq->outputsize,
->  					     PAGE_SIZE - rq->pageofs_out);
-> +	const unsigned int lefthalf = rq->outputsize - righthalf;
->  	unsigned char *src, *dst;
->  
->  	if (nrpages_out > 2) {
-> @@ -342,10 +343,10 @@ static int z_erofs_shifted_transform(struct z_erofs_decompress_req *rq,
->  	if (nrpages_out == 2) {
->  		DBG_BUGON(!rq->out[1]);
->  		if (rq->out[1] == *rq->in) {
-> -			memmove(src, src + righthalf, rq->pageofs_out);
-> +			memmove(src, src + righthalf, lefthalf);
->  		} else {
->  			dst = kmap_atomic(rq->out[1]);
-> -			memcpy(dst, src + righthalf, rq->pageofs_out);
-> +			memcpy(dst, src + righthalf, lefthalf);
->  			kunmap_atomic(dst);
->  		}
->  	}
+>  (a) that zone lock is too hot.
+> 
+>  (b) given lock contention, the fields that get written to under the
+> lock are too close to the lock
+> 
+> Now, the optimal fix would of course be to just fix the lock so that
+> it isn't so hot. But assuming that's not possible, just looking at the
+> definition of that 'struct zone', I do have to say that the
+> ZONE_PADDING fields seem to have bit-rotted over the years.
+> 
+> The whole and only reason for them would be to avoid the cache
+> bouncing, but commit 6168d0da2b47 ("mm/lru: replace pgdat lru_lock
+> with lruvec lock") actively undid that for the 'lru_lock' case, and
+> way back when commit a368ab67aa55 ("mm: move zone lock to a different
+> cache line than order-0 free page lists") tried to make it true for
+> the 'lock' vs free_area[] cases, but did it without actually using the
+> ZONE_PADDING thing, but by moving things around, and not really
+> *guaranteeing* that 'lock' was in a different cacheline, but really
+> just making 'free_area[]' aligned, but still potentially in the same
+> cache-line as 'lock' (so now the lower-order 'free_area[]' entries are
+> not sharing a cache-line, but the higher-order 'free_area[]' ones
+> probably are).
+> 
+> So I get the feeling that those 'ZONE_PADDING' things are a bit random
+> and not really effective.
+> 
+> In a perfect world, somebody would fix the locking to just not have as
+> much contention. But assuming that isn't an option, maybe somebody
+> should just look at that 'struct zone' layout a bit more.
+
+Sure.  We will work on this.
+
+Best Regards,
+Huang, Ying
+
 
