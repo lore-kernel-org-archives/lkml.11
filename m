@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59053C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6AFC4167D
 	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381736AbiEMOgb (ORCPT
+        id S1381868AbiEMOgj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
+        Fri, 13 May 2022 10:36:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381073AbiEMOd7 (ORCPT
+        with ESMTP id S1381269AbiEMOdi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:33:59 -0400
+        Fri, 13 May 2022 10:33:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871971C0F36;
-        Fri, 13 May 2022 07:29:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E111C06F4;
+        Fri, 13 May 2022 07:29:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0829DB8306B;
-        Fri, 13 May 2022 14:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CF03C34100;
-        Fri, 13 May 2022 14:29:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09231B8306A;
+        Fri, 13 May 2022 14:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6F8C34100;
+        Fri, 13 May 2022 14:29:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452185;
-        bh=Y1TzF/YMwvC8/mzO9SoTHJEd1QC2dRV7GhkkWpcNl+U=;
+        s=korg; t=1652452182;
+        bh=sv08YaLt1F//JntcxmPzAyGIXxf4lL/FDqMK4jlfWwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=czOJfCgHzR7BXCLY7Ff1z4Yqa9giSlsG6mtQEvqVctVLS2BC+fgCT/sygzdLzxCtt
-         DswTWcVq2ry2IKVdj1HHqspTRcHhTXcj1mQpozQ5G1Tgogo4YVeTlBRMw+1K5Drxcx
-         aIKbJYFUpRCwWXz0r7KIA/oKIuFEjPt2Q3U9nMNc=
+        b=lY4+W1hCUCqLxrn+nnZ5He9HkiHevATz0JGSJNh9SMGEkaMbng7KTgqpY0exLZ3tD
+         jHqEmz7ZgVcw6CL4Mpg5KCRfi5ZOe2Ugdd8ywnZl2k9xwQ6xpYo7lbpTtE4mhhQXGQ
+         jJEiw/cmP3S68Pdwb55ntK0SChPX3a3R89EB3Tow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.17 01/12] Bluetooth: Fix the creation of hdev->name
-Date:   Fri, 13 May 2022 16:24:01 +0200
-Message-Id: <20220513142228.696497916@linuxfoundation.org>
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Herbert van den Bergh <herbert.van.den.bergh@oracle.com>,
+        Chris Mason <chris.mason@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 10/12] mm/mlock: fix potential imbalanced rlimit ucounts adjustment
+Date:   Fri, 13 May 2022 16:24:10 +0200
+Message-Id: <20220513142228.956764796@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142228.651822943@linuxfoundation.org>
 References: <20220513142228.651822943@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,65 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Itay Iellin <ieitayie@gmail.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit 103a2f3255a95991252f8f13375c3a96a75011cd upstream.
+commit 5c2a956c3eea173b2bc89f632507c0eeaebf6c4a upstream.
 
-Set a size limit of 8 bytes of the written buffer to "hdev->name"
-including the terminating null byte, as the size of "hdev->name" is 8
-bytes. If an id value which is greater than 9999 is allocated,
-then the "snprintf(hdev->name, sizeof(hdev->name), "hci%d", id)"
-function call would lead to a truncation of the id value in decimal
-notation.
+user_shm_lock forgets to set allowed to 0 when get_ucounts fails.  So
+the later user_shm_unlock might do the extra dec_rlimit_ucounts.  Fix
+this by resetting allowed to 0.
 
-Set an explicit maximum id parameter in the id allocation function call.
-The id allocation function defines the maximum allocated id value as the
-maximum id parameter value minus one. Therefore, HCI_MAX_ID is defined
-as 10000.
-
-Signed-off-by: Itay Iellin <ieitayie@gmail.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Link: https://lkml.kernel.org/r/20220310132417.41189-1-linmiaohe@huawei.com
+Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
+Acked-by: Hugh Dickins <hughd@google.com>
+Cc: Herbert van den Bergh <herbert.van.den.bergh@oracle.com>
+Cc: Chris Mason <chris.mason@oracle.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/bluetooth/hci_core.h |    3 +++
- net/bluetooth/hci_core.c         |    6 +++---
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ mm/mlock.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -36,6 +36,9 @@
- /* HCI priority */
- #define HCI_PRIO_MAX	7
- 
-+/* HCI maximum id value */
-+#define HCI_MAX_ID 10000
-+
- /* HCI Core structures */
- struct inquiry_data {
- 	bdaddr_t	bdaddr;
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -2554,10 +2554,10 @@ int hci_register_dev(struct hci_dev *hde
- 	 */
- 	switch (hdev->dev_type) {
- 	case HCI_PRIMARY:
--		id = ida_simple_get(&hci_index_ida, 0, 0, GFP_KERNEL);
-+		id = ida_simple_get(&hci_index_ida, 0, HCI_MAX_ID, GFP_KERNEL);
- 		break;
- 	case HCI_AMP:
--		id = ida_simple_get(&hci_index_ida, 1, 0, GFP_KERNEL);
-+		id = ida_simple_get(&hci_index_ida, 1, HCI_MAX_ID, GFP_KERNEL);
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -2566,7 +2566,7 @@ int hci_register_dev(struct hci_dev *hde
- 	if (id < 0)
- 		return id;
- 
--	sprintf(hdev->name, "hci%d", id);
-+	snprintf(hdev->name, sizeof(hdev->name), "hci%d", id);
- 	hdev->id = id;
- 
- 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -838,6 +838,7 @@ int user_shm_lock(size_t size, struct uc
+ 	}
+ 	if (!get_ucounts(ucounts)) {
+ 		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
++		allowed = 0;
+ 		goto out;
+ 	}
+ 	allowed = 1;
 
 
