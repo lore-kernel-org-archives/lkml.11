@@ -2,195 +2,382 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7440C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77224C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382161AbiEMPmS (ORCPT
+        id S1382017AbiEMPmh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59216 "EHLO
+        Fri, 13 May 2022 11:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234876AbiEMPmH (ORCPT
+        with ESMTP id S1382185AbiEMPmb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 11:42:07 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C25BE21
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:42:06 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id i19so16970163eja.11
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:42:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BOG74POVeYOfQY9afdarMF3mc0mDpcOp33/SYa9z2g4=;
-        b=UvtK+9uXFFbJiEIXAG4TxrUr8xm6F/cK4VWAl7OwyGrIi1ROBFy+N+sMHRhWqU/+0l
-         yF+0TlTr+37pRHCV1GZfzzUwxINR5QbfWpRTmdts4Wgy8shHcK9FbhtJ1RzR3iVucSL0
-         n6V8aw+UkKpK9BTfh8StIyAROhsejouLG5tZtjr+OfJC9lJXuNnR/5b/tL15D5ILZ3rx
-         DpOj28rwvrg5UAm22hgOu9DkHyY2Pg+P52OccmCs7q5rEOepc/VC8jGSliAbWwRkXvSB
-         LyY3ZVscMyXr0i8VCorGvS1ygKBxlEjWNE4pws1Cex+q8oq3Fg6Z2wQJjX/dGzKEQIKk
-         B+ug==
+        Fri, 13 May 2022 11:42:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E226A2FFCC
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:42:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652456549;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qt51KmMEp2p5kZHKW2/GzlR6XIOdTGRJtza/WZphhNw=;
+        b=BCyCKR/BKaTTr/3Ki48uFAVrZ7bwJG1t66mH9L6PVf1twHubYyGPi/xMExh9RZICGoyQ/S
+        D+Cr7TiOftJ5VAxarIExvCeQJNVICIuhxxOC1ahOecXPlFoFQwttoT/UuiqE1DypbKt8HW
+        nf19vdqB9q1vYcQhcdWimMDEwUXg9hg=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-640-cUZIJt-LNnKvbw2c55tldg-1; Fri, 13 May 2022 11:42:27 -0400
+X-MC-Unique: cUZIJt-LNnKvbw2c55tldg-1
+Received: by mail-qv1-f71.google.com with SMTP id kl11-20020a056214518b00b0045a9af67efbso7095947qvb.18
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:42:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BOG74POVeYOfQY9afdarMF3mc0mDpcOp33/SYa9z2g4=;
-        b=oxPP3Q+zIUN00saHNQolQ7O2U4cWMpr8kSO5DjZlEb/hYPK8SCAwoM9yQTEIrbmrYc
-         1PyUbHcyikXbyP07jteVJFPKO5wdDVYsRdcdMVSR2yphrdK6NKd/yXnPGXawaMEdO6ai
-         pgMeWlciznNYM4RBuNe4fwOkrYMDFlOQRxFp9xWYncFT6nIkUnM/5CdWYtG8JmO8vu0g
-         mxLzI2tiK9+K2LH17df3cZRRKGdP25wiUQLQcqsPabrUUQo/ys07qxDwvaeeR0ZeNIQd
-         abY5ul55S4NoDEhqarObIpTKHC1/l1p48wwWV8z4XhlCwEJo+a1UemqgNKIQZdPuvTYV
-         bZeQ==
-X-Gm-Message-State: AOAM532hGmPyEosK+9ru4bqULcXbNbvRQmuu7rkv0WBzyTNCMsagmMic
-        WWqUj+E7YrAJtLQTsqUqoj0=
-X-Google-Smtp-Source: ABdhPJxAwjcDm4BtYfBQSGIif62BWIgQHDEoMLu0Ig7Opo7ZT8E5W9XSJ198+zmltv+r4FP2nkilfQ==
-X-Received: by 2002:a17:906:4884:b0:6f3:a042:c1c6 with SMTP id v4-20020a170906488400b006f3a042c1c6mr4706002ejq.363.1652456523354;
-        Fri, 13 May 2022 08:42:03 -0700 (PDT)
-Received: from octofox.metropolis ([178.134.103.46])
-        by smtp.gmail.com with ESMTPSA id h16-20020a1709066d9000b006f3ef214e73sm848313ejt.217.2022.05.13.08.42.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:42:03 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-xtensa@linux-xtensa.org
-Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 2/2] xtensa: support artificial division by 0 exception
-Date:   Fri, 13 May 2022 08:41:51 -0700
-Message-Id: <20220513154151.4135905-3-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220513154151.4135905-1-jcmvbkbc@gmail.com>
-References: <20220513154151.4135905-1-jcmvbkbc@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Qt51KmMEp2p5kZHKW2/GzlR6XIOdTGRJtza/WZphhNw=;
+        b=q+mBES75K1+862G/Al9AZOMy0iogusOZHj7Zx+J5JerNOfNTFgot2n163UWdE2Wgvp
+         BSWcbM5sajcGL5PQ/wL/GvKNFnpghkohBEP9TnHtHlRlYSHBE93nqJYRbDSE5mYtLerF
+         8UKRZ2ogVnmjQY0HJf8yk5lrY/mKcrhTnJv1bg+J6Pxg8WoercsFeqQUwIFaI170sQcz
+         /HuAXJKGmoVv9rP8JdQ1QCAdGK8ybZENrZ6HP+Ex2uRAMM8PxtZFSp/d0MMbliVt2A1y
+         w0DXDhNma0dIbksxL8ioMgPMEGd0a1nh0NEb7GTUS8G5Ce0EIOYLM93qL9JOXlgF0sYf
+         bZDw==
+X-Gm-Message-State: AOAM531BRazrmMpAyboembMiBpi59YKq4eSClxXXhfDFBiU02kd7Qp8O
+        K8WmTxdV03L8SEkdKRtmCNN8ViJyEunrtbZ55qaP8m8JiFNcPnH2NDWtjNmmupE5YR1OaZgEV9D
+        hMM3vUdhc0mhZrt6Xs87qKmYC
+X-Received: by 2002:ac8:5e0c:0:b0:2f3:adfd:bd30 with SMTP id h12-20020ac85e0c000000b002f3adfdbd30mr5067552qtx.277.1652456547228;
+        Fri, 13 May 2022 08:42:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyKaXPR/x6m9eRtDhITZ/mgkh3K8v85o3GPEiQQ767o63X5SoQJyaXZc+UC5jRKP4V4ZeURSA==
+X-Received: by 2002:ac8:5e0c:0:b0:2f3:adfd:bd30 with SMTP id h12-20020ac85e0c000000b002f3adfdbd30mr5067495qtx.277.1652456546522;
+        Fri, 13 May 2022 08:42:26 -0700 (PDT)
+Received: from [192.168.98.18] ([107.15.110.69])
+        by smtp.gmail.com with ESMTPSA id f10-20020ac8498a000000b002f39b99f6b9sm1599192qtq.83.2022.05.13.08.42.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 08:42:25 -0700 (PDT)
+Message-ID: <d2696dab-2490-feb5-ccb2-96906fc652f0@redhat.com>
+Date:   Fri, 13 May 2022 11:42:24 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v2] bond: add mac filter option for balance-xor
+Content-Language: en-US
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     Long Xin <lxin@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+References: <6227427ef3b57d7de6d4d95e9dd7c9b222a37bf6.1651689665.git.jtoppins@redhat.com>
+ <f85a0a66-d3b8-9d20-9abb-fc9fa5e84eab@blackwall.org>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <f85a0a66-d3b8-9d20-9abb-fc9fa5e84eab@blackwall.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On xtensa cores wihout hardware division option division support
-functions from libgcc react to division by 0 attempt by executing
-illegal instruction followed by the characters 'DIV0'. Recognize this
-pattern in illegal instruction exception handler and convert it to
-division by 0.
-When call0 userspace ABI support by probing is enabled instructions that
-cause illegal instruction exception when PS.WOE is clear are retried
-with PS.WOE set before calling c-level exception handler. Record user pc
-where PS.WOE was set in the fast exception handler and clear PS.WOE in
-the c-level exception handler if it was due to artificial division by 0.
+Hi Nik, thanks for the review. Responses below.
 
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
----
- arch/xtensa/include/asm/thread_info.h |  4 +++
- arch/xtensa/kernel/asm-offsets.c      |  3 ++
- arch/xtensa/kernel/entry.S            |  5 +++
- arch/xtensa/kernel/traps.c            | 45 +++++++++++++++++++++++++++
- 4 files changed, 57 insertions(+)
+On 5/5/22 08:14, Nikolay Aleksandrov wrote:
+> On 04/05/2022 21:47, Jonathan Toppins wrote:
+>> Implement a MAC filter that prevents duplicate frame delivery when
+>> handling BUM traffic. This attempts to partially replicate OvS SLB
+>> Bonding[1] like functionality without requiring significant change
+>> in the Linux bridging code.
+>>
+>> A typical network setup for this feature would be:
+>>
+>>              .--------------------------------------------.
+>>              |         .--------------------.             |
+>>              |         |                    |             |
+>>         .-------------------.               |             |
+>>         |    | Bond 0  |    |               |             |
+>>         | .--'---. .---'--. |               |             |
+>>    .----|-| eth0 |-| eth1 |-|----.    .-----+----.   .----+------.
+>>    |    | '------' '------' |    |    | Switch 1 |   | Switch 2  |
+>>    |    '---,---------------'    |    |          +---+           |
+>>    |       /                     |    '----+-----'   '----+------'
+>>    |  .---'---.    .------.      |         |              |
+>>    |  |  br0  |----| VM 1 |      |      ~~~~~~~~~~~~~~~~~~~~~
+>>    |  '-------'    '------'      |     (                     )
+>>    |      |        .------.      |     ( Rest of Network     )
+>>    |      '--------| VM # |      |     (_____________________)
+>>    |               '------'      |
+>>    |  Host 1                     |
+>>    '-----------------------------'
+>>
+>> Where 'VM1' and 'VM#' are hosts connected to a Linux bridge, br0, with
+>> bond0 and its associated links, eth0 & eth1, provide ingress/egress. One
+>> can assume bond0, br1, and hosts VM1 to VM# are all contained in a
+>> single box, as depicted. Interfaces eth0 and eth1 provide redundant
+>> connections to the data center with the requirement to use all bandwidth
+>> when the system is functioning normally. Switch 1 and Switch 2 are
+>> physical switches that do not implement any advanced L2 management
+>> features such as MLAG, Cisco's VPC, or LACP.
+>>
+>> Combining this feature with vlan+srcmac hash policy allows a user to
+>> create an access network without the need to use expensive switches that
+>> support features like Cisco's VCP.
+>>
+>> [1] https://docs.openvswitch.org/en/latest/topics/bonding/#slb-bonding
+>>
+>> Co-developed-by: Long Xin <lxin@redhat.com>
+>> Signed-off-by: Long Xin <lxin@redhat.com>
+>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>> ---
+>>
+>> Notes:
+>>      v2:
+>>       * dropped needless abstraction functions and put code in module init
+>>       * renamed variable "rc" to "ret" to stay consistent with most of the
+>>         code
+>>       * fixed parameter setting management, when arp-monitor is turned on
+>>         this feature will be turned off similar to how miimon and arp-monitor
+>>         interact
+>>       * renamed bond_xor_recv to bond_mac_filter_recv for a little more
+>>         clarity
+>>       * it appears the implied default return code for any bonding recv probe
+>>         must be `RX_HANDLER_ANOTHER`. Changed the default return code of
+>>         bond_mac_filter_recv to use this return value to not break skb
+>>         processing when the skb dev is switched to the bond dev:
+>>           `skb->dev = bond->dev`
+>>
+>>   Documentation/networking/bonding.rst  |  19 +++
+>>   drivers/net/bonding/Makefile          |   2 +-
+>>   drivers/net/bonding/bond_mac_filter.c | 201 ++++++++++++++++++++++++++
+>>   drivers/net/bonding/bond_mac_filter.h |  39 +++++
+>>   drivers/net/bonding/bond_main.c       |  27 ++++
+>>   drivers/net/bonding/bond_netlink.c    |  13 ++
+>>   drivers/net/bonding/bond_options.c    |  86 ++++++++++-
+>>   drivers/net/bonding/bonding_priv.h    |   1 +
+>>   include/net/bond_options.h            |   1 +
+>>   include/net/bonding.h                 |   3 +
+>>   include/uapi/linux/if_link.h          |   1 +
+>>   11 files changed, 390 insertions(+), 3 deletions(-)
+>>   create mode 100644 drivers/net/bonding/bond_mac_filter.c
+>>   create mode 100644 drivers/net/bonding/bond_mac_filter.h
+>>
+> 
+> Hi Jonathan,
+> I must mention that this is easily solvable with two very simple ebpf programs, one on egress
+> to track source macs and one on ingress to filter them, it can also easily be solved by a
+> user-space agent that adds macs for filtering in many different ways, after all these VMs
+> run on the host and you don't need bond-specific knowledge to do this. Also you have no visibility
+> into what is currently being filtered, so it will be difficult to debug. With the above solutions
+> you already have that. I don't think the bond should be doing any learning or filtering, this is
+> deviating a lot from its purpose and adds unnecessary complexity.
+> That being said, if you decide to continue with the set, comments are below...
 
-diff --git a/arch/xtensa/include/asm/thread_info.h b/arch/xtensa/include/asm/thread_info.h
-index 52974317a6b6..326db1c1d5d8 100644
---- a/arch/xtensa/include/asm/thread_info.h
-+++ b/arch/xtensa/include/asm/thread_info.h
-@@ -56,6 +56,10 @@ struct thread_info {
- 	/* result of the most recent exclusive store */
- 	unsigned long		atomctl8;
- #endif
-+#ifdef CONFIG_USER_ABI_CALL0_PROBE
-+	/* Address where PS.WOE was enabled by the ABI probing code */
-+	unsigned long		ps_woe_fix_addr;
-+#endif
- 
- 	/*
- 	 * If i-th bit is set then coprocessor state is loaded into the
-diff --git a/arch/xtensa/kernel/asm-offsets.c b/arch/xtensa/kernel/asm-offsets.c
-index 9a1db6ffcbf4..da38de20ae59 100644
---- a/arch/xtensa/kernel/asm-offsets.c
-+++ b/arch/xtensa/kernel/asm-offsets.c
-@@ -88,6 +88,9 @@ int main(void)
- 	OFFSET(TI_STSTUS, thread_info, status);
- 	OFFSET(TI_CPU, thread_info, cpu);
- 	OFFSET(TI_PRE_COUNT, thread_info, preempt_count);
-+#ifdef CONFIG_USER_ABI_CALL0_PROBE
-+	OFFSET(TI_PS_WOE_FIX_ADDR, thread_info, ps_woe_fix_addr);
-+#endif
- 
- 	/* struct thread_info (offset from start_struct) */
- 	DEFINE(THREAD_RA, offsetof (struct task_struct, thread.ra));
-diff --git a/arch/xtensa/kernel/entry.S b/arch/xtensa/kernel/entry.S
-index 3224b4ceca34..e3eae648ba2e 100644
---- a/arch/xtensa/kernel/entry.S
-+++ b/arch/xtensa/kernel/entry.S
-@@ -1056,6 +1056,11 @@ ENTRY(fast_illegal_instruction_user)
- 	movi	a3, PS_WOE_MASK
- 	or	a0, a0, a3
- 	wsr	a0, ps
-+#ifdef CONFIG_USER_ABI_CALL0_PROBE
-+	GET_THREAD_INFO(a3, a2)
-+	rsr	a0, epc1
-+	s32i	a0, a3, TI_PS_WOE_FIX_ADDR
-+#endif
- 	l32i	a3, a2, PT_AREG3
- 	l32i	a0, a2, PT_AREG0
- 	rsr	a2, depc
-diff --git a/arch/xtensa/kernel/traps.c b/arch/xtensa/kernel/traps.c
-index 7c7c4c7b33bb..d45dfa10be73 100644
---- a/arch/xtensa/kernel/traps.c
-+++ b/arch/xtensa/kernel/traps.c
-@@ -293,12 +293,57 @@ static void do_interrupt(struct pt_regs *regs)
- 	set_irq_regs(old_regs);
- }
- 
-+static int check_div0(struct pt_regs *regs)
-+{
-+#if !XCHAL_HAVE_DIV32
-+	u8 buf[7];
-+	void *p;
-+	static const u8 pattern1[] = {0, 0, 0, 'D', 'I', 'V', '0'};
-+#if defined(__XTENSA_EB__)
-+	static const u8 pattern2[] = {0xd6, 0x0f, 'D', 'I', 'V', '0'};
-+#elif defined(__XTENSA_EL__)
-+	static const u8 pattern2[] = {0x6d, 0xf0, 'D', 'I', 'V', '0'};
-+#else
-+#error Unsupported Xtensa endianness
-+#endif
-+
-+	if (user_mode(regs)) {
-+		if (copy_from_user(buf, (void __user *)regs->pc, 7))
-+			return 0;
-+		p = buf;
-+	} else {
-+		p = (void *)regs->pc;
-+	}
-+
-+	return memcmp(p, pattern1, sizeof(pattern1)) == 0 ||
-+		memcmp(p, pattern2, sizeof(pattern2)) == 0;
-+#else
-+	return 0;
-+#endif
-+}
-+
- /*
-  * Illegal instruction. Fatal if in kernel space.
-  */
- 
- static void do_illegal_instruction(struct pt_regs *regs)
- {
-+	if (check_div0(regs)) {
-+#ifdef CONFIG_USER_ABI_CALL0_PROBE
-+		/*
-+		 * When call0 application generates artificial division by 0
-+		 * exception fast illegal instruction exception handler will
-+		 * attempt to set PS.WOE and retry failing instruction.
-+		 * We know that that illegal instruction was not related to
-+		 * windowed option so we clear PS.WOE here.
-+		 */
-+		if (regs->pc == current_thread_info()->ps_woe_fix_addr)
-+			regs->ps &= ~PS_WOE_MASK;
-+#endif
-+		do_div0(regs);
-+		return;
-+	}
-+
- 	__die_if_kernel("Illegal instruction in kernel", regs, SIGKILL);
- 
- 	/* If in user mode, send SIGILL signal to current process. */
--- 
-2.30.2
+This is an excellent observation, it does appear this could likely be 
+done with eBPF. However, the delivery of such a solution to a user would 
+be the difficult part. There appears to be no standard way for attaching 
+a program to an interface, it still seems customary to write your own 
+custom loader. Where would the user run this loader? In Debian likely in 
+a post up hook with ifupdown, in Fedora one would have to write a 
+locally custom dispatcher script (assuming Network Manager) that only 
+ran the loader for a given interface. In short I do not see a reasonably 
+appropriate way to deploy an eBPF program to users with the current 
+infrastructure. Also, I am not aware of the bpf syscall supporting 
+signed program loading. Signing kernel modules seems popular with some 
+distros to identify limits of support and authentication of an 
+unmodified system. I suspect similar bpf support might be needed to 
+identify support and authentication for deployed programs.
+
+[...]
+
+>> diff --git a/drivers/net/bonding/bond_mac_filter.c b/drivers/net/bonding/bond_mac_filter.c
+>> new file mode 100644
+>> index 000000000000..e86b2b475df3
+>> --- /dev/null
+>> +++ b/drivers/net/bonding/bond_mac_filter.c
+>> @@ -0,0 +1,201 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Filter received frames based on MAC addresses "behind" the bond.
+>> + */
+>> +
+>> +#include "bonding_priv.h"
+>> +
+>> +static const struct rhashtable_params bond_rht_params = {
+>> +	.head_offset         = offsetof(struct bond_mac_cache_entry, rhnode),
+>> +	.key_offset          = offsetof(struct bond_mac_cache_entry, key),
+>> +	.key_len             = sizeof(struct mac_addr),
+>> +	.automatic_shrinking = true,
+>> +};
+>> +
+>> +static inline unsigned long hold_time(const struct bonding *bond)
+> 
+> no inlines in .c files, let the compiler do its job
+> 
+>> +{
+>> +	return msecs_to_jiffies(5000);
+>> +}
+>> +
+>> +static bool has_expired(const struct bonding *bond,
+>> +			struct bond_mac_cache_entry *mac)
+>> +{
+>> +	return time_before_eq(mac->used + hold_time(bond), jiffies);
+>> +}
+>> +
+>> +static void mac_delete_rcu(struct callback_head *head)
+>> +{
+>> +	kmem_cache_free(bond_mac_cache,
+>> +			container_of(head, struct bond_mac_cache_entry, rcu));
+>> +}
+>> +
+>> +static int mac_delete(struct bonding *bond,
+>> +		      struct bond_mac_cache_entry *entry)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret = rhashtable_remove_fast(bond->mac_filter_tbl,
+>> +				     &entry->rhnode,
+>> +				     bond->mac_filter_tbl->p);
+>> +	set_bit(BOND_MAC_DEAD, &entry->flags);
+> 
+> you don't need the atomic bitops, these flags are all modified and checked
+> under the entry lock
+
+I need to keep the atomic set_bit if I remove the [use-after-free] 
+idiomatic issue later in the file.
+
+> 
+>> +	call_rcu(&entry->rcu, mac_delete_rcu);
+> 
+> all of these entries are queued to be freed, what happens if we unload the bonding
+> driver before that?
+
+[...]
+
+> 
+>> +
+>> +	rhashtable_walk_enter(bond->mac_filter_tbl, &iter);
+>> +	rhashtable_walk_start(&iter);
+>> +	while ((entry = rhashtable_walk_next(&iter)) != NULL) {
+>> +		if (IS_ERR(entry))
+>> +			continue;
+>> +
+>> +		spin_lock_irqsave(&entry->lock, flags);
+>> +		if (has_expired(bond, entry))
+>> +			mac_delete(bond, entry);
+>> +		spin_unlock_irqrestore(&entry->lock, flags);
+> 
+> deleting entries while holding their own lock is not very idiomatic
+
+[use-after-free] To fix this I made has_expired take the lock, making 
+has_expired atomic. Now there is no need to have the critical section 
+above and mac_delete can be outside the critical section. This also 
+removed the use-after-free bug that would appear if the code were not 
+using RCU and cache malloc.
+
+> 
+>> +	bond->mac_filter_tbl = kzalloc(sizeof(*bond->mac_filter_tbl),
+>> +				       GFP_KERNEL);
+>> +	if (!bond->mac_filter_tbl)
+>> +		return -ENOMEM;
+>> +
+>> +	ret = rhashtable_init(bond->mac_filter_tbl, &bond_rht_params);
+>> +	if (ret)
+>> +		kfree(bond->mac_filter_tbl);
+> 
+> on error this is freed, but the pointer is stale and on bond destruction
+> will be accessed and potentially freed again
+
+set to NULL.
+
+[...]
+
+>> +static int mac_create(struct bonding *bond, const u8 *addr)
+>> +{
+>> +	struct bond_mac_cache_entry *entry;
+>> +	int ret;
+>> +
+>> +	entry = kmem_cache_alloc(bond_mac_cache, GFP_ATOMIC);
+>> +	if (!entry)
+>> +		return -ENOMEM;
+>> +	spin_lock_init(&entry->lock);
+>> +	memcpy(&entry->key, addr, sizeof(entry->key));
+>> +	entry->used = jiffies;
+> 
+> you must zero the old fields, otherwise you can find stale values from old
+> structs which were freed
+
+good point, have done.
+
+[...]
+
+>> diff --git a/drivers/net/bonding/bond_mac_filter.h b/drivers/net/bonding/bond_mac_filter.h
+>> new file mode 100644
+>> index 000000000000..7c968d41b456
+>> --- /dev/null
+>> +++ b/drivers/net/bonding/bond_mac_filter.h
+>> @@ -0,0 +1,39 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only
+>> + *
+>> + * Filter received frames based on MAC addresses "behind" the bond.
+>> + */
+>> +
+>> +#ifndef _BOND_MAC_FILTER_H
+>> +#define _BOND_MAC_FILTER_H
+>> +#include <net/bonding.h>
+>> +#include <linux/spinlock.h>
+>> +#include <linux/rhashtable.h>
+>> +
+>> +enum {
+>> +	BOND_MAC_DEAD,
+>> +	BOND_MAC_LOCKED,
+>> +	BOND_MAC_STATIC,
+> 
+> What are BOND_MAC_LOCKED or STATIC ? I didn't see them used anywhere.
+
+Stale, was going to use them to allow the user to manually add entries 
+but never got around to it. Removed.
+
+[...]
+
+>> diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+>> index 64f7db2627ce..d295903a525b 100644
+>> --- a/drivers/net/bonding/bond_options.c
+>> +++ b/drivers/net/bonding/bond_options.c
+
+[...]
+
+>> @@ -1035,6 +1075,44 @@ static int bond_option_use_carrier_set(struct bonding *bond,
+>>   	return 0;
+>>   }
+>>   
+>> +static int bond_option_mac_filter_set(struct bonding *bond,
+>> +				      const struct bond_opt_value *newval)
+>> +{
+>> +	int rc = 0;
+>> +	u8 prev = bond->params.mac_filter;
+> 
+> reverse xmas tree
+> 
+>> +
+>> +	if (newval->value && bond->params.arp_interval) {
+> 
+> what happens if we set arp_interval after enabling this, the table will be
+> freed while the bond is up and is using it, also the queued work is still enabled
+
+This is a good observation. To simplify the option setting I moved the 
+init/destroy of the hash table to bond_open/close respectively. This 
+allowed me to simply set the value of mac_filter. The only catch is in 
+bond_option_arp_interval_set() if mac_filter is set and the interface is 
+up, the user will receive an -EBUSY. This was the minimal amount of 
+configuration behavioral change I could think of.
+
+Thanks,
+-Jon
 
