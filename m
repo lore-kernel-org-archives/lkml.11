@@ -2,136 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E37C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0512DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379231AbiEMJ4l (ORCPT
+        id S1378844AbiEMJ46 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
+        Fri, 13 May 2022 05:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379247AbiEMJ4S (ORCPT
+        with ESMTP id S242977AbiEMJ44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:56:18 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 541DA1BE94
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:56:17 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2DD231477;
-        Fri, 13 May 2022 02:56:17 -0700 (PDT)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CF6F63F5A1;
-        Fri, 13 May 2022 02:56:15 -0700 (PDT)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>, linux-kernel@vger.kernel.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>
-Subject: [PATCH 4/4] arch_topology: Add support for parsing sockets in /cpu-map
-Date:   Fri, 13 May 2022 10:55:59 +0100
-Message-Id: <20220513095559.1034633-5-sudeep.holla@arm.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513095559.1034633-1-sudeep.holla@arm.com>
-References: <20220513095559.1034633-1-sudeep.holla@arm.com>
+        Fri, 13 May 2022 05:56:56 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306E725599;
+        Fri, 13 May 2022 02:56:55 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L03tz2sr9zhZ2n;
+        Fri, 13 May 2022 17:56:11 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 13 May 2022 17:56:53 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
+ 2022 17:56:52 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>
+CC:     <matthias.bgg@gmail.com>, <sr@denx.de>, <wsa@the-dreams.de>
+Subject: [PATCH -next 1/2] i2c: mt7621: fix missing clk_disable_unprepare() on error in mtk_i2c_probe()
+Date:   Fri, 13 May 2022 18:08:18 +0800
+Message-ID: <20220513100819.2711845-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Finally let us add support for socket nodes in /cpu-map in the device
-tree. Since this may not be present in all the old platforms and even
-most of the existing platforms, we need to assume absence of the socket
-node indicates that it is a single socket system and handle appropriately.
+Fix the missing clk_disable_unprepare() before return
+from mtk_i2c_probe() in the error handling case.
 
-Also it is likely that most single socket systems skip to as the node
-since it is optional.
-
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Fixes: d04913ec5f89 ("i2c: mt7621: Add MediaTek MT7621/7628/7688 I2C driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/base/arch_topology.c | 37 +++++++++++++++++++++++++++++++-----
- 1 file changed, 32 insertions(+), 5 deletions(-)
+ drivers/i2c/busses/i2c-mt7621.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-index 46420db5a836..ae61af84c161 100644
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -539,8 +539,8 @@ static int __init parse_core(struct device_node *core, int package_id,
- 	return 0;
+diff --git a/drivers/i2c/busses/i2c-mt7621.c b/drivers/i2c/busses/i2c-mt7621.c
+index 45fe4a7fe0c0..f117c3d9ca19 100644
+--- a/drivers/i2c/busses/i2c-mt7621.c
++++ b/drivers/i2c/busses/i2c-mt7621.c
+@@ -304,7 +304,8 @@ static int mtk_i2c_probe(struct platform_device *pdev)
+ 
+ 	if (i2c->bus_freq == 0) {
+ 		dev_warn(i2c->dev, "clock-frequency 0 not supported\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_disable_clk;
+ 	}
+ 
+ 	adap = &i2c->adap;
+@@ -322,10 +323,13 @@ static int mtk_i2c_probe(struct platform_device *pdev)
+ 
+ 	ret = i2c_add_adapter(adap);
+ 	if (ret < 0)
+-		return ret;
++		goto err_disable_clk;
+ 
+ 	dev_info(&pdev->dev, "clock %u kHz\n", i2c->bus_freq / 1000);
+ 
++err_disable_clk:
++	clk_disable_unprepare(i2c->clk);
++
+ 	return ret;
  }
- 
--static int __init
--parse_cluster(struct device_node *cluster, int cluster_id, int depth)
-+static int __init parse_cluster(struct device_node *cluster, int package_id,
-+				int cluster_id, int depth)
- {
- 	char name[20];
- 	bool leaf = true;
-@@ -560,7 +560,7 @@ parse_cluster(struct device_node *cluster, int cluster_id, int depth)
- 		c = of_get_child_by_name(cluster, name);
- 		if (c) {
- 			leaf = false;
--			ret = parse_cluster(c, i, depth + 1);
-+			ret = parse_cluster(c, package_id, i, depth + 1);
- 			of_node_put(c);
- 			if (ret != 0)
- 				return ret;
-@@ -584,7 +584,8 @@ parse_cluster(struct device_node *cluster, int cluster_id, int depth)
- 			}
- 
- 			if (leaf) {
--				ret = parse_core(c, 0, cluster_id, core_id++);
-+				ret = parse_core(c, package_id, cluster_id,
-+						 core_id++);
- 			} else {
- 				pr_err("%pOF: Non-leaf cluster with core %s\n",
- 				       cluster, name);
-@@ -604,6 +605,32 @@ parse_cluster(struct device_node *cluster, int cluster_id, int depth)
- 	return 0;
- }
- 
-+static int __init parse_socket(struct device_node *socket)
-+{
-+	char name[20];
-+	struct device_node *c;
-+	bool has_socket = false;
-+	int package_id = 0, ret;
-+
-+	do {
-+		snprintf(name, sizeof(name), "socket%d", package_id);
-+		c = of_get_child_by_name(socket, name);
-+		if (c) {
-+			has_socket = true;
-+			ret = parse_cluster(c, package_id, -1, 0);
-+			of_node_put(c);
-+			if (ret != 0)
-+				return ret;
-+		}
-+		package_id++;
-+	} while (c);
-+
-+	if (!has_socket)
-+		ret = parse_cluster(socket, 0, -1, 0);
-+
-+	return ret;
-+}
-+
- static int __init parse_dt_topology(void)
- {
- 	struct device_node *cn, *map;
-@@ -624,7 +651,7 @@ static int __init parse_dt_topology(void)
- 	if (!map)
- 		goto out;
- 
--	ret = parse_cluster(map, -1, 0);
-+	ret = parse_socket(map);
- 	if (ret != 0)
- 		goto out_map;
  
 -- 
-2.36.1
+2.25.1
 
