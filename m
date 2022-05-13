@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C44C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381009AbiEMO3g (ORCPT
+        id S1380812AbiEMO3p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
+        Fri, 13 May 2022 10:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381095AbiEMO0c (ORCPT
+        with ESMTP id S1381097AbiEMO0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 10:26:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E827506E3;
-        Fri, 13 May 2022 07:26:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF858506EC;
+        Fri, 13 May 2022 07:26:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3FB3B82C9D;
-        Fri, 13 May 2022 14:26:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E49D0C34115;
-        Fri, 13 May 2022 14:26:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C3F16219D;
+        Fri, 13 May 2022 14:26:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B8DAC36AEC;
+        Fri, 13 May 2022 14:26:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451985;
-        bh=LAW3oRY7WSoDZ6V/paLZpl/L6DCV49O7Hv7830ybxPM=;
+        s=korg; t=1652451988;
+        bh=85U1WWVkHeMQrJWMsxOyN59skP9tpj5MeWFM5A12uXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GXyDhOiiJRccrS99PCIsAaKHP9Sfl/W3GtF8OHGZsFeNJgYw2vkdj9lmReCuZSkNW
-         25YoqfN66gr42evUIl7QNmeNuCH8IypHBLMZpk/+Qzxuxtc4VAsZSMj+3y3daylWvL
-         POShwnNedeIhzgznHSIRDIqrnyaAvDkMlZKy4y9k=
+        b=Z69z3oDXPD21rNW9i5pU2xdBQSPQGAePhxjHL1MhlizvNubIkg2KtoA/5NPLc35nb
+         WRkITwqgnicSG/5sBtZg7Vm2LyEr3KCNf86g+8MC7GZbp5HhpQMlVmZixtDqTet+1D
+         sspSucBEntU5Btet39kQCTflWgfYlUUZ4zmPy+Vg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
         Juergen Gross <jgross@suse.com>, x86@kernel.org,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
         Ingo Molnar <mingo@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
         Andrew Cooper <andrew.cooper3@citrix.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
         Borislav Petkov <bp@alien8.de>, xen-devel@lists.xenproject.org,
         Randy Dunlap <rdunlap@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Maximilian Heyne <mheyne@amazon.de>
-Subject: [PATCH 5.4 10/18] x86/asm: Allow to pass macros to __ASM_FORM()
-Date:   Fri, 13 May 2022 16:23:36 +0200
-Message-Id: <20220513142229.456082257@linuxfoundation.org>
+Subject: [PATCH 5.4 11/18] x86: xen: kvm: Gather the definition of emulate prefixes
+Date:   Fri, 13 May 2022 16:23:37 +0200
+Message-Id: <20220513142229.483992618@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
 References: <20220513142229.153291230@linuxfoundation.org>
@@ -60,46 +60,96 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Masami Hiramatsu <mhiramat@kernel.org>
 
-commit f7919fd943abf0c77aed4441ea9897a323d132f5 upstream.
+commit b3dc0695fa40c3b280230fb6fb7fb7a94ce28bf4 upstream.
 
-Use __stringify() at __ASM_FORM() so that user can pass
-code including macros to __ASM_FORM().
+Gather the emulate prefixes, which forcibly make the following
+instruction emulated on virtualization, in one place.
 
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
 Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Cc: Juergen Gross <jgross@suse.com>
 Cc: x86@kernel.org
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Stefano Stabellini <sstabellini@kernel.org>
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Cc: Andrew Cooper <andrew.cooper3@citrix.com>
+Cc: Stefano Stabellini <sstabellini@kernel.org>
 Cc: Borislav Petkov <bp@alien8.de>
 Cc: xen-devel@lists.xenproject.org
 Cc: Randy Dunlap <rdunlap@infradead.org>
 Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/156777562873.25081.2288083344657460959.stgit@devnote2
+Link: https://lkml.kernel.org/r/156777563917.25081.7286628561790289995.stgit@devnote2
 Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/asm.h |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/emulate_prefix.h |   14 ++++++++++++++
+ arch/x86/include/asm/xen/interface.h  |   11 ++++-------
+ arch/x86/kvm/x86.c                    |    4 +++-
+ 3 files changed, 21 insertions(+), 8 deletions(-)
+ create mode 100644 arch/x86/include/asm/emulate_prefix.h
 
---- a/arch/x86/include/asm/asm.h
-+++ b/arch/x86/include/asm/asm.h
-@@ -7,9 +7,11 @@
- # define __ASM_FORM_RAW(x)     x
- # define __ASM_FORM_COMMA(x) x,
- #else
--# define __ASM_FORM(x)	" " #x " "
--# define __ASM_FORM_RAW(x)     #x
--# define __ASM_FORM_COMMA(x) " " #x ","
-+#include <linux/stringify.h>
+--- /dev/null
++++ b/arch/x86/include/asm/emulate_prefix.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_EMULATE_PREFIX_H
++#define _ASM_X86_EMULATE_PREFIX_H
 +
-+# define __ASM_FORM(x)	" " __stringify(x) " "
-+# define __ASM_FORM_RAW(x)     __stringify(x)
-+# define __ASM_FORM_COMMA(x) " " __stringify(x) ","
- #endif
++/*
++ * Virt escape sequences to trigger instruction emulation;
++ * ideally these would decode to 'whole' instruction and not destroy
++ * the instruction stream; sadly this is not true for the 'kvm' one :/
++ */
++
++#define __XEN_EMULATE_PREFIX  0x0f,0x0b,0x78,0x65,0x6e  /* ud2 ; .ascii "xen" */
++#define __KVM_EMULATE_PREFIX  0x0f,0x0b,0x6b,0x76,0x6d	/* ud2 ; .ascii "kvm" */
++
++#endif
+--- a/arch/x86/include/asm/xen/interface.h
++++ b/arch/x86/include/asm/xen/interface.h
+@@ -379,12 +379,9 @@ struct xen_pmu_arch {
+  * Prefix forces emulation of some non-trapping instructions.
+  * Currently only CPUID.
+  */
+-#ifdef __ASSEMBLY__
+-#define XEN_EMULATE_PREFIX .byte 0x0f,0x0b,0x78,0x65,0x6e ;
+-#define XEN_CPUID          XEN_EMULATE_PREFIX cpuid
+-#else
+-#define XEN_EMULATE_PREFIX ".byte 0x0f,0x0b,0x78,0x65,0x6e ; "
+-#define XEN_CPUID          XEN_EMULATE_PREFIX "cpuid"
+-#endif
++#include <asm/emulate_prefix.h>
++
++#define XEN_EMULATE_PREFIX __ASM_FORM(.byte __XEN_EMULATE_PREFIX ;)
++#define XEN_CPUID          XEN_EMULATE_PREFIX __ASM_FORM(cpuid)
  
- #ifndef __x86_64__
+ #endif /* _ASM_X86_XEN_INTERFACE_H */
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -68,6 +68,7 @@
+ #include <asm/mshyperv.h>
+ #include <asm/hypervisor.h>
+ #include <asm/intel_pt.h>
++#include <asm/emulate_prefix.h>
+ #include <clocksource/hyperv_timer.h>
+ 
+ #define CREATE_TRACE_POINTS
+@@ -5583,6 +5584,7 @@ EXPORT_SYMBOL_GPL(kvm_write_guest_virt_s
+ 
+ int handle_ud(struct kvm_vcpu *vcpu)
+ {
++	static const char kvm_emulate_prefix[] = { __KVM_EMULATE_PREFIX };
+ 	int emul_type = EMULTYPE_TRAP_UD;
+ 	char sig[5]; /* ud2; .ascii "kvm" */
+ 	struct x86_exception e;
+@@ -5590,7 +5592,7 @@ int handle_ud(struct kvm_vcpu *vcpu)
+ 	if (force_emulation_prefix &&
+ 	    kvm_read_guest_virt(vcpu, kvm_get_linear_rip(vcpu),
+ 				sig, sizeof(sig), &e) == 0 &&
+-	    memcmp(sig, "\xf\xbkvm", sizeof(sig)) == 0) {
++	    memcmp(sig, kvm_emulate_prefix, sizeof(sig)) == 0) {
+ 		kvm_rip_write(vcpu, kvm_rip_read(vcpu) + sizeof(sig));
+ 		emul_type = EMULTYPE_TRAP_UD_FORCED;
+ 	}
 
 
