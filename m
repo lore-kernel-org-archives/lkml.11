@@ -2,109 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271E1C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F6AC433EF
 	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 13:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381509AbiEMNhk (ORCPT
+        id S1381497AbiEMNhg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 09:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56130 "EHLO
+        Fri, 13 May 2022 09:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381284AbiEMNeR (ORCPT
+        with ESMTP id S1381118AbiEMNbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 09:34:17 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E132663B8
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:34:15 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id EFA071F904;
-        Fri, 13 May 2022 13:34:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1652448853; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YDJZar56lzTheHzjbbIajAJWdJ4wgWvDaqV7f4rkCRo=;
-        b=D1LJM/ZXh3F36LL08QDC3YgQIfFBisJ9gZ2U+0J2ikeUgkJZFy9jGH4GKV5lh+Gu64DTUb
-        Xm8veebY2ta1jqFwCcPDwNDctUfsGaYw9/HCyvdQ1nd6BH1sUIX6C4Mmm/MoLKOph4WHjx
-        7ZTXMLaeDT6diwP93DStjT0oa/VpKJQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1652448853;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YDJZar56lzTheHzjbbIajAJWdJ4wgWvDaqV7f4rkCRo=;
-        b=goV9CK2QaWzK4JKz/rU94eht9BS6SsmtekY4TQVEW1OqmTZFgE8/4enG7OzsdtOJSraYCP
-        SlP3NYNmw4by8XDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7D80113446;
-        Fri, 13 May 2022 13:34:13 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id B5/6HFVefmKdcwAAMHmgww
-        (envelope-from <jroedel@suse.de>); Fri, 13 May 2022 13:34:13 +0000
-Date:   Fri, 13 May 2022 15:34:12 +0200
-From:   Joerg Roedel <jroedel@suse.de>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Oleg Nesterov <oleg@redhat.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH V2] x86/sev: Mark the code returning to user space as
- syscall gap
-Message-ID: <Yn5eVA07T4oTkTLl@suse.de>
-References: <20220412124909.10467-1-jiangshanlai@gmail.com>
+        Fri, 13 May 2022 09:31:47 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51B3E5296;
+        Fri, 13 May 2022 06:31:42 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id v4so10279225ljd.10;
+        Fri, 13 May 2022 06:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Na7KKiRW8g4tHv1id7jR6DFKacvqXxknGAITtk875TM=;
+        b=KFSjXIqFSyF8XNjKgP/oTuuLiMUh2SEArbQCznMA0nlw4N0ApWuIbkA/bkbwWwzMXt
+         ELayu0ZHjr9dkjB5ZgnRSw5DW/JaAl3ufbUXPvzofZe+HewnZ/0KaxEO79/5AZb25pgk
+         uMxLcqMIQXjvBnHZMRE9K0IcparMt3vhH64aYietbnLmZH0P8vwEehx6iEPGIo7pWxvF
+         1dbMrI5YXH7GdSnowidxxc3wTxXMKK+1Pnerjvuj3bBw3ZYpw+a8lqMq8dZu/Xky4UYt
+         9167H7iwFrE+tW7ASgCNkQSgmmms+Aqu/6GzZYLOtN/XxMF5CLi+GWQWELEeeXb4qwof
+         3xbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Na7KKiRW8g4tHv1id7jR6DFKacvqXxknGAITtk875TM=;
+        b=04aIjI3Qh3E+u3jb5B7YXpxgogKANKQmAS4eZ2A40fjFLKi/7KpZ38YSZlIGMjTiui
+         +MGS03ru/p9hm/dcsbSFv/QFt8oTFtDTzgL2XRXhwoP/E+0jsYNLZnTlHb38SGtDFoCr
+         9GGG23VIfw/3K/Xqwx4W/3oPDySL5qir83k4IJ7sbYBLvCREOLglV6qW90zL46y8DfCL
+         Ft4DdE4IAJEgrauK9Ja3ZLvntaRF2wBd5EoZFV4Ze4SuX3dlY2yGP4sv9zMUx50dyWsv
+         oX7G4w2K0G282BFZtFfdJZX+4PDfm7A1vcWFi6NaR01m2GD0b+f7uusXzdY5u25VqV+V
+         wxuw==
+X-Gm-Message-State: AOAM533wvXijAovQ8UT4xID4PaBSqOG40NCoalcD38Ant2yaHeYQBQSf
+        +/AvQbBGl+RgXVXTESr94qg=
+X-Google-Smtp-Source: ABdhPJz56UMDH0Hhn7SVFGu8yjI811vwyRUUfOnKCOz+qNf8d0wIF18Xt4hl2aodxiGtYO7ef5TRpQ==
+X-Received: by 2002:a2e:9645:0:b0:24f:2e6f:f931 with SMTP id z5-20020a2e9645000000b0024f2e6ff931mr3149716ljh.466.1652448701036;
+        Fri, 13 May 2022 06:31:41 -0700 (PDT)
+Received: from mobilestation ([95.79.189.214])
+        by smtp.gmail.com with ESMTPSA id g10-20020a2e390a000000b0024f3d1dae92sm438634lja.26.2022.05.13.06.31.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 06:31:40 -0700 (PDT)
+Date:   Fri, 13 May 2022 16:31:38 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Cc:     Hannes Reinecke <hare@suse.de>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 08/23] ata: libahci_platform: Add function returning a
+ clock-handle by id
+Message-ID: <20220513133138.mmi3n6zc5yvcf5py@mobilestation>
+References: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
+ <20220511231810.4928-9-Sergey.Semin@baikalelectronics.ru>
+ <0732a28c-579e-52f8-21ad-653fd9a10aa2@suse.de>
+ <20220512142607.u2kls35pevnjsjjh@mobilestation>
+ <83ae3312-36ea-fa01-9b53-28818a04699f@opensource.wdc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220412124909.10467-1-jiangshanlai@gmail.com>
+In-Reply-To: <83ae3312-36ea-fa01-9b53-28818a04699f@opensource.wdc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Tue, Apr 12, 2022 at 08:49:08PM +0800, Lai Jiangshan wrote:
-> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+On Fri, May 13, 2022 at 11:32:09AM +0200, Damien Le Moal wrote:
+> On 2022/05/12 16:26, Serge Semin wrote:
+> > On Thu, May 12, 2022 at 08:32:37AM +0200, Hannes Reinecke wrote:
+> >> On 5/12/22 01:17, Serge Semin wrote:
+> >>> Since all the clocks are retrieved by the method
+> >>> ahci_platform_get_resources() there is no need for the LLD (glue) drivers
+> >>> to be looking for some particular of them in the kernel clocks table
+> >>> again. Instead we suggest to add a simple method returning a
+> >>> device-specific clock with passed connection ID if it is managed to be
+> >>> found. Otherwise the function will return NULL. Thus the glue-drivers
+> >>> won't need to either manually touching the hpriv->clks array or calling
+> >>> clk_get()-friends. The AHCI platform drivers will be able to use the new
+> >>> function right after the ahci_platform_get_resources() method invocation
+> >>> and up to the device removal.
+> >>>
+> >>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> >>>
+> >>> ---
+> >>>
+> >>> Changelog v2:
+> >>> - Fix some grammar mistakes in the method description.
+> >>> ---
+> >>>   drivers/ata/libahci_platform.c | 27 +++++++++++++++++++++++++++
+> >>>   include/linux/ahci_platform.h  |  3 +++
+> >>>   2 files changed, 30 insertions(+)
+> >>>
+> >>> diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
+> >>> index 3cff86c225fd..7ff6626fd569 100644
+> >>> --- a/drivers/ata/libahci_platform.c
+> >>> +++ b/drivers/ata/libahci_platform.c
+> >>> @@ -94,6 +94,33 @@ void ahci_platform_disable_phys(struct ahci_host_priv *hpriv)
+> >>>   }
+> >>>   EXPORT_SYMBOL_GPL(ahci_platform_disable_phys);
+> >>> +/**
+> >>> + * ahci_platform_find_clk - Find platform clock
+> >>> + * @hpriv: host private area to store config values
+> >>> + * @con_id: clock connection ID
+> >>> + *
+> >>> + * This function returns a pointer to the clock descriptor of the clock with
+> >>> + * the passed ID.
+> >>> + *
+> >>> + * RETURNS:
+> >>> + * Pointer to the clock descriptor on success otherwise NULL
+> >>> + */
+> >>> +struct clk *ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con_id)
+> >>> +{
+> >>> +	struct clk *clk = NULL;
+> >>> +	int i;
+> >>> +
+> >>> +	for (i = 0; i < hpriv->n_clks; i++) {
+> >>> +		if (!strcmp(hpriv->clks[i].id, con_id)) {
+> >>> +			clk = hpriv->clks[i].clk;
+> >>> +			break;
+> >>> +		}
+> >>> +	}
+> >>> +
+> >>> +	return clk;
+> >>> +}
+> >>> +EXPORT_SYMBOL_GPL(ahci_platform_find_clk);
+> >>> +
+> >>>   /**
+> >>>    * ahci_platform_enable_clks - Enable platform clocks
+> >>>    * @hpriv: host private area to store config values
+> >>> diff --git a/include/linux/ahci_platform.h b/include/linux/ahci_platform.h
+> >>> index 49e5383d4222..fd964e6a68d6 100644
+> >>> --- a/include/linux/ahci_platform.h
+> >>> +++ b/include/linux/ahci_platform.h
+> >>> @@ -13,6 +13,7 @@
+> >>>   #include <linux/compiler.h>
+> >>> +struct clk;
+> >>>   struct device;
+> >>>   struct ata_port_info;
+> >>>   struct ahci_host_priv;
+> >>> @@ -21,6 +22,8 @@ struct scsi_host_template;
+> >>>   int ahci_platform_enable_phys(struct ahci_host_priv *hpriv);
+> >>>   void ahci_platform_disable_phys(struct ahci_host_priv *hpriv);
+> >>> +struct clk *
+> >>> +ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con_id);
+> >>>   int ahci_platform_enable_clks(struct ahci_host_priv *hpriv);
+> >>>   void ahci_platform_disable_clks(struct ahci_host_priv *hpriv);
+> >>>   int ahci_platform_enable_regulators(struct ahci_host_priv *hpriv);
+> >>
+> > 
+> >> Where is this function being used?
+> > 
+> > It will be used in the DWC AHCI SATA driver and can be utilized in the
+> > rest of the drivers to simplify the available clocks access.
+> > BTW Damien asked the same question in v1. My response was the same.
 > 
-> When returning to user space, the %rsp is user controlled value.
+
+> Please squash this patch together with the patch introducing the first use of
+> this function.
+
+I don't find this required seeing the changes introduced here are
+coherent and can be considered as preparation to the corresponding
+patch. This doesn't break any submitting patch procedure and
+doesn't complicate the review process but simplifies it.
+
+-Sergey
+
 > 
-> If it is SNP-guest and the hypervisor decides to mess with the code-page
-> for this path while a CPU is executing it.  This will cause a #VC on
-> that CPU and that could hit in the syscall return path and mislead
-> the #VC handler.
+> > 
+> > -Sergey
+> > 
+> >>
+> >> Cheers,
+> >>
+> >> Hannes
+> >> -- 
+> >> Dr. Hannes Reinecke		           Kernel Storage Architect
+> >> hare@suse.de			                  +49 911 74053 688
+> >> SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+> >> HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
 > 
-> So make ip_within_syscall_gap() return true in this case.
-
-With the SNP guest patches in tip-tree I think it actually becomes
-possible that a #VC exception hits in these parts of the execution
-stream. It requires good timing by the attacker, but it is not
-impossible. Therefore:
-
-Acked-by: Joerg Roedel <jroedel@suse.de>
-
--- 
-Jörg Rödel
-jroedel@suse.de
-
-SUSE Software Solutions Germany GmbH
-Maxfeldstr. 5
-90409 Nürnberg
-Germany
- 
-(HRB 36809, AG Nürnberg)
-Geschäftsführer: Ivo Totev
-
+> 
+> -- 
+> Damien Le Moal
+> Western Digital Research
