@@ -2,104 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 13:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6640C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 13:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232288AbiEMNvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 09:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
+        id S233062AbiEMNv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 09:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382016AbiEMNmb (ORCPT
+        with ESMTP id S1382077AbiEMNnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 09:42:31 -0400
-Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6A2BC0E;
-        Fri, 13 May 2022 06:42:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1652449350; x=1683985350;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uguWhCfJrqay1S13NWgbZNRG98dj6oaX1/xu1tlmmzM=;
-  b=g1CzpIgG2Noc6I4YtTP0yXuou+aHgwq/aKxBZ8laP6osOm7B3yV41cf0
-   Yz2QVsrQxPRrHVNQUtmiZvYcuLL28AdsGezLrYs238sfB9EWj9zZUNpJ2
-   LCsXXksrwiXYFCoGW6PiZ3X/Aux1LeeNiNaa5LXZmZWtr5xrc1I9tavRH
-   w=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="294595933"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647298800"; 
-   d="scan'208";a="294595933"
-Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
-  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 15:42:28 +0200
-Received: from MUCSE814.infineon.com (MUCSE814.infineon.com [172.23.29.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
-        Fri, 13 May 2022 15:42:27 +0200 (CEST)
-Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE814.infineon.com
- (172.23.29.40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 13 May
- 2022 15:42:27 +0200
-Received: from smaha-lin-dev01.agb.infineon.com (172.23.8.247) by
- MUCSE818.infineon.com (172.23.29.44) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 13 May 2022 15:42:27 +0200
-From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-To:     <jarkko@kernel.org>, <linux-integrity@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <peterhuewe@gmx.de>, <jgg@ziepe.ca>, <jsnitsel@redhat.com>,
-        <nayna@linux.vnet.ibm.com>, <stefan.mahnke-hartmann@infineon.com>,
-        <alexander.steffen@infineon.com>
-Subject: [PATCH v2 2/2] tpm: Add field upgrade mode support for Infineon TPM2 modules
-Date:   Fri, 13 May 2022 15:41:53 +0200
-Message-ID: <20220513134152.270442-2-stefan.mahnke-hartmann@infineon.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220513134152.270442-1-stefan.mahnke-hartmann@infineon.com>
-References: <20220513134152.270442-1-stefan.mahnke-hartmann@infineon.com>
+        Fri, 13 May 2022 09:43:22 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E6C26574
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:43:19 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id g23so9969380edy.13
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:43:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OWSeXSH3F3SaHIEtdX7R74ohKdWLZ0h8DQhO+Wcow0w=;
+        b=TGvTFxSVVmsEc3R8tVYYfZPGrWW6+ABu75S3UTtbbnTLGRLejRG8DEPWi7HBJDNiRX
+         snrZ57KR/vPmOg0RsTfEskBNf6dAnEjS4bAs+2XyKKaeTs7kCAFs+cWvIE8PKqNdC+vH
+         S+NVgBta+PCEftq5+psO3lOcA4CPcFYtLzer4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OWSeXSH3F3SaHIEtdX7R74ohKdWLZ0h8DQhO+Wcow0w=;
+        b=zIpDk71SReI+o78HhDvKMfWNGYmkZzUnqxuoHXGvOuYbyjVqPD2TTOXJE89MO8YoQk
+         0TxL54Etuf0/mfIdg+79pGTKT6eAvNrdUOOH0nOw01rOcU/MrORR2kNi0NapipELXnPK
+         mLoO7zsUlPZuqgWwRXsOCRiMSlv+c7c+Z0zbvYLIJl8nglzEjsL9ecW5U3MvAoJkRwbn
+         RrZFwFgbjwlZIkx2doQlGXVENbI4tZKdWMr1hgg+idktF+yn/EtPPrSh+p++yNXAj/jN
+         YRwEadOhl6OAjE0lVz5yiKOxx9oYHlNJ6eMlfMc9lNKikTazVGZqckp3BCSoPTNcELHH
+         EPOA==
+X-Gm-Message-State: AOAM532TYWagPlxo3OcxTC/Qkh1aoUNW++l6raGpcf8Y5prZKlDqsT56
+        El9m1bCa5KoHxLWBQPGKDlaB5qtkkWbcWsPmUtw=
+X-Google-Smtp-Source: ABdhPJykuEA98okdyD52YJM8+xFDg1qSQmO0NdHElHc7/+1TvZoip/yO7KMyjVVQhH+W6ykD0VGh0A==
+X-Received: by 2002:a05:6402:84a:b0:423:fe99:8c53 with SMTP id b10-20020a056402084a00b00423fe998c53mr39978291edz.195.1652449398306;
+        Fri, 13 May 2022 06:43:18 -0700 (PDT)
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
+        by smtp.gmail.com with ESMTPSA id h2-20020a0564020e8200b0042617ba63c8sm987659eda.82.2022.05.13.06.43.16
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 06:43:16 -0700 (PDT)
+Received: by mail-wm1-f47.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so4790855wmn.1
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:43:16 -0700 (PDT)
+X-Received: by 2002:a05:600c:3d8c:b0:394:6097:9994 with SMTP id
+ bi12-20020a05600c3d8c00b0039460979994mr15065402wmb.29.1652449395743; Fri, 13
+ May 2022 06:43:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE813.infineon.com (172.23.29.39) To
- MUCSE818.infineon.com (172.23.29.44)
+References: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
+ <20220512090429.2.I1318c1ae2ce55ade1d092fc21df846360b15c560@changeid> <1652445201.115225.85852.nullmailer@robh.at.kernel.org>
+In-Reply-To: <1652445201.115225.85852.nullmailer@robh.at.kernel.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 13 May 2022 06:43:04 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=W1CC8NGFCiUCb-W3i4Z6wYyhmf9JmgbFJ4K+KL6mgvgQ@mail.gmail.com>
+Message-ID: <CAD=FV=W1CC8NGFCiUCb-W3i4Z6wYyhmf9JmgbFJ4K+KL6mgvgQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] dt-bindings: arm: qcom: Add / fix sc7280 board bindings
+To:     Rob Herring <robh@kernel.org>
+Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TPM2_GetCapability with a capability that has the property type value
-of TPM_PT_TOTAL_COMMANDS returns a zero length list, when an Infineon
-TPM2 is in field upgrade mode.
-Since an Infineon TPM2.0 in field upgrade mode returns RC_SUCCESS on
-TPM2_Startup, the field upgrade mode has to be detected by
-TPM2_GetCapability.
+Hi,
 
-Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
----
-Changelog:
- * v2:
-   * Move check of -ENODATA to if condition below.
-   * Change 'field upgrade mode' to lower case.
+On Fri, May 13, 2022 at 5:33 AM Rob Herring <robh@kernel.org> wrote:
+>
+> On Thu, 12 May 2022 09:04:46 -0700, Douglas Anderson wrote:
+> > This copy-pastes compatibles from sc7280-based boards from the device
+> > trees to the yaml file. It also fixes the CRD/IDP bindings which had
+> > gotten stale.
+> >
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> >
+> >  .../devicetree/bindings/arm/qcom.yaml         | 40 +++++++++++++++----
+> >  1 file changed, 33 insertions(+), 7 deletions(-)
+> >
+>
+> Running 'make dtbs_check' with the schema in this patch gives the
+> following warnings. Consider if they are expected or the schema is
+> incorrect. These may not be new warnings.
+>
+> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> This will change in the future.
+>
+> Full log is available here: https://patchwork.ozlabs.org/patch/
+>
+>
+> /: compatible: 'oneOf' conditional failed, one must be fixed:
+[...]
+>         arch/arm64/boot/dts/qcom/sc7280-crd.dtb
+>         arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
 
- drivers/char/tpm/tpm2-cmd.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Looking explicitly at these, since sc7280 boards were supposed to have
+been fixed.
 
-diff --git a/drivers/char/tpm/tpm2-cmd.c b/drivers/char/tpm/tpm2-cmd.c
-index 04a3e23a4afc..c1eb5d223839 100644
---- a/drivers/char/tpm/tpm2-cmd.c
-+++ b/drivers/char/tpm/tpm2-cmd.c
-@@ -754,7 +754,11 @@ int tpm2_auto_startup(struct tpm_chip *chip)
- 	rc = tpm2_get_cc_attrs_tbl(chip);
- 
- out:
--	if (rc == TPM2_RC_UPGRADE) {
-+	/*
-+	 * Infineon TPM in field upgrade mode will return no data for the number
-+	 * of supported commands.
-+	 */
-+	if (rc == TPM2_RC_UPGRADE || rc == -ENODATA) {
- 		dev_info(&chip->dev, "TPM in field upgrade mode, requires firmware upgrade\n");
- 		chip->flags |= TPM_CHIP_FLAG_FIRMWARE_UPGRADE;
- 		rc = 0;
--- 
-2.25.1
+Ah, I see. herobrine-r0 was removed recently, and the crd compatibles
+were rejiggered. ...so this makes sense. I'll expect that it will be
+resolved when the current Qualcomm tree makes it to mainline.
 
+-Doug
