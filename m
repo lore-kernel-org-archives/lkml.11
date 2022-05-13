@@ -2,127 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABDFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 471C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382527AbiEMQwc (ORCPT
+        id S1382627AbiEMQwi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 12:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
+        Fri, 13 May 2022 12:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382711AbiEMQvD (ORCPT
+        with ESMTP id S1382552AbiEMQue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 12:51:03 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7F3532EA;
-        Fri, 13 May 2022 09:51:02 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 839611F4228A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652460661;
-        bh=GKsA2sowh5zETh3IdEBedNaUz2n5kLBfuDV0nmxxWQE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aeL7OVfEvhWLmjMbONAiIToLFDFt5Hmg74Ht394BSCOvh94VGeiR/he3JIajK3MaO
-         MgGgiNUv1JAskna2SmGva8vs/8ZsoG5gK++jw3YsufdKN9R82newg/COZ3yzWf3049
-         Vjnyh+SZipv39QuvMOmGhoOrQZ+g0OWBQnZ1X1s5I8BmcnqOhvzSHSVGgFAL9dn5pA
-         NHq9nnU4uSwSCzzKVrckMlgSHLfaLRsCus0Fqqyd19VADs7uvwxCq+yHtcJX2K2T3O
-         5vd+H1tNdIU9sCsyRmAiMahGze5kaJbVJ4mEPfMTYl6xMSA7WMGzbmUt5zhKXbtZ7J
-         iC45qE1/t+bSw==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     robh+dt@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        y.oudjana@protonmail.com, angelogioacchino.delregno@collabora.com,
-        jason-jh.lin@mediatek.com, ck.hu@mediatek.com,
-        fparent@baylibre.com, rex-bc.chen@mediatek.com,
-        tinghan.shen@mediatek.com, chun-jie.chen@mediatek.com,
-        weiyi.lu@mediatek.com, ikjn@chromium.org, miles.chen@mediatek.com,
-        sam.shih@mediatek.com, wenst@chromium.org,
-        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        kernel@collabora.com
-Subject: [PATCH 3/5] dt-bindings: reset: Add bindings for MT6795 Helio X10 reset controllers
-Date:   Fri, 13 May 2022 18:50:48 +0200
-Message-Id: <20220513165050.500831-4-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220513165050.500831-1-angelogioacchino.delregno@collabora.com>
-References: <20220513165050.500831-1-angelogioacchino.delregno@collabora.com>
+        Fri, 13 May 2022 12:50:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81C4E54FAC
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652460613;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=33oKxA4Na7t/dSRQE6iTTpYQb3oMGj6G5wXczQ6on5U=;
+        b=HgzI0KNdDK+GaLqXXntnFdmsTtCrzBTsA1x4LoxshCzVb2GT7YfPciupJxRsyYvW6Sfav+
+        W5XFtqCxtjDAppwGCFQcsfV2gKK0yhZOsc/J4NKpJDbCuIkHQbocYL3wX17jyHWnKAqxhK
+        6RBtqwYE6CCNDhP2MF123EVttIFKxqc=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-182-E_epyNm9N-Gqr5RiMsj8Zg-1; Fri, 13 May 2022 12:50:10 -0400
+X-MC-Unique: E_epyNm9N-Gqr5RiMsj8Zg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DCFA7294EDF4;
+        Fri, 13 May 2022 16:50:09 +0000 (UTC)
+Received: from [10.22.11.63] (unknown [10.22.11.63])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AE6ED438BD9;
+        Fri, 13 May 2022 16:50:09 +0000 (UTC)
+Message-ID: <151959a6-e691-c905-fe05-c6fd3f616f25@redhat.com>
+Date:   Fri, 13 May 2022 12:50:09 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] kselftest/cgroup: fix test_stress.sh to use OUTPUT dir
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Phil Auld <pauld@redhat.com>, lkml <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+References: <20220512143439.26104-1-pauld@redhat.com>
+ <f819f288-7f67-77d1-5d92-f0a5545c1c48@redhat.com>
+ <CAOS58YNYoFQy9gv9qiUX-PDkhEJ0CAwKeNibUghrT68vSSckYQ@mail.gmail.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <CAOS58YNYoFQy9gv9qiUX-PDkhEJ0CAwKeNibUghrT68vSSckYQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the reset controller bindings for MT6795.
+On 5/13/22 12:20, Tejun Heo wrote:
+> Can you send a quick patch?
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- include/dt-bindings/reset/mt6795-resets.h | 50 +++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
- create mode 100644 include/dt-bindings/reset/mt6795-resets.h
+Will do.
 
-diff --git a/include/dt-bindings/reset/mt6795-resets.h b/include/dt-bindings/reset/mt6795-resets.h
-new file mode 100644
-index 000000000000..0a6514884eae
---- /dev/null
-+++ b/include/dt-bindings/reset/mt6795-resets.h
-@@ -0,0 +1,50 @@
-+/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-2-Clause) */
-+/*
-+ * Copyright (c) 2022 Collabora Ltd.
-+ * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-+ */
-+
-+#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT6795
-+#define _DT_BINDINGS_RESET_CONTROLLER_MT6795
-+
-+/* INFRACFG resets */
-+#define MT6795_INFRA_SCPSYS_RST			0
-+#define MT6795_INFRA_PMIC_WRAP_RST		1
-+
-+/* MMSYS resets */
-+#define MT6795_MMSYS_SW0_RST_B_SMI_COMMON	0
-+#define MT6795_MMSYS_SW0_RST_B_SMI_LARB		1
-+#define MT6795_MMSYS_SW0_RST_B_CAM_MDP		2
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RDMA0	3
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RDMA1	4
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RSZ0		5
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RSZ1		6
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RSZ2		7
-+#define MT6795_MMSYS_SW0_RST_B_MDP_TDSHP0	8
-+#define MT6795_MMSYS_SW0_RST_B_MDP_TDSHP1	9
-+#define MT6795_MMSYS_SW0_RST_B_MDP_WDMA		10
-+#define MT6795_MMSYS_SW0_RST_B_MDP_WROT0	11
-+#define MT6795_MMSYS_SW0_RST_B_MDP_WROT1	12
-+#define MT6795_MMSYS_SW0_RST_B_MDP_CROP		13
-+
-+/*  PERICFG resets */
-+#define MT6795_PERI_NFI_SW_RST			0
-+#define MT6795_PERI_THERM_SW_RST		1
-+#define MT6795_PERI_MSDC1_SW_RST		2
-+
-+/* TOPRGU resets */
-+#define MT6795_TOPRGU_INFRA_SW_RST		0
-+#define MT6795_TOPRGU_MM_SW_RST			1
-+#define MT6795_TOPRGU_MFG_SW_RST		2
-+#define MT6795_TOPRGU_VENC_SW_RST		3
-+#define MT6795_TOPRGU_VDEC_SW_RST		4
-+#define MT6795_TOPRGU_IMG_SW_RST		5
-+#define MT6795_TOPRGU_DDRPHY_SW_RST		6
-+#define MT6795_TOPRGU_MD_SW_RST			7
-+#define MT6795_TOPRGU_INFRA_AO_SW_RST		8
-+#define MT6795_TOPRGU_MD_LITE_SW_RST		9
-+#define MT6795_TOPRGU_APMIXED_SW_RST		10
-+#define MT6795_TOPRGU_PWRAP_SPI_CTL_RST		11
-+#define MT6795_TOPRGU_SW_RST_NUM		12
-+
-+#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT6795 */
--- 
-2.35.1
+Cheers,
+Longman
+
+>
+> Thanks.
+>
+> On Fri, May 13, 2022 at 6:19 AM Waiman Long <longman@redhat.com> wrote:
+>>
+>> On 5/12/22 10:34, Phil Auld wrote:
+>>> Running cgroup kselftest with O= fails to run the with_stress test due
+>>> to hardcoded ./test_core. Find test_core binary using the OUTPUT directory.
+>>>
+>>> Fixes: 1a99fcc035fb ("selftests: cgroup: Run test_core under interfering stress")
+>>> Signed-off-by: Phil Auld <pauld@redhat.com>
+>>> ---
+>>>    tools/testing/selftests/cgroup/test_stress.sh | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/tools/testing/selftests/cgroup/test_stress.sh b/tools/testing/selftests/cgroup/test_stress.sh
+>>> index 15d9d5896394..109c044f715f 100755
+>>> --- a/tools/testing/selftests/cgroup/test_stress.sh
+>>> +++ b/tools/testing/selftests/cgroup/test_stress.sh
+>>> @@ -1,4 +1,4 @@
+>>>    #!/bin/bash
+>>>    # SPDX-License-Identifier: GPL-2.0
+>>>
+>>> -./with_stress.sh -s subsys -s fork ./test_core
+>>> +./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
+>>
+>> I would suggest using "${OUTPUT:-.}" as the variable OUTPUT may not be
+>> defined if test_stress.sh is run interactively.
+>>
+>> Cheers,
+>> Longman
+>>
+>
 
