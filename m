@@ -2,144 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65530C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:28:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382073AbiEMP2A (ORCPT
+        id S1382026AbiEMP3P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54926 "EHLO
+        Fri, 13 May 2022 11:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382012AbiEMP1K (ORCPT
+        with ESMTP id S1382042AbiEMP3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 11:27:10 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44666248DD;
-        Fri, 13 May 2022 08:26:58 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id z2so16958770ejj.3;
-        Fri, 13 May 2022 08:26:58 -0700 (PDT)
+        Fri, 13 May 2022 11:29:00 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1A062A14
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:28:49 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id e12so15839736ybc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:28:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ojlGOBCpkisLhdBLZc5xu5fbD3iLbV6lB886LLnQg1w=;
-        b=FxnvipMwHXfyVVeiBLqbMdLNV5U4F0yr5igQCC7dsfDdEcL35Nh+CKGbHkSA2RRujI
-         qRtj6fP0onfppiUtnZFstFQyer4u9ERWj8xeNVoyiRQr4kOhm8FRiv2uo4rxrBv/eT3W
-         WyrDkp5sddZ+j4YnzAWpV7Yoo9XgnO+vIHqAik5b03AtuSM36WxAnnalkp+W2Uot+61/
-         gh+cqGZoYUFujdSW4ZN3DzbNUK4BLV7hOVZRStVIe9MkXNtnUhAcIPeEIYeshloz5bwu
-         IANF26vuHPdCB+o/XARjfVwKTAHTvrvmcH41BfbW7ZdV68InWVMq68x5z3mls5qKHjaa
-         YlLw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=qHkbDcmIgfu+PdFtLJ6QK27CjcqHMlIDYaRd7PVknp4=;
+        b=AIYIk3dQe6uIwNjIx0OXaaI8vUlWzLlvm9qrR2Wqb4c3GkB/uYpPy6XUoTmIH+EUMZ
+         ql9fShPHLXrNNzvr1TBHBrsXWJygTJf9onlKDfQDrjRvhjAxXGH3u2VSUEOLr7oiiTyU
+         jj/dQg5E3yqsATm0AQR+lRdHuPmhg5ydY3edvzxmDiZspHVJMaVaXy56FDAAaIwAiiqA
+         YTWBaaZrYp7rmqJHc4Vbau0jHXNsDfKD7Rd8E13iRnDtpdr1ACtXDt2cxQ/bFxxZB17B
+         7QR8DBkyH6BHdY+MgH5uodm7KT65RUGSWKioSmGyqBq+S91ISBZw8rXGuCASjRyAzSfR
+         PC+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ojlGOBCpkisLhdBLZc5xu5fbD3iLbV6lB886LLnQg1w=;
-        b=Tj/v412+JPjDGboqsIb0odOZzmi07O8F+WKSNVQe3v1UcCKN3/Gi2rP6NW2IL0FUJ7
-         59oMRoiWUCX1dTGdlXjjn18wsnVDuSJgm+RZsbjPWXaiSAjETDasfazIfICiT2u6nCMP
-         qavYfFPYs7VzdyJDIbXxpEwhorGqBD2uVrGXUO0hn0sGaW5LEmX53mjJHkAwEAlV+BHt
-         lWqsgsFHs1otjHDnstSXnykxz6Z+nRPZf0bdu/k0nifDv0Ro95yStAWRSybiOVkk8PKA
-         C+ZJq743X4bcfOe0Tu7ZHFax5dmC5nj2MuzxSrbC2hCH29CxPXJ0LP6WajmY705449CW
-         58BA==
-X-Gm-Message-State: AOAM532Fc6PJtldvPIXkeexZMCPnUFsNo8ijToyO57Wrlmp5C/5WEQOU
-        BbYa2FqdqS3R5asX5H746B/EHwh5hSs=
-X-Google-Smtp-Source: ABdhPJwwrP/iB1n7B9SUctoDqawFOEMzLHfDXlG7K8RA7Xk3mMBBmsfD0iJsfYwuW2CGYhvrNWG+xA==
-X-Received: by 2002:a17:906:24db:b0:6f3:a29f:95dc with SMTP id f27-20020a17090624db00b006f3a29f95dcmr4979024ejb.520.1652455617555;
-        Fri, 13 May 2022 08:26:57 -0700 (PDT)
-Received: from 127.0.0.1localhost ([185.69.144.161])
-        by smtp.gmail.com with ESMTPSA id j13-20020a508a8d000000b0042617ba63cbsm1015351edj.85.2022.05.13.08.26.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:26:57 -0700 (PDT)
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org,
-        Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v3 10/10] ipv6: clean up ip6_setup_cork
-Date:   Fri, 13 May 2022 16:26:15 +0100
-Message-Id: <b1847becb141a0c57ca9d8267fab88a41895273b.1652368648.git.asml.silence@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <cover.1652368648.git.asml.silence@gmail.com>
-References: <cover.1652368648.git.asml.silence@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qHkbDcmIgfu+PdFtLJ6QK27CjcqHMlIDYaRd7PVknp4=;
+        b=EpMNXrwKpcSYpZLDssNY0GzSPQvzger7Mlv4TolAM35mUIYRBMn0Kc6y/H/au2qkXw
+         HZnsAeXxxhVbG+hz2B1S3Fdukn5/m1XUMSA1q7Ve1lNjgC243kwl7+6nr3Y/Ph141OlI
+         ior8IL3ye5+SUhcd6fetLiwA9SI1qex4wgDV61Dm90Nhy7XF4tZiYpjOJLEKGB2YyUVz
+         7oRvJqyhk+kdN4BUET6A5LhQdQDxjsJPJCX2i+yD4YPqhPH6kV9SxPBcjjIePtV46mhD
+         IZzqRCxHJS9gU90eXsjhc/wf78vnvDrHwK1MJLeG3181kYKenejljMErLil13stsLPXh
+         ivbQ==
+X-Gm-Message-State: AOAM533IkDoE/ZQzQOpmV81PL+TygZWH4wcCIg6qvLNvuUBSWvPjoZeJ
+        nSKR6u+H0jAlo/FGZDBxq/4Aib/em8MQpnKFChw94w==
+X-Google-Smtp-Source: ABdhPJx3VhVGgZYu2bUk/YBm7CeVVJ+1f7Fyqquyp4xWb52htCkyiut92oml18xPBAcuBtHq7ZXV6TzLPo9RyCyNumQ=
+X-Received: by 2002:a25:d44e:0:b0:648:3d5b:fbd5 with SMTP id
+ m75-20020a25d44e000000b006483d5bfbd5mr5516615ybf.363.1652455728952; Fri, 13
+ May 2022 08:28:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+ <20220511064943.GR76023@worktop.programming.kicks-ass.net>
+ <20bada85-9203-57f4-2502-57a6fd11f3ea@intel.com> <875ymav8ul.ffs@tglx>
+ <55176b79-90af-4a47-dc06-9f5f2f2c123d@intel.com> <CAG_fn=URUve59ZPWRawW+BN-bUy7U3QmFsfOz_7L8ndsL4kQFQ@mail.gmail.com>
+ <8a47d0ee50b44520a6f26177e6fe7ec5@AcuMS.aculab.com> <CAG_fn=XUqzBWzuU0cmjUoSfHTv6pN=LCqGh7Ns8kgR6L169bPw@mail.gmail.com>
+ <ea7faf6e961141c7848e7587d5e369eb@AcuMS.aculab.com>
+In-Reply-To: <ea7faf6e961141c7848e7587d5e369eb@AcuMS.aculab.com>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Fri, 13 May 2022 17:28:12 +0200
+Message-ID: <CAG_fn=URz4SFfsrMY=Gsfra5_7-2FQYLEqE7mkg7Q3BVXeM=Yg@mail.gmail.com>
+Subject: Re: [RFCv2 00/10] Linear Address Masking enabling
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do a bit of refactoring for ip6_setup_cork(). Cache a xfrm_dst_path()
-result to not call it twice, reshuffle ifs to not repeat some parts
-twice and so.
+On Fri, May 13, 2022 at 4:26 PM David Laight <David.Laight@aculab.com> wrot=
+e:
+>
+> From: Alexander Potapenko
+> > Sent: 13 May 2022 13:26
+> >
+> > On Fri, May 13, 2022 at 1:28 PM David Laight <David.Laight@aculab.com> =
+wrote:
+> > >
+> > > ...
+> > > > Once we have the possibility to store tags in the pointers, we don'=
+t
+> > > > need redzones for heap/stack objects anymore, which saves quite a b=
+it
+> > > > of memory.
+> > >
+> > > You still need redzones.
+> > > The high bits are ignored for actual memory accesses.
+> > >
+> > > To do otherwise you'd need the high bits to be in the PTE,
+> > > copied to the TLB and finally get into the cache tag.
+> > >
+> > > Then you'd have to use the correct tags for each page.
+> >
+> > Sorry, I don't understand how this is relevant to HWASan in the userspa=
+ce.
+> > Like in ASan, we have a custom allocator that assigns tags to heap
+> > objects. The assigned tag is stored in both the shadow memory for the
+> > object and the pointer returned by the allocator.
+> > Instrumentation inserted by the compiler checks the pointer before
+> > every memory access and ensures that its tag matches the tag of the
+> > object in the shadow memory.
+>
+> Doesn't that add so much overhead that the system runs like a sick pig?
+> I don't see any point adding overhead to a generic kernel to support
+> such operation.
+Let me ensure we are on the same page here. Right now we are talking
+about LAM support for userspace addresses.
+At this point nobody is going to add instrumentation to a generic
+kernel - just a prctl (let aside how exactly it works) that makes the
+CPU ignore certain address bits in a particular userspace process.
+The whole system is not supposed to run slower because of that - even
+if one or many processes choose to enable LAM.
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
----
- net/ipv6/ip6_output.c | 30 +++++++++++++-----------------
- 1 file changed, 13 insertions(+), 17 deletions(-)
+Now let's consider ASan (https://clang.llvm.org/docs/AddressSanitizer.html)=
+.
+It is a powerful detector of memory corruptions in the userspace, but
+it comes with a cost:
+ - compiler instrumentation bloats the code (by roughly 50%) and slows
+down the execution (by up to 2x);
+ - redzones around stack and heap objects, memory quarantine and
+shadow memory increase the memory consumption (by up to 4x).
+In short, for each 8 bytes of app memory ASan stores one byte of the
+metadata (shadow memory) indicating the addressability of those 8
+bytes.
+It then uses compiler instrumentation to verify that every memory
+access in the program accesses only addressable memory.
+ASan is widely used for testing and to some extent can be used in
+production, but for big server-side apps the RAM overhead becomes
+critical.
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 6ee44c509485..61dfe3eca773 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1359,15 +1359,13 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	unsigned int mtu;
- 	struct ipv6_txoptions *nopt, *opt = ipc6->opt;
-+	struct dst_entry *xrfm_dst;
- 
- 	/* callers pass dst together with a reference, set it first so
- 	 * ip6_cork_release() can put it down even in case of an error.
- 	 */
- 	cork->base.dst = &rt->dst;
- 
--	/*
--	 * setup for corking
--	 */
- 	if (opt) {
- 		if (WARN_ON(v6_cork->opt))
- 			return -EINVAL;
-@@ -1400,28 +1398,26 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 	}
- 	v6_cork->hop_limit = ipc6->hlimit;
- 	v6_cork->tclass = ipc6->tclass;
--	if (rt->dst.flags & DST_XFRM_TUNNEL)
--		mtu = np->pmtudisc >= IPV6_PMTUDISC_PROBE ?
--		      READ_ONCE(rt->dst.dev->mtu) : dst_mtu(&rt->dst);
-+
-+	xrfm_dst = xfrm_dst_path(&rt->dst);
-+	if (dst_allfrag(xrfm_dst))
-+		cork->base.flags |= IPCORK_ALLFRAG;
-+
-+	if (np->pmtudisc < IPV6_PMTUDISC_PROBE)
-+		mtu = dst_mtu(rt->dst.flags & DST_XFRM_TUNNEL ? &rt->dst : xrfm_dst);
- 	else
--		mtu = np->pmtudisc >= IPV6_PMTUDISC_PROBE ?
--			READ_ONCE(rt->dst.dev->mtu) : dst_mtu(xfrm_dst_path(&rt->dst));
--	if (np->frag_size < mtu) {
--		if (np->frag_size)
--			mtu = np->frag_size;
--	}
-+		mtu = READ_ONCE(rt->dst.dev->mtu);
-+
-+	if (np->frag_size < mtu && np->frag_size)
-+		mtu = np->frag_size;
-+
- 	cork->base.fragsize = mtu;
- 	cork->base.gso_size = ipc6->gso_size;
- 	cork->base.tx_flags = 0;
- 	cork->base.mark = ipc6->sockc.mark;
- 	sock_tx_timestamp(sk, ipc6->sockc.tsflags, &cork->base.tx_flags);
--
--	if (dst_allfrag(xfrm_dst_path(&rt->dst)))
--		cork->base.flags |= IPCORK_ALLFRAG;
- 	cork->base.length = 0;
--
- 	cork->base.transmit_time = ipc6->sockc.transmit_time;
--
- 	return 0;
- }
- 
--- 
-2.36.0
+This is where HWASan
+(https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html)
+comes to the rescue.
+Instead of storing addressability info in the shadow memory, it stores
+a 1-byte tag for every 16 bytes of app memory (see
+https://arxiv.org/pdf/1802.09517.pdf for other options).
+As I mentioned before, the custom userspace memory allocator assigns
+the tags to memory chunks and returns tagged pointers.
+Like ASan, HWASan uses compiler instrumentation to verify that every
+memory access is touching valid memory, but in this case it must
+ensure that the pointer tag matches the tag stored in the shadow
+memory.
+Because of instrumentation, HWASan still has comparable code size and
+execution overheads, but it uses way less memory (10-35% of the
+original app memory consumption).
+This lets us test beefy applications, e.g. feeding real-world queries
+to production services. Even smaller applications benefit from it,
+e.g. because of reduced cache pressure.
+HWASan has been available for Android for a while now, and proved itself us=
+eful.
 
+> > A tag mismatch is reported as an out-of-bounds or a use-after-free,
+> > depending on whether the accessed memory is still considered
+> > allocated.
+> > Because objects with different tags follow each other, there is no
+> > need to add extra redzones to the objects to detect buffer overflows.
+> > (We might need to increase the object alignment though, but that's a
+> > different story).
+>
+> How does all that help if a system call (eg read()) is given
+> an invalid length.
+Neither ASan nor HWASan care about what happens in the kernel.
+Instead, they wrap system calls (along with some important libc
+functions) and check their arguments to ensure there are no buffer
+overflows.
+
+HTH,
+Alex
+--
+Alexander Potapenko
+Software Engineer
+
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
+
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
+
+Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
+erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
+weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
+mich
+bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
+
+
+This e-mail is confidential. If you received this communication by
+mistake, please don't forward it to anyone else, please erase all
+copies and attachments, and please let me know that it has gone to the
+wrong person.
