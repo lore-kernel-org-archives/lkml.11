@@ -2,83 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11130C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 04:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D10C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 04:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377016AbiEMEmC (ORCPT
+        id S1377027AbiEMEmG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 00:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
+        Fri, 13 May 2022 00:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376997AbiEMEl4 (ORCPT
+        with ESMTP id S1377001AbiEMEl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 00:41:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEF2A0D04
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 21:41:55 -0700 (PDT)
+        Fri, 13 May 2022 00:41:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C8A9C2F6
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 21:41:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD392B82BE7
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:41:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AC8AC34100;
-        Fri, 13 May 2022 04:41:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3210C6193E
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:41:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94919C34116;
+        Fri, 13 May 2022 04:41:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652416912;
-        bh=oxAlRx4MzJ+PAn+aE8dvVxfRtIou9yLuSLdN2OrKr3g=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IkiovpWnIeTJeDWfUItnDXAr0x8pl5ILas0+jgZPDGwoKJLoEW3RW9kuGUR0clhlW
-         76kuYy6rZ2MgX9vN0hjjoRHU8j4ySNPmuDBFkm9r6cQ6KfZMiqVJFjW3MDnEQ+IHaG
-         7/8YExvIfPlb8ClyCIyCBbYfXxzpkKLDkgpL1wjY5taNRbsrGoPs51zSd5MqQ18HhN
-         uuh4hlOiDconVmSFouaDE7N7PXjNyZBmwbj16APJNKhARHJIBIVjNRs5XjDJ/h7sup
-         DYal0YmBEExjhltfNi3g5W8g+/P2Ck6CUuto8uzDdMPmpL7Wy/CUxrp5wGzxq/QfOd
-         pIPhXNI1NlMyw==
+        s=k20201202; t=1652416916;
+        bh=DUjbqOiPwSotTkZmud2YzJPM3OuvMaOA+B4B15eN5pA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YdyoEmQj+SYNv2mOLGGst/beMLUNkickm8rJrk9M16dps/yhPSR9O7yXrXk3BzIb1
+         LZ+1/L/1/vMyMWOfmn/78fioIUovUkHnyVI/vNWeEeBnYrdOy96fazazodXZzocDdv
+         XgKKUxoAMQo+MIgArsi3XGLUfGNLmOzzvCr+RWYrVAsNq/SKDaKdz3nHnaZP7pR/ki
+         akLIPFN2owWcsX4NQB1z+8+OPnW7Ce43re0yNagbMmgFzQ8UBP0GiF5DhvDOW3phpH
+         arfGSDd87A0G3lPhLNyZFC3daprfGg41B1mZDWwH380ysNjEjRyUsmc7J0zdFQ++Zt
+         Te9iV+fETR/tw==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/7] platform/chrome: get rid of BUG_ON()
-Date:   Fri, 13 May 2022 12:41:36 +0800
-Message-Id: <20220513044143.1045728-1-tzungbi@kernel.org>
+Subject: [PATCH v2 3/7] platform/chrome: cros_ec_proto: drop BUG_ON() in cros_ec_prepare_tx()
+Date:   Fri, 13 May 2022 12:41:39 +0800
+Message-Id: <20220513044143.1045728-4-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+In-Reply-To: <20220513044143.1045728-1-tzungbi@kernel.org>
+References: <20220513044143.1045728-1-tzungbi@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The series gets rid of BUG_ON()s in drivers/platform/chrome/.  Most of them
-can be replaced by returning proper return code.
+It is overkill to crash the kernel if the given message is oversize.
 
-The 2nd patch makes callers of cros_ec_prepare_tx() to take care of the
-return code.
+Drop the BUG_ON() and return -EINVAL instead.
 
-The 3rd patch turns cros_ec_prepare_tx() to return error code if any.
-
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+---
 Changes from v1:
-(https://patchwork.kernel.org/project/chrome-platform/cover/20220512083627.885338-1-tzungbi@kernel.org/)
-- Split the original 6th patch into 2 smaller patches. 
+- Add R-b tag.
 
-Tzung-Bi Shih (7):
-  platform/chrome: cros_ec_proto: drop unneeded BUG_ON() in
-    prepare_packet()
-  platform/chrome: correct cros_ec_prepare_tx() usage
-  platform/chrome: cros_ec_proto: drop BUG_ON() in cros_ec_prepare_tx()
-  platform/chrome: cros_ec_proto: drop BUG_ON() in
-    cros_ec_get_host_event()
-  platform/chrome: cros_ec_i2c: drop BUG_ON() in cros_ec_pkt_xfer_i2c()
-  platform/chrome: cros_ec_spi: drop unneeded BUG_ON()
-  platform/chrome: cros_ec_spi: drop BUG_ON() if `din` isn't large
-    enough
+ drivers/platform/chrome/cros_ec_proto.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
- drivers/platform/chrome/cros_ec_i2c.c   | 12 ++++++++++--
- drivers/platform/chrome/cros_ec_ishtp.c |  4 +++-
- drivers/platform/chrome/cros_ec_lpc.c   |  2 ++
- drivers/platform/chrome/cros_ec_proto.c | 13 ++++++++-----
- drivers/platform/chrome/cros_ec_rpmsg.c |  2 ++
- drivers/platform/chrome/cros_ec_spi.c   | 15 ++++++++++-----
- 6 files changed, 35 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index 2d6d3fbfa905..9ce3374846ff 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -60,7 +60,8 @@ static int prepare_packet(struct cros_ec_device *ec_dev,
+ 	int i;
+ 	u8 csum = 0;
+ 
+-	BUG_ON(msg->outsize + sizeof(*request) > ec_dev->dout_size);
++	if (msg->outsize + sizeof(*request) > ec_dev->dout_size)
++		return -EINVAL;
+ 
+ 	out = ec_dev->dout;
+ 	request = (struct ec_host_request *)out;
+@@ -176,7 +177,9 @@ int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
+ 	if (ec_dev->proto_version > 2)
+ 		return prepare_packet(ec_dev, msg);
+ 
+-	BUG_ON(msg->outsize > EC_PROTO2_MAX_PARAM_SIZE);
++	if (msg->outsize > EC_PROTO2_MAX_PARAM_SIZE)
++		return -EINVAL;
++
+ 	out = ec_dev->dout;
+ 	out[0] = EC_CMD_VERSION0 + msg->version;
+ 	out[1] = msg->command;
 -- 
 2.36.0.550.gb090851708-goog
 
