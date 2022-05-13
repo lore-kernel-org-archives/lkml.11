@@ -2,132 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BFDC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379211AbiEMJwF (ORCPT
+        id S1379216AbiEMJwN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
+        Fri, 13 May 2022 05:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357204AbiEMJwD (ORCPT
+        with ESMTP id S1379214AbiEMJwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 05:52:03 -0400
-Received: from vulcan.natalenko.name (vulcan.natalenko.name [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3825E5838F;
-        Fri, 13 May 2022 02:51:58 -0700 (PDT)
-Received: from spock.localnet (unknown [83.148.33.151])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 3FFFDEDD9FA;
-        Fri, 13 May 2022 11:51:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1652435515;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dkS9jvsDAiR8QpYW2hSmRXL0ArdVBFFpuCQ+UOIi0zo=;
-        b=JNG1vX/JZGDat+hBg4RxgIOTkjMrrdHKEGECZLNdlYv93vX/MpIK3+mMLWPspBhy6Un/l0
-        DDUuOUceOlCdvUPYDbD9pF8OXMN9HudeeGnLGvY+k0nJIcRSbRD5YPRC0fUV+kEp6/CpA3
-        sp5NEs+lJTJh9CysOsWP3IrNXHcBGMg=
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     cgel.zte@gmail.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, corbet@lwn.net,
-        xu xin <xu.xin16@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        wangyong <wang.yong12@zte.com.cn>,
-        Yunkai Zhang <zhang.yunkai@zte.com.cn>,
-        Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH v6] mm/ksm: introduce ksm_force for each process
-Date:   Fri, 13 May 2022 11:51:53 +0200
-Message-ID: <1835064.A2aMcgg3dW@natalenko.name>
-In-Reply-To: <20220512153753.6f999fa8f5519753d43b8fd5@linux-foundation.org>
-References: <20220510122242.1380536-1-xu.xin16@zte.com.cn> <5820954.lOV4Wx5bFT@natalenko.name> <20220512153753.6f999fa8f5519753d43b8fd5@linux-foundation.org>
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B615E172
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:51:59 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L03mg0k7pzfbMc;
+        Fri, 13 May 2022 17:50:43 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 13 May 2022 17:51:58 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
+ 2022 17:51:57 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-mtd@lists.infradead.org>
+CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>
+Subject: [PATCH -next] mtd: st_spi_fsm: add missing clk_disable_unprepare() stfsm_remove()
+Date:   Fri, 13 May 2022 18:03:22 +0800
+Message-ID: <20220513100322.2664431-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello.
+Clock source is prepared and enabled by clk_prepare_enable()
+in probe function, but no disable or unprepare in remove function.
 
-On p=C3=A1tek 13. kv=C4=9Btna 2022 0:37:53 CEST Andrew Morton wrote:
-> On Tue, 10 May 2022 15:30:36 +0200 Oleksandr Natalenko <oleksandr@natalen=
-ko.name> wrote:
->=20
-> > > If ksm_force is set to 1, force all anonymous and 'qualified' VMAs
-> > > of this mm to be involved in KSM scanning without explicitly calling
-> > > madvise to mark VMA as MADV_MERGEABLE. But It is effective only when
-> > > the klob of /sys/kernel/mm/ksm/run is set as 1.
-> > >=20
-> > > If ksm_force is set to 0, cancel the feature of ksm_force of this
-> > > process (fallback to the default state) and unmerge those merged pages
-> > > belonging to VMAs which is not madvised as MADV_MERGEABLE of this pro=
-cess,
-> > > but still leave MADV_MERGEABLE areas merged.
-> >=20
-> > To my best knowledge, last time a forcible KSM was discussed (see threa=
-ds [1], [2], [3] and probably others) it was concluded that a) procfs was a=
- horrible interface for things like this one; and b) process_madvise() sysc=
-all was among the best suggested places to implement this (which would requ=
-ire a more tricky handling from userspace, but still).
-> >=20
-> > So, what changed since that discussion?
-> >=20
-> > P.S. For now I do it via dedicated syscall, but I'm not trying to upstr=
-eam this approach.
->=20
-> Why are you patching the kernel with a new syscall rather than using
-> process_madvise()?
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/mtd/devices/st_spi_fsm.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Because I'm not sure how to use `process_madvise()` to achieve $subj proper=
-ly.
-
-The objective is to mark all the eligible VMAs of the target task for KSM t=
-o consider them for merging.
-
-=46or that, all the eligible VMAs have to be traversed.
-
-Given `process_madvise()` has got an iovec API, this means the process that=
- will call `process_madvise()` has to know the list of VMAs of the target p=
-rocess. In order to traverse them in a race-free manner the target task has=
- to be SIGSTOP'ped or frozen, then the list of VMAs has to be obtained, the=
-n `process_madvise()` has to be called, and the the target task can continu=
-e. This is:
-
-a) superfluous (the kernel already knows the list of VMAs of the target tas=
-ks, why proxy it through the userspace then?); and
-b) may induce more latency than needed because the target task has to be st=
-opped to avoid races.
-
-OTOH, IIUC, even if `MADV_MERGEABLE` is allowed for `process_madvise()`, I =
-cannot just call it like this:
-
-```
-iovec.iov_base =3D 0;
-iovec.iov_len =3D ~0ULL;
-process_madvise(pidfd, &iovec, 1, MADV_MERGEABLE, 0);
-```
-
-to cover the whole address space because iovec expects total size to be und=
-er ssize_t.
-
-Or maybe there's no need to cover the whole address space, only the lower h=
-alf of it?
-
-Or maybe there's another way of doing things, and I just look stupid and do=
- not understand how this is supposed to work?..
-
-I'm more than happy to read your comments on this.
-
-Thanks.
-
-=2D-=20
-Oleksandr Natalenko (post-factum)
-
+diff --git a/drivers/mtd/devices/st_spi_fsm.c b/drivers/mtd/devices/st_spi_fsm.c
+index 983999c020d6..d3377b10fc0f 100644
+--- a/drivers/mtd/devices/st_spi_fsm.c
++++ b/drivers/mtd/devices/st_spi_fsm.c
+@@ -2126,6 +2126,8 @@ static int stfsm_remove(struct platform_device *pdev)
+ {
+ 	struct stfsm *fsm = platform_get_drvdata(pdev);
+ 
++	clk_disable_unprepare(fsm->clk);
++
+ 	return mtd_device_unregister(&fsm->mtd);
+ }
+ 
+-- 
+2.25.1
 
