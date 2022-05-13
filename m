@@ -2,193 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D67C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 20:07:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2755C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 20:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384099AbiEMUG6 (ORCPT
+        id S1384057AbiEMUHz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 16:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
+        Fri, 13 May 2022 16:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384047AbiEMUGv (ORCPT
+        with ESMTP id S1346040AbiEMUHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 16:06:51 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23D72F3A9
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:06:44 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id y19so11517976ljd.4
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:06:44 -0700 (PDT)
+        Fri, 13 May 2022 16:07:53 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D20CBF48
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:07:51 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id y21so11229898edo.2
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:07:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=bAlNLNPG8lCLz/0bJ8LE4u2RCdPn2myNbje+Y5Tx6fE=;
-        b=ZNRxrZXPyfEcNgJIxGvFJFMYkrrdpRSzO+EvUjKrOaLJur7BO/Mf8HbmyYtbuWejrD
-         RKMUynKfGI1JYtA9Us0vEFH65yOknWb7IFGHy5xikMhSF6iPX8RI72siknl32HhuKJPM
-         faShExDuxMLj2PwwS1SpNts/aIxBJu7j/U7+8PwlWjyXKz+BrVfaRCxh47mPVuudAQTb
-         0sGRanbU4roHxX9RD4mZsH/IoJdWSpfY0oCtamf1eMZ1EUxil5L5MQ2vOwjvBCiWJEdB
-         mWXvvzVjKBD2j+Vh4RF3euwbSjMtx2bpZVaPHxav5/9PAoZiXTLT+MMrI/6KNyLxVtfH
-         fEqw==
+        bh=VjLYKQz9W+b9Ub9U9HIkTaFYWELaFcx+tDToyM0Q0Is=;
+        b=Z8kJgkrl1ICP+BHtwk0Kv0Ik1kTt5soCfHi56pWTcJMzYbpRkqUX6jgW6iVpuM01bP
+         dUCoGTDtoou29KeWoXgevvlN94X1JwMBX+3AxqZRfib5zFYYWhL3QUauNdrp4YwUf081
+         Ei6HAkxKxBgT9UY+3J7C2pJspiT8AMzk0Axq8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bAlNLNPG8lCLz/0bJ8LE4u2RCdPn2myNbje+Y5Tx6fE=;
-        b=L3+KBfjFrFWSsa0NiriIUmWedq8IKiY5PFliu/mPM8rR4JVhgSo9bnEszvG3s7AVJT
-         GvU/j9SaeQ54BO8zpTaCkYGmJwzbJy03iLqEREaVKXe71vYlJY0ku7ZRqzNfNaUeedVd
-         sux9d/NM3f0MBq2mHDbdR/p0UQ3oLBxWh449/C0jUshKipCs72cRyQZzgFeB/c9m9Ghj
-         auDBo/FjF4voi5rxNQDObiowjyhSkuaMKXZxIrMu56wwoOcBWVze5H6JQrlc/FA83fki
-         PqPyDQ6tjGCOIXOYK/Etny36siRw3kJvK29UzxNxWobx7JKfADp81M3cA44dO18xVTSk
-         oVyw==
-X-Gm-Message-State: AOAM530Wrvz4NtbuDiCKU5yr/UxbqtY9kzHQwvyoGA8G7KipasPaiPJi
-        UaG6ChE9OVqI9McKGVBD3PdhnygdW7fnySBwCtH9zw==
-X-Google-Smtp-Source: ABdhPJz0MyqDCm9mdJFea0YzwEqjBf5cHU3OHI2pNw5dBEwCq/KJyFPe6mum1yYUpT6ZLAplaTWmmMuSB50Wv7FU+74=
-X-Received: by 2002:a05:651c:a12:b0:250:5abe:4ec4 with SMTP id
- k18-20020a05651c0a1200b002505abe4ec4mr3976051ljq.4.1652472403010; Fri, 13 May
- 2022 13:06:43 -0700 (PDT)
+        bh=VjLYKQz9W+b9Ub9U9HIkTaFYWELaFcx+tDToyM0Q0Is=;
+        b=b59OZzVjnJHu6HswftjNDwxm3OjfXsPc0/cl2gjfjATOOOBRIzVGtHIFh4pxGWCRFD
+         Y/hYQkY0otK74NX9jHg2pZrHoorjaBbgcCbs8a57TZ+A0ZRCuHaGe5AJxsfkJr8ExYOF
+         DlW6jSugqucT0eVQjkJeUqD3zVlQw9w/LIc237MEQPxEpBhkiCnCZ9LjWGTVBrFQThAZ
+         rG2yolSxjtpQeJL22h7Kfd1I4/c7tnAmHu69St+8J46aGPPdhQrQo3ZVb8vyLxq4qH6b
+         6lJyQnzadgNYZ6ekpXBrTJAAgB1pGqbot9TSbciFyLPPkPXb+XNmjqWDVtNENVlPMy6o
+         Dc9w==
+X-Gm-Message-State: AOAM530VubBpF5WD61cP7ZRJKZfX3arFGc0HVnRZxzgPQyPBlXWOxRSO
+        D2PJotww4vS23fwvPyXuz9hvg54S7w+CKhUkINU=
+X-Google-Smtp-Source: ABdhPJw5xz7vCcwOiT2e8B2HeJiaCJtVM60IjiXmwaZyr+GcGTxQbMq/OGvDVdbekX5tyLxQo+56hA==
+X-Received: by 2002:a05:6402:364:b0:425:f88d:7d4a with SMTP id s4-20020a056402036400b00425f88d7d4amr398837edw.68.1652472469197;
+        Fri, 13 May 2022 13:07:49 -0700 (PDT)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
+        by smtp.gmail.com with ESMTPSA id i6-20020a50c3c6000000b0042617ba63besm1316587edf.72.2022.05.13.13.07.48
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 13:07:48 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id j25so11734996wrc.9
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:07:48 -0700 (PDT)
+X-Received: by 2002:a05:6000:c7:b0:20a:d8c1:d044 with SMTP id
+ q7-20020a05600000c700b0020ad8c1d044mr5361193wrx.422.1652472467490; Fri, 13
+ May 2022 13:07:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220304105656.149281-1-ulf.hansson@linaro.org>
- <CAPDyKFr1PzSaiKqB4ZoqTS_8bGsEH=aB3ARhxyGu+cYeRqeBew@mail.gmail.com>
- <20220504054652.GA7851@math.uni-bielefeld.de> <CAPDyKFrBVyYx+BybGR2P8paS6qA=V2EHAXH+vPUc9JzxoXn6+g@mail.gmail.com>
- <20220511064617.GA28982@math.uni-bielefeld.de>
-In-Reply-To: <20220511064617.GA28982@math.uni-bielefeld.de>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 13 May 2022 22:06:05 +0200
-Message-ID: <CAPDyKFrGCrC6fc+VDJGhCiM8nSiu8M-NeM+UGMUPERt2aeLTbg@mail.gmail.com>
-Subject: Re: [PATCH] mmc: core: Restore (almost) the busy polling for MMC_SEND_OP_COND
-To:     Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-Cc:     "H . Nikolaus Schaller" <hns@goldelico.com>,
-        Huijin Park <huijin.park@samsung.com>,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
+References: <20220510135101.v2.1.I31ec454f8d4ffce51a7708a8092f8a6f9c929092@changeid>
+ <db7a2b7f-3c94-d45d-98fd-7fd0b181e6aa@suse.de> <CAD=FV=WoSTcSOB_reDbayNb=q7w00rd7p-zHUDt+evTkSjQ=2g@mail.gmail.com>
+In-Reply-To: <CAD=FV=WoSTcSOB_reDbayNb=q7w00rd7p-zHUDt+evTkSjQ=2g@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 13 May 2022 13:07:35 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VbwkK-z8T-98aPSiybd2c94n8p46oBxY_MtPjV608YRQ@mail.gmail.com>
+Message-ID: <CAD=FV=VbwkK-z8T-98aPSiybd2c94n8p46oBxY_MtPjV608YRQ@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/probe-helper: Default to 640x480 if no EDID
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 at 08:46, Jean Rene Dawin
-<jdawin@math.uni-bielefeld.de> wrote:
->
-> Ulf Hansson wrote on Wed  4/05/22 11:08:
-> > On Wed, 4 May 2022 at 07:46, Jean Rene Dawin
-> > <jdawin@math.uni-bielefeld.de> wrote:
-> > >
-> > > Ulf Hansson wrote on Mon  7/03/22 13:17:
-> > > > On Fri, 4 Mar 2022 at 11:57, Ulf Hansson <ulf.hansson@linaro.org> wrote:
-> > > > >
-> > > > > Commit 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1"),
-> > > > > significantly decreased the polling period from ~10-12ms into just a couple
-> > > > > of us. The purpose was to decrease the total time spent in the busy polling
-> > > > > loop, but unfortunate it has lead to problems, that causes eMMC cards to
-> > > > > never gets out busy and thus fails to be initialized.
-> > > > >
-> > > > > To fix the problem, but also to try to keep some of the new improved
-> > > > > behaviour, let's start by using a polling period of 1-2ms, which then
-> > > > > increases for each loop, according to common polling loop in
-> > > > > __mmc_poll_for_busy().
-> > > > >
-> > > > > Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-> > > > > Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-> > > > > Cc: Huijin Park <huijin.park@samsung.com>
-> > > > > Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
-> > > > > Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> > > > > ---
-> > > > >
-> > > > > Jean Rene and H. Nikolaus, if this doesn't work, please try extending the
-> > > > > the MMC_OP_COND_PERIOD_US a bit, to so see if we can find a value that always
-> > > > > works.
-> > > > >
-> > > > > Kind regards
-> > > > > Uffe
-> > >
-> > > >
-> > > > Applied for fixes and by adding two tested-by tags from you, thanks!
-> > > >
-> > > > Kind regards
-> > > > Uffe
-> > >
-> > > Hi,
-> > >
-> > > with the current value of MMC_OP_COND_PERIOD_US = 1ms I still see
-> > >
-> > > mmc1: Card stuck being busy! __mmc_poll_for_busy
-> > > mmc1: error -110 doing runtime resume
-> > >
-> > > regularly. The same with 2ms. Setting it to 4ms makes the messages go
-> > > away. Would it be ok to increase MMC_OP_COND_PERIOD_US to 4ms?
-> >
-> > It doesn't look like we have a very good alternative - unless the
-> > problem is tied to a particular type of eMMC card, is it? (If so, we
-> > can add a card-quirk).
-> >
-> > The only other option I see, would then be to add a generic DT
-> > property for eMMCs, that allows us to specify the OP_COND polling
-> > period for it. See
-> > Documentation/devicetree/bindings/mmc/mmc-card.yaml.
-> >
-> > Kind regards
-> > Uffe
+Hi,
+
+On Wed, May 11, 2022 at 2:32 PM Doug Anderson <dianders@chromium.org> wrote:
 >
 > Hi,
 >
-> I tested 2 beaglebones now - one with Micron eMMC and the other with Kingston.
-> With the Kingston chip I don't get the errors. So it seems to be card specific.
+> On Wed, May 11, 2022 at 12:14 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
+> >
+> > Hi
+> >
+> > Am 10.05.22 um 22:51 schrieb Douglas Anderson:
+> > > If we're unable to read the EDID for a display because it's corrupt /
+> > > bogus / invalid then we'll add a set of standard modes for the
+> > > display. When userspace looks at these modes it doesn't really have a
+> > > good concept for which mode to pick and it'll likely pick the highest
+> > > resolution one by default. That's probably not ideal because the modes
+> > > were purely guesses on the part of the Linux kernel.
+> >
+> > I'm skeptical. Why does the kernel do a better job than userspace here?
+> > Only the graphics driver could possibly make such a decision.
+> >
+> > Not setting any preferred mode at least gives a clear message to userspace.
 >
-> Grepping for mmc in dmesg gives the following.
+> OK, that's a fair point. So I tried to find out what our userspace is
+> doing. I believe it's:
 >
-> Beaglebone with Micron eMMC:
+> https://source.chromium.org/chromium/chromium/src/+/main:ui/ozone/platform/drm/common/drm_util.cc;l=529
 >
->   sdhci-omap 481d8000.mmc: supply pbias not found, using dummy regulator
->   sdhci-omap 481d8000.mmc: supply vqmmc not found, using dummy regulator
->   mmc1: SDHCI controller on 481d8000.mmc [481d8000.mmc] using External DMA
->   mmc1: new high speed MMC card at address 0001
->   mmcblk1: mmc1:0001 MMC04G 3.66 GiB
->    mmcblk1: p1
->   mmcblk1boot0: mmc1:0001 MMC04G 1.00 MiB
->   mmcblk1boot1: mmc1:0001 MMC04G 1.00 MiB
->   mmcblk1rpmb: mmc1:0001 MMC04G 128 KiB, chardev (247:0)
->   sdhci-omap 48060000.mmc: Got CD GPIO
->   sdhci-omap 48060000.mmc: supply pbias not found, using dummy regulator
->   sdhci-omap 48060000.mmc: supply vqmmc not found, using dummy regulator
->   mmc0: SDHCI controller on 48060000.mmc [48060000.mmc] using External DMA
+> Specifically this bit of code:
 >
+>   // If we still have no preferred mode, then use the first one since it should
+>   // be the best mode.
+>   if (!*out_native_mode && !modes.empty())
+>     *out_native_mode = modes.front().get();
 >
-> Beaglebone with Kingston eMMC:
+> Do you agree with what our userspace is doing here, or is it wrong?
 >
->   sdhci-omap 481d8000.mmc: supply pbias not found, using dummy regulator
->   sdhci-omap 481d8000.mmc: supply vqmmc not found, using dummy regulator
->   mmc1: SDHCI controller on 481d8000.mmc [481d8000.mmc] using External DMA
->   mmc1: new high speed MMC card at address 0001
->   mmcblk1: mmc1:0001 M62704 3.56 GiB
->    mmcblk1: p1
->   mmcblk1boot0: mmc1:0001 M62704 2.00 MiB
->   mmcblk1boot1: mmc1:0001 M62704 2.00 MiB
->   mmcblk1rpmb: mmc1:0001 M62704 512 KiB, chardev (247:0)
->   sdhci-omap 48060000.mmc: Got CD GPIO
->   sdhci-omap 48060000.mmc: supply pbias not found, using dummy regulator
->   sdhci-omap 48060000.mmc: supply vqmmc not found, using dummy regulator
->   mmc0: SDHCI controller on 48060000.mmc [48060000.mmc] using External DMA
->
-> Is this enough information to identify the mmc card?
+> If our userspace is doing the right thing, then I guess the problem is
+> the call to "drm_mode_sort(&connector->modes);" at the end of
+> drm_helper_probe_single_connector_modes(). Would you be OK with me
+> _not_ sorting the modes in the "bad EDID" case? That also seems to fix
+> my problem...
 
-Thanks for running the tests and sharing this information.
+I've implemented the "don't mark preferred, but don't sort" as a v3.
+Hopefully it looks good.
 
-One thing that I realized, again, is that you seem to be encountering
-the problem only during re-initialization (at runtime resume of the
-eMMC card), but I guess, at least theoretically, you could meet the
-same problem during the first initialization (boot). At this point we
-can't use a card quirk, simply because we don't know anything about
-the card yet.
+https://lore.kernel.org/r/20220513130533.v3.1.I31ec454f8d4ffce51a7708a8092f8a6f9c929092@changeid
 
-That said, I think we should change the MMC_OP_COND_PERIOD_US to 4ms,
-to make sure it works for all cases. Do you want to send a patch for
-this - or just tell me if you prefer me to do it!?
-
-Additionally, for those eMMC cards that can cope with a smaller
-polling period, we could add a new generic DT property for the eMMC
-card (Documentation/devicetree/bindings/mmc/mmc-card.yaml). In this
-way we can avoid regressing eMMC initializations in general, but at
-the same time allow those cards/platforms that can cope with a smaller
-timeout, to specify and use this to decrease the initialization time.
-
-Kind regards
-Uffe
+-Doug
