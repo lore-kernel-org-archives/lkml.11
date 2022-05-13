@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD75C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EABE3C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378855AbiEMOZy (ORCPT
+        id S1379817AbiEMO0A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:25:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41792 "EHLO
+        Fri, 13 May 2022 10:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357671AbiEMOZd (ORCPT
+        with ESMTP id S1358696AbiEMOZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:25:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3865F25F;
-        Fri, 13 May 2022 07:24:57 -0700 (PDT)
+        Fri, 13 May 2022 10:25:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D5350E24;
+        Fri, 13 May 2022 07:24:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC920B83069;
-        Fri, 13 May 2022 14:24:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37832C34100;
-        Fri, 13 May 2022 14:24:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2888562154;
+        Fri, 13 May 2022 14:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE98C36AED;
+        Fri, 13 May 2022 14:24:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451894;
-        bh=EA01oe04kv1Z6xi6cYSG2V8+qEH9/h6Pd1RFkA0jMpM=;
+        s=korg; t=1652451897;
+        bh=3l8oLSFBFL6JeyqCXKSRDsL0L+zpyYluaqxwg+Vr58A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HmE05c9/cbCJBBLjnEkGqtMGQMOAu5bgpQRuxNTmR0KgiFQKUVfLuTS4EA0L0QelJ
-         PkdzcEGLhGAA5W65BuOY8Zm6cWFhbMUWUAoymajtMxI9OwWEhzvbYsXzMpMyC/+GkP
-         isurt9jKNtWOJfrud+79uFcIYlKvasmqHma/tmEQ=
+        b=nC35oZMEzRlvBgEml1WGdFeBdEgc8SGx7YOZp9gq4Yxln5HvImCoL7fPXlG7W4RtK
+         oMAs2X7LR1iWgENkgrTxtmCvmOR7xsF9yTfeqAkrrzt0ZlhBxvqWgerp4C8Tsz6q9a
+         kq7DRF8TbeAA1v8iFTc7u/bfc2Sqd086Y/e8WY+s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>,
         Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 11/14] ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
-Date:   Fri, 13 May 2022 16:23:27 +0200
-Message-Id: <20220513142227.717010807@linuxfoundation.org>
+Subject: [PATCH 4.14 12/14] ALSA: pcm: Fix races among concurrent prealloc proc writes
+Date:   Fri, 13 May 2022 16:23:28 +0200
+Message-Id: <20220513142227.746603027@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142227.381154244@linuxfoundation.org>
 References: <20220513142227.381154244@linuxfoundation.org>
@@ -51,97 +51,68 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit 3c3201f8c7bb77eb53b08a3ca8d9a4ddc500b4c0 upstream.
+commit 69534c48ba8ce552ce383b3dfdb271ffe51820c3 upstream.
 
-Like the previous fixes to hw_params and hw_free ioctl races, we need
-to paper over the concurrent prepare ioctl calls against hw_params and
-hw_free, too.
-
-This patch implements the locking with the existing
-runtime->buffer_mutex for prepare ioctls.  Unlike the previous case
-for snd_pcm_hw_hw_params() and snd_pcm_hw_free(), snd_pcm_prepare() is
-performed to the linked streams, hence the lock can't be applied
-simply on the top.  For tracking the lock in each linked substream, we
-modify snd_pcm_action_group() slightly and apply the buffer_mutex for
-the case stream_lock=false (formerly there was no lock applied)
-there.
+We have no protection against concurrent PCM buffer preallocation
+changes via proc files, and it may potentially lead to UAF or some
+weird problem.  This patch applies the PCM open_mutex to the proc
+write operation for avoiding the racy proc writes and the PCM stream
+open (and further operations).
 
 Cc: <stable@vger.kernel.org>
 Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322170720.3529-4-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220322170720.3529-5-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 [OP: backport to 4.14: adjusted context]
 Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_native.c |   32 ++++++++++++++++++--------------
- 1 file changed, 18 insertions(+), 14 deletions(-)
+ sound/core/pcm_memory.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -1046,15 +1046,17 @@ struct action_ops {
-  */
- static int snd_pcm_action_group(const struct action_ops *ops,
- 				struct snd_pcm_substream *substream,
--				int state, int do_lock)
-+				int state, int stream_lock)
- {
- 	struct snd_pcm_substream *s = NULL;
- 	struct snd_pcm_substream *s1;
- 	int res = 0, depth = 1;
+--- a/sound/core/pcm_memory.c
++++ b/sound/core/pcm_memory.c
+@@ -160,19 +160,20 @@ static void snd_pcm_lib_preallocate_proc
+ 	size_t size;
+ 	struct snd_dma_buffer new_dmab;
  
- 	snd_pcm_group_for_each_entry(s, substream) {
--		if (do_lock && s != substream) {
--			if (s->pcm->nonatomic)
-+		if (s != substream) {
-+			if (!stream_lock)
-+				mutex_lock_nested(&s->runtime->buffer_mutex, depth);
-+			else if (s->pcm->nonatomic)
- 				mutex_lock_nested(&s->self_group.mutex, depth);
- 			else
- 				spin_lock_nested(&s->self_group.lock, depth);
-@@ -1082,18 +1084,18 @@ static int snd_pcm_action_group(const st
- 		ops->post_action(s, state);
++	mutex_lock(&substream->pcm->open_mutex);
+ 	if (substream->runtime) {
+ 		buffer->error = -EBUSY;
+-		return;
++		goto unlock;
  	}
-  _unlock:
--	if (do_lock) {
--		/* unlock streams */
--		snd_pcm_group_for_each_entry(s1, substream) {
--			if (s1 != substream) {
--				if (s1->pcm->nonatomic)
--					mutex_unlock(&s1->self_group.mutex);
--				else
--					spin_unlock(&s1->self_group.lock);
--			}
--			if (s1 == s)	/* end */
--				break;
-+	/* unlock streams */
-+	snd_pcm_group_for_each_entry(s1, substream) {
-+		if (s1 != substream) {
-+			if (!stream_lock)
-+				mutex_unlock(&s1->runtime->buffer_mutex);
-+			else if (s1->pcm->nonatomic)
-+				mutex_unlock(&s1->self_group.mutex);
-+			else
-+				spin_unlock(&s1->self_group.lock);
+ 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
+ 		snd_info_get_str(str, line, sizeof(str));
+ 		size = simple_strtoul(str, NULL, 10) * 1024;
+ 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
+ 			buffer->error = -EINVAL;
+-			return;
++			goto unlock;
  		}
-+		if (s1 == s)	/* end */
-+			break;
+ 		if (substream->dma_buffer.bytes == size)
+-			return;
++			goto unlock;
+ 		memset(&new_dmab, 0, sizeof(new_dmab));
+ 		new_dmab.dev = substream->dma_buffer.dev;
+ 		if (size > 0) {
+@@ -180,7 +181,7 @@ static void snd_pcm_lib_preallocate_proc
+ 						substream->dma_buffer.dev.dev,
+ 						size, &new_dmab) < 0) {
+ 				buffer->error = -ENOMEM;
+-				return;
++				goto unlock;
+ 			}
+ 			substream->buffer_bytes_max = size;
+ 		} else {
+@@ -192,6 +193,8 @@ static void snd_pcm_lib_preallocate_proc
+ 	} else {
+ 		buffer->error = -EINVAL;
  	}
- 	return res;
++ unlock:
++	mutex_unlock(&substream->pcm->open_mutex);
  }
-@@ -1174,10 +1176,12 @@ static int snd_pcm_action_nonatomic(cons
- 	int res;
  
- 	down_read(&snd_pcm_link_rwsem);
-+	mutex_lock(&substream->runtime->buffer_mutex);
- 	if (snd_pcm_stream_linked(substream))
- 		res = snd_pcm_action_group(ops, substream, state, 0);
- 	else
- 		res = snd_pcm_action_single(ops, substream, state);
-+	mutex_unlock(&substream->runtime->buffer_mutex);
- 	up_read(&snd_pcm_link_rwsem);
- 	return res;
- }
+ static inline void preallocate_info_init(struct snd_pcm_substream *substream)
 
 
