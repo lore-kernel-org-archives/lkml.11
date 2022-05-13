@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9352C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 04:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD77C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 04:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377037AbiEMEmK (ORCPT
+        id S1377044AbiEMEmN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 00:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43272 "EHLO
+        Fri, 13 May 2022 00:42:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377006AbiEMEl6 (ORCPT
+        with ESMTP id S1377009AbiEMEmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 00:41:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D46BA309A
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 21:41:57 -0700 (PDT)
+        Fri, 13 May 2022 00:42:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBABA30A3
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 21:41:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71475B82AE9
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:41:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D16DC34100;
-        Fri, 13 May 2022 04:41:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D21361924
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:41:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07896C34118;
+        Fri, 13 May 2022 04:41:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652416915;
-        bh=UxhsGKq6Hkz6ckhEo9ojFFKACE0CY4WmkG8hUvrsotg=;
+        s=k20201202; t=1652416918;
+        bh=k9vGXmtsSs9khxIspmJ56bJIMiqhhowKnt4sI6Qo+yE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=smlc+YIa5VkRSQlje/Lq2H5idoQ7Dlhj86sSl6C2kgH15xdzu975CuZUb7pz197Jo
-         ik6bc2Nrd9xSUl7qDvJajG6GHZYMAY5cnpZMe+x3icWkVFhZoGy6K4beQJchfAt1nL
-         V95Ie1QlHFVa1y1Fyah1NWgFhP9sGqM1f7dte99y+yTh8AnT35y/U4CcKkRKnAwmqG
-         402wssdhU7om2q6v3+yUSyEmsQo2cZjSTnxIz7vs2TY+SGJzN1ZG4NKHmvvGkfEXtj
-         cbMWCcJZW509T7CROuRv68KlxA+uQR3QA0KsP/TJPnEukIzejQUtpIqoUhZbF0i+92
-         e5qWtD2d3Jqkg==
+        b=A6bf+w5Ut4EZUXKjvtsfHaksGcI9H+7+LEISgkD+gHK/tnTgSlLtJgTc4aZqmuCNd
+         U1tyrU+ODgK6ikyyATYYJe97GyfmliRjHpETtsIHKVZwyQhxJkqC2bL5AJ0icNPMJ1
+         1JAANlBp9rBr5pHbfckU9WrBLG2gP5CMImat+yfpGymGDkw+OY1UDmemIobQPY/30x
+         rPn2DusB+HIu/yXVPmVHxVz2DXNm1G+oXJ4P9k+1ARdGxYYk3TtzaW2QGTjcgJ8m6e
+         9x9+ljrtz7znJC7SUqHq/viXgO8xW+1xab6dsW/vEwFbZKO1ZMabgIpxi09+D6CnrA
+         qJ3VcYkmp/jqg==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/7] platform/chrome: correct cros_ec_prepare_tx() usage
-Date:   Fri, 13 May 2022 12:41:38 +0800
-Message-Id: <20220513044143.1045728-3-tzungbi@kernel.org>
+Subject: [PATCH v2 4/7] platform/chrome: cros_ec_proto: drop BUG_ON() in cros_ec_get_host_event()
+Date:   Fri, 13 May 2022 12:41:40 +0800
+Message-Id: <20220513044143.1045728-5-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
 In-Reply-To: <20220513044143.1045728-1-tzungbi@kernel.org>
 References: <20220513044143.1045728-1-tzungbi@kernel.org>
@@ -49,11 +49,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cros_ec_prepare_tx() returns either:
-- >= 0 for number of prepared bytes.
-- < 0 for -errno.
+It is overkill to crash the kernel if the `ec_dev` doesn't support MKBP
+event but gets called into cros_ec_get_host_event().
 
-Correct the comment and make sure all callers check the return code.
+Drop the BUG_ON() and return error (0 in the case) instead.
 
 Reviewed-by: Guenter Roeck <groeck@chromium.org>
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
@@ -61,103 +60,23 @@ Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Changes from v1:
 - Add R-b tag.
 
- drivers/platform/chrome/cros_ec_i2c.c   | 2 ++
- drivers/platform/chrome/cros_ec_ishtp.c | 4 +++-
- drivers/platform/chrome/cros_ec_lpc.c   | 2 ++
- drivers/platform/chrome/cros_ec_proto.c | 2 +-
- drivers/platform/chrome/cros_ec_rpmsg.c | 2 ++
- drivers/platform/chrome/cros_ec_spi.c   | 4 ++++
- 6 files changed, 14 insertions(+), 2 deletions(-)
+ drivers/platform/chrome/cros_ec_proto.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/platform/chrome/cros_ec_i2c.c b/drivers/platform/chrome/cros_ec_i2c.c
-index 22feb0fd4ce7..a4f305f1eb0e 100644
---- a/drivers/platform/chrome/cros_ec_i2c.c
-+++ b/drivers/platform/chrome/cros_ec_i2c.c
-@@ -89,6 +89,8 @@ static int cros_ec_pkt_xfer_i2c(struct cros_ec_device *ec_dev,
- 
- 	ec_dev->dout++;
- 	ret = cros_ec_prepare_tx(ec_dev, msg);
-+	if (ret < 0)
-+		goto done;
- 	ec_dev->dout--;
- 
- 	/* send command to EC and read answer */
-diff --git a/drivers/platform/chrome/cros_ec_ishtp.c b/drivers/platform/chrome/cros_ec_ishtp.c
-index 4020b8354bae..cb2031cf7106 100644
---- a/drivers/platform/chrome/cros_ec_ishtp.c
-+++ b/drivers/platform/chrome/cros_ec_ishtp.c
-@@ -521,7 +521,9 @@ static int cros_ec_pkt_xfer_ish(struct cros_ec_device *ec_dev,
- 	out_msg->hdr.status = 0;
- 
- 	ec_dev->dout += OUT_MSG_EC_REQUEST_PREAMBLE;
--	cros_ec_prepare_tx(ec_dev, msg);
-+	rv = cros_ec_prepare_tx(ec_dev, msg);
-+	if (rv < 0)
-+		goto end_error;
- 	ec_dev->dout -= OUT_MSG_EC_REQUEST_PREAMBLE;
- 
- 	dev_dbg(dev,
-diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
-index 8eeef85a96b1..7677ab3c0ead 100644
---- a/drivers/platform/chrome/cros_ec_lpc.c
-+++ b/drivers/platform/chrome/cros_ec_lpc.c
-@@ -147,6 +147,8 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *ec,
- 	u8 *dout;
- 
- 	ret = cros_ec_prepare_tx(ec, msg);
-+	if (ret < 0)
-+		goto done;
- 
- 	/* Write buffer */
- 	cros_ec_lpc_ops.write(EC_LPC_ADDR_HOST_PACKET, ret, ec->dout);
 diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index db1c8ba43171..2d6d3fbfa905 100644
+index 9ce3374846ff..ff767dccdf0f 100644
 --- a/drivers/platform/chrome/cros_ec_proto.c
 +++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -164,7 +164,7 @@ static int send_command(struct cros_ec_device *ec_dev,
-  * only SPI uses it. Once LPC uses the same protocol it can start using it.
-  * I2C could use it now, with a refactor of the existing code.
-  *
-- * Return: 0 on success or negative error code.
-+ * Return: number of prepared bytes on success or negative error code.
-  */
- int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
- 		       struct cros_ec_command *msg)
-diff --git a/drivers/platform/chrome/cros_ec_rpmsg.c b/drivers/platform/chrome/cros_ec_rpmsg.c
-index d96d15b8ca94..39d3b50a7c09 100644
---- a/drivers/platform/chrome/cros_ec_rpmsg.c
-+++ b/drivers/platform/chrome/cros_ec_rpmsg.c
-@@ -89,6 +89,8 @@ static int cros_ec_pkt_xfer_rpmsg(struct cros_ec_device *ec_dev,
+@@ -817,7 +817,8 @@ u32 cros_ec_get_host_event(struct cros_ec_device *ec_dev)
+ {
+ 	u32 host_event;
  
- 	ec_msg->result = 0;
- 	len = cros_ec_prepare_tx(ec_dev, ec_msg);
-+	if (len < 0)
-+		return len;
- 	dev_dbg(ec_dev->dev, "prepared, len=%d\n", len);
+-	BUG_ON(!ec_dev->mkbp_event_supported);
++	if (!ec_dev->mkbp_event_supported)
++		return 0;
  
- 	reinit_completion(&ec_rpmsg->xfer_ack);
-diff --git a/drivers/platform/chrome/cros_ec_spi.c b/drivers/platform/chrome/cros_ec_spi.c
-index 8493af0f680e..589f18e9537d 100644
---- a/drivers/platform/chrome/cros_ec_spi.c
-+++ b/drivers/platform/chrome/cros_ec_spi.c
-@@ -401,6 +401,8 @@ static int do_cros_ec_pkt_xfer_spi(struct cros_ec_device *ec_dev,
- 	unsigned long delay;
- 
- 	len = cros_ec_prepare_tx(ec_dev, ec_msg);
-+	if (len < 0)
-+		return len;
- 	dev_dbg(ec_dev->dev, "prepared, len=%d\n", len);
- 
- 	/* If it's too soon to do another transaction, wait */
-@@ -544,6 +546,8 @@ static int do_cros_ec_cmd_xfer_spi(struct cros_ec_device *ec_dev,
- 	unsigned long delay;
- 
- 	len = cros_ec_prepare_tx(ec_dev, ec_msg);
-+	if (len < 0)
-+		return len;
- 	dev_dbg(ec_dev->dev, "prepared, len=%d\n", len);
- 
- 	/* If it's too soon to do another transaction, wait */
+ 	if (ec_dev->event_data.event_type != EC_MKBP_EVENT_HOST_EVENT)
+ 		return 0;
 -- 
 2.36.0.550.gb090851708-goog
 
