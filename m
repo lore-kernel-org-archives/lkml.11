@@ -2,78 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D08C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 03:24:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C063AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 03:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376723AbiEMDYw (ORCPT
+        id S1376726AbiEMDZK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 23:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
+        Thu, 12 May 2022 23:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376671AbiEMDYq (ORCPT
+        with ESMTP id S1376671AbiEMDZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 23:24:46 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F288B201C06
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 20:24:21 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(7688:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 13 May 2022 11:22:23 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.6; Fri, 13 May 2022 11:22:20 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2507.006; Fri, 13 May 2022 11:22:20 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "sboyd@kernel.org" <sboyd@kernel.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
+        Thu, 12 May 2022 23:25:05 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AFD28FE9E;
+        Thu, 12 May 2022 20:25:03 -0700 (PDT)
+X-UUID: e0b939beb29a47cf9303ec2e25af5571-20220513
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:e194aacb-28e5-483b-aaf1-8934bbe63ff2,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-15
+X-CID-META: VersionHash:faefae9,CLOUDID:ec5224a7-eab7-4b74-a74d-5359964535a9,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: e0b939beb29a47cf9303ec2e25af5571-20220513
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1995915734; Fri, 13 May 2022 11:24:56 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 13 May 2022 11:24:56 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 13 May 2022 11:24:55 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 13 May 2022 11:24:54 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v15 04/10] dt-bindings: clock: Add bindings for SP7021
- clock driver
-Thread-Topic: [PATCH v15 04/10] dt-bindings: clock: Add bindings for SP7021
- clock driver
-Thread-Index: AQHYZcsP5QfLdHxDWUuwmqTXvmezs60ag04AgACLAGD//30wAIABmWAA
-Date:   Fri, 13 May 2022 03:22:20 +0000
-Message-ID: <d4671a918be043b991e4ab050239b326@cqplus1.com>
-References: <cover.1652329411.git.qinjian@cqplus1.com>
- <b5ca5d417be079a2a40a6e79ac1b246b6359a49e.1652329411.git.qinjian@cqplus1.com>
- <e9a39eb6-d8e2-bac6-27e2-f63ef8519917@linaro.org>
- <8a9fa13f66ce4ef9a8f8c9200e1fac5f@cqplus1.com>
- <c385961d-7290-bad6-a1d7-be9738a1d842@linaro.org>
-In-Reply-To: <c385961d-7290-bad6-a1d7-be9738a1d842@linaro.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [RESEND, v4] media: mediatek: vcodec: Fix v4l2 compliance decoder cmd test fail
+Date:   Fri, 13 May 2022 11:24:53 +0800
+Message-ID: <20220513032453.4997-1-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBPbiAxMi8wNS8yMDIyIDEyOjQ1LCBxaW5qaWFuW+img+WBpV0gd3JvdGU6DQo+ID4+PiArDQo+
-ID4+PiArZXhhbXBsZXM6DQo+ID4+PiArICAtIHwNCj4gPj4+ICsNCj4gPj4NCj4gPj4gU2FtZSBh
-cyBpbiB2MTQuIFBsZWFzZSBnbyB0aHJvdWdoIHRoZSBjb21tZW50cyB0aG9yb3VnaGx5IHNvIHJl
-dmlld2Vycw0KPiA+PiB3aWxsIG5vdCB3YXN0ZSB0aW1lIHJlcGVhdGluZyB0aGUgc2FtZSB0d2lj
-ZS4NCj4gPj4NCj4gPg0KPiA+IFNvcnJ5LCBJIGRvbuKAmXQgdW5kZXJzdGFuZCB5b3VyIG1lYW5p
-bmcuDQo+ID4gQ291bGQgeW91IGV4cGxhaW4gbW9yZSwgdGhhbmtzLg0KPiANCj4gSSBjb21tZW50
-ZWQgaW4geW91ciB2MTQuIFBsZWFzZSBhcHBseSB0aGUgY29tbWVudCBvciBrZWVwIGRpc2N1c3Np
-b24NCj4gcnVubmluZy4gRG9uJ3QgaWdub3JlIG15IGNvbW1lbnQuDQo+IA0KDQpTb3JyeSwgSSBt
-aXNzZWQgeW91ciBjb21tZW50OiAiTm8gbmVlZCBmb3IgYmxhbmsgbGluZSIuDQpJJ2xsIGZpeCBp
-dCBsYXRlci4NCg==
+Will return -EINVAL using standard framework api when test stateless
+decoder with cmd VIDIOC_(TRY)DECODER_CMD. Disable them to adjust v4l2
+compliance test for user driver(GStreamer/Chrome) won't use decoder cmd.
+
+Fixes: 8cdc3794b2e3 ("media: mtk-vcodec: vdec: support stateless API")
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+resend v4:
+- add Reviewed-by tag for patch v4.
+changes compared with v3:
+- using v4l2_disable_ioctl to replace return -ENOTTY
+changes compared with v2:
+- add reviewed-by tag
+changes compared with v1:
+- add Fixes: tag
+---
+ .../media/platform/mediatek/vcodec/mtk_vcodec_dec.c | 13 +------------
+ .../platform/mediatek/vcodec/mtk_vcodec_dec_drv.c   |  3 +++
+ 2 files changed, 4 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+index 3859e4c651c6..52e5d36aa912 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+@@ -47,14 +47,7 @@ static struct mtk_q_data *mtk_vdec_get_q_data(struct mtk_vcodec_ctx *ctx,
+ static int vidioc_try_decoder_cmd(struct file *file, void *priv,
+ 				struct v4l2_decoder_cmd *cmd)
+ {
+-	struct mtk_vcodec_ctx *ctx = fh_to_ctx(priv);
+-
+-	/* Use M2M stateless helper if relevant */
+-	if (ctx->dev->vdec_pdata->uses_stateless_api)
+-		return v4l2_m2m_ioctl_stateless_try_decoder_cmd(file, priv,
+-								cmd);
+-	else
+-		return v4l2_m2m_ioctl_try_decoder_cmd(file, priv, cmd);
++	return v4l2_m2m_ioctl_try_decoder_cmd(file, priv, cmd);
+ }
+ 
+ 
+@@ -69,10 +62,6 @@ static int vidioc_decoder_cmd(struct file *file, void *priv,
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Use M2M stateless helper if relevant */
+-	if (ctx->dev->vdec_pdata->uses_stateless_api)
+-		return v4l2_m2m_ioctl_stateless_decoder_cmd(file, priv, cmd);
+-
+ 	mtk_v4l2_debug(1, "decoder cmd=%u", cmd->cmd);
+ 	dst_vq = v4l2_m2m_get_vq(ctx->m2m_ctx,
+ 				V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
+index b417a6ab2176..995e6e2fb1ab 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
+@@ -395,6 +395,9 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	if (dev->vdec_pdata->uses_stateless_api) {
++		v4l2_disable_ioctl(vfd_dec, VIDIOC_DECODER_CMD);
++		v4l2_disable_ioctl(vfd_dec, VIDIOC_TRY_DECODER_CMD);
++
+ 		dev->mdev_dec.dev = &pdev->dev;
+ 		strscpy(dev->mdev_dec.model, MTK_VCODEC_DEC_NAME,
+ 			sizeof(dev->mdev_dec.model));
+-- 
+2.18.0
+
