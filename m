@@ -2,146 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C829DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00347C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380140AbiEMMGH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 08:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33658 "EHLO
+        id S232400AbiEMML4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 08:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380131AbiEMMFx (ORCPT
+        with ESMTP id S231622AbiEMMLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 08:05:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A818F1EC5F
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:05:51 -0700 (PDT)
+        Fri, 13 May 2022 08:11:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D965DBEA
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:11:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62930B82AF1
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 12:05:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C153AC34100;
-        Fri, 13 May 2022 12:05:48 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="NyG/y0OX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652443546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a4sD11ZKK6sqMEDpGj+axkoyGANeBn5FLuCNj9ojO1o=;
-        b=NyG/y0OX5bQjQMUjE5kScYkp5SHw+t0sFtZBxhuzHE4G66cHL65xEjc7wM0DTyxjL13FNI
-        cfxBRErq+FW9gZqQAK68tYR9GO/NquF9I4ZTv90atjtRXysN9+zO9tVAfv5mYC70SvVFab
-        wVO7EFkoA1jCfM3+6heRnjGNp8xe7ko=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 45c5de57 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 13 May 2022 12:05:46 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH v2] random: move initialization out of reseeding hot path
-Date:   Fri, 13 May 2022 14:05:43 +0200
-Message-Id: <20220513120543.314127-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9pN_N_fG6k5gFB8mwrEPn1W-Zy54AmA3VSSvrkQyc3PvA@mail.gmail.com>
-References: <CAHmME9pN_N_fG6k5gFB8mwrEPn1W-Zy54AmA3VSSvrkQyc3PvA@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B84561EAE
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 12:11:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D4A2C34100;
+        Fri, 13 May 2022 12:11:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652443905;
+        bh=4hgHs2uetBGWruhbC3YMXipXWF1Og9xqgeUtgLqcWMg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GfUieOHDTiqfc5pXosFRKxyyIh5df4VpTftU2dJuEywS0UuxFIUDiUwMzOf7Iz9zN
+         DMpJQXPeB970ERs5v1SRQT5mrzj8Ru0otPc2EIke1YNRaFDmadZnU1BDok/OyiI544
+         LKrQKHJSMQpS8ctA1iV+4kx7OVzvFe/b30XBdI/YSh65MbnXK3MC/aGw1NjAKhs4BC
+         qVM6MIRV4aBSrGbDpBHPQ9wlvDQyaNkd7RyJVkAUVkOrIwLfkeLHb2Jg5qPFkWLMT7
+         772kMvD8Vi29sBUT23Q1IdEISUmX2MOMvhO1zxNM4aS5pzZgdqd/cPSvVLUiDJaa+R
+         N5zYqS+li56kw==
+Date:   Fri, 13 May 2022 13:11:39 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     john.garry@huawei.com, mark.rutland@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxarm@huawei.com, liuqi115@huawei.com,
+        zhangshaokun@hisilicon.com, f.fangjian@huawei.com,
+        lipeng321@huawei.com, shenjian15@huawei.com
+Subject: Re: [PATCH V6 2/2] drivers/perf: hisi: add driver for HNS3 PMU
+Message-ID: <20220513121137.GA31733@willie-the-truck>
+References: <20220427121000.56026-1-huangguangbin2@huawei.com>
+ <20220427121000.56026-3-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427121000.56026-3-huangguangbin2@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Initialization happens once -- by way of credit_init_bits() -- and then
-it never happens again. Therefore, it doesn't need to be in
-crng_reseed(), which is a hot path that is called multiple times. It
-also doesn't make sense to have there, as initialization activity is
-better associated with initialization routines.
+On Wed, Apr 27, 2022 at 08:10:00PM +0800, Guangbin Huang wrote:
+> HNS3(HiSilicon Network System 3) PMU is RCiEP device in HiSilicon SoC NIC,
+> supports collection of performance statistics such as bandwidth, latency,
+> packet rate and interrupt rate.
+> 
+> NIC of each SICL has one PMU device for it. Driver registers each PMU
+> device to perf, and exports information of supported events, filter mode of
+> each event, bdf range, hardware clock frequency, identifier and so on via
+> sysfs.
 
-After the prior commit, crng_reseed() now won't be called by multiple
-concurrent callers, which means that we can safely move the
-"finialize_init" logic into crng_init_bits() unconditionally.
+Curioous, but how similar is this device to the one which we already support
+in hisi_pcie_pmu.c? Can we reuse/share any of that existing code?
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Changes v1->v2:
-- Keep crng_init = CRNG_READY conditional to avoid dirtying cache line.
+> Each PMU device has its own registers of control, counters and interrupt,
+> and it supports 8 hardware events, each hardward event has its own
+> registers for configuration, counters and interrupt.
+> 
+> Filter options contains:
+> event        - select event
+> port         - select physical port of nic
+> tc           - select tc(must be used with port)
+> func         - select PF/VF
+> queue        - select queue of PF/VF(must be used with func)
+> intr         - select interrupt number(must be used with func)
+> global       - select all functions of IO DIE
+> 
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> Reviewed-by: John Garry <john.garry@huawei.com>
+> ---
+>  MAINTAINERS                       |    6 +
+>  drivers/perf/hisilicon/Kconfig    |   10 +
+>  drivers/perf/hisilicon/Makefile   |    1 +
+>  drivers/perf/hisilicon/hns3_pmu.c | 1654 +++++++++++++++++++++++++++++
+>  include/linux/cpuhotplug.h        |    1 +
+>  5 files changed, 1672 insertions(+)
+>  create mode 100644 drivers/perf/hisilicon/hns3_pmu.c
 
- drivers/char/random.c | 42 +++++++++++++++++++-----------------------
- 1 file changed, 19 insertions(+), 23 deletions(-)
+Anyway, this mostly looks good to me, but I have a few small comments on the
+user ABI:
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 3646eac353b7..8cea19024936 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -265,7 +265,6 @@ static void crng_reseed(void)
- 	unsigned long flags;
- 	unsigned long next_gen;
- 	u8 key[CHACHA_KEY_SIZE];
--	bool finalize_init = false;
- 
- 	extract_entropy(key, sizeof(key));
- 
-@@ -282,28 +281,10 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (!crng_ready()) {
-+	if (!crng_ready())
- 		crng_init = CRNG_READY;
--		finalize_init = true;
--	}
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
- 	memzero_explicit(key, sizeof(key));
--	if (finalize_init) {
--		process_random_ready_list();
--		wake_up_interruptible(&crng_init_wait);
--		kill_fasync(&fasync, SIGIO, POLL_IN);
--		pr_notice("crng init done\n");
--		if (unseeded_warning.missed) {
--			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
--				  unseeded_warning.missed);
--			unseeded_warning.missed = 0;
--		}
--		if (urandom_warning.missed) {
--			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
--				  urandom_warning.missed);
--			urandom_warning.missed = 0;
--		}
--	}
- }
- 
- /*
-@@ -835,10 +816,25 @@ static void credit_init_bits(size_t nbits)
- 		new = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.init_bits, orig, new) != orig);
- 
--	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS)
--		crng_reseed();
--	else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
-+	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
-+		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
-+		process_random_ready_list();
-+		wake_up_interruptible(&crng_init_wait);
-+		kill_fasync(&fasync, SIGIO, POLL_IN);
-+		pr_notice("crng init done\n");
-+		if (unseeded_warning.missed) {
-+			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
-+				  unseeded_warning.missed);
-+			unseeded_warning.missed = 0;
-+		}
-+		if (urandom_warning.missed) {
-+			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
-+				  urandom_warning.missed);
-+			urandom_warning.missed = 0;
-+		}
-+	} else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
- 		spin_lock_irqsave(&base_crng.lock, flags);
-+		/* Check if crng_init is CRNG_EMPTY, to avoid race with crng_reseed(). */
- 		if (crng_init == CRNG_EMPTY) {
- 			extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_init = CRNG_EARLY;
--- 
-2.35.1
+> +#define HNS3_PMU_FILTER_ATTR(_name, _config, _start, _end)               \
+> +	static inline u64 hns3_pmu_get_##_name(struct perf_event *event) \
+> +	{                                                                \
+> +		return FIELD_GET(GENMASK_ULL(_end, _start),              \
+> +				 event->attr._config);                   \
+> +	}
+> +
+> +HNS3_PMU_FILTER_ATTR(event, config, 0, 16);
+> +HNS3_PMU_FILTER_ATTR(subevent, config, 0, 7);
+> +HNS3_PMU_FILTER_ATTR(event_type, config, 8, 15);
+> +HNS3_PMU_FILTER_ATTR(ext_counter_used, config, 16, 16);
+> +HNS3_PMU_FILTER_ATTR(real_event, config, 0, 15);
+> +HNS3_PMU_FILTER_ATTR(port, config1, 0, 3);
+> +HNS3_PMU_FILTER_ATTR(tc, config1, 4, 7);
+> +HNS3_PMU_FILTER_ATTR(bdf, config1, 8, 23);
+> +HNS3_PMU_FILTER_ATTR(queue, config1, 24, 39);
+> +HNS3_PMU_FILTER_ATTR(intr, config1, 40, 51);
+> +HNS3_PMU_FILTER_ATTR(global, config1, 52, 52);
+> +
+> +#define HNS3_BW_EVT_BYTE_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
+> +	HNS3_PMU_EVT_BW_##_name##_BYTE_NUM,				\
+> +	HNS3_PMU_FILTER_BW_##_name})
+> +#define HNS3_BW_EVT_TIME(_name)		(&(struct hns3_pmu_event_attr) {\
+> +	HNS3_PMU_EVT_BW_##_name##_TIME,					\
+> +	HNS3_PMU_FILTER_BW_##_name})
+> +#define HNS3_PPS_EVT_PACKET_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
+> +	HNS3_PMU_EVT_PPS_##_name##_PACKET_NUM,				\
+> +	HNS3_PMU_FILTER_PPS_##_name})
+> +#define HNS3_PPS_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
+> +	HNS3_PMU_EVT_PPS_##_name##_TIME,				\
+> +	HNS3_PMU_FILTER_PPS_##_name})
+> +#define HNS3_DLY_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
+> +	HNS3_PMU_EVT_DLY_##_name##_TIME,				\
+> +	HNS3_PMU_FILTER_DLY_##_name})
+> +#define HNS3_DLY_EVT_PACKET_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
+> +	HNS3_PMU_EVT_DLY_##_name##_PACKET_NUM,				\
+> +	HNS3_PMU_FILTER_DLY_##_name})
+> +#define HNS3_INTR_EVT_INTR_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
+> +	HNS3_PMU_EVT_PPS_##_name##_INTR_NUM,				\
+> +	HNS3_PMU_FILTER_INTR_##_name})
+> +#define HNS3_INTR_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
+> +	HNS3_PMU_EVT_PPS_##_name##_TIME,				\
+> +	HNS3_PMU_FILTER_INTR_##_name})
+> +
+> +static ssize_t hns3_pmu_format_show(struct device *dev,
+> +				    struct device_attribute *attr, char *buf)
+> +{
+> +	struct dev_ext_attribute *eattr;
+> +
+> +	eattr = container_of(attr, struct dev_ext_attribute, attr);
+> +
+> +	return sysfs_emit(buf, "%s\n", (char *)eattr->var);
+> +}
+> +
+> +static ssize_t hns3_pmu_event_show(struct device *dev,
+> +				   struct device_attribute *attr, char *buf)
+> +{
+> +	struct hns3_pmu_event_attr *event;
+> +	struct dev_ext_attribute *eattr;
+> +
+> +	eattr = container_of(attr, struct dev_ext_attribute, attr);
+> +	event = eattr->var;
+> +
+> +	return sysfs_emit(buf, "config=0x%05x\n", event->event);
 
+Are you sure you want the %05 here? The format of the number is
+user-visible, so you won't be able to change this in future. The other hisi
+PMU drivers use %lx or %llx.
+
+> +}
+> +
+> +static ssize_t hns3_pmu_filter_mode_show(struct device *dev,
+> +					 struct device_attribute *attr,
+> +					 char *buf)
+> +{
+> +	struct hns3_pmu_event_attr *event;
+> +	struct dev_ext_attribute *eattr;
+> +	int len;
+> +
+> +	eattr = container_of(attr, struct dev_ext_attribute, attr);
+> +	event = eattr->var;
+> +
+> +	len = sysfs_emit_at(buf, 0, "filter mode supported: ");
+> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_GLOBAL)
+> +		len += sysfs_emit_at(buf, len, "global ");
+> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_PORT)
+> +		len += sysfs_emit_at(buf, len, "port ");
+> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_PORT_TC)
+> +		len += sysfs_emit_at(buf, len, "port-tc ");
+> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC)
+> +		len += sysfs_emit_at(buf, len, "func ");
+> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC_QUEUE)
+> +		len += sysfs_emit_at(buf, len, "func-queue ");
+> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC_INTR)
+> +		len += sysfs_emit_at(buf, len, "func-intr");
+
+It's a bit odd to have a trailing space for everything other than
+"func-intr" as it's not guaranteed to be the last entry (it might not be
+present).
+
+> +
+> +	len += sysfs_emit_at(buf, len, "\n");
+> +
+> +	return len;
+> +}
+> +
+> +#define HNS3_PMU_ATTR(_name, _func, _config)				\
+> +	(&((struct dev_ext_attribute[]) {				\
+> +		{ __ATTR(_name, 0444, _func, NULL), (void *)_config }	\
+> +	})[0].attr.attr)
+> +
+> +#define HNS3_PMU_FORMAT_ATTR(_name, _format) \
+> +	HNS3_PMU_ATTR(_name, hns3_pmu_format_show, (void *)_format)
+> +#define HNS3_PMU_EVENT_ATTR(_name, _event) \
+> +	HNS3_PMU_ATTR(_name, hns3_pmu_event_show, (void *)_event)
+> +#define HNS3_PMU_FLT_MODE_ATTR(_name, _event) \
+> +	HNS3_PMU_ATTR(_name, hns3_pmu_filter_mode_show, (void *)_event)
+> +
+> +#define HNS3_PMU_BW_EVT_PAIR(_name, _macro) \
+> +	HNS3_PMU_EVENT_ATTR(_name##_byte_num, HNS3_BW_EVT_BYTE_NUM(_macro)), \
+> +	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_BW_EVT_TIME(_macro))
+> +#define HNS3_PMU_PPS_EVT_PAIR(_name, _macro) \
+> +	HNS3_PMU_EVENT_ATTR(_name##_packet_num, HNS3_PPS_EVT_PACKET_NUM(_macro)), \
+> +	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_PPS_EVT_TIME(_macro))
+> +#define HNS3_PMU_DLY_EVT_PAIR(_name, _macro) \
+> +	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_DLY_EVT_TIME(_macro)), \
+> +	HNS3_PMU_EVENT_ATTR(_name##_packet_num, HNS3_DLY_EVT_PACKET_NUM(_macro))
+> +#define HNS3_PMU_INTR_EVT_PAIR(_name, _macro) \
+> +	HNS3_PMU_EVENT_ATTR(_name##_intr_num, HNS3_INTR_EVT_INTR_NUM(_macro)), \
+> +	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_INTR_EVT_TIME(_macro))
+> +
+> +#define HNS3_PMU_BW_FLT_MODE_PAIR(_name, _macro) \
+> +	HNS3_PMU_FLT_MODE_ATTR(_name##_byte_num, HNS3_BW_EVT_BYTE_NUM(_macro)), \
+> +	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_BW_EVT_TIME(_macro))
+> +#define HNS3_PMU_PPS_FLT_MODE_PAIR(_name, _macro) \
+> +	HNS3_PMU_FLT_MODE_ATTR(_name##_packet_num, HNS3_PPS_EVT_PACKET_NUM(_macro)), \
+> +	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_PPS_EVT_TIME(_macro))
+> +#define HNS3_PMU_DLY_FLT_MODE_PAIR(_name, _macro) \
+> +	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_DLY_EVT_TIME(_macro)), \
+> +	HNS3_PMU_FLT_MODE_ATTR(_name##_packet_num, HNS3_DLY_EVT_PACKET_NUM(_macro))
+> +#define HNS3_PMU_INTR_FLT_MODE_PAIR(_name, _macro) \
+> +	HNS3_PMU_FLT_MODE_ATTR(_name##_intr_num, HNS3_INTR_EVT_INTR_NUM(_macro)), \
+> +	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_INTR_EVT_TIME(_macro))
+> +
+> +static u8 hns3_pmu_hw_filter_modes[] = {
+> +	HNS3_PMU_HW_FILTER_GLOBAL,
+> +	HNS3_PMU_HW_FILTER_PORT,
+> +	HNS3_PMU_HW_FILTER_PORT_TC,
+> +	HNS3_PMU_HW_FILTER_FUNC,
+> +	HNS3_PMU_HW_FILTER_FUNC_QUEUE,
+> +	HNS3_PMU_HW_FILTER_FUNC_INTR,
+> +};
+> +
+> +#define HNS3_PMU_SET_HW_FILTER(_hwc, _mode) \
+> +	((_hwc)->addr_filters = (void *)&hns3_pmu_hw_filter_modes[(_mode)])
+> +
+> +static ssize_t identifier_show(struct device *dev,
+> +			       struct device_attribute *attr, char *buf)
+> +{
+> +	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
+> +
+> +	return sysfs_emit(buf, "0x%x\n", hns3_pmu->identifier);
+> +}
+> +static DEVICE_ATTR_RO(identifier);
+> +
+> +static ssize_t cpumask_show(struct device *dev, struct device_attribute *attr,
+> +			    char *buf)
+> +{
+> +	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
+> +
+> +	return sysfs_emit(buf, "%d\n", hns3_pmu->on_cpu);
+> +}
+> +static DEVICE_ATTR_RO(cpumask);
+> +
+> +static ssize_t bdf_min_show(struct device *dev, struct device_attribute *attr,
+> +			    char *buf)
+> +{
+> +	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
+> +
+> +	return sysfs_emit(buf, "0x%4x\n", hns3_pmu->bdf_min);
+
+Is it worth formatting the bdf in the usual way ("b:d.f") rather than a
+plain 16-bit number.
+
+> +}
+> +static DEVICE_ATTR_RO(bdf_min);
+> +
+> +static ssize_t bdf_max_show(struct device *dev, struct device_attribute *attr,
+> +			    char *buf)
+> +{
+> +	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
+> +
+> +	return sysfs_emit(buf, "0x%4x\n", hns3_pmu->bdf_max);
+
+Likewise.
+
+> +static struct attribute *hns3_pmu_format_attr[] = {
+> +	HNS3_PMU_FORMAT_ATTR(event, "config:0-16"),
+
+Earlier you split this into event, subevent, event_type and
+ext_counter_used. Why isn't that same structure used here? Ideally, you'd
+derive the strings and the accessors from the same set of definitions so
+you don't run the risk of them falling out of sync. I did that in
+arm_spe_pmu.c but it's not the prettiest code in the world.
+
+> +	HNS3_PMU_FORMAT_ATTR(port, "config1:0-3"),
+> +	HNS3_PMU_FORMAT_ATTR(tc, "config1:4-7"),
+> +	HNS3_PMU_FORMAT_ATTR(bdf, "config1:8-23"),
+> +	HNS3_PMU_FORMAT_ATTR(queue, "config1:24-39"),
+> +	HNS3_PMU_FORMAT_ATTR(intr, "config1:40-51"),
+> +	HNS3_PMU_FORMAT_ATTR(global, "config1:52-52"),
+
+"52-52" is a bit weird; PMU drivers would usually just do "config1:52"
+for a single-bit field. Is perf tool happy with this?
+
+Will
