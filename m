@@ -2,114 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA2CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 00:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 00:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359798AbiEMAql (ORCPT
+        id S1359773AbiEMAuC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 20:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
+        Thu, 12 May 2022 20:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359811AbiEMAqg (ORCPT
+        with ESMTP id S1357287AbiEMAt7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 20:46:36 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806B666219
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 17:46:31 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652402789;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xd8me3zJySDc9HaBBmJv3HcDQGa35Kv/TIv1nYHhe6s=;
-        b=vddEIncvnG/nsi6VTvMIXkJG01KEpPIw3AwzEeuxtq8S6ZYkEPjYwvcjt4O3sV8QdzrITN
-        mLP6Yh9yPHI8BmaCCS3CKeGxSslKlxZ5Q1J4+mqMz8FFAVf//4OfBRQMEb0m38qxwX1A7w
-        fmHEfDokYTHRdP5GxH3UMMLCOt36M3x7Va+TaPazXgrn9o2ksmG7Sm4sgcF6b8fsffAhGN
-        1WLwZMooyXlLFKdMxEHGA7tZTXuUOqBZNEPFEeHwID82pe3AAzREkXePwOtYr9Oi3ZCCdO
-        Pxw6dEPuKAl4yt4nJOWyTz76y6D62MF7wURBFgOS8QAQBCx826uZolpV6BhMEQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652402789;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xd8me3zJySDc9HaBBmJv3HcDQGa35Kv/TIv1nYHhe6s=;
-        b=3F06efiAuRLVvpsUQlMIvmVqjkkqV4jjSnt5hSCvdcckZpqqCC3UcmlC+Sjf38puwTU16t
-        VMWqX7G1P0OqADBw==
-To:     "H.J. Lu" <hjl.tools@gmail.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFCv2 00/10] Linear Address Masking enabling
-In-Reply-To: <CAMe9rOpXOLEMcir9zMq_UJe08Y-kM+9zok6gDicqAhPySV+3NA@mail.gmail.com>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511064943.GR76023@worktop.programming.kicks-ass.net>
- <20bada85-9203-57f4-2502-57a6fd11f3ea@intel.com> <875ymav8ul.ffs@tglx>
- <55176b79-90af-4a47-dc06-9f5f2f2c123d@intel.com>
- <CAMe9rOqb6ZnAZYe4uAWDt-vmhhP=z_+uZwi5fBURqyUWxCX9Cg@mail.gmail.com>
- <87o802tjd7.ffs@tglx>
- <CAMe9rOpXOLEMcir9zMq_UJe08Y-kM+9zok6gDicqAhPySV+3NA@mail.gmail.com>
-Date:   Fri, 13 May 2022 02:46:28 +0200
-Message-ID: <87czgitg2j.ffs@tglx>
+        Thu, 12 May 2022 20:49:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E559116D5E8;
+        Thu, 12 May 2022 17:49:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6F17B8200D;
+        Fri, 13 May 2022 00:49:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E9D0C385B8;
+        Fri, 13 May 2022 00:49:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652402996;
+        bh=g0IhZHLcypRMQEW3o9PkdjskIdxfRPbz9rwZfz1QTYQ=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=IvK0BxYHQaxctgykLUVShK8eT+1vvPT8PGzmI905HRkCgbpUbJj/RzHFDrw78jARV
+         wTpwMVkhtD+lIrAfcPZdiachNhQgmFKlHcon8p/I0DTrvGE8OzL6myB62/fOdIM2m7
+         a3JOZCFRvMtnZ6VOFmeAx+miph2rgA1zJJCsKtLpwykj1wd2BefCaW50HJ22eZ07kY
+         voOexYYHRbMpF5fIVXypQquRjRsIyAx827pjzBaqu3g7MzOYGTvUik2k3n7Nh8/CAp
+         dfpXSYV0AOP+z7uSTZA4G2pIJOoXDezNLFcQYIKLJrma+lefOm+mQh3fB3o5czUapv
+         +0GWy8BAqrdsg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id E92075C051B; Thu, 12 May 2022 17:49:55 -0700 (PDT)
+Date:   Thu, 12 May 2022 17:49:55 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Zqiang <qiang1.zhang@intel.com>
+Cc:     frederic@kernel.org, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rcu: Remove debug_object_active_state() from
+ debug_rcu_head_queue/unqueue()
+Message-ID: <20220513004955.GC1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220510030748.1814004-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510030748.1814004-1-qiang1.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12 2022 at 17:08, H. J. Lu wrote:
-> On Thu, May 12, 2022 at 4:35 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->> > When an application asks for LAM_U57, I expect it will store tags in
->> > upper 6 bits, even if the kernel enables LAM_U48.
->>
->> The kernel does not enable LAM_U48 when the application only wants to
->> have LAM_U57, because that would restrict the address space of the
->> application to 47 bits on 5-level capable system for no reason.
->>
->> So what are you trying to tell me?
->>
-> I am expecting applications to ask for LAM_U48 or LAM_U57, not just
-> LAM.
+On Tue, May 10, 2022 at 11:07:48AM +0800, Zqiang wrote:
+> Currently, the double call_rcu() detected only need call
+> debug_object_activate() to check whether the rcu head object is
+> activated, the rcu head object usage state check is not necessary
+> and when call rcu_test_debug_objects() the debug_object_active_state()
+> will output same callstack as debug_object_activate(). so remove
+> debug_object_active_state() to reduce the output of repeated callstack.
+> 
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 
-That still does not tell anything.
+Could you please post the output of the dmesg output of a failed
+check with your change?
 
-You can as well tell me, that this will depend on the moon phase. That
-would be more telling at least.
+							Thanx, Paul
 
-If we commit to an ABI, which we have to support forever, then we want
-factual arguments, not expectations.
-
-The fact that hardware supports 5 variants does not mean that all of
-them make sense to support in the OS.
-
-Quite the contrary, 99% of all 'flexible' hardware features are based on
-bogus assumptions. The worst of these assumptions is:
-
-      'We can handle this in software'
-
-Sure, most of the trainwrecks hardware people provide can be 'handled'
-in software, but you have to consider the price for doing so.
-
-   The price is that we amount technical debt.
-
-You are well aware of this as you have contributed your share of
-technical debt by cramming unsupportable crap into user space projects
-prematurely.
-
-So can you please take a step back and seriously think about the
-semantics and long term consequences instead of providing handwaving
-expectations which are biased by uninformed wishful thinking, AKA
-marketing?
-
-Thanks,
-
-        tglx
+> ---
+>  kernel/rcu/rcu.h | 13 +------------
+>  1 file changed, 1 insertion(+), 12 deletions(-)
+> 
+> diff --git a/kernel/rcu/rcu.h b/kernel/rcu/rcu.h
+> index 15b96f990774..0604ecd16627 100644
+> --- a/kernel/rcu/rcu.h
+> +++ b/kernel/rcu/rcu.h
+> @@ -179,27 +179,16 @@ static inline unsigned long rcu_seq_diff(unsigned long new, unsigned long old)
+>   */
+>  
+>  #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD
+> -# define STATE_RCU_HEAD_READY	0
+> -# define STATE_RCU_HEAD_QUEUED	1
+>  
+>  extern const struct debug_obj_descr rcuhead_debug_descr;
+>  
+>  static inline int debug_rcu_head_queue(struct rcu_head *head)
+>  {
+> -	int r1;
+> -
+> -	r1 = debug_object_activate(head, &rcuhead_debug_descr);
+> -	debug_object_active_state(head, &rcuhead_debug_descr,
+> -				  STATE_RCU_HEAD_READY,
+> -				  STATE_RCU_HEAD_QUEUED);
+> -	return r1;
+> +	return debug_object_activate(head, &rcuhead_debug_descr);
+>  }
+>  
+>  static inline void debug_rcu_head_unqueue(struct rcu_head *head)
+>  {
+> -	debug_object_active_state(head, &rcuhead_debug_descr,
+> -				  STATE_RCU_HEAD_QUEUED,
+> -				  STATE_RCU_HEAD_READY);
+>  	debug_object_deactivate(head, &rcuhead_debug_descr);
+>  }
+>  #else	/* !CONFIG_DEBUG_OBJECTS_RCU_HEAD */
+> -- 
+> 2.25.1
+> 
