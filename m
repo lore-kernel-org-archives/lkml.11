@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57272C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1244EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378202AbiEMMeu (ORCPT
+        id S1380387AbiEMMez (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 08:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55012 "EHLO
+        Fri, 13 May 2022 08:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380345AbiEMMem (ORCPT
+        with ESMTP id S1380381AbiEMMev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 08:34:42 -0400
+        Fri, 13 May 2022 08:34:51 -0400
 Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024D168331
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:34:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A16768317
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:34:46 -0700 (PDT)
 Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
  (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Fri, 13 May 2022
- 20:32:48 +0800
+ 20:32:53 +0800
 From:   Liang Yang <liang.yang@amlogic.com>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         <linux-mtd@lists.infradead.org>
@@ -38,9 +38,9 @@ CC:     Liang Yang <liang.yang@amlogic.com>,
         YongHui Yu <yonghui.yu@amlogic.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 2/4] mtd: rawnand: meson: fix the clock
-Date:   Fri, 13 May 2022 20:34:02 +0800
-Message-ID: <20220513123404.48513-3-liang.yang@amlogic.com>
+Subject: [PATCH v5 4/4] dt-bindings: nand: meson: convert txt to yaml
+Date:   Fri, 13 May 2022 20:34:04 +0800
+Message-ID: <20220513123404.48513-5-liang.yang@amlogic.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220513123404.48513-1-liang.yang@amlogic.com>
 References: <20220513123404.48513-1-liang.yang@amlogic.com>
@@ -52,189 +52,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-EMMC and NAND have the same clock control register named 'SD_EMMC_CLOCK'
-which is defined in EMMC port internally. bit0~5 of 'SD_EMMC_CLOCK' is
-the divider and bit6~7 is the mux for fix pll and xtal. At the beginning,
-a common MMC and NAND sub-clock was discussed and planed to be implemented
-as NFC clock provider, but now this series of patches of a common MMC and
-NAND sub-clock are never being accepted.  the reasons for giving up are:
-1. EMMC and NAND, which are mutually exclusive anyway
-2. coupling the EMMC and NAND.
-3. it seems that a common MMC and NAND sub-clock is over engineered.
-and let us see the link fot more information:
-https://lore.kernel.org/all/20220121074508.42168-5-liang.yang@amlogic.com
-so The meson nfc can't work now, let us rework the clock.
-
 Signed-off-by: Liang Yang <liang.yang@amlogic.com>
 ---
- drivers/mtd/nand/raw/meson_nand.c | 82 +++++++++++++++----------------
- 1 file changed, 41 insertions(+), 41 deletions(-)
+ .../bindings/mtd/amlogic,meson-nand.txt       | 55 ------------
+ .../bindings/mtd/amlogic,meson-nand.yaml      | 88 +++++++++++++++++++
+ 2 files changed, 88 insertions(+), 55 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
+ create mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
 
-diff --git a/drivers/mtd/nand/raw/meson_nand.c b/drivers/mtd/nand/raw/meson_nand.c
-index ac3be92872d0..cc93667a1e7f 100644
---- a/drivers/mtd/nand/raw/meson_nand.c
-+++ b/drivers/mtd/nand/raw/meson_nand.c
-@@ -10,6 +10,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/interrupt.h>
- #include <linux/clk.h>
-+#include <linux/clk-provider.h>
- #include <linux/mtd/rawnand.h>
- #include <linux/mtd/mtd.h>
- #include <linux/mfd/syscon.h>
-@@ -56,6 +57,9 @@
- 
- #define NFC_RB_IRQ_EN		BIT(21)
- 
-+#define CLK_DIV_SHIFT		0
-+#define CLK_DIV_WIDTH		6
-+
- #define CMDRWGEN(cmd_dir, ran, bch, short_mode, page_size, pages)	\
- 	(								\
- 		(cmd_dir)			|			\
-@@ -151,15 +155,15 @@ struct meson_nfc {
- 	struct nand_controller controller;
- 	struct clk *core_clk;
- 	struct clk *device_clk;
--	struct clk *phase_tx;
--	struct clk *phase_rx;
-+	struct clk *nand_clk;
-+	struct clk_divider nand_divider;
- 
- 	unsigned long clk_rate;
- 	u32 bus_timing;
- 
- 	struct device *dev;
- 	void __iomem *reg_base;
--	struct regmap *reg_clk;
-+	void __iomem *reg_clk;
- 	struct completion completion;
- 	struct list_head chips;
- 	const struct meson_nfc_data *data;
-@@ -235,7 +239,7 @@ static void meson_nfc_select_chip(struct nand_chip *nand, int chip)
- 	nfc->timing.tbers_max = meson_chip->tbers_max;
- 
- 	if (nfc->clk_rate != meson_chip->clk_rate) {
--		ret = clk_set_rate(nfc->device_clk, meson_chip->clk_rate);
-+		ret = clk_set_rate(nfc->nand_clk, meson_chip->clk_rate);
- 		if (ret) {
- 			dev_err(nfc->dev, "failed to set clock rate\n");
- 			return;
-@@ -987,6 +991,8 @@ static const struct mtd_ooblayout_ops meson_ooblayout_ops = {
- 
- static int meson_nfc_clk_init(struct meson_nfc *nfc)
- {
-+	struct clk_parent_data nfc_divider_parent_data[1];
-+	struct clk_init_data init = {0};
- 	int ret;
- 
- 	/* request core clock */
-@@ -1002,21 +1008,28 @@ static int meson_nfc_clk_init(struct meson_nfc *nfc)
- 		return PTR_ERR(nfc->device_clk);
- 	}
- 
--	nfc->phase_tx = devm_clk_get(nfc->dev, "tx");
--	if (IS_ERR(nfc->phase_tx)) {
--		dev_err(nfc->dev, "failed to get TX clk\n");
--		return PTR_ERR(nfc->phase_tx);
--	}
+diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
+deleted file mode 100644
+index 5d5cdfef417f..000000000000
+--- a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
++++ /dev/null
+@@ -1,55 +0,0 @@
+-Amlogic NAND Flash Controller (NFC) for GXBB/GXL/AXG family SoCs
 -
--	nfc->phase_rx = devm_clk_get(nfc->dev, "rx");
--	if (IS_ERR(nfc->phase_rx)) {
--		dev_err(nfc->dev, "failed to get RX clk\n");
--		return PTR_ERR(nfc->phase_rx);
--	}
-+	init.name = devm_kasprintf(nfc->dev,
-+				   GFP_KERNEL, "%s#div",
-+				   dev_name(nfc->dev));
-+	init.ops = &clk_divider_ops;
-+	nfc_divider_parent_data[0].fw_name = "device";
-+	init.parent_data = nfc_divider_parent_data;
-+	init.num_parents = 1;
-+	nfc->nand_divider.reg = nfc->reg_clk;
-+	nfc->nand_divider.shift = CLK_DIV_SHIFT;
-+	nfc->nand_divider.width = CLK_DIV_WIDTH;
-+	nfc->nand_divider.hw.init = &init;
-+	nfc->nand_divider.flags = CLK_DIVIDER_ONE_BASED |
-+				  CLK_DIVIDER_ROUND_CLOSEST |
-+				  CLK_DIVIDER_ALLOW_ZERO;
-+
-+	nfc->nand_clk = devm_clk_register(nfc->dev, &nfc->nand_divider.hw);
-+	if (IS_ERR(nfc->nand_clk))
-+		return PTR_ERR(nfc->nand_clk);
- 
- 	/* init SD_EMMC_CLOCK to sane defaults w/min clock rate */
--	regmap_update_bits(nfc->reg_clk,
--			   0, CLK_SELECT_NAND, CLK_SELECT_NAND);
-+	writel(CLK_SELECT_NAND | readl(nfc->reg_clk),
-+	       nfc->reg_clk);
- 
- 	ret = clk_prepare_enable(nfc->core_clk);
- 	if (ret) {
-@@ -1030,29 +1043,21 @@ static int meson_nfc_clk_init(struct meson_nfc *nfc)
- 		goto err_device_clk;
- 	}
- 
--	ret = clk_prepare_enable(nfc->phase_tx);
-+	ret = clk_prepare_enable(nfc->nand_clk);
- 	if (ret) {
--		dev_err(nfc->dev, "failed to enable TX clock\n");
--		goto err_phase_tx;
-+		dev_err(nfc->dev, "pre enable NFC divider fail\n");
-+		goto err_nand_clk;
- 	}
- 
--	ret = clk_prepare_enable(nfc->phase_rx);
--	if (ret) {
--		dev_err(nfc->dev, "failed to enable RX clock\n");
--		goto err_phase_rx;
--	}
+-This file documents the properties in addition to those available in
+-the MTD NAND bindings.
 -
--	ret = clk_set_rate(nfc->device_clk, 24000000);
-+	ret = clk_set_rate(nfc->nand_clk, 24000000);
- 	if (ret)
--		goto err_disable_rx;
-+		goto err_disable_clk;
- 
- 	return 0;
- 
--err_disable_rx:
--	clk_disable_unprepare(nfc->phase_rx);
--err_phase_rx:
--	clk_disable_unprepare(nfc->phase_tx);
--err_phase_tx:
-+err_disable_clk:
-+	clk_disable_unprepare(nfc->nand_clk);
-+err_nand_clk:
- 	clk_disable_unprepare(nfc->device_clk);
- err_device_clk:
- 	clk_disable_unprepare(nfc->core_clk);
-@@ -1061,8 +1066,7 @@ static int meson_nfc_clk_init(struct meson_nfc *nfc)
- 
- static void meson_nfc_disable_clk(struct meson_nfc *nfc)
- {
--	clk_disable_unprepare(nfc->phase_rx);
--	clk_disable_unprepare(nfc->phase_tx);
-+	clk_disable_unprepare(nfc->nand_clk);
- 	clk_disable_unprepare(nfc->device_clk);
- 	clk_disable_unprepare(nfc->core_clk);
- }
-@@ -1396,13 +1400,9 @@ static int meson_nfc_probe(struct platform_device *pdev)
- 	if (IS_ERR(nfc->reg_base))
- 		return PTR_ERR(nfc->reg_base);
- 
--	nfc->reg_clk =
--		syscon_regmap_lookup_by_phandle(dev->of_node,
--						"amlogic,mmc-syscon");
--	if (IS_ERR(nfc->reg_clk)) {
--		dev_err(dev, "Failed to lookup clock base\n");
-+	nfc->reg_clk = devm_platform_ioremap_resource_byname(pdev, "emmc");
-+	if (IS_ERR(nfc->reg_clk))
- 		return PTR_ERR(nfc->reg_clk);
--	}
- 
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0)
+-Required properties:
+-- compatible : contains one of:
+-  - "amlogic,meson-gxl-nfc"
+-  - "amlogic,meson-axg-nfc"
+-
+-- reg        : Offset and length of the register set
+-
+-- reg-names  : "nfc" is the register set for NFC controller and "emmc"
+-		is the register set for MCI controller.
+-
+-- clocks     :
+-	A list of phandle + clock-specifier pairs for the clocks listed
+-	in clock-names.
+-
+-- clock-names: Should contain the following:
+-	"core" - NFC module gate clock
+-	"device" - parent clock for internal NFC
+-
+-Optional children nodes:
+-Children nodes represent the available nand chips.
+-
+-Other properties:
+-see Documentation/devicetree/bindings/mtd/nand-controller.yaml for generic bindings.
+-
+-Example demonstrate on AXG SoC:
+-
+-	nand-controller@7800 {
+-		compatible = "amlogic,meson-axg-nfc";
+-		reg = <0x0 0x7800 0x0 0x100>,
+-		      <0x0 0x7000 0x0 0x800>;
+-		reg-names = "nfc", "emmc";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		interrupts = <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
+-
+-		clocks = <&clkc CLKID_SD_EMMC_C>,
+-			 <&clkc CLKID_FCLK_DIV2>;
+-		clock-names = "core", "device";
+-
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&nand_pins>;
+-
+-		nand@0 {
+-			reg = <0>;
+-			#address-cells = <1>;
+-			#size-cells = <1>;
+-
+-			nand-on-flash-bbt;
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
+new file mode 100644
+index 000000000000..42634e9c0d3c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
+@@ -0,0 +1,88 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mtd/amlogic,meson-nand.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Amlogic NAND Flash Controller (NFC) for GXBB/GXL/AXG family SoCs
++
++allOf:
++  - $ref: "nand-controller.yaml"
++
++maintainers:
++  - liang.yang@amlogic.com
++
++properties:
++  compatible:
++    enum:
++      - "amlogic,meson-gxl-nfc"
++      - "amlogic,meson-axg-nfc"
++
++  reg:
++    maxItems: 2
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    minItems: 2
++
++  clock-names:
++    items:
++      - const: core
++      - const: device
++
++patternProperties:
++  "^nand@[0-7]$":
++    type: object
++    properties:
++      reg:
++        minimum: 0
++        maximum: 1
++
++      nand-ecc-mode:
++        const: hw
++
++      nand-ecc-step-size:
++        const: 1024
++
++      nand-ecc-strength:
++        enum: [8, 16, 24, 30, 40, 50, 60]
++        description: |
++          The ECC configurations that can be supported are as follows.
++            meson-gxl-nfc 8, 16, 24, 30, 40, 50, 60
++            meson-axg-nfc 8
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/axg-clkc.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    nand-controller@ffe07800 {
++      compatible = "amlogic,meson-axg-nfc";
++      reg = <0xffe07800 0x100>, <0xffe07000 0x800>;
++      reg-names = "nfc", "emmc";
++      interrupts = <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
++      clocks = <&clkc CLKID_SD_EMMC_C>,  <&clkc CLKID_FCLK_DIV2>;
++      clock-names = "core", "device";
++
++      pinctrl-0 = <&nand_pins>;
++      pinctrl-names = "default";
++
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      nand@0 {
++        reg = <0>;
++      };
++    };
++
++...
 -- 
 2.34.1
 
