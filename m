@@ -2,233 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC02C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0887AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378083AbiEMIJH (ORCPT
+        id S1378088AbiEMIJR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 04:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
+        Fri, 13 May 2022 04:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378064AbiEMIJB (ORCPT
+        with ESMTP id S1378097AbiEMIJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 04:09:01 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2052.outbound.protection.outlook.com [40.107.92.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFD81CA079;
-        Fri, 13 May 2022 01:09:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PMevHvVZ5Xu7tbu72nLtnom1oTqWcCRnJZbSrcKLr2eZAoQzwnqNBCDWywsu2Flnu15JkvODmHjXaGhnDQgbBYuO2f1dLq5XmRV45/pz3OBSAinVnYHH/5p5B/uhZp8UXO6es2S3l4ZBjQAkd2KRLZfAWk+n5Cr4OY5nTSVefYVuHzwcQ2vHUXrL/F4s7ee1HQjjNiRQYa2UCkiaO4blNp/x/jBSmCGKn//HVxK8PoNGIID1Zk8UwehdJlFwNGWnzoZnr2Gmf3S/Y8umcD6BqaRnsP/LniuI7uj6kg074/r+P7By0jXGe/FwXQtjbfoVbie3770Ky2FXMpKS21af4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WvhiiIfqwNMHbC83BoK+8OEaS2TUyq5mZBEPUT4zkjA=;
- b=eNS2w6oleWyf/wE9TARsdQhyYCtlpmLn7XaO+kUTUYvlwjrNmEHQJngX8+mkDUUIFJhcnPgDYjzP38iOFu7xTmnbyn1Ps1X8jXNbU4A9CIgsYTJREqMtuMcl2cxCPk++Mcv+HUiafMOh+X89ZmUDq7cJAn4HrSGb8EXvIf+xw0IEw5EWJ8jMChUrJ3zeUF0Y+YK3YDDwoZHQEanj/5kbvRKVZJLk/vmWqD5iPwEQdXkXIFlTKGoycEw53OFCZbPNj/wX/KGXhIELtuIV3Gri6eKDdltLeTcl/Gf1QoChuZhycCxCmjeLrFYJcxPZLJUH9rd04KDwgEUMpNOECIoxow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WvhiiIfqwNMHbC83BoK+8OEaS2TUyq5mZBEPUT4zkjA=;
- b=ERFQRTQULSxgRHI+siB2KvxtOv+YnRNH1hibuSF/a5CYJAClX584Q3EPVgJEegKY1cbtgUwOo65bAfMCNTD3PdTt5mYUocCd8XGR9WH2vXIU9CJiFxa7ckNaUekNN2nx+P4VKV4+WlWnTHmbBrZxzfjrmoO4E5BZ0eT3Ff1N+mX0SolkQqWig4HHiYyIVUrgrVLqIlmfg1PVxya8otL4XiTT/9Jw6+f4sB2ASw456j7oxjISvG9rXESpembdnmVfFbmryHEVwrWr+j9yaht9w6NVakpNBOsrrYJTig5Ao7moYv4rLFs/sZ8BNSHuo7oZDAzPZSlc2hz4mc88/fZgFw==
-Received: from BN9PR03CA0524.namprd03.prod.outlook.com (2603:10b6:408:131::19)
- by DM5PR1201MB0154.namprd12.prod.outlook.com (2603:10b6:4:58::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Fri, 13 May
- 2022 08:08:56 +0000
-Received: from BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:131:cafe::98) by BN9PR03CA0524.outlook.office365.com
- (2603:10b6:408:131::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.15 via Frontend
- Transport; Fri, 13 May 2022 08:08:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT029.mail.protection.outlook.com (10.13.177.68) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5250.13 via Frontend Transport; Fri, 13 May 2022 08:08:55 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 13 May
- 2022 08:08:54 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 13 May
- 2022 01:08:54 -0700
-Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Fri, 13 May 2022 01:08:51 -0700
-From:   Krishna Yarlagadda <kyarlagadda@nvidia.com>
-To:     <broonie@kernel.org>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <linux-spi@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <ashishsingha@nvidia.com>,
-        <robh+dt@kernel.org>
-CC:     <skomatineni@nvidia.com>, <ldewangan@nvidia.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Krishna Yarlagadda" <kyarlagadda@nvidia.com>
-Subject: [Patch V2 2/3] spi: dt-bindings: split peripheral prods
-Date:   Fri, 13 May 2022 13:38:27 +0530
-Message-ID: <20220513080828.22079-3-kyarlagadda@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220513080828.22079-1-kyarlagadda@nvidia.com>
-References: <20220513080828.22079-1-kyarlagadda@nvidia.com>
-X-NVConfidentiality: public
+        Fri, 13 May 2022 04:09:13 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BAB1DFD81;
+        Fri, 13 May 2022 01:09:09 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L01V10R0Dz1JBlJ;
+        Fri, 13 May 2022 16:07:53 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 13 May 2022 16:09:07 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
+ 2022 16:09:07 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
+Subject: [PATCH] crypto: hisilicon/sec - delete the flag CRYPTO_ALG_ALLOCATES_MEMORY
+Date:   Fri, 13 May 2022 16:02:44 +0800
+Message-ID: <20220513080244.19304-1-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b376cacd-ba6c-47ec-c556-08da34b7d385
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB0154:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB0154256D6DFDCCF097CC4CE7C3CA9@DM5PR1201MB0154.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: t7DwSnNjW365oH4HK8VlScmTb+I+fEhziw7jG0NFAS3liuToyCEuVT1NoNH0IOZFvTU4fRcP6hMHT/1FFpmGqn8Zj8NhuHWRQyhcoojAz1rbGZK9CNNJcpw22rJI/zPq/g5mLPPMEQGX9wbnZegv5QyEVewh+NuAozZQEjx5IrdoKLOUl2GWzu1qttakw6XHZ5SfY6x91DJSIbxhf/fecFXgQn9BbljhE4XuAbxl3hJT8BvEepbYC7k9YnRgOW9fqx49CMSJx58FPDcwYVOQmmXJlKDt3Eta7LRAGdXRct5wZj1A+HL1d/uuLCu1NNsNyoa7mtBlCo35psAJ3mpZGKucw54zsAved4iTfov7VacFr0NdV6+/Z8jTQ0ROLUjcKw9q9OtzjStNBb8gZ2jz6n20KES9s4fD+VKXVYYzjuaZodtpq/6Nzf8fenG95NLrxyp8ZIJRq0rHo4rcfyDmsfnfIyJhphDK161qdNqVoIdVuOQ0t/bIbL+nbnoRP3vbXgiWqVSTVg7LU58FSxi/SZzDeJh63uY3ajBA1mg/4AhTDT9YgtO/nOehOqI/8MjIXorrrHXFSmyc1K1XcachSnsXYGj/CIpd60UiEi95Q3jI2X2rbvFWpnljU4HECSs1Nc2/U3CCnnXiQXxrnwmYnPVBBDpSFawjzwL4DDk6talxeUMgz0DBBRPUSUbhsZoGBlkyirmcXnZR6/kaRZibnuZRMub2GgeJyA9/bpKH4XMAS32pxZu9A4zIJO8YG5wgrb4RiDjTShsZ+gDNyXD3WPO3mF4toDf1NR7byXss6xugwQ1we8s37ci1EEunSoDIyOig3tr71edqYHaetYLZTQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(8936002)(5660300002)(508600001)(426003)(336012)(966005)(36860700001)(47076005)(356005)(107886003)(6666004)(316002)(2906002)(54906003)(26005)(2616005)(36756003)(81166007)(110136005)(186003)(83380400001)(86362001)(70586007)(70206006)(8676002)(82310400005)(4326008)(7696005)(1076003)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 08:08:55.7046
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b376cacd-ba6c-47ec-c556-08da34b7d385
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0154
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move peripheral properties for Tegra QSPI controller to
-nvidia,tegra210-quad-peripheral-props.yaml and add reference
-to spi-peripheral-props.yaml file.
+Should not to uses the CRYPTO_ALG_ALLOCATES_MEMORY in SEC2. The SEC2
+driver uses the pre-allocated buffers, including the src sgl pool, dst
+sgl pool and other qp ctx resources. (e.g. IV buffer, mac buffer, key
+buffer). The SEC2 driver doesn't allocate memory during request processing.
+The driver only maps software sgl to allocated hardware sgl during I/O. So
+here is fix it.
 
-Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Signed-off-by: Kai Ye <yekai13@huawei.com>
 ---
- ...nvidia,tegra210-quad-peripheral-props.yaml | 45 +++++++++++++++++++
- .../bindings/spi/nvidia,tegra210-quad.yaml    | 32 -------------
- .../bindings/spi/spi-peripheral-props.yaml    |  1 +
- 3 files changed, 46 insertions(+), 32 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml
+ drivers/crypto/hisilicon/sec2/sec_crypto.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml
-new file mode 100644
-index 000000000000..f91347759c65
---- /dev/null
-+++ b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml
-@@ -0,0 +1,45 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/spi/nvidia,tegra210-quad-peripheral-props.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Peripheral properties for Tegra Quad SPI Controller
-+
-+maintainers:
-+  - Thierry Reding <thierry.reding@gmail.com>
-+  - Jonathan Hunter <jonathanh@nvidia.com>
-+
-+properties:
-+  reg:
-+    maxItems: 1
-+
-+  spi-rx-bus-width:
-+    enum: [1, 2, 4]
-+
-+  spi-tx-bus-width:
-+    enum: [1, 2, 4]
-+
-+  nvidia,tx-clk-tap-delay:
-+    description:
-+      Delays the clock going out to device with this tap value.
-+      Tap value varies based on platform design trace lengths from Tegra
-+      QSPI to corresponding slave device.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    minimum: 0
-+    maximum: 31
-+
-+  nvidia,rx-clk-tap-delay:
-+    description:
-+      Delays the clock coming in from the device with this tap value.
-+      Tap value varies based on platform design trace lengths from Tegra
-+      QSPI to corresponding slave device.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    minimum: 0
-+    maximum: 255
-+
-+required:
-+      - reg
-+
-+unevaluatedProperties: false
-+
-diff --git a/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml
-index 0296edd1de22..7d60bb1af047 100644
---- a/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml
-+++ b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml
-@@ -21,9 +21,6 @@ properties:
-       - nvidia,tegra194-qspi
-       - nvidia,tegra234-qspi
- 
--  reg:
--    maxItems: 1
--
-   interrupts:
-     maxItems: 1
- 
-@@ -50,37 +47,8 @@ patternProperties:
-   "@[0-9a-f]+":
-     type: object
- 
--    properties:
--      spi-rx-bus-width:
--        enum: [1, 2, 4]
--
--      spi-tx-bus-width:
--        enum: [1, 2, 4]
--
--      nvidia,tx-clk-tap-delay:
--        description:
--          Delays the clock going out to device with this tap value.
--          Tap value varies based on platform design trace lengths from Tegra
--          QSPI to corresponding slave device.
--        $ref: /schemas/types.yaml#/definitions/uint32
--        minimum: 0
--        maximum: 31
--
--      nvidia,rx-clk-tap-delay:
--        description:
--          Delays the clock coming in from the device with this tap value.
--          Tap value varies based on platform design trace lengths from Tegra
--          QSPI to corresponding slave device.
--        $ref: /schemas/types.yaml#/definitions/uint32
--        minimum: 0
--        maximum: 255
--
--    required:
--      - reg
--
- required:
-   - compatible
--  - reg
-   - interrupts
-   - clock-names
-   - clocks
-diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-index 5e32928c4fc3..cf589d17b0f5 100644
---- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-@@ -112,5 +112,6 @@ properties:
- allOf:
-   - $ref: cdns,qspi-nor-peripheral-props.yaml#
-   - $ref: samsung,spi-peripheral-props.yaml#
-+  - $ref: nvidia,tegra210-quad-peripheral-props.yaml#
- 
- additionalProperties: true
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+index a91635c348b5..6eebe739893c 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+@@ -2113,7 +2113,6 @@ static int sec_skcipher_decrypt(struct skcipher_request *sk_req)
+ 		.cra_driver_name = "hisi_sec_"sec_cra_name,\
+ 		.cra_priority = SEC_PRIORITY,\
+ 		.cra_flags = CRYPTO_ALG_ASYNC |\
+-		 CRYPTO_ALG_ALLOCATES_MEMORY |\
+ 		 CRYPTO_ALG_NEED_FALLBACK,\
+ 		.cra_blocksize = blk_size,\
+ 		.cra_ctxsize = sizeof(struct sec_ctx),\
+@@ -2366,7 +2365,6 @@ static int sec_aead_decrypt(struct aead_request *a_req)
+ 		.cra_driver_name = "hisi_sec_"sec_cra_name,\
+ 		.cra_priority = SEC_PRIORITY,\
+ 		.cra_flags = CRYPTO_ALG_ASYNC |\
+-		 CRYPTO_ALG_ALLOCATES_MEMORY |\
+ 		 CRYPTO_ALG_NEED_FALLBACK,\
+ 		.cra_blocksize = blk_size,\
+ 		.cra_ctxsize = sizeof(struct sec_ctx),\
 -- 
-2.17.1
+2.33.0
 
