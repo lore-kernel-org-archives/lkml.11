@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D7FC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 880A9C43217
 	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 13:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381553AbiEMNiC (ORCPT
+        id S1359698AbiEMNiG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 09:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
+        Fri, 13 May 2022 09:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381352AbiEMNfd (ORCPT
+        with ESMTP id S1381348AbiEMNfc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 09:35:33 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D92C615F
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:35:30 -0700 (PDT)
+        Fri, 13 May 2022 09:35:32 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D194F5FCF
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:35:29 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id ABD222224D;
-        Fri, 13 May 2022 15:35:28 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DFE65221D4;
+        Fri, 13 May 2022 15:35:27 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
         t=1652448928;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xavI/gAisc47AB04Lxd4coGNq76/GR9N74Rm+AMG6uI=;
-        b=kV8Y0Jw3EDQL4i0NJHEfAhJ6F0g6bKhBayKgmBQbhkRYWqUV4GlnZm/c8aLAPLdcgiqASR
-        jB9UiWS2jzfGWRVwAQbsciLbjfFAWZDf3zNygvuEogdP7bBYgQR2ZGhJwDOvhfRGQjEWQn
-        Bxjdq579wN/jjTOL8dfZlo92oVv+MAg=
+        bh=9ZoXseUxXDuBhnUU+CGsQXKX/xQuLPABnNgtpp1mC+U=;
+        b=YQJ0xJ6ilUYAf2PtdFVg0FFO7xDDVImh8oloeDySiX/UTZmczh09vDOmjmGjqNbBy1W72O
+        +xVqWrrrnVPOkQkd4SEjgEoE21WbuM4NfMKz+eueT95K9CghOTvA9jClPAsWO0H5K8rNqX
+        MSzsMTjNPw/UxRUrSGu7Qj8oob+aiQI=
 From:   Michael Walle <michael@walle.cc>
 To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Pratyush Yadav <p.yadav@ti.com>,
@@ -40,9 +40,9 @@ To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>
 Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
-Subject: [PATCH 3/6] mtd: spi-nor: remember full JEDEC flash ID
-Date:   Fri, 13 May 2022 15:35:17 +0200
-Message-Id: <20220513133520.3945820-4-michael@walle.cc>
+Subject: [PATCH 1/6] mtd: spi-nor: hide jedec_id sysfs attribute if not present
+Date:   Fri, 13 May 2022 15:35:15 +0200
+Message-Id: <20220513133520.3945820-2-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220513133520.3945820-1-michael@walle.cc>
 References: <20220513133520.3945820-1-michael@walle.cc>
@@ -52,74 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At the moment, we print the JEDEC ID that is stored in our database. The
-generic flash support won't have such an entry in our database. To find
-out the JEDEC ID later we will have to cache it. There is also another
-advantage: If the flash is found in the database, the ID could be
-truncated because the ID of the entry is used which can be shorter. Some
-flashes still holds valuable information in the bytes after the JEDEC ID
-and come in handy during debugging of when coping with INFO6() entries.
-These are not accessible for now.
+Some non-jedec compliant flashes (like the Everspin flashes) don't have
+an ID at all. Hide the attribute in this case.
 
-Save a copy of the ID bytes after reading and display it via debugfs.
-
+Fixes: 36ac02286265 ("mtd: spi-nor: add initial sysfs support")
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/mtd/spi-nor/core.c    | 5 +++++
- drivers/mtd/spi-nor/debugfs.c | 2 +-
- include/linux/mtd/spi-nor.h   | 3 +++
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ .../ABI/testing/sysfs-bus-spi-devices-spi-nor      |  3 +++
+ drivers/mtd/spi-nor/sysfs.c                        | 14 ++++++++++++++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index ce5d69317d46..65cd8e668579 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -1664,6 +1664,11 @@ static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
- 		return ERR_PTR(ret);
- 	}
+diff --git a/Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor b/Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor
+index d76cd3946434..e9ef69aef20b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor
++++ b/Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor
+@@ -5,6 +5,9 @@ Contact:	linux-mtd@lists.infradead.org
+ Description:	(RO) The JEDEC ID of the SPI NOR flash as reported by the
+ 		flash device.
  
-+	/* Cache the complete flash ID. */
-+	nor->id = devm_kmemdup(nor->dev, id, SPI_NOR_MAX_ID_LEN, GFP_KERNEL);
-+	if (!nor->id)
-+		return ERR_PTR(-ENOMEM);
++		The attribute is not present if the flash doesn't support
++		the "Read JEDEC ID" command (9Fh). This is the case for
++		non-JEDEC compliant flashes.
+ 
+ What:		/sys/bus/spi/devices/.../spi-nor/manufacturer
+ Date:		April 2021
+diff --git a/drivers/mtd/spi-nor/sysfs.c b/drivers/mtd/spi-nor/sysfs.c
+index 9aec9d8a98ad..4c3b351aef24 100644
+--- a/drivers/mtd/spi-nor/sysfs.c
++++ b/drivers/mtd/spi-nor/sysfs.c
+@@ -67,6 +67,19 @@ static struct bin_attribute *spi_nor_sysfs_bin_entries[] = {
+ 	NULL
+ };
+ 
++static umode_t spi_nor_sysfs_is_visible(struct kobject *kobj,
++					struct attribute *attr, int n)
++{
++	struct spi_device *spi = to_spi_device(kobj_to_dev(kobj));
++	struct spi_mem *spimem = spi_get_drvdata(spi);
++	struct spi_nor *nor = spi_mem_get_drvdata(spimem);
 +
- 	info = spi_nor_match_id(nor, id);
- 	if (!info) {
- 		dev_err(nor->dev, "unrecognized JEDEC id bytes: %*ph\n",
-diff --git a/drivers/mtd/spi-nor/debugfs.c b/drivers/mtd/spi-nor/debugfs.c
-index eaf84f7a0676..23d51e7ba0a7 100644
---- a/drivers/mtd/spi-nor/debugfs.c
-+++ b/drivers/mtd/spi-nor/debugfs.c
-@@ -81,7 +81,7 @@ static int spi_nor_params_show(struct seq_file *s, void *data)
- 	int i;
++	if (attr == &dev_attr_jedec_id.attr && !nor->info->id_len)
++		return 0;
++
++	return 0444;
++}
++
+ static umode_t spi_nor_sysfs_is_bin_visible(struct kobject *kobj,
+ 					    struct bin_attribute *attr, int n)
+ {
+@@ -82,6 +95,7 @@ static umode_t spi_nor_sysfs_is_bin_visible(struct kobject *kobj,
  
- 	seq_printf(s, "name\t\t%s\n", info->name);
--	seq_printf(s, "id\t\t%*ph\n", info->id_len, info->id);
-+	seq_printf(s, "id\t\t%*ph\n", SPI_NOR_MAX_ID_LEN, nor->id);
- 	string_get_size(params->size, 1, STRING_UNITS_2, buf, sizeof(buf));
- 	seq_printf(s, "size\t\t%s\n", buf);
- 	seq_printf(s, "write size\t%u\n", params->writesize);
-diff --git a/include/linux/mtd/spi-nor.h b/include/linux/mtd/spi-nor.h
-index 1ede4c89805a..4dd6cd7389ca 100644
---- a/include/linux/mtd/spi-nor.h
-+++ b/include/linux/mtd/spi-nor.h
-@@ -349,6 +349,8 @@ struct spi_nor_flash_parameter;
-  * @bouncebuf:		bounce buffer used when the buffer passed by the MTD
-  *                      layer is not DMA-able
-  * @bouncebuf_size:	size of the bounce buffer
-+ * @id:			The flash's ID bytes. Always contains
-+ *			SPI_NOR_MAX_ID_LEN bytes.
-  * @info:		SPI NOR part JEDEC MFR ID and other info
-  * @manufacturer:	SPI NOR manufacturer
-  * @addr_width:		number of address bytes
-@@ -379,6 +381,7 @@ struct spi_nor {
- 	struct spi_mem		*spimem;
- 	u8			*bouncebuf;
- 	size_t			bouncebuf_size;
-+	u8			*id;
- 	const struct flash_info	*info;
- 	const struct spi_nor_manufacturer *manufacturer;
- 	u8			addr_width;
+ static const struct attribute_group spi_nor_sysfs_group = {
+ 	.name		= "spi-nor",
++	.is_visible	= spi_nor_sysfs_is_visible,
+ 	.is_bin_visible	= spi_nor_sysfs_is_bin_visible,
+ 	.attrs		= spi_nor_sysfs_entries,
+ 	.bin_attrs	= spi_nor_sysfs_bin_entries,
 -- 
 2.30.2
 
