@@ -2,104 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86837C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 13:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD70FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232377AbiEMN6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 09:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
+        id S232822AbiEMOEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 10:04:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiEMN6a (ORCPT
+        with ESMTP id S229788AbiEMOEG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 09:58:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0677A80F;
-        Fri, 13 May 2022 06:58:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 964D9B82EA3;
-        Fri, 13 May 2022 13:58:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50582C3411C;
-        Fri, 13 May 2022 13:58:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652450305;
-        bh=Q9uWqroQBrMhNpZ56AYK8kAafrfYjv57IuXu6ljniEI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=kP2duuHmNgNTr23wQ3jJV4ACqVDoXiHvJmOEfYJk9MtvU/pYg6PV8inmVYuf8+isB
-         OWLyTHjbPFfaEjxgSziDDit9HdhUJhWWhqRm5d2BsSBvMqiC2R4TR7y+3zJ8IjEiVG
-         WabOU9VbStlIep5W1f5eZh/z3GxAg+zdPHTSMXcFiNzrXBt07iC7jTjCXO/cCBD7Tr
-         g5R8OCcieFgvfgNaw51Kue7VWHPY/Pe4dB6Y+VHDOsIT1B/hzKlmblJJQzwBpfQCxE
-         omgpjYXMk/DBrwTM8vOrcZbjODXWEn7uaBq22v744sg/OpLNPSfRbQREn5rP1vkkil
-         WY3HkUDaQCkLg==
-Received: by mail-pj1-f49.google.com with SMTP id x88so8174301pjj.1;
-        Fri, 13 May 2022 06:58:25 -0700 (PDT)
-X-Gm-Message-State: AOAM532qMBz0C3/3yCC9Eejuwc0gZc0NULASTSCFbveL0OENFOX0+gbP
-        PyJrwqk/O1aKsOI44u7gcrbh24YKck375Ui3Iw==
-X-Google-Smtp-Source: ABdhPJzeUi/T2UXmS90oIyfTH4jE3xb7KHEsioE2ug9DOGlHySktMSjKYgLM3J6rQcaXmuC2h+ylwtxmks7pbqNurVU=
-X-Received: by 2002:a17:902:9345:b0:15f:186b:e478 with SMTP id
- g5-20020a170902934500b0015f186be478mr4834270plp.117.1652450304740; Fri, 13
- May 2022 06:58:24 -0700 (PDT)
+        Fri, 13 May 2022 10:04:06 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B598369D2
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 07:04:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652450644; x=1683986644;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=IV4iYGo7pIxZHj+iT+8akiALKJwO+kZUW0gEutIT5x0=;
+  b=RqXVIC/6m50q4XtXxaPlNCxBqbyd8hxHfECXIYABB/nazsA7aXvZ9xT1
+   ZnHydgXvvepitKkKMSsa7nzAwS+1Hv+5ab/9+0yUyvdDRuG8qtLIAt8Iv
+   wQe333UZNQWui6/qQsLoP+NnW3Trk+qSh8s3hIIpGGRlfuGdFGlaavDVj
+   o=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 13 May 2022 07:04:04 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 07:04:03 -0700
+Received: from [10.216.62.117] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 13 May
+ 2022 07:04:00 -0700
+Message-ID: <f251bc8f-7e72-cfd9-5eca-179c91880a1a@quicinc.com>
+Date:   Fri, 13 May 2022 19:33:56 +0530
 MIME-Version: 1.0
-References: <20220429220933.1350374-1-saravanak@google.com>
-In-Reply-To: <20220429220933.1350374-1-saravanak@google.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 13 May 2022 08:58:11 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+2A7mRVV24XW0YcP8GkFCK_Ri4KDcqvW4e0p3TkQMWVg@mail.gmail.com>
-Message-ID: <CAL_Jsq+2A7mRVV24XW0YcP8GkFCK_Ri4KDcqvW4e0p3TkQMWVg@mail.gmail.com>
-Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver registration
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Will Deacon <will@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Thierry Reding <treding@nvidia.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [RESEND PATCH v4] devcoredump : Serialize devcd_del work
+Content-Language: en-US
+To:     <linux-kernel@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <tglx@linutronix.de>,
+        <sboyd@kernel.org>, <rafael@kernel.org>,
+        <johannes@sipsolutions.net>, <keescook@chromium.org>
+References: <1651558074-9620-1-git-send-email-quic_mojha@quicinc.com>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+In-Reply-To: <1651558074-9620-1-git-send-email-quic_mojha@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 5:09 PM Saravana Kannan <saravanak@google.com> wrote:
->
-> The deferred probe timer that's used for this currently starts at
-> late_initcall and runs for driver_deferred_probe_timeout seconds. The
-> assumption being that all available drivers would be loaded and
-> registered before the timer expires. This means, the
-> driver_deferred_probe_timeout has to be pretty large for it to cover the
-> worst case. But if we set the default value for it to cover the worst
-> case, it would significantly slow down the average case. For this
-> reason, the default value is set to 0.
->
-> Also, with CONFIG_MODULES=y and the current default values of
-> driver_deferred_probe_timeout=0 and fw_devlink=on, devices with missing
-> drivers will cause their consumer devices to always defer their probes.
-> This is because device links created by fw_devlink defer the probe even
-> before the consumer driver's probe() is called.
->
-> Instead of a fixed timeout, if we extend an unexpired deferred probe
-> timer on every successful driver registration, with the expectation more
-> modules would be loaded in the near future, then the default value of
-> driver_deferred_probe_timeout only needs to be as long as the worst case
-> time difference between two consecutive module loads.
->
-> So let's implement that and set the default value to 10 seconds when
-> CONFIG_MODULES=y.
+Gentle reminder!
 
-We had to revert a non-zero timeout before (issue with NFS root IIRC).
-Does fw_devlink=on somehow fix that?
-
-Rob
+Thanks,
+-Mukesh
+On 5/3/2022 11:37 AM, Mukesh Ojha wrote:
+> In following scenario(diagram), when one thread X running dev_coredumpm()
+> adds devcd device to the framework which sends uevent notification to
+> userspace and another thread Y reads this uevent and call to
+> devcd_data_write() which eventually try to delete the queued timer that
+> is not initialized/queued yet.
+> 
+> So, debug object reports some warning and in the meantime, timer is
+> initialized and queued from X path. and from Y path, it gets reinitialized
+> again and timer->entry.pprev=NULL and try_to_grab_pending() stucks.
+> 
+> To fix this, introduce mutex and a boolean flag to serialize the behaviour.
+> 
+>   	cpu0(X)			                cpu1(Y)
+> 
+>      dev_coredump() uevent sent to user space
+>      device_add()  ======================> user space process Y reads the
+>                                            uevents writes to devcd fd
+>                                            which results into writes to
+> 
+>                                           devcd_data_write()
+>                                             mod_delayed_work()
+>                                               try_to_grab_pending()
+>                                                 del_timer()
+>                                                   debug_assert_init()
+>     INIT_DELAYED_WORK()
+>     schedule_delayed_work()
+>                                                     debug_object_fixup()
+>                                                       timer_fixup_assert_init()
+>                                                         timer_setup()
+>                                                           do_init_timer()
+>                                                         /*
+>                                                          Above call reinitializes
+>                                                          the timer to
+>                                                          timer->entry.pprev=NULL
+>                                                          and this will be checked
+>                                                          later in timer_pending() call.
+>                                                         */
+>                                                   timer_pending()
+>                                                    !hlist_unhashed_lockless(&timer->entry)
+>                                                      !h->pprev
+>                                                  /*
+>                                                    del_timer() checks h->pprev and finds
+>                                                    it to be NULL due to which
+>                                                    try_to_grab_pending() stucks.
+>                                                  */
+> 
+> Link: https://lore.kernel.org/lkml/2e1f81e2-428c-f11f-ce92-eb11048cb271@quicinc.com/
+> Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
+> ---
+> v3->v4:
+>   - flg variable renamed to delete_work.
+> 
+> v2->v3:
+>   Addressed comments from gregkh
+>   - Wrapped the commit text and corrected the alignment.
+>   - Described the reason to introduce new variables.
+>   - Restored the blank line.
+>   - rename the del_wk_queued to flg.
+>   Addressed comments from tglx
+>   - Added a comment which explains the race which looks obvious however
+>     would not occur between disabled_store and devcd_del work.
+> 
+> 
+> v1->v2:
+>   - Added del_wk_queued flag to serialize the race between devcd_data_write()
+>     and disabled_store() => devcd_free().
+>   drivers/base/devcoredump.c | 83 ++++++++++++++++++++++++++++++++++++++++++++--
+>   1 file changed, 81 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/base/devcoredump.c b/drivers/base/devcoredump.c
+> index f4d794d..1c06781 100644
+> --- a/drivers/base/devcoredump.c
+> +++ b/drivers/base/devcoredump.c
+> @@ -25,6 +25,47 @@ struct devcd_entry {
+>   	struct device devcd_dev;
+>   	void *data;
+>   	size_t datalen;
+> +	/*
+> +	 * Here, mutex is required to serialize the calls to del_wk work between
+> +	 * user/kernel space which happens when devcd is added with device_add()
+> +	 * and that sends uevent to user space. User space reads the uevents,
+> +	 * and calls to devcd_data_write() which try to modify the work which is
+> +	 * not even initialized/queued from devcoredump.
+> +	 *
+> +	 *
+> +	 *
+> +	 *        cpu0(X)                                 cpu1(Y)
+> +	 *
+> +	 *        dev_coredump() uevent sent to user space
+> +	 *        device_add()  ======================> user space process Y reads the
+> +	 *                                              uevents writes to devcd fd
+> +	 *                                              which results into writes to
+> +	 *
+> +	 *                                             devcd_data_write()
+> +	 *                                               mod_delayed_work()
+> +	 *                                                 try_to_grab_pending()
+> +	 *                                                   del_timer()
+> +	 *                                                     debug_assert_init()
+> +	 *       INIT_DELAYED_WORK()
+> +	 *       schedule_delayed_work()
+> +	 *
+> +	 *
+> +	 * Also, mutex alone would not be enough to avoid scheduling of
+> +	 * del_wk work after it get flush from a call to devcd_free()
+> +	 * mentioned as below.
+> +	 *
+> +	 *	disabled_store()
+> +	 *        devcd_free()
+> +	 *          mutex_lock()             devcd_data_write()
+> +	 *          flush_delayed_work()
+> +	 *          mutex_unlock()
+> +	 *                                   mutex_lock()
+> +	 *                                   mod_delayed_work()
+> +	 *                                   mutex_unlock()
+> +	 * So, delete_work flag is required.
+> +	 */
+> +	struct mutex mutex;
+> +	bool delete_work;
+>   	struct module *owner;
+>   	ssize_t (*read)(char *buffer, loff_t offset, size_t count,
+>   			void *data, size_t datalen);
+> @@ -84,7 +125,12 @@ static ssize_t devcd_data_write(struct file *filp, struct kobject *kobj,
+>   	struct device *dev = kobj_to_dev(kobj);
+>   	struct devcd_entry *devcd = dev_to_devcd(dev);
+>   
+> -	mod_delayed_work(system_wq, &devcd->del_wk, 0);
+> +	mutex_lock(&devcd->mutex);
+> +	if (!devcd->delete_work) {
+> +		devcd->delete_work = true;
+> +		mod_delayed_work(system_wq, &devcd->del_wk, 0);
+> +	}
+> +	mutex_unlock(&devcd->mutex);
+>   
+>   	return count;
+>   }
+> @@ -112,7 +158,12 @@ static int devcd_free(struct device *dev, void *data)
+>   {
+>   	struct devcd_entry *devcd = dev_to_devcd(dev);
+>   
+> +	mutex_lock(&devcd->mutex);
+> +	if (!devcd->delete_work)
+> +		devcd->delete_work = true;
+> +
+>   	flush_delayed_work(&devcd->del_wk);
+> +	mutex_unlock(&devcd->mutex);
+>   	return 0;
+>   }
+>   
+> @@ -122,6 +173,30 @@ static ssize_t disabled_show(struct class *class, struct class_attribute *attr,
+>   	return sysfs_emit(buf, "%d\n", devcd_disabled);
+>   }
+>   
+> +/*
+> + *
+> + *	disabled_store()                                	worker()
+> + *	 class_for_each_device(&devcd_class,
+> + *		NULL, NULL, devcd_free)
+> + *         ...
+> + *         ...
+> + *	   while ((dev = class_dev_iter_next(&iter))
+> + *                                                             devcd_del()
+> + *                                                               device_del()
+> + *                                                                 put_device() <- last reference
+> + *             error = fn(dev, data)                           devcd_dev_release()
+> + *             devcd_free(dev, data)                           kfree(devcd)
+> + *             mutex_lock(&devcd->mutex);
+> + *
+> + *
+> + * In the above diagram, It looks like disabled_store() would be racing with parallely
+> + * running devcd_del() and result in memory abort while acquiring devcd->mutex which
+> + * is called after kfree of devcd memory  after dropping its last reference with
+> + * put_device(). However, this will not happens as fn(dev, data) runs
+> + * with its own reference to device via klist_node so it is not its last reference.
+> + * so, above situation would not occur.
+> + */
+> +
+>   static ssize_t disabled_store(struct class *class, struct class_attribute *attr,
+>   			      const char *buf, size_t count)
+>   {
+> @@ -278,13 +353,16 @@ void dev_coredumpm(struct device *dev, struct module *owner,
+>   	devcd->read = read;
+>   	devcd->free = free;
+>   	devcd->failing_dev = get_device(dev);
+> +	devcd->delete_work = false;
+>   
+> +	mutex_init(&devcd->mutex);
+>   	device_initialize(&devcd->devcd_dev);
+>   
+>   	dev_set_name(&devcd->devcd_dev, "devcd%d",
+>   		     atomic_inc_return(&devcd_count));
+>   	devcd->devcd_dev.class = &devcd_class;
+>   
+> +	mutex_lock(&devcd->mutex);
+>   	if (device_add(&devcd->devcd_dev))
+>   		goto put_device;
+>   
+> @@ -301,10 +379,11 @@ void dev_coredumpm(struct device *dev, struct module *owner,
+>   
+>   	INIT_DELAYED_WORK(&devcd->del_wk, devcd_del);
+>   	schedule_delayed_work(&devcd->del_wk, DEVCD_TIMEOUT);
+> -
+> +	mutex_unlock(&devcd->mutex);
+>   	return;
+>    put_device:
+>   	put_device(&devcd->devcd_dev);
+> +	mutex_unlock(&devcd->mutex);
+>    put_module:
+>   	module_put(owner);
+>    free:
