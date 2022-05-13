@@ -2,83 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004FBC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380358AbiEMMfB (ORCPT
+        id S1380360AbiEMMfO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 08:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
+        Fri, 13 May 2022 08:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380345AbiEMMeu (ORCPT
+        with ESMTP id S1380386AbiEMMfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 08:34:50 -0400
-Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB2367D33
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:34:42 -0700 (PDT)
-Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
- (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Fri, 13 May 2022
- 20:32:50 +0800
-From:   Liang Yang <liang.yang@amlogic.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-mtd@lists.infradead.org>
-CC:     Liang Yang <liang.yang@amlogic.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 3/4] mtd: rawnand: meson: refine resource getting in probe
-Date:   Fri, 13 May 2022 20:34:03 +0800
-Message-ID: <20220513123404.48513-4-liang.yang@amlogic.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220513123404.48513-1-liang.yang@amlogic.com>
-References: <20220513123404.48513-1-liang.yang@amlogic.com>
+        Fri, 13 May 2022 08:35:01 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F9469498;
+        Fri, 13 May 2022 05:35:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652445301; x=1683981301;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Zv7Qi86HPneMHTnZpf40yaE9hmnJYLH+m3BORrPBcec=;
+  b=RoWmQ6iwVOTB8MQ+8HMUo1kgPbBvVVKr0rrJbk6oskwi7rIaCAksbgZQ
+   azZqXoVSy7gU1bkLlXUymZoRnIFOO01bLUT2wmiUMSsZ8ylLKhL8rgDmq
+   kZoss0zZnSia9fiKra2UlkpFNTf50VFbbyq5a5ue7D93rNJdAo8cXpmRg
+   x/V7umKa6WSL5mBXVRspY93Er4LYY30iSxGC2OAS1xFVXz98C/quJex/t
+   umpgMyNB8B+StndAG3z0Vm7qEfPMGWKBh+weKbOVWyRP9QT199Gr+btyx
+   KdXBlc5JuCdMN83sDRY+X+0ASwp8s642UxNrMGmLNhXqBpucbn5HDvPPN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="356721676"
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="356721676"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 05:35:00 -0700
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="521405157"
+Received: from apamu-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.33.218])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 05:34:58 -0700
+Message-ID: <a125cfc58ef09367dc4557fd8a854ed9f21c1675.camel@intel.com>
+Subject: Re: [RFC PATCH v6 025/104] KVM: TDX: initialize VM with TDX
+ specific parameters
+From:   Kai Huang <kai.huang@intel.com>
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
+        Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        erdemaktas@google.com, Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+Date:   Sat, 14 May 2022 00:34:55 +1200
+In-Reply-To: <20220509151829.GC2789321@ls.amr.corp.intel.com>
+References: <cover.1651774250.git.isaku.yamahata@intel.com>
+         <fbc23565f7556e7b33227bcad95441195bb4758d.1651774250.git.isaku.yamahata@intel.com>
+         <b3d587fd-1bf2-411c-96a9-6750e9aeefa2@intel.com>
+         <20220509151829.GC2789321@ls.amr.corp.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.28.8.21]
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Liang Yang <liang.yang@amlogic.com>
----
- drivers/mtd/nand/raw/meson_nand.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Mon, 2022-05-09 at 08:18 -0700, Isaku Yamahata wrote:
+> > > +struct kvm_tdx_init_vm {
+> > > +	__u64 attributes;
+> > > +	__u32 max_vcpus;
+> > > +	__u32 tsc_khz;
+> > > +	__u64 mrconfigid[6];	/* sha384 digest */
+> > > +	__u64 mrowner[6];	/* sha384 digest */
+> > > +	__u64 mrownerconfig[6];	/* sha348 digest */
+> > > +	union {
+> > > +		/*
+> > > +		 * KVM_TDX_INIT_VM is called before vcpu creation, thus
+> > > before
+> > > +		 * KVM_SET_CPUID2.  CPUID configurations needs to be
+> > > passed.
+> > > +		 *
+> > > +		 * This configuration supersedes KVM_SET_CPUID{,2}.
+> > > +		 * The user space VMM, e.g. qemu, should make them
+> > > consistent
+> > > +		 * with this values.
+> > > +		 * sizeof(struct kvm_cpuid_entry2) *
+> > > KVM_MAX_CPUID_ENTRIES(256)
+> > > +		 * = 8KB.
+> > > +		 */
+> > > +		struct {
+> > > +			struct kvm_cpuid2 cpuid;
+> > > +			/* 8KB with KVM_MAX_CPUID_ENTRIES. */
+> > > +			struct kvm_cpuid_entry2 entries[];
+> > > +		};
+> > > +		/*
+> > > +		 * For future extensibility.
+> > > +		 * The size(struct kvm_tdx_init_vm) = 16KB.
+> > > +		 * This should be enough given sizeof(TD_PARAMS) = 1024
+> > > +		 */
+> > > +		__u64 reserved[2028];
+> > 
+> > I don't think it's a good idea to put the CPUID configs at the end of this
+> > structure and put it into a union.
+> > 
+> > 1. The union makes the Array of Length zero entries[] pointless.
+> > 2. It wastes memory that when new field to be added in the future, it has to
+> > be put after union instead of inside union.
+> 
+> Hmm, I checked this as there was a suggestion to do so.
+> I have to admit that it's ugly for future reserved area.  The options I can
+> think of are
+> 
+> A. add a pointer to struct kvm_cpuid2 (previous v5 patch)
+> B. this patch.
 
-diff --git a/drivers/mtd/nand/raw/meson_nand.c b/drivers/mtd/nand/raw/meson_nand.c
-index cc93667a1e7f..6e50387475bb 100644
---- a/drivers/mtd/nand/raw/meson_nand.c
-+++ b/drivers/mtd/nand/raw/meson_nand.c
-@@ -1378,7 +1378,6 @@ static int meson_nfc_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct meson_nfc *nfc;
--	struct resource *res;
- 	int ret, irq;
- 
- 	nfc = devm_kzalloc(dev, sizeof(*nfc), GFP_KERNEL);
-@@ -1395,8 +1394,7 @@ static int meson_nfc_probe(struct platform_device *pdev)
- 
- 	nfc->dev = dev;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	nfc->reg_base = devm_ioremap_resource(dev, res);
-+	nfc->reg_base = devm_platform_ioremap_resource_byname(pdev, "nfc");
- 	if (IS_ERR(nfc->reg_base))
- 		return PTR_ERR(nfc->reg_base);
- 
+Why can't we just use kvm_cpuid2 here to replace the union?  We can add
+additional reserved space before kvm_cpuid2 for future extension.  Is there any
+problem?
+
+I don't see there's fundamental difference between putting kvm_cpuid2 directly
+here vs putting a 'cpuid' pointer here.  My personal feeling is the former is
+clearer than the latter.
+
 -- 
-2.34.1
+Thanks,
+-Kai
+
 
