@@ -2,42 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE56C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 090FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380971AbiEMO3S (ORCPT
+        id S1380978AbiEMO3Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39752 "EHLO
+        Fri, 13 May 2022 10:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381111AbiEMO0k (ORCPT
+        with ESMTP id S1381106AbiEMO0g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA0D50B25;
-        Fri, 13 May 2022 07:26:38 -0700 (PDT)
+        Fri, 13 May 2022 10:26:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1FE50B02;
+        Fri, 13 May 2022 07:26:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 396056216D;
-        Fri, 13 May 2022 14:26:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49833C36AE9;
-        Fri, 13 May 2022 14:26:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 238D2B8307B;
+        Fri, 13 May 2022 14:26:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51036C34100;
+        Fri, 13 May 2022 14:26:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451997;
-        bh=UpCcU25Xv82HILkYDgU1w77S6ZMW9ZRfx0gmJ332NVc=;
+        s=korg; t=1652451991;
+        bh=0C1cmO61Qt6CWllfe71gI5XVVBFSNf2m2kyZRF4iiWw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YomKhBjtFMi3CEd486NRv2gxQfGX+nfvLzx4H+l4JoBzkBeh8ocJwfRiQV0dbWvbL
-         yspy6qc+0+oEgAtPpo4FI6g+FsgSfUofzrwd1IO+uWtXJGnQDtfia0MB/MTphQ0Cg4
-         VB+syeep60x8ekO7Y8Oyz7IEv0Pzjai7Ccq5ICio=
+        b=q/gOHPrsmHmQ9IgCarEV10qPdGKt3nqPlxqY04cerC2lHLbfz4DTNT6Q9HT1yYIMI
+         DcEQ9LlYAQYhA4E2pu9IKB4z/SeNVOCI1Wt36jtljXQEYmjpy8qdVCQ2q19vrFziyS
+         dnLt1VwR8GS5DFrWi8aC1pgrkZ1tREdTYCk/k1S8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kyle Huey <me@kylehuey.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.4 14/18] KVM: x86/svm: Account for family 17h event renumberings in amd_pmc_perf_hw_id
-Date:   Fri, 13 May 2022 16:23:40 +0200
-Message-Id: <20220513142229.569318882@linuxfoundation.org>
+        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Juergen Gross <jgross@suse.com>, x86@kernel.org,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Borislav Petkov <bp@alien8.de>, xen-devel@lists.xenproject.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Maximilian Heyne <mheyne@amazon.de>
+Subject: [PATCH 5.4 12/18] x86: xen: insn: Decode Xen and KVM emulate-prefix signature
+Date:   Fri, 13 May 2022 16:23:38 +0200
+Message-Id: <20220513142229.512910493@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
 References: <20220513142229.153291230@linuxfoundation.org>
@@ -49,86 +58,257 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyle Huey <me@kylehuey.com>
+From: Masami Hiramatsu <mhiramat@kernel.org>
 
-commit 5eb849322d7f7ae9d5c587c7bc3b4f7c6872cd2f upstream.
+commit 4d65adfcd1196818659d3bd9b42dccab291e1751 upstream.
 
-Zen renumbered some of the performance counters that correspond to the
-well known events in perf_hw_id. This code in KVM was never updated for
-that, so guest that attempt to use counters on Zen that correspond to the
-pre-Zen perf_hw_id values will silently receive the wrong values.
+Decode Xen and KVM's emulate-prefix signature by x86 insn decoder.
+It is called "prefix" but actually not x86 instruction prefix, so
+this adds insn.emulate_prefix_size field instead of reusing
+insn.prefixes.
 
-This has been observed in the wild with rr[0] when running in Zen 3
-guests. rr uses the retired conditional branch counter 00d1 which is
-incorrectly recognized by KVM as PERF_COUNT_HW_STALLED_CYCLES_BACKEND.
+If x86 decoder finds a special sequence of instructions of
+XEN_EMULATE_PREFIX and 'ud2a; .ascii "kvm"', it just counts the
+length, set insn.emulate_prefix_size and fold it with the next
+instruction. In other words, the signature and the next instruction
+is treated as a single instruction.
 
-[0] https://rr-project.org/
-
-Signed-off-by: Kyle Huey <me@kylehuey.com>
-Message-Id: <20220503050136.86298-1-khuey@kylehuey.com>
-Cc: stable@vger.kernel.org
-[Check guest family, not host. - Paolo]
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-[Backport to 5.15: adjusted context]
-Signed-off-by: Kyle Huey <me@kylehuey.com>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: x86@kernel.org
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Stefano Stabellini <sstabellini@kernel.org>
+Cc: Andrew Cooper <andrew.cooper3@citrix.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: xen-devel@lists.xenproject.org
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lkml.kernel.org/r/156777564986.25081.4964537658500952557.stgit@devnote2
+[mheyne: resolved contextual conflict in tools/objtools/sync-check.sh]
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/pmu_amd.c |   28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/insn.h                 |    6 ++++
+ arch/x86/lib/insn.c                         |   34 ++++++++++++++++++++++++++++
+ tools/arch/x86/include/asm/emulate_prefix.h |   14 +++++++++++
+ tools/arch/x86/include/asm/insn.h           |    6 ++++
+ tools/arch/x86/lib/insn.c                   |   34 ++++++++++++++++++++++++++++
+ tools/objtool/sync-check.sh                 |    3 +-
+ tools/perf/check-headers.sh                 |    3 +-
+ 7 files changed, 98 insertions(+), 2 deletions(-)
+ create mode 100644 tools/arch/x86/include/asm/emulate_prefix.h
 
---- a/arch/x86/kvm/pmu_amd.c
-+++ b/arch/x86/kvm/pmu_amd.c
-@@ -44,6 +44,22 @@ static struct kvm_event_hw_type_mapping
- 	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
- };
+--- a/arch/x86/include/asm/insn.h
++++ b/arch/x86/include/asm/insn.h
+@@ -45,6 +45,7 @@ struct insn {
+ 		struct insn_field immediate2;	/* for 64bit imm or seg16 */
+ 	};
  
-+/* duplicated from amd_f17h_perfmon_event_map. */
-+static struct kvm_event_hw_type_mapping amd_f17h_event_mapping[] = {
-+	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
-+	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
-+	[2] = { 0x60, 0xff, PERF_COUNT_HW_CACHE_REFERENCES },
-+	[3] = { 0x64, 0x09, PERF_COUNT_HW_CACHE_MISSES },
-+	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
-+	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
-+	[6] = { 0x87, 0x02, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
-+	[7] = { 0x87, 0x01, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
-+};
-+
-+/* amd_pmc_perf_hw_id depends on these being the same size */
-+static_assert(ARRAY_SIZE(amd_event_mapping) ==
-+	     ARRAY_SIZE(amd_f17h_event_mapping));
-+
- static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
- {
- 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
-@@ -128,19 +144,25 @@ static inline struct kvm_pmc *get_gp_pmc
- 
- static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
- {
-+	struct kvm_event_hw_type_mapping *event_mapping;
- 	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
- 	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
- 	int i;
- 
-+	if (guest_cpuid_family(pmc->vcpu) >= 0x17)
-+		event_mapping = amd_f17h_event_mapping;
-+	else
-+		event_mapping = amd_event_mapping;
-+
- 	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
--		if (amd_event_mapping[i].eventsel == event_select
--		    && amd_event_mapping[i].unit_mask == unit_mask)
-+		if (event_mapping[i].eventsel == event_select
-+		    && event_mapping[i].unit_mask == unit_mask)
- 			break;
- 
- 	if (i == ARRAY_SIZE(amd_event_mapping))
- 		return PERF_COUNT_HW_MAX;
- 
--	return amd_event_mapping[i].event_type;
-+	return event_mapping[i].event_type;
++	int	emulate_prefix_size;
+ 	insn_attr_t attr;
+ 	unsigned char opnd_bytes;
+ 	unsigned char addr_bytes;
+@@ -128,6 +129,11 @@ static inline int insn_is_evex(struct in
+ 	return (insn->vex_prefix.nbytes == 4);
  }
  
- /* return PERF_COUNT_HW_MAX as AMD doesn't have fixed events */
++static inline int insn_has_emulate_prefix(struct insn *insn)
++{
++	return !!insn->emulate_prefix_size;
++}
++
+ /* Ensure this instruction is decoded completely */
+ static inline int insn_complete(struct insn *insn)
+ {
+--- a/arch/x86/lib/insn.c
++++ b/arch/x86/lib/insn.c
+@@ -13,6 +13,8 @@
+ #include <asm/inat.h>
+ #include <asm/insn.h>
+ 
++#include <asm/emulate_prefix.h>
++
+ /* Verify next sizeof(t) bytes can be on the same instruction */
+ #define validate_next(t, insn, n)	\
+ 	((insn)->next_byte + sizeof(t) + n <= (insn)->end_kaddr)
+@@ -58,6 +60,36 @@ void insn_init(struct insn *insn, const
+ 		insn->addr_bytes = 4;
+ }
+ 
++static const insn_byte_t xen_prefix[] = { __XEN_EMULATE_PREFIX };
++static const insn_byte_t kvm_prefix[] = { __KVM_EMULATE_PREFIX };
++
++static int __insn_get_emulate_prefix(struct insn *insn,
++				     const insn_byte_t *prefix, size_t len)
++{
++	size_t i;
++
++	for (i = 0; i < len; i++) {
++		if (peek_nbyte_next(insn_byte_t, insn, i) != prefix[i])
++			goto err_out;
++	}
++
++	insn->emulate_prefix_size = len;
++	insn->next_byte += len;
++
++	return 1;
++
++err_out:
++	return 0;
++}
++
++static void insn_get_emulate_prefix(struct insn *insn)
++{
++	if (__insn_get_emulate_prefix(insn, xen_prefix, sizeof(xen_prefix)))
++		return;
++
++	__insn_get_emulate_prefix(insn, kvm_prefix, sizeof(kvm_prefix));
++}
++
+ /**
+  * insn_get_prefixes - scan x86 instruction prefix bytes
+  * @insn:	&struct insn containing instruction
+@@ -76,6 +108,8 @@ void insn_get_prefixes(struct insn *insn
+ 	if (prefixes->got)
+ 		return;
+ 
++	insn_get_emulate_prefix(insn);
++
+ 	nb = 0;
+ 	lb = 0;
+ 	b = peek_next(insn_byte_t, insn);
+--- /dev/null
++++ b/tools/arch/x86/include/asm/emulate_prefix.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_EMULATE_PREFIX_H
++#define _ASM_X86_EMULATE_PREFIX_H
++
++/*
++ * Virt escape sequences to trigger instruction emulation;
++ * ideally these would decode to 'whole' instruction and not destroy
++ * the instruction stream; sadly this is not true for the 'kvm' one :/
++ */
++
++#define __XEN_EMULATE_PREFIX  0x0f,0x0b,0x78,0x65,0x6e  /* ud2 ; .ascii "xen" */
++#define __KVM_EMULATE_PREFIX  0x0f,0x0b,0x6b,0x76,0x6d	/* ud2 ; .ascii "kvm" */
++
++#endif
+--- a/tools/arch/x86/include/asm/insn.h
++++ b/tools/arch/x86/include/asm/insn.h
+@@ -45,6 +45,7 @@ struct insn {
+ 		struct insn_field immediate2;	/* for 64bit imm or seg16 */
+ 	};
+ 
++	int	emulate_prefix_size;
+ 	insn_attr_t attr;
+ 	unsigned char opnd_bytes;
+ 	unsigned char addr_bytes;
+@@ -128,6 +129,11 @@ static inline int insn_is_evex(struct in
+ 	return (insn->vex_prefix.nbytes == 4);
+ }
+ 
++static inline int insn_has_emulate_prefix(struct insn *insn)
++{
++	return !!insn->emulate_prefix_size;
++}
++
+ /* Ensure this instruction is decoded completely */
+ static inline int insn_complete(struct insn *insn)
+ {
+--- a/tools/arch/x86/lib/insn.c
++++ b/tools/arch/x86/lib/insn.c
+@@ -13,6 +13,8 @@
+ #include "../include/asm/inat.h"
+ #include "../include/asm/insn.h"
+ 
++#include "../include/asm/emulate_prefix.h"
++
+ /* Verify next sizeof(t) bytes can be on the same instruction */
+ #define validate_next(t, insn, n)	\
+ 	((insn)->next_byte + sizeof(t) + n <= (insn)->end_kaddr)
+@@ -58,6 +60,36 @@ void insn_init(struct insn *insn, const
+ 		insn->addr_bytes = 4;
+ }
+ 
++static const insn_byte_t xen_prefix[] = { __XEN_EMULATE_PREFIX };
++static const insn_byte_t kvm_prefix[] = { __KVM_EMULATE_PREFIX };
++
++static int __insn_get_emulate_prefix(struct insn *insn,
++				     const insn_byte_t *prefix, size_t len)
++{
++	size_t i;
++
++	for (i = 0; i < len; i++) {
++		if (peek_nbyte_next(insn_byte_t, insn, i) != prefix[i])
++			goto err_out;
++	}
++
++	insn->emulate_prefix_size = len;
++	insn->next_byte += len;
++
++	return 1;
++
++err_out:
++	return 0;
++}
++
++static void insn_get_emulate_prefix(struct insn *insn)
++{
++	if (__insn_get_emulate_prefix(insn, xen_prefix, sizeof(xen_prefix)))
++		return;
++
++	__insn_get_emulate_prefix(insn, kvm_prefix, sizeof(kvm_prefix));
++}
++
+ /**
+  * insn_get_prefixes - scan x86 instruction prefix bytes
+  * @insn:	&struct insn containing instruction
+@@ -76,6 +108,8 @@ void insn_get_prefixes(struct insn *insn
+ 	if (prefixes->got)
+ 		return;
+ 
++	insn_get_emulate_prefix(insn);
++
+ 	nb = 0;
+ 	lb = 0;
+ 	b = peek_next(insn_byte_t, insn);
+--- a/tools/objtool/sync-check.sh
++++ b/tools/objtool/sync-check.sh
+@@ -4,6 +4,7 @@
+ FILES='
+ arch/x86/include/asm/inat_types.h
+ arch/x86/include/asm/orc_types.h
++arch/x86/include/asm/emulate_prefix.h
+ arch/x86/lib/x86-opcode-map.txt
+ arch/x86/tools/gen-insn-attr-x86.awk
+ '
+@@ -46,4 +47,4 @@ done
+ check arch/x86/include/asm/inat.h     '-I "^#include [\"<]\(asm/\)*inat_types.h[\">]"'
+ check arch/x86/include/asm/insn.h     '-I "^#include [\"<]\(asm/\)*inat.h[\">]"'
+ check arch/x86/lib/inat.c             '-I "^#include [\"<]\(../include/\)*asm/insn.h[\">]"'
+-check arch/x86/lib/insn.c             '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]"'
++check arch/x86/lib/insn.c             '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]" -I "^#include [\"<]\(../include/\)*asm/emulate_prefix.h[\">]"'
+--- a/tools/perf/check-headers.sh
++++ b/tools/perf/check-headers.sh
+@@ -28,6 +28,7 @@ arch/x86/include/asm/disabled-features.h
+ arch/x86/include/asm/required-features.h
+ arch/x86/include/asm/cpufeatures.h
+ arch/x86/include/asm/inat_types.h
++arch/x86/include/asm/emulate_prefix.h
+ arch/x86/include/uapi/asm/prctl.h
+ arch/x86/lib/x86-opcode-map.txt
+ arch/x86/tools/gen-insn-attr-x86.awk
+@@ -116,7 +117,7 @@ check lib/ctype.c		      '-I "^EXPORT_SY
+ check arch/x86/include/asm/inat.h     '-I "^#include [\"<]\(asm/\)*inat_types.h[\">]"'
+ check arch/x86/include/asm/insn.h     '-I "^#include [\"<]\(asm/\)*inat.h[\">]"'
+ check arch/x86/lib/inat.c	      '-I "^#include [\"<]\(../include/\)*asm/insn.h[\">]"'
+-check arch/x86/lib/insn.c	      '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]"'
++check arch/x86/lib/insn.c             '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]" -I "^#include [\"<]\(../include/\)*asm/emulate_prefix.h[\">]"'
+ 
+ # diff non-symmetric files
+ check_2 tools/perf/arch/x86/entry/syscalls/syscall_64.tbl arch/x86/entry/syscalls/syscall_64.tbl
 
 
