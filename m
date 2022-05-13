@@ -2,105 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EACC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378947AbiEMJPI (ORCPT
+        id S1378952AbiEMJRy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
+        Fri, 13 May 2022 05:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378923AbiEMJPD (ORCPT
+        with ESMTP id S244743AbiEMJRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:15:03 -0400
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14CA1882BE;
-        Fri, 13 May 2022 02:15:01 -0700 (PDT)
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 24D9ERqI026893;
-        Fri, 13 May 2022 18:14:27 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 24D9ERqI026893
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652433267;
-        bh=MNi8P0TIeSQvF6fTUb5WzkP1pBowEJarOeoYmEQnwsE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=zQE0jkQj4fxQFUd6EbU1MkOTv9AjSliQKbEYBJXTgTx2rJBxDleE2nvQ/vRYuDOt+
-         rtvl/5syIfBWq5aIlK6JpH3Oc8J9TVWI9VlTxC4F6ZhVK/eT5QNl3rRKfy6cBNZG/W
-         YSWeW5/F1QziK+y/hcyLjnYPXAHZB0DxYe7oo35sTqz95bXkbru8Vdc+XOgJDmGu1P
-         74d5eHnIYfVbRlNvhQfMP83Z4Omt0xC4Gs7gezEsXNTS0XFbTDOh7Z9evuVCMmDUi/
-         cK6edwCc4+3NxaTiVY8dP3U5aHg2mF6cHODuFrfN1RXuF7ftUugQQTBklwCnB9NEut
-         z8nLjcV9QphUw==
-X-Nifty-SrcIP: [209.85.214.181]
-Received: by mail-pl1-f181.google.com with SMTP id i1so7371870plg.7;
-        Fri, 13 May 2022 02:14:27 -0700 (PDT)
-X-Gm-Message-State: AOAM531X4EpGk32h/PLldDUkd1buIOwhyIOCziwNAqPQuLZkI/tkNR2Y
-        k1VbUYlDJP4CJSckkcRV61JlDObsP7fs/vpaJeY=
-X-Google-Smtp-Source: ABdhPJygABMRI0O9lGJUpfjyuPvMB+Gl4wNhupLUDv7TQImq96vVJ5o7/bbbI9PWKpzKzpd4U892qwF9cIRI4g1/SLs=
-X-Received: by 2002:a17:903:1205:b0:15e:8cbc:fd2b with SMTP id
- l5-20020a170903120500b0015e8cbcfd2bmr3956625plh.99.1652433266603; Fri, 13 May
- 2022 02:14:26 -0700 (PDT)
+        Fri, 13 May 2022 05:17:47 -0400
+Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [5.144.164.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C2C541A8;
+        Fri, 13 May 2022 02:17:45 -0700 (PDT)
+Received: from SoMainline.org (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 6008D3F792;
+        Fri, 13 May 2022 11:17:41 +0200 (CEST)
+Date:   Fri, 13 May 2022 11:17:34 +0200
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     phone-devel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/7] dt-bindings: pinctrl: qcom-pmic-gpio: Add pm6125
+ compatible
+Message-ID: <20220513091734.hivkkbpc6inyb4la@SoMainline.org>
+Mail-Followup-To: Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        phone-devel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220511220613.1015472-1-marijn.suijten@somainline.org>
+ <20220511220613.1015472-3-marijn.suijten@somainline.org>
+ <d2507298-00a6-a1cc-0302-f96597fb4127@linaro.org>
 MIME-Version: 1.0
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <CAK8P3a3RWypZ2H6zRTdEWMvg608VFVAoNAQZbUM4GbW7uAWk8A@mail.gmail.com>
- <CAK7LNASxCvbqTLaUmVmmp_cKFNCj8hfVUA2kzEBYRf+u45Y3TQ@mail.gmail.com> <CAK8P3a3GbHJOk5MyKL9TnUXdpEoaUM4_XfzXyc=Xi6c_84cZ=w@mail.gmail.com>
-In-Reply-To: <CAK8P3a3GbHJOk5MyKL9TnUXdpEoaUM4_XfzXyc=Xi6c_84cZ=w@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 13 May 2022 18:13:12 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT86MTKnN0b1bXkojHR4n9tTXVw__cL3QCbUrtMAQ1N1A@mail.gmail.com>
-Message-ID: <CAK7LNAT86MTKnN0b1bXkojHR4n9tTXVw__cL3QCbUrtMAQ1N1A@mail.gmail.com>
-Subject: Re: [PATCH 0/8] UAPI: make more exported headers self-contained, and
- put them into test coverage
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d2507298-00a6-a1cc-0302-f96597fb4127@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 6:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Fri, May 13, 2022 at 10:43 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > Hi Arnd,
-> >
-> > On Mon, Apr 4, 2022 at 4:35 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > >
-> > > On Mon, Apr 4, 2022 at 8:19 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > > >
-> > > >
-> > > > Here are more efforts to put more headers to UAPI compile testing
-> > > > (CONFIG_UAPI_HEADER_TEST).
-> > > >
-> > > > I am sending this series to Arnd because he has deep knowledge for the
-> > > > kernel APIs and manages asm-generic pull requests.
-> > >
-> > > These all look good to me, I can apply them for 5.19 but would wait
-> > > a few days for others to comment.
-> >
-> > Can you apply 01-06 for the next MW?
-> >
-> > I got a 0-day bot report for 07, but
-> > I may not have time to come back to it
-> > in this development cycle.
->
-> Ok, done now. What about patch 8? I left it out for now, but could
-> include it as well
-> if you want.
->
->         Arnd
+On 2022-05-13 10:19:56, Krzysztof Kozlowski wrote:
+> On 12/05/2022 00:06, Marijn Suijten wrote:
+> > The pm6125 comes with 9 GPIOs, without holes.
+> > 
+> > Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+> 
+> It's the first version, how did the tag appear here?
 
+We are friends and review each-others patches offline before spamming
+the mailing list with them, to save readers and maintainers here from
+pointing out glaring mistakes.  I hope this is standard practice in
+companies too, or do you recommend aganst us doing this?
 
-No.
+> > ---
+> >  Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml | 2 ++
+> >  1 file changed, 2 insertions(+)
+> 
+> 
+> This will need fixups or rebasing on my sets of PMIC gpio schema cleanup:
 
-08 depends on 07.
+Ack.
 
-We do not have __kernel_uintptr_t  yet.
+> https://lore.kernel.org/all/20220507194913.261121-1-krzysztof.kozlowski@linaro.org/
+> https://lore.kernel.org/all/20220508135932.132378-2-krzysztof.kozlowski@linaro.org/
+> 
+> Bjorn,
+> let us know preferred order (who should rebase on who).
 
+I prefer yours to be applied first, so that I can retest this
+patchseries with stricter / more correct dt-bindings introduced by it.
+My series can also be resent with the notice that it has already been
+rebased on top of your series, after collecting more reviews.  Where
+necessary, I can review your series too if that helps getting it in
+sooner.
 
-
-
--- 
-Best Regards
-Masahiro Yamada
+- Marijn
