@@ -2,150 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A81C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378005AbiEMH4l (ORCPT
+        id S1377977AbiEMH5p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
+        Fri, 13 May 2022 03:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377977AbiEMH4N (ORCPT
+        with ESMTP id S1356176AbiEMH5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:56:13 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2093.outbound.protection.outlook.com [40.107.255.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 581DC56775;
-        Fri, 13 May 2022 00:56:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=So5+zVVg5HuHU+YUWdp0CtMQjoxhxMcIJTTdigvWlomHkHGdvXvjybl9u6A5UqEWiNkDrlYoyw1cMGIeVvAeIrWNc3hlud//eqW1zs7MHUSqnJtXrXVdQgl93ycdwgC/VHGQ5fSmLrHv8PvekXvdaq+KtJrzVNVzlfXQVES4R97CIec3LbyV3n2/z9Lk820tnCL0enu5b/HdQeSy5NzNfzr/89swMnVSMm4b3bJ3KwBqzcjJhJrwZqBKmqvek4qBHEqxkIFxoLAtjv0c6rbF37w+f/e0mE025nLKt2Xef10UHvFNwXULC8AOC7N+wXrQJTCu01rFsPZ95Ltmgt1lDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vrwYH/dXZDTsr+q1rmO/5omlYC3Rvy3/el/yca/Fcxw=;
- b=ccFWq4kKvS9nzPyH/rbkIUJ0VeAP+26RYXUOIeUA4ZlwqKvtKDI4uKNRKMtxGFBr6JXF9glSMOG4mfCh6z4xmnMVsh/4wSl7qbfyFKEFYju6O6ZqPZMTnVQMYCm8fIsLvKWH+6RQHWv0vY9C7yTjpItaC8ApWQl7EHm8lgrdr3DBlHzW+jE96kiUc0V6A9YqxG2RJuw4eVcvA8l5vc+gWM9sCw57vZSg6uo+cZ2YqvRrW9mIf/3YQ9Xh2tdONzfHa7Q6/Y3MeSOdO6iOnR7ay/P8J4R0G+Bc8sXQZAsiLHMm8cMQDDEJ7ucPn9JKbx0fEpr3+3me4JD5wmVoWt/uVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vrwYH/dXZDTsr+q1rmO/5omlYC3Rvy3/el/yca/Fcxw=;
- b=EnycBHdhZwI/cv4pdtU+lsGPo8Of41zKV8X4rJFQ/42f1gEIpYO8fs6wJlZJQGXL8ZaIpddq0WGxvBqJE+qiA8GFzCKzwis7LcBi49aQl7b6+GgGfl8+8nCHIXozyL3q8EQ0j/Lqn0tX4t49jEQMQoQr6DAcrdXx/+jIxCAImSY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from TY2PR06MB3374.apcprd06.prod.outlook.com (2603:1096:404:a4::10)
- by PS2PR06MB3495.apcprd06.prod.outlook.com (2603:1096:300:6c::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Fri, 13 May
- 2022 07:56:07 +0000
-Received: from TY2PR06MB3374.apcprd06.prod.outlook.com
- ([fe80::b13e:aba1:b630:a14e]) by TY2PR06MB3374.apcprd06.prod.outlook.com
- ([fe80::b13e:aba1:b630:a14e%3]) with mapi id 15.20.5227.023; Fri, 13 May 2022
- 07:56:07 +0000
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] ata: Remove unneeded ERROR check before clk_disable_unprepare
-Date:   Fri, 13 May 2022 15:55:54 +0800
-Message-Id: <20220513075554.127677-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.35.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR02CA0134.apcprd02.prod.outlook.com
- (2603:1096:202:16::18) To TY2PR06MB3374.apcprd06.prod.outlook.com
- (2603:1096:404:a4::10)
+        Fri, 13 May 2022 03:57:36 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306346D1A8
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:57:34 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id m2-20020a1ca302000000b003943bc63f98so4282985wme.4
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Z+VCyQ4FdNddQ9JeHnVFC+z2HG9qAdxbs5Dzgp/YOGU=;
+        b=U7l70itwvDOp59iGQBatgtEC7/68noHv/4vGH1xx/gK7xvyggOGACYW2HTnqYKz3ee
+         sJOFgdqbHCFjCU3aQQl/Rg1oYM5N1KLbqe1vKRIzZJVZGp8F92oIuvvKTgXHunrypO6S
+         ario2rMzTUHJpt5W1RyDo5AEHkPMHc+amiz8oaY8qUe5AE3xTHUlsBYYKgvlD51IrLri
+         vRObZRK8TQUiyUGNtiuAcZZd2XHd8DuG6vzyk5VAodEsSQguBUEFDQ4fWttJWbeAXFoe
+         1t5doi5ttGiH+QvcINZYalUci9oo4Y9W/Xu2cBhRwzX7WUqbRGIPgfJBfrb++xH3GSeH
+         Q26A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Z+VCyQ4FdNddQ9JeHnVFC+z2HG9qAdxbs5Dzgp/YOGU=;
+        b=XmmFZ60WMzGt7yRGoV+vuM7vQxP9vZmqZwdWu4DoTnwak7SI2ecQxDshrnhZT52Yrt
+         VI2K8XyngkCxs60k9JvG65IsEfrvnuudILNRKGU+7hq+NLzsD5QGW51rxQdUiaK+HxE7
+         maf5aJym8PZE9YbRUXVIqLd3BzXil/JNCOnIZOQmKF8pcEUlYvHBNMAdr+gZAwM9dxw9
+         Y/6babN0GR/J876Jp92Ft+0DRwhb/ZRDmpJqYd8jFGk+N4ShQuxcG/9FWycArKklodLm
+         RkeNJMvMHw4x7oJSEaYlPqO2z9CxHGRE9KL1AMGE1dc7oG0wrtnNySFkCyTWfWFz6dzX
+         GtVg==
+X-Gm-Message-State: AOAM532coYDkMxq5DLZvGMBcHQf+bA9DEwKINvkeg3blgye5omatWQrM
+        mC+UjFpw2KDh4fqZVg/zQoQ9Ng==
+X-Google-Smtp-Source: ABdhPJy4D3xJsnTbYAm3729KW2bXLN3aezoJhW288ATXwZYtmBFLJxapQ5HevWL2cU0I7YpH37KeGw==
+X-Received: by 2002:a7b:c0c3:0:b0:394:4c67:b9df with SMTP id s3-20020a7bc0c3000000b003944c67b9dfmr13853307wmh.8.1652428652625;
+        Fri, 13 May 2022 00:57:32 -0700 (PDT)
+Received: from [192.168.0.168] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id y11-20020adfc7cb000000b0020cf41017b4sm297862wrg.19.2022.05.13.00.57.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 00:57:31 -0700 (PDT)
+Message-ID: <828bc65f-e585-0fe7-c038-c750861c9446@linaro.org>
+Date:   Fri, 13 May 2022 09:57:30 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 54530617-c08c-42d4-2784-08da34b60913
-X-MS-TrafficTypeDiagnostic: PS2PR06MB3495:EE_
-X-Microsoft-Antispam-PRVS: <PS2PR06MB34954A8A861C7F5A302F787DABCA9@PS2PR06MB3495.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l+akvnDVpA6haOyob68VoLNwVddyAdTlENbY6CXdiBq7zwRA3yBQ3Amab7GXASVRslQIOrY8awGzmDL5wfMsUcSpbF7hfaI0hiFq3GkAiU21mDSD5fymdwfvSpb6EpqpgXvTdJ06f110g3kx2OhBT5axq2liMIyW8a/QV0TmKE6CdMaQNeWCWs7PADkWWyV7qMkz9aNQncRG6p6VnUapgJbj+qTfGF5ejHekcr2dwAWJ3KP6UUhhp6QvYufe+P1USs068DiyKao8uvKahZRfOhJ95w98hkWoZh+xqoJQ86ZwEsmACP2JGRhweOO1jHbTp6mKNjuL0r6mK5Go7slhDEZrgGDVQvSQTCh6f2GVBSNBtEUhEv9waRqtyGWL3IaKnNxE/mDMhVaggitK3saJ3/uN+toE4eOcUNmQ1VTl+KSkO98EBjPJd91O3QOfZ+O43NjbFh+3tHjxBGEcwDboRaCiez5/dV+4U37pjL4fHesZ0AelzLi3dxRmh//Trb2HZ9U1k51HXmQYPp2PO+nvWR7bW+1Fqvc9DZKe0oRedzKk+vGXARvWxBSKaahWGcSqOlF55MuihLG60csiGLcSf/lQsnTzkOrf/m9IiUEy06hhH81cVV71NUhCwG6OZMcAqUlwvbrQrDpp+iYQmtbB3zcLJnbHrJji/L5kSctxHIbn8ogKkiyV/r0p02bWLASAKxnx2/D2+8OQd2qoOxVohg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR06MB3374.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52116002)(26005)(6512007)(6506007)(2616005)(6666004)(36756003)(8936002)(38350700002)(4744005)(2906002)(5660300002)(508600001)(86362001)(66476007)(66556008)(6486002)(8676002)(4326008)(316002)(107886003)(83380400001)(1076003)(186003)(38100700002)(66946007)(110136005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uEYYVfdizEAIaPd90kpYJDizMdFb+5FUaOH1gPAn2v6jfG+sK4dGqrOd/QWq?=
- =?us-ascii?Q?YSeRm/JXsVJcRhS03yn+Pn5jZt7lfJe6r9fzImV9tkxRDrDKvvgrPkJ20hIj?=
- =?us-ascii?Q?K+EIK3fCsbXYEvy7qkJRzDGPagt1Rdom0ahlMDUUFjYPrV9+Irm/jJnFsreY?=
- =?us-ascii?Q?0MHNFX/42NpeaQSeJCRXKq4uYoAyIYrk3idcMvjpxlqhJiJ/hTvUFREngBXl?=
- =?us-ascii?Q?KjbLr5dF3WEQCXwRtnf5GOIbjiLlrMsf1fqOJLswaf31NMbBYVnd9EFU4koZ?=
- =?us-ascii?Q?WSak0udKcrLNSpovrwlUfY+82FFSRrc55o1WwOt0PeaMZ9TfapwRnqUDGuuL?=
- =?us-ascii?Q?gl4M6FhwkeDNiEiwfIFVX0jd0X/7Kf8HGeZsrAfVOdwfZrKgGVZpe8O98Zka?=
- =?us-ascii?Q?w0n8MXXckv+bHnZTKrN/qA4/2/TYj1r3E4tsoeziNA4IiccqibdHTelHJntx?=
- =?us-ascii?Q?mLJV9gxRbWgvRRL+GhaBbil1nzzrrTo+5cNl4KDWbjKQtuTCwQEM4Lzmw5JD?=
- =?us-ascii?Q?kW8QlEpPhd6EaqOdU8AptKegb34/8f6atjUTomnQ+2sN+22Wtv5vp7E06SAL?=
- =?us-ascii?Q?AoqyOSwb4QsEVTjhUWk51pQa3BkY40sGThQrA5c5CXro/3rYbWUOHCh0citK?=
- =?us-ascii?Q?da9Pz1rGhMdOwjbhYqJFekvl3hxUZr7j7ekQx7NECLEMhk3ZBsbOOWJiTTIJ?=
- =?us-ascii?Q?yTIk9ZSSTjjnl5XIEKvfQb7IEesVee2PBSEaOfUgsTwXHo98XBS7McnFn381?=
- =?us-ascii?Q?oBo2sSe+MhSGwpscJNXqpGsSV8u3uVVyWRg5vbT2BO5XzA/kLO2umnDhAEIp?=
- =?us-ascii?Q?QHUJ/nCkzugBBd2hmK/9QxKmb3L945O+suixXNbra9wbyoEwUcd4+RISmAUL?=
- =?us-ascii?Q?x1QhbvWNU4q0Q6lMdRcK6lpI2vJYelwvacK1X2/LailOc0QW20dgylo1dZYU?=
- =?us-ascii?Q?njYocTkmzo/R2Ux4bYMA6U5L/AGl6Vqc9rbArQ/SaTkN2Nj1G7ih7DLaON2d?=
- =?us-ascii?Q?uQqtF38a5W081a5YkuUdC7CIliPfhQkIP+QpZnKz3JvITUhZ0bBo2rpF26Uk?=
- =?us-ascii?Q?Npo5Lg/bHffNOdCFTUD+QYZsEK2CSX2vecCKXWdMQyiCWQXruiO9qpyf01Wz?=
- =?us-ascii?Q?kjL6tVxcxOhmAFbk85XI8suMR/aFmwQNX3sXWzGLkNXAKIHAAVMfC12XKkgE?=
- =?us-ascii?Q?e/aCnnmVT9l+/SvP195IrgMWG3MFz9ZqZInWDFybp6AcnYTFylFtEELn35SS?=
- =?us-ascii?Q?BTgWbrPqgGuQ4yde7YIi0X+XzTXNIAsZG/deg4mgIa6e40vaqJmVdpei8SoY?=
- =?us-ascii?Q?/6vxw5mX9HUyB1NdZxq4g0EhwjtYXfpPin2ujrqRA0AC7CHIhIGzoL1XMTjy?=
- =?us-ascii?Q?SW/1mbOI+FJvAATz4FxiiD19Hj6SqUG0pwc49KG+iVDM2PGw8yfHCCXXA7hx?=
- =?us-ascii?Q?W4qZAMgCsroZjh7vVF3nfGwlVv3SLHEElMIxksMrQ0gAE/zkrWBqL13DH0yG?=
- =?us-ascii?Q?tqK1LO0X68sTz7FMv5hxJufvfpkZrAIeE+boLbuvuyvHs7antovha/rL4JTR?=
- =?us-ascii?Q?eatFXAV+gB11E+qmhbl3vpPYkubezfTkEc0wFj8vLsmxQzVHRVZwGY59zd75?=
- =?us-ascii?Q?YMJ4xEQb5owXAlzA2ZkrlVGaU5SVl6nPb4nU7SSXywp6O0Tc3oI+pYcxUpcj?=
- =?us-ascii?Q?kV7mNzfAy5xiI4lnOqxfiYpSe+OToXIayu73OvxHkpP5vl/h4i39mMeyptz1?=
- =?us-ascii?Q?hjY4CVsa2w=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54530617-c08c-42d4-2784-08da34b60913
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR06MB3374.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 07:56:07.0882
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jFAw8owzDgGbYACR4ajKz7PNwVTbnWBsknpKDoMlvXLkfnnNm24huivYi4nGC/wrkBOmGFnOfhurUMEUoe52xQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS2PR06MB3495
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/3] dt-bindings: arm: qcom: Add sc7180 Chromebook board
+ bindings
+Content-Language: en-US
+To:     Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ERROR check is already in clk_disable() and clk_unprepare() by using
-IS_ERR_OR_NULL. Remove unneeded ERROR check for ftide->pclk here.
+On 12/05/2022 18:04, Douglas Anderson wrote:
+> This copy-pastes compatibles from sc7180-based boards from the device
+> trees to the yaml file so that `make dtbs_check` will be happy.
+> 
+> NOTES:
+> - I make no attempt to try to share an "item" for all sc7180 based
+>   Chromebooks. Because of the revision matching scheme used by the
+>   Chromebook bootloader, at times we need a different number of
+>   revisions listed.
+> - Some of the odd entries in here (like google,homestar-rev23 or the
+>   fact that "Google Lazor Limozeen without Touchscreen" changed from
+>   sku5 to sku6) are not typos but simply reflect reality.
+> - Many revisions of boards here never actually went to consumers, but
+>   they are still in use within various companies that were involved in
+>   Chromebook development. Since Chromebooks are developed with an
+>   "upstream first" methodology, having these revisions supported with
+>   upstream Linux is important. Making it easy for Chromebooks to be
+>   developed with an "upstream first" methodology is valuable to the
+>   upstream community because it improves the quality of upstream and
+>   gets Chromebooks supported with vanilla upstream faster.
+> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
+> 
+>  .../devicetree/bindings/arm/qcom.yaml         | 180 ++++++++++++++++++
+>  1 file changed, 180 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+> index 5c06d1bfc046..399be67eb5d2 100644
+> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+> @@ -214,11 +214,191 @@ properties:
+>                - qcom,ipq8074-hk10-c2
+>            - const: qcom,ipq8074
+>  
+> +      # Qualcomm Technologies, Inc. SC7180 IDP
+>        - items:
+>            - enum:
+>                - qcom,sc7180-idp
+>            - const: qcom,sc7180
+>  
+> +      # Google CoachZ (rev1 - 2)
+> +      - items:
+> +          - const: google,coachz-rev1
+> +          - const: google,coachz-rev2
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
- drivers/ata/pata_ftide010.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+The inverted pattern of old revision being compatible with the new one,
+is done on purpose? You claim here every rev1 is always compatible with
+rev2 ...
 
-diff --git a/drivers/ata/pata_ftide010.c b/drivers/ata/pata_ftide010.c
-index 2e35505b683c..0117df0fe3c5 100644
---- a/drivers/ata/pata_ftide010.c
-+++ b/drivers/ata/pata_ftide010.c
-@@ -536,8 +536,8 @@ static int pata_ftide010_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_dis_clk:
--	if (!IS_ERR(ftide->pclk))
--		clk_disable_unprepare(ftide->pclk);
-+	clk_disable_unprepare(ftide->pclk);
-+
- 	return ret;
- }
- 
-@@ -547,8 +547,7 @@ static int pata_ftide010_remove(struct platform_device *pdev)
- 	struct ftide010 *ftide = host->private_data;
- 
- 	ata_host_detach(ftide->host);
--	if (!IS_ERR(ftide->pclk))
--		clk_disable_unprepare(ftide->pclk);
-+	clk_disable_unprepare(ftide->pclk);
- 
- 	return 0;
- }
--- 
-2.35.1
+I don't think we discussed such patterns in previous talk. I quickly
+went through it and there were only skuX moving around, not rev1 being
+newer then rev2.
 
+Best regards,
+Krzysztof
