@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B307C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D81C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381142AbiEMObA (ORCPT
+        id S1381186AbiEMObJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
+        Fri, 13 May 2022 10:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380716AbiEMO1G (ORCPT
+        with ESMTP id S1380814AbiEMO1a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:27:06 -0400
+        Fri, 13 May 2022 10:27:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9672B51336;
-        Fri, 13 May 2022 07:26:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CED5FF3E;
+        Fri, 13 May 2022 07:27:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2A2CB83067;
-        Fri, 13 May 2022 14:26:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDE44C34115;
-        Fri, 13 May 2022 14:26:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80A03B82C9D;
+        Fri, 13 May 2022 14:27:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC569C34100;
+        Fri, 13 May 2022 14:27:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452015;
-        bh=1AoLTDAALQr7QOhpcU99xOeIqr+N6b46LV8dUcsNKbs=;
+        s=korg; t=1652452027;
+        bh=yeIUaTo40bRsvVBRbw4eJP2tcUsRcsuqDSy+cRWCDGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SH4WfvHLn+5rNQIkvPFY2qAzJWHjWQWkXghLiwqvmPxO8a69seQ6fUVc5rT/t/1+u
-         K/sInGavdebkTfWix/Qc3q+NzeXfDooB5B5KWogUw970DwWnRkYHOjCsSfUxuoxSqL
-         MjC6J4wpeQqf7kPurOlTDlfdHfdUXdReUtnnKGU8=
+        b=xjA9sHDZfgZu+M91h2i2ZTP0OJM3iHA+rR5xOrgGlWRtilfh1+7aGEgZKiDAU8rus
+         W8nVHDE17S2/X0QVy6nS6g7+yp0bMdmJ/RZXr40rO32JD9E7fibwgaXN+ZUFH2nfXA
+         m4KFv8thCD87TQ6PC+M5GcMGVp6B6qVCMXjhUyew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.4 03/18] drm/amd/display/dc/gpio/gpio_service: Pass around correct dce_{version, environment} types
-Date:   Fri, 13 May 2022 16:23:29 +0200
-Message-Id: <20220513142229.252970541@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.4 07/18] can: grcan: only use the NAPI poll budget for RX
+Date:   Fri, 13 May 2022 16:23:33 +0200
+Message-Id: <20220513142229.371295939@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
 References: <20220513142229.153291230@linuxfoundation.org>
@@ -55,77 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lee Jones <lee.jones@linaro.org>
+From: Andreas Larsson <andreas@gaisler.com>
 
-commit 353f7f3a9dd5fd2833b6462bac89ec1654c9c3aa upstream.
+commit 2873d4d52f7c52d60b316ba6c47bd7122b5a9861 upstream.
 
-Fixes the following W=1 kernel build warning(s):
+The previous split budget between TX and RX made it return not using
+the entire budget but at the same time not having calling called
+napi_complete. This sometimes led to the poll to not be called, and at
+the same time having TX and RX interrupts disabled resulting in the
+driver getting stuck.
 
- drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c: In function ‘dal_gpio_service_create’:
- drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c:71:4: warning: implicit conversion from ‘enum dce_version’ to ‘enum dce_environment’ [-Wenum-conversion]
- drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c:77:4: warning: implicit conversion from ‘enum dce_version’ to ‘enum dce_environment’ [-Wenum-conversion]
-
-Cc: Harry Wentland <harry.wentland@amd.com>
-Cc: Leo Li <sunpeng.li@amd.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Christian König" <christian.koenig@amd.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: amd-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
+Link: https://lore.kernel.org/all/20220429084656.29788-4-andreas@gaisler.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Andreas Larsson <andreas@gaisler.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c           |   12 +++++------
- drivers/gpu/drm/amd/display/include/gpio_service_interface.h |    4 +--
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/can/grcan.c |   22 +++++++---------------
+ 1 file changed, 7 insertions(+), 15 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
-+++ b/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
-@@ -53,8 +53,8 @@
-  */
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -1137,7 +1137,7 @@ static int grcan_close(struct net_device
+ 	return 0;
+ }
  
- struct gpio_service *dal_gpio_service_create(
--	enum dce_version dce_version_major,
--	enum dce_version dce_version_minor,
-+	enum dce_version dce_version,
-+	enum dce_environment dce_environment,
- 	struct dc_context *ctx)
+-static int grcan_transmit_catch_up(struct net_device *dev, int budget)
++static void grcan_transmit_catch_up(struct net_device *dev)
  {
- 	struct gpio_service *service;
-@@ -67,14 +67,14 @@ struct gpio_service *dal_gpio_service_cr
- 		return NULL;
+ 	struct grcan_priv *priv = netdev_priv(dev);
+ 	unsigned long flags;
+@@ -1145,7 +1145,7 @@ static int grcan_transmit_catch_up(struc
+ 
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+-	work_done = catch_up_echo_skb(dev, budget, true);
++	work_done = catch_up_echo_skb(dev, -1, true);
+ 	if (work_done) {
+ 		if (!priv->resetting && !priv->closing &&
+ 		    !(priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
+@@ -1159,8 +1159,6 @@ static int grcan_transmit_catch_up(struc
  	}
  
--	if (!dal_hw_translate_init(&service->translate, dce_version_major,
--			dce_version_minor)) {
-+	if (!dal_hw_translate_init(&service->translate, dce_version,
-+			dce_environment)) {
- 		BREAK_TO_DEBUGGER();
- 		goto failure_1;
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+-
+-	return work_done;
+ }
+ 
+ static int grcan_receive(struct net_device *dev, int budget)
+@@ -1242,19 +1240,13 @@ static int grcan_poll(struct napi_struct
+ 	struct net_device *dev = priv->dev;
+ 	struct grcan_registers __iomem *regs = priv->regs;
+ 	unsigned long flags;
+-	int tx_work_done, rx_work_done;
+-	int rx_budget = budget / 2;
+-	int tx_budget = budget - rx_budget;
++	int work_done;
+ 
+-	/* Half of the budget for receiveing messages */
+-	rx_work_done = grcan_receive(dev, rx_budget);
++	work_done = grcan_receive(dev, budget);
+ 
+-	/* Half of the budget for transmitting messages as that can trigger echo
+-	 * frames being received
+-	 */
+-	tx_work_done = grcan_transmit_catch_up(dev, tx_budget);
++	grcan_transmit_catch_up(dev);
+ 
+-	if (rx_work_done < rx_budget && tx_work_done < tx_budget) {
++	if (work_done < budget) {
+ 		napi_complete(napi);
+ 
+ 		/* Guarantee no interference with a running reset that otherwise
+@@ -1271,7 +1263,7 @@ static int grcan_poll(struct napi_struct
+ 		spin_unlock_irqrestore(&priv->lock, flags);
  	}
  
--	if (!dal_hw_factory_init(&service->factory, dce_version_major,
--			dce_version_minor)) {
-+	if (!dal_hw_factory_init(&service->factory, dce_version,
-+			dce_environment)) {
- 		BREAK_TO_DEBUGGER();
- 		goto failure_1;
- 	}
---- a/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
-+++ b/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
-@@ -42,8 +42,8 @@ void dal_gpio_destroy(
- 	struct gpio **ptr);
+-	return rx_work_done + tx_work_done;
++	return work_done;
+ }
  
- struct gpio_service *dal_gpio_service_create(
--	enum dce_version dce_version_major,
--	enum dce_version dce_version_minor,
-+	enum dce_version dce_version,
-+	enum dce_environment dce_environment,
- 	struct dc_context *ctx);
- 
- struct gpio *dal_gpio_service_create_irq(
+ /* Work tx bug by waiting while for the risky situation to clear. If that fails,
 
 
