@@ -2,88 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DAAC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 22:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6F6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 22:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiEMWNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 18:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55488 "EHLO
+        id S230262AbiEMWNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 18:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiEMWND (ORCPT
+        with ESMTP id S230098AbiEMWNS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 18:13:03 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E320C6EB1A
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:13:00 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id r1so17540350ybo.7
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:13:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hPXr8pV9dZF9B1BXNKQfXMsYbL4rZ6nKjrUwBZQ0KMo=;
-        b=DHMa15fitu2r/PPB1WyddaTAumAftS6vsCOF9zBC7o5tUDhku++ZAFZdAjLZqkR/4O
-         KX9pgu0nhyXarktf2F7egfxAdIkEjn1nrLIaAu1dscNjoQdsOaEbg9rlVjOSSR/9U+W7
-         fF9/0uIVsF1CKnclqxUFYK03LSRWHwMpuJQWV03jnnNCj8HLOTb8XQOC03TzlHXrd11e
-         Pvk0073QqoqJT4IY6nBATQGIfOg66LqbvK0hQ3wY6V9R2LkXW3Z7VSxjgZhcZbgicNTf
-         /YHRakDlnlyqJTFdMZcjl4omUdTi+VyA/ZkrWY28MxiBc5wnvSeUXOgDzGII6NX6XYlh
-         iOjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hPXr8pV9dZF9B1BXNKQfXMsYbL4rZ6nKjrUwBZQ0KMo=;
-        b=mEm1BeI9OLoErusn95byrr4+JyT89l+qCNG5Zo9/VOE5Ui5ikx3AUcMQvWxt9j70ee
-         udnEBHiVQGEWtGiYTW2XX6HZYfjBRPXFIH2AZCm7hdhgVp6O7iItSMcrOqqeV/4D/tg4
-         3pcdKFTqLOX++V+yREIwN/JJfG6G5jZqVuL+ow+RYyxWRDMYoJXIafp2mlTv1UYtV+9Z
-         XuQ7RxbobvRrXukAr2I7m1cxwcIoe1v4bekVCgdVFznP5FUzSZog9uii5o+EzjJPDI8r
-         1GkyQQtnMSf1pB5ptpNdEvmsk4EoA4VmhGypxeov8n2yYPZIV9bYt91u1+9kcv4EE/P1
-         e8kw==
-X-Gm-Message-State: AOAM533GCbzU/DyMj2vhVq53tlsHCWhKyOIT+xdhFLx3CW4EEJw0Lo0b
-        ldbaupDBd7PJ4TINPtj/uB7HmhZBJB2h6pOHkB6J7g==
-X-Google-Smtp-Source: ABdhPJwdDBtD5whluJHsM54nTP7gGqxuqR862sxqevyBOecVN1RSRe8qZZNMWPlXtgaeaFPIGj9+/FwhHzKHQLS55y0=
-X-Received: by 2002:a5b:302:0:b0:64b:a20a:fcd9 with SMTP id
- j2-20020a5b0302000000b0064ba20afcd9mr4121428ybp.492.1652479980153; Fri, 13
- May 2022 15:13:00 -0700 (PDT)
+        Fri, 13 May 2022 18:13:18 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E2B719DB
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:13:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652479996; x=1684015996;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cxef9S28Y+ZsR9yxpw47GL3tVgcHUSJqzLfqt+5PNSo=;
+  b=Q04s0Y9VtUDQRM4mG92f3MMBXfQDBkqGdEsZ5j/+TPA+YetCe2HoTezj
+   dpwcplWrID1tY897TIoEynRXM9J1r3FoLjtucFULc7YdfcXlwpqIYZI9O
+   TUnta5b22dKHX/BYW2M8+u+l+bcr85RvGTtFSaJC60iXsSFrzbybWY9L9
+   dWuqvpPN5PeRb+UfK3WwWYLgS1XxEmzxVji8oNtyCU4JWtSBS3lzBO6UM
+   47ukV5tF9WKnxqga4DyNC4gT8zXhjnhutRev+KtpIPh1X6DmpCMWpXNnG
+   PVk2eDh/Rl9ke6LPIOY/vSeEXYvdiLXuh5SRaUV4ra6S3tQ3Jnj4CUlhJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270357920"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="270357920"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 15:13:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="543454884"
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+  by orsmga006.jf.intel.com with ESMTP; 13 May 2022 15:13:15 -0700
+Date:   Fri, 13 May 2022 15:16:50 -0700
+From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 22/29] x86/watchdog/hardlockup: Add an HPET-based
+ hardlockup detector
+Message-ID: <20220513221650.GA8691@ranerica-svr.sc.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-23-ricardo.neri-calderon@linux.intel.com>
+ <877d6uref8.ffs@tglx>
 MIME-Version: 1.0
-References: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220509050953.11005-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220509050953.11005-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 14 May 2022 00:12:48 +0200
-Message-ID: <CACRpkdafrkyQjmyoa4CAJXJ8JdT3owapq10=yBQLyPp0EwO6AQ@mail.gmail.com>
-Subject: Re: [PATCH v2 4/5] gpio: gpiolib: Add ngirq member to struct gpio_irq_chip
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <877d6uref8.ffs@tglx>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 9, 2022 at 7:10 AM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+On Mon, May 09, 2022 at 04:03:39PM +0200, Thomas Gleixner wrote:
+> On Thu, May 05 2022 at 17:00, Ricardo Neri wrote:
+> > +	if (is_hpet_hld_interrupt(hdata)) {
+> > +		/*
+> > +		 * Kick the timer first. If the HPET channel is periodic, it
+> > +		 * helps to reduce the delta between the expected TSC value and
+> > +		 * its actual value the next time the HPET channel fires.
+> > +		 */
+> > +		kick_timer(hdata, !(hdata->has_periodic));
+> > +
+> > +		if (cpumask_weight(hld_data->monitored_cpumask) > 1) {
+> > +			/*
+> > +			 * Since we cannot know the source of an NMI, the best
+> > +			 * we can do is to use a flag to indicate to all online
+> > +			 * CPUs that they will get an NMI and that the source of
+> > +			 * that NMI is the hardlockup detector. Offline CPUs
+> > +			 * also receive the NMI but they ignore it.
+> > +			 *
+> > +			 * Even though we are in NMI context, we have concluded
+> > +			 * that the NMI came from the HPET channel assigned to
+> > +			 * the detector, an event that is infrequent and only
+> > +			 * occurs in the handling CPU. There should not be races
+> > +			 * with other NMIs.
+> > +			 */
+> > +			cpumask_copy(hld_data->inspect_cpumask,
+> > +				     cpu_online_mask);
+> > +
+> > +			/* If we are here, IPI shorthands are enabled. */
+> > +			apic->send_IPI_allbutself(NMI_VECTOR);
+> 
+> So if the monitored cpumask is a subset of online CPUs, which is the
+> case when isolation features are enabled, then you still send NMIs to
+> those isolated CPUs. I'm sure the isolation folks will be enthused.
 
-> Supported GPIO IRQs by the chip is not always equal to the number of GPIO
-> pins. For example on Renesas RZ/G2L SoC where it has GPIO0-122 pins but at
-> a give point a maximum of only 32 GPIO pins can be used as IRQ lines in
-> the IRQC domain.
->
-> This patch adds ngirq member to struct gpio_irq_chip and passes this as a
-> size to irq_domain_create_hierarchy()/irq_domain_create_simple() if it is
-> being set in the driver otherwise fallbacks to using ngpio.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Yes, I acknowledged this limitation in the cover letter. I should also update
+Documentation/admin-guide/lockup-watchdogs.rst.
 
-As mentioned in some other patch, try to use .valid_mask for this instead.
+This patchset proposes the HPET NMI watchdog as an opt-in feature.
 
-Yours,
-Linus Walleij
+Perhaps the limitation might be mitigated by adding a check for non-housekeeping
+and non-monitored CPUs in exc_nmi(). However, that will not eliminate the
+problem of isolated CPUs also getting the NMI.
+
+Thanks and BR,
+Ricardo
