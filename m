@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC95C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3706FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382062AbiEMP1X (ORCPT
+        id S1378180AbiEMP1d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        Fri, 13 May 2022 11:27:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381994AbiEMP1D (ORCPT
+        with ESMTP id S1381968AbiEMP1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 11:27:03 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C803D20F59;
-        Fri, 13 May 2022 08:26:57 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id n10so16958500ejk.5;
-        Fri, 13 May 2022 08:26:57 -0700 (PDT)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B981EAE2;
+        Fri, 13 May 2022 08:26:54 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id p4so10458088edx.0;
+        Fri, 13 May 2022 08:26:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BE2B7uKhNXQyg8J2kv6NnIFx4l6JsKDKmGAV5Q3AWIU=;
-        b=cSQzIJFGbs6YjIOnMw/vwXKddJ7ZQRnMY3HOlTGeyOgYwaeP8PlznsbOtrgI8dloJq
-         QvLoZ8TgMyZPXZt9QeGR1c/q5OTkR5O5XLH0hBXDeLNj37xzjNRhA3H7uQCAp5DJIBxf
-         SwGJHOtiI/ZcffHh16aOc9y9UMFqMM19FH6fmFimBntm7CImnBckGAQYDV2puE6m1iOQ
-         5oAAEWwT7FLn9jPjrUunHslgHt1TgVk9QnHaSDhd+tWC3xdkNdFmg5huaSyd9aaHaiul
-         4CINtSms8YWv4IAyQXN2EhcL73PC8xw51OpBZftwvltgHkME0Wh+bGnV9nWXRi98X7LI
-         tmwA==
+        bh=2f0ybbz8E7mN3j4Tb5d9P3U+4UfBTwfy+rp+to+TOMc=;
+        b=SnN97loAqd01nKEevEa8om4+j+zhtJvbfcYe6gAc4dnVt78jwBv30d9Lj1VwOdRT7j
+         JbdvjHayTNwhnb2Tzihh6iil++p9o51C7jSzJjyk+YLkdwYoj7/9GYL8KtzaBFc5iV/M
+         Ny9+760xuw06BLik3fooaGQHiUkg2QqO/NEx22Dp98VsLHG27j3c6/3MI/QAYwF34D6Q
+         QsrexPPyR45vkMmILm7MZsiu+K53fYaKzje4Ce5c2eCpZg9CnJthPG8aAmdB8grfMBch
+         hH8rzJw6lj2vrbMMMAoVXDxtijDbfUksZ2HaiT7BQLkIj50L3v1+Fr0l+64WoD9aNnso
+         4iKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BE2B7uKhNXQyg8J2kv6NnIFx4l6JsKDKmGAV5Q3AWIU=;
-        b=TDWmjvBdAC8shZlTzoktj3j5GD+YZHGXH11d76MhTzUkoS92TWq0Ku7r5DnpeYBrdu
-         DaR5BRTOhSeQlRLx4ISJIYbQGLX/aUahaKiunv434fmduz1C+cwKGSO+88gjhfqDnT2P
-         wMVEQ9o90phh7UxAlfeeF+Esxz37V7FH4OihABjfbqXqje/FaoJpDEDcit9pQru8KaKX
-         o3D7QP2kG0Ivrjx3FTC/HWLy+KdXe0Gm1JP5goOHHeaKOzlnZpAMMD4SnK9Q5DeEC+/G
-         7LA0n/6bGZSqFegReI/yrMSht6YZARuC/fjdDUP0zyuTs8YHFUo+zu7r0DIZfkJm7+n2
-         jtDA==
-X-Gm-Message-State: AOAM530IszcohDu2ECavduJKyFynbA69DtJ+V9O8OTXgG91K1kpWCscf
-        vAZ6SbQRMXRce2MvbysqrTgSkBtqXrY=
-X-Google-Smtp-Source: ABdhPJzeHzP56uLb9ZBQ+E5L/mcOfpQjQ0kh9CSyHC+1ERuzQLdRpzCN+rVBNGUeFgJVudUNWHKu8w==
-X-Received: by 2002:a17:906:fca:b0:6f3:e2d8:7c57 with SMTP id c10-20020a1709060fca00b006f3e2d87c57mr4802766ejk.320.1652455615584;
-        Fri, 13 May 2022 08:26:55 -0700 (PDT)
+        bh=2f0ybbz8E7mN3j4Tb5d9P3U+4UfBTwfy+rp+to+TOMc=;
+        b=Sn/jPa1J7OqtT/yiZt5ZcBU/7On8Rg4PULVBmSVgciKUcaUx4Oc8XfehZhyUEUYury
+         umqW43QeHcuBv0UIUnFxWdQ1n8NMgXAhv7ehaVegjBIBU7Pr4OK82dRUE0NYkzQXeKdP
+         BAwewWApKfNIUmnjK9WD09zpqE94v5UnkKbXezF7Sn/MmFWkULFBVH4HaLr2VZDM/Px0
+         JZt3eAZ8DLQGDYVHAENmvWYnwTUHGSnckBov4+H2BDUQbO7QfwP4l4Y7kTeB3DEdr1Sq
+         oQhEi3D5MN05YA7sBdpZQCyNCW+CcU9KlwIwIM9ti2iWcthaX+a27C3HmZBAh/Tcz68d
+         HDeg==
+X-Gm-Message-State: AOAM531TVnWq+oQgkptMyBJ78dFpmcgh7h2w71SV8wJ4tghPc8WJF0d5
+        y/Jf+uFbv4NMuzncPN8doHD8K93tBq8=
+X-Google-Smtp-Source: ABdhPJxwCDx4BAdWGWk3w9oCniYQ4oGFoyalXpn8i9svkQlZBZXkKzyD7pTLXTt0mdL93QP9y9G1mQ==
+X-Received: by 2002:a05:6402:278f:b0:428:3c79:4eb8 with SMTP id b15-20020a056402278f00b004283c794eb8mr40872954ede.81.1652455612180;
+        Fri, 13 May 2022 08:26:52 -0700 (PDT)
 Received: from 127.0.0.1localhost ([185.69.144.161])
-        by smtp.gmail.com with ESMTPSA id j13-20020a508a8d000000b0042617ba63cbsm1015351edj.85.2022.05.13.08.26.54
+        by smtp.gmail.com with ESMTPSA id j13-20020a508a8d000000b0042617ba63cbsm1015351edj.85.2022.05.13.08.26.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:26:55 -0700 (PDT)
+        Fri, 13 May 2022 08:26:51 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -57,9 +57,9 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v3 08/10] ipv6: refactor opts push in __ip6_make_skb()
-Date:   Fri, 13 May 2022 16:26:13 +0100
-Message-Id: <27c44aad28badebcaef184bd993b8f6c719ce1f8.1652368648.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v3 05/10] udp/ipv6: optimise out daddr reassignment
+Date:   Fri, 13 May 2022 16:26:10 +0100
+Message-Id: <f7f7fc42f950218e9e6d5794c1c675dfac29df26.1652368648.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <cover.1652368648.git.asml.silence@gmail.com>
 References: <cover.1652368648.git.asml.silence@gmail.com>
@@ -69,45 +69,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't preload v6_cork->opt before we actually need it, it likely to be
-saved on the stack and read again for no good reason.
+There is nothing that checks daddr placement in udpv6_sendmsg(), so the
+check reassigning it to ->sk_v6_daddr looks like a not needed anymore
+artifact from the past. Remove it.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/ip6_output.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ net/ipv6/udp.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 53c0e33e3899..e2a6b9bdf79c 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1856,7 +1856,6 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	struct net *net = sock_net(sk);
- 	struct ipv6hdr *hdr;
--	struct ipv6_txoptions *opt = v6_cork->opt;
- 	struct rt6_info *rt = (struct rt6_info *)cork->base.dst;
- 	struct flowi6 *fl6 = &cork->fl.u.ip6;
- 	unsigned char proto = fl6->flowi6_proto;
-@@ -1885,10 +1884,14 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
- 	__skb_pull(skb, skb_network_header_len(skb));
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 8a37e2d7b14b..61dbe2f04675 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1420,14 +1420,6 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			}
+ 		}
  
- 	final_dst = &fl6->daddr;
--	if (opt && opt->opt_flen)
--		ipv6_push_frag_opts(skb, opt, &proto);
--	if (opt && opt->opt_nflen)
--		ipv6_push_nfrag_opts(skb, opt, &proto, &final_dst, &fl6->saddr);
-+	if (v6_cork->opt) {
-+		struct ipv6_txoptions *opt = v6_cork->opt;
-+
-+		if (opt->opt_flen)
-+			ipv6_push_frag_opts(skb, opt, &proto);
-+		if (opt->opt_nflen)
-+			ipv6_push_nfrag_opts(skb, opt, &proto, &final_dst, &fl6->saddr);
-+	}
- 
- 	skb_push(skb, sizeof(struct ipv6hdr));
- 	skb_reset_network_header(skb);
+-		/*
+-		 * Otherwise it will be difficult to maintain
+-		 * sk->sk_dst_cache.
+-		 */
+-		if (sk->sk_state == TCP_ESTABLISHED &&
+-		    ipv6_addr_equal(daddr, &sk->sk_v6_daddr))
+-			daddr = &sk->sk_v6_daddr;
+-
+ 		if (addr_len >= sizeof(struct sockaddr_in6) &&
+ 		    sin6->sin6_scope_id &&
+ 		    __ipv6_addr_needs_scope_id(__ipv6_addr_type(daddr)))
 -- 
 2.36.0
 
