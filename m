@@ -2,192 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D67C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346105AbiEMIap (ORCPT
+        id S1378360AbiEMIbC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 04:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        Fri, 13 May 2022 04:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378268AbiEMIa0 (ORCPT
+        with ESMTP id S1378300AbiEMIa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 04:30:26 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4AC92A805B;
-        Fri, 13 May 2022 01:30:24 -0700 (PDT)
-Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 24D8UADs030389;
-        Fri, 13 May 2022 17:30:10 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 24D8UADs030389
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652430611;
-        bh=xwQUcCuSdiBEAUsLh/QjGhFxHJPH9BOto+TxiXdTFS8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=zclHX7e0AIOCuEgtAHRCq86RPT+RFalnhBpx48pccNpK47qZzEQnXhSp8FaiK+N66
-         8KXpuNelq1ujLRd0BTCi3zy5l0iHgXrSaYVuxpUB3E44lalsgb2DU1cZwTDbI3NIIg
-         B/dbpe0G3G8GcD3Ek0ZM157hD9LhwUb6Wr7bgDgw+OQExp6Un2ZRBHPQiPMnE8hRUl
-         Y1PdCdp/OplkXchrSx3k1PIsasVSfo52awDIv32RZCpgfYb8gm31esk0Fq+uDNNt4h
-         KnyiolXzDSOH9WYcwYmgZ5C5r2O7tuaVUvQF12Blnb+jHt3JKbPTHQR+jij98ElleA
-         OjzfMw75no9gw==
-X-Nifty-SrcIP: [209.85.215.174]
-Received: by mail-pg1-f174.google.com with SMTP id x12so6872692pgj.7;
-        Fri, 13 May 2022 01:30:10 -0700 (PDT)
-X-Gm-Message-State: AOAM532c2+myU9xnLdV7lFQdc/7Bb77MvD5Zf2jQcQ/wi1qwYxxEDMBD
-        wY0URLQoAnyFqJwSq8QK3ddAhm8U7SS5Duic6ms=
-X-Google-Smtp-Source: ABdhPJyWaARH7kP3udlEkBFZS+dq9jp45KcuHkgk1gw80CFiDT/HA+anIznGX3AngyDSu3X4Sjo9qekT58OmrARZ4Yk=
-X-Received: by 2002:a63:e108:0:b0:3c6:6833:9192 with SMTP id
- z8-20020a63e108000000b003c668339192mr3019013pgh.616.1652430609879; Fri, 13
- May 2022 01:30:09 -0700 (PDT)
+        Fri, 13 May 2022 04:30:57 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB445F31
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:30:41 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id g6so14838675ejw.1
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rIdMXWo1r64Y4/FoS4X9RpN/HRh3/syFTT7xnGA6T5c=;
+        b=kYn9THiEvjgdOi0srB9gv0TQcb1JT6AXp6rZ7l1PrnDHo9qkMGlSwm7w8VteNAoqP2
+         I1hQw5r+p9CvNNrd+cbvslCXTbQhhWoY+/b8VMs8SRlRmlPGmUtUZxPH/BAnN8ZShquT
+         i+Deg6SKr82BxkgfXu7yGOXRtCVnE/butUAWCAXyDy/QP2xl+DFxPiGqGeAYrLU5kZxK
+         2OD5B8XN2qmudqjk/H1QcleJQzIZ2ZsA/l9eEx+gFhXAyFSjDIG/6ZZLj411OxtRbG5x
+         86y43GfWeayMPZbFTNXzs9A4ag06Z9uxI5N7+mSk4coGdp5Kv7xQiHljskPrXxntCpQU
+         7YHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rIdMXWo1r64Y4/FoS4X9RpN/HRh3/syFTT7xnGA6T5c=;
+        b=N7iywNrUbuML6Nqh5rMqbnuFC+0CLubhPqVZklJJNEIlimfOakcqAtQopIXbfbrJVU
+         LeVy2HTxqBctxpiPMxZU4YWDXwwrq1FQMS0h3M9BcmTnpHVoIvqg3UNZWqgoixOUu2yE
+         1d0VStxCqD+Q4wdAtDmia6MNN85M/Wf7VGW834MzZ3LPJ4oOtzGNbN10EAULOJrs2iYd
+         1h/83/q12GCYslvWwpE8PcSlyI35qvkNAVJgRYJqa9m1uNO3l9bHbMJVyNazpad+FWrN
+         W1OrmTupqjljUjXoreJfm8YMQlC/SWuEGf5M0eDjPhlX7rIyvwrk/mB9BNXLJ+vp51AV
+         Ns4Q==
+X-Gm-Message-State: AOAM531se+Z/zwz6/woLBr7aGZP5qiPqLOWwxpPliGrZ5iao9iXxWZil
+        tO3Q7qBx7qRe0dpYFsyXKslKJA==
+X-Google-Smtp-Source: ABdhPJyJ2MbVQT4SxCH65r033Zpdd9f9AOE/v8ahHMI//oxZ3uzkmD0d6awASJrIeLl4rZ47+JH2TQ==
+X-Received: by 2002:a17:907:2da7:b0:6f4:801c:6c3d with SMTP id gt39-20020a1709072da700b006f4801c6c3dmr3119325ejc.310.1652430640281;
+        Fri, 13 May 2022 01:30:40 -0700 (PDT)
+Received: from [192.168.0.169] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id f19-20020a50a6d3000000b0042617ba6392sm655223edc.28.2022.05.13.01.30.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 01:30:39 -0700 (PDT)
+Message-ID: <c4278f18-359a-d658-7b42-0a701dd15270@linaro.org>
+Date:   Fri, 13 May 2022 10:30:38 +0200
 MIME-Version: 1.0
-References: <20220512035903.2779287-1-masahiroy@kernel.org>
- <20220512035903.2779287-3-masahiroy@kernel.org> <CAJF2gTTWo2XGsov7HLdjj60YrrSUCVJ3xzW5=g9Xyr7Q8Tsq4A@mail.gmail.com>
-In-Reply-To: <CAJF2gTTWo2XGsov7HLdjj60YrrSUCVJ3xzW5=g9Xyr7Q8Tsq4A@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 13 May 2022 17:28:57 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARq+WqMn=POoJtAsOj-CXagFBERveum1314Ook4wenWkQ@mail.gmail.com>
-Message-ID: <CAK7LNARq+WqMn=POoJtAsOj-CXagFBERveum1314Ook4wenWkQ@mail.gmail.com>
-Subject: Re: [PATCH 3/4] csky: introduce CONFIG_CSKY_ABI_V1/2
-To:     Guo Ren <guoren@kernel.org>
-Cc:     linux-csky@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition
+ for mt8195
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de
+Cc:     airlied@linux.ie, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, jason-jh.lin@mediatek.com,
+        nancy.lin@mediatek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220512080523.25082-1-rex-bc.chen@mediatek.com>
+ <20220512080523.25082-2-rex-bc.chen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220512080523.25082-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 3:57 PM Guo Ren <guoren@kernel.org> wrote:
->
-> On Thu, May 12, 2022 at 12:01 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > This is useful to clean up Makefile.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> >  arch/csky/Kconfig  | 11 +++++++++++
-> >  arch/csky/Makefile | 14 ++++++++------
-> >  2 files changed, 19 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
-> > index 75ef86605d69..da756ecf0f85 100644
-> > --- a/arch/csky/Kconfig
-> > +++ b/arch/csky/Kconfig
-> > @@ -161,6 +161,12 @@ config ARCH_MMAP_RND_BITS_MIN
-> >  config ARCH_MMAP_RND_BITS_MAX
-> >         default 17
-> >
-> > +config CSKY_ABI_V1
-> > +       bool
-> > +
-> > +config CSKY_ABI_V2
-> > +       bool
-> > +
-> >  menu "Processor type and features"
-> >
-> >  choice
-> > @@ -172,15 +178,18 @@ config CPU_CK610
-> >         select CPU_NEED_TLBSYNC
-> >         select CPU_NEED_SOFTALIGN
-> >         select CPU_NO_USER_BKPT
-> > +       select CSKY_ABI_V1
-> >
-> >  config CPU_CK810
-> >         bool "CSKY CPU ck810"
-> >         select CPU_HAS_HILO
-> >         select CPU_NEED_TLBSYNC
-> > +       select CSKY_ABI_V2
-> >
-> >  config CPU_CK807
-> >         bool "CSKY CPU ck807"
-> >         select CPU_HAS_HILO
-> > +       select CSKY_ABI_V2
-> >
-> >  config CPU_CK860
-> >         bool "CSKY CPU ck860"
-> > @@ -188,6 +197,8 @@ config CPU_CK860
-> >         select CPU_HAS_CACHEV2
-> >         select CPU_HAS_LDSTEX
-> >         select CPU_HAS_FPUV2
-> > +       select CSKY_ABI_V2
-> > +
-> >  endchoice
-> >
-> >  choice
-> > diff --git a/arch/csky/Makefile b/arch/csky/Makefile
-> > index 4d72aca4069b..2b30525f39e1 100644
-> > --- a/arch/csky/Makefile
-> > +++ b/arch/csky/Makefile
-> > @@ -16,34 +16,36 @@ endif
-> >
-> >  ifdef CONFIG_CPU_CK610
-> >  CPUTYPE        = ck610
-> > -CSKYABI        = abiv1
-> >  endif
-> >
-> >  ifdef CONFIG_CPU_CK810
-> >  CPUTYPE = ck810
-> > -CSKYABI        = abiv2
-> >  endif
-> >
-> >  ifdef CONFIG_CPU_CK807
-> >  CPUTYPE = ck807
-> > -CSKYABI        = abiv2
-> >  endif
-> >
-> >  ifdef CONFIG_CPU_CK860
-> >  CPUTYPE = ck860
-> > +endif
-> > +
-> > +ifdef CONFIG_CSKY_ABI_V1
-> > +CSKYABI        = abiv1
-> > +endif
-> > +
-> > +ifdef CONFIG_CSKY_ABI_V2
-> >  CSKYABI        = abiv2
-> We still need CSKYABI, so I don't think adding CONFIG_CSKY_ABI_V2 is
-> necessary. And ck807 & ck860 have different ABI.
+On 12/05/2022 10:05, Rex-BC Chen wrote:
+> From: "Nancy.Lin" <nancy.lin@mediatek.com>
+> 
+> Add vdosys1 RDMA definition.
+> 
+> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-My main motivation is 4/4.
-
-I want to use the standard Kbuild syntax in arch/csky/Kbuild.
-
- obj-$(CONFIG_ ...)  += abiv1/
- obj-$(CONFIG_ ...)  += abiv2/
-
-
-
->
-> >  endif
-> >
-> > -ifneq ($(CSKYABI),)
-> >  MCPU_STR = $(CPUTYPE)$(FPUEXT)$(VDSPEXT)$(TEEEXT)
-> >  KBUILD_CFLAGS += -mcpu=$(CPUTYPE) -Wa,-mcpu=$(MCPU_STR)
-> >  KBUILD_CFLAGS += -DCSKYCPU_DEF_NAME=\"$(MCPU_STR)\"
-> >  KBUILD_CFLAGS += -msoft-float -mdiv
-> >  KBUILD_CFLAGS += -fno-tree-vectorize
-> > -endif
-> >
-> >  KBUILD_CFLAGS += -pipe
-> > -ifeq ($(CSKYABI),abiv2)
-> > +ifdef CONFIG_CSKY_ABI_V2
-> >  KBUILD_CFLAGS += -mno-stack-size
-> >  endif
-> >
-> > --
-> > 2.32.0
-> >
->
->
-> --
-> Best Regards
->  Guo Ren
->
-> ML: https://lore.kernel.org/linux-csky/
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Best regards,
+Krzysztof
