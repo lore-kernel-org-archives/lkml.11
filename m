@@ -2,124 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90911C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59AE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384638AbiEMVQT (ORCPT
+        id S1384645AbiEMVQZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 17:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        Fri, 13 May 2022 17:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232910AbiEMVQR (ORCPT
+        with ESMTP id S1384652AbiEMVQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 17:16:17 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6FD27FE3
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:16:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652476576; x=1684012576;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9Gskyxl5a38unKZlQosOqjGR7Ihzv9T1bkSU8Qq82ZE=;
-  b=iuqSWemR6QTtifoX0Bmz+wmhZFx5045APKimXuGW5I85UtOzgGmSPW3f
-   OV8vAqZbCYIetn/kN8hd0s4NF09FEctds3LzknOxrjxvm4QdqmA4t5+xp
-   /nVTv2NVOrMn+2Jk2oVH+Xmfg65h3q4M6rP0awtxjNG6u28VL7jEJMMmc
-   hV2d+2zUa/OzmGD5YwCVCOVlXfpmuRKgZjulN6NvBxtgpN9Owmn3DT3v7
-   /40fhOAlLWdByhCHmmRMkuTY59L9N2s5tNTiMue/zg9yJLKZYpMvVa4n9
-   GHnF2mhgWUwgNBk8f+6Yr7rdW3aTbVaHp0kd/ke3XqR0Lew5LMfdPrLrg
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="250940431"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="250940431"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 14:16:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="595421000"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga008.jf.intel.com with ESMTP; 13 May 2022 14:16:09 -0700
-Date:   Fri, 13 May 2022 14:19:44 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 15/29] x86/hpet: Add helper function
- hpet_set_comparator_periodic()
-Message-ID: <20220513211944.GE22683@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
- <87mtfufifa.ffs@tglx>
+        Fri, 13 May 2022 17:16:23 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8A92FFF7
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:16:21 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2f7d7e3b5bfso102760637b3.5
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:16:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=MRtO0/Q9M+/YZltuvI+O6gptQdPEm7Chns62TBTJqlc=;
+        b=XsaKL/zxEjiTu7bLIUanqsf5HUSHvBat2+niQNEEe7sWSGi5nCS81ON4Sk80OIdusO
+         VWOauFKsK+sOP1mBCWVBrLxtnmsVrQntMWn7YwzXpLegvvq+wjPBmDo2CqHQYl/YU//l
+         oOLn20hynM9LECB8QSe/1i1gZ3NilEwPE5KPw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MRtO0/Q9M+/YZltuvI+O6gptQdPEm7Chns62TBTJqlc=;
+        b=t31U6eaZYVXIUPGl9nYis288OsBXj5BPMGr4zEoh2lRQIJgzP+s395u00482XIggPz
+         v9o/BezXRTKLLGJc9aOvzcRhbjknwqiRJXp9WzaEtX403SmhcSt2y6g6mBx70LYz4dus
+         XsiSYIs5rocR2UwMpTg8eBGGSrGSTwptWZjfpFJWRFrxs9oucDEv1kzbPTuftLjqBQCq
+         k/uWEr0Z4x0C/RrEOGeJyZKIcvmZHoZ8d00drUHraHszAtmIzCCudpek7p1jGoiXBvY7
+         rYfiUzpUdPpdey1FC7XNbXt+A1eKQXXRDz/z62gj0ijK7pwkr9wo3I8b24t6LvhyoFY6
+         kJUQ==
+X-Gm-Message-State: AOAM531RqypVSUlL2toMOVgDr0W/9OUXCcyULEEjg6vItVYpDraB7CkW
+        J7sUJXYComWV2ZEUFE8QjdXOPmPbkenCK6P5movk
+X-Google-Smtp-Source: ABdhPJykpwd6++Qrr66Y1B5RF+cba9dVJSWF8myhIJOtMwmcDp+XjSshI91XllrQqxdsxNvOIt02QPk+u9pSluSBgnQ=
+X-Received: by 2002:a81:1196:0:b0:2f8:ccab:8807 with SMTP id
+ 144-20020a811196000000b002f8ccab8807mr7766773ywr.58.1652476580686; Fri, 13
+ May 2022 14:16:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87mtfufifa.ffs@tglx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20220512033045.1101909-1-daolu@rivosinc.com> <689ad3c4-0365-bd27-4873-bff8dbe6591b@sholland.org>
+ <CAOnJCUJbsrCfjsfBgBMuA5E_h+yhOCjE4rSKYvxv1meQGDwZgA@mail.gmail.com>
+In-Reply-To: <CAOnJCUJbsrCfjsfBgBMuA5E_h+yhOCjE4rSKYvxv1meQGDwZgA@mail.gmail.com>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Fri, 13 May 2022 14:16:09 -0700
+Message-ID: <CAOnJCUJzFE-QWcGZGw9-BHb6teoXEX_m+H1-p=RY-UFbppcCYA@mail.gmail.com>
+Subject: Re: [PATCH] arch/riscv: Add Zihintpause extension support
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Dao Lu <daolu@rivosinc.com>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 11:41:13PM +0200, Thomas Gleixner wrote:
-> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
-> > Programming an HPET channel as periodic requires setting the
-> > HPET_TN_SETVAL bit in the channel configuration. Plus, the comparator
-> > register must be written twice (once for the comparator value and once for
-> > the periodic value). Since this programming might be needed in several
-> > places (e.g., the HPET clocksource and the HPET-based hardlockup detector),
-> > add a helper function for this purpose.
+On Fri, May 13, 2022 at 12:09 AM Atish Patra <atishp@atishpatra.org> wrote:
+>
+> On Thu, May 12, 2022 at 6:06 PM Samuel Holland <samuel@sholland.org> wrot=
+e:
 > >
-> > A helper function hpet_set_comparator_oneshot() could also be implemented.
-> > However, such function would only program the comparator register and the
-> > function would be quite small. Hence, it is better to not bloat the code
-> > with such an obvious function.
-> 
-> This word salad above does not provide a single reason why the periodic
-> programming function is required and better suited for the NMI watchdog
-> case
+> > On 5/11/22 10:30 PM, Dao Lu wrote:
+> > > This patch:
+> > >   1. Build with _zihintpause if the toolchain has support for it
+> > >   2. Detects if the platform supports the extension
+> >
+> > This instruction is a hint, meaning it is a harmless no-op if the exten=
+sion is
+> > unsupported by the CPU. So we can use it as long as the compiler suppor=
+ts it.
+> > There is no need to probe for it at runtime.
+> >
+>
+> Is it guaranteed that the hardware won't throw any error if it sees a
+> fence instruction with
+> (pred=3DW, succ=3D0, fm=3D0, rd=3Dx0, and rs1=3Dx0.) ? I couldn't find an=
+ything
+> specific related to this in the spec.
+>
 
-The goal of hpet_set_comparator_periodic() is to avoid code duplication. The
-functions hpet_clkevt_set_state_periodic() and kick_timer() in the HPET NMI
-watchdog need to program a periodic HPET channel when supported.
+Never mind. I found this
+
+"The FENCE encoding currently has nine non-trivial combinations of the
+four bits PR, PW, SR,
+and SW, plus one extra encoding FENCE.TSO which facilitates mapping of
+=E2=80=9Cacquire+release=E2=80=9D or
+RVTSO semantics. The remaining seven combinations have empty
+predecessor and/or successor
+sets and hence are no-ops."
+
+However, we still need the extension availability check to preserve
+the older platform's behavior.
+Currently, the stall in cpu_relax is caused by the div. Without the
+extension probe, it will just execute
+"nop" which was not the earlier behavior.
+
+> I think using the static key mechanism provides backward compatibility
+> without any runtime impact.
+>
+> > Regards,
+> > Samuel
+> >
+> > >   3. Use PAUSE for cpu_relax if both toolchain and the platform suppo=
+rt it
+> > >
+> > > Signed-off-by: Dao Lu <daolu@rivosinc.com>
+> > > ---
+> > >  arch/riscv/Makefile                     |  4 ++++
+> > >  arch/riscv/include/asm/hwcap.h          |  1 +
+> > >  arch/riscv/include/asm/vdso/processor.h | 19 ++++++++++++++++---
+> > >  arch/riscv/kernel/cpu.c                 |  1 +
+> > >  arch/riscv/kernel/cpufeature.c          |  7 +++++++
+> > >  5 files changed, 29 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+> > > index 7d81102cffd4..900a8fda1a2d 100644
+> > > --- a/arch/riscv/Makefile
+> > > +++ b/arch/riscv/Makefile
+> > > @@ -56,6 +56,10 @@ riscv-march-$(CONFIG_RISCV_ISA_C)  :=3D $(riscv-ma=
+rch-y)c
+> > >  toolchain-need-zicsr-zifencei :=3D $(call cc-option-yn, -march=3D$(r=
+iscv-march-y)_zicsr_zifencei)
+> > >  riscv-march-$(toolchain-need-zicsr-zifencei) :=3D $(riscv-march-y)_z=
+icsr_zifencei
+> > >
+> > > +# Check if the toolchain supports Zihintpause extension
+> > > +toolchain-supports-zihintpause :=3D $(call cc-option-yn, -march=3D$(=
+riscv-march-y)_zihintpause)
+> > > +riscv-march-$(toolchain-supports-zihintpause) :=3D $(riscv-march-y)_=
+zihintpause
+> > > +
+> > >  KBUILD_CFLAGS +=3D -march=3D$(subst fd,,$(riscv-march-y))
+> > >  KBUILD_AFLAGS +=3D -march=3D$(riscv-march-y)
+> > >
+> > > diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/=
+hwcap.h
+> > > index 0734e42f74f2..caa9ee5459b4 100644
+> > > --- a/arch/riscv/include/asm/hwcap.h
+> > > +++ b/arch/riscv/include/asm/hwcap.h
+> > > @@ -52,6 +52,7 @@ extern unsigned long elf_hwcap;
+> > >   */
+> > >  enum riscv_isa_ext_id {
+> > >       RISCV_ISA_EXT_SSCOFPMF =3D RISCV_ISA_EXT_BASE,
+> > > +     RISCV_ISA_EXT_ZIHINTPAUSE,
+> > >       RISCV_ISA_EXT_ID_MAX =3D RISCV_ISA_EXT_MAX,
+> > >  };
+> > >
+> > > diff --git a/arch/riscv/include/asm/vdso/processor.h b/arch/riscv/inc=
+lude/asm/vdso/processor.h
+> > > index 134388cbaaa1..106b35ba8cac 100644
+> > > --- a/arch/riscv/include/asm/vdso/processor.h
+> > > +++ b/arch/riscv/include/asm/vdso/processor.h
+> > > @@ -4,15 +4,28 @@
+> > >
+> > >  #ifndef __ASSEMBLY__
+> > >
+> > > +#include <linux/jump_label.h>
+> > >  #include <asm/barrier.h>
+> > > +#include <asm/hwcap.h>
+> > >
+> > > +extern struct static_key_false riscv_pause_available;
+> > >  static inline void cpu_relax(void)
+> > >  {
+> > > +     if (!static_branch_likely(&riscv_pause_available)) {
+> > >  #ifdef __riscv_muldiv
+> > > -     int dummy;
+> > > -     /* In lieu of a halt instruction, induce a long-latency stall. =
+*/
+> > > -     __asm__ __volatile__ ("div %0, %0, zero" : "=3Dr" (dummy));
+> > > +             int dummy;
+> > > +             /* In lieu of a halt instruction, induce a long-latency=
+ stall. */
+> > > +             __asm__ __volatile__ ("div %0, %0, zero" : "=3Dr" (dumm=
+y));
+> > >  #endif
+> > > +     } else {
+> > > +#ifdef __riscv_zihintpause
+> > > +             /*
+> > > +              * Reduce instruction retirement.
+> > > +              * This assumes the PC changes.
+> > > +              */
+> > > +             __asm__ __volatile__ ("pause");
+> > > +#endif
+> > > +     }
+> > >       barrier();
+> > >  }
+> > >
+> > > diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
+> > > index ccb617791e56..89e563e9c4cc 100644
+> > > --- a/arch/riscv/kernel/cpu.c
+> > > +++ b/arch/riscv/kernel/cpu.c
+> > > @@ -88,6 +88,7 @@ int riscv_of_parent_hartid(struct device_node *node=
+)
+> > >   */
+> > >  static struct riscv_isa_ext_data isa_ext_arr[] =3D {
+> > >       __RISCV_ISA_EXT_DATA(sscofpmf, RISCV_ISA_EXT_SSCOFPMF),
+> > > +     __RISCV_ISA_EXT_DATA(zihintpause, RISCV_ISA_EXT_ZIHINTPAUSE),
+> > >       __RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
+> > >  };
+> > >
+> > > diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufe=
+ature.c
+> > > index 1b2d42d7f589..327c19507dbb 100644
+> > > --- a/arch/riscv/kernel/cpufeature.c
+> > > +++ b/arch/riscv/kernel/cpufeature.c
+> > > @@ -24,6 +24,8 @@ static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX)=
+ __read_mostly;
+> > >  #ifdef CONFIG_FPU
+> > >  __ro_after_init DEFINE_STATIC_KEY_FALSE(cpu_hwcap_fpu);
+> > >  #endif
+> > > +DEFINE_STATIC_KEY_FALSE(riscv_pause_available);
+> > > +EXPORT_SYMBOL_GPL(riscv_pause_available);
+> > >
+> > >  /**
+> > >   * riscv_isa_extension_base() - Get base extension word
+> > > @@ -192,6 +194,7 @@ void __init riscv_fill_hwcap(void)
+> > >                               set_bit(*ext - 'a', this_isa);
+> > >                       } else {
+> > >                               SET_ISA_EXT_MAP("sscofpmf", RISCV_ISA_E=
+XT_SSCOFPMF);
+> > > +                             SET_ISA_EXT_MAP("zihintpause", RISCV_IS=
+A_EXT_ZIHINTPAUSE);
+> > >                       }
+> > >  #undef SET_ISA_EXT_MAP
+> > >               }
+> > > @@ -213,6 +216,10 @@ void __init riscv_fill_hwcap(void)
+> > >
+> > >       }
+> > >
+> > > +     if (__riscv_isa_extension_available(riscv_isa, RISCV_ISA_EXT_ZI=
+HINTPAUSE)) {
+> > > +             static_branch_enable(&riscv_pause_available);
+> > > +     }
+> > > +
+> > >       /* We don't support systems with F but without D, so mask those=
+ out
+> > >        * here. */
+> > >       if ((elf_hwcap & COMPAT_HWCAP_ISA_F) && !(elf_hwcap & COMPAT_HW=
+CAP_ISA_D)) {
+> > >
+> >
+> >
+> > _______________________________________________
+> > linux-riscv mailing list
+> > linux-riscv@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-riscv
+>
+>
+>
+> --
+> Regards,
+> Atish
 
 
-> and then goes on and blurbs about why a function which is not
-> required is not implemented.
 
-I can remove this.
-
-> The argument about not bloating the code
-> with an "obvious???" function which is quite small is slightly beyond my
-> comprehension level.
-
-That obvious function would look like this:
-
-void hpet_set_comparator_one_shot(int channel, u32 delta)
-{
-	u32 count;
-
-	count = hpet_readl(HPET_COUNTER);
-	count += delta;
-	hpet_writel(count, HPET_Tn_CMP(channel));
-}
-
-It involves one register read, one addition and one register write. IMO, this
-code is sufficiently simple and small to allow duplication.
-
-Programming a periodic HPET channel is not as straightforward, IMO. It involves
-handling two different values (period and comparator) written in a specific
-sequence, one configuration bit, and one delay. It also involves three register
-writes and one register read.
-
-Thanks and BR,
-Ricardo
+--=20
+Regards,
+Atish
