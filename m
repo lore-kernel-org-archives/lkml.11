@@ -2,46 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B51C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380951AbiEMO3J (ORCPT
+        id S1380965AbiEMO3Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
+        Fri, 13 May 2022 10:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381025AbiEMO01 (ORCPT
+        with ESMTP id S1381108AbiEMO0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C49661294;
-        Fri, 13 May 2022 07:26:02 -0700 (PDT)
+        Fri, 13 May 2022 10:26:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C0750B1C;
+        Fri, 13 May 2022 07:26:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED6FA62175;
-        Fri, 13 May 2022 14:26:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 050AAC34115;
-        Fri, 13 May 2022 14:26:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D0A1B8305B;
+        Fri, 13 May 2022 14:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 432FDC34100;
+        Fri, 13 May 2022 14:26:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451961;
-        bh=5XYf6gXSLYCNV2NSOwWm/qXUoqIF9nuraWWShBEsE+Q=;
+        s=korg; t=1652451994;
+        bh=arJTKN6Rb4CHGdT1xDXtM3SZJ76Ck5SXwxLc4XVG6h0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xWdGiKZyZj+vxISxQxKKqVe6HJSX8QvejTYfFtJgAsMDCIXqjJ0TZMibpx79z4QQb
-         cJadO3UWmKsjSeYeATpSGLD4XRXbJvfoFQU2G2TAvT9gW7ajEf68JBYmKHOAw5+eyz
-         J4IlmkW2Dme9g9Ps5M7gNar1csxUNN7qI9Pdqijw=
+        b=Lkj2UAFs1vyUgNw/OznDpD3UdBVqNE8K6RAGjcXiZQCZEK2nLckNHvZ2JSX7w9XQR
+         2zCCsajBmD87WM3JZKnp+P4hwCHqObdQNspqV1ZZhhbcwPjJchztmAo7B1qVwi83FN
+         5d/y+2eEEMXvBV1OgINjBSgL470b4SpjEs26yluY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 04/15] nfp: bpf: silence bitwise vs. logical OR warning
-Date:   Fri, 13 May 2022 16:23:26 +0200
-Message-Id: <20220513142228.026954425@linuxfoundation.org>
+        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Juergen Gross <jgross@suse.com>, x86@kernel.org,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Borislav Petkov <bp@alien8.de>, xen-devel@lists.xenproject.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Maximilian Heyne <mheyne@amazon.de>
+Subject: [PATCH 5.4 13/18] x86: kprobes: Prohibit probing on instruction which has emulate prefix
+Date:   Fri, 13 May 2022 16:23:39 +0200
+Message-Id: <20220513142229.541060503@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
-References: <20220513142227.897535454@linuxfoundation.org>
+In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
+References: <20220513142229.153291230@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,61 +58,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Masami Hiramatsu <mhiramat@kernel.org>
 
-commit 8a64ef042eab8a6cec04a6c79d44d1af79b628ca upstream.
+commit 004e8dce9c5595697951f7cd0e9f66b35c92265e upstream.
 
-A new warning in clang points out two places in this driver where
-boolean expressions are being used with a bitwise OR instead of a
-logical one:
+Prohibit probing on instruction which has XEN_EMULATE_PREFIX
+or KVM's emulate prefix. Since that prefix is a marker for Xen
+and KVM, if we modify the marker by kprobe's int3, that doesn't
+work as expected.
 
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
-        reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                             ||
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: note: cast one or both operands to int to silence this warning
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
-        reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                             ||
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: note: cast one or both operands to int to silence this warning
-2 errors generated.
-
-The motivation for the warning is that logical operations short circuit
-while bitwise operations do not. In this case, it does not seem like
-short circuiting is harmful so implement the suggested fix of changing
-to a logical operation to fix the warning.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1479
-Reported-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Link: https://lore.kernel.org/r/20211018193101.2340261-1-nathan@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: x86@kernel.org
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Stefano Stabellini <sstabellini@kernel.org>
+Cc: Andrew Cooper <andrew.cooper3@citrix.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: xen-devel@lists.xenproject.org
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/156777566048.25081.6296162369492175325.stgit@devnote2
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_asm.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kernel/kprobes/core.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/ethernet/netronome/nfp/nfp_asm.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_asm.c
-@@ -226,7 +226,7 @@ int swreg_to_unrestricted(swreg dst, swr
- 	}
+--- a/arch/x86/kernel/kprobes/core.c
++++ b/arch/x86/kernel/kprobes/core.c
+@@ -358,6 +358,10 @@ int __copy_instruction(u8 *dest, u8 *src
+ 	kernel_insn_init(insn, dest, MAX_INSN_SIZE);
+ 	insn_get_length(insn);
  
- 	reg->dst_lmextn = swreg_lmextn(dst);
--	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-+	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
- 
- 	return 0;
- }
-@@ -307,7 +307,7 @@ int swreg_to_restricted(swreg dst, swreg
- 	}
- 
- 	reg->dst_lmextn = swreg_lmextn(dst);
--	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-+	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
- 
- 	return 0;
- }
++	/* We can not probe force emulate prefixed instruction */
++	if (insn_has_emulate_prefix(insn))
++		return 0;
++
+ 	/* Another subsystem puts a breakpoint, failed to recover */
+ 	if (insn->opcode.bytes[0] == BREAKPOINT_INSTRUCTION)
+ 		return 0;
 
 
