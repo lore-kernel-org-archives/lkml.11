@@ -2,85 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4869AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 23:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98DCDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 23:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234463AbiEMXOn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 19:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
+        id S229768AbiEMXTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 19:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiEMXOg (ORCPT
+        with ESMTP id S229450AbiEMXTY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 19:14:36 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C016D3211D1
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:14:22 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id e12so17669482ybc.11
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:14:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uJjCKmIV0+PUlw1yN8LzGGtdpY7JQRJT83F9A+chaFQ=;
-        b=THiP8XlKeuATd+sFBtOcYrkM4vfQtgO4vnzZ0czrpsdPkpjchMTT4P/obyYS2u/Ph0
-         +d4NGAg/jxClzjL8HVJs1YAUDTNGgJWRecVdDws5TTDi+gv0iwTmpz+MkqCaUpeAV5AA
-         yF3lhT3KSxCLDQJ9FmJNtviqrwf/aWE8xllwdNkP73HSFcu2JxZfzQwraA3ZMJaktL2/
-         OkzTNpuZEQcIWaejl7sk/YJRrshWH/IN8sd7qW08KjeWOtRqJdYH5DbIBGNlQDidczW+
-         6kEBBpSeOhUtIg4JxlmhyKAglB0MmRs+oQnBntEgiBPniHirdlTfg443BTKKz6xnZr/V
-         JO8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uJjCKmIV0+PUlw1yN8LzGGtdpY7JQRJT83F9A+chaFQ=;
-        b=13ZeXUy47Vx5YHYM5y7zFje5K2yafsmjcOrYYvosCjXUTdYiRtdluo4C9d2yihgk6M
-         DjVS1NkJnhOwP7Y3K+arFywG5Ayk4Xxvd+e+UVWTVapA79R+YIBuW4bobIuQ3u41KDq7
-         7wFFpgE135CGBcocKnWNXzXwC5vcviY4d8w6Eog+2jPQaOroaLt45zAQDowTYNPBTotv
-         gxOC6QM0I6A8+Pl+09slutlNRYTCzK5q7z+4zD6Xgj/arKcF6dMfhDdlS6wMAQB/a38X
-         qYy2d+WESjzxCUabUaW4DIYlo4fnY5Jr+mE1aygtBTG1HzLR/1OX/RiCoeorSu67f22f
-         PluQ==
-X-Gm-Message-State: AOAM5321QWKaaCi7Am8ulAmtXjT9S5M1F8dKU5xR6ZfMFOUP4Uqt1Boc
-        mmhz1juf0yHwbPJ37tGFUHI//lPLFeM8Necj4tI0+w==
-X-Google-Smtp-Source: ABdhPJyqJOHYby5B4zPz7I69RNcSghbBdax44/7CJOKXFMx9IaAQOi+fUTHLPntFEHAMZ9z/gSOi5OooYyzthLTILkw=
-X-Received: by 2002:a25:aa94:0:b0:648:62f2:ef4e with SMTP id
- t20-20020a25aa94000000b0064862f2ef4emr6931589ybi.626.1652483661584; Fri, 13
- May 2022 16:14:21 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220507102257.26414-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220507102257.26414-1-andriy.shevchenko@linux.intel.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 14 May 2022 01:14:10 +0200
-Message-ID: <CACRpkdYjmAKPb9sHvC+Y0goDBmGXDthJDmgbG2CZ6VO_Y1zEmQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] pinctrl: stm32: Unshadow np variable in stm32_pctl_probe()
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        linux-gpio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 13 May 2022 19:19:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A58CFE22
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 16:19:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C53061785
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 23:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D4A4C34100;
+        Fri, 13 May 2022 23:19:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652483951;
+        bh=nsqqEsbCAJO9Nx/S0guNnQUIdm8rw5xK6VIXgCLIZKM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UnzcjbtwVrbXBSJ7C2fccqdOzxiXb31wk+hfEkpeaBLXWJdNcx1CpI+LaNUPy6db2
+         tWzlGaW+UfIm8frhuwsYDs5KRRS0ujdqusYynfLuyf0QIbmMluE0z4ZtrjIfpdzuZz
+         voCrn3e+2upCTSDr9UN5f18p+pJf1Mt8qHCM29u4=
+Date:   Fri, 13 May 2022 16:19:10 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     syzbot <syzbot+acf65ca584991f3cc447@syzkaller.appspotmail.com>,
+        Minchan Kim <minchan@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, llvm@lists.linux.dev, nathan@kernel.org,
+        ndesaulniers@google.com, syzkaller-bugs@googlegroups.com,
+        trix@redhat.com, Matthew Wilcox <willy@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: [syzbot] WARNING in follow_hugetlb_page
+Message-Id: <20220513161910.d1b73583cdb2e33562aa86e5@linux-foundation.org>
+In-Reply-To: <a7fd0c3f-921e-19b3-2f67-a231dede28f9@oracle.com>
+References: <000000000000ef451a05dee0f2b1@google.com>
+        <00000000000077377c05dee75f63@google.com>
+        <20220513102617.c464c4f566052838e911a3ec@linux-foundation.org>
+        <75f09063-d184-7d44-17a1-ed04be5eb953@oracle.com>
+        <a7fd0c3f-921e-19b3-2f67-a231dede28f9@oracle.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 7, 2022 at 12:23 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
+On Fri, 13 May 2022 15:48:15 -0700 Mike Kravetz <mike.kravetz@oracle.com> wrote:
 
-> The np variable is used globally for stm32_pctl_probe() and in one of
-> its code branches. cppcheck is not happy with that:
->
->   pinctrl-stm32.c:1530:23: warning: Local variable 'np' shadows outer variable [shadowVariable]
->
-> Instead of simply renaming one of the variables convert some code to
-> use a device pointer directly.
->
-> Fixes: bb949ed9b16b ("pinctrl: stm32: Switch to use for_each_gpiochip_node() helper")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> On 5/13/22 11:09, Mike Kravetz wrote:
+> > On 5/13/22 10:26, Andrew Morton wrote:
+> >> On Fri, 13 May 2022 09:43:24 -0700 syzbot <syzbot+acf65ca584991f3cc447@syzkaller.appspotmail.com> wrote:
+> >>
+> >>> syzbot has found a reproducer for the following issue on:
+> >>
+> >> Thanks.
+> >>
+> >>> HEAD commit:    1e1b28b936ae Add linux-next specific files for 20220513
+> >>> git tree:       linux-next
+> >>> console+strace: https://syzkaller.appspot.com/x/log.txt?x=174ae715f00000
+> >>> kernel config:  https://syzkaller.appspot.com/x/.config?x=e4eb3c0c4b289571
+> >>> dashboard link: https://syzkaller.appspot.com/bug?extid=acf65ca584991f3cc447
+> >>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> >>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11531766f00000
+> >>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ce5a9ef00000
+> >>>
+> >>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> >>> Reported-by: syzbot+acf65ca584991f3cc447@syzkaller.appspotmail.com
+> >>>
+> >>> ------------[ cut here ]------------
+> >>> WARNING: CPU: 1 PID: 3611 at mm/hugetlb.c:6250 follow_hugetlb_page+0x1326/0x1c80 mm/hugetlb.c:6250
+> >>
+> >> The try_grab_folio() added by 822951d84684d ("mm/hugetlb: Use
+> >> try_grab_folio() instead of try_grab_compound_head()").  That commit
+> >> has been there over a month so I guess it's something else.  Does
+> >> someone have the time to bisect?
+> > 
+> > I can recreate in my 'easy to debug' environment, so I can bisect in
+> > parallel with other things I need to do today.
+> > 
+> 
+> I isolated this to Minchan Kim's "mm: fix is_pinnable_page against on cma
+> page".  Yes, the fat finger fix is in next-20220513.
+> 
+> I don't have time to analyze right now, but can confirm that in the
+> reproducer is_pinnable_page is returning false after this change when it
+> previously returned true.
 
-Patch applied!
-
-Yours,
-Linus Walleij
+OK, thanks, I dropped mm-fix-is_pinnable_page-against-on-cma-page.patch
