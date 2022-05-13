@@ -2,42 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C78C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381172AbiEMOc4 (ORCPT
+        id S1381179AbiEMOdC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
+        Fri, 13 May 2022 10:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380989AbiEMO31 (ORCPT
+        with ESMTP id S1381008AbiEMO3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:29:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72CB66AF1;
-        Fri, 13 May 2022 07:27:43 -0700 (PDT)
+        Fri, 13 May 2022 10:29:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10EA8B0AE;
+        Fri, 13 May 2022 07:27:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53234B8306F;
-        Fri, 13 May 2022 14:27:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D834C34100;
-        Fri, 13 May 2022 14:27:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7085F61F99;
+        Fri, 13 May 2022 14:27:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510BDC34115;
+        Fri, 13 May 2022 14:27:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452061;
-        bh=LhGzbSLV3+nIk8fIqT3DC2GjdY5oWA403ZV6ONLDG9E=;
+        s=korg; t=1652452071;
+        bh=zHoUYD+o1GnIl9sG0xD2eHVGS+koYvFKCsVWQJC2l7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IYdhuQu19d6yA9EMfHJTc4x7LOF9EpkPcviIbzIvf8qNxYwZ4VnV6Q/3dJAu/pTDe
-         lKm72utyPeNLW1cFrP3cTNuis0nsBu+VvBNfGCF03K1/vwI/NvVgSuVAXJ6ybjjQY1
-         ApJJozDuGVh5NWwdbB76MVpRXIo+VaGXQA/BaHj8=
+        b=jXjfWVQoCJySeSFDoPiZp3cmu8Z521Gmd7ebPdEtf3iE6fOfrrtcO3p5w2sLWARjc
+         QyIzc6AaHC4ObgorM+XWKBthqAjhBI1En/ZhwcxsLMdaYCmIAK6SUhVoSfIJc+InA3
+         vdRSxyVNycAmtvUpAKvAlkkbKCZYfGSK2gJXx5Lo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.10 07/10] Bluetooth: Fix the creation of hdev->name
-Date:   Fri, 13 May 2022 16:23:51 +0200
-Message-Id: <20220513142228.523314007@linuxfoundation.org>
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Lars Persson <lars.persson@axis.com>,
+        Peter Xu <peterx@redhat.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Zi Yan <ziy@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 09/10] mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
+Date:   Fri, 13 May 2022 16:23:53 +0200
+Message-Id: <20220513142228.581883501@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142228.303546319@linuxfoundation.org>
 References: <20220513142228.303546319@linuxfoundation.org>
@@ -49,65 +59,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Itay Iellin <ieitayie@gmail.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-commit 103a2f3255a95991252f8f13375c3a96a75011cd upstream.
+commit e763243cc6cb1fcc720ec58cfd6e7c35ae90a479 upstream.
 
-Set a size limit of 8 bytes of the written buffer to "hdev->name"
-including the terminating null byte, as the size of "hdev->name" is 8
-bytes. If an id value which is greater than 9999 is allocated,
-then the "snprintf(hdev->name, sizeof(hdev->name), "hci%d", id)"
-function call would lead to a truncation of the id value in decimal
-notation.
+userfaultfd calls copy_huge_page_from_user() which does not do any cache
+flushing for the target page.  Then the target page will be mapped to
+the user space with a different address (user address), which might have
+an alias issue with the kernel address used to copy the data from the
+user to.
 
-Set an explicit maximum id parameter in the id allocation function call.
-The id allocation function defines the maximum allocated id value as the
-maximum id parameter value minus one. Therefore, HCI_MAX_ID is defined
-as 10000.
+Fix this issue by flushing dcache in copy_huge_page_from_user().
 
-Signed-off-by: Itay Iellin <ieitayie@gmail.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Link: https://lkml.kernel.org/r/20220210123058.79206-4-songmuchun@bytedance.com
+Fixes: fa4d75c1de13 ("userfaultfd: hugetlbfs: add copy_huge_page_from_user for hugetlb userfaultfd support")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Fam Zheng <fam.zheng@bytedance.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Lars Persson <lars.persson@axis.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/bluetooth/hci_core.h |    3 +++
- net/bluetooth/hci_core.c         |    6 +++---
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ mm/memory.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -35,6 +35,9 @@
- /* HCI priority */
- #define HCI_PRIO_MAX	7
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -5295,6 +5295,8 @@ long copy_huge_page_from_user(struct pag
+ 		if (rc)
+ 			break;
  
-+/* HCI maximum id value */
-+#define HCI_MAX_ID 10000
++		flush_dcache_page(subpage);
 +
- /* HCI Core structures */
- struct inquiry_data {
- 	bdaddr_t	bdaddr;
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3718,10 +3718,10 @@ int hci_register_dev(struct hci_dev *hde
- 	 */
- 	switch (hdev->dev_type) {
- 	case HCI_PRIMARY:
--		id = ida_simple_get(&hci_index_ida, 0, 0, GFP_KERNEL);
-+		id = ida_simple_get(&hci_index_ida, 0, HCI_MAX_ID, GFP_KERNEL);
- 		break;
- 	case HCI_AMP:
--		id = ida_simple_get(&hci_index_ida, 1, 0, GFP_KERNEL);
-+		id = ida_simple_get(&hci_index_ida, 1, HCI_MAX_ID, GFP_KERNEL);
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -3730,7 +3730,7 @@ int hci_register_dev(struct hci_dev *hde
- 	if (id < 0)
- 		return id;
- 
--	sprintf(hdev->name, "hci%d", id);
-+	snprintf(hdev->name, sizeof(hdev->name), "hci%d", id);
- 	hdev->id = id;
- 
- 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
+ 		cond_resched();
+ 	}
+ 	return ret_val;
 
 
