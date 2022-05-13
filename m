@@ -2,196 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379379AbiEMKVd (ORCPT
+        id S1379370AbiEMKV4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 06:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47318 "EHLO
+        Fri, 13 May 2022 06:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379366AbiEMKVL (ORCPT
+        with ESMTP id S1379369AbiEMKVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 06:21:11 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41F635A8C;
-        Fri, 13 May 2022 03:21:09 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id v11so6727205qkf.1;
-        Fri, 13 May 2022 03:21:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H6ylwExavTNkB9OKuRxxHz9+Xg9/ks6xmcZnmCtHXS4=;
-        b=g7sMP1a/2Ow4/qzpN/Sm8aIBRpxhQcQyCbqaVkaoHj4pQXP7aKNC5YWj6wegNBoSVd
-         TfGGvzvOuXLaN1VIXbzx0DIbATYr3Fe007x6dNTtpV1p/3gK0ZhgdjAW/wG7K46Y873b
-         3zgKCMlepFUMBfunyi0UblgvQKj2DlJFl4E0OnPhXdMYCGbyPPIdgCiHN7o+mNGNBDRp
-         Oz7WztObzxYcFGquAJCzfHsHC2Y9HkHvkBCQTZ7faaKEml65v8TYxFYbesnyxNJTYklz
-         AM90lL7v3gZTPwrrMeadUkkATk6QEcXggcp/1P/CqUOayhEWnqcKvchfs3X6pFPfI7bG
-         Q1jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H6ylwExavTNkB9OKuRxxHz9+Xg9/ks6xmcZnmCtHXS4=;
-        b=LKGqb6jOlFGh2+SQo86BKsCZB3l8OkT1OGwmvXgNwznLkPXYwNH3nioCeeJf6M8bMl
-         q3CIN8uBXTtTtF+HhKjynEWNNVNZFmWZMq9nYmL6MdUUb4voTTzNTk0004DJqivLiQux
-         kpurmKqf+c3GsNguPC2qrYRW/yImYw8QrlXRv/k+74geOtPZT77ii12zcB1weMwh//3l
-         q/6Y5OIXwtt4AHLdN8il4D7Qtz42Ho2993ZcPvufwKHfskizDW+6gpIYcJCWSGzN9ATG
-         BoFK6I0vuJsNRLppG1xQS3YZxIRozOqJ8xbUu4g0F6sr9vOIeHjWSBs/C65vq2jmqEef
-         +krg==
-X-Gm-Message-State: AOAM531EG7dJnsrsmufUdCgmDRji0pgVygy+FZdDswwHeS/tHUG/u/HM
-        6aruZByJh9DIOfA27HBlCPr9ZauRsGtQZ/rMmU8=
-X-Google-Smtp-Source: ABdhPJxiJw1Fre6mkmANvSgkm0EHSpd2RqKozOhnla/0jPGCJ4Q1kJ8UDjHbT3oJWUqW4svCeK/hgsML7lzmHAy+nhc=
-X-Received: by 2002:a05:620a:1a01:b0:69c:fda:7404 with SMTP id
- bk1-20020a05620a1a0100b0069c0fda7404mr3084015qkb.522.1652437268783; Fri, 13
- May 2022 03:21:08 -0700 (PDT)
+        Fri, 13 May 2022 06:21:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933F8166440
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 03:21:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CCEB6222B
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:21:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85167C34100;
+        Fri, 13 May 2022 10:21:37 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YEipm3ml"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1652437295;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=R9guTYSF77xdE/OjLFIshPpl9Sd/e3mIVmMDqCLm7Ek=;
+        b=YEipm3ml98SQI3klpGvYMjmPPMkQVXuDq8oG4yImUqn1/kH4FS1urx9ZjevF2RZbu54vtn
+        /9kZteamKXdmcnZVE6Yv4pucVMoSgTetaawjSRE/qCu0rSNIQcNzYciWneHCQCXydmKFu6
+        KiTBdXfcwf+L3F4ACZPEr88Hwhmnrn0=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 34076031 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 13 May 2022 10:21:35 +0000 (UTC)
+Date:   Fri, 13 May 2022 12:21:34 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Dominik Brodowski <linux@dominikbrodowski.net>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] random: move initialization out of reseeding hot path
+Message-ID: <Yn4xLowv+farg814@zx2c4.com>
+References: <20220509121409.529788-1-Jason@zx2c4.com>
+ <20220509121409.529788-2-Jason@zx2c4.com>
+ <Yn35k+yyrvgAt3tb@owl.dominikbrodowski.net>
 MIME-Version: 1.0
-References: <20220510154217.5216-1-ubizjak@gmail.com> <20220513091034.GH76023@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220513091034.GH76023@worktop.programming.kicks-ass.net>
-From:   Uros Bizjak <ubizjak@gmail.com>
-Date:   Fri, 13 May 2022 12:20:57 +0200
-Message-ID: <CAFULd4bAAKc=wo6vFkN6xQqBjaSJhF3L+WmuymSsC6-ec6TuvA@mail.gmail.com>
-Subject: Re: [PATCH] locking/atomic/x86: Introduce try_cmpxchg64
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        kvm@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marco Elver <elver@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yn35k+yyrvgAt3tb@owl.dominikbrodowski.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 11:10 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Tue, May 10, 2022 at 05:42:17PM +0200, Uros Bizjak wrote:
->
-> For the Changelog I would focus on the 64bit improvement and leave 32bit
-> as a side-note.
+Hi Dominik,
 
-Thanks, I will rephrase the ChangeLog.
+On Fri, May 13, 2022 at 08:24:19AM +0200, Dominik Brodowski wrote:
+> > -	if (!crng_ready()) {
+> > -		crng_init = CRNG_READY;
+> > -		finalize_init = true;
+> > -	}
+> > +	crng_init = CRNG_READY;
+> 
+> Why unconditionally
 
->
-> > ---
-> >  arch/x86/include/asm/cmpxchg_32.h          | 43 ++++++++++++++++++++++
-> >  arch/x86/include/asm/cmpxchg_64.h          |  6 +++
-> >  include/linux/atomic/atomic-instrumented.h | 40 +++++++++++++++++++-
-> >  scripts/atomic/gen-atomic-instrumented.sh  |  2 +-
-> >  4 files changed, 89 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/arch/x86/include/asm/cmpxchg_32.h b/arch/x86/include/asm/cmpxchg_32.h
-> > index 0a7fe0321613..e874ff7f7529 100644
-> > --- a/arch/x86/include/asm/cmpxchg_32.h
-> > +++ b/arch/x86/include/asm/cmpxchg_32.h
-> > @@ -42,6 +42,9 @@ static inline void set_64bit(volatile u64 *ptr, u64 value)
-> >  #define arch_cmpxchg64_local(ptr, o, n)                                      \
-> >       ((__typeof__(*(ptr)))__cmpxchg64_local((ptr), (unsigned long long)(o), \
-> >                                              (unsigned long long)(n)))
-> > +#define arch_try_cmpxchg64(ptr, po, n)                                       \
-> > +     ((__typeof__(*(ptr)))__try_cmpxchg64((ptr), (unsigned long long *)(po), \
-> > +                                          (unsigned long long)(n)))
-> >  #endif
-> >
-> >  static inline u64 __cmpxchg64(volatile u64 *ptr, u64 old, u64 new)
-> > @@ -70,6 +73,25 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
-> >       return prev;
-> >  }
-> >
-> > +static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
-> > +{
-> > +     bool success;
-> > +     u64 prev;
-> > +     asm volatile(LOCK_PREFIX "cmpxchg8b %2"
-> > +                  CC_SET(z)
-> > +                  : CC_OUT(z) (success),
-> > +                    "=A" (prev),
-> > +                    "+m" (*ptr)
-> > +                  : "b" ((u32)new),
-> > +                    "c" ((u32)(new >> 32)),
-> > +                    "1" (*pold)
-> > +                  : "memory");
-> > +
-> > +     if (unlikely(!success))
-> > +             *pold = prev;
->
-> I would prefer this be more like the existing try_cmpxchg code,
-> perhaps:
->
->         u64 old = *pold;
->
->         asm volatile (LOCK_PREFIX "cmpxchg8b %[ptr]"
->                       CC_SET(z)
->                       : CC_OUT(z) (success),
->                         [ptr] "+m" (*ptr)
->                         "+A" (old)
->                       : "b" ((u32)new)
->                         "c" ((u32)(new >> 32))
->                       : "memory");
->
->         if (unlikely(!success))
->                 *pold = old;
->
-> The existing 32bit cmpxchg code is a 'bit' crusty.
+To avoid a useless branch.
 
-I was trying to follow the existing __cmpxchg64 as much as possible,
-with the intention of a follow-up patch that would modernize
-everything in cmpxchg_32.h. I can surely go the other way and submit
-modernized new code.
 
-> > +     return success;
-> > +}
-> > +
-> >  #ifndef CONFIG_X86_CMPXCHG64
-> >  /*
-> >   * Building a kernel capable running on 80386 and 80486. It may be necessary
-> > @@ -108,6 +130,27 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
-> >                      : "memory");                             \
-> >       __ret; })
-> >
-> > +#define arch_try_cmpxchg64(ptr, po, n)                               \
-> > +({                                                           \
-> > +     bool success;                                           \
-> > +     __typeof__(*(ptr)) __prev;                              \
-> > +     __typeof__(ptr) _old = (__typeof__(ptr))(po);           \
-> > +     __typeof__(*(ptr)) __old = *_old;                       \
-> > +     __typeof__(*(ptr)) __new = (n);                         \
-> > +     alternative_io(LOCK_PREFIX_HERE                         \
-> > +                     "call cmpxchg8b_emu",                   \
-> > +                     "lock; cmpxchg8b (%%esi)" ,             \
-> > +                    X86_FEATURE_CX8,                         \
-> > +                    "=A" (__prev),                           \
-> > +                    "S" ((ptr)), "0" (__old),                \
-> > +                    "b" ((unsigned int)__new),               \
-> > +                    "c" ((unsigned int)(__new>>32))          \
-> > +                    : "memory");                             \
-> > +     success = (__prev == __old);                            \
-> > +     if (unlikely(!success))                                 \
-> > +             *_old = __prev;                                 \
-> > +     likely(success);                                        \
-> > +})
->
-> Wouldn't this be better written like the normal fallback wrapper?
->
-> static __always_inline bool
-> arch_try_cmpxchg64(u64 *v, u64 *old, u64 new)
-> {
->         u64 r, o = *old;
->         r = arch_cmpxchg64(v, o, new);
->         if (unlikely(r != o))
->                 *old = r;
->         return likely(r == o);
-> }
->
-> Less magical, same exact code.
+> (you revert that bit in the static branch patch and make
+> it conditional again; so I see no reason for that here)?
 
-Also, I tried to follow up the existing #defines. Will improve the
-code according to your suggestion here.
+With the static branch patch, I can totally remove the branch and the
+store all together, so we get the best of both worlds.
 
-Thanks,
-Uros.
+Jason
