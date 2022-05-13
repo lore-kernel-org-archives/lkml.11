@@ -2,103 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9980C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97162C4167B
 	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 13:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381635AbiEMNiu (ORCPT
+        id S1381592AbiEMNiN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 09:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        Fri, 13 May 2022 09:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381484AbiEMNha (ORCPT
+        with ESMTP id S1381355AbiEMNff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 09:37:30 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344DDE2E
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:37:28 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id f4so1741916lfu.12
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WNun4ZTStfT49QHEpCQD8tjXU6kqYy14sdjKYugygVM=;
-        b=dugEPaRnc81vdHcYLXTwEg09DwWdgNK8aq3YFDbhGqRHq2+0pH78YRR5OacHw/9ekI
-         SeTPlA9FCZnmbjeCdFVit5DAKGDM/YLaXvR1mqygL2qq0vIMkmqele/NXQyAT8bVC1/W
-         hZufPIDp9VFsZcy61dw0456Y5ekfWsyaZ4K6ceC+4QUWjppBEtfq+tKnCsxVxi6gJwtO
-         sLqWW+iXN8gL7dTyfh7yGuEufpQ2/TRPytHGs9DeLfcvYGQ7/9lsLNau3G/o5kuJRumh
-         iINyZNx+I/FJa9RFkQFP8AMhm3r5LhuRFcy0myq7BcvYDpaE7x48jAcm1ArDnJg/gRNC
-         msmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WNun4ZTStfT49QHEpCQD8tjXU6kqYy14sdjKYugygVM=;
-        b=p5iFwasyrpUHTJtJm+QuTthcXEJqk+mA6kudvzntD54e/iO1E7VsS6piNRUb5EMshv
-         m1HvmDij0DPsikYn9KCkTawwRCl0SWEqhtfZlLuFqTg8tOZJVOB6zAb4CL52yKvxG7//
-         QMuvXY3VN20kpOri0SJn6dfLij7aTLGfnMX1IRN4RL/twDh1Zq6APikpciC7C0bHevyu
-         RH6PxlwzjrqhYj8oXOwSwN6D7Fw9Tay3NGhJTVfaGDsO1jV+lQ/Q0U0UGXnvkdeKLItA
-         hVC5KWpetfqBAP2Pw4mATF7ztZ+d0lyxOAzkWyERruOpZt5RRL83yQ+UnaNtjTt6+LTH
-         7xQg==
-X-Gm-Message-State: AOAM5301HPkJZWnYSNnDP7H0dNj4GXgEAbaRz9CK+goK58UvATI1hAAg
-        u0YR7EAqiodyuthwwfUMs9p/UOcvO2ABdzQ8WKahEw==
-X-Google-Smtp-Source: ABdhPJw4mopRb/AcWYZNSPPYhotHrAhFymOgtcNEija7JL7Xo6Q4eQqzZtgVFlxABVf3k53ALIc4jnlSQVfoaCnYEo4=
-X-Received: by 2002:a05:6512:234c:b0:473:c3ba:2cf1 with SMTP id
- p12-20020a056512234c00b00473c3ba2cf1mr3518251lfu.402.1652449046335; Fri, 13
- May 2022 06:37:26 -0700 (PDT)
+        Fri, 13 May 2022 09:35:35 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4EE63A6
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 06:35:33 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 672202224F;
+        Fri, 13 May 2022 15:35:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1652448929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LJSt6IT3ECdLzAVmB/COzMrm9/Mol0eBhyUGK0zCRhc=;
+        b=lVVp1YCd4TNs7AOsWX50tJLf4Fe/V+31U8QWT4eM33NZIvm8U2aoEGWZnFh0mWl6x36RoL
+        RXFsr/GhNPSShK1g/EwEdHNbjeU/jG15FulAojMh52qz6xadEiMIScEESlW8TERlPGT/4/
+        hLqzVn/UCeNA6Gf5hQgmEtbZxjCmcyE=
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+Subject: [PATCH 5/6] mtd: spi-nor: add generic flash driver
+Date:   Fri, 13 May 2022 15:35:19 +0200
+Message-Id: <20220513133520.3945820-6-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220513133520.3945820-1-michael@walle.cc>
+References: <20220513133520.3945820-1-michael@walle.cc>
 MIME-Version: 1.0
-References: <20220512202328.2453895-1-Ashish.Kalra@amd.com>
-In-Reply-To: <20220512202328.2453895-1-Ashish.Kalra@amd.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Fri, 13 May 2022 09:37:15 -0400
-Message-ID: <CAMkAt6ogEpWf7J-OhXrPNw8KojwuLxUwfP6B+A7zrRHpNeX3uA@mail.gmail.com>
-Subject: Re: [PATCH] KVM: SVM: Use kzalloc for sev ioctl interfaces to prevent
- kernel memory leak.
-To:     Ashish Kalra <Ashish.Kalra@amd.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Nguyen <theflow@google.com>,
-        David Rientjes <rientjes@google.com>,
-        John Allen <john.allen@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 4:23 PM Ashish Kalra <Ashish.Kalra@amd.com> wrote:
->
-> From: Ashish Kalra <ashish.kalra@amd.com>
->
-> For some sev ioctl interfaces, the length parameter that is passed maybe
-> less than or equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data
-> that PSP firmware returns. In this case, kmalloc will allocate memory
-> that is the size of the input rather than the size of the data.
-> Since PSP firmware doesn't fully overwrite the allocated buffer, these
-> sev ioctl interface may return uninitialized kernel slab memory.
->
-> Reported-by: Andy Nguyen <theflow@google.com>
-> Suggested-by: David Rientjes <rientjes@google.com>
-> Suggested-by: Peter Gonda <pgonda@google.com>
-> Cc: kvm@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
-> ---
->  arch/x86/kvm/svm/sev.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
+Our SFDP is parsing is everything we need to support all basic
+operations of a flash device. If the flash isn't found in our in-kernel
+flash database, gracefully fall back to a driver described solely by its
+SFDP tables.
 
-Can we just update all the kmalloc()s that buffers get given to the
-PSP? For instance doesn't sev_send_update_data() have an issue?
-Reading the PSP spec it seems like a user can call this ioctl with a
-large hdr_len and the PSP will only fill out what's actually required
-like in these fixed up cases? This is assuming the PSP is written to
-spec (and just the current version). I'd rather have all of these
-instances updated.
+It is still recommended to add the flash to the in-kernel database.
+First, we get a proper partname and secondly, for all features not
+described by the SFDP like OTP we need the entry anyway.
+
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/mtd/spi-nor/core.c | 13 +++++++++++++
+ drivers/mtd/spi-nor/core.h |  1 +
+ drivers/mtd/spi-nor/sfdp.c | 27 +++++++++++++++++++++++++++
+ 3 files changed, 41 insertions(+)
+
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index 65cd8e668579..ee193a61310a 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -1632,6 +1632,11 @@ static const struct spi_nor_manufacturer *manufacturers[] = {
+ 	&spi_nor_xmc,
+ };
+ 
++static const struct flash_info spi_nor_generic_flash = {
++	.name = "spi-nor-generic",
++	.parse_sfdp = true,
++};
++
+ static const struct flash_info *spi_nor_match_id(struct spi_nor *nor,
+ 						 const u8 *id)
+ {
+@@ -1670,6 +1675,14 @@ static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	info = spi_nor_match_id(nor, id);
++
++	/* Fallback to a generic flash described only by its SFDP data. */
++	if (!info) {
++		ret = spi_nor_check_sfdp_signature(nor);
++		if (!ret)
++			info = &spi_nor_generic_flash;
++	}
++
+ 	if (!info) {
+ 		dev_err(nor->dev, "unrecognized JEDEC id bytes: %*ph\n",
+ 			SPI_NOR_MAX_ID_LEN, id);
+diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+index 3a19b8092ab8..aa9f218245a5 100644
+--- a/drivers/mtd/spi-nor/core.h
++++ b/drivers/mtd/spi-nor/core.h
+@@ -694,6 +694,7 @@ int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
+ int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
+ 				     const u8 *buf, size_t len);
+ 
++int spi_nor_check_sfdp_signature(struct spi_nor *nor);
+ int spi_nor_parse_sfdp(struct spi_nor *nor);
+ 
+ static inline struct spi_nor *mtd_to_spi_nor(struct mtd_info *mtd)
+diff --git a/drivers/mtd/spi-nor/sfdp.c b/drivers/mtd/spi-nor/sfdp.c
+index a5211543d30d..9bdb3d5dc7e8 100644
+--- a/drivers/mtd/spi-nor/sfdp.c
++++ b/drivers/mtd/spi-nor/sfdp.c
+@@ -1247,6 +1247,33 @@ static void spi_nor_post_sfdp_fixups(struct spi_nor *nor)
+ 		nor->info->fixups->post_sfdp(nor);
+ }
+ 
++/**
++ * spi_nor_check_sfdp_header() - check for a valid SFDP header
++ * @nor:		pointer to a 'struct spi_nor'
++ *
++ * Used to detect if the flash supports the RDSFDP command as well as the
++ * presence of a valid SFDP table.
++ *
++ * Return: 0 on success, -errno otherwise.
++ */
++int spi_nor_check_sfdp_signature(struct spi_nor *nor)
++{
++	u32 signature;
++	int err;
++
++	/* Get the SFDP header. */
++	err = spi_nor_read_sfdp_dma_unsafe(nor, 0, sizeof(signature),
++					   &signature);
++	if (err < 0)
++		return err;
++
++	/* Check the SFDP signature. */
++	if (le32_to_cpu(signature) != SFDP_SIGNATURE)
++		return -EINVAL;
++
++	return 0;
++}
++
+ /**
+  * spi_nor_parse_sfdp() - parse the Serial Flash Discoverable Parameters.
+  * @nor:		pointer to a 'struct spi_nor'
+-- 
+2.30.2
+
