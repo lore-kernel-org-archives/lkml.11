@@ -2,139 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F38EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E90B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381116AbiEMOeS (ORCPT
+        id S1381286AbiEMOeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
+        Fri, 13 May 2022 10:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381278AbiEMObP (ORCPT
+        with ESMTP id S1381365AbiEMObU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:31:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BAE1AB7B4;
-        Fri, 13 May 2022 07:29:08 -0700 (PDT)
+        Fri, 13 May 2022 10:31:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8531A29DE;
+        Fri, 13 May 2022 07:28:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5CECB82F64;
-        Fri, 13 May 2022 14:29:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D01DEC34100;
-        Fri, 13 May 2022 14:29:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A664621AF;
+        Fri, 13 May 2022 14:28:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E740C34117;
+        Fri, 13 May 2022 14:28:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452146;
-        bh=z9GmZZIrI8Ekfpz76cjKYYfFFX50TIWlwptiScaqNsM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mOGRKufGLiBolgimhTpskiR3XPlvJKrp6cAf14Zr2etUI93gmAXf3d12AAdl6jUDB
-         ikcvMmTH5owSndhxseT9Y+OKwp8RoiyxhjB9E2XYIu8N67IV8EeuHIxqMypSzlGV6M
-         JW3j3aaq16TNAevsgrA+VGWh62iEvvBCzK/7Il1g=
+        s=korg; t=1652452136;
+        bh=ucZsfcLRt1vtS/CGzKQjww9jd+U9CFY4u/T5ofBcl1k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Bcw2ePGtLsw5/eb9LCNGwNmVvVsEFgbejIdR/rTrdJZQSkqqK87ATyZOGNOcgcCO1
+         JJBEcEJHBwLrex0Gulh4ZXSRygPzZBvIR2zWm8oqrGJGgn6EmNnkS+mIsgZ2g+bVnD
+         BfCp1DLSDUERf159OpGEBJ7914GduNfviNylUfDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.17 00/12] 5.17.8-rc1 review
-Date:   Fri, 13 May 2022 16:24:00 +0200
-Message-Id: <20220513142228.651822943@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 11/21] objtool: Fix SLS validation for kcov tail-call replacement
+Date:   Fri, 13 May 2022 16:23:53 +0200
+Message-Id: <20220513142230.205917847@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220513142229.874949670@linuxfoundation.org>
+References: <20220513142229.874949670@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.8-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.17.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.17.8-rc1
-X-KernelTest-Deadline: 2022-05-15T14:22+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.17.8 release.
-There are 12 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Peter Zijlstra <peterz@infradead.org>
 
-Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
-Anything received after that time might be too late.
+[ Upstream commit 7a53f408902d913cd541b4f8ad7dbcd4961f5b82 ]
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.8-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-and the diffstat can be found below.
+Since not all compilers have a function attribute to disable KCOV
+instrumentation, objtool can rewrite KCOV instrumentation in noinstr
+functions as per commit:
 
-thanks,
+  f56dae88a81f ("objtool: Handle __sanitize_cov*() tail calls")
 
-greg k-h
+However, this has subtle interaction with the SLS validation from
+commit:
 
--------------
-Pseudo-Shortlog of commits:
+  1cc1e4c8aab4 ("objtool: Add straight-line-speculation validation")
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.17.8-rc1
+In that when a tail-call instrucion is replaced with a RET an
+additional INT3 instruction is also written, but is not represented in
+the decoded instruction stream.
 
-Peter Xu <peterx@redhat.com>
-    mm: fix invalid page pointer returned with FOLL_PIN gups
+This then leads to false positive missing INT3 objtool warnings in
+noinstr code.
 
-Huang Ying <ying.huang@intel.com>
-    mm,migrate: fix establishing demotion target
+Instead of adding additional struct instruction objects, mark the RET
+instruction with retpoline_safe to suppress the warning (since we know
+there really is an INT3).
 
-Miaohe Lin <linmiaohe@huawei.com>
-    mm/mlock: fix potential imbalanced rlimit ucounts adjustment
+Fixes: 1cc1e4c8aab4 ("objtool: Add straight-line-speculation validation")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220323230712.GA8939@worktop.programming.kicks-ass.net
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/objtool/check.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Naoya Horiguchi <naoya.horiguchi@nec.com>
-    mm/hwpoison: fix error page recovered but reported "not recovered"
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: shmem: fix missing cache flush in shmem_mfill_atomic_pte()
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: hugetlb: fix missing cache flush in hugetlb_mcopy_atomic_pte()
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
-
-Muchun Song <songmuchun@bytedance.com>
-    mm: fix missing cache flush for all tail pages of compound page
-
-Jan Kara <jack@suse.cz>
-    udf: Avoid using stale lengthOfImpUse
-
-Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
-    rfkill: uapi: fix RFKILL_IOCTL_MAX_SIZE ioctl request definition
-
-Itay Iellin <ieitayie@gmail.com>
-    Bluetooth: Fix the creation of hdev->name
-
-
--------------
-
-Diffstat:
-
- Makefile                         |  4 ++--
- fs/udf/namei.c                   |  8 ++++----
- include/net/bluetooth/hci_core.h |  3 +++
- include/uapi/linux/rfkill.h      |  2 +-
- mm/gup.c                         |  2 +-
- mm/hugetlb.c                     |  3 ++-
- mm/memory-failure.c              |  4 +++-
- mm/memory.c                      |  2 ++
- mm/migrate.c                     | 14 ++++++++++----
- mm/mlock.c                       |  1 +
- mm/shmem.c                       |  4 +++-
- mm/userfaultfd.c                 |  3 +++
- net/bluetooth/hci_core.c         |  6 +++---
- 13 files changed, 38 insertions(+), 18 deletions(-)
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -871,6 +871,16 @@ static void add_call_dest(struct objtool
+ 			               : arch_nop_insn(insn->len));
+ 
+ 		insn->type = sibling ? INSN_RETURN : INSN_NOP;
++
++		if (sibling) {
++			/*
++			 * We've replaced the tail-call JMP insn by two new
++			 * insn: RET; INT3, except we only have a single struct
++			 * insn here. Mark it retpoline_safe to avoid the SLS
++			 * warning, instead of adding another insn.
++			 */
++			insn->retpoline_safe = true;
++		}
+ 	}
+ 
+ 	if (mcount && !strcmp(insn->call_dest->name, "__fentry__")) {
 
 
