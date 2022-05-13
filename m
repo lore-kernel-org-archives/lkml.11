@@ -2,114 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4852C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D18C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:51:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377903AbiEMHus (ORCPT
+        id S1377924AbiEMHvL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
+        Fri, 13 May 2022 03:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352984AbiEMHur (ORCPT
+        with ESMTP id S1377910AbiEMHvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:50:47 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2716328
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652428242; x=1683964242;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=CGPxjaomcbXxm6GZzv2LtN8DWBzi8Alu8nAqq4wgI8Y=;
-  b=tWNn9y2ksYWBRTZbB4tGjg/QSR4uFx3YIuULhRO2js21M3SuuJgypAAh
-   cQrDvtNYAk3GJUubMolySVSm9AnSwq+ViZ36GUL+9FFXUyg/1ioq9EsuA
-   FTHKEj/9wSkRmy/ElGPkknDGgs7oJdlLQ/BDphzWrFGpWH2sGbsgtyBe/
-   qEmYB2HAMqp3Dj1+QwyIz7KJyE1183hrdBl/0boLdBCifH4sVYHOXGFWE
-   g1MAWhueIKesTVvDOuS3DQsm8bArsWLD0QFK+F5gSaBmUp6lQIG7G0PLm
-   aq3pC92OV9k05M45iIkYWHUZMTaYqaM1cT5k0xcRkpnDIBOUQZyuiCkuf
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="95653875"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 May 2022 00:50:41 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+        Fri, 13 May 2022 03:51:04 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A77136401
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:50:41 -0700 (PDT)
+X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
+        R,40,3)
+Received: from 172.27.96.203
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(7682:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Fri, 13 May 2022 15:44:27 +0800 (CST)
+Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
+ CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 13 May 2022 00:50:41 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 13 May 2022 00:50:37 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <linux@armlinux.org.uk>, <linus.walleij@linaro.org>,
-        <alexandre.belloni@bootlin.com>, <michael@walle.cc>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Kavyasree.Kotagiri@microchip.com>, <Manohar.Puri@microchip.com>
-Subject: [PATCH v3] ARM: at91: debug: add lan966 support
-Date:   Fri, 13 May 2022 13:20:35 +0530
-Message-ID: <20220513075035.18663-1-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
+ 15.1.2507.6; Fri, 13 May 2022 15:44:24 +0800
+Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
+ ([::1]) with mapi id 15.01.2507.006; Fri, 13 May 2022 15:44:24 +0800
+From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "sboyd@kernel.org" <sboyd@kernel.org>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: RE: [PATCH v15 10/10] ARM: dts: Add Sunplus SP7021-Demo-V3 board
+ device tree
+Thread-Topic: [PATCH v15 10/10] ARM: dts: Add Sunplus SP7021-Demo-V3 board
+ device tree
+Thread-Index: AQHYZcsUOdNmnhD0gkKqn75ry15Nq60ahDUAgAHng+A=
+Date:   Fri, 13 May 2022 07:44:24 +0000
+Message-ID: <3a01fe9aa860407694ee77133459a9ab@cqplus1.com>
+References: <cover.1652329411.git.qinjian@cqplus1.com>
+ <daeccdfb9655e549656af0af955a4697871e3ab0.1652329411.git.qinjian@cqplus1.com>
+ <32c80a79-abd5-3fd2-cbb4-e2ae93c539da@linaro.org>
+In-Reply-To: <32c80a79-abd5-3fd2-cbb4-e2ae93c539da@linaro.org>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.28.110.18]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for low-level debugging on FLEXCOM USART of
-LAN966 SoC.
-
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
----
- arch/arm/Kconfig.debug | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
-
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 0c9497d549e3..b8a2364df9c1 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -210,6 +210,26 @@ choice
- 		  Say Y here if you want kernel low-level debugging support
- 		  on the FLEXCOM3 port of SAMA7G5.
- 
-+	config DEBUG_AT91_LAN966_FLEXCOM
-+		bool "Kernel low-level debugging on LAN966 FLEXCOM USART"
-+		select DEBUG_AT91_UART
-+		depends on SOC_LAN966x
-+		help
-+		Say Y here if you want kernel low-level debugging support
-+		on the FLEXCOM port of LAN966.
-+
-+		DEBUG_UART_PHYS | DEBUG_UART_VIRT
-+
-+		0xe0040200      | 0xfd040200     | FLEXCOM0
-+		0xe0044200      | 0xfd044200     | FLEXCOM1
-+		0xe0060200      | 0xfd060200     | FLEXCOM2
-+		0xe0064200      | 0xfd064200     | FLEXCOM3
-+		0xe0070200      | 0xfd070200     | FLEXCOM4
-+
-+		By default, enabling FLEXCOM3 port. Based on requirement, use
-+		DEBUG_UART_PHYS and DEBUG_UART_VIRT configurations from above
-+		table.
-+
- 	config DEBUG_BCM2835
- 		bool "Kernel low-level debugging on BCM2835 PL011 UART"
- 		depends on ARCH_BCM2835 && ARCH_MULTI_V6
-@@ -1685,6 +1705,7 @@ config DEBUG_UART_PHYS
- 	default 0xd4017000 if DEBUG_MMP_UART2
- 	default 0xd4018000 if DEBUG_MMP_UART3
- 	default 0xe0000000 if DEBUG_SPEAR13XX
-+	default 0xe0064200 if DEBUG_AT91_LAN966_FLEXCOM
- 	default 0xe1824200 if DEBUG_AT91_SAMA7G5_FLEXCOM3
- 	default 0xe4007000 if DEBUG_HIP04_UART
- 	default 0xe6c40000 if DEBUG_RMOBILE_SCIFA0
-@@ -1805,6 +1826,7 @@ config DEBUG_UART_VIRT
- 	default 0xfb10c000 if DEBUG_REALVIEW_PB1176_PORT
- 	default 0xfcfe8600 if DEBUG_BCM63XX_UART
- 	default 0xfd000000 if DEBUG_SPEAR3XX || DEBUG_SPEAR13XX
-+	default 0xfd064200 if DEBUG_AT91_LAN966_FLEXCOM
- 	default 0xfd531000 if DEBUG_STIH41X_SBC_ASC1
- 	default 0xfd883000 if DEBUG_ALPINE_UART0
- 	default 0xfdd32000 if DEBUG_STIH41X_ASC2
--- 
-2.17.1
-
+PiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zdW5wbHVzLXNwNzAyMS1hY2hpcC5k
+dHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3VucGx1cy1zcDcwMjEtYWNoaXAuZHRzaQ0KPiA+IG5l
+dyBmaWxlIG1vZGUgMTAwNjQ0DQo+ID4gaW5kZXggMDAwMDAwMDAwLi4xNTYwYzk1ZDkNCj4gPiAt
+LS0gL2Rldi9udWxsDQo+ID4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3VucGx1cy1zcDcwMjEt
+YWNoaXAuZHRzaQ0KPiA+IEBAIC0wLDAgKzEsODUgQEANCj4gPiArLy8gU1BEWC1MaWNlbnNlLUlk
+ZW50aWZpZXI6IEdQTC0yLjANCj4gPiArLyoNCj4gPiArICogRGV2aWNlIFRyZWUgU291cmNlIGZv
+ciBTdW5wbHVzIFNQNzAyMQ0KPiA+ICsgKg0KPiA+ICsgKiBDb3B5cmlnaHQgKEMpIDIwMjEgU3Vu
+cGx1cyBUZWNobm9sb2d5IENvLg0KPiA+ICsgKi8NCj4gPiArDQo+ID4gKyNpbmNsdWRlICJzdW5w
+bHVzLXNwNzAyMS5kdHNpIg0KPiA+ICsNCj4gPiArLyB7DQo+ID4gKwljb21wYXRpYmxlID0gInN1
+bnBsdXMsc3A3MDIxLWFjaGlwIjsNCj4gDQo+IFRoaXMgZG9lcyBub3QgbWF0Y2ggeW91ciBiaW5k
+aW5ncy4NCj4gDQoNCj4gPiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zdW5wbHVzLXNwNzAyMS1k
+ZW1vLXYzLmR0cw0KPiA+IEBAIC0wLDAgKzEsMjcgQEANCj4gPiArLy8gU1BEWC1MaWNlbnNlLUlk
+ZW50aWZpZXI6IEdQTC0yLjANCj4gPiArLyoNCj4gPiArICogRGV2aWNlIFRyZWUgU291cmNlIGZv
+ciBTdW5wbHVzIFNQNzAyMSBEZW1vIFYzIFNCQyBib2FyZA0KPiA+ICsgKg0KPiA+ICsgKiBDb3B5
+cmlnaHQgKEMpIFN1bnBsdXMgVGVjaG5vbG9neSBDby4NCj4gPiArICovDQo+ID4gKw0KPiA+ICsv
+ZHRzLXYxLzsNCj4gPiArDQo+ID4gKyNpbmNsdWRlICJzdW5wbHVzLXNwNzAyMS1hY2hpcC5kdHNp
+Ig0KPiA+ICsNCj4gPiArLyB7DQo+ID4gKwljb21wYXRpYmxlID0gInN1bnBsdXMsc3A3MDIxLWRl
+bW8tdjMiOw0KPiANCj4gVGhpcyBkb2VzIG5vdCBtYXRjaCB5b3VyIGJpbmRpbmdzLg0KPiANCj4g
+UGxlYXNlIHJ1biBtYWtlIGR0YnNfY2hlY2suDQoNCkkgZGlkIHBhc3NlZCB0aGUgbWFrZSBkdGJz
+X2NoZWNrLg0KY29tcGF0aWJsZSBzdHJpbmc6ICJzdW5wbHVzLHNwNzAyMSIsICJzdW5wbHVzLHNw
+NzAyMS1hY2hpcCIsICJzdW5wbHVzLHNwNzAyMS1kZW1vLXYzIg0KYWxsIGRlZmluZWQgQCBEb2N1
+bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvYXJtL3N1bnBsdXMsc3A3MDIxLnlhbWwgWzFd
+DQoNClsxXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9sa21sLzYxMDdhNjgwMDhmMmQ3MWQyYzc4
+NjhkNGQ5NGNiNjZjNWI1ZmMxMzQuMTY1MjMyOTQxMS5naXQucWluamlhbkBjcXBsdXMxLmNvbS8N
+CiANCg0K
