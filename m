@@ -2,91 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D18C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 925D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377924AbiEMHvL (ORCPT
+        id S1377922AbiEMHvo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
+        Fri, 13 May 2022 03:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377910AbiEMHvE (ORCPT
+        with ESMTP id S1377915AbiEMHvl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:51:04 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A77136401
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:50:41 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(7682:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 13 May 2022 15:44:27 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.6; Fri, 13 May 2022 15:44:24 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2507.006; Fri, 13 May 2022 15:44:24 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "sboyd@kernel.org" <sboyd@kernel.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v15 10/10] ARM: dts: Add Sunplus SP7021-Demo-V3 board
- device tree
-Thread-Topic: [PATCH v15 10/10] ARM: dts: Add Sunplus SP7021-Demo-V3 board
- device tree
-Thread-Index: AQHYZcsUOdNmnhD0gkKqn75ry15Nq60ahDUAgAHng+A=
-Date:   Fri, 13 May 2022 07:44:24 +0000
-Message-ID: <3a01fe9aa860407694ee77133459a9ab@cqplus1.com>
-References: <cover.1652329411.git.qinjian@cqplus1.com>
- <daeccdfb9655e549656af0af955a4697871e3ab0.1652329411.git.qinjian@cqplus1.com>
- <32c80a79-abd5-3fd2-cbb4-e2ae93c539da@linaro.org>
-In-Reply-To: <32c80a79-abd5-3fd2-cbb4-e2ae93c539da@linaro.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        Fri, 13 May 2022 03:51:41 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78CB2655E
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:51:40 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso7122681pjg.0
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:51:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=QrqaDOovabmDJIWbQp5jwa4H/wrRF/tDldOr21QOUG4=;
+        b=JZDuLkdBTFDQ7KWBfaXar4nccamEVRPV8aYGT+jAlBqgUy7xAE50b6PfTPWkSpBSUJ
+         RfFaWL13Ii0HXejxG2THMOhsk9sCuc+TPRKm8lT7Eq2TNzG6iLB6b2PdXtWhZ4i0vPm/
+         FxVPUhzwel0M2NDefl0HXRj6j3TjEPQ7WydboFnFx7mTbhYLuzjLrt6dLnFYonvS6i95
+         hciohckIA9Xho+Z63+dFvOYwOdFz4q2aRdcnfbOJgdEEvjwBxk3apgJ801Ps03VkbtZP
+         TyKAi20gCp1duBtVxmFmw9lP0GoUsN/xNgpzECLb91m/k7apWSG+dBS8wHADLmnAOwla
+         Tl7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=QrqaDOovabmDJIWbQp5jwa4H/wrRF/tDldOr21QOUG4=;
+        b=PDA2OIz0X31iK5V37waXNUgQVaK5Tr0Q6YOyQECzDS3UnJs4+4i5stpzchhE0F0mk0
+         EalgMaXJEywWXnrdw9vPDzYjBnp8IA82+f3B+y3ci1ofdPkQEfndKYe+48qG6hK+1292
+         a8AuzJP3pboVI2JqspagUR+TlEqGrd4cCW2wpwYTxQJJnUV/m/UJYL18x2hcW5wDOJqK
+         IYeAQuchQjN1VhZHDEjGLj/FoJ6MFgxmAbTuZZDRKtMjLTVgJ7/cUr6TOhK7wlzlxwuc
+         yxm4YNWW2IWiCRvW+EWnX3ODfn7B44MYplm09PLxt8HiaAfV0NQg6x5jZYL+BGwpXbW+
+         RwGA==
+X-Gm-Message-State: AOAM531uZMZsKCF9UodpEKrdC3uvowtvW4q+Qhp7y2QCGp0lfHQv9td8
+        4AuijiO3jso85FgOlKm/lgVjyFyykfeJmw==
+X-Google-Smtp-Source: ABdhPJyWmgoWTR40oS2xAUiT/lGyMb4AB8dUzXDLfA22y1IuOAspj8AvdRVmVI6ODS+SgiFp0oniyw==
+X-Received: by 2002:a17:903:1252:b0:154:ca85:59a0 with SMTP id u18-20020a170903125200b00154ca8559a0mr3689431plh.169.1652428299951;
+        Fri, 13 May 2022 00:51:39 -0700 (PDT)
+Received: from Negi ([207.151.52.3])
+        by smtp.gmail.com with ESMTPSA id w18-20020a62c712000000b0050dc7628166sm1099898pfg.64.2022.05.13.00.51.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 00:51:39 -0700 (PDT)
+From:   Soumya Negi <soumya.negi97@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Soumya Negi <soumya.negi97@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: r8188eu: Fix block comment format
+Date:   Fri, 13 May 2022 00:51:07 -0700
+Message-Id: <20220513075107.23285-1-soumya.negi97@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zdW5wbHVzLXNwNzAyMS1hY2hpcC5k
-dHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3VucGx1cy1zcDcwMjEtYWNoaXAuZHRzaQ0KPiA+IG5l
-dyBmaWxlIG1vZGUgMTAwNjQ0DQo+ID4gaW5kZXggMDAwMDAwMDAwLi4xNTYwYzk1ZDkNCj4gPiAt
-LS0gL2Rldi9udWxsDQo+ID4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3VucGx1cy1zcDcwMjEt
-YWNoaXAuZHRzaQ0KPiA+IEBAIC0wLDAgKzEsODUgQEANCj4gPiArLy8gU1BEWC1MaWNlbnNlLUlk
-ZW50aWZpZXI6IEdQTC0yLjANCj4gPiArLyoNCj4gPiArICogRGV2aWNlIFRyZWUgU291cmNlIGZv
-ciBTdW5wbHVzIFNQNzAyMQ0KPiA+ICsgKg0KPiA+ICsgKiBDb3B5cmlnaHQgKEMpIDIwMjEgU3Vu
-cGx1cyBUZWNobm9sb2d5IENvLg0KPiA+ICsgKi8NCj4gPiArDQo+ID4gKyNpbmNsdWRlICJzdW5w
-bHVzLXNwNzAyMS5kdHNpIg0KPiA+ICsNCj4gPiArLyB7DQo+ID4gKwljb21wYXRpYmxlID0gInN1
-bnBsdXMsc3A3MDIxLWFjaGlwIjsNCj4gDQo+IFRoaXMgZG9lcyBub3QgbWF0Y2ggeW91ciBiaW5k
-aW5ncy4NCj4gDQoNCj4gPiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zdW5wbHVzLXNwNzAyMS1k
-ZW1vLXYzLmR0cw0KPiA+IEBAIC0wLDAgKzEsMjcgQEANCj4gPiArLy8gU1BEWC1MaWNlbnNlLUlk
-ZW50aWZpZXI6IEdQTC0yLjANCj4gPiArLyoNCj4gPiArICogRGV2aWNlIFRyZWUgU291cmNlIGZv
-ciBTdW5wbHVzIFNQNzAyMSBEZW1vIFYzIFNCQyBib2FyZA0KPiA+ICsgKg0KPiA+ICsgKiBDb3B5
-cmlnaHQgKEMpIFN1bnBsdXMgVGVjaG5vbG9neSBDby4NCj4gPiArICovDQo+ID4gKw0KPiA+ICsv
-ZHRzLXYxLzsNCj4gPiArDQo+ID4gKyNpbmNsdWRlICJzdW5wbHVzLXNwNzAyMS1hY2hpcC5kdHNp
-Ig0KPiA+ICsNCj4gPiArLyB7DQo+ID4gKwljb21wYXRpYmxlID0gInN1bnBsdXMsc3A3MDIxLWRl
-bW8tdjMiOw0KPiANCj4gVGhpcyBkb2VzIG5vdCBtYXRjaCB5b3VyIGJpbmRpbmdzLg0KPiANCj4g
-UGxlYXNlIHJ1biBtYWtlIGR0YnNfY2hlY2suDQoNCkkgZGlkIHBhc3NlZCB0aGUgbWFrZSBkdGJz
-X2NoZWNrLg0KY29tcGF0aWJsZSBzdHJpbmc6ICJzdW5wbHVzLHNwNzAyMSIsICJzdW5wbHVzLHNw
-NzAyMS1hY2hpcCIsICJzdW5wbHVzLHNwNzAyMS1kZW1vLXYzIg0KYWxsIGRlZmluZWQgQCBEb2N1
-bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvYXJtL3N1bnBsdXMsc3A3MDIxLnlhbWwgWzFd
-DQoNClsxXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9sa21sLzYxMDdhNjgwMDhmMmQ3MWQyYzc4
-NjhkNGQ5NGNiNjZjNWI1ZmMxMzQuMTY1MjMyOTQxMS5naXQucWluamlhbkBjcXBsdXMxLmNvbS8N
-CiANCg0K
+Adhere to Linux coding style. Fix the below checkpatch warning:
+ WARNING: Block comments should align the * on each line
+
+Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_xmit.c | 60 ++++++++++++-------------
+ 1 file changed, 28 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+index d086812f8c0e..806e24743ecc 100644
+--- a/drivers/staging/r8188eu/core/rtw_xmit.c
++++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+@@ -52,8 +52,8 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 	sema_init(&pxmitpriv->terminate_xmitthread_sema, 0);
+ 
+ 	/*
+-	Please insert all the queue initializaiton using rtw_init_queue below
+-	*/
++	 * Please insert all the queue initializaiton using rtw_init_queue below
++	 */
+ 
+ 	pxmitpriv->adapter = padapter;
+ 
+@@ -66,10 +66,10 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 	rtw_init_queue(&pxmitpriv->free_xmit_queue);
+ 
+ 	/*
+-	Please allocate memory with the sz = (struct xmit_frame) * NR_XMITFRAME,
+-	and initialize free_xmit_frame below.
+-	Please also apply  free_txobj to link_up all the xmit_frames...
+-	*/
++	 * Please allocate memory with the sz = (struct xmit_frame) * NR_XMITFRAME,
++	 * and initialize free_xmit_frame below.
++	 * Please also apply  free_txobj to link_up all the xmit_frames...
++	 */
+ 
+ 	pxmitpriv->pallocated_frame_buf = vzalloc(NR_XMITFRAME * sizeof(struct xmit_frame) + 4);
+ 
+@@ -853,17 +853,15 @@ s32 rtw_txframes_sta_ac_pending(struct adapter *padapter, struct pkt_attrib *pat
+ }
+ 
+ /*
+-
+-This sub-routine will perform all the following:
+-
+-1. remove 802.3 header.
+-2. create wlan_header, based on the info in pxmitframe
+-3. append sta's iv/ext-iv
+-4. append LLC
+-5. move frag chunk from pframe to pxmitframe->mem
+-6. apply sw-encrypt, if necessary.
+-
+-*/
++ * This sub-routine will perform all the following:
++ *
++ * 1. remove 802.3 header.
++ * 2. create wlan_header, based on the info in pxmitframe
++ * 3. append sta's iv/ext-iv
++ * 4. append LLC
++ * 5. move frag chunk from pframe to pxmitframe->mem
++ * 6. apply sw-encrypt, if necessary.
++ */
+ s32 rtw_xmitframe_coalesce(struct adapter *padapter, struct sk_buff *pkt, struct xmit_frame *pxmitframe)
+ {
+ 	struct pkt_file pktfile;
+@@ -1207,24 +1205,22 @@ s32 rtw_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
+ }
+ 
+ /*
+-Calling context:
+-1. OS_TXENTRY
+-2. RXENTRY (rx_thread or RX_ISR/RX_CallBack)
+-
+-If we turn on USE_RXTHREAD, then, no need for critical section.
+-Otherwise, we must use _enter/_exit critical to protect free_xmit_queue...
+-
+-Must be very very cautious...
+-
+-*/
+-
++ * Calling context:
++ * 1. OS_TXENTRY
++ * 2. RXENTRY (rx_thread or RX_ISR/RX_CallBack)
++ *
++ * If we turn on USE_RXTHREAD, then, no need for critical section.
++ * Otherwise, we must use _enter/_exit critical to protect free_xmit_queue...
++ *
++ * Must be very very cautious...
++ */
+ struct xmit_frame *rtw_alloc_xmitframe(struct xmit_priv *pxmitpriv)/* _queue *pfree_xmit_queue) */
+ {
+ 	/*
+-		Please remember to use all the osdep_service api,
+-		and lock/unlock or _enter/_exit critical to protect
+-		pfree_xmit_queue
+-	*/
++	 * Please remember to use all the osdep_service api,
++	 * and lock/unlock or _enter/_exit critical to protect
++	 * pfree_xmit_queue
++	 */
+ 
+ 	struct xmit_frame *pxframe = NULL;
+ 	struct list_head *plist, *phead;
+-- 
+2.17.1
+
