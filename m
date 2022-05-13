@@ -2,92 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39DF0C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 17:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 811A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 17:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383216AbiEMR7g (ORCPT
+        id S1383219AbiEMR7v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 13:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49826 "EHLO
+        Fri, 13 May 2022 13:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234536AbiEMR7e (ORCPT
+        with ESMTP id S1382772AbiEMR7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 13:59:34 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B3152610A;
-        Fri, 13 May 2022 10:59:32 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id y32so15801241lfa.6;
-        Fri, 13 May 2022 10:59:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=F9nVmxbxhPUjXlAFgxWdPottc/POpyAnJKeZJvdJb3Q=;
-        b=nDJ5l8PJQN6ErdgB5BQL9UoNqthpJEj8Ph+b6M5H6gCD5YJQOQLn9uVZW0TCxjV5d3
-         xWk/gd9SFSNISUuInNDzkEePTpVfVBA82xTxYgz5IIksYKh91DVz57K7Ikjnqx0K5gC5
-         5sKzwXwNFBue6IdUNQxncSJksQy+MYHAg25vbmbX80bMyfKEjLGNPP7es0kWv/bEIXKR
-         Hw2wsGYZbmfkXrLAalGWqMQX32xsODTl1Ushj8HBKuAr5avV2/t2JEnXWEirtKL+Sar9
-         4Sv0KYKsLnXHqFGPaKEcjshoSESRb+QNIW0Nieq1iie2dzne+s2KLGhMaZVnk6JSujr3
-         SLww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=F9nVmxbxhPUjXlAFgxWdPottc/POpyAnJKeZJvdJb3Q=;
-        b=QemadDMPwANQifbO4+RxC3dlgF4fdEU9f36FLZhfXzRU00Zttk24YcmArwB8EVGnbg
-         7j3wLEHzDXrkcXyzkow7AQrQVOfFQABTxNurNXWWDFHeKG+TLrcAjcsbI+/LA+zzzP+w
-         UHsbETeHkz0zJeuFJLaYnQrDPYQOqdRnvViDrCpIaO7oOj3HNroiVLMzZ25EhYF1Ar5S
-         pGTOBIdieLVk+gfnkr1UgmCY/amcuQ9haDfGIZsXBT0LNjeju9sRK4h+/s88elQ8uvl7
-         E3r8CcmXW6mKq2G8YPrXSOiiX/uTp7NWhFPjsQACKoQFfhsHhebGQNqanC4EUMTgxmHi
-         9Yfw==
-X-Gm-Message-State: AOAM533u0lQv0RFSNQeCp02s24wIt7k5jivUSwSh/8ZlA2NgIH2C2skz
-        endCmYkkVGgNvNqSO7bU4k6gFJzL8mc=
-X-Google-Smtp-Source: ABdhPJzROlR9JfnWELD1llXgexuPYrFMoAc1dOTyPtjP64jGm4kWCWLf8hy56AAM4zb4yA/N6eu63g==
-X-Received: by 2002:a05:6512:b11:b0:474:2b91:99c4 with SMTP id w17-20020a0565120b1100b004742b9199c4mr4252868lfu.347.1652464770749;
-        Fri, 13 May 2022 10:59:30 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-137-244.dynamic.spd-mgts.ru. [109.252.137.244])
-        by smtp.googlemail.com with ESMTPSA id b20-20020a05651c099400b0024f3d1dae82sm527639ljq.10.2022.05.13.10.59.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 10:59:30 -0700 (PDT)
-Message-ID: <a3fa2e6d-55bc-2da0-9796-fc936583d78a@gmail.com>
-Date:   Fri, 13 May 2022 20:59:29 +0300
+        Fri, 13 May 2022 13:59:46 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7380A522C0
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:59:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652464785; x=1684000785;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/nNj8XlCpwQw0dLOSacHnO9xHg/M4ZQqauXIJNlqO4c=;
+  b=USRSKbCKZkicNj9O9/rbxYh8EJm1k6BvHz0fK9RPSkWlv9CN8fFLh864
+   rAsTAh75yOvJq9hyogsf3AtRFpUu1E2FHfMfQWQGZbeh1CgDEFZmfe/wu
+   auhe9AKlThk6iC33ZwLUnVNwzrnS3YKxE9z8HGHjP0LQTQ89wcvwwO4IY
+   4Xfiq7uVnMkfeNAothmlVW6gyUAg/Ktznkb+JsGqCTb0ucj0AYdmR2eig
+   Cc5wqegOAw00zbKG7gvNoFU6zHc1OmvTXBmTRjPm16OrjeIdM7ptzSQuF
+   Mc3tzY/Cb6PUm4bVRRbZkI+qfhlo1UEvJ/ZgmnTS0JgIlIP2r4XmbLi6j
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="250283471"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="250283471"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 10:59:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="671444234"
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+  by fmsmga002.fm.intel.com with ESMTP; 13 May 2022 10:59:45 -0700
+Date:   Fri, 13 May 2022 11:03:20 -0700
+From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for
+ NMIs
+Message-ID: <20220513180320.GA22683@ranerica-svr.sc.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
+ <87zgjufjrf.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 3/3] iio: light: Add support for ltrf216a sensor
-Content-Language: en-US
-To:     Shreeya Patel <shreeya.patel@collabora.com>, jic23@kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
-        krisman@collabora.com
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        alvaro.soliverez@collabora.com
-References: <20220511094024.175994-1-shreeya.patel@collabora.com>
- <20220511094024.175994-4-shreeya.patel@collabora.com>
- <a5929558-d09a-cb67-cba9-1dcfb5e43525@gmail.com>
- <88b33ada-e997-05e9-f555-b9c1ed369fb7@collabora.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <88b33ada-e997-05e9-f555-b9c1ed369fb7@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87zgjufjrf.ffs@tglx>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-13.05.2022 16:40, Shreeya Patel пишет:
-> Also, why would we want to do a SW reset here?
+On Fri, May 06, 2022 at 11:12:20PM +0200, Thomas Gleixner wrote:
+> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
+> > Vectors are meaningless when allocating IRQs with NMI as the delivery
+> > mode.
 > 
-> In the datasheet, I could see the following steps to enable the sensor
-> Supply VDD to Sensor (Sensor in Standby Mode) ---> Wait 100 ms (min) -
-> initial startup time
-> ---> I2C Command (Write) To enable sensor to Active Mode
+> Vectors are not meaningless. NMI has a fixed vector.
+> 
+> The point is that for a fixed vector there is no vector management
+> required.
+> 
+> Can you spot the difference?
 
-For example, if you'll do kexec from other kernel, say downstream
-kernel, then the h/w state is undetermined for us. It's a common problem
-with downstream drivers that they rely on a specific state left from
-bootloader, which is often unacceptable for upstream.
+Yes, I see your point now. Thank you for the explanation.
 
-If we'll do the SW reset on probe, then we'll bring h/w into the
-predictable state and won't depend on state left from bootloader or
-anything else that touched h/w before us.
+> 
+> > In such case, skip the reservation of IRQ vectors. Do it in the lowest-
+> > level functions where the actual IRQ reservation takes place.
+> >
+> > Since NMIs target specific CPUs, keep the functionality to find the best
+> > CPU.
+> 
+> Again. What for?
+>   
+> > +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
+> > +		cpu = irq_matrix_find_best_cpu(vector_matrix, dest);
+> > +		apicd->cpu = cpu;
+> > +		vector = 0;
+> > +		goto no_vector;
+> > +	}
+> 
+> Why would a NMI ever end up in this code? There is no vector management
+> required and this find cpu exercise is pointless.
+
+But even if the NMI has a fixed vector, it is still necessary to determine
+which CPU will get the NMI. It is still necessary to determine what to
+write in the Destination ID field of the MSI message.
+
+irq_matrix_find_best_cpu() would find the CPU with the lowest number of
+managed vectors so that the NMI is directed to that CPU. 
+
+In today's code, an NMI would end up here because we rely on the existing
+interrupt management infrastructure... Unless, the check is done the entry
+points as you propose.
+
+> 
+> >  	vector = irq_matrix_alloc(vector_matrix, dest, resvd, &cpu);
+> >  	trace_vector_alloc(irqd->irq, vector, resvd, vector);
+> >  	if (vector < 0)
+> >  		return vector;
+> >  	apic_update_vector(irqd, vector, cpu);
+> > +
+> > +no_vector:
+> >  	apic_update_irq_cfg(irqd, vector, cpu);
+> >  
+> >  	return 0;
+> > @@ -321,12 +330,22 @@ assign_managed_vector(struct irq_data *irqd, const struct cpumask *dest)
+> >  	/* set_affinity might call here for nothing */
+> >  	if (apicd->vector && cpumask_test_cpu(apicd->cpu, vector_searchmask))
+> >  		return 0;
+> > +
+> > +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
+> > +		cpu = irq_matrix_find_best_cpu_managed(vector_matrix, dest);
+> > +		apicd->cpu = cpu;
+> > +		vector = 0;
+> > +		goto no_vector;
+> > +	}
+> 
+> This code can never be reached for a NMI delivery. If so, then it's a
+> bug.
+> 
+> This all is special purpose for that particular HPET NMI watchdog use
+> case and we are not exposing this to anything else at all.
+> 
+> So why are you sprinkling this NMI nonsense all over the place? Just
+> because? There are well defined entry points to all of this where this
+> can be fenced off.
+
+I put the NMI checks in these points because assign_vector_locked() and
+assign_managed_vector() are reached through multiple paths and these are
+the two places where the allocation of the vector is requested and the
+destination CPU is determined.
+
+I do observe this code being reached for an NMI, but that is because this
+code still does not know about NMIs... Unless the checks for NMI are put
+in the entry points as you pointed out.
+
+The intent was to refactor the code in a generic manner and not to focus
+only in the NMI watchdog. That would have looked hacky IMO.
+
+> 
+> If at some day the hardware people get their act together and provide a
+> proper vector space for NMIs then we have to revisit that, but then
+> there will be a separate NMI vector management too.
+> 
+> What you want is the below which also covers the next patch. Please keep
+> an eye on the comments I added/modified.
+
+Thank you for the code and the clarifying comments.
+> 
+> Thanks,
+> 
+>         tglx
+> ---
+> --- a/arch/x86/kernel/apic/vector.c
+> +++ b/arch/x86/kernel/apic/vector.c
+> @@ -42,6 +42,7 @@ EXPORT_SYMBOL_GPL(x86_vector_domain);
+>  static DEFINE_RAW_SPINLOCK(vector_lock);
+>  static cpumask_var_t vector_searchmask;
+>  static struct irq_chip lapic_controller;
+> +static struct irq_chip lapic_nmi_controller;
+>  static struct irq_matrix *vector_matrix;
+>  #ifdef CONFIG_SMP
+>  static DEFINE_PER_CPU(struct hlist_head, cleanup_list);
+> @@ -451,6 +452,10 @@ static int x86_vector_activate(struct ir
+>  	trace_vector_activate(irqd->irq, apicd->is_managed,
+>  			      apicd->can_reserve, reserve);
+>  
+> +	/* NMI has a fixed vector. No vector management required */
+> +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI)
+> +		return 0;
+> +
+>  	raw_spin_lock_irqsave(&vector_lock, flags);
+>  	if (!apicd->can_reserve && !apicd->is_managed)
+>  		assign_irq_vector_any_locked(irqd);
+> @@ -472,6 +477,10 @@ static void vector_free_reserved_and_man
+>  	trace_vector_teardown(irqd->irq, apicd->is_managed,
+>  			      apicd->has_reserved);
+>  
+> +	/* NMI has a fixed vector. No vector management required */
+> +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI)
+> +		return;
+> +
+>  	if (apicd->has_reserved)
+>  		irq_matrix_remove_reserved(vector_matrix);
+>  	if (apicd->is_managed)
+> @@ -568,6 +577,24 @@ static int x86_vector_alloc_irqs(struct
+>  		irqd->hwirq = virq + i;
+>  		irqd_set_single_target(irqd);
+>  
+> +		if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
+> +			/*
+> +			 * NMIs have a fixed vector and need their own
+> +			 * interrupt chip so nothing can end up in the
+> +			 * regular local APIC management code except the
+> +			 * MSI message composing callback.
+> +			 */
+> +			irqd->chip = &lapic_nmi_controller;
+> +			/*
+> +			 * Don't allow affinity setting attempts for NMIs.
+> +			 * This cannot work with the regular affinity
+> +			 * mechanisms and for the intended HPET NMI
+> +			 * watchdog use case it's not required.
+
+But we do need the ability to set affinity, right? As stated above, we need
+to know what Destination ID to write in the MSI message or in the interrupt
+remapping table entry.
+
+It cannot be any CPU because only one specific CPU is supposed to handle the
+NMI from the HPET channel.
+
+We cannot hard-code a CPU for that because it may go offline (and ignore NMIs)
+or not be part of the monitored CPUs.
+
+Also, if lapic_nmi_controller.irq_set_affinity() is NULL, then irq_chips
+INTEL-IR, AMD-IR, those using msi_domain_set_affinity() need to check for NULL.
+They currently unconditionally call the parent irq_chip's irq_set_affinity().
+I see that there is a irq_chip_set_affinity_parent() function. Perhaps it can
+be used for this check?
+
+> +			 */
+> +			irqd_set_no_balance(irqd);
+
+This code does not set apicd->hw_irq_cfg.delivery_mode as NMI, right?
+I had to add that to make it work.
+
+> +			continue;
+> +		}
+> +
+>  		/*
+>  		 * Prevent that any of these interrupts is invoked in
+>  		 * non interrupt context via e.g. generic_handle_irq()
+> @@ -921,6 +948,11 @@ static struct irq_chip lapic_controller
+>  	.irq_retrigger		= apic_retrigger_irq,
+>  };
+>  
+> +static struct irq_chip lapic_nmi_controller = {
+> +	.name			= "APIC-NMI",
+> +	.irq_compose_msi_msg	= x86_vector_msi_compose_msg,
+> +};
+> +
+>  #ifdef CONFIG_SMP
+>  
+>  static void free_moved_vector(struct apic_chip_data *apicd)
+> --- a/include/linux/irq.h
+> +++ b/include/linux/irq.h
+> @@ -261,6 +261,11 @@ static inline bool irqd_is_per_cpu(struc
+>  	return __irqd_to_state(d) & IRQD_PER_CPU;
+>  }
+>  
+> +static inline void irqd_set_no_balance(struct irq_data *d)
+> +{
+> +	__irqd_to_state(d) |= IRQD_NO_BALANCING;
+> +}
+> +
+>  static inline bool irqd_can_balance(struct irq_data *d)
+>  {
+>  	return !(__irqd_to_state(d) & (IRQD_PER_CPU | IRQD_NO_BALANCING));
+
+Thanks and BR,
+Ricardo
