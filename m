@@ -2,223 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A4D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383692AbiEMVlg (ORCPT
+        id S1384731AbiEMVpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 17:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
+        Fri, 13 May 2022 17:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384713AbiEMVl2 (ORCPT
+        with ESMTP id S1384768AbiEMVpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 17:41:28 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECB92E08A
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:41:25 -0700 (PDT)
-Received: from p508fd4ce.dip0.t-ipconnect.de ([80.143.212.206] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1npd26-0003Vy-OT; Fri, 13 May 2022 23:41:10 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
-        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        wens@csie.org, maxime@cerno.tech, gfavor@ventanamicro.com,
-        andrea.mondelli@huawei.com, behrensj@mit.edu, xinhaoqu@huawei.com,
-        mick@ics.forth.gr, allen.baum@esperantotech.com,
-        jscheid@ventanamicro.com, rtrauben@gmail.com, samuel@sholland.org,
-        cmuellner@linux.com, philipp.tomsich@vrull.eu
-Subject: Re: [PATCH v10 00/12] riscv: support for Svpbmt and D1 memory types
-Date:   Fri, 13 May 2022 23:41:09 +0200
-Message-ID: <8248008.lOV4Wx5bFT@phil>
-In-Reply-To: <mhng-471ef84f-9ac4-44c9-ae85-0492d2a1ad99@palmer-ri-x1c9>
-References: <mhng-471ef84f-9ac4-44c9-ae85-0492d2a1ad99@palmer-ri-x1c9>
+        Fri, 13 May 2022 17:45:09 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1144927B
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652478279; x=1684014279;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lT74lGiuAEz86Uzv2XsXjui8dUE6R9Dh5404oENmuFE=;
+  b=WM5NIot1tSOWhUQxBkvks9XJOYbOdWG9Qsbfjeqg8MH/7jwsKhqooDms
+   H4/vzqDTJJvJ0NouSoCpmrTs76CV7yrGgcPkXrDAU87IZQNI65yzlzwAb
+   z0Ev6eVwcZgMtHHE0l00sh0Cvs6QByb1UKrymW2BmMphwKzYpxabZQVzi
+   XItmkM8KGpXcbLlbZDfh1HMcv+CBVSuCXW9GSSZ6VoqZKTIQ/q4Aq8HM0
+   4VKjKBdUUau8R7CjngBxHmw1b236Xrd5Gvzf+M4RdeLOHleaqf8CHpWhO
+   RbyNn7YP15l3KdnckNWVYlnpHzrvMDJj/pXWqboElaon/HqWql014B707
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="257969424"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="257969424"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 14:44:38 -0700
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="896390798"
+Received: from schen9-mobl.amr.corp.intel.com ([10.209.51.158])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 14:44:37 -0700
+Message-ID: <f1f50c52673aa1873b4a4d3b6b15250d4bf390f9.camel@linux.intel.com>
+Subject: Re: [PATCH v2 0/7]  Add latency_nice priority
+From:   Tim Chen <tim.c.chen@linux.intel.com>
+To:     Vincent Guittot <vincent.guittot@linaro.org>, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org, parth@linux.ibm.com
+Cc:     qais.yousef@arm.com, chris.hyser@oracle.com,
+        valentin.schneider@arm.com, patrick.bellasi@matbug.net,
+        David.Laight@aculab.com, pjt@google.com, pavel@ucw.cz,
+        tj@kernel.org, qperret@google.com, joshdon@google.com,
+        len.brown@intel.com
+Date:   Fri, 13 May 2022 14:44:37 -0700
+In-Reply-To: <20220512163534.2572-1-vincent.guittot@linaro.org>
+References: <20220512163534.2572-1-vincent.guittot@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, 13. Mai 2022, 05:32:49 CEST schrieb Palmer Dabbelt:
-> On Wed, 11 May 2022 12:29:09 PDT (-0700), heiko@sntech.de wrote:
-> > Svpbmt is an extension defining "Supervisor-mode: page-based memory types"
-> > for things like non-cacheable pages or I/O memory pages.
-> >
-> >
-> > So this is my 2nd try at implementing Svpbmt (and the diverging D1 memory
-> > types) using the alternatives framework.
-> >
-> > This includes a number of changes to the alternatives mechanism itself.
-> > The biggest one being the move to a more central location, as I expect
-> > in the future, nearly every chip needing some sort of patching, be it
-> > either for erratas or for optional features (svpbmt or others).
-> >
-> > Detection of the svpbmt functionality is done via Atish's isa extension
-> > handling series [0] and thus does not need any dt-parsing of its own
-> > anymore.
-> >
-> > The series also introduces support for the memory types of the D1
-> > which are implemented differently to svpbmt. But when patching anyway
-> > it's pretty clean to add the D1 variant via ALTERNATIVE_2 to the same
-> > location.
-> >
-> > The only slightly bigger difference is that the "normal" type is not 0
-> > as with svpbmt, so kernel patches for this PMA type need to be applied
-> > even before the MMU is brought up, so the series introduces a separate
-> > stage for that.
-> >
-> >
-> > In theory this series is 2 parts:
-> > - alternatives improvements
-> > - svpbmt+d1
-> >
-> > I picked the recipient list from the previous versions, hopefully
-> > I didn't forget anybody.
-> >
-> > I tested the series on:
-> > - qemu-rv32 + buildroot rootfs
-> > - qemu-rv64 + debian roots
-> > - Allwinner D1-Nezha
-> > - BeagleV - it at least reached the same point as without the series
+On Thu, 2022-05-12 at 18:35 +0200, Vincent Guittot wrote:
+> This patchset restarts the work about adding a latency nice priority to
+> describe the latency tolerance of cfs tasks.
 > 
-> IMO that's fine, it's also broken due to issues around non-coherence but 
-> it has an entirely different way of handling things than.
+> The patches [1-4] have been done by Parth:
+> https://lore.kernel.org/lkml/20200228090755.22829-1-parth@linux.ibm.com/
 > 
-> > I also ran Palmers CI environment on 5.18-rc6 + this series and
-> > it passed with all testcases now.
-> 
-> Thanks, I know that's a bit of a mess.  If I ever get some time I'll try 
-> and clean it up, but it keeps finding issues so I'm sort of stuck with 
-> it for now.
-
-No worries, once I got it to run, it was easy to use, though needs
-quite a bit of time to build everything.
-
-But now that I made it to run, I'll try to use in the future as well :-) .
-
-> As expected it now passes locally, so I've put this on 
-> for-next.  I hadn't noticed your testing was on rc6, I put this on top 
-> of rc1 -- that's what I usually do for merge window stuff, but if 
-> there's something specific between rc1 and rc6 this depends on then LMK 
-> and I'll sort it out.
-
-In the past I also had it run on -rc1 without any issues.
-Just after refreshing with with your recent changes, it was back at
-5.17-something and then I went to 5.18-rc6 as base.
-
-So there wasn't any real reason for -rc6 except was the most current
-release :-)
-
-Heiko
-
-> > changes in v10:
-> > - add received review-tags
-> > - put early patching behind a kconfig symbol
-> > - adapt compiler flags of sources in use by early patching
-> >   similar to other riscv arch-parts.
-> >   This fixes the medlow cmodel issue on rv32 and also issues
-> >   with Kasan.
-> >
-> > changes in v9:
-> > - rebase onto 5.18-rc1
-> > - drop the sbi null-ptr patch
-> >   While I still think this to be non-ideal as is, it isn't really
-> >   necessary for svpbmt support anymore
-> > - merge cpufeature + svpbmt patch, as otherwise some empty shells
-> >   cause build warnings when a bisection stops between these two
-> >   patches
-> > - address review comments from Christoph Hellwig:
-> >   - keep alternatives optional, they now get selected by its
-> >     users (erratas and also the newly introduced svpbmt kconfig)
-> >   - wrap long lines and keep things below 80 characters
-> >   - restyle svpbmt + thead errata assembly
-> >   - introduce a helper for the repeated calls to
-> >     (val & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT
-> >
-> > changes in v8:
-> > - rebase onto 5.17-final + isa extension series
-> >   We're halfway through the merge-window, so this series
-> >   should be merge after that
-> > - adapt to fix limiting alternatives to non-xip-kernels
-> > - add .norelax option for alternatives
-> > - fix unused cpu_apply_errata in thead errata
-> > - don't use static globals to store cpu-manufacturer data
-> >   as it makes machines hang if done too early
-> >
-> > changes in v7:
-> > - fix typo in patch1 (Atish)
-> > - moved to Atish's isa-extension framework
-> > - and therefore move regular boot-alternatives directly behind fill_hwcaps
-> > - change T-Head errata Kconfig text (Atish)
-> >
-> > changes in v6:
-> > - rebase onto 5.17-rc1
-> > - handle sbi null-ptr differently
-> > - improve commit messages
-> > - use riscv,mmu as property name
-> >
-> > changes in v5:
-> > - move to use alternatives for runtime-patching
-> > - add D1 variant
-> >
-> >
-> > [0] https://lore.kernel.org/r/20220222204811.2281949-2-atishp@rivosinc.com
-> >
-> > Heiko Stuebner (12):
-> >   riscv: integrate alternatives better into the main architecture
-> >   riscv: allow different stages with alternatives
-> >   riscv: implement module alternatives
-> >   riscv: implement ALTERNATIVE_2 macro
-> >   riscv: extend concatenated alternatives-lines to the same length
-> >   riscv: prevent compressed instructions in alternatives
-> >   riscv: move boot alternatives to after fill_hwcap
-> >   riscv: Fix accessing pfn bits in PTEs for non-32bit variants
-> >   riscv: add RISC-V Svpbmt extension support
-> >   riscv: remove FIXMAP_PAGE_IO and fall back to its default value
-> >   riscv: don't use global static vars to store alternative data
-> >   riscv: add memory-type errata for T-Head
-> >
-> >  arch/riscv/Kconfig                          |  28 +++++
-> >  arch/riscv/Kconfig.erratas                  |  34 ++++--
-> >  arch/riscv/Kconfig.socs                     |   1 -
-> >  arch/riscv/Makefile                         |   2 +-
-> >  arch/riscv/errata/Makefile                  |   2 +-
-> >  arch/riscv/errata/alternative.c             |  75 ------------
-> >  arch/riscv/errata/sifive/errata.c           |  20 ++-
-> >  arch/riscv/errata/thead/Makefile            |  11 ++
-> >  arch/riscv/errata/thead/errata.c            |  82 +++++++++++++
-> >  arch/riscv/include/asm/alternative-macros.h | 129 +++++++++++++++-----
-> >  arch/riscv/include/asm/alternative.h        |  25 +++-
-> >  arch/riscv/include/asm/errata_list.h        |  59 +++++++++
-> >  arch/riscv/include/asm/fixmap.h             |   2 -
-> >  arch/riscv/include/asm/hwcap.h              |   1 +
-> >  arch/riscv/include/asm/pgtable-32.h         |  17 +++
-> >  arch/riscv/include/asm/pgtable-64.h         |  79 +++++++++++-
-> >  arch/riscv/include/asm/pgtable-bits.h       |  10 --
-> >  arch/riscv/include/asm/pgtable.h            |  55 +++++++--
-> >  arch/riscv/include/asm/vendorid_list.h      |   1 +
-> >  arch/riscv/kernel/Makefile                  |  15 +++
-> >  arch/riscv/kernel/alternative.c             | 118 ++++++++++++++++++
-> >  arch/riscv/kernel/cpu.c                     |   1 +
-> >  arch/riscv/kernel/cpufeature.c              |  80 +++++++++++-
-> >  arch/riscv/kernel/module.c                  |  29 +++++
-> >  arch/riscv/kernel/setup.c                   |   2 +
-> >  arch/riscv/kernel/smpboot.c                 |   4 -
-> >  arch/riscv/kernel/traps.c                   |   2 +-
-> >  arch/riscv/mm/init.c                        |   1 +
-> >  28 files changed, 724 insertions(+), 161 deletions(-)
-> >  delete mode 100644 arch/riscv/errata/alternative.c
-> >  create mode 100644 arch/riscv/errata/thead/Makefile
-> >  create mode 100644 arch/riscv/errata/thead/errata.c
-> >  create mode 100644 arch/riscv/kernel/alternative.c
+> I have just rebased and moved the set of latency priority outside the
+> priority update. I have removed the reviewed tag because the patches
+> are 2 years old.
 > 
 
+Vincent,
 
+Thanks for introducing the feature again, which is much needed.  I am trying
+to look at the problem again from usage point of view. And wonder if
+there are ways to make the latency_nice knob easier to use.
 
+The latency nice value here is relative.  A latency sensitive task
+may not tell if setting the latency_nice to -5, or to -10 is good enough.
+It depends on what other tasks are setting their latency_nice value to.
+What a task does know is what it it doing and its characteristics.  
+For instance for client tasks, we may have categories such as
+
+Task Category					latency_nice_range
+-------------                                   ------------------
+urgent						-19 to -16
+media playback					-15 to -11
+interactive (e.g.pressing key)  		-10 to -6
+normal						-5  to  9
+background					 10  to 15
+opportunistic soaker task (sched_idle class)	 16 to  20
+
+And we could allow a task to set attribute of which task category applies
+to it and the OS can set a default latency nice value in its task category.   
+So a task can just declare itself what kind of task it is, and not worry about
+actually setting a latency nice value which it may not know
+what is appopriate. 
+If needed, a task could still adjust its latency nice value within the range to
+differentiate itself in a task category. And we will prevent
+a task from seeting inappropriate latency nice value out of the right range.
+
+Knowing a task characteristics will also be helpful with other
+scheduling decisions, like placing a task on a more high performing
+core in hetero systems.  
+
+I think the missing piece here is a way for a task to declare 
+what kind of task it is.  I think that will make things easier.
+
+Tim
+
+> The patches [5-7] use latency nice priority to decide if a cfs task can
+> preempt the current running task. Patch 5 gives some tests results with
+> cyclictests and hackbench to highlight the benefit of latency nice
+> priority for short interactive task or long intensive tasks.
+> 
+> 
+> Change since v1:
+> - fix typo
+> - move some codes in the right patch to make bisect happy
+> - simplify and fixed how the weight is computed
+> - added support of sched core patch 7
+> 
+> Parth Shah (4):
+>   sched: Introduce latency-nice as a per-task attribute
+>   sched/core: Propagate parent task's latency requirements to the child
+>     task
+>   sched: Allow sched_{get,set}attr to change latency_nice of the task
+>   sched/core: Add permission checks for setting the latency_nice value
+> 
+> Vincent Guittot (3):
+>   sched/fair: Take into account latency nice at wakeup
+>   sched/fair: Add sched group latency support
+>   sched/core: support latency nice with sched core
+> 
+>  include/linux/sched.h            |   3 +
+>  include/uapi/linux/sched.h       |   4 +-
+>  include/uapi/linux/sched/types.h |  19 ++++++
+>  init/init_task.c                 |   1 +
+>  kernel/sched/core.c              |  90 ++++++++++++++++++++++++++
+>  kernel/sched/debug.c             |   1 +
+>  kernel/sched/fair.c              | 105 ++++++++++++++++++++++++++++++-
+>  kernel/sched/sched.h             |  34 ++++++++++
+>  tools/include/uapi/linux/sched.h |   4 +-
+>  9 files changed, 257 insertions(+), 4 deletions(-)
+> 
 
