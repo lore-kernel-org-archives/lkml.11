@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF73C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81895C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379937AbiEMQwC (ORCPT
+        id S1382556AbiEMQwK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 12:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50048 "EHLO
+        Fri, 13 May 2022 12:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382719AbiEMQvF (ORCPT
+        with ESMTP id S1382722AbiEMQvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 12:51:05 -0400
+        Fri, 13 May 2022 12:51:09 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E0952534;
-        Fri, 13 May 2022 09:51:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6BD54018;
+        Fri, 13 May 2022 09:51:06 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 221F01F46364
+        with ESMTPSA id 5D16F1F4228B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652460662;
-        bh=xwq1gpeccyvcU8bMkAWwkySqeJSH5hDRD7v8Dl7oSm4=;
+        s=mail; t=1652460657;
+        bh=71uG7PAcLUDV/b9HnxX+1uY8eqEWrWAzMJjvR2OBRg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nM6ZVdltYgVqvG4Sw32cOOnOkzKiYDCPjSizxfJWvzYGqYdfS3wQH54dDKB1ShSmy
-         f+sslyONbphYOauIX/IvcLkpArvHTv6gpc3oOYyLMtYO9OnWD8cZpWioUSwlkSd2b4
-         SVY7oVRwcv98BmvjS/GHzhLS9XnbwNlqRQE8qTs/EyvUq8J0KYz+Y0AnLcF56s6ETV
-         aHzZvhN7/QWgTHKqKbrT/B3lNwjiE/MNMp8cw1JSfr690t9e7l/5UPIa0oD85ncsgZ
-         UbG3wnRccghFCiQudl7FzwEG9Qd2xr0Z5zEJGrpk4unXwfAQDG0Ub//jBOPf809UAe
-         VlyjHctf6+z/w==
+        b=Vuxx8MFgndwlpFBNZfLDj8LYMpMHaWgwGK5YvhpDMFqwA/LieF0mk4DJn2QYNJ+en
+         IT7qup4jY35qlrWnH1kRHOdxXRK3cHm9a3q3LGcZB6yum0hpDmNnFNuAJwaAg1ujZj
+         jya92zN8O+tSomb4kbXNciBvqyac46uq48TctfrS0vn+viesFyNYgFyclyvAAvfAKw
+         SmEHPaMqnnQ1SzpZh7Jmog/ySfx7st54YQFVZR7meHnTG8D2qYG0qFTENRY3aDlt/t
+         zxsoNkW/Rw0Jf0e8NCF98/d4jej3R6qiYxYz89WdG8wTKAavUDoY6rhwBfm662gb75
+         0epHrKU3au0yA==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     robh+dt@kernel.org
@@ -47,9 +47,9 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
         martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
         phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
         kernel@collabora.com
-Subject: [PATCH 4/5] dt-bindings: arm: mediatek: Add clock driver bindings for MT6795
-Date:   Fri, 13 May 2022 18:50:49 +0200
-Message-Id: <20220513165050.500831-5-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 1/5] dt-bindings: mediatek: Document MT6795 system controllers bindings
+Date:   Fri, 13 May 2022 18:50:46 +0200
+Message-Id: <20220513165050.500831-2-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220513165050.500831-1-angelogioacchino.delregno@collabora.com>
 References: <20220513165050.500831-1-angelogioacchino.delregno@collabora.com>
@@ -59,169 +59,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the bindings for the clock drivers of the MediaTek Helio X10
-MT6795 SoC.
+Document the MediaTek Helio X10 (MT6795) bindings for the apmixedsys,
+infracfg, topckgen, pericfg and mmsys system controllers.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../arm/mediatek/mediatek,mt6795-clock.yaml   | 67 +++++++++++++++++
- .../mediatek/mediatek,mt6795-sys-clock.yaml   | 73 +++++++++++++++++++
- 2 files changed, 140 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-clock.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-sys-clock.yaml
+ .../devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml     | 2 ++
+ .../devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml        | 1 +
+ .../devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml      | 1 +
+ .../devicetree/bindings/clock/mediatek,apmixedsys.yaml          | 1 +
+ Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml  | 1 +
+ 5 files changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-clock.yaml
-new file mode 100644
-index 000000000000..b7d96d0ed867
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-clock.yaml
-@@ -0,0 +1,67 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt6795-clock.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: MediaTek Functional Clock Controller for MT6795
-+
-+maintainers:
-+  - AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-+  - Chun-Jie Chen <chun-jie.chen@mediatek.com>
-+
-+description: |
-+  The clock architecture in MediaTek like below
-+  PLLs -->
-+          dividers -->
-+                      muxes
-+                           -->
-+                              clock gate
-+
-+  The devices provide clock gate control in different IP blocks.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - mediatek,mt6795-mfgcfg
-+          - mediatek,mt6795-vdecsys
-+          - mediatek,mt6795-vencsys
-+  reg:
-+    maxItems: 1
-+
-+  '#clock-cells':
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        clock-controller@13000000 {
-+            compatible = "mediatek,mt6795-mfgcfg";
-+            reg = <0 0x13000000 0 0x1000>;
-+            #clock-cells = <1>;
-+        };
-+
-+        clock-controller@16000000 {
-+            compatible = "mediatek,mt6795-vdecsys";
-+            reg = <0 0x16000000 0 0x1000>;
-+            #clock-cells = <1>;
-+        };
-+
-+        clock-controller@18000000 {
-+            compatible = "mediatek,mt6795-vdecsys";
-+            reg = <0 0x18000000 0 0x1000>;
-+            #clock-cells = <1>;
-+        };
-+    };
-+
-+
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-sys-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-sys-clock.yaml
-new file mode 100644
-index 000000000000..389dd8e245ac
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-sys-clock.yaml
-@@ -0,0 +1,73 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt6795-sys-clock.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: MediaTek System Clock Controller for MT6795
-+
-+maintainers:
-+  - AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-+  - Chun-Jie Chen <chun-jie.chen@mediatek.com>
-+
-+description:
-+  The Mediatek system clock controller provides various clocks and system configuration
-+  like reset and bus protection on MT6795.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - mediatek,mt6795-apmixedsys
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
+index 8681b785ed6d..1d7c837d9378 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
+@@ -23,6 +23,7 @@ properties:
+               - mediatek,mt2701-infracfg
+               - mediatek,mt2712-infracfg
+               - mediatek,mt6765-infracfg
++              - mediatek,mt6795-infracfg
+               - mediatek,mt6779-infracfg_ao
+               - mediatek,mt6797-infracfg
+               - mediatek,mt7622-infracfg
+@@ -60,6 +61,7 @@ if:
+         enum:
+           - mediatek,mt2701-infracfg
+           - mediatek,mt2712-infracfg
 +          - mediatek,mt6795-infracfg
-+          - mediatek,mt6795-pericfg
-+          - mediatek,mt6795-topckgen
-+      - const: syscon
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#clock-cells':
-+    const: 1
-+
-+  '#reset-cells':
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        topckgen: clock-controller@10000000 {
-+            compatible = "mediatek,mt6795-topckgen", "syscon";
-+            reg = <0 0x10000000 0 0x1000>;
-+            #clock-cells = <1>;
-+        };
-+
-+        infracfg: power-controller@10001000 {
-+            compatible = "mediatek,mt6795-infracfg", "syscon";
-+            reg = <0 0x10001000 0 0x1000>;
-+            #clock-cells = <1>;
-+            #reset-cells = <1>;
-+        }
-+
-+        pericfg: power-controller@10003000 {
-+            compatible = "mediatek,mt6795-pericfg", "syscon";
-+            reg = <0 0x10003000 0 0x1000>;
-+            #clock-cells = <1>;
-+            #reset-cells = <1>;
-+        };
-+
-+        apmixedsys: clock-controller@10209000 {
-+            compatible = "mediatek,mt6795-apmixedsys", "syscon";
-+            reg = <0 0x10209000 0 0x1000>;
-+            #clock-cells = <1>;
-+        };
-+    };
+           - mediatek,mt7622-infracfg
+           - mediatek,mt7986-infracfg
+           - mediatek,mt8135-infracfg
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+index 6ad023eec193..597ef18f3c5f 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+@@ -25,6 +25,7 @@ properties:
+               - mediatek,mt2712-mmsys
+               - mediatek,mt6765-mmsys
+               - mediatek,mt6779-mmsys
++              - mediatek,mt6795-mmsys
+               - mediatek,mt6797-mmsys
+               - mediatek,mt8167-mmsys
+               - mediatek,mt8173-mmsys
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
+index 611f666f359d..c518ed3c4153 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
+@@ -21,6 +21,7 @@ properties:
+               - mediatek,mt2701-pericfg
+               - mediatek,mt2712-pericfg
+               - mediatek,mt6765-pericfg
++              - mediatek,mt6795-pericfg
+               - mediatek,mt7622-pericfg
+               - mediatek,mt7629-pericfg
+               - mediatek,mt8135-pericfg
+diff --git a/Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml b/Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml
+index 770546195fb5..731bfe0408c2 100644
+--- a/Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml
++++ b/Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml
+@@ -34,6 +34,7 @@ properties:
+               - mediatek,mt2712-apmixedsys
+               - mediatek,mt6765-apmixedsys
+               - mediatek,mt6779-apmixedsys
++              - mediatek,mt6795-apmixedsys
+               - mediatek,mt7629-apmixedsys
+               - mediatek,mt8167-apmixedsys
+               - mediatek,mt8183-apmixedsys
+diff --git a/Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml b/Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml
+index 5b8b37a2e594..81531b5b0db7 100644
+--- a/Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml
++++ b/Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml
+@@ -33,6 +33,7 @@ properties:
+               - mediatek,mt2712-topckgen
+               - mediatek,mt6765-topckgen
+               - mediatek,mt6779-topckgen
++              - mediatek,mt6795-topckgen
+               - mediatek,mt7629-topckgen
+               - mediatek,mt7986-topckgen
+               - mediatek,mt8167-topckgen
 -- 
 2.35.1
 
