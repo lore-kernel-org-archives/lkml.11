@@ -2,119 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B2CC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F393C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349749AbiEMPPo (ORCPT
+        id S1354285AbiEMPQL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
+        Fri, 13 May 2022 11:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381173AbiEMPPd (ORCPT
+        with ESMTP id S1377700AbiEMPQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 11:15:33 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0504654018
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:15:31 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id u3so11896215wrg.3
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 08:15:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4kMBq3ML8i4Cw0yoGEU+fJc6+bgjz8wLr/JmgXqi+0Y=;
-        b=sSPnHzKsfAMHfdJZEceCGudvpiXtlhgaJ1KH/jFERZw+Cwc4GNQJYDOsKkIwlRr1SG
-         zkWovpQQtEag6AdaxK7LyAXiyW4g8aA5dcLn+9igMe8Z3FYGQlwHPZ1wvRN/wEYYdiHu
-         hMkkGjyQ+Tg2fqdGTUSLDTrNDPk2ljGdh5zd3aZlkZJpJe6aTklZSUiwHBRbGGHQYQGu
-         ok9S/0Q9HjL69n9v7eso0j2N64NbQr2B6Zd/FL9ssgXm67yxf6bgcK+dfcKAnLT9EwdE
-         5ObekqAsaYhfBzkthbhzG+YTC8/USyXkFJr1R21N2xOWBQa1TszxvMOXXJCCK3dpGgXF
-         HzhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4kMBq3ML8i4Cw0yoGEU+fJc6+bgjz8wLr/JmgXqi+0Y=;
-        b=lfs9IveaaElNYpJTwbU9Oy0R1ABy3WPmzWoXB/rkTzycG2ziMxwnYW9hBHeGB0d2q4
-         Takbt6SRHsjanrlAQIuC+Zt5F5n+TymkyZQsJd6NN9poc/aT6I+X+ycZmiqvwxhoIqnU
-         jUj9Bi3SWMgDzF1qNdR/KkJpKzqxj/yKGwotLxEvzIRf2u8ammQkaZF/90QmAAiPfgh1
-         5I5lbdJJ0fJHJG5L0VU0dmSyoN/h9GM0Su+qqZrTZ4SpDtvhKIj+kC6o5nNB0wbQaGlC
-         jMUk9bJdaUztZH6g2Q0eXcTZURwUa4r/b5w+mSErfTGhVDduXYKt+XKcNBR4DmWCsdt1
-         23Ig==
-X-Gm-Message-State: AOAM531k/MwSFLQyEbTo3y1891IXE4SRRXaHtooGS9BEF1ruyxhvIA9r
-        q8izPx0nGVAE1b06yfhS4O3wXg==
-X-Google-Smtp-Source: ABdhPJxYzFSnDNuHEGkraj3axUSnYZQ3NLj17U3JhPBsXfiJv7WzEL40kF+makqi7xt9BaGY90jGXw==
-X-Received: by 2002:a05:6000:86:b0:20a:d7be:e09b with SMTP id m6-20020a056000008600b0020ad7bee09bmr4325701wrx.398.1652454929639;
-        Fri, 13 May 2022 08:15:29 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id y15-20020a05600c364f00b003945237fea1sm2741440wmq.0.2022.05.13.08.15.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:15:29 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Govind Singh <govinds@codeaurora.org>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] ath10k: do not enforce interrupt trigger type
-Date:   Fri, 13 May 2022 17:15:16 +0200
-Message-Id: <20220513151516.357549-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Fri, 13 May 2022 11:16:06 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD415A0AE;
+        Fri, 13 May 2022 08:16:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652454963; x=1683990963;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=24oKuYXEcnWrp4B5Kh3zaIWR0+FTuDd0VrQkGRVBuc8=;
+  b=Zli9crThxZTE1+om0dNbqy2cGf66DQff5k/c/2j647Jf1pHXO4BwvGFW
+   kNpTojiraQgyntFjeikTfQyaBl4HoBGfuh9gPUTF5hInX2Mum++f2aWEH
+   Q/Rb94QmCT3bTZKnb9cv7Y+2YF2Up+bqGx1MlTV7WTR4tvavY8TvLhU5f
+   dSTg4ytSTJwdPcOw2f+v1wzJzzK4WKSZSalTN/dOMLZYn06SYOj/XAczC
+   Max2/PN89n8cxD9SPqA6X0E5XGoJhpUFGULg77qn62/ZYDe+HFMqhjS/q
+   q/TvwPSVeu1vLCHSLtlX5XiQV+84kbDHYymvks4xZ+thMSWpCZDc5dBqd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="269160146"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="269160146"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 08:16:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="698518050"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by orsmga004.jf.intel.com with ESMTP; 13 May 2022 08:16:02 -0700
+From:   kan.liang@linux.intel.com
+To:     acme@kernel.org, mingo@redhat.com, irogers@google.com,
+        jolsa@kernel.org, namhyung@kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     peterz@infradead.org, zhengjun.xing@linux.intel.com,
+        adrian.hunter@intel.com, ak@linux.intel.com, eranian@google.com,
+        Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH 1/4] perf evsel: Fixes topdown events in a weak group for the hybrid platform
+Date:   Fri, 13 May 2022 08:15:51 -0700
+Message-Id: <20220513151554.1054452-2-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220513151554.1054452-1-kan.liang@linux.intel.com>
+References: <20220513151554.1054452-1-kan.liang@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Interrupt line can be configured on different hardware in different way,
-even inverted.  Therefore driver should not enforce specific trigger
-type - edge rising - but instead rely on Devicetree to configure it.
+From: Kan Liang <kan.liang@linux.intel.com>
 
-All Qualcomm DTSI with WCN3990 define the interrupt type as level high,
-so the mismatch between DTSI and driver causes rebind issues:
+The patch ("perf evlist: Keep topdown counters in weak group") fixes the
+perf metrics topdown event issue when the topdown events are in a weak
+group on a non-hybrid platform. However, it doesn't work for the hybrid
+platform.
 
-  $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/unbind
-  $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/bind
-  [   44.763114] irq: type mismatch, failed to map hwirq-446 for interrupt-controller@17a00000!
-  [   44.763130] ath10k_snoc 18800000.wifi: error -ENXIO: IRQ index 0 not found
-  [   44.763140] ath10k_snoc 18800000.wifi: failed to initialize resource: -6
+$./perf stat -e '{cpu_core/slots/,cpu_core/topdown-bad-spec/,
+cpu_core/topdown-be-bound/,cpu_core/topdown-fe-bound/,
+cpu_core/topdown-retiring/,cpu_core/branch-instructions/,
+cpu_core/branch-misses/,cpu_core/bus-cycles/,cpu_core/cache-misses/,
+cpu_core/cache-references/,cpu_core/cpu-cycles/,cpu_core/instructions/,
+cpu_core/mem-loads/,cpu_core/mem-stores/,cpu_core/ref-cycles/,
+cpu_core/cache-misses/,cpu_core/cache-references/}:W' -a sleep 1
 
-Fixes: c963a683e701 ("ath10k: add resource init and deinit for WCN3990")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ Performance counter stats for 'system wide':
 
+       751,765,068      cpu_core/slots/                                               (84.07%)
+   <not supported>      cpu_core/topdown-bad-spec/
+   <not supported>      cpu_core/topdown-be-bound/
+   <not supported>      cpu_core/topdown-fe-bound/
+   <not supported>      cpu_core/topdown-retiring/
+        12,398,197      cpu_core/branch-instructions/                                     (84.07%)
+         1,054,218      cpu_core/branch-misses/                                       (84.24%)
+       539,764,637      cpu_core/bus-cycles/                                          (84.64%)
+            14,683      cpu_core/cache-misses/                                        (84.87%)
+         7,277,809      cpu_core/cache-references/                                     (77.30%)
+       222,299,439      cpu_core/cpu-cycles/                                          (77.28%)
+        63,661,714      cpu_core/instructions/                                        (84.85%)
+                 0      cpu_core/mem-loads/                                           (77.29%)
+        12,271,725      cpu_core/mem-stores/                                          (77.30%)
+       542,241,102      cpu_core/ref-cycles/                                          (84.85%)
+             8,854      cpu_core/cache-misses/                                        (76.71%)
+         7,179,013      cpu_core/cache-references/                                     (76.31%)
+
+       1.003245250 seconds time elapsed
+
+A hybrid platform has a different PMU name for the core PMUs, while
+the current perf hard code the PMU name "cpu".
+
+The evsel->pmu_name can be used to replace the "cpu" to fix the issue.
+For a hybrid platform, the pmu_name must be non-NULL. Because there are
+at least two core PMUs. The PMU has to be specified.
+For a non-hybrid platform, the pmu_name may be NULL. Because there is
+only one core PMU, "cpu". For a NULL pmu_name, we can safely assume that
+it is a "cpu" PMU.
+
+With the patch,
+
+$perf stat -e '{cpu_core/slots/,cpu_core/topdown-bad-spec/,
+cpu_core/topdown-be-bound/,cpu_core/topdown-fe-bound/,
+cpu_core/topdown-retiring/,cpu_core/branch-instructions/,
+cpu_core/branch-misses/,cpu_core/bus-cycles/,cpu_core/cache-misses/,
+cpu_core/cache-references/,cpu_core/cpu-cycles/,cpu_core/instructions/,
+cpu_core/mem-loads/,cpu_core/mem-stores/,cpu_core/ref-cycles/,
+cpu_core/cache-misses/,cpu_core/cache-references/}:W' -a sleep 1
+
+ Performance counter stats for 'system wide':
+
+       766,620,266      cpu_core/slots/                                               (84.06%)
+        73,172,129      cpu_core/topdown-bad-spec/ #      9.5% bad speculation         (84.06%)
+       193,443,341      cpu_core/topdown-be-bound/ #     25.0% backend bound           (84.06%)
+       403,940,929      cpu_core/topdown-fe-bound/ #     52.3% frontend bound          (84.06%)
+       102,070,237      cpu_core/topdown-retiring/ #     13.2% retiring                (84.06%)
+        12,364,429      cpu_core/branch-instructions/                                     (84.03%)
+         1,080,124      cpu_core/branch-misses/                                       (84.24%)
+       564,120,383      cpu_core/bus-cycles/                                          (84.65%)
+            36,979      cpu_core/cache-misses/                                        (84.86%)
+         7,298,094      cpu_core/cache-references/                                     (77.30%)
+       227,174,372      cpu_core/cpu-cycles/                                          (77.31%)
+        63,886,523      cpu_core/instructions/                                        (84.87%)
+                 0      cpu_core/mem-loads/                                           (77.31%)
+        12,208,782      cpu_core/mem-stores/                                          (77.31%)
+       566,409,738      cpu_core/ref-cycles/                                          (84.87%)
+            23,118      cpu_core/cache-misses/                                        (76.71%)
+         7,212,602      cpu_core/cache-references/                                     (76.29%)
+
+       1.003228667 seconds time elapsed
+
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 ---
+ tools/perf/arch/x86/util/evsel.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Separate question is whether DTS has a proper interrupt type (level
-high) configured...
----
- drivers/net/wireless/ath/ath10k/snoc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index 607e8164bf98..5576ad9fd116 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -1249,13 +1249,12 @@ static void ath10k_snoc_init_napi(struct ath10k *ar)
- static int ath10k_snoc_request_irq(struct ath10k *ar)
- {
- 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
--	int irqflags = IRQF_TRIGGER_RISING;
- 	int ret, id;
+diff --git a/tools/perf/arch/x86/util/evsel.c b/tools/perf/arch/x86/util/evsel.c
+index 00cb4466b4ca..24510bcb4bf4 100644
+--- a/tools/perf/arch/x86/util/evsel.c
++++ b/tools/perf/arch/x86/util/evsel.c
+@@ -33,8 +33,9 @@ void arch_evsel__fixup_new_cycles(struct perf_event_attr *attr)
  
- 	for (id = 0; id < CE_COUNT_MAX; id++) {
- 		ret = request_irq(ar_snoc->ce_irqs[id].irq_line,
--				  ath10k_snoc_per_engine_handler,
--				  irqflags, ce_name[id], ar);
-+				  ath10k_snoc_per_engine_handler, 0,
-+				  ce_name[id], ar);
- 		if (ret) {
- 			ath10k_err(ar,
- 				   "failed to register IRQ handler for CE %d: %d\n",
+ bool arch_evsel__must_be_in_group(const struct evsel *evsel)
+ {
+-	if ((evsel->pmu_name && strcmp(evsel->pmu_name, "cpu")) ||
+-	    !pmu_have_event("cpu", "slots"))
++	const char *pmu_name = evsel->pmu_name ? evsel->pmu_name : "cpu";
++
++	if (!pmu_have_event(pmu_name, "slots"))
+ 		return false;
+ 
+ 	return evsel->name &&
 -- 
-2.32.0
+2.35.1
 
