@@ -2,133 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15BA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 17:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D12FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 17:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382932AbiEMRXK (ORCPT
+        id S1382954AbiEMRXv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 13:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33458 "EHLO
+        Fri, 13 May 2022 13:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382930AbiEMRXC (ORCPT
+        with ESMTP id S1376461AbiEMRXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 13:23:02 -0400
+        Fri, 13 May 2022 13:23:48 -0400
 Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC156FA14
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:23:00 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d17so8613373plg.0
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:23:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0906D53A7A
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:23:48 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id d22so8564092plr.9
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 10:23:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=LmlkxE85vc6UhxNoZfZV20UnauAx9uE6Cz/0zHf9/y0=;
-        b=tHn0ufT6L+atomup5vtndYLuPbMdYYrBkYgqv6ommywwIMqpqT+wemVju040dVYiUM
-         kH2sDLqTKFFja93w7x9kbQpl9GqnJp1u3YyOKs2jmxb5gAIf/KEoY7mvWNSKidlC9PoQ
-         /l7ch9/cWgGlO7IMtxkC9iysiHdTobTx7CwOg8CS02y2iEfr5/Ql5D/VFE7owQevuT3f
-         Xrv954YQ0D49HAaesYjBUxxiIZ6jShsY1k9DXGXiVGECWWZYEGGNvYVr0LE/pCyRxvHo
-         /IQ2La+xI0613nRYpdMCTlA97L8SOInyE0o7FpeSvEWszNbxcperG4TGzjloH1rByJ5w
-         XgKQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pUiCnPMeV2tewEXDSR1Opfl8CW/W1nTXt/fBcyuE7po=;
+        b=hcbrT8LB9KtUyOFhJcjNGDoACadQCvR45e8T6zhTyidWst7gm9QCPlPUMus2qyKZO5
+         F5DqklOOcurOuJJoDyNyaahuz9kll92/JgnSl7AlqgPH+K3Sn2fBXIsuvf7m/+R6yAVS
+         fsGK3TwUuxHbSqM+peiMHJozwxnh0TRDv3ZGQTeyAIlOMdMVBvwteTZ4PytPmR9t47Gg
+         pqGrxwTsmpv7IbPbGbuf/rmrhjr8qRe8wpa4F75swNWUD2SfEYFj+qQV2DV/gexKRIvo
+         8snEpImCqQT57ffaUneyHTR7IkLcLcdzbaRzu3MoseaxEL7zq3AKDZum93Mv0C+hXL9+
+         x1Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=LmlkxE85vc6UhxNoZfZV20UnauAx9uE6Cz/0zHf9/y0=;
-        b=YLXkRULiO/c7hIOG+vdjIyO3VYU/tdNr3GjJGjT/5AUtMlnohopmhYSyJjHbRKC1z9
-         5zWCxR4b6RSlIj8uBCuv6NZybA34yGKf+BArK3zYj5uClk9ueZQAmbJKevW7ejF+hwLF
-         aaybN+lfLD+nO7czza8i/G8HWc+JeKQJ61Vl6R4VWrazX+f/TPiMXlRa3jWPjdwQha9e
-         zd/g012PGvymn3Qazp4KrF9JR33ASwLNqAbSGmDMyux2dI50spNsukNCNh09TsQoY1/j
-         c/66hLtiTSyR7nTElPp8G+cd+uAdxNzeVZ/wSk8cu22DaVQaE6TjTkYO07CQuoitZJbs
-         fqNA==
-X-Gm-Message-State: AOAM533Jiq0t2aKaKrcSERV9DADpGpO9AaE8Hyr/mDHqcnNvkYUnQpiH
-        2OjGutdpPlW3+nVZsA7MxUpz
-X-Google-Smtp-Source: ABdhPJyZY6dt5VXk1vcXI7ZjHApuVJAr163atWieL5kinllyl84dovJtGvw031JvaqN7voVZHkCwew==
-X-Received: by 2002:a17:90b:4c0a:b0:1dc:e81a:f0c with SMTP id na10-20020a17090b4c0a00b001dce81a0f0cmr6068132pjb.2.1652462580028;
-        Fri, 13 May 2022 10:23:00 -0700 (PDT)
-Received: from thinkpad ([117.202.184.246])
-        by smtp.gmail.com with ESMTPSA id f10-20020a6547ca000000b003c5e836eddasm1886683pgs.94.2022.05.13.10.22.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 10:22:59 -0700 (PDT)
-Date:   Fri, 13 May 2022 22:52:49 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 2/7] dt-bindings: opp: accept array of frequencies
-Message-ID: <20220513172249.GB1922@thinkpad>
-References: <20220513061347.46480-1-krzysztof.kozlowski@linaro.org>
- <20220513061347.46480-3-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pUiCnPMeV2tewEXDSR1Opfl8CW/W1nTXt/fBcyuE7po=;
+        b=Wc0TgOOVylb07zIYvqo/t6aUWYH9Ip2h/fZ7OfneHkjRDIOBGkAQOJBRuE+0qIMA+x
+         v37m/0vu8iipDmvjoZulWLDyZgtVmhZ+TEFfVI3aqw2YQsYm5RT5qn9FJB4kPYgYLQEl
+         I+Rl/0p9gKaaa4IoGx/3BrdKTL14Y32maKjI++5ifXYFkdiyKR1SqPeCTSpfEDChXgni
+         3nw++S4hmtHEDvOnlYx4Od3u5/4cBLm47J9m4P/nktFmbyLhDLZS2D+tOPSbdogPoQiz
+         Z+26iRZ6zyvZiFo3ah3ocPANHPi/gt7F49M9+XTBa+AL9ndnus77Zuq4fMbFqSbobpuz
+         KMMA==
+X-Gm-Message-State: AOAM5300zrbtQ/i5VeBMWTYk/q7QqJUInK7bK/S4NqhESVmJFogWte52
+        uqbVnDEl7qAKltoAQzhhJ78qlgMe7iSrxHsUA+bPYw==
+X-Google-Smtp-Source: ABdhPJz4VHbNlIGbH/16c9aEUEopLMQoK6LkB7d36n7lf29oYijqqNLTzk2YOn+i0DI+nxCAjpyhWmReuAOUVN9lSMM=
+X-Received: by 2002:a17:902:b094:b0:15c:dee8:74c8 with SMTP id
+ p20-20020a170902b09400b0015cdee874c8mr5479352plr.6.1652462627392; Fri, 13 May
+ 2022 10:23:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220513061347.46480-3-krzysztof.kozlowski@linaro.org>
+References: <20220510152847.230957-1-hannes@cmpxchg.org> <20220510152847.230957-7-hannes@cmpxchg.org>
+In-Reply-To: <20220510152847.230957-7-hannes@cmpxchg.org>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Fri, 13 May 2022 10:23:36 -0700
+Message-ID: <CALvZod6kBZZFfD6Y5p_=9TMJr8P-vU_77NTq048wGUDr0wTv0Q@mail.gmail.com>
+Subject: Re: [PATCH v2 6/6] zswap: memcg accounting
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>,
+        Minchan Kim <minchan@kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 08:13:42AM +0200, Krzysztof Kozlowski wrote:
-> Devices might need to control several clocks when scaling the frequency
-> and voltage.  Allow passing array of clock frequencies, similarly to the
-> voltages.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-
-Thanks,
-Mani
-
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Acked-by: Rob Herring <robh@kernel.org>
-> 
-> ---
-> 
-> Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  Documentation/devicetree/bindings/opp/opp-v2-base.yaml | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
-> index 76c8acd981b3..66d0ec763f0b 100644
-> --- a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
-> +++ b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
-> @@ -50,6 +50,16 @@ patternProperties:
->            property to uniquely identify the OPP nodes exists. Devices like power
->            domains must have another (implementation dependent) property.
->  
-> +          Entries for multiple clocks shall be provided in the same field, as
-> +          array of frequencies.  The OPP binding doesn't provide any provisions
-> +          to relate the values to their clocks or the order in which the clocks
-> +          need to be configured and that is left for the implementation
-> +          specific binding.
-> +        minItems: 1
-> +        maxItems: 16
-> +        items:
-> +          maxItems: 1
+On Tue, May 10, 2022 at 8:29 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
+>
+[...]
+> +void obj_cgroup_charge_zswap(struct obj_cgroup *objcg, size_t size)
+> +{
+> +       struct mem_cgroup *memcg;
 > +
->        opp-microvolt:
->          description: |
->            Voltage for the OPP
-> -- 
-> 2.32.0
-> 
+> +       VM_WARN_ON_ONCE(!(current->flags & PF_MEMALLOC));
+> +
+> +       /* PF_MEMALLOC context, charging must succeed */
+)
+Instead of these warnings and comment why not just explicitly use
+memalloc_noreclaim_[save|restore]() ?
 
--- 
-மணிவண்ணன் சதாசிவம்
+> +       if (obj_cgroup_charge(objcg, GFP_KERNEL, size))
+
+Can we please make this specific charging an opt-in feature or at
+least provide a way to opt-out? This will impact users/providers where
+swap is used transparently (in terms of memory usage). Also do you
+want this change for v1 users as well?
+
+> +               VM_WARN_ON_ONCE(1);
+> +
+> +       rcu_read_lock();
+> +       memcg = obj_cgroup_memcg(objcg);
+> +       mod_memcg_state(memcg, MEMCG_ZSWAP_B, size);
+> +       mod_memcg_state(memcg, MEMCG_ZSWAPPED, 1);
+> +       rcu_read_unlock();
+> +}
+> +
