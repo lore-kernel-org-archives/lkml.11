@@ -2,128 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 11:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C97C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 11:25:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379887AbiEMLVx (ORCPT
+        id S1379882AbiEMLZD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 07:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48784 "EHLO
+        Fri, 13 May 2022 07:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379872AbiEMLVp (ORCPT
+        with ESMTP id S1350675AbiEMLZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 07:21:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE264BBAE;
-        Fri, 13 May 2022 04:21:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70240B82E2D;
-        Fri, 13 May 2022 11:21:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E32EC34114;
-        Fri, 13 May 2022 11:21:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652440899;
-        bh=NSumgZGJhzw4Um65FRmlw3GUmWdXI8pQPXolPYvlJDM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aca5IocmkQXoNRqXxscwpGHGvEvVVEnoPo6+343RDS7hcbE2/NrNNNGEXvCs4BEyn
-         DKYRdC0TqZxf8Z04x9n3PArd4q3cJV77Doc2fbugAoTjKyvvr3Q9GQwdUNArX1AKLU
-         SuL3MDpJxPq6NG6OvHpTsCHyAhlm/pHwWxrV2eWjJXzIUGU9wc18D2UNgDlyLD+RIM
-         5+VBp4JGfmLL85D5gdBdbXDtM37q3k0bz1WbiwUiL8BMOzf0UmPVZjk70KuP7xzaTl
-         uoXFh8LCbj2lLzeA7Ijr0CaS8PmO1TYJU2eJD6PYZoyZf9qVwjWXiNfmByiOhh/kVG
-         Cyu/aanGBvGQw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0E0A1F03935;
-        Fri, 13 May 2022 11:21:39 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 13 May 2022 07:25:00 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2742A7C06
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:25:00 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id jt15so6433195qvb.8
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:25:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UE4ANBc0dyv3rKuUnMaCAbsStOruYiarl2aWFMtkOuk=;
+        b=AaBzSlnW49zH06z7yi1ois+BrtxmqIe9mgTOZtnWiu4Ilto2+Fu4b3Mhi4Ax/r1x7n
+         e2Qnif5FFcpu1uKeN3QYn6eseYKurLktuseBR/sw/wjuY55Wwk/fpcB7mB1a6CFX8bXO
+         jK05ni5VBCc8THDLHDC5e88bs7d2hpsRMTV4NGEfgOEYeNllWaLqofN8VFK+jpjrdqQx
+         XmU1O7+//ooeobHm1VbcsRzg6rzl/AQ1+CDBciu1jVwq8FN+OL+96tBaahkRjAsrjwcD
+         lqQETAUNi8+2iO0jw62jyTo7AU2DrsroaF1fRit9xSC3a1NmM54BYL2EJhcIW23Vx+N5
+         S5LQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UE4ANBc0dyv3rKuUnMaCAbsStOruYiarl2aWFMtkOuk=;
+        b=8M+S2KNV5trJcnEnKsGyOEPNSD1hs50Yq3xbWnFMefUKZ97u6VfZIfeQ9f/j2CRGVg
+         n/TM9ae4CEygeP39+PP8kweTvCi+M+rj8xr9/kIf8/oUwGSN7Cwgj6Cq1w+TrzzQ46EG
+         riRLexn2U5o6P76SemG67EEEg3NoyelgDUZxC0RYgvMFlzFwgsIAeCygiRagutXtPlxo
+         k9nxo04MSZd9E13cmI+LeO0nATkRCrA2uB4caupc9DvZX8oxFiaLexPhx0VTexAfyPp4
+         GI8+YOv3G7NnuDgBV1BmD87Z1LD9MhMMtkE/mNbyQD9unSEOiGoE4/d5LF5Kpc/Tt9If
+         ScvA==
+X-Gm-Message-State: AOAM533QaOiV5tUvTATVKjjUcSh4J/eImq/xzBVLLgbft2MPYrEq2hUN
+        3hDaiFMybMYv58oYgYXervk=
+X-Google-Smtp-Source: ABdhPJycz2hJ2vcUk/lsOKvMWhUkTqJ7XQ7rWnfvUzPsgPjtueIyOCCFObBknLOW8fxijfVvHMidtQ==
+X-Received: by 2002:a05:6214:509d:b0:45a:d14a:eb53 with SMTP id kk29-20020a056214509d00b0045ad14aeb53mr3762501qvb.40.1652441099174;
+        Fri, 13 May 2022 04:24:59 -0700 (PDT)
+Received: from MBP.hobot.cc (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id j28-20020a05620a147c00b0069fcc501851sm1208618qkl.78.2022.05.13.04.24.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 13 May 2022 04:24:58 -0700 (PDT)
+From:   Schspa Shi <schspa@gmail.com>
+To:     gregkh@linuxfoundation.org, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, schspa@gmail.com
+Subject: [PATCH v2] driver: base: fix UAF when driver_attach failed
+Date:   Fri, 13 May 2022 19:24:44 +0800
+Message-Id: <20220513112444.45112-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] Bluetooth: btmtksdio: fix use-after-free at
- btmtksdio_recv_event
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <165244089905.8477.615548709486219646.git-patchwork-notify@kernel.org>
-Date:   Fri, 13 May 2022 11:21:39 +0000
-References: <f8bf12f9682a01de8905d4c0d7a0a1ff0502ba5f.1652307131.git.objelf@gmail.com>
-In-Reply-To: <f8bf12f9682a01de8905d4c0d7a0a1ff0502ba5f.1652307131.git.objelf@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
-        Soul.Huang@mediatek.com, YN.Chen@mediatek.com,
-        Leon.Yen@mediatek.com, Eric-SY.Chang@mediatek.com,
-        Deren.Wu@mediatek.com, km.lin@mediatek.com,
-        robin.chiu@mediatek.com, Eddie.Chen@mediatek.com,
-        ch.yeh@mediatek.com, posh.sun@mediatek.com, ted.huang@mediatek.com,
-        Eric.Liang@mediatek.com, Stella.Chang@mediatek.com,
-        Tom.Chou@mediatek.com, steve.lee@mediatek.com, jsiuda@google.com,
-        frankgor@google.com, abhishekpandit@google.com,
-        michaelfsun@google.com, mcchou@chromium.org, shawnku@google.com,
-        linux-bluetooth@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        yake.yang@mediatek.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+When driver_attach(drv); failed, the driver_private will be freed.
+But it has been added to the bus, which caused a UAF.
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Marcel Holtmann <marcel@holtmann.org>:
+To fix it, we need to delete it from the bus when failed.
 
-On Thu, 12 May 2022 06:22:15 +0800 you wrote:
-> From: Sean Wang <sean.wang@mediatek.com>
-> 
-> We should not access skb buffer data anymore after hci_recv_frame was
-> called.
-> 
-> [   39.634809] BUG: KASAN: use-after-free in btmtksdio_recv_event+0x1b0
-> [   39.634855] Read of size 1 at addr ffffff80cf28a60d by task kworker
-> [   39.634962] Call trace:
-> [   39.634974]  dump_backtrace+0x0/0x3b8
-> [   39.634999]  show_stack+0x20/0x2c
-> [   39.635016]  dump_stack_lvl+0x60/0x78
-> [   39.635040]  print_address_description+0x70/0x2f0
-> [   39.635062]  kasan_report+0x154/0x194
-> [   39.635079]  __asan_report_load1_noabort+0x44/0x50
-> [   39.635099]  btmtksdio_recv_event+0x1b0/0x1c4
-> [   39.635129]  btmtksdio_txrx_work+0x6cc/0xac4
-> [   39.635157]  process_one_work+0x560/0xc5c
-> [   39.635177]  worker_thread+0x7ec/0xcc0
-> [   39.635195]  kthread+0x2d0/0x3d0
-> [   39.635215]  ret_from_fork+0x10/0x20
-> [   39.635247] Allocated by task 0:
-> [   39.635260] (stack is not available)
-> [   39.635281] Freed by task 2392:
-> [   39.635295]  kasan_save_stack+0x38/0x68
-> [   39.635319]  kasan_set_track+0x28/0x3c
-> [   39.635338]  kasan_set_free_info+0x28/0x4c
-> [   39.635357]  ____kasan_slab_free+0x104/0x150
-> [   39.635374]  __kasan_slab_free+0x18/0x28
-> [   39.635391]  slab_free_freelist_hook+0x114/0x248
-> [   39.635410]  kfree+0xf8/0x2b4
-> [   39.635427]  skb_free_head+0x58/0x98
-> [   39.635447]  skb_release_data+0x2f4/0x410
-> [   39.635464]  skb_release_all+0x50/0x60
-> [   39.635481]  kfree_skb+0xc8/0x25c
-> [   39.635498]  hci_event_packet+0x894/0xca4 [bluetooth]
-> [   39.635721]  hci_rx_work+0x1c8/0x68c [bluetooth]
-> [   39.635925]  process_one_work+0x560/0xc5c
-> [   39.635951]  worker_thread+0x7ec/0xcc0
-> [   39.635970]  kthread+0x2d0/0x3d0
-> [   39.635990]  ret_from_fork+0x10/0x20
-> [   39.636021] The buggy address belongs to the object at ffffff80cf28a600
->                 which belongs to the cache kmalloc-512 of size 512
-> [   39.636039] The buggy address is located 13 bytes inside of
->                 512-byte region [ffffff80cf28a600, ffffff80cf28a800)
-> 
-> [...]
+Fixes: 190888ac01d0 ("driver core: fix possible missing of device probe")
+Signed-off-by: Schspa Shi <schspa@gmail.com>
 
-Here is the summary with links:
-  - [v2] Bluetooth: btmtksdio: fix use-after-free at btmtksdio_recv_event
-    https://git.kernel.org/bluetooth/bluetooth-next/c/0fab6361c4ba
+---
 
-You are awesome, thank you!
+Changelog:
+v1 -> v2:
+        - Remove the blank line needed after fixes
+---
+ drivers/base/bus.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+index 97936ec49bde..7ca47e5b3c1f 100644
+--- a/drivers/base/bus.c
++++ b/drivers/base/bus.c
+@@ -617,7 +617,7 @@ int bus_add_driver(struct device_driver *drv)
+ 	if (drv->bus->p->drivers_autoprobe) {
+ 		error = driver_attach(drv);
+ 		if (error)
+-			goto out_unregister;
++			goto out_del_list;
+ 	}
+ 	module_add_driver(drv->owner, drv);
+ 
+@@ -644,6 +644,8 @@ int bus_add_driver(struct device_driver *drv)
+ 
+ 	return 0;
+ 
++out_del_list:
++	klist_del(&priv->knode_bus);
+ out_unregister:
+ 	kobject_put(&priv->kobj);
+ 	/* drv->p is freed in driver_release()  */
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.29.0
 
