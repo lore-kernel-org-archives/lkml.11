@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A470C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382080AbiEMP1j (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
+        id S231233AbiEMP1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 11:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382002AbiEMP1K (ORCPT
+        with ESMTP id S1382008AbiEMP1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 11:27:10 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D81248E1;
-        Fri, 13 May 2022 08:26:58 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id dk23so16912568ejb.8;
-        Fri, 13 May 2022 08:26:58 -0700 (PDT)
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD41D205F8;
+        Fri, 13 May 2022 08:26:54 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id m20so16892035ejj.10;
+        Fri, 13 May 2022 08:26:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=D3zbuxrZpd+reD5tDBCOEJ+DWKYB665DXVybKfumiKM=;
-        b=a2aR40sJG6BWUFVttOS4UgRwO+TWZAJbA06M13tI3yoNRxU2vLx43aOBEvbwt7hwGR
-         pu6EI2wDTGdXYyxKEXXMJufvEQx/4gWk7dUikNKsdETYDlE40QUmPugKPCuCU1JHCe9U
-         iNQPf35K0W9S46ty3/utcnzrJDAdyTC4QSwlKSupe0KMxQqE55JbaTiz5cVS3MNgB4fH
-         kKPx1Iu/Ar6U40MGrbO3KSE358F6E6gaKXBiY/Q646g1GV2g4Q11vgodj885RS+JxkQF
-         GroY6Mto11rjK0gZS7RBbsCJjNAb5IpfUaRLxczWazGwEqtFjaTkPv3EpnVjHLANV4QD
-         U/cw==
+        bh=MdffPT0YM78EitIudyoFbqjCIcS1NHxhBv6aczYla1Q=;
+        b=IWf5fvyqwI7ymlG6Mvh6Uai+D7DbXCSJlMEODdUs83qoW1qJFQHPBk2dER5lq2ec9Y
+         96SCA1zyQ1289Or2jJ78YV5ALyxGM/7jPbYAgqmaJgv9GL5XDRDamptB9fixG/eXdCVz
+         V/K1akmkHRsfKeHLIyXyis+y3MaM73zSMd6EHuJUNSrDZIGylgev1aZOqe3+3vPi4e1H
+         6WbFuy29+854tqzrMPlkOYRkXSGbWuvKXctuulP+PBXvKeda3TX/ivOKQSuk68FD0pp5
+         P+rCLZ5u8BcTfnEmOmbrS8Oy6o+hIS1SGtSJCXdDUS3W6e1aDVqQ6taHMCVk9EwMjw0+
+         6Lqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=D3zbuxrZpd+reD5tDBCOEJ+DWKYB665DXVybKfumiKM=;
-        b=ULTG4cE1Rb5diP37CLUe5XeOAlmpl+SSmdkVz3Ukj//9/o2B7dO3yJgtLojojNvT3y
-         6hTjUMktx379O0DN6ANx6zCkpHEjKVnVZ0hQ43vTraYYD8Ycwyv08PTZbr6pahv5VvZ/
-         bB4apWSMKvBfzgrjK50kTkftXWIkljAoqTfiv5DTQoplbmjcj+TjBRc/xKmCrgyPZ/h9
-         d9+h9Ngegx5WIe2uDa8kP9IkPLgNPnsvVc4Ix3iomUqlT6VDvkRXcxFIRnulriOHTd3p
-         yH2qWQav8pcLNK3LYLLRCtml29CDWyMBWWP+og0RbF9OdkyPtQzfOWg+5lxT2qbV9FPH
-         GPgQ==
-X-Gm-Message-State: AOAM5329jW1YVR+doD3xdDwOHDxKzkc60+3/dFPvrPX3QRgAOYwhyaGa
-        7FyjkZ0EbWf/SH8FhO1o8PZiMU7BZOA=
-X-Google-Smtp-Source: ABdhPJznqoQK/z/eWLpGyAc6/miENx/pfikUFEFO5W0CiflFf/EkNvJETpsr8MqzRt5M/XtGrJMA6w==
-X-Received: by 2002:a17:907:6e88:b0:6fa:888d:74a7 with SMTP id sh8-20020a1709076e8800b006fa888d74a7mr4774036ejc.335.1652455616628;
-        Fri, 13 May 2022 08:26:56 -0700 (PDT)
+        bh=MdffPT0YM78EitIudyoFbqjCIcS1NHxhBv6aczYla1Q=;
+        b=0Eh8W30WsIt+FFeXCNLGPTJyGLiSmpf78HfDNECrFaJ5aoq60+CiMAgD87WMA3PGp+
+         GnL9zoAWTUCoYB6aXCO0SfqS7w0cdBhM8jYSxxcHBdrX909O/mTtMx7vFvjyryn+ARRd
+         oxAq+ZyEaAt7vqJ1XpMI/sALOV37cwslsES4C/5uUkpies8avSy96RQmj2s5AWatPF85
+         Vc3YrSmnIxwpvnP5A2eVonmIRalA9VHFilMPD7dIMnr3egBGbh/FQFD2HRzYhwXFEHOg
+         ZiW0rSVxWSjAUFUiRlJ15kpebKx3Oefj1qyMR050LYcAjKGImEe0pIWVywZIsxK7tvEN
+         BCdw==
+X-Gm-Message-State: AOAM530PPZHc3tEFDi43r/jOqUQzN2+epvlowW1fPQ3bewZR3nEZHa9O
+        MEeffANLuDutuYzKEz9WZXjrohAg9s4=
+X-Google-Smtp-Source: ABdhPJw9jBhhp+PMj+9mJMyRz2PcqazYPwajbKaFd+y4ODIv0RhFDwpfytllQNC23xspaWUCbENPNQ==
+X-Received: by 2002:a17:907:d1d:b0:6fa:1f27:b39 with SMTP id gn29-20020a1709070d1d00b006fa1f270b39mr4554972ejc.146.1652455613343;
+        Fri, 13 May 2022 08:26:53 -0700 (PDT)
 Received: from 127.0.0.1localhost ([185.69.144.161])
-        by smtp.gmail.com with ESMTPSA id j13-20020a508a8d000000b0042617ba63cbsm1015351edj.85.2022.05.13.08.26.55
+        by smtp.gmail.com with ESMTPSA id j13-20020a508a8d000000b0042617ba63cbsm1015351edj.85.2022.05.13.08.26.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:26:56 -0700 (PDT)
+        Fri, 13 May 2022 08:26:52 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -57,9 +56,9 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v3 09/10] ipv6: improve opt-less __ip6_make_skb()
-Date:   Fri, 13 May 2022 16:26:14 +0100
-Message-Id: <84e2968f7783e478e60f74fa712485d83c904de8.1652368648.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v3 06/10] udp/ipv6: clean up udpv6_sendmsg's saddr init
+Date:   Fri, 13 May 2022 16:26:11 +0100
+Message-Id: <2a0bd67940ed265cb9f4734f602792da37292968.1652368648.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <cover.1652368648.git.asml.silence@gmail.com>
 References: <cover.1652368648.git.asml.silence@gmail.com>
@@ -69,45 +68,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We do a bit of a network header pointer shuffling in __ip6_make_skb()
-expecting that ipv6_push_*frag_opts() might change the layout. Avoid it
-with associated overhead when there are no opts.
+We initialise fl6 in udpv6_sendmsg() to zeroes, that sets saddr to any
+addr, then it might be changed in by cmsg but only to a non-any addr.
+After we check again for it left set to "any", which is likely to be so,
+and try to initialise it from socket saddr.
+
+The result of it is that fl6->saddr is set to cmsg's saddr if specified
+and inet6_sk(sk)->saddr otherwise. We can achieve the same by
+pre-setting it to the sockets saddr and potentially overriding by cmsg
+after.
+
+This looks a bit cleaner comparing to conditional init and also removes
+extra checks from the way.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/ip6_output.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ net/ipv6/udp.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index e2a6b9bdf79c..6ee44c509485 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1881,22 +1881,20 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
- 
- 	/* Allow local fragmentation. */
- 	skb->ignore_df = ip6_sk_ignore_df(sk);
--	__skb_pull(skb, skb_network_header_len(skb));
--
- 	final_dst = &fl6->daddr;
- 	if (v6_cork->opt) {
- 		struct ipv6_txoptions *opt = v6_cork->opt;
- 
-+		__skb_pull(skb, skb_network_header_len(skb));
- 		if (opt->opt_flen)
- 			ipv6_push_frag_opts(skb, opt, &proto);
- 		if (opt->opt_nflen)
- 			ipv6_push_nfrag_opts(skb, opt, &proto, &final_dst, &fl6->saddr);
-+		skb_push(skb, sizeof(struct ipv6hdr));
-+		skb_reset_network_header(skb);
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 61dbe2f04675..9bd317c2b67f 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1434,14 +1434,15 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		connected = true;
  	}
  
--	skb_push(skb, sizeof(struct ipv6hdr));
--	skb_reset_network_header(skb);
- 	hdr = ipv6_hdr(skb);
++	fl6->flowi6_uid = sk->sk_uid;
++	fl6->saddr = np->saddr;
++	fl6->daddr = *daddr;
++
+ 	if (!fl6->flowi6_oif)
+ 		fl6->flowi6_oif = sk->sk_bound_dev_if;
 -
- 	ip6_flow_hdr(hdr, v6_cork->tclass,
- 		     ip6_make_flowlabel(net, skb, fl6->flowlabel,
- 					ip6_autoflowlabel(net, np), fl6));
+ 	if (!fl6->flowi6_oif)
+ 		fl6->flowi6_oif = np->sticky_pktinfo.ipi6_ifindex;
+ 
+-	fl6->flowi6_uid = sk->sk_uid;
+-
+ 	if (msg->msg_controllen) {
+ 		opt = &opt_space;
+ 		memset(opt, 0, sizeof(struct ipv6_txoptions));
+@@ -1476,9 +1477,6 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ 	fl6->flowi6_proto = sk->sk_protocol;
+ 	fl6->flowi6_mark = ipc6.sockc.mark;
+-	fl6->daddr = *daddr;
+-	if (ipv6_addr_any(&fl6->saddr) && !ipv6_addr_any(&np->saddr))
+-		fl6->saddr = np->saddr;
+ 	fl6->fl6_sport = inet->inet_sport;
+ 
+ 	if (cgroup_bpf_enabled(CGROUP_UDP6_SENDMSG) && !connected) {
 -- 
 2.36.0
 
