@@ -2,144 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:01:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378719AbiEMJAc (ORCPT
+        id S1378730AbiEMJB1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58920 "EHLO
+        Fri, 13 May 2022 05:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347155AbiEMJAa (ORCPT
+        with ESMTP id S1378735AbiEMJBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:00:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED8D2B24CF
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:00:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652432430; x=1683968430;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=UZNkG4uYXbLPDXpnWT/lY5jCnuirKRlehwcMQwjEFIg=;
-  b=CPT034C5Qvge/vqP4na/bj3PeTOPG1BCl72cprDGxeXefgVayzmVvgll
-   gbf5po+emdhJZDgkdvwMPlrhxR93vhbRsGthfME9fGTahr3sdCle7MhiU
-   Xl0B4nyHSFHJBjyFq8FZigkh/31TIiOXFLKzZG9CUhNUsoX3+ETSra+oV
-   xA2hCkwT62grpntFjGWwA3/ZWxSKdqeUcCUHwK4GHS7VUYZzTo7isEJtw
-   4aNwSGLpwE7I1+ARlf91yiIRAtJq8mQA05aBAlFL/ztfcHsoBsjxF6vRd
-   uPNAhdPhnmye+M90pJRUUDmQOuyyqGU0ap+WJfJGIZv/VcbUdhDViL0mp
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257803076"
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="257803076"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 02:00:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="637219581"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 13 May 2022 02:00:27 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npR9v-000LZ8-4m;
-        Fri, 13 May 2022 09:00:27 +0000
-Date:   Fri, 13 May 2022 16:59:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/rxrpc-ringless 35/35]
- net/rxrpc/recvmsg.c:311:25: sparse: sparse: cast from restricted __be16
-Message-ID: <202205131657.SjbSnATI-lkp@intel.com>
+        Fri, 13 May 2022 05:01:04 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2406C2F39E
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:01:00 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so4385086wmn.1
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:01:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=lRU0KcNE0a23vfPKTZTRFidSipfZvgZA2AvdCHUsUCQ=;
+        b=UHUEMu6m/YYgTvqVnCaYzdnC9PFsK3950Ebdu8MmueWFBUVmxSTKxYWedRVF4YUGnV
+         QQ+lzbsdYh8TDyYLXS2cldnW9jKCxeIfd6VFmAVz0pkqg59pZDbavwQOj8r9WhrPbelf
+         9OopO3EdBKu8ZawPVeLrhLOsbxvEdXY/8DyIsVMlzsu9bkLOXDbqlHcbxKtwivVfKaDA
+         1miew9iVHh7BehvoScGH4zzTYaXtv2CG+PnQiBMy6/LjXVojrA58e0OSFssRo+Vsn4RG
+         YAPd5tc3tM3D648CTGvBPzDbbo64w/ZM0wE4ZTdyKsYuzlxc++5DonMqw+kMktEFwJYj
+         Dm8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=lRU0KcNE0a23vfPKTZTRFidSipfZvgZA2AvdCHUsUCQ=;
+        b=E3Y5ezYPr+tOYoiBYgVNMI0sSBRkSHoZrXy9q6yRSo7ZiSxySGmnU+DtrF1DwhT1DP
+         BLMW5VWq2KNM45KI/UvgtW/JYTaNtFzI7wqgei7llocYTCZdln0c+GWj2QGnn8uyrY+i
+         bxFWOm38Aai+TF0b4y2/FGIEkR+1CA+O9MzFHb0QkIh3SiGTNJMS2vGUkdm7GkYk/1IN
+         VtQl90ipFErVHdDSumtZhMDDaePe8o7OOkSkH1CIUZ8ip8kvs+MkxPmjEAN8qOu+v6vm
+         FKSaDYJAfCKt/hkqgCIE6c8j609+GsPuHvTk9jRHRKSQ5gIPNKEeQLhgptPj7dEUa6Vg
+         G8XA==
+X-Gm-Message-State: AOAM532tPy7CKgrnBmkxNkH62IMwQFX2nvXQ64gA+3NCRyH6kEJUvUpI
+        r5/V2eJGQcrA4OQvKSETpyisTA==
+X-Google-Smtp-Source: ABdhPJziNEAcPdLbmvFdxJ3jD2a2GdpSTyBsHkbyz2V3JF3SiM9UZWNoRNY6y9zaDL35ZJRJt41LDA==
+X-Received: by 2002:a05:600c:ad2:b0:394:22e1:ebcf with SMTP id c18-20020a05600c0ad200b0039422e1ebcfmr13991066wmr.181.1652432458722;
+        Fri, 13 May 2022 02:00:58 -0700 (PDT)
+Received: from [192.168.0.169] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id m18-20020adfa3d2000000b0020c5253d8ffsm1560932wrb.75.2022.05.13.02.00.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 02:00:58 -0700 (PDT)
+Message-ID: <48d96a4e-ce1b-03a1-1831-36555efd7080@linaro.org>
+Date:   Fri, 13 May 2022 11:00:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/3] dt-bindings: arm: qcom: Add sc7180 Chromebook board
+ bindings
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
+ <828bc65f-e585-0fe7-c038-c750861c9446@linaro.org>
+In-Reply-To: <828bc65f-e585-0fe7-c038-c750861c9446@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/rxrpc-ringless
-head:   36075641f704b02b4bcaee01d904a06676b32199
-commit: 36075641f704b02b4bcaee01d904a06676b32199 [35/35] rxrpc: Don't split up received jumbo packets
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220513/202205131657.SjbSnATI-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/36075641f704b02b4bcaee01d904a06676b32199
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/rxrpc-ringless
-        git checkout 36075641f704b02b4bcaee01d904a06676b32199
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sh SHELL=/bin/bash net/rxrpc/
+On 13/05/2022 09:57, Krzysztof Kozlowski wrote:
+> On 12/05/2022 18:04, Douglas Anderson wrote:
+>> This copy-pastes compatibles from sc7180-based boards from the device
+>> trees to the yaml file so that `make dtbs_check` will be happy.
+>>
+>> NOTES:
+>> - I make no attempt to try to share an "item" for all sc7180 based
+>>   Chromebooks. Because of the revision matching scheme used by the
+>>   Chromebook bootloader, at times we need a different number of
+>>   revisions listed.
+>> - Some of the odd entries in here (like google,homestar-rev23 or the
+>>   fact that "Google Lazor Limozeen without Touchscreen" changed from
+>>   sku5 to sku6) are not typos but simply reflect reality.
+>> - Many revisions of boards here never actually went to consumers, but
+>>   they are still in use within various companies that were involved in
+>>   Chromebook development. Since Chromebooks are developed with an
+>>   "upstream first" methodology, having these revisions supported with
+>>   upstream Linux is important. Making it easy for Chromebooks to be
+>>   developed with an "upstream first" methodology is valuable to the
+>>   upstream community because it improves the quality of upstream and
+>>   gets Chromebooks supported with vanilla upstream faster.
+>>
+>> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+>> ---
+>>
+>>  .../devicetree/bindings/arm/qcom.yaml         | 180 ++++++++++++++++++
+>>  1 file changed, 180 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+>> index 5c06d1bfc046..399be67eb5d2 100644
+>> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+>> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+>> @@ -214,11 +214,191 @@ properties:
+>>                - qcom,ipq8074-hk10-c2
+>>            - const: qcom,ipq8074
+>>  
+>> +      # Qualcomm Technologies, Inc. SC7180 IDP
+>>        - items:
+>>            - enum:
+>>                - qcom,sc7180-idp
+>>            - const: qcom,sc7180
+>>  
+>> +      # Google CoachZ (rev1 - 2)
+>> +      - items:
+>> +          - const: google,coachz-rev1
+>> +          - const: google,coachz-rev2
+> 
+> The inverted pattern of old revision being compatible with the new one,
+> is done on purpose? You claim here every rev1 is always compatible with
+> rev2 ...
+> 
+> I don't think we discussed such patterns in previous talk. I quickly
+> went through it and there were only skuX moving around, not rev1 being
+> newer then rev2.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+BTW, your other Chromebooks use logical order:
+
+https://lore.kernel.org/all/20220512205602.158273-2-nfraprado@collabora.com/
 
 
-sparse warnings: (new ones prefixed by >>)
->> net/rxrpc/recvmsg.c:311:25: sparse: sparse: cast from restricted __be16
->> net/rxrpc/recvmsg.c:311:25: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned short [usertype] val @@     got restricted __be16 [addressable] [usertype] cksum @@
-   net/rxrpc/recvmsg.c:311:25: sparse:     expected unsigned short [usertype] val
-   net/rxrpc/recvmsg.c:311:25: sparse:     got restricted __be16 [addressable] [usertype] cksum
->> net/rxrpc/recvmsg.c:311:25: sparse: sparse: cast from restricted __be16
->> net/rxrpc/recvmsg.c:311:25: sparse: sparse: cast from restricted __be16
->> net/rxrpc/recvmsg.c:311:23: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned short [usertype] cksum @@     got restricted __be16 [usertype] @@
-   net/rxrpc/recvmsg.c:311:23: sparse:     expected unsigned short [usertype] cksum
-   net/rxrpc/recvmsg.c:311:23: sparse:     got restricted __be16 [usertype]
 
-vim +311 net/rxrpc/recvmsg.c
 
-   275	
-   276	/*
-   277	 * Set up a data location table for a jumbo DATA packet then verify
-   278	 * and decrypt all the subpackets and locate the data for each.  We
-   279	 * also need to skip over any duplicate subpackets.
-   280	 */
-   281	static int rxrpc_verify_data(struct rxrpc_call *call, struct sk_buff *skb)
-   282	{
-   283		struct rxrpc_jumbo_header jhdr;
-   284		struct rxrpc_skb_subpacket *subs;
-   285		struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
-   286		unsigned int offset = sizeof(struct rxrpc_wire_header);
-   287		unsigned int len = skb->len - sizeof(struct rxrpc_wire_header);
-   288		rxrpc_seq_t seq = sp->hdr.seq;
-   289		int nr_subs = sp->nr_subpackets - 1, i = 0, j;
-   290		u16 cksum = sp->hdr.cksum;
-   291	
-   292		subs = kcalloc(sp->nr_subpackets, sizeof(*sp->subs), GFP_KERNEL);
-   293		if (!subs)
-   294			return -ENOMEM;
-   295		sp->subs = subs;
-   296	
-   297		for (; j < nr_subs; j++, seq++) {
-   298			if (after(seq, call->rx_consumed)) {
-   299				subs[i].offset	= offset;
-   300				subs[i].len	= RXRPC_JUMBO_DATALEN;
-   301				subs[i].cksum	= cksum;
-   302				i++;
-   303			} else {
-   304				sp->hdr.seq++;
-   305				sp->nr_subpackets--;
-   306			}
-   307			offset += RXRPC_JUMBO_DATALEN;
-   308			if (skb_copy_bits(skb, offset, &jhdr.cksum, 2) < 0)
-   309				return -EPROTO;
-   310			offset += sizeof(jhdr);
- > 311			cksum = htons(jhdr.cksum);
-   312			len -= RXRPC_JUMBO_SUBPKTLEN;
-   313		}
-   314	
-   315		subs[i].offset	= offset;
-   316		subs[i].len	= len;
-   317		subs[i].cksum	= cksum;
-   318		return call->security->verify_packet(call, skb);
-   319	}
-   320	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
