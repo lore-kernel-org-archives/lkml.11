@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51183C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A557C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380032AbiEMO2t (ORCPT
+        id S1380730AbiEMO2x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
+        Fri, 13 May 2022 10:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380942AbiEMO0S (ORCPT
+        with ESMTP id S1380992AbiEMO0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:18 -0400
+        Fri, 13 May 2022 10:26:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B385F8E2;
-        Fri, 13 May 2022 07:25:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FDC606D7;
+        Fri, 13 May 2022 07:25:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9B77B8306F;
-        Fri, 13 May 2022 14:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E01DC34100;
-        Fri, 13 May 2022 14:25:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EFDEB83069;
+        Fri, 13 May 2022 14:25:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94600C34100;
+        Fri, 13 May 2022 14:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451951;
-        bh=3ZAQoHJRAorjhE63N9J2GNWT/DBzxa637Mj9/BzDMmU=;
+        s=korg; t=1652451957;
+        bh=5TQdR9CfD/pFNVGjxcqLRAGHcY/q8Rinz6NZhij5HSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0OYEq3/QdjkmG/2dCQbjMUeid3PUAGUqPfPzllHHeRGsG34HaQLb95evAKkMBYbRA
-         l0aJm3leAmUAD5rSUaw/9cxSudi50uCsFM2KFwPe7pujExcFJMQE0XJ6EtC5P1HNsG
-         /5ETxIG67ZNgjTrChv7dXY0vkiKjzcNRLUesKveQ=
+        b=ga8+prMOVvKBLYpaOONtxdP9eDAlopCwtHRziEGZ9vyEkKNc/VaMygOGzEyXxyeY8
+         tJyj8g9GGGdTPxKWcvkw/EvMyFh4oF5iMw4Qg7pLdC0MhsiI78cN1lbe60X58iWgrf
+         uCD9xkRuvQitZFq0XBMkpenGdVnJL/f/4owBDRxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        ChenXiaoSong <chenxiaosong2@huawei.com>
-Subject: [PATCH 4.19 15/15] VFS: Fix memory leak caused by concurrently mounting fs with subtype
-Date:   Fri, 13 May 2022 16:23:37 +0200
-Message-Id: <20220513142228.347780404@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 4.19 03/15] drm/amd/display/dc/gpio/gpio_service: Pass around correct dce_{version, environment} types
+Date:   Fri, 13 May 2022 16:23:25 +0200
+Message-Id: <20220513142227.998453147@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
 References: <20220513142227.897535454@linuxfoundation.org>
@@ -49,77 +55,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+From: Lee Jones <lee.jones@linaro.org>
 
-If two processes mount same superblock, memory leak occurs:
+commit 353f7f3a9dd5fd2833b6462bac89ec1654c9c3aa upstream.
 
-CPU0               |  CPU1
-do_new_mount       |  do_new_mount
-  fs_set_subtype   |    fs_set_subtype
-    kstrdup        |
-                   |      kstrdup
-    memrory leak   |
+Fixes the following W=1 kernel build warning(s):
 
-The following reproducer triggers the problem:
+ drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c: In function ‘dal_gpio_service_create’:
+ drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c:71:4: warning: implicit conversion from ‘enum dce_version’ to ‘enum dce_environment’ [-Wenum-conversion]
+ drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c:77:4: warning: implicit conversion from ‘enum dce_version’ to ‘enum dce_environment’ [-Wenum-conversion]
 
-1. shell command: mount -t ntfs /dev/sda1 /mnt &
-2. c program: mount("/dev/sda1", "/mnt", "fuseblk", 0, "...")
-
-with kmemleak report being along the lines of
-
-unreferenced object 0xffff888235f1a5c0 (size 8):
-  comm "mount.ntfs", pid 2860, jiffies 4295757824 (age 43.423s)
-  hex dump (first 8 bytes):
-    00 a5 f1 35 82 88 ff ff                          ...5....
-  backtrace:
-    [<00000000656e30cc>] __kmalloc_track_caller+0x16e/0x430
-    [<000000008e591727>] kstrdup+0x3e/0x90
-    [<000000008430d12b>] do_mount.cold+0x7b/0xd9
-    [<0000000078d639cd>] ksys_mount+0xb2/0x150
-    [<000000006015988d>] __x64_sys_mount+0x29/0x40
-    [<00000000e0a7c118>] do_syscall_64+0xc1/0x1d0
-    [<00000000bcea7df5>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-    [<00000000803a4067>] 0xffffffffffffffff
-
-Linus's tree already have refactoring patchset [1], one of them can fix this bug:
-        c30da2e981a7 ("fuse: convert to use the new mount API")
-After refactoring, init super_block->s_subtype in fuse_fill_super.
-
-Since we did not merge the refactoring patchset in this branch, I create this patch.
-This patch fix this by adding a write lock while calling fs_set_subtype.
-
-[1] https://patchwork.kernel.org/project/linux-fsdevel/patch/20190903113640.7984-3-mszeredi@redhat.com/
-
-Fixes: 79c0b2df79eb ("add filesystem subtype support")
-Cc: David Howells <dhowells@redhat.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Cc: Harry Wentland <harry.wentland@amd.com>
+Cc: Leo Li <sunpeng.li@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Christian König" <christian.koenig@amd.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: amd-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-v1: Can not mount sshfs ([PATCH linux-4.19.y] VFS: Fix fuseblk memory leak caused by mount concurrency)
-v2: Use write lock while writing superblock ([PATCH 4.19,v2] VFS: Fix fuseblk memory leak caused by mount concurrency)
-v3: Update commit message
+ drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c           |   12 +++++------
+ drivers/gpu/drm/amd/display/include/gpio_service_interface.h |    4 +--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
- fs/namespace.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
---- a/fs/namespace.c
-+++ b/fs/namespace.c
-@@ -2490,9 +2490,12 @@ static int do_new_mount(struct path *pat
- 		return -ENODEV;
+--- a/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
++++ b/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
+@@ -51,8 +51,8 @@
+  */
  
- 	mnt = vfs_kern_mount(type, sb_flags, name, data);
--	if (!IS_ERR(mnt) && (type->fs_flags & FS_HAS_SUBTYPE) &&
--	    !mnt->mnt_sb->s_subtype)
--		mnt = fs_set_subtype(mnt, fstype);
-+	if (!IS_ERR(mnt) && (type->fs_flags & FS_HAS_SUBTYPE)) {
-+		down_write(&mnt->mnt_sb->s_umount);
-+		if (!mnt->mnt_sb->s_subtype)
-+			mnt = fs_set_subtype(mnt, fstype);
-+		up_write(&mnt->mnt_sb->s_umount);
-+	}
+ struct gpio_service *dal_gpio_service_create(
+-	enum dce_version dce_version_major,
+-	enum dce_version dce_version_minor,
++	enum dce_version dce_version,
++	enum dce_environment dce_environment,
+ 	struct dc_context *ctx)
+ {
+ 	struct gpio_service *service;
+@@ -66,14 +66,14 @@ struct gpio_service *dal_gpio_service_cr
+ 		return NULL;
+ 	}
  
- 	put_filesystem(type);
- 	if (IS_ERR(mnt))
+-	if (!dal_hw_translate_init(&service->translate, dce_version_major,
+-			dce_version_minor)) {
++	if (!dal_hw_translate_init(&service->translate, dce_version,
++			dce_environment)) {
+ 		BREAK_TO_DEBUGGER();
+ 		goto failure_1;
+ 	}
+ 
+-	if (!dal_hw_factory_init(&service->factory, dce_version_major,
+-			dce_version_minor)) {
++	if (!dal_hw_factory_init(&service->factory, dce_version,
++			dce_environment)) {
+ 		BREAK_TO_DEBUGGER();
+ 		goto failure_1;
+ 	}
+--- a/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
++++ b/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
+@@ -42,8 +42,8 @@ void dal_gpio_destroy(
+ 	struct gpio **ptr);
+ 
+ struct gpio_service *dal_gpio_service_create(
+-	enum dce_version dce_version_major,
+-	enum dce_version dce_version_minor,
++	enum dce_version dce_version,
++	enum dce_environment dce_environment,
+ 	struct dc_context *ctx);
+ 
+ struct gpio *dal_gpio_service_create_irq(
 
 
