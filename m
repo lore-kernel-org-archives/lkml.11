@@ -2,136 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6118C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87891C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:29:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377797AbiEMHXw (ORCPT
+        id S1377796AbiEMH3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59056 "EHLO
+        Fri, 13 May 2022 03:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352114AbiEMHXs (ORCPT
+        with ESMTP id S229562AbiEMH3j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:23:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2767D64BCA;
-        Fri, 13 May 2022 00:23:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 13 May 2022 03:29:39 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C7A2A1535;
+        Fri, 13 May 2022 00:29:37 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCF3CB82C44;
-        Fri, 13 May 2022 07:23:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F2FFC34100;
-        Fri, 13 May 2022 07:23:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652426624;
-        bh=4j63qxQv6bBPt6Zh+ZWZmN70Zaw28P37OyeOwv5c/Oc=;
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L00dq2NV6z4xLb;
+        Fri, 13 May 2022 17:29:35 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652426976;
+        bh=amBoUhAchuiKZLMpzSpOqMbdV/DoM2H/tnnKlO0EPgk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VFyf0r+jwlAxjvj7Sk8arQc3WwE7ti3QUVyvSibylKDucSVUrODGUnSLKNQU60Vea
-         c0G2o8jiMF8I0ZkSoXo7Aq4+OITclZIgF7H45q/xOlUt1AijIJ3J3DD3I3dl6oxQ3J
-         O6OQ/RaPdkDgwGO1BEPhtOA6MsMEpBiivgBKIryG1TT8AQrhl9BX4TOdsBIuCTHVsm
-         d/AiIF+dT5pLk+suc058p7yFuk11dBe5TARH8/T4ZIz2li8IVKn3fOmnRrFZGpuHRr
-         qjnO8Q9jfnpObbgM3HM4BbgOakBoXlXKW3jfDj6gthTSGRyXxYwQi5olgS4bYfMq0Q
-         Ja4H52FoTl9ZA==
-Date:   Fri, 13 May 2022 09:23:39 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Miles Chen <miles.chen@mediatek.com>
-Cc:     <lukas.bulwahn@gmail.com>, <bin.liu@mediatek.com>,
-        <kernel-janitors@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        Rick Chang <rick.chang@mediatek.com>
-Subject: Re: [PATCH RFC] MAINTAINERS: drop unreachable contact for MEDIATEK
- JPEG DRIVER
-Message-ID: <20220513092339.60f9eedc@coco.lan>
-In-Reply-To: <20220309030431.31247-1-miles.chen@mediatek.com>
-References: <20220308114300.12502-1-lukas.bulwahn@gmail.com>
-        <20220309030431.31247-1-miles.chen@mediatek.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.31; x86_64-redhat-linux-gnu)
+        b=e+PZmhjqeVy35zXpWfpmXn6hzAvj9cBX3QihjtQlY9Pf4p9SqK+Nju1zzbXfhBJ91
+         zNS/CZh7xWm/+NImbNnSfGXWkKpCIlUv6zKlIVIjEuS7VUF23c25DUNsC0K5vOC86D
+         1PA0LWE1e1m107qbphn0ozs0Yw/0yJOC4YFj7hgWiBaC9KfnqAjuswFcol8eVEZpmx
+         2WNpkPlCf/1ScdCMshxe547kbFyBU+5z98pPTz6393e4FZWkd0+YFYUx4x/h3uNjo1
+         Tta3ALV6dCuWNV5eJCU7wu8EzHwFVsjUT0YThRHunnq0hsoxfhxkaEruqr9hAxSlD7
+         q14lz+HXS0AFg==
+Date:   Fri, 13 May 2022 17:29:33 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings after merge of the arm-soc tree
+Message-ID: <20220513172933.5dbf4ffb@canb.auug.org.au>
+In-Reply-To: <20220506085815.5a3cfa83@canb.auug.org.au>
+References: <20220506085815.5a3cfa83@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/+oID1gv3YK/8R5EMEQLZBIi";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, 9 Mar 2022 11:04:31 +0800
-Miles Chen <miles.chen@mediatek.com> escreveu:
+--Sig_/+oID1gv3YK/8R5EMEQLZBIi
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> Hi Lukas,
-> 
-> > After sending a patch to Rick Chang, the mediatek mail server responded:
-> > 
-> >   ** Message not delivered **
-> > 
-> >   Your message couldn't be delivered to rick.chang@mediatek.com because
-> >   the remote server is misconfigured. See technical details below for more
-> >   information.
-> > 
-> >   The response from the remote server was:
-> >   550 Relaying mail to rick.chang@mediatek.com is not allowed
-> > 
-> > So, drop Rick Chang from the MEDIATEK JPEG DRIVER section.
+Hi all,
 
-Funny... I did a quick test here, and the e-mail to Rick was not rejected:
+On Fri, 6 May 2022 08:58:15 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
+>
+> After merging the arm-soc tree, today's linux-next build (arm
+> multi_v7_defconfig) produced these warnings:
+>=20
+> arch/arm/boot/dts/bcm953012hr.dts:57.3-33: Warning (reg_format): /nand-co=
+ntroller@18028000/nand@0/partition@0:reg: property has invalid length (8 by=
+tes) (#address-cells =3D=3D 2, #size-cells =3D=3D 1)
+> arch/arm/boot/dts/bcm953012hr.dts:62.3-33: Warning (reg_format): /nand-co=
+ntroller@18028000/nand@0/partition@200000:reg: property has invalid length =
+(8 bytes) (#address-cells =3D=3D 2, #size-cells =3D=3D 1)
+> arch/arm/boot/dts/bcm953012hr.dts:66.3-33: Warning (reg_format): /nand-co=
+ntroller@18028000/nand@0/partition@600000:reg: property has invalid length =
+(8 bytes) (#address-cells =3D=3D 2, #size-cells =3D=3D 1)
+> arch/arm/boot/dts/bcm953012hr.dts:70.3-33: Warning (reg_format): /nand-co=
+ntroller@18028000/nand@0/partition@1000000:reg: property has invalid length=
+ (8 bytes) (#address-cells =3D=3D 2, #size-cells =3D=3D 1)
+> arch/arm/boot/dts/bcm953012hr.dtb: Warning (pci_device_reg): Failed prere=
+quisite 'reg_format'
+> arch/arm/boot/dts/bcm953012hr.dtb: Warning (pci_device_bus_num): Failed p=
+rerequisite 'reg_format'
+> arch/arm/boot/dts/bcm953012hr.dtb: Warning (i2c_bus_reg): Failed prerequi=
+site 'reg_format'
+> arch/arm/boot/dts/bcm953012hr.dtb: Warning (spi_bus_reg): Failed prerequi=
+site 'reg_format'
+> arch/arm/boot/dts/bcm953012hr.dts:55.14-59.4: Warning (avoid_default_addr=
+_size): /nand-controller@18028000/nand@0/partition@0: Relying on default #a=
+ddress-cells value
+> arch/arm/boot/dts/bcm953012hr.dts:55.14-59.4: Warning (avoid_default_addr=
+_size): /nand-controller@18028000/nand@0/partition@0: Relying on default #s=
+ize-cells value
+> arch/arm/boot/dts/bcm953012hr.dts:60.19-63.4: Warning (avoid_default_addr=
+_size): /nand-controller@18028000/nand@0/partition@200000: Relying on defau=
+lt #address-cells value
+> arch/arm/boot/dts/bcm953012hr.dts:60.19-63.4: Warning (avoid_default_addr=
+_size): /nand-controller@18028000/nand@0/partition@200000: Relying on defau=
+lt #size-cells value
+> arch/arm/boot/dts/bcm953012hr.dts:64.19-67.4: Warning (avoid_default_addr=
+_size): /nand-controller@18028000/nand@0/partition@600000: Relying on defau=
+lt #address-cells value
+> arch/arm/boot/dts/bcm953012hr.dts:64.19-67.4: Warning (avoid_default_addr=
+_size): /nand-controller@18028000/nand@0/partition@600000: Relying on defau=
+lt #size-cells value
+> arch/arm/boot/dts/bcm953012hr.dts:68.20-71.4: Warning (avoid_default_addr=
+_size): /nand-controller@18028000/nand@0/partition@1000000: Relying on defa=
+ult #address-cells value
+> arch/arm/boot/dts/bcm953012hr.dts:68.20-71.4: Warning (avoid_default_addr=
+_size): /nand-controller@18028000/nand@0/partition@1000000: Relying on defa=
+ult #size-cells value
+>=20
+> I don't know what caused this now.
 
-Connecting to smtp.kernel.org [35.85.114.177]:587 ...  TFO mode sendto, no data: EINPROGRESS
- connected
-  SMTP<< 220 smtp.kernel.org ESMTP Postfix
-  SMTP>> EHLO mail.kernel.org
-  SMTP<< 250-smtp.kernel.org
-         250-PIPELINING
-         250-SIZE 30720000
-         250-VRFY
-         250-ETRN
-         250-STARTTLS
-         250-ENHANCEDSTATUSCODES
-         250-8BITMIME
-         250-DSN
-         250 CHUNKING
-  SMTP>> STARTTLS
-  SMTP<< 220 2.0.0 Ready to start TLS
-  SMTP>> EHLO mail.kernel.org
-  SMTP<< 250-smtp.kernel.org
-         250-PIPELINING
-         250-SIZE 30720000
-         250-VRFY
-         250-ETRN
-         250-AUTH PLAIN LOGIN
-         250-ENHANCEDSTATUSCODES
-         250-8BITMIME
-         250-DSN
-         250 CHUNKING
-  SMTP>> AUTH PLAIN ************************************
-  SMTP<< 235 2.7.0 Authentication successful
-  SMTP|> MAIL FROM:<mchehab@kernel.org> SIZE=1361 AUTH=mchehab@kernel.org
-  SMTP|> RCPT TO:<rick.chang@mediatek.com>
-         will write message using CHUNKING
-  SMTP+> BDAT 338 LAST
-  SMTP>> QUIT
-  SMTP<< 250 2.1.0 Ok
-  SMTP<< 250 2.1.5 Ok
-  SMTP<< 250 2.0.0 Ok: 338 bytes queued as 8DCF4C34100
-  SMTP<< 221 2.0.0 Bye
-  SMTP(close)>>
-LOG: MAIN
-  => rick.chang@mediatek.com R=smarthost T=remote_msa H=smtp.kernel.org [35.85.114.177] X=TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256 CV=yes A=client_auth_plain K C="250 2.0.0 Ok: 338 bytes queued as 8DCF4C34100"
-LOG: MAIN
-  Completed
+I am still getting these warnings.
 
-> > 
-> > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>  
-> 
-> I confirmed that Rick Chang has left Mediatek, so it is ok to remove his name.
+--=20
+Cheers,
+Stephen Rothwell
 
-Ok, I'll apply the patch.
+--Sig_/+oID1gv3YK/8R5EMEQLZBIi
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-> 
-> Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-> 
-> Thanks,
-> Miles
+-----BEGIN PGP SIGNATURE-----
 
-Thanks,
-Mauro
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ+CN4ACgkQAVBC80lX
+0GxWawf/aR3e1ZdCSDAIxLd4A7nYxaIkdZ+29L+cGnukIOLND+soF1SwQi5P29o4
+yRx9xzaOJWri9mDYuJvkT5wvkL8k3Fy3kyQbevhGGe4WcjnA81M9h/E9Zc3BYwK3
+tpXCR5zvMHbfPJH9uYO8aIsgabhsQBobKPf734vh4up2cme+0pNZhKXE3sCm8Edg
+e4pBHoYDoQJKUVb+Sfck5Vkt23dfvjLoPH+TYlZFlqs+0NxeLER8XoYsb0t+hGNf
+SLs0zwcVVGL3WEeRS1YiRuBLCDHILzYHvlHm2RHH36XgKRli1Uos3Y3ZyT3QcMEF
+1MDafRhQPoQOQLG9ece4SHR4zJqC7g==
+=TPsA
+-----END PGP SIGNATURE-----
+
+--Sig_/+oID1gv3YK/8R5EMEQLZBIi--
