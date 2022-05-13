@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A34C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378500AbiEMIno (ORCPT
+        id S1378469AbiEMInx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 04:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48298 "EHLO
+        Fri, 13 May 2022 04:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378472AbiEMIn1 (ORCPT
+        with ESMTP id S1378470AbiEMInu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 04:43:27 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9206727E6A8
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:43:25 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id e29so819240wrc.11
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:43:25 -0700 (PDT)
+        Fri, 13 May 2022 04:43:50 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02DA27E69B
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:43:49 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id f2so3441541wrc.0
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:43:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :references:from:in-reply-to:content-transfer-encoding;
-        bh=AXzBkgOIzsI5oEa0R5RmaxZKaaGiIzhSFzg3r0GIbOc=;
-        b=nk4F59btZaMgTDLIGi4zEvXVHuy/BRsWuunF0Efn1KMK54NQ18YyrilhqoPx7jkFLu
-         N749EBSnqhuAIZSzAk0Y/x+GKvPGqSqIepoBsV7W+463zmjc39QFS5itim+u8hqimccJ
-         xkLZ4aJaOc9aGVlGszbbgEEE/X7lvvVvKK10wLxfzzAInBxmFTCnYa3TBv9ZaYQyBsMS
-         cGy3ZUYhL27Rg2v/50HqI+vviAAdnni+ZlhwAQJKfu1fKWPMPjHCITS5MlF2PFOPkQ/h
-         GYGkP5qdXKSQjdZKabEj7w6ziGwox8H8JED4+jSlgzK8O3BkIXcLok715ZnUHqmV45jL
-         Wxlw==
+        bh=1z5UASj4DoLDyPa67Jzi84KEnjz8sgXey4TyaOWwNlo=;
+        b=JGWEYKtqu95JsZVkmmGlbrkw7tyPMkfuNMGsQV4cXQ2Tv4QUImajIvsmCCAgbEcGf+
+         7UfnP59g4O/cUxfUtDGemSL6pIJymrhLDWP8JvBj9G84IfqVAVgMUpiN5BdEPqpUdukN
+         9N6TxALYTEYq1m1EuawMM5CsFK6DHTlN38VMNWVEmVbasEqM18avf1jzAbhJhMC2ajiq
+         PfZRzqUy76akS/uSFjRi8CJ8SiCIqabF63NN67AGSXIYE3HHNDH4XoE1wmqJkaDEu4ql
+         lF2O8EsU421ztQ3qxPSI+yuyDXFTVLAdQBZGhb0JIKOON1a+Uxu2qmJQgsWF6qPbaWPh
+         FbrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=AXzBkgOIzsI5oEa0R5RmaxZKaaGiIzhSFzg3r0GIbOc=;
-        b=GR+5dxb/6wlUuwuChVvcG6byZ/oXUzEPoNUwXopBPbPOzqXAIwLnNQ3DG7UP8Nw55L
-         C9hxK0E+BvyPBsGBCuOqgv/gMr7ByKqZFe1t/7WJFPcltooF6xg+kvhWWVv8lAgZarQp
-         65oIH1UTYIPWsmYLG+eswLbDHYPkdY1/lisqF/DQ6UBUdLE6EJZW45z5b9CRGkZ8+40D
-         ta824ZYWYGbOnAXY0hKDGcDvD+snA7mjZx9m4AceDN2tl7sW6mKuOCV7qJae9uQ6flQw
-         /eF4G7f3jnBBNI0P19cOuWg/BE287qEotXkivVCqVnZ4eTMsOt3gKcboOfE8qwAM91el
-         5LmQ==
-X-Gm-Message-State: AOAM532n/N69NXehxoIAKUNZEKGLC1TFXk5uxrEriqpx4nCOMOiIf8+5
-        W5LlyudyQgkv/0k2jU5+21Untw==
-X-Google-Smtp-Source: ABdhPJxJkGR9lQ6LfRBhOofaSSj87mK7S1i7LmyjNYF6/yHIXEcgRKezKiH8jbkheoxc9gvlQqGM6g==
-X-Received: by 2002:a05:6000:1f0e:b0:20c:4fde:7e20 with SMTP id bv14-20020a0560001f0e00b0020c4fde7e20mr2936280wrb.532.1652431404146;
-        Fri, 13 May 2022 01:43:24 -0700 (PDT)
+        bh=1z5UASj4DoLDyPa67Jzi84KEnjz8sgXey4TyaOWwNlo=;
+        b=T1jOmKtWmjRR0UloZxHbvPrJTn6/uJvkhXZl65qdxARX9CMtSnQBf7YSG6AZSUSbaB
+         tLRxmDt38OZ11UvSVVy4HMe4n0MXY9lBZ5xujTLLgohcRqrU1iFPqwNR3b5pr16at/7A
+         BdYiCHpNgYRsSD0AlIg/twf4WVcto/bMO1KuMSxiOGmwSyk75Z7jC1ztPlrZQkSCS56z
+         JuaIAZZyhki4f0OkWtNsNlLjsakYof9xOO6cWDj1r32/tnYJ5cf95phYSSkwOTRzDqxN
+         BkpI8OxteSgKDsixk3aUMF1oSpJKPswwcYf0bJ2cVR8VxfSiVWYVn4ZfVq6y8qcBefsP
+         n3pA==
+X-Gm-Message-State: AOAM532i7ZNoQw1wDJvQ2YcZZX8E//YIAl2vCxGupPe4EZEFZJDOPbVN
+        +FQaOPlc3tHbvc1uBSDKl61XAbQXwaVwyhvD
+X-Google-Smtp-Source: ABdhPJyt+cT9n69L1AaUW/LfOfepmTtLwJdfP1FZKvSXaoRewb+qvMQ+kOc15S84hrKieG3qgOu/8w==
+X-Received: by 2002:a05:6000:3c9:b0:20c:4e4e:863f with SMTP id b9-20020a05600003c900b0020c4e4e863fmr2940964wrg.4.1652431428336;
+        Fri, 13 May 2022 01:43:48 -0700 (PDT)
 Received: from [192.168.0.169] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id j6-20020a05600c2b8600b00395cf2c55d5sm1288993wmc.42.2022.05.13.01.43.23
+        by smtp.gmail.com with ESMTPSA id p26-20020adfa21a000000b0020c61af5e1fsm1537460wra.51.2022.05.13.01.43.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 01:43:23 -0700 (PDT)
-Message-ID: <c8c420ae-8d11-9add-876e-a3ace3b03398@linaro.org>
-Date:   Fri, 13 May 2022 10:43:22 +0200
+        Fri, 13 May 2022 01:43:47 -0700 (PDT)
+Message-ID: <f5c2efb7-35f6-8c8e-d881-b144d15a299b@linaro.org>
+Date:   Fri, 13 May 2022 10:43:46 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH v3 04/11] arm64: dts: marvell: uDPU: add missing SoC
- compatible
+Subject: Re: [PATCH v3 06/11] arm64: dts: marvell: uDPU: align LED-s with
+ bindings
 Content-Language: en-US
 To:     Robert Marko <robert.marko@sartura.hr>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
@@ -64,24 +64,23 @@ To:     Robert Marko <robert.marko@sartura.hr>, robh+dt@kernel.org,
         kostap@marvell.com, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 References: <20220512124905.49979-1-robert.marko@sartura.hr>
- <20220512124905.49979-4-robert.marko@sartura.hr>
+ <20220512124905.49979-6-robert.marko@sartura.hr>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220512124905.49979-4-robert.marko@sartura.hr>
+In-Reply-To: <20220512124905.49979-6-robert.marko@sartura.hr>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/05/2022 14:48, Robert Marko wrote:
-> According to the bindings, all boards using Armada 37xx SoC-s must have
-> "marvell,armada3710" compatible while 3720 based ones should also have
-> "marvell,armada3720" before it.
+On 12/05/2022 14:49, Robert Marko wrote:
+> According to bindings they LED-s should be prefixed with "led" in this
+> use case, so fix accordingly.
 > 
 > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
 Best regards,
