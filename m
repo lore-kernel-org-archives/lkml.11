@@ -2,93 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22321C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 264C5C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:08:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379246AbiEMKGx (ORCPT
+        id S1379272AbiEMKIA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 06:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
+        Fri, 13 May 2022 06:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379274AbiEMKGs (ORCPT
+        with ESMTP id S1359219AbiEMKHz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 06:06:48 -0400
-X-Greylist: delayed 493 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 13 May 2022 03:06:44 PDT
-Received: from smtp102.iad3b.emailsrvr.com (smtp102.iad3b.emailsrvr.com [146.20.161.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25566663C3
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 03:06:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
-        s=20190130-41we5z8j; t=1652435909;
-        bh=6HQSMLhL1Di2JFWD3jyK8sB/rv+s9jBCEgbZg24jR+4=;
-        h=Date:Subject:To:From:From;
-        b=lNt5irZTCy/xniing+AEFQ2HCx3ZsExjFiblj8Too0PiV+87ux5maPk0N2MqFu00N
-         feXc72jjA4AanY07GCEcwqJtJZ58ytcInmo/i630MWZiN+Eh9CLKWyas7NX689GFyP
-         IEdORNY35jMYSTMcuI3XNqDcxSoOTNI7pJyQ8xig=
-X-Auth-ID: abbotti@mev.co.uk
-Received: by smtp5.relay.iad3b.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id CB17E400DC;
-        Fri, 13 May 2022 05:58:28 -0400 (EDT)
-Message-ID: <86b36563-af34-b105-650b-63a1e92912bd@mev.co.uk>
-Date:   Fri, 13 May 2022 10:58:28 +0100
+        Fri, 13 May 2022 06:07:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23E66AA46;
+        Fri, 13 May 2022 03:07:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 636066222D;
+        Fri, 13 May 2022 10:07:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D07AC34100;
+        Fri, 13 May 2022 10:07:53 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LwDOuIuH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1652436471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7N1zyXIi+oMbfwTrQnEnFevk7qISh3+9W8x85t6Q8bY=;
+        b=LwDOuIuHymjucObEZc6dI/e+wZ50PeYNASM60HYX9wYpZsJIZvBVBqAtCFcZsR844wLYPa
+        rCG3RtG3UnuMYyVc6ym4HNSTqGtQD7PeAmohnOeVmGeqSWOj+uHuBU/DUldfXPFlyIREl7
+        S5KBsIdtQEDxVpxILA3yK/51DIhVYMY=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ae4f983b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 13 May 2022 10:07:51 +0000 (UTC)
+Date:   Fri, 13 May 2022 12:07:49 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Dominik Brodowski <linux@dominikbrodowski.net>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH] random32: use real rng for non-deterministic randomness
+Message-ID: <Yn4t9S71LhI8W0ek@zx2c4.com>
+References: <20220511143257.88442-1-Jason@zx2c4.com>
+ <Yn34Tf4CpSaZBlGi@owl.dominikbrodowski.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] drivers: comedi: replace ternary operator with min()
-Content-Language: en-GB
-To:     Guo Zhengkui <guozhengkui@vivo.com>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     zhengkui_guo@outlook.com
-References: <20220513071608.49047-1-guozhengkui@vivo.com>
-From:   Ian Abbott <abbotti@mev.co.uk>
-Organization: MEV Ltd.
-In-Reply-To: <20220513071608.49047-1-guozhengkui@vivo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Classification-ID: 4281c6e2-bdd8-4a30-8c69-e8403c57c52e-1-1
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yn34Tf4CpSaZBlGi@owl.dominikbrodowski.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/05/2022 08:16, Guo Zhengkui wrote:
-> Fix the following coccicheck warning:
-> 
-> drivers/comedi/drivers.c:857:12-13: WARNING opportunity for min().
-> 
-> min() macro is defined in include/linux/minmax.h. It avoids multiple
-> evaluations of the arguments when non-constant and performs strict
-> type-checking.
-> 
-> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
-> ---
->   drivers/comedi/drivers.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/comedi/drivers.c b/drivers/comedi/drivers.c
-> index 8eb1f699a857..d4e2ed709bfc 100644
-> --- a/drivers/comedi/drivers.c
-> +++ b/drivers/comedi/drivers.c
-> @@ -854,7 +854,7 @@ int comedi_load_firmware(struct comedi_device *dev,
->   		release_firmware(fw);
->   	}
->   
-> -	return ret < 0 ? ret : 0;
-> +	return min(ret, 0);
->   }
->   EXPORT_SYMBOL_GPL(comedi_load_firmware);
->   
+Hi Dominik,
 
-Looks good thanks.
+On Fri, May 13, 2022 at 08:18:53AM +0200, Dominik Brodowski wrote:
+> Nice! However, wouldn't it be much better to clean up the indirection
+> introduced here as well? prandom_u32() as wrapper for get_random_u32() and
+> prandom_bytes() as wrapper for get_random_bytes() seems unnecessary...
 
-I was wondering if it could be replaced with a simple `return ret;`, but 
-unfortunately the `ret = cb(...);` call returns a non-negative value on 
-success for some of the drivers' callback functions.  (The usbdux* 
-drivers return the result of a call to `usb_control_msg(...)`.)
+Yes; we can look at tree-wide changes for 5.20. The first step in making
+tree-wide changes is filling in the old function with an inline wrapper,
+which then gets removed as part of the last step after all the other
+patches have landed. That's a huge process, so this is just step one.
 
-Reviewed-by: Ian Abbott <abbotti@mev.co.uk>
-
--- 
--=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
--=( registered in England & Wales.  Regd. number: 02862268.  )=-
--=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
--=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
+Jason
