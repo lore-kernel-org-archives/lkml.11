@@ -2,87 +2,328 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 03:21:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A06CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 03:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376699AbiEMDU5 (ORCPT
+        id S1376652AbiEMDXH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 23:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36386 "EHLO
+        Thu, 12 May 2022 23:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376711AbiEMDUw (ORCPT
+        with ESMTP id S1347229AbiEMDXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 23:20:52 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB813630B;
-        Thu, 12 May 2022 20:20:49 -0700 (PDT)
-Received: from kwepemi500017.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kzv3T5p4TzGpZj;
-        Fri, 13 May 2022 11:17:57 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500017.china.huawei.com (7.221.188.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 13 May 2022 11:20:47 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 13 May 2022 11:20:47 +0800
-Subject: Re: [PROBLEM] nbd requests become stuck when devices watched by
- inotify emit udev uevent changes
-To:     Matthew Ruffell <matthew.ruffell@canonical.com>,
-        Josef Bacik <josef@toxicpanda.com>
-CC:     Jens Axboe <axboe@kernel.dk>,
-        linux-block <linux-block@vger.kernel.org>,
-        nbd <nbd@other.debian.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>
-References: <20220422054224.19527-1-matthew.ruffell@canonical.com>
- <CAEzrpqe=LD3DQcEeLXmmFuq7cX_dAQ6DOCuJYWBoZWKKTmoTzA@mail.gmail.com>
- <CAKAwkKt3yMOOW3NXcE91WkGr+8xj050CYP2pLoQVHt_2wXq=-w@mail.gmail.com>
- <CAKAwkKvfFn18RjupuqGpx4QeAiMYKSq7QUTd3wEL=pkZ+BENpQ@mail.gmail.com>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <0eb5ff67-b1f0-a8c4-281c-55a5ded58662@huawei.com>
-Date:   Fri, 13 May 2022 11:20:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Thu, 12 May 2022 23:23:05 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4627A1F1597
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 20:23:03 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id c12so8409488edv.10
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 20:23:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yAcmV9FDTz7FaesnF1N1N4V0GnEb7KHKInbH9fhNWU8=;
+        b=QHETTkWnyZGXpgnl8ePep7ok3z4DDLg8Zrn78o8rL2LbxEGESiKNwCyhDu+suMQN88
+         MKkRdkThW5qr7PfDduYHY/DI2t/dOxZQH5Kqf5y8deyq9fWPMHI4SbQ01YNQkNNLSy8+
+         zFM/m1i5LNj2m9W0ZtVxFbxbdBSIaT3XIBeSJoA+hNNzXhSEZKCs2vzuB6CQPw4iHyah
+         r3QAdDQSsMVMxnN10Mx3bsbUxF28M4+5mW0eIpzf+CSFQR4n1brBGyn7Rn68y4Nxcu5y
+         88q2sNvQ6FJJWMGWKZn8RvVaQDt/ca41bIPO5AS37/qmWapBx3wadrRYJ/NThtYNPF99
+         cn5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yAcmV9FDTz7FaesnF1N1N4V0GnEb7KHKInbH9fhNWU8=;
+        b=i7l+HPcfDWMyXsVgXdHpB3q/7R7cHyU47VoxbOMffX7jd7mTtAmIwdWn9fdj+iuPNE
+         E2BkKRIJsLv/dMLnVI7XOKehE6Kg3Jpy8E9GvUoCG4C4zebBCepV9I7GbNs/Eobnd6iE
+         R9Wsg6/3G8iMYsRJD0xDYOt7yQbOxfjhal5HVaLPTs+5XBAHCoAPmvBR/ZParncUrt3O
+         hgv6wN5vWZ5Yp2WLmqiLfRsp5NR6jJTT8+ZlZYkFgv0KOIK178K+HBhzbjY9dgkBjdQG
+         cxX7gelssj7WkLMgXG/vm7m4k5FOY3Bh3Ig5zltJMuowUBY+ehw3HplduYJoZaBG7TE6
+         WlYw==
+X-Gm-Message-State: AOAM533mJQyAjm7Fw0W937FmrlHpomtQKEBo/rKdoZrMhAl73NqqhuXh
+        yzrPkdUJ2CdxzL/HHIOW694hST1orP2q/MbwRMA=
+X-Google-Smtp-Source: ABdhPJxk4Q0KYf7Cfpk4Jl2nPS3dLGcSK/IeOpVKohOMoNcRZAy8adNdMqd3WJG12lYeXMs+QiElbd7zH+39U0Q1KR0=
+X-Received: by 2002:a05:6402:1694:b0:425:ae5e:4843 with SMTP id
+ a20-20020a056402169400b00425ae5e4843mr38942566edv.415.1652412181572; Thu, 12
+ May 2022 20:23:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAKAwkKvfFn18RjupuqGpx4QeAiMYKSq7QUTd3wEL=pkZ+BENpQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+References: <29ff99f86e3da965b6e46c1cc2d72ce6528c17c3.1652382321.git.jpoimboe@kernel.org>
+In-Reply-To: <29ff99f86e3da965b6e46c1cc2d72ce6528c17c3.1652382321.git.jpoimboe@kernel.org>
+From:   Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+Date:   Fri, 13 May 2022 08:52:45 +0530
+Message-ID: <CAPDLWs9Ld5iP60k1MjC8K-QBvY1+-CLFOt0VXVjNJZQpiuXdvg@mail.gmail.com>
+Subject: Re: [PATCH] scripts/faddr2line: Fix overlapping text section failures
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/05/13 10:56, Matthew Ruffell 写道:
-> Hi Josef,
-> 
-> Just a friendly ping, I am more than happy to test a patch, if you send it
-> inline in the email, since the pastebin you used expired after 1 day, and I
-> couldn't access it.
-> 
-> I came across and tested Yu Kuai's patches [1][2] which are for the same issue,
-> and they indeed fix the hang. Thank you Yu.
-Hi, Matthew
+Works perfectly!
+Thanks Josh, awaiting the merge into mainline ...
 
-Thanks for your test.
-> 
-> [1] nbd: don't clear 'NBD_CMD_INFLIGHT' flag if request is not completed
-> https://lists.debian.org/nbd/2022/04/msg00212.html
-> 
-> [2] nbd: fix io hung while disconnecting device
-> https://lists.debian.org/nbd/2022/04/msg00207.html
-> 
-> I am also happy to test any patches to fix the I/O errors.
 
-Sorry that I missed this thread. IMO, if inflight requests is cleared by
-ioctl NBD_CLEAR_SOCK after my patch [2](or other callers for
-nbd_clear_que()), such io will return as error. Thus I don't think such
-io errors need to be fixed.
-
-Josef, do you have other suggestions?
-
-Thanks,
-Kuai
+On Fri, May 13, 2022 at 12:35 AM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+>
+> There have been some recent reports of faddr2line failures:
+>
+>   $ scripts/faddr2line sound/soundcore.ko sound_devnode+0x5/0x35
+>   bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+>
+>   $ ./scripts/faddr2line vmlinux.o enter_from_user_mode+0x24
+>   bad symbol size: base: 0x0000000000005fe0 end: 0x0000000000005fe0
+>
+> The problem is that faddr2line is based on 'nm', which has a major
+> limitation: it doesn't know how to distinguish between different text
+> sections.  So if an offset exists in multiple text sections in the
+> object, it may fail.
+>
+> Rewrite faddr2line to be section-aware, by basing it on readelf.
+>
+> Fixes: 67326666e2d4 ("scripts: add script for translating stack dump function offsets")
+> Reported-by: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+> Reported-by: Peter Zijlstra <peterz@infradead.org>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> ---
+>  scripts/faddr2line | 150 +++++++++++++++++++++++++++++----------------
+>  1 file changed, 97 insertions(+), 53 deletions(-)
+>
+> diff --git a/scripts/faddr2line b/scripts/faddr2line
+> index 6c6439f69a72..0e6268d59883 100755
+> --- a/scripts/faddr2line
+> +++ b/scripts/faddr2line
+> @@ -44,17 +44,6 @@
+>  set -o errexit
+>  set -o nounset
+>
+> -READELF="${CROSS_COMPILE:-}readelf"
+> -ADDR2LINE="${CROSS_COMPILE:-}addr2line"
+> -SIZE="${CROSS_COMPILE:-}size"
+> -NM="${CROSS_COMPILE:-}nm"
+> -
+> -command -v awk >/dev/null 2>&1 || die "awk isn't installed"
+> -command -v ${READELF} >/dev/null 2>&1 || die "readelf isn't installed"
+> -command -v ${ADDR2LINE} >/dev/null 2>&1 || die "addr2line isn't installed"
+> -command -v ${SIZE} >/dev/null 2>&1 || die "size isn't installed"
+> -command -v ${NM} >/dev/null 2>&1 || die "nm isn't installed"
+> -
+>  usage() {
+>         echo "usage: faddr2line [--list] <object file> <func+offset> <func+offset>..." >&2
+>         exit 1
+> @@ -69,6 +58,14 @@ die() {
+>         exit 1
+>  }
+>
+> +READELF="${CROSS_COMPILE:-}readelf"
+> +ADDR2LINE="${CROSS_COMPILE:-}addr2line"
+> +AWK="awk"
+> +
+> +command -v ${AWK} >/dev/null 2>&1 || die "${AWK} isn't installed"
+> +command -v ${READELF} >/dev/null 2>&1 || die "${READELF} isn't installed"
+> +command -v ${ADDR2LINE} >/dev/null 2>&1 || die "${ADDR2LINE} isn't installed"
+> +
+>  # Try to figure out the source directory prefix so we can remove it from the
+>  # addr2line output.  HACK ALERT: This assumes that start_kernel() is in
+>  # init/main.c!  This only works for vmlinux.  Otherwise it falls back to
+> @@ -76,7 +73,7 @@ die() {
+>  find_dir_prefix() {
+>         local objfile=$1
+>
+> -       local start_kernel_addr=$(${READELF} -sW $objfile | awk '$8 == "start_kernel" {printf "0x%s", $2}')
+> +       local start_kernel_addr=$(${READELF} --symbols --wide $objfile | ${AWK} '$8 == "start_kernel" {printf "0x%s", $2}')
+>         [[ -z $start_kernel_addr ]] && return
+>
+>         local file_line=$(${ADDR2LINE} -e $objfile $start_kernel_addr)
+> @@ -97,86 +94,133 @@ __faddr2line() {
+>         local dir_prefix=$3
+>         local print_warnings=$4
+>
+> -       local func=${func_addr%+*}
+> +       local sym_name=${func_addr%+*}
+>         local offset=${func_addr#*+}
+>         offset=${offset%/*}
+> -       local size=
+> -       [[ $func_addr =~ "/" ]] && size=${func_addr#*/}
+> +       local user_size=
+> +       [[ $func_addr =~ "/" ]] && user_size=${func_addr#*/}
+>
+> -       if [[ -z $func ]] || [[ -z $offset ]] || [[ $func = $func_addr ]]; then
+> +       if [[ -z $sym_name ]] || [[ -z $offset ]] || [[ $sym_name = $func_addr ]]; then
+>                 warn "bad func+offset $func_addr"
+>                 DONE=1
+>                 return
+>         fi
+>
+>         # Go through each of the object's symbols which match the func name.
+> -       # In rare cases there might be duplicates.
+> -       file_end=$(${SIZE} -Ax $objfile | awk '$1 == ".text" {print $2}')
+> -       while read symbol; do
+> -               local fields=($symbol)
+> -               local sym_base=0x${fields[0]}
+> -               local sym_type=${fields[1]}
+> -               local sym_end=${fields[3]}
+> -
+> -               # calculate the size
+> -               local sym_size=$(($sym_end - $sym_base))
+> +       # In rare cases there might be duplicates, in which case we print all
+> +       # matches.
+> +       while read line; do
+> +               local fields=($line)
+> +               local sym_addr=0x${fields[1]}
+> +               local sym_elf_size=${fields[2]}
+> +               local sym_sec=${fields[6]}
+> +
+> +               # Get the section size:
+> +               local sec_size=$(${READELF} --section-headers --wide $objfile |
+> +                       sed 's/\[ /\[/' |
+> +                       ${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print "0x" $6; exit }')
+> +
+> +               if [[ -z $sec_size ]]; then
+> +                       warn "bad section size: section: $sym_sec"
+> +                       DONE=1
+> +                       return
+> +               fi
+> +
+> +               # Calculate the symbol size.
+> +               #
+> +               # Unfortunately we can't use the ELF size, because kallsyms
+> +               # also includes the padding bytes in its size calculation.  For
+> +               # kallsyms, the size calculation is the distance between the
+> +               # symbol and the next symbol in a sorted list.
+> +               local sym_size
+> +               local cur_sym_addr
+> +               local found=0
+> +               while read line; do
+> +                       local fields=($line)
+> +                       cur_sym_addr=0x${fields[1]}
+> +                       local cur_sym_elf_size=${fields[2]}
+> +                       local cur_sym_name=${fields[7]:-}
+> +
+> +                       if [[ $cur_sym_addr = $sym_addr ]] &&
+> +                          [[ $cur_sym_elf_size = $sym_elf_size ]] &&
+> +                          [[ $cur_sym_name = $sym_name ]]; then
+> +                               found=1
+> +                               continue
+> +                       fi
+> +
+> +                       if [[ $found = 1 ]]; then
+> +                               sym_size=$(($cur_sym_addr - $sym_addr))
+> +                               [[ $sym_size -lt $sym_elf_size ]] && continue;
+> +                               found=2
+> +                               break
+> +                       fi
+> +               done < <(${READELF} --symbols --wide $objfile | ${AWK} -v sec=$sym_sec '$7 == sec' | sort --key=2)
+> +
+> +               if [[ $found = 0 ]]; then
+> +                       warn "can't find symbol: sym_name: $sym_name sym_sec: $sym_sec sym_addr: $sym_addr sym_elf_size: $sym_elf_size"
+> +                       DONE=1
+> +                       return
+> +               fi
+> +
+> +               # If nothing was found after the symbol, assume it's the last
+> +               # symbol in the section.
+> +               [[ $found = 1 ]] && sym_size=$(($sec_size - $sym_addr))
+> +
+>                 if [[ -z $sym_size ]] || [[ $sym_size -le 0 ]]; then
+> -                       warn "bad symbol size: base: $sym_base end: $sym_end"
+> +                       warn "bad symbol size: sym_addr: $sym_addr cur_sym_addr: $cur_sym_addr"
+>                         DONE=1
+>                         return
+>                 fi
+> +
+>                 sym_size=0x$(printf %x $sym_size)
+>
+> -               # calculate the address
+> -               local addr=$(($sym_base + $offset))
+> +               # Calculate the section address from user-supplied offset:
+> +               local addr=$(($sym_addr + $offset))
+>                 if [[ -z $addr ]] || [[ $addr = 0 ]]; then
+> -                       warn "bad address: $sym_base + $offset"
+> +                       warn "bad address: $sym_addr + $offset"
+>                         DONE=1
+>                         return
+>                 fi
+>                 addr=0x$(printf %x $addr)
+>
+> -               # weed out non-function symbols
+> -               if [[ $sym_type != t ]] && [[ $sym_type != T ]]; then
+> -                       [[ $print_warnings = 1 ]] &&
+> -                               echo "skipping $func address at $addr due to non-function symbol of type '$sym_type'"
+> -                       continue
+> -               fi
+> -
+> -               # if the user provided a size, make sure it matches the symbol's size
+> -               if [[ -n $size ]] && [[ $size -ne $sym_size ]]; then
+> +               # If the user provided a size, make sure it matches the symbol's size:
+> +               if [[ -n $user_size ]] && [[ $user_size -ne $sym_size ]]; then
+>                         [[ $print_warnings = 1 ]] &&
+> -                               echo "skipping $func address at $addr due to size mismatch ($size != $sym_size)"
+> +                               echo "skipping $sym_name address at $addr due to size mismatch ($user_size != $sym_size)"
+>                         continue;
+>                 fi
+>
+> -               # make sure the provided offset is within the symbol's range
+> +               # Make sure the provided offset is within the symbol's range:
+>                 if [[ $offset -gt $sym_size ]]; then
+>                         [[ $print_warnings = 1 ]] &&
+> -                               echo "skipping $func address at $addr due to size mismatch ($offset > $sym_size)"
+> +                               echo "skipping $sym_name address at $addr due to size mismatch ($offset > $sym_size)"
+>                         continue
+>                 fi
+>
+> -               # separate multiple entries with a blank line
+> +               # In case of duplicates or multiple addresses specified on the
+> +               # cmdline, separate multiple entries with a blank line:
+>                 [[ $FIRST = 0 ]] && echo
+>                 FIRST=0
+>
+> -               # pass real address to addr2line
+> -               echo "$func+$offset/$sym_size:"
+> -               local file_lines=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
+> -               [[ -z $file_lines ]] && return
+> +               echo "$sym_name+$offset/$sym_size:"
+>
+> +               # Pass section address to addr2line and strip absolute paths
+> +               # from the output:
+> +               local output=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
+> +               [[ -z $output ]] && continue
+> +
+> +               # Default output (non --list):
+>                 if [[ $LIST = 0 ]]; then
+> -                       echo "$file_lines" | while read -r line
+> +                       echo "$output" | while read -r line
+>                         do
+>                                 echo $line
+>                         done
+>                         DONE=1;
+> -                       return
+> +                       continue
+>                 fi
+>
+> -               # show each line with context
+> -               echo "$file_lines" | while read -r line
+> +               # For --list, show each line with its corresponding source code:
+> +               echo "$output" | while read -r line
+>                 do
+>                         echo
+>                         echo $line
+> @@ -184,12 +228,12 @@ __faddr2line() {
+>                         n1=$[$n-5]
+>                         n2=$[$n+5]
+>                         f=$(echo $line | sed 's/.*at \(.\+\):.*/\1/g')
+> -                       awk 'NR>=strtonum("'$n1'") && NR<=strtonum("'$n2'") { if (NR=='$n') printf(">%d<", NR); else printf(" %d ", NR); printf("\t%s\n", $0)}' $f
+> +                       ${AWK} 'NR>=strtonum("'$n1'") && NR<=strtonum("'$n2'") { if (NR=='$n') printf(">%d<", NR); else printf(" %d ", NR); printf("\t%s\n", $0)}' $f
+>                 done
+>
+>                 DONE=1
+>
+> -       done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
+> +       done < <(${READELF} --symbols --wide $objfile | ${AWK} -v fn=$sym_name '$4 == "FUNC" && $8 == fn')
+>  }
+>
+>  [[ $# -lt 2 ]] && usage
+> --
+> 2.34.1
+>
