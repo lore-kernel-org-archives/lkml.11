@@ -2,122 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2784FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F305EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384655AbiEMVY5 (ORCPT
+        id S1384662AbiEMVZe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 17:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
+        Fri, 13 May 2022 17:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358795AbiEMVYz (ORCPT
+        with ESMTP id S1358795AbiEMVZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 17:24:55 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9022663FA
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:24:52 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id j84so6569975ybc.3
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:24:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0ueDaSsTErmQolYj/n89FuDLYTxrI+xxTPOLBk1HDOg=;
-        b=XvprDXkDP/fuPYLrBoI4hnZYfwqDXbJPAroGtexlcSuJlDruxai6ShoTfhn7sxb4C5
-         iZlmgndunl0Hw27N+ZimYysy3vyVRSfqc6FMBeWqre2N6FyL0pBjDjIGLhQgQ206Nvw2
-         Oq9nfla9Z0DMWaJkFf/k3obDJKp2edaLrq/zqi7t0zFH/XMOxP1ndGdLjg1RIDpHb9Y0
-         ky8J5D1ObPqIIwJKcn6eat+nhChP11h/FM9WjQvdChQIgY0D4VDL1UsPSVZZocgyR5aq
-         N7ZS/EvualRlqgh+jJJvouLCgjCiP23rbWgVTlOCHvr+s/DyYLSIl8B1nHBlm7o4gUTy
-         nXhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0ueDaSsTErmQolYj/n89FuDLYTxrI+xxTPOLBk1HDOg=;
-        b=R3rleVBa0IpbCdKO8ltR7CrqVXYc+Mez5ibUd7d20aF0EqCTyQXxFNcbsBcGju8Q6p
-         Co7J+A5YOlzEXsEozT8/NonCbdnyGVdbohl2Nt51DHUzQ9+PaFy4ldHG9gagEeiwGP0H
-         M2WVk98ANxahmptNrDNHOnFIkVIMXbCLRgZOMFRfueGev3eqnzZynycDE+WmzEpCHEDH
-         IAEF461YnswUkOqxDetRRpqeCAngMYc8U19FD25vNddzMnnjUI0ihBfEr9rxIxwnMdKV
-         Xt/bjDroTxvTMjwas9Vg+foySaeGpXTJ7wrGxd92dQvDOR0KJJeQccV3+0Hxg3VA7yFQ
-         mX7w==
-X-Gm-Message-State: AOAM533bA3PLTOTD8bgZVWZQf3AFN595tyNJumhpZgIOuOdFgvZzLJMx
-        /LJg4aWH1OM0DhhIrtkyzDLp2w95lzvelLJDqGsFhg==
-X-Google-Smtp-Source: ABdhPJxa1oQfaDAJgT6dUGne1j3ZUOM3aJOd/CmIcNBzgc1KHFgeiv/kBZmlxZpM00Uxg4d1zxDYWRbjBIZAHDoUxjk=
-X-Received: by 2002:a25:2c82:0:b0:64d:62a1:850b with SMTP id
- s124-20020a252c82000000b0064d62a1850bmr273160ybs.291.1652477091802; Fri, 13
- May 2022 14:24:51 -0700 (PDT)
+        Fri, 13 May 2022 17:25:30 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDD8663FD
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:25:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652477128; x=1684013128;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=l6Vls9wnN+x00vvDZEEHtOYdZPzsd8ahPI1ukzsIW6A=;
+  b=nO/Q31FD+tqSRLnr5rJ+KbWanPdla8H2wpg9JU9hCwj0Rp2NQNDknYqO
+   5khjTFzgOqJh5MychSdM+XAPGLj4cBpNqlr9XQdHqjmB+5uBYRL+zdPhq
+   QMMev1r2nU5Fb6ltC9H16pDLkMWTHvZFk/Otn9kRNLMmA18B69dMkulBt
+   gOVnMlNe8WyL5yoAO1yjnVFT9iNQIzPQk+ciUKp4dqFJStkblWbNDigtp
+   teR7oVJIh9AzI66F7ja0Nx/pkoUuH6DkYMjjJ2z8wmYoSqU/1XeFN5L6L
+   bqgAbl33qPdU6eSH7dxZNeheDeM3RhH1YNZNrdwA+i/NyOH15pFFRnIF3
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270350414"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="270350414"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 14:25:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="712562541"
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 14:25:28 -0700
+Date:   Fri, 13 May 2022 14:29:03 -0700
+From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 15/29] x86/hpet: Add helper function
+ hpet_set_comparator_periodic()
+Message-ID: <20220513212903.GF22683@ranerica-svr.sc.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
+ <87mtfufifa.ffs@tglx>
+ <87ilqifhxj.ffs@tglx>
 MIME-Version: 1.0
-References: <20220512162320.2213488-1-maz@kernel.org>
-In-Reply-To: <20220512162320.2213488-1-maz@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 13 May 2022 23:24:40 +0200
-Message-ID: <CACRpkdajTCS5CmQLY8hffVe1x4WzWuC_myQVGZNKV3sRzLPa=w@mail.gmail.com>
-Subject: Re: [PATCH] gpio: Remove dynamic allocation from populate_parent_alloc_arg()
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com,
-        Daniel Palmer <daniel@thingy.jp>,
-        Romain Perier <romain.perier@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Robert Richter <rric@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ilqifhxj.ffs@tglx>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 6:23 PM Marc Zyngier <maz@kernel.org> wrote:
+On Fri, May 06, 2022 at 11:51:52PM +0200, Thomas Gleixner wrote:
+> On Fri, May 06 2022 at 23:41, Thomas Gleixner wrote:
+> > On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
+> >> Programming an HPET channel as periodic requires setting the
+> >> HPET_TN_SETVAL bit in the channel configuration. Plus, the comparator
+> >> register must be written twice (once for the comparator value and once for
+> >> the periodic value). Since this programming might be needed in several
+> >> places (e.g., the HPET clocksource and the HPET-based hardlockup detector),
+> >> add a helper function for this purpose.
+> >>
+> >> A helper function hpet_set_comparator_oneshot() could also be implemented.
+> >> However, such function would only program the comparator register and the
+> >> function would be quite small. Hence, it is better to not bloat the code
+> >> with such an obvious function.
+> >
+> > This word salad above does not provide a single reason why the periodic
+> > programming function is required and better suited for the NMI watchdog
+> > case and then goes on and blurbs about why a function which is not
+> > required is not implemented. The argument about not bloating the code
+> > with an "obvious???" function which is quite small is slightly beyond my
+> > comprehension level.
+> 
+> What's even more uncomprehensible is that the patch which actually sets
+> up that NMI watchdog cruft has:
+> 
+> > +       if (hc->boot_cfg & HPET_TN_PERIODIC_CAP)
+> > +               hld_data->has_periodic = true;
+> 
+> So how the heck does that work with a HPET which does not support
+> periodic mode?
 
-> The gpiolib is unique in the way it uses intermediate fwspecs
-> when feeding an interrupt specifier to the parent domain, as it
-> relies on the populate_parent_alloc_arg() callback to perform
-> a dynamic allocation.
->
-> THis is pretty inefficient (we free the structure almost immediately),
-> and the only reason this isn't a stack allocation is that our
-> ThunderX friend uses MSIs rather than a FW-constructed structure.
->
-> Let's solve it by providing a new type composed of the union
-> of a struct irq_fwspec and a msi_info_t, which satisfies both
-> requirements. This allows us to use a stack allocation, and we
-> can move the handful of users to this new scheme.
->
-> Also perform some additional cleanup, such as getting rid of the
-> stub versions of the irq_domain_translate_*cell helpers, which
-> are never used when CONFIG_IRQ_DOMAIN_HIERARCHY isn't selected.
->
-> Tested on a Tegra186.
->
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> Cc: Daniel Palmer <daniel@thingy.jp>
-> Cc: Romain Perier <romain.perier@gmail.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Jonathan Hunter <jonathanh@nvidia.com>
-> Cc: Robert Richter <rric@kernel.org>
-> Cc: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+If the HPET channel does not support periodic mode (as indicated by the flag
+above), it will read the HPET counter into a local variable, increment that
+local variable, and write comparator of the HPET channel.
 
-This looks very appetizing to me but:
+If the HPET channel does support periodic mode, it will not kick it again.
+It will only kick a periodic HPET channel if needed (e.g., if the NMI watchdog
+was idle of watchdog_thresh changed its value).
 
-drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 15 ++++-----
+> 
+> That watchdog muck will still happily invoke that set periodic function
+> in the hope that it works by chance?
 
-This seems to have some changes to
-->populate_parent_alloc_arg not even in linux-next,
-so I get confused, what are the prerequisites? (Probably
-something I already reviewed, but...)
+It will not. It will check hld_data->has_periodic and act accordingly.
 
-Also: don't you also need to fix something in
-drivers/pinctrl/qcom/pinctrl-ssbi-mpp.c?
-the way I remember it it was quite similar to spmi-gpio
-but I may be mistaken.
+FWIW, I have tested this NMI watchdog with periodic and non-periodic HPET
+channels.
 
-Yours,
-Linus Walleij
+Thanks and BR,
+Ricardo
