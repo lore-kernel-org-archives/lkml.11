@@ -2,140 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 777B2C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377290AbiEMGYr (ORCPT
+        id S1377319AbiEMG0Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 02:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60300 "EHLO
+        Fri, 13 May 2022 02:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240920AbiEMGYl (ORCPT
+        with ESMTP id S1377256AbiEMG0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 02:24:41 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB50291E76
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:24:38 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VD1tx8B_1652423067;
-Received: from localhost.localdomain(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VD1tx8B_1652423067)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 13 May 2022 14:24:35 +0800
-From:   Tianchen Ding <dtcccc@linux.alibaba.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
+        Fri, 13 May 2022 02:26:19 -0400
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29008275CF
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:26:08 -0700 (PDT)
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id A28E02013AF;
+        Fri, 13 May 2022 06:26:05 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 4A5DB80949; Fri, 13 May 2022 08:18:45 +0200 (CEST)
+Date:   Fri, 13 May 2022 08:18:45 +0200
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] sched: Queue task on wakelist in the same llc if the wakee cpu is idle
-Date:   Fri, 13 May 2022 14:24:27 +0800
-Message-Id: <20220513062427.2375743-1-dtcccc@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
+Subject: Re: [PATCH] random: handle latent entropy and command line from
+ random_init()
+Message-ID: <Yn34RROzSQtHP/rZ@owl.dominikbrodowski.net>
+References: <20220512124839.20755-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512124839.20755-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We notice the commit 518cd6234178 ("sched: Only queue remote wakeups
-when crossing cache boundaries") disabled queuing tasks on wakelist when
-the cpus share llc. This is because, at that time, the scheduler must
-send IPIs to do ttwu_queue_wakelist. Nowadays, ttwu_queue_wakelist also
-supports TIF_POLLING, so this is not a problem now when the wakee cpu is
-in idle polling.
+Am Thu, May 12, 2022 at 02:48:39PM +0200 schrieb Jason A. Donenfeld:
+> Currently, start_kernel() adds latent entropy and the command line to
+> the entropy bool *after* the RNG has been initialized, deferring when
+> it's actually used by things like stack canaries until the next time
+> the pool is seeded. This surely is not intended.
+> 
+> Rather than splitting up which entropy gets added where and when between
+> start_kernel() and random_init(), just do everything in random_init(),
+> which should eliminate these kinds of bugs in the future.
+> 
+> While we're at it, rename the awkwardly titled "rand_initialize()" to
+> the more standard "random_init()" nomenclature.
+> 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/char/random.c  | 17 ++++++++++-------
+>  include/linux/random.h | 17 ++++++++---------
+>  init/main.c            |  8 ++------
+>  3 files changed, 20 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/char/random.c b/drivers/char/random.c
+> index d4bc9beaed2c..bd80d74a7f8c 100644
+> --- a/drivers/char/random.c
+> +++ b/drivers/char/random.c
+> @@ -926,12 +926,13 @@ static struct notifier_block pm_notifier = { .notifier_call = random_pm_notifica
+>  
+>  /*
+>   * The first collection of entropy occurs at system boot while interrupts
+> - * are still turned off. Here we push in RDSEED, a timestamp, and utsname().
+> - * Depending on the above configuration knob, RDSEED may be considered
+> - * sufficient for initialization. Note that much earlier setup may already
+> - * have pushed entropy into the input pool by the time we get here.
+> + * are still turned off. Here we push in latent entropy, RDSEED, a timestamp,
+> + * utsname(), and the command line. Depending on the above configuration knob,
+> + * RDSEED may be considered sufficient for initialization. Note that much
+> + * earlier setup may already have pushed entropy into the input pool by the
+> + * time we get here.
+>   */
+> -int __init rand_initialize(void)
+> +int __init random_init(const char *command_line)
+>  {
+>  	size_t i;
+>  	ktime_t now = ktime_get_real();
+> @@ -953,6 +954,8 @@ int __init rand_initialize(void)
+>  	}
+>  	_mix_pool_bytes(&now, sizeof(now));
+>  	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
+> +	_mix_pool_bytes(command_line, strlen(command_line));
+> +	add_latent_entropy();
+>  
+>  	if (crng_ready()) {
+>  		/*
+> @@ -1703,8 +1706,8 @@ static struct ctl_table random_table[] = {
+>  };
+>  
+>  /*
+> - * rand_initialize() is called before sysctl_init(),
+> - * so we cannot call register_sysctl_init() in rand_initialize()
+> + * random_init() is called before sysctl_init(),
+> + * so we cannot call register_sysctl_init() in random_init()
+>   */
+>  static int __init random_sysctls_init(void)
+>  {
+> diff --git a/include/linux/random.h b/include/linux/random.h
+> index f673fbb838b3..6eabea6697d0 100644
+> --- a/include/linux/random.h
+> +++ b/include/linux/random.h
+> @@ -14,22 +14,21 @@ struct notifier_block;
+>  
+>  extern void add_device_randomness(const void *, size_t);
+>  extern void add_bootloader_randomness(const void *, size_t);
+> +extern void add_input_randomness(unsigned int type, unsigned int code,
+> +				 unsigned int value) __latent_entropy;
+> +extern void add_interrupt_randomness(int irq) __latent_entropy;
+> +extern void add_hwgenerator_randomness(const void *buffer, size_t count,
+> +				       size_t entropy);
+>  
+>  #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+>  static inline void add_latent_entropy(void)
+>  {
+> -	add_device_randomness((const void *)&latent_entropy,
+> -			      sizeof(latent_entropy));
+> +	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+>  }
+>  #else
+> -static inline void add_latent_entropy(void) {}
+> +static inline void add_latent_entropy(void) { }
 
-Benefits:
-  Queuing the task on idle cpu can help improving performance on waker cpu
-  and utilization on wakee cpu, and further improve locality because
-  the wakee cpu can handle its own rq. This patch helps improving rt on
-  our real java workloads where wakeup happens frequently.
+Stray change here, which doesn't seem necessary...
 
-Does this patch bring IPI flooding?
-  For archs with TIF_POLLING_NRFLAG (e.g., x86), there will be no
-  difference if the wakee cpu is idle polling. If the wakee cpu is idle
-  but not polling, the later check_preempt_curr() will send IPI too.
+Otherwise:
 
-  For archs without TIF_POLLING_NRFLAG (e.g., arm64), the IPI is
-  unavoidable, since the later check_preempt_curr() will send IPI when
-  wakee cpu is idle.
+	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
-Benchmark:
-running schbench -m 2 -t 8 on 8269CY:
-
-without patch:
-Latency percentiles (usec)
-        50.0000th: 10
-        75.0000th: 14
-        90.0000th: 16
-        95.0000th: 16
-        *99.0000th: 17
-        99.5000th: 20
-        99.9000th: 23
-        min=0, max=28
-
-with patch:
-Latency percentiles (usec)
-        50.0000th: 6
-        75.0000th: 8
-        90.0000th: 9
-        95.0000th: 9
-        *99.0000th: 10
-        99.5000th: 10
-        99.9000th: 14
-        min=0, max=16
-
-We've also tested unixbench and see about 10% improvement on Pipe-based
-Context Switching, and no performance regression on other test cases.
-
-For arm64, we've tested schbench and unixbench on Kunpeng920, the
-results show that, the improvement is not as obvious as on x86, and
-there's no performance regression.
-
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
----
- kernel/sched/core.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 51efaabac3e4..cae5011a8b1f 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3820,6 +3820,9 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	if (!cpu_active(cpu))
- 		return false;
- 
-+	if (cpu == smp_processor_id())
-+		return false;
-+
- 	/*
- 	 * If the CPU does not share cache, then queue the task on the
- 	 * remote rqs wakelist to avoid accessing remote data.
-@@ -3827,6 +3830,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	if (!cpus_share_cache(smp_processor_id(), cpu))
- 		return true;
- 
-+	/*
-+	 * If the CPU is idle, let itself do activation to improve utilization.
-+	 */
-+	if (available_idle_cpu(cpu))
-+		return true;
-+
- 	/*
- 	 * If the task is descheduling and the only running task on the
- 	 * CPU then use the wakelist to offload the task activation to
-@@ -3842,9 +3851,6 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
- {
- 	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu, wake_flags)) {
--		if (WARN_ON_ONCE(cpu == smp_processor_id()))
--			return false;
--
- 		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
- 		__ttwu_queue_wakelist(p, cpu, wake_flags);
- 		return true;
--- 
-2.27.0
-
+Thanks,
+	Dominik
