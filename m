@@ -2,290 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17AE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:01:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352731AbiEMHAj (ORCPT
+        id S1377637AbiEMHAx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43748 "EHLO
+        Fri, 13 May 2022 03:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377607AbiEMHAT (ORCPT
+        with ESMTP id S1377621AbiEMHAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:00:19 -0400
-Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774651EEE3B
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:00:17 -0700 (PDT)
-Received: by mail-vk1-xa2b.google.com with SMTP id q136so3762823vke.10
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:00:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zSQtsKCtwMYCMAV1h8dxEmMkmLjgLgdq8u/If5PWyoo=;
-        b=ghMK2HcrDTMpFO6IVO2QFoxB3sSruYjPWtgLSUU0nZAzAVWbjZR/I92Jcca5YBBd02
-         r6WXn2DlpPBcjtfKLYUsM3rJbujVUZpo9B+6oBmlT6fTD2ebulJNtpFWY0KI9ozq+F+H
-         tjqsFvAMfaFSO6urR6ZsPMcHj49NE/SdB4lobuQ2ep22BNmxralwTYHKlx7bXPanzpna
-         rFnsjjSsyw6fwfG58NPn/7xSS5p/Xt8qy5LUi1chzrJd1x6Bjw/ycI4X5FJBShd6dkhq
-         ugGKY6arD6j3N9GJRI4szNel9G+zRyCErU6lq5vEMiWan5DjnrIJrDOaIzZ+taTMG6wL
-         Id3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zSQtsKCtwMYCMAV1h8dxEmMkmLjgLgdq8u/If5PWyoo=;
-        b=AM06CnMoTpGqohfybf7kZ3R/ivel8I/5KAJWl7jDhIs4si46kM479gOMOQrMUR6EK4
-         oEG0mNsXKF7PsywMkY4dY1XV8pedAe29Z3RYSrQ1wE+OwH3yZkGj6LYM7L+5x7LSoo/M
-         xgRqf/eP+S76NLyoXp/3PIgRHl2PtNCaLv1YmIvB1adrqBLzKzl/IB1HsgWUPqsMRC/d
-         +zLsJtLO2d0unY8H4Yajd5U3tMPcNWxBcfh50e7492cWIgteSJfh1NOPLNGp3KkzpzV0
-         eyFsfx0sep/FHCTSbHuT6S13PfPqsPBVYI9UXtCOdhqXhXZYQUtlR/mD2HPVTEqm/e2/
-         1xqg==
-X-Gm-Message-State: AOAM531QZVW89CPJFxFhfbx0ZVBSPcQ9RceifN2h6wPHRuPZKsDhTWEs
-        +Nq6icplRsQZFGy0jJZn2cp2QfQ0/prWGSeEkRGZpw==
-X-Google-Smtp-Source: ABdhPJyLkJEi/QkxDrR4cj9GzGNh4STOHakEoAIWSXBYUyEbDuYdxNMvlEFO7t6AjmE67KVluFtpr9ivOtYKtnvQ2XI=
-X-Received: by 2002:a1f:9b85:0:b0:32d:4d56:cf64 with SMTP id
- d127-20020a1f9b85000000b0032d4d56cf64mr1480204vke.31.1652425216408; Fri, 13
- May 2022 00:00:16 -0700 (PDT)
+        Fri, 13 May 2022 03:00:44 -0400
+Received: from AUS01-ME3-obe.outbound.protection.outlook.com (mail-me3aus01olkn2178.outbound.protection.outlook.com [40.92.63.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977222613;
+        Fri, 13 May 2022 00:00:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I665GQwJDvaKHqVYjYo4BJEKUhd0I/9g+VxKVRm8bG4vvIgMet9P3A/KyBJDq/CjbQNwW3XWY/0hTEgOMMYGUpwNJ43456LavHJQ7p/lICfXYhSWixES6mR95hUbLPbQZnYLbqp9tYLaYP+oXSIsDGasy4SKIXZ4hmDMomGmuLocdF51NPC88TuYMJO6eHla1t3S5oonaK1699qJeGY/5ZKMDbr3YjpjoAy8Ct4xcgkV/p+eS0mTcsHt1qIChajP9lq8KQeoqAqFWnGiwrwWohqfEFN/gz6ngIQ/Nc1kHnyldoERRcTmSNf5i2mU6i+Jp5FkNt0r5L762ifrk9TOXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HUCQVmJpUePNb0KEQZ8VuPr/KhXgvsKZkIwkGKl2uTo=;
+ b=Cipl0/hQx0K516imNFAv2tP9Plz4BRrljIPBdzXGX+PFSS/mLjbv5uSdEV4ctV56US9LcBF83xKoNH78M+5vNlweMNqyOoOh+UbqJL1MCwrDPcZo/l3DwhmZ08cb1pdMzDJ+5T+YElToN9EOJjcADOp2HTxrq9VZcQ55e9Zo597Gg59LW67LaL9mtl0XcVqjTG9DbeWkFtfseBqjMJfKotNgFOnvZmOo1fSKFw+cjDQrsxi8CUOuf/e0zyLXSIm32SSujA1stPDSmE4POhRmrqxpVmJ7tuOhHWTSCxLXWYYdInEXMmRfJYk3FiQEdVaU+vyLya/NT8LNJOpdDoPg0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HUCQVmJpUePNb0KEQZ8VuPr/KhXgvsKZkIwkGKl2uTo=;
+ b=pLkfPs0kmET86q0Odnpq3s4A69zPLvtsOpLT02tGXgk7o776c4w9IbGd8ec7MUOjh6uK+J1s5wUMZAWFe7cq7ko2vZSvR3HuVQ5hG4cNfztl7OgICaBnAKVVmc8ELB8+bYRZtTU2mzYNvgxFcE3hXS4i8wDnqXwJRikTJOwGIZkhUSSWU+fWahul3d2NgzLBC9YkYR/M5Wz+y/g4q2sxI9soOLrN+aM6BEg1MN/gUoZ1hz4yVDFfxDFCp+1aPGW5O8qPWACqVCIljS5ydPRcx4gNxHAvslg54MJU0/IsNWkYcPKvakxbQa66Pwxmj+KqR5c/osDbHHx5eWn7x3WGiA==
+Received: from MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM (2603:10c6:220:113::14)
+ by SY7P282MB3836.AUSP282.PROD.OUTLOOK.COM (2603:10c6:10:1e7::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Fri, 13 May
+ 2022 07:00:36 +0000
+Received: from MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM
+ ([fe80::702a:73df:6a57:6a00]) by MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM
+ ([fe80::702a:73df:6a57:6a00%8]) with mapi id 15.20.5250.014; Fri, 13 May 2022
+ 07:00:36 +0000
+From:   Yonglin Tan <yonglin.tan@outlook.com>
+To:     mani@kernel.org, quic_hemantk@quicinc.com,
+        gregkh@linuxfoundation.org, loic.poulain@linaro.org
+Cc:     mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ylintan <yonglin.tan@outlook.com>
+Subject: [PATCH]     bus: mhi: host: Add support for Quectel EM120 FCCL project.
+Date:   Fri, 13 May 2022 15:00:25 +0800
+Message-ID: <MEYP282MB23742A3646D681AF27BED85EFDCA9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+X-Mailer: git-send-email 2.7.4
+Content-Type: text/plain
+X-TMN:  [LapoVmlh3NyOfQNPb2aKKeKZvNGDhG6l]
+X-ClientProxiedBy: HK2PR04CA0064.apcprd04.prod.outlook.com
+ (2603:1096:202:14::32) To MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM
+ (2603:10c6:220:113::14)
+X-Microsoft-Original-Message-ID: <1652425225-19461-1-git-send-email-yonglin.tan@outlook.com>
 MIME-Version: 1.0
-References: <CAAPL-u-DGLcKRVDnChN9ZhxPkfxQvz9Sb93kVoX_4J2oiJSkUw@mail.gmail.com>
- <56b41ce6922ed5f640d9bd46a603fa27576532a9.camel@intel.com>
- <c5d55131-76ff-7354-2954-7cfac365a9a5@linux.ibm.com> <CAAPL-u-g86QqHaHGGtVJMER8ENC2dpekK+2qOkxoRFmC0F_80g@mail.gmail.com>
- <87y1z7jj85.fsf@linux.ibm.com> <CAAPL-u90Gzrepbsdpc62FGRBYOx1LAVwZWHg1E7UyVD_CmcROw@mail.gmail.com>
- <c8f253839505adec4d68cd2aa3f3769866915ad3.camel@intel.com> <f36273d9a2fa09342972cd49e31bf2fe91e7c9e4.camel@intel.com>
-In-Reply-To: <f36273d9a2fa09342972cd49e31bf2fe91e7c9e4.camel@intel.com>
-From:   Wei Xu <weixugc@google.com>
-Date:   Fri, 13 May 2022 00:00:05 -0700
-Message-ID: <CAAPL-u-vPgCKVYOLqiScYu5Q_jApPsoHZnNGNfN+k2YuFFR_nw@mail.gmail.com>
-Subject: Re: RFC: Memory Tiering Kernel Interfaces (v2)
-To:     "ying.huang@intel.com" <ying.huang@intel.com>
-Cc:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Dan Williams <dan.j.williams@intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Hesham Almatary <hesham.almatary@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9c524c59-d938-4c42-ba48-08da34ae47a4
+X-MS-Exchange-SLBlob-MailProps: q+fD6XS3/UK9L7TuN7urXflCoxF44vp+mgWmKm8GeXXZb0oEhWY5o4sDySjMDGeHMVjFcKC87l1F5wTQTdFi5tDx8dqXmTmOSRdIVSPsE8UIHAgxwzVmgdGuNI25sxJE6Jwit3adr9Ap0/jHEKoQUnpgT4kkSBcYXwB9spprbUyw5Sxk5NYZzdKAbGTSBl15B5cF9kvgm2bBNfTnd6dLNNDV+xS3oAi0JCoOsED4OQaDBm1EdWcPynMkLW3eaS09pQ8+nz8zXmefqStIHC7o4zDrW8wdKx6LAfb7BU7tnjm9k54OIv1Leadk+9Y5qOWFph8Dm/hcHKYkRFrGWEuDhf/kF9ATEw57MWrG8/X4oBjA1amfF7mqi2RubqHQk97ULrCHtbtc5rvOU2QUC9ef4O4bcFTML9fbu/GUu219wMpdnycTTXcZVBCWKhuLCtsrv0lN7j8ift0R8cikpRxjDgs9preW4mwzy0hqoJ0fECiZmdzd4HYYZ2XP4HA19j1vRG++/U+wBgpp27Re7kpWUz1ZLYlHaS4peOqT/2boOCI0qsketMjl6iNLGxBC6Id9VEco2EHdR/ZWsvFEoTZGsNwWMVlwFrdH0jJ4BzM1RPWDEwgbvFxT2e33XO0aFs7R6Q9c7A+vVFl3353JRERqm5Hjbyw4eKAvY3CJ0lmV7UiVrbR7+5KiZZIWA9uJNN6XZIg8BbghiNsEbNra+nI04A==
+X-MS-TrafficTypeDiagnostic: SY7P282MB3836:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: x0qskfP8rTPLV8PRW1pYEv0nspE7L74CVOSxuFZWrNWlHHhJNnFRLxgjNB1fdj/3q08OtNoaXLc8BnBV8r6psMGSLozKP43dMPrQknTHKbjJdWWUj+uMvQMzXnjSNkGgX06Q7QoFNU5KIue/CeuO1OinuDmpzfOzWs5n2xHqikLYhOx1foz+hVmk3v+ruvqKtZxKGdulrcZhjr9hxAHPn6HKIFnbugZL4LbFvAvG67BF5PuabhrsSw0dOmIh0cPN+xFkVqj8HLncTJ0n9VutaOiVYQyRMLjVByf+rQH5Y1X2+rWg9S7GQKWgYACGNjdJNaad44DypEObkMCzO/Sw43e153IVKMGo4FOxJc2dkAWtDyjRX4KrJ1v3pm4aAP6J+Ay5sPGMdAJNIUdBGN6IK1ys8yhEBP4Cn5Il9iwP7Edv8Y37ZWnSSkIAYDGJZnQ2s+8ZTaytY8VoriU+5BE6bG0ddZLMXB8Oc5dxS9BMzXkcF5Zqdhrnk83iXgLf9yTHoOjszBwdMQ6eiPD98ZczBJlJj7heK75+c4x2ns/aqBL6/a6QJYbFTJ5u102Rx8441QyAJybOstwN3W7Oh/OvTg==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NCgRr/ctDdWrmszo6Ndqo012TdaiyPQpAg1L0ZUH3MRdyChUkxCYGTR8x1tk?=
+ =?us-ascii?Q?mfYJULs4OIbbwnaBuhwTEwrz5R/VeyuYr7NeX4cHwdt0e10wmnajGYa9MzHq?=
+ =?us-ascii?Q?5DYVBU3y1MmERQO0z2JvJpnNfThhkTqylAZBy2W+ju+DFlm1rtTFXIbsD2NS?=
+ =?us-ascii?Q?Ni/qZsPqGiPGWxGXmfPT22xivjFXwXlElomDeqEPBe0D1MDqaTepNBMep23Y?=
+ =?us-ascii?Q?EwZsnrsofwD16ppn9GLCuAR2KRsr/wkxOqiiNPG7rYYdHWDQf4m2pDlEoWyV?=
+ =?us-ascii?Q?9cMEJjwVueg1X9Q/rPQQ50o74RjwfR3UcBQ7aG+2kK3Vw+uZqc3cQ92VKjsP?=
+ =?us-ascii?Q?pZ+y8QdraskCYMyhBdwks+ykP5P9fZ0D8G2osN+fy4jURCwhsfqqE28dsP5Z?=
+ =?us-ascii?Q?/FQDh83yQ2Zo0GA4gdu5aVeeoFZw3t3b57zsgeXpewXO6+G0ckM6WRnAYV3N?=
+ =?us-ascii?Q?r5V4v9dzIZy8OGSnZN04oOSiu2Sy11SDCz+5kfjqLR+G7xuZOYV1MO0KGWaO?=
+ =?us-ascii?Q?/fb7MOffqtgmj6K7qqJGRRJSPbGLjZu5TUzFJC0IAEAyQSQNDsyNNsW7hSbi?=
+ =?us-ascii?Q?qSrCi6TZKtekJR1u0+8Ab5zkNjkO9c2I+TewXbVDV2khiZFv0DLx1C+mNqoA?=
+ =?us-ascii?Q?gIr5fe9n3tTTVA7ys/xZI6pK3TDTBXeRcfzlzxeTr/PoMF9qCEEkSN1U1sdI?=
+ =?us-ascii?Q?6gPg9boQyrN28mEF2PS73ttB318ekSmSmrn2AwK7L+ErycbeFA7O0MJZjljz?=
+ =?us-ascii?Q?6NegfPAphiBziXG95OvQLdmjcTNFURqtnlQhkT3UWrgL/GhsYRfCBeCBXnsN?=
+ =?us-ascii?Q?QxduHK2zLAHvFUdWnMkmiIQ0TPaVnaayc9MGh57dmeT8+IHNeOl1p1Aqzbzd?=
+ =?us-ascii?Q?ti5uMPEhAduH7N5SZxH+cpb7xs6W11VaAWws1sG8/v+2J1UOWi/rlZcyFozW?=
+ =?us-ascii?Q?FbXzSBLpb3yBJtuIVwf+u26c6523I8xbQig4F1VG0fimvPDC/taxQjoVEjq6?=
+ =?us-ascii?Q?tuOl5OvZPhX0IUtCJAWP+TJvcue/B1p9YHpdFs0hUH7lyTB+RCs6jYQOsJP5?=
+ =?us-ascii?Q?lkDrLXD8hSQkz0l2XObHR41VaY7NlZ9aAzGDRuxxRUtqKOuAlUyW5xE4Y1MF?=
+ =?us-ascii?Q?2snPMUsUNnuMnlPmxhwb8z4zlwiA/vx8jlj1QDSaaKgN2KDttPXLFQGR7TEk?=
+ =?us-ascii?Q?W4JUO9e/DPJGLL49uFqlvTBbd6Rb3aNHJd3DKAIzEa64vv0iNLhYeH3RHu4C?=
+ =?us-ascii?Q?wbTBRJuPWWCoTWDmyMsCXim5Ym89JdtQGKuupTEKOF8BvjVIiefXvzfwQuDH?=
+ =?us-ascii?Q?GLN03EB6Ea3vCTdM3dYbsTN0ehW9tbsS5XwB/5SrvQtJbOmTulu6VGsEwG3+?=
+ =?us-ascii?Q?ApU4UI+JzLjcT1TNhFxvY7pcELRMdvhdVa1hEMNVqTsZiwBT2QgvwHOvBIUx?=
+ =?us-ascii?Q?MBVocEsDBqI=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c524c59-d938-4c42-ba48-08da34ae47a4
+X-MS-Exchange-CrossTenant-AuthSource: MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 07:00:36.0402
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SY7P282MB3836
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 7:53 PM ying.huang@intel.com
-<ying.huang@intel.com> wrote:
->
-> On Thu, 2022-05-12 at 16:37 +0800, ying.huang@intel.com wrote:
-> > On Thu, 2022-05-12 at 01:15 -0700, Wei Xu wrote:
-> > > On Thu, May 12, 2022 at 12:36 AM Aneesh Kumar K.V
-> > > <aneesh.kumar@linux.ibm.com> wrote:
-> > > >
-> > > > Wei Xu <weixugc@google.com> writes:
-> > > >
-> > > > > On Thu, May 12, 2022 at 12:12 AM Aneesh Kumar K V
-> > > > > <aneesh.kumar@linux.ibm.com> wrote:
-> > > > > >
-> > > > > > On 5/12/22 12:33 PM, ying.huang@intel.com wrote:
-> > > > > > > On Wed, 2022-05-11 at 23:22 -0700, Wei Xu wrote:
-> > > > > > > > Sysfs Interfaces
-> > > > > > > > ================
-> > > > > > > >
-> > > > > > > > * /sys/devices/system/memtier/memtierN/nodelist
-> > > > > > > >
-> > > > > > > >    where N = 0, 1, 2 (the kernel supports only 3 tiers for now).
-> > > > > > > >
-> > > > > > > >    Format: node_list
-> > > > > > > >
-> > > > > > > >    Read-only.  When read, list the memory nodes in the specified tier.
-> > > > > > > >
-> > > > > > > >    Tier 0 is the highest tier, while tier 2 is the lowest tier.
-> > > > > > > >
-> > > > > > > >    The absolute value of a tier id number has no specific meaning.
-> > > > > > > >    What matters is the relative order of the tier id numbers.
-> > > > > > > >
-> > > > > > > >    When a memory tier has no nodes, the kernel can hide its memtier
-> > > > > > > >    sysfs files.
-> > > > > > > >
-> > > > > > > > * /sys/devices/system/node/nodeN/memtier
-> > > > > > > >
-> > > > > > > >    where N = 0, 1, ...
-> > > > > > > >
-> > > > > > > >    Format: int or empty
-> > > > > > > >
-> > > > > > > >    When read, list the memory tier that the node belongs to.  Its value
-> > > > > > > >    is empty for a CPU-only NUMA node.
-> > > > > > > >
-> > > > > > > >    When written, the kernel moves the node into the specified memory
-> > > > > > > >    tier if the move is allowed.  The tier assignment of all other nodes
-> > > > > > > >    are not affected.
-> > > > > > > >
-> > > > > > > >    Initially, we can make this interface read-only.
-> > > > > > >
-> > > > > > > It seems that "/sys/devices/system/node/nodeN/memtier" has all
-> > > > > > > information we needed.  Do we really need
-> > > > > > > "/sys/devices/system/memtier/memtierN/nodelist"?
-> > > > > > >
-> > > > > > > That can be gotten via a simple shell command line,
-> > > > > > >
-> > > > > > > $ grep . /sys/devices/system/node/nodeN/memtier | sort -n -k 2 -t ':'
-> > > > > > >
-> > > > > >
-> > > > > > It will be really useful to fetch the memory tier node list in an easy
-> > > > > > fashion rather than reading multiple sysfs directories. If we don't have
-> > > > > > other attributes for memorytier, we could keep
-> > > > > > "/sys/devices/system/memtier/memtierN" a NUMA node list there by
-> > > > > > avoiding /sys/devices/system/memtier/memtierN/nodelist
-> > > > > >
-> > > > > > -aneesh
-> > > > >
-> > > > > It is harder to implement memtierN as just a file and doesn't follow
-> > > > > the existing sysfs pattern, either.  Besides, it is extensible to have
-> > > > > memtierN as a directory.
-> > > >
-> > > > diff --git a/drivers/base/node.c b/drivers/base/node.c
-> > > > index 6248326f944d..251f38ec3816 100644
-> > > > --- a/drivers/base/node.c
-> > > > +++ b/drivers/base/node.c
-> > > > @@ -1097,12 +1097,49 @@ static struct attribute *node_state_attrs[] = {
-> > > >         NULL
-> > > >  };
-> > > >
-> > > > +#define MAX_TIER 3
-> > > > +nodemask_t memory_tier[MAX_TIER];
-> > > > +
-> > > > +#define _TIER_ATTR_RO(name, tier_index)                                        \
-> > > > +       { __ATTR(name, 0444, show_tier, NULL), tier_index, NULL }
-> > > > +
-> > > > +struct memory_tier_attr {
-> > > > +       struct device_attribute attr;
-> > > > +       int tier_index;
-> > > > +       int (*write)(nodemask_t nodes);
-> > > > +};
-> > > > +
-> > > > +static ssize_t show_tier(struct device *dev,
-> > > > +                        struct device_attribute *attr, char *buf)
-> > > > +{
-> > > > +       struct memory_tier_attr *mt = container_of(attr, struct memory_tier_attr, attr);
-> > > > +
-> > > > +       return sysfs_emit(buf, "%*pbl\n",
-> > > > +                         nodemask_pr_args(&memory_tier[mt->tier_index]));
-> > > > +}
-> > > > +
-> > > >  static const struct attribute_group memory_root_attr_group = {
-> > > >         .attrs = node_state_attrs,
-> > > >  };
-> > > >
-> > > > +
-> > > > +#define TOP_TIER 0
-> > > > +static struct memory_tier_attr memory_tiers[] = {
-> > > > +       [0] = _TIER_ATTR_RO(memory_top_tier, TOP_TIER),
-> > > > +};
-> > > > +
-> > > > +static struct attribute *memory_tier_attrs[] = {
-> > > > +       &memory_tiers[0].attr.attr,
-> > > > +       NULL
-> > > > +};
-> > > > +
-> > > > +static const struct attribute_group memory_tier_attr_group = {
-> > > > +       .attrs = memory_tier_attrs,
-> > > > +};
-> > > > +
-> > > >  static const struct attribute_group *cpu_root_attr_groups[] = {
-> > > >         &memory_root_attr_group,
-> > > > +       &memory_tier_attr_group,
-> > > >         NULL,
-> > > >  };
-> > > >
-> > > >
-> > > > As long as we have the ability to see the nodelist, I am good with the
-> > > > proposal.
-> > > >
-> > > > -aneesh
-> > >
-> > > I am OK with moving back the memory tier nodelist into node/.  When
-> > > there are more memory tier attributes needed, we can then create the
-> > > memory tier subtree and replace the tier nodelist in node/ with
-> > > symlinks.
-> >
-> > What attributes do you imagine that we may put in memory_tierX/ sysfs
-> > directory?  If we have good candidates in mind, we may just do that.
-> > What I can imagine now is "demote", like "memory_reclaim" in nodeX/ or
-> > node/ directory you proposed before.  Is it necessary to show something
-> > like "meminfo", "vmstat" there?
->
-> My words may be confusing, so let me say it in another way.
+From: ylintan <yonglin.tan@outlook.com>
 
-I can understand. :)
+    This patch add VendorID/DeviceID definitions for EM120 FCCL project.
+    It has the same configration as Quectel EM160R-GL and EM120R-GL.
 
-> Just for brainstorm, if we have
->
->   /sys/devices/system/memtier/memtierN/
->
-> What can we put in it in addition to "nodelist" or links to the nodes?
-> For example,
->
->   /sys/devices/system/memtier/memtierN/demote
->
-> When write a page number to it, the specified number of pages will be
-> demoted from memtierN to memtierN+1, like the
-> /sys/devices/system/node/memory_reclaim interface you proposed before.
+    Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Reviewed-by: Hemant Kumar <hemantk@codeaurora.org>
+    Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+    Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
+---
+ drivers/bus/mhi/host/pci_generic.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-"demote" might be fine to add there.  Just to clarify, we (Google)
-currently don't yet have the need for an interface to do system-wide
-demotion from one tier to another.  What we need is memory.demote
-(similar to memory.reclaim) for memory cgroup based demotions.
+diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
+index 8416267..0a6469c 100644
+--- a/drivers/bus/mhi/host/pci_generic.c
++++ b/drivers/bus/mhi/host/pci_generic.c
+@@ -557,6 +557,8 @@ static const struct pci_device_id mhi_pci_id_table[] = {
+ 		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
+ 	{ PCI_DEVICE(0x1eac, 0x1002), /* EM160R-GL (sdx24) */
+ 		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
++	{ PCI_DEVICE(0x1eac, 0x2001), /* EM120R-GL for FCCL (sdx24) */
++		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
+ 	/* T99W175 (sdx55), Both for eSIM and Non-eSIM */
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0ab),
+ 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
+-- 
+2.7.4
 
-Other things that might be added include tier-specific properties
-(e.g. expected latency and bandwidth when available) and tier-specific
-stats.
-
-Under /sys/devices/system/memtier/, we may add global properties about
-memory tiers, e.g. max number of tiers, min/max tier ids (which might
-be useful if we hide unpopulated memory tiers).
-
-> Or, is it necessary to add
->
->   /sys/devices/system/memtier/memtierN/meminfo
->   /sys/devices/system/memtier/memtierN/vmstat
-
-The userspace can aggregate such data from node/nodeN/{meminfo,
-vmstat} based on the memory tier nodelist. But I am not against adding
-these files to memtierN/ for user convenience.
-
-> I don't mean to propose these.  Just want to know whether there's
-> requirement for these kind of stuff?  And what else may be required.
-
-This sounds good.  I think a memtier directory may eventually become a
-necessity, though I don't feel too strongly about adding it right now.
-
-> Best Regards,
-> Huang, Ying
->
-> > >
-> > > So the revised sysfs interfaces are:
-> > >
-> > > * /sys/devices/system/node/memory_tierN (read-only)
-> > >
-> > >   where N = 0, 1, 2
-> > >
-> > >   Format: node_list
-> > >
-> > > * /sys/devices/system/node/nodeN/memory_tier (read/write)
-> > >
-> > >   where N = 0, 1, ...
-> > >
-> > >   Format: int or empty
-> >
->
->
->
