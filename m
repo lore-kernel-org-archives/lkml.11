@@ -2,72 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 20:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC979C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 20:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384237AbiEMUXu (ORCPT
+        id S1384269AbiEMUXz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 16:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        Fri, 13 May 2022 16:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384230AbiEMUWr (ORCPT
+        with ESMTP id S1384220AbiEMUWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 16:22:47 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68240179940
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:22:37 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f4dee8688cso80603367b3.16
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:22:37 -0700 (PDT)
+        Fri, 13 May 2022 16:22:46 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422FD17909F
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:22:33 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id d188-20020a25cdc5000000b00648429e5ab9so8233267ybf.13
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 13:22:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=CUpp+eY1h6QavnLplUi4X+6IJ2Hw5l406MyPGXj9jyo=;
-        b=NJZvNrKMHoHE07itMseh//QkW1oZVG1hCm5Y34ki8iVp32X/fIOIG4pQrp41GoNIh4
-         4/vt1vqzEx1K7q8Je1+0mPg3QA9/Qy4ZitgvgWB49MQowYMC/cH9uxBIK5vAGqnAJXir
-         ekRUxDpRjm8KyFj/cpyFJMcXI+ruO3K/yT4m+65BqWW9aWkxjK1EdSTA53QBrbcyXoNS
-         kYAR4exBZhq7ge6oYG/Z6cHSKt7QKR+Doiv7NpqSnEwN9RmcMp8+U5jwfKld3dm3Ueuc
-         m1oIjVLfuTjqn3YAQkcR4uVX8iEvvpOKWA5v+AX8LB6GAGLFkF96bW8ARNw1LRoAUfEV
-         xF8w==
+        bh=A+7QPiSqoa8uHCAaz7cWSuhzWOaNl1zZwhVwOmSdW3Q=;
+        b=eoneec1qCPJ+mzeLTO/26o4Gge0cWT5SAiGzbalPj2kajo6F/0cY+hXNaJV6/r+1ew
+         Y6uGiwZLXUyodzZ8UYO/n8YLOsl89RGDclgPhS6fxgoPf/o7am8+mqu4bw/b3L+/Yuyi
+         Cc/OaxzJLjKECCzrQRpdRnOuumBxE4idnbmxYj0GGrcjayFmVVo2gRU+pSIAIGWkmF0a
+         3GrUoXzWAOrstvsKGj3Hh/ia4A/Gbuk8XwS8MbQH/z19h/yMUcGvuCm84jFLSCi6XCzG
+         qcVtZMwaKqUWyqXG9PrxZtGErnPUmFAsNBu4fvRjKv6v93XufMYo0X2ugGmnuiRsSDsp
+         gASQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=CUpp+eY1h6QavnLplUi4X+6IJ2Hw5l406MyPGXj9jyo=;
-        b=luH5iUnQcd4mZLF1ChNPr4WWur6UG6W/1g4BFzDD2EWABL/ft6xg2qCkuDP7Ngq/Ly
-         QTd4t8MC6DMs6G2MiS0oHO+iDJfMV9CSVBKqM0d3jFmt+/klx43XNB/X/32hT+ywfPtm
-         Q/CHfrNpnBEQhuPS56/uqSdYCQ7UjW+vsgtCg5k6Za6tDTJdbYq87MlrWBctMbjBwU4/
-         bH2Ha7DyzC0kcSL11o4KuWNZIMvTLyENnXZuynE3Agw6pu3EFTvjjVWh1nrf873sWqHB
-         t/qTpiUEbb5Ku4P1EHR14DJxtaptUcB3cvVN5cRe8Pchwx2vkHsOIkaY5e+ZAZHvzSSc
-         HxCg==
-X-Gm-Message-State: AOAM532J7A+ZSavABknoy0Tw45kusSIgxXykd5QxZuP+P5z3NKAtYfMH
-        evFSI6DoXdo5EYxdBe4+7xSbZKgFNUO4+t7Eo/DmXjP6C1uHnGOt95xad1LmscOiNJ8ITFQ8ilz
-        UrJkgvqHdsjNh8e12X2dD+KgMf1Egj2bGzhjoWSRzP3gXc/oP8ioSdDqoTDEuT/Us/Zmy/+3YrM
-        HhSPQnVW/8Qg==
-X-Google-Smtp-Source: ABdhPJz5wAuQU3zhvCRsK12hFWDISmsLfDtjrTPNI5RGXLBRze46095reNUl3lvy/7ZwI2ttc/rbo/qNH7jP9MYfta4=
+        bh=A+7QPiSqoa8uHCAaz7cWSuhzWOaNl1zZwhVwOmSdW3Q=;
+        b=ak8Qdo4P7G6c0Y0RoG/d94K0W4qe6Hc2vZzOTlQJAQ51P7xZE7ddDBEnXcz3EzU6TJ
+         7L05dZf5px67qwtHhdswPfz4BICQzcbGakY5Ozh9Bwe/6vOf2kSdEXwTUtOruYnar15c
+         phMONmEY6Sugx/QO70K5VULtrPM9XFqdHW6E2DIdQbQGKMscw5NONvXk4mAX0Vxta4yy
+         ZwZQs9tE6GBICiDUBKipx/XmrDaljZi4E5SVi6OKp8ahpVxoDNgj8gOtksxbFrSbSvFm
+         uoIDOXcnmJQBFBULcckmbNRRrDKT03EQuuEfSYWfBFgrIH1A1gpr5nPE/6Ix1DTPD2Ve
+         5Duw==
+X-Gm-Message-State: AOAM531VTbNJmdDm+wcDETGr+MQlUUDXdjDtQasGc8pUhLhTwjoKBDDA
+        79daVyR+mw6b000LJSsoVd2lVItx3ogmBRAQSI4r8Kh/h4ZUg1fD8q5e0wA+36qJ7wxIwP0FaX9
+        BhqWW+0uDObuS3ZvdUeLApwzFQnoEBDr37iZF1TkpxeQmZiX76v6nj2jmJshoh06COpj08VauT0
+        mLoQ2/r+dECw==
+X-Google-Smtp-Source: ABdhPJzvGknJQJvJIOdsshYzjyQxItMWAOO5KzitzyEuNvSreyd+VCQrAAW9GnGKTwHoKx86rGgma5rzRyc5taV0BnQ=
 X-Received: from samitolvanen1.mtv.corp.google.com ([2620:15c:201:2:e0:c17e:c2dc:13eb])
- (user=samitolvanen job=sendgmr) by 2002:a25:595:0:b0:648:dd02:7e51 with SMTP
- id 143-20020a250595000000b00648dd027e51mr6808309ybf.486.1652473356577; Fri,
- 13 May 2022 13:22:36 -0700 (PDT)
-Date:   Fri, 13 May 2022 13:21:53 -0700
+ (user=samitolvanen job=sendgmr) by 2002:a81:3685:0:b0:2fb:947b:5247 with SMTP
+ id d127-20020a813685000000b002fb947b5247mr7593917ywa.64.1652473352269; Fri,
+ 13 May 2022 13:22:32 -0700 (PDT)
+Date:   Fri, 13 May 2022 13:21:51 -0700
 In-Reply-To: <20220513202159.1550547-1-samitolvanen@google.com>
-Message-Id: <20220513202159.1550547-16-samitolvanen@google.com>
+Message-Id: <20220513202159.1550547-14-samitolvanen@google.com>
 Mime-Version: 1.0
 References: <20220513202159.1550547-1-samitolvanen@google.com>
 X-Developer-Key: i=samitolvanen@google.com; a=openpgp; fpr=35CCFB63B283D6D3AEB783944CB5F6848BBC56EE
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1132; h=from:subject;
- bh=/4dgPteGbvoZ6Zm9ahP/RnJKty3E0+Ci/Lgu/Bn2E3A=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBifr3lEh9/nV290jJ4ehCHvPJOG78C323NH9UaWJCR
- 7UXQDEKJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYn695QAKCRBMtfaEi7xW7r1IC/
- 95H/s3slv+1ghpDO8U01KIVSGedwc/9NJRp7/HlT/nHaySYRWxxRwR5AqeE42fgrLsMPiozLy0Gfxj
- rcr/Twts4H9ZFBUSI1zYQ2eKUgaBOvevjRwwMWpcW1O0FilrWNF8RIsot8ME7I9MbxjJrnOG+pHJfT
- NNyxQDi02C4LNomTPzVRftAmOwfSpPyodElQFeBS5iWwA3B0AiUhkh8E6mBsXlJDAtHQamg7yXPD5U
- EGcfAHyyTA/JVuvdvSJagxtTXU9AMwHPt4D9hltcduns8G8fsw8PbvIhCtYyN2+fBE5oNs5y8ZEGkY
- fy7lP7nBp/SfFw/JgNztUkvbE5Qk5zuC6DzVZwU6jIhMAYwyNs5FgeY1k7KCuSwHBPTrCyHxMjO35Z
- 65OmbzeZnKrCpwJNuLuoXnPZi6zFP7iUkZI0QJl8XSDLul8rQvLdrgPRrEnuJU2U4qxS2/n//iyqIy
- c0HZsESX2A63vEHvQWQsl/o6WsSYKsYPwxnyLskmJeO/c=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2492; h=from:subject;
+ bh=O+VMkemg5E90usG6SsfLEV+HTvQnGaBlMMBcrxqTesI=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBifr3kE9sw78o8+eJw34YnMmYuK157n4APskm6j4x8
+ RWFsHcaJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYn695AAKCRBMtfaEi7xW7nURC/
+ wOdNWBO3UhCkvlEOcn4eL9iiDgGLHqd+ms7km80Bh8LZzW9sOnnlG3t3vRb52kdG5VEXtgkxioGv41
+ xDP0vHe/60Dqza8pTAK6oUDwZ9oravnzAdveNeysGT+iWwn6o+1PlLzaJmMM1WHiNJunt64I1Frt7l
+ MG+kykOaX8IOtuUHQGbZHWos22oiPy9qAluaUwvZuPOkfOfDaZILICUJ+aOVo0YsM8pziu05P1lMyZ
+ S6JU5H6j9BiCebv0Fc2EqSsSN5gNHjaRWhPBzA5au10tr+30q+wOqa1BHCK8mMAkmGTFUQZsKOfVyJ
+ OcIxdboVGgRVBnDBRJCMZ8aytWoWx0G6HlaYhqS/WvOC1C4QDVu1DaIIC7FFX3v7KJB+D8zmwf7Tzo
+ BbojzcBBfnmu6tJIxx1uUPt69XNi1OBt4xpbkBA8+eLJ4X7gmJouTVZo8KFUFQJeB6mF8MYQ1ttzhr
+ h0OWEF+nFaDfGtzLvSL23nOGQJx8DP5aI9DLAbnTGhKs8=
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [RFC PATCH v2 15/21] objtool: Don't warn about __cfi_ preambles
- falling through
+Subject: [RFC PATCH v2 13/21] treewide: Drop WARN_ON_FUNCTION_MISMATCH
 From:   Sami Tolvanen <samitolvanen@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -89,42 +88,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The __cfi_ preambles contain valid instructions, which embed KCFI
-type information in the following format:
-
-  __cfi_function:
-    int3
-    int3
-    mov <id>, %eax
-    int3
-    int3
-  function:
-    ...
-
-While the preambles are STT_FUNC and contain valid instructions,
-they are not executed and always fall through. Skip the warning for
-them.
+CONFIG_CFI_CLANG no longer breaks cross-module function address
+equality, which makes WARN_ON_FUNCTION_MISMATCH unnecessary. Remove
+the definition and switch back to WARN_ON_ONCE.
 
 Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
 ---
- tools/objtool/check.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/asm-generic/bug.h | 16 ----------------
+ kernel/kthread.c          |  3 +--
+ kernel/workqueue.c        |  2 +-
+ 3 files changed, 2 insertions(+), 19 deletions(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index ca5b74603008..88f005ae6dcc 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -3311,6 +3311,10 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 		next_insn = next_insn_to_validate(file, insn);
+diff --git a/include/asm-generic/bug.h b/include/asm-generic/bug.h
+index ba1f860af38b..4050b191e1a9 100644
+--- a/include/asm-generic/bug.h
++++ b/include/asm-generic/bug.h
+@@ -220,22 +220,6 @@ extern __printf(1, 2) void __warn_printk(const char *fmt, ...);
+ # define WARN_ON_SMP(x)			({0;})
+ #endif
  
- 		if (func && insn->func && func != insn->func->pfunc) {
-+			/* Ignore KCFI type preambles, which always fall through */
-+			if (!strncmp(func->name, "__cfi_", 6))
-+				return 0;
-+
- 			WARN("%s() falls through to next function %s()",
- 			     func->name, insn->func->name);
- 			return 1;
+-/*
+- * WARN_ON_FUNCTION_MISMATCH() warns if a value doesn't match a
+- * function address, and can be useful for catching issues with
+- * callback functions, for example.
+- *
+- * With CONFIG_CFI_CLANG, the warning is disabled because the
+- * compiler replaces function addresses taken in C code with
+- * local jump table addresses, which breaks cross-module function
+- * address equality.
+- */
+-#if defined(CONFIG_CFI_CLANG) && defined(CONFIG_MODULES)
+-# define WARN_ON_FUNCTION_MISMATCH(x, fn) ({ 0; })
+-#else
+-# define WARN_ON_FUNCTION_MISMATCH(x, fn) WARN_ON_ONCE((x) != (fn))
+-#endif
+-
+ #endif /* __ASSEMBLY__ */
+ 
+ #endif
+diff --git a/kernel/kthread.c b/kernel/kthread.c
+index 50265f69a135..dfeb87876b4a 100644
+--- a/kernel/kthread.c
++++ b/kernel/kthread.c
+@@ -1050,8 +1050,7 @@ static void __kthread_queue_delayed_work(struct kthread_worker *worker,
+ 	struct timer_list *timer = &dwork->timer;
+ 	struct kthread_work *work = &dwork->work;
+ 
+-	WARN_ON_FUNCTION_MISMATCH(timer->function,
+-				  kthread_delayed_work_timer_fn);
++	WARN_ON_ONCE(timer->function != kthread_delayed_work_timer_fn);
+ 
+ 	/*
+ 	 * If @delay is 0, queue @dwork->work immediately.  This is for
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 0d2514b4ff0d..18c1a1c09684 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -1651,7 +1651,7 @@ static void __queue_delayed_work(int cpu, struct workqueue_struct *wq,
+ 	struct work_struct *work = &dwork->work;
+ 
+ 	WARN_ON_ONCE(!wq);
+-	WARN_ON_FUNCTION_MISMATCH(timer->function, delayed_work_timer_fn);
++	WARN_ON_ONCE(timer->function != delayed_work_timer_fn);
+ 	WARN_ON_ONCE(timer_pending(timer));
+ 	WARN_ON_ONCE(!list_empty(&work->entry));
+ 
 -- 
 2.36.0.550.gb090851708-goog
 
