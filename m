@@ -2,117 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AEF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17489C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379005AbiEMJZs (ORCPT
+        id S1379026AbiEMJZ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36278 "EHLO
+        Fri, 13 May 2022 05:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378985AbiEMJZi (ORCPT
+        with ESMTP id S1378997AbiEMJZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:25:38 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F3E2A28CB
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:25:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652433938; x=1683969938;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=7lONoJE0pI/mqPtOMCm6iSirbPlA0ZWBn6ql3BY1kUg=;
-  b=mSIvswrEzuEf8aPRDQBW+jPSsayJrINpb3C+ODcKfTOIbMG2IbLg0PT8
-   DXiABBRM2l+V0+YTreGoZG9uMZGlVszEHO216uQeKgEWPAWNnajarDPqp
-   F0NEx7RkV3eFvd5iBCvuc7+IsivYJqWyD7B6N/xFUe5/oRfjaE8eKKtQw
-   jghduSH3QCvhnS7wUQBnS9idxVRqR0p8mjET2vARy/rrjvx0St0FmX9MP
-   g1TLZu0WabA37Gs5YC5ZKFVPHCKW0uWusGFUIFQsF4dFxpUQNA8j4i9KV
-   u0XRaTWQtz/ssV1MiGSgxfmSZsktvq/J8LENpfXlfrn/uY4tOUwStDDca
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="163546220"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 May 2022 02:25:37 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 13 May 2022 02:25:36 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 13 May 2022 02:25:32 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <linux@armlinux.org.uk>, <linus.walleij@linaro.org>,
-        <alexandre.belloni@bootlin.com>, <michael@walle.cc>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Kavyasree.Kotagiri@microchip.com>, <Manohar.Puri@microchip.com>
-Subject: [PATCH v4] ARM: at91: debug: add lan966 support
-Date:   Fri, 13 May 2022 14:55:30 +0530
-Message-ID: <20220513092530.19213-1-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 13 May 2022 05:25:42 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BA72A28C4;
+        Fri, 13 May 2022 02:25:38 -0700 (PDT)
+X-UUID: 5b9ddf3c4b094b32aeeff7893ec0d781-20220513
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:30ca3764-6493-4d2f-be0f-8eec07cf63c7,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:90
+X-CID-INFO: VERSION:1.1.5,REQID:30ca3764-6493-4d2f-be0f-8eec07cf63c7,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:90
+X-CID-META: VersionHash:2a19b09,CLOUDID:8a891cf2-ab23-4aed-a67b-f96514452486,C
+        OID:8ee79baca8ee,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 5b9ddf3c4b094b32aeeff7893ec0d781-20220513
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 594576137; Fri, 13 May 2022 17:25:33 +0800
+Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 13 May 2022 17:25:32 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 13 May 2022 17:25:31 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 13 May 2022 17:25:30 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v6, 2/7] media: mediatek: vcodec: Add to support lat soc hardware
+Date:   Fri, 13 May 2022 17:25:21 +0800
+Message-ID: <20220513092526.9670-3-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220513092526.9670-1-yunfei.dong@mediatek.com>
+References: <20220513092526.9670-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for low-level debugging on FLEXCOM USART of
-LAN966 SoC.
+Add lat soc compatible and to support lat soc power/clk helper.
 
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
 ---
-v3 -> v4:
-- changed SOC_LAN966x to SOC_LAN966.
+ .../platform/mediatek/vcodec/mtk_vcodec_dec_hw.c | 12 +++++++++---
+ .../platform/mediatek/vcodec/mtk_vcodec_dec_hw.h |  2 ++
+ .../platform/mediatek/vcodec/mtk_vcodec_dec_pm.c | 16 ++++++++++++++++
+ .../platform/mediatek/vcodec/mtk_vcodec_drv.h    |  1 +
+ 4 files changed, 28 insertions(+), 3 deletions(-)
 
- arch/arm/Kconfig.debug | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
-
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 0c9497d549e3..77b2db882e75 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -210,6 +210,26 @@ choice
- 		  Say Y here if you want kernel low-level debugging support
- 		  on the FLEXCOM3 port of SAMA7G5.
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c
+index 14bed2bd4283..376db0e433d7 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c
+@@ -28,6 +28,10 @@ static const struct of_device_id mtk_vdec_hw_match[] = {
+ 		.compatible = "mediatek,mtk-vcodec-core",
+ 		.data = (void *)MTK_VDEC_CORE,
+ 	},
++	{
++		.compatible = "mediatek,mtk-vcodec-lat-soc",
++		.data = (void *)MTK_VDEC_LAT_SOC,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, mtk_vdec_hw_match);
+@@ -166,9 +170,11 @@ static int mtk_vdec_hw_probe(struct platform_device *pdev)
+ 	subdev_dev->reg_base[VDEC_HW_SYS] = main_dev->reg_base[VDEC_HW_SYS];
+ 	set_bit(subdev_dev->hw_idx, main_dev->subdev_bitmap);
  
-+	config DEBUG_AT91_LAN966_FLEXCOM
-+		bool "Kernel low-level debugging on LAN966 FLEXCOM USART"
-+		select DEBUG_AT91_UART
-+		depends on SOC_LAN966
-+		help
-+		Say Y here if you want kernel low-level debugging support
-+		on the FLEXCOM port of LAN966.
+-	ret = mtk_vdec_hw_init_irq(subdev_dev);
+-	if (ret)
+-		goto err;
++	if (IS_SUPPORT_VDEC_HW_IRQ(hw_idx)) {
++		ret = mtk_vdec_hw_init_irq(subdev_dev);
++		if (ret)
++			goto err;
++	}
+ 
+ 	subdev_dev->reg_base[VDEC_HW_MISC] =
+ 		devm_platform_ioremap_resource(pdev, 0);
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.h b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.h
+index a63e4b1b81c3..36faa8d9d681 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.h
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.h
+@@ -17,6 +17,8 @@
+ #define VDEC_IRQ_CLR 0x10
+ #define VDEC_IRQ_CFG_REG 0xa4
+ 
++#define IS_SUPPORT_VDEC_HW_IRQ(hw_idx) ((hw_idx) != MTK_VDEC_LAT_SOC)
 +
-+		DEBUG_UART_PHYS | DEBUG_UART_VIRT
+ /**
+  * enum mtk_vdec_hw_reg_idx - subdev hardware register base index
+  * @VDEC_HW_SYS : vdec soc register index
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_pm.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_pm.c
+index 0fb7e5ba635b..d69faa463d04 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_pm.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_pm.c
+@@ -174,6 +174,14 @@ static void mtk_vcodec_dec_child_dev_on(struct mtk_vcodec_dev *vdec_dev,
+ 		mtk_vcodec_dec_pw_on(pm);
+ 		mtk_vcodec_dec_clock_on(pm);
+ 	}
 +
-+		0xe0040200      | 0xfd040200     | FLEXCOM0
-+		0xe0044200      | 0xfd044200     | FLEXCOM1
-+		0xe0060200      | 0xfd060200     | FLEXCOM2
-+		0xe0064200      | 0xfd064200     | FLEXCOM3
-+		0xe0070200      | 0xfd070200     | FLEXCOM4
++	if (hw_idx == MTK_VDEC_LAT0) {
++		pm = mtk_vcodec_dec_get_pm(vdec_dev, MTK_VDEC_LAT_SOC);
++		if (pm) {
++			mtk_vcodec_dec_pw_on(pm);
++			mtk_vcodec_dec_clock_on(pm);
++		}
++	}
+ }
+ 
+ static void mtk_vcodec_dec_child_dev_off(struct mtk_vcodec_dev *vdec_dev,
+@@ -186,6 +194,14 @@ static void mtk_vcodec_dec_child_dev_off(struct mtk_vcodec_dev *vdec_dev,
+ 		mtk_vcodec_dec_clock_off(pm);
+ 		mtk_vcodec_dec_pw_off(pm);
+ 	}
 +
-+		By default, enabling FLEXCOM3 port. Based on requirement, use
-+		DEBUG_UART_PHYS and DEBUG_UART_VIRT configurations from above
-+		table.
-+
- 	config DEBUG_BCM2835
- 		bool "Kernel low-level debugging on BCM2835 PL011 UART"
- 		depends on ARCH_BCM2835 && ARCH_MULTI_V6
-@@ -1685,6 +1705,7 @@ config DEBUG_UART_PHYS
- 	default 0xd4017000 if DEBUG_MMP_UART2
- 	default 0xd4018000 if DEBUG_MMP_UART3
- 	default 0xe0000000 if DEBUG_SPEAR13XX
-+	default 0xe0064200 if DEBUG_AT91_LAN966_FLEXCOM
- 	default 0xe1824200 if DEBUG_AT91_SAMA7G5_FLEXCOM3
- 	default 0xe4007000 if DEBUG_HIP04_UART
- 	default 0xe6c40000 if DEBUG_RMOBILE_SCIFA0
-@@ -1805,6 +1826,7 @@ config DEBUG_UART_VIRT
- 	default 0xfb10c000 if DEBUG_REALVIEW_PB1176_PORT
- 	default 0xfcfe8600 if DEBUG_BCM63XX_UART
- 	default 0xfd000000 if DEBUG_SPEAR3XX || DEBUG_SPEAR13XX
-+	default 0xfd064200 if DEBUG_AT91_LAN966_FLEXCOM
- 	default 0xfd531000 if DEBUG_STIH41X_SBC_ASC1
- 	default 0xfd883000 if DEBUG_ALPINE_UART0
- 	default 0xfdd32000 if DEBUG_STIH41X_ASC2
++	if (hw_idx == MTK_VDEC_LAT0) {
++		pm = mtk_vcodec_dec_get_pm(vdec_dev, MTK_VDEC_LAT_SOC);
++		if (pm) {
++			mtk_vcodec_dec_clock_off(pm);
++			mtk_vcodec_dec_pw_off(pm);
++		}
++	}
+ }
+ 
+ void mtk_vcodec_dec_enable_hardware(struct mtk_vcodec_ctx *ctx, int hw_idx)
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
+index a29041a0b7e0..0e3db8ccb398 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
+@@ -104,6 +104,7 @@ enum mtk_vdec_hw_id {
+ 	MTK_VDEC_CORE,
+ 	MTK_VDEC_LAT0,
+ 	MTK_VDEC_LAT1,
++	MTK_VDEC_LAT_SOC,
+ 	MTK_VDEC_HW_MAX,
+ };
+ 
 -- 
-2.17.1
+2.18.0
 
