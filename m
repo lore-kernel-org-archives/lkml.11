@@ -2,82 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF54C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E659BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379163AbiEMJz0 (ORCPT
+        id S1347873AbiEMJ4P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        Fri, 13 May 2022 05:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347873AbiEMJzV (ORCPT
+        with ESMTP id S1379252AbiEMJ4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:55:21 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9F0515FE06
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:54:55 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(7678:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 13 May 2022 17:47:40 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.6; Fri, 13 May 2022 17:47:38 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2507.006; Fri, 13 May 2022 17:47:38 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "sboyd@kernel.org" <sboyd@kernel.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v15 10/10] ARM: dts: Add Sunplus SP7021-Demo-V3 board
- device tree
-Thread-Topic: [PATCH v15 10/10] ARM: dts: Add Sunplus SP7021-Demo-V3 board
- device tree
-Thread-Index: AQHYZcsUOdNmnhD0gkKqn75ry15Nq60ahDUAgAHng+D//4R3gIAAnWgA
-Date:   Fri, 13 May 2022 09:47:38 +0000
-Message-ID: <878e3edf42434620b31cf7f8bf97209f@cqplus1.com>
-References: <cover.1652329411.git.qinjian@cqplus1.com>
- <daeccdfb9655e549656af0af955a4697871e3ab0.1652329411.git.qinjian@cqplus1.com>
- <32c80a79-abd5-3fd2-cbb4-e2ae93c539da@linaro.org>
- <3a01fe9aa860407694ee77133459a9ab@cqplus1.com>
- <85c40d22-afaa-0f7b-01bd-6de9e592079f@linaro.org>
-In-Reply-To: <85c40d22-afaa-0f7b-01bd-6de9e592079f@linaro.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 13 May 2022 05:56:12 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 809881402C
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 02:56:11 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 55CDD143D;
+        Fri, 13 May 2022 02:56:11 -0700 (PDT)
+Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 160BC3F5A1;
+        Fri, 13 May 2022 02:56:09 -0700 (PDT)
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Atish Patra <atishp@atishpatra.org>,
+        Atish Patra <atishp@rivosinc.com>, linux-kernel@vger.kernel.org
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Qing Wang <wangqing@vivo.com>
+Subject: [PATCH 0/4] arch_topology: Updates to add socket support and fix cluster ids
+Date:   Fri, 13 May 2022 10:55:55 +0100
+Message-Id: <20220513095559.1034633-1-sudeep.holla@arm.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiA+DQo+ID4gSSBkaWQgcGFzc2VkIHRoZSBtYWtlIGR0YnNfY2hlY2suDQo+ID4gY29tcGF0aWJs
-ZSBzdHJpbmc6ICJzdW5wbHVzLHNwNzAyMSIsICJzdW5wbHVzLHNwNzAyMS1hY2hpcCIsICJzdW5w
-bHVzLHNwNzAyMS1kZW1vLXYzIg0KPiA+IGFsbCBkZWZpbmVkIEAgRG9jdW1lbnRhdGlvbi9kZXZp
-Y2V0cmVlL2JpbmRpbmdzL2FybS9zdW5wbHVzLHNwNzAyMS55YW1sIFsxXQ0KPiANCj4gSG93IHRo
-aXMgY2FuIHBhc3MgdGhlIGNoZWNrIGlmIGl0IGlzIGVudGlyZWx5IGRpZmZlcmVudCBjb21wYXRp
-YmxlIGFuZA0KPiBkb2VzIG5vdCBtYXRjaCBzY2hlbWE/IFRoZSBjb2RlIGlzIG5vdCBjb3JyZWN0
-LiBJZiB5b3UgdGVzdCB5b3VyIERUUw0KPiB3aXRoIGR0YnNfY2hlY2sgeW91IHdpbGwgc2VlOg0K
-PiANCj4gCXN1bnBsdXMtc3A3MDIxLWRlbW8tdjMuZHRiOiAvOiBjb21wYXRpYmxlOiBbJ3N1bnBs
-dXMsc3A3MDIxLWRlbW8tdjMnXQ0KPiBpcyB0b28gc2hvcnQNCj4gDQo+IA0KPiBBZGRpdGlvbmFs
-bHk6DQo+IDEuIFlvdXIgRFRCcyBkbyBub3QgY29tcGlsZSwgbWlzc2luZyBNYWtlZmlsZSBlbnRy
-eS4NCj4gDQoNCkdvdCBpdCwgSSBjb21waWxlZCB0aGUgZHRiIHdpdGggY29tbWFuZDogbWFrZSBz
-dW5wbHVzLXNwNzAyMS1kZW1vLXYzLmR0Yg0KQWZ0ZXIgSSBhZGQgaXQgdG8gYXJjaC9hcm0vYm9v
-dC9kdHMvTWFrZWZpbGUsDQptYWtlIGR0YnNfY2hlY2sgZ290IHRoZSBlcnJvci4NClRoYW5rcyBm
-b3IgeW91ciBwYXRpZW50IGd1aWRhbmNlLg0KDQo=
+Hi All,
+
+This series intends to fix some discrepancies we have in the CPU topology
+parsing from the device tree /cpu-map node. Also this diverges from the
+behaviour on a ACPI enabled platform. The expectation is that both DT
+and ACPI enabled systems must present consistent view of the CPU topology.
+
+Currently we assign generated cluster count as the physical package identifier
+for each CPU which is wrong. The device tree bindings for CPU topology supports
+sockets to infer the socket or physical package identifier for a given CPU.
+Also we don't check if all the cores/threads belong to the same cluster before
+updating their sibling masks which is fine as we don't set the cluster id yet.
+
+These changes also assigns the cluster identifier as parsed from the device tree
+cluster nodes within /cpu-map without support for nesting of the clusters.
+Finally, it also add support for socket nodes in /cpu-map. With this the
+parsing of exact same information from ACPI PPTT and /cpu-map DT node
+aligns well.
+
+The only exception is that the last level cache id information can be
+inferred from the same ACPI PPTT while we need to parse CPU cache nodes
+in the device tree. llc_id is not handled as part of these changes.
+
+P.S: I have not cc-ed Greg and Rafael so that all the users of arch_topology
+agree with the changes first before we include them.
+
+Sudeep Holla (4):
+  arch_topology: Don't set cluster identifier as physical package identifier
+  arch_topology: Set thread and core siblings only within the cluster
+  arch_topology: Set cluster identifier in each core/thread from /cpu-map
+  arch_topology: Add support for parsing sockets in /cpu-map
+
+ drivers/base/arch_topology.c | 48 +++++++++++++++++++++++++++---------
+ 1 file changed, 37 insertions(+), 11 deletions(-)
+
+--
+2.36.1
+
