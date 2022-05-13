@@ -2,92 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB90C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377541AbiEMG4R (ORCPT
+        id S1377546AbiEMG4d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 02:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59142 "EHLO
+        Fri, 13 May 2022 02:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377531AbiEMG4K (ORCPT
+        with ESMTP id S1377531AbiEMG4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 02:56:10 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2343BFAD;
-        Thu, 12 May 2022 23:56:08 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KzzvB22Jzz4xXS;
-        Fri, 13 May 2022 16:56:06 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652424966;
-        bh=Zzs8W9olAm7/BVysWerN2adjTxULXwiT/Ujq0I2vKHY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=pb/ee9F6qL3nAgAzHCAbXXzWHXQf5DKrVXJjLDtIWWhCJcwGSPhSrQBkuMYwfFz+C
-         aM6pVot0ugvcfN5zLCYglBeXHRCcTT1Y/5klrUEA4rdjzdm0Hf+VT54YXEibeTd9uK
-         S/75OphLvLZi9DENZsDcQuj2lnsKOMWV0TQKjjbP6Q2z20hcFhMQp7jHo6UvX85g0Y
-         nYG2C/ed3BbhHOXVBBs2T2e9oRq+8ivtg0/TyKgJPKicvPrperHSNFeASMuJoY+GUe
-         kODwaFe9o8mhzd2pDlj2FnXsr9d2aH1VmLvINveW3mkpehoHzir0zTwr8+1x5XGOMv
-         1d1y3S+rVXWuQ==
-Date:   Fri, 13 May 2022 16:56:05 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the mm tree
-Message-ID: <20220513165605.306223da@canb.auug.org.au>
+        Fri, 13 May 2022 02:56:31 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F05E49F1B;
+        Thu, 12 May 2022 23:56:29 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kzzt90LMkz1JBn5;
+        Fri, 13 May 2022 14:55:13 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
+ 2022 14:56:26 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <vburru@marvell.com>, <aayarekar@marvell.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
+Subject: [PATCH v2 -next] octeon_ep: add missing destroy_workqueue in octep_init_module
+Date:   Fri, 13 May 2022 15:10:18 +0800
+Message-ID: <20220513071018.3279210-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/3goykHgHmWyQpmzb=We/rfU";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/3goykHgHmWyQpmzb=We/rfU
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+octep_init_module misses destroy_workqueue in error path,
+this patch fixes that.
 
-Hi all,
+Fixes: 862cd659a6fb ("octeon_ep: Add driver framework and device initialization")
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+---
+v1->v2: add Fixes tag
+ drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-In commit
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+index e020c81f3455..ebf78f6ca82b 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+@@ -1149,6 +1149,7 @@ static int __init octep_init_module(void)
+ 	if (ret < 0) {
+ 		pr_err("%s: Failed to register PCI driver; err=%d\n",
+ 		       OCTEP_DRV_NAME, ret);
++		destroy_workqueue(octep_wq);
+ 		return ret;
+ 	}
 
-  58fd0cc2b3ba ("mm, compaction: fast_find_migrateblock() should return pfn=
- in the target zone")
+--
+2.31.1
 
-Fixes tag
-
-  Fixes: 70b4459 ("mm, compaction: use free lists to quickly locate a migra=
-tion source")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    This can be fixed for the future by setting core.abbrev to 12 (or
-    more) or (for git v2.11 or later) just making sure it is not set
-    (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/3goykHgHmWyQpmzb=We/rfU
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ+AQUACgkQAVBC80lX
-0GwdYwgAlhhR31xf/01juU4uVmlmPcx7erQklc19Si0Gke75AOY6r+Y9pZiAIiEy
-8YccE7HPwZBwP4T3UTXb7qOJdTxgQ6hBHxOORUze+na7jR64rV0k/9INZO5MugFt
-GwdaQnqAu5iGvQW5WxAC4YiT3Prq7k5qerJwB360LlAD5BOxlUVW5vwyvBgpxyvj
-T7NOJFMwfd6OkPUBJGAgf8uqU4KpJN7nSaO8ro6FMj4sQ7FNL9GYV7y7xnqwFChj
-No1F0OGntTqhjBFXFIYuatXESYB5mTaBCUekpP+nB09Z8UTEv/mr+qZZf0I36qvr
-l6xWBSxMdQiNKDqnQenkZLr/JV12GA==
-=1FPP
------END PGP SIGNATURE-----
-
---Sig_/3goykHgHmWyQpmzb=We/rfU--
