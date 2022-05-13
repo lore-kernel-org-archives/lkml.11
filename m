@@ -2,197 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F6AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8C8C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 13:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381497AbiEMNhg (ORCPT
+        id S1381519AbiEMNhm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 09:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
+        Fri, 13 May 2022 09:37:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381118AbiEMNbr (ORCPT
+        with ESMTP id S1381294AbiEMNe2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 09:31:47 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51B3E5296;
-        Fri, 13 May 2022 06:31:42 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id v4so10279225ljd.10;
-        Fri, 13 May 2022 06:31:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Na7KKiRW8g4tHv1id7jR6DFKacvqXxknGAITtk875TM=;
-        b=KFSjXIqFSyF8XNjKgP/oTuuLiMUh2SEArbQCznMA0nlw4N0ApWuIbkA/bkbwWwzMXt
-         ELayu0ZHjr9dkjB5ZgnRSw5DW/JaAl3ufbUXPvzofZe+HewnZ/0KaxEO79/5AZb25pgk
-         uMxLcqMIQXjvBnHZMRE9K0IcparMt3vhH64aYietbnLmZH0P8vwEehx6iEPGIo7pWxvF
-         1dbMrI5YXH7GdSnowidxxc3wTxXMKK+1Pnerjvuj3bBw3ZYpw+a8lqMq8dZu/Xky4UYt
-         9167H7iwFrE+tW7ASgCNkQSgmmms+Aqu/6GzZYLOtN/XxMF5CLi+GWQWELEeeXb4qwof
-         3xbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Na7KKiRW8g4tHv1id7jR6DFKacvqXxknGAITtk875TM=;
-        b=04aIjI3Qh3E+u3jb5B7YXpxgogKANKQmAS4eZ2A40fjFLKi/7KpZ38YSZlIGMjTiui
-         +MGS03ru/p9hm/dcsbSFv/QFt8oTFtDTzgL2XRXhwoP/E+0jsYNLZnTlHb38SGtDFoCr
-         9GGG23VIfw/3K/Xqwx4W/3oPDySL5qir83k4IJ7sbYBLvCREOLglV6qW90zL46y8DfCL
-         Ft4DdE4IAJEgrauK9Ja3ZLvntaRF2wBd5EoZFV4Ze4SuX3dlY2yGP4sv9zMUx50dyWsv
-         oX7G4w2K0G282BFZtFfdJZX+4PDfm7A1vcWFi6NaR01m2GD0b+f7uusXzdY5u25VqV+V
-         wxuw==
-X-Gm-Message-State: AOAM533wvXijAovQ8UT4xID4PaBSqOG40NCoalcD38Ant2yaHeYQBQSf
-        +/AvQbBGl+RgXVXTESr94qg=
-X-Google-Smtp-Source: ABdhPJz56UMDH0Hhn7SVFGu8yjI811vwyRUUfOnKCOz+qNf8d0wIF18Xt4hl2aodxiGtYO7ef5TRpQ==
-X-Received: by 2002:a2e:9645:0:b0:24f:2e6f:f931 with SMTP id z5-20020a2e9645000000b0024f2e6ff931mr3149716ljh.466.1652448701036;
-        Fri, 13 May 2022 06:31:41 -0700 (PDT)
-Received: from mobilestation ([95.79.189.214])
-        by smtp.gmail.com with ESMTPSA id g10-20020a2e390a000000b0024f3d1dae92sm438634lja.26.2022.05.13.06.31.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 06:31:40 -0700 (PDT)
-Date:   Fri, 13 May 2022 16:31:38 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Hannes Reinecke <hare@suse.de>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 08/23] ata: libahci_platform: Add function returning a
- clock-handle by id
-Message-ID: <20220513133138.mmi3n6zc5yvcf5py@mobilestation>
-References: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
- <20220511231810.4928-9-Sergey.Semin@baikalelectronics.ru>
- <0732a28c-579e-52f8-21ad-653fd9a10aa2@suse.de>
- <20220512142607.u2kls35pevnjsjjh@mobilestation>
- <83ae3312-36ea-fa01-9b53-28818a04699f@opensource.wdc.com>
+        Fri, 13 May 2022 09:34:28 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BA310F0;
+        Fri, 13 May 2022 06:34:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/2J4OgJGpc1Cb3jgc4qYyZLCbL55xwunzKlfyYoeZdw=; b=H5fwWH/CF298SAz3ALbH2c5z7A
+        ciR7XVfqLP2R9vBz+MM7Tt7mIzVpVGIazQK/SwfeM03Y1CMw+rot1fB6EqfwRCpmMCQQ3db4Og1wr
+        +oAMRjAqnC6qW6GJxg8gPUVzb1RuKngei/SmD1m8Rqcjv8kfpENiIDCoVIBAdx73tJrXHSNVzGJYe
+        LjhjRPpxho7i5tuSUy8poYWdnn32VWijCYNYgtnFyJq/MkMMEIGFvfKSEH/F67s/49q5/+1VpduK1
+        SZhzVCB6wwKCqQzkqPS90HVCD6vA9M4EWHmUrceGEpByaycBWTM6Ct1rX8qPS6FNZTawPPDcnVbGK
+        ZVKrN0DA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1npVQo-00Do81-V4; Fri, 13 May 2022 13:34:11 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B3984981018; Fri, 13 May 2022 15:34:08 +0200 (CEST)
+Date:   Fri, 13 May 2022 15:34:08 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Rik van Riel <riel@fb.com>,
+        "song@kernel.org" <song@kernel.org>,
+        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>
+Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
+Message-ID: <20220513133408.GI76023@worktop.programming.kicks-ass.net>
+References: <20220510165244.ikfh64ertnvodxb4@treble>
+ <1bd15361edfd4db9fc9271d35e7bbe5edad1b87a.camel@fb.com>
+ <20220510184213.l3gjweeleyg7obca@treble>
+ <47440502-930F-4CBD-B859-3AC9BBFF8FC6@fb.com>
+ <20220510230402.e5ymkwt45sg7bd35@treble>
+ <D298A3F1-43A5-4FD5-B198-906364BF4B79@fb.com>
+ <20220511003331.clfvwfgpmbr5yx6n@treble>
+ <20220511092433.GA26047@pathway.suse.cz>
+ <78DFED12-571B-489C-A662-DA333555266B@fb.com>
+ <Yn5QHpc9YlAbP1li@alley>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <83ae3312-36ea-fa01-9b53-28818a04699f@opensource.wdc.com>
+In-Reply-To: <Yn5QHpc9YlAbP1li@alley>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 11:32:09AM +0200, Damien Le Moal wrote:
-> On 2022/05/12 16:26, Serge Semin wrote:
-> > On Thu, May 12, 2022 at 08:32:37AM +0200, Hannes Reinecke wrote:
-> >> On 5/12/22 01:17, Serge Semin wrote:
-> >>> Since all the clocks are retrieved by the method
-> >>> ahci_platform_get_resources() there is no need for the LLD (glue) drivers
-> >>> to be looking for some particular of them in the kernel clocks table
-> >>> again. Instead we suggest to add a simple method returning a
-> >>> device-specific clock with passed connection ID if it is managed to be
-> >>> found. Otherwise the function will return NULL. Thus the glue-drivers
-> >>> won't need to either manually touching the hpriv->clks array or calling
-> >>> clk_get()-friends. The AHCI platform drivers will be able to use the new
-> >>> function right after the ahci_platform_get_resources() method invocation
-> >>> and up to the device removal.
-> >>>
-> >>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> >>>
-> >>> ---
-> >>>
-> >>> Changelog v2:
-> >>> - Fix some grammar mistakes in the method description.
-> >>> ---
-> >>>   drivers/ata/libahci_platform.c | 27 +++++++++++++++++++++++++++
-> >>>   include/linux/ahci_platform.h  |  3 +++
-> >>>   2 files changed, 30 insertions(+)
-> >>>
-> >>> diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
-> >>> index 3cff86c225fd..7ff6626fd569 100644
-> >>> --- a/drivers/ata/libahci_platform.c
-> >>> +++ b/drivers/ata/libahci_platform.c
-> >>> @@ -94,6 +94,33 @@ void ahci_platform_disable_phys(struct ahci_host_priv *hpriv)
-> >>>   }
-> >>>   EXPORT_SYMBOL_GPL(ahci_platform_disable_phys);
-> >>> +/**
-> >>> + * ahci_platform_find_clk - Find platform clock
-> >>> + * @hpriv: host private area to store config values
-> >>> + * @con_id: clock connection ID
-> >>> + *
-> >>> + * This function returns a pointer to the clock descriptor of the clock with
-> >>> + * the passed ID.
-> >>> + *
-> >>> + * RETURNS:
-> >>> + * Pointer to the clock descriptor on success otherwise NULL
-> >>> + */
-> >>> +struct clk *ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con_id)
-> >>> +{
-> >>> +	struct clk *clk = NULL;
-> >>> +	int i;
-> >>> +
-> >>> +	for (i = 0; i < hpriv->n_clks; i++) {
-> >>> +		if (!strcmp(hpriv->clks[i].id, con_id)) {
-> >>> +			clk = hpriv->clks[i].clk;
-> >>> +			break;
-> >>> +		}
-> >>> +	}
-> >>> +
-> >>> +	return clk;
-> >>> +}
-> >>> +EXPORT_SYMBOL_GPL(ahci_platform_find_clk);
-> >>> +
-> >>>   /**
-> >>>    * ahci_platform_enable_clks - Enable platform clocks
-> >>>    * @hpriv: host private area to store config values
-> >>> diff --git a/include/linux/ahci_platform.h b/include/linux/ahci_platform.h
-> >>> index 49e5383d4222..fd964e6a68d6 100644
-> >>> --- a/include/linux/ahci_platform.h
-> >>> +++ b/include/linux/ahci_platform.h
-> >>> @@ -13,6 +13,7 @@
-> >>>   #include <linux/compiler.h>
-> >>> +struct clk;
-> >>>   struct device;
-> >>>   struct ata_port_info;
-> >>>   struct ahci_host_priv;
-> >>> @@ -21,6 +22,8 @@ struct scsi_host_template;
-> >>>   int ahci_platform_enable_phys(struct ahci_host_priv *hpriv);
-> >>>   void ahci_platform_disable_phys(struct ahci_host_priv *hpriv);
-> >>> +struct clk *
-> >>> +ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con_id);
-> >>>   int ahci_platform_enable_clks(struct ahci_host_priv *hpriv);
-> >>>   void ahci_platform_disable_clks(struct ahci_host_priv *hpriv);
-> >>>   int ahci_platform_enable_regulators(struct ahci_host_priv *hpriv);
-> >>
-> > 
-> >> Where is this function being used?
-> > 
-> > It will be used in the DWC AHCI SATA driver and can be utilized in the
-> > rest of the drivers to simplify the available clocks access.
-> > BTW Damien asked the same question in v1. My response was the same.
-> 
+On Fri, May 13, 2022 at 02:33:34PM +0200, Petr Mladek wrote:
 
-> Please squash this patch together with the patch introducing the first use of
-> this function.
+> My concern is that klp_try_complete_transition() checks all processes
+> under read_lock(&tasklist_lock). It might create some contention
+> on this lock. I am not sure if this lock is fair. It might slow down
+> block writers (creating/deleting tasks).
 
-I don't find this required seeing the changes introduced here are
-coherent and can be considered as preparation to the corresponding
-patch. This doesn't break any submitting patch procedure and
-doesn't complicate the review process but simplifies it.
+rwlock_t is sorta fair. Is it fair for process contect usage, but
+in-interrupt use will have a reader bias.
 
--Sergey
+That said; contention on tasklist_lock is a real scalability concern.
 
-> 
-> > 
-> > -Sergey
-> > 
-> >>
-> >> Cheers,
-> >>
-> >> Hannes
-> >> -- 
-> >> Dr. Hannes Reinecke		           Kernel Storage Architect
-> >> hare@suse.de			                  +49 911 74053 688
-> >> SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
-> >> HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
-> 
-> 
-> -- 
-> Damien Le Moal
-> Western Digital Research
+Can't you use RCU here? With RCU traversal of the tasklist you can miss
+new entry (which should already run the new code) or miss exits (which
+will stop running code).
