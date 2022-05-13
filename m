@@ -2,96 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355028AbiEMOXn (ORCPT
+        id S1355530AbiEMOYX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
+        Fri, 13 May 2022 10:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245426AbiEMOXh (ORCPT
+        with ESMTP id S1355218AbiEMOYU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:23:37 -0400
-Received: from outbound-smtp37.blacknight.com (outbound-smtp37.blacknight.com [46.22.139.220])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE75B9
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 07:23:34 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
-        by outbound-smtp37.blacknight.com (Postfix) with ESMTPS id 920C63691
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:23:32 +0100 (IST)
-Received: (qmail 16087 invoked from network); 13 May 2022 14:23:32 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 13 May 2022 14:23:32 -0000
-Date:   Fri, 13 May 2022 15:23:30 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH 0/6] Drain remote per-cpu directly v3
-Message-ID: <20220513142330.GI3441@techsingularity.net>
-References: <20220512085043.5234-1-mgorman@techsingularity.net>
- <20220512124325.751781bb88ceef5c37ca653e@linux-foundation.org>
+        Fri, 13 May 2022 10:24:20 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62EE55047F;
+        Fri, 13 May 2022 07:24:19 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id x8so4222242pgr.4;
+        Fri, 13 May 2022 07:24:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DSFVvtb25vaSMEJHnBVUCbV3FpLzvNN+SMPfTZx1ihA=;
+        b=qp2pxaTyYctTFWdpw9JQdQ3QXnRJeCkCFg4wEMX0q9mrELp8Q3U2hFOfksh/v2G6wv
+         L66zZ/6JenJwKeyBZn/ABvCbA4ej2zaBfz0H3eBuxdjpd7+F3B60Rf9j9MkH8Xjbxqty
+         iwteSrHoYBgFuOR2x+p0JVGRrLt2aOnzaLRt8lNMgzOaRDRnvWlKBi29ys9x8r3Mgekh
+         QBUfqpaZ6poYs3K6Shk41nqil7NRlYV2t0b5CpjIKAOf6hwTWTb0BTZVWAYTQukEFB7u
+         o69keVEw3T6yXdtOZspZh4R05hxFVO8kL58fvMviqKGsFD/qFjJhDIf8+ikjO22KR61u
+         e1QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=DSFVvtb25vaSMEJHnBVUCbV3FpLzvNN+SMPfTZx1ihA=;
+        b=vkJx9XJtokCFz3MTSsBACOGDOJOkL964N3XqqwqerhotNqAapkm6Azjv2pU3UfBTU8
+         utL65RfEaWBxDNK2hrg5ZWeK9P9lIVGEJ/j4gFDct0PPFHtwsSQRQr3xiYhhmVb6ZHG8
+         dcAGMr6CUn/OzrE99gYaLtyUjYdwnARV9OedyH1lbVUXt8uDcFPh29/BJHNSfoJ3FMK9
+         bjoT1FCeAkGKOLcAPRT9yfJxRIBhDWnOUXsoUq8p9C4Ewa2sxzji1Y0nXsQR/3MWXbDQ
+         XCj+WTr6O0DJWwjDDTTzY4STx4HaE5yfpem7BGUQW45Jubd+aY+NAhjTfSBpkLstEqaa
+         gFnA==
+X-Gm-Message-State: AOAM533dBdpMeCMUg++M0D9wWFBtPhEO//7XtdvDb8kOqrXYNv/IbQJv
+        Z6bwoXibBkx7/Rj1mCEtVpQ=
+X-Google-Smtp-Source: ABdhPJwkNv+XJvGA6KBWMfFKv4SevAuYmOvl9B58tgbnkLWWoNlY5QyFiEGBww3BZg8owQA4lxkLbQ==
+X-Received: by 2002:a63:6c8a:0:b0:3ab:8c07:4d93 with SMTP id h132-20020a636c8a000000b003ab8c074d93mr4259567pgc.431.1652451858778;
+        Fri, 13 May 2022 07:24:18 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id jj10-20020a170903048a00b0015e8d4eb2ccsm1684488plb.278.2022.05.13.07.24.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 07:24:18 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH 0/2] can: drop tx skb if the device is in listen only mode
+Date:   Fri, 13 May 2022 23:23:53 +0900
+Message-Id: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20220512124325.751781bb88ceef5c37ca653e@linux-foundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 12:43:25PM -0700, Andrew Morton wrote:
-> On Thu, 12 May 2022 09:50:37 +0100 Mel Gorman <mgorman@techsingularity.net> wrote:
-> 
-> > Changelog since v2
-> > o More conversions from page->lru to page->[pcp_list|buddy_list]
-> > o Additional test results in changelogs
-> > 
-> > Changelog since v1
-> > o Fix unsafe RT locking scheme
-> > o Use spin_trylock on UP PREEMPT_RT
-> > 
-> > This series has the same intent as Nicolas' series "mm/page_alloc: Remote
-> > per-cpu lists drain support" -- avoid interference of a high priority
-> > task due to a workqueue item draining per-cpu page lists. While many
-> > workloads can tolerate a brief interruption, it may be cause a real-time
-> 
-> s/may be/may/
-> 
-> > task runnning on a NOHZ_FULL CPU to miss a deadline and at minimum,
-> 
-> s/nnn/nn/
-> 
+In listen only mode, tx CAN frames can still reach the driver if
+injected via the packet socket. This series add a check toward
+CAN_CTRLMODE_LISTENONLY in can_dropped_invalid_skb() to discard such
+skb. The first patch does some preparation work and migrates
+can_dropped_invalid_skb() from skb.h to dev.h. The second and last
+patch is the actual change.
 
-Correct.
+Vincent Mailhol (2):
+  can: move can_dropped_invalid_skb from skb.h to dev.h
+  can: dev: drop tx skb if in listen only mode
 
-> > the draining in non-deterministic.
-> 
-> s/n/s/;)
-> 
-
-Think that one is ok. At least spell check did not complain.
-
-> > Currently an IRQ-safe local_lock protects the page allocator per-cpu lists.
-> > The local_lock on its own prevents migration and the IRQ disabling protects
-> > from corruption due to an interrupt arriving while a page allocation is
-> > in progress. The locking is inherently unsafe for remote access unless
-> > the CPU is hot-removed.
-> 
-> I don't understand the final sentence here.  Which CPU and why does
-> hot-removing it make the locking safe?
-> 
-
-The sentence can be dropped because it adds little and is potentially
-confusing. The PCP being safe to access remotely is specific to the
-context of the CPU being hot-removed and there are other special corner
-cases like zone_pcp_disable that modifies a per-cpu structure remotely
-but not in a way that causes corruption.
+ include/linux/can/dev.h | 35 +++++++++++++++++++++++++++++++++++
+ include/linux/can/skb.h | 28 ----------------------------
+ 2 files changed, 35 insertions(+), 28 deletions(-)
 
 -- 
-Mel Gorman
-SUSE Labs
+2.35.1
+
