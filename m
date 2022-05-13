@@ -2,51 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C44C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4A8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380812AbiEMO3p (ORCPT
+        id S1380878AbiEMO3z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
+        Fri, 13 May 2022 10:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381097AbiEMO0c (ORCPT
+        with ESMTP id S1381117AbiEMO0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF858506EC;
-        Fri, 13 May 2022 07:26:29 -0700 (PDT)
+        Fri, 13 May 2022 10:26:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4869250E11;
+        Fri, 13 May 2022 07:26:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C3F16219D;
-        Fri, 13 May 2022 14:26:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B8DAC36AEC;
-        Fri, 13 May 2022 14:26:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C11DDB82C9D;
+        Fri, 13 May 2022 14:26:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6BBC34100;
+        Fri, 13 May 2022 14:26:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451988;
-        bh=85U1WWVkHeMQrJWMsxOyN59skP9tpj5MeWFM5A12uXE=;
+        s=korg; t=1652452000;
+        bh=HWTMEGbsHhXtcvzhDNm8UxDIRyRvfDBRzlYitpsBLYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z69z3oDXPD21rNW9i5pU2xdBQSPQGAePhxjHL1MhlizvNubIkg2KtoA/5NPLc35nb
-         WRkITwqgnicSG/5sBtZg7Vm2LyEr3KCNf86g+8MC7GZbp5HhpQMlVmZixtDqTet+1D
-         sspSucBEntU5Btet39kQCTflWgfYlUUZ4zmPy+Vg=
+        b=bpdlGr93yMLojJR+ushecK87W9x7WFJea7+IllbE+3b40Yq5Zamo+qsvU2wk/76MY
+         6+4tyNAZMErkhTuVcK6iWSvz7AhZR7kSdZ5Z7RacrmENMZ86vbytsQvkObgbx03434
+         x25SWjnn8Drd37RzWCEAGs8Fi5Fs+U7rm18E352c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Juergen Gross <jgross@suse.com>, x86@kernel.org,
-        Ingo Molnar <mingo@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Borislav Petkov <bp@alien8.de>, xen-devel@lists.xenproject.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Maximilian Heyne <mheyne@amazon.de>
-Subject: [PATCH 5.4 11/18] x86: xen: kvm: Gather the definition of emulate prefixes
-Date:   Fri, 13 May 2022 16:23:37 +0200
-Message-Id: <20220513142229.483992618@linuxfoundation.org>
+        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.4 15/18] Bluetooth: Fix the creation of hdev->name
+Date:   Fri, 13 May 2022 16:23:41 +0200
+Message-Id: <20220513142229.598090397@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
 References: <20220513142229.153291230@linuxfoundation.org>
@@ -58,98 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Itay Iellin <ieitayie@gmail.com>
 
-commit b3dc0695fa40c3b280230fb6fb7fb7a94ce28bf4 upstream.
+commit 103a2f3255a95991252f8f13375c3a96a75011cd upstream.
 
-Gather the emulate prefixes, which forcibly make the following
-instruction emulated on virtualization, in one place.
+Set a size limit of 8 bytes of the written buffer to "hdev->name"
+including the terminating null byte, as the size of "hdev->name" is 8
+bytes. If an id value which is greater than 9999 is allocated,
+then the "snprintf(hdev->name, sizeof(hdev->name), "hci%d", id)"
+function call would lead to a truncation of the id value in decimal
+notation.
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Juergen Gross <jgross@suse.com>
-Cc: x86@kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Cc: Andrew Cooper <andrew.cooper3@citrix.com>
-Cc: Stefano Stabellini <sstabellini@kernel.org>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: xen-devel@lists.xenproject.org
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/156777563917.25081.7286628561790289995.stgit@devnote2
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Set an explicit maximum id parameter in the id allocation function call.
+The id allocation function defines the maximum allocated id value as the
+maximum id parameter value minus one. Therefore, HCI_MAX_ID is defined
+as 10000.
+
+Signed-off-by: Itay Iellin <ieitayie@gmail.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/emulate_prefix.h |   14 ++++++++++++++
- arch/x86/include/asm/xen/interface.h  |   11 ++++-------
- arch/x86/kvm/x86.c                    |    4 +++-
- 3 files changed, 21 insertions(+), 8 deletions(-)
- create mode 100644 arch/x86/include/asm/emulate_prefix.h
+ include/net/bluetooth/hci_core.h |    3 +++
+ net/bluetooth/hci_core.c         |    6 +++---
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
---- /dev/null
-+++ b/arch/x86/include/asm/emulate_prefix.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_X86_EMULATE_PREFIX_H
-+#define _ASM_X86_EMULATE_PREFIX_H
-+
-+/*
-+ * Virt escape sequences to trigger instruction emulation;
-+ * ideally these would decode to 'whole' instruction and not destroy
-+ * the instruction stream; sadly this is not true for the 'kvm' one :/
-+ */
-+
-+#define __XEN_EMULATE_PREFIX  0x0f,0x0b,0x78,0x65,0x6e  /* ud2 ; .ascii "xen" */
-+#define __KVM_EMULATE_PREFIX  0x0f,0x0b,0x6b,0x76,0x6d	/* ud2 ; .ascii "kvm" */
-+
-+#endif
---- a/arch/x86/include/asm/xen/interface.h
-+++ b/arch/x86/include/asm/xen/interface.h
-@@ -379,12 +379,9 @@ struct xen_pmu_arch {
-  * Prefix forces emulation of some non-trapping instructions.
-  * Currently only CPUID.
-  */
--#ifdef __ASSEMBLY__
--#define XEN_EMULATE_PREFIX .byte 0x0f,0x0b,0x78,0x65,0x6e ;
--#define XEN_CPUID          XEN_EMULATE_PREFIX cpuid
--#else
--#define XEN_EMULATE_PREFIX ".byte 0x0f,0x0b,0x78,0x65,0x6e ; "
--#define XEN_CPUID          XEN_EMULATE_PREFIX "cpuid"
--#endif
-+#include <asm/emulate_prefix.h>
-+
-+#define XEN_EMULATE_PREFIX __ASM_FORM(.byte __XEN_EMULATE_PREFIX ;)
-+#define XEN_CPUID          XEN_EMULATE_PREFIX __ASM_FORM(cpuid)
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -34,6 +34,9 @@
+ /* HCI priority */
+ #define HCI_PRIO_MAX	7
  
- #endif /* _ASM_X86_XEN_INTERFACE_H */
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -68,6 +68,7 @@
- #include <asm/mshyperv.h>
- #include <asm/hypervisor.h>
- #include <asm/intel_pt.h>
-+#include <asm/emulate_prefix.h>
- #include <clocksource/hyperv_timer.h>
++/* HCI maximum id value */
++#define HCI_MAX_ID 10000
++
+ /* HCI Core structures */
+ struct inquiry_data {
+ 	bdaddr_t	bdaddr;
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3304,10 +3304,10 @@ int hci_register_dev(struct hci_dev *hde
+ 	 */
+ 	switch (hdev->dev_type) {
+ 	case HCI_PRIMARY:
+-		id = ida_simple_get(&hci_index_ida, 0, 0, GFP_KERNEL);
++		id = ida_simple_get(&hci_index_ida, 0, HCI_MAX_ID, GFP_KERNEL);
+ 		break;
+ 	case HCI_AMP:
+-		id = ida_simple_get(&hci_index_ida, 1, 0, GFP_KERNEL);
++		id = ida_simple_get(&hci_index_ida, 1, HCI_MAX_ID, GFP_KERNEL);
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -3316,7 +3316,7 @@ int hci_register_dev(struct hci_dev *hde
+ 	if (id < 0)
+ 		return id;
  
- #define CREATE_TRACE_POINTS
-@@ -5583,6 +5584,7 @@ EXPORT_SYMBOL_GPL(kvm_write_guest_virt_s
+-	sprintf(hdev->name, "hci%d", id);
++	snprintf(hdev->name, sizeof(hdev->name), "hci%d", id);
+ 	hdev->id = id;
  
- int handle_ud(struct kvm_vcpu *vcpu)
- {
-+	static const char kvm_emulate_prefix[] = { __KVM_EMULATE_PREFIX };
- 	int emul_type = EMULTYPE_TRAP_UD;
- 	char sig[5]; /* ud2; .ascii "kvm" */
- 	struct x86_exception e;
-@@ -5590,7 +5592,7 @@ int handle_ud(struct kvm_vcpu *vcpu)
- 	if (force_emulation_prefix &&
- 	    kvm_read_guest_virt(vcpu, kvm_get_linear_rip(vcpu),
- 				sig, sizeof(sig), &e) == 0 &&
--	    memcmp(sig, "\xf\xbkvm", sizeof(sig)) == 0) {
-+	    memcmp(sig, kvm_emulate_prefix, sizeof(sig)) == 0) {
- 		kvm_rip_write(vcpu, kvm_rip_read(vcpu) + sizeof(sig));
- 		emul_type = EMULTYPE_TRAP_UD_FORCED;
- 	}
+ 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
 
 
