@@ -2,46 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF45C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381374AbiEMObV (ORCPT
+        id S1380814AbiEMOba (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        Fri, 13 May 2022 10:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380787AbiEMO13 (ORCPT
+        with ESMTP id S1380910AbiEMO0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:27:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E065EDF7;
-        Fri, 13 May 2022 07:27:03 -0700 (PDT)
+        Fri, 13 May 2022 10:26:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279D951318;
+        Fri, 13 May 2022 07:25:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 840BFB82C9D;
-        Fri, 13 May 2022 14:27:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E15C3C34100;
-        Fri, 13 May 2022 14:27:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7D3962159;
+        Fri, 13 May 2022 14:25:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90954C34115;
+        Fri, 13 May 2022 14:25:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452021;
-        bh=l0wXDFVrQkp+DaaqJRFPdaUiGUGaqXl4hB6va4+NAQs=;
+        s=korg; t=1652451947;
+        bh=uzEHjHDWLguBXYjfTqs0u3kFAhT29DbpDmBLr/hjc1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g8Q6EwHj5Bccg8R0DrI5FZqaaia1g7N1V4m45nM7/G0PqF1pmjlo0lZndcWGUbYzt
-         UaO1OlYRgknAUDkwMgms9V8dRx6pvRiSW9Yp54iHtUV1ZD/DoB5jWR+14Qa1PA/ODb
-         raWVE3wWARIqqpkZ1W7UWhmbRiXrYth6W1WRSw3A=
+        b=IGVnrf/GlZMe7iJJQfNwZKoSAcurS94cL0Q0NSXFikZYZMjjtGLWjAI2izu/+hFA8
+         OmJMZQ173EiICKYeukNCCTQmqKCNM4/8w8PmPyW7e3K9o1w0IKXLMAh/mT7MSiEk17
+         qOzOdB7UQ7kiPd9wssUf+e3UzgOMtdouGMlxxnlI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 05/18] nfp: bpf: silence bitwise vs. logical OR warning
-Date:   Fri, 13 May 2022 16:23:31 +0200
-Message-Id: <20220513142229.310212274@linuxfoundation.org>
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Lars Persson <lars.persson@axis.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Xu <peterx@redhat.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Zi Yan <ziy@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 14/15] mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
+Date:   Fri, 13 May 2022 16:23:36 +0200
+Message-Id: <20220513142228.318854560@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
-References: <20220513142229.153291230@linuxfoundation.org>
+In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
+References: <20220513142227.897535454@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,61 +59,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Muchun Song <songmuchun@bytedance.com>
 
-commit 8a64ef042eab8a6cec04a6c79d44d1af79b628ca upstream.
+commit 7c25a0b89a487878b0691e6524fb5a8827322194 upstream.
 
-A new warning in clang points out two places in this driver where
-boolean expressions are being used with a bitwise OR instead of a
-logical one:
+userfaultfd calls mcopy_atomic_pte() and __mcopy_atomic() which do not
+do any cache flushing for the target page.  Then the target page will be
+mapped to the user space with a different address (user address), which
+might have an alias issue with the kernel address used to copy the data
+from the user to.  Fix this by insert flush_dcache_page() after
+copy_from_user() succeeds.
 
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
-        reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                             ||
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: note: cast one or both operands to int to silence this warning
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
-        reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                             ||
-drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: note: cast one or both operands to int to silence this warning
-2 errors generated.
-
-The motivation for the warning is that logical operations short circuit
-while bitwise operations do not. In this case, it does not seem like
-short circuiting is harmful so implement the suggested fix of changing
-to a logical operation to fix the warning.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1479
-Reported-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Link: https://lore.kernel.org/r/20211018193101.2340261-1-nathan@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lkml.kernel.org/r/20220210123058.79206-7-songmuchun@bytedance.com
+Fixes: b6ebaedb4cb1 ("userfaultfd: avoid mmap_sem read recursion in mcopy_atomic")
+Fixes: c1a4de99fada ("userfaultfd: mcopy_atomic|mfill_zeropage: UFFDIO_COPY|UFFDIO_ZEROPAGE preparation")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Fam Zheng <fam.zheng@bytedance.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Lars Persson <lars.persson@axis.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_asm.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ mm/userfaultfd.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/netronome/nfp/nfp_asm.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_asm.c
-@@ -196,7 +196,7 @@ int swreg_to_unrestricted(swreg dst, swr
- 	}
- 
- 	reg->dst_lmextn = swreg_lmextn(dst);
--	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-+	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
- 
- 	return 0;
- }
-@@ -277,7 +277,7 @@ int swreg_to_restricted(swreg dst, swreg
- 	}
- 
- 	reg->dst_lmextn = swreg_lmextn(dst);
--	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
-+	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
- 
- 	return 0;
- }
+--- a/mm/userfaultfd.c
++++ b/mm/userfaultfd.c
+@@ -55,6 +55,8 @@ static int mcopy_atomic_pte(struct mm_st
+ 			/* don't free the page */
+ 			goto out;
+ 		}
++
++		flush_dcache_page(page);
+ 	} else {
+ 		page = *pagep;
+ 		*pagep = NULL;
+@@ -574,6 +576,7 @@ retry:
+ 				err = -EFAULT;
+ 				goto out;
+ 			}
++			flush_dcache_page(page);
+ 			goto retry;
+ 		} else
+ 			BUG_ON(page);
 
 
