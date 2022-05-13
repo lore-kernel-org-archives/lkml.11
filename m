@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D07C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 458EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379552AbiEMKY3 (ORCPT
+        id S1346939AbiEMKYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 06:24:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
+        Fri, 13 May 2022 06:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379437AbiEMKXv (ORCPT
+        with ESMTP id S1379488AbiEMKYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 06:23:51 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1368095DD3;
-        Fri, 13 May 2022 03:23:26 -0700 (PDT)
+        Fri, 13 May 2022 06:24:09 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8BC2B8D00;
+        Fri, 13 May 2022 03:23:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652437406; x=1683973406;
+  t=1652437425; x=1683973425;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Xp4K8hQTWLnSSIvT6QLUN6BPr9Fyl4/lp1+BYyvMhZ8=;
-  b=hqK/i+ZQsEB6dbZTaWaSbDlmuFcF557RyQlug2MvKSLrMSRsiUh4miYG
-   Hnbfy/QPdksR8fbF9bMIKuNWREnzwOfdDRqr8Z58XXUNDz4RUre5ql3/F
-   Oo/4qnfQOOThrtSWFqT5CV/G4EALim7QmvKYhUEOneoiIAyO9jhawerfa
-   P07J07C6g9Yssasc8xjZpJcXFQIH/oRvuq1Pa0+mfPLIUeA+MG3ZSXaO+
-   oQuO8oKRNc3bxSppib44usfP+kJvkDggY3rr524ab3U5e1k0o6dV5SMjV
-   2LrV/EiYZClyxTXfn+ZsGFemEHz5i9rpAhXOzCXCkDQBn2YO4qDUJSXMJ
-   g==;
+  bh=qFNcK5SPYUNoBOTGXVmjjk/qJuzY81f0mzVOPXRjxxo=;
+  b=sxE+L3ATvJ41rh3iV51y62eUDKWMFO+HTbws4wm5q2vsjYwiCnc6STQY
+   YxWq9hddwUWYQ11gIBfsfcXFAnKcs+v9EFtFE5uA9At7cgUMU1RM5TGZj
+   cMAt1u18C267mR8yL45SxgVgh+MY+id3B++GfvIrJSRsHqxixfTyE7g4o
+   rKm+maOguhavpIiMGvrqljjiTSpw6NshxQJNCqfkzUqpDqpsk1KPxsnBS
+   BvhOb+tz3C86MbHIcsf6ggTlG4IEorBRKkfobVoHL/r0JmGeJiWZE3tr2
+   AowHJjY6PzSyx9WaVghDX0lFaw4fJFhYMckdltAqSV8b/IwAaXThPsoGU
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="158946910"
+   d="scan'208";a="163926160"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 May 2022 03:23:25 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 May 2022 03:23:38 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 13 May 2022 03:23:25 -0700
+ 15.1.2375.17; Fri, 13 May 2022 03:23:38 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 13 May 2022 03:23:20 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 13 May 2022 03:23:33 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Russell King <linux@armlinux.org.uk>,
@@ -55,9 +55,9 @@ CC:     Russell King <linux@armlinux.org.uk>,
         Marek Vasut <marex@denx.de>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>,
         Eric Dumazet <edumazet@google.com>
-Subject: [RFC Patch net-next v2 7/9] net: dsa: move mib->cnt_ptr reset code to ksz_common.c
-Date:   Fri, 13 May 2022 15:52:17 +0530
-Message-ID: <20220513102219.30399-8-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next v2 9/9] net: dsa: microchip: remove unused members in ksz_device
+Date:   Fri, 13 May 2022 15:52:19 +0530
+Message-ID: <20220513102219.30399-10-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220513102219.30399-1-arun.ramadoss@microchip.com>
 References: <20220513102219.30399-1-arun.ramadoss@microchip.com>
@@ -68,66 +68,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+The name, regs_size and overrides members in struct ksz_device are
+unused. Hence remove it.
+And host_mask is used in only place of ksz8795.c file, which can be
+replaced by dev->info->cpu_ports
 
-mib->cnt_ptr resetting is handled in multiple places as part of
-port_init_cnt(). Hence moved mib->cnt_ptr code to ksz common layer
-and removed from individual product files.
-
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 2 --
- drivers/net/dsa/microchip/ksz9477.c    | 3 ---
- drivers/net/dsa/microchip/ksz_common.c | 8 +++++++-
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 3 +--
+ drivers/net/dsa/microchip/ksz_common.h | 4 ----
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 251048ffd3d4..d6162b00e4fb 100644
+index 9d6d3c69fd47..12a599d5e61a 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -388,8 +388,6 @@ static void ksz8_port_init_cnt(struct ksz_device *dev, int port)
- 					dropped, &mib->counters[mib->cnt_ptr]);
- 		++mib->cnt_ptr;
- 	}
--	mib->cnt_ptr = 0;
--	memset(mib->counters, 0, dev->info->mib_cnt * sizeof(u64));
- }
+@@ -1360,7 +1360,7 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 	ether_addr_copy(alu.mac, eth_stp_addr);
+ 	alu.is_static = true;
+ 	alu.is_override = true;
+-	alu.port_forward = dev->host_mask;
++	alu.port_forward = dev->info->cpu_ports;
  
- static void ksz8_r_table(struct ksz_device *dev, int table, u16 addr, u64 *data)
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 7cffc3388106..22ef56e2cb7b 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -274,9 +274,6 @@ static void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
- 	ksz_write8(dev, REG_SW_MAC_CTRL_6, SW_MIB_COUNTER_FLUSH);
- 	ksz_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT__4, 0);
- 	mutex_unlock(&mib->cnt_mutex);
--
--	mib->cnt_ptr = 0;
--	memset(mib->counters, 0, dev->info->mib_cnt * sizeof(u64));
- }
+ 	ksz8_w_sta_mac_table(dev, 0, &alu);
  
- static enum dsa_tag_protocol ksz9477_get_tag_protocol(struct dsa_switch *ds,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 18160543090c..240a0aab96ff 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -560,8 +560,14 @@ void ksz_init_mib_timer(struct ksz_device *dev)
+@@ -1476,7 +1476,6 @@ static int ksz8_switch_init(struct ksz_device *dev)
+ 	dev->ds->ops = &ksz8_switch_ops;
  
- 	INIT_DELAYED_WORK(&dev->mib_read, ksz_mib_read_work);
+ 	dev->cpu_port = fls(dev->info->cpu_ports) - 1;
+-	dev->host_mask = dev->info->cpu_ports;
+ 	dev->phy_port_cnt = dev->info->port_cnt - 1;
+ 	dev->port_mask = (BIT(dev->phy_port_cnt) - 1) | dev->info->cpu_ports;
  
--	for (i = 0; i < dev->info->port_cnt; i++)
-+	for (i = 0; i < dev->info->port_cnt; i++) {
-+		struct ksz_port_mib *mib = &dev->ports[i].mib;
-+
- 		dev->dev_ops->port_init_cnt(dev, i);
-+
-+		mib->cnt_ptr = 0;
-+		memset(mib->counters, 0, dev->info->mib_cnt * sizeof(u64));
-+	}
- }
- EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 846d3aa606ec..2ad7673ea2a5 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -73,7 +73,6 @@ struct ksz_port {
+ struct ksz_device {
+ 	struct dsa_switch *ds;
+ 	struct ksz_platform_data *pdata;
+-	const char *name;
+ 	const struct ksz_chip_data *info;
+ 
+ 	struct mutex dev_mutex;		/* device access */
+@@ -94,7 +93,6 @@ struct ksz_device {
+ 	int cpu_port;			/* port connected to CPU */
+ 	int phy_port_cnt;
+ 	phy_interface_t compat_interface;
+-	u32 regs_size;
+ 	bool synclko_125;
+ 	bool synclko_disable;
+ 
+@@ -106,8 +104,6 @@ struct ksz_device {
+ 	u16 mirror_rx;
+ 	u16 mirror_tx;
+ 	u32 features;			/* chip specific features */
+-	u32 overrides;			/* chip functions set by user */
+-	u16 host_mask;
+ 	u16 port_mask;
+ };
  
 -- 
 2.33.0
