@@ -2,85 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22123C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF73C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352750AbiEMQvw (ORCPT
+        id S1379937AbiEMQwC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 12:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50498 "EHLO
+        Fri, 13 May 2022 12:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382724AbiEMQvJ (ORCPT
+        with ESMTP id S1382719AbiEMQvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 12:51:09 -0400
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDDB546A3;
-        Fri, 13 May 2022 09:51:08 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id k2so12204666wrd.5;
-        Fri, 13 May 2022 09:51:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rVAC2kQTqq+vwTg/1G3n9h7KQw0WRs3azTYSfPc+fTA=;
-        b=APAQGSJmIxc+OctT1qKuX7YSdhDhMxb1fbjgbej+mP6jxioTfF+ny+275ZFGj3Rt6Z
-         kXrVP/nkijR6wBxwnYBFus3sS6xi56d4F5nzyYRWPwOkv+KZW/fWzJelVgun16aC8eyv
-         vA5SKYHblhMkoNnxGYi8ue3rVmrhSc+ASKmtbvaLCbsgmkIORVKDW78Z2jpZCMtHkdfA
-         QHXL+maimg652lNdlyMdyRZRS1WpGn/Wgph3CBMNLkJosp6XWSbzvcsWxEQVXzjfzpcw
-         oFrwbAcvu8sa/lL9fY9SX176COc5nZsTFIo7j9IkJeoZDEzhuYYzHYd5uATA3dGeEf7B
-         ZJiA==
-X-Gm-Message-State: AOAM533Jh4gQPAQa/98LxWcLvWPACm7M+4+mPYBudidW3O/k5CwESIDs
-        UBl6KRY5Dv2FtYp+E4H6QFs=
-X-Google-Smtp-Source: ABdhPJxxgsTP/GIl6zlNKcGBIqlY0EGUPW3EubrPZUpD3F8LCyVHM5lUQupPCxgpK4MtAjk/8R3JMw==
-X-Received: by 2002:adf:d1cd:0:b0:20c:51c6:5d9f with SMTP id b13-20020adfd1cd000000b0020c51c65d9fmr4897430wrd.244.1652460666567;
-        Fri, 13 May 2022 09:51:06 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id d16-20020adf9c90000000b0020c5253d8fasm2599882wre.70.2022.05.13.09.51.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 09:51:05 -0700 (PDT)
-Date:   Fri, 13 May 2022 16:51:03 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Wilczynski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] PCI: hv: Hardening changes
-Message-ID: <20220513165103.vaqklaav5yhr6jpl@liuwe-devbox-debian-v2>
-References: <20220511223207.3386-1-parri.andrea@gmail.com>
- <20220513101132.GA26886@lpieralisi>
+        Fri, 13 May 2022 12:51:05 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E0952534;
+        Fri, 13 May 2022 09:51:03 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 221F01F46364
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652460662;
+        bh=xwq1gpeccyvcU8bMkAWwkySqeJSH5hDRD7v8Dl7oSm4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nM6ZVdltYgVqvG4Sw32cOOnOkzKiYDCPjSizxfJWvzYGqYdfS3wQH54dDKB1ShSmy
+         f+sslyONbphYOauIX/IvcLkpArvHTv6gpc3oOYyLMtYO9OnWD8cZpWioUSwlkSd2b4
+         SVY7oVRwcv98BmvjS/GHzhLS9XnbwNlqRQE8qTs/EyvUq8J0KYz+Y0AnLcF56s6ETV
+         aHzZvhN7/QWgTHKqKbrT/B3lNwjiE/MNMp8cw1JSfr690t9e7l/5UPIa0oD85ncsgZ
+         UbG3wnRccghFCiQudl7FzwEG9Qd2xr0Z5zEJGrpk4unXwfAQDG0Ub//jBOPf809UAe
+         VlyjHctf6+z/w==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        y.oudjana@protonmail.com, angelogioacchino.delregno@collabora.com,
+        jason-jh.lin@mediatek.com, ck.hu@mediatek.com,
+        fparent@baylibre.com, rex-bc.chen@mediatek.com,
+        tinghan.shen@mediatek.com, chun-jie.chen@mediatek.com,
+        weiyi.lu@mediatek.com, ikjn@chromium.org, miles.chen@mediatek.com,
+        sam.shih@mediatek.com, wenst@chromium.org,
+        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
+        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
+        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
+        kernel@collabora.com
+Subject: [PATCH 4/5] dt-bindings: arm: mediatek: Add clock driver bindings for MT6795
+Date:   Fri, 13 May 2022 18:50:49 +0200
+Message-Id: <20220513165050.500831-5-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220513165050.500831-1-angelogioacchino.delregno@collabora.com>
+References: <20220513165050.500831-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513101132.GA26886@lpieralisi>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 11:11:32AM +0100, Lorenzo Pieralisi wrote:
-> On Thu, May 12, 2022 at 12:32:05AM +0200, Andrea Parri (Microsoft) wrote:
-> > Changes since v1[1]:
-> >   - Add validation in q_resource_requirements()
-> > 
-> > Patch #2 depends on changes in hyperv-next.  (Acknowledging that hyperv
-> > is entering EOM, for review.)
-> 
-> I suppose then it is best for me to ACK it and ask Hyper-V maintainers
-> to pick it up.
-> 
+Add the bindings for the clock drivers of the MediaTek Helio X10
+MT6795 SoC.
 
-Yes.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ .../arm/mediatek/mediatek,mt6795-clock.yaml   | 67 +++++++++++++++++
+ .../mediatek/mediatek,mt6795-sys-clock.yaml   | 73 +++++++++++++++++++
+ 2 files changed, 140 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-clock.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-sys-clock.yaml
 
-> For the series:
-> 
->Pending Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-clock.yaml
+new file mode 100644
+index 000000000000..b7d96d0ed867
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-clock.yaml
+@@ -0,0 +1,67 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt6795-clock.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: MediaTek Functional Clock Controller for MT6795
++
++maintainers:
++  - AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
++  - Chun-Jie Chen <chun-jie.chen@mediatek.com>
++
++description: |
++  The clock architecture in MediaTek like below
++  PLLs -->
++          dividers -->
++                      muxes
++                           -->
++                              clock gate
++
++  The devices provide clock gate control in different IP blocks.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt6795-mfgcfg
++          - mediatek,mt6795-vdecsys
++          - mediatek,mt6795-vencsys
++  reg:
++    maxItems: 1
++
++  '#clock-cells':
++    const: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        clock-controller@13000000 {
++            compatible = "mediatek,mt6795-mfgcfg";
++            reg = <0 0x13000000 0 0x1000>;
++            #clock-cells = <1>;
++        };
++
++        clock-controller@16000000 {
++            compatible = "mediatek,mt6795-vdecsys";
++            reg = <0 0x16000000 0 0x1000>;
++            #clock-cells = <1>;
++        };
++
++        clock-controller@18000000 {
++            compatible = "mediatek,mt6795-vdecsys";
++            reg = <0 0x18000000 0 0x1000>;
++            #clock-cells = <1>;
++        };
++    };
++
++
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-sys-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-sys-clock.yaml
+new file mode 100644
+index 000000000000..389dd8e245ac
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt6795-sys-clock.yaml
+@@ -0,0 +1,73 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt6795-sys-clock.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: MediaTek System Clock Controller for MT6795
++
++maintainers:
++  - AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
++  - Chun-Jie Chen <chun-jie.chen@mediatek.com>
++
++description:
++  The Mediatek system clock controller provides various clocks and system configuration
++  like reset and bus protection on MT6795.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt6795-apmixedsys
++          - mediatek,mt6795-infracfg
++          - mediatek,mt6795-pericfg
++          - mediatek,mt6795-topckgen
++      - const: syscon
++
++  reg:
++    maxItems: 1
++
++  '#clock-cells':
++    const: 1
++
++  '#reset-cells':
++    const: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        topckgen: clock-controller@10000000 {
++            compatible = "mediatek,mt6795-topckgen", "syscon";
++            reg = <0 0x10000000 0 0x1000>;
++            #clock-cells = <1>;
++        };
++
++        infracfg: power-controller@10001000 {
++            compatible = "mediatek,mt6795-infracfg", "syscon";
++            reg = <0 0x10001000 0 0x1000>;
++            #clock-cells = <1>;
++            #reset-cells = <1>;
++        }
++
++        pericfg: power-controller@10003000 {
++            compatible = "mediatek,mt6795-pericfg", "syscon";
++            reg = <0 0x10003000 0 0x1000>;
++            #clock-cells = <1>;
++            #reset-cells = <1>;
++        };
++
++        apmixedsys: clock-controller@10209000 {
++            compatible = "mediatek,mt6795-apmixedsys", "syscon";
++            reg = <0 0x10209000 0 0x1000>;
++            #clock-cells = <1>;
++        };
++    };
+-- 
+2.35.1
 
-Thanks!
