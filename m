@@ -2,55 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9407EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381267AbiEMOfZ (ORCPT
+        id S1381333AbiEMOfa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        Fri, 13 May 2022 10:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381099AbiEMOay (ORCPT
+        with ESMTP id S1381446AbiEMObZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:30:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7275994D0;
-        Fri, 13 May 2022 07:28:28 -0700 (PDT)
+        Fri, 13 May 2022 10:31:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E1E1ACF90;
+        Fri, 13 May 2022 07:29:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B118B82F64;
-        Fri, 13 May 2022 14:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E04DC34100;
-        Fri, 13 May 2022 14:28:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 452C2621C6;
+        Fri, 13 May 2022 14:29:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CE11C34100;
+        Fri, 13 May 2022 14:29:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452106;
-        bh=5ZCbbjalRN0VDnRXvXaRT54sdbfjnMs9SWLD6ofNXW4=;
+        s=korg; t=1652452149;
+        bh=xp+u8NygbVxoi99MAWO9qUlTrei9uqsPK0jfOp9gZ8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oeQhgbmBYXQukJsBR+ZKNWH1jM49SvIy4SW5Mbr3RhdhoUnVJ24MuHyc7g+waaHJY
-         7h5koS/00zIw8xAYkq2qVvaQ9chaaOuY9ZO7mDb1uAi8h7ZTZjIV5iYUz24N850UpL
-         rluKhZMKSh+gEoc0wKgRSMAgHsJIV3w481Aguxzo=
+        b=I63vphraMYnpAhzPWVteJ15I1YtUzcKwW4yfa5JJIBKu+yw0lh5d9VQi9CacBuXAH
+         rwHfSgUpUvLMb8QA/PDK031BN/oEfvFrBA2IFdj67V1IE0vRgdh182GrzGdliqLbD2
+         4H7yWoTnyQChnJAjbjzCIY7mYKJ6gr4gAexkDcr4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Peter Xu <peterx@redhat.com>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Zi Yan <ziy@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 18/21] mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-Date:   Fri, 13 May 2022 16:24:00 +0200
-Message-Id: <20220513142230.403397523@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        "Dmitry V. Levin" <ldv@altlinux.org>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.17 02/12] rfkill: uapi: fix RFKILL_IOCTL_MAX_SIZE ioctl request definition
+Date:   Fri, 13 May 2022 16:24:02 +0200
+Message-Id: <20220513142228.724371318@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142229.874949670@linuxfoundation.org>
-References: <20220513142229.874949670@linuxfoundation.org>
+In-Reply-To: <20220513142228.651822943@linuxfoundation.org>
+References: <20220513142228.651822943@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -59,55 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
 
-commit 7c25a0b89a487878b0691e6524fb5a8827322194 upstream.
+commit a36e07dfe6ee71e209383ea9288cd8d1617e14f9 upstream.
 
-userfaultfd calls mcopy_atomic_pte() and __mcopy_atomic() which do not
-do any cache flushing for the target page.  Then the target page will be
-mapped to the user space with a different address (user address), which
-might have an alias issue with the kernel address used to copy the data
-from the user to.  Fix this by insert flush_dcache_page() after
-copy_from_user() succeeds.
+The definition of RFKILL_IOCTL_MAX_SIZE introduced by commit
+54f586a91532 ("rfkill: make new event layout opt-in") is unusable
+since it is based on RFKILL_IOC_EXT_SIZE which has not been defined.
+Fix that by replacing the undefined constant with the constant which
+is intended to be used in this definition.
 
-Link: https://lkml.kernel.org/r/20220210123058.79206-7-songmuchun@bytedance.com
-Fixes: b6ebaedb4cb1 ("userfaultfd: avoid mmap_sem read recursion in mcopy_atomic")
-Fixes: c1a4de99fada ("userfaultfd: mcopy_atomic|mfill_zeropage: UFFDIO_COPY|UFFDIO_ZEROPAGE preparation")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Fam Zheng <fam.zheng@bytedance.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Lars Persson <lars.persson@axis.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 54f586a91532 ("rfkill: make new event layout opt-in")
+Cc: stable@vger.kernel.org # 5.11+
+Signed-off-by: Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
+Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+Link: https://lore.kernel.org/r/20220506172454.120319-1-glebfm@altlinux.org
+[add commit message provided later by Dmitry]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/userfaultfd.c |    3 +++
- 1 file changed, 3 insertions(+)
+ include/uapi/linux/rfkill.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/userfaultfd.c
-+++ b/mm/userfaultfd.c
-@@ -151,6 +151,8 @@ static int mcopy_atomic_pte(struct mm_st
- 			/* don't free the page */
- 			goto out;
- 		}
-+
-+		flush_dcache_page(page);
- 	} else {
- 		page = *pagep;
- 		*pagep = NULL;
-@@ -621,6 +623,7 @@ retry:
- 				err = -EFAULT;
- 				goto out;
- 			}
-+			flush_dcache_page(page);
- 			goto retry;
- 		} else
- 			BUG_ON(page);
+--- a/include/uapi/linux/rfkill.h
++++ b/include/uapi/linux/rfkill.h
+@@ -184,7 +184,7 @@ struct rfkill_event_ext {
+ #define RFKILL_IOC_NOINPUT	1
+ #define RFKILL_IOCTL_NOINPUT	_IO(RFKILL_IOC_MAGIC, RFKILL_IOC_NOINPUT)
+ #define RFKILL_IOC_MAX_SIZE	2
+-#define RFKILL_IOCTL_MAX_SIZE	_IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_EXT_SIZE, __u32)
++#define RFKILL_IOCTL_MAX_SIZE	_IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_MAX_SIZE, __u32)
+ 
+ /* and that's all userspace gets */
+ 
 
 
