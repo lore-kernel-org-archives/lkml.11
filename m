@@ -2,85 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 746BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379085AbiEMJez (ORCPT
+        id S1379170AbiEMJge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
+        Fri, 13 May 2022 05:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379067AbiEMJew (ORCPT
+        with ESMTP id S1379131AbiEMJgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:34:52 -0400
+        Fri, 13 May 2022 05:36:24 -0400
 Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F488297424;
-        Fri, 13 May 2022 02:34:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C886147578;
+        Fri, 13 May 2022 02:36:22 -0700 (PDT)
 Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
         by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1npRgu-00DHDO-S3; Fri, 13 May 2022 19:34:34 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 13 May 2022 17:34:33 +0800
-Date:   Fri, 13 May 2022 17:34:33 +0800
+        id 1npRiY-00DHGI-J4; Fri, 13 May 2022 19:36:16 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 13 May 2022 17:36:14 +0800
+Date:   Fri, 13 May 2022 17:36:14 +0800
 From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     jernej.skrabec@gmail.com, samuel@sholland.org, wens@csie.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v2 00/19] crypto: allwinner: lots of fixes
-Message-ID: <Yn4mKfJKPI18KHrS@gondor.apana.org.au>
-References: <20220502201929.843194-1-clabbe@baylibre.com>
+To:     Vladis Dronov <vdronov@redhat.com>
+Cc:     Patrick Steuer <patrick.steuer@de.ibm.com>,
+        Harald Freudenberger <freude@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        linux-crypto@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] s390/crypto: add crypto library interface for ChaCha20
+Message-ID: <Yn4mjhfyMtshhEpp@gondor.apana.org.au>
+References: <20220508130944.17860-1-vdronoff@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220502201929.843194-1-clabbe@baylibre.com>
+In-Reply-To: <20220508130944.17860-1-vdronoff@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 08:19:10PM +0000, Corentin Labbe wrote:
-> Hello
+On Sun, May 08, 2022 at 03:09:44PM +0200, Vladis Dronov wrote:
+> From: Vladis Dronov <vdronov@redhat.com>
 > 
-> This series is all fixes which I found on allwinner crypto drivers.
+> Implement a crypto library interface for the s390-native ChaCha20 cipher
+> algorithm. This allows us to stop to select CRYPTO_CHACHA20 and instead
+> select CRYPTO_ARCH_HAVE_LIB_CHACHA. This allows BIG_KEYS=y not to build
+> a whole ChaCha20 crypto infrastructure as a built-in, but build a smaller
+> CRYPTO_LIB_CHACHA instead.
 > 
-> Regards
+> Make CRYPTO_CHACHA_S390 config entry to look like similar ones on other
+> architectures. Remove CRYPTO_ALGAPI select as anyway it is selected by
+> CRYPTO_SKCIPHER.
 > 
-> Change since v1:
-> - fixed endianess of hash_pad() paramaters
+> Add a new test module and a test script for ChaCha20 cipher and its
+> interfaces. Here are test results on an idle z15 machine:
 > 
-> Corentin Labbe (19):
->   crypto: sun8i-ce: Fix minor style issue
->   crypto: sun8i-ce: do not allocate memory when handling requests
->   crypto: sun4i-ss: do not allocate backup IV on requests
->   crypto: sun8i-ss: rework handling of IV
->   crypto: sun8i-ss: handle zero sized sg
->   crypto: sun8i-ss: remove redundant test
->   crypto: sun8i-ss: test error before assigning
->   crypto: sun8i-ss: use sg_nents_for_len
->   crypto: sun8i-ss: do not allocate memory when handling hash requests
->   crypto: sun8i-ss: do not zeroize all pad
->   crypto: sun8i-ss: handle requests if last block is not modulo 64
->   crypto: sun8i-ss: rework debugging
->   crypto: sun8i-ss: Add function for handling hash padding
->   crypto: sun8i-ss: add hmac(sha1)
->   crypto: sun8i-ss: do not fallback if cryptlen is less than sg length
->   crypto: sun8i-ce: Add function for handling hash padding
->   crypto: sun8i-ce: use sg_nents_for_len
->   crypto: sun8i-ce: rework debugging
->   crypto: sun8i-ce: do not fallback if cryptlen is less than sg length
+> Data | Generic crypto TFM |  s390 crypto TFM |    s390 lib
+> size |      enc      dec  |     enc     dec  |     enc     dec
+> -----+--------------------+------------------+----------------
+> 512b |   1545ns   1295ns  |   604ns   446ns  |   430ns  407ns
+> 4k   |   9536ns   9463ns  |  2329ns  2174ns  |  2170ns  2154ns
+> 64k  |  149.6us  149.3us  |  34.4us  34.5us  |  33.9us  33.1us
+> 6M   |  23.61ms  23.11ms  |  4223us  4160us  |  3951us  4008us
+> 60M  |  143.9ms  143.9ms  |  33.5ms  33.2ms  |  32.2ms  32.1ms
 > 
->  .../allwinner/sun4i-ss/sun4i-ss-cipher.c      |  22 +-
->  drivers/crypto/allwinner/sun4i-ss/sun4i-ss.h  |   1 +
->  .../allwinner/sun8i-ce/sun8i-ce-cipher.c      | 102 +++--
->  .../crypto/allwinner/sun8i-ce/sun8i-ce-core.c |  54 ++-
->  .../crypto/allwinner/sun8i-ce/sun8i-ce-hash.c | 130 ++++--
->  drivers/crypto/allwinner/sun8i-ce/sun8i-ce.h  |  19 +-
->  .../allwinner/sun8i-ss/sun8i-ss-cipher.c      | 180 +++++---
->  .../crypto/allwinner/sun8i-ss/sun8i-ss-core.c |  92 ++++-
->  .../crypto/allwinner/sun8i-ss/sun8i-ss-hash.c | 385 +++++++++++++++---
->  drivers/crypto/allwinner/sun8i-ss/sun8i-ss.h  |  33 +-
->  10 files changed, 767 insertions(+), 251 deletions(-)
+> Signed-off-by: Vladis Dronov <vdronov@redhat.com>
+> ---
+>  arch/s390/crypto/chacha-glue.c                |  34 +-
+>  drivers/crypto/Kconfig                        |   4 +-
+>  tools/testing/crypto/chacha20-s390/Makefile   |  12 +
+>  .../testing/crypto/chacha20-s390/run-tests.sh |  34 ++
+>  .../crypto/chacha20-s390/test-cipher.c        | 372 ++++++++++++++++++
+>  5 files changed, 452 insertions(+), 4 deletions(-)
+>  create mode 100644 tools/testing/crypto/chacha20-s390/Makefile
+>  create mode 100644 tools/testing/crypto/chacha20-s390/run-tests.sh
+>  create mode 100644 tools/testing/crypto/chacha20-s390/test-cipher.c
 
-All applied.  Thanks.
+Patch applied.  Thanks.
 -- 
 Email: Herbert Xu <herbert@gondor.apana.org.au>
 Home Page: http://gondor.apana.org.au/~herbert/
