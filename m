@@ -2,68 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA32C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83368C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377942AbiEMHxi (ORCPT
+        id S1377945AbiEMHyy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48074 "EHLO
+        Fri, 13 May 2022 03:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377939AbiEMHxe (ORCPT
+        with ESMTP id S1377854AbiEMHyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:53:34 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 369619B186
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:53:30 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 3FC631E80C96;
-        Fri, 13 May 2022 15:47:47 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 1B9KQIwIbOZ6; Fri, 13 May 2022 15:47:44 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: liqiong@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id F2E341E80C93;
-        Fri, 13 May 2022 15:47:43 +0800 (CST)
-From:   liqiong <liqiong@nfschina.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, hukun@nfschina.com,
-        qixu@nfschina.com, yuzhe@nfschina.com, renyu@nfschina.com,
-        liqiong <liqiong@nfschina.com>
-Subject: [PATCH] kernel/trace: cleanup code, remove init "char *name"
-Date:   Fri, 13 May 2022 15:52:21 +0800
-Message-Id: <20220513075221.26275-1-liqiong@nfschina.com>
-X-Mailer: git-send-email 2.11.0
+        Fri, 13 May 2022 03:54:49 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284B515A3EF
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 00:54:47 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 968321F921;
+        Fri, 13 May 2022 07:54:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652428486; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/ijA/xgUqWRx9xio/21UMMT78f/5jHH4GV/QBK+sDxA=;
+        b=vJsHBr8spZUeBnqTnlnQEs2fzM4UELF4AYVTTmJNTTUeHfft1353smZmjErICScE/YSm56
+        4mPO4lhVty6ta0wtcjQp99X70RgrN/8YRzGM1LeoEGyYwgj3l1UtbMTD5LTvbWIjIJUPCx
+        YQ6Dx/WYhjuUNPAFL0B1TN342lXY0d4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652428486;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/ijA/xgUqWRx9xio/21UMMT78f/5jHH4GV/QBK+sDxA=;
+        b=Dl0MBN8rxb0aLplV+2u+DRxg8KKDUplMi9D2gIRw/v5UVYlt8h6wSrVlWqx9df4ssTshhS
+        B5l++1SXAOpmvJCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BE19E13A84;
+        Fri, 13 May 2022 07:54:45 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id cUtcK8UOfmJFTwAAMHmgww
+        (envelope-from <osalvador@suse.de>); Fri, 13 May 2022 07:54:45 +0000
+Date:   Fri, 13 May 2022 09:54:44 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
+        vvghjk1234@gmail.com, aquini@redhat.com, ddutile@redhat.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm, compaction: fast_find_migrateblock() should return
+ pfn in the target zone
+Message-ID: <Yn4OxDIsl3OfB+6W@localhost.localdomain>
+References: <20220511044300.4069-1-yamamoto.rei@jp.fujitsu.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511044300.4069-1-yamamoto.rei@jp.fujitsu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pointer is assigned to "type->name" anyway. no need to
-initialize with "preemption".
+On Wed, May 11, 2022 at 01:43:00PM +0900, Rei Yamamoto wrote:
+> Prevent returning a pfn outside the target zone in case that not
+> aligned with pageblock boundary.
+> Otherwise isolate_migratepages_block() would handle pages not in
+> the target zone.
+> 
+> Signed-off-by: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
 
-Signed-off-by: liqiong <liqiong@nfschina.com>
----
- kernel/trace/trace.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 64649990a66a..d511581cfafd 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -4273,9 +4273,7 @@ print_trace_header(struct seq_file *m, struct trace_iterator *iter)
- 	struct tracer *type = iter->trace;
- 	unsigned long entries;
- 	unsigned long total;
--	const char *name = "preemption";
--
--	name = type->name;
-+	const char *name = type->name;
- 
- 	get_total_entries(buf, &total, &entries);
- 
+> ---
+>  mm/compaction.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/mm/compaction.c b/mm/compaction.c
+> index fe915db6149b..de42b8e48758 100644
+> --- a/mm/compaction.c
+> +++ b/mm/compaction.c
+> @@ -1858,6 +1858,8 @@ static unsigned long fast_find_migrateblock(struct compact_control *cc)
+>  
+>  				update_fast_start_pfn(cc, free_pfn);
+>  				pfn = pageblock_start_pfn(free_pfn);
+> +				if (pfn < cc->zone->zone_start_pfn)
+> +					pfn = cc->zone->zone_start_pfn;
+>  				cc->fast_search_fail = 0;
+>  				found_block = true;
+>  				set_pageblock_skip(freepage);
+> -- 
+> 2.27.0
+> 
+> 
+
 -- 
-2.25.1
-
+Oscar Salvador
+SUSE Labs
