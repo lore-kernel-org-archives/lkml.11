@@ -2,109 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02BBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377875AbiEMHtl (ORCPT
+        id S1377894AbiEMHtx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 03:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35582 "EHLO
+        Fri, 13 May 2022 03:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377872AbiEMHtg (ORCPT
+        with ESMTP id S1377890AbiEMHtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 03:49:36 -0400
-Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41B51134E1D;
-        Fri, 13 May 2022 00:49:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Message-ID:Date:MIME-Version:Subject:From; bh=I1PW+
-        UgrxtpOrGKAmIK6mKmMXNBZW3K0uImlgxDg5uk=; b=LomQvD4CK/f2fzw6gLHeW
-        9p3/uY6i69F9rBDSzSdN0wmUuQC5KcOIG+B8yEJtJnxOblL4sgXEghC7MLiUzA2F
-        CaIdcukEgvSzMC0bin2E1nzvRZ2cJFhonh51eyS5wC3KqjjKQ6HVvBxFZraZCjey
-        8QXsvnC3KnjlkrCrYxbGso=
-Received: from [192.168.3.102] (unknown [218.201.129.19])
-        by smtp14 (Coremail) with SMTP id EsCowABnVAViDX5iXlrTCA--.56204S2;
-        Fri, 13 May 2022 15:48:50 +0800 (CST)
-Message-ID: <1352b9d7-5219-af09-948b-6462def39ea5@163.com>
-Date:   Fri, 13 May 2022 15:48:50 +0800
+        Fri, 13 May 2022 03:49:47 -0400
+X-Greylist: delayed 1025 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 13 May 2022 00:49:42 PDT
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49DE13C377;
+        Fri, 13 May 2022 00:49:42 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=71464b001b=fe@dev.tdt.de>)
+        id 1npPmm-000Mf9-8i; Fri, 13 May 2022 09:32:28 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1npPml-0008PU-9e; Fri, 13 May 2022 09:32:27 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 8A531240049;
+        Fri, 13 May 2022 09:32:26 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 13B94240040;
+        Fri, 13 May 2022 09:32:26 +0200 (CEST)
+Received: from localhost.localdomain (unknown [10.2.3.40])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 687B22750E;
+        Fri, 13 May 2022 09:32:25 +0200 (CEST)
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     linux@roeck-us.net
+Cc:     jdelvare@suse.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eckert.Florian@googlemail.com,
+        kernel testrobot <lkp@intel.com>
+Subject: [PATCH] hwmon: (ltq-cputemp) restrict build to SOC_XWAY
+Date:   Fri, 13 May 2022 09:32:21 +0200
+Message-ID: <20220513073221.48744-1-fe@dev.tdt.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3 2/2] ARM: dts: sun8i-r40: Add "cpu-supply" node for
- sun8i-r40 based board
-Content-Language: en-US
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-References: <20220512071858.10805-1-qianfanguijin@163.com>
- <20220512071858.10805-2-qianfanguijin@163.com>
- <20220513073849.cu4jzykefat2sepg@houat>
-From:   qianfan <qianfanguijin@163.com>
-In-Reply-To: <20220513073849.cu4jzykefat2sepg@houat>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowABnVAViDX5iXlrTCA--.56204S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxJr1DZF13AF45KrykXr4Utwb_yoW8Cr4rp3
-        yxuF4DCrs7WF1rKry2grWUJry7AFyrWr4jqF15Gw1rJrn8XF9rtrn3KwnakrZ8Xr4fGw40
-        vrW8ur97Ww4DZa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UGQ6XUUUUU=
-X-Originating-IP: [218.201.129.19]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbB2AIA7WBHKY57KgAAsm
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate-ID: 151534::1652427147-F32576BE-22BD198C/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This driver can only be built if the target is set to SOC_XWAY, because
+only then the used macros 'ltq_cgu_*'  are available.
 
+To clarify this, the Kconfig is adjusted so that the driver can only be
+selected when the SOC_XWAY is also selected.
 
-在 2022/5/13 15:38, Maxime Ripard 写道:
-> Hi,
->
-> On Thu, May 12, 2022 at 03:18:58PM +0800, qianfanguijin@163.com wrote:
->> From: qianfan Zhao <qianfanguijin@163.com>
->>
->> sun8i-r40 actived cpufreq feature now, let's add "cpu-supply" node on
->> board.
->>
->> Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
->> ---
->>   arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts | 4 ++++
->>   arch/arm/boot/dts/sun8i-r40-feta40i.dtsi          | 4 ++++
->>   arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts          | 4 ++++
->>   arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts | 4 ++++
->>   4 files changed, 16 insertions(+)
->>
->> diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
->> index a6a1087a0c9b..4f30018ec4a2 100644
->> --- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
->> +++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
->> @@ -113,6 +113,10 @@ &ahci {
->>   	status = "okay";
->>   };
->>   
->> +&cpu0 {
->> +	cpu-supply = <&reg_dcdc2>;
->> +};
->> +
-> This will break bisection on those boards. Indeed, you added the OPPs on
-> the first patch, and if you only apply that patch, the boards in the
-> second patch will be missing their CPU regulator. The kernel will then
-> ramp up the frequency to the highest OPP, but will not change the
-> voltage, resulting in a crash.
-This is a good point and I will merge those two patch.
->
-> There's a similar issue for all the boards that don't have a regulator
-> in the first place.
->
-> The way we worked around this for the other SoCs is to have a DTSI with
-> the OPPs with a frequency higher than what U-Boot boots with (1008MHz?),
-> and only include that DTSI on boards that have a CPU regulator hooked in.
-Is this really necessary? It seems like every board based on sun8i-r40
-have a cpu regulator.
->
-> Maxime
+Reported-by: kernel testrobot <lkp@intel.com>
+Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+---
+
+This is a fix for an issue, that was reported by the 'kernel testrobot'.
+
+ drivers/hwmon/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 68a8a27ab3b7..1122c0519410 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -960,7 +960,7 @@ config SENSORS_LTC4261
+=20
+ config SENSORS_LTQ_CPUTEMP
+ 	bool "Lantiq cpu temperature sensor driver"
+-	depends on LANTIQ
++	depends on LANTIQ && SOC_XWAY
+ 	help
+ 	  If you say yes here you get support for the temperature
+ 	  sensor inside your CPU.
+--=20
+2.30.2
 
