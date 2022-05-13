@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC48C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF45C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381464AbiEMOb0 (ORCPT
+        id S1381374AbiEMObV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
+        Fri, 13 May 2022 10:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380706AbiEMOZs (ORCPT
+        with ESMTP id S1380787AbiEMO13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:25:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033B369724;
-        Fri, 13 May 2022 07:25:15 -0700 (PDT)
+        Fri, 13 May 2022 10:27:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E065EDF7;
+        Fri, 13 May 2022 07:27:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6EE4B83069;
-        Fri, 13 May 2022 14:25:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08F93C34115;
-        Fri, 13 May 2022 14:25:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 840BFB82C9D;
+        Fri, 13 May 2022 14:27:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E15C3C34100;
+        Fri, 13 May 2022 14:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451912;
-        bh=QF88le2UwZdYFdKhakOikXNGtWetoJ79BBE9pUZFl9c=;
+        s=korg; t=1652452021;
+        bh=l0wXDFVrQkp+DaaqJRFPdaUiGUGaqXl4hB6va4+NAQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EIJaJNoxswNQXKnL11196r67pDXb7+JgRhCeJRqIlHeSz/sQfQSsEgjS6l7vmB/Qo
-         1uJjn5EREW92NM46AoYQJUd2CcKQf5swGnYjH7LRfwXY1t1mshAtry7vQW2Ftjfn0d
-         CewbncTbaKc9ZTvShOnsEEB3c3eb1TseGahSqofo=
+        b=g8Q6EwHj5Bccg8R0DrI5FZqaaia1g7N1V4m45nM7/G0PqF1pmjlo0lZndcWGUbYzt
+         UaO1OlYRgknAUDkwMgms9V8dRx6pvRiSW9Yp54iHtUV1ZD/DoB5jWR+14Qa1PA/ODb
+         raWVE3wWARIqqpkZ1W7UWhmbRiXrYth6W1WRSw3A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 4.14 04/14] can: grcan: only use the NAPI poll budget for RX
-Date:   Fri, 13 May 2022 16:23:20 +0200
-Message-Id: <20220513142227.512055684@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 05/18] nfp: bpf: silence bitwise vs. logical OR warning
+Date:   Fri, 13 May 2022 16:23:31 +0200
+Message-Id: <20220513142229.310212274@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142227.381154244@linuxfoundation.org>
-References: <20220513142227.381154244@linuxfoundation.org>
+In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
+References: <20220513142229.153291230@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,87 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Larsson <andreas@gaisler.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit 2873d4d52f7c52d60b316ba6c47bd7122b5a9861 upstream.
+commit 8a64ef042eab8a6cec04a6c79d44d1af79b628ca upstream.
 
-The previous split budget between TX and RX made it return not using
-the entire budget but at the same time not having calling called
-napi_complete. This sometimes led to the poll to not be called, and at
-the same time having TX and RX interrupts disabled resulting in the
-driver getting stuck.
+A new warning in clang points out two places in this driver where
+boolean expressions are being used with a bitwise OR instead of a
+logical one:
 
-Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
-Link: https://lore.kernel.org/all/20220429084656.29788-4-andreas@gaisler.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Andreas Larsson <andreas@gaisler.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
+        reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                             ||
+drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: note: cast one or both operands to int to silence this warning
+drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
+        reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                             ||
+drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: note: cast one or both operands to int to silence this warning
+2 errors generated.
+
+The motivation for the warning is that logical operations short circuit
+while bitwise operations do not. In this case, it does not seem like
+short circuiting is harmful so implement the suggested fix of changing
+to a logical operation to fix the warning.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1479
+Reported-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Link: https://lore.kernel.org/r/20211018193101.2340261-1-nathan@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/grcan.c |   22 +++++++---------------
- 1 file changed, 7 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfp_asm.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -1141,7 +1141,7 @@ static int grcan_close(struct net_device
+--- a/drivers/net/ethernet/netronome/nfp/nfp_asm.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_asm.c
+@@ -196,7 +196,7 @@ int swreg_to_unrestricted(swreg dst, swr
+ 	}
+ 
+ 	reg->dst_lmextn = swreg_lmextn(dst);
+-	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
++	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
+ 
  	return 0;
  }
- 
--static int grcan_transmit_catch_up(struct net_device *dev, int budget)
-+static void grcan_transmit_catch_up(struct net_device *dev)
- {
- 	struct grcan_priv *priv = netdev_priv(dev);
- 	unsigned long flags;
-@@ -1149,7 +1149,7 @@ static int grcan_transmit_catch_up(struc
- 
- 	spin_lock_irqsave(&priv->lock, flags);
- 
--	work_done = catch_up_echo_skb(dev, budget, true);
-+	work_done = catch_up_echo_skb(dev, -1, true);
- 	if (work_done) {
- 		if (!priv->resetting && !priv->closing &&
- 		    !(priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
-@@ -1163,8 +1163,6 @@ static int grcan_transmit_catch_up(struc
+@@ -277,7 +277,7 @@ int swreg_to_restricted(swreg dst, swreg
  	}
  
- 	spin_unlock_irqrestore(&priv->lock, flags);
--
--	return work_done;
+ 	reg->dst_lmextn = swreg_lmextn(dst);
+-	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
++	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
+ 
+ 	return 0;
  }
- 
- static int grcan_receive(struct net_device *dev, int budget)
-@@ -1246,19 +1244,13 @@ static int grcan_poll(struct napi_struct
- 	struct net_device *dev = priv->dev;
- 	struct grcan_registers __iomem *regs = priv->regs;
- 	unsigned long flags;
--	int tx_work_done, rx_work_done;
--	int rx_budget = budget / 2;
--	int tx_budget = budget - rx_budget;
-+	int work_done;
- 
--	/* Half of the budget for receiveing messages */
--	rx_work_done = grcan_receive(dev, rx_budget);
-+	work_done = grcan_receive(dev, budget);
- 
--	/* Half of the budget for transmitting messages as that can trigger echo
--	 * frames being received
--	 */
--	tx_work_done = grcan_transmit_catch_up(dev, tx_budget);
-+	grcan_transmit_catch_up(dev);
- 
--	if (rx_work_done < rx_budget && tx_work_done < tx_budget) {
-+	if (work_done < budget) {
- 		napi_complete(napi);
- 
- 		/* Guarantee no interference with a running reset that otherwise
-@@ -1275,7 +1267,7 @@ static int grcan_poll(struct napi_struct
- 		spin_unlock_irqrestore(&priv->lock, flags);
- 	}
- 
--	return rx_work_done + tx_work_done;
-+	return work_done;
- }
- 
- /* Work tx bug by waiting while for the risky situation to clear. If that fails,
 
 
