@@ -2,70 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0386C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 21:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384703AbiEMVjD (ORCPT
+        id S1384711AbiEMVlW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 17:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
+        Fri, 13 May 2022 17:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384692AbiEMVjC (ORCPT
+        with ESMTP id S1383692AbiEMVlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 17:39:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2653454BED
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 14:39:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3782B831E4
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 21:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 79519C34100;
-        Fri, 13 May 2022 21:38:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652477938;
-        bh=uls0Cs7a/Pq03jujmH7qyme26hYYsttE4InpYcX4XM8=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=bCw9L/nHBxvmBN+gCwdn57XC9erRsWoyPAI+934a4w7QPRsPpKyFNzBCi/gIMWd1F
-         B/VBeD4H2iHZzL7CIcozQgdDce0Wwv9cULFlLHRCp9xf7HAgirUoMxe0kBqzsfJmtW
-         5elWLR4sMDsXkLh4w8nCpc2vSMqKL18fhpqI+5MpfIuL8poFqCsJWz+5Kwvnd7D/KW
-         u5o2D44BNtgumu0jwDH+EmOazsRqVDogpemUaYbAXQpZpchD5R46uvxu0h8sr1EqLq
-         ao1/2/UJaK6YPwj1cwAoZXzllcMjTgtqZTSbdb1puytGI8dgPDr8eip1a6wpCPb+hV
-         KdNuUdegD8mOw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 64A72F0389D;
-        Fri, 13 May 2022 21:38:58 +0000 (UTC)
-Subject: Re: [GIT PULL] gfs2 fixes
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220513210710.4124506-1-agruenba@redhat.com>
-References: <20220513210710.4124506-1-agruenba@redhat.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220513210710.4124506-1-agruenba@redhat.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git tags/gfs2-v5.18-rc4-fix3
-X-PR-Tracked-Commit-Id: e1fa9ea85ce89207d2ac0316da35a4a7736801f9
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: d928e8f3af38abc8d2d56d9329a8280f7af5f10e
-Message-Id: <165247793840.10019.8065611897082120198.pr-tracker-bot@kernel.org>
-Date:   Fri, 13 May 2022 21:38:58 +0000
-To:     Andreas Gruenbacher <agruenba@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        cluster-devel@redhat.com, linux-kernel@vger.kernel.org
+        Fri, 13 May 2022 17:41:20 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAC827B2D;
+        Fri, 13 May 2022 14:41:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652478079; x=1684014079;
+  h=subject:from:to:cc:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qAF9zD9EtuX3tbZ+GfTkFflelIxMa30w8V3BNOoliu8=;
+  b=FQkXlkKFict6sKfP3zmg9V+WB+0j33+O/d58yimFuyomU1PlSEw4mCtN
+   Xzc2nrn9lKMoGy1ZzLn3v1fkMheDpkyn+pqvq/89Pq80RB6IJ3rkRxTIW
+   hb1i17I5umOuMl/13+9Sw7FopoPOr+9P4/NksyLpp03B3UjCys5oZW/RO
+   SShE1tcDrzrBmGVee0GaUKhMQHCD6gx/KD6yZC1BM3R87ezwvy4xaqy7f
+   LFxAQ2QpEPSCU1dLGlL6A0N7Qd4lvKMiLqGRv7cEMcjxSR4IBUK/S0EcM
+   hCv1IL9i0BZ3A2JqRjAc5NpzAhkWXp3lhrwf5+hEkWbIgantfuEBK1Q5+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="250325813"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="250325813"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 14:41:19 -0700
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="554398099"
+Received: from dwillia2-desk3.jf.intel.com (HELO dwillia2-desk3.amr.corp.intel.com) ([10.54.39.25])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 14:41:18 -0700
+Subject: [PATCH v10 2/7] x86/mce: relocate set{clear}_mce_nospec() functions
+From:   Dan Williams <dan.j.williams@intel.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>, Jane Chu <jane.chu@oracle.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        nvdimm@lists.linux.dev, linux-fsdevel@vger.kernel.org
+Date:   Fri, 13 May 2022 14:41:18 -0700
+Message-ID: <165247798860.4117683.4554602198740624216.stgit@dwillia2-desk3.amr.corp.intel.com>
+In-Reply-To: <20220422224508.440670-3-jane.chu@oracle.com>
+References: <20220422224508.440670-3-jane.chu@oracle.com>
+User-Agent: StGit/0.18-3-g996c
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 13 May 2022 23:07:10 +0200:
+From: Jane Chu <jane.chu@oracle.com>
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git tags/gfs2-v5.18-rc4-fix3
+Relocate the twin mce functions to arch/x86/mm/pat/set_memory.c
+file where they belong.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d928e8f3af38abc8d2d56d9329a8280f7af5f10e
+While at it, fixup a function name in a comment.
 
-Thank you!
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Jane Chu <jane.chu@oracle.com>
+Acked-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+---
+Changes since v9:
+- fixup a 0day report: "no previous prototype for 'set_mce_nospec'",
+  include linux/set_memory.h in set_memory.c.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+ arch/x86/include/asm/set_memory.h |   52 -------------------------------------
+ arch/x86/mm/pat/set_memory.c      |   51 +++++++++++++++++++++++++++++++++++-
+ include/linux/set_memory.h        |    8 +++---
+ 3 files changed, 53 insertions(+), 58 deletions(-)
+
+diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
+index 78ca53512486..b45c4d27fd46 100644
+--- a/arch/x86/include/asm/set_memory.h
++++ b/arch/x86/include/asm/set_memory.h
+@@ -86,56 +86,4 @@ bool kernel_page_present(struct page *page);
+ 
+ extern int kernel_set_to_readonly;
+ 
+-#ifdef CONFIG_X86_64
+-/*
+- * Prevent speculative access to the page by either unmapping
+- * it (if we do not require access to any part of the page) or
+- * marking it uncacheable (if we want to try to retrieve data
+- * from non-poisoned lines in the page).
+- */
+-static inline int set_mce_nospec(unsigned long pfn, bool unmap)
+-{
+-	unsigned long decoy_addr;
+-	int rc;
+-
+-	/* SGX pages are not in the 1:1 map */
+-	if (arch_is_platform_page(pfn << PAGE_SHIFT))
+-		return 0;
+-	/*
+-	 * We would like to just call:
+-	 *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
+-	 * but doing that would radically increase the odds of a
+-	 * speculative access to the poison page because we'd have
+-	 * the virtual address of the kernel 1:1 mapping sitting
+-	 * around in registers.
+-	 * Instead we get tricky.  We create a non-canonical address
+-	 * that looks just like the one we want, but has bit 63 flipped.
+-	 * This relies on set_memory_XX() properly sanitizing any __pa()
+-	 * results with __PHYSICAL_MASK or PTE_PFN_MASK.
+-	 */
+-	decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
+-
+-	if (unmap)
+-		rc = set_memory_np(decoy_addr, 1);
+-	else
+-		rc = set_memory_uc(decoy_addr, 1);
+-	if (rc)
+-		pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
+-	return rc;
+-}
+-#define set_mce_nospec set_mce_nospec
+-
+-/* Restore full speculative operation to the pfn. */
+-static inline int clear_mce_nospec(unsigned long pfn)
+-{
+-	return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
+-}
+-#define clear_mce_nospec clear_mce_nospec
+-#else
+-/*
+- * Few people would run a 32-bit kernel on a machine that supports
+- * recoverable errors because they have too much memory to boot 32-bit.
+- */
+-#endif
+-
+ #endif /* _ASM_X86_SET_MEMORY_H */
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index abf5ed76e4b7..8297cf82c613 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -19,6 +19,7 @@
+ #include <linux/vmstat.h>
+ #include <linux/kernel.h>
+ #include <linux/cc_platform.h>
++#include <linux/set_memory.h>
+ 
+ #include <asm/e820/api.h>
+ #include <asm/processor.h>
+@@ -29,7 +30,6 @@
+ #include <asm/pgalloc.h>
+ #include <asm/proto.h>
+ #include <asm/memtype.h>
+-#include <asm/set_memory.h>
+ #include <asm/hyperv-tlfs.h>
+ #include <asm/mshyperv.h>
+ 
+@@ -1816,7 +1816,7 @@ static inline int cpa_clear_pages_array(struct page **pages, int numpages,
+ }
+ 
+ /*
+- * _set_memory_prot is an internal helper for callers that have been passed
++ * __set_memory_prot is an internal helper for callers that have been passed
+  * a pgprot_t value from upper layers and a reservation has already been taken.
+  * If you want to set the pgprot to a specific page protocol, use the
+  * set_memory_xx() functions.
+@@ -1925,6 +1925,53 @@ int set_memory_wb(unsigned long addr, int numpages)
+ }
+ EXPORT_SYMBOL(set_memory_wb);
+ 
++/*
++ * Prevent speculative access to the page by either unmapping
++ * it (if we do not require access to any part of the page) or
++ * marking it uncacheable (if we want to try to retrieve data
++ * from non-poisoned lines in the page).
++ */
++int set_mce_nospec(unsigned long pfn, bool unmap)
++{
++	unsigned long decoy_addr;
++	int rc;
++
++	if (!IS_ENABLED(CONFIG_64BIT))
++		return 0;
++
++	/* SGX pages are not in the 1:1 map */
++	if (arch_is_platform_page(pfn << PAGE_SHIFT))
++		return 0;
++	/*
++	 * We would like to just call:
++	 *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
++	 * but doing that would radically increase the odds of a
++	 * speculative access to the poison page because we'd have
++	 * the virtual address of the kernel 1:1 mapping sitting
++	 * around in registers.
++	 * Instead we get tricky.  We create a non-canonical address
++	 * that looks just like the one we want, but has bit 63 flipped.
++	 * This relies on set_memory_XX() properly sanitizing any __pa()
++	 * results with __PHYSICAL_MASK or PTE_PFN_MASK.
++	 */
++	decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
++
++	if (unmap)
++		rc = set_memory_np(decoy_addr, 1);
++	else
++		rc = set_memory_uc(decoy_addr, 1);
++	if (rc)
++		pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
++	return rc;
++}
++
++/* Restore full speculative operation to the pfn. */
++int clear_mce_nospec(unsigned long pfn)
++{
++	return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
++}
++EXPORT_SYMBOL_GPL(clear_mce_nospec);
++
+ int set_memory_x(unsigned long addr, int numpages)
+ {
+ 	if (!(__supported_pte_mask & _PAGE_NX))
+diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
+index f36be5166c19..683a6c3f7179 100644
+--- a/include/linux/set_memory.h
++++ b/include/linux/set_memory.h
+@@ -42,14 +42,14 @@ static inline bool can_set_direct_map(void)
+ #endif
+ #endif /* CONFIG_ARCH_HAS_SET_DIRECT_MAP */
+ 
+-#ifndef set_mce_nospec
++#ifdef CONFIG_X86_64
++int set_mce_nospec(unsigned long pfn, bool unmap);
++int clear_mce_nospec(unsigned long pfn);
++#else
+ static inline int set_mce_nospec(unsigned long pfn, bool unmap)
+ {
+ 	return 0;
+ }
+-#endif
+-
+-#ifndef clear_mce_nospec
+ static inline int clear_mce_nospec(unsigned long pfn)
+ {
+ 	return 0;
+
