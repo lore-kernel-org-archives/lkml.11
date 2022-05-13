@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9407EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6891EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381333AbiEMOfa (ORCPT
+        id S1353014AbiEMOfg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        Fri, 13 May 2022 10:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381446AbiEMObZ (ORCPT
+        with ESMTP id S1381447AbiEMObZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 10:31:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E1E1ACF90;
-        Fri, 13 May 2022 07:29:10 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748C719FB26;
+        Fri, 13 May 2022 07:28:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 452C2621C6;
-        Fri, 13 May 2022 14:29:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CE11C34100;
-        Fri, 13 May 2022 14:29:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B90762154;
+        Fri, 13 May 2022 14:28:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A0BC34115;
+        Fri, 13 May 2022 14:28:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452149;
-        bh=xp+u8NygbVxoi99MAWO9qUlTrei9uqsPK0jfOp9gZ8o=;
+        s=korg; t=1652452128;
+        bh=FUcUhRYbP7KCybJFcZBEQiZkC4zROQLRkWfS3w43Iio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I63vphraMYnpAhzPWVteJ15I1YtUzcKwW4yfa5JJIBKu+yw0lh5d9VQi9CacBuXAH
-         rwHfSgUpUvLMb8QA/PDK031BN/oEfvFrBA2IFdj67V1IE0vRgdh182GrzGdliqLbD2
-         4H7yWoTnyQChnJAjbjzCIY7mYKJ6gr4gAexkDcr4=
+        b=rAlY982JpVdhMqQ4uFLc0KLmwgwaonzPlYSPEpcJ9AU7g1LIgiu4/2QXbmRhQBF9W
+         u3ekTw7mMCgjALbzbtQO1T4rIbZ1UKIXz6/7iQk097xf+CVtVn1vNIpgnlrABagYwc
+         HZFMFH8r9FYd2RHxkjAWzCHHRgKS8sGTt8gU6Cmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        "Dmitry V. Levin" <ldv@altlinux.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.17 02/12] rfkill: uapi: fix RFKILL_IOCTL_MAX_SIZE ioctl request definition
-Date:   Fri, 13 May 2022 16:24:02 +0200
-Message-Id: <20220513142228.724371318@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 08/21] tools arch: Update arch/x86/lib/mem{cpy,set}_64.S copies used in perf bench mem memcpy
+Date:   Fri, 13 May 2022 16:23:50 +0200
+Message-Id: <20220513142230.120380855@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142228.651822943@linuxfoundation.org>
-References: <20220513142228.651822943@linuxfoundation.org>
+In-Reply-To: <20220513142229.874949670@linuxfoundation.org>
+References: <20220513142229.874949670@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +51,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit a36e07dfe6ee71e209383ea9288cd8d1617e14f9 upstream.
+[ Upstream commit 35cb8c713a496e8c114eed5e2a5a30b359876df2 ]
 
-The definition of RFKILL_IOCTL_MAX_SIZE introduced by commit
-54f586a91532 ("rfkill: make new event layout opt-in") is unusable
-since it is based on RFKILL_IOC_EXT_SIZE which has not been defined.
-Fix that by replacing the undefined constant with the constant which
-is intended to be used in this definition.
+To bring in the change made in this cset:
 
-Fixes: 54f586a91532 ("rfkill: make new event layout opt-in")
-Cc: stable@vger.kernel.org # 5.11+
-Signed-off-by: Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
-Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
-Link: https://lore.kernel.org/r/20220506172454.120319-1-glebfm@altlinux.org
-[add commit message provided later by Dmitry]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+  f94909ceb1ed4bfd ("x86: Prepare asm files for straight-line-speculation")
+
+It silences these perf tools build warnings, no change in the tools:
+
+  Warning: Kernel ABI header at 'tools/arch/x86/lib/memcpy_64.S' differs from latest version at 'arch/x86/lib/memcpy_64.S'
+  diff -u tools/arch/x86/lib/memcpy_64.S arch/x86/lib/memcpy_64.S
+  Warning: Kernel ABI header at 'tools/arch/x86/lib/memset_64.S' differs from latest version at 'arch/x86/lib/memset_64.S'
+  diff -u tools/arch/x86/lib/memset_64.S arch/x86/lib/memset_64.S
+
+The code generated was checked before and after using 'objdump -d /tmp/build/perf/bench/mem-memcpy-x86-64-asm.o',
+no changes.
+
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/rfkill.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/arch/x86/lib/memcpy_64.S |   12 ++++++------
+ tools/arch/x86/lib/memset_64.S |    6 +++---
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
---- a/include/uapi/linux/rfkill.h
-+++ b/include/uapi/linux/rfkill.h
-@@ -184,7 +184,7 @@ struct rfkill_event_ext {
- #define RFKILL_IOC_NOINPUT	1
- #define RFKILL_IOCTL_NOINPUT	_IO(RFKILL_IOC_MAGIC, RFKILL_IOC_NOINPUT)
- #define RFKILL_IOC_MAX_SIZE	2
--#define RFKILL_IOCTL_MAX_SIZE	_IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_EXT_SIZE, __u32)
-+#define RFKILL_IOCTL_MAX_SIZE	_IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_MAX_SIZE, __u32)
+--- a/tools/arch/x86/lib/memcpy_64.S
++++ b/tools/arch/x86/lib/memcpy_64.S
+@@ -39,7 +39,7 @@ SYM_FUNC_START_WEAK(memcpy)
+ 	rep movsq
+ 	movl %edx, %ecx
+ 	rep movsb
+-	ret
++	RET
+ SYM_FUNC_END(memcpy)
+ SYM_FUNC_END_ALIAS(__memcpy)
+ EXPORT_SYMBOL(memcpy)
+@@ -53,7 +53,7 @@ SYM_FUNC_START_LOCAL(memcpy_erms)
+ 	movq %rdi, %rax
+ 	movq %rdx, %rcx
+ 	rep movsb
+-	ret
++	RET
+ SYM_FUNC_END(memcpy_erms)
  
- /* and that's all userspace gets */
+ SYM_FUNC_START_LOCAL(memcpy_orig)
+@@ -137,7 +137,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ 	movq %r9,	1*8(%rdi)
+ 	movq %r10,	-2*8(%rdi, %rdx)
+ 	movq %r11,	-1*8(%rdi, %rdx)
+-	retq
++	RET
+ 	.p2align 4
+ .Lless_16bytes:
+ 	cmpl $8,	%edx
+@@ -149,7 +149,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ 	movq -1*8(%rsi, %rdx),	%r9
+ 	movq %r8,	0*8(%rdi)
+ 	movq %r9,	-1*8(%rdi, %rdx)
+-	retq
++	RET
+ 	.p2align 4
+ .Lless_8bytes:
+ 	cmpl $4,	%edx
+@@ -162,7 +162,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ 	movl -4(%rsi, %rdx), %r8d
+ 	movl %ecx, (%rdi)
+ 	movl %r8d, -4(%rdi, %rdx)
+-	retq
++	RET
+ 	.p2align 4
+ .Lless_3bytes:
+ 	subl $1, %edx
+@@ -180,7 +180,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ 	movb %cl, (%rdi)
  
+ .Lend:
+-	retq
++	RET
+ SYM_FUNC_END(memcpy_orig)
+ 
+ .popsection
+--- a/tools/arch/x86/lib/memset_64.S
++++ b/tools/arch/x86/lib/memset_64.S
+@@ -40,7 +40,7 @@ SYM_FUNC_START(__memset)
+ 	movl %edx,%ecx
+ 	rep stosb
+ 	movq %r9,%rax
+-	ret
++	RET
+ SYM_FUNC_END(__memset)
+ SYM_FUNC_END_ALIAS(memset)
+ EXPORT_SYMBOL(memset)
+@@ -63,7 +63,7 @@ SYM_FUNC_START_LOCAL(memset_erms)
+ 	movq %rdx,%rcx
+ 	rep stosb
+ 	movq %r9,%rax
+-	ret
++	RET
+ SYM_FUNC_END(memset_erms)
+ 
+ SYM_FUNC_START_LOCAL(memset_orig)
+@@ -125,7 +125,7 @@ SYM_FUNC_START_LOCAL(memset_orig)
+ 
+ .Lende:
+ 	movq	%r10,%rax
+-	ret
++	RET
+ 
+ .Lbad_alignment:
+ 	cmpq $7,%rdx
 
 
