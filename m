@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 562D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B307C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380995AbiEMOat (ORCPT
+        id S1381142AbiEMObA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44512 "EHLO
+        Fri, 13 May 2022 10:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358882AbiEMO0x (ORCPT
+        with ESMTP id S1380716AbiEMO1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:53 -0400
+        Fri, 13 May 2022 10:27:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6032F2D8;
-        Fri, 13 May 2022 07:26:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9672B51336;
+        Fri, 13 May 2022 07:26:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FB10B8305B;
-        Fri, 13 May 2022 14:26:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42130C34100;
-        Fri, 13 May 2022 14:26:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2A2CB83067;
+        Fri, 13 May 2022 14:26:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDE44C34115;
+        Fri, 13 May 2022 14:26:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452009;
-        bh=LlQbheZQzV7Mk0qNq8vbWSUFM1smMc3+eMIRlpmwgXw=;
+        s=korg; t=1652452015;
+        bh=1AoLTDAALQr7QOhpcU99xOeIqr+N6b46LV8dUcsNKbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KV47AoiEIkpKoNg1ijZxYQCnnG76e13cx9ysV9fX+0Hi4ZdRVBiPhvr6FsG52KLvJ
-         7p3xtJdG8UAI4pDRDTq3qXroCfTXJOl2UTgjjgp8wWtDfgp5CyrQrDo4tgIVeHQsO6
-         OFlmAvXAyIH9siYkov7M5S4rDHs00OThNlY26sug=
+        b=SH4WfvHLn+5rNQIkvPFY2qAzJWHjWQWkXghLiwqvmPxO8a69seQ6fUVc5rT/t/1+u
+         K/sInGavdebkTfWix/Qc3q+NzeXfDooB5B5KWogUw970DwWnRkYHOjCsSfUxuoxSqL
+         MjC6J4wpeQqf7kPurOlTDlfdHfdUXdReUtnnKGU8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Peter Xu <peterx@redhat.com>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Zi Yan <ziy@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 18/18] mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-Date:   Fri, 13 May 2022 16:23:44 +0200
-Message-Id: <20220513142229.682741906@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.4 03/18] drm/amd/display/dc/gpio/gpio_service: Pass around correct dce_{version, environment} types
+Date:   Fri, 13 May 2022 16:23:29 +0200
+Message-Id: <20220513142229.252970541@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
 References: <20220513142229.153291230@linuxfoundation.org>
@@ -59,55 +55,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Lee Jones <lee.jones@linaro.org>
 
-commit 7c25a0b89a487878b0691e6524fb5a8827322194 upstream.
+commit 353f7f3a9dd5fd2833b6462bac89ec1654c9c3aa upstream.
 
-userfaultfd calls mcopy_atomic_pte() and __mcopy_atomic() which do not
-do any cache flushing for the target page.  Then the target page will be
-mapped to the user space with a different address (user address), which
-might have an alias issue with the kernel address used to copy the data
-from the user to.  Fix this by insert flush_dcache_page() after
-copy_from_user() succeeds.
+Fixes the following W=1 kernel build warning(s):
 
-Link: https://lkml.kernel.org/r/20220210123058.79206-7-songmuchun@bytedance.com
-Fixes: b6ebaedb4cb1 ("userfaultfd: avoid mmap_sem read recursion in mcopy_atomic")
-Fixes: c1a4de99fada ("userfaultfd: mcopy_atomic|mfill_zeropage: UFFDIO_COPY|UFFDIO_ZEROPAGE preparation")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Fam Zheng <fam.zheng@bytedance.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Lars Persson <lars.persson@axis.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+ drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c: In function ‘dal_gpio_service_create’:
+ drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c:71:4: warning: implicit conversion from ‘enum dce_version’ to ‘enum dce_environment’ [-Wenum-conversion]
+ drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c:77:4: warning: implicit conversion from ‘enum dce_version’ to ‘enum dce_environment’ [-Wenum-conversion]
+
+Cc: Harry Wentland <harry.wentland@amd.com>
+Cc: Leo Li <sunpeng.li@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Christian König" <christian.koenig@amd.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: amd-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/userfaultfd.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c           |   12 +++++------
+ drivers/gpu/drm/amd/display/include/gpio_service_interface.h |    4 +--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
---- a/mm/userfaultfd.c
-+++ b/mm/userfaultfd.c
-@@ -53,6 +53,8 @@ static int mcopy_atomic_pte(struct mm_st
- 			/* don't free the page */
- 			goto out;
- 		}
-+
-+		flush_dcache_page(page);
- 	} else {
- 		page = *pagep;
- 		*pagep = NULL;
-@@ -572,6 +574,7 @@ retry:
- 				err = -EFAULT;
- 				goto out;
- 			}
-+			flush_dcache_page(page);
- 			goto retry;
- 		} else
- 			BUG_ON(page);
+--- a/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
++++ b/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
+@@ -53,8 +53,8 @@
+  */
+ 
+ struct gpio_service *dal_gpio_service_create(
+-	enum dce_version dce_version_major,
+-	enum dce_version dce_version_minor,
++	enum dce_version dce_version,
++	enum dce_environment dce_environment,
+ 	struct dc_context *ctx)
+ {
+ 	struct gpio_service *service;
+@@ -67,14 +67,14 @@ struct gpio_service *dal_gpio_service_cr
+ 		return NULL;
+ 	}
+ 
+-	if (!dal_hw_translate_init(&service->translate, dce_version_major,
+-			dce_version_minor)) {
++	if (!dal_hw_translate_init(&service->translate, dce_version,
++			dce_environment)) {
+ 		BREAK_TO_DEBUGGER();
+ 		goto failure_1;
+ 	}
+ 
+-	if (!dal_hw_factory_init(&service->factory, dce_version_major,
+-			dce_version_minor)) {
++	if (!dal_hw_factory_init(&service->factory, dce_version,
++			dce_environment)) {
+ 		BREAK_TO_DEBUGGER();
+ 		goto failure_1;
+ 	}
+--- a/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
++++ b/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
+@@ -42,8 +42,8 @@ void dal_gpio_destroy(
+ 	struct gpio **ptr);
+ 
+ struct gpio_service *dal_gpio_service_create(
+-	enum dce_version dce_version_major,
+-	enum dce_version dce_version_minor,
++	enum dce_version dce_version,
++	enum dce_environment dce_environment,
+ 	struct dc_context *ctx);
+ 
+ struct gpio *dal_gpio_service_create_irq(
 
 
