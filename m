@@ -2,115 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6F6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 22:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 22:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230262AbiEMWNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 18:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
+        id S230268AbiEMWN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 18:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiEMWNS (ORCPT
+        with ESMTP id S230330AbiEMWNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 18:13:18 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E2B719DB
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:13:16 -0700 (PDT)
+        Fri, 13 May 2022 18:13:22 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6848587A3A
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 15:13:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652479996; x=1684015996;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cxef9S28Y+ZsR9yxpw47GL3tVgcHUSJqzLfqt+5PNSo=;
-  b=Q04s0Y9VtUDQRM4mG92f3MMBXfQDBkqGdEsZ5j/+TPA+YetCe2HoTezj
-   dpwcplWrID1tY897TIoEynRXM9J1r3FoLjtucFULc7YdfcXlwpqIYZI9O
-   TUnta5b22dKHX/BYW2M8+u+l+bcr85RvGTtFSaJC60iXsSFrzbybWY9L9
-   dWuqvpPN5PeRb+UfK3WwWYLgS1XxEmzxVji8oNtyCU4JWtSBS3lzBO6UM
-   47ukV5tF9WKnxqga4DyNC4gT8zXhjnhutRev+KtpIPh1X6DmpCMWpXNnG
-   PVk2eDh/Rl9ke6LPIOY/vSeEXYvdiLXuh5SRaUV4ra6S3tQ3Jnj4CUlhJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270357920"
+  t=1652480001; x=1684016001;
+  h=subject:from:to:cc:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tp29QKBC0TkkWxqN6GFsZPZItezTnUJxKUUuesmJmVE=;
+  b=nGpXkwV0OlfTT0ZpLuIrqROGanol54PsPM4vJbSL3VtP+hC0w4QVIZ37
+   bjTw5YV+wYErWEZZbKfQUXisFIISSuWp8+leG6/TFbFz35lkYFO0hSIT1
+   XF3PDcHbSHzSgQTtIZUnRf+QHzSld9sN5ij3kd/7INq9XGs38sg/djRPu
+   aiAwSsNQbLhN2Ts8MM2vKV7v8qCR+eQyBq14+TiTIEdYJdr5rbjPQeARc
+   x/uSfiSBgPe/EZHzaD/TPjp7e5MZaPIpyPpVMQh4KbdxgNEdp2Z6Y6hgV
+   VWDQKjQUln/k7J7hb2rF5TVu2ETef7HiE16lGP8T+Zn+uiSCq4dMJVHYc
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="250949612"
 X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="270357920"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 15:13:15 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="250949612"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 15:13:21 -0700
 X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="543454884"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga006.jf.intel.com with ESMTP; 13 May 2022 15:13:15 -0700
-Date:   Fri, 13 May 2022 15:16:50 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 22/29] x86/watchdog/hardlockup: Add an HPET-based
- hardlockup detector
-Message-ID: <20220513221650.GA8691@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-23-ricardo.neri-calderon@linux.intel.com>
- <877d6uref8.ffs@tglx>
+   d="scan'208";a="659299630"
+Received: from dwillia2-desk3.jf.intel.com (HELO dwillia2-desk3.amr.corp.intel.com) ([10.54.39.25])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 15:13:20 -0700
+Subject: [PATCH v10 7/7] pmem: implement pmem_recovery_write()
+From:   Dan Williams <dan.j.williams@intel.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jane Chu <jane.chu@oracle.com>, Christoph Hellwig <hch@lst.de>,
+        nvdimm@lists.linux.dev
+Date:   Fri, 13 May 2022 15:13:20 -0700
+Message-ID: <165247997655.53156.8381418704988035976.stgit@dwillia2-desk3.amr.corp.intel.com>
+In-Reply-To: <20220422224508.440670-8-jane.chu@oracle.com>
+References: <20220422224508.440670-8-jane.chu@oracle.com>
+User-Agent: StGit/0.18-3-g996c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877d6uref8.ffs@tglx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 04:03:39PM +0200, Thomas Gleixner wrote:
-> On Thu, May 05 2022 at 17:00, Ricardo Neri wrote:
-> > +	if (is_hpet_hld_interrupt(hdata)) {
-> > +		/*
-> > +		 * Kick the timer first. If the HPET channel is periodic, it
-> > +		 * helps to reduce the delta between the expected TSC value and
-> > +		 * its actual value the next time the HPET channel fires.
-> > +		 */
-> > +		kick_timer(hdata, !(hdata->has_periodic));
-> > +
-> > +		if (cpumask_weight(hld_data->monitored_cpumask) > 1) {
-> > +			/*
-> > +			 * Since we cannot know the source of an NMI, the best
-> > +			 * we can do is to use a flag to indicate to all online
-> > +			 * CPUs that they will get an NMI and that the source of
-> > +			 * that NMI is the hardlockup detector. Offline CPUs
-> > +			 * also receive the NMI but they ignore it.
-> > +			 *
-> > +			 * Even though we are in NMI context, we have concluded
-> > +			 * that the NMI came from the HPET channel assigned to
-> > +			 * the detector, an event that is infrequent and only
-> > +			 * occurs in the handling CPU. There should not be races
-> > +			 * with other NMIs.
-> > +			 */
-> > +			cpumask_copy(hld_data->inspect_cpumask,
-> > +				     cpu_online_mask);
-> > +
-> > +			/* If we are here, IPI shorthands are enabled. */
-> > +			apic->send_IPI_allbutself(NMI_VECTOR);
-> 
-> So if the monitored cpumask is a subset of online CPUs, which is the
-> case when isolation features are enabled, then you still send NMIs to
-> those isolated CPUs. I'm sure the isolation folks will be enthused.
+From: Jane Chu <jane.chu@oracle.com>
 
-Yes, I acknowledged this limitation in the cover letter. I should also update
-Documentation/admin-guide/lockup-watchdogs.rst.
+The recovery write thread started out as a normal pwrite thread and
+when the filesystem was told about potential media error in the
+range, filesystem turns the normal pwrite to a dax_recovery_write.
 
-This patchset proposes the HPET NMI watchdog as an opt-in feature.
+The recovery write consists of clearing media poison, clearing page
+HWPoison bit, reenable page-wide read-write permission, flush the
+caches and finally write.  A competing pread thread will be held
+off during the recovery process since data read back might not be
+valid, and this is achieved by clearing the badblock records after
+the recovery write is complete. Competing recovery write threads
+are already serialized by writer lock held by dax_iomap_rw().
 
-Perhaps the limitation might be mitigated by adding a check for non-housekeeping
-and non-monitored CPUs in exc_nmi(). However, that will not eliminate the
-problem of isolated CPUs also getting the NMI.
+Signed-off-by: Jane Chu <jane.chu@oracle.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+---
+Changes since v9:
+- Fixup compile warnings in debug messages
 
-Thanks and BR,
-Ricardo
+ drivers/nvdimm/pmem.c |   87 ++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 79 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
+index 0961625dfa05..6b24ecada695 100644
+--- a/drivers/nvdimm/pmem.c
++++ b/drivers/nvdimm/pmem.c
+@@ -266,21 +266,43 @@ __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
+ 		pfn_t *pfn)
+ {
+ 	resource_size_t offset = PFN_PHYS(pgoff) + pmem->data_offset;
+-
+-	if (unlikely(is_bad_pmem(&pmem->bb, PFN_PHYS(pgoff) / 512,
+-					PFN_PHYS(nr_pages))))
+-		return -EIO;
++	sector_t sector = PFN_PHYS(pgoff) >> SECTOR_SHIFT;
++	unsigned int num = PFN_PHYS(nr_pages) >> SECTOR_SHIFT;
++	struct badblocks *bb = &pmem->bb;
++	sector_t first_bad;
++	int num_bad;
+ 
+ 	if (kaddr)
+ 		*kaddr = pmem->virt_addr + offset;
+ 	if (pfn)
+ 		*pfn = phys_to_pfn_t(pmem->phys_addr + offset, pmem->pfn_flags);
+ 
++	if (bb->count &&
++	    badblocks_check(bb, sector, num, &first_bad, &num_bad)) {
++		long actual_nr;
++
++		if (mode != DAX_RECOVERY_WRITE)
++			return -EIO;
++
++		/*
++		 * Set the recovery stride is set to kernel page size because
++		 * the underlying driver and firmware clear poison functions
++		 * don't appear to handle large chunk(such as 2MiB) reliably.
++		 */
++		actual_nr = PHYS_PFN(
++			PAGE_ALIGN((first_bad - sector) << SECTOR_SHIFT));
++		dev_dbg(pmem->bb.dev, "start sector(%llu), nr_pages(%ld), first_bad(%llu), actual_nr(%ld)\n",
++				sector, nr_pages, first_bad, actual_nr);
++		if (actual_nr)
++			return actual_nr;
++		return 1;
++	}
++
+ 	/*
+-	 * If badblocks are present, limit known good range to the
+-	 * requested range.
++	 * If badblocks are present but not in the range, limit known good range
++	 * to the requested range.
+ 	 */
+-	if (unlikely(pmem->bb.count))
++	if (bb->count)
+ 		return nr_pages;
+ 	return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);
+ }
+@@ -310,10 +332,59 @@ static long pmem_dax_direct_access(struct dax_device *dax_dev,
+ 	return __pmem_direct_access(pmem, pgoff, nr_pages, mode, kaddr, pfn);
+ }
+ 
++/*
++ * The recovery write thread started out as a normal pwrite thread and
++ * when the filesystem was told about potential media error in the
++ * range, filesystem turns the normal pwrite to a dax_recovery_write.
++ *
++ * The recovery write consists of clearing media poison, clearing page
++ * HWPoison bit, reenable page-wide read-write permission, flush the
++ * caches and finally write.  A competing pread thread will be held
++ * off during the recovery process since data read back might not be
++ * valid, and this is achieved by clearing the badblock records after
++ * the recovery write is complete. Competing recovery write threads
++ * are already serialized by writer lock held by dax_iomap_rw().
++ */
+ static size_t pmem_recovery_write(struct dax_device *dax_dev, pgoff_t pgoff,
+ 		void *addr, size_t bytes, struct iov_iter *i)
+ {
+-	return 0;
++	struct pmem_device *pmem = dax_get_private(dax_dev);
++	size_t olen, len, off;
++	phys_addr_t pmem_off;
++	struct device *dev = pmem->bb.dev;
++	long cleared;
++
++	off = offset_in_page(addr);
++	len = PFN_PHYS(PFN_UP(off + bytes));
++	if (!is_bad_pmem(&pmem->bb, PFN_PHYS(pgoff) >> SECTOR_SHIFT, len))
++		return _copy_from_iter_flushcache(addr, bytes, i);
++
++	/*
++	 * Not page-aligned range cannot be recovered. This should not
++	 * happen unless something else went wrong.
++	 */
++	if (off || !PAGE_ALIGNED(bytes)) {
++		dev_dbg(dev, "Found poison, but addr(%p) or bytes(%#zx) not page aligned\n",
++			addr, bytes);
++		return 0;
++	}
++
++	pmem_off = PFN_PHYS(pgoff) + pmem->data_offset;
++	cleared = __pmem_clear_poison(pmem, pmem_off, len);
++	if (cleared > 0 && cleared < len) {
++		dev_dbg(dev, "poison cleared only %ld out of %zu bytes\n",
++			cleared, len);
++		return 0;
++	}
++	if (cleared < 0) {
++		dev_dbg(dev, "poison clear failed: %ld\n", cleared);
++		return 0;
++	}
++
++	olen = _copy_from_iter_flushcache(addr, bytes, i);
++	pmem_clear_bb(pmem, to_sect(pmem, pmem_off), cleared >> SECTOR_SHIFT);
++
++	return olen;
+ }
+ 
+ static const struct dax_operations pmem_dax_ops = {
+
