@@ -2,172 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D45C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 12:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380212AbiEMMYz (ORCPT
+        id S1380226AbiEMMZ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 08:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
+        Fri, 13 May 2022 08:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380170AbiEMMYw (ORCPT
+        with ESMTP id S1380217AbiEMMZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 08:24:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B4872A1FC2
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:24:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652444691;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yGylHDS/3fg5TrOKJP4cWNt11P3ZBc0gnKyFOChcypg=;
-        b=HXCr4SEnWWpDdy/QjlzroM+33fmIQRTFDFuod0HNn/fCMdp/9zyztginhfpkfjszcRn0HG
-        PZ/vFi+k1DG562dgIR5GN+ooICiGzVtAZrozRtM7vbyFcDJaSscKHIioAIJlo7yao4M7P8
-        AbLnshJaxJp2qovNVW17Ihl75gHQ3rI=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-255-q1HaNCKyPSeWDPTFL_D4Mg-1; Fri, 13 May 2022 08:24:50 -0400
-X-MC-Unique: q1HaNCKyPSeWDPTFL_D4Mg-1
-Received: by mail-wm1-f71.google.com with SMTP id i131-20020a1c3b89000000b00393fbb0718bso5913058wma.0
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 05:24:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=yGylHDS/3fg5TrOKJP4cWNt11P3ZBc0gnKyFOChcypg=;
-        b=671e03s+OBCEYqro7b5eNWrKlSAO5EKlmEDWvtrKX3Lm8mJPxQL5f/E0n8/9Mdmqec
-         2u/oenszDccblgnKygLdhP12dfwQCfJsMQkJxrk+WgpPqQ6X/dWsqz/5ELfBOeiSGjIJ
-         Zls5bN2PwYG6pFnXI+frbFagvUsbo668StAlBSWb6d77q4sTnUNaevcwEjL01dzGWZrE
-         2+0+Hl7Rys6y54Phg01KaecKAz2FJ2uVhuE8pK+UaVwh6oU9ExIYpaS15Xlx2y867rQl
-         OclbzhFX5je+IP0tHlryxqGHNIyVk83WjvtlHuiBGOvjB2x/zb025u8v2Cq6IH1mXF6s
-         /LqQ==
-X-Gm-Message-State: AOAM531AmX2UnwNOPgUtKygyc8Q92EzkHP3LZzvT3scdtm8lGjvjAqn6
-        Fe9RptTuRDT8/RciLKkwy8Jh9X6kJ0ALnPMWzwqq4ngzxLTs4wF8NKHXJ2JIG/Ejn0UzADdlRIH
-        5pbfXGLkjb675yytcu4FMnL44
-X-Received: by 2002:adf:ce09:0:b0:20c:bee9:b3b3 with SMTP id p9-20020adfce09000000b0020cbee9b3b3mr3763241wrn.72.1652444688987;
-        Fri, 13 May 2022 05:24:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwGpwj2LbflIxB6c/w1XdVK2531eXprkSVlVWibKbS8fwNFsrJx+2GGpeU7ISRVY+uVS+RS/w==
-X-Received: by 2002:adf:ce09:0:b0:20c:bee9:b3b3 with SMTP id p9-20020adfce09000000b0020cbee9b3b3mr3763226wrn.72.1652444688771;
-        Fri, 13 May 2022 05:24:48 -0700 (PDT)
-Received: from ?IPv6:2a0c:5a80:1306:2f00:be0e:91f7:c0a3:32f0? ([2a0c:5a80:1306:2f00:be0e:91f7:c0a3:32f0])
-        by smtp.gmail.com with ESMTPSA id n9-20020a1c7209000000b0039482d95ab7sm2310670wmc.24.2022.05.13.05.24.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 05:24:48 -0700 (PDT)
-Message-ID: <9b04479e3810dbbc3cb2ebd68a3ab3fd034e125e.camel@redhat.com>
-Subject: Re: [PATCH 0/6] Drain remote per-cpu directly v3
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Date:   Fri, 13 May 2022 14:24:47 +0200
-In-Reply-To: <20220512085043.5234-1-mgorman@techsingularity.net>
-References: <20220512085043.5234-1-mgorman@techsingularity.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        Fri, 13 May 2022 08:25:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9DCC2A1FCC;
+        Fri, 13 May 2022 05:25:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79627B82F6C;
+        Fri, 13 May 2022 12:25:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C57CC34115;
+        Fri, 13 May 2022 12:25:18 +0000 (UTC)
+Message-ID: <2532419a-812b-c2de-ef56-849ec7dc16bc@linux-m68k.org>
+Date:   Fri, 13 May 2022 22:25:16 +1000
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] m68knommu: fix undefined reference to `mach_get_rtc_pll'
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux/m68k <linux-m68k@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel test robot <lkp@intel.com>
+References: <20220513064952.3610672-1-gerg@linux-m68k.org>
+ <CAMuHMdVWRM7U9_SxbtDUE0a-sB5_PDiO2009Cu3QKMP3wNc=yw@mail.gmail.com>
+From:   Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <CAMuHMdVWRM7U9_SxbtDUE0a-sB5_PDiO2009Cu3QKMP3wNc=yw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mel,
+Hi Geert,
 
-On Thu, 2022-05-12 at 09:50 +0100, Mel Gorman wrote:
-> Changelog since v2
-> o More conversions from page->lru to page->[pcp_list|buddy_list]
-> o Additional test results in changelogs
->=20
-> Changelog since v1
-> o Fix unsafe RT locking scheme
-> o Use spin_trylock on UP PREEMPT_RT
->=20
-> This series has the same intent as Nicolas' series "mm/page_alloc:
-> Remote
-> per-cpu lists drain support" -- avoid interference of a high priority
-> task due to a workqueue item draining per-cpu page lists. While many
-> workloads can tolerate a brief interruption, it may be cause a real-
-> time
-> task runnning on a NOHZ_FULL CPU to miss a deadline and at minimum,
-> the draining in non-deterministic.
->=20
-> Currently an IRQ-safe local_lock protects the page allocator per-cpu
-> lists.
-> The local_lock on its own prevents migration and the IRQ disabling
-> protects
-> from corruption due to an interrupt arriving while a page allocation
-> is
-> in progress. The locking is inherently unsafe for remote access
-> unless
-> the CPU is hot-removed.
->=20
-> This series adjusts the locking. A spinlock is added to struct
-> per_cpu_pages to protect the list contents while local_lock_irq
-> continues
-> to prevent migration and IRQ reentry. This allows a remote CPU to
-> safely
-> drain a remote per-cpu list.
->=20
-> This series is a partial series. Follow-on work should allow the
-> local_irq_save to be converted to a local_irq to avoid IRQs being
-> disabled/enabled in most cases. Consequently, there are some TODO
-> comments
-> highlighting the places that would change if local_irq was used.
-> However,
-> there are enough corner cases that it deserves a series on its own
-> separated by one kernel release and the priority right now is to
-> avoid
-> interference of high priority tasks.
->=20
-> Patch 1 is a cosmetic patch to clarify when page->lru is storing
-> buddy pages
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0and when it is storing pe=
-r-cpu pages.
->=20
-> Patch 2 shrinks per_cpu_pages to make room for a spin lock. Strictly
-> speaking
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0this is not necessary but=
- it avoids per_cpu_pages consuming
-> another
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0cache line.
->=20
-> Patch 3 is a preparation patch to avoid code duplication.
->=20
-> Patch 4 is a simple micro-optimisation that improves code flow
-> necessary for
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0a later patch to avoid co=
-de duplication.
->=20
-> Patch 5 uses a spin_lock to protect the per_cpu_pages contents while
-> still
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0relying on local_lock to =
-prevent migration, stabilise the pcp
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0lookup and prevent IRQ re=
-entrancy.
->=20
-> Patch 6 remote drains per-cpu pages directly instead of using a
-> workqueue.
->=20
-> =C2=A0include/linux/mm_types.h |=C2=A0=C2=A0 5 +
-> =C2=A0include/linux/mmzone.h=C2=A0=C2=A0 |=C2=A0 12 +-
-> =C2=A0mm/page_alloc.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 | 348 +++++++++++++++++++++++++------------
+On 13/5/22 17:12, Geert Uytterhoeven wrote:
+> Hi Greg,
+> 
+> On Fri, May 13, 2022 at 8:50 AM Greg Ungerer <gerg@linux-m68k.org> wrote:
+>> Configuring for a nommu classic m68k target and enabling the generic rtc
+>> driver (CONFIG_RTC_DRV_GENERIC) will result in the following compile
+>> error:
+>>
+>>     m68k-linux-ld: arch/m68k/kernel/time.o: in function `rtc_ioctl':
+>>     time.c:(.text+0x82): undefined reference to `mach_get_rtc_pll'
+>>     m68k-linux-ld: time.c:(.text+0xbc): undefined reference to `mach_set_rtc_pll'
+>>     m68k-linux-ld: time.c:(.text+0xf4): undefined reference to `mach_set_rtc_pll'
+>>
+>> "mach_set_rtc_pll" and "mach_get_rtc_pll" are only defined in the common
+>> MMU setup code, and are really only implemented in any meaningful way on
+>> classic M68K MMU enabled machines. So conditionally limit their use to
+> 
+> And only on Q40/Q60.
+> 
+>> MMU enabled classic M68K systems.
+>>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+> 
+> Thanks for your patch!
+> 
+>> --- a/arch/m68k/kernel/time.c
+>> +++ b/arch/m68k/kernel/time.c
+>> @@ -62,7 +62,7 @@ void timer_heartbeat(void)
+>>   }
+>>   #endif /* CONFIG_HEARTBEAT */
+>>
+>> -#ifdef CONFIG_M68KCLASSIC
+>> +#if defined(CONFIG_M68KCLASSIC) && defined(CONFIG_MMU)
+>>   #if !IS_BUILTIN(CONFIG_RTC_DRV_GENERIC)
+>>   void read_persistent_clock64(struct timespec64 *ts)
+>>   {
+> 
+> read_persistent_clock64() uses mach_hwclk(), which is provided by
+> both setup_mm.c and setup_no.c, so it's always available?> Albeit not populated by coldfire or nommu platform code, so I see
+> the point in depending on MMU (no nommu Amiga support yet ;-).
+
+Yes, exactly. And even worse is that on ColdFire platforms it
+is never set, so will be the startup value of NULL. It is called
+without checking for NULL in both of rtc_generic_get_time() and
+rtc_generic_set_time().
+
+I figured if nommu mode is ever supported on any of the classic
+MMU m68k then this could be revisited.
+
+
+> Perhaps rtc_ioctl() should depend on CONFIG_Q40?
+
+That is probably reasonable too. Using CONFIG_MMU was a good fit
+for the way mach_set_rtc_pll and mach_get_rtc_pll are currently
+defined - as in setup_mm.c which is CONFIG_MMU only, which is why
+I went that way.
+
+But if you prefer I can re-factor further based on CONFIG_Q40?
+
+Regards
+Greg
+
+
+>> @@ -140,7 +140,7 @@ static int __init rtc_init(void)
+>>
+>>   module_init(rtc_init);
+>>   #endif /* CONFIG_RTC_DRV_GENERIC */
+>> -#endif /* CONFIG M68KCLASSIC */
+>> +#endif /* CONFIG M68KCLASSIC && CONFIG_MMU */
+>>
+>>   void __init time_init(void)
+>>   {
+> 
+> Gr{oetje,eeting}s,
+> 
+>                          Geert
+> 
 > --
-
-Thanks for the series!
-
-I'm testing the series ATM, both with on vanilla and RT kernels. I'll have =
-the
-results by Monday.
-
-Regards,
-
---=20
-Nicol=C3=A1s S=C3=A1enz
-
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
