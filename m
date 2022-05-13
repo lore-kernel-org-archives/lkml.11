@@ -2,104 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC890C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 03:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E80C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 03:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376791AbiEMDfi (ORCPT
+        id S1376802AbiEMDfm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 23:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        Thu, 12 May 2022 23:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243810AbiEMDfc (ORCPT
+        with ESMTP id S1376788AbiEMDff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 23:35:32 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41E128C9FF;
-        Thu, 12 May 2022 20:35:27 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so9656633pju.2;
-        Thu, 12 May 2022 20:35:27 -0700 (PDT)
+        Thu, 12 May 2022 23:35:35 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD8F2983AE
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 20:35:32 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id s11so4657399edy.6
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 20:35:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=xB3Nks/3PZ8n8YE9KWGnAkbqCqvpCjSbkXuUmVufMJE=;
-        b=e5KSV/frgL0y90h9WqaG4FkFK9FPt3hC1zgca8AjROj+zUJka/k48R426iC/Z+T8rl
-         HbMLuv5luVQb/LxqPQmj7ZvmAoK6HYQQJ8LfGaa0BJLx92RQNiNkUJrfWjUbGzMblwfI
-         ps5AidIQnesJSyVuioiiMJ0JHhfQVH1NTuyWkqIKUPq4nqHb/wgyHxX67+kOhB9FYD/M
-         +VyCgOIZSz9Eqj61XIWVtZIDMjybh0KHHh+rbrvKfw9IPBLDEurn+RN2m9s/xJL8ANNf
-         l+qv0p6f/QCX9cAHVspG7kbz0rIf/aWK+6MNsxX1mJROEgq/R7tn8SsGV77s+1ANri/Y
-         bmNg==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hp5XW+EPUgNO9juHKBfPepcJCtSp8113Ul6jaPu0DAQ=;
+        b=GDSDCn+HYVu7o6UcrQY7lfpYOfUai0qVrApLd9h412Qrq2pirSRC/X/vIGsbko6Xzr
+         u3u5darEcYyz1M2dEJRf6XEL1U+gNibYj54aLOA6Sy+/Fx6sALMc8GvkVgl/2TEaeP51
+         6K5WH0O4bOLy61rVkroPJh9crDW+fddMKEZzU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xB3Nks/3PZ8n8YE9KWGnAkbqCqvpCjSbkXuUmVufMJE=;
-        b=KFxk+WLxHXG40SpX9PbCCEato4bCFFOE+3Keai+2UgINO7mchzQf+skjC6VAZcoel9
-         cp4mESGGBzpH+71ua6iKk0cJRRCkemxQp6c1i4PW2rdAnW3WlYpFfAze5xSQwCPM101U
-         aZw31sG6uI6mqudlGQui+DnBQx7x2CyACAqxzIjP061S7vccQZdDxCw1u8/lh7R3jkpx
-         pNYqEdz/S4CGF/bz18nI/MWfWObfNdc7SVOO+ZWgKwKbvB5Q0LW/Dkst7cnYgiloTwkY
-         bC/y2DF3XcvDv7VWZoI30N+h+rpSheuCtu/jM7Gq5vWbrCQGbWmFrI5+mzLoIbjhh1x3
-         hY4w==
-X-Gm-Message-State: AOAM531gKTOfvDMCiXlST5arq4m2VZS1H77hintcHzQaSwsS8QLCYwLK
-        hOmLePrjF5iKrtEreafPMFqSyHv3O7DQng==
-X-Google-Smtp-Source: ABdhPJzCPONrWkNJJNUxQjkZmdNVGTHsJlRIZRaZyXHsGPITgnOoKbCbu4Csf4TCy9A96bwXauu3xA==
-X-Received: by 2002:a17:902:eb88:b0:15e:967b:f934 with SMTP id q8-20020a170902eb8800b0015e967bf934mr2859768plg.67.1652412927312;
-        Thu, 12 May 2022 20:35:27 -0700 (PDT)
-Received: from localhost.localdomain (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id b7-20020a1709027e0700b0015e8d4eb1c7sm685133plm.17.2022.05.12.20.35.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 20:35:16 -0700 (PDT)
-From:   Marvin Lin <milkfafa@gmail.com>
-X-Google-Original-From: Marvin Lin <kflin@nuvoton.com>
-To:     mchehab@kernel.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     openbmc@lists.ozlabs.org, avifishman70@gmail.com,
-        tmaimon77@gmail.com, tali.perry1@gmail.com, kwliu@nuvoton.com,
-        kflin@nuvoton.com
-Subject: [PATCH v2 0/5] Support Nuvoton NPCM Video Capture/Encode Engine
-Date:   Fri, 13 May 2022 11:34:45 +0800
-Message-Id: <20220513033450.7038-1-kflin@nuvoton.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hp5XW+EPUgNO9juHKBfPepcJCtSp8113Ul6jaPu0DAQ=;
+        b=UEiIha7GIy1EgpXv12EhKSMwHBo49nlro4+ADxYsMYqqEjzahGGYkgtCGGylQ3BKlT
+         xp3vvDXOR3FLI4T9s/shSUF9q+jjAdih3uBlJB2yFlKw2MN5BK7+B8qQyBr6RLEZXNx6
+         ic3eAtye5XE3Qpsn8TKw2dvMKMMdgbadvalGmzpE3FcuV69sF2S5QWKS9yIIgazKQlCr
+         0zeXOFZ0H0ih54k/OmOeW3h2UsQBFpdWIUw65nCkfM/p8kdzxGGcM9k28Jo48hpuj51d
+         T8z3klQ3k21g4KkCPUjSTqYIGU0XVKPbTfsFoxLNAp/qGiCvTpUkybR7R2dSZnX4oEqf
+         ZifA==
+X-Gm-Message-State: AOAM532imz9Pc9EN6rBGff5q2VRRUZBqbIrb+XmUeMFDc4dBI/cwfcdY
+        Q3cCLNX1t9Xr9jRssahTUEHQRFxG3VB6pPsTRiIwQQ==
+X-Google-Smtp-Source: ABdhPJwCxuakH0MPfmD4BsVGbk8H/0s+6mFVVZ6p1DZEFE3K2V6LRK/oXrI3wQNquf51Rr/hHpcAOHj5MVbVUnJKE6w=
+X-Received: by 2002:a50:9ecc:0:b0:428:73bd:4667 with SMTP id
+ a70-20020a509ecc000000b0042873bd4667mr34262382edf.165.1652412931525; Thu, 12
+ May 2022 20:35:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220513032832.17645-1-johnson.wang@mediatek.com> <20220513032832.17645-2-johnson.wang@mediatek.com>
+In-Reply-To: <20220513032832.17645-2-johnson.wang@mediatek.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Fri, 13 May 2022 11:35:20 +0800
+Message-ID: <CAGXv+5FqjDX7y_bR0Y=2xCnCqwtAB2S+3Fn==adxJJqanv8=YQ@mail.gmail.com>
+Subject: Re: [RESEND v4 1/2] dt-bindings: interconnect: Add MediaTek CCI dt-bindings
+To:     Johnson Wang <johnson.wang@mediatek.com>
+Cc:     cw00.choi@samsung.com, krzk+dt@kernel.org, robh+dt@kernel.org,
+        kyungmin.park@samsung.com, djakov@kernel.org, khilman@kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v2: Add Hextile document and locate with vendor formats.
+On Fri, May 13, 2022 at 11:31 AM Johnson Wang <johnson.wang@mediatek.com> wrote:
+>
+> Add devicetree binding of MediaTek CCI on MT8183 and MT8186.
+>
+> Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> ---
+>  .../bindings/interconnect/mediatek,cci.yaml   | 140 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 141 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml b/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+> new file mode 100644
+> index 000000000000..034c3b38ca3d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+> @@ -0,0 +1,140 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/interconnect/mediatek,cci.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek Cache Coherent Interconnect (CCI) frequency and voltage scaling
+> +
+> +maintainers:
+> +  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> +  - Johnson Wang <johnson.wang@mediatek.com>
+> +
+> +description: |
+> +  MediaTek Cache Coherent Interconnect (CCI) is a hardware engine used by
+> +  MT8183 and MT8186 SoCs to scale the frequency and adjust the voltage in
+> +  hardware. It can also optimize the voltage to reduce the power consumption.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - mediatek,mt8183-cci
+> +      - mediatek,mt8186-cci
+> +
+> +  clocks:
+> +    items:
+> +      - description:
+> +          The multiplexer for clock input of the bus.
+> +      - description:
+> +          A parent of "cpu" clock which is used as an intermediate clock source
 
-This patch series add DTS node, dt-bindings document and drivers for Video
-Capture/Differentiation Engine (VCD) and Encoding Compression Engine (ECE)
-present on Nuvoton NPCM SoCs.
+Replace "cpu" with "bus"?
 
-VCD can capture/differentiate video data from digital or analog sources,
-then ECE will compress the data into HEXTILE format.
+> +          when the original CPU is under transition and not stable yet.
 
-HEXTILE compressed format is defined in Remote Framebuffer Protocol (RFC
-6143) and is used by VNC features, so we also add a patch to support it.
 
-Marvin Lin (5):
-  arm: dts: Add node for NPCM Video Capture/Encode Engine
-  dt-bindings: media: Add dt-bindings for NPCM Video Capture/Encode
-    Engine
-  dt-bindings: arm/npcm: Add dt-bindings for Graphics Core Information
-  media: Add HEXTILE compressed format
-  drivers: media: platform: Add NPCM Video Capture/Encode Engine driver
+And also, "when the original clock source (PLL) is under transition ..."
 
- .../bindings/arm/npcm/nuvoton,gfxi.yaml       |   41 +
- .../bindings/media/nuvoton,npcm-video.yaml    |   87 +
- .../media/v4l/pixfmt-reserved.rst             |    7 +
- arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi |   19 +
- drivers/media/platform/Kconfig                |    1 +
- drivers/media/platform/Makefile               |    1 +
- drivers/media/platform/nuvoton/Kconfig        |   12 +
- drivers/media/platform/nuvoton/Makefile       |    2 +
- drivers/media/platform/nuvoton/npcm-video.c   | 2074 +++++++++++++++++
- drivers/media/v4l2-core/v4l2-ioctl.c          |    1 +
- include/uapi/linux/videodev2.h                |    1 +
- 11 files changed, 2246 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/npcm/nuvoton,gfxi.yaml
- create mode 100644 Documentation/devicetree/bindings/media/nuvoton,npcm-video.yaml
- create mode 100644 drivers/media/platform/nuvoton/Kconfig
- create mode 100644 drivers/media/platform/nuvoton/Makefile
- create mode 100644 drivers/media/platform/nuvoton/npcm-video.c
+Otherwise,
 
--- 
-2.17.1
-
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
