@@ -2,86 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27228C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 18:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 512DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 19:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383516AbiEMS7v (ORCPT
+        id S1383521AbiEMTAL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 14:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        Fri, 13 May 2022 15:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350124AbiEMS7r (ORCPT
+        with ESMTP id S1350124AbiEMTAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 14:59:47 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8E236B5B
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 11:59:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652468385; x=1684004385;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8jZEDO0wap/S70A6rQv+pSQuvwOwjW4+QKi9OH+Emho=;
-  b=VQPvmxJo7n7Hi2Yncoe/646I5rny79Uc07/jWAGRhL+sV0D8iPTfdICw
-   lNpwA12EQvYrliB6n9+nCSEsISjCQ53GUU/jvWRBEu0R/iR2dlt1Avbpc
-   IBcb7jk73SJYMeWl8yOMnD9mTAp0IRXwzELxnUiOONiPU/rb2EKRe6PqK
-   aaYsBb6cdzyuZ3OpRTM8FYTkWLZFb4DbkN1Ah/QXb3kkt7aaJzIp4ucq+
-   ucQM4dCgwGUHuzkTldztkouf5P8qT/RY341AwNp8kTgel1CoNmteXBr8C
-   TgLbDnxQCfk6Q+7ATfsCII9uj8PJSj2zT6tLwx6cc6L+tigKj6jZeJig3
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270518314"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="270518314"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 11:59:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="698603603"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga004.jf.intel.com with ESMTP; 13 May 2022 11:59:44 -0700
-Date:   Fri, 13 May 2022 12:03:19 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 13/29] iommu/amd: Compose MSI messages for NMI irqs in
- non-IR format
-Message-ID: <20220513190319.GD22683@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-14-ricardo.neri-calderon@linux.intel.com>
- <87r156fiur.ffs@tglx>
+        Fri, 13 May 2022 15:00:07 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E9C51325;
+        Fri, 13 May 2022 12:00:05 -0700 (PDT)
+Date:   Fri, 13 May 2022 11:59:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1652468403;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VqpZhH7J5youYlvqQPYfh1hCiMgjjWNCBTzk0n4ZxXA=;
+        b=F4EModIONc1PztPbxj08bNBaO8jF2TB7U0Ez9Ira/aYAAwz8eA72ptgiF1I1ULNyM7IVp7
+        kK/WhwqWPOQDCfP4/od29ylwXnmAvg/gbAFgyfaveVhFF2KhbZVSGYIv5hflnA15e+qzPh
+        YDxYaYxWoVB4FC51eWTTQkRgBUVJyjU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     void@manifault.com, akpm@linux-foundation.org,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org, kernel-team@fb.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        mhocko@kernel.org, shakeelb@google.com, tj@kernel.org,
+        Richard Palethorpe <rpalethorpe@suse.de>
+Subject: Re: [PATCH 4/4] selftests: memcg: Remove protection from top level
+ memcg
+Message-ID: <Yn6qrHHS935ppX98@carbon>
+References: <20220512174452.tr34tuh4k5jm6qjs@dev0025.ash9.facebook.com>
+ <20220513171811.730-1-mkoutny@suse.com>
+ <20220513171811.730-5-mkoutny@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <87r156fiur.ffs@tglx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220513171811.730-5-mkoutny@suse.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 11:31:56PM +0200, Thomas Gleixner wrote:
-> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
-> > +	 *
-> > +	 * Also, NMIs do not have an associated vector. No need for cleanup.
+On Fri, May 13, 2022 at 07:18:11PM +0200, Michal Koutny wrote:
+> The reclaim is triggered by memory limit in a subtree, therefore the
+> testcase does not need configured protection against external reclaim.
 > 
-> They have a vector and what the heck is this cleanup comment for here?
-> There is nothing cleanup alike anywhere near.
+> Also, correct/deduplicate respective comments
 > 
-> Adding confusing comments is worse than adding no comments at all.
+> Signed-off-by: Michal Koutný <mkoutny@suse.com>
+> ---
+>  tools/testing/selftests/cgroup/test_memcontrol.c | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
+> index 9ffacf024bbd..9d370aafd799 100644
+> --- a/tools/testing/selftests/cgroup/test_memcontrol.c
+> +++ b/tools/testing/selftests/cgroup/test_memcontrol.c
+> @@ -247,7 +247,7 @@ static int cg_test_proc_killed(const char *cgroup)
+>  
+>  /*
+>   * First, this test creates the following hierarchy:
+> - * A       memory.min = 50M,  memory.max = 200M
+> + * A       memory.min = 0,    memory.max = 200M
+>   * A/B     memory.min = 50M,  memory.current = 50M
+>   * A/B/C   memory.min = 75M,  memory.current = 50M
+>   * A/B/D   memory.min = 25M,  memory.current = 50M
+> @@ -257,7 +257,7 @@ static int cg_test_proc_killed(const char *cgroup)
+>   * Usages are pagecache, but the test keeps a running
+>   * process in every leaf cgroup.
+>   * Then it creates A/G and creates a significant
+> - * memory pressure in it.
+> + * memory pressure in A.
+>   *
+>   * A/B    memory.current ~= 50M
+>   * A/B/C  memory.current ~= 29M
+> @@ -335,8 +335,6 @@ static int test_memcg_min(const char *root)
+>  			      (void *)(long)fd);
+>  	}
+>  
+> -	if (cg_write(parent[0], "memory.min", "50M"))
+> -		goto cleanup;
+>  	if (cg_write(parent[1], "memory.min", "50M"))
+>  		goto cleanup;
+>  	if (cg_write(children[0], "memory.min", "75M"))
+> @@ -404,8 +402,8 @@ static int test_memcg_min(const char *root)
+>  
+>  /*
+>   * First, this test creates the following hierarchy:
+> - * A       memory.low = 50M,  memory.max = 200M
+> - * A/B     memory.low = 50M,  memory.current = 50M
+> + * A       memory.low = 0,    memory.max = 200M
+> + * A/B     memory.low = 50M,  memory.current = ...
 
-I will remove the comment regarding cleanup. I will clarify that NMI has a
-fixed vector.
+Can you, please, just remove "memory.current = ...", it's not
+because obvious what "..." means here.
 
-Thanks and BR,
-Ricardo
+Other than that: Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+
+Thank you!
