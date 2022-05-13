@@ -2,51 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60CF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A2BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380825AbiEMO2P (ORCPT
+        id S1380841AbiEMO2U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42192 "EHLO
+        Fri, 13 May 2022 10:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380859AbiEMO0L (ORCPT
+        with ESMTP id S1380909AbiEMO0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEED95E742;
-        Fri, 13 May 2022 07:25:34 -0700 (PDT)
+        Fri, 13 May 2022 10:26:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFBB5EBF5;
+        Fri, 13 May 2022 07:25:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87A5462154;
-        Fri, 13 May 2022 14:25:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 960EBC3411C;
-        Fri, 13 May 2022 14:25:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E9B5B83067;
+        Fri, 13 May 2022 14:25:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9E13C34100;
+        Fri, 13 May 2022 14:25:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451932;
-        bh=Ct0LLrtbw4fIcwNuzzkdy83wmUH3W9eNG0B4y6zLjog=;
+        s=korg; t=1652451944;
+        bh=HNr6tWUbelcsxN8l9Mtu0Wmp8vTca4JSr0uOSz08qBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TH5LiA43KGtbDo///OflzwbPsF7jksSewgj+tYDxx7S9vASlDctk3ucYQqJeVBQd1
-         Buscp6lM6cW80l5DM3jYw4Rui3T0im1/vJjsMowQdfmNOJE/158yTDTpgPwB6I4Uqc
-         fwOXve1QqTIJQ/sGzob8YBPouWZ9cSUb2zj030Bg=
+        b=JIYYlSbmBhZkqj+fiSehIqMuNPycLdchC4dmuwDlF7L+nQ8KuhYE9bmlNIyuc3ddf
+         gWuqIcgyZsI/5/7OVR67xOHfM2XYPPdgtxw4ik18jwA5uunTlA4YWgHsL4kqdpHHt4
+         ndz6Zb2vNQgVw55Dq0q/m70TR7ypcrYmPxwWFssw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.19 01/15] MIPS: Use address-of operator on section symbols
-Date:   Fri, 13 May 2022 16:23:23 +0200
-Message-Id: <20220513142227.941595011@linuxfoundation.org>
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Lars Persson <lars.persson@axis.com>,
+        Peter Xu <peterx@redhat.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Zi Yan <ziy@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 13/15] mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
+Date:   Fri, 13 May 2022 16:23:35 +0200
+Message-Id: <20220513142228.288933782@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
 References: <20220513142227.897535454@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -54,81 +59,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <natechancellor@gmail.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-commit d422c6c0644bccbb1ebeefffa51f35cec3019517 upstream.
+commit e763243cc6cb1fcc720ec58cfd6e7c35ae90a479 upstream.
 
-When building xway_defconfig with clang:
+userfaultfd calls copy_huge_page_from_user() which does not do any cache
+flushing for the target page.  Then the target page will be mapped to
+the user space with a different address (user address), which might have
+an alias issue with the kernel address used to copy the data from the
+user to.
 
-arch/mips/lantiq/prom.c:82:23: error: array comparison always evaluates
-to true [-Werror,-Wtautological-compare]
-        else if (__dtb_start != __dtb_end)
-                             ^
-1 error generated.
+Fix this issue by flushing dcache in copy_huge_page_from_user().
 
-These are not true arrays, they are linker defined symbols, which are
-just addresses. Using the address of operator silences the warning
-and does not change the resulting assembly with either clang/ld.lld
-or gcc/ld (tested with diff + objdump -Dr). Do the same thing across
-the entire MIPS subsystem to ensure there are no more warnings around
-this type of comparison.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1232
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Link: https://lkml.kernel.org/r/20220210123058.79206-4-songmuchun@bytedance.com
+Fixes: fa4d75c1de13 ("userfaultfd: hugetlbfs: add copy_huge_page_from_user for hugetlb userfaultfd support")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Fam Zheng <fam.zheng@bytedance.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Lars Persson <lars.persson@axis.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/bmips/setup.c          |    2 +-
- arch/mips/lantiq/prom.c          |    2 +-
- arch/mips/pic32/pic32mzda/init.c |    2 +-
- arch/mips/ralink/of.c            |    2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ mm/memory.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/mips/bmips/setup.c
-+++ b/arch/mips/bmips/setup.c
-@@ -174,7 +174,7 @@ void __init plat_mem_setup(void)
- 		dtb = phys_to_virt(fw_arg2);
- 	else if (fw_passed_dtb) /* UHI interface */
- 		dtb = (void *)fw_passed_dtb;
--	else if (__dtb_start != __dtb_end)
-+	else if (&__dtb_start != &__dtb_end)
- 		dtb = (void *)__dtb_start;
- 	else
- 		panic("no dtb found");
---- a/arch/mips/lantiq/prom.c
-+++ b/arch/mips/lantiq/prom.c
-@@ -81,7 +81,7 @@ void __init plat_mem_setup(void)
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -4978,6 +4978,8 @@ long copy_huge_page_from_user(struct pag
+ 		if (rc)
+ 			break;
  
- 	if (fw_passed_dtb) /* UHI interface */
- 		dtb = (void *)fw_passed_dtb;
--	else if (__dtb_start != __dtb_end)
-+	else if (&__dtb_start != &__dtb_end)
- 		dtb = (void *)__dtb_start;
- 	else
- 		panic("no dtb found");
---- a/arch/mips/pic32/pic32mzda/init.c
-+++ b/arch/mips/pic32/pic32mzda/init.c
-@@ -36,7 +36,7 @@ static ulong get_fdtaddr(void)
- 	if (fw_passed_dtb && !fw_arg2 && !fw_arg3)
- 		return (ulong)fw_passed_dtb;
- 
--	if (__dtb_start < __dtb_end)
-+	if (&__dtb_start < &__dtb_end)
- 		ftaddr = (ulong)__dtb_start;
- 
- 	return ftaddr;
---- a/arch/mips/ralink/of.c
-+++ b/arch/mips/ralink/of.c
-@@ -79,7 +79,7 @@ void __init plat_mem_setup(void)
- 	 */
- 	if (fw_passed_dtb)
- 		dtb = (void *)fw_passed_dtb;
--	else if (__dtb_start != __dtb_end)
-+	else if (&__dtb_start != &__dtb_end)
- 		dtb = (void *)__dtb_start;
- 
- 	__dt_setup_arch(dtb);
++		flush_dcache_page(subpage);
++
+ 		cond_resched();
+ 	}
+ 	return ret_val;
 
 
