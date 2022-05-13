@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F758C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D327DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381214AbiEMOfB (ORCPT
+        id S1356409AbiEMOfG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
+        Fri, 13 May 2022 10:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381194AbiEMObJ (ORCPT
+        with ESMTP id S1381135AbiEMOa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:31:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5AF919C3BD;
-        Fri, 13 May 2022 07:28:42 -0700 (PDT)
+        Fri, 13 May 2022 10:30:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1866C994EA;
+        Fri, 13 May 2022 07:28:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 190F662175;
-        Fri, 13 May 2022 14:28:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF23AC34100;
-        Fri, 13 May 2022 14:28:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AA3E61F99;
+        Fri, 13 May 2022 14:28:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43FEAC34100;
+        Fri, 13 May 2022 14:28:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452121;
-        bh=rOu789wVzOD6bYsiCxLndfe4675ny745B3rwyw6CJXY=;
+        s=korg; t=1652452109;
+        bh=SZDidThTxrSwy7TK6gVo0MGXhtuEdWJ6gJKEZ+IvH8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w/kVPwLxHnVYHJolDTHTHgAdl/Bz3Bi3K8HdxX/uB358M4qjU+PEtEj/bUxRBGRJN
-         1fEN7b/WSXx0lHfSAVsRaSMGLCxaibd7u0xhZQiMlfUDEME+0Gy4uar6gVsffhYzzq
-         o3nCr8XwI+cfr+z7MAj5awicqS45+Z8afYxvLjR0=
+        b=vCT/7Gq6CyZDRyC5dP/I/EwNyIqx8o+a1jyqAoROdrav9/kb6FBkIhAQ/T3tMUy9i
+         5eTIc9gErtY66ApecnXN2LxGFA1UnfauE+Cqyzoqt0c3oXJtYJoEErjykS0k1fHPsh
+         9eDNYmByxz0u47vzmr7z+oxfH+I5+FL7pXaGL+qA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 06/21] kbuild: move objtool_args back to scripts/Makefile.build
-Date:   Fri, 13 May 2022 16:23:48 +0200
-Message-Id: <20220513142230.062663025@linuxfoundation.org>
+        stable@vger.kernel.org, Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Youquan Song <youquan.song@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 19/21] mm/hwpoison: fix error page recovered but reported "not recovered"
+Date:   Fri, 13 May 2022 16:24:01 +0200
+Message-Id: <20220513142230.431675712@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142229.874949670@linuxfoundation.org>
 References: <20220513142229.874949670@linuxfoundation.org>
@@ -51,72 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-[ Upstream commit 8f0c32c788fffa8e88f995372415864039347c8a ]
+commit 046545a661af2beec21de7b90ca0e35f05088a81 upstream.
 
-Commit b1a1a1a09b46 ("kbuild: lto: postpone objtool") moved objtool_args
-to Makefile.lib, so the arguments can be used in Makefile.modfinal as
-well as Makefile.build.
+When an uncorrected memory error is consumed there is a race between the
+CMCI from the memory controller reporting an uncorrected error with a
+UCNA signature, and the core reporting and SRAR signature machine check
+when the data is about to be consumed.
 
-With commit 850ded46c642 ("kbuild: Fix TRIM_UNUSED_KSYMS with
-LTO_CLANG"), module LTO linking came back to scripts/Makefile.build
-again.
+If the CMCI wins that race, the page is marked poisoned when
+uc_decode_notifier() calls memory_failure() and the machine check
+processing code finds the page already poisoned.  It calls
+kill_accessing_process() to make sure a SIGBUS is sent.  But returns the
+wrong error code.
 
-So, there is no more reason to keep objtool_args in a separate file.
+Console log looks like this:
 
-Get it back to the original place, close to the objtool command.
+  mce: Uncorrected hardware memory error in user-access at 3710b3400
+  Memory failure: 0x3710b3: recovery action for dirty LRU page: Recovered
+  Memory failure: 0x3710b3: already hardware poisoned
+  Memory failure: 0x3710b3: Sending SIGBUS to einj_mem_uc:361438 due to hardware memory corruption
+  mce: Memory error not recovered
 
-Remove the stale comment too.
+kill_accessing_process() is supposed to return -EHWPOISON to notify that
+SIGBUS is already set to the process and kill_me_maybe() doesn't have to
+send it again.  But current code simply fails to do this, so fix it to
+make sure to work as intended.  This change avoids the noise message
+"Memory error not recovered" and skips duplicate SIGBUSs.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[tony.luck@intel.com: reword some parts of commit message]
+
+Link: https://lkml.kernel.org/r/20220113231117.1021405-1-naoya.horiguchi@linux.dev
+Fixes: a3f5d80ea401 ("mm,hwpoison: send SIGBUS with error virutal address")
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reported-by: Youquan Song <youquan.song@intel.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/Makefile.build |   10 ++++++++++
- scripts/Makefile.lib   |   11 -----------
- 2 files changed, 10 insertions(+), 11 deletions(-)
+ mm/memory-failure.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -224,6 +224,16 @@ cmd_record_mcount = $(if $(findstring $(
- endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -705,8 +705,10 @@ static int kill_accessing_process(struct
+ 			      (void *)&priv);
+ 	if (ret == 1 && priv.tk.addr)
+ 		kill_proc(&priv.tk, pfn, flags);
++	else
++		ret = 0;
+ 	mmap_read_unlock(p->mm);
+-	return ret ? -EFAULT : -EHWPOISON;
++	return ret > 0 ? -EHWPOISON : -EFAULT;
+ }
  
- ifdef CONFIG_STACK_VALIDATION
-+
-+objtool_args =								\
-+	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
-+	$(if $(part-of-module), --module)				\
-+	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
-+	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
-+	$(if $(CONFIG_RETPOLINE), --retpoline)				\
-+	$(if $(CONFIG_X86_SMAP), --uaccess)				\
-+	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)
-+
- ifndef CONFIG_LTO_CLANG
- 
- __objtool_obj := $(objtree)/tools/objtool/objtool
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -232,17 +232,6 @@ ifeq ($(CONFIG_LTO_CLANG),y)
- mod-prelink-ext := .lto
- endif
- 
--# Objtool arguments are also needed for modfinal with LTO, so we define
--# then here to avoid duplication.
--objtool_args =								\
--	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
--	$(if $(part-of-module), --module)				\
--	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
--	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
--	$(if $(CONFIG_RETPOLINE), --retpoline)				\
--	$(if $(CONFIG_X86_SMAP), --uaccess)				\
--	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)
--
- # Useful for describing the dependency of composite objects
- # Usage:
- #   $(call multi_depend, multi_used_targets, suffix_to_remove, suffix_to_add)
+ static const char *action_name[] = {
 
 
