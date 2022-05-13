@@ -2,70 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A20C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 18:59:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27228C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 18:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383509AbiEMS7Q (ORCPT
+        id S1383516AbiEMS7v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 14:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50764 "EHLO
+        Fri, 13 May 2022 14:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240694AbiEMS7N (ORCPT
+        with ESMTP id S1350124AbiEMS7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 14:59:13 -0400
-Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5ECC852E51;
-        Fri, 13 May 2022 11:59:11 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id 0668AFFCE9;
-        Fri, 13 May 2022 18:59:09 +0000 (UTC)
-Date:   Fri, 13 May 2022 20:59:07 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Vincent Mailhol <vincent.mailhol@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6] can, tty: can327 CAN/ldisc driver for ELM327 based
- OBD-II adapters
-Message-ID: <20220513205907.6d5473ff.max@enpas.org>
-In-Reply-To: <CAMZ6RqKjGJyOPCQvS95ZUc6UrgaFzjunRhU=10biAAWYT_V_ZQ@mail.gmail.com>
-References: <20220512182921.193462-1-max@enpas.org>
-        <CAMZ6Rq+BwL1NPTLtC5sQAd4z1Kc1TFJPPoW-i+0RZ5dnFaWYiw@mail.gmail.com>
-        <CAMZ6RqKjGJyOPCQvS95ZUc6UrgaFzjunRhU=10biAAWYT_V_ZQ@mail.gmail.com>
+        Fri, 13 May 2022 14:59:47 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8E236B5B
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 11:59:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652468385; x=1684004385;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8jZEDO0wap/S70A6rQv+pSQuvwOwjW4+QKi9OH+Emho=;
+  b=VQPvmxJo7n7Hi2Yncoe/646I5rny79Uc07/jWAGRhL+sV0D8iPTfdICw
+   lNpwA12EQvYrliB6n9+nCSEsISjCQ53GUU/jvWRBEu0R/iR2dlt1Avbpc
+   IBcb7jk73SJYMeWl8yOMnD9mTAp0IRXwzELxnUiOONiPU/rb2EKRe6PqK
+   aaYsBb6cdzyuZ3OpRTM8FYTkWLZFb4DbkN1Ah/QXb3kkt7aaJzIp4ucq+
+   ucQM4dCgwGUHuzkTldztkouf5P8qT/RY341AwNp8kTgel1CoNmteXBr8C
+   TgLbDnxQCfk6Q+7ATfsCII9uj8PJSj2zT6tLwx6cc6L+tigKj6jZeJig3
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270518314"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="270518314"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 11:59:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="698603603"
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+  by orsmga004.jf.intel.com with ESMTP; 13 May 2022 11:59:44 -0700
+Date:   Fri, 13 May 2022 12:03:19 -0700
+From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 13/29] iommu/amd: Compose MSI messages for NMI irqs in
+ non-IR format
+Message-ID: <20220513190319.GD22683@ranerica-svr.sc.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-14-ricardo.neri-calderon@linux.intel.com>
+ <87r156fiur.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87r156fiur.ffs@tglx>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 13 May 2022 15:31:20 +0900
-Vincent Mailhol <vincent.mailhol@gmail.com> wrote:
-
-> On Fri. 13 May 2022 at 11:38, Vincent Mailhol
-> <vincent.mailhol@gmail.com> wrote: [...]
-> > > +       case ELM327_STATE_RECEIVING:
-> > > +               /* Find <CR> delimiting feedback lines. */
-> > > +               for (len = 0;
-> > > +                    (len < elm->rxfill) && (elm->rxbuf[len] !=
-> > > '\r');
-> > > +                    len++) {
-> > > +                       /* empty loop */  
-> >
-> > Question of taste but would prefer a while look with the len++ in
-> > the body (if you prefer to do as above, no need to argue, just keep
-> > it like it is).  
+On Fri, May 06, 2022 at 11:31:56PM +0200, Thomas Gleixner wrote:
+> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
+> > +	 *
+> > +	 * Also, NMIs do not have an associated vector. No need for cleanup.
 > 
-> Actually, what about this?
+> They have a vector and what the heck is this cleanup comment for here?
+> There is nothing cleanup alike anywhere near.
 > 
-> len = strnchr(elm->rxbuf, elm->rxfill, '\r');
+> Adding confusing comments is worse than adding no comments at all.
 
-Actually I'd use memchr() if anything, but not really here. I do end up
-using the actual index. And since both strchr() and mrmchr() return
-pointers, I'd rather avoid them because I prefer to use indices
-whenever possible.
+I will remove the comment regarding cleanup. I will clarify that NMI has a
+fixed vector.
 
-
-Max
+Thanks and BR,
+Ricardo
