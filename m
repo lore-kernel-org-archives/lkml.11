@@ -2,76 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E963C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:27:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F40C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377364AbiEMG1B (ORCPT
+        id S1351077AbiEMGaW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 02:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35466 "EHLO
+        Fri, 13 May 2022 02:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377313AbiEMG0Z (ORCPT
+        with ESMTP id S243588AbiEMGaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 02:26:25 -0400
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E669F275E4;
-        Thu, 12 May 2022 23:26:21 -0700 (PDT)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id F418B20140E;
-        Fri, 13 May 2022 06:26:05 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 73159809A1; Fri, 13 May 2022 08:22:36 +0200 (CEST)
-Date:   Fri, 13 May 2022 08:22:36 +0200
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v3] random: use first 128 bits of input as fast init
-Message-ID: <Yn35LG3pz9BNsSS3@owl.dominikbrodowski.net>
-References: <20220503131204.571547-1-Jason@zx2c4.com>
- <20220504111644.284927-1-Jason@zx2c4.com>
+        Fri, 13 May 2022 02:30:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540662927AE;
+        Thu, 12 May 2022 23:30:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E318761E21;
+        Fri, 13 May 2022 06:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD347C34114;
+        Fri, 13 May 2022 06:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652423418;
+        bh=IOn/pOV0AeF2oNjVCjrm6Xgmh353s7FLlJ25r2Ka6zs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VPZEiXfhCuwNBuoRiAUpiEUdfHlLpkqgYv95yllk28UssbGWuIh+OOWIAOU9H+P8/
+         lu8j1U8nS1FzsVmlJc6CXOQ2AFY+BdDCOsA2t7pWXMkzBOz5zECgiAwoOPeGxXmxxT
+         Hk6OfykZLEbJBoo9Qnw2+epDHM1AN0b7Uo+Jiq3g=
+Date:   Fri, 13 May 2022 08:30:10 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] USB-serial fixes for 5.18-rc7
+Message-ID: <Yn368twGLV1CW7Xi@kroah.com>
+References: <Yn32DMmVNRmT0zz2@hovoldconsulting.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504111644.284927-1-Jason@zx2c4.com>
+In-Reply-To: <Yn32DMmVNRmT0zz2@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Wed, May 04, 2022 at 01:16:44PM +0200 schrieb Jason A. Donenfeld:
-> Before, the first 64 bytes of input, regardless of how entropic it was,
-> would be used to mutate the crng base key directly, and none of those
-> bytes would be credited as having entropy. Then 256 bits of credited
-> input would be accumulated, and only then would the rng transition from
-> the earlier "fast init" phase into being actually initialized.
+On Fri, May 13, 2022 at 08:09:16AM +0200, Johan Hovold wrote:
+> The following changes since commit 672c0c5173427e6b3e2a9bbb7be51ceeec78093a:
 > 
-> The thinking was that by mixing and matching fast init and real init, an
-> attacker who compromised the fast init state, considered easy to do
-> given how little entropy might be in those first 64 bytes, would then be
-> able to bruteforce bits from the actual initialization. By keeping these
-> separate, bruteforcing became impossible.
+>   Linux 5.18-rc5 (2022-05-01 13:57:58 -0700)
 > 
-> However, by not crediting potentially creditable bits from those first 64
-> bytes of input, we delay initialization, and actually make the problem
-> worse, because it means the user is drawing worse random numbers for a
-> longer period of time.
+> are available in the Git repository at:
 > 
-> Instead, we can take the first 128 bits as fast init, and allow them to
-> be credited, and then hold off on the next 128 bits until they've
-> accumulated. This is still a wide enough margin to prevent bruteforcing
-> the rng state, while still initializing much faster.
-> 
-> Then, rather than trying to piecemeal inject into the base crng key at
-> various points, instead just extract from the pool when we need it, for
-> the crng_init==0 phase. Performance may even be better for the various
-> inputs here, since there are likely more calls to mix_pool_bytes() then
-> there are to get_random_bytes() during this phase of system execution.
+>   https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git tags/usb-serial-5.18-rc7
 
-Have you evaluated this closer, also for systems where it takes ages to
-reach crng_init = 1? And might it make sense to only call extract_entropy()
-if there has been new input between two calls to get_random_bytes()?
+Pulled and pushed out, thanks.
 
-Thanks,
-	Dominik
+greg k-h
