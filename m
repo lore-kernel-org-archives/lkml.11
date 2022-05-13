@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11AA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380878AbiEMO3z (ORCPT
+        id S1380985AbiEMOaB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        Fri, 13 May 2022 10:30:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381117AbiEMO0p (ORCPT
+        with ESMTP id S1381085AbiEMO0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:45 -0400
+        Fri, 13 May 2022 10:26:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4869250E11;
-        Fri, 13 May 2022 07:26:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0244850B24;
+        Fri, 13 May 2022 07:26:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C11DDB82C9D;
-        Fri, 13 May 2022 14:26:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6BBC34100;
-        Fri, 13 May 2022 14:26:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3C14B83068;
+        Fri, 13 May 2022 14:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2767C34100;
+        Fri, 13 May 2022 14:26:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452000;
-        bh=HWTMEGbsHhXtcvzhDNm8UxDIRyRvfDBRzlYitpsBLYA=;
+        s=korg; t=1652451976;
+        bh=3gwdWpVVxSY2RAbkBx16m29vhyxddLubsNCdmoGDlqc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bpdlGr93yMLojJR+ushecK87W9x7WFJea7+IllbE+3b40Yq5Zamo+qsvU2wk/76MY
-         6+4tyNAZMErkhTuVcK6iWSvz7AhZR7kSdZ5Z7RacrmENMZ86vbytsQvkObgbx03434
-         x25SWjnn8Drd37RzWCEAGs8Fi5Fs+U7rm18E352c=
+        b=MDSyw7EU8tbTpgUnKuMQuajHU6EkNHMcSVrmKXGjte4BH29hrnHM39J3aqqigw3z2
+         hg3/yWjxrGB+jvj5aDUztfAi2Ai7O7+ypniOHyti4mG3WqBNVqkingIrJ3BVZ2AF0I
+         UtDN2qDbdte0nQ3PyNjF/Y7+ykstMXRkGKuSrdto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.4 15/18] Bluetooth: Fix the creation of hdev->name
-Date:   Fri, 13 May 2022 16:23:41 +0200
-Message-Id: <20220513142229.598090397@linuxfoundation.org>
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.19 09/15] ALSA: pcm: Fix races among concurrent read/write and buffer changes
+Date:   Fri, 13 May 2022 16:23:31 +0200
+Message-Id: <20220513142228.170275746@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
-References: <20220513142229.153291230@linuxfoundation.org>
+In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
+References: <20220513142227.897535454@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,65 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Itay Iellin <ieitayie@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 103a2f3255a95991252f8f13375c3a96a75011cd upstream.
+commit dca947d4d26dbf925a64a6cfb2ddbc035e831a3d upstream.
 
-Set a size limit of 8 bytes of the written buffer to "hdev->name"
-including the terminating null byte, as the size of "hdev->name" is 8
-bytes. If an id value which is greater than 9999 is allocated,
-then the "snprintf(hdev->name, sizeof(hdev->name), "hci%d", id)"
-function call would lead to a truncation of the id value in decimal
-notation.
+In the current PCM design, the read/write syscalls (as well as the
+equivalent ioctls) are allowed before the PCM stream is running, that
+is, at PCM PREPARED state.  Meanwhile, we also allow to re-issue
+hw_params and hw_free ioctl calls at the PREPARED state that may
+change or free the buffers, too.  The problem is that there is no
+protection against those mix-ups.
 
-Set an explicit maximum id parameter in the id allocation function call.
-The id allocation function defines the maximum allocated id value as the
-maximum id parameter value minus one. Therefore, HCI_MAX_ID is defined
-as 10000.
+This patch applies the previously introduced runtime->buffer_mutex to
+the read/write operations so that the concurrent hw_params or hw_free
+call can no longer interfere during the operation.  The mutex is
+unlocked before scheduling, so we don't take it too long.
 
-Signed-off-by: Itay Iellin <ieitayie@gmail.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Link: https://lore.kernel.org/r/20220322170720.3529-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/bluetooth/hci_core.h |    3 +++
- net/bluetooth/hci_core.c         |    6 +++---
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ sound/core/pcm_lib.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -34,6 +34,9 @@
- /* HCI priority */
- #define HCI_PRIO_MAX	7
+--- a/sound/core/pcm_lib.c
++++ b/sound/core/pcm_lib.c
+@@ -1876,9 +1876,11 @@ static int wait_for_avail(struct snd_pcm
+ 		if (avail >= runtime->twake)
+ 			break;
+ 		snd_pcm_stream_unlock_irq(substream);
++		mutex_unlock(&runtime->buffer_mutex);
  
-+/* HCI maximum id value */
-+#define HCI_MAX_ID 10000
-+
- /* HCI Core structures */
- struct inquiry_data {
- 	bdaddr_t	bdaddr;
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3304,10 +3304,10 @@ int hci_register_dev(struct hci_dev *hde
- 	 */
- 	switch (hdev->dev_type) {
- 	case HCI_PRIMARY:
--		id = ida_simple_get(&hci_index_ida, 0, 0, GFP_KERNEL);
-+		id = ida_simple_get(&hci_index_ida, 0, HCI_MAX_ID, GFP_KERNEL);
- 		break;
- 	case HCI_AMP:
--		id = ida_simple_get(&hci_index_ida, 1, 0, GFP_KERNEL);
-+		id = ida_simple_get(&hci_index_ida, 1, HCI_MAX_ID, GFP_KERNEL);
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -3316,7 +3316,7 @@ int hci_register_dev(struct hci_dev *hde
- 	if (id < 0)
- 		return id;
+ 		tout = schedule_timeout(wait_time);
  
--	sprintf(hdev->name, "hci%d", id);
-+	snprintf(hdev->name, sizeof(hdev->name), "hci%d", id);
- 	hdev->id = id;
++		mutex_lock(&runtime->buffer_mutex);
+ 		snd_pcm_stream_lock_irq(substream);
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		switch (runtime->status->state) {
+@@ -2172,6 +2174,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
  
- 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
+ 	nonblock = !!(substream->f_flags & O_NONBLOCK);
+ 
++	mutex_lock(&runtime->buffer_mutex);
+ 	snd_pcm_stream_lock_irq(substream);
+ 	err = pcm_accessible_state(runtime);
+ 	if (err < 0)
+@@ -2254,6 +2257,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
+ 	if (xfer > 0 && err >= 0)
+ 		snd_pcm_update_state(substream, runtime);
+ 	snd_pcm_stream_unlock_irq(substream);
++	mutex_unlock(&runtime->buffer_mutex);
+ 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : err;
+ }
+ EXPORT_SYMBOL(__snd_pcm_lib_xfer);
 
 
