@@ -2,173 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9014FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 17:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 17:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383193AbiEMR4r convert rfc822-to-8bit (ORCPT
+        id S1383205AbiEMR5G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 13:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
+        Fri, 13 May 2022 13:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383226AbiEMR4o (ORCPT
+        with ESMTP id S234536AbiEMR5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 13:56:44 -0400
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2DE1356BA;
-        Fri, 13 May 2022 10:56:32 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id x74so3896362ybe.4;
-        Fri, 13 May 2022 10:56:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6e/oSgyfVARToRdeUYxHVtQ6AaUn4CgE1vbZwPLu6BI=;
-        b=PSBgBNYlfpDf0Z3bbt5FDi4oiBkguaeBh8TF6uDl0kNAZOWFnn0hV50LJzweRs56on
-         NiHrLwNiu72yeUYejQ5bcVoWczMRi1V8H0hHVx2yRkj9wTKR7KLKvw8vVgG9V4fyeJ8q
-         Pn8C9Olr0WfHI59xE3ej+8umpKsiBYY+OIr6Zip4n8wx/LQUYLasYePzE4S89U/Lt1kw
-         D3iVeFHTV3a7tYdPNYo5KTyE6b0HxVZ//Dwbg9demhWt9enVOTGD/ANNFCZ7+89VOGEA
-         t5+XZSFpc/1TGyMoZwh+Jlzi+EJUf8bddp6pb8Wsbcm27aKnwJQ0XGtwqexzTyz/iYWc
-         dNxA==
-X-Gm-Message-State: AOAM5302AoolLwax64CLKlsK73iz1K59Jj2239dlNWtS3gawXG7lrXgX
-        OzVZOwKqmj7vn+c8WBBCbecWWFRmtamz5PmtJq0=
-X-Google-Smtp-Source: ABdhPJyajGmsQ2qElA4nEpdS0uYIgFI8XDIlXxzY7qVC4nr9FiwxJJnbtYuLgK6ynqYgnTaLubbNX2Vu+ze+pD/UFIw=
-X-Received: by 2002:a25:d4f:0:b0:64b:a4b1:2d50 with SMTP id
- 76-20020a250d4f000000b0064ba4b12d50mr2860970ybn.482.1652464590248; Fri, 13
- May 2022 10:56:30 -0700 (PDT)
+        Fri, 13 May 2022 13:57:03 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7D41312AA;
+        Fri, 13 May 2022 10:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652464619; x=1684000619;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=E5uYlfEx8G4vbMsaJMA/1PseB1AhKPjUjBAp4ujFeuU=;
+  b=WWvlxcSpA6jB93VD3WUTxsrEM7s+EMZ7nWH/JfJBQodNZ7KiRpRju9MD
+   CYZwb+QnriF/kjL1uizh0OjBOMdIY6I9ZDNN3ynl1nGjdA58bHIYUJYy1
+   HT8a4aJcPp/t3faiRmaYnxNHJiHi0xEQqZtTCYxuvIkZ22vNLmC1V3Lh3
+   XaAsd7Z4+Ti2kBoh3LJfUQMO8FuKV8llxXuwB1JtX6a423A1i9eforSyh
+   e/2GU45TKwzCeUIRN8GjT+d/z0VMzzsNz4YlZwkZuFiIHYTrztXNY1zTk
+   kpuyRv3gPBNaCaK1DBE2o2hETeA3G5+noRkLbN//lrLjVD+ZLDT3LnUns
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="95725549"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 May 2022 10:56:58 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 13 May 2022 10:56:58 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 13 May 2022 10:56:56 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net] net: lan966x: Fix assignment of the MAC address
+Date:   Fri, 13 May 2022 20:00:30 +0200
+Message-ID: <20220513180030.3076793-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20220507125443.2766939-1-daniel.lezcano@linexp.org> <63f1c4a0-d2c6-8157-5da0-198c2d8d1013@linaro.org>
-In-Reply-To: <63f1c4a0-d2c6-8157-5da0-198c2d8d1013@linaro.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 13 May 2022 19:56:17 +0200
-Message-ID: <CAJZ5v0iexz36LL52rZ0BTtSXCf63UnU0kMJR7w6Qfe7P5ZmHTA@mail.gmail.com>
-Subject: Re: [PATCH v2 00/14] thermal OF rework
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Daniel Lezcano <daniel.lezcano@linexp.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Alexandre Bailon <abailon@baylibre.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 7:23 PM Daniel Lezcano
-<daniel.lezcano@linaro.org> wrote:
->
->
-> Hi Rafael,
->
-> if you are ok with this series, I'll pick it up.
->
-> Is that ok ?
+The following two scenarios were failing for lan966x.
+1. If the port had the address X and then trying to assign the same
+   address, then the HW was just removing this address because first it
+   tries to learn new address and then delete the old one. As they are
+   the same the HW remove it.
+2. If the port eth0 was assigned the same address as one of the other
+   ports eth1 then when assigning back the address to eth0 then the HW
+   was deleting the address of eth1.
 
-Give me some more time to look at it, please.
+The case 1. is fixed by checking if the port has already the same
+address while case 2. is fixed by checking if the address is used by any
+other port.
 
-I'll respond in the first half of next week.
+Fixes: e18aba8941b40b ("net: lan966x: add mactable support")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ .../ethernet/microchip/lan966x/lan966x_main.c | 28 +++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-> On 07/05/2022 14:54, Daniel Lezcano wrote:
-> > The thermal framework initialization with the device tree appears to
-> > be complicated and hard to make it to evolve.
-> >
-> > It contains duplication of almost the same thermal generic structures
-> > and has an assymetric initialization making hard any kind of serious
-> > changes for more complex features. One of them is the multiple sensors
-> > support per thermal zone.
-> >
-> > In order to set the scene for the aforementioned feature with generic
-> > code, we need to cleanup and rework the device tree initialization.
-> >
-> > However this rework is not obvious because of the multiple components
-> > entering in the composition of a thermal zone and being initialized at
-> > different moments. For instance, a cooling device can be initialized
-> > before a sensor, so the thermal zones must exist before the cooling
-> > device as well as the sensor. This asynchonous initialization forces
-> > the thermal zone to be created with fake ops because they are
-> > mandotory and build a list of cooling devices which is used to lookup
-> > afterwards when the cooling device driver is registering itself.
-> >
-> > As there could be a large number of changes, this first series provide
-> > some steps forward for a simpler device tree initialization.
-> >
-> > Changelog:
-> >   - V2:
-> >     - Drop patch 1/15 which contains too many changes for a simple
-> >       structure renaming. This could be addressed in a separate series as
-> >       it is not necessary for the OF rework
-> >
-> >     - Fixed of_node_put with gchild not initialized as reported by
-> >       kbuild and Dan Carpenter
-> >
-> >   - V1:
-> >     - Initial post
-> >
-> > Daniel Lezcano (14):
-> >    thermal/core: Change thermal_zone_ops to thermal_sensor_ops
-> >    thermal/core: Add a thermal sensor structure in the thermal zone
-> >    thermal/core: Remove duplicate information when an error occurs
-> >    thermal/of: Replace device node match with device node search
-> >    thermal/of: Remove the device node pointer for thermal_trip
-> >    thermal/of: Move thermal_trip structure to thermal.h
-> >    thermal/core: Remove unneeded EXPORT_SYMBOLS
-> >    thermal/core: Move thermal_set_delay_jiffies to static
-> >    thermal/core: Rename trips to ntrips
-> >    thermal/core: Add thermal_trip in thermal_zone
-> >    thermal/core: Register with the trip points
-> >    thermal/of: Store the trips in the thermal zone
-> >    thermal/of: Use thermal trips stored in the thermal zone
-> >    thermal/of: Initialize trip points separately
-> >
-> >   .../driver-api/thermal/sysfs-api.rst          |   2 +-
-> >   drivers/acpi/thermal.c                        |   6 +-
-> >   .../ethernet/chelsio/cxgb4/cxgb4_thermal.c    |   2 +-
-> >   .../ethernet/mellanox/mlxsw/core_thermal.c    |   6 +-
-> >   drivers/net/wireless/intel/iwlwifi/mvm/tt.c   |   2 +-
-> >   drivers/platform/x86/acerhdf.c                |   2 +-
-> >   drivers/power/supply/power_supply_core.c      |   2 +-
-> >   drivers/thermal/armada_thermal.c              |   2 +-
-> >   drivers/thermal/broadcom/bcm2835_thermal.c    |   2 +-
-> >   drivers/thermal/da9062-thermal.c              |   2 +-
-> >   drivers/thermal/dove_thermal.c                |   2 +-
-> >   drivers/thermal/gov_bang_bang.c               |   6 +-
-> >   drivers/thermal/gov_fair_share.c              |  10 +-
-> >   drivers/thermal/gov_power_allocator.c         |  22 +-
-> >   drivers/thermal/gov_step_wise.c               |   4 +-
-> >   drivers/thermal/imx_thermal.c                 |   2 +-
-> >   .../intel/int340x_thermal/int3400_thermal.c   |   2 +-
-> >   .../int340x_thermal/int340x_thermal_zone.c    |   6 +-
-> >   .../int340x_thermal/int340x_thermal_zone.h    |   4 +-
-> >   .../processor_thermal_device.c                |   4 +-
-> >   .../processor_thermal_device_pci.c            |   2 +-
-> >   drivers/thermal/intel/intel_pch_thermal.c     |   2 +-
-> >   .../thermal/intel/intel_quark_dts_thermal.c   |   2 +-
-> >   drivers/thermal/intel/intel_soc_dts_iosf.c    |   2 +-
-> >   drivers/thermal/intel/x86_pkg_temp_thermal.c  |   2 +-
-> >   drivers/thermal/kirkwood_thermal.c            |   2 +-
-> >   drivers/thermal/rcar_gen3_thermal.c           |   6 +-
-> >   drivers/thermal/rcar_thermal.c                |   4 +-
-> >   drivers/thermal/samsung/exynos_tmu.c          |   6 +-
-> >   drivers/thermal/spear_thermal.c               |   2 +-
-> >   drivers/thermal/st/st_thermal.c               |   2 +-
-> >   drivers/thermal/tegra/soctherm.c              |  10 +-
-> >   drivers/thermal/tegra/tegra30-tsensor.c       |   6 +-
-> >   drivers/thermal/thermal_core.c                | 102 ++++----
-> >   drivers/thermal/thermal_core.h                |  25 +-
-> >   drivers/thermal/thermal_helpers.c             |  35 ++-
-> >   drivers/thermal/thermal_hwmon.c               |   4 +-
-> >   drivers/thermal/thermal_netlink.c             |  10 +-
-> >   drivers/thermal/thermal_of.c                  | 221 ++++++++++--------
-> >   drivers/thermal/thermal_sysfs.c               |  62 ++---
-> >   include/linux/thermal.h                       |  34 ++-
-> >   41 files changed, 341 insertions(+), 290 deletions(-)
-> >
->
->
-> --
-> <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
->
-> Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-> <http://twitter.com/#!/linaroorg> Twitter |
-> <http://www.linaro.org/linaro-blog/> Blog
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 95830e3e2b1f..05f6dcc9dfd5 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -103,6 +103,24 @@ static int lan966x_create_targets(struct platform_device *pdev,
+ 	return 0;
+ }
+ 
++static bool lan966x_port_unique_address(struct net_device *dev)
++{
++	struct lan966x_port *port = netdev_priv(dev);
++	struct lan966x *lan966x = port->lan966x;
++	int p;
++
++	for (p = 0; p < lan966x->num_phys_ports; ++p) {
++		port = lan966x->ports[p];
++		if (!port || port->dev == dev)
++			continue;
++
++		if (ether_addr_equal(dev->dev_addr, port->dev->dev_addr))
++			return false;
++	}
++
++	return true;
++}
++
+ static int lan966x_port_set_mac_address(struct net_device *dev, void *p)
+ {
+ 	struct lan966x_port *port = netdev_priv(dev);
+@@ -110,16 +128,26 @@ static int lan966x_port_set_mac_address(struct net_device *dev, void *p)
+ 	const struct sockaddr *addr = p;
+ 	int ret;
+ 
++	if (ether_addr_equal(addr->sa_data, dev->dev_addr))
++		return 0;
++
+ 	/* Learn the new net device MAC address in the mac table. */
+ 	ret = lan966x_mac_cpu_learn(lan966x, addr->sa_data, HOST_PVID);
+ 	if (ret)
+ 		return ret;
+ 
++	/* If there is another port with the same address as the dev, then don't
++	 * delete it from the MAC table
++	 */
++	if (!lan966x_port_unique_address(dev))
++		goto out;
++
+ 	/* Then forget the previous one. */
+ 	ret = lan966x_mac_cpu_forget(lan966x, dev->dev_addr, HOST_PVID);
+ 	if (ret)
+ 		return ret;
+ 
++out:
+ 	eth_hw_addr_set(dev, addr->sa_data);
+ 	return ret;
+ }
+-- 
+2.33.0
+
