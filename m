@@ -2,68 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 264C5C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379272AbiEMKIA (ORCPT
+        id S1378979AbiEMKJN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 06:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
+        Fri, 13 May 2022 06:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359219AbiEMKHz (ORCPT
+        with ESMTP id S1350059AbiEMKJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 06:07:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23E66AA46;
-        Fri, 13 May 2022 03:07:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 636066222D;
-        Fri, 13 May 2022 10:07:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D07AC34100;
-        Fri, 13 May 2022 10:07:53 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LwDOuIuH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652436471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7N1zyXIi+oMbfwTrQnEnFevk7qISh3+9W8x85t6Q8bY=;
-        b=LwDOuIuHymjucObEZc6dI/e+wZ50PeYNASM60HYX9wYpZsJIZvBVBqAtCFcZsR844wLYPa
-        rCG3RtG3UnuMYyVc6ym4HNSTqGtQD7PeAmohnOeVmGeqSWOj+uHuBU/DUldfXPFlyIREl7
-        S5KBsIdtQEDxVpxILA3yK/51DIhVYMY=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ae4f983b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 13 May 2022 10:07:51 +0000 (UTC)
-Date:   Fri, 13 May 2022 12:07:49 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Dominik Brodowski <linux@dominikbrodowski.net>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH] random32: use real rng for non-deterministic randomness
-Message-ID: <Yn4t9S71LhI8W0ek@zx2c4.com>
-References: <20220511143257.88442-1-Jason@zx2c4.com>
- <Yn34Tf4CpSaZBlGi@owl.dominikbrodowski.net>
+        Fri, 13 May 2022 06:09:11 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A86566B09B
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 03:09:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652436550; x=1683972550;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=5i3oSmoCYG0z99aFLyfO1/Lffb6G3ID6DMGfB1vnRWE=;
+  b=Hzwtz6Au5ZteRNGz8p1ybV3hyIc3qYJnYFQ7+k/iD6lOffXQsyafwzrk
+   XcZm1qPYpciB72tr+qZGLYsIFuYc2DECSpGmRXLPePqr0BIFJuvvRQd/s
+   sFGNnkBQKj3RQ551F98QT1vL4NbVGlbJ5FUamwwOhrjV3viAf1YhtDqzE
+   DTHB5K6epK5vLXtyCAxlXnTpvD9o0TjVer4w/EBwl3xZmTyYGxi7xQsVj
+   HX1IwFpferGM37SoxGqorMg8VQrVyMMt+tYeNiX98vatKhy9vebQqnAT2
+   0vUHDvopyMixGFfMMsHcwf5RxDGk6jaSP32ugAUEC6W7G+MRGHklS2HAr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257815399"
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="257815399"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 03:08:55 -0700
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="554167026"
+Received: from cpazx-mobl.ger.corp.intel.com (HELO [10.213.209.239]) ([10.213.209.239])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 03:08:52 -0700
+Message-ID: <d7fc4f81-1a04-3633-5d6b-ebc35acb5c4a@linux.intel.com>
+Date:   Fri, 13 May 2022 11:08:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yn34Tf4CpSaZBlGi@owl.dominikbrodowski.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] drm/i915: Fix CFI violation with show_dynamic_id()
+Content-Language: en-US
+To:     Nathan Chancellor <nathan@kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev
+References: <20220512211704.3158759-1-nathan@kernel.org>
+From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Organization: Intel Corporation UK Plc
+In-Reply-To: <20220512211704.3158759-1-nathan@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dominik,
 
-On Fri, May 13, 2022 at 08:18:53AM +0200, Dominik Brodowski wrote:
-> Nice! However, wouldn't it be much better to clean up the indirection
-> introduced here as well? prandom_u32() as wrapper for get_random_u32() and
-> prandom_bytes() as wrapper for get_random_bytes() seems unnecessary...
+On 12/05/2022 22:17, Nathan Chancellor wrote:
+> When an attribute group is created with sysfs_create_group(), the
+> ->sysfs_ops() callback is set to kobj_sysfs_ops, which sets the ->show()
+> callback to kobj_attr_show(). kobj_attr_show() uses container_of() to
+> get the ->show() callback from the attribute it was passed, meaning the
+> ->show() callback needs to be the same type as the ->show() callback in
+> 'struct kobj_attribute'.
+> 
+> However, show_dynamic_id() has the type of the ->show() callback in
+> 'struct device_attribute', which causes a CFI violation when opening the
+> 'id' sysfs node under drm/card0/metrics. This happens to work because
+> the layout of 'struct kobj_attribute' and 'struct device_attribute' are
+> the same, so the container_of() cast happens to allow the ->show()
+> callback to still work.
+> 
+> Change the type of show_dynamic_id() to match the ->show() callback in
+> 'struct kobj_attributes' and update the type of sysfs_metric_id to
+> match, which resolves the CFI violation.
+> 
+> Fixes: f89823c21224 ("drm/i915/perf: Implement I915_PERF_ADD/REMOVE_CONFIG interface")
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 
-Yes; we can look at tree-wide changes for 5.20. The first step in making
-tree-wide changes is filling in the old function with an inline wrapper,
-which then gets removed as part of the last step after all the other
-patches have landed. That's a huge process, so this is just step one.
+Merged to drm-intel-gt-next, thanks for the fix and reviews!
 
-Jason
+Regards,
+
+Tvrtko
+
+> ---
+>   drivers/gpu/drm/i915/i915_perf.c       | 4 ++--
+>   drivers/gpu/drm/i915/i915_perf_types.h | 2 +-
+>   2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/i915/i915_perf.c b/drivers/gpu/drm/i915/i915_perf.c
+> index 0a9c3fcc09b1..1577ab6754db 100644
+> --- a/drivers/gpu/drm/i915/i915_perf.c
+> +++ b/drivers/gpu/drm/i915/i915_perf.c
+> @@ -4050,8 +4050,8 @@ static struct i915_oa_reg *alloc_oa_regs(struct i915_perf *perf,
+>   	return ERR_PTR(err);
+>   }
+>   
+> -static ssize_t show_dynamic_id(struct device *dev,
+> -			       struct device_attribute *attr,
+> +static ssize_t show_dynamic_id(struct kobject *kobj,
+> +			       struct kobj_attribute *attr,
+>   			       char *buf)
+>   {
+>   	struct i915_oa_config *oa_config =
+> diff --git a/drivers/gpu/drm/i915/i915_perf_types.h b/drivers/gpu/drm/i915/i915_perf_types.h
+> index 473a3c0544bb..05cb9a335a97 100644
+> --- a/drivers/gpu/drm/i915/i915_perf_types.h
+> +++ b/drivers/gpu/drm/i915/i915_perf_types.h
+> @@ -55,7 +55,7 @@ struct i915_oa_config {
+>   
+>   	struct attribute_group sysfs_metric;
+>   	struct attribute *attrs[2];
+> -	struct device_attribute sysfs_metric_id;
+> +	struct kobj_attribute sysfs_metric_id;
+>   
+>   	struct kref ref;
+>   	struct rcu_head rcu;
+> 
+> base-commit: 7ecc3cc8a7b39f08eee9aea7b718187583342a70
