@@ -2,275 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 664B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 00:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 01:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359813AbiEMAyy (ORCPT
+        id S1359820AbiEMBAX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 20:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        Thu, 12 May 2022 21:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241356AbiEMAyw (ORCPT
+        with ESMTP id S241356AbiEMBAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 20:54:52 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2EF28B862
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 17:54:51 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id l26-20020a25ad5a000000b0064adb7991f6so5987738ybe.8
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 17:54:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=9WYd2rtxaDZCyqlU8hrUJ4izuxc3n01UNTUNj7G5bxQ=;
-        b=jzpCDIymhebkWy+KOqWXx2Df8k+EPty6MegJfzM5H3XE/cKGodeWAwVB2DNDKoS8yo
-         TiiU9Vsc60VHEXTkLXEcgAXnyAGwhavNYbsu7sGppoHJkisMsjxGVP7gbAEfIZ5aY3DF
-         5S1Ufm8uom4XPXISu7PLFP/X7wjxe89iD2UnnGR8rN8BicMOiI7skOs2YhMaXdEzmvFG
-         RUKxn+vGHysPaBFOm9JhBVrzPBgWzFF2xeb91O1o+imOrxXVuMUUW2+3vWB86uBCncVK
-         zXKED400kmrNBjDfeEXp1FP4Y+ZQx1LoAmdHIEg1VxE3IoKbmFo9sMVFu91uT/3yWDbz
-         5Ztg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=9WYd2rtxaDZCyqlU8hrUJ4izuxc3n01UNTUNj7G5bxQ=;
-        b=OPPmyBrDIADDGyefTiI0DF7rohI2QUCSK8DBS7HmK6p9qcOBj9m1bPvd2drJ+2vx2/
-         bDJFv5NvFaySb1wNlbCE6U4u4aCr33z6NFCtjkVeAzjeM5nmmEl5bf/0R2zixyqVwpuc
-         t/csTXf8Jx7ZTaiKDIXkgewQGdmhwkWIwbKvELqZIFOr+scwTEazaza/hsrVJwtl1HAe
-         N/0ElVKqIOXZzgNe8dFRDuaN4bALFGFrwC/QLnRifsAfT2RwjoHP2gOnI1prwXhF+cWg
-         G0tLEMv8po+5c6qAIkVtTfwRQghwMPVbZRFyrwMVggec5qqu/IOjqdDUJvCoTgv/XZGA
-         Kqdw==
-X-Gm-Message-State: AOAM531dr/V+GrgorG7klCO51Z5kEoEeG1nVT1ci+hRmhXuRba6+JA1G
-        Slp7T4/xqKwfPotKYevGPzGH/YxODrc5
-X-Google-Smtp-Source: ABdhPJxQWkEFy79Kpxf2yha4fRhd91dMDnCakmbtQ6tZu3VqMI7tYo73lzA8q+Wm2ut/mv6iZJeP7G1b6304
-X-Received: from joshdon.svl.corp.google.com ([2620:15c:2cd:202:23eb:d421:68f0:28e2])
- (user=joshdon job=sendgmr) by 2002:a25:3cd:0:b0:64a:b29a:9539 with SMTP id
- 196-20020a2503cd000000b0064ab29a9539mr2482475ybd.534.1652403290679; Thu, 12
- May 2022 17:54:50 -0700 (PDT)
-Date:   Thu, 12 May 2022 17:54:27 -0700
-Message-Id: <20220513005427.2507335-1-joshdon@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH] sched/core: add forced idle accounting for cgroups
-From:   Josh Don <joshdon@google.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Cruz Zhao <CruzZhao@linux.alibaba.com>,
-        Tejun Heo <tj@kernel.org>, Josh Don <joshdon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 12 May 2022 21:00:22 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBF725509E
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 18:00:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652403621; x=1683939621;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=h+CBhS+9r9aX0w6K7C1Kn4GMveFRn/hT6QJ+Y2T1zfM=;
+  b=CkuVex8wmQYCXlb/aRRQzM5KMWqyQM2VjsMzY533TVeGTqIqV4KDt4Im
+   00G9h1wjz4o5Cy0pnQQPIlUlx1Ua/t0NfnWVEYG7onzkA7Qqptgm7ubYg
+   kel/BqyhCTwIHFD2B0G3/oOrxprsbTUZfIjpTTR7bWyGFLOdRlFlVJUsq
+   eMdEFPgSMexfryg5q7meVYaawmNgCH/1zr+zBJnbA0a/W7ZbmGPRT7fRY
+   ognpO229JBjHy8aaqsjwtbGctgv3MmnQt0Xq1V6XwOGKSwHu1k7Gz9lUG
+   5OKudJGh/btsMbganPAVKwfYqt47eWWc0QPKtdy4NJ2kNaLDZwKGMGoq8
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="270113275"
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="270113275"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 18:00:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="554015968"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 12 May 2022 18:00:19 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1npJfH-000L7k-5D;
+        Fri, 13 May 2022 01:00:19 +0000
+Date:   Fri, 13 May 2022 09:00:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/rxrpc-ringless 35/35]
+ net/rxrpc/recvmsg.c:297:9: warning: variable 'j' is uninitialized when used
+ here
+Message-ID: <202205130800.78D0sAwZ-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-4feee7d1260 previously added per-task forced idle accounting. This patch
-extends this to also include cgroups.
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/rxrpc-ringless
+head:   36075641f704b02b4bcaee01d904a06676b32199
+commit: 36075641f704b02b4bcaee01d904a06676b32199 [35/35] rxrpc: Don't split up received jumbo packets
+config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220513/202205130800.78D0sAwZ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 9519dacab7b8afd537811fc2abaceb4d14f4e16a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/36075641f704b02b4bcaee01d904a06676b32199
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/rxrpc-ringless
+        git checkout 36075641f704b02b4bcaee01d904a06676b32199
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/iommu/ kernel/trace/ net/rxrpc/
 
-rstat is used for cgroup accounting, except for the root, which uses
-kcpustat in order to bypass the need for doing an rstat flush when
-reading root stats.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Only cgroup v2 is supported. Similar to the task accounting, the cgroup
-accounting requires that schedstats is enabled.
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: Josh Don <joshdon@google.com>
----
- include/linux/kernel_stat.h |  1 +
- kernel/sched/core.c         | 15 ++++++++-
- kernel/sched/core_sched.c   | 62 +++++++++++++++++++++++++++++++++++++
- kernel/sched/sched.h        | 18 +++++++++++
- 4 files changed, 95 insertions(+), 1 deletion(-)
+>> net/rxrpc/recvmsg.c:297:9: warning: variable 'j' is uninitialized when used here [-Wuninitialized]
+           for (; j < nr_subs; j++, seq++) {
+                  ^
+   net/rxrpc/recvmsg.c:289:47: note: initialize the variable 'j' to silence this warning
+           int nr_subs = sp->nr_subpackets - 1, i = 0, j;
+                                                        ^
+                                                         = 0
+   1 warning generated.
 
-diff --git a/include/linux/kernel_stat.h b/include/linux/kernel_stat.h
-index 69ae6b278464..2e9b3c7d2f18 100644
---- a/include/linux/kernel_stat.h
-+++ b/include/linux/kernel_stat.h
-@@ -28,6 +28,7 @@ enum cpu_usage_stat {
- 	CPUTIME_STEAL,
- 	CPUTIME_GUEST,
- 	CPUTIME_GUEST_NICE,
-+	CPUTIME_FORCEIDLE,
- 	NR_STATS,
- };
- 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 48cfad152b86..a29cb4029818 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -10828,12 +10828,18 @@ static struct cftype cpu_legacy_files[] = {
- 	{ }	/* Terminate */
- };
- 
-+static void cpu_cgroup_css_rstat_flush(struct cgroup_subsys_state *css, int cpu)
-+{
-+	sched_core_rstat_flush(css_tg(css), cpu);
-+}
-+
- static int cpu_extra_stat_show(struct seq_file *sf,
- 			       struct cgroup_subsys_state *css)
- {
-+	struct task_group __maybe_unused *tg = css_tg(css);
-+
- #ifdef CONFIG_CFS_BANDWIDTH
- 	{
--		struct task_group *tg = css_tg(css);
- 		struct cfs_bandwidth *cfs_b = &tg->cfs_bandwidth;
- 		u64 throttled_usec, burst_usec;
- 
-@@ -10851,6 +10857,12 @@ static int cpu_extra_stat_show(struct seq_file *sf,
- 			   throttled_usec, cfs_b->nr_burst, burst_usec);
- 	}
- #endif
-+
-+#ifdef CONFIG_SCHED_CORE
-+	/* already updated stats via rstat flush */
-+	seq_printf(sf, "forceidle_usec %llu\n",
-+			sched_core_forceidle_sum(tg) / NSEC_PER_USEC);
-+#endif
- 	return 0;
- }
- 
-@@ -11031,6 +11043,7 @@ struct cgroup_subsys cpu_cgrp_subsys = {
- 	.css_online	= cpu_cgroup_css_online,
- 	.css_released	= cpu_cgroup_css_released,
- 	.css_free	= cpu_cgroup_css_free,
-+	.css_rstat_flush = cpu_cgroup_css_rstat_flush,
- 	.css_extra_stat_show = cpu_extra_stat_show,
- 	.fork		= cpu_cgroup_fork,
- 	.can_attach	= cpu_cgroup_can_attach,
-diff --git a/kernel/sched/core_sched.c b/kernel/sched/core_sched.c
-index 38a2cec21014..ccfeef6542dc 100644
---- a/kernel/sched/core_sched.c
-+++ b/kernel/sched/core_sched.c
-@@ -277,7 +277,16 @@ void __sched_core_account_forceidle(struct rq *rq)
- 		if (p == rq_i->idle)
- 			continue;
- 
-+		/* thread accounting */
- 		__schedstat_add(p->stats.core_forceidle_sum, delta);
-+
-+		/* root accounting */
-+		kcpustat_cpu(i).cpustat[CPUTIME_FORCEIDLE] += delta;
-+
-+		/* cgroup accounting */
-+#ifdef CONFIG_FAIR_GROUP_SCHED
-+		task_group(p)->cfs_rq[i]->forceidle_sum += delta;
-+#endif
- 	}
- }
- 
-@@ -292,4 +301,57 @@ void __sched_core_tick(struct rq *rq)
- 	__sched_core_account_forceidle(rq);
- }
- 
-+void sched_core_rstat_flush(struct task_group *tg, int cpu)
-+{
-+	struct cfs_rq *cfs_rq = tg->cfs_rq[cpu];
-+	struct task_group *parent = tg->parent;
-+	u64 delta, curr_sum;
-+
-+	/* root uses cpustat */
-+	if (!parent)
-+		return;
-+
-+	/*
-+	 * Note: cgroup_rstat_lock protects cfs_rq->forceidle_sum_prev and
-+	 * tg->{forceidle_sum, forceidle_sum_pending}.
-+	 */
-+
-+	delta = tg->forceidle_sum_pending;
-+	if (delta)
-+		tg->forceidle_sum_pending = 0;
-+
-+	/* rq lock not held; value may change concurrently */
-+	curr_sum = READ_ONCE(cfs_rq->forceidle_sum);
-+	if (curr_sum != cfs_rq->forceidle_sum_prev) {
-+		delta += curr_sum - cfs_rq->forceidle_sum_prev;
-+		cfs_rq->forceidle_sum_prev = curr_sum;
-+	}
-+
-+	if (!delta)
-+		return;
-+
-+	tg->forceidle_sum += delta;
-+	parent->forceidle_sum_pending += delta;
-+}
-+
-+/* REQUIRES: If tg is not root, an rstat flush was recently done. */
-+u64 sched_core_forceidle_sum(struct task_group *tg)
-+{
-+	if (!tg->parent) {
-+		u64 sum = 0;
-+		int i;
-+
-+		for_each_possible_cpu(i) {
-+			struct kernel_cpustat kcpustat;
-+
-+			kcpustat_cpu_fetch(&kcpustat, i);
-+			sum += kcpustat.cpustat[CPUTIME_FORCEIDLE];
-+		}
-+
-+		return sum;
-+	} else {
-+		return tg->forceidle_sum;
-+	}
-+}
-+
- #endif /* CONFIG_SCHEDSTATS */
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 7f338c53ce42..36bef97b9e2f 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -425,6 +425,12 @@ struct task_group {
- 	struct uclamp_se	uclamp[UCLAMP_CNT];
- #endif
- 
-+#ifdef CONFIG_SCHED_CORE
-+	/* used with rstat */
-+	u64			forceidle_sum;
-+	u64			forceidle_sum_pending;
-+#endif
-+
- };
- 
- #ifdef CONFIG_FAIR_GROUP_SCHED
-@@ -526,6 +532,10 @@ struct cfs_rq {
- #ifdef CONFIG_SCHED_CORE
- 	unsigned int		forceidle_seq;
- 	u64			min_vruntime_fi;
-+
-+	/* for accounting with rstat */
-+	u64			forceidle_sum;
-+	u64			forceidle_sum_prev;
- #endif
- 
- #ifndef CONFIG_64BIT
-@@ -1849,12 +1859,20 @@ static inline void sched_core_tick(struct rq *rq)
- 		__sched_core_tick(rq);
- }
- 
-+extern void sched_core_rstat_flush(struct task_group *tg, int cpu);
-+
-+extern u64 sched_core_forceidle_sum(struct task_group *tg);
-+
- #else
- 
- static inline void sched_core_account_forceidle(struct rq *rq) {}
- 
- static inline void sched_core_tick(struct rq *rq) {}
- 
-+static inline void sched_core_rstat_flush(struct task_group *tg, int cpu) {}
-+
-+static inline u64 sched_core_forceidle_sum(struct task_group *tg) { return 0; }
-+
- #endif /* CONFIG_SCHED_CORE && CONFIG_SCHEDSTATS */
- 
- #ifdef CONFIG_CGROUP_SCHED
+
+vim +/j +297 net/rxrpc/recvmsg.c
+
+   275	
+   276	/*
+   277	 * Set up a data location table for a jumbo DATA packet then verify
+   278	 * and decrypt all the subpackets and locate the data for each.  We
+   279	 * also need to skip over any duplicate subpackets.
+   280	 */
+   281	static int rxrpc_verify_data(struct rxrpc_call *call, struct sk_buff *skb)
+   282	{
+   283		struct rxrpc_jumbo_header jhdr;
+   284		struct rxrpc_skb_subpacket *subs;
+   285		struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+   286		unsigned int offset = sizeof(struct rxrpc_wire_header);
+   287		unsigned int len = skb->len - sizeof(struct rxrpc_wire_header);
+   288		rxrpc_seq_t seq = sp->hdr.seq;
+   289		int nr_subs = sp->nr_subpackets - 1, i = 0, j;
+   290		u16 cksum = sp->hdr.cksum;
+   291	
+   292		subs = kcalloc(sp->nr_subpackets, sizeof(*sp->subs), GFP_KERNEL);
+   293		if (!subs)
+   294			return -ENOMEM;
+   295		sp->subs = subs;
+   296	
+ > 297		for (; j < nr_subs; j++, seq++) {
+   298			if (after(seq, call->rx_consumed)) {
+   299				subs[i].offset	= offset;
+   300				subs[i].len	= RXRPC_JUMBO_DATALEN;
+   301				subs[i].cksum	= cksum;
+   302				i++;
+   303			} else {
+   304				sp->hdr.seq++;
+   305				sp->nr_subpackets--;
+   306			}
+   307			offset += RXRPC_JUMBO_DATALEN;
+   308			if (skb_copy_bits(skb, offset, &jhdr.cksum, 2) < 0)
+   309				return -EPROTO;
+   310			offset += sizeof(jhdr);
+   311			cksum = htons(jhdr.cksum);
+   312			len -= RXRPC_JUMBO_SUBPKTLEN;
+   313		}
+   314	
+   315		subs[i].offset	= offset;
+   316		subs[i].len	= len;
+   317		subs[i].cksum	= cksum;
+   318		return call->security->verify_packet(call, skb);
+   319	}
+   320	
+
 -- 
-2.36.0.512.ge40c2bad7a-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
