@@ -2,88 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6C9C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9130FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 08:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378531AbiEMIoP (ORCPT
+        id S1378487AbiEMIoT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 04:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
+        Fri, 13 May 2022 04:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378484AbiEMIoE (ORCPT
+        with ESMTP id S1378502AbiEMIoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 04:44:04 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2CA29839F
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:44:03 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id i5so10420078wrc.13
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 01:44:03 -0700 (PDT)
+        Fri, 13 May 2022 04:44:11 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918AC2AC0E9;
+        Fri, 13 May 2022 01:44:06 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id g6so14899913ejw.1;
+        Fri, 13 May 2022 01:44:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=JTmmZZrjjt1hpC3GYbK+OrumndLLbB/5XKH0Ceu//Qw=;
-        b=GrrA4zNNH11zqhiaQhj5njhGLa61T3Rdg5e0EaXPKYVkKuE1my05Kv/NAYJ7uyllFW
-         o6sBqbJrkfxM6N/fkJ4uM6MHgWyUbEsps/HjhqiLZylZSFPykGe+wpTXPfpymN2oXB9B
-         pWEl+hYVV+BmgMofS3LlG6q6UU8u62bP7EKlYKe3U+FttSQ8qfHFZ5GkWO9TyuyTWvLg
-         u1ONSkp6y8ozzfos+MCZuNNhn2pt0Fyd3Yv2txxi597fhd140r9x/QgpywK0rkVWnvO5
-         b4fqjDWx19BR8k9AEhkBi6ls5mMCnwPaAOfhPCEzzVoOX6AEkTPW326DBT9+ppPemF1V
-         2/fA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iZuFOu7mi3R6oaoaxmRQI9ZUruMPyMLHtg+6pEfGbWE=;
+        b=QYRK3klwC97qKC35SuJKJwR3ljh55QviJszDrOQTatoqR3xNXMtv7y2tvL4oQ4/62i
+         bStx1dSMmwYPsweHMouSZ6m5taR7WQzEu4YiXV4kG4shELh1Ig+35kxhhXG61u6AKgdc
+         pR61dzxoH6r/PYTiXE54q8E3yCNMWAMevaU2PXapNsGNmJc1ml+5L1Q6Tjs9N5s+JT6q
+         rYQdkbioGf8769je7PEU73DViMl73nUYqx0s50EQ1tqJRvqGOqGUz1G97vxB8p4MZG7x
+         OxETS/BRxq/yxN3NaDWXol9IcY2gYO5HUGyfVJuJsd437aNM2RCZxQnR2QOufjV10Ygz
+         s4Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JTmmZZrjjt1hpC3GYbK+OrumndLLbB/5XKH0Ceu//Qw=;
-        b=BuxbOoEkxfYMpH9OO7dLOe2YoicyisBToLoC8Am2VtGt13r/aDN5sOBVUKuqSBOfKx
-         lOixSEUaPOlsbm5A4vr2Ub7s8S4UjSWkJqntxpqoZwQ+6I0DHlLu0XouXsObZm8eKNkM
-         HRLuBUhvcveHoEUvqV4IzJwKoIdCq9Fre5J+aZzE4VkGo7ALEMQtXvHAt7jaC/fns2pz
-         32YMAYFmz8YwyQ302HUyAGi8AjOPyEpqrNTGRMWYQyLdOCLEZIs9LApffoa1rSr6poa5
-         HkewdTa5YxbDUDrmbKU02jtnmo6wqrJzNCNg0zGI6306qD1wsI0H14Ib72ySKetSyOZq
-         x/Jw==
-X-Gm-Message-State: AOAM530zR9YS04Qa7S+xe3HYhkXrUov+mdVxmmVtXM6b409Y6xcO53mA
-        zZQnhIa7Ksr4UTpVfKqbvKuEuA==
-X-Google-Smtp-Source: ABdhPJyHhlPLOukfjjtC8elUtEr+RQ3i1s8e4uPbZzwLxk8P9533jLrEp5Wk6pubVLTuIRP1s215Og==
-X-Received: by 2002:a5d:6d88:0:b0:20c:594d:6ac7 with SMTP id l8-20020a5d6d88000000b0020c594d6ac7mr2993077wrs.622.1652431442042;
-        Fri, 13 May 2022 01:44:02 -0700 (PDT)
-Received: from [192.168.0.169] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id n8-20020a05600c4f8800b0039444973258sm6332569wmq.0.2022.05.13.01.44.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 01:44:01 -0700 (PDT)
-Message-ID: <5e5520d0-dbb9-8ba8-cf5f-40d322c1f880@linaro.org>
-Date:   Fri, 13 May 2022 10:44:00 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iZuFOu7mi3R6oaoaxmRQI9ZUruMPyMLHtg+6pEfGbWE=;
+        b=zVY8YQJhxoea1hxBQci07SzzKWd+ZZC5U0c6eN/314GCaOsVhK9kZBjpDQPgCt7a1I
+         ouLJmefim5iYRK0zr+hKjO1oO1PfqZ+OD3kjD2mRAobYr+LQhnjqFh/avyb/htS2Yapr
+         8Ys8Zy3ZI/PYWbyAo9nqj2jtbHQaJgHaL2n1NvN08MpiwEyZSIsj8U+hYfideCzNQorF
+         ccTzcSqLrWyk99cEBmbjiwhad3kNBimyxK/PD6Mutvio0OfOXWWQ3T6Wmup7Gd13uUve
+         fcRe3oQnL3wIxE5p2VjZBgEVykuRGdrqLpcGJ6+R74lQ1ayLZzBR8GMEsM51WQvsshC6
+         wdRA==
+X-Gm-Message-State: AOAM530F2tu80uAjDmRXDzcM4CRGQ3NI3KomxnUE9hiUcDBQxUZYYArg
+        FFil6TCZuerdw1TpjXucWquTV6T1FHqujrzfCt4=
+X-Google-Smtp-Source: ABdhPJwPYgn9qjZuHBlcNiKfKy33XVPFV4ohp7JOvTJYAgY2JqdWz2SullZNfUvaf3cvYaAWXCITaYTI8Ji7in/u2hk=
+X-Received: by 2002:a17:906:c10d:b0:6f4:a770:846e with SMTP id
+ do13-20020a170906c10d00b006f4a770846emr3263286ejc.497.1652431444879; Fri, 13
+ May 2022 01:44:04 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 07/11] arm64: dts: marvell: uDPU: remove LED node
- pinctrl-names
-Content-Language: en-US
-To:     Robert Marko <robert.marko@sartura.hr>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        kostap@marvell.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220512124905.49979-1-robert.marko@sartura.hr>
- <20220512124905.49979-7-robert.marko@sartura.hr>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220512124905.49979-7-robert.marko@sartura.hr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220419141846.598305-1-maz@kernel.org> <Yn0/DIl3+i/heRH6@smile.fi.intel.com>
+ <Yn1Fe4WPp3ZaUERj@smile.fi.intel.com> <87tu9umm3k.wl-maz@kernel.org>
+In-Reply-To: <87tu9umm3k.wl-maz@kernel.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 13 May 2022 10:43:29 +0200
+Message-ID: <CAHp75VfKMEcr1U=YQFfDRCpU=2LE78c76fSsAOFTWZHaswdiwg@mail.gmail.com>
+Subject: Re: [PATCH v3 00/10] gpiolib: Handle immutable irq_chip structures
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/05/2022 14:49, Robert Marko wrote:
-> Using pinctrl-names requires the appropriate pinctrl-0 property, otherwise
-> it is not utilized at all.
-> 
-> Since its not required, just remove it.
-> 
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+On Fri, May 13, 2022 at 12:18 AM Marc Zyngier <maz@kernel.org> wrote:
+> On Thu, 12 May 2022 18:35:55 +0100,
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> >
+> > On Thu, May 12, 2022 at 08:08:28PM +0300, Andy Shevchenko wrote:
+> > > On Tue, Apr 19, 2022 at 03:18:36PM +0100, Marc Zyngier wrote:
+> > > > This is a followup from [2].
+> > > >
+> > > > I recently realised that the gpiolib play ugly tricks on the
+> > > > unsuspecting irq_chip structures by patching the callbacks.
+> > > >
+> > > > Not only this breaks when an irq_chip structure is made const (which
+> > > > really should be the default case), but it also forces this structure
+> > > > to be copied at nauseam for each instance of the GPIO block, which is
+> > > > a waste of memory.
+> > >
+> > > Is this brings us to the issue with IRQ chip name?
+> > >
+> > > The use case in my mind is the following:
+> > > 1) we have two or more GPIO chips that supports IRQ;
+> > > 2) the user registers two IRQs of the same (by number) pin on different chips;
+> > > 3) cat /proc/interrupt will show 'my_gpio_chip XX', where XX is the number.
+> > >
+> > > So, do I understand correct current state of affairs?
+> > >
+> > > If so, we have to fix this to have any kind of ID added to the chip name that
+> > > we can map /proc/interrupts output correctly.
+> >
+> > Hmm... Some drivers are using static names, some -- dynamically
+> > prepared (one way or another). Either way I think the ID is good to
+> > have if we still miss it.
+>
+> No, this is a terrible idea. /proc/interrupts gives you a hint of
+> which driver/subsystem deals with the interrupt. This isn't a source
+> of topological information. /sys/kernel/debug/irq has all the
+> information you can dream of, and much more. Just make use of it.
 
+Okay, so IIUC the mapping is that: I got a vIRQ number from
+/proc/interrupts, but then I have to mount debugfs and look into it
+for a detailed answer of which chip/domain this vIRQ belongs to. Also
+/sys/kernel/irq rings a bell, but not sure if it's related.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
+-- 
+With Best Regards,
+Andy Shevchenko
