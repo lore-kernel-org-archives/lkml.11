@@ -2,174 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9436EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD640C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 07:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377584AbiEMG6S (ORCPT
+        id S1377611AbiEMHAQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 02:58:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
+        Fri, 13 May 2022 03:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377535AbiEMG57 (ORCPT
+        with ESMTP id S1353010AbiEMHAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 02:57:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9025A606CC;
-        Thu, 12 May 2022 23:57:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14F4561E67;
-        Fri, 13 May 2022 06:57:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 740DEC34117;
-        Fri, 13 May 2022 06:57:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652425076;
-        bh=bwKLLYkMHR307DmldZhVcAwohNlVK35xlfmJdyEzUzE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=EQkPOKS5dT+OPPkQCzVD/qRRo/zPU9MXcsSE5zyOZfrIAstbXeUo3tWKRXeDo6iur
-         7Gfxy1j+1s+cU6bPKKtH54HkHBhY0P3cTjW36/P9cbjgqUUqP5J0M778UCjB8F5TaD
-         oz69ycCiUCSACkiefS1lJe/JbqYe+T6Z8jWPzN/mYfUQJmFSbUGzxTWjPbZJPsTGek
-         kelwzaLxAmF6NtyFpG6X+ZzjxkAa4foHHthQhDzMQUPug9TGIdsucqy/7uAXVdYOCU
-         KwHIwJwdFJBtM0nthXUyVAgQ+7/3MKj18GeNFUa19KA2uBd3VL5pae3zoBAktKayI6
-         Dj8SBN20yqQyA==
-Received: by mail-vs1-f43.google.com with SMTP id y74so7482741vsy.7;
-        Thu, 12 May 2022 23:57:56 -0700 (PDT)
-X-Gm-Message-State: AOAM533a5w089zITgfQ+ljMJ/ZP+7rQb4oFdx7Y45UKt2aIBApWd/yZ+
-        q4iHj8cG8VvpdGcE6+VRWDYxTj4el0p/P+3Mdx8=
-X-Google-Smtp-Source: ABdhPJw3kQe5yqOihTdRUusUoGJTLVX/iPQ/GrFPrc38Koet00mVv/IXQZ16gw5KAflUROV8E8OuToLWUndXfeSRPxQ=
-X-Received: by 2002:a67:af01:0:b0:32d:3d57:cff with SMTP id
- v1-20020a67af01000000b0032d3d570cffmr1872881vsl.8.1652425075448; Thu, 12 May
- 2022 23:57:55 -0700 (PDT)
+        Fri, 13 May 2022 03:00:12 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DD9671DFD8E;
+        Fri, 13 May 2022 00:00:11 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 59BD41C80DC4;
+        Fri, 13 May 2022 15:00:11 +0800 (CST)
+Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 13
+ May 2022 15:00:10 +0800
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS03.nuvoton.com
+ (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1847.3; Fri, 13 May
+ 2022 15:00:10 +0800
+Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS04.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Fri, 13 May 2022 15:00:10 +0800
+Message-ID: <7902bc78-877d-4f00-171f-fbfe7167075f@nuvoton.com>
+Date:   Fri, 13 May 2022 15:00:11 +0800
 MIME-Version: 1.0
-References: <20220512035903.2779287-1-masahiroy@kernel.org> <20220512035903.2779287-3-masahiroy@kernel.org>
-In-Reply-To: <20220512035903.2779287-3-masahiroy@kernel.org>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Fri, 13 May 2022 14:57:44 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTTWo2XGsov7HLdjj60YrrSUCVJ3xzW5=g9Xyr7Q8Tsq4A@mail.gmail.com>
-Message-ID: <CAJF2gTTWo2XGsov7HLdjj60YrrSUCVJ3xzW5=g9Xyr7Q8Tsq4A@mail.gmail.com>
-Subject: Re: [PATCH 3/4] csky: introduce CONFIG_CSKY_ABI_V1/2
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-csky@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH V4 0/5] Add initial support for MA35D1 SoC
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
+        <ychuang570808@gmail.com>, "Rob Herring" <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, SoC Team <soc@kernel.org>,
+        <cfli0@nuvoton.com>
+References: <20220510032558.10304-1-ychuang3@nuvoton.com>
+ <CAK8P3a1k8y8U99bBmqBYE1vYAc0q-UeaM0oLP4tTHZCpyYNOgA@mail.gmail.com>
+ <8be62b40-077a-7634-7d34-7776909a2abe@linaro.org>
+ <CAK8P3a3=YD7WV+Www8pf+JTv14DwcnSjD+f=YFCNMxXYT9FAZA@mail.gmail.com>
+ <51ce4fca-f7b8-92ab-c9c6-1e57a2a5b5f3@nuvoton.com>
+ <9b2ecc28-df1e-903a-c652-2d65fc7d41ec@linaro.org>
+From:   Jacky Huang <ychuang3@nuvoton.com>
+In-Reply-To: <9b2ecc28-df1e-903a-c652-2d65fc7d41ec@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 12:01 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> This is useful to clean up Makefile.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
->
->  arch/csky/Kconfig  | 11 +++++++++++
->  arch/csky/Makefile | 14 ++++++++------
->  2 files changed, 19 insertions(+), 6 deletions(-)
->
-> diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
-> index 75ef86605d69..da756ecf0f85 100644
-> --- a/arch/csky/Kconfig
-> +++ b/arch/csky/Kconfig
-> @@ -161,6 +161,12 @@ config ARCH_MMAP_RND_BITS_MIN
->  config ARCH_MMAP_RND_BITS_MAX
->         default 17
->
-> +config CSKY_ABI_V1
-> +       bool
-> +
-> +config CSKY_ABI_V2
-> +       bool
-> +
->  menu "Processor type and features"
->
->  choice
-> @@ -172,15 +178,18 @@ config CPU_CK610
->         select CPU_NEED_TLBSYNC
->         select CPU_NEED_SOFTALIGN
->         select CPU_NO_USER_BKPT
-> +       select CSKY_ABI_V1
->
->  config CPU_CK810
->         bool "CSKY CPU ck810"
->         select CPU_HAS_HILO
->         select CPU_NEED_TLBSYNC
-> +       select CSKY_ABI_V2
->
->  config CPU_CK807
->         bool "CSKY CPU ck807"
->         select CPU_HAS_HILO
-> +       select CSKY_ABI_V2
->
->  config CPU_CK860
->         bool "CSKY CPU ck860"
-> @@ -188,6 +197,8 @@ config CPU_CK860
->         select CPU_HAS_CACHEV2
->         select CPU_HAS_LDSTEX
->         select CPU_HAS_FPUV2
-> +       select CSKY_ABI_V2
-> +
->  endchoice
->
->  choice
-> diff --git a/arch/csky/Makefile b/arch/csky/Makefile
-> index 4d72aca4069b..2b30525f39e1 100644
-> --- a/arch/csky/Makefile
-> +++ b/arch/csky/Makefile
-> @@ -16,34 +16,36 @@ endif
->
->  ifdef CONFIG_CPU_CK610
->  CPUTYPE        = ck610
-> -CSKYABI        = abiv1
->  endif
->
->  ifdef CONFIG_CPU_CK810
->  CPUTYPE = ck810
-> -CSKYABI        = abiv2
->  endif
->
->  ifdef CONFIG_CPU_CK807
->  CPUTYPE = ck807
-> -CSKYABI        = abiv2
->  endif
->
->  ifdef CONFIG_CPU_CK860
->  CPUTYPE = ck860
-> +endif
-> +
-> +ifdef CONFIG_CSKY_ABI_V1
-> +CSKYABI        = abiv1
-> +endif
-> +
-> +ifdef CONFIG_CSKY_ABI_V2
->  CSKYABI        = abiv2
-We still need CSKYABI, so I don't think adding CONFIG_CSKY_ABI_V2 is
-necessary. And ck807 & ck860 have different ABI.
-
->  endif
->
-> -ifneq ($(CSKYABI),)
->  MCPU_STR = $(CPUTYPE)$(FPUEXT)$(VDSPEXT)$(TEEEXT)
->  KBUILD_CFLAGS += -mcpu=$(CPUTYPE) -Wa,-mcpu=$(MCPU_STR)
->  KBUILD_CFLAGS += -DCSKYCPU_DEF_NAME=\"$(MCPU_STR)\"
->  KBUILD_CFLAGS += -msoft-float -mdiv
->  KBUILD_CFLAGS += -fno-tree-vectorize
-> -endif
->
->  KBUILD_CFLAGS += -pipe
-> -ifeq ($(CSKYABI),abiv2)
-> +ifdef CONFIG_CSKY_ABI_V2
->  KBUILD_CFLAGS += -mno-stack-size
->  endif
->
-> --
-> 2.32.0
->
 
 
--- 
-Best Regards
- Guo Ren
+On 2022/5/13 下午 02:55, Krzysztof Kozlowski wrote:
+> On 13/05/2022 08:53, Jacky Huang wrote:
+>> Thanks for your review and help.
+>> I will run the dtbs_check, add binding document, and include serial
+>> driver in the next version.
+> Except dtbs_check you have to run dt_binding_check because this is the
+> one which was failing at the first place.
+>
+> Best regards,
+> Krzysztof
 
-ML: https://lore.kernel.org/linux-csky/
+OK, I got it. Thank you very much.
+
+
+Sincerely,
+Jacky Huang
+
