@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A557C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB04AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380730AbiEMO2x (ORCPT
+        id S1380938AbiEMO27 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
+        Fri, 13 May 2022 10:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380992AbiEMO0Z (ORCPT
+        with ESMTP id S1381051AbiEMO02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:26:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FDC606D7;
-        Fri, 13 May 2022 07:25:59 -0700 (PDT)
+        Fri, 13 May 2022 10:26:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE778B0A8;
+        Fri, 13 May 2022 07:26:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5EFDEB83069;
-        Fri, 13 May 2022 14:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94600C34100;
-        Fri, 13 May 2022 14:25:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB8DE62122;
+        Fri, 13 May 2022 14:26:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0954C34100;
+        Fri, 13 May 2022 14:26:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451957;
-        bh=5TQdR9CfD/pFNVGjxcqLRAGHcY/q8Rinz6NZhij5HSw=;
+        s=korg; t=1652451964;
+        bh=Uc2tIDHiFzBQONuh97aDBwrWdOkXOiTES2GizRPUqH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ga8+prMOVvKBLYpaOONtxdP9eDAlopCwtHRziEGZ9vyEkKNc/VaMygOGzEyXxyeY8
-         tJyj8g9GGGdTPxKWcvkw/EvMyFh4oF5iMw4Qg7pLdC0MhsiI78cN1lbe60X58iWgrf
-         uCD9xkRuvQitZFq0XBMkpenGdVnJL/f/4owBDRxE=
+        b=rx+8XR/BoRBengrxMXOQgj7gnKgGY4mdnpjqBcXzzGydiF9ZRI/fh1yHMSzEwl01y
+         enWTzkkvVVLqYFT3F6cH8MBzn87JLf4vmPk5UeFQYgDQjTJy4em1mgRx/MK/wP7c45
+         slc7U5GcIPlBx87CQ/xnohTLJyNlgsJ2Z67PsaVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 4.19 03/15] drm/amd/display/dc/gpio/gpio_service: Pass around correct dce_{version, environment} types
-Date:   Fri, 13 May 2022 16:23:25 +0200
-Message-Id: <20220513142227.998453147@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.19 05/15] can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
+Date:   Fri, 13 May 2022 16:23:27 +0200
+Message-Id: <20220513142228.055226183@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
 References: <20220513142227.897535454@linuxfoundation.org>
@@ -55,77 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lee Jones <lee.jones@linaro.org>
+From: Andreas Larsson <andreas@gaisler.com>
 
-commit 353f7f3a9dd5fd2833b6462bac89ec1654c9c3aa upstream.
+commit 1e93ed26acf03fe6c97c6d573a10178596aadd43 upstream.
 
-Fixes the following W=1 kernel build warning(s):
+The systemid property was checked for in the wrong place of the device
+tree and compared to the wrong value.
 
- drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c: In function ‘dal_gpio_service_create’:
- drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c:71:4: warning: implicit conversion from ‘enum dce_version’ to ‘enum dce_environment’ [-Wenum-conversion]
- drivers/gpu/drm/amd/amdgpu/../display/dc/gpio/gpio_service.c:77:4: warning: implicit conversion from ‘enum dce_version’ to ‘enum dce_environment’ [-Wenum-conversion]
-
-Cc: Harry Wentland <harry.wentland@amd.com>
-Cc: Leo Li <sunpeng.li@amd.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Christian König" <christian.koenig@amd.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: amd-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
+Link: https://lore.kernel.org/all/20220429084656.29788-3-andreas@gaisler.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Andreas Larsson <andreas@gaisler.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c           |   12 +++++------
- drivers/gpu/drm/amd/display/include/gpio_service_interface.h |    4 +--
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/can/grcan.c |   16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
-+++ b/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
-@@ -51,8 +51,8 @@
-  */
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -245,7 +245,7 @@ struct grcan_device_config {
+ 		.rxsize		= GRCAN_DEFAULT_BUFFER_SIZE,	\
+ 		}
  
- struct gpio_service *dal_gpio_service_create(
--	enum dce_version dce_version_major,
--	enum dce_version dce_version_minor,
-+	enum dce_version dce_version,
-+	enum dce_environment dce_environment,
- 	struct dc_context *ctx)
+-#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	0x4100
++#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	4100
+ #define GRLIB_VERSION_MASK		0xffff
+ 
+ /* GRCAN private data structure */
+@@ -1660,6 +1660,7 @@ exit_free_candev:
+ static int grcan_probe(struct platform_device *ofdev)
  {
- 	struct gpio_service *service;
-@@ -66,14 +66,14 @@ struct gpio_service *dal_gpio_service_cr
- 		return NULL;
- 	}
+ 	struct device_node *np = ofdev->dev.of_node;
++	struct device_node *sysid_parent;
+ 	struct resource *res;
+ 	u32 sysid, ambafreq;
+ 	int irq, err;
+@@ -1669,10 +1670,15 @@ static int grcan_probe(struct platform_d
+ 	/* Compare GRLIB version number with the first that does not
+ 	 * have the tx bug (see start_xmit)
+ 	 */
+-	err = of_property_read_u32(np, "systemid", &sysid);
+-	if (!err && ((sysid & GRLIB_VERSION_MASK)
+-		     >= GRCAN_TXBUG_SAFE_GRLIB_VERSION))
+-		txbug = false;
++	sysid_parent = of_find_node_by_path("/ambapp0");
++	if (sysid_parent) {
++		of_node_get(sysid_parent);
++		err = of_property_read_u32(sysid_parent, "systemid", &sysid);
++		if (!err && ((sysid & GRLIB_VERSION_MASK) >=
++			     GRCAN_TXBUG_SAFE_GRLIB_VERSION))
++			txbug = false;
++		of_node_put(sysid_parent);
++	}
  
--	if (!dal_hw_translate_init(&service->translate, dce_version_major,
--			dce_version_minor)) {
-+	if (!dal_hw_translate_init(&service->translate, dce_version,
-+			dce_environment)) {
- 		BREAK_TO_DEBUGGER();
- 		goto failure_1;
- 	}
- 
--	if (!dal_hw_factory_init(&service->factory, dce_version_major,
--			dce_version_minor)) {
-+	if (!dal_hw_factory_init(&service->factory, dce_version,
-+			dce_environment)) {
- 		BREAK_TO_DEBUGGER();
- 		goto failure_1;
- 	}
---- a/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
-+++ b/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
-@@ -42,8 +42,8 @@ void dal_gpio_destroy(
- 	struct gpio **ptr);
- 
- struct gpio_service *dal_gpio_service_create(
--	enum dce_version dce_version_major,
--	enum dce_version dce_version_minor,
-+	enum dce_version dce_version,
-+	enum dce_environment dce_environment,
- 	struct dc_context *ctx);
- 
- struct gpio *dal_gpio_service_create_irq(
+ 	err = of_property_read_u32(np, "freq", &ambafreq);
+ 	if (err) {
 
 
