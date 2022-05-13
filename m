@@ -2,259 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D94E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 02:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1675C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 02:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376539AbiEMCxV (ORCPT
+        id S1376595AbiEMC4c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 22:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34268 "EHLO
+        Thu, 12 May 2022 22:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232487AbiEMCxT (ORCPT
+        with ESMTP id S1376610AbiEMC42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 22:53:19 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4486C0EB
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 19:53:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652410397; x=1683946397;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JPC6dlUogmhAYLUiSLbX/tviFaxYHSUYu+d6BDiKwJg=;
-  b=n4PO/GeGq9E+yLm7iwLMxnuJm7XQSaIbkGlPJBtsDwyZpQNw+0mUWBuf
-   SS+bSEaUAFkhLtJWiWRiQAjDpSMSf845iQGaqiAO3RbYjR73nPmrEmkXq
-   BCnMqnmaqdAf02ecFHEw5PKRRO3LpKcpydXMEDT5wZitX+ToN4la9R7zg
-   5CSdoYKE/fUZhiXBH9qDblErBNstRH6gBEn1JEwN3yYSUBlvm3SwbOCCI
-   KDtGOMq+Lma0XfU/1yRsmIUZMB2dYkzm77XsZa0MoOD/6ZIdWo9teWplm
-   5G2J+V29Zp4DF74LGd4MrCOvEobCPwGbq6loAbuaj2NXApblCyiWHgSEr
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257742566"
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="257742566"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 19:53:05 -0700
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="594997869"
-Received: from jliu69-mobl.ccr.corp.intel.com ([10.254.212.158])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 19:53:00 -0700
-Message-ID: <f36273d9a2fa09342972cd49e31bf2fe91e7c9e4.camel@intel.com>
-Subject: Re: RFC: Memory Tiering Kernel Interfaces (v2)
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Wei Xu <weixugc@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Dan Williams <dan.j.williams@intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Hesham Almatary <hesham.almatary@huawei.com>
-Date:   Fri, 13 May 2022 10:52:58 +0800
-In-Reply-To: <c8f253839505adec4d68cd2aa3f3769866915ad3.camel@intel.com>
-References: <CAAPL-u-DGLcKRVDnChN9ZhxPkfxQvz9Sb93kVoX_4J2oiJSkUw@mail.gmail.com>
-         <56b41ce6922ed5f640d9bd46a603fa27576532a9.camel@intel.com>
-         <c5d55131-76ff-7354-2954-7cfac365a9a5@linux.ibm.com>
-         <CAAPL-u-g86QqHaHGGtVJMER8ENC2dpekK+2qOkxoRFmC0F_80g@mail.gmail.com>
-         <87y1z7jj85.fsf@linux.ibm.com>
-         <CAAPL-u90Gzrepbsdpc62FGRBYOx1LAVwZWHg1E7UyVD_CmcROw@mail.gmail.com>
-         <c8f253839505adec4d68cd2aa3f3769866915ad3.camel@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 12 May 2022 22:56:28 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6404423162
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 19:56:27 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id r71so5945060pgr.0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 19:56:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=OGgDMvpY/n5VX5vYctev+tzQH6piKUfUzgYoN8lHPK8=;
+        b=OUR7fAJxJRCdgVA79xpMHkngYG/aXvMdppYHbPGcaOU99EAuvmPd1kShMCPzLUUVcu
+         GiX3Zsu33E//VV1DnOeopUCtD+bc1iG87XLMvc4vF0bmjbLMSBUOXm766o9CZey5UaWy
+         wxuioIw1csCRj9SZRD3ItoLE5LscG6tOFMdMyP14Fs/GxeFOaiQWKcVnXTMaBuqyRsL0
+         G6DUkVEALRHFSvDpR2YYsGd9jfMtOlTGRL0zMfmFp9hJkfD3P1cKqgZFOqap4lx5jJsT
+         ECzwby0l8NXYomdcbDee8Ce9otXjhcccz89br1sNsj8Nb9yVBg5PVn3GNdgStyCODGF2
+         C6DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=OGgDMvpY/n5VX5vYctev+tzQH6piKUfUzgYoN8lHPK8=;
+        b=ZNxigZY8Iqk1ABYZaTBgd4f5vBOf+1iTZP40kvUqg7Ao1baW8DWky4IozGztD6qnfx
+         WP67BlN8+SpZQWB1xibuiDASiAJLOD2iCZ3K7yAc2Mpmn8Cej3De9BK+vFKU9ao2r4Gf
+         CIFdayHFMl/LZ+QiocEgalpLvGO/8uv6uciVo0yZZfr+57mTOU6NW77DrsOoQV5+RQQ4
+         wOKwERyezqtbU5s/BrPVPvP3wX2yW4OsQtnv/tM/pMWSGubuBWCVJhXbyTJF+ru3Z7dQ
+         7skX8lBLxjtqzmqBOD2EYFnC19+68mtuxOHB0dUwlUbd7E+jFwdZ29cqxx3ut62Y7xmX
+         pdvQ==
+X-Gm-Message-State: AOAM532KiSeYgtQr46cnohisOEDViEpi+B1ldF8FUT80SbKmmDTZzzQ4
+        cz8o67ivvfrJoguVp2lrIThlk0fyUAcu4Q==
+X-Google-Smtp-Source: ABdhPJw0m4Ce6/qaZpm58tHclY9RoVfekRzhloooOMpO4pVQGqAEPgLhzdE6QQPpFBtECoNJc9BytQ==
+X-Received: by 2002:a63:e108:0:b0:3db:11bb:7345 with SMTP id z8-20020a63e108000000b003db11bb7345mr2153825pgh.502.1652410586489;
+        Thu, 12 May 2022 19:56:26 -0700 (PDT)
+Received: from Negi ([207.151.52.3])
+        by smtp.gmail.com with ESMTPSA id y4-20020a17090ad0c400b001d95cdb62d4sm2449444pjw.33.2022.05.12.19.56.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 19:56:25 -0700 (PDT)
+From:   Soumya Negi <soumya.negi97@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Soumya Negi <soumya.negi97@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: rtl8723bs: Fix alignment to match open parenthesis
+Date:   Thu, 12 May 2022 19:55:53 -0700
+Message-Id: <20220513025553.13634-1-soumya.negi97@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-12 at 16:37 +0800, ying.huang@intel.com wrote:
-> On Thu, 2022-05-12 at 01:15 -0700, Wei Xu wrote:
-> > On Thu, May 12, 2022 at 12:36 AM Aneesh Kumar K.V
-> > <aneesh.kumar@linux.ibm.com> wrote:
-> > > 
-> > > Wei Xu <weixugc@google.com> writes:
-> > > 
-> > > > On Thu, May 12, 2022 at 12:12 AM Aneesh Kumar K V
-> > > > <aneesh.kumar@linux.ibm.com> wrote:
-> > > > > 
-> > > > > On 5/12/22 12:33 PM, ying.huang@intel.com wrote:
-> > > > > > On Wed, 2022-05-11 at 23:22 -0700, Wei Xu wrote:
-> > > > > > > Sysfs Interfaces
-> > > > > > > ================
-> > > > > > > 
-> > > > > > > * /sys/devices/system/memtier/memtierN/nodelist
-> > > > > > > 
-> > > > > > >    where N = 0, 1, 2 (the kernel supports only 3 tiers for now).
-> > > > > > > 
-> > > > > > >    Format: node_list
-> > > > > > > 
-> > > > > > >    Read-only.  When read, list the memory nodes in the specified tier.
-> > > > > > > 
-> > > > > > >    Tier 0 is the highest tier, while tier 2 is the lowest tier.
-> > > > > > > 
-> > > > > > >    The absolute value of a tier id number has no specific meaning.
-> > > > > > >    What matters is the relative order of the tier id numbers.
-> > > > > > > 
-> > > > > > >    When a memory tier has no nodes, the kernel can hide its memtier
-> > > > > > >    sysfs files.
-> > > > > > > 
-> > > > > > > * /sys/devices/system/node/nodeN/memtier
-> > > > > > > 
-> > > > > > >    where N = 0, 1, ...
-> > > > > > > 
-> > > > > > >    Format: int or empty
-> > > > > > > 
-> > > > > > >    When read, list the memory tier that the node belongs to.  Its value
-> > > > > > >    is empty for a CPU-only NUMA node.
-> > > > > > > 
-> > > > > > >    When written, the kernel moves the node into the specified memory
-> > > > > > >    tier if the move is allowed.  The tier assignment of all other nodes
-> > > > > > >    are not affected.
-> > > > > > > 
-> > > > > > >    Initially, we can make this interface read-only.
-> > > > > > 
-> > > > > > It seems that "/sys/devices/system/node/nodeN/memtier" has all
-> > > > > > information we needed.  Do we really need
-> > > > > > "/sys/devices/system/memtier/memtierN/nodelist"?
-> > > > > > 
-> > > > > > That can be gotten via a simple shell command line,
-> > > > > > 
-> > > > > > $ grep . /sys/devices/system/node/nodeN/memtier | sort -n -k 2 -t ':'
-> > > > > > 
-> > > > > 
-> > > > > It will be really useful to fetch the memory tier node list in an easy
-> > > > > fashion rather than reading multiple sysfs directories. If we don't have
-> > > > > other attributes for memorytier, we could keep
-> > > > > "/sys/devices/system/memtier/memtierN" a NUMA node list there by
-> > > > > avoiding /sys/devices/system/memtier/memtierN/nodelist
-> > > > > 
-> > > > > -aneesh
-> > > > 
-> > > > It is harder to implement memtierN as just a file and doesn't follow
-> > > > the existing sysfs pattern, either.  Besides, it is extensible to have
-> > > > memtierN as a directory.
-> > > 
-> > > diff --git a/drivers/base/node.c b/drivers/base/node.c
-> > > index 6248326f944d..251f38ec3816 100644
-> > > --- a/drivers/base/node.c
-> > > +++ b/drivers/base/node.c
-> > > @@ -1097,12 +1097,49 @@ static struct attribute *node_state_attrs[] = {
-> > >         NULL
-> > >  };
-> > > 
-> > > +#define MAX_TIER 3
-> > > +nodemask_t memory_tier[MAX_TIER];
-> > > +
-> > > +#define _TIER_ATTR_RO(name, tier_index)                                        \
-> > > +       { __ATTR(name, 0444, show_tier, NULL), tier_index, NULL }
-> > > +
-> > > +struct memory_tier_attr {
-> > > +       struct device_attribute attr;
-> > > +       int tier_index;
-> > > +       int (*write)(nodemask_t nodes);
-> > > +};
-> > > +
-> > > +static ssize_t show_tier(struct device *dev,
-> > > +                        struct device_attribute *attr, char *buf)
-> > > +{
-> > > +       struct memory_tier_attr *mt = container_of(attr, struct memory_tier_attr, attr);
-> > > +
-> > > +       return sysfs_emit(buf, "%*pbl\n",
-> > > +                         nodemask_pr_args(&memory_tier[mt->tier_index]));
-> > > +}
-> > > +
-> > >  static const struct attribute_group memory_root_attr_group = {
-> > >         .attrs = node_state_attrs,
-> > >  };
-> > > 
-> > > +
-> > > +#define TOP_TIER 0
-> > > +static struct memory_tier_attr memory_tiers[] = {
-> > > +       [0] = _TIER_ATTR_RO(memory_top_tier, TOP_TIER),
-> > > +};
-> > > +
-> > > +static struct attribute *memory_tier_attrs[] = {
-> > > +       &memory_tiers[0].attr.attr,
-> > > +       NULL
-> > > +};
-> > > +
-> > > +static const struct attribute_group memory_tier_attr_group = {
-> > > +       .attrs = memory_tier_attrs,
-> > > +};
-> > > +
-> > >  static const struct attribute_group *cpu_root_attr_groups[] = {
-> > >         &memory_root_attr_group,
-> > > +       &memory_tier_attr_group,
-> > >         NULL,
-> > >  };
-> > > 
-> > > 
-> > > As long as we have the ability to see the nodelist, I am good with the
-> > > proposal.
-> > > 
-> > > -aneesh
-> > 
-> > I am OK with moving back the memory tier nodelist into node/.  When
-> > there are more memory tier attributes needed, we can then create the
-> > memory tier subtree and replace the tier nodelist in node/ with
-> > symlinks.
-> 
-> What attributes do you imagine that we may put in memory_tierX/ sysfs
-> directory?  If we have good candidates in mind, we may just do that. 
-> What I can imagine now is "demote", like "memory_reclaim" in nodeX/ or
-> node/ directory you proposed before.  Is it necessary to show something
-> like "meminfo", "vmstat" there?
+Adhere to Linux coding style. Fixes checkpatch warnings:
+CHECK: Alignment should match open parenthesis
+CHECK: line length of 101 exceeds 100 columns
 
-My words may be confusing, so let me say it in another way.
+Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+---
+ drivers/staging/rtl8723bs/core/rtw_ap.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-Just for brainstorm, if we have
-
-  /sys/devices/system/memtier/memtierN/
-
-What can we put in it in addition to "nodelist" or links to the nodes? 
-For example,
-
-  /sys/devices/system/memtier/memtierN/demote
-
-When write a page number to it, the specified number of pages will be
-demoted from memtierN to memtierN+1, like the
-/sys/devices/system/node/memory_reclaim interface you proposed before. 
-Or, is it necessary to add
-
-  /sys/devices/system/memtier/memtierN/meminfo
-  /sys/devices/system/memtier/memtierN/vmstat
-
-I don't mean to propose these.  Just want to know whether there's
-requirement for these kind of stuff?  And what else may be required.
-
-Best Regards,
-Huang, Ying
-
-> > 
-> > So the revised sysfs interfaces are:
-> > 
-> > * /sys/devices/system/node/memory_tierN (read-only)
-> > 
-> >   where N = 0, 1, 2
-> > 
-> >   Format: node_list
-> > 
-> > * /sys/devices/system/node/nodeN/memory_tier (read/write)
-> > 
-> >   where N = 0, 1, ...
-> > 
-> >   Format: int or empty
-> 
-
+diff --git a/drivers/staging/rtl8723bs/core/rtw_ap.c b/drivers/staging/rtl8723bs/core/rtw_ap.c
+index 5478188be991..d30d6e6bcd07 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_ap.c
++++ b/drivers/staging/rtl8723bs/core/rtw_ap.c
+@@ -520,12 +520,12 @@ void update_sta_info_apmode(struct adapter *padapter, struct sta_info *psta)
+ 
+ 		/*  B0 Config LDPC Coding Capability */
+ 		if (TEST_FLAG(phtpriv_ap->ldpc_cap, LDPC_HT_ENABLE_TX) &&
+-			      GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
++		    GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
+ 			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
+ 
+ 		/*  B7 B8 B9 Config STBC setting */
+ 		if (TEST_FLAG(phtpriv_ap->stbc_cap, STBC_HT_ENABLE_TX) &&
+-			      GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
++		    GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
+ 			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
+ 	} else {
+ 		phtpriv_sta->ampdu_enable = false;
+@@ -1065,10 +1065,12 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
+ 		);
+ 
+ 		if ((psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_CCMP) ||
+-		     (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
+-			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & (0x07 << 2));
++		    (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
++			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
++						       (0x07 << 2));
+ 		} else {
+-			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & 0x00);
++			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
++						       0x00);
+ 		}
+ 
+ 		rtw_hal_get_def_var(
+@@ -1116,7 +1118,7 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
+ 	pmlmepriv->htpriv.ht_option = false;
+ 
+ 	if ((psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_TKIP) ||
+-	     (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
++	    (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
+ 		/* todo: */
+ 		/* ht_cap = false; */
+ 	}
+@@ -1725,7 +1727,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_preamble--;
+ 
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				(pmlmepriv->num_sta_no_short_preamble == 0)) {
++			    (pmlmepriv->num_sta_no_short_preamble == 0)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -1763,7 +1765,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_slot_time++;
+ 
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				 (pmlmepriv->num_sta_no_short_slot_time == 1)) {
++			    (pmlmepriv->num_sta_no_short_slot_time == 1)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -1775,7 +1777,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_slot_time--;
+ 
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				 (pmlmepriv->num_sta_no_short_slot_time == 0)) {
++			    (pmlmepriv->num_sta_no_short_slot_time == 0)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -2024,7 +2026,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
+ 	start_bss_network(padapter);
+ 
+ 	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
+-		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
++	    (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
+ 		/* restore group key, WEP keys is restored in ips_leave() */
+ 		rtw_set_key(
+ 			padapter,
+@@ -2062,7 +2064,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
+ 			/* pairwise key */
+ 			/* per sta pairwise key and settings */
+ 			if ((psecuritypriv->dot11PrivacyAlgrthm == _TKIP_) ||
+-				(psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
++			    (psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
+ 				rtw_setstakey_cmd(padapter, psta, true, false);
+ 			}
+ 		}
+-- 
+2.17.1
 
