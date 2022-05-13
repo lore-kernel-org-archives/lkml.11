@@ -2,107 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEF5C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF3DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 09:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379109AbiEMJ0d (ORCPT
+        id S1379032AbiEMJ2G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 05:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36850 "EHLO
+        Fri, 13 May 2022 05:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379009AbiEMJZt (ORCPT
+        with ESMTP id S1379089AbiEMJ0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 05:25:49 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87AE7E4A;
-        Fri, 13 May 2022 02:25:41 -0700 (PDT)
-X-UUID: 53143719f33c41ce9411d22abb4668ae-20220513
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:01d6e588-00c4-4499-9d2c-964ba603b69f,OB:20,L
-        OB:20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:01d6e588-00c4-4499-9d2c-964ba603b69f,OB:20,LOB
-        :20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:048a1cf2-ab23-4aed-a67b-f96514452486,C
-        OID:b20ba0dbcb63,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 53143719f33c41ce9411d22abb4668ae-20220513
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 510357662; Fri, 13 May 2022 17:25:36 +0800
-Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 13 May 2022 17:25:35 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 13 May 2022 17:25:34 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 13 May 2022 17:25:31 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v6, 3/7] dt-bindings: media: mediatek: vcodec: Adds decoder dt-bindings for mt8195
-Date:   Fri, 13 May 2022 17:25:22 +0800
-Message-ID: <20220513092526.9670-4-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220513092526.9670-1-yunfei.dong@mediatek.com>
-References: <20220513092526.9670-1-yunfei.dong@mediatek.com>
+        Fri, 13 May 2022 05:26:21 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3D415721;
+        Fri, 13 May 2022 02:26:16 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id q4so7379103plr.11;
+        Fri, 13 May 2022 02:26:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4Fl9YRg3lybj0A+SLC/IEMp8cNpVOztdbgPj51TjJ/Q=;
+        b=XWsCnrQq+wuM/Qpf4MrQ49slj4Eh/XVkfg106+runlYDDvdUOq9/6T+3Gf6w1v+Vr9
+         D6wT5wYqzsvJUvvieqzuvt8Tenuhr483rOXsYHlZS33c6+V9Z2JrLonax4vay4bmY6MS
+         dkjohi0fqLRJPJBVlCiEzmKLtxHZ+5aHNAaBzrvxnBWnucyxZDL42JvzIp34GMps7iYh
+         vUUg97R+awEhMLhDRtwOh4O9ZiFtO/m347mqyE2Q9gLFOgoVfXMvU04o5CEkLyyl0fM4
+         R0gMOk3UnfaS6nrn6MC/j1HxC46ePPFgfKdX+ZjD/Ii7T4YfKg515EbzkKobklEHXrPi
+         3puw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4Fl9YRg3lybj0A+SLC/IEMp8cNpVOztdbgPj51TjJ/Q=;
+        b=kFZbDT5BvBzSVmnejb8DBhpwHqMuFWejecabXbnLf9TW1pxf2W2zXSdxbZSpFnbvem
+         XzMSMvC/iPZIq1OT7VD1JHA3vWcqVoqLdSkb/jSozm0yVV6pnQ5+YW2vhhxJ6XLbqEQ/
+         PHINHosHK4SPl/r+KIKHUXt0waQgMXV+t1IkC8mxBeQzHlam4fQQnC8XdQs7CgHL/A/J
+         bhxcaMbhx5zhIX5+/6Yr5TcvOQiFAnBkz793tIYW21uJbQ/a9vWT0N5HkrA/Fu8cDWIT
+         fv15JZLw2gdRic8rBiVqwAdo+1Bj2hX0rxG9hHkn9rgAPUZlo7bDm37LRhL+/TGxyffD
+         VStA==
+X-Gm-Message-State: AOAM530YUVI9TFJIzhUP++zDGvrSkmJkrOrBKJ6If3KL0AZHkpYL99jE
+        d3NMhcmNhoftJ/EMb24VoDg=
+X-Google-Smtp-Source: ABdhPJwaYjXq+z83/qwDwoXkJhd6TjzfMoI4iuLA8jsCmvicv/kOa2lB82NC0kJ6OvIBM6ju8sz43A==
+X-Received: by 2002:a17:902:ea0e:b0:15e:c0e4:cf15 with SMTP id s14-20020a170902ea0e00b0015ec0e4cf15mr4034800plg.63.1652433976446;
+        Fri, 13 May 2022 02:26:16 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.22])
+        by smtp.gmail.com with ESMTPSA id m13-20020a170902f64d00b0015e8d4eb299sm1331558plg.227.2022.05.13.02.26.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 02:26:16 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     pbonzini@redhat.com
+Cc:     jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, seanjc@google.com,
+        vkuznets@redhat.com, wanpengli@tencent.com
+Subject: [PATCH v13 09/17] KVM: x86/pmu: Adjust precise_ip to emulate Ice Lake guest PDIR counter
+Date:   Fri, 13 May 2022 17:26:11 +0800
+Message-Id: <20220513092611.13291-1-likexu@tencent.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220411101946.20262-10-likexu@tencent.com>
+References: <20220411101946.20262-10-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds decoder dt-bindings for mt8195.
+From: Like Xu <likexu@tencent.com>
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Reviewed-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+The PEBS-PDIR facility on Ice Lake server is supported on IA31_FIXED0 only.
+If the guest configures counter 32 and PEBS is enabled, the PEBS-PDIR
+facility is supposed to be used, in which case KVM adjusts attr.precise_ip
+to 3 and request host perf to assign the exactly requested counter or fail.
+
+The CPU model check is also required since some platforms may place the
+PEBS-PDIR facility in another counter index.
+
+Signed-off-by: Like Xu <likexu@tencent.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- .../bindings/media/mediatek,vcodec-subdev-decoder.yaml           | 1 +
- 1 file changed, 1 insertion(+)
+v12 -> v13 Changelog:
+- Move vmx_icl_pebs_cpu[] from pmu.h to pmu.c;
+- Drop unrelated change about arch/x86/events/intel/core.c;
 
-diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-index 6854e7f2ce9f..ca6a00be815a 100644
---- a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-@@ -57,6 +57,7 @@ properties:
-     enum:
-       - mediatek,mt8192-vcodec-dec
-       - mediatek,mt8186-vcodec-dec
-+      - mediatek,mt8195-vcodec-dec
+ arch/x86/kvm/pmu.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 36487088f72c..0b8fc86839ba 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -16,6 +16,7 @@
+ #include <linux/bsearch.h>
+ #include <linux/sort.h>
+ #include <asm/perf_event.h>
++#include <asm/cpu_device_id.h>
+ #include "x86.h"
+ #include "cpuid.h"
+ #include "lapic.h"
+@@ -24,6 +25,12 @@
+ /* This is enough to filter the vast majority of currently defined events. */
+ #define KVM_PMU_EVENT_FILTER_MAX_EVENTS 300
  
-   reg:
-     maxItems: 1
++static const struct x86_cpu_id vmx_icl_pebs_cpu[] = {
++	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_D, NULL),
++	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_X, NULL),
++	{}
++};
++
+ /* NOTE:
+  * - Each perf counter is defined as "struct kvm_pmc";
+  * - There are two types of perf counters: general purpose (gp) and fixed.
+@@ -175,6 +182,8 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+ 		 * could possibly care here is unsupported and needs changes.
+ 		 */
+ 		attr.precise_ip = 1;
++		if (x86_match_cpu(vmx_icl_pebs_cpu) && pmc->idx == 32)
++			attr.precise_ip = 3;
+ 	}
+ 
+ 	event = perf_event_create_kernel_counter(&attr, -1, current,
 -- 
-2.18.0
+2.36.1
 
