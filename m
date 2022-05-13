@@ -2,155 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4411C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 18:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 18:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383232AbiEMSGt (ORCPT
+        id S1382888AbiEMSKY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 14:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
+        Fri, 13 May 2022 14:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347598AbiEMSGr (ORCPT
+        with ESMTP id S244159AbiEMSKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 14:06:47 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A816E275D6
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 11:06:45 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id v11so7642148qkf.1
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 11:06:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jl3uQ/qIvTlTsjRN/rhZlGLpkaQPanJfn4mpvTQX1aA=;
-        b=Urn0R2WklZCf3R62oBx1CQsalCjvGHDvD/O9/HF/VUFW0+gOzwIZI3XYzPSPID/YWi
-         hLkv2CkD9HEdwrIgzAHJrlJOlYID+QbP8LlDudWBPeZGcYN9uiNf3hZaO9vcx69AxDvj
-         atVIw0LFaZB12fWgOJZhhfjhneMRFBU2sg2l0ASskga3lltY+nfH+vCeMg0x3Ac4nYIp
-         Y05eQwv+w4KgMMsVfxGgFG6SCmI9DlAWUjABIcZZA88pPAWTAThRtOfarCvUMkMSy6Vj
-         6DJfDReE7lhik4L7w7L6KgvgDLirRR6kvxJaEbZVo7A1gbc2q7iMFf/HGhj8AeyWekUg
-         mvZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jl3uQ/qIvTlTsjRN/rhZlGLpkaQPanJfn4mpvTQX1aA=;
-        b=o0/Ub036uXA8b0qORX4Tb9dvUyXvBUDWGKBXauOqNgLmkJoEs0SzoGpUgf0KLJipBu
-         RsbWBnRJ4eRHR2ajIB0xRJva7eqaG/uphk0s70JqZBG4VMEbdVJcBF+eRRa1ahiTOYsi
-         +GUmUTUjKVuLTCvtJoA8rC7+AIL2TAqqXbRNKY/LSh5rBKtsra5ZCQ1qYS02CLG4hzyc
-         ZvZO0sajkIYuCVh+ivAzt0/Rs+g1v+NeSEq68UAnvbybt9ra8YlqflUBzT17VE69jTQJ
-         051EopRLcwrhAqG7lWXjF4X/6bkGk+pjGWanMwLMXK3GzByr//oXnFZtksCFNzQov+mL
-         C/IQ==
-X-Gm-Message-State: AOAM530L2JFypxuT8TeaEAcJW+EbUgwd9l5rOKic2vpkBoDtP4H7Se6t
-        yXGlFLeZpdbLHFqCtYZOjE95UT+xczqrifQJxUWSxg==
-X-Google-Smtp-Source: ABdhPJwtsAlxvwtRTL2sVCKEEyqbYHcmIz2b5TB4ajdk6SJjT5nsmSELiLCdfSvVImbTESf1u6t5Tv42uT3m5FZ415M=
-X-Received: by 2002:a37:f508:0:b0:69b:ed2f:e56 with SMTP id
- l8-20020a37f508000000b0069bed2f0e56mr4645661qkk.384.1652465204516; Fri, 13
- May 2022 11:06:44 -0700 (PDT)
+        Fri, 13 May 2022 14:10:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B325253D;
+        Fri, 13 May 2022 11:10:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DB17B83029;
+        Fri, 13 May 2022 18:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E4F1C34100;
+        Fri, 13 May 2022 18:10:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652465418;
+        bh=QVFRHciwVHsT/StrKZNZPPyBLNp0Pv3TiO/oD8UrSLo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=O3D+iKn1wRG3Mgt93Dx8a0sfe8hCyc4kqJHi25y9xPg88/MH4jTk1xPdjsZywacre
+         ly7tUzk0m7KNEpK9Fu460QX4M6OoSKHbnQw1zz1dAl6lhmdGzSgmzQOYpy2L5kczqp
+         akHofx0s9JBZs/rJkPGqlz9MRNFezD2tRvxj5z1cemyP/y2ytFsdrRHrrl4ZoaACia
+         9l0jCg8Rjjego6i1/espF8Dy4n4pnw9GqpAuSPtQ2pxt8A732G7c/AXVJt+qMyQwDg
+         vBtDNXLwwkpQKIER6eqFbfSJam6qdBCM43entSW918d5wJ1LlfQIgWuz6MiUMdcddk
+         G9pzrRPVEaMDg==
+Date:   Fri, 13 May 2022 21:08:48 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lukas@wunner.de,
+        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH v4 1/6] tpm, tpm_tis_spi: Request threaded irq
+Message-ID: <Yn6esMyUl+QhECq+@kernel.org>
+References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
+ <20220509080559.4381-2-LinoSanfilippo@gmx.de>
+ <YnucgDH3I87RI8PN@kernel.org>
+ <486cec01-ec02-3f11-0b81-037e0700c503@gmx.de>
 MIME-Version: 1.0
-References: <CACGdZYLMW2KHVebfyJZVn9G=15N+Jt4+8oF5gq3wdDTOcXbk9A@mail.gmail.com>
- <20220513174030.1307720-1-khazhy@google.com>
-In-Reply-To: <20220513174030.1307720-1-khazhy@google.com>
-From:   Khazhy Kumykov <khazhy@google.com>
-Date:   Fri, 13 May 2022 11:06:33 -0700
-Message-ID: <CACGdZYJAm4kwXB_76qT6PZmPO66Kt2NFSQ0+KNT=S+Tgu6SmoA@mail.gmail.com>
-Subject: Re: [RESEND][RFC PATCH] blkcg: rewind seq_file if no stats
-To:     Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000008d08af05dee889d1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <486cec01-ec02-3f11-0b81-037e0700c503@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000008d08af05dee889d1
-Content-Type: text/plain; charset="UTF-8"
+On Wed, May 11, 2022 at 09:18:39PM +0200, Lino Sanfilippo wrote:
+> Hi,
+> 
+> On 11.05.22 at 13:22, Jarkko Sakkinen wrote:
+> > On Mon, May 09, 2022 at 10:05:54AM +0200, Lino Sanfilippo wrote:
+> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> >>
+> >> Interrupt handling at least includes reading and writing the interrupt
+> >> status register within the interrupt routine. Since accesses over the SPI
+> >> bus are synchronized by a mutex, request a threaded interrupt handler to
+> >> ensure a sleepable context during interrupt processing.
+> >>
+> >> Fixes: 1a339b658d9d ("tpm_tis_spi: Pass the SPI IRQ down to the driver")
+> >> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> >
+> > When you state that it needs a sleepable context, you should bring a
+> > context why it needs it. This not to disregard the code change overally but
+> > you cannot make even the most obvious claim without backing data.
+> >
+> 
+> so what kind of backing data do you have in mind? Would it help to emphasize more
+> that the irq handler is running in hard irq context in the current code and thus
+> must not access registers over SPI since SPI uses a mutex (I consider it as basic
+> knowledge that a mutex must not be taken in hard irq context)?
 
-On Fri, May 13, 2022 at 10:40 AM Khazhismel Kumykov <khazhy@google.com> wrote:
-> +void seq_restore(struct seq_file *m, int count)
-(Yes, this and elsewhere should be size_t to match m->count)
-> +{
-> +       if (WARN_ON_ONCE(count > m->count || count > m->size))
-> +               return;
-> +       m->count = count;
+There's zero mention about specific lock you are talking about. Providing
+the basic knowledge what you are trying to do is the whole point of the
+commit message in the first place. I'd presume this patch is related to the
+use bus_lock_mutex but it is fully ingored here.
 
---0000000000008d08af05dee889d1
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIIPmwYJKoZIhvcNAQcCoIIPjDCCD4gCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz1MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-h3dPtFviTyG11HYwTAYDVR0gBEUwQzBBBgkrBgEEAaAyASgwNDAyBggrBgEFBQcCARYmaHR0cHM6
-Ly93d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wDAYDVR0TAQH/BAIwADCBmgYIKwYBBQUH
-AQEEgY0wgYowPgYIKwYBBQUHMAGGMmh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2NhL2dzYXRs
-YXNyM3NtaW1lY2EyMDIwMEgGCCsGAQUFBzAChjxodHRwOi8vc2VjdXJlLmdsb2JhbHNpZ24uY29t
-L2NhY2VydC9nc2F0bGFzcjNzbWltZWNhMjAyMC5jcnQwHwYDVR0jBBgwFoAUfMwKaNei6x4schvR
-zV2Vb4378mMwRgYDVR0fBD8wPTA7oDmgN4Y1aHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9jYS9n
-c2F0bGFzcjNzbWltZWNhMjAyMC5jcmwwDQYJKoZIhvcNAQELBQADggEBAE0ANr7NUOqEcZce4KYP
-SjzlrshSC8sgJ8dKDDbe35PL86vDuMIrytVjiV10p/YUofun9GeHBY6r5kTyh4be5FgftiiNtWzn
-U1W5cxLYMT1hKYxXxnM2sWMQGFl4TkxxbRoVZa3ou/NxFdAZeiQSwGnzk5oIDTBZQc8q3wMa1svm
-A5Rd4MVaIUt+hyk6seAldN6k4/O34O1l2V6D+/BwagyzLWvOeMEM9hClVF+F6a20yy4dcDsprFZZ
-Sk9JzUy9F6FM7L1wT2ndjTNDja4Y2tixf31KuisZLGKmDZsW/fXF1GgWDaM0DbYJwtE3kHylWnMk
-CN4PfYgIa15C5A9lXhExggJqMIICZgIBATBoMFQxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9i
-YWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFzIFIzIFNNSU1FIENBIDIwMjAC
-EAFEftjde/YEIFcjUXqhcBUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBoOLZS/
-wLUixiZ06eOojFIVPl5zuHue3WyR5PbSC06QMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJ
-KoZIhvcNAQkFMQ8XDTIyMDUxMzE4MDY0NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASow
-CwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZI
-hvcNAQEHMAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCVIpxkVlm3Bw2DBD8dQ8S2/WGh
-4gwmhTJ72vF0m/CjOWWwB772p6VpjNOj439230F0eR8R7nnH45ArXh8oOq4UKnaQQIstMyKkNZ4s
-0zBkEq2wsNJAzZlaSwOqGR3fNjJNgEJC9IRf21IWfnuhmCnsLZPa+kZCBPsJuCn5FH3ZCa5naRrg
-2OORPTNYgFzP9PL7zsxUUnf9qz+za7rPXqx+uya/UXn3BMNdbmOs8FLu+1srbX7Ua3gDjB327+P/
-TH1MIAjfWUW42lJN2rbUMUe4cBPM+wTYDhf+Zc4ft9BY4e1wH7LpXfiZPemcUM6Xih5eZX0J5MRp
-PnLuBQq6HD05
---0000000000008d08af05dee889d1--
+BR, Jarkko
