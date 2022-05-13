@@ -2,173 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 16:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379380AbiEMQJu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 12:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
+        id S235254AbiEMQM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 12:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235082AbiEMQJr (ORCPT
+        with ESMTP id S235081AbiEMQMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 12:09:47 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70131.outbound.protection.outlook.com [40.107.7.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D8F6C540
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:09:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VEgUFUfG5S9JF81gzil81Z3P9dGVUfTXOCj5EO3QObxlNX3Zbq1maErXPUExZe6CqEq4T6kNWCUyh2+tWKMZrfo+Ju5LdIPqu3Soi4PiEw+HiFI034kVB7AURqbKV11in5m2jFiNPaiiVEo9jwuQVcFZKb8rG+Fjvos1K85tx48VP6feHktOJc52BqOFmaJZCKUg/2GX2/oWat8EE6vJJEgFUaxczfruQN6hiH24BxNANcymOFOgziGsM1N+1DNnDpTKfyjv2UnQA6uBB05V9WsdxUfQPglls22q9wwsXvdiRH3lsqjtfxtcXbD2O4eG6KI5z7XTlWAi7AmxuZCotA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aL4EOGafSiArWzeHjTttw0SmsRh0ctJvuIcggITtIIA=;
- b=TbDxEUcYZQC2xYO5L6ZgDS2+hCGd2+bAj8OKtTwdbdntrn4DxCgOrNYvHg9hB4lS9NsfF7E5yS8ndC2PDdj10IG4LBV7Nphzf00cdWt85dSe5s46GY1NOGBCLm5XuvDD+Sy3q1/21RFpiHi8xxvYE5Q2awmz7mlR34m6iSZNyn84ZxAARxf/Al9Ki9j/fqc6ul4zPZjvZasFYXry+6ll+tSNM+ich9QGi+JmK8FTl0EDPs4NO9nuQqrS1GghJA+pSUUoMo11cX+1ySDUm6gPgQvE5s3elZzIJF/sElfPDyi8nyldp5wYd6mu5rySgMH89JJTBRFSz83b5NoBpuNAPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aL4EOGafSiArWzeHjTttw0SmsRh0ctJvuIcggITtIIA=;
- b=foswN9KC7RuBuaLGrKnJElVc3T/DGEVJ5gfv8lCEav5RE+Yj9I/GmqpbyQzjYWwK5XjSkaxNjc+LW2pfTmgZlZdYSuJOWH5J5Z/DQN9fuPMSeJRBg/X6M9bOzOXMixHoshIkFH1GbTDuWyayc+Gg19B0tjna693gtxra2Ds60LI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nokia.com;
-Received: from AS4PR07MB8658.eurprd07.prod.outlook.com (2603:10a6:20b:4cd::12)
- by AM9PR07MB8004.eurprd07.prod.outlook.com (2603:10a6:20b:30e::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.4; Fri, 13 May
- 2022 16:09:43 +0000
-Received: from AS4PR07MB8658.eurprd07.prod.outlook.com
- ([fe80::1d35:9369:bda:b3a0]) by AS4PR07MB8658.eurprd07.prod.outlook.com
- ([fe80::1d35:9369:bda:b3a0%6]) with mapi id 15.20.5273.005; Fri, 13 May 2022
- 16:09:43 +0000
-Message-ID: <d59ec4e0-3bce-2b44-1fc5-54a26fe77c7f@nokia.com>
-Date:   Fri, 13 May 2022 18:09:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] mtd: spi-nor: Support Dual and Quad Read on Macronix
- mx25u25635f
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-mtd@lists.infradead.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org
-References: <20220513094759.44185-1-alexander.sverdlin@nokia.com>
- <34eccc66cc75dd0ffbf8a77780b6f8a7@walle.cc>
-From:   Alexander Sverdlin <alexander.sverdlin@nokia.com>
-In-Reply-To: <34eccc66cc75dd0ffbf8a77780b6f8a7@walle.cc>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM6PR04CA0068.eurprd04.prod.outlook.com
- (2603:10a6:20b:f0::45) To AS4PR07MB8658.eurprd07.prod.outlook.com
- (2603:10a6:20b:4cd::12)
+        Fri, 13 May 2022 12:12:47 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83303ED21
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:12:45 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id i24so8072075pfa.7
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 09:12:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=z141h5DooZE4FL3AcX+0cKxHlZQWL6e7O/2bq4FL5UY=;
+        b=pMpyJUjUuK/7b/oFgsoqZPGJMcOKB+7c5car+thP1abZdX0Ernmov9vuFLaqKMGXn2
+         rG8JUhF6WgH7lMygF4hmuRIwFoCrADaFG0pDWTQKNWoL6WLM69N4kM4KtTQkkoALHWrD
+         mAeJQipbT6/IL+OPcmvLrWT3xFgMFLNWJ+O6dFPVj4sg1KmNHaULMm56Trm/hh8TOipy
+         uhaRQ/7aUedXdd9J0nEfOtBBAWb0ZPzn5j4jRptmc960+ldd4gTqKw70bR33LbaLOe4i
+         OR/28/FZmY9vcAYQkNkQbiAC8Sl0bxsa6t+sHaEyvc1goNVOfOnpsfXq5AH2VoYmLRhW
+         N/PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=z141h5DooZE4FL3AcX+0cKxHlZQWL6e7O/2bq4FL5UY=;
+        b=u3UkaJfCnQejfYLid2OgBD/1o815rc5LgfmW1KipfEbHilfRWed8TBMYefFaoDEk5z
+         Uc6tuPwmb5piHKTyy56Rnw2V8OYJGZLU9xoUi9WcUEvEac+lYhQ0MunNJetje7CmYWE/
+         nKQ1QHsoxYM7MdXU32ajWElSRFy1VG2Aubv5HfW/ALsHrNNJcrDpxxa/xAoatQr3Wavi
+         bfaiiPMMeUF8NkW+SjJ+Ky4GfLM/+utI4M4VuG9ZauTf3KiKB+eoYL0tL4p6eIkwEU4i
+         mhLQ0fvDuefkPsitAWFCECKCLtM1Sa5WJDtdAKhsVB+Klu3M6Q/usMMDuxqN7b7CkBpM
+         iT1Q==
+X-Gm-Message-State: AOAM530sj2A+J03rMJSykzRT7qJJ3admIRbBfPN3yLSx17rdZ101DIFv
+        j+dUaz64C+7jUekvsxIB3iQSaw==
+X-Google-Smtp-Source: ABdhPJxZZEiYRsI2RBdRgtXYc4csRnATqQp8IQ+ui/ozYpm8C71ZnCC99jhfyvA9CYU552pckX/xxw==
+X-Received: by 2002:a63:190d:0:b0:3db:11ba:cdb3 with SMTP id z13-20020a63190d000000b003db11bacdb3mr4564735pgl.81.1652458365185;
+        Fri, 13 May 2022 09:12:45 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id c9-20020aa78e09000000b0050dc76281ebsm1952250pfr.197.2022.05.13.09.12.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 09:12:44 -0700 (PDT)
+Date:   Fri, 13 May 2022 16:12:40 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Yosry Ahmed <yosryahmed@google.com>, Marc Zyngier <maz@kernel.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Oliver Upton <oupton@google.com>, cgroups@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
+Subject: Re: [PATCH v4 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
+ page table uses.
+Message-ID: <Yn6DeEGLyR4Q0cDp@google.com>
+References: <20220429201131.3397875-1-yosryahmed@google.com>
+ <20220429201131.3397875-2-yosryahmed@google.com>
+ <87ilqoi77b.wl-maz@kernel.org>
+ <CAJD7tkY7JF25XXUFq2mGroetMkfo-2zGOaQC94pjZE3D42+oaw@mail.gmail.com>
+ <Yn2TGJ4vZ/fst+CY@cmpxchg.org>
+ <Yn2YYl98Vhh/UL0w@google.com>
+ <Yn5+OtZSSUZZgTQj@cmpxchg.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 55eb0835-6d6b-420b-d41b-08da34fafd83
-X-MS-TrafficTypeDiagnostic: AM9PR07MB8004:EE_
-X-Microsoft-Antispam-PRVS: <AM9PR07MB8004878527233589E81ACE2788CA9@AM9PR07MB8004.eurprd07.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8iRbXRqt7chIaR/OfiRypxMiWapIw38cKECgKHa9lYY/vVFFlSb37tusXtSt1rtjMuc6ylxVMf08B6KnzqJgm7ba/0GENxwexVw6mH+jTR4cqQ3hQ52CTEyRG4z/hL6Lm4ufAMF8PC/NasJ0SOgFG8K4Pdj3tQVztz0kyL+B6peb2PiPPDK/URdP4WUDFwTj/Jhmup2B8yxTZZH7GOykVgD7Tsvg8v+tw+YeXgdyXe2eA8JwRgYRtUkIFCwWFiQGVAmDAbGnSZyvTvWr6ewQM1pAUniNH1JEr8BSwVT2YbivZvpN9hrFT0/VCqBbStZD88WsNL9xS3sREJSdTYJ0wjMIpTivC4SEi5W0E90y4fsSpsyQSTXuO1xJ++b8pKvT6jjMixRc7BiBB6jgVp49yLDfN5IRHNFFmCgw5FOmYmrxb86ie/CzOJTL5FF2jzyjhaVfuqqakj7aw8IP8qevSyNIEAcysFwPAplFIZkheFkf75yggWViV1irY++62TV1YNtsv56LcBVgbebV5FpZ9+hVr8y4tTqL2e24bxqqG//Dssq2mLeKXlU2EHRz1I1rRTuiVSSEinOnhAEwl8wkqTy/eUYNOOzkfGC7VxSLk0kSL8tNhSgRMBa30uEsDy+rEBDogfPzpqJq3F/H2r1VmiCx0T8r4NYtPZ3dnf5cDXzKWARnFFgwwDuT9XyZlrLWCJq8T7T+0S68Sqn4Sb8fuVrq7Ft4BosKU06j9n1CKURxTg48kisITUQB14yOJ8q5RMkEnG7v5dK0ftCuVlm20W2k87k89C4B+5CeKkDYtcAXwD/p2oGbQviyXw3l8aub8eTHYR/4UC8wtjRlfeK3fB3KBbB84JqZiswTWXz5iNQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR07MB8658.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38350700002)(26005)(6512007)(2616005)(6506007)(52116002)(6666004)(5660300002)(8936002)(2906002)(31686004)(44832011)(36756003)(66556008)(66946007)(54906003)(508600001)(82960400001)(86362001)(31696002)(66476007)(6486002)(966005)(8676002)(4326008)(316002)(186003)(38100700002)(6916009)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cUQ3aEZJR1QxMU9yaFRkL1BpcTJYVHdmRGxmWnJ4a3RwOU1pSWZUaGk1VG8r?=
- =?utf-8?B?QTkwclBXaDNUNm5WenRHdEdCRjBnVFdPMGQ0WVdWcFllanh0NGV5WTVRaW5Y?=
- =?utf-8?B?WTNyQzFJMUVkV1ZETlFaQUcxOW1saklja3kzVFFYUE5oNjNUa1l6K1BzL3Zk?=
- =?utf-8?B?VXFBZVAwemVNdDNZRmIyV0xMckNVcXFTaFpMMTF3TVB5UFFtYlhyMkFtMEgz?=
- =?utf-8?B?TnFjZDY0Mnl5OW9kM1VNSWdqL0xlK1grTVF2RDM5WkFDR1QvdFFwWFJndnB5?=
- =?utf-8?B?TFFjNDRHWFNzYjlNdGE5bThJZ0xIRW1QWlBBSXV1bnArMXhpbWpMdFlBU0JF?=
- =?utf-8?B?SXBCSHQrdWpKNHBjMUhqbmx2Uy9uSC85Uk1kdy94MmUvQjlxTlA3cUtMaktm?=
- =?utf-8?B?bVk4RUtEZWRGTmpZSUcvRytacGZWaHNFeXM1WFBFZlpxN2VQMWJSQ3c1ODJm?=
- =?utf-8?B?QjlGOUdGZzVwQzN1UGZsbS80Nno0WVRZRUpiMWd2M3pyYkNQd2U0UGlRR2dp?=
- =?utf-8?B?Y0F5UFN6OVY2a2JnSGJGTFpqWk5DVDRmOEtwRWhCSFkxM2w5OXhXdVQ3YUhN?=
- =?utf-8?B?R3Jpbk1zM1lLcS91YzNHVmxBL2NUajlyRkxHaXR3SmZhOGN4ck1RZVd4aDF0?=
- =?utf-8?B?a0RJK1Y5RHBMRDJ5M0hLUmZZM2dlWVpNaHJ2SzFlUk01cFhNK2pyVGQvL3dG?=
- =?utf-8?B?Z3JYdDFtaDEzL3VCdVYvcGJwaDYwVXBUZC90bzFlWDNMQWMzMXQxRUZ0UUVw?=
- =?utf-8?B?ODN3UjZ3dmF3UVFlTFF2UTNzdUQwMDJMNVJQclpNd3JONml3aFBlTitjVFgz?=
- =?utf-8?B?UE1UL0s1cXRVOEh6MXorTTZ0YjR1eXB2ZmdqcjFCL3RuY0lGUUZWdERsVUFH?=
- =?utf-8?B?b0pQck5YNWpwZW1EMDRBTGFtbU9FcG9oQkFCSDNwdG4rTjhRRmVVaUlPNXoz?=
- =?utf-8?B?NVBKRE5QVmlqaTc3U2JXcGl4SThPc1JMOEVpbCthdmlpenFxS3paemZOWnlX?=
- =?utf-8?B?aStLem5CbVlRZGVuM1p6WHNQK0dadTI2ellYeCszNndIUCt5blNsWWVUZkRY?=
- =?utf-8?B?SGhTUlk2RFliajRHOHBrNDcycmZzeXRHUVNNNFNUTlBOLytpWjM3aExPYTlI?=
- =?utf-8?B?amdlWFlnRGF0eER6SWVHcmZkZnBmcmdxcjhvbG9OSjFZV3AxMGwrNkJjR2Ry?=
- =?utf-8?B?dDhUbENadzc0MlRxVElVQmwzUkU2bmE1bWVOR2RnS3lzVUJoblJRbnoyb3B4?=
- =?utf-8?B?aWx4YmNPS1VQRHRsZTJ6RXJDZVVOTU5kM2xOQVdtVjR6MDRZZHk4S0YrTS9Y?=
- =?utf-8?B?S1VOeTBKWENNdXRpR3hOc1JLandaQnhrS3QrVGxnZDBZTHRCYlNtNmRBVnNB?=
- =?utf-8?B?WEdJMVdKME5IZkVKWCszS3pYdS9pZVF0c2NWcVhvaG04MGlORzRRdzIwZklE?=
- =?utf-8?B?MTlxMFBiSjY1dHdGTUtjVDc5bStFWFRXcFgvQk1tN0x6b25reCtKalJwYUFO?=
- =?utf-8?B?NksxMW9DRkE2MWJkd1cycHU4Zk04SUlFajFjbWMvaUhYTi9QYTZ3b3plK01D?=
- =?utf-8?B?NEZZQmJ4ZURCSEhkdWJWNTB0NnNWaGZON3kvZDdPbG4wdEZ1eG1wL0xjUTU2?=
- =?utf-8?B?VHRzbzhMVDk5b3k4c282OEFHVkFoMzZTK0h6MERTanJpMjZRMTdVWlYyTUYz?=
- =?utf-8?B?Y0lXdWk5TG5QYzRFMU5vTjBtaXNwcmp6WkJ3d0FZTG5NVElHaDBqNjBpa0xG?=
- =?utf-8?B?alRxSU83NFQ3dXVzMkIrVTBJSThJdktTZ2dYeUk1UDlkRzZ0aUdpdmNUdG5M?=
- =?utf-8?B?V1hpTnBOVm9MOUFJQUZvS01NbGlqRWFLQzhSN1dqQW84akVybVlxNnBMRGpB?=
- =?utf-8?B?OWpyUUtYQmFMR0VBaHZxOVprMkRINGhJdHZlcm9MQTFraGZ6bFczMDQvZmhI?=
- =?utf-8?B?cVhqUW5MS2lKQlBURWU3d2I0a3AxVldDR3B3RElTQkZuS08xbGVsakgwc3RG?=
- =?utf-8?B?azBRby9PVWhtUkhhVExNOERWNkNkWmIyQ1RZTmIxbVJzZlY1MzlDZTRCQjFP?=
- =?utf-8?B?YU1hLzFxcDJHd0tSdFZDKzdsdndmc216WlJHckZYM01qcHNaT1NYbElzeFho?=
- =?utf-8?B?M1h0bFNHcWJEK0dWT1cwY2RHZ0lxdzNMRDQySUtWaGttVmhubmdEb1NqUVMx?=
- =?utf-8?B?cWQwQjRjMFB6WmhrdTdzQVNNaU5YZkcwaktYVGdWL3pXcC9OYW1aY1Q3eTc5?=
- =?utf-8?B?L3lUMVA5L09sNHNub28wTjAwZTFBQ3c3bC9MQ0ZUMi8wZGJycGJKbzJCMGhT?=
- =?utf-8?B?WFA0N3pEQnptU0orNnpQVlgwUURVendkMTFJMk5raXR4blpDV0JqajlXTjFW?=
- =?utf-8?Q?laMmO0z7b5gYbY5Q=3D?=
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55eb0835-6d6b-420b-d41b-08da34fafd83
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR07MB8658.eurprd07.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 16:09:43.0464
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: n8PlMpoE7Z+jt2yGHSW8ro5aqVjgO4b1EoMPuP/CVgUftvxIJSivFM/YNAeB0km45g+E+pgolKg6tyyxhPg1m7S9FrsKOU6LXlOqoGe2csc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR07MB8004
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yn5+OtZSSUZZgTQj@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Michael,
-
->> According to datasheet both Dual and Quad Read is supported. The read test
->> shows x3.8 speed gain.
+On Fri, May 13, 2022, Johannes Weiner wrote:
+> On Thu, May 12, 2022 at 11:29:38PM +0000, Sean Christopherson wrote:
+> > On Thu, May 12, 2022, Johannes Weiner wrote:
+> > > On Mon, May 02, 2022 at 11:46:26AM -0700, Yosry Ahmed wrote:
+> > > > On Mon, May 2, 2022 at 3:01 AM Marc Zyngier <maz@kernel.org> wrote:
+> > > > > What do you plan to do for IOMMU page tables? After all, they serve
+> > > > > the exact same purpose, and I'd expect these to be handled the same
+> > > > > way (i.e. why is this KVM specific?).
+> > > > 
+> > > > The reason this was named NR_SECONDARY_PAGTABLE instead of
+> > > > NR_KVM_PAGETABLE is exactly that. To leave room to incrementally
+> > > > account other types of secondary page tables to this stat. It is just
+> > > > that we are currently interested in the KVM MMU usage.
+> > > 
+> > > Do you actually care at the supervisor level that this memory is used
+> > > for guest page tables?
+> > 
+> > Hmm, yes?  KVM does have a decent number of large-ish allocations that aren't
+> > for page tables, but except for page tables, the number/size of those allocations
+> > scales linearly with either the number of vCPUs or the amount of memory assigned
+> > to the VM (with no room for improvement barring KVM changes).
+> > 
+> > Off the top of my head, KVM's secondary page tables are the only allocations that
+> > don't scale linearly, especially when nested virtualization is in use.
 > 
-> Does it have SFDP? Try adding PARSE_SFDP instead of the
-> NO_SFDP_FLAGS.
+> Thanks, that's useful information.
+> 
+> Are these other allocations accounted somewhere? If not, are they
+> potential containment holes that will need fixing eventually?
 
-Some issues with its SFDP were known:
-https://patchwork.ozlabs.org/project/linux-mtd/patch/1492068234-9509-1-git-send-email-dev@kresin.me/
+All allocations that are tied to specific VM/vCPU are tagged GFP_KERNEL_ACCOUNT,
+so we should be good on that front.
  
-> Please post an SFDP dump of this flash [1].
+> > > It seems to me you primarily care that it is reported *somewhere*
+> > > (hence the piggybacking off of NR_PAGETABLE at first). And whether
+> > > it's page tables or iommu tables or whatever else allocated for the
+> > > purpose of virtualization, it doesn't make much of a difference to the
+> > > host/cgroup that is tracking it, right?
+> > > 
+> > > (The proximity to nr_pagetable could also be confusing. A high page
+> > > table count can be a hint to userspace to enable THP. It seems
+> > > actionable in a different way than a high number of kvm page tables or
+> > > iommu page tables.)
+> > 
+> > I don't know about iommu page tables, but on the KVM side a high count can also
+> > be a good signal that enabling THP would be beneficial.
+> 
+> Well, maybe.
+> 
+> It might help, but ultimately it's the process that's in control in
+> all cases: it's unmovable kernel memory allocated to manage virtual
+> address space inside the task.
+> 
+> So I'm still a bit at a loss whether these things should all be lumped
+> in together or kept separately. meminfo and memory.stat are permanent
+> ABI, so we should try to establish in advance whether the new itme is
+> really a first-class consumer or part of something bigger.
+> 
+> The patch initially piggybacked on NR_PAGETABLE. I found an email of
+> you asking why it couldn't be a separate item, but it didn't provide a
+> reasoning for that decision. Could you share your thoughts on that?
 
->xxd -p /sys/bus/spi/devices/spi0.0/sfdp
-53464450060102ff00060110300000ffc2000104100100ff84000102c000
-00ffffffffffffffffffffffffffffffffffe520fbffffffff0f44eb086b
-083b04bbfeffffffffff00ffffff44eb0c200f5210d800ff8749b50082d2
-04d24403673830b030b0f7bdd55c4a9e29fff050f985ffffffffffffffff
-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffff7f8fffff215cdcffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-ffff002050169df9c06485cbffffffffffff
-
->md5sum /sys/bus/spi/devices/spi0.0/sfdp
-bc360997e729ce1f77f1ff728621d94f /sys/bus/spi/devices/spi0.0/sfdp
-
->cat /sys/bus/spi/devices/spi0.0/jedec_id
-c22539
-
->cat /sys/bus/spi/devices/spi0.0/partname
-mx25u25635f
-
->cat /sys/bus/spi/devices/spi0.0/manufacturer
-macronix
-
--- 
-Best regards,
-Alexander Sverdlin.
+It was mostly an honest question, I too am trying to understand what userspace
+wants to do with this information.  I was/am also trying to understand the benefits
+of doing the tracking through page_state and not a dedicated KVM stat.  E.g. KVM
+already has specific stats for the number of leaf pages mapped into a VM, why not
+do the same for non-leaf pages?
