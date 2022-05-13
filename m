@@ -2,73 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B840C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 01:56:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DF1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 01:59:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376451AbiEMBz6 (ORCPT
+        id S1356214AbiEMB7R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 21:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48524 "EHLO
+        Thu, 12 May 2022 21:59:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376439AbiEMBzy (ORCPT
+        with ESMTP id S244677AbiEMB7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 21:55:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B58F2DF50
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 18:55:53 -0700 (PDT)
-Received: from canpemm500005.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KzsCK1wGYzfbLX;
-        Fri, 13 May 2022 09:54:37 +0800 (CST)
-Received: from huawei.com (10.67.174.96) by canpemm500005.china.huawei.com
- (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
- 2022 09:55:51 +0800
-From:   Zhang Jianhua <chris.zjh@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <chris.zjh@huawei.com>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next v2] vt: defkeymap.c_shipped remove unused variables
-Date:   Fri, 13 May 2022 09:54:27 +0800
-Message-ID: <20220513015427.569539-1-chris.zjh@huawei.com>
-X-Mailer: git-send-email 2.31.0
+        Thu, 12 May 2022 21:59:14 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9C3E17909B
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 18:59:11 -0700 (PDT)
+Received: from [10.20.42.170] (unknown [10.20.42.170])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxCtlru31ipZATAA--.3480S3;
+        Fri, 13 May 2022 09:59:07 +0800 (CST)
+Message-ID: <28f69c51-0778-56f3-62fd-172b60a039d8@loongson.cn>
+Date:   Fri, 13 May 2022 09:59:07 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.96]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500005.china.huawei.com (7.192.104.229)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3] mm/khugepaged: sched to numa node when collapse huge
+ page
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Yang Shi <shy828301@gmail.com>
+References: <20220317065024.2635069-1-maobibo@loongson.cn>
+ <3a441789-b3e4-236e-2e44-e7a1c7258a94@redhat.com>
+ <YmrB/7ehG2kj2RMn@xz-m1.local>
+ <20220512173620.2f5175c7a321e6ccea6e58e9@linux-foundation.org>
+ <8c1fc6d4-7d3a-85dd-ebd9-fc8e221f1878@loongson.cn>
+ <69c4f018-2012-8af5-569b-289d2a8a80f5@loongson.cn>
+ <20220512184908.0852e1efcb6fd78aea52b557@linux-foundation.org>
+From:   maobibo <maobibo@loongson.cn>
+In-Reply-To: <20220512184908.0852e1efcb6fd78aea52b557@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9AxCtlru31ipZATAA--.3480S3
+X-Coremail-Antispam: 1UD129KBjvdXoW7XrWrGw1xJFWkCF45XrWDJwb_yoWfKrX_Xr
+        4UuF1DJw4UJFW8ta9xK3s3XFsrt3yY9r15ua4UX3W2qa4qqFW3ZF12gF92k34rWF42kwsF
+        ga4ktayayF9I9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbIkYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwV
+        C2z280aVCY1x0267AKxVWxJr0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
+        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
+        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwCYjI0SjxkI62AI1cAE67vIY487
+        MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_
+        Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
+        CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE
+        14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf
+        9x07beAp5UUUUU=
+X-CM-SenderInfo: xpdruxter6z05rqj20fqof0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The global variables 'funcbufptr' 'funcbufsize' and 'funcbufleft' have
-been initialized but not used, they are redundant and remove them.
 
-Signed-off-by: Zhang Jianhua <chris.zjh@huawei.com>
 
----
-No code changes since v1, only remove the redundant line "--------" in
-v1 commit message.
----
- drivers/tty/vt/defkeymap.c_shipped | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/tty/vt/defkeymap.c_shipped b/drivers/tty/vt/defkeymap.c_shipped
-index 094d95bf0005..80dee50bcb7a 100644
---- a/drivers/tty/vt/defkeymap.c_shipped
-+++ b/drivers/tty/vt/defkeymap.c_shipped
-@@ -185,10 +185,6 @@ char func_buf[] = {
- 	'\033', '[', 'P', 0, 
- };
- 
--char *funcbufptr = func_buf;
--int funcbufsize = sizeof(func_buf);
--int funcbufleft = 0;          /* space left */
--
- char *func_table[MAX_NR_FUNC] = {
- 	func_buf + 0,
- 	func_buf + 5,
--- 
-2.31.0
+在 2022/5/13 09:49, Andrew Morton 写道:
+> On Fri, 13 May 2022 09:29:07 +0800 maobibo <maobibo@loongson.cn> wrote:
+> 
+>>
+>>
+>>>> and/or changelogging.
+>>> Sorry for the late response, the mail is filtered and I did not notice that. The result is not so obvious after bandwidth is improved between nodes, it is only about 1% improvement for specint2006 for 32 core on my box.
+>>>
+>>> Now I do not see negative effective about this patch unless user wants to keep some cores separated from khugepaged daemon process.
+>>
+>> Can we provide an extra parameter to let khugepaged daemon scheduling binded to node or freely? If can, I will provide updated patch.
+> 
+> It has always surprised me that we have a single khugepaged thread.  If
+> we had a thread per node, you'd be all fixed up, yes?
+yes, it will solve this issue if there is a thread per node, also it can speed up huge page scanning. It should be useful for some workloads in short time like specint.
+> 
+> Ditto ksmd.
 
