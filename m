@@ -2,128 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53941C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 11:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6551C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 11:21:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379859AbiEMLVa (ORCPT
+        id S1379862AbiEMLVn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 07:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47484 "EHLO
+        Fri, 13 May 2022 07:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378094AbiEMLV0 (ORCPT
+        with ESMTP id S1379863AbiEMLVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 07:21:26 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D226A4BBAE;
-        Fri, 13 May 2022 04:21:23 -0700 (PDT)
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 24DBL5eI005328;
-        Fri, 13 May 2022 20:21:05 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 24DBL5eI005328
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652440865;
-        bh=3tI3D7hiyyyIzHnssR6gH32RhQ9iCi1PmX8JTdAAbK4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=FNrcSNRu/H684rp9bSyXcSEnsqIndi8Cc+unqqxlbC7K9oAomCj4cnGTQVJCd/2hb
-         9b7OaMJaaCAbcQKX2fpCrN9YCw8jQm6B6TZmSALO51hED9MfPLMmduJM0EUnQHsoRl
-         ONJgfvVH2S9SCQYJQksfftzTxHsAVsWbiAkR4Q+tDzWnt4JbGxar/zBxVyVj1MYChI
-         jLj6Aaaf+ChkvzBHJl2MPIYDHGT8rkQe6KbYCmXDRrCJ0Xm/c7Zp2eGsylOP4vpzKu
-         bLP5744eETFsrwCANFrkgSRlssSu5FDzb9gc/Z2J6nScOgzqrEqJnd/jEpxs7Cs/Vr
-         sHWLM3BbBKCJQ==
-X-Nifty-SrcIP: [209.85.214.178]
-Received: by mail-pl1-f178.google.com with SMTP id d22so7624019plr.9;
-        Fri, 13 May 2022 04:21:05 -0700 (PDT)
-X-Gm-Message-State: AOAM531Cv4DmWzHbE/EcXOsMojZl4ibMnXjVomWDXqJdRhq/98L19sEL
-        nrKeSVN19CGxbbi8Ema/979uF04DU7pf3RNBNn8=
-X-Google-Smtp-Source: ABdhPJxrUzvKeAz23KKcJoGYoRhEsRSXGPu3aS7Qu2aL1nDGTyhJ/9/U10A4dP5fZ0eKdHZhvjye16kS7LpfUh26AlI=
-X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
- s7-20020a170902988700b001516e1c7082mr4333904plp.162.1652440864645; Fri, 13
- May 2022 04:21:04 -0700 (PDT)
+        Fri, 13 May 2022 07:21:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD714F477;
+        Fri, 13 May 2022 04:21:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D11A161D7B;
+        Fri, 13 May 2022 11:21:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3DBA8C36AE2;
+        Fri, 13 May 2022 11:21:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652440899;
+        bh=PVTCAHuDpC7TKyqJJ6yfKKs+p30+5tiQZTFIZV159oQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TnM8HoUNbVYxdTfg0b+rnan7vn3FmRPLuc3+jS73RubnADXWLI9nzvgXXO1VyRZyM
+         kjGMeB8BfAvNS62ZVPFyVv8ktAfKLD8Kb69viEBnHaxS6odD40foB5mmxlbyMBeliU
+         x2k6BMb9QHixVfqPWE5XTLfshNLNrPje+QV17xuKs5QBw9+jDWQhTd18Hnlo+aPJ1X
+         zPZsZxfLHvgjeg7n4fCt8PBaL5oUSPSJDggPQP1JyDjbti1uHS96RNhHDs/AzwcuZ/
+         X8ZgPc9NnyMcciYpYCdpZScmmerBVJRVghnAlFf1Tqc4YvypKGw00wrs+StI7kzhkF
+         2QhHh764cbZrw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1E0F3E8DBDA;
+        Fri, 13 May 2022 11:21:39 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220511164514.2741934-1-masahiroy@kernel.org>
- <YnwWsYdL2khCikSY@dev-arch.thelio-3990X> <CAK7LNATs67zGL7JohD-79Nxig25XCC=T9Dih4Z8iwdhoiWai8w@mail.gmail.com>
-In-Reply-To: <CAK7LNATs67zGL7JohD-79Nxig25XCC=T9Dih4Z8iwdhoiWai8w@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 13 May 2022 20:19:50 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQ7qHFjoSKhRQC0cAzAu3aD5i_z+tdnv7Hf0VYZ7mJbDw@mail.gmail.com>
-Message-ID: <CAK7LNAQ7qHFjoSKhRQC0cAzAu3aD5i_z+tdnv7Hf0VYZ7mJbDw@mail.gmail.com>
-Subject: Re: [PATCH v5 00/12] kbuild: yet another series of cleanups (modpost,
- LTO, MODULE_REL_CRCS, export.h)
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] Bluetooth: btbcm: Add entry for BCM4373A0 UART Bluetooth
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <165244089911.8477.8063070079009637517.git-patchwork-notify@kernel.org>
+Date:   Fri, 13 May 2022 11:21:39 +0000
+References: <20220505195010.31329-1-tharvey@gateworks.com>
+In-Reply-To: <20220505195010.31329-1-tharvey@gateworks.com>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 8:18 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Thu, May 12, 2022 at 5:04 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > Hi Masahiro,
-> >
-> > On Thu, May 12, 2022 at 01:45:02AM +0900, Masahiro Yamada wrote:
-> > >
-> > > This is the third batch of cleanups in this development cycle.
-> > >
-> > > Major changes in v5:
-> > >  - Fix build errors
-> > >  - More cleanups
-> > >
-> > > Major changes in v4:
-> > >  - Move static EXPORT_SYMBOL check to a script
-> > >  - Some refactoring
-> > >
-> > > Major changes in v3:
-> > >
-> > >  - Generate symbol CRCs as C code, and remove CONFIG_MODULE_REL_CRCS.
-> > >
-> > > Major changes in v2:
-> > >
-> > >  - V1 did not work with CONFIG_MODULE_REL_CRCS.
-> > >    I fixed this for v2.
-> > >
-> > >  - Reflect some review comments in v1
-> > >
-> > >  - Refactor the code more
-> > >
-> > >  - Avoid too long argument error
-> > >
-> > >
-> > >
-> > > Masahiro Yamada (12):
-> > >   modpost: split the section mismatch checks into section-check.c
-> > >   modpost: add sym_find_with_module() helper
-> > >   modpost: extract symbol versions from *.cmd files
-> > >   kbuild: link symbol CRCs at final link, removing
-> > >     CONFIG_MODULE_REL_CRCS
-> > >   kbuild: stop merging *.symversions
-> > >   genksyms: adjust the output format to modpost
-> > >   kbuild: do not create *.prelink.o for Clang LTO or IBT
-> > >   kbuild: check static EXPORT_SYMBOL* by script instead of modpost
-> > >   kbuild: make built-in.a rule robust against too long argument error
-> > >   kbuild: make *.mod rule robust against too long argument error
-> > >   kbuild: add cmd_and_savecmd macro
-> > >   kbuild: rebuild multi-object modules when objtool is updated
-> >
+Hello:
 
-The first two applied.
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Marcel Holtmann <marcel@holtmann.org>:
 
-I will send v6 for the rest.
+On Thu,  5 May 2022 12:50:10 -0700 you wrote:
+> This patch adds the device ID for the BCM4373A0 module, found e.g. in
+> the Infineon (Cypress) CYW4373E chip. The required firmware file is
+> named 'BCM4373A0.hcd'.
+> 
+> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> ---
+>  drivers/bluetooth/btbcm.c | 1 +
+>  1 file changed, 1 insertion(+)
 
+Here is the summary with links:
+  - Bluetooth: btbcm: Add entry for BCM4373A0 UART Bluetooth
+    https://git.kernel.org/bluetooth/bluetooth-next/c/0d37ddfc50d9
 
-
-
-
-
+You are awesome, thank you!
 -- 
-Best Regards
-Masahiro Yamada
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
