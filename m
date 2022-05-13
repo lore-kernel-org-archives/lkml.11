@@ -2,182 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB107C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379591AbiEMKnj (ORCPT
+        id S1379599AbiEMKod (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 06:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47964 "EHLO
+        Fri, 13 May 2022 06:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379580AbiEMKnh (ORCPT
+        with ESMTP id S1379580AbiEMKoa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 06:43:37 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4771078A0;
-        Fri, 13 May 2022 03:43:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652438616; x=1683974616;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BdqrzcXRZKOAVCmDpevsRh9iA39ZHGPnaSUGJajxz/E=;
-  b=a7VhJFbiNHcZw/bjqQJqH+F+xDR1rmULBRpAG2O8lUYYuAON5+eHD6zA
-   9BZb+BFZLuu9UCkCHD3zj9zXOrJHzQFn6hXnPABbWWo6K+yQ9tBcdFtJo
-   PE+b+inQZUb1AI2Xd+zqAJIT61cbSxw2GXN5JbS/lv2Uua7HFEnjqR1i9
-   SXv4btaDNsfP+UOxFLlCpe0LeIGO0N1FVI+DkiquC+PwhgvOzlVCHWaP+
-   1t/fw8JlMV1Mk1bttsuUSC+9e/yCX2RZd9C6e1HW4j6LfJUKav2hUreiK
-   uBsjPlOTJzLo65tZZKb8S2H08WOKNKVuDqd9OJiiolHaB3G10cM2YI81J
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="250807313"
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="250807313"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 03:43:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="712350022"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 03:43:33 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npSlg-000Lds-Nu;
-        Fri, 13 May 2022 10:43:32 +0000
-Date:   Fri, 13 May 2022 18:42:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>,
-        kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     kbuild-all@lists.01.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net/smc: send cdc msg inline if qp has
- sufficient inline space
-Message-ID: <202205131842.j3oh7PXI-lkp@intel.com>
-References: <20220513071551.22065-2-guangguan.wang@linux.alibaba.com>
+        Fri, 13 May 2022 06:44:30 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F010C2A0A53;
+        Fri, 13 May 2022 03:44:29 -0700 (PDT)
+Date:   Fri, 13 May 2022 10:44:27 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652438668;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lCMh6nqjHElj/25pJ4wX9SdSVOW2vHWVXsi1MXUwgTI=;
+        b=IpO9gztm4bTvLaifLDQ9nUY+VI8Ts4oHTGWrseIQBLsbiEl40L9g5zr0KSjwpxcRJgxxVg
+        56BNUwJfQTXwrWiz2LHLnl48m/+o2epdny+cFlmbgwTRveXsrGl6FD2vvYlaP1JFlg5Onj
+        un/QUDr1Fu5yVlZ7AzmyIPVjb9rtgTTmmsc6dzMkKC5IGZ6MTd60T4L/trS2bR4hJkhO8p
+        OJ/Q3AoAoLpHd0aWtCtEFUOlZqPQplL9EPaa+rVU4TC6vg1DKPML6QaLtF9iLutBwH0f9d
+        lTQ08JEm8XuKi3W/U+5asrSCHNzFW9huUftD4pH0PUZOW3sCBxiytBwXkN9QeA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652438668;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lCMh6nqjHElj/25pJ4wX9SdSVOW2vHWVXsi1MXUwgTI=;
+        b=TYx2ABwb3E0Hlny78P2LX4dzQG13JP17gj7fORKMz1FhW5muuIureL9voZSj0nXFrC0VQc
+        ywiYE7OwzlTHhTCw==
+From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: locking/core] futex: Remove a PREEMPT_RT_FULL reference.
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>, andrealmeid@igalia.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <YnvWUvq1vpqCfCU7@linutronix.de>
+References: <YnvWUvq1vpqCfCU7@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513071551.22065-2-guangguan.wang@linux.alibaba.com>
+Message-ID: <165243866737.4207.3194810680223006844.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guangguan,
+The following commit has been merged into the locking/core branch of tip:
 
-Thank you for the patch! Perhaps something to improve:
+Commit-ID:     6829061315065c7af394d556a887fbf847e4e708
+Gitweb:        https://git.kernel.org/tip/6829061315065c7af394d556a887fbf847e=
+4e708
+Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+AuthorDate:    Wed, 11 May 2022 17:29:22 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Fri, 13 May 2022 12:36:51 +02:00
 
-[auto build test WARNING on net-next/master]
+futex: Remove a PREEMPT_RT_FULL reference.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Guangguan-Wang/net-smc-send-and-write-inline-optimization-for-smc/20220513-151715
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b67fd3d9d94223b424674f45eeadeff58b4b03ef
-config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20220513/202205131842.j3oh7PXI-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/bac726bf950dac20959af52c6884b7bb07772dac
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Guangguan-Wang/net-smc-send-and-write-inline-optimization-for-smc/20220513-151715
-        git checkout bac726bf950dac20959af52c6884b7bb07772dac
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash net/smc/
+Earlier the PREEMPT_RT patch had a PREEMPT_RT_FULL and PREEMPT_RT_BASE
+Kconfig option. The latter was a subset of the functionality that was
+enabled with PREEMPT_RT_FULL and was mainly useful for debugging.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+During the merging efforts the two Kconfig options were abandoned in the
+v5.4.3-rt1 release and since then there is only PREEMPT_RT which enables
+the full features set (as PREEMPT_RT_FULL did in earlier releases).
 
-All warnings (new ones prefixed by >>):
+Replace the PREEMPT_RT_FULL reference with PREEMPT_RT.
 
-   net/smc/smc_wr.c: In function 'smc_wr_init_sge':
->> net/smc/smc_wr.c:561:57: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-     561 |                 lnk->wr_tx_sges[i].addr = send_inline ? (u64)(&lnk->wr_tx_bufs[i]) :
-         |                                                         ^
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Andr=C3=A9 Almeida <andrealmeid@igalia.com>
+Link: https://lore.kernel.org/r/YnvWUvq1vpqCfCU7@linutronix.de
 
+---
+ kernel/futex/pi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-vim +561 net/smc/smc_wr.c
-
-   553	
-   554	static void smc_wr_init_sge(struct smc_link *lnk)
-   555	{
-   556		int sges_per_buf = (lnk->lgr->smc_version == SMC_V2) ? 2 : 1;
-   557		bool send_inline = (lnk->qp_attr.cap.max_inline_data >= SMC_WR_TX_SIZE);
-   558		u32 i;
-   559	
-   560		for (i = 0; i < lnk->wr_tx_cnt; i++) {
- > 561			lnk->wr_tx_sges[i].addr = send_inline ? (u64)(&lnk->wr_tx_bufs[i]) :
-   562				lnk->wr_tx_dma_addr + i * SMC_WR_BUF_SIZE;
-   563			lnk->wr_tx_sges[i].length = SMC_WR_TX_SIZE;
-   564			lnk->wr_tx_sges[i].lkey = lnk->roce_pd->local_dma_lkey;
-   565			lnk->wr_tx_rdma_sges[i].tx_rdma_sge[0].wr_tx_rdma_sge[0].lkey =
-   566				lnk->roce_pd->local_dma_lkey;
-   567			lnk->wr_tx_rdma_sges[i].tx_rdma_sge[0].wr_tx_rdma_sge[1].lkey =
-   568				lnk->roce_pd->local_dma_lkey;
-   569			lnk->wr_tx_rdma_sges[i].tx_rdma_sge[1].wr_tx_rdma_sge[0].lkey =
-   570				lnk->roce_pd->local_dma_lkey;
-   571			lnk->wr_tx_rdma_sges[i].tx_rdma_sge[1].wr_tx_rdma_sge[1].lkey =
-   572				lnk->roce_pd->local_dma_lkey;
-   573			lnk->wr_tx_ibs[i].next = NULL;
-   574			lnk->wr_tx_ibs[i].sg_list = &lnk->wr_tx_sges[i];
-   575			lnk->wr_tx_ibs[i].num_sge = 1;
-   576			lnk->wr_tx_ibs[i].opcode = IB_WR_SEND;
-   577			lnk->wr_tx_ibs[i].send_flags =
-   578				IB_SEND_SIGNALED | IB_SEND_SOLICITED;
-   579			if (send_inline)
-   580				lnk->wr_tx_ibs[i].send_flags |= IB_SEND_INLINE;
-   581			lnk->wr_tx_rdmas[i].wr_tx_rdma[0].wr.opcode = IB_WR_RDMA_WRITE;
-   582			lnk->wr_tx_rdmas[i].wr_tx_rdma[1].wr.opcode = IB_WR_RDMA_WRITE;
-   583			lnk->wr_tx_rdmas[i].wr_tx_rdma[0].wr.sg_list =
-   584				lnk->wr_tx_rdma_sges[i].tx_rdma_sge[0].wr_tx_rdma_sge;
-   585			lnk->wr_tx_rdmas[i].wr_tx_rdma[1].wr.sg_list =
-   586				lnk->wr_tx_rdma_sges[i].tx_rdma_sge[1].wr_tx_rdma_sge;
-   587		}
-   588	
-   589		if (lnk->lgr->smc_version == SMC_V2) {
-   590			lnk->wr_tx_v2_sge->addr = lnk->wr_tx_v2_dma_addr;
-   591			lnk->wr_tx_v2_sge->length = SMC_WR_BUF_V2_SIZE;
-   592			lnk->wr_tx_v2_sge->lkey = lnk->roce_pd->local_dma_lkey;
-   593	
-   594			lnk->wr_tx_v2_ib->next = NULL;
-   595			lnk->wr_tx_v2_ib->sg_list = lnk->wr_tx_v2_sge;
-   596			lnk->wr_tx_v2_ib->num_sge = 1;
-   597			lnk->wr_tx_v2_ib->opcode = IB_WR_SEND;
-   598			lnk->wr_tx_v2_ib->send_flags =
-   599				IB_SEND_SIGNALED | IB_SEND_SOLICITED;
-   600		}
-   601	
-   602		/* With SMC-Rv2 there can be messages larger than SMC_WR_TX_SIZE.
-   603		 * Each ib_recv_wr gets 2 sges, the second one is a spillover buffer
-   604		 * and the same buffer for all sges. When a larger message arrived then
-   605		 * the content of the first small sge is copied to the beginning of
-   606		 * the larger spillover buffer, allowing easy data mapping.
-   607		 */
-   608		for (i = 0; i < lnk->wr_rx_cnt; i++) {
-   609			int x = i * sges_per_buf;
-   610	
-   611			lnk->wr_rx_sges[x].addr =
-   612				lnk->wr_rx_dma_addr + i * SMC_WR_BUF_SIZE;
-   613			lnk->wr_rx_sges[x].length = SMC_WR_TX_SIZE;
-   614			lnk->wr_rx_sges[x].lkey = lnk->roce_pd->local_dma_lkey;
-   615			if (lnk->lgr->smc_version == SMC_V2) {
-   616				lnk->wr_rx_sges[x + 1].addr =
-   617						lnk->wr_rx_v2_dma_addr + SMC_WR_TX_SIZE;
-   618				lnk->wr_rx_sges[x + 1].length =
-   619						SMC_WR_BUF_V2_SIZE - SMC_WR_TX_SIZE;
-   620				lnk->wr_rx_sges[x + 1].lkey =
-   621						lnk->roce_pd->local_dma_lkey;
-   622			}
-   623			lnk->wr_rx_ibs[i].next = NULL;
-   624			lnk->wr_rx_ibs[i].sg_list = &lnk->wr_rx_sges[x];
-   625			lnk->wr_rx_ibs[i].num_sge = sges_per_buf;
-   626		}
-   627		lnk->wr_reg.wr.next = NULL;
-   628		lnk->wr_reg.wr.num_sge = 0;
-   629		lnk->wr_reg.wr.send_flags = IB_SEND_SIGNALED;
-   630		lnk->wr_reg.wr.opcode = IB_WR_REG_MR;
-   631		lnk->wr_reg.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE;
-   632	}
-   633	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+diff --git a/kernel/futex/pi.c b/kernel/futex/pi.c
+index 183b28c..ce2889f 100644
+--- a/kernel/futex/pi.c
++++ b/kernel/futex/pi.c
+@@ -1005,7 +1005,7 @@ retry_private:
+ 	rt_mutex_init_waiter(&rt_waiter);
+=20
+ 	/*
+-	 * On PREEMPT_RT_FULL, when hb->lock becomes an rt_mutex, we must not
++	 * On PREEMPT_RT, when hb->lock becomes an rt_mutex, we must not
+ 	 * hold it while doing rt_mutex_start_proxy(), because then it will
+ 	 * include hb->lock in the blocking chain, even through we'll not in
+ 	 * fact hold it while blocking. This will lead it to report -EDEADLK
