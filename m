@@ -2,127 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 665FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20901C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 15:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381324AbiEMPgf (ORCPT
+        id S1382171AbiEMPgm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 11:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
+        Fri, 13 May 2022 11:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382165AbiEMPgH (ORCPT
+        with ESMTP id S1382219AbiEMPg2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 11:36:07 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE620101C4;
-        Fri, 13 May 2022 08:36:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=IzQ9owkt8YiZe1369EAKIafa5obLJ/EHaGRPb2JnnbM=; b=W2k6pVD2XZSvc+QSfttXCU/bUD
-        OZCk9dzOVnxPbkF5YIhtpIhTheDdhQUleH6hDnDLx9Ig0n6tIwR3KOXNS3eLATawiWFy+mnSZJABk
-        gBjQDYDw+zLRY1ZDBj5Dfck9IA37sYMald2vTwgkjYJ+C4smFN5ixIUT08bXygbb+oXOWROBQYrV5
-        zYIuXn/hjLqPR7x1rMm5x4aFhrlNkkewDUsE7XciDZx2jZW5FzIJngcsRNChagJLibuWAgIWzbtKo
-        Vx4YYrtA19tWfw0zJtsZsEU1tIOmp91enosDVjJcCHW8SFRiNc0Go+WQBd7vCJ18DykDvYplLiaQO
-        2xW34pKQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1npXKY-00Giv4-Jd; Fri, 13 May 2022 15:35:50 +0000
-Date:   Fri, 13 May 2022 08:35:50 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Joe Fradley <joefradley@google.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] panic: Taint kernel if tests are run
-Message-ID: <Yn561lzWDuiVdTHT@bombadil.infradead.org>
-References: <20220429043913.626647-1-davidgow@google.com>
- <20220513083212.3537869-1-davidgow@google.com>
+        Fri, 13 May 2022 11:36:28 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5184F2DC6;
+        Fri, 13 May 2022 08:36:27 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d22so8284913plr.9;
+        Fri, 13 May 2022 08:36:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=I7l1Xm9qehIrYZIkT6lmz4zbqDX5vJCIeT/thGsyl/E=;
+        b=VRWAuALO2Af7o/62+j66JdKdxL0rMt2KMj/NaWp9Si4SMu++SSGKzBG6uOls+/wRn1
+         JZGr8eVqcmg1+ljceUfzl5iIP7Q/7kuOahMYEkyJ/bWL6Fl3W8Uq4wcgxWvNcjmkKlr1
+         o3NaZGaOjYBJsrOORMuHHyxKFGc/1wMak/oQTnE8BppGXSO4oknfp42KdB+ZaQnIFTU3
+         h94hPlAC5pv/AF0rSwQ2lb6kDlznKYmeslyr1h6ciLcQKCF33GEUz2n2g32P1ooJPLaU
+         CoQjiM3r1Zfa7pN4eKe21DpcQDJWM1+/nnWKOiqnmhgrR+8nHofh/LaRP+JtqarmQOhL
+         Mg7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=I7l1Xm9qehIrYZIkT6lmz4zbqDX5vJCIeT/thGsyl/E=;
+        b=a5UguZMxtKkDYWtEibbdpUm802ZvHiZVcp6GqI5FH2m49rKlXWTpipsPYmVYa++SMj
+         Tl0SqnO0PN+1c39WuX434ZGS+CBG5noDYwTogDXPCIbguSJXRcu/zvTWNQst+TIjQ2dz
+         N7nzxeq7BtKcj8gy8TLpCdvJZNA/FMtzf2mTTXjQun1I+WHky+F0ZSJzPjS5Is9xuizs
+         BsotAEWglqSC1x1H1DRrdCWYF3ZF+lbUV6+dKEJbAVnqLcifjeQp4uN/DBDsk8tKGgYb
+         dp5E611sS3qHSuvHkp6C1oGEvbZwDyhFRdy9stmoyHr6rEof67pIhKGw8WomPomI+r4q
+         maMA==
+X-Gm-Message-State: AOAM533gg6Q1RIfApGfDZhNS0AwsLANlUOHGGUo2a07DqtP7DmWSRwte
+        iNd8y+gboBdjl+XzfBs1BGIqz8HexyVt7int
+X-Google-Smtp-Source: ABdhPJxgmirE5WiHq4PtXYEBZb9gW1HP4FSI3hKRiYplfUiVttocN/cB6TB1YADyvfFONKAVP4+YvA==
+X-Received: by 2002:a17:902:cec9:b0:15e:cbf4:c246 with SMTP id d9-20020a170902cec900b0015ecbf4c246mr5132972plg.1.1652456186689;
+        Fri, 13 May 2022 08:36:26 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id b10-20020a62a10a000000b0050dc762817dsm1942137pff.87.2022.05.13.08.36.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 08:36:26 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2 1/2] can: skb:: move can_dropped_invalid_skb and can_skb_headroom_valid to skb.c
+Date:   Sat, 14 May 2022 00:36:05 +0900
+Message-Id: <20220513153606.302464-2-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220513153606.302464-1-mailhol.vincent@wanadoo.fr>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220513153606.302464-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513083212.3537869-1-davidgow@google.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 04:32:11PM +0800, David Gow wrote:
-> Most in-kernel tests (such as KUnit tests) are not supposed to run on
-> production systems: they may do deliberately illegal things to trigger
-> errors, and have security implications (for example, KUnit assertions
-> will often deliberately leak kernel addresses).
-> 
-> Add a new taint type, TAINT_TEST to signal that a test has been run.
-> This will be printed as 'N' (originally for kuNit, as every other
-> sensible letter was taken.)
-> 
-> This should discourage people from running these tests on production
-> systems, and to make it easier to tell if tests have been run
-> accidentally (by loading the wrong configuration, etc.)
-> 
-> Signed-off-by: David Gow <davidgow@google.com>
-> ---
-> 
-> Updated this to handle the most common case of selftest modules, in
-> addition to KUnit tests. There's room for other tests or test frameworks
-> to use this as well, either with a call to add_taint() from within the
-> kernel, or by writing to /proc/sys/kernel/tainted.
-> 
-> The 'N' character for the taint is even less useful now that it's no
-> longer short for kuNit, but all the letters in TEST are taken. :-(
-> 
-> Changes since v2:
-> https://lore.kernel.org/linux-kselftest/20220430030019.803481-1-davidgow@google.com/
-> - Rename TAINT_KUNIT -> TAINT_TEST.
-> - Split into separate patches for adding the taint, and triggering it.
-> - Taint on a kselftest_module being loaded (patch 3/3)
-> 
-> Changes since v1:
-> https://lore.kernel.org/linux-kselftest/20220429043913.626647-1-davidgow@google.com/
-> - Make the taint per-module, to handle the case when tests are in
->   (longer lasting) modules. (Thanks Greg KH).
-> 
-> Note that this still has checkpatch.pl warnings around bracket
-> placement, which are intentional as part of matching the surrounding
-> code.
-> 
-> ---
->  Documentation/admin-guide/tainted-kernels.rst | 1 +
->  include/linux/panic.h                         | 3 ++-
->  kernel/panic.c                                | 1 +
->  3 files changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/admin-guide/tainted-kernels.rst b/Documentation/admin-guide/tainted-kernels.rst
-> index ceeed7b0798d..546f3071940d 100644
-> --- a/Documentation/admin-guide/tainted-kernels.rst
-> +++ b/Documentation/admin-guide/tainted-kernels.rst
-> @@ -100,6 +100,7 @@ Bit  Log  Number  Reason that got the kernel tainted
->   15  _/K   32768  kernel has been live patched
->   16  _/X   65536  auxiliary taint, defined for and used by distros
->   17  _/T  131072  kernel was built with the struct randomization plugin
-> + 18  _/N  262144  an in-kernel test (such as a KUnit test) has been run
+The functions can_dropped_invalid_skb() and can_skb_headroom_valid()
+grew a lot over the years to a point which it does make much sense to
+have them defined as static inline in header files. Move those two
+functions to the .c counterpart of skb.h.
 
-I think mentioning just kunit fuzzes its interpretation here.
-Best to keep that out.
+can_skb_headroom_valid() only caller being can_dropped_invalid_skb(),
+the declaration is removed from the header. Only
+can_dropped_invalid_skb() gets its symbol exported.
 
-Other than that:
+While doing so, do a small cleanup: add brackets around the else block
+in can_dropped_invalid_skb().
 
-Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+ drivers/net/can/dev/skb.c | 58 ++++++++++++++++++++++++++++++++++++++
+ include/linux/can/skb.h   | 59 +--------------------------------------
+ 2 files changed, 59 insertions(+), 58 deletions(-)
 
-  Luis
+diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
+index 61660248c69e..8b1991130de5 100644
+--- a/drivers/net/can/dev/skb.c
++++ b/drivers/net/can/dev/skb.c
+@@ -252,3 +252,61 @@ struct sk_buff *alloc_can_err_skb(struct net_device *dev, struct can_frame **cf)
+ 	return skb;
+ }
+ EXPORT_SYMBOL_GPL(alloc_can_err_skb);
++
++/* Check for outgoing skbs that have not been created by the CAN subsystem */
++static bool can_skb_headroom_valid(struct net_device *dev, struct sk_buff *skb)
++{
++	/* af_packet creates a headroom of HH_DATA_MOD bytes which is fine */
++	if (WARN_ON_ONCE(skb_headroom(skb) < sizeof(struct can_skb_priv)))
++		return false;
++
++	/* af_packet does not apply CAN skb specific settings */
++	if (skb->ip_summed == CHECKSUM_NONE) {
++		/* init headroom */
++		can_skb_prv(skb)->ifindex = dev->ifindex;
++		can_skb_prv(skb)->skbcnt = 0;
++
++		skb->ip_summed = CHECKSUM_UNNECESSARY;
++
++		/* perform proper loopback on capable devices */
++		if (dev->flags & IFF_ECHO)
++			skb->pkt_type = PACKET_LOOPBACK;
++		else
++			skb->pkt_type = PACKET_HOST;
++
++		skb_reset_mac_header(skb);
++		skb_reset_network_header(skb);
++		skb_reset_transport_header(skb);
++	}
++
++	return true;
++}
++
++/* Drop a given socketbuffer if it does not contain a valid CAN frame. */
++bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
++{
++	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
++
++	if (skb->protocol == htons(ETH_P_CAN)) {
++		if (unlikely(skb->len != CAN_MTU ||
++			     cfd->len > CAN_MAX_DLEN))
++			goto inval_skb;
++	} else if (skb->protocol == htons(ETH_P_CANFD)) {
++		if (unlikely(skb->len != CANFD_MTU ||
++			     cfd->len > CANFD_MAX_DLEN))
++			goto inval_skb;
++	} else {
++		goto inval_skb;
++	}
++
++	if (!can_skb_headroom_valid(dev, skb))
++		goto inval_skb;
++
++	return false;
++
++inval_skb:
++	kfree_skb(skb);
++	dev->stats.tx_dropped++;
++	return true;
++}
++EXPORT_SYMBOL_GPL(can_dropped_invalid_skb);
+diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
+index fdb22b00674a..182749e858b3 100644
+--- a/include/linux/can/skb.h
++++ b/include/linux/can/skb.h
+@@ -31,6 +31,7 @@ struct sk_buff *alloc_canfd_skb(struct net_device *dev,
+ 				struct canfd_frame **cfd);
+ struct sk_buff *alloc_can_err_skb(struct net_device *dev,
+ 				  struct can_frame **cf);
++bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb);
+ 
+ /*
+  * The struct can_skb_priv is used to transport additional information along
+@@ -96,64 +97,6 @@ static inline struct sk_buff *can_create_echo_skb(struct sk_buff *skb)
+ 	return nskb;
+ }
+ 
+-/* Check for outgoing skbs that have not been created by the CAN subsystem */
+-static inline bool can_skb_headroom_valid(struct net_device *dev,
+-					  struct sk_buff *skb)
+-{
+-	/* af_packet creates a headroom of HH_DATA_MOD bytes which is fine */
+-	if (WARN_ON_ONCE(skb_headroom(skb) < sizeof(struct can_skb_priv)))
+-		return false;
+-
+-	/* af_packet does not apply CAN skb specific settings */
+-	if (skb->ip_summed == CHECKSUM_NONE) {
+-		/* init headroom */
+-		can_skb_prv(skb)->ifindex = dev->ifindex;
+-		can_skb_prv(skb)->skbcnt = 0;
+-
+-		skb->ip_summed = CHECKSUM_UNNECESSARY;
+-
+-		/* perform proper loopback on capable devices */
+-		if (dev->flags & IFF_ECHO)
+-			skb->pkt_type = PACKET_LOOPBACK;
+-		else
+-			skb->pkt_type = PACKET_HOST;
+-
+-		skb_reset_mac_header(skb);
+-		skb_reset_network_header(skb);
+-		skb_reset_transport_header(skb);
+-	}
+-
+-	return true;
+-}
+-
+-/* Drop a given socketbuffer if it does not contain a valid CAN frame. */
+-static inline bool can_dropped_invalid_skb(struct net_device *dev,
+-					  struct sk_buff *skb)
+-{
+-	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
+-
+-	if (skb->protocol == htons(ETH_P_CAN)) {
+-		if (unlikely(skb->len != CAN_MTU ||
+-			     cfd->len > CAN_MAX_DLEN))
+-			goto inval_skb;
+-	} else if (skb->protocol == htons(ETH_P_CANFD)) {
+-		if (unlikely(skb->len != CANFD_MTU ||
+-			     cfd->len > CANFD_MAX_DLEN))
+-			goto inval_skb;
+-	} else
+-		goto inval_skb;
+-
+-	if (!can_skb_headroom_valid(dev, skb))
+-		goto inval_skb;
+-
+-	return false;
+-
+-inval_skb:
+-	kfree_skb(skb);
+-	dev->stats.tx_dropped++;
+-	return true;
+-}
+-
+ static inline bool can_is_canfd_skb(const struct sk_buff *skb)
+ {
+ 	/* the CAN specific type of skb is identified by its data length */
+-- 
+2.35.1
+
