@@ -2,259 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E899C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EBDC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380765AbiEMO23 (ORCPT
+        id S1380892AbiEMO2f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
+        Fri, 13 May 2022 10:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380905AbiEMO0P (ORCPT
+        with ESMTP id S1380911AbiEMO0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 10:26:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCB75047F;
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB644506E3;
         Fri, 13 May 2022 07:25:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652451944; x=1683987944;
+  h=message-id:date:mime-version:from:subject:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=9MO4Cg9SWuQ3cY0TApzliKOPUlU3hZ6Zqzm0n1CSgmQ=;
+  b=jH37YUvTNIG8JhrJm8Z5bHHrMhGG/C7fJaIw75GrtL1ASiVim3V4mbLn
+   BpF3DnCuXgwuskJ4XhVD6zj1RW4Bc6NjJoKL5AN9hzatXhzBkOlKbx2an
+   t4RT5HLnFqrb+23ZNBavV/3aUNrP4p7awv9z5ZXxkHOGvp1reY0WVBrDn
+   oAaESy5EpiTfmvpDowcqWJKwgyplXT9ypGro8QKpZ0ihWDVxaTtQml3y5
+   +j5lDjEH68foidrwCH77ZL47L8NWWPYM/aostHFyyI7hLKZWb+SIH0MFt
+   Uw30eyXx7PtXvSekBMEsB0FPitpZXNlXA7ZIYHDmlaNsObziLrW/jmB4V
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="295575088"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="295575088"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 07:25:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="659107033"
+Received: from linux.intel.com ([10.54.29.200])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 May 2022 07:25:43 -0700
+Received: from [10.252.212.211] (kliang2-MOBL.ccr.corp.intel.com [10.252.212.211])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D7B3B83073;
-        Fri, 13 May 2022 14:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0629BC3411A;
-        Fri, 13 May 2022 14:25:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451941;
-        bh=WzIyzFtI25DndcCvGpFXa3XiBHPDlBGo/cqwsDQExEE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ok7X5iTaIxgz3qhjgLk2dgMVuUAyRmshlVDBeTx0XtQ08aPiodMQ7N/74v9XKZLLv
-         GwFitiX0giYc5wIoopRK/Ne1SwWMDS7SH+48UOqL6Ojaz3G6JYFJScNJP3KGfMjipR
-         Ys/nzeENTnAzcvXspsx5XaCPZMHBQgPJlsy6Wn9U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        syzbot+6e5c88838328e99c7e1c@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.19 12/15] ALSA: pcm: Fix potential AB/BA lock with buffer_mutex and mmap_lock
-Date:   Fri, 13 May 2022 16:23:34 +0200
-Message-Id: <20220513142228.260134097@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
-References: <20220513142227.897535454@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by linux.intel.com (Postfix) with ESMTPS id C7C4C580A88;
+        Fri, 13 May 2022 07:25:40 -0700 (PDT)
+Message-ID: <8ba20985-8116-c7f7-a082-ec30152d9adb@linux.intel.com>
+Date:   Fri, 13 May 2022 10:25:39 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+Subject: Re: [PATCH v2 0/2] Fix topdown event weak grouping
+To:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        James Clark <james.clark@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>
+References: <20220512061308.1152233-1-irogers@google.com>
+Content-Language: en-US
+In-Reply-To: <20220512061308.1152233-1-irogers@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
-
-commit bc55cfd5718c7c23e5524582e9fa70b4d10f2433 upstream.
-
-syzbot caught a potential deadlock between the PCM
-runtime->buffer_mutex and the mm->mmap_lock.  It was brought by the
-recent fix to cover the racy read/write and other ioctls, and in that
-commit, I overlooked a (hopefully only) corner case that may take the
-revert lock, namely, the OSS mmap.  The OSS mmap operation
-exceptionally allows to re-configure the parameters inside the OSS
-mmap syscall, where mm->mmap_mutex is already held.  Meanwhile, the
-copy_from/to_user calls at read/write operations also take the
-mm->mmap_lock internally, hence it may lead to a AB/BA deadlock.
-
-A similar problem was already seen in the past and we fixed it with a
-refcount (in commit b248371628aa).  The former fix covered only the
-call paths with OSS read/write and OSS ioctls, while we need to cover
-the concurrent access via both ALSA and OSS APIs now.
-
-This patch addresses the problem above by replacing the buffer_mutex
-lock in the read/write operations with a refcount similar as we've
-used for OSS.  The new field, runtime->buffer_accessing, keeps the
-number of concurrent read/write operations.  Unlike the former
-buffer_mutex protection, this protects only around the
-copy_from/to_user() calls; the other codes are basically protected by
-the PCM stream lock.  The refcount can be a negative, meaning blocked
-by the ioctls.  If a negative value is seen, the read/write aborts
-with -EBUSY.  In the ioctl side, OTOH, they check this refcount, too,
-and set to a negative value for blocking unless it's already being
-accessed.
-
-Reported-by: syzbot+6e5c88838328e99c7e1c@syzkaller.appspotmail.com
-Fixes: dca947d4d26d ("ALSA: pcm: Fix races among concurrent read/write and buffer changes")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/000000000000381a0d05db622a81@google.com
-Link: https://lore.kernel.org/r/20220330120903.4738-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-[OP: backport to 4.19: adjusted context]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/sound/pcm.h     |    1 +
- sound/core/pcm.c        |    1 +
- sound/core/pcm_lib.c    |    9 +++++----
- sound/core/pcm_native.c |   39 ++++++++++++++++++++++++++++++++-------
- 4 files changed, 39 insertions(+), 11 deletions(-)
-
---- a/include/sound/pcm.h
-+++ b/include/sound/pcm.h
-@@ -405,6 +405,7 @@ struct snd_pcm_runtime {
- 	wait_queue_head_t tsleep;	/* transfer sleep */
- 	struct fasync_struct *fasync;
- 	struct mutex buffer_mutex;	/* protect for buffer changes */
-+	atomic_t buffer_accessing;	/* >0: in r/w operation, <0: blocked */
- 
- 	/* -- private section -- */
- 	void *private_data;
---- a/sound/core/pcm.c
-+++ b/sound/core/pcm.c
-@@ -1032,6 +1032,7 @@ int snd_pcm_attach_substream(struct snd_
- 
- 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
- 	mutex_init(&runtime->buffer_mutex);
-+	atomic_set(&runtime->buffer_accessing, 0);
- 
- 	substream->runtime = runtime;
- 	substream->private_data = pcm->private_data;
---- a/sound/core/pcm_lib.c
-+++ b/sound/core/pcm_lib.c
-@@ -1876,11 +1876,9 @@ static int wait_for_avail(struct snd_pcm
- 		if (avail >= runtime->twake)
- 			break;
- 		snd_pcm_stream_unlock_irq(substream);
--		mutex_unlock(&runtime->buffer_mutex);
- 
- 		tout = schedule_timeout(wait_time);
- 
--		mutex_lock(&runtime->buffer_mutex);
- 		snd_pcm_stream_lock_irq(substream);
- 		set_current_state(TASK_INTERRUPTIBLE);
- 		switch (runtime->status->state) {
-@@ -2174,7 +2172,6 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
- 
- 	nonblock = !!(substream->f_flags & O_NONBLOCK);
- 
--	mutex_lock(&runtime->buffer_mutex);
- 	snd_pcm_stream_lock_irq(substream);
- 	err = pcm_accessible_state(runtime);
- 	if (err < 0)
-@@ -2224,10 +2221,15 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
- 			snd_pcm_stream_unlock_irq(substream);
- 			return -EINVAL;
- 		}
-+		if (!atomic_inc_unless_negative(&runtime->buffer_accessing)) {
-+			err = -EBUSY;
-+			goto _end_unlock;
-+		}
- 		snd_pcm_stream_unlock_irq(substream);
- 		err = writer(substream, appl_ofs, data, offset, frames,
- 			     transfer);
- 		snd_pcm_stream_lock_irq(substream);
-+		atomic_dec(&runtime->buffer_accessing);
- 		if (err < 0)
- 			goto _end_unlock;
- 		err = pcm_accessible_state(runtime);
-@@ -2257,7 +2259,6 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
- 	if (xfer > 0 && err >= 0)
- 		snd_pcm_update_state(substream, runtime);
- 	snd_pcm_stream_unlock_irq(substream);
--	mutex_unlock(&runtime->buffer_mutex);
- 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : err;
- }
- EXPORT_SYMBOL(__snd_pcm_lib_xfer);
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -666,6 +666,24 @@ static int snd_pcm_hw_params_choose(stru
- 	return 0;
- }
- 
-+/* acquire buffer_mutex; if it's in r/w operation, return -EBUSY, otherwise
-+ * block the further r/w operations
-+ */
-+static int snd_pcm_buffer_access_lock(struct snd_pcm_runtime *runtime)
-+{
-+	if (!atomic_dec_unless_positive(&runtime->buffer_accessing))
-+		return -EBUSY;
-+	mutex_lock(&runtime->buffer_mutex);
-+	return 0; /* keep buffer_mutex, unlocked by below */
-+}
-+
-+/* release buffer_mutex and clear r/w access flag */
-+static void snd_pcm_buffer_access_unlock(struct snd_pcm_runtime *runtime)
-+{
-+	mutex_unlock(&runtime->buffer_mutex);
-+	atomic_inc(&runtime->buffer_accessing);
-+}
-+
- #if IS_ENABLED(CONFIG_SND_PCM_OSS)
- #define is_oss_stream(substream)	((substream)->oss.oss)
- #else
-@@ -676,14 +694,16 @@ static int snd_pcm_hw_params(struct snd_
- 			     struct snd_pcm_hw_params *params)
- {
- 	struct snd_pcm_runtime *runtime;
--	int err = 0, usecs;
-+	int err, usecs;
- 	unsigned int bits;
- 	snd_pcm_uframes_t frames;
- 
- 	if (PCM_RUNTIME_CHECK(substream))
- 		return -ENXIO;
- 	runtime = substream->runtime;
--	mutex_lock(&runtime->buffer_mutex);
-+	err = snd_pcm_buffer_access_lock(runtime);
-+	if (err < 0)
-+		return err;
- 	snd_pcm_stream_lock_irq(substream);
- 	switch (runtime->status->state) {
- 	case SNDRV_PCM_STATE_OPEN:
-@@ -788,7 +808,7 @@ static int snd_pcm_hw_params(struct snd_
- 			substream->ops->hw_free(substream);
- 	}
-  unlock:
--	mutex_unlock(&runtime->buffer_mutex);
-+	snd_pcm_buffer_access_unlock(runtime);
- 	return err;
- }
- 
-@@ -821,7 +841,9 @@ static int snd_pcm_hw_free(struct snd_pc
- 	if (PCM_RUNTIME_CHECK(substream))
- 		return -ENXIO;
- 	runtime = substream->runtime;
--	mutex_lock(&runtime->buffer_mutex);
-+	result = snd_pcm_buffer_access_lock(runtime);
-+	if (result < 0)
-+		return result;
- 	snd_pcm_stream_lock_irq(substream);
- 	switch (runtime->status->state) {
- 	case SNDRV_PCM_STATE_SETUP:
-@@ -841,7 +863,7 @@ static int snd_pcm_hw_free(struct snd_pc
- 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
- 	pm_qos_remove_request(&substream->latency_pm_qos_req);
-  unlock:
--	mutex_unlock(&runtime->buffer_mutex);
-+	snd_pcm_buffer_access_unlock(runtime);
- 	return result;
- }
- 
-@@ -1208,12 +1230,15 @@ static int snd_pcm_action_nonatomic(cons
- 	int res;
- 
- 	down_read(&snd_pcm_link_rwsem);
--	mutex_lock(&substream->runtime->buffer_mutex);
-+	res = snd_pcm_buffer_access_lock(substream->runtime);
-+	if (res < 0)
-+		goto unlock;
- 	if (snd_pcm_stream_linked(substream))
- 		res = snd_pcm_action_group(ops, substream, state, 0);
- 	else
- 		res = snd_pcm_action_single(ops, substream, state);
--	mutex_unlock(&substream->runtime->buffer_mutex);
-+	snd_pcm_buffer_access_unlock(substream->runtime);
-+ unlock:
- 	up_read(&snd_pcm_link_rwsem);
- 	return res;
- }
 
 
+On 5/12/2022 2:13 AM, Ian Rogers wrote:
+> Keep topdown events within a group when a weak group is broken. This
+> is a requirement as topdown events must form a group.
+> 
+> Add perf stat testing including for required topdown event group
+> behaviors.
+> 
+> Note: as with existing topdown evsel/evlist code topdown events are
+> assumed to be on the PMU "cpu". On Alderlake the PMU "cpu_core" should
+> also be tested. Future changes can fix Alderlake.
+
+I will send a follow-up patch to fix the weak grouping for the hybrid 
+platform shortly.
+
+For the non-hybrid platform, the patch set looks good to me.
+
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+
+Thanks,
+Kan
+
+> 
+> v2. Correct behavior wrt pmu prefixed events and avoid the test using
+>      deprecated events: Suggested-by: Liang, Kan <kan.liang@linux.intel.com>
+> 
+> Ian Rogers (2):
+>    perf evlist: Keep topdown counters in weak group
+>    perf test: Add basic stat and topdown group test
+> 
+>   tools/perf/arch/x86/util/evsel.c | 12 ++++++
+>   tools/perf/tests/shell/stat.sh   | 67 ++++++++++++++++++++++++++++++++
+>   tools/perf/util/evlist.c         | 16 +++++++-
+>   tools/perf/util/evsel.c          | 10 +++++
+>   tools/perf/util/evsel.h          |  3 ++
+>   5 files changed, 106 insertions(+), 2 deletions(-)
+>   create mode 100755 tools/perf/tests/shell/stat.sh
+> 
