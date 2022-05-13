@@ -2,45 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D95EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 562D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381044AbiEMOan (ORCPT
+        id S1380995AbiEMOat (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        Fri, 13 May 2022 10:30:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357133AbiEMOZ6 (ORCPT
+        with ESMTP id S1358882AbiEMO0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:25:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1C25F8F6;
-        Fri, 13 May 2022 07:25:10 -0700 (PDT)
+        Fri, 13 May 2022 10:26:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6032F2D8;
+        Fri, 13 May 2022 07:26:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 004B861F99;
-        Fri, 13 May 2022 14:25:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2CCEC36AE2;
-        Fri, 13 May 2022 14:25:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FB10B8305B;
+        Fri, 13 May 2022 14:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42130C34100;
+        Fri, 13 May 2022 14:26:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652451909;
-        bh=fHimoKp/mXL+UxFA5uk5tI0L5eJ2S8lPXohgxQuYI1g=;
+        s=korg; t=1652452009;
+        bh=LlQbheZQzV7Mk0qNq8vbWSUFM1smMc3+eMIRlpmwgXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BPotrmJ6AaMsVWurexvTLRjRrnibAj0FMCbekjFUWkcq/OHbbGG1FFWUZkwNVpbsN
-         OX50PZYJzYOpkmt3dZzmb3lUMUxXsYz5XK3BGL5GkwXS7yXENgNGYkIGqvH6hJUIG8
-         CYTGmuZ4szMgC6I7BRIZnDuTsZTXr9dzpQWZFbT8=
+        b=KV47AoiEIkpKoNg1ijZxYQCnnG76e13cx9ysV9fX+0Hi4ZdRVBiPhvr6FsG52KLvJ
+         7p3xtJdG8UAI4pDRDTq3qXroCfTXJOl2UTgjjgp8wWtDfgp5CyrQrDo4tgIVeHQsO6
+         OFlmAvXAyIH9siYkov7M5S4rDHs00OThNlY26sug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 4.14 03/14] can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
-Date:   Fri, 13 May 2022 16:23:19 +0200
-Message-Id: <20220513142227.483170199@linuxfoundation.org>
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Lars Persson <lars.persson@axis.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Xu <peterx@redhat.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Zi Yan <ziy@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 18/18] mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
+Date:   Fri, 13 May 2022 16:23:44 +0200
+Message-Id: <20220513142229.682741906@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220513142227.381154244@linuxfoundation.org>
-References: <20220513142227.381154244@linuxfoundation.org>
+In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
+References: <20220513142229.153291230@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,61 +59,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Larsson <andreas@gaisler.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-commit 1e93ed26acf03fe6c97c6d573a10178596aadd43 upstream.
+commit 7c25a0b89a487878b0691e6524fb5a8827322194 upstream.
 
-The systemid property was checked for in the wrong place of the device
-tree and compared to the wrong value.
+userfaultfd calls mcopy_atomic_pte() and __mcopy_atomic() which do not
+do any cache flushing for the target page.  Then the target page will be
+mapped to the user space with a different address (user address), which
+might have an alias issue with the kernel address used to copy the data
+from the user to.  Fix this by insert flush_dcache_page() after
+copy_from_user() succeeds.
 
-Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
-Link: https://lore.kernel.org/all/20220429084656.29788-3-andreas@gaisler.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Andreas Larsson <andreas@gaisler.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lkml.kernel.org/r/20220210123058.79206-7-songmuchun@bytedance.com
+Fixes: b6ebaedb4cb1 ("userfaultfd: avoid mmap_sem read recursion in mcopy_atomic")
+Fixes: c1a4de99fada ("userfaultfd: mcopy_atomic|mfill_zeropage: UFFDIO_COPY|UFFDIO_ZEROPAGE preparation")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Fam Zheng <fam.zheng@bytedance.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Lars Persson <lars.persson@axis.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/grcan.c |   16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ mm/userfaultfd.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -245,7 +245,7 @@ struct grcan_device_config {
- 		.rxsize		= GRCAN_DEFAULT_BUFFER_SIZE,	\
+--- a/mm/userfaultfd.c
++++ b/mm/userfaultfd.c
+@@ -53,6 +53,8 @@ static int mcopy_atomic_pte(struct mm_st
+ 			/* don't free the page */
+ 			goto out;
  		}
- 
--#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	0x4100
-+#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	4100
- #define GRLIB_VERSION_MASK		0xffff
- 
- /* GRCAN private data structure */
-@@ -1665,6 +1665,7 @@ exit_free_candev:
- static int grcan_probe(struct platform_device *ofdev)
- {
- 	struct device_node *np = ofdev->dev.of_node;
-+	struct device_node *sysid_parent;
- 	struct resource *res;
- 	u32 sysid, ambafreq;
- 	int irq, err;
-@@ -1674,10 +1675,15 @@ static int grcan_probe(struct platform_d
- 	/* Compare GRLIB version number with the first that does not
- 	 * have the tx bug (see start_xmit)
- 	 */
--	err = of_property_read_u32(np, "systemid", &sysid);
--	if (!err && ((sysid & GRLIB_VERSION_MASK)
--		     >= GRCAN_TXBUG_SAFE_GRLIB_VERSION))
--		txbug = false;
-+	sysid_parent = of_find_node_by_path("/ambapp0");
-+	if (sysid_parent) {
-+		of_node_get(sysid_parent);
-+		err = of_property_read_u32(sysid_parent, "systemid", &sysid);
-+		if (!err && ((sysid & GRLIB_VERSION_MASK) >=
-+			     GRCAN_TXBUG_SAFE_GRLIB_VERSION))
-+			txbug = false;
-+		of_node_put(sysid_parent);
-+	}
- 
- 	err = of_property_read_u32(np, "freq", &ambafreq);
- 	if (err) {
++
++		flush_dcache_page(page);
+ 	} else {
+ 		page = *pagep;
+ 		*pagep = NULL;
+@@ -572,6 +574,7 @@ retry:
+ 				err = -EFAULT;
+ 				goto out;
+ 			}
++			flush_dcache_page(page);
+ 			goto retry;
+ 		} else
+ 			BUG_ON(page);
 
 
