@@ -2,72 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55646C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81FE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 06:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377373AbiEMG0t (ORCPT
+        id S1377378AbiEMG0w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 02:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
+        Fri, 13 May 2022 02:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377309AbiEMG0Y (ORCPT
+        with ESMTP id S1377308AbiEMG0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 02:26:24 -0400
+        Fri, 13 May 2022 02:26:25 -0400
 Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB83275CF;
-        Thu, 12 May 2022 23:26:21 -0700 (PDT)
-X-isilmar-external: YES
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B8827CC0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 23:26:22 -0700 (PDT)
 X-isilmar-external: YES
 X-isilmar-external: YES
 Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id F3FD0201409;
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id F07F2201406;
         Fri, 13 May 2022 06:26:05 +0000 (UTC)
 Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 18A7B80914; Fri, 13 May 2022 08:18:30 +0200 (CEST)
-Date:   Fri, 13 May 2022 08:18:30 +0200
+        id D3E92809A3; Fri, 13 May 2022 08:23:40 +0200 (CEST)
+Date:   Fri, 13 May 2022 08:23:40 +0200
 From:   Dominik Brodowski <linux@dominikbrodowski.net>
 To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH] random: credit architectural init the exact amount
-Message-ID: <Yn34NiJUnZOgK99X@owl.dominikbrodowski.net>
-References: <20220512133835.102028-1-Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] random: avoid init'ing twice in credit race
+Message-ID: <Yn35bNS6RlElAGYh@owl.dominikbrodowski.net>
+References: <20220509121409.529788-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220512133835.102028-1-Jason@zx2c4.com>
+In-Reply-To: <20220509121409.529788-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Thu, May 12, 2022 at 03:38:35PM +0200 schrieb Jason A. Donenfeld:
-> RDRAND and RDSEED can fail sometimes, which is fine. We currently
-> initialize the RNG with 512 bits of RDRAND/RDSEED. We only need 256 bits
-> of those to succeed in order to initialize the RNG. Instead of the
-> current "all or nothing" approach, actually credit these contributions
-> the amount that is actually contributed.
+Am Mon, May 09, 2022 at 02:14:08PM +0200 schrieb Jason A. Donenfeld:
+> Since all changes of crng_init now go through credit_init_bits(), we can
+> fix a long standing race in which two concurrent callers of
+> credit_init_bits() have the new bit count >= some threshold, but are
+> doing so with crng_init as a lower threshold, checked outside of a lock,
+> resulting in crng_reseed() or similar being called twice.
+
+Sidenote: crng_reseed() did manage quite fine if called twice in short
+order.
+
+> In order to fix this, we can use the original cmpxchg value of the bit
+> count, and only change crng_init when the bit count transitions from
+> below a threshold to meeting the threshold.
 > 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
 > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/char/random.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index bd80d74a7f8c..9ffa41c5e092 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -934,9 +934,8 @@ static struct notifier_block pm_notifier = { .notifier_call = random_pm_notifica
->   */
->  int __init random_init(const char *command_line)
->  {
-> -	size_t i;
->  	ktime_t now = ktime_get_real();
-> -	bool arch_init = true;
-> +	unsigned int i, arch_init;
-
-Maybe s/arch_init/arch_init_cnt/g to clarify that this is now used as a
-counter?
-
-Otherwise, looks good:
 
 	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
