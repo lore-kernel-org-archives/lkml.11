@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0279FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 119E9C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 14:32:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381312AbiEMObR (ORCPT
+        id S1381418AbiEMObY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 10:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46680 "EHLO
+        Fri, 13 May 2022 10:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380849AbiEMO1c (ORCPT
+        with ESMTP id S1380799AbiEMO13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 10:27:32 -0400
+        Fri, 13 May 2022 10:27:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD416161E;
-        Fri, 13 May 2022 07:27:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3199B39828;
+        Fri, 13 May 2022 07:27:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E358CB82F64;
-        Fri, 13 May 2022 14:27:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33F28C34100;
-        Fri, 13 May 2022 14:27:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78DAAB8305B;
+        Fri, 13 May 2022 14:27:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0543C34117;
+        Fri, 13 May 2022 14:27:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652452033;
-        bh=9uh8S6c2FeFDM/PNy1MSw1czMlOtY7INGH7Ku6JDXN0=;
+        s=korg; t=1652452024;
+        bh=HFF/gg0eDw4LZavuZrPdCCTBbCiwwglPcIcU81h9Ij0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehxAFX2XFcwMTYYe2fUxRuF5+5q+GrAF0Zn1MQ6s4wxOeKKzq2uv42hMX++S1bU1F
-         OgJhd1fNFh81aQsbUiPLW63OiPOBeR9eMspcqDhtcTwGcZM30zg3gGpfjiW9774/gv
-         wLpOAe/MyQ7qJae737dg6g7Y7GmFSQKDIjYo/IHE=
+        b=QgOU5oPx2BFbGY9OAJXKYpzJ/HzlQqVUDlei1NiCveRgYCSzcHFqKwTYZGiJGzeW3
+         2s2qxbg/62tavyob6MKIhSpnaw6c7ghRo1Uk7us4ggpQetq0NzoC3I/UciaUIAqrTE
+         egoTy0Sx3aOpG7H6zRkWw4je7JBRLShacuB9vA2Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Kyle Huey <me@kylehuey.com>
-Subject: [PATCH 5.4 09/18] KVM: x86/pmu: Refactoring find_arch_event() to pmc_perf_hw_id()
-Date:   Fri, 13 May 2022 16:23:35 +0200
-Message-Id: <20220513142229.427408031@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.4 06/18] can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
+Date:   Fri, 13 May 2022 16:23:32 +0200
+Message-Id: <20220513142229.343286299@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513142229.153291230@linuxfoundation.org>
 References: <20220513142229.153291230@linuxfoundation.org>
@@ -50,122 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Andreas Larsson <andreas@gaisler.com>
 
-commit 7c174f305cbee6bdba5018aae02b84369e7ab995 upstream.
+commit 1e93ed26acf03fe6c97c6d573a10178596aadd43 upstream.
 
-The find_arch_event() returns a "unsigned int" value,
-which is used by the pmc_reprogram_counter() to
-program a PERF_TYPE_HARDWARE type perf_event.
+The systemid property was checked for in the wrong place of the device
+tree and compared to the wrong value.
 
-The returned value is actually the kernel defined generic
-perf_hw_id, let's rename it to pmc_perf_hw_id() with simpler
-incoming parameters for better self-explanation.
-
-Signed-off-by: Like Xu <likexu@tencent.com>
-Message-Id: <20211130074221.93635-3-likexu@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-[Backport to 5.4: kvm_x86_ops is a pointer here]
-Signed-off-by: Kyle Huey <me@kylehuey.com>]
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
+Link: https://lore.kernel.org/all/20220429084656.29788-3-andreas@gaisler.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Andreas Larsson <andreas@gaisler.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/pmu.c           |    8 +-------
- arch/x86/kvm/pmu.h           |    3 +--
- arch/x86/kvm/pmu_amd.c       |    8 ++++----
- arch/x86/kvm/vmx/pmu_intel.c |    9 +++++----
- 4 files changed, 11 insertions(+), 17 deletions(-)
+ drivers/net/can/grcan.c |   16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -143,7 +143,6 @@ static void pmc_reprogram_counter(struct
- void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -241,7 +241,7 @@ struct grcan_device_config {
+ 		.rxsize		= GRCAN_DEFAULT_BUFFER_SIZE,	\
+ 		}
+ 
+-#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	0x4100
++#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	4100
+ #define GRLIB_VERSION_MASK		0xffff
+ 
+ /* GRCAN private data structure */
+@@ -1656,6 +1656,7 @@ exit_free_candev:
+ static int grcan_probe(struct platform_device *ofdev)
  {
- 	unsigned config, type = PERF_TYPE_RAW;
--	u8 event_select, unit_mask;
- 	struct kvm *kvm = pmc->vcpu->kvm;
- 	struct kvm_pmu_event_filter *filter;
- 	int i;
-@@ -175,17 +174,12 @@ void reprogram_gp_counter(struct kvm_pmc
- 	if (!allow_event)
- 		return;
+ 	struct device_node *np = ofdev->dev.of_node;
++	struct device_node *sysid_parent;
+ 	struct resource *res;
+ 	u32 sysid, ambafreq;
+ 	int irq, err;
+@@ -1665,10 +1666,15 @@ static int grcan_probe(struct platform_d
+ 	/* Compare GRLIB version number with the first that does not
+ 	 * have the tx bug (see start_xmit)
+ 	 */
+-	err = of_property_read_u32(np, "systemid", &sysid);
+-	if (!err && ((sysid & GRLIB_VERSION_MASK)
+-		     >= GRCAN_TXBUG_SAFE_GRLIB_VERSION))
+-		txbug = false;
++	sysid_parent = of_find_node_by_path("/ambapp0");
++	if (sysid_parent) {
++		of_node_get(sysid_parent);
++		err = of_property_read_u32(sysid_parent, "systemid", &sysid);
++		if (!err && ((sysid & GRLIB_VERSION_MASK) >=
++			     GRCAN_TXBUG_SAFE_GRLIB_VERSION))
++			txbug = false;
++		of_node_put(sysid_parent);
++	}
  
--	event_select = eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
--	unit_mask = (eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
--
- 	if (!(eventsel & (ARCH_PERFMON_EVENTSEL_EDGE |
- 			  ARCH_PERFMON_EVENTSEL_INV |
- 			  ARCH_PERFMON_EVENTSEL_CMASK |
- 			  HSW_IN_TX |
- 			  HSW_IN_TX_CHECKPOINTED))) {
--		config = kvm_x86_ops->pmu_ops->find_arch_event(pmc_to_pmu(pmc),
--						      event_select,
--						      unit_mask);
-+		config = kvm_x86_ops->pmu_ops->pmc_perf_hw_id(pmc);
- 		if (config != PERF_COUNT_HW_MAX)
- 			type = PERF_TYPE_HARDWARE;
- 	}
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -22,8 +22,7 @@ struct kvm_event_hw_type_mapping {
- };
- 
- struct kvm_pmu_ops {
--	unsigned (*find_arch_event)(struct kvm_pmu *pmu, u8 event_select,
--				    u8 unit_mask);
-+	unsigned int (*pmc_perf_hw_id)(struct kvm_pmc *pmc);
- 	unsigned (*find_fixed_event)(int idx);
- 	bool (*pmc_is_enabled)(struct kvm_pmc *pmc);
- 	struct kvm_pmc *(*pmc_idx_to_pmc)(struct kvm_pmu *pmu, int pmc_idx);
---- a/arch/x86/kvm/pmu_amd.c
-+++ b/arch/x86/kvm/pmu_amd.c
-@@ -126,10 +126,10 @@ static inline struct kvm_pmc *get_gp_pmc
- 	return &pmu->gp_counters[msr_to_index(msr)];
- }
- 
--static unsigned amd_find_arch_event(struct kvm_pmu *pmu,
--				    u8 event_select,
--				    u8 unit_mask)
-+static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
- {
-+	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
-+	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
-@@ -300,7 +300,7 @@ static void amd_pmu_reset(struct kvm_vcp
- }
- 
- struct kvm_pmu_ops amd_pmu_ops = {
--	.find_arch_event = amd_find_arch_event,
-+	.pmc_perf_hw_id = amd_pmc_perf_hw_id,
- 	.find_fixed_event = amd_find_fixed_event,
- 	.pmc_is_enabled = amd_pmc_is_enabled,
- 	.pmc_idx_to_pmc = amd_pmc_idx_to_pmc,
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -64,10 +64,11 @@ static void global_ctrl_changed(struct k
- 		reprogram_counter(pmu, bit);
- }
- 
--static unsigned intel_find_arch_event(struct kvm_pmu *pmu,
--				      u8 event_select,
--				      u8 unit_mask)
-+static unsigned int intel_pmc_perf_hw_id(struct kvm_pmc *pmc)
- {
-+	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
-+	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
-+	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(intel_arch_events); i++)
-@@ -374,7 +375,7 @@ static void intel_pmu_reset(struct kvm_v
- }
- 
- struct kvm_pmu_ops intel_pmu_ops = {
--	.find_arch_event = intel_find_arch_event,
-+	.pmc_perf_hw_id = intel_pmc_perf_hw_id,
- 	.find_fixed_event = intel_find_fixed_event,
- 	.pmc_is_enabled = intel_pmc_is_enabled,
- 	.pmc_idx_to_pmc = intel_pmc_idx_to_pmc,
+ 	err = of_property_read_u32(np, "freq", &ambafreq);
+ 	if (err) {
 
 
