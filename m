@@ -2,55 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7773C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 10:40:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379568AbiEMKkW (ORCPT
+        id S1379582AbiEMKka (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 06:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36078 "EHLO
+        Fri, 13 May 2022 06:40:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379549AbiEMKkS (ORCPT
+        with ESMTP id S1379541AbiEMKkS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 06:40:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542012992FA;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B7A28B854;
         Fri, 13 May 2022 03:40:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E17926153C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9F46614FB;
         Fri, 13 May 2022 10:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 47F95C34119;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 30924C34114;
         Fri, 13 May 2022 10:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1652438416;
-        bh=zTvTiCTVxbvSW+PS+KKIL6/4dwDy6vvmSFDisj1b1rs=;
+        bh=t+j2oa0sybV7dpErO/Q6VSoSiLVS3Ad1s7QqbLdvJL0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OdmEg7jyVFt1B6nyojJY4nORTfp1ZJ7uj+56TSh9q1DQrlVz54hVn8B1xmaCkpJl+
-         TvhiUvWG91RyFUFt33Gf9UON7tsB41TDOW1JJAi5I/UevEMOMOnQms9tT7YSuRJ0Ci
-         v3FUAFGGOEhg1uJJHgSo/4ioQxgDSujU6GRgDFCmZW8ztYxInhkLZdMEQJ+b0MY80b
-         Pm6/WDTDPGE7YtNIEVsGFx11SsvvOdD5oxmE0oR23oHZNnNjW3i9DPzhHzLobFJq3K
-         daoof2bgKQ2468WGXles9Nqm1JuTet+EdmibBwmGpgnSTZOHobgJ05olyydGmNuyEi
-         fD/3lMKuQVHPQ==
+        b=pIsWii6X8QcgtsWvhRaP2wkzZeRLhz3bPxkC69fjDD9eES9nD5Ew55L3Q4tB7MbrQ
+         uqJwZqLk1yoDq908WDPmOTQeKrXVMqVoGh6cAfjVLMZTKlou90wHU7hVex8yZ6UCkd
+         TeKAxRH7S98faImX2dF6Hi5Gqf8utzxW+Oor8bRTPqBhKeXpgXABp35kFYFTTvuEAh
+         j3dDhxuDq4/02sDCorIQIErwxbMxLCaU3nVk9FHYqsdO+NNnJ8bCqpx+wGuu7gEdtg
+         Q5MVCpHFj8e0l8uEVgRHHg+ynWSqwnc9xWLHdSIfG0zjkICiDJinAasxAIZaQqV//a
+         dCsqElYURR/8Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 24D04F03935;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 17DF7F03937;
         Fri, 13 May 2022 10:40:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: page_pool: add page allocation stats for two
- fast page allocate path
+Subject: Re: [PATCH -next] net: ethernet: fix platform_no_drv_owner.cocci warning
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165243841613.19214.9273427764376965858.git-patchwork-notify@kernel.org>
+Message-Id: <165243841609.19214.3757815327753045737.git-patchwork-notify@kernel.org>
 Date:   Fri, 13 May 2022 10:40:16 +0000
-References: <20220512065631.33673-1-huangguangbin2@huawei.com>
-In-Reply-To: <20220512065631.33673-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        chenhao288@hisilicon.com
+References: <20220512080357.44357-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <20220512080357.44357-1-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     wellslutw@gmail.com, edumazet@google.com, pabeni@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, abaci@linux.alibaba.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -60,20 +58,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 12 May 2022 14:56:31 +0800 you wrote:
-> From: Jie Wang <wangjie125@huawei.com>
+On Thu, 12 May 2022 16:03:57 +0800 you wrote:
+> Remove .owner field if calls are used which set it automatically.
+> ./drivers/net/ethernet/sunplus/spl2sw_driver.c:569:3-8: No need to set
+> .owner here. The core will do it.
 > 
-> Currently If use page pool allocation stats to analysis a RX performance
-> degradation problem. These stats only count for pages allocate from
-> page_pool_alloc_pages. But nic drivers such as hns3 use
-> page_pool_dev_alloc_frag to allocate pages, so page stats in this API
-> should also be counted.
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: page_pool: add page allocation stats for two fast page allocate path
-    https://git.kernel.org/netdev/net-next/c/0f6deac3a079
+  - [-next] net: ethernet: fix platform_no_drv_owner.cocci warning
+    https://git.kernel.org/netdev/net-next/c/7b8b82224c26
 
 You are awesome, thank you!
 -- 
