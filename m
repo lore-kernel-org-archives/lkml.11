@@ -2,87 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C7CDC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 11:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA21C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 13 May 2022 11:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379742AbiEMLGT (ORCPT
+        id S1379757AbiEMLGe convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 07:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
+        Fri, 13 May 2022 07:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379732AbiEMLF5 (ORCPT
+        with ESMTP id S1379732AbiEMLG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 07:05:57 -0400
-X-Greylist: delayed 503 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 13 May 2022 04:05:53 PDT
-Received: from smtp6.goneo.de (smtp6.goneo.de [85.220.129.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE33DEF1
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:05:50 -0700 (PDT)
-Received: from hub1.goneo.de (hub1.goneo.de [IPv6:2001:1640:5::8:52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by smtp6.goneo.de (Postfix) with ESMTPS id E2CB010A3329;
-        Fri, 13 May 2022 12:57:22 +0200 (CEST)
-Received: from hub1.goneo.de (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by hub1.goneo.de (Postfix) with ESMTPS id 49F2210A1E8A;
-        Fri, 13 May 2022 12:57:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=georgemail.eu;
-        s=DKIM001; t=1652439441;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/OaoAYNGeTkjqRpT9BXELSpZRhtmoluGTZks7oz+u3I=;
-        b=oyxTOcNnpA7wvYA8hX8Kszx8M5qhGFlS0q2v+c+mbP1hL4iebb0Aw3naz2QHlLrSSDHDI5
-        5cwCBrorgj0DfHRxeKyivLA8u50MrxEDKpJ0AaiOpZQe2WbODIRS96oLCms8Ua5rzunQGg
-        tBdaqtXuaRDkiaYafkplVbPI6WEYCgZtB7wFFPqPoWpNGFNVlJChQEYDoQ0ml4586W2JK7
-        BvoFbA3EgCxvsm0byojsoxx8S9tgMytvTAhJXqlE8s3JTsol1zDb78bilbrg+o2ZU0zOGV
-        iDBgy+zQFEab5S7ZF/06gXO7An4vPTXL13/A8U5jA0TEf8vGIH1t9cRhExMdHQ==
-Received: from brot.fritz.box (unknown [IPv6:2a02:908:2a43:3560:cb6d:eb1d:27ff:405a])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by hub1.goneo.de (Postfix) with ESMTPSA id 0469110A1E87;
-        Fri, 13 May 2022 12:57:20 +0200 (CEST)
-From:   "Leon M. George" <leon@georgemail.eu>
-To:     Phillip Lougher <phillip@squashfs.org.uk>
-Cc:     "Leon M. George" <leon@georgemail.eu>, linux-kernel@vger.kernel.org
-Subject: [PATCH] squashfs: free page if bio_add_page fails
-Date:   Fri, 13 May 2022 12:57:09 +0200
-Message-Id: <20220513105709.2209247-1-leon@georgemail.eu>
-X-Mailer: git-send-email 2.35.1
+        Fri, 13 May 2022 07:06:28 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5708027CC0
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 04:06:26 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-197-ASZCsPWJPluT1yty21qOXQ-1; Fri, 13 May 2022 12:06:24 +0100
+X-MC-Unique: ASZCsPWJPluT1yty21qOXQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Fri, 13 May 2022 12:06:23 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Fri, 13 May 2022 12:06:23 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Andrew Morton' <akpm@linux-foundation.org>,
+        liqiong <liqiong@nfschina.com>
+CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] mm: change "char *bdi_unknown_name" to "char
+ bdi_unknown_name[]"
+Thread-Topic: [PATCH] mm: change "char *bdi_unknown_name" to "char
+ bdi_unknown_name[]"
+Thread-Index: AQHYZjsAqW5HazYh8E6shSZ+mswpua0cpDpg
+Date:   Fri, 13 May 2022 11:06:23 +0000
+Message-ID: <4b21dec7e98243b89daea96286c33434@AcuMS.aculab.com>
+References: <20220512082637.24649-1-liqiong@nfschina.com>
+ <20220512130051.94a0c53e5d1498292473975d@linux-foundation.org>
+In-Reply-To: <20220512130051.94a0c53e5d1498292473975d@linux-foundation.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-UID: b6ee6c
-X-Rspamd-UID: 4a24b1
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In squashfs_bio_read, the page recently allocated for use with
-bio_add_page isn't freed when the call fails.
+From: Andrew Morton
+> Sent: 12 May 2022 21:01
+> 
+> On Thu, 12 May 2022 16:26:37 +0800 liqiong <liqiong@nfschina.com> wrote:
+> 
+> > "char bdi_unknown_nam[]" string form declares a single variable.
+> > It is better then "char *bdi_unknown_name" which creates two
+> > variables.
+> >
+> > ...
+> >
+> > --- a/mm/backing-dev.c
+> > +++ b/mm/backing-dev.c
+> > @@ -20,7 +20,7 @@ struct backing_dev_info noop_backing_dev_info;
+> >  EXPORT_SYMBOL_GPL(noop_backing_dev_info);
+> >
+> >  static struct class *bdi_class;
+> > -static const char *bdi_unknown_name = "(unknown)";
+> > +static const char bdi_unknown_name[] = "(unknown)";
+> >
+> 
+> heh, fun patch.  We actually do this quite a lot.
+> 
+> 	grep -r "^[a-z].*char \*[a-z].*= \"" .
+> 
+> is a pathetic pattern which catches a lot of them.
+> 
+> 
+> However.  I expected your patch to shrink the kernel a bit, but it has
+> the opposite effect:
+> 
+> hp2:/usr/src/25> size mm/backing-dev.o
+>    text	   data	    bss	    dec	    hex	filename
+>   21288	   9396	   3808	  34492	   86bc	mm/backing-dev.o-before
+>   21300	   9428	   3808	  34536	   86e8	mm/backing-dev.o-after
+> 
+> Even .data became larger.  I didn't investigate why.
 
-This patch adds a call to __free_page.
+The linker can merge replicated strings
+(ie data in .rodata.str1.n sections)
+but I don't think the compiler puts variables into that section.
 
-Signed-off-by: Leon M. George <leon@georgemail.eu>
----
- fs/squashfs/block.c | 1 +
- 1 file changed, 1 insertion(+)
+So if you have:
+static const char *const foo_xxx = "foo";
+in multiple source/object files you get lots of pointers
+but only one string.
+OTOH with:
+static const char foo_xxx[] = "foo";
+you get lots of copies of the string.
+Which is smaller depends on the number of variables and the length
+of the string.
 
-diff --git a/fs/squashfs/block.c b/fs/squashfs/block.c
-index 622c844f6d11..5ca1c9caef7d 100644
---- a/fs/squashfs/block.c
-+++ b/fs/squashfs/block.c
-@@ -110,6 +110,7 @@ static int squashfs_bio_read(struct super_block *sb, u64 index, int length,
- 		}
- 		if (!bio_add_page(bio, page, len, offset)) {
- 			error = -EIO;
-+			__free_page(page);
- 			goto out_free_bio;
- 		}
- 		offset = 0;
--- 
-2.35.1
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
