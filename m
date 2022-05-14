@@ -2,109 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 074B4C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1875DC433EF
 	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 15:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233361AbiENPUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 11:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
+        id S233836AbiENPUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 11:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiENPUn (ORCPT
+        with ESMTP id S229606AbiENPUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 11:20:43 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B102F030
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 08:20:41 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id f4so6290209lfu.12
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 08:20:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vgEQZGj7XdPzKpml1xZjmFHRxmKWGvcEYL2lJUBaVsU=;
-        b=m4skFe/fjMkgPeZRXHRT7lmXSxKYhwE0VfUTRb6cHXLVXCDTZt5kYDzRQN4cIad6Nx
-         +FrVOkwHES6FDU42vMw/5rykZLePnGTUoeBjEXJhQVZj9Qayk2t1n9YpZg96DuECzAME
-         RWTlrtbZOW5GSCumUcHWt8Vgpok46Zj7DOMqdhszEG96AbuK+JjKEn44NbI9ZV/v8eMJ
-         oHVzLswLqY3uTDBt8WWlevlNynqtJwst1Utjvj5kO8EQz115KPb2lymke80pTSum56iq
-         yTXeFxnJ4UcTJsWXwiHotDVDytOGWrJsF4W8vUSNznvd98uO07FIN8XePxzJBGDYh7Ng
-         ZSTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vgEQZGj7XdPzKpml1xZjmFHRxmKWGvcEYL2lJUBaVsU=;
-        b=ig5HU9m4zSmQPQlSphZTf0euJNuiya5b+3h+sktR2bp2Pyx+5mGRn/La3FQFxIc+df
-         KjQSDox/6c422EZZN8ojbE8x3CTHHGBYfPIVQVxxWAIFQXj59hAXwHOBG8m3VpNyZ85N
-         fpeA+ACNTtFKHAQi9+f57BH1ObYj3ayL1nLBFJ/rCrzg1rN4ir6QpGUztd3yJNdnNBYc
-         lRk4IQA9eNvE6mrB2Y9UXgX02OI6ulCZsuYO2o/H8l5QcfzjUWsA4u0dtsh1MnxqIIsm
-         B0cBSYP41HX9tz7B2LPTMA6zkf6VIoqmgDHvcSDtdK90v8I/Lzpa/0MQKQoqplG01mFU
-         kwFw==
-X-Gm-Message-State: AOAM5305AqtuJzhg6QtZQUrq9BJr/CLWcHj2qRTr364xTAfEwyw8l9dG
-        aOZL+lEu1XwcP5jyzQ2eZic0c1aKkZCJKQ==
-X-Google-Smtp-Source: ABdhPJzzPOWb8YcOcXdI0jUpKc7cMAmRKte6m/hGPjpztOpdV6al6mOvoJFC7cx2XnwypmlVC4xSzg==
-X-Received: by 2002:a05:6512:553:b0:472:205b:97ba with SMTP id h19-20020a056512055300b00472205b97bamr7001418lfl.314.1652541640290;
-        Sat, 14 May 2022 08:20:40 -0700 (PDT)
-Received: from localhost.localdomain (h-98-128-181-154.NA.cust.bahnhof.se. [98.128.181.154])
-        by smtp.gmail.com with ESMTPSA id q18-20020a2e9152000000b0024f3d1daee5sm830413ljg.109.2022.05.14.08.20.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 May 2022 08:20:39 -0700 (PDT)
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Anup Patel <anup@brainfault.org>, linux-pm@vger.kernel.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@rivosinc.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] cpuidle: psci: Fix regression leading to no genpd governor
-Date:   Sat, 14 May 2022 17:20:32 +0200
-Message-Id: <20220514152032.758738-1-ulf.hansson@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Sat, 14 May 2022 11:20:49 -0400
+Received: from mail-m121145.qiye.163.com (mail-m121145.qiye.163.com [115.236.121.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389E92F391
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 08:20:47 -0700 (PDT)
+Received: from [192.168.3.48] (unknown [220.250.45.22])
+        by mail-m121145.qiye.163.com (Hmail) with ESMTPA id E939880017B;
+        Sat, 14 May 2022 23:20:42 +0800 (CST)
+Message-ID: <7ff0ed31-6326-9dc8-6003-0aab8370ad0d@rock-chips.com>
+Date:   Sat, 14 May 2022 23:20:45 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2] ASoC: hdmi-codec: Add option for ELD bypass
+To:     Mark Brown <broonie@kernel.org>, Maxime Ripard <maxime@cerno.tech>
+Cc:     Dmitry Osipenko <digetx@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+References: <20220430134006.v2.1.Ide2a04ad0c123cc6990a63632e6f9bb7d7f9be13@changeid>
+ <20220503083852.be2aihvkd3gestdw@houat> <YnGUHcFOYrvcA2Ol@sirena.org.uk>
+From:   sugar zhang <sugar.zhang@rock-chips.com>
+In-Reply-To: <YnGUHcFOYrvcA2Ol@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWRlJTU5WSElJGU9PH0tKHk
+        xIVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITk9VS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nk06Kxw6Sj05TU0JSzJLFwo8
+        HilPCRJVSlVKTU5JTk9KTU9IT0JJVTMWGhIXVQgOHBoJVQETGhUcOwkUGBBWGBMSCwhVGBQWRVlX
+        WRILWUFZSUlLVUlOS1VPTlVJSVlXWQgBWUFIQkhONwY+
+X-HM-Tid: 0a80c32859c3b03akuuue939880017b
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While factoring out the PM domain related code from PSCI domain driver into
-a set of library functions, a regression when initializing the genpds got
-introduced. More precisely, we fail to assign a genpd governor, so let's
-fix this.
+Hi Mark, Maxime,
 
-Fixes: 9d976d6721df ("cpuidle: Factor-out power domain related code from PSCI domain driver")
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
----
- drivers/cpuidle/cpuidle-psci-domain.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+在 2022/5/4 4:44, Mark Brown 写道:
+> On Tue, May 03, 2022 at 10:38:52AM +0200, Maxime Ripard wrote:
+>
+>> I think some more documentation is needed there to describe how it's
+>> going to be used.
+>>
+>> Like, you mention that it's relevant when the EDID is not valid. But if
+>> the EDID is valid, is bypass still allowed or not?
+> I'd expect so given that it's explicitly an override and that it's not
+> like it's unknown for people to put nonsense in ID information.
+>
+>>> +static int hdmi_codec_eld_bypass_put(struct snd_kcontrol *kcontrol,
+>>> +				     struct snd_ctl_elem_value *ucontrol)
+>>> +{
+>>> +	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+>>> +	struct hdmi_codec_priv *hcp = snd_soc_component_get_drvdata(component);
+>>> +
+>>> +	if (hcp->eld_bypass == ucontrol->value.integer.value[0])
+>>> +		return 0;
+>>> +
+>>> +	hcp->eld_bypass = ucontrol->value.integer.value[0];
+>>> +
+>>> +	return 1;
+>>> +}
+>> If the ELD bypass is set, how does it affect the hdmi_codec_params being
+>> passed to the codec?
+> Presumably we should tell the CODEC what we're trying to play (looks
+> like that's what the current code does)?
+>
+>> Also, what is being returned to the userspace by hdmi_eld_ctl_get once
+>> the bypass is enabled?
+> My first thought would be that we'd always read whatever is there
+> rather than trying to make something up, bypass just says we're not
+> enforcing it.
+>
+>> And shouldn't we call get_eld when we remove the bypass?
+> Or given what I just said above should we not change any get_eld() calls
+> but instead only change things so that we don't look at the ELD data
+> when setting constraints during startup() and during channel map
+> operations?  In that case we wouldn't need to read again.
 
-diff --git a/drivers/cpuidle/cpuidle-psci-domain.c b/drivers/cpuidle/cpuidle-psci-domain.c
-index 755bbdfc5b82..3db4fca1172b 100644
---- a/drivers/cpuidle/cpuidle-psci-domain.c
-+++ b/drivers/cpuidle/cpuidle-psci-domain.c
-@@ -52,7 +52,7 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
- 	struct generic_pm_domain *pd;
- 	struct psci_pd_provider *pd_provider;
- 	struct dev_power_governor *pd_gov;
--	int ret = -ENOMEM, state_count = 0;
-+	int ret = -ENOMEM;
- 
- 	pd = dt_idle_pd_alloc(np, psci_dt_parse_state_node);
- 	if (!pd)
-@@ -71,7 +71,7 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
- 		pd->flags |= GENPD_FLAG_ALWAYS_ON;
- 
- 	/* Use governor for CPU PM domains if it has some states to manage. */
--	pd_gov = state_count > 0 ? &pm_domain_cpu_gov : NULL;
-+	pd_gov = pd->states ? &pm_domain_cpu_gov : NULL;
- 
- 	ret = pm_genpd_init(pd, pd_gov, false);
- 	if (ret)
+I agree this idea that just don't use it for constraints and channel map 
+or something else.
+
+but still do get_eld() as it was. will do in v3.
+
+
 -- 
-2.25.1
+Best Regards!
+张学广/Sugar
+瑞芯微电子股份有限公司
+Rockchip Electronics Co., Ltd.
 
