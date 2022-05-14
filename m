@@ -2,112 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C04C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229815AbiENChy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57194 "EHLO
+        id S229843AbiENCr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiENChw (ORCPT
+        with ESMTP id S229781AbiENCr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:37:52 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB2B34ACB5
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:39:24 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-d39f741ba0so12427536fac.13
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:39:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=y+n1fPZT1zdS+lAHwbtnaHu3tkmXjTbbjBa7vPYlABo=;
-        b=O6V92x54nhsbw+iIsi5VHLqlpU/25LrFdzgZySWoN2Jrfjv/G3KftonhcTmUy8+al1
-         WFE6Q+tE0l2iBl25sRgpQbo9qhWdx+7LQtZft6V5k/h/7WOZNGlG35S3sPrBgkgQs9hp
-         3tvilCQ/lgFTZeOe6BIxP5p34eS2/nfLcGGBAlSpH5WKPoPzQueO4EBtjraJShnZ0Puj
-         JNLJIYxMRvMTsSMvBtIVlwZO5+dGqyE0RJY+fJ51cHSBbBgakP4QrXQDkjvt2Ofq5IbP
-         6iFY+2AcNfxSZg9S+opPYsWSgCUOx9dixE2DVScTOtJ1u5b9h9LKzZ0w8nUmMAEI9TQQ
-         QhnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=y+n1fPZT1zdS+lAHwbtnaHu3tkmXjTbbjBa7vPYlABo=;
-        b=xfkaIIHc8bVbl/JDsKscJ/cLfqWY5ysvBFhWCqr9MG6k1OAYLWPI82t1hrlGORASnp
-         ZAdxS8WnhZryCE4Lh9vKHsl88qfolrFCkqws360qOKsT9/wbm2Al5LKec7ODFURXnUEm
-         /M6r/1U5jI0qclW25cHKTBrz+4l2UCGg9bFJu/TVGkR4LN5t9PRxuMmL3OJnuFQ0f3wH
-         NS5DOaXhHNNdnFt9GDb4GTXObBbP8Zf8QCBj5aYs5c/zdIJLmL3TF86rHjr0RwGmhM9H
-         Zuf1cRfd0R1w+jB9h3aZtr+gcR4cTrEPZAQ12S6ND7IsmcMT1BonnsNfOXxvJvBuLlD4
-         xp/Q==
-X-Gm-Message-State: AOAM5327V/WhxLl7uNaWFs5gIIhjPvE3lagJfpvutNRDaWxRqIE1cuIy
-        AmyhqmIHG+uhHcD1mFCmhbY6aPAu7nw=
-X-Google-Smtp-Source: ABdhPJyOeXl2fFGTzg0iG/6FpetLkDcmdjOHsoeI13uUcbQHA6nOkjFHKMo1BhP97JPHpR+hLyq8fg==
-X-Received: by 2002:a17:90b:3e8a:b0:1dc:9d7e:1e12 with SMTP id rj10-20020a17090b3e8a00b001dc9d7e1e12mr7400387pjb.58.1652487969532;
-        Fri, 13 May 2022 17:26:09 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:1969:9b8a:5056:897b])
-        by smtp.gmail.com with ESMTPSA id n16-20020a6563d0000000b003c14af50607sm2160677pgv.31.2022.05.13.17.26.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 17:26:09 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Fri, 13 May 2022 17:26:07 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        syzbot <syzbot+acf65ca584991f3cc447@syzkaller.appspotmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        llvm@lists.linux.dev, nathan@kernel.org, ndesaulniers@google.com,
-        syzkaller-bugs@googlegroups.com, trix@redhat.com,
-        Matthew Wilcox <willy@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Hildenbrand <david@redhat.com>
-Subject: Re: [syzbot] WARNING in follow_hugetlb_page
-Message-ID: <Yn73Hz7LkSUv7ycw@google.com>
-References: <000000000000ef451a05dee0f2b1@google.com>
- <00000000000077377c05dee75f63@google.com>
- <20220513102617.c464c4f566052838e911a3ec@linux-foundation.org>
- <75f09063-d184-7d44-17a1-ed04be5eb953@oracle.com>
- <a7fd0c3f-921e-19b3-2f67-a231dede28f9@oracle.com>
- <20220513161910.d1b73583cdb2e33562aa86e5@linux-foundation.org>
- <Yn7vnpXwX50J3K+7@google.com>
- <4809b134-a37a-50b8-4c25-44548bc1048f@nvidia.com>
+        Fri, 13 May 2022 22:47:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139584F6133;
+        Fri, 13 May 2022 17:49:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6728AB8324C;
+        Sat, 14 May 2022 00:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 258A4C34100;
+        Sat, 14 May 2022 00:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652487612;
+        bh=VbH6Eye7rDprrBdwdIeqL7tRQ78t85laQ8YSPwhSV1g=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=I2XyV2+sHI8TA9wcJNxT+5veFxwxzCz6kr4ib/sqAPVTZSnlQJr7LoIULCQwDHawP
+         nZFFYmtBjh6jhN8d8a3gQFpEe0mu1WKaOLZjvCPsnt60zGNwt62C4yp5Yyb8Kpk8IR
+         tqvMOYUH6WNq1Eb97oaJ1SAGayzg9Sw2wRGVdaS6zLTU9y4wrpwXHuU5IR3NGF8SG5
+         ScflNvtOuq3Rw7o0q/Flwqf1kaxoPknVMMI+AFKOmT4u2qIdhNZXU6pL8kLLdZPDSb
+         hWufMt9mInN3DMIbNS5+uzge+JlZOAifYLgZSP2NQHBMU/FpGJkMdu1HbI0Z5My0Q3
+         NEl7oBPrCNWqQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0A830F03934;
+        Sat, 14 May 2022 00:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4809b134-a37a-50b8-4c25-44548bc1048f@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] net: macb: Increment rx bd head after allocating skb and
+ buffer
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165248761203.19970.11604393560078071280.git-patchwork-notify@kernel.org>
+Date:   Sat, 14 May 2022 00:20:12 +0000
+References: <20220512171900.32593-1-harini.katakam@xilinx.com>
+In-Reply-To: <20220512171900.32593-1-harini.katakam@xilinx.com>
+To:     Harini Katakam <harini.katakam@xilinx.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        claudiu.beznea@microchip.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
+        radhey.shyam.pandey@xilinx.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 05:09:11PM -0700, John Hubbard wrote:
-> On 5/13/22 16:54, Minchan Kim wrote:
-> > > > I isolated this to Minchan Kim's "mm: fix is_pinnable_page against on cma
-> > > > page".  Yes, the fat finger fix is in next-20220513.
-> > > > 
-> > > > I don't have time to analyze right now, but can confirm that in the
-> > > > reproducer is_pinnable_page is returning false after this change when it
-> > > > previously returned true.
-> > > 
-> > > OK, thanks, I dropped mm-fix-is_pinnable_page-against-on-cma-page.patch
-> > 
-> > Seems like bug of the patch v5 due to change of this
-> > 
-> >      if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
-> > 
-> > The migration type is not bit type so it shold be
-> > 
-> > if (mt == MIGRATE_CMA || mt == MIGRATE_ISOLATE)
-> > 
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 12 May 2022 22:49:00 +0530 you wrote:
+> In gem_rx_refill rx_prepared_head is incremented at the beginning of
+> the while loop preparing the skb and data buffers. If the skb or data
+> buffer allocation fails, this BD will be unusable BDs until the head
+> loops back to the same BD (and obviously buffer allocation succeeds).
+> In the unlikely event that there's a string of allocation failures,
+> there will be an equal number of unusable BDs and an inconsistent RX
+> BD chain. Hence increment the head at the end of the while loop to be
+> clean.
 > 
-> Sorry for leading you astray by recommending the bitwise OR, Minchan.
-> I overlooked that point even though it was right in front of me.
+> [...]
 
-No worry, John.
+Here is the summary with links:
+  - [v2] net: macb: Increment rx bd head after allocating skb and buffer
+    https://git.kernel.org/netdev/net/c/9500acc631db
 
-Anything else further can we get insight from the warning?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-For example, pin_user_pages going on against a hugetlb page
-which are concurrently running alloc_contig_range(it's
-exported function so anyone can call randomly) so
-alloc_contig_range changes pageblock type as MIGRATE_ISOLATE
-under us so the hit at the warning?
+
