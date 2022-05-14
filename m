@@ -2,162 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230216AbiENC6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33176 "EHLO
+        id S231429AbiENC6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231440AbiENC5K (ORCPT
+        with ESMTP id S230229AbiENC52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:57:10 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F6F2E5D02
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:42:30 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VD5LTZy_1652492545;
-Received: from 30.236.14.33(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VD5LTZy_1652492545)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 14 May 2022 09:42:26 +0800
-Message-ID: <b7b5fa19-1611-f357-e313-5ea4b82218a2@linux.alibaba.com>
-Date:   Sat, 14 May 2022 09:43:03 +0800
+        Fri, 13 May 2022 22:57:28 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8A53A253C
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652492836; x=1684028836;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=h9H5Br/N5inR8hBGkTrWQLfQT0kDOku9gguSP1OEsxA=;
+  b=IhVnR980ayc/Cr3b86axBshi7VWW/0hqvbekTAC4ICQRhwKg7U8cU147
+   27iViuIGAAjj7zeg+ZJsjaiwXgD1CtcQKrNUC208V8pTp6oJks8HqdWfU
+   4/8siVttweixv+lwpTwKWSrIHXo+b+hWLfMu1bg0RKx+P5Y0XVOVxvDgx
+   9Abw7QmFAeSdMTdNb1bKRmZ4JWifNegRU9oo/uR3u6gHkXyzkVgnuDq/7
+   4oZB3+9EJBTP0Ud46hnhh3Z+KhUyEbmPG1tYjVjYCwYhunTyw6BApQ7RL
+   Ols79Ak6rFzOY8QmTHPaXvU0SLKWl7Zzjx/wqhxfFfnYq8THCLOjcmp9Z
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="258005813"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="258005813"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 18:47:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="712630839"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:47:09 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ning Sun <ning.sun@intel.com>
+Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 7/7] iommu/vt-d: Move include/linux/intel_iommu.h under iommu
+Date:   Sat, 14 May 2022 09:43:22 +0800
+Message-Id: <20220514014322.2927339-8-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
+References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 2/2] arm64/hugetlb: Implement arm64 specific
- huge_ptep_get()
-To:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        catalin.marinas@arm.com, will@kernel.org
-Cc:     mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        songmuchun@bytedance.com, willy@infradead.org,
-        christophe.leroy@csgroup.eu, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <cover.1652411252.git.baolin.wang@linux.alibaba.com>
- <de60e44dc6fa7991889320a7dfc9ee7ea38f01d8.1652411252.git.baolin.wang@linux.alibaba.com>
- <15c2d16e-4071-677b-5ca5-3b66e6af59d5@arm.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <15c2d16e-4071-677b-5ca5-3b66e6af59d5@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This header file is private to the Intel IOMMU driver. Move it to the
+driver folder.
 
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ include/linux/intel-iommu.h => drivers/iommu/intel/iommu.h | 0
+ drivers/iommu/intel/trace.h                                | 3 ++-
+ drivers/iommu/intel/cap_audit.c                            | 2 +-
+ drivers/iommu/intel/debugfs.c                              | 2 +-
+ drivers/iommu/intel/dmar.c                                 | 2 +-
+ drivers/iommu/intel/iommu.c                                | 2 +-
+ drivers/iommu/intel/irq_remapping.c                        | 2 +-
+ drivers/iommu/intel/pasid.c                                | 2 +-
+ drivers/iommu/intel/perf.c                                 | 2 +-
+ drivers/iommu/intel/svm.c                                  | 2 +-
+ MAINTAINERS                                                | 1 -
+ 11 files changed, 10 insertions(+), 10 deletions(-)
+ rename include/linux/intel-iommu.h => drivers/iommu/intel/iommu.h (100%)
 
-在 5/13/2022 7:03 PM, Anshuman Khandual 写道:
-> 
-> 
-> On 5/13/22 09:07, Baolin Wang wrote:
->> Now we use huge_ptep_get() to get the pte value of a hugetlb page,
->> however it will only return one specific pte value for the CONT-PTE
->> or CONT-PMD size hugetlb on ARM64 system, which can contain seravel
-> 
-> A small nit.
-> 
-> s/seravel/several
+diff --git a/include/linux/intel-iommu.h b/drivers/iommu/intel/iommu.h
+similarity index 100%
+rename from include/linux/intel-iommu.h
+rename to drivers/iommu/intel/iommu.h
+diff --git a/drivers/iommu/intel/trace.h b/drivers/iommu/intel/trace.h
+index 25cb7f88e1a2..93d96f93a89b 100644
+--- a/drivers/iommu/intel/trace.h
++++ b/drivers/iommu/intel/trace.h
+@@ -13,7 +13,8 @@
+ #define _TRACE_INTEL_IOMMU_H
+ 
+ #include <linux/tracepoint.h>
+-#include <linux/intel-iommu.h>
++
++#include "iommu.h"
+ 
+ #define MSG_MAX		256
+ 
+diff --git a/drivers/iommu/intel/cap_audit.c b/drivers/iommu/intel/cap_audit.c
+index 71596fc62822..3ee68393122f 100644
+--- a/drivers/iommu/intel/cap_audit.c
++++ b/drivers/iommu/intel/cap_audit.c
+@@ -10,7 +10,7 @@
+ 
+ #define pr_fmt(fmt)	"DMAR: " fmt
+ 
+-#include <linux/intel-iommu.h>
++#include "iommu.h"
+ #include "cap_audit.h"
+ 
+ static u64 intel_iommu_cap_sanity;
+diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+index ed796eea4581..d927ef10641b 100644
+--- a/drivers/iommu/intel/debugfs.c
++++ b/drivers/iommu/intel/debugfs.c
+@@ -10,11 +10,11 @@
+ 
+ #include <linux/debugfs.h>
+ #include <linux/dmar.h>
+-#include <linux/intel-iommu.h>
+ #include <linux/pci.h>
+ 
+ #include <asm/irq_remapping.h>
+ 
++#include "iommu.h"
+ #include "pasid.h"
+ #include "perf.h"
+ 
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index b02d72097a8c..059af0ef2a9d 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -19,7 +19,6 @@
+ #include <linux/pci.h>
+ #include <linux/dmar.h>
+ #include <linux/iova.h>
+-#include <linux/intel-iommu.h>
+ #include <linux/timer.h>
+ #include <linux/irq.h>
+ #include <linux/interrupt.h>
+@@ -32,6 +31,7 @@
+ #include <asm/irq_remapping.h>
+ #include <asm/iommu_table.h>
+ 
++#include "iommu.h"
+ #include "../irq_remapping.h"
+ #include "perf.h"
+ #include "trace.h"
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index ea1c3bcd38d5..1af4b6562266 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -17,7 +17,6 @@
+ #include <linux/dma-direct.h>
+ #include <linux/dma-iommu.h>
+ #include <linux/dmi.h>
+-#include <linux/intel-iommu.h>
+ #include <linux/intel-svm.h>
+ #include <linux/memory.h>
+ #include <linux/pci.h>
+@@ -26,6 +25,7 @@
+ #include <linux/syscore_ops.h>
+ #include <linux/tboot.h>
+ 
++#include "iommu.h"
+ #include "../irq_remapping.h"
+ #include "../iommu-sva-lib.h"
+ #include "pasid.h"
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index a67319597884..2e9683e970f8 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -10,7 +10,6 @@
+ #include <linux/hpet.h>
+ #include <linux/pci.h>
+ #include <linux/irq.h>
+-#include <linux/intel-iommu.h>
+ #include <linux/acpi.h>
+ #include <linux/irqdomain.h>
+ #include <linux/crash_dump.h>
+@@ -21,6 +20,7 @@
+ #include <asm/irq_remapping.h>
+ #include <asm/pci-direct.h>
+ 
++#include "iommu.h"
+ #include "../irq_remapping.h"
+ #include "cap_audit.h"
+ 
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index cb4c1d0cf25c..b2ac5869286f 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -12,13 +12,13 @@
+ #include <linux/bitops.h>
+ #include <linux/cpufeature.h>
+ #include <linux/dmar.h>
+-#include <linux/intel-iommu.h>
+ #include <linux/iommu.h>
+ #include <linux/memory.h>
+ #include <linux/pci.h>
+ #include <linux/pci-ats.h>
+ #include <linux/spinlock.h>
+ 
++#include "iommu.h"
+ #include "pasid.h"
+ 
+ /*
+diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
+index 0e8e03252d92..94ee70ac38e3 100644
+--- a/drivers/iommu/intel/perf.c
++++ b/drivers/iommu/intel/perf.c
+@@ -9,8 +9,8 @@
+  */
+ 
+ #include <linux/spinlock.h>
+-#include <linux/intel-iommu.h>
+ 
++#include "iommu.h"
+ #include "perf.h"
+ 
+ static DEFINE_SPINLOCK(latency_lock);
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 70b40d007a52..580713aa9e07 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -5,7 +5,6 @@
+  * Authors: David Woodhouse <dwmw2@infradead.org>
+  */
+ 
+-#include <linux/intel-iommu.h>
+ #include <linux/mmu_notifier.h>
+ #include <linux/sched.h>
+ #include <linux/sched/mm.h>
+@@ -22,6 +21,7 @@
+ #include <asm/page.h>
+ #include <asm/fpu/api.h>
+ 
++#include "iommu.h"
+ #include "pasid.h"
+ #include "perf.h"
+ #include "../iommu-sva-lib.h"
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a2095c832d84..81458c7f9a32 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9870,7 +9870,6 @@ L:	iommu@lists.linux-foundation.org
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ F:	drivers/iommu/intel/
+-F:	include/linux/intel-iommu.h
+ F:	include/linux/intel-svm.h
+ 
+ INTEL IOP-ADMA DMA DRIVER
+-- 
+2.25.1
 
-Will fix.
-
-> 
->> continuous pte or pmd entries with same page table attributes. And it
->> will not take into account the subpages' dirty or young bits of a
->> CONT-PTE/PMD size hugetlb page.
->>
->> So the huge_ptep_get() is inconsistent with huge_ptep_get_and_clear(),
->> which already takes account the dirty or young bits for any subpages
->> in this CONT-PTE/PMD size hugetlb [1]. Meanwhile we can miss dirty or
->> young flags statistics for hugetlb pages with current huge_ptep_get(),
->> such as the gather_hugetlb_stats() function, and CONT-PTE/PMD hugetlb
->> monitoring with DAMON.
->>
->> Thus define an ARM64 specific  huge_ptep_get() implementation, that will
->> take into account any subpages' dirty or young bits for CONT-PTE/PMD size
->> hugetlb page, for those functions that want to check the dirty and young
->> flags of a hugetlb page.
->>
->> [1] https://lore.kernel.org/linux-mm/85bd80b4-b4fd-0d3f-a2e5-149559f2f387@oracle.com/
-> 
-> Might be worth mentioning that arm64 now enables __HAVE_ARCH_HUGE_PTEP_GET.
-
-Sure.
-
-> 
->>
->> Suggested-by: Muchun Song <songmuchun@bytedance.com>
->> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
->> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
->> ---
->>   arch/arm64/include/asm/hugetlb.h |  2 ++
->>   arch/arm64/mm/hugetlbpage.c      | 24 ++++++++++++++++++++++++
->>   2 files changed, 26 insertions(+)
->>
->> diff --git a/arch/arm64/include/asm/hugetlb.h b/arch/arm64/include/asm/hugetlb.h
->> index 616b2ca..1fd2846 100644
->> --- a/arch/arm64/include/asm/hugetlb.h
->> +++ b/arch/arm64/include/asm/hugetlb.h
->> @@ -44,6 +44,8 @@ extern pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
->>   #define __HAVE_ARCH_HUGE_PTE_CLEAR
->>   extern void huge_pte_clear(struct mm_struct *mm, unsigned long addr,
->>   			   pte_t *ptep, unsigned long sz);
->> +#define __HAVE_ARCH_HUGE_PTEP_GET
->> +extern pte_t huge_ptep_get(pte_t *ptep);
->>   extern void set_huge_swap_pte_at(struct mm_struct *mm, unsigned long addr,
->>   				 pte_t *ptep, pte_t pte, unsigned long sz);
->>   #define set_huge_swap_pte_at set_huge_swap_pte_at
->> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
->> index 9553851..9a3f7f1 100644
->> --- a/arch/arm64/mm/hugetlbpage.c
->> +++ b/arch/arm64/mm/hugetlbpage.c
->> @@ -158,6 +158,30 @@ static inline int num_contig_ptes(unsigned long size, size_t *pgsize)
->>   	return contig_ptes;
->>   }
->>   
->> +pte_t huge_ptep_get(pte_t *ptep)
->> +{
->> +	int ncontig, i;
->> +	size_t pgsize;
->> +	pte_t orig_pte = ptep_get(ptep);
->> +
->> +	if (!pte_present(orig_pte) || !pte_cont(orig_pte))
->> +		return orig_pte;
->> +
->> +	ncontig = num_contig_ptes(page_size(pte_page(orig_pte)), &pgsize);
-> 
-> Hmm, I guess there is no better way of deriving page size here.
-> 
-> Please drop the extra line here.
-
-OK.
-
-> 
->> +
->> +	for (i = 0; i < ncontig; i++, ptep++) {
->> +		pte_t pte = ptep_get(ptep);
->> +
->> +		if (pte_dirty(pte))
->> +			orig_pte = pte_mkdirty(orig_pte);
->> +
->> +		if (pte_young(pte))
->> +			orig_pte = pte_mkyoung(orig_pte);
->> +	}
-> 
-> Please drop the extra line here.
-
-Sure.
-
-> 
->> +
->> +	return orig_pte;
->> +}
->> +
->>   /*
->>    * Changing some bits of contiguous entries requires us to follow a
->>    * Break-Before-Make approach, breaking the whole contiguous set
-> Otherwise LGTM.
-> 
-> With those small changes accommodated,
-> 
-> Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-
-Thanks for reviewing.
