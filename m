@@ -2,94 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD18C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 13:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AB8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 13:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbiENNjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 09:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
+        id S232706AbiENNkM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 09:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231604AbiENNjS (ORCPT
+        with ESMTP id S231604AbiENNkJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 09:39:18 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C119B22517
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 06:39:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652535557; x=1684071557;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=a/OR87Rlz7aYbpCSqhHPGyG96MB/HtXdaFY/pzAVgbM=;
-  b=bR9tbS0M7plH3VfsHtE8Ez/Y5HKECMM/V1je2rtyEX/4KZCJptS8ovJ8
-   WRtvRjeHbUCFiBRo646ZBxatXtNRQTy3ms1ie223zTR1UGmkeH1c6gwRN
-   +z825btzgVc1xSEKcqyADIt6o6kfZlYbQWWRak/0PfskJwtSd3b4nllbN
-   jf5/1Kcorc9dmfK4v4ETFf5iXz9+aIARECbY40AvrzGD9yN0dRlLNVPdf
-   SJ/yexwaTHyXvkusPcjDrq05Ub5xiXhkpuWacG2C9eHS31oqDJy+FO0Hx
-   ptJk7NV5+aOx1n8sngVP5Qm0OFAiwREpg6acOyr0W+p9JGvANN6kmKCQj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10347"; a="295770711"
-X-IronPort-AV: E=Sophos;i="5.91,226,1647327600"; 
-   d="scan'208";a="295770711"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2022 06:39:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,226,1647327600"; 
-   d="scan'208";a="543656169"
-Received: from lkp-server01.sh.intel.com (HELO d1462bc4b09b) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 14 May 2022 06:39:15 -0700
-Received: from kbuild by d1462bc4b09b with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nprzG-0000gz-Hk;
-        Sat, 14 May 2022 13:39:14 +0000
-Date:   Sat, 14 May 2022 21:39:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nick Terrell <terrelln@fb.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: ERROR: modpost: "__ld_r13_to_r19_ret" [lib/zstd/zstd_decompress.ko]
- undefined!
-Message-ID: <202205142119.1yKSvG50-lkp@intel.com>
+        Sat, 14 May 2022 09:40:09 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5581C22517
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 06:40:08 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id k14-20020a0566022a4e00b0065ae0c238aeso6850245iov.1
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 06:40:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=INdvROdDh/6zEjEhZ8TMAIUkIHaBkIrSGppOJMwXt/k=;
+        b=jNCTbMzbw8pWqwxI+jZPsBTGaJq57ebgv8oNqBL0xwVsE0tNgaWC1E9qT7cr3pmIsU
+         cR8fNsroIphLzHgII24WtgiiLxY3zRv2hxoMOeKgFJ6RyEFYJEWJ06cT7epz/mJFv+tc
+         BybhX2S8Bi/y+viu7Jf3+QkZFuJZ4VNDNchGK10hpj6J9jCDg2YeoG56InO9vUEVhDw4
+         LrzoGe6GJ9hzob+5JifJVwxgGCmySRz0WL30DbMs/jCwg8ZkDaWgj8DN/N6LvuaViXOF
+         t3C+sm4jG0F12F0Zi+blnFt69hQQoeqJVPf1QK283fwmQBZngLyxhuauZUBYai25S4cr
+         rjOA==
+X-Gm-Message-State: AOAM530uJuygDyVWbWb7VvpELZLFD8HdjJRUDb7mUH6MiGvkemUl8igA
+        iXsFPY6Jai2sBhb3mgaqVJoOt5epRH+T/OS8iP0AzThUVG10
+X-Google-Smtp-Source: ABdhPJxL4EnCKoIrzsJYoSv4QnUHHbWGupM9x+McF0L0ELkiNhzxiJRLyyLf4Bjim/s0gcJVxJWF4AAmhI+kJD2lkuOUwiCwmHhu
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Received: by 2002:a92:c7ce:0:b0:2cd:5ffd:9f5e with SMTP id
+ g14-20020a92c7ce000000b002cd5ffd9f5emr5113471ilk.34.1652535607775; Sat, 14
+ May 2022 06:40:07 -0700 (PDT)
+Date:   Sat, 14 May 2022 06:40:07 -0700
+In-Reply-To: <20220514132858.1322-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e15b2705def8ed12@google.com>
+Subject: Re: [syzbot] WARNING in mntput_no_expire (3)
+From:   syzbot <syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ec7f49619d8ee13e108740c82f942cd401b989e9
-commit: 7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8 lib: zstd: Don't add -O3 to cflags
-date:   6 months ago
-config: arc-randconfig-r015-20220512 (https://download.01.org/0day-ci/archive/20220514/202205142119.1yKSvG50-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+Hello,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+WARNING in mntput_no_expire
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 4205 at fs/namespace.c:1226 mntput_no_expire+0x979/0xfe0 fs/namespace.c:1226
+Modules linked in:
+CPU: 1 PID: 4205 Comm: syz-executor.2 Not tainted 5.18.0-rc6-syzkaller-00009-gfeb9c5e19e91-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:mntput_no_expire+0x979/0xfe0 fs/namespace.c:1226
+Code: 04 00 00 48 8b 35 ef 77 dd 0b b9 01 00 00 00 bf 08 00 00 00 48 c7 c2 60 fe f0 8b e8 21 e1 71 ff e9 01 f9 ff ff e8 17 93 9d ff <0f> 0b e9 b6 f8 ff ff e8 0b 93 9d ff 0f 0b e9 aa f8 ff ff e8 ff 92
+RSP: 0018:ffffc9000374fd78 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88802467bb00 RSI: ffffffff81dbadc9 RDI: 0000000000000003
+RBP: 0000000000000008 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff81dba668 R11: 0000000000000000 R12: 0000000000000002
+R13: ffff888079fad500 R14: dffffc0000000000 R15: ffffed100f3f5aaa
+FS:  0000555556994400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005555572e8848 CR3: 000000006a5f1000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ mntput+0x67/0x90 fs/namespace.c:1289
+ __fput+0x3ba/0x9d0 fs/file_table.c:333
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
+ exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:294
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f3c1a63bd2b
+Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
+RSP: 002b:00007ffd7174ab10 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: 00007f3c1a63bd2b
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000003
+RBP: 00007f3c1a79d960 R08: 0000000000000000 R09: 00007ffd71751080
+R10: 0000000000000000 R11: 0000000000000293 R12: 00000000000142ec
+R13: 00007ffd7174ac10 R14: 00007ffd7174ac30 R15: 0000000000000032
+ </TASK>
 
-ERROR: modpost: "__st_r13_to_r18" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__ld_r13_to_r18_ret" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__ld_r13_to_r24_ret" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__st_r13_to_r23" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__st_r13_to_r19" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__st_r13_to_r21" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__ld_r13_to_r17_ret" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__st_r13_to_r24" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__ld_r13_to_r19_ret" [lib/zstd/zstd_decompress.ko] undefined!
-ERROR: modpost: "__ld_r13_to_r21_ret" [lib/zstd/zstd_decompress.ko] undefined!
-WARNING: modpost: suppressed 2 unresolved symbol warnings because there were too many)
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Tested on:
+
+commit:         feb9c5e1 Merge tag 'for_linus' of git://git.kernel.org..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=124eef66f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=79caa0035f59d385
+dashboard link: https://syzkaller.appspot.com/bug?extid=5b1e53987f858500ec00
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=123ae715f00000
+
