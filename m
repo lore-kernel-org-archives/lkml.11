@@ -2,97 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6684C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 03:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4778C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 03:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbiENDAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 23:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
+        id S231538AbiENDAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 23:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231548AbiENC70 (ORCPT
+        with ESMTP id S231477AbiENC6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:59:26 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BA1389B30;
-        Fri, 13 May 2022 18:22:25 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id 3so6892985ily.2;
-        Fri, 13 May 2022 18:22:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=67GP168P+hN/ssTeYEMLrtAfHM65J+cVfzRzQLLyya8=;
-        b=eszRmVdCzSebdghf0JbUqiCSHp1Yx/0f1hYR2Kw1QzBnVjRhZfpX/o5gxbOSyld0yq
-         SWqiuszl2XyX2axPP6WPhhDS0pqwfwg3sogffqfHTKT7luNfmTeosynWJWV+wZ6Cu8ng
-         fW5CfYtVvjVugAOMzNq5PfMvXWMQY9NEWvEYjBEiCPokFWhOA3wcYPcI+yE4pQr7NvgU
-         WTd6Z0mYqdD34/6hGsaRam/CBW8FRvoSnuo60qsWkkSWNSGnqkgnoN9S532wDLhABTtr
-         PwCIIaPewN5f7LNqZ/kmWoyCSEqzPxKNLH/VstNnbhUahkM61sddWwRuyA+LsgLQJdXn
-         5VzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=67GP168P+hN/ssTeYEMLrtAfHM65J+cVfzRzQLLyya8=;
-        b=cFgaSeP9QXjB+mfl8SzyhaWjAQU2qE8uWh63LHZWKb3VCNkgzL3MGEYAP0qSmifY48
-         Wtf7nTt68Y0SdUrpmEEwXBUpR/G86A44CY5bqRh7vAFrkdLiSMq73NtQAo+OhfzmZqvJ
-         k3PRQgMipFPxJq1yaQKELS+Mjh4gVE5rsdEQ0Am17AomokN17ZZuzeFTZTkoh3ofoymn
-         xw8QhqGm5t/+nbYbTZk0oorL5/gA4UmAZE+7luya/2/it7JwCNZk4y9HUtCHR5YBH/aO
-         Lm/crrO77YZLhyQ7FfPI0zeKPa1U7Q8zrjBbNygPGTFcgJJ8tA3g0kbMh+xZmtFyj/hz
-         E+fg==
-X-Gm-Message-State: AOAM531nVcmHm6qnUq+z3OPqsUcJL2SfwuLalTi5LxoL9n+Niv+Ll0va
-        1UykV3abuhk6jZQFFqkDYevLM421mvs=
-X-Google-Smtp-Source: ABdhPJzqqWSNPJV15eq1Iqxa8q0UYnaWDJC1IQR0sGesXJRBWEXfZYlg0xjkbQhvp2iMFtfdHa0jNQ==
-X-Received: by 2002:a05:6a02:105:b0:381:fd01:330f with SMTP id bg5-20020a056a02010500b00381fd01330fmr5791393pgb.483.1652487049545;
-        Fri, 13 May 2022 17:10:49 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id t5-20020a62d145000000b0050dc7628143sm2294159pfl.29.2022.05.13.17.10.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 17:10:48 -0700 (PDT)
-Message-ID: <5f27e87b-78e9-68c0-d776-e3bc3a54561c@gmail.com>
-Date:   Fri, 13 May 2022 17:10:46 -0700
+        Fri, 13 May 2022 22:58:49 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E452E434B
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:41:33 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VD5SDVr_1652492488;
+Received: from 30.236.14.33(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VD5SDVr_1652492488)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 14 May 2022 09:41:29 +0800
+Message-ID: <30e805ba-cf4d-c13c-8d34-e1b2d9e77dae@linux.alibaba.com>
+Date:   Sat, 14 May 2022 09:42:06 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 4.9 0/7] 4.9.314-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220513142225.909697091@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220513142225.909697091@linuxfoundation.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 1/2] arm64/hugetlb: Use ptep_get() to get the pte value
+ of a huge page
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        catalin.marinas@arm.com, will@kernel.org
+Cc:     mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        songmuchun@bytedance.com, willy@infradead.org,
+        christophe.leroy@csgroup.eu, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <cover.1652411252.git.baolin.wang@linux.alibaba.com>
+ <d3d60680508486ecb48ae639cfd3911009275710.1652411252.git.baolin.wang@linux.alibaba.com>
+ <88e02de3-c87e-2728-d980-da0e70a58102@arm.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <88e02de3-c87e-2728-d980-da0e70a58102@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/13/22 07:23, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.9.314 release.
-> There are 7 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.314-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+On 5/13/2022 6:50 PM, Anshuman Khandual wrote:
+> 
+> 
+> On 5/13/22 09:07, Baolin Wang wrote:
+>> The original huge_ptep_get() on ARM64 is just a wrapper of ptep_get(),
+> 
+> Right, as arm64 does not enable __HAVE_ARCH_HUGE_PTEP_GET.
+> 
+>> which will not take into account any contig-PTEs dirty and access bits.
+> 
+> As expected being operating on a single table entry.
+> 
+>> Meanwhile we will implement a new ARM64-specific huge_ptep_get()
+>> interface in following patch, which will take into account any contig-PTEs
+>> dirty and access bits. To keep the same efficient logics to get the pte
+> 
+> s/logics/logic
+
+Will fix.
+
+> 
+>> value, change to use ptep_get() as a preparation.
+>>
+>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> 
+> LGTM
+> 
+> Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+
+Thanks.
