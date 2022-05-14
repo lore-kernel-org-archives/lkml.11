@@ -2,96 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70335C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB637C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232884AbiENOBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 10:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60446 "EHLO
+        id S232883AbiENOEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 10:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232521AbiENOBh (ORCPT
+        with ESMTP id S232521AbiENOEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 10:01:37 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECEB62F0;
-        Sat, 14 May 2022 07:01:36 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-e93bbb54f9so13910757fac.12;
-        Sat, 14 May 2022 07:01:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AlHDlcHjNYXzX3RkcBnNlMLpBpY4z86D8OUXp3n1KLE=;
-        b=Uedh5j0NhdygtpwIZrBjg1nnAh2Mr8wUBIOTj1eU4y/C8SbrwBEny0GfFqYvWNfSsH
-         0039LsEf2z6lHZzu/cVFICOZCle9dLejbCesRVJfzIVNTB4FfqYT9ANj4ROzFE4EHMhD
-         itq945oVoRHh6PRPdeVDDDoI0MLO0oHgR7zfdiMri0M89RH180lyzp0RTej0Q8zJwmHs
-         Mb1DhZOC4eYRpL1aYICdAtH0mGIS5nhv8CJWezRsAkwytcAbW8TnfN50IG4y9zurEvyM
-         FNwKuANUoHY+xX+5XgDxQfuBD7hUou6/xaNklhGWEGnWHFZsykVa2KldPPwFO4IozG4o
-         XgfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=AlHDlcHjNYXzX3RkcBnNlMLpBpY4z86D8OUXp3n1KLE=;
-        b=P+MuoNHCBwHUwZQo/Tzan/64MM/Ib+8UcGVKzt2XZnfGBAwL/mCpzA36inqUSoZt8B
-         GrM/MQftMXyna8LDs+FtbUC4Ip7RJpQ24ZB3Yes8PDlLfu/XzIrEFV42P3GvZY56K9Dz
-         jZYmcmLGWewiBY1QYlbndPFDCjXtiPSlzCDUonr0xTSjrVgiY5gtmlmVTEyLeDEn/7AA
-         m5zIl4mYVzv/zxBc+qJ8UrrLowLUUhSeX9qYCT95JTpv+B+mVlgBYYEWyVWn+2jrWZb7
-         9y4VpWDJww9H9zeIzGvI9gWvTRX9ycBrD4rr/d+djq7ukYjy7ODIfcDn4C+jqpRTbALg
-         byKw==
-X-Gm-Message-State: AOAM530Xv3UPZwA2ppvS9giOKGME2eMpXqzilG2PhOd+wfqJEM/TPlMy
-        i96N/xnske/+DOhsy2RaegjvVmmNJnxC3A==
-X-Google-Smtp-Source: ABdhPJxwhLRAaMOyRm+KV6BkHe5KGTx5InvmsQOf4eCj4jzC2wASt9WlMHMh0+ZJtf9jvIg1bR9j3Q==
-X-Received: by 2002:a05:6870:34a:b0:f1:7200:5bed with SMTP id n10-20020a056870034a00b000f172005bedmr2003941oaf.288.1652536896125;
-        Sat, 14 May 2022 07:01:36 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 35-20020a9d0da6000000b0060603221263sm2162670ots.51.2022.05.14.07.01.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 May 2022 07:01:35 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sat, 14 May 2022 07:01:34 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: watchdog: Add SC8180X and SC8280XP
- compatibles
-Message-ID: <20220514140134.GA1276720@roeck-us.net>
-References: <20220408212854.581481-1-bjorn.andersson@linaro.org>
+        Sat, 14 May 2022 10:04:21 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C1A13FB4
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 07:04:20 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652537058;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KHOIys2lUf5zRjBsSOUOWEZGDpRLn7fWHLTsPdw7f4U=;
+        b=LHg9QKXYPrV5G6DpjGAQUj+qfPDVnxCZetHDBfVfH+LeqCXHlJAbKb8WllnreP7S3bNkfN
+        4KeQuJ7ASL57SIcHW5e0/ESjXmm27lFLndKPfS7ueia9+AnyVBizDI/I8cVvjyBodAV73C
+        KuR6VX1IdjUZkcx7JJgKy1PXR652V3bzFUHb8gWx45QdbM32XdC1pSbLSU5kSVZNHK9CnN
+        sYrvtcF6hGd4esjm7UwZp0Jjc3XOn+pTPW63vJAVYDRvjZI2qtcicolrLDuGi3y01KBsGF
+        OHVzd6Qv0y0sYGOnTDmWoNHy2dKwZHGvbkDMdo4G48fllgMyGiB+2V0HQQZJAA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652537058;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KHOIys2lUf5zRjBsSOUOWEZGDpRLn7fWHLTsPdw7f4U=;
+        b=Wccmxkq4ead+q0uv0ac7dDXkCM4gzRqejs0vLHNPNyx0+CzSuVgKfK7pCPPycJh8YJUxj4
+        LicVDTm3UgM/NtDA==
+To:     Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 22/29] x86/watchdog/hardlockup: Add an HPET-based
+ hardlockup detector
+In-Reply-To: <20220513221650.GA8691@ranerica-svr.sc.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-23-ricardo.neri-calderon@linux.intel.com>
+ <877d6uref8.ffs@tglx> <20220513221650.GA8691@ranerica-svr.sc.intel.com>
+Date:   Sat, 14 May 2022 16:04:17 +0200
+Message-ID: <875ym8rz1a.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408212854.581481-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 02:28:54PM -0700, Bjorn Andersson wrote:
-> Add compatibles for the SC8180X and SC8280XP platforms to the Qualcomm
-> watchdog binding.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On Fri, May 13 2022 at 15:16, Ricardo Neri wrote:
+> On Mon, May 09, 2022 at 04:03:39PM +0200, Thomas Gleixner wrote:
+>> > +			/* If we are here, IPI shorthands are enabled. */
+>> > +			apic->send_IPI_allbutself(NMI_VECTOR);
+>> 
+>> So if the monitored cpumask is a subset of online CPUs, which is the
+>> case when isolation features are enabled, then you still send NMIs to
+>> those isolated CPUs. I'm sure the isolation folks will be enthused.
+>
+> Yes, I acknowledged this limitation in the cover letter. I should also update
+> Documentation/admin-guide/lockup-watchdogs.rst.
+>
+> This patchset proposes the HPET NMI watchdog as an opt-in feature.
+>
+> Perhaps the limitation might be mitigated by adding a check for non-housekeeping
+> and non-monitored CPUs in exc_nmi(). However, that will not eliminate the
+> problem of isolated CPUs also getting the NMI.
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-
-> ---
->  Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> index 16c6f82a13ca..cdb09a2d244d 100644
-> --- a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> @@ -18,6 +18,8 @@ properties:
->        - qcom,apss-wdt-qcs404
->        - qcom,apss-wdt-sc7180
->        - qcom,apss-wdt-sc7280
-> +      - qcom,apss-wdt-sc8180x
-> +      - qcom,apss-wdt-sc8280xp
->        - qcom,apss-wdt-sdm845
->        - qcom,apss-wdt-sdx55
->        - qcom,apss-wdt-sm6350
+Right. It's a mess...
