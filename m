@@ -2,142 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D02AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 15:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C01C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 15:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234018AbiENPne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 11:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57730 "EHLO
+        id S234034AbiENPom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 11:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231569AbiENPnb (ORCPT
+        with ESMTP id S231569AbiENPoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 11:43:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE8CFD3B;
-        Sat, 14 May 2022 08:43:27 -0700 (PDT)
-Date:   Sat, 14 May 2022 15:43:23 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652543004;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ey17U1j0ae8/OyAMJAQzay89E2ztl5A31+9DlKk5bco=;
-        b=CIeAwenoIwr/d1cIyIdo73ERP3kVhpvHIMLliwD1g1zByIo6kFBSpiQ4WhLzGRCp7R28P9
-        /MDOw8KPHacs1Y5eIPDi91hYgv4sdhiHAa7D4f9qpsltqvpM+B3PF5kgTLNg+/itPGWMgu
-        C5cL3NXR3zvWZLnsjvQ33LWO/HAAHcptQdt7NqRiPLG4OV6XoSHsJvKbKxBshWCaqegwoQ
-        z/8eowUx4ubp5gbSts6H3ubrywzLfTehcCwNfc4uAACKENC64og/FaCm+Przdg9FvKafsb
-        IzmqR8NyZ4u116qdkP8Rv65APbN51IP2FFeDQSTbi48ZbckpvslS0ZgK1U2E/A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652543004;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ey17U1j0ae8/OyAMJAQzay89E2ztl5A31+9DlKk5bco=;
-        b=IKADpQYF7V8E3ak/V7wH/egrb1SxQ3IsvClJDqEiL4wR5CDlW1q/3lntF5cc7Pomd+4bA/
-        2EN+r4jysTGXXFDw==
-From:   "tip-bot2 for Stephen Boyd" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] timers: Provide a better debugobjects hint for
- delayed works
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <swboyd@chromium.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220511201951.42408-1-swboyd@chromium.org>
-References: <20220511201951.42408-1-swboyd@chromium.org>
+        Sat, 14 May 2022 11:44:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D72BFC5;
+        Sat, 14 May 2022 08:44:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4E3960FDF;
+        Sat, 14 May 2022 15:44:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7AF1C340EE;
+        Sat, 14 May 2022 15:44:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652543076;
+        bh=mv7fBW28LBGQjB6TNE8qE4Q+PHMJWnlAXHOAlsOBxTA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eXDIqw7HUdccXhBDLlUkU/FepEM2ogrz6qKGSgzjLWwIVZJohm5OmR8eo46hvCrK+
+         PDEf0q1Q8/0dqExDB7LZk0eCrHu2vEDUDVGE0uhGtgCGqs6AYj5wiSjDTd4/kEOJ30
+         uP8Tzqy7n4+5p2nBkpOIWP08Ml8g6OCEQI0dHcx148Ea21NGm1zlwRIN0uFg6R/Pao
+         k5PZ1Ai4oMTv2TlsIdmgGUy0z3OteoqDV+aS+lXrExXuIs51q8S/SsOXn287J+1brE
+         xxMkqI9XRqyAnh+JfuiapPrEd2NkbQ/5Tk+BufxeDnRF6ejvxczZdzH+x53wPbvYcZ
+         JYxLfNVsUfTqA==
+Date:   Sat, 14 May 2022 16:53:09 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
+        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 05/22] iio: replace bitmap_weight with
+ bitmap_weitght_{eq,le} where appropriate
+Message-ID: <20220514165309.7445c767@jic23-huawei>
+In-Reply-To: <20220510154750.212913-6-yury.norov@gmail.com>
+References: <20220510154750.212913-1-yury.norov@gmail.com>
+        <20220510154750.212913-6-yury.norov@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Message-ID: <165254300323.4207.7727256341828519425.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the timers/core branch of tip:
+On Tue, 10 May 2022 08:47:33 -0700
+Yury Norov <yury.norov@gmail.com> wrote:
 
-Commit-ID:     317f29c14d0cca09952f1022491454b23455ebcb
-Gitweb:        https://git.kernel.org/tip/317f29c14d0cca09952f1022491454b23455ebcb
-Author:        Stephen Boyd <swboyd@chromium.org>
-AuthorDate:    Wed, 11 May 2022 13:19:51 -07:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Sat, 14 May 2022 17:40:36 +02:00
+> bitmap_weight_{eq,le} is better than bitmap_weight because it
+> may return earlier.
+> 
+> CC: Jonathan Cameron <jic23@kernel.org>
+> CC: Lars-Peter Clausen <lars@metafoo.de>
+> CC: Michael Hennerich <Michael.Hennerich@analog.com>
+> CC: linux-iio@vger.kernel.org
+> CC: linux-kernel@vger.kernel.org
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+without being cc'd on the cover letter, there is no obvious way for
+me to know this is reliant in some series to be found in next.
 
-timers: Provide a better debugobjects hint for delayed works
+Please call out the exact dependency and whilst it's a long list,
+it is good to cc all people cc'd on individual patches also
+on the cover letter so they have that background information.
 
-With debugobjects enabled the timer hint for freeing of active timers
-embedded inside delayed works is always the same, i.e. the hint is
-delayed_work_timer_fn, even though the function the delayed work is going
-to run can be wildly different depending on what work was queued.  Enabling
-workqueue debugobjects doesn't help either because the delayed work isn't
-considered active until it is actually queued to run on a workqueue. If the
-work is freed while the timer is pending the work isn't considered active
-so there is no information from workqueue debugobjects.
+Change seems fine, but I've no idea when/if to pick it up because of
+that lack of information.
 
-Special case delayed works in the timer debugobjects hint logic so that the
-delayed work function is returned instead of the delayed_work_timer_fn.
-This will help to understand which delayed work was pending that got
-freed.
+Jonathan
 
-Apply the same treatment for kthread_delayed_work because it follows the
-same pattern.
+> ---
+>  drivers/iio/adc/ad_sigma_delta.c  | 2 +-
+>  drivers/iio/industrialio-buffer.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+> index 261a9a6b45e1..6445b591f071 100644
+> --- a/drivers/iio/adc/ad_sigma_delta.c
+> +++ b/drivers/iio/adc/ad_sigma_delta.c
+> @@ -525,7 +525,7 @@ static bool ad_sd_validate_scan_mask(struct iio_dev *indio_dev, const unsigned l
+>  {
+>  	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+>  
+> -	return bitmap_weight(mask, indio_dev->masklength) <= sigma_delta->num_slots;
+> +	return bitmap_weight_le(mask, indio_dev->masklength, sigma_delta->num_slots);
+>  }
+>  
+>  static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index 06141ca27e1f..18d3d756aee1 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -1824,7 +1824,7 @@ void iio_buffers_free_sysfs_and_mask(struct iio_dev *indio_dev)
+>  bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
+>  	const unsigned long *mask)
+>  {
+> -	return bitmap_weight(mask, indio_dev->masklength) == 1;
+> +	return bitmap_weight_eq(mask, indio_dev->masklength, 1);
+>  }
+>  EXPORT_SYMBOL_GPL(iio_validate_scan_mask_onehot);
+>  
 
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20220511201951.42408-1-swboyd@chromium.org
----
- kernel/time/timer.c | 32 +++++++++++++++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index ef082d4..a0666d9 100644
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -638,9 +638,39 @@ static void internal_add_timer(struct timer_base *base, struct timer_list *timer
- 
- static const struct debug_obj_descr timer_debug_descr;
- 
-+struct timer_hint {
-+	void	(*function)(struct timer_list *t);
-+	long	offset;
-+};
-+
-+#define TIMER_HINT(fn, container, timr, hintfn)			\
-+	{							\
-+		.function = fn,					\
-+		.offset	  = offsetof(container, hintfn) -	\
-+			    offsetof(container, timr)		\
-+	}
-+
-+static const struct timer_hint timer_hints[] = {
-+	TIMER_HINT(delayed_work_timer_fn,
-+		   struct delayed_work, timer, work.func),
-+	TIMER_HINT(kthread_delayed_work_timer_fn,
-+		   struct kthread_delayed_work, timer, work.func),
-+};
-+
- static void *timer_debug_hint(void *addr)
- {
--	return ((struct timer_list *) addr)->function;
-+	struct timer_list *timer = addr;
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(timer_hints); i++) {
-+		if (timer_hints[i].function == timer->function) {
-+			void (**fn)(void) = addr + timer_hints[i].offset;
-+
-+			return *fn;
-+		}
-+	}
-+
-+	return timer->function;
- }
- 
- static bool timer_is_static_object(void *addr)
