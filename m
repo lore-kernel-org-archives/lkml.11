@@ -2,69 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D394DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A566EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231453AbiENC5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
+        id S230190AbiENC5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231325AbiENC4U (ORCPT
+        with ESMTP id S230319AbiENCzg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:56:20 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31712D9E93;
-        Fri, 13 May 2022 19:03:23 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24E23GDX027652
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 13 May 2022 22:03:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1652493798; bh=sFmzqkIeci57u6nHHwJ3RZ6bKRyy3u2QpbbxnT80U28=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=mxx6yK9tTGz/EXWRPSsD9y1HlsrJLehKhvLirg43Gz6E75bazb57jOSow2szOuxqj
-         vABckrFZbiAXiME0gNfco8F4hyWjrWQaddWm7oQxRux8XRq0Mu/oSJpoH+Yj3updeI
-         CZnp+vVMLZzOuNdYXlTuNVJc257Tct9VOyLrxNM8Vc7UonNsaCNP9PBLmlZIwPw1jV
-         icBu/0QCElbayJYzCoR0C4/q+/LvmgjqsUNlSlYR1s4cyeHXfQfjG2IsfJM6+FuT/Y
-         MMY2SsoKHdpikJITrxEiHdSd2zoScFwnJWSj4/U/HstAzHBLY1NZ0Lrwqpb4XzfgzV
-         8H3TWGRE1lpnA==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 441E615C3F2A; Fri, 13 May 2022 22:03:16 -0400 (EDT)
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Ojaswin Mujoo <ojaswin@linux.ibm.com>, linux-ext4@vger.kernel.org
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-fsdevel@vger.kernel.org,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ext4: Fix journal_ioprio mount option handling
-Date:   Fri, 13 May 2022 22:03:15 -0400
-Message-Id: <165249378801.644521.15436473858156116983.b4-ty@mit.edu>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220418083545.45778-1-ojaswin@linux.ibm.com>
-References: <20220418083545.45778-1-ojaswin@linux.ibm.com>
+        Fri, 13 May 2022 22:55:36 -0400
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3DF3427AA;
+        Fri, 13 May 2022 19:41:38 -0700 (PDT)
+Received: by mail-pj1-f47.google.com with SMTP id j10-20020a17090a94ca00b001dd2131159aso12424808pjw.0;
+        Fri, 13 May 2022 19:41:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ruNVL6DayK6ln7TndvoBaHbZun5aJyL13XuWbDCegG0=;
+        b=y06J1wAy8jNk0IoC+Se/QSI2nZbpb5LVap+m2F5xuPMCj0k4G5P4011SHfvN4zysWg
+         azug38qlND8sdDK97F0TZdvWAPXVsx24sukfNaIkBtUYtTEvl5JOHW48tomDhDdrruAn
+         Yi+XMvGalMAeKOEwh18SOi81d9L3wXXCIqZgKWwPw1vbStcCLQbwbJzMS+222+fF8W1A
+         ofWHUxXCMm8xop7w5pSAQF/p7IDa0522IWkye9GTVaSRoowbpxlk/b2GNFIHJaTxrvX4
+         2ZpXHdl1DXYgrtlpfDKPtC4nv/UoqK0nvN71ktXnH75rkxVVRJ1kSWVaI8wRcYraGfoD
+         mJTw==
+X-Gm-Message-State: AOAM533c3KKnR9zMPBvjzKXUNPnTTdD5+M5hUyx9gvVSUvrNBDHrNLiy
+        ataJTA8O/veL1b7zdjjXiJA=
+X-Google-Smtp-Source: ABdhPJyILAujfkR+f4aG7ZVSsJIkaeu+GmGudqvdunSorB2oGvvzIVNHRhdSPE1nLC9p3a+9IC14Iw==
+X-Received: by 2002:a17:90b:2311:b0:1d9:2e43:c7ae with SMTP id mt17-20020a17090b231100b001d92e43c7aemr18944133pjb.47.1652496098092;
+        Fri, 13 May 2022 19:41:38 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id c14-20020a170902848e00b0015e8da1f9e8sm2537827plo.77.2022.05.13.19.41.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 19:41:37 -0700 (PDT)
+Message-ID: <7e12e950-fece-845f-6784-d3e59480f810@acm.org>
+Date:   Fri, 13 May 2022 19:41:35 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH linux-next] scsi: target: cxgbit: replace ternary operator
+ with min()
+Content-Language: en-US
+To:     Guo Zhengkui <guozhengkui@vivo.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Varun Prakash <varun@chelsio.com>,
+        "open list:SCSI TARGET SUBSYSTEM" <linux-scsi@vger.kernel.org>,
+        "open list:SCSI TARGET SUBSYSTEM" <target-devel@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Cc:     zhengkui_guo@outlook.com
+References: <20220512133754.40849-1-guozhengkui@vivo.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220512133754.40849-1-guozhengkui@vivo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Apr 2022 14:05:45 +0530, Ojaswin Mujoo wrote:
-> In __ext4_super() we always overwrote the user specified journal_ioprio
-> value with a default value, expecting  parse_apply_sb_mount_options() to
-> later correctly set ctx->journal_ioprio to the user specified value.
-> However, if parse_apply_sb_mount_options() returned early because of
-> empty sbi->es_s->s_mount_opts, the correct journal_ioprio value was
-> never set.
-> 
-> [...]
+On 5/12/22 06:37, Guo Zhengkui wrote:
+> diff --git a/drivers/target/iscsi/cxgbit/cxgbit_cm.c b/drivers/target/iscsi/cxgbit/cxgbit_cm.c
+> index 3336d2b78bf7..6d9a13da6cb7 100644
+> --- a/drivers/target/iscsi/cxgbit/cxgbit_cm.c
+> +++ b/drivers/target/iscsi/cxgbit/cxgbit_cm.c
+> @@ -1008,7 +1008,7 @@ int cxgbit_ofld_send(struct cxgbit_device *cdev, struct sk_buff *skb)
+>   	ret = cxgb4_ofld_send(cdev->lldi.ports[0], skb);
+>   	if (ret < 0)
+>   		kfree_skb(skb);
+> -	return ret < 0 ? ret : 0;
+> +	return min(ret, 0);
+>   }
+>   
+>   static void cxgbit_release_tid(struct cxgbit_device *cdev, u32 tid)
+> @@ -1039,7 +1039,7 @@ cxgbit_l2t_send(struct cxgbit_device *cdev, struct sk_buff *skb,
+>   	ret = cxgb4_l2t_send(cdev->lldi.ports[0], skb, l2e);
+>   	if (ret < 0)
+>   		kfree_skb(skb);
+> -	return ret < 0 ? ret : 0;
+> +	return min(ret, 0);
+>   }
+>   
+>   static void cxgbit_send_rx_credits(struct cxgbit_sock *csk, struct sk_buff *skb)
 
-Applied, thanks!
+I prefer to keep the existing code since "return min(ret, 0)" is not how 
+humans write kernel code.
 
-[1/1] ext4: Fix journal_ioprio mount option handling
-      commit: 8d7b9890b5d18a593b7c7e10d23513340919b837
+Thanks,
 
-Best regards,
--- 
-Theodore Ts'o <tytso@mit.edu>
+Bart.
