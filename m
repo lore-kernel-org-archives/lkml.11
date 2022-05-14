@@ -2,139 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34697C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CB8C43217
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234075AbiENQAp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 12:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37020 "EHLO
+        id S234096AbiENQEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 12:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232414AbiENQAl (ORCPT
+        with ESMTP id S230453AbiENQEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 12:00:41 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E53D20BC2;
-        Sat, 14 May 2022 09:00:38 -0700 (PDT)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 10168100004;
-        Sat, 14 May 2022 16:00:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652544037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6WfQCozPKRIS1eb+8FwlePRl53vVrdYwrk9axraCIxo=;
-        b=clNGH9JTtIRzD2/SfSPVoov0gdu5f4sFNNETGJRfTv6e1IcJqsUtjcLg83+lAjgBff5wrt
-        J5OL+J8daN8O+zmvnRr7RoRvbjxKzdOpGdgqpab92qaRYblgdAux83+Fj+sfztm4Qq2flL
-        K3oDgdl5zW2yhfkkYNqPpaLlGZ7/+8w9Y7KaCJ4dxXgqqTataagF3UJqhMH9Yeoy/yiinW
-        OtC+zN10Y4c+znygsnmHPj7caAGMV1MaPBUj7ddkNt9leA+6og2HXF9OQQkcyMMN8GTXtz
-        8GS652moGqCMQDgrCkrTYKRi8ou1VK+SSZ9N+ZhP9UVVtzSkj9wsZB2uh4W2Xw==
-Date:   Sat, 14 May 2022 18:00:33 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Huacai Chen <chenhuacai@gmail.com>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH V10 16/22] LoongArch: Add misc common routines
-Message-ID: <Yn/SIVnQY+PdlggG@mail.local>
-References: <20220514080402.2650181-1-chenhuacai@loongson.cn>
- <20220514080402.2650181-17-chenhuacai@loongson.cn>
- <Yn+nAFCA/+Wm+rC/@mail.local>
- <CAAhV-H7_a4hUoDV+FLjf9PXuHjxRa8BokjCFAGFfirgAPfGuqw@mail.gmail.com>
+        Sat, 14 May 2022 12:04:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF4D2AC7B;
+        Sat, 14 May 2022 09:04:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80547B808C9;
+        Sat, 14 May 2022 16:04:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4299BC340EE;
+        Sat, 14 May 2022 16:04:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652544278;
+        bh=ahkhJryacQr7ULePw0qjg+sVbSF/2SBQ/b0sTtL5hKc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aoWMhXojLJv+afB8djzlOLgAZQLKrZ81hUWX6xvYGtmBRyWa3Nvj4lF0KFuhpbhI9
+         yeL04eD+01R3zSYoLLPL6yRS9xmbKihb+6LPr540g0Sq/NpNMDz3jeYGdVKcfymjs+
+         86OemoSG4NcAS++BPFSYGri2rYwRgFakEV8dFRJ7hkZ9Uxm3aiFGLxsTH6eNECJRRg
+         LVDawoo52+o3m4oCAlbdX0+a+Wd0CkJTBOXBlmko9Vtn4FjYDitHNZKRyexo8fCPFV
+         juwVvS8WgwAe6Y9aVQ91PWGYVm9qRrx449yR/ZfXSyIuMHSgeC0667jTMB7dES/4MZ
+         rEMuCoq8eOr+g==
+Date:   Sat, 14 May 2022 17:13:12 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     phone-devel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/7] iio: adc: qcom-spmi-adc5: Add missing
+ VCOIN/AMUX_THM3/GPIO# channels
+Message-ID: <20220514171312.227a1f07@jic23-huawei>
+In-Reply-To: <20220511220613.1015472-5-marijn.suijten@somainline.org>
+References: <20220511220613.1015472-1-marijn.suijten@somainline.org>
+        <20220511220613.1015472-5-marijn.suijten@somainline.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAhV-H7_a4hUoDV+FLjf9PXuHjxRa8BokjCFAGFfirgAPfGuqw@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/05/2022 22:12:37+0800, Huacai Chen wrote:
-> Hi, Alexandre,
+On Thu, 12 May 2022 00:06:10 +0200
+Marijn Suijten <marijn.suijten@somainline.org> wrote:
+
+> These channels are specified in downstream kernels [1] and actively used
+> by ie. the Sony Seine platform on the SM6125 SoC.
+
+Looking at the links, some of them are on that platform but not all.
+Better to make that explicit in this description.
+
 > 
-> On Sat, May 14, 2022 at 8:56 PM Alexandre Belloni
-> <alexandre.belloni@bootlin.com> wrote:
-> >
-> > Hi,
-> >
-> > On 14/05/2022 16:03:56+0800, Huacai Chen wrote:
-> > > diff --git a/arch/loongarch/kernel/rtc.c b/arch/loongarch/kernel/rtc.c
-> > > new file mode 100644
-> > > index 000000000000..d7568385219f
-> > > --- /dev/null
-> > > +++ b/arch/loongarch/kernel/rtc.c
-> > > @@ -0,0 +1,36 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/*
-> > > + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-> > > + */
-> > > +
-> > > +#include <linux/init.h>
-> > > +#include <linux/kernel.h>
-> > > +#include <linux/platform_device.h>
-> > > +#include <asm/loongson.h>
-> > > +
-> > > +#define RTC_TOYREAD0    0x2C
-> > > +#define RTC_YEAR        0x30
-> > > +
-> > > +unsigned long loongson_get_rtc_time(void)
-> > > +{
-> > > +     unsigned int year, mon, day, hour, min, sec;
-> > > +     unsigned int value;
-> > > +
-> > > +     value = ls7a_readl(LS7A_RTC_REG_BASE + RTC_TOYREAD0);
-> > > +     sec = (value >> 4) & 0x3f;
-> > > +     min = (value >> 10) & 0x3f;
-> > > +     hour = (value >> 16) & 0x1f;
-> > > +     day = (value >> 21) & 0x1f;
-> > > +     mon = (value >> 26) & 0x3f;
-> > > +     year = ls7a_readl(LS7A_RTC_REG_BASE + RTC_YEAR);
-> > > +
-> > > +     year = 1900 + year;
-> > > +
-> > > +     return mktime64(year, mon, day, hour, min, sec);
-> > > +}
-> > > +
-> > > +void read_persistent_clock64(struct timespec64 *ts)
-> > > +{
-> >
-> > This should rather be implemented in a proper rtc driver and then have
-> > userspace set the system time or use hctosys.
-> I found that some archs don't implement read_persistent_clock64(), so
-> I can safely remove the whole file if there is available rtc drivers?
+> [1]: https://source.codeaurora.org/quic/la/kernel/msm-4.14/tree/drivers/iio/adc/qcom-spmi-adc5.c?h=LA.UM.7.11.r1-05200-NICOBAR.0#n688
 > 
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 
-Yes, you can remove the whole file.
+I'm not keen on patches with no context being
+sent to mailing lists. Please cc all lists (and preferably individuals)
+on at least the cover letter so we can see overall discussion.
 
-> Huacai
-> >
-> > > +     ts->tv_sec = loongson_get_rtc_time();
-> > > +     ts->tv_nsec = 0;
-> > > +}
-> > > --
-> > > 2.27.0
-> > >
-> >
-> > --
-> > Alexandre Belloni, co-owner and COO, Bootlin
-> > Embedded Linux and Kernel engineering
-> > https://bootlin.com
+If nothing else, I've no idea if intent is that the patches go through different
+trees or all need to merge via one route.
 
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Patch itself looks fine,
+
+Jonathan
+
+
+> ---
+>  drivers/iio/adc/qcom-spmi-adc5.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+> index 87438d1e5c0b..69c7fd44d34c 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
+> @@ -526,6 +526,8 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
+>  					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
+>  					SCALE_HW_CALIB_DEFAULT)
+> +	[ADC5_VCOIN]		= ADC5_CHAN_VOLT("vcoin", 1,
+> +					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 0,
+>  					SCALE_HW_CALIB_PMIC_THERM)
+>  	[ADC5_USB_IN_I]		= ADC5_CHAN_VOLT("usb_in_i_uv", 0,
+> @@ -549,6 +551,16 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
+>  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+>  	[ADC5_AMUX_THM2]	= ADC5_CHAN_TEMP("amux_thm2", 0,
+>  					SCALE_HW_CALIB_PM5_SMB_TEMP)
+> +	[ADC5_AMUX_THM3]	= ADC5_CHAN_TEMP("amux_thm3", 0,
+> +					SCALE_HW_CALIB_PM5_SMB_TEMP)
+> +	[ADC5_GPIO1_100K_PU]	= ADC5_CHAN_TEMP("gpio1_100k_pu", 0,
+> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> +	[ADC5_GPIO2_100K_PU]	= ADC5_CHAN_TEMP("gpio2_100k_pu", 0,
+> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> +	[ADC5_GPIO3_100K_PU]	= ADC5_CHAN_TEMP("gpio3_100k_pu", 0,
+> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> +	[ADC5_GPIO4_100K_PU]	= ADC5_CHAN_TEMP("gpio4_100k_pu", 0,
+> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+>  };
+>  
+>  static const struct adc5_channels adc7_chans_pmic[ADC5_MAX_CHANNEL] = {
+
