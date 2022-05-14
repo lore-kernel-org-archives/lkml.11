@@ -2,176 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 347B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 08:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3818DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 08:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiENI0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 04:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        id S230100AbiENI2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 04:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbiENI02 (ORCPT
+        with ESMTP id S229678AbiENI2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 04:26:28 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6749A
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 01:26:26 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id m1so14076651wrb.8
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 01:26:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fGSNjX7FWQgS0zAf5uzD98exN773UqLJMyTQST6/uq8=;
-        b=kr+ZoQoZymx9R0c+QUc/iRMK7yM5RJMiYBaDp29vkbzqN7JsQvW7P8dRIHD0OC0Sgb
-         9h/gegiLUJbI2vnd3FLgX/zT8QIDEDZvJUA5QItCnKwonX2DhnCre7aNN6WHzCDzmyt9
-         I43ecBElIP+jlg58xhiDXPtcOBYbhytGBFnZvjsNIMRdASSJKRAZTUQGh0isW83j8WGg
-         Sgo3kHAinNsrc10w18UGp+2+V3MWOlL6bdQIvB21UOUXeuHPZi5B9FJke2Ga09IJAWOf
-         idRiJm/YgtYOTc9+JCdRb0RTl+6EiIAhcysqwgchztbk2NwBxnCWA8lFPS2WLVfqKrqn
-         2JqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fGSNjX7FWQgS0zAf5uzD98exN773UqLJMyTQST6/uq8=;
-        b=UFPACYg7fjHSeRPmGFPbUF8nQw+i+1ygQFqrTOiLNPKmdgreK40daZB6Q2siDJ9wby
-         p9nEKWwkWTHSuMjAaOMMLyV/giGraMTJKrqvApz57e03s7n4UBw0xDdCIkj9OGg8E/SO
-         ufkIgUwTIsVlKjZcd7vuH5eELzKlv/PwObyM2nmE968kkFTBzZ0AyX9ba77fVPANKdM4
-         kmFeadab8g2/MwX/P6X/c7b+cGz7nwRTb94IsDFYCg4TQOs6eY27xEKP3IrnAeE65qFO
-         xWtczhclSpM4nz26btHmUDjGgJUs5/6hxEoWO2mE4ns9L+/uvLMi7EVOBQhY6mikptiV
-         sriw==
-X-Gm-Message-State: AOAM532X3h1ZBNlaBqB8B91dihtGIyMk+iSx0Pc6TnE0MCAYm2Bu7p/R
-        jHUcnCKdYljrwI3S0TsNo2tp06SRFSZLXy9AebeSPw==
-X-Google-Smtp-Source: ABdhPJxd2yAOrMDx1kyKIycTBHNDuUPoF3izxQpqfG9Ebu0UFmB15wKbKgzL/O8DbbD6u5O1U1bgna6lzZ1eJnpLVQs=
-X-Received: by 2002:a5d:6651:0:b0:20a:df2f:8027 with SMTP id
- f17-20020a5d6651000000b0020adf2f8027mr6968835wrw.269.1652516785016; Sat, 14
- May 2022 01:26:25 -0700 (PDT)
+        Sat, 14 May 2022 04:28:51 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D68FCC
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 01:28:50 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L0dp60XY0zCsYk;
+        Sat, 14 May 2022 16:23:58 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 14 May 2022 16:28:48 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 14 May
+ 2022 16:28:48 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
+Subject: [PATCH -next] clocksource/drivers/timer-ti-dm: fix missing clk_disable_unprepare in dmtimer_systimer_init_clock()
+Date:   Sat, 14 May 2022 16:40:08 +0800
+Message-ID: <20220514084008.680446-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <bc6e9ed7-d98b-c4da-2a59-ee0915c18f10@gmail.com>
- <5ca35c47-6145-4ec1-6c05-3c46f436cb4d@gmail.com> <CAGS_qxpE9qGsS1LqaobVGFKFgV6TwvwNLR4e9PG5zsfPACSf_Q@mail.gmail.com>
- <5b2783a2-76bf-ce6f-89b1-d0fe05b80b82@gmail.com>
-In-Reply-To: <5b2783a2-76bf-ce6f-89b1-d0fe05b80b82@gmail.com>
-From:   David Gow <davidgow@google.com>
-Date:   Sat, 14 May 2022 16:26:13 +0800
-Message-ID: <CABVgOS=XcaheGrJ+n2DPUuE=MrJwDn5UWYcdQmfhZfHx2MDazg@mail.gmail.com>
-Subject: Re: [RFC] KTAP spec v2: prefix to KTAP data
-To:     Frank Rowand <frowand.list@gmail.com>
-Cc:     Daniel Latypov <dlatypov@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Bird, Tim" <Tim.Bird@sony.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Jonathan Corbet <corbet@lwn.net>, Rae Moar <rmr167@gmail.com>,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        kernelci@groups.io, KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 1:26 AM Frank Rowand <frowand.list@gmail.com> wrote:
->
-> On 5/12/22 10:25, Daniel Latypov wrote:
-> > On Wed, May 11, 2022 at 11:01 PM Frank Rowand <frowand.list@gmail.com> wrote:
-> >> ================================================================================
-> >> #### discussion notes:
-> >>
-> >> - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-> >> PRO: minimally invasive to specification.
-> >>
-> >> - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-> >> CON:
-> >>
-> >> KTAP does not include any mechanism to describe the value of <prefix string>
-> >> to test harnesses and test output processing programs.  The test output
-> >> processing programs must infer the value of <prefix string> by detecting
-> >> the <prefix string> in the "Version lines".
-> >>
-> >> The detection of a "Version lines" might be a match of the regex:
-> >>
-> >>    "^.*KTAP version 2$"
-> >>
-> >> This risks falsely detecting a "Version lines", but the risk is small???
-> >
-> > Agree this is a risk and also think it's probably small, but it's hard to say.
-> > I think the $ anchoring the regex is probably safe enough.
-> >
-> > As noted earlier, this tracks with what kunit.py already does.
-> > That was necessitated by dynamic prefixes such as timestamps, etc.f
->
-> That is a good observation.  I nearly always have the prefix timestamp
-> on my console output, and thus remove the timestamp with a regex when
-> processing the data.
->
+If clk_get_rate() fails, clk_disable_unprepare() need be called
+in error path.
 
-Yeah: the use of a prefix length for timestamps (and similar 'dynamic
-prefixes') works really well as a way to automatically find KTAP
-output in the kernel log.
-It's definitely less useful as a way of disambiguating several
-(potentially interleaved) KTAP streams, though.
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/clocksource/timer-ti-dm-systimer.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Personally, my conception of KTAP is that the prefix is not a part of
-the format, but a way (possibly one we should recommend in the spec)
-to isolate KTAP output from (e.g.) the kernel log.
-So, in theory, the processing pipeline for log -> result is:
-[dmesg] ---<remove prefix>--> [KTAP] ---<parse>---> [results]
+diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
+index 2737407ff069..632523c1232f 100644
+--- a/drivers/clocksource/timer-ti-dm-systimer.c
++++ b/drivers/clocksource/timer-ti-dm-systimer.c
+@@ -345,8 +345,10 @@ static int __init dmtimer_systimer_init_clock(struct dmtimer_systimer *t,
+ 		return error;
+ 
+ 	r = clk_get_rate(clock);
+-	if (!r)
++	if (!r) {
++		clk_disable_unprepare(clock);
+ 		return -ENODEV;
++	}
+ 
+ 	if (is_ick)
+ 		t->ick = clock;
+-- 
+2.25.1
 
-I wouldn't object to having the prefix be a part of KTAP if it were
-particularly useful to anyone, though, and definitely agree we should
-note ways to do it.
-
-Either way, we do end up with two (slightly conflicting) uses of prefixes:
-a) To isolate tests from a log.
-b) To allow multiple concurrent tests.
-
-For a), Alternative 1 seems obviously correct to me, since whatever
-module is being used might not know what random prefixes are being
-added to its log lines.
-For b), either would work, but we do potentially get conflicts with a)
-if we're trying to do both. So maybe alternative 2 makes sense for
-that.
-
->
-> > So I think this is probably a fine risk to take.
-> >
-> > I imagine we could add constraints of prefix string, e.g. must have []
-> > around it, etc. if we want to try and minimize this risk.
-> > But I don't know if it's necessarily worth it, given what we know right now.
-> >
-> > Along those lines, I think I like this approach (Alternative 1) more
-> > than Alternative 2/2b.
-
-I agree, though note that we might need both if we want two separate
-types of prefix as mentioned above.
-
-> > I'm not sure we need a structured way to specify metadata in KTAP yet?
-> > The prefix seems like a reasonable candidate, but do others have ideas
-> > of other bits of metadata we'd want to be able to declare?
-> >
-
-That's the important takeaway from Alternative 2: some generic way of
-having metadata could be quite handy. (Of them, Alternative 2b feels a
-little more like a hack than I'd prefer, albeit a clever one. I'd
-prefer a cleaner "configuration info line" personally, though if
-reusing the test results for test 0 makes parsing significantly easier
-for others, it may nevertheless be worth doing.)
-
-As for other pieces of metadata, there are all sorts of useful
-information about the test which could be useful to store alongside
-the results (what tool generated it, kernel version, etc), though
-those might be more useful when saving results elsewhere than embedded
-into the kernel output.
-
-Equally, if we extended these configuration/info lines to individual
-test/subtests, things like test size, originating module, etc could
-potentially be stored. Suite/test init functions could potentially add
-useful metadata, too (e.g., number of cores/threads for kcsan, etc).
-
-None of those are, I think, quite compelling enough individually to
-add a config system, though. If we already had one for the prefix, and
-other things which are necessary for parsing, maybe...
-
--- David
