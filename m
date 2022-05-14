@@ -2,122 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D80C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0859C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232835AbiENOA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 10:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
+        id S232874AbiENOBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 10:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232791AbiENOAv (ORCPT
+        with ESMTP id S230525AbiENOBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 10:00:51 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E8B13F32;
-        Sat, 14 May 2022 07:00:50 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id k25-20020a056830169900b00605f215e55dso6920332otr.13;
-        Sat, 14 May 2022 07:00:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=r5s+doHcYQWzsPeh1k8QMpiHwn1NutW4RM6Yb0cra0w=;
-        b=WonD9bik2i2LWjMSuw+kATdtO63CjkAXmXLKLK1WFKtqk2grZ5M/XKCyFfVHktQRQc
-         Cj/epoHbr402sgBhVuwUGg7/QQ9HatLD2I2oe52B8y6ETGoMUVHwv45lCncnopx/kEdJ
-         EmjCmjNbXLgCN9OK7qKhpFbofy75pObVsV5EVNoNokzKZukVf6EU4Xmqu2jG6LApJ0s1
-         SgoS/vyc5Yitf92vWOWduSNWtl8HdqopVBkY9PFfbEHlZZnLdoJTYbOzUqTa3cAN4iLj
-         OBHuvrgP4iz6c0KoO8ZAuTSX3lfdHTX1KDqCmIzw2S07yzmA0lEZIGfoCQgaIGPsBQmM
-         kvVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=r5s+doHcYQWzsPeh1k8QMpiHwn1NutW4RM6Yb0cra0w=;
-        b=4dcU2XkERB5QY/FBR3tY/v6wb8efKplG0a/h+MYt9Cp6/Wyddwdy7n6QToGr8V5iZB
-         FX/h/RensifWGj3VIFpfcnOlahmvmPTftcEjMylkqdrsYI0OIOCt5gvVdn3uVIu/Ymf5
-         V4DhSppeJRWQTzOgdv7rUHUYpXS1nsyF8g9QknmdK3uah7PlvZsInno3LsMzPeKJ6uPR
-         +ZyUq/tR7NId6ixe6Ulm8V7SYS8dTneClkSqUOmCJz+z2lVoQs8ctEn5DC1Lxfb9iO1I
-         qIxXUptpHC1YN1Q9kiLe1RdwqalPXunqUkAY+7V58Wb3uf7wRLzp3aLzJftSpHZ77D2H
-         RBrg==
-X-Gm-Message-State: AOAM531a7ip8tvYpXg3741gICsHSG3JsPZDMQo2aiBgSc8QliiAks9d1
-        n16fp/l8OE7+cQ8GpcwZpSpYVHd/ryFJ3w==
-X-Google-Smtp-Source: ABdhPJxY98kAGijVKg0vLPBl2mgcf5CmxD8ZncDkfFie3T/F7As56uNYEJjOprbFasvDcBiCNs/LcQ==
-X-Received: by 2002:a05:6830:1c65:b0:606:3cc:862 with SMTP id s5-20020a0568301c6500b0060603cc0862mr3434882otg.75.1652536848463;
-        Sat, 14 May 2022 07:00:48 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id r196-20020acaa8cd000000b00325cda1ffa5sm2066306oie.36.2022.05.14.07.00.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 May 2022 07:00:47 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sat, 14 May 2022 07:00:46 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Jan Kiszka <jan.kiszka@siemens.com>
-Cc:     Hari Nagalla <hnagalla@ti.com>, Nishanth Menon <nm@ti.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-watchdog@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] watchdog: rti_wdt: Fix calculation and evaluation of
- preset heartbeat
-Message-ID: <20220514140046.GA1244552@roeck-us.net>
-References: <6a4b54ac-9588-e172-c4c7-b91d524a851e@siemens.com>
+        Sat, 14 May 2022 10:01:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBD262F0;
+        Sat, 14 May 2022 07:01:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D9A960F0B;
+        Sat, 14 May 2022 14:01:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBF1DC34115;
+        Sat, 14 May 2022 14:01:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652536888;
+        bh=IjsexA4QKvKiPnu9VPIN+xBIIykcF8S/oKoPdCTOtAQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sTkGtUXt+E6IHCibIDVmnOG9XEawnYpMLshN1jntf+wWSbROPd4B8zEQ7ohtDzODb
+         1F1rTgq6+2XRckCzITs/LFHpMFCb19FzJdu9ZHBYl4QDYY8qjVAMm2l7CAtP876c08
+         Co2k5OyMK3Jr5luaUCs99MOxejU1bY0qHIFWa0barJpPPR6WhoPBIf0qAJ5lt7vLt1
+         kH0J8uVpJ/5olht2BAOc4768/4FXZ38TEeWwHYph3nZVTAXzfCaQ3m/V3T3h3xjDrd
+         Z5cPKH761JUAmbX76JTCRRk4zieyKSdLfm2BPtWsgV5OxrEqm7IYQSwYnyB5Ua2LpR
+         gRDdGqs/CCKdA==
+Date:   Sat, 14 May 2022 15:10:03 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
+        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH V6 3/5] iio: accel: sca3300: modified to support multi
+ chips
+Message-ID: <20220514151003.42fa5044@jic23-huawei>
+In-Reply-To: <20220513124135.1295822-4-Qing-wu.Li@leica-geosystems.com.cn>
+References: <20220513124135.1295822-1-Qing-wu.Li@leica-geosystems.com.cn>
+        <20220513124135.1295822-4-Qing-wu.Li@leica-geosystems.com.cn>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6a4b54ac-9588-e172-c4c7-b91d524a851e@siemens.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:22:38PM +0100, Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> This ensures that the same value is read back as was eventually
-> programmed when using seconds as accuracy. Even then, comparing the more
-> precise heartbeat_ms against heartbeat in seconds will almost never
-> provide a match and will needlessly raise a warning. Fix by comparing
-> apples to apples.
-> 
-> Tested in combination with U-Boot as watchdog starter.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+On Fri, 13 May 2022 12:41:33 +0000
+LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+> Prepare the way for multiple chips and additional channels:
+> - Modify the driver to read the device ID and load the corresponding
+>   sensor information from the table to support multiple chips
+> - Add prepares for the addition of extra channels
+> - Prepare for handling the operation modes for multiple chips
+> 
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+A few requests for additional comments inline where the handling
+is 'unusual' enough to be non obvious to figure out.
+
+Thanks,
+
+Jonathan
 
 > ---
+>  drivers/iio/accel/sca3300.c | 186 ++++++++++++++++++++++++++++--------
+>  1 file changed, 145 insertions(+), 41 deletions(-)
 > 
-> To fully work, it also needs a U-Boot patch to add the same 10% margin 
-> to the clock frequency:
-> 
-> https://patchwork.ozlabs.org/project/uboot/patch/9b3603a3-1bf4-eb57-c378-20d5c2accc34@siemens.com/
-> 
->  drivers/watchdog/rti_wdt.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/watchdog/rti_wdt.c b/drivers/watchdog/rti_wdt.c
-> index 117bc2a8eb0a..3ecd14e180fb 100644
-> --- a/drivers/watchdog/rti_wdt.c
-> +++ b/drivers/watchdog/rti_wdt.c
-> @@ -252,6 +252,7 @@ static int rti_wdt_probe(struct platform_device *pdev)
+> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
+> index ff16d2cc8c70..bc6e0213e4aa 100644
+> --- a/drivers/iio/accel/sca3300.c
+> +++ b/drivers/iio/accel/sca3300.c
+> @@ -93,15 +93,35 @@ static const struct iio_chan_spec sca3300_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+> -static const int sca3300_lp_freq[] = {70, 70, 70, 10};
+> -static const int sca3300_accel_scale[][2] = {{0, 370}, {0, 741}, {0, 185}, {0, 185}};
+> +static const int sca3300_lp_freq[] = {70, 10};
+> +static const int sca3300_lp_freq_map[] = {0, 0, 0, 1};
+>  
+> +static const int sca3300_accel_scale[][2] = {{0, 370}, {0, 741}, {0, 185}};
+> +static const int sca3300_accel_scale_map[] = {0, 1, 2, 2};
+> +
+> +static const int sca3300_avail_modes_map[] = {0, 1, 2, 3};
+>  static const unsigned long sca3300_scan_masks[] = {
+>  	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+>  	BIT(SCA3300_TEMP),
+>  	0
+>  };
+>  
+> +struct sca3300_chip_info {
+> +	const char *name;
+> +	const unsigned long *scan_masks;
+> +	const struct iio_chan_spec *channels;
+> +	u8 num_channels;
+> +	u8 num_accel_scales;
+> +	const int (*accel_scale)[2];
+> +	const int *accel_scale_map;
+> +	u8 num_freqs;
+> +	const int *freq_table;
+> +	const int *freq_map;
+> +	const int *avail_modes_table;
+> +	u8 num_avail_modes;
+> +	u8 chip_id;
+> +};
+> +
+>  /**
+>   * struct sca3300_data - device data
+>   * @spi: SPI device structure
+> @@ -117,10 +137,29 @@ struct sca3300_data {
+>  		s16 channels[4];
+>  		s64 ts __aligned(sizeof(s64));
+>  	} scan;
+> +	const struct sca3300_chip_info *chip;
+
+Needs documentation as struct sca3300_data has kernel doc.
+Also, move this above scan.  That way all the buffers used
+for various purposes will remain together.
+
+>  	u8 txbuf[4] ____cacheline_aligned;
+>  	u8 rxbuf[4];
+>  };
+>  
+> +static const struct sca3300_chip_info sca3300_chip_tbl[] = {
+> +	{
+> +		.name = "sca3300",
+> +		.scan_masks = sca3300_scan_masks,
+> +		.channels = sca3300_channels,
+> +		.num_channels = ARRAY_SIZE(sca3300_channels),
+> +		.num_accel_scales = ARRAY_SIZE(sca3300_accel_scale)*2,
+> +		.accel_scale = sca3300_accel_scale,
+> +		.accel_scale_map = sca3300_accel_scale_map,
+> +		.num_freqs = ARRAY_SIZE(sca3300_lp_freq),
+> +		.freq_table = sca3300_lp_freq,
+> +		.freq_map = sca3300_lp_freq_map,
+> +		.avail_modes_table = sca3300_avail_modes_map,
+> +		.num_avail_modes = 4,
+> +		.chip_id = SCA3300_WHOAMI_ID,
+> +	},
+> +};
+> +
+>  DECLARE_CRC8_TABLE(sca3300_crc_table);
+>  
+>  static int sca3300_transfer(struct sca3300_data *sca_data, int *val)
+> @@ -227,36 +266,80 @@ static int sca3300_write_reg(struct sca3300_data *sca_data, u8 reg, int val)
+>  	return sca3300_error_handler(sca_data);
+>  }
+>  
+> +static int sca3300_set_op_mode(struct sca3300_data *sca_data, int index)
+> +{
+> +	if ((index < 0) || (index >= sca_data->chip->num_avail_modes))
+> +		return -EINVAL;
+> +
+> +	return sca3300_write_reg(sca_data, SCA3300_REG_MODE,
+> +				 sca_data->chip->avail_modes_table[index]);
+> +}
+> +
+> +static int sca3300_get_op_mode(struct sca3300_data *sca_data, int *index)
+> +{
+> +	int reg_val;
+> +	int ret;
+> +	int i;
+> +
+> +	ret = sca3300_read_reg(sca_data, SCA3300_REG_MODE, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	reg_val &= GENMASK(1, 0);
+> +	for (i = 0; i < sca_data->chip->num_avail_modes; i++) {
+> +		if (sca_data->chip->avail_modes_table[i] == reg_val)
+> +			break;
+> +	}
+> +	if (i == sca_data->chip->num_avail_modes)
+> +		return -EINVAL;
+> +
+> +	*index = i;
+> +	return 0;
+> +}
+> +
+> +static int sca3300_set_frequency(struct sca3300_data *data, int val)
+> +{
+> +	const struct sca3300_chip_info *chip = data->chip;
+> +	unsigned int index;
+> +	unsigned int i;
+> +
+> +	if (sca3300_get_op_mode(data, &index))
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < chip->num_avail_modes; i++) {
+> +		if ((val == chip->freq_table[chip->freq_map[i]]) &&
+
+The conditions being checked here are far from obvious, so I think this would benefit
+from an explanatory comment.
+
+Something along the lines of,
+"Find a mode in which the requested sampling frequency is available
+ and the scaling currently set is retained".
+
+
+
+> +		    (chip->accel_scale[chip->accel_scale_map[index]] ==
+> +		     chip->accel_scale[chip->accel_scale_map[i]]))
+> +			break;
+> +	}
+> +	if (i == chip->num_avail_modes)
+> +		return -EINVAL;
+> +
+> +	return sca3300_set_op_mode(data, i);
+> +}
+> +
+>  static int sca3300_write_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int val, int val2, long mask)
+>  {
+>  	struct sca3300_data *data = iio_priv(indio_dev);
+> -	int reg_val;
+> -	int ret;
+> +	int index;
+>  	int i;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_SCALE:
+> -		if (val)
+> +		if (chan->type != IIO_ACCEL)
+>  			return -EINVAL;
+> -
+> -		for (i = 0; i < ARRAY_SIZE(sca3300_accel_scale); i++) {
+> -			if (val2 == sca3300_accel_scale[i][1])
+> -				return sca3300_write_reg(data, SCA3300_REG_MODE, i);
+> +		for (i = 0; i < data->chip->num_avail_modes; i++) {
+> +			index = data->chip->accel_scale_map[i];
+
+Also a comment here that we are letting scale take priority over
+sampling frequency. That makes sense given we can only ever end up increasing
+the sampling frequency which is unlikely to be a problem.
+
+> +			if ((val  == data->chip->accel_scale[index][0]) &&
+> +			    (val2 == data->chip->accel_scale[index][1])) {
+> +				return sca3300_set_op_mode(data, i);
+> +			}
+>  		}
+>  		return -EINVAL;
+> -
+>  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> -		ret = sca3300_read_reg(data, SCA3300_REG_MODE, &reg_val);
+> -		if (ret)
+> -			return ret;
+> -		/* freq. change is possible only for mode 3 and 4 */
+> -		if (reg_val == 2 && val == sca3300_lp_freq[3])
+> -			return sca3300_write_reg(data, SCA3300_REG_MODE, 3);
+> -		if (reg_val == 3 && val == sca3300_lp_freq[2])
+> -			return sca3300_write_reg(data, SCA3300_REG_MODE, 2);
+> -		return -EINVAL;
+> +		return sca3300_set_frequency(data, val);
+>  	default:
+>  		return -EINVAL;
 >  	}
->  
->  	if (readl(wdt->base + RTIDWDCTRL) == WDENABLE_KEY) {
-> +		int preset_heartbeat;
->  		u32 time_left_ms;
->  		u64 heartbeat_ms;
->  		u32 wsize;
-> @@ -262,11 +263,12 @@ static int rti_wdt_probe(struct platform_device *pdev)
->  		heartbeat_ms <<= WDT_PRELOAD_SHIFT;
->  		heartbeat_ms *= 1000;
->  		do_div(heartbeat_ms, wdt->freq);
-> -		if (heartbeat_ms != heartbeat * 1000)
-> +		preset_heartbeat = heartbeat_ms + 500;
-> +		preset_heartbeat /= 1000;
-> +		if (preset_heartbeat != heartbeat)
->  			dev_warn(dev, "watchdog already running, ignoring heartbeat config!\n");
->  
-> -		heartbeat = heartbeat_ms;
-> -		heartbeat /= 1000;
-> +		heartbeat = preset_heartbeat;
->  
->  		wsize = readl(wdt->base + RTIWWDSIZECTRL);
->  		ret = rti_wdt_setup_hw_hb(wdd, wsize);
