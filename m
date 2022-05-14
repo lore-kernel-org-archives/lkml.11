@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C31C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 13:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7067C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 13:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232729AbiENNkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 09:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
+        id S232871AbiENNln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 09:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232718AbiENNkU (ORCPT
+        with ESMTP id S232763AbiENNlP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 09:40:20 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BB623153
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 06:40:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652535618; x=1684071618;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ATOwkom89fRH40zG0QcAYWcTUk7vSqR49LMlHjMCims=;
-  b=GzGc8M/ZajOhvnAwBMYs+tu0QxypdwSKs8+LXYwVCgob8JOmV04CiYmr
-   ANzy0gC/KJ+dxzAsRcm7oBDaDp0DnIzD9YA+Cf64YFzy2Q8b5TOmVgHim
-   ihYB0WQ0vcA+s6Vo4jMeMnrRpgMQbM+8HX48dsU9T/nP0vJpfKOfGrHt2
-   BDTxT5gieQhUfOUCteHuqJkdwMhaBkj28s2xnzmHB96Tdgq+yegGICsvc
-   tW8XXp+PN1PeFVS6LWqvBWuWAuZt/F0TvacxIZpzDkkcZFWCamjKuWmOT
-   Q8WcDf+o+ggR4TUgCRHUv7UcmbbE8bX+WTG9Y4SCnAt3U7u8/6OeKnp0H
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10347"; a="258069513"
-X-IronPort-AV: E=Sophos;i="5.91,226,1647327600"; 
-   d="scan'208";a="258069513"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2022 06:40:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,226,1647327600"; 
-   d="scan'208";a="521793037"
-Received: from lkp-server01.sh.intel.com (HELO d1462bc4b09b) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 14 May 2022 06:40:15 -0700
-Received: from kbuild by d1462bc4b09b with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nps0E-0000h3-Ij;
-        Sat, 14 May 2022 13:40:14 +0000
-Date:   Sat, 14 May 2022 21:39:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [nsaenz-rpi:ct-work-defer-wip 24/25] arch/x86/mm/tlb.c:1010:12:
- error: use of undeclared identifier 'CONTEXT_WORK_TLBI'
-Message-ID: <202205142105.ZgamkxvX-lkp@intel.com>
+        Sat, 14 May 2022 09:41:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9337F1CFC0;
+        Sat, 14 May 2022 06:41:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA2DB60EFE;
+        Sat, 14 May 2022 13:41:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F34C340EE;
+        Sat, 14 May 2022 13:41:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652535670;
+        bh=cVPc8IxLVs5l5GfO+OTpaS1oTxpwAgb4hn1moAJyGJw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BfwymUFfcpF0xX+ohmRqugaY5uNQQiIsZhcVsOJ7srIDsHdnD/rk8mpyGUW/E1wXi
+         3TrLJ/fCFjf3cdl+MbCYrh/f8xzwGDOFtHgJ5l1dOHrFuy9CmLRkBrzDSAj4uW+Xgg
+         sjaGfYmQ86vC/gUZNZt9J9cATz9BYHxh+4cBxJDWrPGlpVEs3pH4JUHrTzt1VS2wv2
+         kkhdKxb+AGwamgHMI+27pNS6j8h28iF6OVC4FmAsPcqYXBtrfmzxBn/Pns+chQfdZF
+         KRz8NbEWGlaDJnTIZRzUpAIdMAEiocfuXRyM6jarMrVd5IUccNmR4acUf34C9GMxxs
+         I5BhqFLd8kTXA==
+Date:   Sat, 14 May 2022 14:49:44 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Michal Simek <michal.simek@xilinx.com>
+Cc:     <cgel.zte@gmail.com>, <lars@metafoo.de>,
+        <anand.ashok.dumbre@xilinx.com>, <manish.narani@xilinx.com>,
+        <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] iio: adc: fix return error variable
+Message-ID: <20220514144944.21709427@jic23-huawei>
+In-Reply-To: <c19cce8d-ca99-4993-435d-1a4e53543713@xilinx.com>
+References: <20220509072405.1118019-1-lv.ruyi@zte.com.cn>
+        <c19cce8d-ca99-4993-435d-1a4e53543713@xilinx.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/nsaenz/linux-rpi.git ct-work-defer-wip
-head:   ed63029652239a6befad96dd473b16332913f889
-commit: ac6fd7356ff9f2e0f040ef337d3eb731454ce49f [24/25] context_tracking,x86: Fix Kernel TLBi vs NOHZ_FULL
-config: i386-allnoconfig (https://download.01.org/0day-ci/archive/20220514/202205142105.ZgamkxvX-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 38189438b69ca27b4c6ce707c52dbd217583d046)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/nsaenz/linux-rpi.git/commit/?id=ac6fd7356ff9f2e0f040ef337d3eb731454ce49f
-        git remote add nsaenz-rpi https://git.kernel.org/pub/scm/linux/kernel/git/nsaenz/linux-rpi.git
-        git fetch --no-tags nsaenz-rpi ct-work-defer-wip
-        git checkout ac6fd7356ff9f2e0f040ef337d3eb731454ce49f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Mon, 9 May 2022 09:34:57 +0200
+Michal Simek <michal.simek@xilinx.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> On 5/9/22 09:24, cgel.zte@gmail.com wrote:
+> > From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-All errors (new ones prefixed by >>):
+Applied, with modified patch title.  There are a lot of ADC drivers
+so you should include the name of the driver in the patch description.
 
->> arch/x86/mm/tlb.c:1010:12: error: use of undeclared identifier 'CONTEXT_WORK_TLBI'
-                                                 CONTEXT_WORK_TLBI);
-                                                 ^
-   1 error generated.
---
->> arch/x86/mm/pat/set_memory.c:367:12: error: use of undeclared identifier 'CONTEXT_WORK_TLBI'
-                                                 CONTEXT_WORK_TLBI);
-                                                 ^
-   1 error generated.
+iio: adc: xilinx-ams: fix return error variable
+> > 
+> > Return irq instead of ret which always equals to zero here.
+> > 
+> > Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+> > Reported-by: Zeal Robot <zealci@zte.com.cn>
+> > Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+> > ---
+> >   drivers/iio/adc/xilinx-ams.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+> > index a55396c1f8b2..a7687706012d 100644
+> > --- a/drivers/iio/adc/xilinx-ams.c
+> > +++ b/drivers/iio/adc/xilinx-ams.c
+> > @@ -1409,7 +1409,7 @@ static int ams_probe(struct platform_device *pdev)
+> >   
+> >   	irq = platform_get_irq(pdev, 0);
+> >   	if (irq < 0)
+> > -		return ret;
+> > +		return irq;
+> >   
+> >   	ret = devm_request_irq(&pdev->dev, irq, &ams_irq, 0, "ams-irq",
+> >   			       indio_dev);  
+> 
+> Reviewed-by: Michal Simek <michal.simek@amd.com>
+> 
+> Thanks,
+> Michal
 
-
-vim +/CONTEXT_WORK_TLBI +1010 arch/x86/mm/tlb.c
-
-  1006	
-  1007	static bool do_kernel_flush_cond(int cpu, void *info)
-  1008	{
-  1009		return !context_tracking_set_cpu_work(cpu, CONTEXT_USER | CONTEXT_GUEST,
-> 1010						      CONTEXT_WORK_TLBI);
-  1011	}
-  1012	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
