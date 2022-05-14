@@ -2,132 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39112C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E496C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234099AbiENQGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 12:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
+        id S234105AbiENQHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 12:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbiENQGe (ORCPT
+        with ESMTP id S229965AbiENQHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 12:06:34 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2825E1EECB
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:06:32 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id CF39E5C00E7;
-        Sat, 14 May 2022 12:06:29 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 14 May 2022 12:06:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        invisiblethingslab.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:message-id:mime-version:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1652544389; x=1652630789; bh=dl1KQYoQor
-        7dFAFhpdtNa+47JnMIBmQHVAoY4PnaKqo=; b=WnlthM3QMFEj+Xq1OpWQEBjXhn
-        Zt9iXKJXoLPTs78znRUeUZuvpieT3yiMv+PxzvZm51zjeFyuFH3+ddcMkaRKXttE
-        keBOGVqhJDhH/jkpT9dWyOL5/B+PVdXYL065XT/xW/QzXYkPNFceXa6YoBqLn+UU
-        /NjBicpatJFwFsd22aozATMNCbRiIdzNXfR2joBb2sz+E8HAMC0AuYaDcKIdws5b
-        8m4Xj4cLXwJYEBjQPcr6W2T8eqWeapQx6YK+w1mvcAWLzLdOMgqAC4blFmobjTuo
-        HLQsEbfKHObprXjc8XoHqIegtoZt32Tq4gM9svo6Hx3DMqYBlro4I/bYtZZA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:message-id:mime-version:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1652544389; x=1652630789; bh=dl1KQYoQor7dF
-        AFhpdtNa+47JnMIBmQHVAoY4PnaKqo=; b=JFVIQTw60eGO61Ai9EOiGrGqPkes0
-        WzDU0eDlZK2DRQGqt/UZJg+hHrpIW59ZPU2XqAgKEyK4z3mOxfLTiovRQ5TLmiQW
-        1DD4LdLtSA4ki09d2uBqkBJxLhbb+lXrpr7IYdnRxtJcjTM+QNcvJDn2bwT+atkL
-        Kb39ege6Ta0USh0tZkSqPaB1YHIpG7QAWxrlirYrp0OJ/Z6iTgvhMLF22Djc1OrH
-        PO3pa67ygpqtdBzzE9blGGJ19ajMUfYOS161NGrxUEiJFuMdtink6SVUIc+1+zbb
-        /XBH5EnQF1pMigQnDb5CSC5GCBTWj98raQeSgqDiHItYoc1xpr/ZIxeUA==
-X-ME-Sender: <xms:hdN_Yg_jOMJvpHjDH4XrahOAe4g-5Tv-xUzVOBhdyxKyudaHxq4wAg>
-    <xme:hdN_YotDAmov4IBUnTsYLdzweccadZlwmCpCcMEoeDhFpDC4nn-usHF-xwRlrmPTi
-    gmTmimUeBrtiOg>
-X-ME-Received: <xmr:hdN_YmD8KfF0XYpRXnKAqBcNioNbR5ppKwgpJ9QoMLSxVAaBtunsuK83klSP>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrhedugdelhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfggtggusehgtderredttdejnecuhfhrohhmpeffvghmihcuofgr
-    rhhivgcuqfgsvghnohhurhcuoeguvghmihesihhnvhhishhisghlvghthhhinhhgshhlrg
-    gsrdgtohhmqeenucggtffrrghtthgvrhhnpeevieefgeeuhefhjedutdejuefhudetveeg
-    geeitddujeelteekgeeigedtteekgeenucffohhmrghinhepghhithhhuhgsrdgtohhmne
-    cuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepuggvmhhi
-    sehinhhvihhsihgslhgvthhhihhnghhslhgrsgdrtghomh
-X-ME-Proxy: <xmx:hdN_YgchApXzjgp4u1QsrCKUld8MY_ZwwfCkJrfInHQDBXXYamDn_A>
-    <xmx:hdN_YlMeTBzqXb54izPnzT8QH7o50dmBbgKmh09u0DxqiYlhxR_lPg>
-    <xmx:hdN_YqkXEt8EOyXWVRbzu1wvxogLY1pwP9kWbUhc_4sFzASS523e7g>
-    <xmx:hdN_YuaCb5j33xfz42cxAu5H1w4B-7JOB6c7hmO_kOJkgKw9BtVaQA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 14 May 2022 12:06:29 -0400 (EDT)
-Date:   Sat, 14 May 2022 11:55:39 -0400
-From:   Demi Marie Obenour <demi@invisiblethingslab.com>
-To:     Xen developer discussion <xen-devel@lists.xenproject.org>
-Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovski <boris.ostrovsky@oracle.com>,
-        Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, linux-kernel@vger.kernel.org
-Subject: Hang in 5.17.4+ that appears to be due to Xen
-Message-ID: <Yn/Tgj1Ehs/BdpHp@itl-email>
+        Sat, 14 May 2022 12:07:49 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6363E1EEDE
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:07:48 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id j2so20341872ybu.0
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:07:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=G0eVXpYcKIK/j+1zkeKD2oL9HRdqUSTcmLP8+WyBRnI=;
+        b=mitoN4cP0mKoaRMcv0pC3eEe5T4q/qafs9KxPyHMtuA6LYPQO94M+G/3Fa/F7ZHm+U
+         fb0418Hoe0L1b+P1B+L4Pak37aj0RkRppIBZREZMj3ydsRP9+QRjcY9Qkk8qGJ3KNFx3
+         bmFxHltw2ztm5gRVU+l3rn+GtmJXxTx+Jxp3fKGtkNxSMtZziMS1l4rtP8kOB4XniRJc
+         FgxktOyyjhHlbWqDt9torTmvDc1Y9W84drvWyaBf78pQ+8bfooFGvSz0bh5ihzwJ7KW3
+         acMG9hRK4HuQDWG5RAXho4+OVJscYD/yZ10mrnfcIQNx4ePwSzEhQO2pa7H0dCkMPF6B
+         oT7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=G0eVXpYcKIK/j+1zkeKD2oL9HRdqUSTcmLP8+WyBRnI=;
+        b=C0zbQeL5TcbarwVLkmP0ocicPuI8mNBfckJR5mflvspTek6Mp1D1mKu+5gcHal1c4W
+         Hvn09n2Ep+JaEINqN1azJPzZAfLZFCjlAuIXzc0N6S2/Rh/IYZIMmCBnBEuOwKUdGdou
+         32LJ+TNL1r1BIgo4m+5CIywKN1h3zqiSmY04WdLXIu4hxehd8VzUuH212tGsVKHGNgpv
+         i/LIkJwcKJQNkx4Xh5nbSWIGqlzlNm2avHrsy1DXkcThwqtj3aqcfqBOagajsQc3lqkl
+         7N5AoxZLj+OcqJZ/9NJTU0zHbZXwAcuDbS8twput0mVKgBVJy+7EwUWyQ9aHdMHaJrjg
+         H9eQ==
+X-Gm-Message-State: AOAM532UWhFMSJkVCeQUTRhI/l3wlftVPaEzPQYMn6GbjS4xaNN0vTG6
+        q9Z8juM+uH6EfO+5TK92n19EIOcJ/OJUJD3Ev/OkZwf2R/w=
+X-Google-Smtp-Source: ABdhPJyUtjvnYjzV22I3GFuVWb7pyCbaVQJl7iU8WoUjoa3cZ0nnQZyV/pbJmSDtNWnCL5ncOGZllksGRzmzFAXnLqY=
+X-Received: by 2002:a25:ab72:0:b0:64b:9be4:d8b9 with SMTP id
+ u105-20020a25ab72000000b0064b9be4d8b9mr7286471ybi.128.1652544467479; Sat, 14
+ May 2022 09:07:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="TNAwTdkDEjbbq6M1"
-Content-Disposition: inline
+References: <20220513142227.381154244@linuxfoundation.org>
+In-Reply-To: <20220513142227.381154244@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 14 May 2022 21:37:36 +0530
+Message-ID: <CA+G9fYsmH6P2TQuXH6WOH0mwY66QejAc15kS9v52m3cSTZvRaw@mail.gmail.com>
+Subject: Re: [PATCH 4.14 00/14] 4.14.279-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 13 May 2022 at 19:55, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.14.279 release.
+> There are 14 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.14.279-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.14.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
---TNAwTdkDEjbbq6M1
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Date: Sat, 14 May 2022 11:55:39 -0400
-From: Demi Marie Obenour <demi@invisiblethingslab.com>
-To: Xen developer discussion <xen-devel@lists.xenproject.org>
-Cc: Juergen Gross <jgross@suse.com>,
-	Boris Ostrovski <boris.ostrovsky@oracle.com>,
-	Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>,
-	linux-kernel@vger.kernel.org
-Subject: Hang in 5.17.4+ that appears to be due to Xen
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-In https://github.com/QubesOS/qubes-issues/issues/7481, a user reported
-that Xorg locked up when resizing a VM window.  While I do not have the
-same hardware the user does and thus cannot reproduce the bug, the stack
-trace seems to indicate a deadlock between xen_gntdev and i915.  It
-appears that gnttab_unmap_refs_sync() is waiting for i915 to free the
-pages, while i915 is waiting for the MMU notifier that called
-gnttab_unmap_refs_sync() to return.  Result: deadlock.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-The problem appears to be that a mapped grant in PV mode will stay in
-the =E2=80=9Cinvalidating=E2=80=9D state until it is freed.  While MMU noti=
-fiers are
-allowed to sleep, it appears that they cannot wait for the page to be
-freed, as is happening here.  That said, I am not very familiar with
-this code, so my diagnosis might be incorrect.
---=20
-Sincerely,
-Demi Marie Obenour (she/her/hers)
-Invisible Things Lab
+## Build
+* kernel: 4.14.279-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.14.y
+* git commit: 4477341b2b1996b745937de9d99ff53095c7a679
+* git describe: v4.14.278-15-g4477341b2b19
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.14.y/build/v4.14=
+.278-15-g4477341b2b19
 
---TNAwTdkDEjbbq6M1
-Content-Type: application/pgp-signature; name="signature.asc"
+## Test Regressions (compared to v4.14.278)
+No test regressions found.
 
------BEGIN PGP SIGNATURE-----
+## Metric Regressions (compared to v4.14.278)
+No metric regressions found.
 
-iQIzBAEBCAAdFiEEdodNnxM2uiJZBxxxsoi1X/+cIsEFAmJ/04MACgkQsoi1X/+c
-IsGi2hAArO7G1fAnno/7xTzDfqxcNnOEuHFwZcn55O1E0JJ6qjGj9Uc98Td3TAcw
-M2i9U0fDpAB3L9naiD86fZHTgbKhEHAJ3d8D7RzA8wLOCdYD5Swh2rib2smYgZHP
-7Lsl9IhcMhc0JkgwJ0Acr7qnA/2bar8uz3q4hX/aEiHJo+nD/PvrLnhXYNrfSUHK
-zP4ceuHJ2DYMBMEE66kdcolWYB2md5oOJXf1ff8MIiGAfxlaAqfBpCTInD6Fx060
-SM8JBnDkoDkp8lyMpoklyN0wwtParAdYpQ4au70NctQ0ImQtcEtx8YKQI1qkyCUy
-oXDX8LwVb4YNpu1/wtfKwM4M2q4zKqvPLRjGA2TVKPOv4fPBw2+3GyhmOPwQDn19
-LSbwnBo0mFb05bjQFKHf7sEhFmKZ63Gr2RlU+91tjVaquRQILd5CFW/0wCaNvDhq
-6+t28vOl/loFBoQo0OCXL1KMgKQjtPcj+Kd8OflFuOceuD+4L7KzZ2EpUHOTD+V5
-q+qchLFuJ9ic0Ohy+m4J1aU0t2Hjk5iyD//lrlA1iWhSM15F0PEPzRbeO02DT0Js
-bTKbIx62lTo5NHrB6AcHWYUsX9wN51+Kb7/ca/vNVD1gQJPgFaooNnNv2fK0z0ND
-jGcmREAkW9MAGOovIwBHEU68Ibr0bvwgf5jrcJWERKtOPQXVHs4=
-=i937
------END PGP SIGNATURE-----
+## Test Fixes (compared to v4.14.278)
+No test fixes found.
 
---TNAwTdkDEjbbq6M1--
+## Metric Fixes (compared to v4.14.278)
+No metric fixes found.
+
+## Test result summary
+total: 67829, pass: 54211, fail: 882, skip: 11056, xfail: 1680
+
+## Build Summary
+* arm: 270 total, 270 passed, 0 failed
+* arm64: 35 total, 35 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 19 total, 19 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 22 total, 22 passed, 0 failed
+* powerpc: 16 total, 16 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 34 total, 34 passed, 0 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
