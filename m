@@ -2,74 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17314C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F889C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233679AbiENO4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 10:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52208 "EHLO
+        id S233557AbiENO5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 10:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233619AbiENO4I (ORCPT
+        with ESMTP id S230264AbiENO5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 10:56:08 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A091F606
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 07:56:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ORKxu+U8dKVvnm4qsYa5tdS1vsCfhUpuKYTjDhWmKiE=; b=egm+lXQh8zTwtP5qgqsAZ14I9d
-        bh7lZpwYFpnD8WJ1UBsZMS9nDMuJ8AtSyBTcADsAfT/S31AbCekosFCmFQv1ZAp3K6GyfQjCOhkZa
-        H4a3mWObJM23KA7ruVxZJcmInrPD4xSgQLE3i/ciXa4jjmPw9DRIFDI6YjfWWFNf/4yx8j+vSLc/Y
-        hVkuJ7pScXFByoz9sBTPO4vXp4nmlLHbrcnc3FWkcMon9ejmoIMgiaeZ1SVJfWuSqDAAxiDycM6qQ
-        sK0YD5qPiKbEDC8vANprsKKbY6WIauEX2KE21CU/68b9IhUaLdRQnGU94IIlomgGkDAmf+C5sqOvM
-        QMsmkdCg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nptBR-000Nid-Ua; Sat, 14 May 2022 14:55:54 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 82D8A980DC4; Sat, 14 May 2022 16:55:51 +0200 (CEST)
-Date:   Sat, 14 May 2022 16:55:51 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [RFC PATCH v2 2/2] kbuild: call check-atomics.sh only if
- prerequisites change
-Message-ID: <20220514145551.GC100765@worktop.programming.kicks-ass.net>
-References: <20220426155229.436681-1-mailhol.vincent@wanadoo.fr>
- <20220507131146.834810-1-mailhol.vincent@wanadoo.fr>
- <20220507131146.834810-3-mailhol.vincent@wanadoo.fr>
- <CAK7LNATuvQhiZZ8A9+RcLYKmbugi6S61Aw5CStc3xbfGM-L34Q@mail.gmail.com>
- <20220514131448.GL76023@worktop.programming.kicks-ass.net>
+        Sat, 14 May 2022 10:57:01 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D8F2644;
+        Sat, 14 May 2022 07:56:59 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id z5-20020a9d62c5000000b00606041d11f1so7007078otk.2;
+        Sat, 14 May 2022 07:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wRNDH6PTPiAzerFSEmuZw4zFBMiXy2l+20ohpH1Ko84=;
+        b=WcgIxiECDnbFc6grOIO1BNxxCtTmG/eYEE7dIwLXcpmjU2LGD3tbpd64iiEkIEvs8h
+         i787v2Zqm+GayEzbOH3+hTDOw6N/KSJL4MoQO8CE3kBMM7YzhljmnflDhNpWISrUjsWq
+         Cq6/cea+9DwUbaV4nTITs77pmxEZ5Rp6YtgMmLQY3qcHPxg8KL9EBz8txETStd+ejzN/
+         Vgfs+ZvHRFyDRC+5Lt9JJkqTuI394J8gF8E/Y+MN2GE75ekiOmybmzVHVtMQPauwhVgT
+         A5uIJn4UhfdLLsMDq56wtz4Jr0nrA6dNcpcB5JMYkzVO66ZFfl+FkgCn1v/ANoE3+hLq
+         y6Rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=wRNDH6PTPiAzerFSEmuZw4zFBMiXy2l+20ohpH1Ko84=;
+        b=AZtsnoaAd5iFvWki6HStMkr9fZ6had6AzcPsmx1+u6Vcp7zLHRvjeOALc53jnFV4Q/
+         5I3MQBPzpT0AfEn3jhlMgqYh7Pn12Jzq/TxvPu9sHJ75mHXy1HyuGcHiSQvoO7hCCOvr
+         /4wOZPdGfYpjjECTaQiHbJN0Sc1PLCw7cbu0nWmtXPpDeuJMlLHUsus16qWAIrGs7jrs
+         2vuhpsDJwDZU6vUlbQOkreb/df7hEEjYdEBXcWINpt7o0cInFNd9LzIiwo+vsEcFnYxu
+         Jwf9MB+27SWOxIQnOQqwc5BuvGd7HwoMBCtR5smNvkWfJmTiiY+m091Hr+0KZJ/4WvR0
+         VvDg==
+X-Gm-Message-State: AOAM532JMums3KXAQ4HqZ6FA782YyqhPNPpGmNDumjnsx9kO45Ha4WEh
+        07ZGLDboHawa1foO1TznVGQ=
+X-Google-Smtp-Source: ABdhPJzZd50f63hXiJFmdfD5cwVoH2eTR9xA5Z2UrHAoASZOgBz/Uc1nxu1ZMesNWXRILfodn/q+FA==
+X-Received: by 2002:a9d:4f12:0:b0:605:e45f:a533 with SMTP id d18-20020a9d4f12000000b00605e45fa533mr3568010otl.293.1652540219311;
+        Sat, 14 May 2022 07:56:59 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id bi5-20020a056808188500b00325cda1ff96sm2321963oib.21.2022.05.14.07.56.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 May 2022 07:56:58 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Sat, 14 May 2022 07:56:57 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 00/10] 5.10.116-rc1 review
+Message-ID: <20220514145657.GE1322724@roeck-us.net>
+References: <20220513142228.303546319@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220514131448.GL76023@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220513142228.303546319@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 03:14:48PM +0200, Peter Zijlstra wrote:
-> On Sat, May 14, 2022 at 04:01:18AM +0900, Masahiro Yamada wrote:
-> > I wrote a different patch.
-> > https://lore.kernel.org/lkml/20220513185340.239753-1-masahiroy@kernel.org/T/#u
+On Fri, May 13, 2022 at 04:23:44PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.116 release.
+> There are 10 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> I'm not seeing that in my inbox :-(
+> Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
+> Anything received after that time might be too late.
 > 
-> AFAICT this way 'make tags' will not find and index the files, which is
-> a total no-go.
-> 
-> NAK
 
-Additionally, if you spuriously regenerate these files, you'll risk
-rebuilding huge parts of the kernel through the dependencies.
+Build results:
+	total: 161 pass: 161 fail: 0
+Qemu test results:
+	total: 477 pass: 477 fail: 0
+
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+
+Guenter
