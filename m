@@ -2,119 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B27A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61202C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbiENCyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
+        id S230087AbiENCzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230484AbiENCyk (ORCPT
+        with ESMTP id S230208AbiENCyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:54:40 -0400
-X-Greylist: delayed 5901 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 13 May 2022 18:11:27 PDT
-Received: from outgoing-stata.csail.mit.edu (outgoing-stata.csail.mit.edu [128.30.2.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6591E37B8CB
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:11:27 -0700 (PDT)
-Received: from [128.177.82.146] (helo=srivatsab-a02.vmware.com)
-        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:RSA_AES_128_CBC_SHA1:128)
-        (Exim 4.82)
-        (envelope-from <srivatsa@csail.mit.edu>)
-        id 1npemM-000Vex-0L; Fri, 13 May 2022 19:33:02 -0400
-To:     Elliot Berman <quic_eberman@quicinc.com>,
-        Juergen Gross <jgross@suse.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>,
-        virtualization@lists.linux-foundation.org, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Murali Nalajala <quic_mnalajal@quicinc.com>
-References: <20220513174654.362169-1-quic_eberman@quicinc.com>
-From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-Subject: Re: [PATCH v3] arm64: paravirt: Use RCU read locks to guard
- stolen_time
-Message-ID: <c24e405e-b5f9-d2f7-a629-1ee1beab3681@csail.mit.edu>
-Date:   Fri, 13 May 2022 16:32:53 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        Fri, 13 May 2022 22:54:32 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A8936C37F
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:04:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652490262; x=1684026262;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ULzszqX1AXkde7fpKYLu/jWGI0tajP0JKeZsmGZAFVA=;
+  b=e2UChilFKrZJq6Sg6enGIx+xV0fbQMvDseA5UwZ2GOr+0ZCqz3linDiU
+   2H/zfLsYQiwjfJfBIps3Rm+Yk4JGqqAreHaH6N9ME9F06+Gw2aK15evqT
+   RJzhg0Z97Dlcv/ZsldPUzmWRCo42HVBUx/QzNshsRRyF2ipXqeW2xA0Le
+   Xm/sssk7c/KtV2Cag4XrKCqnU7c4yEnWbXFNmc7SHf78QY3nuMGGg3z26
+   C1AHetv4YZIHAVyKpIC+m7Uhe9a81qQ4pzz8iCMLhMaGWy1FNh7w6ZFVl
+   icWnwRg9g7NX9gZqhiWr8tu7QfkcRRwWYaT9PE80n4Z53/u+hlu92l7yn
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="252494423"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="252494423"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 17:39:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="698716209"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 13 May 2022 17:39:26 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1npfoc-000MFy-5E;
+        Sat, 14 May 2022 00:39:26 +0000
+Date:   Sat, 14 May 2022 08:38:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/urgent] BUILD SUCCESS
+ 280abe14b6e0a38de9cc86fe6a019523aadd8f70
+Message-ID: <627efa18.fyCErxysS+KqcJOb%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-In-Reply-To: <20220513174654.362169-1-quic_eberman@quicinc.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/13/22 10:46 AM, Elliot Berman wrote:
-> From: Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>
-> 
-> During hotplug, the stolen time data structure is unmapped and memset.
-> There is a possibility of the timer IRQ being triggered before memset
-> and stolen time is getting updated as part of this timer IRQ handler. This
-> causes the below crash in timer handler -
-> 
->   [ 3457.473139][    C5] Unable to handle kernel paging request at virtual address ffffffc03df05148
->   ...
->   [ 3458.154398][    C5] Call trace:
->   [ 3458.157648][    C5]  para_steal_clock+0x30/0x50
->   [ 3458.162319][    C5]  irqtime_account_process_tick+0x30/0x194
->   [ 3458.168148][    C5]  account_process_tick+0x3c/0x280
->   [ 3458.173274][    C5]  update_process_times+0x5c/0xf4
->   [ 3458.178311][    C5]  tick_sched_timer+0x180/0x384
->   [ 3458.183164][    C5]  __run_hrtimer+0x160/0x57c
->   [ 3458.187744][    C5]  hrtimer_interrupt+0x258/0x684
->   [ 3458.192698][    C5]  arch_timer_handler_virt+0x5c/0xa0
->   [ 3458.198002][    C5]  handle_percpu_devid_irq+0xdc/0x414
->   [ 3458.203385][    C5]  handle_domain_irq+0xa8/0x168
->   [ 3458.208241][    C5]  gic_handle_irq.34493+0x54/0x244
->   [ 3458.213359][    C5]  call_on_irq_stack+0x40/0x70
->   [ 3458.218125][    C5]  do_interrupt_handler+0x60/0x9c
->   [ 3458.223156][    C5]  el1_interrupt+0x34/0x64
->   [ 3458.227560][    C5]  el1h_64_irq_handler+0x1c/0x2c
->   [ 3458.232503][    C5]  el1h_64_irq+0x7c/0x80
->   [ 3458.236736][    C5]  free_vmap_area_noflush+0x108/0x39c
->   [ 3458.242126][    C5]  remove_vm_area+0xbc/0x118
->   [ 3458.246714][    C5]  vm_remove_mappings+0x48/0x2a4
->   [ 3458.251656][    C5]  __vunmap+0x154/0x278
->   [ 3458.255796][    C5]  stolen_time_cpu_down_prepare+0xc0/0xd8
->   [ 3458.261542][    C5]  cpuhp_invoke_callback+0x248/0xc34
->   [ 3458.266842][    C5]  cpuhp_thread_fun+0x1c4/0x248
->   [ 3458.271696][    C5]  smpboot_thread_fn+0x1b0/0x400
->   [ 3458.276638][    C5]  kthread+0x17c/0x1e0
->   [ 3458.280691][    C5]  ret_from_fork+0x10/0x20
-> 
-> As a fix, introduce rcu lock to update stolen time structure.
-> 
-> Suggested-by: Will Deacon <will@kernel.org>
-> Signed-off-by: Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>
-> Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
-> ---
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
+branch HEAD: 280abe14b6e0a38de9cc86fe6a019523aadd8f70  x86/mm: Fix marking of unused sub-pmd ranges
 
-Looks good to me, but one quick question though (see below).
+elapsed time: 763m
 
-Reviewed-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+configs tested: 150
+configs skipped: 75
 
->  
->  static int stolen_time_cpu_down_prepare(unsigned int cpu)
->  {
-> +	struct pvclock_vcpu_stolen_time *kaddr = NULL;
->  	struct pv_time_stolen_time_region *reg;
->  
->  	reg = this_cpu_ptr(&stolen_time_region);
->  	if (!reg->kaddr)
->  		return 0;
->  
-> -	memunmap(reg->kaddr);
-> -	memset(reg, 0, sizeof(*reg));
-> +	kaddr = rcu_replace_pointer(reg->kaddr, NULL, true);
-> +	synchronize_rcu();
-> +	memunmap(kaddr);
->  
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-The original code used to memset the stolen time region, but this
-patch seems to drop it. Was that change intentional?
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+arm                           stm32_defconfig
+csky                                defconfig
+riscv             nommu_k210_sdcard_defconfig
+powerpc                     tqm8555_defconfig
+arm                          simpad_defconfig
+arm                        cerfcube_defconfig
+sh                          r7785rp_defconfig
+sh                          urquell_defconfig
+xtensa                  audio_kc705_defconfig
+xtensa                           alldefconfig
+m68k                       m5275evb_defconfig
+ia64                      gensparse_defconfig
+xtensa                    xip_kc705_defconfig
+h8300                     edosk2674_defconfig
+arm                            hisi_defconfig
+mips                        bcm47xx_defconfig
+sh                              ul2_defconfig
+sh                      rts7751r2d1_defconfig
+sh                           se7712_defconfig
+mips                             allyesconfig
+mips                         tb0226_defconfig
+sh                   secureedge5410_defconfig
+ia64                          tiger_defconfig
+m68k                           sun3_defconfig
+powerpc                       eiger_defconfig
+openrisc                            defconfig
+powerpc                     stx_gp3_defconfig
+arm64                            alldefconfig
+m68k                          sun3x_defconfig
+nios2                         3c120_defconfig
+m68k                       bvme6000_defconfig
+i386                             alldefconfig
+ia64                         bigsur_defconfig
+m68k                        mvme147_defconfig
+sh                         ecovec24_defconfig
+powerpc                     taishan_defconfig
+sparc                       sparc32_defconfig
+arm                             ezx_defconfig
+sh                          lboxre2_defconfig
+sh                        sh7763rdp_defconfig
+powerpc                           allnoconfig
+powerpc                 mpc837x_mds_defconfig
+xtensa                  cadence_csp_defconfig
+arm                        oxnas_v6_defconfig
+arm                        clps711x_defconfig
+riscv                               defconfig
+powerpc                      pcm030_defconfig
+sparc                       sparc64_defconfig
+arc                     nsimosci_hs_defconfig
+powerpc                    amigaone_defconfig
+sh                          landisk_defconfig
+sh                          rsk7264_defconfig
+sh                           se7751_defconfig
+parisc                generic-32bit_defconfig
+sh                            hp6xx_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220512
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+s390                 randconfig-r044-20220512
+riscv                randconfig-r042-20220512
+arc                  randconfig-r043-20220512
+arc                  randconfig-r043-20220513
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
 
-Regards,
-Srivatsa
+clang tested configs:
+powerpc              randconfig-c003-20220512
+x86_64                        randconfig-c007
+riscv                randconfig-c006-20220512
+mips                 randconfig-c004-20220512
+i386                          randconfig-c001
+arm                  randconfig-c002-20220512
+powerpc                     tqm5200_defconfig
+powerpc                          allyesconfig
+arm                      pxa255-idp_defconfig
+arm                  colibri_pxa270_defconfig
+arm                        magician_defconfig
+arm                       netwinder_defconfig
+riscv                    nommu_virt_defconfig
+arm                           spitz_defconfig
+mips                  cavium_octeon_defconfig
+powerpc                     tqm8540_defconfig
+riscv                             allnoconfig
+arm                        mvebu_v5_defconfig
+powerpc                 mpc8315_rdb_defconfig
+arm                          moxart_defconfig
+powerpc                   lite5200b_defconfig
+mips                   sb1250_swarm_defconfig
+powerpc                      ppc44x_defconfig
+powerpc                   bluestone_defconfig
+x86_64                           allyesconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+hexagon              randconfig-r045-20220512
+hexagon              randconfig-r041-20220512
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
