@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA267C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E314C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbiENC7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33176 "EHLO
+        id S230319AbiENC7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231226AbiENC6C (ORCPT
+        with ESMTP id S231196AbiENC6B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:58:02 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88DC199492
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:46:47 -0700 (PDT)
+        Fri, 13 May 2022 22:58:01 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C11E3A2531
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:46:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652492807; x=1684028807;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wuco7zHOI8upW/toCZeZhBQ9k0tR0YA88Idt0JHdMVY=;
-  b=LvVuezdvRNL14aeBxlRTemOXZfCJemHdEPDGreXaBwBWCGBEM3J3uEnp
-   mBmSidITX+nPmpD8HkXbbqD9dCY0XfZ/s/lXDE9M5D8oP7JFaWkDxOyEf
-   lFy69cp1j9d6K4pBiQJ34nopQVyDcX1Np+uC/wMupQmMbAqdjVXl24PiD
-   UyXy95N7K8Wa4/fm25Av+LEdP4YO8/yAImJDZcv7rgPUiwKLEAUOwam1k
-   GGEA03ZQkzs3PKCO/tAhcViAiF3hiBRaDaRMKEGxx2ygw4Ew2cwGD3+UP
-   zK+/hu7TuiqWEiFs+B51j1nygiqL3ptX9wzI3pDgO/J+9sJkZUNxdlGq1
+  t=1652492797; x=1684028797;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Q4OHxOkBcZ+3CvVCvY0m+wxDlD8i3ZcBOa66oWnNSzg=;
+  b=fS0tiTIlHN/rXK09vydbfoIzwYSBe1egHqUCaNQ6ubAz3LB9V62LvYX2
+   uSt49kida25Cd5S4iXHr+HZpZ+OKNpzf6kKw+QQvHzOieqhw+JPZlxLXH
+   QrSrriapt2K7S0glU1jPNnX5NzY35QYRaJnp7BpfInQa+s9moN69D64F8
+   WcEMsfn1lbkt/J0FrPuLXcUR7gYs26amnjPixEohiLIg+xPvWUyP0+wH7
+   GBRqiZaHVjOpql986qge+64Blbj0ZHGSqpKnsXLxUDH3v4HTld4KUXq0c
+   aeHTjQvStdGZf+sMyZdXfQdruHbb0pGbytajG0djA/lHbKypkBLXERX1M
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270581939"
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270387987"
 X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="270581939"
+   d="scan'208";a="270387987"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 18:46:47 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 18:46:36 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="712630780"
+   d="scan'208";a="712630756"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:46:42 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:46:31 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -60,70 +60,63 @@ Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Steve Wahl <steve.wahl@hpe.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/7] agp/intel: Use per device iommu check
-Date:   Sat, 14 May 2022 09:43:17 +0800
-Message-Id: <20220514014322.2927339-3-baolu.lu@linux.intel.com>
+Subject: [PATCH 0/7] iommu/vt-d: Make intel-iommu.h private
+Date:   Sat, 14 May 2022 09:43:15 +0800
+Message-Id: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
-References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The IOMMU subsystem has already provided an interface to query whether
-the IOMMU hardware is enabled for a specific device. This changes the
-check from Intel specific intel_iommu_gfx_mapped (globally exported by
-the Intel IOMMU driver) to probing the presence of IOMMU on a specific
-device using the generic device_iommu_mapped().
+Hi folks,
 
-This follows commit cca084692394a ("drm/i915: Use per device iommu check")
-which converted drm/i915 driver to use device_iommu_mapped().
+The include/linux/intel-iommu.h should be private to the Intel IOMMU
+driver. Other drivers or components should interact with the IOMMU
+drivers through the kAPIs provided by the iommu core.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/char/agp/intel-gtt.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+This series cleanups all includes of intel-iommu.h outside of the Intel
+IOMMU driver and move this header from include/linux to
+drivers/iommu/intel/.
 
-diff --git a/drivers/char/agp/intel-gtt.c b/drivers/char/agp/intel-gtt.c
-index 79a1b65527c2..cfcb450e9b59 100644
---- a/drivers/char/agp/intel-gtt.c
-+++ b/drivers/char/agp/intel-gtt.c
-@@ -20,7 +20,7 @@
- #include <linux/kernel.h>
- #include <linux/pagemap.h>
- #include <linux/agp_backend.h>
--#include <linux/intel-iommu.h>
-+#include <linux/iommu.h>
- #include <linux/delay.h>
- #include <asm/smp.h>
- #include "agp.h"
-@@ -573,18 +573,15 @@ static void intel_gtt_cleanup(void)
-  */
- static inline int needs_ilk_vtd_wa(void)
- {
--#ifdef CONFIG_INTEL_IOMMU
- 	const unsigned short gpu_devid = intel_private.pcidev->device;
- 
--	/* Query intel_iommu to see if we need the workaround. Presumably that
--	 * was loaded first.
-+	/*
-+	 * Query iommu subsystem to see if we need the workaround. Presumably
-+	 * that was loaded first.
- 	 */
--	if ((gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_D_IG ||
--	     gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG) &&
--	     intel_iommu_gfx_mapped)
--		return 1;
--#endif
--	return 0;
-+	return ((gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_D_IG ||
-+		 gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG) &&
-+		device_iommu_mapped(&intel_private.pcidev->dev));
- }
- 
- static bool intel_gtt_can_wc(void)
+No functional changes intended. Please help to review and suggest.
+
+Best regards,
+baolu
+
+Lu Baolu (7):
+  iommu/vt-d: Move trace/events/intel_iommu.h under iommu
+  agp/intel: Use per device iommu check
+  iommu/vt-d: Remove unnecessary exported symbol
+  drm/i915: Remove unnecessary include
+  KVM: x86: Remove unnecessary include
+  x86/boot/tboot: Move tboot_force_iommu() to Intel IOMMU
+  iommu/vt-d: Move include/linux/intel_iommu.h under iommu
+
+ include/linux/tboot.h                         |  2 --
+ drivers/gpu/drm/i915/i915_drv.h               |  1 -
+ .../iommu/intel/iommu.h                       |  1 -
+ .../iommu/intel/trace.h                       |  7 +++++-
+ arch/x86/kernel/tboot.c                       | 15 -------------
+ arch/x86/kvm/x86.c                            |  1 -
+ drivers/char/agp/intel-gtt.c                  | 17 ++++++--------
+ drivers/gpu/drm/i915/display/intel_display.c  |  1 -
+ .../gpu/drm/i915/gem/i915_gem_execbuffer.c    |  1 -
+ drivers/iommu/intel/cap_audit.c               |  2 +-
+ drivers/iommu/intel/debugfs.c                 |  2 +-
+ drivers/iommu/intel/dmar.c                    |  4 ++--
+ drivers/iommu/intel/iommu.c                   | 22 +++++++++++++------
+ drivers/iommu/intel/irq_remapping.c           |  2 +-
+ drivers/iommu/intel/pasid.c                   |  2 +-
+ drivers/iommu/intel/perf.c                    |  2 +-
+ drivers/iommu/intel/svm.c                     |  4 ++--
+ drivers/iommu/intel/trace.c                   |  2 +-
+ MAINTAINERS                                   |  1 -
+ 19 files changed, 38 insertions(+), 51 deletions(-)
+ rename include/linux/intel-iommu.h => drivers/iommu/intel/iommu.h (99%)
+ rename include/trace/events/intel_iommu.h => drivers/iommu/intel/trace.h (93%)
+
 -- 
 2.25.1
 
