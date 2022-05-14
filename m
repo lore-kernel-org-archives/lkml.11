@@ -2,88 +2,428 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69559C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF74C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233536AbiENOxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 10:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
+        id S233567AbiENOxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 10:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbiENOxV (ORCPT
+        with ESMTP id S233555AbiENOx3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 10:53:21 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAD717ABC;
-        Sat, 14 May 2022 07:53:15 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-d39f741ba0so14019968fac.13;
-        Sat, 14 May 2022 07:53:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=48MgQAzUXegHD5XRY7NujwSFppfJ4jf1CM/UlJ6YWN4=;
-        b=DF/tsQDtd55/iof7ggY6ka15plQZ7nD78ElOTE4u98vdwLbvCxu2db56yf9RBks+fn
-         bpkjt2UfmypZHzoPeRsUP+qyyHi/S3yQkDfECsputttDpy6MvgrtNJk505MsG0AYJCae
-         +X7dj1hXhiSE00wvZhb67Wi67GdSs0En/7LuAKhahghQGlXVYWDiw4LCC+2Q2PAK0uNF
-         XHbgTa0cSjZLlFaeu6uNAisGYYP4xEmSQ4MN+cohNexQpySyWvKNeflb9lqJD9PmTkvs
-         loKPwvlwBrpSfvAtQqR8/CTVszNwLqmOjK/XhS3AyYU/VoU4F7HrDsq+EtdHBcxj/a8e
-         SWAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=48MgQAzUXegHD5XRY7NujwSFppfJ4jf1CM/UlJ6YWN4=;
-        b=12jrBlD1iYcN0ReC4Xst0yp8F9TaH9o14MdeTDAAk/TJ80TncoAT6h2abZdMp+94GP
-         dmJfu5+CreTSKQhHuHSG0LIlaZToYn2Og0McFb45G0KHT8G58/t7Dvdy/T+uvwXvkKoR
-         cLOUzkPnOuuao8g6Pjg+LaMF8OQtijStwKuRDyQrauyb+adDkvElA7UHFutwTs74eYMt
-         CuQFci5twcW8mZIoznHeefVSubwrmHcb3xUfaL7hDc3KALltZcFmqsm9EmCUEzvg4wBh
-         ti2uCH9UWPmxrfwBhrTwY0rc+Ln9Bl5kBy8xC8Pfx+m6lwz5QT0r6vxJXRZOElVKxKp/
-         M8Ig==
-X-Gm-Message-State: AOAM532bVmSIBtLB3CLB60ZGVp9XFk0443ALwIYz8EnP4lABhF3WTEo+
-        KMwINcKSLLLMKrwQNrFHFKM=
-X-Google-Smtp-Source: ABdhPJyokogdJfNsUyOEfdMmJu6L6Hlhe27+dfyNI9yya/f7r7MjRx+xcDC55IAjKB7RD98EFKj/vg==
-X-Received: by 2002:a05:6870:7a8:b0:e5:d471:1e82 with SMTP id en40-20020a05687007a800b000e5d4711e82mr10821016oab.138.1652539994488;
-        Sat, 14 May 2022 07:53:14 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id u30-20020a056871009e00b000e686d13883sm2406156oaa.29.2022.05.14.07.53.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 May 2022 07:53:13 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sat, 14 May 2022 07:53:12 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 4.14 00/14] 4.14.279-rc1 review
-Message-ID: <20220514145312.GB1322724@roeck-us.net>
-References: <20220513142227.381154244@linuxfoundation.org>
+        Sat, 14 May 2022 10:53:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C142D26E1;
+        Sat, 14 May 2022 07:53:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33E34B8075F;
+        Sat, 14 May 2022 14:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94FF1C340EE;
+        Sat, 14 May 2022 14:53:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652540004;
+        bh=bpAnSgbKbpEuUOV+tfGFIueXUqhCgoUh4Jsix+lUMh8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BeSTDOZ4g7BCrmn7Ii4QuWE7xIvg0eXaIIvdYNl7fs+92AGyqoOkUpMABOWbwLyZT
+         CnwJvpxY56r3KyzWmWm4gkfex5l4XmJVMkHnQPsR/mfHcIk1Ge2fN3t2eLcrY7zoIN
+         bSv+72xFPPyV0PhawW5dE3Otxtb00eOe9Dnw+YxwI4xuLxXlMGOD6go+b5quHLCs8l
+         kF81rjF2/QJ0OgEqBUFFoif2g229GXRLhaI3f8okfeZwYI5Y836sNwDe0ED5lMGTZf
+         BvvGPiwjYjmExfLMW7Pcojk+c1fehU8mk4ZtM/t/4j8g/L4htg7aYcIPprUUGe/W+3
+         fYNVzMgucUqjw==
+Date:   Sat, 14 May 2022 16:02:00 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lars@metafoo.de, joel@jms.id.au
+Subject: Re: [PATCH] iio: pressure: dps310: Reset chip if MEAS_CFG is
+ corrupt
+Message-ID: <20220514160200.091d40ca@jic23-huawei>
+In-Reply-To: <20220511192724.51845-1-eajames@linux.ibm.com>
+References: <20220511192724.51845-1-eajames@linux.ibm.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513142227.381154244@linuxfoundation.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 04:23:16PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.14.279 release.
-> There are 14 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, 11 May 2022 14:27:24 -0500
+Eddie James <eajames@linux.ibm.com> wrote:
+
+> Corruption of the MEAS_CFG register has been observed soon after
+> system boot. In order to recover this scenario, check MEAS_CFG if
+> measurement isn't ready, and if it's incorrect, reset the DPS310
+> and write all the necessary registers.
 > 
-> Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
-> Anything received after that time might be too late.
+> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+It's a large patch, so not an ideal 'fix' to backport, but
+if we need to for platforms to work we should do so.
+
+Hence, please add a Fixes tag (which I'm guessing will be the driver
+being added in the first place).
+
+Whilst tidying up might be nice, we shouldn't do refactoring that's not
+strictly necessary in a fix patch.  Hence I'd prefer this as a two patch
+series. Refactor with no functional changes, then the actual change.
+
+A couple of minor queries inline,
+
+Thanks,
+
+Jonathan
+
+
+
+> ---
+>  drivers/iio/pressure/dps310.c | 280 +++++++++++++++++++++-------------
+>  1 file changed, 173 insertions(+), 107 deletions(-)
 > 
+> diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+> index 36fb7ae0d0a9..39f84614f44e 100644
+> --- a/drivers/iio/pressure/dps310.c
+> +++ b/drivers/iio/pressure/dps310.c
+> @@ -159,6 +159,106 @@ static int dps310_get_coefs(struct dps310_data *data)
+>  	return 0;
+>  }
+>  
+> +/*
+> + * Some verions of chip will read temperatures in the ~60C range when
+> + * its actually ~20C. This is the manufacturer recommended workaround
+> + * to correct the issue. The registers used below are undocumented.
+> + */
+> +static int dps310_temp_workaround(struct dps310_data *data)
+> +{
+> +	int rc;
+> +	int reg;
+> +
+> +	rc = regmap_read(data->regmap, 0x32, &reg);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	/*
+> +	 * If bit 1 is set then the device is okay, and the workaround does not
+> +	 * need to be applied
+> +	 */
+> +	if (reg & BIT(1))
+> +		return 0;
+> +
+> +	rc = regmap_write(data->regmap, 0x0e, 0xA5);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	rc = regmap_write(data->regmap, 0x0f, 0x96);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	rc = regmap_write(data->regmap, 0x62, 0x02);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	rc = regmap_write(data->regmap, 0x0e, 0x00);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	return regmap_write(data->regmap, 0x0f, 0x00);
+> +}
+> +
+> +static int dps310_startup(struct dps310_data *data)
+> +{
+> +	int rc;
+> +	int ready;
+> +
+> +	/*
+> +	 * Set up pressure sensor in single sample, one measurement per second
+> +	 * mode
+> +	 */
+> +	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	/*
+> +	 * Set up external (MEMS) temperature sensor in single sample, one
+> +	 * measurement per second mode
+> +	 */
+> +	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	/* Temp and pressure shifts are disabled when PRC <= 8 */
+> +	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
+> +			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	/* MEAS_CFG doesn't update correctly unless first written with 0 */
+> +	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
+> +			       DPS310_MEAS_CTRL_BITS, 0);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	/* Turn on temperature and pressure measurement in the background */
+> +	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
+> +			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
+> +			       DPS310_TEMP_EN | DPS310_BACKGROUND);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	/*
+> +	 * Calibration coefficients required for reporting temperature.
+> +	 * They are available 40ms after the device has started
+> +	 */
+> +	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
+> +				      ready & DPS310_COEF_RDY, 10000, 40000);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	rc = dps310_get_coefs(data);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	rc = dps310_temp_workaround(data);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	return 0;
+> +}
+> +
+>  static int dps310_get_pres_precision(struct dps310_data *data)
+>  {
+>  	int rc;
+> @@ -297,6 +397,38 @@ static int dps310_get_temp_k(struct dps310_data *data)
+>  	return scale_factors[ilog2(rc)];
+>  }
+>  
+> +/* Called with lock held */
+> +static int dps310_verify_meas_cfg(struct dps310_data *data, int ready_bit)
 
-Build results:
-	total: 168 pass: 168 fail: 0
-Qemu test results:
-	total: 424 pass: 424 fail: 0
+Hmm. I'm not immediately coming up with a better name, but it does
+seem odd that a verify function would do a reset.
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+> +{
+> +	int en = DPS310_PRS_EN | DPS310_TEMP_EN | DPS310_BACKGROUND;
+> +	int meas_cfg;
+> +	int rc = regmap_read(data->regmap, DPS310_MEAS_CFG, &meas_cfg);
+> +
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	if (meas_cfg & ready_bit)
+> +		return 0;
+> +
+> +	if ((meas_cfg & en) != en) {
+> +		/* DPS310 register state corrupt, better start from scratch */
+> +		rc = regmap_write(data->regmap, DPS310_RESET, DPS310_RESET_MAGIC);
+> +		if (rc < 0)
+> +			return rc;
+> +
+> +		/* Wait for device chip access: 2.5ms in specification */
+> +		usleep_range(2500, 12000);
+> +		rc = dps310_startup(data);
+> +		if (rc)
+> +			return rc;
+> +
+> +		dev_info(&data->client->dev,
+> +			 "recovered from corrupted MEAS_CFG=%02x\n", meas_cfg);
+> +	}
+> +
+> +	return 1;
+> +}
+> +
+>  static int dps310_read_pres_raw(struct dps310_data *data)
+>  {
+>  	int rc;
+> @@ -309,15 +441,25 @@ static int dps310_read_pres_raw(struct dps310_data *data)
+>  	if (mutex_lock_interruptible(&data->lock))
+>  		return -EINTR;
+>  
+> -	rate = dps310_get_pres_samp_freq(data);
+> -	timeout = DPS310_POLL_TIMEOUT_US(rate);
+> -
+> -	/* Poll for sensor readiness; base the timeout upon the sample rate. */
+> -	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
+> -				      ready & DPS310_PRS_RDY,
+> -				      DPS310_POLL_SLEEP_US(timeout), timeout);
+> -	if (rc)
+> -		goto done;
+> +	rc = dps310_verify_meas_cfg(data, DPS310_PRS_RDY);
+> +	if (rc) {
 
-Guenter
+So at this point we potentially reset. Is there a race condition against
+the device register state corrupting again?  If so I guess we are relying
+on the timeout and userspace trying again.  Maybe worth adding a comment
+if that is the case.
+
+> +		if (rc < 0)
+> +			goto done;
+> +
+> +		rate = dps310_get_pres_samp_freq(data);
+> +		timeout = DPS310_POLL_TIMEOUT_US(rate);
+> +
+> +		/*
+> +		 * Poll for sensor readiness; base the timeout upon the sample
+> +		 * rate.
+> +		 */
+> +		rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
+> +					      ready, ready & DPS310_PRS_RDY,
+> +					      DPS310_POLL_SLEEP_US(timeout),
+> +					      timeout);
+> +		if (rc)
+> +			goto done;
+> +	}
+>  
+>  	rc = regmap_bulk_read(data->regmap, DPS310_PRS_BASE, val, sizeof(val));
+>  	if (rc < 0)
+> @@ -358,15 +500,25 @@ static int dps310_read_temp_raw(struct dps310_data *data)
+>  	if (mutex_lock_interruptible(&data->lock))
+>  		return -EINTR;
+>  
+> -	rate = dps310_get_temp_samp_freq(data);
+> -	timeout = DPS310_POLL_TIMEOUT_US(rate);
+> -
+> -	/* Poll for sensor readiness; base the timeout upon the sample rate. */
+> -	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
+> -				      ready & DPS310_TMP_RDY,
+> -				      DPS310_POLL_SLEEP_US(timeout), timeout);
+> -	if (rc < 0)
+> -		goto done;
+> +	rc = dps310_verify_meas_cfg(data, DPS310_TMP_RDY);
+> +	if (rc) {
+> +		if (rc < 0)
+> +			goto done;
+> +
+> +		rate = dps310_get_temp_samp_freq(data);
+> +		timeout = DPS310_POLL_TIMEOUT_US(rate);
+> +
+> +		/*
+> +		 * Poll for sensor readiness; base the timeout upon the sample
+> +		 * rate.
+> +		 */
+> +		rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
+> +					      ready, ready & DPS310_TMP_RDY,
+> +					      DPS310_POLL_SLEEP_US(timeout),
+> +					      timeout);
+> +		if (rc < 0)
+> +			goto done;
+> +	}
+>  
+>  	rc = dps310_read_temp_ready(data);
+>  
+> @@ -677,52 +829,12 @@ static const struct iio_info dps310_info = {
+>  	.write_raw = dps310_write_raw,
+>  };
+>  
+> -/*
+> - * Some verions of chip will read temperatures in the ~60C range when
+> - * its actually ~20C. This is the manufacturer recommended workaround
+> - * to correct the issue. The registers used below are undocumented.
+> - */
+> -static int dps310_temp_workaround(struct dps310_data *data)
+> -{
+> -	int rc;
+> -	int reg;
+> -
+> -	rc = regmap_read(data->regmap, 0x32, &reg);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	/*
+> -	 * If bit 1 is set then the device is okay, and the workaround does not
+> -	 * need to be applied
+> -	 */
+> -	if (reg & BIT(1))
+> -		return 0;
+> -
+> -	rc = regmap_write(data->regmap, 0x0e, 0xA5);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	rc = regmap_write(data->regmap, 0x0f, 0x96);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	rc = regmap_write(data->regmap, 0x62, 0x02);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	rc = regmap_write(data->regmap, 0x0e, 0x00);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	return regmap_write(data->regmap, 0x0f, 0x00);
+> -}
+> -
+>  static int dps310_probe(struct i2c_client *client,
+>  			const struct i2c_device_id *id)
+>  {
+>  	struct dps310_data *data;
+>  	struct iio_dev *iio;
+> -	int rc, ready;
+> +	int rc;
+>  
+>  	iio = devm_iio_device_alloc(&client->dev,  sizeof(*data));
+>  	if (!iio)
+> @@ -747,54 +859,8 @@ static int dps310_probe(struct i2c_client *client,
+>  	if (rc)
+>  		return rc;
+>  
+> -	/*
+> -	 * Set up pressure sensor in single sample, one measurement per second
+> -	 * mode
+> -	 */
+> -	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
+
+Lack of error checking in original code is odd. Deliberate or not is the
+question... (probably not deliberate as rc = is there).
+
+> -
+> -	/*
+> -	 * Set up external (MEMS) temperature sensor in single sample, one
+> -	 * measurement per second mode
+> -	 */
+> -	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	/* Temp and pressure shifts are disabled when PRC <= 8 */
+> -	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
+> -			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	/* MEAS_CFG doesn't update correctly unless first written with 0 */
+> -	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
+> -			       DPS310_MEAS_CTRL_BITS, 0);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	/* Turn on temperature and pressure measurement in the background */
+> -	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
+> -			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
+> -			       DPS310_TEMP_EN | DPS310_BACKGROUND);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	/*
+> -	 * Calibration coefficients required for reporting temperature.
+> -	 * They are available 40ms after the device has started
+> -	 */
+> -	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
+> -				      ready & DPS310_COEF_RDY, 10000, 40000);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	rc = dps310_get_coefs(data);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	rc = dps310_temp_workaround(data);
+> -	if (rc < 0)
+> +	rc = dps310_startup(data);
+> +	if (rc)
+>  		return rc;
+>  
+>  	rc = devm_iio_device_register(&client->dev, iio);
+
