@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75149C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 21:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 21:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiENVP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 17:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
+        id S235209AbiENVPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 17:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiENVP1 (ORCPT
+        with ESMTP id S230064AbiENVPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 17:15:27 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B59625291
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 14:15:27 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 31so10627849pgp.8
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 14:15:27 -0700 (PDT)
+        Sat, 14 May 2022 17:15:31 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D382558D
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 14:15:29 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id x8so7215674pgr.4
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 14:15:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LJ1TiZWIwFC+0opultkzqc9TR+djjH86dn+EQyDfmgk=;
-        b=nyZydSDrCBcbuEB2JRujTxM3tALzTyIYU4S6fkmkIAMlcL/19c1leoS1kvwHAvseKM
-         +jzh2xRwIK9WFHr5wAl93CPdTxtXw1mOyoPGHTiiz4vDTHLTv6gX84sTsa5XOndJU6qR
-         G5m6L+HleNQBB22C0X0OVbpCTObY/tcgDlmIao4qthK2RWLyG7VMZXlIA2oJM3MglfHJ
-         zqamIfurfvp2VmbmHgFHcrDQ5p8O3MTSgLScW2eabNdqlPHPbcY464+Q94DtOvr1mv1X
-         MlzMY/4m91h4HKP2X/V4PaXJFFkkaQ2yc/WCk1+YY1J/JXC+l5iVLPcPsl5r913wgFfz
-         Ulig==
+        bh=LJelr6XDvO4AfkGbdbA8Y7Zx3lre1EHsyNEOn4pLeLU=;
+        b=OGUdMpgjlBgy7v6jB35voX+Z4PH9UheaSl/oL8e6co97wmxzZKUofJtexjXamGiOpr
+         i2+X3QOdWHWZaxlsOoWHS7CUnEgna/03I/WJa14mwjTy5Qo42TyBk6RK2h1os/KJqtGp
+         Aiir1H43xL+RxWgOxze88ANgsr2i8Q49ls3ylxpKCc1sgRC6Pn8JSb/Bfy1rGd3sfNIX
+         r9Qr1CG2ExyFULcq4xyE0PbQYKQB6Py65bqTgEYgiw56vtYuWSWblJKEmczPetbL/lA6
+         Ai1jlOS9wOpY/VzW1H40M2ELBZ4y5ZBbe4GbLiFqRUvo0SJv18ANN0s7pFw6DWQmxGM4
+         suQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LJ1TiZWIwFC+0opultkzqc9TR+djjH86dn+EQyDfmgk=;
-        b=jDPfUkILrFwBMqLN9/hZF+Z0FJ44iRP6BpDVUC9MzNiFgDuYvZV7yob+f3y+gszY2j
-         4YWEJ1YrTTKwJh6TBPKy4InBVZU7NCDkTXPyy9pzNcCrP1T3w7xuJtUuVLh9pW9ExXdf
-         WVtwTHWCi2iGp+eFStovHRgfl/4l41h4N86esD+bQsJDBVN0jS3y7ezWjVIrS8G/k/Sg
-         OP5UaymzDY805zU2zNlwqOOavpve1FOkgtG+z9jS37XvvC0KVRxLPx7bjMsrraDXTbQM
-         G2bF82q8Qp8OTl/uPkmQ6Z25uPs/voK2k9/bZEVOy0E5VHXQtrUVIS6ByZ/XT7la5sw7
-         EmdQ==
-X-Gm-Message-State: AOAM531CNXoeqxH8FQUs+RQ80zf8XcX+B2yJQCHZSeyCpYquUWgmlNNm
-        nnWCNfXmBE6/f9Dzhi1pOFe2Usx273cOJS8/KxFO1Oh/
-X-Google-Smtp-Source: ABdhPJzr11I/vO466pkaITQ7dZc9Ta+t0gUSuH7Vt/gbCFUg4qK3UnlhL5CxgQaY+t3rcrkqhr9WvQ==
-X-Received: by 2002:a05:6a00:22d4:b0:510:4c30:3f6b with SMTP id f20-20020a056a0022d400b005104c303f6bmr10791265pfj.74.1652562926587;
-        Sat, 14 May 2022 14:15:26 -0700 (PDT)
+        bh=LJelr6XDvO4AfkGbdbA8Y7Zx3lre1EHsyNEOn4pLeLU=;
+        b=BTsWtYnnOVBaejQQnpWEJ/l2iPMDXIUwhr/34a2qIlF9aRBDJPwYySdi7QuA9al8vr
+         IySUWaSax0HfYS04VYe7l9oTpCgSoIFLlOQsqxHJSzmmoJrHIHEXcJUDYzS1nmiFlXLW
+         J/gnZoia0LUcuyeEPEJgS3k3uBkGYCLXBeeamtYwHFRRsYMWy4yyEmSy3p9HkEQ54SF3
+         sMaJo37jhVlj7R2NXzvastZd0/og4fR2+OZ3WMfVjpTfX8ABM6e+8KQdGeXhH5EtgMBi
+         jaFo8rbPsVkpM7/0AnmVwbvvfouNK6g8011pvX44a9B9JuQ+cNezmBnwuDDoWN8zeKvt
+         ywZg==
+X-Gm-Message-State: AOAM532mMJkNMh1cGO7V8SSyACM29UQWMk9Qy82YAb077+aGXh7vvL7x
+        KRQ3hw6cOANJAK/x8c3mobo=
+X-Google-Smtp-Source: ABdhPJzBCRSbfTahTJctvLOdUPn+sjf+y+xgMS/nNJHGd5ElaeH1wFlzitlLHOMl7bwoRBwJzao7kQ==
+X-Received: by 2002:a05:6a00:1582:b0:510:4e67:31d7 with SMTP id u2-20020a056a00158200b005104e6731d7mr10806792pfk.80.1652562929330;
+        Sat, 14 May 2022 14:15:29 -0700 (PDT)
 Received: from f34-buildvm.eng.vmware.com ([66.170.99.2])
-        by smtp.googlemail.com with ESMTPSA id e35-20020a635023000000b003db141a5f26sm3826825pgb.1.2022.05.14.14.15.25
+        by smtp.googlemail.com with ESMTPSA id e35-20020a635023000000b003db141a5f26sm3826825pgb.1.2022.05.14.14.15.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 May 2022 14:15:26 -0700 (PDT)
+        Sat, 14 May 2022 14:15:29 -0700 (PDT)
 From:   Shreenidhi Shedi <yesshedi@gmail.com>
 X-Google-Original-From: Shreenidhi Shedi <sshedi@vmware.com>
 To:     arnd@arndb.de, gregkh@linuxfoundation.org, paul@paul-moore.com,
         eparis@redhat.com
 Cc:     linux-kernel@vger.kernel.org, linux-audit@redhat.com,
         yesshedi@gmail.com, Shreenidhi Shedi <sshedi@vmware.com>
-Subject: [PATCH 2/5] char: lp: remove redundant initialization of err
-Date:   Sun, 15 May 2022 02:44:52 +0530
-Message-Id: <20220514211455.284782-2-sshedi@vmware.com>
+Subject: [PATCH 4/5] audit: remove redundant data_len check
+Date:   Sun, 15 May 2022 02:44:54 +0530
+Message-Id: <20220514211455.284782-4-sshedi@vmware.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220514211455.284782-1-sshedi@vmware.com>
 References: <20220514211455.284782-1-sshedi@vmware.com>
@@ -68,22 +68,22 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- drivers/char/lp.c | 2 +-
+ kernel/audit.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/lp.c b/drivers/char/lp.c
-index d474d02b6c7f..536ceb11176e 100644
---- a/drivers/char/lp.c
-+++ b/drivers/char/lp.c
-@@ -1019,7 +1019,7 @@ static struct parport_driver lp_driver = {
- 
- static int __init lp_init(void)
- {
--	int i, err = 0;
-+	int i, err;
- 
- 	if (parport_nr[0] == LP_PARPORT_OFF)
- 		return 0;
+diff --git a/kernel/audit.c b/kernel/audit.c
+index 7690c29d4ee4..0749211d5552 100644
+--- a/kernel/audit.c
++++ b/kernel/audit.c
+@@ -1390,7 +1390,7 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
+ 						 str);
+ 			} else {
+ 				audit_log_format(ab, " data=");
+-				if (data_len > 0 && str[data_len - 1] == '\0')
++				if (str[data_len - 1] == '\0')
+ 					data_len--;
+ 				audit_log_n_untrustedstring(ab, str, data_len);
+ 			}
 -- 
 2.36.1
 
