@@ -2,118 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D785C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED37FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234439AbiENQtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 12:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
+        id S234286AbiENQt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 12:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234470AbiENQsy (ORCPT
+        with ESMTP id S230332AbiENQtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 12:48:54 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3347F36685
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:48:49 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id m1so15087740wrb.8
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:48:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h9Ne+v1fWGSBcxhiyeEoVMQ4rFmfRWh1mmd5YIH/r7U=;
-        b=meRQd62ep69g3tBqBYUeXf3me9m4oJ40AN+j1I4vlanRExPpzRRvwJGiZsLYWDyhUd
-         INUHrkzVoQbMxwzgnNexlklgKVtXN71UobSDGxwNOupmGxiJLLVDLriwyM4gsuQYSAem
-         FnSvIK6r1IjytddhDA39hO7kvmvRaLmR4FkQFhFkSBb/6XBSG0Hja8KDeT6hmGFjhdrO
-         w3gKjf6NfulL/sCas5YgKZC5aHSNIbfBU1JjOHyAYFP140etjYNiMZ5zIUUw30xts2jh
-         6mSYZXNzv11NKlDDULNg+MaipgsRINAnRucaHw+mp6UGZHPd8l9v8uGP9Vj7uuw6b6nS
-         Whag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h9Ne+v1fWGSBcxhiyeEoVMQ4rFmfRWh1mmd5YIH/r7U=;
-        b=4n4AqNMhPXv+SCpebrJRLLYEe6db79zEPBmdJWzrchb+Dx0BWxtLKX/nc4VtYOmEX1
-         WrMC8FCNLHk96psgIY33J/loF3XpIrLDJAMzbdGyUMCJHfSA47anbU8jANoUllS/lJgY
-         7n4N7WDD/CunEA6vsU0P02FPfk75KIkeTw66axeZFxub6FazDofokdQJT2vQeI1AwoTq
-         ZQ4cPAXySjK3VpKfFuAPih/6sUUcVcitSfp4GV0dJDe59QxahgIzd0adM4YgkUSWkj++
-         v3hIJSu4fdpdNdEK5cwXbq2LS9BO2IfRcvOLMWz0kZIHI7sGZWcbeUXo7NCEKLeNvv+T
-         b+mA==
-X-Gm-Message-State: AOAM530QqnVV+JgglY6jHtHhhMpS8vcv0lNyzR68ZH03vtohody+5Y0o
-        dgW4a6D4X5uzfjpn8LhCUOxMtIkjTGZqPb9Q9xvCJg==
-X-Google-Smtp-Source: ABdhPJzDGeojNw7I+D9/Q7eW0grf3LDdqkTv+/FnRYaAGPuKeMRYFm+g8lQXX1H8/begn/XMC+R1eTY1NiPkP69InEU=
-X-Received: by 2002:adf:f001:0:b0:20d:22b:183c with SMTP id
- j1-20020adff001000000b0020d022b183cmr1403508wro.313.1652546927571; Sat, 14
- May 2022 09:48:47 -0700 (PDT)
+        Sat, 14 May 2022 12:49:55 -0400
+X-Greylist: delayed 160 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 14 May 2022 09:49:53 PDT
+Received: from cmx-torrgo002.bell.net (mta-tor-005.bell.net [209.71.212.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3115838BE3;
+        Sat, 14 May 2022 09:49:53 -0700 (PDT)
+X-RG-CM-BuS: 0
+X-RG-CM-SC: 0
+X-RG-CM: Clean
+X-Originating-IP: [70.50.7.94]
+X-RG-Env-Sender: dave.anglin@bell.net
+X-RG-Rigid: 627A10BA00D03C0E
+X-CM-Envelope: MS4xfOMksjxXwfninAMIQkKQ8I3+iKJe36nzEYaOMmmL1RXS+HofnHnXhpck5vKZalp96pCLurQiSV3iyCcOottdqlLLF3/Cmk7/bVinaRHpPgGr+O4H/Jce
+ KR+vV+QHQkTy9Gicdu9o1YQYBHPv0KYRELMWNElwSBcHl4Ebck1reHtFe0Gx8md7sfRMsRzNmqrkZN1X6OHXmNIy+eFD9xO9M2olESEgs0tOpWkMaSeyWHIA
+ C1TKQJtGASCEXUWJbZD/9Tw4vR6DhUIKiAgYbBj+5xBtq/v9ghAukFH68IKk2jEwFDPMViVQIrVHCKThKL0JjVkO/HOPnTXuzgF6qDTrHJd8zOZnPSdishDn
+ NBdJglJSNkI4PYKPP6DamhKu9RL7F46RcrT25JKq527355RvUYTbu8HFS5pAxHq509SL7Ecn
+X-CM-Analysis: v=2.4 cv=G99/r/o5 c=1 sm=1 tr=0 ts=627fdd04
+ a=9k1bCY7nR7m1ZFzoCuQ56g==:117 a=9k1bCY7nR7m1ZFzoCuQ56g==:17
+ a=IkcTkHD0fZMA:10 a=FBHGMhGWAAAA:8 a=48wWPq5cR6GzFqV75LMA:9 a=QEXdDO2ut3YA:10
+ a=9gvnlMMaQFpL9xblJ6ne:22
+Received: from [192.168.2.49] (70.50.7.94) by cmx-torrgo002.bell.net (5.8.807) (authenticated as dave.anglin@bell.net)
+        id 627A10BA00D03C0E; Sat, 14 May 2022 12:47:00 -0400
+Message-ID: <a3fe40b5-b88e-4d01-0209-6d26b2d384bd@bell.net>
+Date:   Sat, 14 May 2022 12:47:00 -0400
 MIME-Version: 1.0
-References: <20220514152032.758738-1-ulf.hansson@linaro.org>
-In-Reply-To: <20220514152032.758738-1-ulf.hansson@linaro.org>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Sat, 14 May 2022 22:18:35 +0530
-Message-ID: <CAAhSdy3m3FzbkL-On5kPtrZgyO4x=6onr6mXi_=te5B=m_n8GQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] cpuidle: psci: Fix regression leading to no genpd governor
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@rivosinc.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH AUTOSEL 5.17 21/21] Revert "parisc: Fix patch code locking
+ and flushing"
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, Helge Deller <deller@gmx.de>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        James.Bottomley@hansenpartnership.com, linux-parisc@vger.kernel.org
+References: <20220510154340.153400-1-sashal@kernel.org>
+ <20220510154340.153400-21-sashal@kernel.org>
+ <37d6bcac-bca4-06a6-ecab-bf83bd3468cd@gmx.de> <Yn/X0quyI58WVTfJ@sashalap>
+From:   John David Anglin <dave.anglin@bell.net>
+In-Reply-To: <Yn/X0quyI58WVTfJ@sashalap>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 8:50 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+On 2022-05-14 12:24 p.m., Sasha Levin wrote:
+> On Tue, May 10, 2022 at 05:49:31PM +0200, Helge Deller wrote:
+>> Hello Sascha,
+>>
+>> please drop this patch from all your stable-series queues....
+>> It shouldn't be backported.
 >
-> While factoring out the PM domain related code from PSCI domain driver into
-> a set of library functions, a regression when initializing the genpds got
-> introduced. More precisely, we fail to assign a genpd governor, so let's
-> fix this.
->
-> Fixes: 9d976d6721df ("cpuidle: Factor-out power domain related code from PSCI domain driver")
-> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> I've dropped it, but... why?
+It exposed a problem in the kernel flush code for PA 1.x machines. The patch works okay on
+all PA 2.0 machines.  It also works on PA 1.x machines when flush_cache_all is used to flush
+changes to memory.
 
-Looks good to me.
+Helge is investigating PA 1.x problem.
 
-Reviewed-by: Anup Patel <anup@brainfault.org>
+-- 
+John David Anglin  dave.anglin@bell.net
 
-Regards,
-Anup
-
-> ---
->  drivers/cpuidle/cpuidle-psci-domain.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/cpuidle/cpuidle-psci-domain.c b/drivers/cpuidle/cpuidle-psci-domain.c
-> index 755bbdfc5b82..3db4fca1172b 100644
-> --- a/drivers/cpuidle/cpuidle-psci-domain.c
-> +++ b/drivers/cpuidle/cpuidle-psci-domain.c
-> @@ -52,7 +52,7 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
->         struct generic_pm_domain *pd;
->         struct psci_pd_provider *pd_provider;
->         struct dev_power_governor *pd_gov;
-> -       int ret = -ENOMEM, state_count = 0;
-> +       int ret = -ENOMEM;
->
->         pd = dt_idle_pd_alloc(np, psci_dt_parse_state_node);
->         if (!pd)
-> @@ -71,7 +71,7 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
->                 pd->flags |= GENPD_FLAG_ALWAYS_ON;
->
->         /* Use governor for CPU PM domains if it has some states to manage. */
-> -       pd_gov = state_count > 0 ? &pm_domain_cpu_gov : NULL;
-> +       pd_gov = pd->states ? &pm_domain_cpu_gov : NULL;
->
->         ret = pm_genpd_init(pd, pd_gov, false);
->         if (ret)
-> --
-> 2.25.1
->
