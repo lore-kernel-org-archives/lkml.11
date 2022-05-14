@@ -2,71 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3426C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 08:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF9B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 08:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230323AbiENIbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 04:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36852 "EHLO
+        id S230215AbiENIel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 04:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbiENIb1 (ORCPT
+        with ESMTP id S229733AbiENIei (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 04:31:27 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00EB823E;
-        Sat, 14 May 2022 01:31:24 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L0dvM1zgnzGpcj;
-        Sat, 14 May 2022 16:28:31 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 14 May 2022 16:31:22 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 14 May
- 2022 16:31:21 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>
-CC:     <mpm@selenic.com>, <herbert@gondor.apana.org.au>,
-        <tony@atomide.com>
-Subject: [PATCH -next] hwrng: omap3-rom - fix using wrong clk_disable() in omap_rom_rng_runtime_resume()
-Date:   Sat, 14 May 2022 16:42:41 +0800
-Message-ID: <20220514084241.681812-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 14 May 2022 04:34:38 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15AA911E
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 01:34:36 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id p189so5915957wmp.3
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 01:34:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Wqqxn5+q5xmPpZtFRIbD60XulpYnUc5+LRYDs7jEaLY=;
+        b=BRlzdhTV9zT8+bxHgq0iD5R/JhGL/k8jAR9b7CiU8hDeCgzVWFrrjTP0aHZq5tQ8XX
+         3pYNl+Xbb81AWFyTev3K9GimQzlDxKm5/ng/W1WSUjRhKZN93OQN0hDCuANEnE1eNUL6
+         +aUzBtR+QI4bADN71NUFlQC83QglUyIurXGuydMevh73G+uVG3TYo/sIvqErTRAzb58h
+         nzGFgjXKmB/RG2aqyyKCKKFmMioLSkKXxX9GlafBjaZm1KrP7Lw/OTZCsI8ACoMpACYq
+         Rphk6LNz2/OeuYMnsUUf1WipjrlSd1VS+CWBrGJUgfc8Muq8FPXmuSTbP+VZ/Q+iIMod
+         U5zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Wqqxn5+q5xmPpZtFRIbD60XulpYnUc5+LRYDs7jEaLY=;
+        b=d8aVNBsEsu3YawnA/jDQ31bo+QxQlwDRQa1yP5/1o3Hr7npk1DppyKBEvjr6jLTMqc
+         8KryhobQHkAHMS7ntX3px+b8K/PM2SuYxhuQt85GoZsJeV63MQB5Zb7ZnlysmaxjVCI3
+         k5FdjPZIpQGZQnnoYg16CUo/fYOVne6JVDoIfA3uAXFd5f2HZSe7HcZgE6BMhcQ2X32F
+         60y/avhB0IVBg24M+afwRuqEBDPrQcn5RxkeO727ZSBXBw/rPAkg5c9W/pP/3X+pXvxR
+         c1BJ+WwhPw1SzCrKXNiqlwi2kYT33ZkwIe3Sany9/roojLU9uW2ujORpPU2+H4cxquDG
+         W0/Q==
+X-Gm-Message-State: AOAM5332SAGvgCYOhV+Q0Ye3PhZeNF57kHNrT8cuLc0PRxfm/stl1Uj2
+        kx8nGEgjxWsNBPQJ+rQClevKdtApvhWVz1AYVQMWVQ==
+X-Google-Smtp-Source: ABdhPJw8xpJdudoWgJ+1Jx86Q9PASwEwAJPZhccKtWf1cQJ07oWyo0/CpzTe9bNFHE+Eixp2zZJuUPINfVgMRPZ/+Bw=
+X-Received: by 2002:a05:600c:1d9f:b0:394:7a51:cb8b with SMTP id
+ p31-20020a05600c1d9f00b003947a51cb8bmr8040011wms.163.1652517274539; Sat, 14
+ May 2022 01:34:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+References: <20220429043913.626647-1-davidgow@google.com> <20220513083212.3537869-3-davidgow@google.com>
+ <Yn57d1e6k8uv2uQj@bombadil.infradead.org>
+In-Reply-To: <Yn57d1e6k8uv2uQj@bombadil.infradead.org>
+From:   David Gow <davidgow@google.com>
+Date:   Sat, 14 May 2022 16:34:23 +0800
+Message-ID: <CABVgOSkhr6xfgXZWW6UdbU4MpAvqsDOsqVP0THsH0gVB949HjA@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] selftest: Taint kernel when test module loaded
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Joe Fradley <joefradley@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'ddata->clk' is enabled by clk_prepare_enable(), it should be disabled
-by clk_disable_unprepare().
+On Fri, May 13, 2022 at 11:38 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
+>
+> On Fri, May 13, 2022 at 04:32:13PM +0800, David Gow wrote:
+> > Make any kselftest test module (using the kselftest_module framework)
+> > taint the kernel with TAINT_TEST on module load.
+> >
+> > Note that several selftests use kernel modules which are not based on
+> > the kselftest_module framework, and so will not automatically taint the
+> > kernel. These modules will have to be manually modified if they should
+> > taint the kernel this way.
+> >
+> > Similarly, selftests which do not load modules into the kernel generally
+> > should not taint the kernel (or possibly should only do so on failure),
+> > as it's assumed that testing from user-space should be safe. Regardless,
+> > they can write to /proc/sys/kernel/tainted if required.
+> >
+> > Signed-off-by: David Gow <davidgow@google.com>
+>
+> Not all selftest modules use KSTM_MODULE_LOADERS() so I'd like to see a
+> modpost target as well, otherwise this just covers a sliver of
+> selftests.
+>
 
-Fixes: 8d9d4bdc495f ("hwrng: omap3-rom - Use runtime PM instead of custom functions")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/char/hw_random/omap3-rom-rng.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+My personal feeling is that the ideal way of solving this is actually
+to port those modules which aren't using KSTM_MODULE_LOADERS() (or
+KUnit, or some other system) to do so, or to otherwise manually tag
+them as selftests and/or make them taint the kernel.
 
-diff --git a/drivers/char/hw_random/omap3-rom-rng.c b/drivers/char/hw_random/omap3-rom-rng.c
-index e0d77fa048fb..f06e4f95114f 100644
---- a/drivers/char/hw_random/omap3-rom-rng.c
-+++ b/drivers/char/hw_random/omap3-rom-rng.c
-@@ -92,7 +92,7 @@ static int __maybe_unused omap_rom_rng_runtime_resume(struct device *dev)
- 
- 	r = ddata->rom_rng_call(0, 0, RNG_GEN_PRNG_HW_INIT);
- 	if (r != 0) {
--		clk_disable(ddata->clk);
-+		clk_disable_unprepare(ddata->clk);
- 		dev_err(dev, "HW init failed: %d\n", r);
- 
- 		return -EIO;
--- 
-2.25.1
+That being said, we can gain a bit my making the module-loading
+helpers in kselftest/module.sh manually taint the kernel with
+/proc/sys/kernel/tainted, which will catch quite a few of them (even
+if tainting from userspace before they're loaded is suboptimal).
 
+I've also started experimenting with a "test" MODULE_INFO field, which
+modpost would add with the -t option. That still requires sprinkling
+MODULE_INFO() everwhere, or the '-t' option to a bunch of makefiles,
+or doing something more drastic to set it automatically for modules in
+a given directory / makefile. Or the staging thing of checking the
+directory / prefix in modpost.
+
+I'll play around some more and have something to show in v4. (If we
+have a MODULE_INFO field, we should use it for KUnit modules, but we'd
+still have to taint the kernel manually for built-in tests anyway, so
+it'd be redundant...)
+
+-- David
