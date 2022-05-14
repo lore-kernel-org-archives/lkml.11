@@ -2,120 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbiENCwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
+        id S229946AbiENCwk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiENCwZ (ORCPT
+        with ESMTP id S229899AbiENCw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:52:25 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D023087F0;
-        Fri, 13 May 2022 17:55:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652489737; x=1684025737;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4ZbrGrP7cxNMuGCiRcEz9C5bHEQF1KFXcDuzuJA6vYk=;
-  b=KCp8mPQ3M0wO/XOaTEgnseLz2KyNT75gCdP1Zut3387/TgcqdFThzrUx
-   8mnjigj7iXIShV8ncffv9r/ygTH2+TCRrgZ6DQiguTw7vTe7rSbP/7luW
-   8m8jwZ1Gq2H4pzF3Wad/Ovffpkjj1XcK1RAcPU37bt/6ixLjUrMUljY0G
-   mdZpRZj5ZGw8SWo3NF0rpGb0retLSwGVBECDKVvhUfxrYyDvl2fK0/zPy
-   gaeIOm+9cHDX3knqJa18uKYi3YaoYo+dbBLz9EHncmKeas+bLEMfeDpCz
-   tMTPk9N4UsH2iZo9W7t9iv/6fKSg5xOtAYW/f5dXxj4VscaYlTR/ExUtx
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="268033165"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="268033165"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 17:31:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="604048939"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 13 May 2022 17:31:26 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npfgr-000MFY-Sf;
-        Sat, 14 May 2022 00:31:25 +0000
-Date:   Sat, 14 May 2022 08:30:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH] kbuild: copy scripts/atomic/atomic-*.h to
- include/generated/atomic-*.h
-Message-ID: <202205140803.I96fumS7-lkp@intel.com>
-References: <20220513185340.239753-1-masahiroy@kernel.org>
+        Fri, 13 May 2022 22:52:26 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE415308840
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:56:03 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id n10so9433733pjh.5
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:56:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YYxVvNkXOVsJBJNW7IkLQOo2NBhIQpi5g9EjRSQk2JE=;
+        b=OWYMsjKOYyifYrajLqOHfATFsj04q/ZkdSMEMcZCdk4QcYAfNu/YwT46b6noyZk6my
+         oEq0ANS3mBxLf9IMrnOmQNzPVZUyZLH3QwXBEYsWmaP4Zf4rf7v/QJP6kGbk2y2uGPa6
+         K+qprWkgQaasnfSCphUTng5U3bX5o+NoVVRWAJvnpuK6PMu9wRxf1jlARd/msP+8c69S
+         StBxP4DB35ZWCsoVH15DOc1mk0P/5CPfD/qtct9xfbcH6e1kGoIEvIpJ6XDI8rRkKnFd
+         BY3bhHmbJZ2NUSMah0uF8cqiDniC/nnbzoHXnomLCxFT7QSZHWOiUcQ1kuDAcr5m2Lfw
+         uyrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YYxVvNkXOVsJBJNW7IkLQOo2NBhIQpi5g9EjRSQk2JE=;
+        b=LChK7SS4q42Zx8zw8uaw2UykJ5V726X8f2KRgp7L+OBT6mkqBXLeviihoUocL2Hzsa
+         8/JMfriAu0PwttyX7i/OTUx2ab6zGywW1jF1M0T0XXqrZ/hjMEffT86DyrDQMdaq38d7
+         +bOc5KmK6b1xPcgYXG00+LxdKJhsTE7XiAOMp8PApl/njXN8a6tzPr7E1puEe/aAfcfJ
+         NY/lVdqBoJaB9AGNT8aOZ6+hnq2LqhgY1fbntEe/YYhN0Hz+V00aW1/zhXm5C7BY2aT3
+         Bu5JTQrTYbLXCLRbmuYMQAAL9ECuEzZisz/0VLKLtxVJatVcwKGiZcv5BHCRuurWToWF
+         mSdg==
+X-Gm-Message-State: AOAM53380riN5zNEFjdg9OXxP78xJIIYv89QqZhWCpOIVaKGoC+94HVy
+        SHhBEclTUTv9FcKYdgWakw1F4g==
+X-Google-Smtp-Source: ABdhPJzOOX3Ge/keGa+MRHcrzVM9fOR+XRs85V4bqiqf/c8ZmTZa30jgQmtVDlB3V2CsRcWpJ8oSeA==
+X-Received: by 2002:a17:903:22cf:b0:15e:cf4e:79c9 with SMTP id y15-20020a17090322cf00b0015ecf4e79c9mr7334366plg.54.1652489763178;
+        Fri, 13 May 2022 17:56:03 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id fv7-20020a17090b0e8700b001cd4989fecfsm4170476pjb.27.2022.05.13.17.56.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 17:56:01 -0700 (PDT)
+Date:   Sat, 14 May 2022 00:55:58 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     David Matlack <dmatlack@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ben Gardon <bgardon@google.com>
+Subject: Re: [PATCH 1/2] KVM: x86/mmu: Drop RWX=0 SPTEs during ept_sync_page()
+Message-ID: <Yn7+HrYbXhror09V@google.com>
+References: <20220513195000.99371-1-seanjc@google.com>
+ <20220513195000.99371-2-seanjc@google.com>
+ <CALzav=d36gccJv345Phdr0AJx9=6=TP=iZ60dscgQr64Rq4Kew@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220513185340.239753-1-masahiroy@kernel.org>
+In-Reply-To: <CALzav=d36gccJv345Phdr0AJx9=6=TP=iZ60dscgQr64Rq4Kew@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Masahiro,
+On Fri, May 13, 2022, David Matlack wrote:
+> On Fri, May 13, 2022 at 12:50 PM Sean Christopherson <seanjc@google.com> wrote:
+> >
+> > Drop SPTEs whose new protections will yield a RWX=0 SPTE, i.e. a SPTE
+> > that is marked shadow-present but is not-present in the page tables.  If
+> > EPT with execute-only support is in use by L1, KVM can create a RWX=0
+> > SPTE can be created for an EPTE if the upper level combined permissions
+> > are R (or RW) and the leaf EPTE is changed from R (or RW) to X.
+> 
+> For some reason I found this sentence hard to read.
 
-I love your patch! Yet something to improve:
+Heh, probably because "KVM can create a RWX=0 SPTE can be created" is nonsensical.
+I botched a late edit to the changelog...
 
-[auto build test ERROR on masahiroy-kbuild/for-next]
-[also build test ERROR on linux/master linus/master v5.18-rc6 next-20220513]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> What about this:
+> 
+>   When shadowing EPT and NX HugePages is enabled, if the guest changes
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Masahiro-Yamada/kbuild-copy-scripts-atomic-atomic-h-to-include-generated-atomic-h/20220514-025623
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git for-next
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220514/202205140803.I96fumS7-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 38189438b69ca27b4c6ce707c52dbd217583d046)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/3f6dd60121830fdd3733dd804d9ae163d88acc98
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Masahiro-Yamada/kbuild-copy-scripts-atomic-atomic-h-to-include-generated-atomic-h/20220514-025623
-        git checkout 3f6dd60121830fdd3733dd804d9ae163d88acc98
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 prepare
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from scripts/mod/devicetable-offsets.c:3:
-   In file included from include/linux/mod_devicetable.h:13:
-   In file included from include/linux/uuid.h:12:
-   In file included from include/linux/string.h:20:
-   In file included from arch/x86/include/asm/string.h:5:
-   In file included from arch/x86/include/asm/string_64.h:6:
-   In file included from include/linux/jump_label.h:256:
-   In file included from include/linux/atomic.h:80:
->> include/linux/atomic/atomic-arch-fallback.h:2:10: fatal error: 'generated/atomic-arch-fallback.h' file not found
-   #include <generated/atomic-arch-fallback.h>
-            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
-   make[2]: *** [scripts/Makefile.build:121: scripts/mod/devicetable-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1194: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +2 include/linux/atomic/atomic-arch-fallback.h
-
-   > 2	#include <generated/atomic-arch-fallback.h>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+This doesn' thave anything to do with NX HugePages, it's an execute-only specific
+bug where L1 can create a gPTE that is !READABLE but is considered PRESENT because
+it is EXECUTABLE.  If the upper level protections are R or RW, the resulting
+protections for the entire translation are RWX=0.  All of sync_page()'s existing
+checks filter out only !PRESENT gPTE, because without execute-only, all upper
+levels are guaranteed to be at least READABLE.
