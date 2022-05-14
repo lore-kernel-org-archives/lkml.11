@@ -2,141 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F167AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA399C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:28:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233295AbiENO14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 10:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
+        id S233298AbiENO2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 10:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233155AbiENO1v (ORCPT
+        with ESMTP id S233136AbiENO2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 10:27:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C366B2BA;
-        Sat, 14 May 2022 07:27:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A6B660F02;
-        Sat, 14 May 2022 14:27:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECE01C340EE;
-        Sat, 14 May 2022 14:27:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652538469;
-        bh=PyuhuQtevyldQ5YwVAm3vJo7rj0yjNlAxJbFhH2D4C4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eVAwtu8PXM9fahwFSHqkHOj5ZFBQ+9liG8tanBNARTgdq+iJWR7qyOt+0fI/JeFaK
-         5MPZ2jUb7hFhtdtBtkkmpEg8i9vXBxzEeReWBJJzD6/JT9671kbBejiZntgB9tMTeS
-         /PgUfaDzSyV8jE3aQWPo3oVBem0QZkScIF6fNZSoJ60QrXKotJegzm95zSPb3rBbJl
-         vGyP58iZYx1MtWwgiu025yLX+Dct4fRXtfFjXVG3j2v/fDmbfwBqv6Bg4/iKCoII4u
-         +mVCcjCihgYvyvg8whmSDMV4B4vqrwdu6omqYjde6ZTT29CW0tx2F6ABnml+Wp8NtK
-         pPsLYahlvaYXA==
-Date:   Sat, 14 May 2022 15:36:25 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     lars@metafoo.de, andriy.shevchenko@linux.intel.com,
-        sean@geanix.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: bmi160: Fix the error handling at
- bmi160_chip_init()
-Message-ID: <20220514153625.18c4d9f8@jic23-huawei>
-In-Reply-To: <20220513143513.2284425-1-zheyuma97@gmail.com>
-References: <20220513143513.2284425-1-zheyuma97@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 14 May 2022 10:28:46 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC84C2BA;
+        Sat, 14 May 2022 07:28:44 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id bd25-20020a05600c1f1900b0039485220e16so6391183wmb.0;
+        Sat, 14 May 2022 07:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OWBF7wNMgBnw/1Dr330eDqqa7w483SgU45I//Zy0x+k=;
+        b=e5MBLV+T41NZUb1/+LitSnC7oXj//fBqt4glWDxiLsveSFRuZeLJ1I66lsUMuOg3VG
+         MxHoqHmf9jp7koSILZmjW0jvecEWlOCslfzSsvgnQ5FFjhg2OgEmcXrw7Buszx9MIU1B
+         L0kP3PEqiEN5U1MAshZ9p8H3oXeiezMyYzsqfk1phILHb6N7/KtrwSVPWyn8JEox7KQX
+         Bol1ixsLlqV57a1aHB+bM3csQVoIy9FGYh0bKB9XGl9o85nxIxCocl1pYZGZKtbpATXz
+         BPwVB9nEY93bxxqMHoGnf+O524ZCGBB9IBkTjS2IhNZFLchfAB97jDXN23g5XBGY9NFB
+         Qjbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OWBF7wNMgBnw/1Dr330eDqqa7w483SgU45I//Zy0x+k=;
+        b=ZUhpgedQbc59R7FsFbNWksonGGL30fnifQ1rZZ4epGq9TJ1GbqtfwxZSjkBMY1f6kK
+         xFSYc5oweiywN7UJJxDEvrgw1s2yY55oIqCEjUdmsMUCEQTCzkwEImNsM8Dp4VJS6kTd
+         FnmwtodPbeeSoOVnG8znqBCKlGHftGeaYXEPkHglrwzsU4Ra4YXFrmc/mqS2Q7flqAUw
+         YXK6PxLd48LpSU8Y3sIQFCBJKABelKokO/NydQgxC1aVzfUjNMtyg/Pgz7zfPwMymtnk
+         +AhOI6cA7gJXzMJdvgdG9SAsYLVpoTjC3bDK4Nl83LnClF7Ot8eyhev1+76Qa5cS+JLm
+         B9sQ==
+X-Gm-Message-State: AOAM532N2b5eHk0nejX1VI/pfah7663vgsdHbJo2W7vUYB7Swg5HcbOQ
+        tbTl+lqsB9UG3Tc5Ff/dHcFLGTtk6MA=
+X-Google-Smtp-Source: ABdhPJyi6VCEDGuTnagRLvPlFe+GPrELZ3QSnQZ+cTcauWlHFR3PTmiy8d9hs6NUz2iK6AUwn1IleA==
+X-Received: by 2002:a05:600c:3595:b0:394:8343:a66d with SMTP id p21-20020a05600c359500b003948343a66dmr19715566wmq.49.1652538523340;
+        Sat, 14 May 2022 07:28:43 -0700 (PDT)
+Received: from debian (host-2-98-37-191.as13285.net. [2.98.37.191])
+        by smtp.gmail.com with ESMTPSA id y15-20020a05600c364f00b003945237fea1sm5400156wmq.0.2022.05.14.07.28.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 May 2022 07:28:43 -0700 (PDT)
+Date:   Sat, 14 May 2022 15:28:41 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/15] 4.19.243-rc1 review
+Message-ID: <Yn+8mTKCtT5+MbJm@debian>
+References: <20220513142227.897535454@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513142227.897535454@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 13 May 2022 22:35:13 +0800
-Zheyu Ma <zheyuma97@gmail.com> wrote:
+Hi Greg,
 
-> When the driver fails in bmi160_chip_init(), it should disable the
-> regulator.
+On Fri, May 13, 2022 at 04:23:22PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.243 release.
+> There are 15 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> The following log shows it:
-> 
-> [   18.709662] WARNING: CPU: 0 PID: 294 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-> [   18.712069] RIP: 0010:_regulator_put+0x3ec/0x4e0
-> [   18.716395] Call Trace:
-> [   18.716522]  <TASK>
-> [   18.716636]  regulator_bulk_free+0x82/0xe0
-> [   18.717077]  i2c_device_probe+0x6f0/0x800
-> 
-> Fixes: 5dea3fb066f0 ("iio: imu: bmi160: added regulator support")
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
+> Anything received after that time might be too late.
 
-Hi,
+Build test:
+mips (gcc version 12.1.0): 63 configs -> no  failure
+arm (gcc version 12.1.0): 116 configs -> no new failure
+arm64 (gcc version 12.1.0): 2 configs -> no failure
+x86_64 (gcc version 12.1.0): 4 configs -> no failure
 
-Good find, but Tong Zhang got their first and the resulting patch
-fixes an additional issue missed in this fix. See below.
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
 
-Jonathan
-
-> ---
->  drivers/iio/imu/bmi160/bmi160_core.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index 824b5124a5f5..33abfc2bbd7c 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -730,7 +730,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
->  
->  	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
->  	if (ret)
-> -		return ret;
-> +		goto err_regulator_disable;
->  
->  	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
->  
-> @@ -741,29 +741,34 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
->  	if (use_spi) {
->  		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
->  		if (ret)
-> -			return ret;
-> +			goto err_regulator_disable;
->  	}
->  
->  	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
->  	if (ret) {
->  		dev_err(dev, "Error reading chip id\n");
-> -		return ret;
-> +		goto err_regulator_disable;
->  	}
->  	if (val != BMI160_CHIP_ID_VAL) {
->  		dev_err(dev, "Wrong chip id, got %x expected %x\n",
->  			val, BMI160_CHIP_ID_VAL);
-> -		return -ENODEV;
-> +		ret = -ENODEV;
-> +		goto err_regulator_disable;
->  	}
->  
->  	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
->  	if (ret)
-> -		return ret;
-> +		goto err_regulator_disable;
->  
->  	ret = bmi160_set_mode(data, BMI160_GYRO, true);
->  	if (ret)
-
-A failure here does not disable the accelerometer (which is done
-in the uninit() function which we we never end
-up running.
+[1]. https://openqa.qa.codethink.co.uk/tests/1137
 
 
-> -		return ret;
-> +		goto err_regulator_disable;
->  
->  	return 0;
-> +
-> +err_regulator_disable:
-> +	regulator_bulk_disable(ARRAY_SIZE(data->supplies), data->supplies);
-> +	return ret;
->  }
->  
->  static int bmi160_data_rdy_trigger_set_state(struct iio_trigger *trig,
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
 
