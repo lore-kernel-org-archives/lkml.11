@@ -2,103 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88678C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 00:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13485C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 01:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229455AbiENA6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 20:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46874 "EHLO
+        id S229503AbiENBET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 21:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiENA6S (ORCPT
+        with ESMTP id S229490AbiENBEP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 20:58:18 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FC232FA00
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:34:44 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id fy8-20020a17090b020800b001d8de2118ccso4637843pjb.8
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:34:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=CleGR40pCscZ7DX+JE9UL8AwIhXuuwyZAmYy00HxsZE=;
-        b=GKcrB79yedOhvremqRqfx2EEtubE/eyN0JrwxnHMy1Nx5PykTiyD7nKel0Omg5vymk
-         6XX1h8zMRXwXQMbT9RWJmwqZWKb0uZhG8k4UUQ0NijUkhOsxW4JoBuv4+kVdbrVWp1Y6
-         ANGUeQs7HysTo/cvIGwnNRxClRcgw8YP9fFPN/zE24iVnz/Wp1Lu0Blha36/yfJcIYkk
-         DUhmk0ld4NSUFFuYCRhJCBYugyyQrSl8xSR4hdwGCx8z1keAmANLb5uj3zhIC262iZ8D
-         sPvVId0WqsDtgIV3143I4tddKV9UtH9vVwku4d47YnGCiWKoYt0K2kmN7CiP63D/Bvtw
-         o/CQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=CleGR40pCscZ7DX+JE9UL8AwIhXuuwyZAmYy00HxsZE=;
-        b=xmYykoCHdhHv4LmyL0EG6OXoH9laxtzgxZCEowk192BJzeaiYR80aUEddgsLgCoQDA
-         fxfhdXeJv3APVao6KCIwRuWQ/V4uj7Su1J1GcmLgaRpmsnaeJ3NrVvSn2vFM2WxKvXfy
-         dIQGNBrPomseOn8H3A1M6zZvMZ/uVxZ50bnX9MYqnpT54O+06OrVXc+5eaTeES0UOnzc
-         K5cvcjRcK8xaom+AYNjDvjM6NKsgeI+fYno/FQzSdm4TlHrd/ndzGZdrtii3GoOL+phK
-         jWWFatInqWH+6yJDI0sszBTMyhftxCWoWRqzWfRgASjnO0FhEyDBABOSTNYqUbPBgVww
-         hFxA==
-X-Gm-Message-State: AOAM532NOBLPW4IS7xDvZTvDThmQtbyetyUY1+tCD3aWpvCawn69bF2V
-        mxJ4KdKulH5lB3tAur2koj5X/OLbHiSSFHav
-X-Google-Smtp-Source: ABdhPJxywSRLaodpDSsq62D/NbDNNlbxqYbHUFeNFrs/LghHREk6Ui4Slhk+CDu0AZbxFPQdBk8KqU7Oq8cMJvKD
-X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a05:6a00:1d8f:b0:510:9397:65b with SMTP
- id z15-20020a056a001d8f00b005109397065bmr6927932pfw.57.1652487684383; Fri, 13
- May 2022 17:21:24 -0700 (PDT)
-Date:   Sat, 14 May 2022 00:21:15 +0000
-Message-Id: <20220514002115.1376033-1-yosryahmed@google.com>
+        Fri, 13 May 2022 21:04:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2281349108
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:39:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDB65B8324B
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 00:18:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2731C385AA;
+        Sat, 14 May 2022 00:18:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652487493;
+        bh=kw3CRHi4r3zW24bJ9aMXizk9Hol6hDRCL5ptaAt/ldM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pYJQJ1zMoJadGRgSmqDeHSNHpimlTYl8VVS+moIM1ed2Y2BVr7ddCBr/x6nJPh1WF
+         gnNRVqVi0H63lD3X6rthMOfaygHE2kk37joJ20Ti3ySjfeRQ/c6UcQPnHSPxwlEcjQ
+         VZWoBVPghrfFIfz7lTuaElxlzaLLFzeXMKe5/djQ=
+Date:   Fri, 13 May 2022 17:18:11 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
+        syzbot <syzbot+acf65ca584991f3cc447@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        llvm@lists.linux.dev, nathan@kernel.org, ndesaulniers@google.com,
+        syzkaller-bugs@googlegroups.com, trix@redhat.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        John Hubbard <jhubbard@nvidia.com>,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [syzbot] WARNING in follow_hugetlb_page
+Message-Id: <20220513171811.3604fb2da04615100c5ed160@linux-foundation.org>
+In-Reply-To: <Yn7vnpXwX50J3K+7@google.com>
+References: <000000000000ef451a05dee0f2b1@google.com>
+        <00000000000077377c05dee75f63@google.com>
+        <20220513102617.c464c4f566052838e911a3ec@linux-foundation.org>
+        <75f09063-d184-7d44-17a1-ed04be5eb953@oracle.com>
+        <a7fd0c3f-921e-19b3-2f67-a231dede28f9@oracle.com>
+        <20220513161910.d1b73583cdb2e33562aa86e5@linux-foundation.org>
+        <Yn7vnpXwX50J3K+7@google.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [PATCH bpf-next v2] selftests/bpf: fix building bpf selftests statically
-From:   Yosry Ahmed <yosryahmed@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bpf selftests can no longer be built with CFLAGS=-static with
-liburandom_read.so and its dependent target.
+On Fri, 13 May 2022 16:54:06 -0700 Minchan Kim <minchan@kernel.org> wrote:
 
-Filter out -static for liburandom_read.so and its dependent target.
+> > > >> has been there over a month so I guess it's something else.  Does
+> > > >> someone have the time to bisect?
+> > > > 
+> > > > I can recreate in my 'easy to debug' environment, so I can bisect in
+> > > > parallel with other things I need to do today.
+> > > > 
+> > > 
+> > > I isolated this to Minchan Kim's "mm: fix is_pinnable_page against on cma
+> > > page".  Yes, the fat finger fix is in next-20220513.
+> > > 
+> > > I don't have time to analyze right now, but can confirm that in the
+> > > reproducer is_pinnable_page is returning false after this change when it
+> > > previously returned true.
+> > 
+> > OK, thanks, I dropped mm-fix-is_pinnable_page-against-on-cma-page.patch
+> 
+> Seems like bug of the patch v5 due to change of this
+> 
+>     if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
+> 
+> The migration type is not bit type so it shold be 
+> 
+> if (mt == MIGRATE_CMA || mt == MIGRATE_ISOLATE)
+> 
 
-When building statically, this leaves urandom_read relying on
-system-wide shared libraries.
+argh, I meant to check that change but the grey cell died.
 
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
----
- tools/testing/selftests/bpf/Makefile | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+I'll bring it back, with
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 6bbc03161544..4030dd6cbc34 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -168,13 +168,15 @@ $(OUTPUT)/%:%.c
- 	$(call msg,BINARY,,$@)
- 	$(Q)$(LINK.c) $^ $(LDLIBS) -o $@
+--- a/include/linux/mm.h~mm-fix-is_pinnable_page-against-on-cma-page-fix
++++ a/include/linux/mm.h
+@@ -1635,7 +1635,7 @@ static inline bool is_pinnable_page(stru
+ 	int __mt = get_pageblock_migratetype(page);
+ 	int mt = __READ_ONCE(__mt);
  
-+# Filter out -static for liburandom_read.so and its dependent targets so that static builds
-+# do not fail. Static builds leave urandom_read relying on system-wide shared libraries.
- $(OUTPUT)/liburandom_read.so: urandom_read_lib1.c urandom_read_lib2.c
- 	$(call msg,LIB,,$@)
--	$(Q)$(CC) $(CFLAGS) -fPIC $(LDFLAGS) $^ $(LDLIBS) --shared -o $@
-+	$(Q)$(CC) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $^ $(LDLIBS) -fPIC -shared -o $@
+-	if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
++	if (mt == MIGRATE_CMA || mt == MIGRATE_ISOLATE)
+ 		return false;
+ #endif
  
- $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_read.so
- 	$(call msg,BINARY,,$@)
--	$(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.c,$^)			       \
-+	$(Q)$(CC) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $(filter %.c,$^)  \
- 		  liburandom_read.so $(LDLIBS)	       			       \
- 		  -Wl,-rpath=. -Wl,--build-id=sha1 -o $@
- 
--- 
-2.36.0.550.gb090851708-goog
+_
 
