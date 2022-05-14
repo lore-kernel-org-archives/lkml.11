@@ -2,93 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5FF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5ED1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234147AbiENQJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 12:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52588 "EHLO
+        id S234120AbiENQKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 12:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234125AbiENQJJ (ORCPT
+        with ESMTP id S231703AbiENQKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 12:09:09 -0400
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B327F0C
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:09:07 -0700 (PDT)
-Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 24EG8hOe024205
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 01:08:44 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 24EG8hOe024205
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652544524;
-        bh=sz2XzzgYNDJvTzd0PRzJk/pGT+oU5urGUxAfMIxIabo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=oK5kf/bmCwIhV8nViceFmeVwRbq1DrZSJBIUViYf9LR4AaRR/Z7usZPDa+/XqKchv
-         cF9T1oPfW03F0239yTbOJpOKSVKrkXBG3BUOsu/hZkmGknhqnrSh7hIKQVC0uFxRS6
-         nEKNTBG4Pz2mBi3b9frg6J1p063PDwMkknpZy15aO8DspLvg0iroORyG7UANtJR6oy
-         BnyAS5SOqhorOTefxGQrMWqRTg/YFUD4z22+gIwOMsSTgFzB6q/6GuYplcBeb6Jr28
-         Z4tDmF6cmkuvLJ0wMHxazle7YTTtOGoKYEfJt2CUc2FsVLPtwtNhYtA8MXhLrn2k1H
-         AZqRufwQzqKmw==
-X-Nifty-SrcIP: [209.85.215.179]
-Received: by mail-pg1-f179.google.com with SMTP id v10so10193785pgl.11
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:08:44 -0700 (PDT)
-X-Gm-Message-State: AOAM53197xEUqBXhiovtY9NEPeEpad09FmDKfQgx2Wl0ykM+9FSi4YuV
-        fZ2fxbfMnUILOzwnHdrsIenVApSsREf9xdVahfU=
-X-Google-Smtp-Source: ABdhPJz+MjOpLsj7WYejiogsvPh1TNXDi5ermnU5gurzP0umx5V8HeXIbwByRv6NY7Wf0+x/a7c9xeSWVDpt3+FAz1o=
-X-Received: by 2002:a05:6a00:234f:b0:4fa:f52b:46a1 with SMTP id
- j15-20020a056a00234f00b004faf52b46a1mr9648452pfj.32.1652544523203; Sat, 14
- May 2022 09:08:43 -0700 (PDT)
+        Sat, 14 May 2022 12:10:30 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D9519C26
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:10:29 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id r1so20226123ybo.7
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:10:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=gE6MkiEEeLCD45NUwOwjJ66HAqwYJPy4L3Othuorgfg=;
+        b=T+Kz6ULiQwTEEx35wwUENkM5czt1bdXmIdlzyQoyPUhU4wODz+mFKLE1XtqyNhj6Wk
+         hq26xKmLxVTp/7swNDxKA+jmvDBYZ+asLXYVPLpl1bpFgzWfTKqS3/i7GKpg3DeJP7F3
+         vPfvrz+XlidBs+AsogX/hfEMUPGbTcqs/lnFln6zvUPn8Ylzh8AYG8M0yuFMtd8Umt3s
+         Jt3qRjd75RawjcVLjnktvZ7S7DO/lWty0LLXUeagnYNO4+prmZgElOk3cH2IklSVmpgI
+         wOfhJ8rBFftGyWpQve+agGq4J1UkPLax6/aZ0LNmzLMzdjf62lrxgyywiPfRvHSKb5EA
+         Ocrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gE6MkiEEeLCD45NUwOwjJ66HAqwYJPy4L3Othuorgfg=;
+        b=IUAnn6WIydl8Bzj6ynqLV2QdnkiT7eYLaTKb9UqlKeFaWvO11YttP1skq1JmaRFvlz
+         zUun0Y5WwvKkNKkHHk7heCZz2BUidK5ulzNE9ayWeZLZgnY5Mo3NXFB2luUIZshi7PzT
+         QzmWYiPbDpiArtpzwSXkicWo/08EH93Sn4MQFVbDoSlexRS3g/0kc55/CCsaah0LWkkN
+         mTWZYxjRHKlqvGw8pvwzg3gKaCVzFXUbnOh6fLEGRCM0zVx8oi4FMd/5c3jfi63D9O+V
+         tquvhbyAfysQJXhZ5450LU5HuWnW3elWrTg4KVwMSmuLsmIyDyFgnTlLM5M/+awwy0ez
+         2IvQ==
+X-Gm-Message-State: AOAM531DZLynPv1xgKpEPjmqfEJrD73favhMUfopFyJsDvh58VBTS335
+        k4zkBcnb61mX/7LJeuoH0EamtRxScnQfZ320kyz1nQ==
+X-Google-Smtp-Source: ABdhPJwtRs+Y1Hioc9z2KVg0VNt1BsSNO0GqyEgof4XeeQ6yrifdMuUXCbryL4ZutsX4DIlbHACLRGlDvUJOiI8V3T8=
+X-Received: by 2002:a05:6902:704:b0:649:cadc:bcf0 with SMTP id
+ k4-20020a056902070400b00649cadcbcf0mr10091833ybt.537.1652544628987; Sat, 14
+ May 2022 09:10:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220426155229.436681-1-mailhol.vincent@wanadoo.fr>
- <20220507131146.834810-1-mailhol.vincent@wanadoo.fr> <20220507131146.834810-3-mailhol.vincent@wanadoo.fr>
- <CAK7LNATuvQhiZZ8A9+RcLYKmbugi6S61Aw5CStc3xbfGM-L34Q@mail.gmail.com> <20220514131448.GL76023@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220514131448.GL76023@worktop.programming.kicks-ass.net>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sun, 15 May 2022 01:07:27 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATUMfyqiWeZeZJCVO74XtQ1Bw-MN7bcaTZ1pgQy8H2Ehg@mail.gmail.com>
-Message-ID: <CAK7LNATUMfyqiWeZeZJCVO74XtQ1Bw-MN7bcaTZ1pgQy8H2Ehg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 2/2] kbuild: call check-atomics.sh only if
- prerequisites change
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Will Deacon <will@kernel.org>
+References: <20220513142225.909697091@linuxfoundation.org>
+In-Reply-To: <20220513142225.909697091@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 14 May 2022 21:40:17 +0530
+Message-ID: <CA+G9fYuZz_sCMz1UYqx+JigsUDtn5Ub-g3k0icm0yf40wcbM+w@mail.gmail.com>
+Subject: Re: [PATCH 4.9 0/7] 4.9.314-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 10:15 PM Peter Zijlstra <peterz@infradead.org> wrote:
+On Fri, 13 May 2022 at 19:54, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> On Sat, May 14, 2022 at 04:01:18AM +0900, Masahiro Yamada wrote:
-> > I wrote a different patch.
-> > https://lore.kernel.org/lkml/20220513185340.239753-1-masahiroy@kernel.org/T/#u
+> This is the start of the stable review cycle for the 4.9.314 release.
+> There are 7 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> I'm not seeing that in my inbox :-(
+> Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
+> Anything received after that time might be too late.
 >
-> AFAICT this way 'make tags' will not find and index the files, which is
-> a total no-go.
-
-Not only these, we have more generated files.
-Why are these bad?
-
-Also, "make tags" picks up headers in include/generated/
-
-
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.9.314-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.9.y
+> and the diffstat can be found below.
 >
-> NAK
+> thanks,
+>
+> greg k-h
 
-I consider NAK as "I do not like it".
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 4.9.314-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.9.y
+* git commit: 0d0d580b3778c2a438b6315b8f80b87835d1f3e1
+* git describe: v4.9.313-8-g0d0d580b3778
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y/build/v4.9.3=
+13-8-g0d0d580b3778
 
--- 
-Best Regards
-Masahiro Yamada
+## Test Regressions (compared to v4.9.312-67-gbc7a724ac0ce)
+No test regressions found.
+
+## Metric Regressions (compared to v4.9.312-67-gbc7a724ac0ce)
+No metric regressions found.
+
+## Test Fixes (compared to v4.9.312-67-gbc7a724ac0ce)
+No test fixes found.
+
+## Metric Fixes (compared to v4.9.312-67-gbc7a724ac0ce)
+No metric fixes found.
+
+## Test result summary
+total: 64906, pass: 51271, fail: 739, skip: 11179, xfail: 1717
+
+## Build Summary
+* arm: 238 total, 238 passed, 0 failed
+* arm64: 32 total, 32 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 19 total, 19 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 22 total, 22 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 31 total, 31 passed, 0 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kselftest-zram[
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
