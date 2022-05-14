@@ -2,121 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F43C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232346AbiENOSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 10:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
+        id S233183AbiENOUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 10:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233188AbiENOR4 (ORCPT
+        with ESMTP id S233136AbiENOUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 10:17:56 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37E0DFE9;
-        Sat, 14 May 2022 07:17:42 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id b12so1138365pju.3;
-        Sat, 14 May 2022 07:17:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZEhSGoMoojYAD36SANNLcism31dWp4f4Nf5+aItJuTY=;
-        b=jbklFPhslW+4+HkKyrtVXePxSFmMiySYB9NlkM82qwUxV8msgdLqyTMXdM5J1D4Sj3
-         ee47pqFiYwtIU5YThhtubn4Xepiuv3+7H1I83C3XZV6H1nFWvUm3RnPZ5TNjUj+hfoq9
-         G4W+V62LmFEBFcc8Qkn2M8/ai4vSycDl7R/rfvkYvg359NOM7aUrW7kYA6QVM8vebaH8
-         0c2kVrNGpB5WMhFGulffw2N8wwhSTwgZpJYTsgVVKocnLBinHyXR4PLcc1lc6rvbY+gp
-         kc9tWTnBCojyNcT41fq6r6eRMfexRZ9Bqf+WdfcICVefWdyxaVwJNOis3qhjbbxMltva
-         BN2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=ZEhSGoMoojYAD36SANNLcism31dWp4f4Nf5+aItJuTY=;
-        b=PRZAyr4lvlZ9TTPN6qoNbCAL0dz9enMw0R7T9V2qzBi1ZVZJJDglZkBBaJKmz4KMQ7
-         fclA4oEbIAI/qfQ3E/CrE76TgazbaP7DbbXT649b5El/QaFXJ334S4ET1psw+EvkbKiv
-         ujSR6mTykx55WoPCCQxnpLddK4NiZ+vvvssX9OrVyjkhbMsr/FijPAxRyZVP/prVZ38d
-         Q4r6Z+gTSjZ7aiEWxqMjcRPAJyF5NXaBVtVsWpm4UxfcKPRbMxBbbRn3OUgfBcsMvMK/
-         G9YPtNZfVhUUXAI/HmcrF6JdWmJyNdJoNk0MRwfvfgGgrleDXZ1HWiSc7NRLqmCSctrR
-         GmQQ==
-X-Gm-Message-State: AOAM531NPEa234VDX+YOWkNWHZbeOlGUHYYHm/vxFaMJKmiAVB2dEaO7
-        1KIfwNactg+GYttW5om0lGE=
-X-Google-Smtp-Source: ABdhPJzUSRBGx8S6BfJhi0bU2llugcyFbguZzUWUlbDGCnMW6DC9OHT0oX2pZFcdesE+mCKW/C6CxA==
-X-Received: by 2002:a17:90b:4a4a:b0:1dc:4731:31a4 with SMTP id lb10-20020a17090b4a4a00b001dc473131a4mr10171413pjb.19.1652537862493;
-        Sat, 14 May 2022 07:17:42 -0700 (PDT)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id x8-20020a17090a530800b001cd4989feccsm5298541pjh.24.2022.05.14.07.17.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 May 2022 07:17:42 -0700 (PDT)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v3 4/4] can: dev: drop tx skb if in listen only mode
-Date:   Sat, 14 May 2022 23:16:50 +0900
-Message-Id: <20220514141650.1109542-5-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
+        Sat, 14 May 2022 10:20:37 -0400
+Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 173329FD2;
+        Sat, 14 May 2022 07:20:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=fs7xO
+        mXbGEknwJrqsFpipHU+pL7BLI3UV/BiTzqh4uk=; b=mPfx/jPWdKRyT+J4Y+tMp
+        eYKLGBWgQXgAQZ9qr0oLjpWI6FlZy88RHqzbHR9tIWsfQYoUbrOJ/Jj6sYPjfQLm
+        j5QPX3NxZosKFvmnkk+Irw1hzN+dm4+QPEiX7x3g24mSyvx8VbB3/aqCMIdL+ytx
+        af3TrdMBx4RQbB0I4T6XaI=
+Received: from localhost (unknown [223.74.106.63])
+        by smtp9 (Coremail) with SMTP id DcCowAA3Py98un9iKCZdCw--.42048S2;
+        Sat, 14 May 2022 22:19:41 +0800 (CST)
+From:   Junwen Wu <wudaemon@163.com>
+To:     rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
+        rui.zhang@intel.com
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Junwen Wu <wudaemon@163.com>
+Subject: [PATCH v2] thermal/core: Make trans_table tunnable to avoid some needless zero output
+Date:   Sat, 14 May 2022 14:19:32 +0000
+Message-Id: <20220514141932.53938-1-wudaemon@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcCowAA3Py98un9iKCZdCw--.42048S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxtr1fZF4fWF1kKFykWr1xZrb_yoW7uF4rpF
+        nxJa4Y9r4UX3WkGay3Jr4DX3sY9F1Sqa47JFZ7K3s5KF4UJ3sxXFyDJry2yrW5GrWkuFy3
+        K3Wqvr98C3yUtFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pioUDdUUUUU=
+X-Originating-IP: [223.74.106.63]
+X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbisQEBbVXlqDM-GAABsR
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Frames can be directly injected to a can driver via the packet
-socket. By doing that, it is possible to reach the
-net_device_ops::ndo_start_xmit function even if the driver is
-configured in listen only mode.
+Very high cooling device max state value make trans_table node
+prompt File too large. We introduce show_state node, tunnable
+by user,thus trans_table only show show_state'th trans count to
+the max trans count, in this way trans_table_show's buffer is
+always less than PAGE_SIZE and shows the important changes.
 
-Add a check in can_dropped_invalid_skb() to discard the skb if
-CAN_CTRLMODE_LISTENONLY is set.
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Junwen Wu <wudaemon@163.com>
 ---
- drivers/net/can/dev/skb.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/thermal/thermal_sysfs.c | 111 +++++++++++++++++++++++++-------
+ 1 file changed, 86 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
-index 8b1991130de5..f7420fc43b99 100644
---- a/drivers/net/can/dev/skb.c
-+++ b/drivers/net/can/dev/skb.c
-@@ -5,6 +5,7 @@
-  */
+diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
+index f154bada2906..bb8627aa49b7 100644
+--- a/drivers/thermal/thermal_sysfs.c
++++ b/drivers/thermal/thermal_sysfs.c
+@@ -656,6 +656,7 @@ struct cooling_dev_stats {
+ 	spinlock_t lock;
+ 	unsigned int total_trans;
+ 	unsigned long state;
++	unsigned long show_state;
+ 	unsigned long max_states;
+ 	ktime_t last_time;
+ 	ktime_t *time_in_state;
+@@ -752,38 +753,93 @@ reset_store(struct device *dev, struct device_attribute *attr, const char *buf,
+ 	return count;
+ }
  
- #include <linux/can/dev.h>
-+#include <linux/can/netlink.h>
- 
- /* Local echo of CAN messages
-  *
-@@ -286,6 +287,7 @@ static bool can_skb_headroom_valid(struct net_device *dev, struct sk_buff *skb)
- bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
+-static ssize_t trans_table_show(struct device *dev,
+-				struct device_attribute *attr, char *buf)
++static ssize_t
++show_state_store(struct device *dev, struct device_attribute *attr, const char *buf,
++		size_t count)
  {
- 	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
-+	struct can_priv *priv = netdev_priv(dev);
+ 	struct thermal_cooling_device *cdev = to_cooling_device(dev);
+ 	struct cooling_dev_stats *stats = cdev->stats;
+-	ssize_t len = 0;
+-	int i, j;
++	unsigned long state;
++	ssize_t ret;
  
- 	if (skb->protocol == htons(ETH_P_CAN)) {
- 		if (unlikely(skb->len != CAN_MTU ||
-@@ -299,8 +301,13 @@ bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
- 		goto inval_skb;
- 	}
+-	len += snprintf(buf + len, PAGE_SIZE - len, " From  :    To\n");
+-	len += snprintf(buf + len, PAGE_SIZE - len, "       : ");
+-	for (i = 0; i < stats->max_states; i++) {
+-		if (len >= PAGE_SIZE)
+-			break;
+-		len += snprintf(buf + len, PAGE_SIZE - len, "state%2u  ", i);
+-	}
+-	if (len >= PAGE_SIZE)
+-		return PAGE_SIZE;
++	spin_lock(&stats->lock);
++
++	ret = kstrtoul(buf, 10, &state);
++	if (ret || (state > stats->max_states))
++		goto unlock;
  
--	if (!can_skb_headroom_valid(dev, skb))
-+	if (!can_skb_headroom_valid(dev, skb)) {
-+		goto inval_skb;
-+	} else if (priv->ctrlmode & CAN_CTRLMODE_LISTENONLY) {
-+		netdev_info_once(dev,
-+				 "interface in listen only mode, dropping skb\n");
- 		goto inval_skb;
+-	len += snprintf(buf + len, PAGE_SIZE - len, "\n");
++	stats->show_state = state;
++unlock:
++	spin_unlock(&stats->lock);
+ 
+-	for (i = 0; i < stats->max_states; i++) {
+-		if (len >= PAGE_SIZE)
+-			break;
++	return count;
++}
++
++static ssize_t
++show_state_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct thermal_cooling_device *cdev = to_cooling_device(dev);
++	struct cooling_dev_stats *stats = cdev->stats;
++
++	return sprintf(buf, "%lu\n", stats->show_state);
++}
+ 
+-		len += snprintf(buf + len, PAGE_SIZE - len, "state%2u:", i);
++/* find the kth largest in nums array*/
++static int find_show_state(int *nums, int numsSize, int k, unsigned int *max_value)
++{
++	int i, l, r, mid, cnt = 0, min = INT_MAX, max = 0;
+ 
+-		for (j = 0; j < stats->max_states; j++) {
+-			if (len >= PAGE_SIZE)
+-				break;
+-			len += snprintf(buf + len, PAGE_SIZE - len, "%8u ",
+-				stats->trans_table[i * stats->max_states + j]);
++	for (i = 0; i < numsSize; i++) {
++		min = nums[i] < min ? nums[i] : min;
++		max = nums[i] > max ? nums[i] : max;
 +	}
++	l = min;
++	r = max;
++	while (l < r) {
++		mid = r - (r - l) / 2;
++		for (i = 0; i < numsSize; i++) {
++			if (nums[i] >= mid)
++				cnt++;
++		}
++		if (cnt < k) {
++			r = mid - 1;
++			cnt = 0;
++		} else {
++			l = mid;
++			cnt = 0;
+ 		}
++	}
++
++	*max_value = max;
++
++	return l;
++}
++
++
++
++static ssize_t trans_table_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct thermal_cooling_device *cdev = to_cooling_device(dev);
++	struct cooling_dev_stats *stats = cdev->stats;
++	unsigned int show_state_value = 0;
++	unsigned int max_state_value = 0;
++	ssize_t len = 0;
++	int i, j;
++
++	len += snprintf(buf + len, PAGE_SIZE - len, " From  :    Index_change\n");
++	for (i = 0; i < stats->max_states; i++) {
++		show_state_value = find_show_state(&stats->trans_table[i * stats->max_states],
++				stats->max_states, stats->show_state, &max_state_value);
++		if (max_state_value)
++			len += snprintf(buf + len, PAGE_SIZE - len, "state%2u:", i);
++		else
++			continue;
++		for (j = 0; j < stats->max_states; j++)
++			if (stats->trans_table[i * stats->max_states + j] && (show_state_value <=
++						stats->trans_table[i * stats->max_states + j]))
++				len += snprintf(buf + len, PAGE_SIZE - len, "     ->%u(%u)", j,
++						stats->trans_table[i * stats->max_states + j]);
+ 		if (len >= PAGE_SIZE)
+ 			break;
+ 		len += snprintf(buf + len, PAGE_SIZE - len, "\n");
+@@ -793,6 +849,7 @@ static ssize_t trans_table_show(struct device *dev,
+ 		pr_warn_once("Thermal transition table exceeds PAGE_SIZE. Disabling\n");
+ 		return -EFBIG;
+ 	}
++
+ 	return len;
+ }
  
- 	return false;
+@@ -800,12 +857,14 @@ static DEVICE_ATTR_RO(total_trans);
+ static DEVICE_ATTR_RO(time_in_state_ms);
+ static DEVICE_ATTR_WO(reset);
+ static DEVICE_ATTR_RO(trans_table);
++static DEVICE_ATTR_RW(show_state);
+ 
+ static struct attribute *cooling_device_stats_attrs[] = {
+ 	&dev_attr_total_trans.attr,
+ 	&dev_attr_time_in_state_ms.attr,
+ 	&dev_attr_reset.attr,
+ 	&dev_attr_trans_table.attr,
++	&dev_attr_show_state.attr,
+ 	NULL
+ };
+ 
+@@ -829,7 +888,7 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
+ 	var += sizeof(*stats->time_in_state) * states;
+ 	var += sizeof(*stats->trans_table) * states * states;
+ 
+-	stats = kzalloc(var, GFP_KERNEL);
++	stats = kvzalloc(var, GFP_KERNEL);
+ 	if (!stats)
+ 		return;
+ 
+@@ -838,6 +897,8 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
+ 	cdev->stats = stats;
+ 	stats->last_time = ktime_get();
+ 	stats->max_states = states;
++	/* default set show_state = max_states/2 */
++	stats->show_state = states / 2;
+ 
+ 	spin_lock_init(&stats->lock);
+ 
+@@ -848,7 +909,7 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
+ 
+ static void cooling_device_stats_destroy(struct thermal_cooling_device *cdev)
+ {
+-	kfree(cdev->stats);
++	kvfree(cdev->stats);
+ 	cdev->stats = NULL;
+ }
  
 -- 
-2.35.1
+2.25.1
 
