@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F31C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9550CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbiENCwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
+        id S230002AbiENCxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiENCwf (ORCPT
+        with ESMTP id S229882AbiENCx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:52:35 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320B234CD35;
-        Fri, 13 May 2022 17:57:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652489854; x=1684025854;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vOdFNpVYPOQqVrglPzA6klVqup0LBeGqjPQesKgR29c=;
-  b=LH2i1bbVFUFGVHVTPGDc8aGlM4MrPb/+HAX8lDwYMIYxdTmFzqQ3XpKI
-   3tRD6mv5aQ5kAh8anq7Um56S4FZBM2MB0Exwq5DaCdFoT5Bs5XKWVgmva
-   Y54irM4qSUA/3V4aCt5YpnLLJnFs5V9+5x+uiBgOKADDD1fYEsSkNeYr7
-   /ec6UywQkjOcq4wvs08HvPL3qmkgTZFicEdk5maOYvCZ2q6jiqSOVyz8u
-   EKTw9c/d/8eJQ0gaKz1igEVAKZLtsF2jtTWnG2hIiYWOyNXeKqkoUx9cw
-   nq4GdxYn3hhIYX1RnP/4iPk+bkiWZZCh8mCBYhyCwJfpNrkFY1sgEjXr2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="333479190"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="333479190"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 17:31:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="595486968"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 13 May 2022 17:31:27 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npfgr-000MFV-Ql;
-        Sat, 14 May 2022 00:31:25 +0000
-Date:   Sat, 14 May 2022 08:30:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Serge Semin <fancer.lancer@gmail.com>
-Cc:     kbuild-all@lists.01.org,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 21/23] ata: ahci-dwc: Add platform-specific quirks
- support
-Message-ID: <202205140748.Lb7DqbPf-lkp@intel.com>
-References: <20220511231810.4928-22-Sergey.Semin@baikalelectronics.ru>
+        Fri, 13 May 2022 22:53:28 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCE835B1F7;
+        Fri, 13 May 2022 17:59:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=qyZsoJknrWOVDvtpNszTIIAof3pgi3xfB+EMxclimb4=; b=YUKlqPWGIDZvhXATbELAlppcVk
+        92/7Q/rIwsA0xahE9uRHrV3gPbUEYEv1caC2w8u4thxI4DZV33oa7K1SUXBsSPdiaPrKdyPix/5QH
+        oYl1lWBxbSzo2oFcsrRYadLQzEMPbCWhroO2ghC15gjxxUxR5c16PCzSrzvjpeagk87c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1npfZX-002hd6-UG; Sat, 14 May 2022 02:23:51 +0200
+Date:   Sat, 14 May 2022 02:23:51 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saravana Kannan <saravanak@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        John Stultz <jstultz@google.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [RFC PATCH net 0/2] Make phylink and DSA wait for PHY driver
+ that defers probe
+Message-ID: <Yn72l3O6yI7YstMf@lunn.ch>
+References: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220511231810.4928-22-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Serge,
+On Sat, May 14, 2022 at 02:36:38AM +0300, Vladimir Oltean wrote:
+> This patch set completes the picture described by
+> '[RFC,devicetree] of: property: mark "interrupts" as optional for fw_devlink'
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220513201243.2381133-1-vladimir.oltean@nxp.com/
+> 
+> I've CCed non-networking maintainers just in case they want to gain a
+> better understanding. If not, apologies and please ignore the rest.
+> 
+> 
+> 
+> My use case is to migrate a PHY driver from poll mode to interrupt mode
+> without breaking compatibility between new device trees and old kernels
+> which did not have a driver for that IRQ parent, and therefore (for
+> things to work) did not even have that interrupt listed in the "vintage
+> correct" DT blobs. Note that current kernels as of today are also
+> "old kernels" in this description.
+> 
+> Creating some degree of compatibility has multiple components.
+> 
+> 1. A PHY driver must eventually give up waiting for an IRQ provider,
+>    since the dependency is optional and it can fall back to poll mode.
+>    This is currently supported thanks to commit 74befa447e68 ("net:
+>    mdio: don't defer probe forever if PHY IRQ provider is missing").
+> 
+> 2. Before it finally gives up, the PHY driver has a transient phase of
+>    returning -EPROBE_DEFER. That transient phase causes some breakage
+>    which is handled by this patch set, details below.
+> 
+> 3. PHY device probing and Ethernet controller finding it and connecting
+>    to it are async events. When both happen during probing, the problem
+>    is that finding the PHY fails if the PHY defers probe, which results
+>    in a missing PHY rather than waiting for it. Unfortunately there is
+>    no universal way to address this problem, because the majority of
+>    Ethernet drivers do not connect to the PHY during probe. So the
+>    problem is fixed only for the driver that is of interest to me in
+>    this context, DSA, and with special API exported by phylink
+>    specifically for this purpose, to limit the impact on other drivers.
 
-I love your patch! Perhaps something to improve:
+There is a very different approach, which might be simpler.
 
-[auto build test WARNING on axboe-block/for-next]
-[also build test WARNING on robh/for-next linus/master v5.18-rc6 next-20220513]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+We know polling will always work. And it should be possible to
+transition between polling and interrupt at any point, so long as the
+phylock is held. So if you get -EPROBE_DEFFER during probe, mark some
+state in phydev that there should be an irq, but it is not around yet.
+When the phy is started, and phylib starts polling, look for the state
+and try getting the IRQ again. If successful, swap to interrupts, if
+not, keep polling. Maybe after 60 seconds of polling and trying, give
+up trying to find the irq and stick with polling.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/ata-ahci-Add-DWC-Baikal-T1-AHCI-SATA-support/20220512-072125
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git for-next
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220514/202205140748.Lb7DqbPf-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/bc74e5ca4cbfd2bef25a9ecefc401e7d1af3df43
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Serge-Semin/ata-ahci-Add-DWC-Baikal-T1-AHCI-SATA-support/20220512-072125
-        git checkout bc74e5ca4cbfd2bef25a9ecefc401e7d1af3df43
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/ata/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/ata/ahci_dwc.c:414:27: sparse: sparse: symbol 'ahci_dwc_plat' was not declared. Should it be static?
-
-Please review and possibly fold the followup patch.
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+     Andrew
