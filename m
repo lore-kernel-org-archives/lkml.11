@@ -2,112 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230493AbiENC5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
+        id S230189AbiENCzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbiENC4r (ORCPT
+        with ESMTP id S230127AbiENCzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:56:47 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1803532279F
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:52:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652493156; x=1684029156;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RcLuLGGwbVePLOb+KFTMTX4VKymqOx1Gc+kdRlxjhqc=;
-  b=ibr4KcLPUuv82AVGOvb0vnR8LFD4ds4bU2SwAc77DCcMfniND4ayhbqI
-   a9w0J6qDy8wYenJiYbn4xNM6JZ/8v+3OC6T98a2jie2aWDQHJcmmnQNJO
-   /BN5Z7Rf+mTd20sRmONla2eMSPYTROVTAFz86Um9/GJQEj0IPKKT8Cb9M
-   lFNVqdGhQgW2agRIOld7qe+i67s6mm7Q+8yHb4bKinToSnlDstDHKlTjf
-   7Kzk+4bf9nNxx12wa8qA0rK9YRpSzjDOoZSREjYaZoTZ86gzIRQbvgDhx
-   td4kUCj8iy0kqSkqCq1/Ivt8xEAtK3ebLiMOcZ/tYva53UX/bc+UoicTb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="250977865"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="250977865"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 18:52:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="712631468"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:52:30 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npgxJ-000MIi-SJ;
-        Sat, 14 May 2022 01:52:29 +0000
-Date:   Sat, 14 May 2022 09:51:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Liang Yang <liang.yang@amlogic.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-mtd@lists.infradead.org
-Cc:     kbuild-all@lists.01.org, Liang Yang <liang.yang@amlogic.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/4] mtd: rawnand: meson: fix the clock
-Message-ID: <202205140935.9YRSlRhB-lkp@intel.com>
-References: <20220513123404.48513-3-liang.yang@amlogic.com>
+        Fri, 13 May 2022 22:55:43 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBCF335269
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 19:38:14 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L0V3s4R9lzGpbH;
+        Sat, 14 May 2022 10:35:21 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 14 May
+ 2022 10:38:12 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <Vijendar.Mukunda@amd.com>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] ASoC: amd: vangogh: Remove duplicate include files
+Date:   Sat, 14 May 2022 10:38:06 +0800
+Message-ID: <20220514023806.34768-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513123404.48513-3-liang.yang@amlogic.com>
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liang,
+Remove duplicated includes.
 
-I love your patch! Yet something to improve:
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ sound/soc/amd/vangogh/acp5x-mach.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-[auto build test ERROR on mtd/mtd/next]
-[also build test ERROR on mtd/mtd/fixes mtd/nand/next v5.18-rc6 next-20220513]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Liang-Yang/fix-the-meson-NFC-clock/20220513-203700
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git mtd/next
-config: m68k-buildonly-randconfig-r001-20220512 (https://download.01.org/0day-ci/archive/20220514/202205140935.9YRSlRhB-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2a8371d672486fa71241af04615efeff5efed94b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Liang-Yang/fix-the-meson-NFC-clock/20220513-203700
-        git checkout 2a8371d672486fa71241af04615efeff5efed94b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   m68k-linux-ld: drivers/mtd/nand/raw/meson_nand.o: in function `meson_nfc_probe':
->> meson_nand.c:(.text+0xcf8): undefined reference to `clk_divider_ops'
->> m68k-linux-ld: meson_nand.c:(.text+0xd38): undefined reference to `devm_clk_register'
-
+diff --git a/sound/soc/amd/vangogh/acp5x-mach.c b/sound/soc/amd/vangogh/acp5x-mach.c
+index d8b25622f911..727de46860b1 100644
+--- a/sound/soc/amd/vangogh/acp5x-mach.c
++++ b/sound/soc/amd/vangogh/acp5x-mach.c
+@@ -17,10 +17,8 @@
+ #include <linux/clk.h>
+ #include <linux/gpio.h>
+ #include <linux/gpio/consumer.h>
+-#include <linux/module.h>
+ #include <linux/i2c.h>
+ #include <linux/input.h>
+-#include <linux/io.h>
+ #include <linux/acpi.h>
+ #include <linux/dmi.h>
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
