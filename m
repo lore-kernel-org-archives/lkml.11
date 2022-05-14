@@ -2,130 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E134EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 16:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbiENQXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 12:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50058 "EHLO
+        id S234174AbiENQYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 12:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233985AbiENQXe (ORCPT
+        with ESMTP id S231211AbiENQYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 12:23:34 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DAB2CE2D
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:23:32 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id c24so9795819lfv.11
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 09:23:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :content-language:content-transfer-encoding;
-        bh=W5F0uGwuAL8pTZ+Hf+pCcDwDg2tH8pzMKHWva8EgvhE=;
-        b=zCqSFU3L2yPqDpA9e6zkSdFzMlewSbDHui1YgNVZgkEOYdLOoLz3x7AsC+W2olBLwt
-         IThcy1Re3FAhxcn/Tl75bzDyYHshYQx05ySzBpWntoqEYwEJYqiFUvEcTIeAijtIz0MM
-         8Q4gOzHipiFNoWRdcrvQWkpNy1W4/xFgddUVDg8/gb5nwpP4g95HpB5VKSiOJtl/Xyed
-         CQbtMh9HQUQlCqqrGfPPW4b12dfTsuPubqMnXjg7TdmTo/gR2WfAKyFTFZaqdVnsx0Nv
-         zsv4pUR8DUIOTWwXceE5IVzux5Yo7gLwP7z8I6Ee0TsAP5DFjFudWpvTkJ64F8ZIjNLY
-         VaCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:content-language:content-transfer-encoding;
-        bh=W5F0uGwuAL8pTZ+Hf+pCcDwDg2tH8pzMKHWva8EgvhE=;
-        b=ZgV2EP75DnQbrP+KJoEUTG0qOUz68V9wOsnFI7Khtu4xEQg8iZTHUXBXDM5paac6dm
-         GzZi4ZFjkYlwGU8U+NNBakSqfgN2NZ2tYDyPhM0ucVG9iYK12SV3sbon8nNAiXSqh7lm
-         lVaAha5TTSEf9MyjuJ1sOdWBep5EWKhrJ5rIaoFTxAIeWoH7ctO2T/Yl32PG/T827zLK
-         u3d8VnJEYcv8FPNpGxVAzi19SiMgyztQ7sqTdLLVQgbgoPnw/49qUYbaBN0QQPEBjjL9
-         GPNV5neD0yElfTrx7rMrDYoYEFFa07CoI1nV+fwQGmyHA/oMzvTtUBGBP0cLuIfoyBaL
-         niRg==
-X-Gm-Message-State: AOAM5316pY0sHOv19N22kkB2b8fzy0Bhsd8IqUTp3IT+G43scyCDNJGI
-        Cks2mxBbLNHBvSoLpSdNMWaBaXfiFwwIww==
-X-Google-Smtp-Source: ABdhPJyzA3gBu6tJoV7aXuYH4hYAVPI7IiUCE5GtiiWU2bTMC48HhY0m5tzuX2uMo3QxpvekwlBCqQ==
-X-Received: by 2002:ac2:5237:0:b0:471:fe52:9a82 with SMTP id i23-20020ac25237000000b00471fe529a82mr7133701lfl.624.1652545411030;
-        Sat, 14 May 2022 09:23:31 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.177])
-        by smtp.gmail.com with ESMTPSA id p23-20020a2e8057000000b0024f3d1dae7csm891077ljg.4.2022.05.14.09.23.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 May 2022 09:23:30 -0700 (PDT)
-Message-ID: <45e8576e-5fcc-bc52-8805-0b5cc3fc1a84@openvz.org>
-Date:   Sat, 14 May 2022 19:23:29 +0300
+        Sat, 14 May 2022 12:24:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF29935246;
+        Sat, 14 May 2022 09:24:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5438060FEA;
+        Sat, 14 May 2022 16:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 948F2C340EE;
+        Sat, 14 May 2022 16:24:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652545491;
+        bh=eTkF5/i+lhD2Pn11Xw4lTm8GQmEctfUQ0Y2SZiQkE7Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oKzD4h1eBmj12BmiSOwtxlum3c7ryEZdVjHRTFzFucAMIVOOZsluAuADNlzpOZ/P4
+         iOgXmADY97dh1vGcDkQWayW3EzphY3XsOpUb1Vxl55Ezz4BRIWLf2IB7BgsXEecnDv
+         EEC+SoiegC5A6O06OyaJzDzxdHgLnGe1OHQhB38h/CWE2ra/k5JLyCKsSxho7PMPNz
+         zGPc614IyAtWYk5T9Cje0oVIaP9nLU6mL6G3HqPdFNSox1plI7B17QQWJQufkGn+9g
+         T0jZ8hyWLn5T7NJnwCE1zvyP6iMYdoqh+POmJGZkOgf3pQLMRNzJcwkqftFU3+L/Jg
+         5DIEYMcYa4kzA==
+Date:   Sat, 14 May 2022 12:24:50 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Helge Deller <deller@gmx.de>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        James.Bottomley@hansenpartnership.com, dave.anglin@bell.net,
+        linux-parisc@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.17 21/21] Revert "parisc: Fix patch code
+ locking and flushing"
+Message-ID: <Yn/X0quyI58WVTfJ@sashalap>
+References: <20220510154340.153400-1-sashal@kernel.org>
+ <20220510154340.153400-21-sashal@kernel.org>
+ <37d6bcac-bca4-06a6-ecab-bf83bd3468cd@gmx.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH] sparse: use force attribute for __kernel_rwf_t casts
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, io-uring@vger.kernel.org
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <37d6bcac-bca4-06a6-ecab-bf83bd3468cd@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes sparse warnings:
-fs/io_uring.c: note: in included file (through include/trace/perf.h,
-include/trace/define_trace.h, include/trace/events/io_uring.h):
-./include/trace/events/io_uring.h:488:1: sparse:
- warning: incorrect type in assignment (different base types)
-    expected unsigned int [usertype] op_flags
-    got restricted __kernel_rwf_t const [usertype] rw_flags
-fs/io_uring.c:3164:23: sparse:
- warning: incorrect type in assignment (different base types)
-    expected unsigned int [usertype] flags
-    got restricted __kernel_rwf_t
-fs/io_uring.c:3769:48: sparse:
- warning: incorrect type in argument 2 (different base types)
-    expected restricted __kernel_rwf_t [usertype] flags
-    got unsigned int [usertype] flags
+On Tue, May 10, 2022 at 05:49:31PM +0200, Helge Deller wrote:
+>Hello Sascha,
+>
+>please drop this patch from all your stable-series queues....
+>It shouldn't be backported.
 
-__kernel_rwf_t type is bitwise and requires __force attribute for casts
+I've dropped it, but... why?
 
-Signed-off-by: Vasily Averin <vvs@openvz.org>
----
- fs/io_uring.c                   | 4 ++--
- include/trace/events/io_uring.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 91de361ea9ab..5ca4a6e91884 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3161,7 +3161,7 @@ static int io_prep_rw(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	req->imu = NULL;
- 	req->rw.addr = READ_ONCE(sqe->addr);
- 	req->rw.len = READ_ONCE(sqe->len);
--	req->rw.flags = READ_ONCE(sqe->rw_flags);
-+	req->rw.flags = (__force u32)READ_ONCE(sqe->rw_flags);
- 	req->buf_index = READ_ONCE(sqe->buf_index);
- 	return 0;
- }
-@@ -3766,7 +3766,7 @@ static int io_rw_init_file(struct io_kiocb *req, fmode_t mode)
- 		req->flags |= io_file_get_flags(file) << REQ_F_SUPPORT_NOWAIT_BIT;
- 
- 	kiocb->ki_flags = iocb_flags(file);
--	ret = kiocb_set_rw_flags(kiocb, req->rw.flags);
-+	ret = kiocb_set_rw_flags(kiocb, (__force rwf_t)req->rw.flags);
- 	if (unlikely(ret))
- 		return ret;
- 
-diff --git a/include/trace/events/io_uring.h b/include/trace/events/io_uring.h
-index cddf5b6fbeb4..df4b89a79764 100644
---- a/include/trace/events/io_uring.h
-+++ b/include/trace/events/io_uring.h
-@@ -520,7 +520,7 @@ TRACE_EVENT(io_uring_req_failed,
- 		__entry->off		= sqe->off;
- 		__entry->addr		= sqe->addr;
- 		__entry->len		= sqe->len;
--		__entry->op_flags	= sqe->rw_flags;
-+		__entry->op_flags	= (__force u32)sqe->rw_flags;
- 		__entry->buf_index	= sqe->buf_index;
- 		__entry->personality	= sqe->personality;
- 		__entry->file_index	= sqe->file_index;
 -- 
-2.31.1
-
+Thanks,
+Sasha
