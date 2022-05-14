@@ -2,91 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B40AC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D394DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231417AbiENC5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33386 "EHLO
+        id S231453AbiENC5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231536AbiENC4B (ORCPT
+        with ESMTP id S231325AbiENC4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:56:01 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAB42F6250
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 19:12:59 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L0TXX73tlzfbJx;
-        Sat, 14 May 2022 10:11:40 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 14 May 2022 10:12:56 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 14 May 2022 10:12:56 +0800
-Subject: Re: [PATCH -next] mtd: st_spi_fsm: add missing
- clk_disable_unprepare() stfsm_remove()
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <richard@nod.at>, <vigneshr@ti.com>
-References: <20220513100322.2664431-1-yangyingliang@huawei.com>
- <20220513122248.146d6944@xps13>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <0d7ee262-6286-ec41-884e-3ab5863b68b4@huawei.com>
-Date:   Sat, 14 May 2022 10:12:55 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Fri, 13 May 2022 22:56:20 -0400
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31712D9E93;
+        Fri, 13 May 2022 19:03:23 -0700 (PDT)
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24E23GDX027652
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 13 May 2022 22:03:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+        t=1652493798; bh=sFmzqkIeci57u6nHHwJ3RZ6bKRyy3u2QpbbxnT80U28=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=mxx6yK9tTGz/EXWRPSsD9y1HlsrJLehKhvLirg43Gz6E75bazb57jOSow2szOuxqj
+         vABckrFZbiAXiME0gNfco8F4hyWjrWQaddWm7oQxRux8XRq0Mu/oSJpoH+Yj3updeI
+         CZnp+vVMLZzOuNdYXlTuNVJc257Tct9VOyLrxNM8Vc7UonNsaCNP9PBLmlZIwPw1jV
+         icBu/0QCElbayJYzCoR0C4/q+/LvmgjqsUNlSlYR1s4cyeHXfQfjG2IsfJM6+FuT/Y
+         MMY2SsoKHdpikJITrxEiHdSd2zoScFwnJWSj4/U/HstAzHBLY1NZ0Lrwqpb4XzfgzV
+         8H3TWGRE1lpnA==
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 441E615C3F2A; Fri, 13 May 2022 22:03:16 -0400 (EDT)
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     Ojaswin Mujoo <ojaswin@linux.ibm.com>, linux-ext4@vger.kernel.org
+Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-fsdevel@vger.kernel.org,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ext4: Fix journal_ioprio mount option handling
+Date:   Fri, 13 May 2022 22:03:15 -0400
+Message-Id: <165249378801.644521.15436473858156116983.b4-ty@mit.edu>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220418083545.45778-1-ojaswin@linux.ibm.com>
+References: <20220418083545.45778-1-ojaswin@linux.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20220513122248.146d6944@xps13>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, 18 Apr 2022 14:05:45 +0530, Ojaswin Mujoo wrote:
+> In __ext4_super() we always overwrote the user specified journal_ioprio
+> value with a default value, expecting  parse_apply_sb_mount_options() to
+> later correctly set ctx->journal_ioprio to the user specified value.
+> However, if parse_apply_sb_mount_options() returned early because of
+> empty sbi->es_s->s_mount_opts, the correct journal_ioprio value was
+> never set.
+> 
+> [...]
 
-On 2022/5/13 18:22, Miquel Raynal wrote:
-> Hi,
->
-> yangyingliang@huawei.com wrote on Fri, 13 May 2022 18:03:22 +0800:
->
->> Clock source is prepared and enabled by clk_prepare_enable()
->> in probe function, but no disable or unprepare in remove function.
-> 			 not disabled or unprepared
->
-> Otherwise looks good.
-Do I need to resend it ?
+Applied, thanks!
 
-Thanks,
-Yang
->
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   drivers/mtd/devices/st_spi_fsm.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/mtd/devices/st_spi_fsm.c b/drivers/mtd/devices/st_spi_fsm.c
->> index 983999c020d6..d3377b10fc0f 100644
->> --- a/drivers/mtd/devices/st_spi_fsm.c
->> +++ b/drivers/mtd/devices/st_spi_fsm.c
->> @@ -2126,6 +2126,8 @@ static int stfsm_remove(struct platform_device *pdev)
->>   {
->>   	struct stfsm *fsm = platform_get_drvdata(pdev);
->>   
->> +	clk_disable_unprepare(fsm->clk);
->> +
->>   	return mtd_device_unregister(&fsm->mtd);
->>   }
->>   
->
-> Thanks,
-> Miquèl
-> .
+[1/1] ext4: Fix journal_ioprio mount option handling
+      commit: 8d7b9890b5d18a593b7c7e10d23513340919b837
+
+Best regards,
+-- 
+Theodore Ts'o <tytso@mit.edu>
