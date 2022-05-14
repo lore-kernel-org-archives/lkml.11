@@ -2,162 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229852AbiENCwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:52:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
+        id S229932AbiENCwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiENCwV (ORCPT
+        with ESMTP id S229893AbiENCwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:52:21 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07164A0DF5
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:53:26 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id e12so17926039ybc.11
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 17:53:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gh7lyMR/wwSZPN8VM7Gm13nBDOjOCSeBHsdtAIxkzG8=;
-        b=V/0/Z8mBX//e4K3r0ItRdb+QOez5W2XQln5EnRm9IolusnHAblUXo5tTq1gXrjgaOQ
-         h2uOoGmdQlAWavWoSg7h1u45GIg701NSi5498nSXOq4rOpruJ/GAKqNcnk1nUGSwdlUH
-         KF/Jd1j27FhvkKRcNt+VDQDHFUXXZrlRDIyEPE51WCxWNi4RlSDQBmEsIkT8VjxxBV0b
-         bDPbYNoTE5Wm/8XlRiWLjhfWSbYoG/1p+MWkOJdk68z8KRjORJleBHix1Qr33jg0oxdF
-         eFtoXAqEfV7XKe02t4strhNLtYX/5/rc/0uVvjb2X05Tuys7X0VuVPMAtMSbS1+/HUec
-         eX7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gh7lyMR/wwSZPN8VM7Gm13nBDOjOCSeBHsdtAIxkzG8=;
-        b=fF/Pg3ZXBAWCdeQ4e0EaJruRkrBuL3VJ+6HaZ+MVqV8HsOVSO4HYuLG/JaTfwIaDcR
-         vUgwojNsAwrO0AW0owVymjRFDFUjJQHeJ4uOxE+MstF1OlZUYjqE/7Z4zQV/sOMRJdAS
-         BHEARAyLtluN2s40nNg6oqfoWxH2uSpru1hSaniLcpHal7JlCrJK/bb6Z/arG7RBlx0i
-         N8rduC4LvQ5hpLb3BgqPzrN7zQGnW5RlakGvj/VfTXUSPFWaiCYBkXKkCsokK341ghMy
-         umK8xBbDylzazITwIySW1pdGHOVKA4o7iQG322j/rJX8gFMu2tOMlJHt1bGQ6MxbKxqX
-         Q/Vg==
-X-Gm-Message-State: AOAM531Ecz+/dBVHwgy1drRLrTXWMo1wHEV/UCxKdYMpx09pIGqKTOuk
-        BRCMBxDIAKmJ/AbJEHhXxgN4OInJriDjfAgalmUWLHLKv8o=
-X-Google-Smtp-Source: ABdhPJzCWv0a5whfDvG5f1fLXqD8nN3mfB3Ex3KVjsax4u4aVTZ/7ict9ABMT/pHleIA0/+WB0eCT0OjzJ1BqwVO5x8=
-X-Received: by 2002:a25:504c:0:b0:64b:979c:1bae with SMTP id
- e73-20020a25504c000000b0064b979c1baemr5408913ybb.563.1652488799877; Fri, 13
- May 2022 17:39:59 -0700 (PDT)
+        Fri, 13 May 2022 22:52:25 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D023087F0;
+        Fri, 13 May 2022 17:55:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652489737; x=1684025737;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4ZbrGrP7cxNMuGCiRcEz9C5bHEQF1KFXcDuzuJA6vYk=;
+  b=KCp8mPQ3M0wO/XOaTEgnseLz2KyNT75gCdP1Zut3387/TgcqdFThzrUx
+   8mnjigj7iXIShV8ncffv9r/ygTH2+TCRrgZ6DQiguTw7vTe7rSbP/7luW
+   8m8jwZ1Gq2H4pzF3Wad/Ovffpkjj1XcK1RAcPU37bt/6ixLjUrMUljY0G
+   mdZpRZj5ZGw8SWo3NF0rpGb0retLSwGVBECDKVvhUfxrYyDvl2fK0/zPy
+   gaeIOm+9cHDX3knqJa18uKYi3YaoYo+dbBLz9EHncmKeas+bLEMfeDpCz
+   tMTPk9N4UsH2iZo9W7t9iv/6fKSg5xOtAYW/f5dXxj4VscaYlTR/ExUtx
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="268033165"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="268033165"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 17:31:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="604048939"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 13 May 2022 17:31:26 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1npfgr-000MFY-Sf;
+        Sat, 14 May 2022 00:31:25 +0000
+Date:   Sat, 14 May 2022 08:30:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: Re: [PATCH] kbuild: copy scripts/atomic/atomic-*.h to
+ include/generated/atomic-*.h
+Message-ID: <202205140803.I96fumS7-lkp@intel.com>
+References: <20220513185340.239753-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-References: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 13 May 2022 17:39:24 -0700
-Message-ID: <CAGETcx9Q-yXpdai+Ujg+-gMGyHbSO=ws+e7ejqDSmJs5tQRLNQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net 0/2] Make phylink and DSA wait for PHY driver that
- defers probe
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        John Stultz <jstultz@google.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513185340.239753-1-masahiroy@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 4:37 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
->
-> This patch set completes the picture described by
-> '[RFC,devicetree] of: property: mark "interrupts" as optional for fw_devlink'
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220513201243.2381133-1-vladimir.oltean@nxp.com/
+Hi Masahiro,
 
-I replied to that patch. I don't think we can pull that in.
+I love your patch! Yet something to improve:
 
-> I've CCed non-networking maintainers just in case they want to gain a
-> better understanding. If not, apologies and please ignore the rest.
->
->
->
-> My use case is to migrate a PHY driver from poll mode to interrupt mode
-> without breaking compatibility between new device trees and old kernels
-> which did not have a driver for that IRQ parent, and therefore (for
-> things to work) did not even have that interrupt listed in the "vintage
-> correct" DT blobs. Note that current kernels as of today are also
-> "old kernels" in this description.
->
-> Creating some degree of compatibility has multiple components.
->
-> 1. A PHY driver must eventually give up waiting for an IRQ provider,
->    since the dependency is optional and it can fall back to poll mode.
->    This is currently supported thanks to commit 74befa447e68 ("net:
->    mdio: don't defer probe forever if PHY IRQ provider is missing").
->
-> 2. Before it finally gives up, the PHY driver has a transient phase of
->    returning -EPROBE_DEFER. That transient phase causes some breakage
->    which is handled by this patch set, details below.
->
-> 3. PHY device probing and Ethernet controller finding it and connecting
->    to it are async events. When both happen during probing, the problem
->    is that finding the PHY fails if the PHY defers probe, which results
->    in a missing PHY rather than waiting for it. Unfortunately there is
->    no universal way to address this problem, because the majority of
->    Ethernet drivers do not connect to the PHY during probe. So the
->    problem is fixed only for the driver that is of interest to me in
->    this context, DSA, and with special API exported by phylink
->    specifically for this purpose, to limit the impact on other drivers.
+[auto build test ERROR on masahiroy-kbuild/for-next]
+[also build test ERROR on linux/master linus/master v5.18-rc6 next-20220513]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-I'll take a closer look at this later this week, but once we add
-phy-handle support to fw_devlink (the device_bind_driver() is making
-it hard to add support), I think we can address most/all of these
-problems automatically. So hopefully we can work towards that?
-Actually this patch might already fix this for you:
-https://lore.kernel.org/lkml/20220429220933.1350374-1-saravanak@google.com/
+url:    https://github.com/intel-lab-lkp/linux/commits/Masahiro-Yamada/kbuild-copy-scripts-atomic-atomic-h-to-include-generated-atomic-h/20220514-025623
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git for-next
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220514/202205140803.I96fumS7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 38189438b69ca27b4c6ce707c52dbd217583d046)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/3f6dd60121830fdd3733dd804d9ae163d88acc98
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Masahiro-Yamada/kbuild-copy-scripts-atomic-atomic-h-to-include-generated-atomic-h/20220514-025623
+        git checkout 3f6dd60121830fdd3733dd804d9ae163d88acc98
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 prepare
 
-Before fw_devlink, we'd give up on waiting on all suppliers, whether
-they had a driver (but hadn't yet probed for a multitude of reasons)
-or not. fw_devlink is smart about allowing consumers to probe without
-their suppliers only if the supplier has no driver or the driver fails
-(I'll send a patch for this). The deferred_probe_timeout is what's
-used to decide when to give up waiting for drivers.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
--Saravana
+All errors (new ones prefixed by >>):
 
->
-> Note that drivers that connect to the PHY at ndo_open are superficially
-> "fixed" by the patch at step 1 alone, and therefore don't need the
-> mechanism introduced in phylink here. This is because of the larger span
-> of time between PHY probe and opening the network interface (typically
-> initiated by user space). But this is the catch, nfsroot and other
-> in-kernel networking users can also open the net device, and this will
-> still expose the EPROBE_DEFER as a hard error for this second kind of
-> drivers. I don't know how to fix that. From this POV, it's better to do
-> what DSA does (connect to the PHY on probe).
->
-> Vladimir Oltean (2):
->   net: phylink: allow PHY driver to defer probe when connecting via OF
->     node
->   net: dsa: wait for PHY to defer probe
->
->  drivers/net/phy/phylink.c | 73 ++++++++++++++++++++++++++++++---------
->  include/linux/phylink.h   |  2 ++
->  net/dsa/dsa2.c            |  2 ++
->  net/dsa/port.c            |  6 ++--
->  net/dsa/slave.c           | 10 +++---
->  5 files changed, 70 insertions(+), 23 deletions(-)
->
-> --
-> 2.25.1
->
+   In file included from scripts/mod/devicetable-offsets.c:3:
+   In file included from include/linux/mod_devicetable.h:13:
+   In file included from include/linux/uuid.h:12:
+   In file included from include/linux/string.h:20:
+   In file included from arch/x86/include/asm/string.h:5:
+   In file included from arch/x86/include/asm/string_64.h:6:
+   In file included from include/linux/jump_label.h:256:
+   In file included from include/linux/atomic.h:80:
+>> include/linux/atomic/atomic-arch-fallback.h:2:10: fatal error: 'generated/atomic-arch-fallback.h' file not found
+   #include <generated/atomic-arch-fallback.h>
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 error generated.
+   make[2]: *** [scripts/Makefile.build:121: scripts/mod/devicetable-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1194: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +2 include/linux/atomic/atomic-arch-fallback.h
+
+   > 2	#include <generated/atomic-arch-fallback.h>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
