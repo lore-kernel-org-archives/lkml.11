@@ -2,240 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F43C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:20:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43FE2C43219
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 14:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233183AbiENOUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 10:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
+        id S233196AbiENOVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 10:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233136AbiENOUh (ORCPT
+        with ESMTP id S233383AbiENOVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 10:20:37 -0400
-Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 173329FD2;
-        Sat, 14 May 2022 07:20:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=fs7xO
-        mXbGEknwJrqsFpipHU+pL7BLI3UV/BiTzqh4uk=; b=mPfx/jPWdKRyT+J4Y+tMp
-        eYKLGBWgQXgAQZ9qr0oLjpWI6FlZy88RHqzbHR9tIWsfQYoUbrOJ/Jj6sYPjfQLm
-        j5QPX3NxZosKFvmnkk+Irw1hzN+dm4+QPEiX7x3g24mSyvx8VbB3/aqCMIdL+ytx
-        af3TrdMBx4RQbB0I4T6XaI=
-Received: from localhost (unknown [223.74.106.63])
-        by smtp9 (Coremail) with SMTP id DcCowAA3Py98un9iKCZdCw--.42048S2;
-        Sat, 14 May 2022 22:19:41 +0800 (CST)
-From:   Junwen Wu <wudaemon@163.com>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
-        rui.zhang@intel.com
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Junwen Wu <wudaemon@163.com>
-Subject: [PATCH v2] thermal/core: Make trans_table tunnable to avoid some needless zero output
-Date:   Sat, 14 May 2022 14:19:32 +0000
-Message-Id: <20220514141932.53938-1-wudaemon@163.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 14 May 2022 10:21:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0720A1B1;
+        Sat, 14 May 2022 07:21:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8537360F2A;
+        Sat, 14 May 2022 14:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8425FC340EE;
+        Sat, 14 May 2022 14:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652538067;
+        bh=fBJG7A+XsQUdGt9z4Q/dgnY9axRvsRVkKDu5cKbiVRQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pQqTcVRNOWdlHHOXC+4ME/GCYRzZnE8N7ttD47TT9CnJrMLVmTkjbLeWKpJQfeDhv
+         B2s6QGQXfNzXSAyTatQdpt8RwvlURF0V0iC1OVvNyb6mfs8iQcydgDnUBQeAjQfUFG
+         wRp1M52PJ3Y3DsWNx6TGCG1DposlLQ5GRCfW37nVU+4GUaHW2BoAvfJEle4Z6tLi5M
+         EkaXY4LY3LdzMDOg+ZDkxoilOA2mt8cAc4rljnfawj23clTnGXYhUBuBWSXk1unGLk
+         MUBg0K5zcwc22Hpg7igxdPA0VcDyMnHKMP2BmRVEHuc9RJp0a8cAIXywbAeagz6gSZ
+         vR9sGgUex9UPw==
+Date:   Sat, 14 May 2022 15:29:40 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4 1/5] dt-bindings: proximity: vl53l0x: Document
+ optional supply and GPIO properties
+Message-ID: <20220514152940.1a212c7f@jic23-huawei>
+In-Reply-To: <f5ec4fd9-b9d7-10fa-1c27-2f268466274f@linaro.org>
+References: <20220512191334.61804-1-markuss.broks@gmail.com>
+        <20220512191334.61804-2-markuss.broks@gmail.com>
+        <f5ec4fd9-b9d7-10fa-1c27-2f268466274f@linaro.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcCowAA3Py98un9iKCZdCw--.42048S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxtr1fZF4fWF1kKFykWr1xZrb_yoW7uF4rpF
-        nxJa4Y9r4UX3WkGay3Jr4DX3sY9F1Sqa47JFZ7K3s5KF4UJ3sxXFyDJry2yrW5GrWkuFy3
-        K3Wqvr98C3yUtFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pioUDdUUUUU=
-X-Originating-IP: [223.74.106.63]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbisQEBbVXlqDM-GAABsR
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Very high cooling device max state value make trans_table node
-prompt File too large. We introduce show_state node, tunnable
-by user,thus trans_table only show show_state'th trans count to
-the max trans count, in this way trans_table_show's buffer is
-always less than PAGE_SIZE and shows the important changes.
+On Fri, 13 May 2022 10:56:50 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-Signed-off-by: Junwen Wu <wudaemon@163.com>
----
- drivers/thermal/thermal_sysfs.c | 111 +++++++++++++++++++++++++-------
- 1 file changed, 86 insertions(+), 25 deletions(-)
+> On 12/05/2022 21:13, Markuss Broks wrote:
+> > This patch adds the optional properties for the VL53L0X ToF sensor to the
+> > device-tree binding.
+> > 
+> > Signed-off-by: Markuss Broks <markuss.broks@gmail.com>  
+> 
+> Wait, two days and three versions? Please give some time before
+> resending entire patchset.
 
-diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
-index f154bada2906..bb8627aa49b7 100644
---- a/drivers/thermal/thermal_sysfs.c
-+++ b/drivers/thermal/thermal_sysfs.c
-@@ -656,6 +656,7 @@ struct cooling_dev_stats {
- 	spinlock_t lock;
- 	unsigned int total_trans;
- 	unsigned long state;
-+	unsigned long show_state;
- 	unsigned long max_states;
- 	ktime_t last_time;
- 	ktime_t *time_in_state;
-@@ -752,38 +753,93 @@ reset_store(struct device *dev, struct device_attribute *attr, const char *buf,
- 	return count;
- }
- 
--static ssize_t trans_table_show(struct device *dev,
--				struct device_attribute *attr, char *buf)
-+static ssize_t
-+show_state_store(struct device *dev, struct device_attribute *attr, const char *buf,
-+		size_t count)
- {
- 	struct thermal_cooling_device *cdev = to_cooling_device(dev);
- 	struct cooling_dev_stats *stats = cdev->stats;
--	ssize_t len = 0;
--	int i, j;
-+	unsigned long state;
-+	ssize_t ret;
- 
--	len += snprintf(buf + len, PAGE_SIZE - len, " From  :    To\n");
--	len += snprintf(buf + len, PAGE_SIZE - len, "       : ");
--	for (i = 0; i < stats->max_states; i++) {
--		if (len >= PAGE_SIZE)
--			break;
--		len += snprintf(buf + len, PAGE_SIZE - len, "state%2u  ", i);
--	}
--	if (len >= PAGE_SIZE)
--		return PAGE_SIZE;
-+	spin_lock(&stats->lock);
-+
-+	ret = kstrtoul(buf, 10, &state);
-+	if (ret || (state > stats->max_states))
-+		goto unlock;
- 
--	len += snprintf(buf + len, PAGE_SIZE - len, "\n");
-+	stats->show_state = state;
-+unlock:
-+	spin_unlock(&stats->lock);
- 
--	for (i = 0; i < stats->max_states; i++) {
--		if (len >= PAGE_SIZE)
--			break;
-+	return count;
-+}
-+
-+static ssize_t
-+show_state_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct thermal_cooling_device *cdev = to_cooling_device(dev);
-+	struct cooling_dev_stats *stats = cdev->stats;
-+
-+	return sprintf(buf, "%lu\n", stats->show_state);
-+}
- 
--		len += snprintf(buf + len, PAGE_SIZE - len, "state%2u:", i);
-+/* find the kth largest in nums array*/
-+static int find_show_state(int *nums, int numsSize, int k, unsigned int *max_value)
-+{
-+	int i, l, r, mid, cnt = 0, min = INT_MAX, max = 0;
- 
--		for (j = 0; j < stats->max_states; j++) {
--			if (len >= PAGE_SIZE)
--				break;
--			len += snprintf(buf + len, PAGE_SIZE - len, "%8u ",
--				stats->trans_table[i * stats->max_states + j]);
-+	for (i = 0; i < numsSize; i++) {
-+		min = nums[i] < min ? nums[i] : min;
-+		max = nums[i] > max ? nums[i] : max;
-+	}
-+	l = min;
-+	r = max;
-+	while (l < r) {
-+		mid = r - (r - l) / 2;
-+		for (i = 0; i < numsSize; i++) {
-+			if (nums[i] >= mid)
-+				cnt++;
-+		}
-+		if (cnt < k) {
-+			r = mid - 1;
-+			cnt = 0;
-+		} else {
-+			l = mid;
-+			cnt = 0;
- 		}
-+	}
-+
-+	*max_value = max;
-+
-+	return l;
-+}
-+
-+
-+
-+static ssize_t trans_table_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct thermal_cooling_device *cdev = to_cooling_device(dev);
-+	struct cooling_dev_stats *stats = cdev->stats;
-+	unsigned int show_state_value = 0;
-+	unsigned int max_state_value = 0;
-+	ssize_t len = 0;
-+	int i, j;
-+
-+	len += snprintf(buf + len, PAGE_SIZE - len, " From  :    Index_change\n");
-+	for (i = 0; i < stats->max_states; i++) {
-+		show_state_value = find_show_state(&stats->trans_table[i * stats->max_states],
-+				stats->max_states, stats->show_state, &max_state_value);
-+		if (max_state_value)
-+			len += snprintf(buf + len, PAGE_SIZE - len, "state%2u:", i);
-+		else
-+			continue;
-+		for (j = 0; j < stats->max_states; j++)
-+			if (stats->trans_table[i * stats->max_states + j] && (show_state_value <=
-+						stats->trans_table[i * stats->max_states + j]))
-+				len += snprintf(buf + len, PAGE_SIZE - len, "     ->%u(%u)", j,
-+						stats->trans_table[i * stats->max_states + j]);
- 		if (len >= PAGE_SIZE)
- 			break;
- 		len += snprintf(buf + len, PAGE_SIZE - len, "\n");
-@@ -793,6 +849,7 @@ static ssize_t trans_table_show(struct device *dev,
- 		pr_warn_once("Thermal transition table exceeds PAGE_SIZE. Disabling\n");
- 		return -EFBIG;
- 	}
-+
- 	return len;
- }
- 
-@@ -800,12 +857,14 @@ static DEVICE_ATTR_RO(total_trans);
- static DEVICE_ATTR_RO(time_in_state_ms);
- static DEVICE_ATTR_WO(reset);
- static DEVICE_ATTR_RO(trans_table);
-+static DEVICE_ATTR_RW(show_state);
- 
- static struct attribute *cooling_device_stats_attrs[] = {
- 	&dev_attr_total_trans.attr,
- 	&dev_attr_time_in_state_ms.attr,
- 	&dev_attr_reset.attr,
- 	&dev_attr_trans_table.attr,
-+	&dev_attr_show_state.attr,
- 	NULL
- };
- 
-@@ -829,7 +888,7 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- 	var += sizeof(*stats->time_in_state) * states;
- 	var += sizeof(*stats->trans_table) * states * states;
- 
--	stats = kzalloc(var, GFP_KERNEL);
-+	stats = kvzalloc(var, GFP_KERNEL);
- 	if (!stats)
- 		return;
- 
-@@ -838,6 +897,8 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- 	cdev->stats = stats;
- 	stats->last_time = ktime_get();
- 	stats->max_states = states;
-+	/* default set show_state = max_states/2 */
-+	stats->show_state = states / 2;
- 
- 	spin_lock_init(&stats->lock);
- 
-@@ -848,7 +909,7 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- 
- static void cooling_device_stats_destroy(struct thermal_cooling_device *cdev)
- {
--	kfree(cdev->stats);
-+	kvfree(cdev->stats);
- 	cdev->stats = NULL;
- }
- 
--- 
-2.25.1
+Yeah, several instances of this on the IIO list this week. Please
+let things sit for at least a few days between versions even if
+the requested changes are fairly minor.
+
+> 
+> Same comments apply as for v2 and v3...
+>
+I 'could' fix this up, but given you've not responded to Krzysztof
+I think I'd prefer you send a v5 in the second half of next week or
+later (to give time for other review) with the patch description
+change Krzysztof suggested made.
+
+Code wise the series looks fine to me.
+
+Jonathan
+
+
+
+> 
+> Best regards,
+> Krzysztof
 
