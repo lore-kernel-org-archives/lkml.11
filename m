@@ -2,147 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6684C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 03:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbiENC7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33244 "EHLO
+        id S230178AbiENDAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 23:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiENC6B (ORCPT
+        with ESMTP id S231548AbiENC70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 13 May 2022 22:58:01 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E852DD1EB
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:46:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652492802; x=1684028802;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VEv3FSPSgIXzTD6OswoTPktFlXlfBLKoUGoPMD7VvYY=;
-  b=OxBFZvLXwcrTcCVwe3hDaOI034nE76ZJcJIiqLaLwL4jVLTg3zrLwAeB
-   in9CYpEsZDxw+C2zNU3lrWGlp7zIFlzZi2Bon9L5tH9k0rGkwMU6BbdnD
-   Gqug2SmuvRkanq+UfcbEuE07rqgLMt+RqX7zbFlpbDowcUqgFjhvrgLwk
-   OnAxwqeNbE/cKauFJ+vWyF35yc+3d6OBfLqNCJkeDWKpgr/Lmb0AF5y3T
-   OYCvJgTjaUHTkq25VkngieOO77JguNgZ5wrwlpGGr8RnInWnIAg85DLzi
-   wuhTz53XOp7UfpVXMjpqQDz44rlZLkvGYK6mycKd518Wh+dQoKYMHCpCJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="250977523"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="250977523"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 18:46:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="712630770"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:46:36 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Ning Sun <ning.sun@intel.com>
-Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Steve Wahl <steve.wahl@hpe.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/7] iommu/vt-d: Move trace/events/intel_iommu.h under iommu
-Date:   Sat, 14 May 2022 09:43:16 +0800
-Message-Id: <20220514014322.2927339-2-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
-References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
+        Fri, 13 May 2022 22:59:26 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BA1389B30;
+        Fri, 13 May 2022 18:22:25 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id 3so6892985ily.2;
+        Fri, 13 May 2022 18:22:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=67GP168P+hN/ssTeYEMLrtAfHM65J+cVfzRzQLLyya8=;
+        b=eszRmVdCzSebdghf0JbUqiCSHp1Yx/0f1hYR2Kw1QzBnVjRhZfpX/o5gxbOSyld0yq
+         SWqiuszl2XyX2axPP6WPhhDS0pqwfwg3sogffqfHTKT7luNfmTeosynWJWV+wZ6Cu8ng
+         fW5CfYtVvjVugAOMzNq5PfMvXWMQY9NEWvEYjBEiCPokFWhOA3wcYPcI+yE4pQr7NvgU
+         WTd6Z0mYqdD34/6hGsaRam/CBW8FRvoSnuo60qsWkkSWNSGnqkgnoN9S532wDLhABTtr
+         PwCIIaPewN5f7LNqZ/kmWoyCSEqzPxKNLH/VstNnbhUahkM61sddWwRuyA+LsgLQJdXn
+         5VzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=67GP168P+hN/ssTeYEMLrtAfHM65J+cVfzRzQLLyya8=;
+        b=cFgaSeP9QXjB+mfl8SzyhaWjAQU2qE8uWh63LHZWKb3VCNkgzL3MGEYAP0qSmifY48
+         Wtf7nTt68Y0SdUrpmEEwXBUpR/G86A44CY5bqRh7vAFrkdLiSMq73NtQAo+OhfzmZqvJ
+         k3PRQgMipFPxJq1yaQKELS+Mjh4gVE5rsdEQ0Am17AomokN17ZZuzeFTZTkoh3ofoymn
+         xw8QhqGm5t/+nbYbTZk0oorL5/gA4UmAZE+7luya/2/it7JwCNZk4y9HUtCHR5YBH/aO
+         Lm/crrO77YZLhyQ7FfPI0zeKPa1U7Q8zrjBbNygPGTFcgJJ8tA3g0kbMh+xZmtFyj/hz
+         E+fg==
+X-Gm-Message-State: AOAM531nVcmHm6qnUq+z3OPqsUcJL2SfwuLalTi5LxoL9n+Niv+Ll0va
+        1UykV3abuhk6jZQFFqkDYevLM421mvs=
+X-Google-Smtp-Source: ABdhPJzqqWSNPJV15eq1Iqxa8q0UYnaWDJC1IQR0sGesXJRBWEXfZYlg0xjkbQhvp2iMFtfdHa0jNQ==
+X-Received: by 2002:a05:6a02:105:b0:381:fd01:330f with SMTP id bg5-20020a056a02010500b00381fd01330fmr5791393pgb.483.1652487049545;
+        Fri, 13 May 2022 17:10:49 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id t5-20020a62d145000000b0050dc7628143sm2294159pfl.29.2022.05.13.17.10.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 17:10:48 -0700 (PDT)
+Message-ID: <5f27e87b-78e9-68c0-d776-e3bc3a54561c@gmail.com>
+Date:   Fri, 13 May 2022 17:10:46 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 4.9 0/7] 4.9.314-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220513142225.909697091@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220513142225.909697091@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This header file is private to the Intel IOMMU driver. Move it to the
-driver folder.
+On 5/13/22 07:23, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.314 release.
+> There are 7 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 15 May 2022 14:22:19 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.314-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- .../trace/events/intel_iommu.h => drivers/iommu/intel/trace.h | 4 ++++
- drivers/iommu/intel/dmar.c                                    | 2 +-
- drivers/iommu/intel/svm.c                                     | 2 +-
- drivers/iommu/intel/trace.c                                   | 2 +-
- 4 files changed, 7 insertions(+), 3 deletions(-)
- rename include/trace/events/intel_iommu.h => drivers/iommu/intel/trace.h (94%)
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-diff --git a/include/trace/events/intel_iommu.h b/drivers/iommu/intel/trace.h
-similarity index 94%
-rename from include/trace/events/intel_iommu.h
-rename to drivers/iommu/intel/trace.h
-index e5c1ca6d16ee..25cb7f88e1a2 100644
---- a/include/trace/events/intel_iommu.h
-+++ b/drivers/iommu/intel/trace.h
-@@ -91,4 +91,8 @@ TRACE_EVENT(prq_report,
- #endif /* _TRACE_INTEL_IOMMU_H */
- 
- /* This part must be outside protection */
-+#undef TRACE_INCLUDE_PATH
-+#undef TRACE_INCLUDE_FILE
-+#define TRACE_INCLUDE_PATH ../../drivers/iommu/intel/
-+#define TRACE_INCLUDE_FILE trace
- #include <trace/define_trace.h>
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 4de960834a1b..b02d72097a8c 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -31,10 +31,10 @@
- #include <linux/limits.h>
- #include <asm/irq_remapping.h>
- #include <asm/iommu_table.h>
--#include <trace/events/intel_iommu.h>
- 
- #include "../irq_remapping.h"
- #include "perf.h"
-+#include "trace.h"
- 
- typedef int (*dmar_res_handler_t)(struct acpi_dmar_header *, void *);
- struct dmar_res_callback {
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 7ee37d996e15..70b40d007a52 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -21,11 +21,11 @@
- #include <linux/ioasid.h>
- #include <asm/page.h>
- #include <asm/fpu/api.h>
--#include <trace/events/intel_iommu.h>
- 
- #include "pasid.h"
- #include "perf.h"
- #include "../iommu-sva-lib.h"
-+#include "trace.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-diff --git a/drivers/iommu/intel/trace.c b/drivers/iommu/intel/trace.c
-index bfb6a6e37a88..117e626e3ea9 100644
---- a/drivers/iommu/intel/trace.c
-+++ b/drivers/iommu/intel/trace.c
-@@ -11,4 +11,4 @@
- #include <linux/types.h>
- 
- #define CREATE_TRACE_POINTS
--#include <trace/events/intel_iommu.h>
-+#include "trace.h"
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.25.1
-
+Florian
