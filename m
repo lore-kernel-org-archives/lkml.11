@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1965C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 14 May 2022 02:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231363AbiENC6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 13 May 2022 22:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33006 "EHLO
+        id S230184AbiENC6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 13 May 2022 22:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231351AbiENC5B (ORCPT
+        with ESMTP id S231616AbiENC5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 13 May 2022 22:57:01 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FD52FB3C1
-        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:46:53 -0700 (PDT)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D6E3A2539
+        for <linux-kernel@vger.kernel.org>; Fri, 13 May 2022 18:47:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652492813; x=1684028813;
+  t=1652492829; x=1684028829;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GVIFpAO5j7ORaurQGDRjDYzb8qL8hcHPBhy8miD32r0=;
-  b=hznMXTRvVcBO+iuQ7uN6+XOIPcAcVvBZZWFOKBGzlbcOtKbyM/aWx7KH
-   UZOqIY4i3xNf4FF98ZZkPSkUJqmtbyfZjBdOHM5Z9WaopG+wh6ngnBz70
-   aIY/kthA5+b2UfFH1BZfCX8k/sxI6fH8UUKhWiLxyLhF98tckFWaOw8bO
-   yH25B+An0cE/mcw/QVhZ7qXLHMzhZSEs2T8/H0A+SuJsfk6LYJV0flG1R
-   vHAoYdEjWxMPdbwIUagWWvl+gi2d+MMgyzYSLF/OG0ieXkNNL/9CBdB7B
-   F2HwXdzHKFXZVq/SgV/tA4r0PKS7Kd/f2zDf1yIU3K37GfhWUlcY2YAU6
+  bh=v3kPt++FiQ9ARnwZa6X+VCG2cZHcHXHj7nyunngZA8s=;
+  b=gVV2fmw7+XSUAA+RPpZUTwqXiqCfx28egKZIWy7WX+aHtqrVHLBEzeI1
+   G7EPLf8BWZsvND16aNehslH7+rD9UKVtasrK4YoKqlIhY9KzkfmKo3NZg
+   pF9dtFcte8QINLbobVbDqdBAv6a4EB+nXYghThwEbLJq5Hcses+aKgvjy
+   Pz2kISGI8Hctj4XCiAfiNxo0YlhMnM3K/aXrMpLOHlGHFDzuIjvbuJTF1
+   UnuilzoQks66zT1WSow783wEpIkqgLfnCjU02iK7czBKOcy7oYTfTPfoO
+   ByhdmSJcehXCHo4zvBzyU9QKVG5O1fndmWGxPisOAShReD2VypTNk21Cy
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="250358171"
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="270388075"
 X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="250358171"
+   d="scan'208";a="270388075"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 18:46:53 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 18:47:09 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="712630795"
+   d="scan'208";a="712630826"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:46:47 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:47:04 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -60,9 +60,9 @@ Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Steve Wahl <steve.wahl@hpe.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 3/7] iommu/vt-d: Remove unnecessary exported symbol
-Date:   Sat, 14 May 2022 09:43:18 +0800
-Message-Id: <20220514014322.2927339-4-baolu.lu@linux.intel.com>
+Subject: [PATCH 6/7] x86/boot/tboot: Move tboot_force_iommu() to Intel IOMMU
+Date:   Sat, 14 May 2022 09:43:21 +0800
+Message-Id: <20220514014322.2927339-7-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
 References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
@@ -72,51 +72,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The exported symbol intel_iommu_gfx_mapped is not used anywhere in the
-tree. Remove it to avoid dead code.
+tboot_force_iommu() is only called by the Intel IOMMU driver. Move the
+helper into that driver. No functional change intended.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- include/linux/intel-iommu.h | 1 -
- drivers/iommu/intel/iommu.c | 6 ------
- 2 files changed, 7 deletions(-)
+ include/linux/tboot.h       |  2 --
+ arch/x86/kernel/tboot.c     | 15 ---------------
+ drivers/iommu/intel/iommu.c | 14 ++++++++++++++
+ 3 files changed, 14 insertions(+), 17 deletions(-)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 4f29139bbfc3..0f9df5a19ef7 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -790,7 +790,6 @@ extern int iommu_calculate_agaw(struct intel_iommu *iommu);
- extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
- extern int dmar_disabled;
- extern int intel_iommu_enabled;
--extern int intel_iommu_gfx_mapped;
+diff --git a/include/linux/tboot.h b/include/linux/tboot.h
+index 5146d2574e85..d2279160ef39 100644
+--- a/include/linux/tboot.h
++++ b/include/linux/tboot.h
+@@ -126,7 +126,6 @@ extern void tboot_probe(void);
+ extern void tboot_shutdown(u32 shutdown_type);
+ extern struct acpi_table_header *tboot_get_dmar_table(
+ 				      struct acpi_table_header *dmar_tbl);
+-extern int tboot_force_iommu(void);
+ 
  #else
- static inline int iommu_calculate_agaw(struct intel_iommu *iommu)
- {
+ 
+@@ -136,7 +135,6 @@ extern int tboot_force_iommu(void);
+ #define tboot_sleep(sleep_state, pm1a_control, pm1b_control)	\
+ 					do { } while (0)
+ #define tboot_get_dmar_table(dmar_tbl)	(dmar_tbl)
+-#define tboot_force_iommu()		0
+ 
+ #endif /* !CONFIG_INTEL_TXT */
+ 
+diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+index f9af561c3cd4..6eb9c4146f17 100644
+--- a/arch/x86/kernel/tboot.c
++++ b/arch/x86/kernel/tboot.c
+@@ -6,7 +6,6 @@
+  * Copyright (c) 2006-2009, Intel Corporation
+  */
+ 
+-#include <linux/intel-iommu.h>
+ #include <linux/init_task.h>
+ #include <linux/spinlock.h>
+ #include <linux/export.h>
+@@ -517,17 +516,3 @@ struct acpi_table_header *tboot_get_dmar_table(struct acpi_table_header *dmar_tb
+ 
+ 	return dmar_tbl;
+ }
+-
+-int tboot_force_iommu(void)
+-{
+-	if (!tboot_enabled())
+-		return 0;
+-
+-	if (no_iommu || dmar_disabled)
+-		pr_warn("Forcing Intel-IOMMU to enabled\n");
+-
+-	dmar_disabled = 0;
+-	no_iommu = 0;
+-
+-	return 1;
+-}
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e56b3a4b6998..744af407d0da 100644
+index 744af407d0da..ea1c3bcd38d5 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -314,9 +314,6 @@ static int iommu_skip_te_disable;
- #define IDENTMAP_GFX		2
- #define IDENTMAP_AZALIA		4
+@@ -4043,6 +4043,20 @@ static int __init probe_acpi_namespace_devices(void)
+ 	return 0;
+ }
  
--int intel_iommu_gfx_mapped;
--EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
--
- DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
- 
-@@ -4117,9 +4114,6 @@ int __init intel_iommu_init(void)
- 	if (list_empty(&dmar_satc_units))
- 		pr_info("No SATC found\n");
- 
--	if (dmar_map_gfx)
--		intel_iommu_gfx_mapped = 1;
--
- 	init_no_remapping_devices();
- 
- 	ret = init_dmars();
++static __init int tboot_force_iommu(void)
++{
++	if (!tboot_enabled())
++		return 0;
++
++	if (no_iommu || dmar_disabled)
++		pr_warn("Forcing Intel-IOMMU to enabled\n");
++
++	dmar_disabled = 0;
++	no_iommu = 0;
++
++	return 1;
++}
++
+ int __init intel_iommu_init(void)
+ {
+ 	int ret = -ENODEV;
 -- 
 2.25.1
 
