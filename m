@@ -2,206 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 18:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 18:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238018AbiEOSYM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 14:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58882 "EHLO
+        id S238138AbiEOSer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 14:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiEOSYI (ORCPT
+        with ESMTP id S238123AbiEOSeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 14:24:08 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD432FFED
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 11:24:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652639045; x=1684175045;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=Mtpg7qcPQwk+Mj993U56S4U/UHgKX8ZKCyIhaAmJGf8=;
-  b=DaoQo4NdsivOywy0C9Ua9gumg0UGBVftHeGcOROZOWHP+S5cDtTxLoTY
-   KZihogCQG08R09s8jgw/h6LIThvqYmrGX8y/6PfGavDH/Xz5TArnnx3s/
-   c06zTlMqUG3qogRGbexVSc/H4K23JPYz/Ui4IL9XWCUcnZRX2KO6R+jtW
-   nDKcHWD8/lIE6VjHiz6Go9RLLbabat1osQFCEh2FiXynKCfmXRxeFJmUw
-   dmKUpnZ1sBjmsVSn5EDpDZ3PmSawi7H/VOUH3/f9IyblGIa4PSVTaCKTk
-   n1aq6RqxsJc+XE5RIRmBkDVNioLiQVYPBhuWoD81FJ5pdPPz5yAX6+JSr
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="357071188"
-X-IronPort-AV: E=Sophos;i="5.91,228,1647327600"; 
-   d="scan'208";a="357071188"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2022 11:24:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,228,1647327600"; 
-   d="scan'208";a="604566445"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by orsmga001.jf.intel.com with ESMTP; 15 May 2022 11:24:04 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Sun, 15 May 2022 11:24:03 -0700
-Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Sun, 15 May 2022 11:24:03 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Sun, 15 May 2022 11:24:03 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.103)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Sun, 15 May 2022 11:24:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EL/sKUUw+LFpWJl1CfEtUQ0FTgnMG9oH5xdj3FlbL6io8Tm4otmIMVbHVct6cCpxqJaFfCPbRgHWwZFWn3pyBLrgGEdRjIKSaW2snDaQ5SQ5S58p81qILsKmhUUou4UIDkIet7N3gbAOSjVFmgi/jLuMUD7C+A5W/fHk2ZzP5s+XBscrnfjdfzqCbn4SHg8ZgP2qmi8HxIsVET7GCG0mQpIhYotNro/ShbMyqL2CZyd9413387mIPUgButQil2ymHmCeD9Pos2kn3jmj8pv4/4HiKB7LHvtXIl/YJWWgE60vrXTpk6VourS4pZDWwVbSVWYQNrEQx/cJScCnri2KEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Mtpg7qcPQwk+Mj993U56S4U/UHgKX8ZKCyIhaAmJGf8=;
- b=UMjNxB7VzIbRpa0ZDvtDk7dWVAdKrCE4bmGNoCUM7GfUlkVU4+8ylpG2FCjQ0BFhseVxguEFCywomEFSWELN+uYIAta9oHppBv5u8bDixC/vYcFoHyAZTin7Bpssmv0Tqi3WjQK6HrKNYGbcdxV1f5BMAhVa8G6pJ8fckdWG/yqhcV3GyFSeD9hUEo7P0cX/JryHH2q9B2AAkgudNWOZAKWe3SWutg7/B3Gap4V1f47tzjRhqKu0hEA9sDC5FkhYl2cXpayA4rYXpO6x37kV0yyCheRa0WNZfpQYTd1IMhrB/xUdLhzf6dPyWB6Hz8HvLm1PWGGxZQtDwZlGIHZaDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MWHPR11MB1392.namprd11.prod.outlook.com (2603:10b6:300:24::14)
- by CY5PR11MB6318.namprd11.prod.outlook.com (2603:10b6:930:3e::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Sun, 15 May
- 2022 18:24:01 +0000
-Received: from MWHPR11MB1392.namprd11.prod.outlook.com
- ([fe80::34f6:8e1d:ac6b:6e03]) by MWHPR11MB1392.namprd11.prod.outlook.com
- ([fe80::34f6:8e1d:ac6b:6e03%12]) with mapi id 15.20.5250.018; Sun, 15 May
- 2022 18:24:01 +0000
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "aryabinin@virtuozzo.com" <aryabinin@virtuozzo.com>,
-        "dvyukov@google.com" <dvyukov@google.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "glider@google.com" <glider@google.com>
-Subject: Re: [RFCv2 03/10] x86: Introduce userspace API to handle per-thread
- features
-Thread-Topic: [RFCv2 03/10] x86: Introduce userspace API to handle per-thread
- features
-Thread-Index: AQHYZOBkvB2PlILtfUOVczGp43rrrq0c3EGAgAA5TwCAAF3QAIAACzIAgACTWYCAAPLzAIAAplKAgACc9AA=
-Date:   Sun, 15 May 2022 18:24:01 +0000
-Message-ID: <95efb5ae85a96914fff3939d4924e46686196cc7.camel@intel.com>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
-         <20220511022751.65540-5-kirill.shutemov@linux.intel.com>
-         <CAG_fn=V8k3hiviv3htV6wWZ6fUBri=MORfXGJ+Kz7GdRDZvesA@mail.gmail.com>
-         <da0f438bb459050e5a586a17382e961259449761.camel@intel.com>
-         <20220513230958.dbxp6m3y3lnq74qb@black.fi.intel.com>
-         <543eb3ff98f624c6cfa1d450ac3e9ae8934c7c38.camel@intel.com>
-         <87k0aose62.ffs@tglx>
-         <9e59305039f2c8077ee087313d1df5ff06028cfe.camel@intel.com>
-         <87zgjjqico.ffs@tglx>
-In-Reply-To: <87zgjjqico.ffs@tglx>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e66532d9-511b-4854-359e-08da36a015b4
-x-ms-traffictypediagnostic: CY5PR11MB6318:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <CY5PR11MB631816CBD83DF0810D0CE63EC9CC9@CY5PR11MB6318.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lDH+Cy/Q+49SmIP5JV4g7IT/9h99e+HdLIGU9mpF3M640wxdXdcM0aY0zSvZknZoZW2qiupIT3I13qilKjyzJYndthQ81JO/tBtzJIssdo1sliIyl3LyaTTp4MckLiDZpMB96cgfmaDrMAT7lyCJXsbqrRYVMoJxAjCvegGBTIx/poDe+OFxqK09Jz71WW1VXv+Ew0gCbpoGZmnRkrUmGuicqSb+/Q+I9MKw1wEtNqWUdNnW5yaCnIgdQ+8GiEQfCe0oCa3GvSOrGWBeF4aGdhawLNyua98HluXxMw3eYOqVhNG6O+LSqBRce/c+fvEuuMMjhU4/bfVE7YW9hSLZgPuzk0MpmyclURW/KVWDATT0vXrRMX4NVm+gi0JSY4PtdTdvX4xjsytSVTnoKbyeddg90M8/r+uJSRP1yFMjWQke6AKzPFdyoG5AZ+Owd//ljrAGSkOcMNHFM71ODWIaWWrL6DsObGgBTUOO5jMD6S42nzXfVDkbXZtTg5Se4UiuOEzBll9nNOZcRzOIFHfjszCef3qwu7t6Q/2BjeqM/U5HsRX8vzG0Ry8BzjjnKNH8UrWMkvNHMyYHWge4uiW4+W60VcGzSpv4DJXq3lmoiQ/z3c53uF5wvY1qGd+iHKDuOpQSqPU0nGEhNg7m2+V5FsAtxmUxi1zPVCEFKQqexMBfxIKW4ZAwUhscCaYOSBj7y7dcAuw3pdXfzcYvP+rEMW4mPvcGb4Gn69DfqTWytyE=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(83380400001)(8676002)(66446008)(76116006)(66556008)(64756008)(2906002)(6486002)(86362001)(508600001)(186003)(26005)(6512007)(91956017)(82960400001)(71200400001)(122000001)(66476007)(2616005)(7416002)(6506007)(38070700005)(316002)(36756003)(54906003)(8936002)(5660300002)(110136005)(66946007)(38100700002)(99106002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TnRtb1ltUldEeTg2V255U2FtZDQ2Qmx2VFlOaVZSVHQrZnVjSTE0c3graFNt?=
- =?utf-8?B?azR1bmgwTDQvRm4xUHBmdDJTZjJ3MHRHN1NKL2ZwTDl5YkdlVG5ObDVZRmsx?=
- =?utf-8?B?SnpBK0JIeC84TjMwQXdpZDF5YWRheGNGdldjLzlGS0hkRmpEZHZlYnIxOGEx?=
- =?utf-8?B?dHp6UVRYQm9tcVAycUwzVDQ2RW1vOUVVb0c2OTk2NDJ0d2tUaGhleFdacCsx?=
- =?utf-8?B?QldQSkp2Z3hsTUFUSlM0bk1JMTJialZDSlpXSlE5dldzaUpSdkwyRU9KNnd6?=
- =?utf-8?B?NjJ4MUJzQS8yM3o1c2QwWWVKUTEwZUU4VmRaTHA2VGF4czJjaXIxdkFpY01F?=
- =?utf-8?B?Mml5QVB2anpXYlRxeFdTenZ1SWpYRy9Bb0NxbkRTNysrUXFtemRWOHFKK2tM?=
- =?utf-8?B?ZUNHV0hrc2VoSVFISmpTOTVPd0F2QlczenJIczI0YkV2TFhxS2RzRDF6bFAr?=
- =?utf-8?B?Ym8zQm9rd20rUVQ2a2xJQy95UHhNWjNZSW1EbkloMWY5S3A2b0psVGlDWm92?=
- =?utf-8?B?MDl6TC93VmVLa0VVL2tENEltTFRIdjlIcXVvY1hQb2JCc0dJWjFpVFFaN2Fk?=
- =?utf-8?B?WDRHRytTaWl1enNDandKSFp5eHlMUXVJaG51aEZidFNWR1Y1SGdOZ21XQXBa?=
- =?utf-8?B?SU9sd1RoY3BXUW55L1l0Ti9wYjJ2Mk8zRlREbVN5ZUFMYWJ4Qm5nSDZ1NUFr?=
- =?utf-8?B?Z1ZyM0MvSFJJNFhZSW1GcmFBdG5Ncm1sNVZvU2h2Uy82d2pzd2l0d0JUc1RD?=
- =?utf-8?B?WDh6SUxDcUI3dlo5VjZQc1pTaWd6S1JZR2JiS1FGZUV6c0FFc3dSVU0vZlA2?=
- =?utf-8?B?S1lsNGxhR1c0cVBXUHVTZXpFNmZyUlNweXZIUEx5aFFZVDJweTFvb1JZOUw1?=
- =?utf-8?B?K3VvVktpSytJY2sxQXllWCtrMnh4SU91anFmQm1EVkg1VzN4MWNuYUtnUHl1?=
- =?utf-8?B?a3V6cVpRVnlDbkNkRWdkUzQva2ZDdUtKa1YwYzRvckhjVEt5L0t2Qm5pNEpX?=
- =?utf-8?B?TUJaZStjdUhvZFpmOWhsS3ZlU3RVd1M3cXBpZU9ZRHlDdkloQUFDa1crdjN0?=
- =?utf-8?B?bFpRVDhXLzlXa214NGFMS1Vtb29DTEZFU1p2U0tEdXdzTHdDa2RtOUZLUUtB?=
- =?utf-8?B?aFpWRUhaRU0rNjF5WDRlcXE4UWVKSmhXNkFLWUtDc1Y5YmV4ZHhHekdPSCtw?=
- =?utf-8?B?cmNKOSs5KzBIeFZTRThXL2R3ejMxeXRYTzNSWEp1N1E3ZVJETy9RQ3pGQVds?=
- =?utf-8?B?ZkhZVWJVaE45a0NDem82dzVXc1dXeWQ0dEc1YjRBMytoVGdRL213V01mRVFD?=
- =?utf-8?B?ZnFpRURCU0xlMWE3ODE4OTFlYjBnVWJqa2dzWG0zOCtrUWFJVHBaUUtrVTBa?=
- =?utf-8?B?aXRLL2Z6VGVpRWVFeVdnMEk0UmxCUnBmRlVLVGxOMjAyQUpubTVVMVdUL3Fn?=
- =?utf-8?B?M3BUamltRysvdlQ4ZUs4Zm50RW16eHB4bEFndzIwT3UzelZXQTU0RHVoYkVO?=
- =?utf-8?B?OGZ1N1pyRE8vY3QzdzNnVVE5c3VnUWtmQWZYKzJ4c0ZIKzVWMDRsQlUzb2I1?=
- =?utf-8?B?WTBZSmdJdHgxOFlPa0JPV3dNMDZyMTBQeTE5OEVuQWJsYU5vNlhEZ2tYUlV2?=
- =?utf-8?B?bHk1OEQ3eVBUTkpRd3ppV2Z6ZWgyS3FjdkloRnoraGZ2bFZzK1M4K2EweW5R?=
- =?utf-8?B?MmhvNUhPamQ5YVpWZVdSOHJ1azhMWllLaW5WaUMrMGdONHhDWEJsdnJpam1J?=
- =?utf-8?B?S2JNRUV1dkV2RE9TZVJ5QzB0WmFIZUtjZHg4eVpRVDQzNnJEeWdHclRFRFFW?=
- =?utf-8?B?YWVvYnFMa05ZNVFZYzJpbkhQL041bjJBNy96Y3RXVEZLRW5WZHB2NDhLM2lm?=
- =?utf-8?B?TWkrdzlnaWQxbkswT3c3SC9MZzZYYS9yQzlRdkNoK3VWS3pUemFNemRVWGJm?=
- =?utf-8?B?WjNTVG1rNWpWRVZtc0VhWmZOQlU5OUdoeUExTmwwU0VNU0s0Z2hnYUpuSk5H?=
- =?utf-8?B?OHdtbXJnbjlucVdLeFpvWEdJYTV3ZjFaYlJsNmVqMC8vM1phekRBWHBEaW4r?=
- =?utf-8?B?V0lMUWdpQTVRaUNLaXo5ZG11Ly80aXZWc1RWZjk4Nmo1blo4ZVl2TnBRNEdm?=
- =?utf-8?B?Zk54ZlJmamlEUEkrSU9DU1hKbjlkUTB6dS9pUVQ5ZUhqSlh1aU1EcG9TdVpl?=
- =?utf-8?B?N0xIZzBoUTZjMzk3QjN6aVlmU3pkcC9rVVVkaEQyMkFMMXdIOE4vc01vUENF?=
- =?utf-8?B?UFQ5T1pXSUx0SEt3OWcybjV0QjNFa2JQM0E1MjBWQ05TQWJZNWd2VmxnVUJB?=
- =?utf-8?B?SzEwaGNVOU1zREgyaHo3VkZDdVZBbUdQUXpDWHN4L2sxbHpibGg5M3ZtMkdN?=
- =?utf-8?Q?LUiYoHWcBokp9jPD/8ggB1p+wADjuzfkl45o1?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A9CA2A1F5A705F4EBE5145548478821D@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Sun, 15 May 2022 14:34:44 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3294CDED2;
+        Sun, 15 May 2022 11:34:43 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id EBFF93200972;
+        Sun, 15 May 2022 14:34:39 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 15 May 2022 14:34:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=living180.net;
+         h=cc:cc:content-transfer-encoding:content-type:date:date:from
+        :from:in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1652639679; x=
+        1652726079; bh=1tqwKGxvROapik2SZuXrpiyKuwJSO346wMqf0Svvi3s=; b=V
+        7RDZwhnjNHoUl+SnGUB32icJcjYPZerNpiRLx0H0J4qKV5OKbJqag1s4EIRoZxHV
+        CfMVNMNwUBnm97fepkMdA0HrJpjZO7b+963bC3IHDeXsfqPd9xIcGPz1YjqOYGJ/
+        iV1i41LwsH17UiEnaF/NJC+WZdwkWNt7vvJrFPYY5A80iaGvkBohVwza6QKqwCWc
+        1ZUvQabiLMvx7Vmbnyqg/HdlX62VL6WllbBQBhYPy+57Jx0iimnV8vzpBWorflFK
+        G2OUbsJA5ZM2qCdAVjcDGIj6eaYFZlBwnYzj9+gTTIQuGAyACO25YeGiM1QpCp3l
+        B3C8MkyhnjPiWVTowhLeA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1652639679; x=1652726079; bh=1tqwKGxvROapi
+        k2SZuXrpiyKuwJSO346wMqf0Svvi3s=; b=n3ic4cjP6oMiDgJdmmVbSY8k/m0kA
+        4YNNyMu1sJW0h05D3IRB1pFtBTP1rQ6apKZipklWVkjAQGopz1iU9ilUFIWvs6fr
+        YW3VmxDqMbllzJn8VpyiiskW3eBwLCE2Fkni3p5UK4fmYbFzWWM0V+iTgOB+Pd9S
+        K2aJrCN0KxAn3ZwWTBX5opXDqW8oJ3FzUp7+FqLgdhzNB5mPYyoj/CBKBoNVZVh/
+        z1z8MxoC6ASta1b8kZxv2RZu2yXUdYEwmWj77WDkmSQ91YgHT/fNXHfvEPXAhGBz
+        mtAVMmAmK/c4E/FNSHuh7foEiYbdRQMiT9wAcYfdGwBuO5quyfEG2c1IA==
+X-ME-Sender: <xms:v0eBYsIfaVvZk9-p92ok4U9D1VcTpvJHm5Ybel9K7ctUD9u1N8_GjQ>
+    <xme:v0eBYsLtGCnU-yaix8LDlhCm8E6b7R0S9N-6020bHsB8B6qRVR_6bfvgb-jkpoM0R
+    5Oshu6TQfNoVQ>
+X-ME-Received: <xmr:v0eBYsvfcUc1qHAzUpnImPm9M5rbYQr06CJbltm65e_DmSRn04RktysGwzsuXA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrheefgdduvdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkfffgggfuffvvehfhfgjtgfgsehtkeertddtfeejnecuhfhrohhmpeffrghn
+    ihgvlhcujfgrrhguihhnghcuoeguhhgrrhguihhngheslhhivhhinhhgudektddrnhgvth
+    eqnecuggftrfgrthhtvghrnhepfeffjeejffegffeuveekkeffiefghefhtefgvdehveei
+    geeuffegfeeileeihfevnecuffhomhgrihhnpehgihhthhhusgdrtghomhenucevlhhush
+    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeguhhgrrhguihhnghes
+    lhhivhhinhhgudektddrnhgvth
+X-ME-Proxy: <xmx:v0eBYpYXlFjste4YbVDcId4VSJU9xrVLvYB5K2qWAUyOKXm3LcrbMw>
+    <xmx:v0eBYjaTytIVPidYr_e97rcrPH7LbcIkfsZ2VC2deOx_78mikvGKhQ>
+    <xmx:v0eBYlDOMcsiBwEDgQkdH5B4bCYaK1HvhtV7j-ZQFJQITIwOSvaONQ>
+    <xmx:v0eBYiU1C2drFgFPbULENOUedaFvnOnM2N61BfwvhKIRNW2D5IDrHw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 15 May 2022 14:34:37 -0400 (EDT)
+Message-ID: <c2f956e2-b235-9937-d554-424ae44c68e4@living180.net>
+Date:   Sun, 15 May 2022 21:34:35 +0300
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1392.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e66532d9-511b-4854-359e-08da36a015b4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 May 2022 18:24:01.2833
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VvKwJS51pqS+Ms7lPcm8I9JFBxTZWKnMmGu2xl2IF3wjHVVtkl6w3ZzF99CwWvPWyXP5plOOvbCibJyNJVoq9IwFvSDdrdUi+nNqvToDQso=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6318
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [REGRESSION] lxc-stop hang on 5.17.x kernels
+Content-Language: en-US
+To:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     regressions@lists.linux.dev, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <7925e262-e0d4-6791-e43b-d37e9d693414@living180.net>
+ <6ad38ecc-b2a9-f0e9-f7c7-f312a2763f97@kernel.dk>
+ <ccf6cea1-1139-cd73-c4e5-dc9799708bdd@living180.net>
+ <bb283ff5-6820-d096-2fca-ae7679698a50@kernel.dk>
+ <371c01dd-258c-e428-7428-ff390b664752@kernel.dk>
+ <2436d42c-85ca-d060-6508-350c769804f1@gmail.com>
+ <ad9c31e5-ee75-4df2-c16d-b1461be1901a@living180.net>
+ <fb0dbd71-9733-0208-48f2-c5d22ed17510@gmail.com>
+ <a204ba93-7261-5c6e-1baf-e5427e26b124@living180.net>
+ <bd932b5a-9508-e58f-05f8-001503e4bd2b@gmail.com>
+ <12a57dd9-4423-a13d-559b-2b1dd2fb0ef3@living180.net>
+ <897dc597-fc0a-34ec-84b8-7e1c4901e0fc@leemhuis.info>
+From:   Daniel Harding <dharding@living180.net>
+In-Reply-To: <897dc597-fc0a-34ec-84b8-7e1c4901e0fc@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gU3VuLCAyMDIyLTA1LTE1IGF0IDExOjAyICswMjAwLCBUaG9tYXMgR2xlaXhuZXIgd3JvdGU6
-DQo+ID4gT3RoZXJ3aXNlLCB0aGUgb3B0aW9uIHRoYXQgdXNlZCB0byBiZSB1c2VkIGhlcmUgd2Fz
-IGEgInN0YXR1cyINCj4gPiBhcmNoX3ByY3RsKCksIHdoaWNoIHdhcyBjYWxsZWQgc2VwYXJhdGVs
-eSB0byBmaW5kIG91dCB3aGF0IGFjdHVhbGx5DQo+ID4gZ290DQo+ID4gZW5hYmxlZCBhZnRlciBh
-biAiZW5hYmxlIiBjYWxsLiBUaGF0IGZpdCB3aXRoIHRoZSBHRVQvU0VUIHNlbWFudGljcw0KPiA+
-IGFscmVhZHkgaW4gcGxhY2UuDQo+ID4gDQo+ID4gSSBndWVzcyB3ZSBjb3VsZCBhbHNvIGdldCBy
-aWQgb2YgdGhlIGJhdGNoIGVuYWJsaW5nIGlkZWEsIGFuZCBqdXN0DQo+ID4gaGF2ZQ0KPiA+IG9u
-ZSAiZW5hYmxlIiBjYWxsIHBlciBmZWF0dXJlIHRvby4gQnV0IHRoZW4gaXQgaXMgc3lzY2FsbCBo
-ZWF2eS4NCj4gDQo+IFRoaXMgaXMgbm90IGEgcnVudGltZSBob3RwYXRoIHByb2JsZW0uIFRob3Nl
-IHByY3RscygpIGhhcHBlbiBvbmNlDQo+IHdoZW4NCj4gdGhlIHByb2Nlc3Mgc3RhcnRzLCBzbyBo
-YXZpbmcgdGhyZWUgd2hpY2ggYXJlIGRlc2lnbmVkIGZvciB0aGUNCj4gaW5kaXZpZHVhbCBwdXJw
-b3NlIGluc3RlYWQgb2Ygb25lIGlsbCBkZWZpbmVkIGlzIGRlZmluaXRlbHkgdGhlDQo+IGJldHRl
-cg0KPiBjaG9pY2UuDQo+IA0KPiBQcmVtYXR1cmUgb3B0aW1pemF0aW9uIGlzIG5ldmVyIGEgZ29v
-ZCBpZGVhLiBLZWVwIGl0IHNpbXBsZSBpcyB0aGUNCj4gcmlnaHQNCj4gc3RhcnRpbmcgcG9pbnQu
-DQo+IA0KPiBJZiBpdCByZWFsbHkgdHVybnMgb3V0IHRvIGJlIHNvbWV0aGluZyB3aGljaCBtYXR0
-ZXJzLCB0aGVuIHlvdSBjYW4NCj4gcHJvdmlkZSBhIGJhdGNoIGludGVyZmFjZSBsYXRlciBvbiBp
-ZiBpdCBtYWtlcyBzZW5zZSB0byBkbyBzbywgYnV0DQo+IHNlZQ0KPiBhYm92ZS4NCg0KVGhhbmtz
-LCBzb3VuZHMgZ29vZCB0byBtZS4NCg0KS2lyaWxsLCBzbyBJIGd1ZXNzIHdlIGNhbiBqdXN0IGNo
-YW5nZSBBUkNIX1RIUkVBRF9GRUFUVVJFX0VOQUJMRS8NCkFSQ0hfVEhSRUFEX0ZFQVRVUkVfRElT
-QUJMRSB0byByZXR1cm4gRUlOVkFMIGlmIG1vcmUgdGhhbiBvbmUgYml0IGlzDQpzZXQuIEl0IHJl
-dHVybnMgMCBvbiBzdWNjZXNzIGFuZCB3aGF0ZXZlciBlcnJvciBjb2RlIG9uIGZhaWx1cmUuDQpV
-c2Vyc3BhY2UgY2FuIGRvIHdoYXRldmVyIHJvbGxiYWNrIGxvZ2ljIGl0IHdhbnRzLiBXaGF0IGRv
-IHlvdSB0aGluaz8NCg0K
+On 5/15/22 11:20, Thorsten Leemhuis wrote:
+> On 04.05.22 08:54, Daniel Harding wrote:
+>> On 5/3/22 17:14, Pavel Begunkov wrote:
+>>> On 5/3/22 08:37, Daniel Harding wrote:
+>>>> [Resend with a smaller trace]
+>>>> On 5/3/22 02:14, Pavel Begunkov wrote:
+>>>>> On 5/2/22 19:49, Daniel Harding wrote:
+>>>>>> On 5/2/22 20:40, Pavel Begunkov wrote:
+>>>>>>> On 5/2/22 18:00, Jens Axboe wrote:
+>>>>>>>> On 5/2/22 7:59 AM, Jens Axboe wrote:
+>>>>>>>>> On 5/2/22 7:36 AM, Daniel Harding wrote:
+>>>>>>>>>> On 5/2/22 16:26, Jens Axboe wrote:
+>>>>>>>>>>> On 5/2/22 7:17 AM, Daniel Harding wrote:
+>>>>>>>>>>>> I use lxc-4.0.12 on Gentoo, built with io-uring support
+>>>>>>>>>>>> (--enable-liburing), targeting liburing-2.1.  My kernel
+>>>>>>>>>>>> config is a
+>>>>>>>>>>>> very lightly modified version of Fedora's generic kernel
+>>>>>>>>>>>> config. After
+>>>>>>>>>>>> moving from the 5.16.x series to the 5.17.x kernel series, I
+>>>>>>>>>>>> started
+>>>>>>>>>>>> noticed frequent hangs in lxc-stop.  It doesn't happen 100%
+>>>>>>>>>>>> of the
+>>>>>>>>>>>> time, but definitely more than 50% of the time. Bisecting
+>>>>>>>>>>>> narrowed
+>>>>>>>>>>>> down the issue to commit
+>>>>>>>>>>>> aa43477b040251f451db0d844073ac00a8ab66ee:
+>>>>>>>>>>>> io_uring: poll rework. Testing indicates the problem is still
+>>>>>>>>>>>> present
+>>>>>>>>>>>> in 5.18-rc5. Unfortunately I do not have the expertise with the
+>>>>>>>>>>>> codebases of either lxc or io-uring to try to debug the problem
+>>>>>>>>>>>> further on my own, but I can easily apply patches to any of the
+>>>>>>>>>>>> involved components (lxc, liburing, kernel) and rebuild for
+>>>>>>>>>>>> testing or
+>>>>>>>>>>>> validation.  I am also happy to provide any further
+>>>>>>>>>>>> information that
+>>>>>>>>>>>> would be helpful with reproducing or debugging the problem.
+>>>>>>>>>>> Do you have a recipe to reproduce the hang? That would make it
+>>>>>>>>>>> significantly easier to figure out.
+>>>>>>>>>> I can reproduce it with just the following:
+>>>>>>>>>>
+>>>>>>>>>>       sudo lxc-create --n lxc-test --template download --bdev
+>>>>>>>>>> dir --dir /var/lib/lxc/lxc-test/rootfs -- -d ubuntu -r bionic
+>>>>>>>>>> -a amd64
+>>>>>>>>>>       sudo lxc-start -n lxc-test
+>>>>>>>>>>       sudo lxc-stop -n lxc-test
+>>>>>>>>>>
+>>>>>>>>>> The lxc-stop command never exits and the container continues
+>>>>>>>>>> running.
+>>>>>>>>>> If that isn't sufficient to reproduce, please let me know.
+>>>>>>>>> Thanks, that's useful! I'm at a conference this week and hence have
+>>>>>>>>> limited amount of time to debug, hopefully Pavel has time to
+>>>>>>>>> take a look
+>>>>>>>>> at this.
+>>>>>>>> Didn't manage to reproduce. Can you try, on both the good and bad
+>>>>>>>> kernel, to do:
+>>>>>>> Same here, it doesn't reproduce for me
+>>>>>> OK, sorry it wasn't something simple.
+>>>>>>> # echo 1 > /sys/kernel/debug/tracing/events/io_uring/enable
+>>>>>>>> run lxc-stop
+>>>>>>>>
+>>>>>>>> # cp /sys/kernel/debug/tracing/trace ~/iou-trace
+>>>>>>>>
+>>>>>>>> so we can see what's going on? Looking at the source, lxc is just
+>>>>>>>> using
+>>>>>>>> plain POLL_ADD, so I'm guessing it's not getting a notification
+>>>>>>>> when it
+>>>>>>>> expects to, or it's POLL_REMOVE not doing its job. If we have a
+>>>>>>>> trace
+>>>>>>>> from both a working and broken kernel, that might shed some light
+>>>>>>>> on it.
+>>>>>> It's late in my timezone, but I'll try to work on getting those
+>>>>>> traces tomorrow.
+>>>>> I think I got it, I've attached a trace.
+>>>>>
+>>>>> What's interesting is that it issues a multi shot poll but I don't
+>>>>> see any kind of cancellation, neither cancel requests nor task/ring
+>>>>> exit. Perhaps have to go look at lxc to see how it's supposed
+>>>>> to work
+>>>> Yes, that looks exactly like my bad trace.  I've attached good trace
+>>>> (captured with linux-5.16.19) and a bad trace (captured with
+>>>> linux-5.17.5).  These are the differences I noticed with just a
+>>>> visual scan:
+>>>>
+>>>> * Both traces have three io_uring_submit_sqe calls at the very
+>>>> beginning, but in the good trace, there are further
+>>>> io_uring_submit_sqe calls throughout the trace, while in the bad
+>>>> trace, there are none.
+>>>> * The good trace uses a mask of c3 for io_uring_task_add much more
+>>>> often than the bad trace:  the bad trace uses a mask of c3 only for
+>>>> the very last call to io_uring_task_add, but a mask of 41 for the
+>>>> other calls.
+>>>> * In the good trace, many of the io_uring_complete calls have a
+>>>> result of 195, while in the bad trace, they all have a result of 1.
+>>>>
+>>>> I don't know whether any of those things are significant or not, but
+>>>> that's what jumped out at me.
+>>>>
+>>>> I have also attached a copy of the script I used to generate the
+>>>> traces.  If there is anything further I can to do help debug, please
+>>>> let me know.
+>>> Good observations! thanks for traces.
+>>>
+>>> It sounds like multi-shot poll requests were getting downgraded
+>>> to one-shot, which is a valid behaviour and was so because we
+>>> didn't fully support some cases. If that's the reason, than
+>>> the userspace/lxc is misusing the ABI. At least, that's the
+>>> working hypothesis for now, need to check lxc.
+>> So, I looked at the lxc source code, and it appears to at least try to
+>> handle the case of multi-shot being downgraded to one-shot.  I don't
+>> know enough to know if the code is actually correct however:
+>>
+>> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L165-L189
+>> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L254
+>> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L288-L290
+> Hi, this is your Linux kernel regression tracker. Nothing happened here
+> for round about ten days now afaics; or did the discussion continue
+> somewhere else.
+>
+>  From what I gathered from this discussion is seems the root cause might
+> be in LXC, but it was exposed by kernel change. That makes it sill a
+> kernel regression that should be fixed; or is there a strong reason why
+> we should let this one slip?
+
+No, there hasn't been any discussion since the email you replied to.  
+I've done a bit more testing on my end, but without anything 
+conclusive.  The one thing I can say is that my testing shows that LXC 
+does correctly handle multi-shot poll requests which were being 
+downgraded to one-shot in 5.16.x kernels, which I think invalidates 
+Pavel's theory.  In 5.17.x kernels, those same poll requests are no 
+longer being downgraded to one-shot requests, and thus under 5.17.x LXC 
+is no longer re-arming those poll requests (but also shouldn't need to, 
+according to what is being returned by the kernel).  I don't know if 
+this change in kernel behavior is related to the hang, or if it is just 
+a side effect of other io-uring changes that made it into 5.17.  Nothing 
+in the LXC's usage of io-uring seems obviously incorrect to me, but I am 
+far from an expert.  I also did some work toward creating a simpler 
+reproducer, without success (I was able to get a simple program using 
+io-uring running, but never could get it to hang).  ISTM that this is 
+still a kernel regression, unless someone can point out a definite fault 
+in the way LXC is using io-uring.
+
+-- 
+Regards,
+
+Daniel Harding
