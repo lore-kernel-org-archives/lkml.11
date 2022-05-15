@@ -2,129 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 18:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 728CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 18:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238179AbiEOSfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 14:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
+        id S238381AbiEOSmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 14:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238157AbiEOSfv (ORCPT
+        with ESMTP id S236850AbiEOSm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 14:35:51 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3941134
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 11:35:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652639750; x=1684175750;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=npuOhrtNWHjYePDJsyU19Jad4BAGD5v3NtGR63bv/8A=;
-  b=lMCi69B+UWUguezmTAU7gn1EW9K0qU3mAJePGrN4dU1nhx/xFeNJ1/Ak
-   joXeyx6+Q4kcS1ZMzJuNXkPoEPgZ6NoruYWQaQE54IHcCyE7BLyV3baHJ
-   6OxfAcai/qdjuwZul0hldaJXMCmHqRWXO4ln3ZSOd8sRO/uZKMuxP/EvE
-   EMaAKrG3n12B+mbZ2E74fqTYp01lfuFKrtfnN6Mpl0TCWEbTXTy0ELDQ8
-   YSEhRw68I4Wf2N8YrJTd7KeGd112WNoPUnoJaclVBRv5gskAiAA77RU4n
-   8mxaNAkHW+VyXucN06WhwFmoa4p2uSo1ny2Mf7R6Q7tKmzc2y3G1HR4PH
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="251176883"
-X-IronPort-AV: E=Sophos;i="5.91,228,1647327600"; 
-   d="scan'208";a="251176883"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2022 11:35:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,228,1647327600"; 
-   d="scan'208";a="567997056"
-Received: from lkp-server01.sh.intel.com (HELO d1462bc4b09b) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 15 May 2022 11:35:48 -0700
-Received: from kbuild by d1462bc4b09b with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqJ5T-0001tr-9M;
-        Sun, 15 May 2022 18:35:27 +0000
-Date:   Mon, 16 May 2022 02:34:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:irq/core] BUILD SUCCESS
- 21673fcb2532dcd189905ff5a5389eb7dcd0e57a
-Message-ID: <628147b3.mz21v0Apy+mVTwkQ%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sun, 15 May 2022 14:42:26 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C529DE7
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 11:42:24 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id j6so24841179ejc.13
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 11:42:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XyHLOKOVQbDpT7eahnROR3m4U53LPSqe6ZPVDJA+AE8=;
+        b=JNYkq5EcWWSWYB4B3v514DHG8EMVEqmr6E5cLyvmNEv3kcSa5l/GmIaJOPki2W1vae
+         R2x9MrhyOd0p2JC2fk20WnPSyN0093UElSysa3FHDoHXpjmCyOMAZwIgQQg0FUTWfDEo
+         +TrmR+VrXXiL4qdSIlVOXpVKZOpowhniQHtV1SRpO5GFj1xn+N50bawcpGlbtKodxT8l
+         ofkBd3JM+ZqR0c2laA5Ic1bYBttGtozbVNHsQC2A+9VpTPhYVbSHRwBsBVNYuMDIy3tm
+         810Ogsx4fBqpkqQ2xxAD1QsAK+sWvjD+KUYY+gudLx6NuRK+eyYjDg6BS9s1VAG8xPTW
+         lcvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XyHLOKOVQbDpT7eahnROR3m4U53LPSqe6ZPVDJA+AE8=;
+        b=wkWsTk9dO+X1FmsrG1NIGdctcFfvj0Qj5hu7kCX/AdBl1TJd2uRyGdY0H/54DeUDol
+         pTPO1GYG7RDgk1KSBF9cpKA5lNt7VSvtqAE3NeNTB4zxz8WbD6Uv1jLB9Ex/gE2+IhIS
+         rHg2cq2VqHYLqx4BtBtV/B3Fmvu1nqBoz0cp2sYuFzg7MHC8LL5qlBRyWSyHBOcD9DKc
+         TmPnN+U6dJ3kTt/S7b4LGTQYoA6wFIMPgzcmFkXAqpAeKTsK6kHHLBUP6TsOAKdcVguT
+         tilNxNFHB8YXc/dll/x5/MrNlHSWehAJKqbHMPFypkz6igyBdXLy7ogzbV0VLMmsmY3y
+         NEcA==
+X-Gm-Message-State: AOAM5300hDUIUSPPeBTEUNFFvLN24Y4Rxx4AbYROJ/X7JktAcRtrKtV+
+        i1FTT08dsbHcxO/49qh/TUU=
+X-Google-Smtp-Source: ABdhPJx7NkxJxjqUCw4Z7EV8zMWHMcWBTuqs4H4hT1/ANgNLTRD+Yp8GczDIaSCoGCpqo5jWToNc4w==
+X-Received: by 2002:a17:907:86a5:b0:6f9:aa0f:a838 with SMTP id qa37-20020a17090786a500b006f9aa0fa838mr12179163ejc.340.1652640142963;
+        Sun, 15 May 2022 11:42:22 -0700 (PDT)
+Received: from localhost.localdomain (93-103-18-160.static.t-2.net. [93.103.18.160])
+        by smtp.gmail.com with ESMTPSA id hv7-20020a17090760c700b006f3ef214e62sm2861898ejc.200.2022.05.15.11.42.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 May 2022 11:42:22 -0700 (PDT)
+From:   Uros Bizjak <ubizjak@gmail.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Uros Bizjak <ubizjak@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Marco Elver <elver@google.com>
+Subject: [PATCH v3 0/2] locking/atomic/x86: Introduce arch_try_cmpxchg64
+Date:   Sun, 15 May 2022 20:42:02 +0200
+Message-Id: <20220515184205.103089-1-ubizjak@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
-branch HEAD: 21673fcb2532dcd189905ff5a5389eb7dcd0e57a  genirq/irq_sim: Make the irq_work always run in hard irq context
+The followign patchset introduces generic support for try_cmpxchg64
+and introduces arch_try_cmpxchg64 for 64-bit and 32-bit targets.
+On 64-bit targets, the generated assembly improves from:
 
-elapsed time: 1554m
+  ab:	89 c8                	mov    %ecx,%eax
+  ad:	48 89 4c 24 60       	mov    %rcx,0x60(%rsp)
+  b2:	83 e0 fd             	and    $0xfffffffd,%eax
+  b5:	89 54 24 64          	mov    %edx,0x64(%rsp)
+  b9:	88 44 24 60          	mov    %al,0x60(%rsp)
+  bd:	48 89 c8             	mov    %rcx,%rax
+  c0:	c6 44 24 62 f2       	movb   $0xf2,0x62(%rsp)
+  c5:	48 8b 74 24 60       	mov    0x60(%rsp),%rsi
+  ca:	f0 49 0f b1 34 24    	lock cmpxchg %rsi,(%r12)
+  d0:	48 39 c1             	cmp    %rax,%rcx
+  d3:	75 cf                	jne    a4 <t+0xa4>
 
-configs tested: 55
-configs skipped: 3
+to:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+  b3:	89 c2                	mov    %eax,%edx
+  b5:	48 89 44 24 60       	mov    %rax,0x60(%rsp)
+  ba:	83 e2 fd             	and    $0xfffffffd,%edx
+  bd:	89 4c 24 64          	mov    %ecx,0x64(%rsp)
+  c1:	88 54 24 60          	mov    %dl,0x60(%rsp)
+  c5:	c6 44 24 62 f2       	movb   $0xf2,0x62(%rsp)
+  ca:	48 8b 54 24 60       	mov    0x60(%rsp),%rdx
+  cf:	f0 48 0f b1 13       	lock cmpxchg %rdx,(%rbx)
+  d4:	75 d5                	jne    ab <t+0xab>
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                            allmodconfig
-riscv                    nommu_k210_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_virt_defconfig
-riscv                               defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+where a move and a compare after cmpxchg is saved.  The improvements
+for 32-bit targets are even more noticeable, because dual-word compare
+after cmpxchg8b gets eliminated.
+
+Changes since v2:
+ * Remove invalid and unnecessary cast from 32-bit arch_try_cmpxchg64.
+ 
+Changes since v1:
+ * Implement full support for try_cmpxchg64{,_acquire,_release,_relaxed}
+and their falbacks involving cmpxchg64.
+ * Split patch to generic and target-dependant part.
+ * Modernize __try_cmpxchg64 asm template with symbolic operand name.
+ * Use generic fallback when arch_try_cmpxchg64 is not defined.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Marco Elver <elver@google.com>
+
+Uros Bizjak (2):
+  locking/atomic: Add generic try_cmpxchg64 support
+  locking/atomic/x86: Introduce arch_try_cmpxchg64
+
+ arch/x86/include/asm/cmpxchg_32.h           | 21 ++++++
+ arch/x86/include/asm/cmpxchg_64.h           |  6 ++
+ include/linux/atomic/atomic-arch-fallback.h | 72 ++++++++++++++++++++-
+ include/linux/atomic/atomic-instrumented.h  | 40 +++++++++++-
+ scripts/atomic/gen-atomic-fallback.sh       | 31 +++++----
+ scripts/atomic/gen-atomic-instrumented.sh   |  2 +-
+ 6 files changed, 156 insertions(+), 16 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
