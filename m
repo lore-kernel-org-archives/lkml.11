@@ -2,68 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B07FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 10:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 179CFC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 10:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236305AbiEOKSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 06:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
+        id S236314AbiEOKbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 06:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbiEOKS1 (ORCPT
+        with ESMTP id S231899AbiEOKbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 06:18:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECCD175BC
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 03:18:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 15 May 2022 06:31:04 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DF264E7
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 03:31:02 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF9D7B80BE9
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 10:18:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1648AC385B8;
-        Sun, 15 May 2022 10:18:22 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="OV02Vra2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652609900;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q/BkFmFZ1XoCw3vsJkmslzb+cMHbb9FFT6c5rZJWuH4=;
-        b=OV02Vra2A8y5JYZOfWwQJaaJ1e460Rr0qjvRqaJ86NY/IMtYuSkwsTVQZDKwpSrIYSPfPj
-        EtOg2i9AjJjEqfqwAA+8OQv1Z+NvYvtD0qERn5iSTnDvEBxd2aCD+3LKpc1DAIDJ0fC3B1
-        Uk24/Du0J/O6/kGFYBOsFPhyp5Hu2X0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7d4a126c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sun, 15 May 2022 10:18:20 +0000 (UTC)
-Date:   Sun, 15 May 2022 12:18:18 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH] random: handle latent entropy and command line from
- random_init()
-Message-ID: <YoDTavkNV6ufHN9s@zx2c4.com>
-References: <20220512124839.20755-1-Jason@zx2c4.com>
- <YoBMk1lKmF3B5kZC@sol.localdomain>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L1JZF1TVkz4xY4;
+        Sun, 15 May 2022 20:31:01 +1000 (AEST)
+From:   Michael Ellerman <patch-notifications@ellerman.id.au>
+To:     Andrew Donnellan <ajd@linux.ibm.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Frederic Barrat <fbarrat@linux.ibm.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+In-Reply-To: <a2bae89b280e7a7cb87889635d9911d6a245e780.1648833388.git.christophe.leroy@csgroup.eu>
+References: <a2bae89b280e7a7cb87889635d9911d6a245e780.1648833388.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH] cxl/ocxl: Prepare cleanup of powerpc's asm/prom.h
+Message-Id: <165261053892.1047019.3920240317648654638.b4-ty@ellerman.id.au>
+Date:   Sun, 15 May 2022 20:28:58 +1000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YoBMk1lKmF3B5kZC@sol.localdomain>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eric,
-
-On Sat, May 14, 2022 at 05:42:59PM -0700, Eric Biggers wrote:
-> On Thu, May 12, 2022 at 02:48:39PM +0200, Jason A. Donenfeld wrote:
-> > 
-> > While we're at it, rename the awkwardly titled "rand_initialize()" to
-> > the more standard "random_init()" nomenclature.
+On Sat, 2 Apr 2022 11:52:33 +0200, Christophe Leroy wrote:
+> powerpc's asm/prom.h brings some headers that it doesn't
+> need itself.
 > 
-> One nit: there's still a mention of "rand_initialize()" in
-> arch/openrisc/kernel/head.S.
+> In order to clean it up, first add missing headers in
+> users of asm/prom.h
+> 
+> 
+> [...]
 
-Thanks, will fix that too.
+Applied to powerpc/next.
 
-Jason
+[1/1] cxl/ocxl: Prepare cleanup of powerpc's asm/prom.h
+      https://git.kernel.org/powerpc/c/d8d2af70b98109418bb16ff6638d7c1c4336f7fe
+
+cheers
