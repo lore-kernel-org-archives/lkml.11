@@ -2,705 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F78C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 08:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1657C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 08:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235949AbiEOIJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 04:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51370 "EHLO
+        id S235970AbiEOIUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 04:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbiEOIJF (ORCPT
+        with ESMTP id S229915AbiEOIUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 04:09:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AEF62C668
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 01:09:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27AA9B80AF2
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 08:09:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBACC385B8;
-        Sun, 15 May 2022 08:09:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652602140;
-        bh=TuYBsu3r/vJb0/16ZFjj/btTcdjTQUAij9Ygpi/XPQA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0AFklEGNgT/g40PgPJZUJMan/FKDnL5TaenPCxzbwVrJKz3yeR+qSSFGLlf4IMhdD
-         MVorm/zejx0x1yFlRn1uaeJ/Ez8fjy8dPXJ7PPsNOw1eu5a311ywhpw6EcpsGeQ3/A
-         /S/GVpWwOrGUxMAt+AwUDL5tT57dCttkp7F9SAcI=
-Date:   Sun, 15 May 2022 10:08:56 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Shreenidhi Shedi <yesshedi@gmail.com>
-Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org,
-        Shreenidhi Shedi <sshedi@vmware.com>
-Subject: Re: [PATCH 3/3] char: lp: fix most of checkspec.pl warnings & errors
-Message-ID: <YoC1GODgKLnmJbIR@kroah.com>
-References: <20220515075455.306082-1-sshedi@vmware.com>
- <20220515075455.306082-3-sshedi@vmware.com>
+        Sun, 15 May 2022 04:20:49 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B6965E5;
+        Sun, 15 May 2022 01:20:47 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nq9Ub-0005qK-4S; Sun, 15 May 2022 10:20:45 +0200
+Message-ID: <897dc597-fc0a-34ec-84b8-7e1c4901e0fc@leemhuis.info>
+Date:   Sun, 15 May 2022 10:20:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220515075455.306082-3-sshedi@vmware.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     Daniel Harding <dharding@living180.net>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     regressions@lists.linux.dev, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <7925e262-e0d4-6791-e43b-d37e9d693414@living180.net>
+ <6ad38ecc-b2a9-f0e9-f7c7-f312a2763f97@kernel.dk>
+ <ccf6cea1-1139-cd73-c4e5-dc9799708bdd@living180.net>
+ <bb283ff5-6820-d096-2fca-ae7679698a50@kernel.dk>
+ <371c01dd-258c-e428-7428-ff390b664752@kernel.dk>
+ <2436d42c-85ca-d060-6508-350c769804f1@gmail.com>
+ <ad9c31e5-ee75-4df2-c16d-b1461be1901a@living180.net>
+ <fb0dbd71-9733-0208-48f2-c5d22ed17510@gmail.com>
+ <a204ba93-7261-5c6e-1baf-e5427e26b124@living180.net>
+ <bd932b5a-9508-e58f-05f8-001503e4bd2b@gmail.com>
+ <12a57dd9-4423-a13d-559b-2b1dd2fb0ef3@living180.net>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [REGRESSION] lxc-stop hang on 5.17.x kernels
+In-Reply-To: <12a57dd9-4423-a13d-559b-2b1dd2fb0ef3@living180.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1652602847;87dfb4b1;
+X-HE-SMSGID: 1nq9Ub-0005qK-4S
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 15, 2022 at 01:24:55PM +0530, Shreenidhi Shedi wrote:
-> This commit fixes almost all styling issues reported by checkpatch.pl
-> script.
+On 04.05.22 08:54, Daniel Harding wrote:
+> On 5/3/22 17:14, Pavel Begunkov wrote:
+>> On 5/3/22 08:37, Daniel Harding wrote:
+>>> [Resend with a smaller trace]
+>>> On 5/3/22 02:14, Pavel Begunkov wrote:
+>>>> On 5/2/22 19:49, Daniel Harding wrote:
+>>>>> On 5/2/22 20:40, Pavel Begunkov wrote:
+>>>>>> On 5/2/22 18:00, Jens Axboe wrote:
+>>>>>>> On 5/2/22 7:59 AM, Jens Axboe wrote:
+>>>>>>>> On 5/2/22 7:36 AM, Daniel Harding wrote:
+>>>>>>>>> On 5/2/22 16:26, Jens Axboe wrote:
+>>>>>>>>>> On 5/2/22 7:17 AM, Daniel Harding wrote:
+>>>>>>>>>>> I use lxc-4.0.12 on Gentoo, built with io-uring support
+>>>>>>>>>>> (--enable-liburing), targeting liburing-2.1.  My kernel
+>>>>>>>>>>> config is a
+>>>>>>>>>>> very lightly modified version of Fedora's generic kernel
+>>>>>>>>>>> config. After
+>>>>>>>>>>> moving from the 5.16.x series to the 5.17.x kernel series, I
+>>>>>>>>>>> started
+>>>>>>>>>>> noticed frequent hangs in lxc-stop.  It doesn't happen 100%
+>>>>>>>>>>> of the
+>>>>>>>>>>> time, but definitely more than 50% of the time. Bisecting
+>>>>>>>>>>> narrowed
+>>>>>>>>>>> down the issue to commit
+>>>>>>>>>>> aa43477b040251f451db0d844073ac00a8ab66ee:
+>>>>>>>>>>> io_uring: poll rework. Testing indicates the problem is still
+>>>>>>>>>>> present
+>>>>>>>>>>> in 5.18-rc5. Unfortunately I do not have the expertise with the
+>>>>>>>>>>> codebases of either lxc or io-uring to try to debug the problem
+>>>>>>>>>>> further on my own, but I can easily apply patches to any of the
+>>>>>>>>>>> involved components (lxc, liburing, kernel) and rebuild for
+>>>>>>>>>>> testing or
+>>>>>>>>>>> validation.  I am also happy to provide any further
+>>>>>>>>>>> information that
+>>>>>>>>>>> would be helpful with reproducing or debugging the problem.
+>>>>>>>>>> Do you have a recipe to reproduce the hang? That would make it
+>>>>>>>>>> significantly easier to figure out.
+>>>>>>>>>
+>>>>>>>>> I can reproduce it with just the following:
+>>>>>>>>>
+>>>>>>>>>      sudo lxc-create --n lxc-test --template download --bdev
+>>>>>>>>> dir --dir /var/lib/lxc/lxc-test/rootfs -- -d ubuntu -r bionic
+>>>>>>>>> -a amd64
+>>>>>>>>>      sudo lxc-start -n lxc-test
+>>>>>>>>>      sudo lxc-stop -n lxc-test
+>>>>>>>>>
+>>>>>>>>> The lxc-stop command never exits and the container continues
+>>>>>>>>> running.
+>>>>>>>>> If that isn't sufficient to reproduce, please let me know.
+>>>>>>>>
+>>>>>>>> Thanks, that's useful! I'm at a conference this week and hence have
+>>>>>>>> limited amount of time to debug, hopefully Pavel has time to
+>>>>>>>> take a look
+>>>>>>>> at this.
+>>>>>>>
+>>>>>>> Didn't manage to reproduce. Can you try, on both the good and bad
+>>>>>>> kernel, to do:
+>>>>>>
+>>>>>> Same here, it doesn't reproduce for me
+>>>>> OK, sorry it wasn't something simple.
+>>>>>> # echo 1 > /sys/kernel/debug/tracing/events/io_uring/enable
+>>>>>>>
+>>>>>>> run lxc-stop
+>>>>>>>
+>>>>>>> # cp /sys/kernel/debug/tracing/trace ~/iou-trace
+>>>>>>>
+>>>>>>> so we can see what's going on? Looking at the source, lxc is just
+>>>>>>> using
+>>>>>>> plain POLL_ADD, so I'm guessing it's not getting a notification
+>>>>>>> when it
+>>>>>>> expects to, or it's POLL_REMOVE not doing its job. If we have a
+>>>>>>> trace
+>>>>>>> from both a working and broken kernel, that might shed some light
+>>>>>>> on it.
+>>>>> It's late in my timezone, but I'll try to work on getting those
+>>>>> traces tomorrow.
+>>>>
+>>>> I think I got it, I've attached a trace.
+>>>>
+>>>> What's interesting is that it issues a multi shot poll but I don't
+>>>> see any kind of cancellation, neither cancel requests nor task/ring
+>>>> exit. Perhaps have to go look at lxc to see how it's supposed
+>>>> to work
+>>>
+>>> Yes, that looks exactly like my bad trace.  I've attached good trace
+>>> (captured with linux-5.16.19) and a bad trace (captured with
+>>> linux-5.17.5).  These are the differences I noticed with just a
+>>> visual scan:
+>>>
+>>> * Both traces have three io_uring_submit_sqe calls at the very
+>>> beginning, but in the good trace, there are further
+>>> io_uring_submit_sqe calls throughout the trace, while in the bad
+>>> trace, there are none.
+>>> * The good trace uses a mask of c3 for io_uring_task_add much more
+>>> often than the bad trace:  the bad trace uses a mask of c3 only for
+>>> the very last call to io_uring_task_add, but a mask of 41 for the
+>>> other calls.
+>>> * In the good trace, many of the io_uring_complete calls have a
+>>> result of 195, while in the bad trace, they all have a result of 1.
+>>>
+>>> I don't know whether any of those things are significant or not, but
+>>> that's what jumped out at me.
+>>>
+>>> I have also attached a copy of the script I used to generate the
+>>> traces.  If there is anything further I can to do help debug, please
+>>> let me know.
+>>
+>> Good observations! thanks for traces.
+>>
+>> It sounds like multi-shot poll requests were getting downgraded
+>> to one-shot, which is a valid behaviour and was so because we
+>> didn't fully support some cases. If that's the reason, than
+>> the userspace/lxc is misusing the ABI. At least, that's the
+>> working hypothesis for now, need to check lxc.
 > 
-> Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
-> ---
->  drivers/char/lp.c | 338 ++++++++++++++++++++++++----------------------
->  1 file changed, 177 insertions(+), 161 deletions(-)
+> So, I looked at the lxc source code, and it appears to at least try to
+> handle the case of multi-shot being downgraded to one-shot.  I don't
+> know enough to know if the code is actually correct however:
 > 
-> diff --git a/drivers/char/lp.c b/drivers/char/lp.c
-> index 5e8bd8d6c..2efebdfac 100644
-> --- a/drivers/char/lp.c
-> +++ b/drivers/char/lp.c
-> @@ -16,7 +16,7 @@
->   * Support for parport by Philip Blundell <philb@gnu.org>
->   * Parport sharing hacking by Andrea Arcangeli
->   * Fixed kernel_(to/from)_user memory copy to check for errors
-> - * 				by Riccardo Facchetti <fizban@tin.it>
-> + *				by Riccardo Facchetti <fizban@tin.it>
->   * 22-JAN-1998  Added support for devfs  Richard Gooch <rgooch@atnf.csiro.au>
->   * Redesigned interrupt handling for handle printers with buggy handshake
->   *				by Andrea Arcangeli, 11 May 1998
-> @@ -30,7 +30,7 @@
->   * CAREFUL will block a bit after in lp_check_status().
->   *				Andrea Arcangeli, 15 Oct 1998
->   * Obsoleted and removed all the lowlevel stuff implemented in the last
-> - * month to use the IEEE1284 functions (that handle the _new_ compatibilty
-> + * month to use the IEEE1284 functions (that handle the _new_ compatibility
->   * mode fine).
->   */
->  
-> @@ -144,7 +144,7 @@ static DEFINE_MUTEX(lp_mutex);
->  static struct lp_struct lp_table[LP_NO];
->  static int port_num[LP_NO];
->  
-> -static unsigned int lp_count = 0;
-> +static unsigned int lp_count;
->  static struct class *lp_class;
->  
->  #ifdef CONFIG_LP_CONSOLE
-> @@ -161,35 +161,31 @@ static struct parport *console_registered;
->  
->  #define r_dtr(x)	(parport_read_data(lp_table[(x)].dev->port))
->  #define r_str(x)	(parport_read_status(lp_table[(x)].dev->port))
-> -#define w_ctr(x,y)	do { parport_write_control(lp_table[(x)].dev->port, (y)); } while (0)
-> -#define w_dtr(x,y)	do { parport_write_data(lp_table[(x)].dev->port, (y)); } while (0)
-> +#define w_ctr(x, y)	(parport_write_control(lp_table[(x)].dev->port, (y)))
-> +#define w_dtr(x, y)	(parport_write_data(lp_table[(x)].dev->port, (y)))
->  
->  /* Claim the parport or block trying unless we've already claimed it */
->  static void lp_claim_parport_or_block(struct lp_struct *this_lp)
->  {
-> -	if (!test_and_set_bit(LP_PARPORT_CLAIMED, &this_lp->bits)) {
-> +	if (!test_and_set_bit(LP_PARPORT_CLAIMED, &this_lp->bits))
->  		parport_claim_or_block(this_lp->dev);
-> -	}
->  }
->  
->  /* Claim the parport or block trying unless we've already claimed it */
->  static void lp_release_parport(struct lp_struct *this_lp)
->  {
-> -	if (test_and_clear_bit(LP_PARPORT_CLAIMED, &this_lp->bits)) {
-> +	if (test_and_clear_bit(LP_PARPORT_CLAIMED, &this_lp->bits))
->  		parport_release(this_lp->dev);
-> -	}
->  }
->  
-> -
-> -
->  static int lp_preempt(void *handle)
->  {
->  	struct lp_struct *this_lp = (struct lp_struct *)handle;
-> +
->  	set_bit(LP_PREEMPT_REQUEST, &this_lp->bits);
->  	return 1;
->  }
->  
-> -
->  /*
->   * Try to negotiate to a new mode; if unsuccessful negotiate to
->   * compatibility mode.  Return the mode we ended up in.
-> @@ -207,12 +203,14 @@ static int lp_negotiate(struct parport *port, int mode)
->  static int lp_reset(int minor)
->  {
->  	int retval;
-> +
->  	lp_claim_parport_or_block(&lp_table[minor]);
->  	w_ctr(minor, LP_PSELECP);
->  	udelay(LP_DELAY);
->  	w_ctr(minor, LP_PSELECP | LP_PINITP);
->  	retval = r_str(minor);
->  	lp_release_parport(&lp_table[minor]);
-> +
->  	return retval;
->  }
->  
-> @@ -241,30 +239,34 @@ static int lp_check_status(int minor)
->  	int error = 0;
->  	unsigned int last = lp_table[minor].last_error;
->  	unsigned char status = r_str(minor);
-> +
->  	if ((status & LP_PERRORP) && !(LP_F(minor) & LP_CAREFUL))
->  		/* No error. */
->  		last = 0;
->  	else if ((status & LP_POUTPA)) {
->  		if (last != LP_POUTPA) {
->  			last = LP_POUTPA;
-> -			printk(KERN_INFO "lp%d out of paper\n", minor);
-> +			pr_info("lp%d out of paper\n", minor);
->  		}
->  		error = -ENOSPC;
->  	} else if (!(status & LP_PSELECD)) {
->  		if (last != LP_PSELECD) {
->  			last = LP_PSELECD;
-> -			printk(KERN_INFO "lp%d off-line\n", minor);
-> +			pr_info("lp%d off-line\n", minor);
->  		}
->  		error = -EIO;
->  	} else if (!(status & LP_PERRORP)) {
->  		if (last != LP_PERRORP) {
->  			last = LP_PERRORP;
-> -			printk(KERN_INFO "lp%d on fire\n", minor);
-> +			pr_info("lp%d on fire\n", minor);
->  		}
->  		error = -EIO;
->  	} else {
-> -		last = 0; /* Come here if LP_CAREFUL is set and no
-> -			     errors are reported. */
-> +		/*
-> +		 * Come here if LP_CAREFUL is set and no
-> +		 * errors are reported.
-> +		 */
-> +		last = 0;
->  	}
->  
->  	lp_table[minor].last_error = last;
-> @@ -280,9 +282,8 @@ static int lp_wait_ready(int minor, int nonblock)
->  	int error = 0;
->  
->  	/* If we're not in compatibility mode, we're ready now! */
-> -	if (lp_table[minor].current_mode != IEEE1284_MODE_COMPAT) {
-> +	if (lp_table[minor].current_mode != IEEE1284_MODE_COMPAT)
->  		return 0;
-> -	}
->  
->  	do {
->  		error = lp_check_status(minor);
-> @@ -338,68 +339,69 @@ static ssize_t lp_write(struct file *file, const char __user *buf,
->  			    (nonblock ? PARPORT_INACTIVITY_O_NONBLOCK
->  			     : lp_table[minor].timeout));
->  
-> -	if ((retv = lp_wait_ready(minor, nonblock)) == 0)
-> -	do {
-> -		/* Write the data. */
-> -		written = parport_write(port, kbuf, copy_size);
-> -		if (written > 0) {
-> -			copy_size -= written;
-> -			count -= written;
-> -			buf  += written;
-> -			retv += written;
-> -		}
-> +	retv = lp_wait_ready(minor, nonblock);
-> +	if (retv == 0)
-> +		do {
-> +			/* Write the data. */
-> +			written = parport_write(port, kbuf, copy_size);
-> +			if (written > 0) {
-> +				copy_size -= written;
-> +				count -= written;
-> +				buf  += written;
-> +				retv += written;
-> +			}
->  
-> -		if (signal_pending(current)) {
-> -			if (retv == 0)
-> -				retv = -EINTR;
-> +			if (signal_pending(current)) {
-> +				if (retv == 0)
-> +					retv = -EINTR;
->  
-> -			break;
-> -		}
-> +				break;
-> +			}
->  
-> -		if (copy_size > 0) {
-> -			/* incomplete write -> check error ! */
-> -			int error;
-> +			if (copy_size > 0) {
-> +				/* incomplete write -> check error ! */
-> +				int error;
->  
-> -			parport_negotiate(lp_table[minor].dev->port,
-> -					  IEEE1284_MODE_COMPAT);
-> -			lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
-> +				parport_negotiate(lp_table[minor].dev->port,
-> +						  IEEE1284_MODE_COMPAT);
-> +				lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
->  
-> -			error = lp_wait_ready(minor, nonblock);
-> +				error = lp_wait_ready(minor, nonblock);
->  
-> -			if (error) {
-> -				if (retv == 0)
-> -					retv = error;
-> -				break;
-> -			} else if (nonblock) {
-> -				if (retv == 0)
-> -					retv = -EAGAIN;
-> -				break;
-> -			}
-> +				if (error) {
-> +					if (retv == 0)
-> +						retv = error;
-> +					break;
-> +				} else if (nonblock) {
-> +					if (retv == 0)
-> +						retv = -EAGAIN;
-> +					break;
-> +				}
->  
-> -			parport_yield_blocking(lp_table[minor].dev);
-> -			lp_table[minor].current_mode
-> -			  = lp_negotiate(port,
-> -					 lp_table[minor].best_mode);
-> +				parport_yield_blocking(lp_table[minor].dev);
-> +				lp_table[minor].current_mode
-> +				  = lp_negotiate(port,
-> +						 lp_table[minor].best_mode);
->  
-> -		} else if (need_resched())
-> -			schedule();
-> +			} else if (need_resched())
-> +				schedule();
->  
-> -		if (count) {
-> -			copy_size = count;
-> -			if (copy_size > LP_BUFFER_SIZE)
-> -				copy_size = LP_BUFFER_SIZE;
-> +			if (count) {
-> +				copy_size = count;
-> +				if (copy_size > LP_BUFFER_SIZE)
-> +					copy_size = LP_BUFFER_SIZE;
->  
-> -			if (copy_from_user(kbuf, buf, copy_size)) {
-> -				if (retv == 0)
-> -					retv = -EFAULT;
-> -				break;
-> +				if (copy_from_user(kbuf, buf, copy_size)) {
-> +					if (retv == 0)
-> +						retv = -EFAULT;
-> +					break;
-> +				}
->  			}
-> -		}
-> -	} while (count > 0);
-> +		} while (count > 0);
->  
->  	if (test_and_clear_bit(LP_PREEMPT_REQUEST,
->  			       &lp_table[minor].bits)) {
-> -		printk(KERN_INFO "lp%d releasing parport\n", minor);
-> +		pr_info("lp%d releasing parport\n", minor);
->  		parport_negotiate(lp_table[minor].dev->port,
->  				  IEEE1284_MODE_COMPAT);
->  		lp_table[minor].current_mode = IEEE1284_MODE_COMPAT;
-> @@ -418,7 +420,8 @@ static ssize_t lp_read(struct file *file, char __user *buf,
->  		       size_t count, loff_t *ppos)
->  {
->  	DEFINE_WAIT(wait);
-> -	unsigned int minor=iminor(file_inode(file));
-> +
-> +	unsigned int minor = iminor(file_inode(file));
->  	struct parport *port = lp_table[minor].dev->port;
->  	ssize_t retval = 0;
->  	char *kbuf = lp_table[minor].lp_buffer;
-> @@ -511,28 +514,32 @@ static int lp_open(struct inode *inode, struct file *file)
->  		ret = -EBUSY;
->  		goto out;
->  	}
-> -	/* If ABORTOPEN is set and the printer is offline or out of paper,
-> -	   we may still want to open it to perform ioctl()s.  Therefore we
-> -	   have commandeered O_NONBLOCK, even though it is being used in
-> -	   a non-standard manner.  This is strictly a Linux hack, and
-> -	   should most likely only ever be used by the tunelp application. */
-> +	/*
-> +	 * If ABORTOPEN is set and the printer is offline or out of paper,
-> +	 * we may still want to open it to perform ioctl()s. Therefore we
-> +	 * have commandeered O_NONBLOCK, even though it is being used in
-> +	 * a non-standard manner.  This is strictly a Linux hack, and
-> +	 * should most likely only ever be used by the tunelp application.
-> +	 */
->  	if ((LP_F(minor) & LP_ABORTOPEN) && !(file->f_flags & O_NONBLOCK)) {
->  		int status;
-> +
->  		lp_claim_parport_or_block(&lp_table[minor]);
->  		status = r_str(minor);
->  		lp_release_parport(&lp_table[minor]);
-> +
->  		if (status & LP_POUTPA) {
-> -			printk(KERN_INFO "lp%d out of paper\n", minor);
-> +			pr_info("lp%d out of paper\n", minor);
->  			LP_F(minor) &= ~LP_BUSY;
->  			ret = -ENOSPC;
->  			goto out;
->  		} else if (!(status & LP_PSELECD)) {
-> -			printk(KERN_INFO "lp%d off-line\n", minor);
-> +			pr_info("lp%d off-line\n", minor);
->  			LP_F(minor) &= ~LP_BUSY;
->  			ret = -EIO;
->  			goto out;
->  		} else if (!(status & LP_PERRORP)) {
-> -			printk(KERN_ERR "lp%d printer error\n", minor);
-> +			pr_err("lp%d printer error\n", minor);
->  			LP_F(minor) &= ~LP_BUSY;
->  			ret = -EIO;
->  			goto out;
-> @@ -591,75 +598,74 @@ static int lp_do_ioctl(unsigned int minor, unsigned int cmd,
->  	if ((LP_F(minor) & LP_EXIST) == 0)
->  		return -ENODEV;
->  	switch ( cmd ) {
-> -		case LPTIME:
-> -			if (arg > UINT_MAX / HZ)
-> -				return -EINVAL;
-> -			LP_TIME(minor) = arg * HZ/100;
-> -			break;
-> -		case LPCHAR:
-> -			LP_CHAR(minor) = arg;
-> -			break;
-> -		case LPABORT:
-> -			if (arg)
-> -				LP_F(minor) |= LP_ABORT;
-> -			else
-> -				LP_F(minor) &= ~LP_ABORT;
-> -			break;
-> -		case LPABORTOPEN:
-> -			if (arg)
-> -				LP_F(minor) |= LP_ABORTOPEN;
-> -			else
-> -				LP_F(minor) &= ~LP_ABORTOPEN;
-> -			break;
-> -		case LPCAREFUL:
-> -			if (arg)
-> -				LP_F(minor) |= LP_CAREFUL;
-> -			else
-> -				LP_F(minor) &= ~LP_CAREFUL;
-> -			break;
-> -		case LPWAIT:
-> -			LP_WAIT(minor) = arg;
-> -			break;
-> -		case LPSETIRQ:
-> +	case LPTIME:
-> +		if (arg > UINT_MAX / HZ)
->  			return -EINVAL;
-> -			break;
-> -		case LPGETIRQ:
-> -			if (copy_to_user(argp, &LP_IRQ(minor),
-> -					sizeof(int)))
-> -				return -EFAULT;
-> -			break;
-> -		case LPGETSTATUS:
-> -			if (mutex_lock_interruptible(&lp_table[minor].port_mutex))
-> -				return -EINTR;
-> -			lp_claim_parport_or_block(&lp_table[minor]);
-> -			status = r_str(minor);
-> -			lp_release_parport(&lp_table[minor]);
-> -			mutex_unlock(&lp_table[minor].port_mutex);
-> -
-> -			if (copy_to_user(argp, &status, sizeof(int)))
-> -				return -EFAULT;
-> -			break;
-> -		case LPRESET:
-> -			lp_reset(minor);
-> -			break;
-> +		LP_TIME(minor) = arg * HZ/100;
-> +		break;
-> +	case LPCHAR:
-> +		LP_CHAR(minor) = arg;
-> +		break;
-> +	case LPABORT:
-> +		if (arg)
-> +			LP_F(minor) |= LP_ABORT;
-> +		else
-> +			LP_F(minor) &= ~LP_ABORT;
-> +		break;
-> +	case LPABORTOPEN:
-> +		if (arg)
-> +			LP_F(minor) |= LP_ABORTOPEN;
-> +		else
-> +			LP_F(minor) &= ~LP_ABORTOPEN;
-> +		break;
-> +	case LPCAREFUL:
-> +		if (arg)
-> +			LP_F(minor) |= LP_CAREFUL;
-> +		else
-> +			LP_F(minor) &= ~LP_CAREFUL;
-> +		break;
-> +	case LPWAIT:
-> +		LP_WAIT(minor) = arg;
-> +		break;
-> +	case LPSETIRQ:
-> +		return -EINVAL;
-> +	case LPGETIRQ:
-> +		if (copy_to_user(argp, &LP_IRQ(minor),
-> +				sizeof(int)))
-> +			return -EFAULT;
-> +		break;
-> +	case LPGETSTATUS:
-> +		if (mutex_lock_interruptible(&lp_table[minor].port_mutex))
-> +			return -EINTR;
-> +		lp_claim_parport_or_block(&lp_table[minor]);
-> +		status = r_str(minor);
-> +		lp_release_parport(&lp_table[minor]);
-> +		mutex_unlock(&lp_table[minor].port_mutex);
-> +
-> +		if (copy_to_user(argp, &status, sizeof(int)))
-> +			return -EFAULT;
-> +		break;
-> +	case LPRESET:
-> +		lp_reset(minor);
-> +		break;
->  #ifdef LP_STATS
-> -		case LPGETSTATS:
-> -			if (copy_to_user(argp, &LP_STAT(minor),
-> -					sizeof(struct lp_stats)))
-> -				return -EFAULT;
-> -			if (capable(CAP_SYS_ADMIN))
-> -				memset(&LP_STAT(minor), 0,
-> -						sizeof(struct lp_stats));
-> -			break;
-> +	case LPGETSTATS:
-> +		if (copy_to_user(argp, &LP_STAT(minor),
-> +				sizeof(struct lp_stats)))
-> +			return -EFAULT;
-> +		if (capable(CAP_SYS_ADMIN))
-> +			memset(&LP_STAT(minor), 0,
-> +					sizeof(struct lp_stats));
-> +		break;
->  #endif
-> -		case LPGETFLAGS:
-> -			status = LP_F(minor);
-> -			if (copy_to_user(argp, &status, sizeof(int)))
-> -				return -EFAULT;
-> -			break;
-> +	case LPGETFLAGS:
-> +		status = LP_F(minor);
-> +		if (copy_to_user(argp, &status, sizeof(int)))
-> +			return -EFAULT;
-> +		break;
->  
-> -		default:
-> -			retval = -EINVAL;
-> +	default:
-> +		retval = -EINVAL;
->  	}
->  	return retval;
->  }
-> @@ -689,9 +695,9 @@ static int lp_set_timeout(unsigned int minor, s64 tv_sec, long tv_usec)
->  		to_jiffies += tv_sec * (long) HZ;
->  	}
->  
-> -	if (to_jiffies <= 0) {
-> +	if (to_jiffies <= 0)
->  		return -EINVAL;
-> -	}
-> +
->  	lp_table[minor].timeout = to_jiffies;
->  	return 0;
->  }
-> @@ -803,15 +809,17 @@ static const struct file_operations lp_fops = {
->  
->  #define CONSOLE_LP 0
->  
-> -/* If the printer is out of paper, we can either lose the messages or
-> +/*
-> + * If the printer is out of paper, we can either lose the messages or
->   * stall until the printer is happy again.  Define CONSOLE_LP_STRICT
-> - * non-zero to get the latter behaviour. */
-> + * non-zero to get the latter behaviour.
-> + */
->  #define CONSOLE_LP_STRICT 1
->  
->  /* The console must be locked when we get here. */
->  
->  static void lp_console_write(struct console *co, const char *s,
-> -			     unsigned count)
-> +			     unsigned int count)
->  {
->  	struct pardevice *dev = lp_table[CONSOLE_LP].dev;
->  	struct parport *port = dev->port;
-> @@ -830,6 +838,7 @@ static void lp_console_write(struct console *co, const char *s,
->  		/* Write the data, converting LF->CRLF as we go. */
->  		ssize_t canwrite = count;
->  		char *lf = memchr(s, '\n', count);
-> +
->  		if (lf)
->  			canwrite = lf - s;
->  
-> @@ -890,24 +899,28 @@ static int __init lp_setup(char *str)
->  			/* disable driver on "lp=" or "lp=0" */
->  			parport_nr[0] = LP_PARPORT_OFF;
->  		} else {
-> -			printk(KERN_WARNING "warning: 'lp=0x%x' is deprecated, ignored\n", x);
-> +			pr_warn("warning: 'lp=0x%x' is deprecated, ignored\n", x);
->  			return 0;
->  		}
->  	} else if (!strncmp(str, "parport", 7)) {
-> -		int n = simple_strtoul(str+7, NULL, 10);
-> +		int err;
-> +		unsigned long n = 0;
-> +
-> +		err = kstrtoul(str+7, 10, &n);
-> +		if (err)
-> +			return err;
-> +
->  		if (parport_ptr < LP_NO)
->  			parport_nr[parport_ptr++] = n;
->  		else
-> -			printk(KERN_INFO "lp: too many ports, %s ignored.\n",
-> -			       str);
-> +			pr_info("lp: too many ports, %s ignored.\n", str);
->  	} else if (!strcmp(str, "auto")) {
->  		parport_nr[0] = LP_PARPORT_AUTO;
->  	} else if (!strcmp(str, "none")) {
->  		if (parport_ptr < LP_NO)
->  			parport_nr[parport_ptr++] = LP_PARPORT_NONE;
->  		else
-> -			printk(KERN_INFO "lp: too many ports, %s ignored.\n",
-> -			       str);
-> +			pr_info("lp: too many ports, %s ignored.\n", str);
->  	} else if (!strcmp(str, "reset")) {
->  		reset = true;
->  	}
-> @@ -934,7 +947,7 @@ static int lp_register(int nr, struct parport *port)
->  	device_create(lp_class, port->dev, MKDEV(LP_MAJOR, nr), NULL,
->  		      "lp%d", nr);
->  
-> -	printk(KERN_INFO "lp%d: using %s (%s).\n", nr, port->name,
-> +	pr_info("lp%d: using %s (%s).\n", nr, port->name,
->  	       (port->irq == PARPORT_IRQ_NONE)?"polling":"interrupt-driven");
->  
->  #ifdef CONFIG_LP_CONSOLE
-> @@ -942,9 +955,9 @@ static int lp_register(int nr, struct parport *port)
->  		if (port->modes & PARPORT_MODE_SAFEININT) {
->  			register_console(&lpcons);
->  			console_registered = port;
-> -			printk(KERN_INFO "lp%d: console ready\n", CONSOLE_LP);
-> +			pr_info("lp%d: console ready\n", CONSOLE_LP);
->  		} else
-> -			printk(KERN_ERR "lp%d: cannot run console on %s\n",
-> +			pr_err("lp%d: cannot run console on %s\n",
->  			       CONSOLE_LP, port->name);
->  	}
->  #endif
-> @@ -964,7 +977,7 @@ static void lp_attach(struct parport *port)
->  		    port->probe_info[0].class != PARPORT_CLASS_PRINTER)
->  			return;
->  		if (lp_count == LP_NO) {
-> -			printk(KERN_INFO "lp: ignoring parallel port (max. %d)\n",LP_NO);
-> +			pr_info("lp: ignoring parallel port (max. %d)\n", LP_NO);
->  			return;
->  		}
->  		for (i = 0; i < LP_NO; i++)
-> @@ -1044,7 +1057,7 @@ static int __init lp_init(void)
->  	}
->  
->  	if (register_chrdev(LP_MAJOR, "lp", &lp_fops)) {
-> -		printk(KERN_ERR "lp: unable to get major %d\n", LP_MAJOR);
-> +		pr_err("lp: unable to get major %d\n", LP_MAJOR);
->  		return -EIO;
->  	}
->  
-> @@ -1055,16 +1068,16 @@ static int __init lp_init(void)
->  	}
->  
->  	if (parport_register_driver(&lp_driver)) {
-> -		printk(KERN_ERR "lp: unable to register with parport\n");
-> +		pr_err("lp: unable to register with parport\n");
->  		err = -EIO;
->  		goto out_class;
->  	}
->  
->  	if (!lp_count) {
-> -		printk(KERN_INFO "lp: driver loaded but no devices found\n");
-> +		pr_info("lp: driver loaded but no devices found\n");
->  #ifndef CONFIG_PARPORT_1284
->  		if (parport_nr[0] == LP_PARPORT_AUTO)
-> -			printk(KERN_INFO "lp: (is IEEE 1284 support enabled?)\n");
-> +			pr_info("lp: (is IEEE 1284 support enabled?)\n");
->  #endif
->  	}
->  
-> @@ -1085,16 +1098,19 @@ static int __init lp_init_module(void)
->  			parport_nr[0] = LP_PARPORT_AUTO;
->  		else {
->  			int n;
-> +
->  			for (n = 0; n < LP_NO && parport[n]; n++) {
->  				if (!strncmp(parport[n], "none", 4))
->  					parport_nr[n] = LP_PARPORT_NONE;
->  				else {
->  					char *ep;
-> +					/* Don't update to kstrtoul, ep needs to be updated */
->  					unsigned long r = simple_strtoul(parport[n], &ep, 0);
-> +
->  					if (ep != parport[n])
->  						parport_nr[n] = r;
->  					else {
-> -						printk(KERN_ERR "lp: bad port specifier `%s'\n", parport[n]);
-> +						pr_err("lp: bad port specifier `%s'\n", parport[n]);
->  						return -ENODEV;
->  					}
->  				}
-> -- 
-> 2.36.1
-> 
+> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L165-L189
+> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L254
+> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L288-L290
 
+Hi, this is your Linux kernel regression tracker. Nothing happened here
+for round about ten days now afaics; or did the discussion continue
+somewhere else.
 
-Hi,
+From what I gathered from this discussion is seems the root cause might
+be in LXC, but it was exposed by kernel change. That makes it sill a
+kernel regression that should be fixed; or is there a strong reason why
+we should let this one slip?
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
 
-- Your patch did many different things all at once, making it difficult
-  to review.  All Linux kernel patches need to only do one thing at a
-  time.  If you need to do multiple things (such as clean up all coding
-  style issues in a file/driver), do it in a sequence of patches, each
-  one doing only one thing.  This will make it easier to review the
-  patches to ensure that they are correct, and to help alleviate any
-  merge issues that larger patches can cause.
-
-- It looks like you did not use your "real" name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file, Documentation/SubmittingPatches
-  for how to do this correctly.
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+#regzbot poke
