@@ -2,63 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 12:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD44C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 12:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236810AbiEOMny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 08:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
+        id S236909AbiEOMn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 08:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236851AbiEOMnA (ORCPT
+        with ESMTP id S236937AbiEOMnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 08:43:00 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07622E9DA
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 05:42:43 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id a191so11713032pge.2
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 05:42:43 -0700 (PDT)
+        Sun, 15 May 2022 08:43:41 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAED2EA17
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 05:42:49 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id p12so11744707pfn.0
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 05:42:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JuZm0iyeNXKvBw7CRNXXxjER+lmIsZfs9nGcE1KNIMA=;
-        b=HnBtgyglcpAF47QDC7sGEQOlZ8dA2kdM7Qk0V0OskPV+UUv2/Fg0VNfgf/3BP67ae+
-         EWEvu4jP9ZYPFJU1Jl+KsBypKmSHGBT2LbO3zFpUG3sUQMl8Pen4x3klqlH0lkpX7CIZ
-         2QZhW569rFu2lUyA/d6tuBXR7dc3pNrTuLXxqpq+bh2xDns6v0/abZpuEnLnxw5ztYy2
-         oOByW3u1YuNsxat9rJzzWc0WJwNW2mWI1UcpkqpR2sAZVCUjFYfXoTZLMY06brZlH7yO
-         WpSultNnn/SOkiYM04ODjT6uK9n+oQJpB+TuedLmW3/ohjD8K4r8y0MZnQhm9l1WPvZW
-         34MQ==
+        bh=E6nKYG584PAtoQ8/jvqpBx36KvgGo8qJoQWKQdOpBKU=;
+        b=pS/jHvHWwnFrMXvw/NKO7jVf7rgAWmrSVIhik0j+dafXTZMkW49m+3oCGrFQqDzbos
+         fEEJzmYybyqQFqXj6DKvTAXpZ59cC2trVDVaFT3N2OPV98AUho+qv5H2EI3gdseGYAc9
+         dC/I5NtukRdxetaDlvbcln8bqw9kuGMdgQfjUQ50erk4ehtML9NK0f+DvIKGzaceJh08
+         whIQDqUpRrBI1AoXyeTdk0QEn6KMdAiUODtkefc4xfMwDrHiwgFBrdxFfDK+hACaNZqM
+         z7AC5DtDZr+ue5N5p0LbiL8fEqedqJHRk98LeinCbc0Wsv2OeWheFz/FdlTzn8F6fvrq
+         9jhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JuZm0iyeNXKvBw7CRNXXxjER+lmIsZfs9nGcE1KNIMA=;
-        b=6SG+WtyoeADEj15HFlJQZrG60+u9xi7PZ73vZClwa+5NLdb+Jm1tk+n5xJQqjg/CAI
-         Zi9hB6TF644rZ4ikN63fqRowMHSPtNrOD86/k0GJBKBpkhQxYETb7gtlr2Z0AtC1+smR
-         IdiN828P1+oWUQUKnbvPa0SGNOOLkHfOilWkcJwJFyAb1xgNjKO9YaRPjlU5/b9fZnhP
-         XyAB0wCCz1/J5FrGmovMyclBjLdw4bjRAfEXEeGrmghC1GdcYCIPnWK3MhnAScttvjdF
-         TgNUvggKEVvqLH8+r8POb6l6/Rk0rGF1FoD3M/Zwj32OpAGpra17vYZ1NEADi/xU2igV
-         Aw9g==
-X-Gm-Message-State: AOAM533ZLm8oFnpCBqDh6J5Q0qxI1D/1tam8Ho1+DJkAmeAnpWhtSpQG
-        2I9dyyvnfFZWqAgBjq/MumOAQHndRmijIw==
-X-Google-Smtp-Source: ABdhPJzqvncFRUIuRAfj62LKQruwUlpe0XsMKkrLRlM+M8DkM4ubr+ddMYmcks46kDiHJU3mIwGNFQ==
-X-Received: by 2002:a63:491f:0:b0:3f2:6b20:fa10 with SMTP id w31-20020a63491f000000b003f26b20fa10mr1000385pga.531.1652618561911;
-        Sun, 15 May 2022 05:42:41 -0700 (PDT)
+        bh=E6nKYG584PAtoQ8/jvqpBx36KvgGo8qJoQWKQdOpBKU=;
+        b=afZYSkyqAC/ZU0BnK8IfLg9/Z3wlnHO45VgOsfzfsbQLh3z5lYFTGbeh27l34fvZK3
+         dNYXx/GPTeSVq0BdBqUcyQr4TImlW1sUb8tgV4odZ/j2RVZIjIMfCk3ie+wWQvIgHm9y
+         4aa4UwNDqU+BxFTjvKR+KJSPe4Voyt0F4E8N6lpaElL+zK9pwedCHHjSfYl3awLlL5K5
+         +9KaN/YwCuIopsn1ivqbib3eikKzQ+Hrhhl/UHX1niD0jl0aWbSeoMctMaKLUl9togDt
+         TsSIO4WOJl8R+sq+E9kVq0ojcgpQmKgJ7e+WIuGAlLhgZiFaBKjdFCw4H38x8gAVoT4J
+         L2ng==
+X-Gm-Message-State: AOAM530AqAxdhlV6x3t6rLvFjK+CmKNMR1myJphWCzpHhNgHyGfznJXs
+        OVZe53CeDoWcVJQXdOB1LKm50Q/bBgzpkQ==
+X-Google-Smtp-Source: ABdhPJzK3nMYwucViE+6UcrtAYIhYH8yd+pU+/ungG8bLNSFY/C8q7rakJXXY7nDCSbGIll7b+Lapw==
+X-Received: by 2002:a65:6a16:0:b0:39d:4f3:67e6 with SMTP id m22-20020a656a16000000b0039d04f367e6mr11720141pgu.84.1652618568182;
+        Sun, 15 May 2022 05:42:48 -0700 (PDT)
 Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id k1-20020a637b41000000b003dafe6e72ffsm4844337pgn.88.2022.05.15.05.42.41
+        by smtp.gmail.com with ESMTPSA id c3-20020a170903234300b0015e8d4eb1f6sm5209876plh.64.2022.05.15.05.42.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 May 2022 05:42:41 -0700 (PDT)
+        Sun, 15 May 2022 05:42:47 -0700 (PDT)
 From:   Stafford Horne <shorne@gmail.com>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Openrisc <openrisc@lists.librecores.org>,
         Stafford Horne <shorne@gmail.com>,
         Jonas Bonn <jonas@southpole.se>,
         Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Randy Dunlap <rdunlap@infradead.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 10/13] openrisc/time: Fix symbol scope warnings
-Date:   Sun, 15 May 2022 21:41:55 +0900
-Message-Id: <20220515124158.3167452-11-shorne@gmail.com>
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Qi Zheng <zhengqi.arch@bytedance.com>
+Subject: [PATCH 12/13] openrisc/fault: Fix symbol scope warnings
+Date:   Sun, 15 May 2022 21:41:57 +0900
+Message-Id: <20220515124158.3167452-13-shorne@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220515124158.3167452-1-shorne@gmail.com>
 References: <20220515124158.3167452-1-shorne@gmail.com>
@@ -68,42 +70,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Spare reported the following warnings:
-    arch/openrisc/kernel/time.c:64:1: warning: symbol 'clockevent_openrisc_timer' was not declared. Should it be static?
-    arch/openrisc/kernel/time.c:66:6: warning: symbol 'openrisc_clockevent_init' was not declared. Should it be static?
+Sparse reported the following warning:
 
-This patch fixes by:
+    arch/openrisc/mm/fault.c:27:15: warning: symbol 'pte_misses' was not declared. Should it be static?
+    arch/openrisc/mm/fault.c:28:15: warning: symbol 'pte_errors' was not declared. Should it be static?
+    arch/openrisc/mm/fault.c:33:16: warning: symbol 'current_pgd' was not declared. Should it be static?
 
- - Add static declaration to clockevent_openrisc_timer as it's used only in
-   this file.
- - Add include for asm/time.h for openrisc_clockevent_init declaration.
+This patch fixes these by:
+ - Remove unused pte_misses and pte_errors counters which are no longer
+   used.
+ - Add asm/mmu_context.h include to provide the current_pgd declaration.
 
 Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
- arch/openrisc/kernel/time.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/openrisc/mm/fault.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/openrisc/kernel/time.c b/arch/openrisc/kernel/time.c
-index 6d18989d63d0..8e26c1af5441 100644
---- a/arch/openrisc/kernel/time.c
-+++ b/arch/openrisc/kernel/time.c
-@@ -23,6 +23,7 @@
- #include <linux/of_clk.h>
+diff --git a/arch/openrisc/mm/fault.c b/arch/openrisc/mm/fault.c
+index 80bb66ad42f6..516cba14dec9 100644
+--- a/arch/openrisc/mm/fault.c
++++ b/arch/openrisc/mm/fault.c
+@@ -18,15 +18,13 @@
+ #include <linux/perf_event.h>
  
- #include <asm/cpuinfo.h>
-+#include <asm/time.h>
+ #include <linux/uaccess.h>
++#include <asm/mmu_context.h>
+ #include <asm/siginfo.h>
+ #include <asm/signal.h>
  
- /* Test the timer ticks to count, used in sync routine */
- inline void openrisc_timer_set(unsigned long count)
-@@ -61,7 +62,7 @@ static int openrisc_timer_set_next_event(unsigned long delta,
-  * timers) we cannot enable the PERIODIC feature.  The tick timer can run using
-  * one-shot events, so no problem.
+ #define NUM_TLB_ENTRIES 64
+ #define TLB_OFFSET(add) (((add) >> PAGE_SHIFT) & (NUM_TLB_ENTRIES-1))
+ 
+-unsigned long pte_misses;	/* updated by do_page_fault() */
+-unsigned long pte_errors;	/* updated by do_page_fault() */
+-
+ /* __PHX__ :: - check the vmalloc_fault in do_page_fault()
+  *            - also look into include/asm/mmu_context.h
   */
--DEFINE_PER_CPU(struct clock_event_device, clockevent_openrisc_timer);
-+static DEFINE_PER_CPU(struct clock_event_device, clockevent_openrisc_timer);
- 
- void openrisc_clockevent_init(void)
- {
 -- 
 2.31.1
 
