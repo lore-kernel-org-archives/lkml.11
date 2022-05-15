@@ -2,96 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E66C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 10:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 10:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236205AbiEOKD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 06:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49536 "EHLO
+        id S236217AbiEOKFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 06:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236193AbiEOKDZ (ORCPT
+        with ESMTP id S236193AbiEOKFa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 06:03:25 -0400
+        Sun, 15 May 2022 06:05:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E73D3D1E2;
-        Sun, 15 May 2022 03:03:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961553D1E4;
+        Sun, 15 May 2022 03:05:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED4A160EF4;
-        Sun, 15 May 2022 10:03:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EC45C385B8;
-        Sun, 15 May 2022 10:03:17 +0000 (UTC)
-Date:   Sun, 15 May 2022 11:03:13 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E99160EF6;
+        Sun, 15 May 2022 10:05:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39026C385B8;
+        Sun, 15 May 2022 10:05:27 +0000 (UTC)
+Date:   Sun, 15 May 2022 11:05:23 +0100
 From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Pingfan Liu <kernelfans@gmail.com>
-Cc:     linux-ia64@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Russell King <linux@armlinux.org.uk>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv4 2/2] cpu/hotplug: Remove the input parameter
- primary_cpu of smp_shutdown_nonboot_cpus()
-Message-ID: <YoDP4aYg7vdUg4sO@arm.com>
-References: <20220512030619.13426-1-kernelfans@gmail.com>
- <20220512030619.13426-3-kernelfans@gmail.com>
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     Will Deacon <will@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Brown <broonie@kernel.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kselftest/arm64: bti: force static linking
+Message-ID: <YoDQY/0i9BrEIEO8@arm.com>
+References: <20220511172129.2078337-1-andre.przywara@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220512030619.13426-3-kernelfans@gmail.com>
+In-Reply-To: <20220511172129.2078337-1-andre.przywara@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 11:06:19AM +0800, Pingfan Liu wrote:
-> For all call sites of smp_shutdown_nonboot_cpus(),
+On Wed, May 11, 2022 at 06:21:29PM +0100, Andre Przywara wrote:
+> The "bti" selftests are built with -nostdlib, which apparently
+> automatically creates a statically linked binary, which is what we want
+> and need for BTI (to avoid interactions with the dynamic linker).
 > 
-> $git grep smp_shutdown_nonboot_cpus -- arch | grep -v \*
-> arch/arm/kernel/reboot.c:94:    smp_shutdown_nonboot_cpus(reboot_cpu);
-> arch/arm64/kernel/process.c:89: smp_shutdown_nonboot_cpus(reboot_cpu);
-> arch/ia64/kernel/process.c:578: smp_shutdown_nonboot_cpus(reboot_cpu);
-> arch/riscv/kernel/machine_kexec.c:135:  smp_shutdown_nonboot_cpus(smp_processor_id());
+> However this is not true when building a PIE binary, which some
+> toolchains (Ubuntu) configure as the default.
+> When compiling btitest with such a toolchain, it will create a
+> dynamically linked binary, which will probably fail some tests, as the
+> dynamic linker might not support BTI:
+> ===================
+> TAP version 13
+> 1..18
+> not ok 1 nohint_func/call_using_br_x0
+> not ok 2 nohint_func/call_using_br_x16
+> not ok 3 nohint_func/call_using_blr
+> ....
+> ===================
 > 
-> As it shows, the input parameter seems a little arbitrary.
+> To make sure we create static binaries, add an explicit -static on the
+> linker command line. This forces static linking even if the toolchain
+> defaults to PIE builds, and fixes btitest runs on BTI enabled machines.
 > 
-> Since kernel_kexec()->migrate_to_reboot_cpu() has already pinned the
-> rebooting thread on the selected CPU and the CPU hotplug keeps disabled
-> before smp_shutdown_nonboot_cpus(). Let smp_shutdown_nonboot_cpus()
-> deduce the rebooting CPU by smp_processor_id(), instead of passing the
-> parameter primary_cpu to it.
-> 
-> As a result, all call sites look consistent.
-> 
-> Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Jens Axboe <axboe@kernel.dk>
-> To: linux-ia64@vger.kernel.org
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Cc: Peter Collingbourne <pcc@google.com>
-> Cc: Marc Zyngier <maz@kernel.org>
-> To: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 
-For arm64:
+Does this need to go in as a fix (cc stable, fixes tag)?
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+-- 
+Catalin
