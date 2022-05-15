@@ -2,336 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E88CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 03:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D14C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 04:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235494AbiEODmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 23:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
+        id S234418AbiEOENG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 00:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234935AbiEODmJ (ORCPT
+        with ESMTP id S229670AbiEOENC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 23:42:09 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61E13B7E2
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 20:42:08 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxMNqKdoBiT5YWAA--.16685S5;
-        Sun, 15 May 2022 11:42:04 +0800 (CST)
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Jianmin Lv <lvjianmin@loongson.cn>
-Subject: [PATCH RFC 10/10] irqchip: Add Loongson PCH LPC controller support
-Date:   Sun, 15 May 2022 11:42:02 +0800
-Message-Id: <1652586122-22975-4-git-send-email-lvjianmin@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1652586122-22975-1-git-send-email-lvjianmin@loongson.cn>
-References: <1652586122-22975-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf9BxMNqKdoBiT5YWAA--.16685S5
-X-Coremail-Antispam: 1UD129KBjvJXoW3Aw15WryfXFy7AF17Xw4DXFb_yoW3tF4kpa
-        y3Z3y3JF4UZF4Yvw4kCa4UZr45Awn3Kayj9a93Gr13JrnrC3s7KF1vyFnFvrsrAr4agF4a
-        y398tFy8ur15C3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBS14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JrWl82xGYIkIc2
-        x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
-        8EF7xvwVC2z280aVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr0_Cr1U
-        M2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjx
-        v20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1l
-        F7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20x
-        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
-        3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIx
-        AIcVC0I7IYx2IY67AKxVW8JVW5JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UMIIF
-        0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87
-        Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoL0eDUUUU
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+        Sun, 15 May 2022 00:13:02 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141082458E
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 21:13:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652587981; x=1684123981;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nv3c4KkgFEq3HID+noa3U99qbDeu6C5aTmNW1QGKyOM=;
+  b=UuSH6wSemNi+Rhn/U03iS7t9cjyoFWCWYBBOZTCgGNzE3krIsLqX6mn5
+   FPfvTuqLnrd5wmXOtiqMU9JYdTslU7TGPOU1uS7zVVtEKxlQGYZPXXQGd
+   r04U1Rqb+N8Y5e438RzPI9FI9n67Dv6NoTB7yJE7g8FX/INnF4drWxXu9
+   0KK1eCMMGlsdOg05SrsL9UysX4R82YJlxZakEv+qhhJQWFYUShcKeURqW
+   i5X7NS3FT6yOnYzAKpDY6/9uSvKYAF/0f5PHTBsiK8A2Pov/dai09xPqk
+   DyJ5FEsCB8UUaquoD0soxQBUsQISylFHP2lDsVWqpU14uT9WtOUYBr9vj
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10347"; a="269418677"
+X-IronPort-AV: E=Sophos;i="5.91,227,1647327600"; 
+   d="scan'208";a="269418677"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2022 21:13:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,227,1647327600"; 
+   d="scan'208";a="699047155"
+Received: from lkp-server01.sh.intel.com (HELO d1462bc4b09b) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 14 May 2022 21:12:58 -0700
+Received: from kbuild by d1462bc4b09b with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nq5cn-0001Hp-92;
+        Sun, 15 May 2022 04:12:57 +0000
+Date:   Sun, 15 May 2022 12:12:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/merge] BUILD SUCCESS
+ a1df7cc57786ff8ec72f7a19a3d0fe305cf7e1a1
+Message-ID: <62807dc3.VZdnCC07O/FgRA+1%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We are preparing to add new Loongson (based on LoongArch, not compatible
-with old MIPS-based Loongson) support. This patch add Loongson PCH LPC
-interrupt controller support.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/merge
+branch HEAD: a1df7cc57786ff8ec72f7a19a3d0fe305cf7e1a1  Merge branch 'objtool/core' into x86/merge, to resolve conflicts
 
-PCH-LPC stands for "LPC Interrupts" that described in Section 24.3 of
-"Loongson 7A1000 Bridge User Manual". For more information please refer
-Documentation/loongarch/irq-chip-model.rst.
+elapsed time: 12641m
 
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
----
- drivers/irqchip/Kconfig                |   8 ++
- drivers/irqchip/Makefile               |   1 +
- drivers/irqchip/irq-loongson-pch-lpc.c | 225 +++++++++++++++++++++++++++++++++
- 3 files changed, 234 insertions(+)
- create mode 100644 drivers/irqchip/irq-loongson-pch-lpc.c
+configs tested: 229
+configs skipped: 6
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index eea0c15..c56a8db 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -610,6 +610,14 @@ config LOONGSON_PCH_MSI
- 	help
- 	  Support for the Loongson PCH MSI Controller.
- 
-+config LOONGSON_PCH_LPC
-+	bool "Loongson PCH LPC Controller"
-+	depends on MACH_LOONGSON64
-+	default (MACH_LOONGSON64 && LOONGARCH)
-+	select IRQ_DOMAIN_HIERARCHY
-+	help
-+	  Support for the Loongson PCH LPC Controller.
-+
- config MST_IRQ
- 	bool "MStar Interrupt Controller"
- 	depends on ARCH_MEDIATEK || ARCH_MSTARV7 || COMPILE_TEST
-diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
-index 0d82759..a57566c 100644
---- a/drivers/irqchip/Makefile
-+++ b/drivers/irqchip/Makefile
-@@ -112,6 +112,7 @@ obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
- obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
- obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
- obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
-+obj-$(CONFIG_LOONGSON_PCH_LPC)		+= irq-loongson-pch-lpc.o
- obj-$(CONFIG_MST_IRQ)			+= irq-mst-intc.o
- obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
- obj-$(CONFIG_MACH_REALTEK_RTL)		+= irq-realtek-rtl.o
-diff --git a/drivers/irqchip/irq-loongson-pch-lpc.c b/drivers/irqchip/irq-loongson-pch-lpc.c
-new file mode 100644
-index 0000000..18e400d
---- /dev/null
-+++ b/drivers/irqchip/irq-loongson-pch-lpc.c
-@@ -0,0 +1,225 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Loongson LPC Interrupt Controller support
-+ *
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+
-+#define pr_fmt(fmt) "lpc: " fmt
-+
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/irqchip.h>
-+#include <linux/irqchip/chained_irq.h>
-+#include <linux/irqdomain.h>
-+#include <linux/kernel.h>
-+#include <linux/syscore_ops.h>
-+
-+/* Registers */
-+#define LPC_INT_CTL		0x00
-+#define LPC_INT_ENA		0x04
-+#define LPC_INT_STS		0x08
-+#define LPC_INT_CLR		0x0c
-+#define LPC_INT_POL		0x10
-+#define LPC_COUNT		16
-+
-+struct pch_lpc {
-+	void __iomem		*base;
-+	struct irq_domain	*lpc_domain;
-+	struct fwnode_handle	*domain_handle;
-+	raw_spinlock_t		lpc_lock;
-+	u32			saved_reg_ctl;
-+	u32			saved_reg_ena;
-+	u32			saved_reg_pol;
-+};
-+
-+static struct pch_lpc *pch_lpc_priv;
-+
-+static void ack_lpc_irq(struct irq_data *d)
-+{
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&pch_lpc_priv->lpc_lock, flags);
-+	writel(0x1 << d->irq, pch_lpc_priv->base + LPC_INT_CLR);
-+	raw_spin_unlock_irqrestore(&pch_lpc_priv->lpc_lock, flags);
-+}
-+static void mask_lpc_irq(struct irq_data *d)
-+{
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&pch_lpc_priv->lpc_lock, flags);
-+	writel(readl(pch_lpc_priv->base + LPC_INT_ENA) & (~(0x1 << (d->irq))),
-+			pch_lpc_priv->base + LPC_INT_ENA);
-+	raw_spin_unlock_irqrestore(&pch_lpc_priv->lpc_lock, flags);
-+}
-+
-+static void mask_ack_lpc_irq(struct irq_data *d)
-+{
-+}
-+
-+static void unmask_lpc_irq(struct irq_data *d)
-+{
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&pch_lpc_priv->lpc_lock, flags);
-+	writel(readl(pch_lpc_priv->base + LPC_INT_ENA) | (0x1 << (d->irq)),
-+			pch_lpc_priv->base + LPC_INT_ENA);
-+	raw_spin_unlock_irqrestore(&pch_lpc_priv->lpc_lock, flags);
-+}
-+
-+static int lpc_set_type(struct irq_data *d, unsigned int type)
-+{
-+	u32 val;
-+	u32 mask = 0x1 << (d->hwirq);
-+
-+	if (!(type & IRQ_TYPE_LEVEL_MASK))
-+		return 0;
-+
-+	val = readl(pch_lpc_priv->base + LPC_INT_POL);
-+
-+	if (type == IRQ_TYPE_LEVEL_HIGH)
-+		val |= mask;
-+	else
-+		val &= ~mask;
-+
-+	writel(val, pch_lpc_priv->base + LPC_INT_POL);
-+
-+	return 0;
-+}
-+
-+static struct irq_chip pch_lpc_irq_chip = {
-+	.name			= "PCH LPC",
-+	.irq_mask		= mask_lpc_irq,
-+	.irq_unmask		= unmask_lpc_irq,
-+	.irq_ack		= ack_lpc_irq,
-+	.irq_mask_ack		= mask_ack_lpc_irq,
-+	.irq_eoi		= unmask_lpc_irq,
-+	.irq_set_type		= lpc_set_type,
-+	.flags			= IRQCHIP_SKIP_SET_WAKE,
-+};
-+
-+static void lpc_irq_dispatch(struct irq_desc *desc)
-+{
-+	struct irq_chip *chip = irq_desc_get_chip(desc);
-+	u32 pending;
-+
-+	chained_irq_enter(chip, desc);
-+
-+	pending = readl(pch_lpc_priv->base + LPC_INT_ENA);
-+	pending &= readl(pch_lpc_priv->base + LPC_INT_STS);
-+	if (!pending)
-+		spurious_interrupt();
-+
-+	while (pending) {
-+		int bit = __ffs(pending);
-+
-+		generic_handle_irq(bit);
-+		pending &= ~BIT(bit);
-+	}
-+	chained_irq_exit(chip, desc);
-+}
-+
-+static int pch_lpc_map(struct irq_domain *d, unsigned int irq,
-+			irq_hw_number_t hw)
-+{
-+	irq_set_chip_and_handler(irq, &pch_lpc_irq_chip, handle_level_irq);
-+	return 0;
-+}
-+
-+static const struct irq_domain_ops pch_lpc_domain_ops = {
-+	.map 		= pch_lpc_map,
-+	.translate	= irq_domain_translate_twocell,
-+};
-+
-+static void pch_lpc_reset(struct pch_lpc *priv)
-+{
-+	/* Enable the LPC interrupt, bit31: en  bit30: edge */
-+	writel(0x80000000, priv->base + LPC_INT_CTL);
-+	writel(0, priv->base + LPC_INT_ENA);
-+	/* Clear all 18-bit interrpt bit */
-+	writel(0x3ffff, priv->base + LPC_INT_CLR);
-+}
-+
-+static int pch_lpc_disabled(struct pch_lpc *priv)
-+{
-+	return (readl(priv->base + LPC_INT_ENA) == 0xffffffff) &&
-+			(readl(priv->base + LPC_INT_STS) == 0xffffffff);
-+}
-+
-+static int pch_lpc_suspend(void)
-+{
-+	pch_lpc_priv->saved_reg_ctl = readl(pch_lpc_priv->base + LPC_INT_CTL);
-+	pch_lpc_priv->saved_reg_ena = readl(pch_lpc_priv->base + LPC_INT_ENA);
-+	pch_lpc_priv->saved_reg_pol = readl(pch_lpc_priv->base + LPC_INT_POL);
-+	return 0;
-+}
-+
-+static void pch_lpc_resume(void)
-+{
-+	writel(pch_lpc_priv->saved_reg_ctl, pch_lpc_priv->base + LPC_INT_CTL);
-+	writel(pch_lpc_priv->saved_reg_ena, pch_lpc_priv->base + LPC_INT_ENA);
-+	writel(pch_lpc_priv->saved_reg_pol, pch_lpc_priv->base + LPC_INT_POL);
-+}
-+
-+static struct syscore_ops pch_lpc_syscore_ops = {
-+	.suspend = pch_lpc_suspend,
-+	.resume = pch_lpc_resume,
-+};
-+
-+int __init pch_lpc_acpi_init(struct irq_domain *parent,
-+					struct acpi_madt_lpc_pic *acpi_pchlpc)
-+{
-+	int parent_irq;
-+	struct pch_lpc *priv;
-+	struct irq_fwspec fwspec;
-+
-+	if (!acpi_pchlpc)
-+		return -EINVAL;
-+
-+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	raw_spin_lock_init(&priv->lpc_lock);
-+
-+	priv->base = ioremap(acpi_pchlpc->address, acpi_pchlpc->size);
-+	if (!priv->base)
-+		goto free_priv;
-+
-+	if (pch_lpc_disabled(priv)) {
-+		pr_err("Failed to get LPC status\n");
-+		goto iounmap_base;
-+	}
-+
-+	priv->domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_pchlpc);
-+	if (!priv->domain_handle) {
-+		pr_err("Unable to allocate domain handle\n");
-+		goto iounmap_base;
-+	}
-+	priv->lpc_domain = irq_domain_add_legacy(NULL, LPC_COUNT, 0, 0,
-+						&pch_lpc_domain_ops, priv);
-+	if (!priv->lpc_domain) {
-+		pr_err("Failed to create IRQ domain\n");
-+		goto iounmap_base;
-+	}
-+	pch_lpc_reset(priv);
-+
-+	fwspec.fwnode = parent->fwnode;
-+	fwspec.param[0] = acpi_pchlpc->cascade;
-+	fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
-+	fwspec.param_count = 2;
-+	parent_irq = irq_create_fwspec_mapping(&fwspec);
-+	irq_set_chained_handler_and_data(parent_irq, lpc_irq_dispatch, priv);
-+	pch_lpc_priv = priv;
-+
-+	register_syscore_ops(&pch_lpc_syscore_ops);
-+	pch_lpc_domain = priv->lpc_domain;
-+	return 0;
-+
-+iounmap_base:
-+	iounmap(priv->base);
-+free_priv:
-+	kfree(priv);
-+
-+	return -ENOMEM;
-+}
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+m68k                             allmodconfig
+xtensa                       common_defconfig
+arm                      jornada720_defconfig
+arm                        multi_v7_defconfig
+powerpc                      mgcoge_defconfig
+xtensa                    smp_lx200_defconfig
+ia64                      gensparse_defconfig
+m68k                       m5249evb_defconfig
+m68k                       m5475evb_defconfig
+arm                            pleb_defconfig
+mips                          rb532_defconfig
+riscv                               defconfig
+powerpc                     sequoia_defconfig
+arc                          axs103_defconfig
+sh                          landisk_defconfig
+csky                                defconfig
+xtensa                  nommu_kc705_defconfig
+sh                           se7705_defconfig
+s390                       zfcpdump_defconfig
+m68k                           sun3_defconfig
+arm                          exynos_defconfig
+sh                         ap325rxa_defconfig
+x86_64                              defconfig
+powerpc                     ep8248e_defconfig
+sh                             espt_defconfig
+arm                       multi_v4t_defconfig
+arm                             ezx_defconfig
+arm                        mini2440_defconfig
+sh                   sh7724_generic_defconfig
+xtensa                              defconfig
+arm                           sama5_defconfig
+mips                           jazz_defconfig
+um                               alldefconfig
+openrisc                    or1ksim_defconfig
+m68k                          hp300_defconfig
+sparc                       sparc64_defconfig
+sh                          polaris_defconfig
+h8300                            allyesconfig
+powerpc                     rainier_defconfig
+arm                     eseries_pxa_defconfig
+powerpc                  storcenter_defconfig
+sh                               allmodconfig
+arm                           viper_defconfig
+arm                         lubbock_defconfig
+sh                           se7343_defconfig
+parisc                generic-32bit_defconfig
+alpha                               defconfig
+powerpc                      pasemi_defconfig
+mips                           ci20_defconfig
+mips                         bigsur_defconfig
+sh                   rts7751r2dplus_defconfig
+m68k                       m5208evb_defconfig
+powerpc                         wii_defconfig
+mips                      fuloong2e_defconfig
+powerpc                      ep88xc_defconfig
+sh                          rsk7269_defconfig
+alpha                            alldefconfig
+m68k                        m5307c3_defconfig
+arm                      integrator_defconfig
+nios2                         10m50_defconfig
+arm                          gemini_defconfig
+arm                        clps711x_defconfig
+powerpc                      pcm030_defconfig
+arm                            zeus_defconfig
+powerpc                       holly_defconfig
+m68k                          sun3x_defconfig
+powerpc                      chrp32_defconfig
+sh                          kfr2r09_defconfig
+powerpc                    adder875_defconfig
+sparc64                             defconfig
+nios2                            allyesconfig
+arm                           sunxi_defconfig
+sh                        apsh4ad0a_defconfig
+powerpc                     redwood_defconfig
+powerpc                      cm5200_defconfig
+sh                          lboxre2_defconfig
+powerpc                      ppc6xx_defconfig
+mips                 decstation_r4k_defconfig
+arc                           tb10x_defconfig
+sh                          sdk7786_defconfig
+arm                         lpc18xx_defconfig
+arm                         s3c6400_defconfig
+arm                         cm_x300_defconfig
+arm                             rpc_defconfig
+powerpc                mpc7448_hpc2_defconfig
+m68k                        stmark2_defconfig
+nios2                            alldefconfig
+arm                       imx_v6_v7_defconfig
+openrisc                 simple_smp_defconfig
+powerpc                       eiger_defconfig
+mips                        bcm47xx_defconfig
+arm                        cerfcube_defconfig
+m68k                          multi_defconfig
+mips                        vocore2_defconfig
+m68k                         amcore_defconfig
+sh                  sh7785lcr_32bit_defconfig
+m68k                          amiga_defconfig
+parisc                generic-64bit_defconfig
+i386                                defconfig
+sparc                               defconfig
+sh                        dreamcast_defconfig
+powerpc                     pq2fads_defconfig
+um                             i386_defconfig
+arm                        mvebu_v7_defconfig
+sh                     magicpanelr2_defconfig
+powerpc                      tqm8xx_defconfig
+arm                         at91_dt_defconfig
+arc                        nsimosci_defconfig
+sh                 kfr2r09-romimage_defconfig
+mips                            ar7_defconfig
+arc                    vdk_hs38_smp_defconfig
+arm                       omap2plus_defconfig
+sh                           se7750_defconfig
+powerpc                      arches_defconfig
+powerpc                     tqm8555_defconfig
+arm                       aspeed_g5_defconfig
+powerpc                     asp8347_defconfig
+arc                              alldefconfig
+powerpc                 mpc85xx_cds_defconfig
+mips                  maltasmvp_eva_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220506
+arm                  randconfig-c002-20220508
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220507
+s390                 randconfig-r044-20220507
+riscv                randconfig-r042-20220507
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                                  kexec
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220506
+riscv                randconfig-c006-20220506
+mips                 randconfig-c004-20220506
+arm                  randconfig-c002-20220506
+s390                 randconfig-c005-20220506
+powerpc              randconfig-c003-20220508
+riscv                randconfig-c006-20220508
+mips                 randconfig-c004-20220508
+arm                  randconfig-c002-20220508
+powerpc              randconfig-c003-20220507
+riscv                randconfig-c006-20220507
+mips                 randconfig-c004-20220507
+arm                  randconfig-c002-20220507
+arm                           omap1_defconfig
+arm                          moxart_defconfig
+arm                          collie_defconfig
+mips                         tb0219_defconfig
+powerpc                     mpc5200_defconfig
+arm                       cns3420vb_defconfig
+i386                             allyesconfig
+powerpc                     ksi8560_defconfig
+mips                          ath25_defconfig
+mips                           rs90_defconfig
+arm                    vt8500_v6_v7_defconfig
+powerpc                     skiroot_defconfig
+powerpc                 mpc8560_ads_defconfig
+hexagon                             defconfig
+arm                            mmp2_defconfig
+arm                     davinci_all_defconfig
+arm                            dove_defconfig
+arm                         lpc32xx_defconfig
+arm                          ixp4xx_defconfig
+mips                   sb1250_swarm_defconfig
+arm                           spitz_defconfig
+arm                       aspeed_g4_defconfig
+powerpc                   lite5200b_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220506
+riscv                randconfig-r042-20220506
+hexagon              randconfig-r041-20220506
+
 -- 
-1.8.3.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
