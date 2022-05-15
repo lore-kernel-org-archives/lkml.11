@@ -2,182 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 325ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 15:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED558C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 15:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237426AbiEOPiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 11:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60546 "EHLO
+        id S237486AbiEOPyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 11:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237437AbiEOPiL (ORCPT
+        with ESMTP id S231304AbiEOPyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 11:38:11 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D0E10FC1
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 08:38:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652629090; x=1684165090;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=B4NepS6EiGVB7+m8iOkyRoeM3XVAlOweIND0hX1xnBo=;
-  b=mj2hQb4YfZMvmUncqeKPcin9Yj0vat/L6QZQclA2Am8lpJFtIglXFfQ1
-   AI97hF+RxE/WMURI+RUT/G6xMbz05rzxnaBjyS/nOr0VTr4hevugh4OP0
-   TZOPXcT90ylVUc1mZfuMzp9EpjCG2LMI6EAAA1OBxC2cgCUbLVjun7AHM
-   PxFBPdFltBXH0/KfH4ddJ42QbK0Y/5EZlEYA+esMIHRuwRz/ojs8KRinq
-   +/3ZBKn8w7BldGwpufsrt4Y9e11X7v0G7WBUDRz7034odpVvZZTbhf1lf
-   8nJU91DJFJk1xOpeRBKgVJgQ/BbLaXyjkBbKL9DrAZ0IM17inRdXF1fy9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="270769132"
-X-IronPort-AV: E=Sophos;i="5.91,228,1647327600"; 
-   d="scan'208";a="270769132"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2022 08:38:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,228,1647327600"; 
-   d="scan'208";a="625589196"
-Received: from lkp-server01.sh.intel.com (HELO d1462bc4b09b) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 15 May 2022 08:38:09 -0700
-Received: from kbuild by d1462bc4b09b with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqGJs-0001kj-D4;
-        Sun, 15 May 2022 15:38:08 +0000
-Date:   Sun, 15 May 2022 23:37:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:master] BUILD SUCCESS
- 040a86b40a08c76e9fb6783c2646090e1c6c560e
-Message-ID: <62811e2a.z9TvZNOdy52QTGN4%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sun, 15 May 2022 11:54:14 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA2F12D16
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 08:54:13 -0700 (PDT)
+Received: from dslb-188-096-141-066.188.096.pools.vodafone-ip.de ([188.96.141.66] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nqGZM-0006NT-NJ; Sun, 15 May 2022 17:54:08 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 2/5] staging: r8188eu: remove obsolete comments
+Date:   Sun, 15 May 2022 17:53:58 +0200
+Message-Id: <20220515155401.352742-3-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220515155401.352742-1-martin@kaiser.cx>
+References: <20220515155401.352742-1-martin@kaiser.cx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
-branch HEAD: 040a86b40a08c76e9fb6783c2646090e1c6c560e  Merge branch into tip/master: 'x86/vdso'
+Remove some comments in HalPwrSeqCmd.c that contain no useful information.
 
-elapsed time: 4657m
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/hal/HalPwrSeqCmd.c | 22 ----------------------
+ 1 file changed, 22 deletions(-)
 
-configs tested: 105
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                              allmodconfig
-arm                              allyesconfig
-arm                                 defconfig
-arm64                               defconfig
-arm64                            allyesconfig
-i386                          randconfig-c001
-h8300                     edosk2674_defconfig
-mips                        bcm47xx_defconfig
-arm                            hisi_defconfig
-sh                      rts7751r2d1_defconfig
-sh                              ul2_defconfig
-sh                           se7712_defconfig
-arc                            hsdk_defconfig
-csky                             alldefconfig
-arm                         nhk8815_defconfig
-xtensa                          iss_defconfig
-sh                        sh7763rdp_defconfig
-powerpc                     stx_gp3_defconfig
-arm                  randconfig-c002-20220512
-x86_64                        randconfig-c001
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-alpha                               defconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                            allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-sh                               allmodconfig
-arc                                 defconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-parisc                              defconfig
-s390                             allmodconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                                defconfig
-s390                             allyesconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-i386                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-x86_64                        randconfig-a015
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-arc                  randconfig-r043-20220512
-riscv                randconfig-r042-20220512
-s390                 randconfig-r044-20220512
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                            allmodconfig
-riscv                    nommu_k210_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_virt_defconfig
-riscv                               defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                                  kexec
-x86_64                          rhel-8.3-func
-x86_64                               rhel-8.3
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-syz
-
-clang tested configs:
-arm                  colibri_pxa270_defconfig
-arm                        magician_defconfig
-arm                      pxa255-idp_defconfig
-mips                           rs90_defconfig
-x86_64                           allyesconfig
-powerpc                   bluestone_defconfig
-powerpc                     tqm5200_defconfig
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-x86_64                        randconfig-a012
-x86_64                        randconfig-a016
-x86_64                        randconfig-a014
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
-hexagon              randconfig-r041-20220512
-hexagon              randconfig-r045-20220512
-
+diff --git a/drivers/staging/r8188eu/hal/HalPwrSeqCmd.c b/drivers/staging/r8188eu/hal/HalPwrSeqCmd.c
+index 5b91aec6a7e3..150ea380c39e 100644
+--- a/drivers/staging/r8188eu/hal/HalPwrSeqCmd.c
++++ b/drivers/staging/r8188eu/hal/HalPwrSeqCmd.c
+@@ -1,30 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright(c) 2007 - 2011 Realtek Corporation. */
+ 
+-/*++
+-
+-Module Name:
+-	HalPwrSeqCmd.c
+-
+-Abstract:
+-	Implement HW Power sequence configuration CMD handling routine for Realtek devices.
+-
+-Major Change History:
+-	When       Who               What
+-	---------- ---------------   -------------------------------
+-	2011-10-26 Lucas            Modify to be compatible with SD4-CE driver.
+-	2011-07-07 Roger            Create.
+-
+---*/
+-
+ #include "../include/HalPwrSeqCmd.h"
+ 
+-/*	Description: */
+-/*		This routine deals with the Power Configuration CMDs parsing
+- *		for RTL8723/RTL8188E Series IC.
+- *	Assumption:
+- *		We should follow specific format which was released from HW SD.
+- */
+ u8 HalPwrSeqCmdParsing(struct adapter *padapter, struct wl_pwr_cfg pwrseqcmd[])
+ {
+ 	struct wl_pwr_cfg pwrcfgcmd = {0};
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.30.2
+
