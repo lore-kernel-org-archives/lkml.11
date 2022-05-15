@@ -2,336 +2,396 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83171C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 02:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30391C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 03:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235768AbiEOCgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 14 May 2022 22:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57736 "EHLO
+        id S233449AbiEODFJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 14 May 2022 23:05:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233935AbiEOCfi (ORCPT
+        with ESMTP id S229759AbiEODFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 14 May 2022 22:35:38 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78800BF6C
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 19:35:20 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id e18-20020a170902ef5200b0016153d857a6so1249295plx.5
-        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 19:35:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=mivptsETNqNDdcSME2iU77WtyhUxYujtfDC8wYBwYo8=;
-        b=rMya0QjL40CIpu8Uv/ByKWJyDrwJG5QrMXKxZNnicY5ZklKuCvsXB5oQ2U+Z5FoVPS
-         NNID7KJ++02OQhQGC/O7udgQAt+/sF5cjRYPZqcf8Mj7qgc9httTO8QX5l1pGxivwgop
-         eXCz8XpLdo0k56s/4Xp2sMxYTBtxDAeEU1Lt4gvtI33dWiQaKbR2O99nlVMoQRoVY7s7
-         BBXZvaQSBFuYR6uMsX3D3mTwWX1M9QSzWMCbRG5fP5THFSoKblyRNfBoPrTCL9dO8hF1
-         PEq0BiUdinr0dtZQK4V8fQBCrsCqIWbguGR/Jzq4tqE9PEOy01Xl8+B35dPbm6xq8IrW
-         +B9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=mivptsETNqNDdcSME2iU77WtyhUxYujtfDC8wYBwYo8=;
-        b=XxofyVsbxlJD+eSihgKyaQGtTUG5hNAbAdc96LJpRcodpvNTwlpUJx3WGDRTh4e2e3
-         1owJJVd/p7SC+88KwR5XTXrMPHA6BYa9g2a4s878CuD38tRzDWhGgVo6tV6g205pvawR
-         lvHyS+IQStsLEtaaqwMlY5sUAivgCyNhZRJyniNXcVncFj+PZXwT/vd0lUcj/q1EhcoI
-         wOTknQ168xG8O5ZADX+6q3/8KPnE1glTWVvrmq+mqtkAmisB2LjQlEK6k9QwVXk/zLvr
-         L+KAO8/JS/FN5U3myPz+RWbQUzZbLfne9rHIqqaXfDXSBNVFO1slAWmw0LW7JtPLFnf1
-         4fbw==
-X-Gm-Message-State: AOAM5325eo8KWt/fsIh18rBvHEPrlVIaDqQtfC6DrSHmO0vZDymT26q3
-        5zyoHbV3KKCyCe70STxDtBTG9XECMyX+kZf1
-X-Google-Smtp-Source: ABdhPJwounggXga93PA2rBarvjkcnVYOVj3yjgHbf+4I8K2y2Goh8JfuUZYlGSM5QCQ9r6xCJ8cAfkvFDofNY+Iu
-X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a17:903:24f:b0:15c:e3b8:a640 with SMTP
- id j15-20020a170903024f00b0015ce3b8a640mr11562712plh.5.1652582119956; Sat, 14
- May 2022 19:35:19 -0700 (PDT)
-Date:   Sun, 15 May 2022 02:35:02 +0000
-In-Reply-To: <20220515023504.1823463-1-yosryahmed@google.com>
-Message-Id: <20220515023504.1823463-6-yosryahmed@google.com>
-Mime-Version: 1.0
-References: <20220515023504.1823463-1-yosryahmed@google.com>
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [RFC PATCH bpf-next v2 5/7] bpf: Introduce cgroup iter
-From:   Yosry Ahmed <yosryahmed@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org,
-        Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Sat, 14 May 2022 23:05:03 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13CC1CFD5
+        for <linux-kernel@vger.kernel.org>; Sat, 14 May 2022 20:04:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652583898; x=1684119898;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QCoFUWlWcsWREzOb4vgsZN+6dfC/+dNxB8lf6eCg9Zg=;
+  b=lLJBrkv2RX9egbahjAtKdT1vs8vjK9c2faIOLk6IZVzFoEbWlW31KIbC
+   n5CPvcMipZYfUIqiqEeVXZXdP1Dup9NCJ65lz9VmO73YTYU9+DQG9Hhva
+   T7SroEwOIIXUoJbIYAzDjPtgy4VLEUpa9gKGA/pC2poUFO8DqgWfSeBqH
+   uwR8aO/xgLHTJ8jjh3rPI8WvSrAoF+2Z+N3jgwMoIRq8f13ME2GSERogd
+   zA8ZQAu6ofb0z6ZYz1xKk5evUO3BzN2oXGYTjdKBqErOU/B/+lP2wDX4Q
+   9jz4n/IBj0rwpb0kiAVpAXNPrd7w38WKb1q2zeggpG5cCoWO6RmNJ8hPe
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10347"; a="268167830"
+X-IronPort-AV: E=Sophos;i="5.91,227,1647327600"; 
+   d="scan'208";a="268167830"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2022 20:04:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,227,1647327600"; 
+   d="scan'208";a="815913898"
+Received: from lkp-server01.sh.intel.com (HELO d1462bc4b09b) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 14 May 2022 20:04:56 -0700
+Received: from kbuild by d1462bc4b09b with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nq4Yx-0001F3-Ch;
+        Sun, 15 May 2022 03:04:55 +0000
+Date:   Sun, 15 May 2022 11:04:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:ftrace.2022.05.03a] BUILD SUCCESS
+ 17a09ec0e81921c14e703769d710a6e6afbc6e15
+Message-ID: <62806dab.mvWakNOT+kXPkoxv%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git ftrace.2022.05.03a
+branch HEAD: 17a09ec0e81921c14e703769d710a6e6afbc6e15  ftrace: Wait for CPU-hotplug trampolines to complete
 
-Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
-iter doesn't iterate a set of kernel objects. Instead, it is supposed to
-be parameterized by a cgroup id and prints only that cgroup. So one
-needs to specify a target cgroup id when attaching this iter. The target
-cgroup's state can be read out via a link of this iter.
+elapsed time: 12872m
 
-Signed-off-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
----
- include/linux/bpf.h            |   2 +
- include/uapi/linux/bpf.h       |   6 ++
- kernel/bpf/Makefile            |   2 +-
- kernel/bpf/cgroup_iter.c       | 148 +++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h |   6 ++
- 5 files changed, 163 insertions(+), 1 deletion(-)
- create mode 100644 kernel/bpf/cgroup_iter.c
+configs tested: 315
+configs skipped: 6
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index ca908a731cb4..45076c581f24 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -44,6 +44,7 @@ struct kobject;
- struct mem_cgroup;
- struct module;
- struct bpf_func_state;
-+struct cgroup;
- 
- extern struct idr btf_idr;
- extern spinlock_t btf_idr_lock;
-@@ -1579,6 +1580,7 @@ int bpf_obj_get_user(const char __user *pathname, int flags);
- 
- struct bpf_iter_aux_info {
- 	struct bpf_map *map;
-+	struct cgroup *cgroup;
- };
- 
- typedef int (*bpf_iter_attach_target_t)(struct bpf_prog *prog,
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 022522174286..9a93b72bf39c 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -91,6 +91,9 @@ union bpf_iter_link_info {
- 	struct {
- 		__u32	map_fd;
- 	} map;
-+	struct {
-+		__u64	cgroup_id;
-+	} cgroup;
- };
- 
- /* BPF syscall commands, see bpf(2) man-page for more details. */
-@@ -5986,6 +5989,9 @@ struct bpf_link_info {
- 				struct {
- 					__u32 map_id;
- 				} map;
-+				struct {
-+					__u64 cgroup_id;
-+				} cgroup;
- 			};
- 		} iter;
- 		struct  {
-diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-index 0487133b799f..f2a6fd0633d6 100644
---- a/kernel/bpf/Makefile
-+++ b/kernel/bpf/Makefile
-@@ -37,7 +37,7 @@ obj-${CONFIG_BPF_LSM} += bpf_lsm.o
- endif
- obj-$(CONFIG_BPF_PRELOAD) += preload/
- ifeq ($(CONFIG_CGROUPS),y)
--obj-$(CONFIG_BPF_SYSCALL) += rstat.o
-+obj-$(CONFIG_BPF_SYSCALL) += rstat.o cgroup_iter.o
- endif
- 
- obj-$(CONFIG_BPF_SYSCALL) += relo_core.o
-diff --git a/kernel/bpf/cgroup_iter.c b/kernel/bpf/cgroup_iter.c
-new file mode 100644
-index 000000000000..86bdfe135d24
---- /dev/null
-+++ b/kernel/bpf/cgroup_iter.c
-@@ -0,0 +1,148 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022 Google */
-+#include <linux/bpf.h>
-+#include <linux/btf_ids.h>
-+#include <linux/cgroup.h>
-+#include <linux/kernel.h>
-+#include <linux/seq_file.h>
-+
-+struct bpf_iter__cgroup {
-+	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-+	__bpf_md_ptr(struct cgroup *, cgroup);
-+};
-+
-+static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
-+{
-+	/* Only one session is supported. */
-+	if (*pos > 0)
-+		return NULL;
-+
-+	if (*pos == 0)
-+		++*pos;
-+
-+	return *(struct cgroup **)seq->private;
-+}
-+
-+static void *cgroup_iter_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-+{
-+	++*pos;
-+	return NULL;
-+}
-+
-+static int cgroup_iter_seq_show(struct seq_file *seq, void *v)
-+{
-+	struct bpf_iter__cgroup ctx;
-+	struct bpf_iter_meta meta;
-+	struct bpf_prog *prog;
-+	int ret = 0;
-+
-+	ctx.meta = &meta;
-+	ctx.cgroup = v;
-+	meta.seq = seq;
-+	prog = bpf_iter_get_info(&meta, false);
-+	if (prog)
-+		ret = bpf_iter_run_prog(prog, &ctx);
-+
-+	return ret;
-+}
-+
-+static void cgroup_iter_seq_stop(struct seq_file *seq, void *v)
-+{
-+}
-+
-+static const struct seq_operations cgroup_iter_seq_ops = {
-+	.start  = cgroup_iter_seq_start,
-+	.next   = cgroup_iter_seq_next,
-+	.stop   = cgroup_iter_seq_stop,
-+	.show   = cgroup_iter_seq_show,
-+};
-+
-+BTF_ID_LIST_SINGLE(bpf_cgroup_btf_id, struct, cgroup)
-+
-+static int cgroup_iter_seq_init(void *priv_data, struct bpf_iter_aux_info *aux)
-+{
-+	*(struct cgroup **)priv_data = aux->cgroup;
-+	return 0;
-+}
-+
-+static const struct bpf_iter_seq_info cgroup_iter_seq_info = {
-+	.seq_ops                = &cgroup_iter_seq_ops,
-+	.init_seq_private       = cgroup_iter_seq_init,
-+	.seq_priv_size          = sizeof(struct cgroup *),
-+};
-+
-+static int bpf_iter_attach_cgroup(struct bpf_prog *prog,
-+				  union bpf_iter_link_info *linfo,
-+				  struct bpf_iter_aux_info *aux)
-+{
-+	struct cgroup *cgroup;
-+
-+	cgroup = cgroup_get_from_id(linfo->cgroup.cgroup_id);
-+	if (!cgroup)
-+		return -EBUSY;
-+
-+	aux->cgroup = cgroup;
-+	return 0;
-+}
-+
-+static void bpf_iter_detach_cgroup(struct bpf_iter_aux_info *aux)
-+{
-+	if (aux->cgroup)
-+		cgroup_put(aux->cgroup);
-+}
-+
-+static void bpf_iter_cgroup_show_fdinfo(const struct bpf_iter_aux_info *aux,
-+					struct seq_file *seq)
-+{
-+	char *buf;
-+
-+	seq_printf(seq, "cgroup_id:\t%llu\n", cgroup_id(aux->cgroup));
-+
-+	buf = kmalloc(PATH_MAX, GFP_KERNEL);
-+	if (!buf) {
-+		seq_puts(seq, "cgroup_path:\n");
-+		return;
-+	}
-+
-+	/* If cgroup_path_ns() fails, buf will be an empty string, cgroup_path
-+	 * will print nothing.
-+	 *
-+	 * Cgroup_path is the path in the calliing process's cgroup namespace.
-+	 */
-+	cgroup_path_ns(aux->cgroup, buf, sizeof(buf),
-+		       current->nsproxy->cgroup_ns);
-+	seq_printf(seq, "cgroup_path:\t%s\n", buf);
-+	kfree(buf);
-+}
-+
-+static int bpf_iter_cgroup_fill_link_info(const struct bpf_iter_aux_info *aux,
-+					  struct bpf_link_info *info)
-+{
-+	info->iter.cgroup.cgroup_id = cgroup_id(aux->cgroup);
-+	return 0;
-+}
-+
-+DEFINE_BPF_ITER_FUNC(cgroup, struct bpf_iter_meta *meta,
-+		     struct cgroup *cgroup)
-+
-+static struct bpf_iter_reg bpf_cgroup_reg_info = {
-+	.target			= "cgroup",
-+	.attach_target		= bpf_iter_attach_cgroup,
-+	.detach_target		= bpf_iter_detach_cgroup,
-+	.show_fdinfo		= bpf_iter_cgroup_show_fdinfo,
-+	.fill_link_info		= bpf_iter_cgroup_fill_link_info,
-+	.ctx_arg_info_size	= 1,
-+	.ctx_arg_info		= {
-+		{ offsetof(struct bpf_iter__cgroup, cgroup),
-+		  PTR_TO_BTF_ID },
-+	},
-+	.seq_info		= &cgroup_iter_seq_info,
-+};
-+
-+static int __init bpf_cgroup_iter_init(void)
-+{
-+	bpf_cgroup_reg_info.ctx_arg_info[0].btf_id = bpf_cgroup_btf_id[0];
-+	return bpf_iter_reg_target(&bpf_cgroup_reg_info);
-+}
-+
-+late_initcall(bpf_cgroup_iter_init);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 022522174286..9a93b72bf39c 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -91,6 +91,9 @@ union bpf_iter_link_info {
- 	struct {
- 		__u32	map_fd;
- 	} map;
-+	struct {
-+		__u64	cgroup_id;
-+	} cgroup;
- };
- 
- /* BPF syscall commands, see bpf(2) man-page for more details. */
-@@ -5986,6 +5989,9 @@ struct bpf_link_info {
- 				struct {
- 					__u32 map_id;
- 				} map;
-+				struct {
-+					__u64 cgroup_id;
-+				} cgroup;
- 			};
- 		} iter;
- 		struct  {
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+arm                        clps711x_defconfig
+arc                 nsimosci_hs_smp_defconfig
+mips                         tb0226_defconfig
+m68k                             allmodconfig
+xtensa                       common_defconfig
+arm                      jornada720_defconfig
+sh                ecovec24-romimage_defconfig
+arm                           sunxi_defconfig
+ia64                             alldefconfig
+arm                          exynos_defconfig
+h8300                    h8300h-sim_defconfig
+arm                        multi_v7_defconfig
+powerpc                      mgcoge_defconfig
+xtensa                    smp_lx200_defconfig
+ia64                      gensparse_defconfig
+m68k                       m5249evb_defconfig
+m68k                       m5475evb_defconfig
+arm                            pleb_defconfig
+mips                          rb532_defconfig
+riscv                               defconfig
+powerpc                     sequoia_defconfig
+arc                          axs103_defconfig
+sh                             sh03_defconfig
+sh                   sh7724_generic_defconfig
+m68k                          atari_defconfig
+powerpc                      cm5200_defconfig
+powerpc                       eiger_defconfig
+ia64                         bigsur_defconfig
+powerpc                     redwood_defconfig
+mips                  decstation_64_defconfig
+h8300                       h8s-sim_defconfig
+sh                          kfr2r09_defconfig
+sh                           se7712_defconfig
+arm                         axm55xx_defconfig
+arm                        spear6xx_defconfig
+x86_64                           alldefconfig
+powerpc                     tqm8548_defconfig
+m68k                       bvme6000_defconfig
+sh                           se7705_defconfig
+mips                       bmips_be_defconfig
+sh                          landisk_defconfig
+csky                                defconfig
+xtensa                  nommu_kc705_defconfig
+s390                       zfcpdump_defconfig
+m68k                           sun3_defconfig
+powerpc                      ppc40x_defconfig
+powerpc                    adder875_defconfig
+arc                        nsim_700_defconfig
+sh                         ecovec24_defconfig
+sh                               allmodconfig
+sh                        dreamcast_defconfig
+mips                 decstation_r4k_defconfig
+powerpc64                        alldefconfig
+arc                        nsimosci_defconfig
+um                           x86_64_defconfig
+mips                           jazz_defconfig
+sh                     magicpanelr2_defconfig
+powerpc                     tqm8555_defconfig
+sh                         ap325rxa_defconfig
+x86_64                              defconfig
+mips                      loongson3_defconfig
+sparc                            alldefconfig
+powerpc                 mpc837x_rdb_defconfig
+m68k                          hp300_defconfig
+ia64                          tiger_defconfig
+powerpc                           allnoconfig
+powerpc                     ep8248e_defconfig
+sh                             espt_defconfig
+arm                       multi_v4t_defconfig
+arm                             ezx_defconfig
+arm                        mini2440_defconfig
+xtensa                              defconfig
+arm                           sama5_defconfig
+powerpc                  iss476-smp_defconfig
+sparc                            allyesconfig
+sh                          rsk7203_defconfig
+nios2                         3c120_defconfig
+sh                         microdev_defconfig
+powerpc                     stx_gp3_defconfig
+um                               alldefconfig
+openrisc                    or1ksim_defconfig
+sparc                       sparc64_defconfig
+sh                          polaris_defconfig
+sh                        sh7763rdp_defconfig
+powerpc                         wii_defconfig
+arm                           viper_defconfig
+h8300                            allyesconfig
+powerpc                     rainier_defconfig
+sparc                               defconfig
+sh                           se7750_defconfig
+sh                                  defconfig
+xtensa                  audio_kc705_defconfig
+mips                         mpc30x_defconfig
+arm                            zeus_defconfig
+arm                     eseries_pxa_defconfig
+powerpc                  storcenter_defconfig
+arm                         lubbock_defconfig
+sh                           se7343_defconfig
+parisc                generic-32bit_defconfig
+alpha                               defconfig
+powerpc                      pasemi_defconfig
+mips                           ci20_defconfig
+mips                         bigsur_defconfig
+sh                   rts7751r2dplus_defconfig
+m68k                       m5208evb_defconfig
+mips                      fuloong2e_defconfig
+powerpc                      ep88xc_defconfig
+sh                          rsk7269_defconfig
+alpha                            alldefconfig
+m68k                        m5307c3_defconfig
+arm                      integrator_defconfig
+nios2                         10m50_defconfig
+arm                          gemini_defconfig
+powerpc                      pcm030_defconfig
+powerpc                       holly_defconfig
+sh                           se7721_defconfig
+alpha                            allyesconfig
+arm                          lpd270_defconfig
+mips                        vocore2_defconfig
+arc                           tb10x_defconfig
+microblaze                          defconfig
+mips                         db1xxx_defconfig
+powerpc                   currituck_defconfig
+mips                      maltasmvp_defconfig
+m68k                          sun3x_defconfig
+powerpc                      chrp32_defconfig
+sparc64                             defconfig
+nios2                            allyesconfig
+sh                        apsh4ad0a_defconfig
+sh                          lboxre2_defconfig
+powerpc                      ppc6xx_defconfig
+sh                          sdk7786_defconfig
+arm                         lpc18xx_defconfig
+arm                         s3c6400_defconfig
+arm                           stm32_defconfig
+arm                       aspeed_g5_defconfig
+m68k                        stmark2_defconfig
+arm                         cm_x300_defconfig
+sh                   secureedge5410_defconfig
+arm                        mvebu_v7_defconfig
+arm                             rpc_defconfig
+powerpc                mpc7448_hpc2_defconfig
+nios2                            alldefconfig
+arm                            lart_defconfig
+powerpc                     pq2fads_defconfig
+sh                 kfr2r09-romimage_defconfig
+arm                       imx_v6_v7_defconfig
+openrisc                 simple_smp_defconfig
+mips                        bcm47xx_defconfig
+arm                        cerfcube_defconfig
+m68k                          multi_defconfig
+arc                              alldefconfig
+arm                        shmobile_defconfig
+m68k                         amcore_defconfig
+sh                  sh7785lcr_32bit_defconfig
+m68k                          amiga_defconfig
+parisc                generic-64bit_defconfig
+i386                                defconfig
+powerpc                      tqm8xx_defconfig
+arm                         at91_dt_defconfig
+sh                          sdk7780_defconfig
+mips                            ar7_defconfig
+arc                    vdk_hs38_smp_defconfig
+arm                       omap2plus_defconfig
+powerpc                      arches_defconfig
+ia64                            zx1_defconfig
+powerpc64                           defconfig
+sh                               j2_defconfig
+powerpc                     asp8347_defconfig
+h8300                               defconfig
+powerpc                    sam440ep_defconfig
+sh                           se7722_defconfig
+arm                          iop32x_defconfig
+openrisc                            defconfig
+powerpc                 mpc85xx_cds_defconfig
+mips                  maltasmvp_eva_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220506
+arm                  randconfig-c002-20220508
+arm                  randconfig-c002-20220505
+arm                  randconfig-c002-20220507
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+i386                             allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220505
+s390                 randconfig-r044-20220505
+riscv                randconfig-r042-20220505
+arc                  randconfig-r043-20220507
+s390                 randconfig-r044-20220507
+riscv                randconfig-r042-20220507
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                                  kexec
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220506
+riscv                randconfig-c006-20220506
+mips                 randconfig-c004-20220506
+arm                  randconfig-c002-20220506
+s390                 randconfig-c005-20220506
+powerpc              randconfig-c003-20220507
+riscv                randconfig-c006-20220507
+mips                 randconfig-c004-20220507
+arm                  randconfig-c002-20220507
+powerpc              randconfig-c003-20220508
+riscv                randconfig-c006-20220508
+mips                 randconfig-c004-20220508
+arm                  randconfig-c002-20220508
+mips                        omega2p_defconfig
+powerpc                 mpc836x_rdk_defconfig
+mips                         tb0219_defconfig
+powerpc                     mpc5200_defconfig
+arm                       cns3420vb_defconfig
+arm                          collie_defconfig
+mips                      pic32mzda_defconfig
+i386                             allyesconfig
+powerpc                     ksi8560_defconfig
+mips                          ath25_defconfig
+mips                           rs90_defconfig
+arm                        mvebu_v5_defconfig
+powerpc                  mpc885_ads_defconfig
+arm                        vexpress_defconfig
+arm                     davinci_all_defconfig
+arm                    vt8500_v6_v7_defconfig
+powerpc                     skiroot_defconfig
+powerpc                 mpc8560_ads_defconfig
+mips                      malta_kvm_defconfig
+hexagon                             defconfig
+mips                       lemote2f_defconfig
+mips                          ath79_defconfig
+arm                            mmp2_defconfig
+arm                            dove_defconfig
+arm                         lpc32xx_defconfig
+arm                          ixp4xx_defconfig
+mips                   sb1250_swarm_defconfig
+arm                           spitz_defconfig
+arm                       spear13xx_defconfig
+powerpc                      katmai_defconfig
+arm                         s3c2410_defconfig
+mips                     cu1000-neo_defconfig
+arm                        neponset_defconfig
+arm                       aspeed_g4_defconfig
+powerpc                   lite5200b_defconfig
+powerpc                     tqm5200_defconfig
+arm                         s5pv210_defconfig
+arm                       versatile_defconfig
+mips                malta_qemu_32r6_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+i386                 randconfig-a004-20220509
+i386                 randconfig-a006-20220509
+i386                 randconfig-a002-20220509
+i386                 randconfig-a003-20220509
+i386                 randconfig-a001-20220509
+i386                 randconfig-a005-20220509
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220506
+riscv                randconfig-r042-20220506
+hexagon              randconfig-r041-20220506
+hexagon              randconfig-r045-20220505
+hexagon              randconfig-r041-20220505
+hexagon              randconfig-r045-20220509
+hexagon              randconfig-r045-20220508
+riscv                randconfig-r042-20220508
+hexagon              randconfig-r041-20220509
+hexagon              randconfig-r041-20220508
+
 -- 
-2.36.0.550.gb090851708-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
