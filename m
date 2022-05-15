@@ -2,253 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E784C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 18:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81547C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 18:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238697AbiEOSsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 14:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
+        id S238570AbiEOSs5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 14:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238586AbiEOSsA (ORCPT
+        with ESMTP id S238591AbiEOSsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 15 May 2022 14:48:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B3513D5C;
-        Sun, 15 May 2022 11:47:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B217713D67;
+        Sun, 15 May 2022 11:47:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11C1BB80DE0;
-        Sun, 15 May 2022 18:47:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F2B7C385B8;
-        Sun, 15 May 2022 18:47:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25B1F61127;
+        Sun, 15 May 2022 18:47:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D77C385B8;
+        Sun, 15 May 2022 18:47:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652640462;
-        bh=2fH/pOZPH86gdJDhGoDN98IuMvK/upNUUriu34moWOA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Ncd/5ue/Q1hkPYmQMm/UAa4nvDf4/x8aarR8ME5SQM8Vi5f83A0nENV1zR0YZcH5X
-         mwGsIIyuRaSjj1FyjhwYqZw9ZwqTLc0bA4p9dBtSVHdl+ZkAjohRyYjYytHTOKUDa9
-         5smijngFxvohLMQIT8bCqJA/y3VnFaze3eKDFsNg=
+        s=korg; t=1652640465;
+        bh=aeZJVNgi4JQKnACTN8gGui5roz65wqit1K2XsC5yAjI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QM7QhkK1wgJo8Ee33CSgDQE+X2bdE34/an5wztIShBBt5cWDDjLjZjERVW/MzBFe/
+         2W+OcWJimTijHotOUjrAm7niT5SLaNi42C6Uk8cNXMSMkF+AVilO7wcx+XRHwIUZGF
+         3QPbFsC8Jl10HLI6+jzgcnd5oh9BfgQ0gn77p8YE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.15.40
-Date:   Sun, 15 May 2022 20:47:27 +0200
-Message-Id: <1652640447116155@kroah.com>
+Subject: Re: Linux 5.17.8
+Date:   Sun, 15 May 2022 20:47:35 +0200
+Message-Id: <165264045411776@kroah.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <16526404542247@kroah.com>
+References: <16526404542247@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.15.40 kernel.
-
-All users of the 5.15 kernel series must upgrade.
-
-The updated 5.15.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.15.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
-
-thanks,
-
-greg k-h
-
-------------
-
- Makefile                                      |    2 
- arch/x86/Kconfig                              |   12 +++
- arch/x86/Makefile                             |    4 +
- arch/x86/boot/compressed/efi_thunk_64.S       |    2 
- arch/x86/boot/compressed/head_64.S            |    8 +-
- arch/x86/boot/compressed/mem_encrypt.S        |    6 -
- arch/x86/crypto/aegis128-aesni-asm.S          |   48 +++++++-------
- arch/x86/crypto/aes_ctrby8_avx-x86_64.S       |    2 
- arch/x86/crypto/aesni-intel_asm.S             |   56 ++++++++--------
- arch/x86/crypto/aesni-intel_avx-x86_64.S      |   40 ++++++------
- arch/x86/crypto/blake2s-core.S                |    4 -
- arch/x86/crypto/blowfish-x86_64-asm_64.S      |   12 +--
- arch/x86/crypto/camellia-aesni-avx-asm_64.S   |   14 ++--
- arch/x86/crypto/camellia-aesni-avx2-asm_64.S  |   14 ++--
- arch/x86/crypto/camellia-x86_64-asm_64.S      |   12 +--
- arch/x86/crypto/cast5-avx-x86_64-asm_64.S     |   12 +--
- arch/x86/crypto/cast6-avx-x86_64-asm_64.S     |   10 +--
- arch/x86/crypto/chacha-avx2-x86_64.S          |    6 -
- arch/x86/crypto/chacha-avx512vl-x86_64.S      |    6 -
- arch/x86/crypto/chacha-ssse3-x86_64.S         |    8 +-
- arch/x86/crypto/crc32-pclmul_asm.S            |    2 
- arch/x86/crypto/crc32c-pcl-intel-asm_64.S     |    2 
- arch/x86/crypto/crct10dif-pcl-asm_64.S        |    2 
- arch/x86/crypto/des3_ede-asm_64.S             |    4 -
- arch/x86/crypto/ghash-clmulni-intel_asm.S     |    6 -
- arch/x86/crypto/nh-avx2-x86_64.S              |    2 
- arch/x86/crypto/nh-sse2-x86_64.S              |    2 
- arch/x86/crypto/poly1305-x86_64-cryptogams.pl |   38 +++++------
- arch/x86/crypto/serpent-avx-x86_64-asm_64.S   |   10 +--
- arch/x86/crypto/serpent-avx2-asm_64.S         |   10 +--
- arch/x86/crypto/serpent-sse2-i586-asm_32.S    |    6 -
- arch/x86/crypto/serpent-sse2-x86_64-asm_64.S  |    6 -
- arch/x86/crypto/sha1_avx2_x86_64_asm.S        |    2 
- arch/x86/crypto/sha1_ni_asm.S                 |    2 
- arch/x86/crypto/sha1_ssse3_asm.S              |    2 
- arch/x86/crypto/sha256-avx-asm.S              |    2 
- arch/x86/crypto/sha256-avx2-asm.S             |    2 
- arch/x86/crypto/sha256-ssse3-asm.S            |    2 
- arch/x86/crypto/sha256_ni_asm.S               |    2 
- arch/x86/crypto/sha512-avx-asm.S              |    2 
- arch/x86/crypto/sha512-avx2-asm.S             |    2 
- arch/x86/crypto/sha512-ssse3-asm.S            |    2 
- arch/x86/crypto/sm4-aesni-avx-asm_64.S        |   12 +--
- arch/x86/crypto/sm4-aesni-avx2-asm_64.S       |    8 +-
- arch/x86/crypto/twofish-avx-x86_64-asm_64.S   |   10 +--
- arch/x86/crypto/twofish-i586-asm_32.S         |    4 -
- arch/x86/crypto/twofish-x86_64-asm_64-3way.S  |    6 -
- arch/x86/crypto/twofish-x86_64-asm_64.S       |    4 -
- arch/x86/entry/entry_32.S                     |    2 
- arch/x86/entry/entry_64.S                     |   10 +--
- arch/x86/entry/thunk_32.S                     |    2 
- arch/x86/entry/thunk_64.S                     |    2 
- arch/x86/entry/vdso/vdso32/system_call.S      |    2 
- arch/x86/entry/vdso/vsgx.S                    |    2 
- arch/x86/entry/vsyscall/vsyscall_emu_64.S     |    6 -
- arch/x86/include/asm/linkage.h                |   14 ++++
- arch/x86/include/asm/paravirt.h               |    2 
- arch/x86/include/asm/qspinlock_paravirt.h     |    4 -
- arch/x86/include/asm/static_call.h            |    2 
- arch/x86/kernel/acpi/wakeup_32.S              |    6 -
- arch/x86/kernel/alternative.c                 |   51 ++++++++++-----
- arch/x86/kernel/ftrace.c                      |    2 
- arch/x86/kernel/ftrace_32.S                   |    6 -
- arch/x86/kernel/ftrace_64.S                   |   10 +--
- arch/x86/kernel/head_32.S                     |    2 
- arch/x86/kernel/irqflags.S                    |    2 
- arch/x86/kernel/kprobes/core.c                |    2 
- arch/x86/kernel/paravirt.c                    |    2 
- arch/x86/kernel/relocate_kernel_32.S          |   10 +--
- arch/x86/kernel/relocate_kernel_64.S          |   10 +--
- arch/x86/kernel/sev_verify_cbit.S             |    2 
- arch/x86/kernel/static_call.c                 |    5 -
- arch/x86/kernel/verify_cpu.S                  |    4 -
- arch/x86/kvm/emulate.c                        |   23 +++++-
- arch/x86/kvm/svm/vmenter.S                    |    4 -
- arch/x86/kvm/vmx/vmenter.S                    |   14 ++--
- arch/x86/lib/atomic64_386_32.S                |   86 ++++++++++++++------------
- arch/x86/lib/atomic64_cx8_32.S                |   16 ++--
- arch/x86/lib/checksum_32.S                    |    8 +-
- arch/x86/lib/clear_page_64.S                  |    6 -
- arch/x86/lib/cmpxchg16b_emu.S                 |    4 -
- arch/x86/lib/cmpxchg8b_emu.S                  |    4 -
- arch/x86/lib/copy_mc_64.S                     |    6 -
- arch/x86/lib/copy_page_64.S                   |    4 -
- arch/x86/lib/copy_user_64.S                   |   12 +--
- arch/x86/lib/csum-copy_64.S                   |    2 
- arch/x86/lib/error-inject.c                   |    3 
- arch/x86/lib/getuser.S                        |   22 +++---
- arch/x86/lib/hweight.S                        |    6 -
- arch/x86/lib/iomap_copy_64.S                  |    2 
- arch/x86/lib/memcpy_64.S                      |   12 +--
- arch/x86/lib/memmove_64.S                     |    4 -
- arch/x86/lib/memset_64.S                      |    6 -
- arch/x86/lib/msr-reg.S                        |    4 -
- arch/x86/lib/putuser.S                        |    6 -
- arch/x86/lib/retpoline.S                      |    4 -
- arch/x86/math-emu/div_Xsig.S                  |    2 
- arch/x86/math-emu/div_small.S                 |    2 
- arch/x86/math-emu/mul_Xsig.S                  |    6 -
- arch/x86/math-emu/polynom_Xsig.S              |    2 
- arch/x86/math-emu/reg_norm.S                  |    6 -
- arch/x86/math-emu/reg_round.S                 |    2 
- arch/x86/math-emu/reg_u_add.S                 |    2 
- arch/x86/math-emu/reg_u_div.S                 |    2 
- arch/x86/math-emu/reg_u_mul.S                 |    2 
- arch/x86/math-emu/reg_u_sub.S                 |    2 
- arch/x86/math-emu/round_Xsig.S                |    4 -
- arch/x86/math-emu/shr_Xsig.S                  |    8 +-
- arch/x86/math-emu/wm_shrx.S                   |   16 ++--
- arch/x86/mm/mem_encrypt_boot.S                |    4 -
- arch/x86/platform/efi/efi_stub_32.S           |    2 
- arch/x86/platform/efi/efi_stub_64.S           |    2 
- arch/x86/platform/efi/efi_thunk_64.S          |    2 
- arch/x86/platform/olpc/xo1-wakeup.S           |    6 -
- arch/x86/power/hibernate_asm_32.S             |    4 -
- arch/x86/power/hibernate_asm_64.S             |    4 -
- arch/x86/um/checksum_32.S                     |    4 -
- arch/x86/um/setjmp_32.S                       |    2 
- arch/x86/um/setjmp_64.S                       |    2 
- arch/x86/xen/xen-asm.S                        |   12 +--
- arch/x86/xen/xen-head.S                       |    2 
- fs/udf/namei.c                                |    8 +-
- include/net/bluetooth/hci_core.h              |    3 
- include/uapi/linux/rfkill.h                   |    2 
- mm/gup.c                                      |    2 
- mm/memory-failure.c                           |    4 -
- mm/memory.c                                   |    2 
- mm/migrate.c                                  |    7 +-
- mm/mlock.c                                    |    1 
- mm/shmem.c                                    |    4 -
- mm/userfaultfd.c                              |    3 
- net/bluetooth/hci_core.c                      |    6 -
- samples/ftrace/ftrace-direct-modify.c         |    4 -
- samples/ftrace/ftrace-direct-too.c            |    2 
- samples/ftrace/ftrace-direct.c                |    2 
- scripts/Makefile.build                        |   11 +++
- scripts/Makefile.lib                          |   11 ---
- scripts/link-vmlinux.sh                       |    3 
- tools/arch/x86/lib/memcpy_64.S                |   12 +--
- tools/arch/x86/lib/memset_64.S                |    6 -
- tools/objtool/arch/x86/decode.c               |   13 ++-
- tools/objtool/builtin-check.c                 |    3 
- tools/objtool/check.c                         |   24 +++++++
- tools/objtool/include/objtool/arch.h          |    1 
- tools/objtool/include/objtool/builtin.h       |    2 
- 145 files changed, 607 insertions(+), 483 deletions(-)
-
-Arnaldo Carvalho de Melo (1):
-      tools arch: Update arch/x86/lib/mem{cpy,set}_64.S copies used in 'perf bench mem memcpy'
-
-Borislav Petkov (1):
-      kvm/emulate: Fix SETcc emulation function offsets with SLS
-
-Gleb Fotengauer-Malinovskiy (1):
-      rfkill: uapi: fix RFKILL_IOCTL_MAX_SIZE ioctl request definition
-
-Greg Kroah-Hartman (1):
-      Linux 5.15.40
-
-Itay Iellin (1):
-      Bluetooth: Fix the creation of hdev->name
-
-Jan Kara (1):
-      udf: Avoid using stale lengthOfImpUse
-
-Masahiro Yamada (1):
-      kbuild: move objtool_args back to scripts/Makefile.build
-
-Miaohe Lin (1):
-      mm/mlock: fix potential imbalanced rlimit ucounts adjustment
-
-Muchun Song (4):
-      mm: fix missing cache flush for all tail pages of compound page
-      mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
-      mm: shmem: fix missing cache flush in shmem_mfill_atomic_pte()
-      mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-
-Naoya Horiguchi (1):
-      mm/hwpoison: fix error page recovered but reported "not recovered"
-
-Peter Xu (1):
-      mm: fix invalid page pointer returned with FOLL_PIN gups
-
-Peter Zijlstra (8):
-      x86/lib/atomic64_386_32: Rename things
-      x86: Prepare asm files for straight-line-speculation
-      x86: Prepare inline-asm for straight-line-speculation
-      objtool: Add straight-line-speculation validation
-      x86/alternative: Relax text_poke_bp() constraint
-      x86: Add straight-line-speculation mitigation
-      crypto: x86/poly1305 - Fixup SLS
-      objtool: Fix SLS validation for kcov tail-call replacement
-
+diff --git a/Makefile b/Makefile
+index ce65b393a2b4..3cf179812f0f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ VERSION = 5
+ PATCHLEVEL = 17
+-SUBLEVEL = 7
++SUBLEVEL = 8
+ EXTRAVERSION =
+ NAME = Superb Owl
+ 
+diff --git a/fs/udf/namei.c b/fs/udf/namei.c
+index 0ed4861b038f..b3d5f97f16cd 100644
+--- a/fs/udf/namei.c
++++ b/fs/udf/namei.c
+@@ -75,11 +75,11 @@ int udf_write_fi(struct inode *inode, struct fileIdentDesc *cfi,
+ 
+ 	if (fileident) {
+ 		if (adinicb || (offset + lfi < 0)) {
+-			memcpy(udf_get_fi_ident(sfi), fileident, lfi);
++			memcpy(sfi->impUse + liu, fileident, lfi);
+ 		} else if (offset >= 0) {
+ 			memcpy(fibh->ebh->b_data + offset, fileident, lfi);
+ 		} else {
+-			memcpy(udf_get_fi_ident(sfi), fileident, -offset);
++			memcpy(sfi->impUse + liu, fileident, -offset);
+ 			memcpy(fibh->ebh->b_data, fileident - offset,
+ 				lfi + offset);
+ 		}
+@@ -88,11 +88,11 @@ int udf_write_fi(struct inode *inode, struct fileIdentDesc *cfi,
+ 	offset += lfi;
+ 
+ 	if (adinicb || (offset + padlen < 0)) {
+-		memset(udf_get_fi_ident(sfi) + lfi, 0x00, padlen);
++		memset(sfi->impUse + liu + lfi, 0x00, padlen);
+ 	} else if (offset >= 0) {
+ 		memset(fibh->ebh->b_data + offset, 0x00, padlen);
+ 	} else {
+-		memset(udf_get_fi_ident(sfi) + lfi, 0x00, -offset);
++		memset(sfi->impUse + liu + lfi, 0x00, -offset);
+ 		memset(fibh->ebh->b_data, 0x00, padlen + offset);
+ 	}
+ 
+diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+index 36d727f94ac2..131514913430 100644
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -36,6 +36,9 @@
+ /* HCI priority */
+ #define HCI_PRIO_MAX	7
+ 
++/* HCI maximum id value */
++#define HCI_MAX_ID 10000
++
+ /* HCI Core structures */
+ struct inquiry_data {
+ 	bdaddr_t	bdaddr;
+diff --git a/include/uapi/linux/rfkill.h b/include/uapi/linux/rfkill.h
+index 283c5a7b3f2c..db6c8588c1d0 100644
+--- a/include/uapi/linux/rfkill.h
++++ b/include/uapi/linux/rfkill.h
+@@ -184,7 +184,7 @@ struct rfkill_event_ext {
+ #define RFKILL_IOC_NOINPUT	1
+ #define RFKILL_IOCTL_NOINPUT	_IO(RFKILL_IOC_MAGIC, RFKILL_IOC_NOINPUT)
+ #define RFKILL_IOC_MAX_SIZE	2
+-#define RFKILL_IOCTL_MAX_SIZE	_IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_EXT_SIZE, __u32)
++#define RFKILL_IOCTL_MAX_SIZE	_IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_MAX_SIZE, __u32)
+ 
+ /* and that's all userspace gets */
+ 
+diff --git a/mm/gup.c b/mm/gup.c
+index 7bc1ba9ce440..41da0bd61bec 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -465,7 +465,7 @@ static int follow_pfn_pte(struct vm_area_struct *vma, unsigned long address,
+ 		pte_t *pte, unsigned int flags)
+ {
+ 	/* No page to get reference */
+-	if (flags & FOLL_GET)
++	if (flags & (FOLL_GET | FOLL_PIN))
+ 		return -EFAULT;
+ 
+ 	if (flags & FOLL_TOUCH) {
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index a1da8757cc9c..e2dc190c6725 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5820,7 +5820,8 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
+ 			*pagep = NULL;
+ 			goto out;
+ 		}
+-		folio_copy(page_folio(page), page_folio(*pagep));
++		copy_user_huge_page(page, *pagep, dst_addr, dst_vma,
++				    pages_per_huge_page(h));
+ 		put_page(*pagep);
+ 		*pagep = NULL;
+ 	}
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 15dcedbc1730..682eedb5ea75 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -707,8 +707,10 @@ static int kill_accessing_process(struct task_struct *p, unsigned long pfn,
+ 			      (void *)&priv);
+ 	if (ret == 1 && priv.tk.addr)
+ 		kill_proc(&priv.tk, pfn, flags);
++	else
++		ret = 0;
+ 	mmap_read_unlock(p->mm);
+-	return ret ? -EFAULT : -EHWPOISON;
++	return ret > 0 ? -EHWPOISON : -EFAULT;
+ }
+ 
+ static const char *action_name[] = {
+diff --git a/mm/memory.c b/mm/memory.c
+index b69afe3dd597..886925d97759 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -5475,6 +5475,8 @@ long copy_huge_page_from_user(struct page *dst_page,
+ 		if (rc)
+ 			break;
+ 
++		flush_dcache_page(subpage);
++
+ 		cond_resched();
+ 	}
+ 	return ret_val;
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 086a36637467..ac7673e43dda 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -916,9 +916,12 @@ static int move_to_new_page(struct page *newpage, struct page *page,
+ 		if (!PageMappingFlags(page))
+ 			page->mapping = NULL;
+ 
+-		if (likely(!is_zone_device_page(newpage)))
+-			flush_dcache_page(newpage);
++		if (likely(!is_zone_device_page(newpage))) {
++			int i, nr = compound_nr(newpage);
+ 
++			for (i = 0; i < nr; i++)
++				flush_dcache_page(newpage + i);
++		}
+ 	}
+ out:
+ 	return rc;
+@@ -3082,18 +3085,21 @@ static int establish_migrate_target(int node, nodemask_t *used,
+ 	if (best_distance != -1) {
+ 		val = node_distance(node, migration_target);
+ 		if (val > best_distance)
+-			return NUMA_NO_NODE;
++			goto out_clear;
+ 	}
+ 
+ 	index = nd->nr;
+ 	if (WARN_ONCE(index >= DEMOTION_TARGET_NODES,
+ 		      "Exceeds maximum demotion target nodes\n"))
+-		return NUMA_NO_NODE;
++		goto out_clear;
+ 
+ 	nd->nodes[index] = migration_target;
+ 	nd->nr++;
+ 
+ 	return migration_target;
++out_clear:
++	node_clear(migration_target, *used);
++	return NUMA_NO_NODE;
+ }
+ 
+ /*
+diff --git a/mm/mlock.c b/mm/mlock.c
+index 37f969ec68fa..b565b1aac8d4 100644
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -838,6 +838,7 @@ int user_shm_lock(size_t size, struct ucounts *ucounts)
+ 	}
+ 	if (!get_ucounts(ucounts)) {
+ 		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
++		allowed = 0;
+ 		goto out;
+ 	}
+ 	allowed = 1;
+diff --git a/mm/shmem.c b/mm/shmem.c
+index a09b29ec2b45..7a46419d331d 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -2357,8 +2357,10 @@ int shmem_mfill_atomic_pte(struct mm_struct *dst_mm,
+ 				/* don't free the page */
+ 				goto out_unacct_blocks;
+ 			}
++
++			flush_dcache_page(page);
+ 		} else {		/* ZEROPAGE */
+-			clear_highpage(page);
++			clear_user_highpage(page, dst_addr);
+ 		}
+ 	} else {
+ 		page = *pagep;
+diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
+index 885e5adb0168..7259f96faaa0 100644
+--- a/mm/userfaultfd.c
++++ b/mm/userfaultfd.c
+@@ -153,6 +153,8 @@ static int mcopy_atomic_pte(struct mm_struct *dst_mm,
+ 			/* don't free the page */
+ 			goto out;
+ 		}
++
++		flush_dcache_page(page);
+ 	} else {
+ 		page = *pagep;
+ 		*pagep = NULL;
+@@ -628,6 +630,7 @@ static __always_inline ssize_t __mcopy_atomic(struct mm_struct *dst_mm,
+ 				err = -EFAULT;
+ 				goto out;
+ 			}
++			flush_dcache_page(page);
+ 			goto retry;
+ 		} else
+ 			BUG_ON(page);
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 2882bc7d79d7..9e9713f7ddb8 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -2554,10 +2554,10 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	 */
+ 	switch (hdev->dev_type) {
+ 	case HCI_PRIMARY:
+-		id = ida_simple_get(&hci_index_ida, 0, 0, GFP_KERNEL);
++		id = ida_simple_get(&hci_index_ida, 0, HCI_MAX_ID, GFP_KERNEL);
+ 		break;
+ 	case HCI_AMP:
+-		id = ida_simple_get(&hci_index_ida, 1, 0, GFP_KERNEL);
++		id = ida_simple_get(&hci_index_ida, 1, HCI_MAX_ID, GFP_KERNEL);
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -2566,7 +2566,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	if (id < 0)
+ 		return id;
+ 
+-	sprintf(hdev->name, "hci%d", id);
++	snprintf(hdev->name, sizeof(hdev->name), "hci%d", id);
+ 	hdev->id = id;
+ 
+ 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
