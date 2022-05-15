@@ -2,71 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1ECDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 15:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A69C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 15:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237582AbiEOPMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 11:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
+        id S236319AbiEOP2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 11:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237371AbiEOPMC (ORCPT
+        with ESMTP id S233933AbiEOP2c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 11:12:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE19610FF9
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 08:11:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE9A5B80D21
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 15:11:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A421FC34100;
-        Sun, 15 May 2022 15:11:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652627460;
-        bh=0+v6o4r3OvphyPnnoH8be7X3l7d+awsY5uQw80PILzI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=J4VRt2VTbnT7YK1/V2at31/ZGmB8DLpUj6SAX0s/rRWWT35xnGhbvRjR1Uzpmu0e1
-         6ZnROGsCygkCnJYxectlxf9KsWpHCU7LV1yzkRT10TdPOwK1brbKarJZUpeL7Phj7m
-         c32IbIg7j+86wzKBAMJWSeU9x/6UhxYwKGuyE6T+ey8MEsyxiQq8j/WiOZOxeK/dsc
-         JRLUiEAzxNAEXxQ1OeLifGYpkisDBLdqj3JGjmujz5kK7uZkN+4FOV+bYibZ5/H4VH
-         ods7/8Xl+vpAH4WjTf85mrM+EGvVFdkFhrkrLAn9hFhPU0TUBynTQ3/qpI8kO2T91o
-         RfRmfmkOePH0Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8E44BF03936;
-        Sun, 15 May 2022 15:11:00 +0000 (UTC)
-Subject: Re: [GIT PULL] Driver core fixes for 5.18-rc7
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YoEN35dp8yUoKcDA@kroah.com>
-References: <YoEN35dp8yUoKcDA@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YoEN35dp8yUoKcDA@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.18-rc7
-X-PR-Tracked-Commit-Id: 575f00edea0a7117e6a4337800ebf62e2a1d09d6
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0cdd776ec92c0fec768c7079331804d3e52d4b27
-Message-Id: <165262746057.2129.15765567081971781458.pr-tracker-bot@kernel.org>
-Date:   Sun, 15 May 2022 15:11:00 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Saravana Kannan <saravanak@google.com>
+        Sun, 15 May 2022 11:28:32 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1341208A
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 08:28:30 -0700 (PDT)
+Received: from dslb-188-096-141-066.188.096.pools.vodafone-ip.de ([188.96.141.66] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nqGAS-0006Dx-Gb; Sun, 15 May 2022 17:28:24 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>, Joe Perches <joe@perches.com>
+Subject: [PATCH] staging: r8188eu: use defines for addba response status
+Date:   Sun, 15 May 2022 17:27:59 +0200
+Message-Id: <20220515152759.335889-1-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 15 May 2022 16:27:43 +0200:
+Replace the numeric values with defines from ieee80211.h.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.18-rc7
+Suggested-by: Joe Perches <joe@perches.com>
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0cdd776ec92c0fec768c7079331804d3e52d4b27
+This should be applied after yesterday's series "more cleanups in
+OnAction_back".
 
-Thank you!
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index b24c6a79646d..65330baa5a73 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -1504,7 +1504,8 @@ unsigned int OnAction_back(struct adapter *padapter, struct recv_frame *precv_fr
+ 		preorder_ctrl->enable = pmlmeinfo->bAcceptAddbaReq;
+ 
+ 		issue_action_BA(padapter, mgmt->sa, WLAN_ACTION_ADDBA_RESP,
+-				pmlmeinfo->bAcceptAddbaReq ? 0 : 37);
++				pmlmeinfo->bAcceptAddbaReq ?
++					WLAN_STATUS_SUCCESS : WLAN_STATUS_REQUEST_DECLINED);
+ 		break;
+ 	case WLAN_ACTION_ADDBA_RESP:
+ 		tid = u16_get_bits(le16_to_cpu(mgmt->u.action.u.addba_resp.capab),
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.30.2
+
