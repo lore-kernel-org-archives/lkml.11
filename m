@@ -2,267 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E92FC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 20:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0619FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 20:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235113AbiEOUb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 16:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
+        id S238597AbiEOUbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 16:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbiEOUbX (ORCPT
+        with ESMTP id S233281AbiEOUb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 16:31:23 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC532BE5;
-        Sun, 15 May 2022 13:31:22 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id g6so25221459ejw.1;
-        Sun, 15 May 2022 13:31:22 -0700 (PDT)
+        Sun, 15 May 2022 16:31:26 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB082BE5;
+        Sun, 15 May 2022 13:31:25 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id i40so939992eda.7;
+        Sun, 15 May 2022 13:31:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GMH39Son2N3gZ9c/oeFLwOmolsOkBedh777nxOuqfek=;
-        b=ICNuozQdrKs9S7QW4c7BmzeSDmB6P5eSXxchDKGIniTnOy9u6UXnhLsLw06CAeFl35
-         uU4YG5BYBnA8tlQzkDNgjEu5qF1AFJj8HCdiwMzY6I5uc8cBL6JyC5jRFfRAVVjJm1Fn
-         m8lK6UslYi8crDNayf8bv+RCUyk7sFme0sdXzIEvOh65pwhGcKVk6bFxHmnLtyeJzT7b
-         YBd9w+9sNPXw3e47DOOwbDYGsTIgMqXkzTgvYpkfeh2S0pc3gKxKVQzRsT3TSTyZDFrg
-         9OT0H+64hSrJ8iZObQ4VouvaCfXl3RWSBcYfGMQusyeLvGZbx4kLMz4yyif0tYyMg+od
-         bGzg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ENgyZIarJt3vx0WIXiC6L0+jAAX3vWhh6cAjsl5a67I=;
+        b=SZFpiN8zhdmdVfDFONWVxa4X3LiXAkoHxyC9IzvkoFe/QoZrcetJZU/JXmQm9HXQFv
+         NMfbWmRekKmuE2oBEVR75w6N5bj/4fcNfg7gIDcubWs2i1I9W7lqvcgkF/rGjadNkCEL
+         T/VLOLtlg/GHcJ8KkqMOnSSjIkaTVI/8/IShYt0W5W3CHsm9OAXxWDPW/DTao27c0rE/
+         hmjhujBCw9T1Py27mX8WsyE7UwS3nyKSqwrwIgD1rblF00lBhBJkx3p3CJ8/uV+JbreC
+         rHzHgLKRK75KXGFUjWrO1wNRPNA2yToiiqPorpRuh9VKum5QPJGKZvQLp5ynZY7xTrQ4
+         Fzhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GMH39Son2N3gZ9c/oeFLwOmolsOkBedh777nxOuqfek=;
-        b=fEtjlNHCfwCvSN0vTGrXK+GBKRwwkLEtoSR1b0xgjipDZp5gaTfJOkmkMgZGCx0wqv
-         0PRaWSYyfD2fykBWe2n7yYzI9soM7HKcNw6qkv6GDqr2x8EWZ/u2XAEkBU+yPtGaEH3F
-         kwR3hFElXBzkEiik0FUN9OOcBDMqwpz2SUdlOPUcKhNgyzM1g8Qdkg3rOn88jtH1H396
-         sfl5cEUBPiVQMlNFyzp/IbQEj1s6UrLWqLbi0S+Bpq9tfqDThSHxmovCl7wHxBy8NcA5
-         o6dC97A84ON0lTL6PTzTQNdMgd+WF3WLOysMmct7PFnczP2wBDSnhOKl7UUlvy1OKLZf
-         y/6g==
-X-Gm-Message-State: AOAM531pAHnQQMuaOC+RPO18DF+D6kEpw4cBoPeCZAml9Z+K+U/wnESB
-        iNm6ge2rAw2qcM0W9ofRCh8=
-X-Google-Smtp-Source: ABdhPJzwjb3a5SuYFnXIm2M/C54wSpppovcGlUDKCA+/oHrU+JHpmN1eQxv2BMUB5VucaTIsEAW8SA==
-X-Received: by 2002:a17:906:5006:b0:6ce:3762:c72e with SMTP id s6-20020a170906500600b006ce3762c72emr12588246ejj.30.1652646680755;
-        Sun, 15 May 2022 13:31:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ENgyZIarJt3vx0WIXiC6L0+jAAX3vWhh6cAjsl5a67I=;
+        b=kbK0YYbum+ueBk8BdQalngSjvRvu3jV2nUrOBcrFQcIilkQUfX1oAFsmaxvP3saKBr
+         rBCGPJuY34mZszvF9Qt/iXZcFD1S2MZ8bg9NDzyIFZlBUcHbfYl97NBtSOW3/MMZd3dX
+         drGAuGFsfHsRrAVTBcOg9Sd9acqOpO3Z7V6Cz+O1heB/cHM8jW6o9mQ5yUPdtG9EHyqw
+         Or/OjTRGWsahkmVuWvM8HTjXDpho3TN/g4nvDSZHr46ggd0bMzfVqWy8/pOHf8cPinCq
+         iBUjyp/JFuI9Z3ZtyeHhVKa+YecH3iJljxi+QngKVJycexlbXUJducZC0TbKwDzfffQ4
+         QRvQ==
+X-Gm-Message-State: AOAM531n7yR7XKzvBeoPMz+lC2ODDc3pa4zhBcyaxoOD0+AGoThL+TcQ
+        QaUte+5II4QZ1M8oc8gKWsw=
+X-Google-Smtp-Source: ABdhPJwmuEMVFMd3pOhbiXip1TKJdHQndx6BAJa7uGYqCpSA87Jir89Hbfu2jtrHA9DhPU4RPnqLnA==
+X-Received: by 2002:a05:6402:c90:b0:42a:98c7:3fe with SMTP id cm16-20020a0564020c9000b0042a98c703femr7851455edb.270.1652646683799;
+        Sun, 15 May 2022 13:31:23 -0700 (PDT)
 Received: from fedora.robimarko.hr (dh207-98-105.xnet.hr. [88.207.98.105])
-        by smtp.googlemail.com with ESMTPSA id ze16-20020a170906ef9000b006f3ef214e4esm2944884ejb.180.2022.05.15.13.31.19
+        by smtp.googlemail.com with ESMTPSA id ze16-20020a170906ef9000b006f3ef214e4esm2944884ejb.180.2022.05.15.13.31.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 May 2022 13:31:20 -0700 (PDT)
+        Sun, 15 May 2022 13:31:23 -0700 (PDT)
 From:   Robert Marko <robimarko@gmail.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
         broonie@kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH 1/6] dt-bindings: regulator: qcom,spmi-regulator: Convert to dtschema
-Date:   Sun, 15 May 2022 22:31:13 +0200
-Message-Id: <20220515203118.474684-1-robimarko@gmail.com>
+Subject: [PATCH 3/6] dt-bindings: regulator: qcom,spmi-regulator: add PMP8074 PMIC
+Date:   Sun, 15 May 2022 22:31:15 +0200
+Message-Id: <20220515203118.474684-3-robimarko@gmail.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220515203118.474684-1-robimarko@gmail.com>
+References: <20220515203118.474684-1-robimarko@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the bindings of Qualcomm SPMI regulators to DT schema.
+Document the PMP8074 PMIC compatible.
 
 Signed-off-by: Robert Marko <robimarko@gmail.com>
 ---
-I am aware that syscon alone is not really acceptable, its converted
-directly from the old text bindings.
-
-There is also the issue of some MSM8994, MSM8996 and APQ8096 devices using
-'#address-cells', '#size-cells', some even defining reg property for
-regulators.
-
-Any advice on how to solve these issues is appreciated.
----
- .../regulator/qcom,spmi-regulator.yaml        | 176 ++++++++++++++++++
- 1 file changed, 176 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
+ .../devicetree/bindings/regulator/qcom,spmi-regulator.yaml       | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-new file mode 100644
-index 000000000000..f7da310f1845
---- /dev/null
+index f7da310f1845..960e61661bc8 100644
+--- a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
 +++ b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-@@ -0,0 +1,176 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/qcom,spmi-regulator.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm SPMI Regulators
-+
-+maintainers:
-+  - Robert Marko <robert.marko@sartura.hr>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,pm660-regulators
-+      - qcom,pm660l-regulators
-+      - qcom,pm8004-regulators
-+      - qcom,pm8005-regulators
-+      - qcom,pm8226-regulators
-+      - qcom,pm8841-regulators
-+      - qcom,pm8916-regulators
-+      - qcom,pm8941-regulators
-+      - qcom,pm8950-regulators
-+      - qcom,pm8994-regulators
-+      - qcom,pmi8994-regulators
-+      - qcom,pms405-regulators
-+
-+  qcom,saw-reg:
-+    description: Reference to syscon node defining the SAW registers
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,pm8941-regulators
-+    then:
-+      properties:
-+        interrupts:
-+          items:
-+            - description: Over-current protection interrupt for 5V S1
-+            - description: Over-current protection interrupt for 5V S2
-+        interrupt-names:
-+          items:
-+            - const: ocp-5vs1
-+            - const: ocp-5vs2
-+
-+patternProperties:
-+  ".*-supply$":
-+    description: Input supply phandle(s) for this node
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+
-+  "^((s|l|lvs|5vs)[0-9]*)$":
-+    description: List of regulators and its properties
-+    $ref: regulator.yaml#
-+
-+    properties:
-+      qcom,ocp-max-retries:
-+        description:
-+          Maximum number of times to try toggling a voltage switch off and
-+          back on as a result of consecutive over current events
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+
-+      qcom,ocp-retry-delay:
-+        description:
-+          Time to delay in milliseconds between each voltage switch toggle
-+          after an over current event takes place
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+
-+      qcom,pin-ctrl-enable:
-+        description:
-+          Bit mask specifying which hardware pins should be used to enable the
-+          regulator, if any.
-+          Supported bits are
-+          0 = ignore all hardware enable signals
-+          BIT(0) = follow HW0_EN signal
-+          BIT(1) = follow HW1_EN signal
-+          BIT(2) = follow HW2_EN signal
-+          BIT(3) = follow HW3_EN signal
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+        minimum: 0
-+        maximum: 15
-+
-+      qcom,pin-ctrl-hpm:
-+        description:
-+          Bit mask specifying which hardware pins should be used to force the
-+          regulator into high power mode, if any.
-+          Supported bits are
-+          0 = ignore all hardware enable signals
-+          BIT(0) = follow HW0_EN signal
-+          BIT(1) = follow HW1_EN signal
-+          BIT(2) = follow HW2_EN signal
-+          BIT(3) = follow HW3_EN signal
-+          BIT(4) = follow PMIC awake state
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+        minimum: 0
-+        maximum: 31
-+
-+      qcom,vs-soft-start-strength:
-+        description:
-+          This property sets the soft start strength for voltage switch type
-+          regulators.
-+          Supported values are
-+          0 = 0.05 uA
-+          1 = 0.25 uA
-+          2 = 0.55 uA
-+          3 = 0.75 uA
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+        minimum: 0
-+        maximum: 3
-+
-+      qcom,saw-slave:
-+        description: SAW controlled gang slave. Will not be configured.
-+        type: boolean
-+
-+      qcom,saw-leader:
-+        description:
-+          SAW controlled gang leader. Will be configured as SAW regulator.
-+        type: boolean
-+
-+      unevaluatedProperties: false
-+
-+unevaluatedProperties: false
-+
-+required:
-+  - compatible
-+
-+examples:
-+  - |
-+    regulators {
-+      compatible = "qcom,pm8941-regulators";
-+      vdd_l1_l3-supply = <&s1>;
-+
-+      s1: s1 {
-+        regulator-min-microvolt = <1300000>;
-+        regulator-max-microvolt = <1400000>;
-+      };
-+
-+      l1: l1 {
-+        regulator-min-microvolt = <1225000>;
-+        regulator-max-microvolt = <1300000>;
-+      };
-+    };
-+
-+  - |
-+    saw3: syscon@9a10000 {
-+      compatible = "syscon";
-+      reg = <0x9a10000 0x1000>;
-+    };
-+
-+    regulators {
-+      compatible = "qcom,pm8994-regulators";
-+      qcom,saw-reg = <&saw3>;
-+
-+      s8 {
-+        qcom,saw-slave;
-+      };
-+
-+      s9 {
-+        qcom,saw-slave;
-+      };
-+
-+      s10 {
-+        qcom,saw-slave;
-+      };
-+
-+      pm8994_s11_saw: s11 {
-+        qcom,saw-leader;
-+        regulator-always-on;
-+        regulator-min-microvolt = <900000>;
-+        regulator-max-microvolt = <1140000>;
-+      };
-+    };
-+...
+@@ -23,6 +23,7 @@ properties:
+       - qcom,pm8950-regulators
+       - qcom,pm8994-regulators
+       - qcom,pmi8994-regulators
++      - qcom,pmp8074-regulators
+       - qcom,pms405-regulators
+ 
+   qcom,saw-reg:
 -- 
 2.36.1
 
