@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B52C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 10:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C69C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 10:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236411AbiEOKcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 06:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
+        id S236395AbiEOKcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 06:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236307AbiEOKbL (ORCPT
+        with ESMTP id S236311AbiEOKbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 06:31:11 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB9CAE79
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 03:31:10 -0700 (PDT)
+        Sun, 15 May 2022 06:31:13 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C878BB4AF
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 03:31:11 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L1JZN5Dpdz4xXS;
-        Sun, 15 May 2022 20:31:08 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L1JZQ3Pczz4xZ4;
+        Sun, 15 May 2022 20:31:10 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
 To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Paul Mackerras <paulus@samba.org>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>
 Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-In-Reply-To: <3c88286b55413730d7784133993a46ef4a3607ce.1646767214.git.christophe.leroy@csgroup.eu>
-References: <3c88286b55413730d7784133993a46ef4a3607ce.1646767214.git.christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH v1 1/6] powerpc/64: Move pci_device_from_OF_node() out of asm/pci-bridge.h
-Message-Id: <165261052726.1047019.3527577954247343677.b4-ty@ellerman.id.au>
-Date:   Sun, 15 May 2022 20:28:47 +1000
+In-Reply-To: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649226186.git.christophe.leroy@csgroup.eu>
+References: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649226186.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH v2 1/5] powerpc/8xx: Move CPM interrupt controller into a dedicated file
+Message-Id: <165261054465.1047019.17725531961068292233.b4-ty@ellerman.id.au>
+Date:   Sun, 15 May 2022 20:29:04 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -39,30 +39,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Mar 2022 20:20:20 +0100, Christophe Leroy wrote:
-> Move pci_device_from_OF_node() in pci64.c because it needs definition
-> of struct device_node and is not worth inlining.
+On Wed, 6 Apr 2022 08:23:17 +0200, Christophe Leroy wrote:
+> CPM interrupt controller is quite standalone. Move it into a
+> dedicated file. It will help for next step which will change
+> it to a platform driver.
 > 
-> ppc32.c already has it in pci32.c.
-> 
-> That way pci-bridge.h doesn't need linux/of.h (Brought by asm/prom.h
-> via asm/pci.h)
+> This is pure code move, checkpatch report is ignored at this point,
+> except one parenthesis alignment which would remain at the end of
+> the series. All other points fly away with following patches.
 > 
 > [...]
 
 Applied to powerpc/next.
 
-[1/6] powerpc/64: Move pci_device_from_OF_node() out of asm/pci-bridge.h
-      https://git.kernel.org/powerpc/c/0aa297e73bba35bedadbd2d452c62d643dfd4a32
-[2/6] powerpc: Don't include asm/prom.h in asm/parport.h
-      https://git.kernel.org/powerpc/c/07071346bb76f4fbc2c1ca8894ec3d3ad2f22577
-[3/6] powerpc: Include asm/reg.h in asm/svm.h
-      https://git.kernel.org/powerpc/c/eb4713c40a619046af99586743d48b9b4435d371
-[4/6] powerpc: Add missing declaration in asm/drmem.h
-      https://git.kernel.org/powerpc/c/669df99c957561dddf580ec269fb4255c41dabc1
-[5/6] powerpc: Remove asm/prom.h from all files that don't need it
-      https://git.kernel.org/powerpc/c/86c38fec69a461846d84f250f281e8cfbe54b25a
-[6/6] powerpc: Add missing headers
-      https://git.kernel.org/powerpc/c/e6f6390ab7b9d649c13de2c8a591bce61a10ec3b
+[1/5] powerpc/8xx: Move CPM interrupt controller into a dedicated file
+      https://git.kernel.org/powerpc/c/acf9e575d889eb8806be2c8451e7ad12bf444b50
+[2/5] powerpc/8xx: Convert CPM1 error interrupt handler to platform driver
+      https://git.kernel.org/powerpc/c/22add2a20e968291251d46d1b833b651b6aba5d7
+[3/5] powerpc/8xx: Convert CPM1 interrupt controller to platform_device
+      https://git.kernel.org/powerpc/c/14d893fc6846892ae68f8b259594d9cdae99e515
+[4/5] powerpc/8xx: Remove mpc8xx_pics_init()
+      https://git.kernel.org/powerpc/c/e3ba31b78074bee155662edccd9ca00324087e04
+[5/5] powerpc/8xx: Use kmalloced data structure instead of global static
+      https://git.kernel.org/powerpc/c/5ad1aa007da5f1907673a7cbfdf6e355835ef428
 
 cheers
