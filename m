@@ -2,270 +2,1330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0837DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 14:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 14:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237156AbiEOO0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 10:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
+        id S237368AbiEOO1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 10:27:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237184AbiEOO0Z (ORCPT
+        with ESMTP id S237157AbiEOO1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 10:26:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C96A29819
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 07:26:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 15 May 2022 10:27:38 -0400
+Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F375C2AC40;
+        Sun, 15 May 2022 07:27:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
+        t=1652624851; bh=QNIeBvpfwUEHJ6lm4nU4QSOx+ri7nzjGWg7DrswsrRo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=fpoWXLiVpjN5wM+qYwBPKhxWAtTHUHj25Fh0UmOF+EhR+h/eBx/S7emlGy5IbMQ8e
+         mF4Sc+f+fC6ffEZnNds0yLCQ01Tx5M+aKO58F/TnE4HiDjJolDKN6MiDFU6sjNXcxZ
+         1LD3GRgCdbabOKlv9IotPzw+GfJk8PGrX11JZz9Y=
+Received: from [192.168.9.172] (unknown [101.88.28.48])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D268860DBB
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 14:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08214C385B8;
-        Sun, 15 May 2022 14:26:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652624783;
-        bh=SGNq/0CIjjXJLoruFRX372xgbkcA0eccmxedWyD7NGA=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=MWlbK74dr032jPmkHdl4YVN0qyGcnFLn+odt7kKOj0vAbXcfyM3HI3GwU/+j36MJr
-         hp6/Jon7DpbMNQvzQajjfXNeytiMJ0eeRDMoS40maIClp6cCVG8BXbzdTmh//9xEgp
-         APRYpQKI+r2H1E7cKqE6k4FzC+YFFpADDPFpxOoaBt2kH1+eu0G857J5YlhfDqhvKR
-         2zp1gFjgRJa5kKyElCOFvID0Jb40ho3rH3G2AXnZbrzAv/XsduCyXrzV/h352aH4YL
-         YY7RS7FlQ6TJ+2Ln4FDWv++u6fRVvMTJ3aBTA16jHK5mrQCWL00eybEBM+IknKNqbk
-         pfyrs4amFxuDw==
-Message-ID: <c4a1b40f-469c-8e27-5fef-cd0d3ccd0089@kernel.org>
-Date:   Sun, 15 May 2022 22:26:09 +0800
+        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 913C4600B5;
+        Sun, 15 May 2022 22:27:30 +0800 (CST)
+Message-ID: <7487ab89-4e99-bb39-e7e2-91dd0ba549f3@xen0n.name>
+Date:   Sun, 15 May 2022 22:27:29 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [f2fs-dev] [PATCH 4/5 v2] f2fs: do not stop GC when requiring a
- free section
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0a1
+Subject: Re: [PATCH V10 21/22] LoongArch: Add Non-Uniform Memory Access (NUMA)
+ support
 Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-References: <20220506232032.1264078-1-jaegeuk@kernel.org>
- <20220506232032.1264078-4-jaegeuk@kernel.org> <Yn1zC6MUZOEbSlWK@google.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <Yn1zC6MUZOEbSlWK@google.com>
+To:     Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+References: <20220514080402.2650181-1-chenhuacai@loongson.cn>
+ <20220514080402.2650181-22-chenhuacai@loongson.cn>
+From:   WANG Xuerui <kernel@xen0n.name>
+In-Reply-To: <20220514080402.2650181-22-chenhuacai@loongson.cn>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/13 4:50, Jaegeuk Kim wrote:
-> The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
-> chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
-> segment as a victim all the time, resulting in checkpoint=disable failure,
-> for example. Let's pick another one, if we fail to collect it.
-> 
-> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+
+On 5/14/22 16:04, Huacai Chen wrote:
+> Add Non-Uniform Memory Access (NUMA) support for LoongArch. LoongArch
+> has 48-bit physical address, but the HyperTransport I/O bus only support
+> 40-bit address, so we need a custom phys_to_dma() and dma_to_phys() to
+> extract the 4-bit node id (bit 44~47) from Loongson-3's 48-bit physical
+> address space and embed it into 40-bit. In the 40-bit dma address, node
+> id offset can be read from the LS7A_DMA_CFG register.
+>
+> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
 > ---
-> 
->   Change log from v1:
->    - refactor the code path to avoid ambiguous condition like BG_GC/sec_freed
-> 
->   fs/f2fs/f2fs.h              |  1 +
->   fs/f2fs/file.c              | 12 ++++++++----
->   fs/f2fs/gc.c                | 14 +++++++++-----
->   fs/f2fs/segment.c           |  3 ++-
->   fs/f2fs/super.c             |  3 ++-
->   include/trace/events/f2fs.h | 11 ++++++++---
->   6 files changed, 30 insertions(+), 14 deletions(-)
-> 
-> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-> index 9920b2d6af8f..492af5b96de1 100644
-> --- a/fs/f2fs/f2fs.h
-> +++ b/fs/f2fs/f2fs.h
-> @@ -1271,6 +1271,7 @@ struct f2fs_gc_control {
->   	bool no_bg_gc;			/* check the space and stop bg_gc */
->   	bool should_migrate_blocks;	/* should migrate blocks */
->   	bool err_gc_skipped;		/* return EAGAIN if GC skipped */
-> +	unsigned int nr_free_secs;	/* # of free sections to do GC */
->   };
+>   arch/loongarch/Kconfig                  |  22 ++
+>   arch/loongarch/include/asm/bootinfo.h   |   2 +
+>   arch/loongarch/include/asm/dma-direct.h |  11 +
+>   arch/loongarch/include/asm/mmzone.h     |  18 +
+>   arch/loongarch/include/asm/numa.h       |  69 ++++
+>   arch/loongarch/include/asm/pgtable.h    |  12 +
+>   arch/loongarch/include/asm/topology.h   |  21 ++
+>   arch/loongarch/kernel/Makefile          |   2 +
+>   arch/loongarch/kernel/acpi.c            |  95 +++++
+>   arch/loongarch/kernel/dma.c             |  40 ++
+>   arch/loongarch/kernel/module.c          |   1 +
+>   arch/loongarch/kernel/numa.c            | 466 ++++++++++++++++++++++++
+>   arch/loongarch/kernel/setup.c           |   5 +-
+>   arch/loongarch/kernel/smp.c             |  52 ++-
+>   arch/loongarch/kernel/traps.c           |   4 +-
+>   arch/loongarch/mm/init.c                |  13 +
+>   arch/loongarch/mm/tlb.c                 |  37 +-
+>   arch/loongarch/pci/acpi.c               |   3 +
+>   18 files changed, 845 insertions(+), 28 deletions(-)
+>   create mode 100644 arch/loongarch/include/asm/dma-direct.h
+>   create mode 100644 arch/loongarch/include/asm/mmzone.h
+>   create mode 100644 arch/loongarch/include/asm/numa.h
+>   create mode 100644 arch/loongarch/kernel/dma.c
+>   create mode 100644 arch/loongarch/kernel/numa.c
+>
+> diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
+> index f1053d77f06e..a52c706d67f2 100644
+> --- a/arch/loongarch/Kconfig
+> +++ b/arch/loongarch/Kconfig
+> @@ -8,6 +8,7 @@ config LOONGARCH
+>   	select ARCH_ENABLE_MEMORY_HOTPLUG
+>   	select ARCH_ENABLE_MEMORY_HOTREMOVE
+>   	select ARCH_HAS_ACPI_TABLE_UPGRADE	if ACPI
+> +	select ARCH_HAS_PHYS_TO_DMA
+>   	select ARCH_HAS_PTE_SPECIAL
+>   	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
+>   	select ARCH_INLINE_READ_LOCK if !PREEMPTION
+> @@ -42,6 +43,7 @@ config LOONGARCH
+>   	select ARCH_SUPPORTS_ACPI
+>   	select ARCH_SUPPORTS_ATOMIC_RMW
+>   	select ARCH_SUPPORTS_HUGETLBFS
+> +	select ARCH_SUPPORTS_NUMA_BALANCING
+>   	select ARCH_USE_BUILTIN_BSWAP
+>   	select ARCH_USE_CMPXCHG_LOCKREF
+>   	select ARCH_USE_QUEUED_RWLOCKS
+> @@ -94,12 +96,15 @@ config LOONGARCH
+>   	select HAVE_PERF_EVENTS
+>   	select HAVE_REGS_AND_STACK_ACCESS_API
+>   	select HAVE_RSEQ
+> +	select HAVE_SETUP_PER_CPU_AREA if NUMA
+>   	select HAVE_SYSCALL_TRACEPOINTS
+>   	select HAVE_TIF_NOHZ
+>   	select HAVE_VIRT_CPU_ACCOUNTING_GEN if !SMP
+>   	select IRQ_FORCED_THREADING
+>   	select IRQ_LOONGARCH_CPU
+>   	select MODULES_USE_ELF_RELA if MODULES
+> +	select NEED_PER_CPU_EMBED_FIRST_CHUNK
+> +	select NEED_PER_CPU_PAGE_FIRST_CHUNK
+>   	select OF
+>   	select OF_EARLY_FLATTREE
+>   	select PCI
+> @@ -112,6 +117,7 @@ config LOONGARCH
+>   	select SYSCTL_EXCEPTION_TRACE
+>   	select SWIOTLB
+>   	select TRACE_IRQFLAGS_SUPPORT
+> +	select USE_PERCPU_NUMA_NODE_ID
+>   	select ZONE_DMA32
 >   
->   /* For s_flag in struct f2fs_sb_info */
-> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-> index d0547bef0851..216081ea8c81 100644
-> --- a/fs/f2fs/file.c
-> +++ b/fs/f2fs/file.c
-> @@ -1650,7 +1650,8 @@ static int expand_inode_data(struct inode *inode, loff_t offset,
->   	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
->   			.init_gc_type = FG_GC,
->   			.should_migrate_blocks = false,
-> -			.err_gc_skipped = true };
-> +			.err_gc_skipped = true,
-> +			.nr_free_secs = 0 };
->   	pgoff_t pg_start, pg_end;
->   	loff_t new_size = i_size_read(inode);
->   	loff_t off_end;
-> @@ -2350,7 +2351,8 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
->   	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
->   	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
->   			.no_bg_gc = false,
-> -			.should_migrate_blocks = false };
-> +			.should_migrate_blocks = false,
-> +			.nr_free_secs = 0 };
->   	__u32 sync;
->   	int ret;
+>   config 32BIT
+> @@ -354,6 +360,21 @@ config NR_CPUS
+>   	  This allows you to specify the maximum number of CPUs which this
+>   	  kernel will support.
 >   
-> @@ -2391,7 +2393,8 @@ static int __f2fs_ioc_gc_range(struct file *filp, struct f2fs_gc_range *range)
->   			.init_gc_type = range->sync ? FG_GC : BG_GC,
->   			.no_bg_gc = false,
->   			.should_migrate_blocks = false,
-> -			.err_gc_skipped = range->sync };
-> +			.err_gc_skipped = range->sync,
-> +			.nr_free_secs = 0 };
->   	u64 end;
->   	int ret;
->   
-> @@ -2837,7 +2840,8 @@ static int f2fs_ioc_flush_device(struct file *filp, unsigned long arg)
->   	struct f2fs_gc_control gc_control = {
->   			.init_gc_type = FG_GC,
->   			.should_migrate_blocks = true,
-> -			.err_gc_skipped = true };
-> +			.err_gc_skipped = true,
-> +			.nr_free_secs = 0 };
->   	int ret;
->   
->   	if (!capable(CAP_SYS_ADMIN))
-> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-> index e275b72bc65f..10b24b0f13a5 100644
-> --- a/fs/f2fs/gc.c
-> +++ b/fs/f2fs/gc.c
-> @@ -147,6 +147,7 @@ static int gc_thread_func(void *data)
->   
->   		gc_control.init_gc_type = sync_mode ? FG_GC : BG_GC;
->   		gc_control.no_bg_gc = foreground;
-> +		gc_control.nr_free_secs = foreground ? 1 : 0;
->   
->   		/* if return value is not zero, no victim was selected */
->   		if (f2fs_gc(sbi, &gc_control))
-> @@ -1761,6 +1762,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
->   	unsigned int skipped_round = 0, round = 0;
->   
->   	trace_f2fs_gc_begin(sbi->sb, gc_type, gc_control->no_bg_gc,
-> +				gc_control->nr_free_secs,
->   				get_pages(sbi, F2FS_DIRTY_NODES),
->   				get_pages(sbi, F2FS_DIRTY_DENTS),
->   				get_pages(sbi, F2FS_DIRTY_IMETA),
-> @@ -1823,12 +1825,13 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
->   	if (gc_type == FG_GC)
->   		sbi->cur_victim_sec = NULL_SEGNO;
->   
-> -	if (gc_control->init_gc_type == FG_GC)
-> -		goto stop;
-> -
-> -	if (!has_not_enough_free_secs(sbi,
-> -			(gc_type == FG_GC) ? sec_freed : 0, 0))
-> +	if (gc_control->init_gc_type == FG_GC ||
-> +	    !has_not_enough_free_secs(sbi,
-> +				(gc_type == FG_GC) ? sec_freed : 0, 0)) {
+> +config NUMA
+> +	bool "NUMA Support"
+> +	select ACPI_NUMA if ACPI
+> +	help
+> +	  Say Y to compile the kernel to support NUMA (Non-Uniform Memory
+> +	  Access).  This option improves performance on systems with more
+> +	  than two nodes; on two node systems it is generally better to
+> +	  leave it disabled; on single node systems disable this option
+> +	  disabled.
 
-In all gc_control->init_gc_type = BG_GC cases, gc_control->no_bg_gc is true,
-if gc_type = BG_GC, then it should break out due to below condition.
+The paragraph seems broken.
 
-	/* f2fs_balance_fs doesn't need to do BG_GC in critical path. */
-	if (gc_type == BG_GC && gc_control->no_bg_gc) {
-		ret = -EINVAL;
-		goto stop;
-	}
+I've made an improved version:
 
-Otherwise gc_type should always be FG_GC in
-!has_not_enough_free_secs(sbi, (gc_type == FG_GC) ? sec_freed : 0, 0), right?
+Say Y to compile the kernel with NUMA (Non-Uniform Memory Access)
+support.  This option improves performance on systems with more
+than two nodes; on two node systems it is generally better to
+leave it disabled; disable this option on single node systems.
 
-Thanks,
-
-> +		if (gc_mode == FG_GC && sec_freed < gc_control->nr_free_secs)
-> +			goto go_gc_more;
->   		goto stop;
+> +
+> +config NODES_SHIFT
+> +	int
+> +	default "6"
+> +	depends on NUMA
+> +
+>   config FORCE_MAX_ZONEORDER
+>   	int "Maximum zone order"
+>   	range 14 64 if PAGE_SIZE_64KB
+> @@ -400,6 +421,7 @@ config ARCH_SELECT_MEMORY_MODEL
+>   
+>   config ARCH_FLATMEM_ENABLE
+>   	def_bool y
+> +	depends on !NUMA
+>   
+>   config ARCH_SPARSEMEM_ENABLE
+>   	def_bool y
+> diff --git a/arch/loongarch/include/asm/bootinfo.h b/arch/loongarch/include/asm/bootinfo.h
+> index 0076a9e1a817..9c376fa633d3 100644
+> --- a/arch/loongarch/include/asm/bootinfo.h
+> +++ b/arch/loongarch/include/asm/bootinfo.h
+> @@ -13,6 +13,8 @@ const char *get_system_type(void);
+>   extern void init_environ(void);
+>   extern void memblock_init(void);
+>   extern void platform_init(void);
+> +extern void plat_swiotlb_setup(void);
+> +extern int __init init_numa_memory(void);
+>   
+>   struct loongson_board_info {
+>   	int bios_size;
+> diff --git a/arch/loongarch/include/asm/dma-direct.h b/arch/loongarch/include/asm/dma-direct.h
+> new file mode 100644
+> index 000000000000..75ccd808a2af
+> --- /dev/null
+> +++ b/arch/loongarch/include/asm/dma-direct.h
+> @@ -0,0 +1,11 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +#ifndef _LOONGARCH_DMA_DIRECT_H
+> +#define _LOONGARCH_DMA_DIRECT_H
+> +
+> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr);
+> +phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr);
+> +
+> +#endif /* _LOONGARCH_DMA_DIRECT_H */
+> diff --git a/arch/loongarch/include/asm/mmzone.h b/arch/loongarch/include/asm/mmzone.h
+> new file mode 100644
+> index 000000000000..fe67d0b4b33d
+> --- /dev/null
+> +++ b/arch/loongarch/include/asm/mmzone.h
+> @@ -0,0 +1,18 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Author: Huacai Chen (chenhuacai@loongson.cn)
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +#ifndef _ASM_MMZONE_H_
+> +#define _ASM_MMZONE_H_
+> +
+> +#include <asm/page.h>
+> +#include <asm/numa.h>
+> +
+> +extern struct pglist_data *node_data[];
+> +
+> +#define NODE_DATA(nid)	(node_data[(nid)])
+> +
+> +extern void setup_zero_pages(void);
+> +
+> +#endif /* _ASM_MMZONE_H_ */
+> diff --git a/arch/loongarch/include/asm/numa.h b/arch/loongarch/include/asm/numa.h
+> new file mode 100644
+> index 000000000000..8f9c81af7930
+> --- /dev/null
+> +++ b/arch/loongarch/include/asm/numa.h
+> @@ -0,0 +1,69 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * LoongArch specific ACPICA environments and implementation
+> + *
+> + * Author: Jianmin Lv <lvjianmin@loongson.cn>
+> + *         Huacai Chen <chenhuacai@loongson.cn>
+> + *
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +
+> +#ifndef _ASM_LOONGARCH_NUMA_H
+> +#define _ASM_LOONGARCH_NUMA_H
+> +
+> +#include <linux/nodemask.h>
+> +
+> +#define NODE_ADDRSPACE_SHIFT 44
+> +
+> +#define pa_to_nid(addr)		(((addr) & 0xf00000000000) >> NODE_ADDRSPACE_SHIFT)
+> +#define nid_to_addrbase(nid)	(_ULCAST_(nid) << NODE_ADDRSPACE_SHIFT)
+> +
+> +#ifdef CONFIG_NUMA
+> +
+> +extern int numa_off;
+> +extern s16 __cpuid_to_node[CONFIG_NR_CPUS];
+> +extern nodemask_t numa_nodes_parsed __initdata;
+> +
+> +struct numa_memblk {
+> +	u64			start;
+> +	u64			end;
+> +	int			nid;
+> +};
+> +
+> +#define NR_NODE_MEMBLKS		(MAX_NUMNODES*2)
+> +struct numa_meminfo {
+> +	int			nr_blks;
+> +	struct numa_memblk	blk[NR_NODE_MEMBLKS];
+> +};
+> +
+> +extern int __init numa_add_memblk(int nodeid, u64 start, u64 end);
+> +
+> +extern void __init early_numa_add_cpu(int cpuid, s16 node);
+> +extern void numa_add_cpu(unsigned int cpu);
+> +extern void numa_remove_cpu(unsigned int cpu);
+> +
+> +static inline void numa_clear_node(int cpu)
+> +{
+> +}
+> +
+> +static inline void set_cpuid_to_node(int cpuid, s16 node)
+> +{
+> +	__cpuid_to_node[cpuid] = node;
+> +}
+> +
+> +extern int early_cpu_to_node(int cpu);
+> +
+> +#else
+> +
+> +static inline void early_numa_add_cpu(int cpuid, s16 node)	{ }
+> +static inline void numa_add_cpu(unsigned int cpu)		{ }
+> +static inline void numa_remove_cpu(unsigned int cpu)		{ }
+> +
+> +static inline int early_cpu_to_node(int cpu)
+> +{
+> +	return 0;
+> +}
+> +
+> +#endif	/* CONFIG_NUMA */
+> +
+> +#endif	/* _ASM_LOONGARCH_NUMA_H */
+> diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
+> index 5e33987d0a13..5dc84d8f18d6 100644
+> --- a/arch/loongarch/include/asm/pgtable.h
+> +++ b/arch/loongarch/include/asm/pgtable.h
+> @@ -541,6 +541,18 @@ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+>   
+>   #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+>   
+> +#ifdef CONFIG_NUMA_BALANCING
+> +static inline long pte_protnone(pte_t pte)
+> +{
+> +	return (pte_val(pte) & _PAGE_PROTNONE);
+> +}
+> +
+> +static inline long pmd_protnone(pmd_t pmd)
+> +{
+> +	return (pmd_val(pmd) & _PAGE_PROTNONE);
+> +}
+> +#endif /* CONFIG_NUMA_BALANCING */
+> +
+>   /*
+>    * We provide our own get_unmapped area to cope with the virtual aliasing
+>    * constraints placed on us by the cache architecture.
+> diff --git a/arch/loongarch/include/asm/topology.h b/arch/loongarch/include/asm/topology.h
+> index da135841e5b1..66128dec0bf6 100644
+> --- a/arch/loongarch/include/asm/topology.h
+> +++ b/arch/loongarch/include/asm/topology.h
+> @@ -7,6 +7,27 @@
+>   
+>   #include <linux/smp.h>
+>   
+> +#ifdef CONFIG_NUMA
+> +
+> +extern cpumask_t cpus_on_node[];
+> +
+> +#define cpumask_of_node(node)  (&cpus_on_node[node])
+> +
+> +struct pci_bus;
+> +extern int pcibus_to_node(struct pci_bus *);
+> +
+> +#define cpumask_of_pcibus(bus)	(cpu_online_mask)
+> +
+> +extern unsigned char node_distances[MAX_NUMNODES][MAX_NUMNODES];
+> +
+> +void numa_set_distance(int from, int to, int distance);
+> +
+> +#define node_distance(from, to)	(node_distances[(from)][(to)])
+> +
+> +#else
+> +#define pcibus_to_node(bus)	0
+> +#endif
+> +
+>   #ifdef CONFIG_SMP
+>   #define topology_physical_package_id(cpu)	(cpu_data[cpu].package)
+>   #define topology_core_id(cpu)			(cpu_data[cpu].core)
+> diff --git a/arch/loongarch/kernel/Makefile b/arch/loongarch/kernel/Makefile
+> index 08ddd8c90eae..5e76d681e314 100644
+> --- a/arch/loongarch/kernel/Makefile
+> +++ b/arch/loongarch/kernel/Makefile
+> @@ -21,4 +21,6 @@ obj-$(CONFIG_PROC_FS)		+= proc.o
+>   
+>   obj-$(CONFIG_SMP)		+= smp.o
+>   
+> +obj-$(CONFIG_NUMA)		+= numa.o
+> +
+>   CPPFLAGS_vmlinux.lds		:= $(KBUILD_CFLAGS)
+> diff --git a/arch/loongarch/kernel/acpi.c b/arch/loongarch/kernel/acpi.c
+> index 0c7f2d1077a1..df1af8847a72 100644
+> --- a/arch/loongarch/kernel/acpi.c
+> +++ b/arch/loongarch/kernel/acpi.c
+> @@ -14,6 +14,7 @@
+>   #include <linux/memblock.h>
+>   #include <linux/serial_core.h>
+>   #include <asm/io.h>
+> +#include <asm/numa.h>
+>   #include <asm/loongson.h>
+>   
+>   int acpi_disabled;
+> @@ -367,6 +368,79 @@ int __init acpi_boot_init(void)
+>   	return 0;
+>   }
+>   
+> +#ifdef CONFIG_ACPI_NUMA
+> +
+> +static __init int setup_node(int pxm)
+> +{
+> +	return acpi_map_pxm_to_node(pxm);
+> +}
+> +
+> +/*
+> + * Callback for SLIT parsing.  pxm_to_node() returns NUMA_NO_NODE for
+> + * I/O localities since SRAT does not list them.  I/O localities are
+> + * not supported at this point.
+> + */
+> +unsigned int numa_distance_cnt;
+> +
+> +static inline unsigned int get_numa_distances_cnt(struct acpi_table_slit *slit)
+> +{
+> +	return slit->locality_count;
+> +}
+> +
+> +void __init numa_set_distance(int from, int to, int distance)
+> +{
+> +	if ((u8)distance != distance || (from == to && distance != LOCAL_DISTANCE)) {
+> +		pr_warn_once("Warning: invalid distance parameter, from=%d to=%d distance=%d\n",
+> +				from, to, distance);
+> +		return;
 > +	}
+> +
+> +	node_distances[from][to] = distance;
+> +}
+> +
+> +/* Callback for Proximity Domain -> CPUID mapping */
+> +void __init
+> +acpi_numa_processor_affinity_init(struct acpi_srat_cpu_affinity *pa)
+> +{
+> +	int pxm, node;
+> +
+> +	if (srat_disabled())
+> +		return;
+> +	if (pa->header.length != sizeof(struct acpi_srat_cpu_affinity)) {
+> +		bad_srat();
+> +		return;
+> +	}
+> +	if ((pa->flags & ACPI_SRAT_CPU_ENABLED) == 0)
+> +		return;
+> +	pxm = pa->proximity_domain_lo;
+> +	if (acpi_srat_revision >= 2) {
+> +		pxm |= (pa->proximity_domain_hi[0] << 8);
+> +		pxm |= (pa->proximity_domain_hi[1] << 16);
+> +		pxm |= (pa->proximity_domain_hi[2] << 24);
+> +	}
+> +	node = setup_node(pxm);
+> +	if (node < 0) {
+> +		pr_err("SRAT: Too many proximity domains %x\n", pxm);
+> +		bad_srat();
+> +		return;
+> +	}
+> +
+> +	if (pa->apic_id >= CONFIG_NR_CPUS) {
+> +		pr_info("SRAT: PXM %u -> CPU 0x%02x -> Node %u skipped apicid that is too big\n",
+> +				pxm, pa->apic_id, node);
+> +		return;
+> +	}
+> +
+> +	early_numa_add_cpu(pa->apic_id, node);
+> +
+> +	set_cpuid_to_node(pa->apic_id, node);
+> +	node_set(node, numa_nodes_parsed);
+> +	pr_info("SRAT: PXM %u -> CPU 0x%02x -> Node %u\n", pxm, pa->apic_id, node);
+> +}
+> +
+> +void __init acpi_numa_arch_fixup(void) {}
+> +#endif
+> +
+>   void __init arch_reserve_mem_area(acpi_physical_address addr, size_t size)
+>   {
+>   	memblock_reserve(addr, size);
+> @@ -376,6 +450,22 @@ void __init arch_reserve_mem_area(acpi_physical_address addr, size_t size)
 >   
->   	/* FG_GC stops GC by skip_count */
->   	if (gc_type == FG_GC) {
-> @@ -1849,6 +1852,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
->   		if (ret)
->   			goto stop;
+>   #include <acpi/processor.h>
+>   
+> +static int __ref acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+> +{
+> +#ifdef CONFIG_ACPI_NUMA
+> +	int nid;
+> +
+> +	nid = acpi_get_node(handle);
+> +	if (nid != NUMA_NO_NODE) {
+> +		set_cpuid_to_node(physid, nid);
+> +		node_set(nid, numa_nodes_parsed);
+> +		set_cpu_numa_node(cpu, nid);
+> +		cpumask_set_cpu(cpu, cpumask_of_node(nid));
+> +	}
+> +#endif
+> +	return 0;
+> +}
+> +
+>   int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id, int *pcpu)
+>   {
+>   	int cpu;
+> @@ -386,6 +476,8 @@ int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id, int *pcpu
+>   		return cpu;
 >   	}
-> +go_gc_more:
->   	segno = NULL_SEGNO;
->   	goto gc_more;
 >   
-> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-> index 8b4f2b1d2cca..0a4180f64291 100644
-> --- a/fs/f2fs/segment.c
-> +++ b/fs/f2fs/segment.c
-> @@ -404,7 +404,8 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
->   				.init_gc_type = BG_GC,
->   				.no_bg_gc = true,
->   				.should_migrate_blocks = false,
-> -				.err_gc_skipped = false };
-> +				.err_gc_skipped = false,
-> +				.nr_free_secs = 1 };
->   			f2fs_down_write(&sbi->gc_lock);
->   			f2fs_gc(sbi, &gc_control);
+> +	acpi_map_cpu2node(handle, cpu, physid);
+> +
+>   	*pcpu = cpu;
+>   
+>   	return 0;
+> @@ -394,6 +486,9 @@ EXPORT_SYMBOL(acpi_map_cpu);
+>   
+>   int acpi_unmap_cpu(int cpu)
+>   {
+> +#ifdef CONFIG_ACPI_NUMA
+> +	set_cpuid_to_node(cpu_logical_map(cpu), NUMA_NO_NODE);
+> +#endif
+>   	set_cpu_present(cpu, false);
+>   	num_processors--;
+>   
+> diff --git a/arch/loongarch/kernel/dma.c b/arch/loongarch/kernel/dma.c
+> new file mode 100644
+> index 000000000000..659b8faccaee
+> --- /dev/null
+> +++ b/arch/loongarch/kernel/dma.c
+> @@ -0,0 +1,40 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +#include <linux/init.h>
+> +#include <linux/dma-direct.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/dma-map-ops.h>
+> +#include <linux/swiotlb.h>
+> +
+> +#include <asm/bootinfo.h>
+> +#include <asm/dma.h>
+> +#include <asm/loongson.h>
+> +
+> +/*
+> + * We extract 4bit node id (bit 44~47) from Loongson-3's
+> + * 48bit physical address space and embed it into 40bit.
+> + */
+> +
+> +static int node_id_offset;
+> +
+> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+> +{
+> +	long nid = (paddr >> 44) & 0xf;
+> +
+> +	return ((nid << 44) ^ paddr) | (nid << node_id_offset);
+> +}
+> +
+> +phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
+> +{
+> +	long nid = (daddr >> node_id_offset) & 0xf;
+> +
+> +	return ((nid << node_id_offset) ^ daddr) | (nid << 44);
+> +}
+> +
+> +void __init plat_swiotlb_setup(void)
+> +{
+> +	swiotlb_init(1);
+> +	node_id_offset = ((readl(LS7A_DMA_CFG) & LS7A_DMA_NODE_MASK) >> LS7A_DMA_NODE_SHF) + 36;
+> +}
+> diff --git a/arch/loongarch/kernel/module.c b/arch/loongarch/kernel/module.c
+> index f2d3bcd35a39..c89ed9473277 100644
+> --- a/arch/loongarch/kernel/module.c
+> +++ b/arch/loongarch/kernel/module.c
+> @@ -11,6 +11,7 @@
+>   #include <linux/moduleloader.h>
+>   #include <linux/elf.h>
+>   #include <linux/mm.h>
+> +#include <linux/numa.h>
+>   #include <linux/vmalloc.h>
+>   #include <linux/slab.h>
+>   #include <linux/fs.h>
+> diff --git a/arch/loongarch/kernel/numa.c b/arch/loongarch/kernel/numa.c
+> new file mode 100644
+> index 000000000000..a76f547a5aa3
+> --- /dev/null
+> +++ b/arch/loongarch/kernel/numa.c
+> @@ -0,0 +1,466 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Author:  Xiang Gao <gaoxiang@loongson.cn>
+> + *          Huacai Chen <chenhuacai@loongson.cn>
+> + *
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +#include <linux/init.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mm.h>
+> +#include <linux/mmzone.h>
+> +#include <linux/export.h>
+> +#include <linux/nodemask.h>
+> +#include <linux/swap.h>
+> +#include <linux/memblock.h>
+> +#include <linux/pfn.h>
+> +#include <linux/acpi.h>
+> +#include <linux/efi.h>
+> +#include <linux/irq.h>
+> +#include <linux/pci.h>
+> +#include <asm/bootinfo.h>
+> +#include <asm/loongson.h>
+> +#include <asm/numa.h>
+> +#include <asm/page.h>
+> +#include <asm/pgalloc.h>
+> +#include <asm/sections.h>
+> +#include <asm/time.h>
+> +
+> +int numa_off;
+> +struct pglist_data *node_data[MAX_NUMNODES];
+> +unsigned char node_distances[MAX_NUMNODES][MAX_NUMNODES];
+> +
+> +EXPORT_SYMBOL(node_data);
+> +EXPORT_SYMBOL(node_distances);
+> +
+> +static struct numa_meminfo numa_meminfo;
+> +cpumask_t cpus_on_node[MAX_NUMNODES];
+> +cpumask_t phys_cpus_on_node[MAX_NUMNODES];
+> +EXPORT_SYMBOL(cpus_on_node);
+> +
+> +/*
+> + * apicid, cpu, node mappings
+> + */
+> +s16 __cpuid_to_node[CONFIG_NR_CPUS] = {
+> +	[0 ... CONFIG_NR_CPUS - 1] = NUMA_NO_NODE
+> +};
+> +EXPORT_SYMBOL(__cpuid_to_node);
+> +
+> +nodemask_t numa_nodes_parsed __initdata;
+> +
+> +#ifdef CONFIG_HAVE_SETUP_PER_CPU_AREA
+> +unsigned long __per_cpu_offset[NR_CPUS] __read_mostly;
+> +EXPORT_SYMBOL(__per_cpu_offset);
+> +
+> +static int __init pcpu_cpu_to_node(int cpu)
+> +{
+> +	return early_cpu_to_node(cpu);
+> +}
+> +
+> +static int __init pcpu_cpu_distance(unsigned int from, unsigned int to)
+> +{
+> +	if (early_cpu_to_node(from) == early_cpu_to_node(to))
+> +		return LOCAL_DISTANCE;
+> +	else
+> +		return REMOTE_DISTANCE;
+> +}
+> +
+> +void __init pcpu_populate_pte(unsigned long addr)
+> +{
+> +	pgd_t *pgd = pgd_offset_k(addr);
+> +	p4d_t *p4d = p4d_offset(pgd, addr);
+> +	pud_t *pud;
+> +	pmd_t *pmd;
+> +
+> +	if (p4d_none(*p4d)) {
+> +		pud_t *new;
+> +
+> +		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+> +		pgd_populate(&init_mm, pgd, new);
+> +#ifndef __PAGETABLE_PUD_FOLDED
+> +		pud_init((unsigned long)new, (unsigned long)invalid_pmd_table);
+> +#endif
+> +	}
+> +
+> +	pud = pud_offset(p4d, addr);
+> +	if (pud_none(*pud)) {
+> +		pmd_t *new;
+> +
+> +		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+> +		pud_populate(&init_mm, pud, new);
+> +#ifndef __PAGETABLE_PMD_FOLDED
+> +		pmd_init((unsigned long)new, (unsigned long)invalid_pte_table);
+> +#endif
+> +	}
+> +
+> +	pmd = pmd_offset(pud, addr);
+> +	if (!pmd_present(*pmd)) {
+> +		pte_t *new;
+> +
+> +		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+> +		pmd_populate_kernel(&init_mm, pmd, new);
+> +	}
+> +}
+> +
+> +void __init setup_per_cpu_areas(void)
+> +{
+> +	unsigned long delta;
+> +	unsigned int cpu;
+> +	int rc = -EINVAL;
+> +
+> +	if (pcpu_chosen_fc == PCPU_FC_AUTO) {
+> +		if (nr_node_ids >= 8)
+> +			pcpu_chosen_fc = PCPU_FC_PAGE;
+> +		else
+> +			pcpu_chosen_fc = PCPU_FC_EMBED;
+> +	}
+> +
+> +	/*
+> +	 * Always reserve area for module percpu variables.  That's
+> +	 * what the legacy allocator did.
+> +	 */
+> +	if (pcpu_chosen_fc != PCPU_FC_PAGE) {
+> +		rc = pcpu_embed_first_chunk(PERCPU_MODULE_RESERVE,
+> +					    PERCPU_DYNAMIC_RESERVE, PMD_SIZE,
+> +					    pcpu_cpu_distance, pcpu_cpu_to_node);
+> +		if (rc < 0)
+> +			pr_warn("%s allocator failed (%d), falling back to page size\n",
+> +				pcpu_fc_names[pcpu_chosen_fc], rc);
+> +	}
+> +	if (rc < 0)
+> +		rc = pcpu_page_first_chunk(PERCPU_MODULE_RESERVE, pcpu_cpu_to_node);
+> +	if (rc < 0)
+> +		panic("cannot initialize percpu area (err=%d)", rc);
+> +
+> +	delta = (unsigned long)pcpu_base_addr - (unsigned long)__per_cpu_start;
+> +	for_each_possible_cpu(cpu)
+> +		__per_cpu_offset[cpu] = delta + pcpu_unit_offsets[cpu];
+> +}
+> +#endif
+> +
+> +/*
+> + * Get nodeid by logical cpu number.
+> + * __cpuid_to_node maps phyical cpu id to node, so we
+> + * should use cpu_logical_map(cpu) to index it.
+> + *
+> + * This routine is only used in early phase during
+> + * booting, after setup_per_cpu_areas calling and numa_node
+> + * initialization, cpu_to_node will be used instead.
+> + */
+> +int early_cpu_to_node(int cpu)
+> +{
+> +	int physid = cpu_logical_map(cpu);
+> +
+> +	if (physid < 0)
+> +		return NUMA_NO_NODE;
+> +
+> +	return __cpuid_to_node[physid];
+> +}
+> +
+> +void __init early_numa_add_cpu(int cpuid, s16 node)
+> +{
+> +	int cpu = __cpu_number_map[cpuid];
+> +
+> +	if (cpu < 0)
+> +		return;
+> +
+> +	cpumask_set_cpu(cpu, &cpus_on_node[node]);
+> +	cpumask_set_cpu(cpuid, &phys_cpus_on_node[node]);
+> +}
+> +
+> +void numa_add_cpu(unsigned int cpu)
+> +{
+> +	int nid = cpu_to_node(cpu);
+> +	cpumask_set_cpu(cpu, &cpus_on_node[nid]);
+> +}
+> +
+> +void numa_remove_cpu(unsigned int cpu)
+> +{
+> +	int nid = cpu_to_node(cpu);
+> +	cpumask_clear_cpu(cpu, &cpus_on_node[nid]);
+> +}
+> +
+> +static int __init numa_add_memblk_to(int nid, u64 start, u64 end,
+> +				     struct numa_meminfo *mi)
+> +{
+> +	/* ignore zero length blks */
+> +	if (start == end)
+> +		return 0;
+> +
+> +	/* whine about and ignore invalid blks */
+> +	if (start > end || nid < 0 || nid >= MAX_NUMNODES) {
+> +		pr_warn("NUMA: Warning: invalid memblk node %d [mem %#010Lx-%#010Lx]\n",
+> +			   nid, start, end - 1);
+> +		return 0;
+> +	}
+> +
+> +	if (mi->nr_blks >= NR_NODE_MEMBLKS) {
+> +		pr_err("NUMA: too many memblk ranges\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	mi->blk[mi->nr_blks].start = PFN_ALIGN(start);
+> +	mi->blk[mi->nr_blks].end = PFN_ALIGN(end - PAGE_SIZE + 1);
+> +	mi->blk[mi->nr_blks].nid = nid;
+> +	mi->nr_blks++;
+> +	return 0;
+> +}
+> +
+> +/**
+> + * numa_add_memblk - Add one numa_memblk to numa_meminfo
+> + * @nid: NUMA node ID of the new memblk
+> + * @start: Start address of the new memblk
+> + * @end: End address of the new memblk
+> + *
+> + * Add a new memblk to the default numa_meminfo.
+> + *
+> + * RETURNS:
+> + * 0 on success, -errno on failure.
+> + */
+> +int __init numa_add_memblk(int nid, u64 start, u64 end)
+> +{
+> +	return numa_add_memblk_to(nid, start, end, &numa_meminfo);
+> +}
+> +
+> +static void __init alloc_node_data(int nid)
+> +{
+> +	void *nd;
+> +	unsigned long nd_pa;
+> +	size_t nd_sz = roundup(sizeof(pg_data_t), PAGE_SIZE);
+> +
+> +	nd_pa = memblock_phys_alloc_try_nid(nd_sz, SMP_CACHE_BYTES, nid);
+> +	if (!nd_pa) {
+> +		pr_err("Cannot find %zu Byte for node_data (initial node: %d)\n", nd_sz, nid);
+> +		return;
+> +	}
+> +
+> +	nd = __va(nd_pa);
+> +
+> +	node_data[nid] = nd;
+> +	memset(nd, 0, sizeof(pg_data_t));
+> +}
+> +
+> +static void __init node_mem_init(unsigned int node)
+> +{
+> +	unsigned long start_pfn, end_pfn;
+> +	unsigned long node_addrspace_offset;
+> +
+> +	node_addrspace_offset = nid_to_addrbase(node);
+> +	pr_info("Node%d's addrspace_offset is 0x%lx\n",
+> +			node, node_addrspace_offset);
+> +
+> +	get_pfn_range_for_nid(node, &start_pfn, &end_pfn);
+> +	pr_info("Node%d: start_pfn=0x%lx, end_pfn=0x%lx\n",
+> +		node, start_pfn, end_pfn);
+> +
+> +	alloc_node_data(node);
+> +}
+> +
+> +#ifdef CONFIG_ACPI_NUMA
+> +
+> +/*
+> + * Sanity check to catch more bad NUMA configurations (they are amazingly
+> + * common).  Make sure the nodes cover all memory.
+> + */
+> +static bool __init numa_meminfo_cover_memory(const struct numa_meminfo *mi)
+> +{
+> +	int i;
+> +	u64 numaram, biosram;
+> +
+> +	numaram = 0;
+> +	for (i = 0; i < mi->nr_blks; i++) {
+> +		u64 s = mi->blk[i].start >> PAGE_SHIFT;
+> +		u64 e = mi->blk[i].end >> PAGE_SHIFT;
+> +
+> +		numaram += e - s;
+> +		numaram -= __absent_pages_in_range(mi->blk[i].nid, s, e);
+> +		if ((s64)numaram < 0)
+> +			numaram = 0;
+> +	}
+> +	max_pfn = max_low_pfn;
+> +	biosram = max_pfn - absent_pages_in_range(0, max_pfn);
+> +
+> +	BUG_ON((s64)(biosram - numaram) >= (1 << (20 - PAGE_SHIFT)));
+> +	return true;
+> +}
+> +
+> +static void __init add_node_intersection(u32 node, u64 start, u64 size, u32 type)
+> +{
+> +	static unsigned long num_physpages;
+> +
+> +	num_physpages += (size >> PAGE_SHIFT);
+> +	pr_info("Node%d: mem_type:%d, mem_start:0x%llx, mem_size:0x%llx Bytes\n",
+> +		node, type, start, size);
+> +	pr_info("       start_pfn:0x%llx, end_pfn:0x%llx, num_physpages:0x%lx\n",
+> +		start >> PAGE_SHIFT, (start + size) >> PAGE_SHIFT, num_physpages);
+> +	memblock_set_node(start, size, &memblock.memory, node);
+> +}
+> +
+> +/*
+> + * add_numamem_region
+> + *
+> + * Add a uasable memory region described by BIOS. The
+> + * routine gets each intersection between BIOS's region
+"firmware" instead of "BIOS"?
+> + * and node's region, and adds them into node's memblock
+> + * pool.
+> + *
+> + */
+> +static void __init add_numamem_region(u64 start, u64 end, u32 type)
+> +{
+> +	u32 i;
+> +	u64 ofs = start;
+> +
+> +	if (start >= end) {
+> +		pr_debug("Invalid region: %016llx-%016llx\n", start, end);
+> +		return;
+> +	}
+> +
+> +	for (i = 0; i < numa_meminfo.nr_blks; i++) {
+> +		struct numa_memblk *mb = &numa_meminfo.blk[i];
+> +
+> +		if (ofs > mb->end)
+> +			continue;
+> +
+> +		if (end > mb->end) {
+> +			add_node_intersection(mb->nid, ofs, mb->end - ofs, type);
+> +			ofs = mb->end;
+> +		} else {
+> +			add_node_intersection(mb->nid, ofs, end - ofs, type);
+> +			break;
+> +		}
+> +	}
+> +}
+> +
+> +static void __init init_node_memblock(void)
+> +{
+> +	u32 mem_type;
+> +	u64 mem_end, mem_start, mem_size;
+> +	efi_memory_desc_t *md;
+> +
+> +	/* Parse memory information and activate */
+> +	for_each_efi_memory_desc(md) {
+> +		mem_type = md->type;
+> +		mem_start = md->phys_addr;
+> +		mem_size = md->num_pages << EFI_PAGE_SHIFT;
+> +		mem_end = mem_start + mem_size;
+> +
+> +		switch (mem_type) {
+> +		case EFI_LOADER_CODE:
+> +		case EFI_LOADER_DATA:
+> +		case EFI_BOOT_SERVICES_CODE:
+> +		case EFI_BOOT_SERVICES_DATA:
+> +		case EFI_PERSISTENT_MEMORY:
+> +		case EFI_CONVENTIONAL_MEMORY:
+> +			add_numamem_region(mem_start, mem_end, mem_type);
+> +			break;
+> +		case EFI_PAL_CODE:
+> +		case EFI_UNUSABLE_MEMORY:
+> +		case EFI_ACPI_RECLAIM_MEMORY:
+> +			add_numamem_region(mem_start, mem_end, mem_type);
+> +			fallthrough;
+> +		case EFI_RESERVED_TYPE:
+> +		case EFI_RUNTIME_SERVICES_CODE:
+> +		case EFI_RUNTIME_SERVICES_DATA:
+> +		case EFI_MEMORY_MAPPED_IO:
+> +		case EFI_MEMORY_MAPPED_IO_PORT_SPACE:
+> +			pr_info("Resvd: mem_type:%d, mem_start:0x%llx, mem_size:0x%llx Bytes\n",
+> +					mem_type, mem_start, mem_size);
+> +			break;
+> +		}
+> +	}
+> +}
+> +
+> +static void __init numa_default_distance(void)
+> +{
+> +	int row, col;
+> +
+> +	for (row = 0; row < MAX_NUMNODES; row++)
+> +		for (col = 0; col < MAX_NUMNODES; col++) {
+> +			if (col == row)
+> +				node_distances[row][col] = LOCAL_DISTANCE;
+> +			else
+> +				/* We assume that one node per package here!
+> +				 *
+> +				 * A SLIT should be used for multiple nodes
+> +				 * per package to override default setting.
+> +				 */
+> +				node_distances[row][col] = REMOTE_DISTANCE;
+> +	}
+> +}
+> +
+> +int __init init_numa_memory(void)
+> +{
+> +	int i;
+> +	int ret;
+> +	int node;
+> +
+> +	for (i = 0; i < NR_CPUS; i++)
+> +		set_cpuid_to_node(i, NUMA_NO_NODE);
+> +
+> +	numa_default_distance();
+> +	nodes_clear(numa_nodes_parsed);
+> +	nodes_clear(node_possible_map);
+> +	nodes_clear(node_online_map);
+> +	memset(&numa_meminfo, 0, sizeof(numa_meminfo));
+> +
+> +	/* Parse SRAT and SLIT if provided by firmware. */
+> +	ret = acpi_numa_init();
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	node_possible_map = numa_nodes_parsed;
+> +	if (WARN_ON(nodes_empty(node_possible_map)))
+> +		return -EINVAL;
+> +
+> +	init_node_memblock();
+> +	if (numa_meminfo_cover_memory(&numa_meminfo) == false)
+> +		return -EINVAL;
+> +
+> +	for_each_node_mask(node, node_possible_map) {
+> +		node_mem_init(node);
+> +		node_set_online(node);
+> +	}
+> +	max_low_pfn = PHYS_PFN(memblock_end_of_DRAM());
+> +
+> +	setup_nr_node_ids();
+> +	loongson_sysconf.nr_nodes = nr_node_ids;
+> +	loongson_sysconf.cores_per_node = cpumask_weight(&phys_cpus_on_node[0]);
+> +
+> +	return 0;
+> +}
+> +
+> +EXPORT_SYMBOL(init_numa_memory);
+> +#endif
+> +
+> +void __init paging_init(void)
+> +{
+> +	unsigned int node;
+> +	unsigned long zones_size[MAX_NR_ZONES] = {0, };
+> +
+> +	for_each_online_node(node) {
+> +		unsigned long start_pfn, end_pfn;
+> +
+> +		get_pfn_range_for_nid(node, &start_pfn, &end_pfn);
+> +
+> +		if (end_pfn > max_low_pfn)
+> +			max_low_pfn = end_pfn;
+> +	}
+> +#ifdef CONFIG_ZONE_DMA32
+> +	zones_size[ZONE_DMA32] = MAX_DMA32_PFN;
+> +#endif
+> +	zones_size[ZONE_NORMAL] = max_low_pfn;
+> +	free_area_init(zones_size);
+> +}
+> +
+> +void __init mem_init(void)
+> +{
+> +	high_memory = (void *) __va(get_num_physpages() << PAGE_SHIFT);
+> +	memblock_free_all();
+> +	setup_zero_pages();	/* This comes from node 0 */
+> +}
+> +
+> +int pcibus_to_node(struct pci_bus *bus)
+> +{
+> +	return dev_to_node(&bus->dev);
+> +}
+> +EXPORT_SYMBOL(pcibus_to_node);
+> diff --git a/arch/loongarch/kernel/setup.c b/arch/loongarch/kernel/setup.c
+> index c314c22cdb22..b04691b80e6c 100644
+> --- a/arch/loongarch/kernel/setup.c
+> +++ b/arch/loongarch/kernel/setup.c
+> @@ -198,6 +198,9 @@ void __init platform_init(void)
+>   	acpi_boot_init();
+>   #endif
+>   
+> +#ifdef CONFIG_NUMA
+> +	init_numa_memory();
+> +#endif
+>   	dmi_setup();
+>   	smbios_parse();
+>   	pr_info("The BIOS Version: %s\n", b_info.bios_version);
+> @@ -236,7 +239,7 @@ static void __init arch_mem_init(char **cmdline_p)
+>   	sparse_init();
+>   	memblock_set_bottom_up(true);
+>   
+> -	swiotlb_init(1);
+> +	plat_swiotlb_setup();
+>   
+>   	dma_contiguous_reserve(PFN_PHYS(max_low_pfn));
+>   
+> diff --git a/arch/loongarch/kernel/smp.c b/arch/loongarch/kernel/smp.c
+> index 4211025c79d3..8d7ef638e021 100644
+> --- a/arch/loongarch/kernel/smp.c
+> +++ b/arch/loongarch/kernel/smp.c
+> @@ -25,6 +25,7 @@
+>   #include <asm/idle.h>
+>   #include <asm/loongson.h>
+>   #include <asm/mmu_context.h>
+> +#include <asm/numa.h>
+>   #include <asm/processor.h>
+>   #include <asm/setup.h>
+>   #include <asm/time.h>
+> @@ -222,6 +223,9 @@ void loongson3_init_secondary(void)
+>   
+>   	iocsr_writel(0xffffffff, LOONGARCH_IOCSR_IPI_EN);
+>   
+> +#ifdef CONFIG_NUMA
+> +	numa_add_cpu(cpu);
+> +#endif
+>   	per_cpu(cpu_state, cpu) = CPU_ONLINE;
+>   	cpu_data[cpu].core =
+>   		     cpu_logical_map(cpu) % loongson_sysconf.cores_per_package;
+> @@ -263,6 +267,9 @@ int loongson3_cpu_disable(void)
+>   	if (io_master(cpu))
+>   		return -EBUSY;
+>   
+> +#ifdef CONFIG_NUMA
+> +	numa_remove_cpu(cpu);
+> +#endif
+>   	set_cpu_online(cpu, false);
+>   	calculate_cpu_foreign_map();
+>   	local_irq_save(flags);
+> @@ -487,14 +494,36 @@ void calculate_cpu_foreign_map(void)
+>   /* Preload SMP state for boot cpu */
+>   void smp_prepare_boot_cpu(void)
+>   {
+> -	unsigned int cpu;
+> +	unsigned int cpu, node, rr_node;
+>   
+>   	set_cpu_possible(0, true);
+>   	set_cpu_online(0, true);
+>   	set_my_cpu_offset(per_cpu_offset(0));
+>   
+> -	for_each_possible_cpu(cpu)
+> -		set_cpu_numa_node(cpu, 0);
+> +	rr_node = first_node(node_online_map);
+> +	for_each_possible_cpu(cpu) {
+> +		node = early_cpu_to_node(cpu);
+> +
+> +		/*
+> +		 * The mapping between present cpus and nodes has been
+> +		 * built during MADT and SRAT parsing.
+> +		 *
+> +		 * If possible cpus = present cpus here, early_cpu_to_node
+> +		 * will return valid node.
+> +		 *
+> +		 * If possible cpus > present cpus here (e.g. some possible
+> +		 * cpus will be added by cpu-hotplug later), for possible but
+> +		 * not present cpus, early_cpu_to_node will return NUMA_NO_NODE,
+> +		 * and we just map them to online nodes in round-robin way.
+> +		 * Once hotplugged, new correct mapping will be built for them.
+> +		 */
+> +		if (node != NUMA_NO_NODE)
+> +			set_cpu_numa_node(cpu, node);
+> +		else {
+> +			set_cpu_numa_node(cpu, rr_node);
+> +			rr_node = next_node_in(rr_node, node_online_map);
+> +		}
+> +	}
+>   }
+>   
+>   /* called from main before smp_init() */
+> @@ -660,17 +689,10 @@ void flush_tlb_range(struct vm_area_struct *vma, unsigned long start, unsigned l
+>   		on_each_cpu_mask(mm_cpumask(mm), flush_tlb_range_ipi, &fd, 1);
+>   	} else {
+>   		unsigned int cpu;
+> -		int exec = vma->vm_flags & VM_EXEC;
+>   
+>   		for_each_online_cpu(cpu) {
+> -			/*
+> -			 * flush_cache_range() will only fully flush icache if
+> -			 * the VMA is executable, otherwise we must invalidate
+> -			 * ASID without it appearing to has_valid_asid() as if
+> -			 * mm has been completely unused by that CPU.
+> -			 */
+>   			if (cpu != smp_processor_id() && cpu_context(cpu, mm))
+> -				cpu_context(cpu, mm) = !exec;
+> +				cpu_context(cpu, mm) = 0;
 >   		}
-> diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-> index a28c27eed6d0..63daae67a9d9 100644
-> --- a/fs/f2fs/super.c
-> +++ b/fs/f2fs/super.c
-> @@ -2080,7 +2080,8 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
->   			.victim_segno = NULL_SEGNO,
->   			.init_gc_type = FG_GC,
->   			.should_migrate_blocks = false,
-> -			.err_gc_skipped = true };
-> +			.err_gc_skipped = true,
-> +			.nr_free_secs = 1 };
+>   		local_flush_tlb_range(vma, start, end);
+>   	}
+> @@ -715,14 +737,8 @@ void flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
+>   		unsigned int cpu;
 >   
->   		f2fs_down_write(&sbi->gc_lock);
->   		err = f2fs_gc(sbi, &gc_control);
-> diff --git a/include/trace/events/f2fs.h b/include/trace/events/f2fs.h
-> index 54ec9e543f09..16c67ede85b6 100644
-> --- a/include/trace/events/f2fs.h
-> +++ b/include/trace/events/f2fs.h
-> @@ -645,18 +645,21 @@ TRACE_EVENT(f2fs_background_gc,
->   TRACE_EVENT(f2fs_gc_begin,
+>   		for_each_online_cpu(cpu) {
+> -			/*
+> -			 * flush_cache_page() only does partial flushes, so
+> -			 * invalidate ASID without it appearing to
+> -			 * has_valid_asid() as if mm has been completely unused
+> -			 * by that CPU.
+> -			 */
+>   			if (cpu != smp_processor_id() && cpu_context(cpu, vma->vm_mm))
+> -				cpu_context(cpu, vma->vm_mm) = 1;
+> +				cpu_context(cpu, vma->vm_mm) = 0;
+>   		}
+>   		local_flush_tlb_page(vma, page);
+>   	}
+> diff --git a/arch/loongarch/kernel/traps.c b/arch/loongarch/kernel/traps.c
+> index 6fbe24b1dc50..30205af76912 100644
+> --- a/arch/loongarch/kernel/traps.c
+> +++ b/arch/loongarch/kernel/traps.c
+> @@ -660,7 +660,7 @@ asmlinkage void noinstr do_vint(struct pt_regs *regs, unsigned long sp)
+>   	irqentry_exit(regs, state);
+>   }
 >   
->   	TP_PROTO(struct super_block *sb, int gc_type, bool no_bg_gc,
-> +			unsigned int nr_free_secs,
->   			long long dirty_nodes, long long dirty_dents,
->   			long long dirty_imeta, unsigned int free_sec,
->   			unsigned int free_seg, int reserved_seg,
->   			unsigned int prefree_seg),
+> -extern void tlb_init(void);
+> +extern void tlb_init(int cpu);
+>   extern void cache_error_setup(void);
 >   
-> -	TP_ARGS(sb, gc_type, no_bg_gc, dirty_nodes, dirty_dents, dirty_imeta,
-> +	TP_ARGS(sb, gc_type, no_bg_gc, nr_free_secs, dirty_nodes,
-> +		dirty_dents, dirty_imeta,
->   		free_sec, free_seg, reserved_seg, prefree_seg),
+>   unsigned long eentry;
+> @@ -699,7 +699,7 @@ void per_cpu_trap_init(int cpu)
+>   		for (i = 0; i < 64; i++)
+>   			set_handler(i * VECSIZE, handle_reserved, VECSIZE);
 >   
->   	TP_STRUCT__entry(
->   		__field(dev_t,		dev)
->   		__field(int,		gc_type)
->   		__field(bool,		no_bg_gc)
-> +		__field(unsigned int,	nr_free_secs)
->   		__field(long long,	dirty_nodes)
->   		__field(long long,	dirty_dents)
->   		__field(long long,	dirty_imeta)
-> @@ -670,6 +673,7 @@ TRACE_EVENT(f2fs_gc_begin,
->   		__entry->dev		= sb->s_dev;
->   		__entry->gc_type	= gc_type;
->   		__entry->no_bg_gc	= no_bg_gc;
-> +		__entry->nr_free_secs	= nr_free_secs;
->   		__entry->dirty_nodes	= dirty_nodes;
->   		__entry->dirty_dents	= dirty_dents;
->   		__entry->dirty_imeta	= dirty_imeta;
-> @@ -679,12 +683,13 @@ TRACE_EVENT(f2fs_gc_begin,
->   		__entry->prefree_seg	= prefree_seg;
->   	),
+> -	tlb_init();
+> +	tlb_init(cpu);
+>   	cpu_cache_init();
+>   }
 >   
-> -	TP_printk("dev = (%d,%d), gc_type = %s, no_background_GC = %d, nodes = %lld, "
-> -		"dents = %lld, imeta = %lld, free_sec:%u, free_seg:%u, "
-> +	TP_printk("dev = (%d,%d), gc_type = %s, no_background_GC = %d, nr_free_secs = %u, "
-> +		"nodes = %lld, dents = %lld, imeta = %lld, free_sec:%u, free_seg:%u, "
->   		"rsv_seg:%d, prefree_seg:%u",
->   		show_dev(__entry->dev),
->   		show_gc_type(__entry->gc_type),
->   		(__entry->gc_type == BG_GC) ? __entry->no_bg_gc : -1,
-> +		__entry->nr_free_secs,
->   		__entry->dirty_nodes,
->   		__entry->dirty_dents,
->   		__entry->dirty_imeta,
+> diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
+> index afd6634ce171..7094a68c9b83 100644
+> --- a/arch/loongarch/mm/init.c
+> +++ b/arch/loongarch/mm/init.c
+> @@ -84,6 +84,7 @@ int __ref page_is_ram(unsigned long pfn)
+>   	return memblock_is_memory(addr) && !memblock_is_reserved(addr);
+>   }
+>   
+> +#ifndef CONFIG_NUMA
+>   void __init paging_init(void)
+>   {
+>   	unsigned long max_zone_pfns[MAX_NR_ZONES];
+> @@ -107,6 +108,7 @@ void __init mem_init(void)
+>   	memblock_free_all();
+>   	setup_zero_pages();	/* Setup zeroed pages.  */
+>   }
+> +#endif /* !CONFIG_NUMA */
+>   
+>   void __ref free_initmem(void)
+>   {
+> @@ -129,6 +131,17 @@ int arch_add_memory(int nid, u64 start, u64 size, struct mhp_params *params)
+>   	return ret;
+>   }
+>   
+> +#ifdef CONFIG_NUMA
+> +int memory_add_physaddr_to_nid(u64 start)
+> +{
+> +	int nid;
+> +
+> +	nid = pa_to_nid(start);
+> +	return nid;
+> +}
+> +EXPORT_SYMBOL_GPL(memory_add_physaddr_to_nid);
+> +#endif
+> +
+>   #ifdef CONFIG_MEMORY_HOTREMOVE
+>   void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
+>   {
+> diff --git a/arch/loongarch/mm/tlb.c b/arch/loongarch/mm/tlb.c
+> index 5201a87937fe..742000b6d70c 100644
+> --- a/arch/loongarch/mm/tlb.c
+> +++ b/arch/loongarch/mm/tlb.c
+> @@ -250,15 +250,18 @@ static void output_pgtable_bits_defines(void)
+>   	pr_debug("\n");
+>   }
+>   
+> -void setup_tlb_handler(void)
+> -{
+> -	static int run_once = 0;
+> +#ifdef CONFIG_NUMA
+> +static unsigned long pcpu_handlers[NR_CPUS];
+> +#endif
+> +extern long exception_handlers[VECSIZE * 128 / sizeof(long)];
+>   
+> +void setup_tlb_handler(int cpu)
+> +{
+>   	setup_ptwalker();
+>   	output_pgtable_bits_defines();
+>   
+>   	/* The tlb handlers are generated only once */
+> -	if (!run_once) {
+> +	if (cpu == 0) {
+>   		memcpy((void *)tlbrentry, handle_tlb_refill, 0x80);
+>   		local_flush_icache_range(tlbrentry, tlbrentry + 0x80);
+>   		set_handler(EXCCODE_TLBI * VECSIZE, handle_tlb_load, VECSIZE);
+> @@ -268,15 +271,35 @@ void setup_tlb_handler(void)
+>   		set_handler(EXCCODE_TLBNR * VECSIZE, handle_tlb_protect, VECSIZE);
+>   		set_handler(EXCCODE_TLBNX * VECSIZE, handle_tlb_protect, VECSIZE);
+>   		set_handler(EXCCODE_TLBPE * VECSIZE, handle_tlb_protect, VECSIZE);
+> -		run_once++;
+>   	}
+> +#ifdef CONFIG_NUMA
+> +	else {
+> +		void *addr;
+> +		struct page *page;
+> +		const int vec_sz = sizeof(exception_handlers);
+> +
+> +		if (pcpu_handlers[cpu])
+> +			return;
+> +
+> +		page = alloc_pages_node(cpu_to_node(cpu), GFP_KERNEL, get_order(vec_sz));
+> +		if (!page)
+> +			return;
+> +
+> +		addr = page_address(page);
+> +		pcpu_handlers[cpu] = virt_to_phys(addr);
+> +		memcpy((void *)addr, (void *)eentry, vec_sz);
+> +		local_flush_icache_range((unsigned long)addr, (unsigned long)addr + vec_sz);
+> +		csr_writeq(pcpu_handlers[cpu], LOONGARCH_CSR_TLBRENTRY);
+> +		csr_writeq(pcpu_handlers[cpu] + 80*VECSIZE, LOONGARCH_CSR_TLBRENTRY);
+> +	}
+> +#endif
+>   }
+>   
+> -void tlb_init(void)
+> +void tlb_init(int cpu)
+>   {
+>   	write_csr_pagesize(PS_DEFAULT_SIZE);
+>   	write_csr_stlbpgsize(PS_DEFAULT_SIZE);
+>   	write_csr_tlbrefill_pagesize(PS_DEFAULT_SIZE);
+> -	setup_tlb_handler();
+> +	setup_tlb_handler(cpu);
+>   	local_flush_tlb_all();
+>   }
+> diff --git a/arch/loongarch/pci/acpi.c b/arch/loongarch/pci/acpi.c
+> index 7cabb8f37218..bf921487333c 100644
+> --- a/arch/loongarch/pci/acpi.c
+> +++ b/arch/loongarch/pci/acpi.c
+> @@ -11,6 +11,7 @@
+>   #include <linux/pci-ecam.h>
+>   
+>   #include <asm/pci.h>
+> +#include <asm/numa.h>
+>   #include <asm/loongson.h>
+>   
+>   struct pci_root_info {
+> @@ -27,8 +28,10 @@ int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
+>   {
+>   	struct pci_config_window *cfg = bridge->bus->sysdata;
+>   	struct acpi_device *adev = to_acpi_device(cfg->parent);
+> +	struct device *bus_dev = &bridge->bus->dev;
+>   
+>   	ACPI_COMPANION_SET(&bridge->dev, adev);
+> +	set_dev_node(bus_dev, pa_to_nid(cfg->res.start));
+>   
+>   	return 0;
+>   }
+
+While the patch looks reasonable too, I don't have NUMA LoongArch 
+systems to test all this, so I won't be able to confidently give out the 
+R-b tag. I hope someone more familiar with NUMA in general would finish 
+the review...
+
+(Donate me 3C5000 boxes, anyone? I have my rack and switch in the living 
+room ready at all times. ;-)
+
