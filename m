@@ -2,66 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 261F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 15:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1ECDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 15:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237482AbiEOPL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 11:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        id S237582AbiEOPMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 11:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237465AbiEOPLl (ORCPT
+        with ESMTP id S237371AbiEOPMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 11:11:41 -0400
+        Sun, 15 May 2022 11:12:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EC4E0A0
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 08:11:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE19610FF9
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 08:11:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04DFAB80D1D
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 15:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B0DE5C34118;
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE9A5B80D21
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 15:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A421FC34100;
         Sun, 15 May 2022 15:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1652627460;
-        bh=oWlHUHPT9DIkB10LPPsjSnk4Vi4XPeesnP1ihL2mjLU=;
+        bh=0+v6o4r3OvphyPnnoH8be7X3l7d+awsY5uQw80PILzI=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=PfqS2GUv/t6Ze9iIwU74fgzW17rcSogiwvN2pdswZhj0KzyMhCVoJgYef70PqWt43
-         eiQpmY0uPUa/AiEjt3rXNelDO3o/0ICvPPig/ItUL2O9fripNFJdd8HWtArcK15aDG
-         iEKgdsWfnew5n5SjLSESwQfKmfB79DXuJkRaNgYqZOZa++vpC5ti1ddTLqjpYx9qXu
-         GDJCb+cS6ZSA30kS9E5D9QztA2HV9FBH3z3tLhK1sbLwOW2FjXXQkUrINBlxXKwNJ1
-         XU0EcDn2JbGqvEIkxKndwB78FHrxeQhaVM6AxO7gIpI3c/ix9P8eaBE0m3mazTDa88
-         Z9pXpL12iRTvQ==
+        b=J4VRt2VTbnT7YK1/V2at31/ZGmB8DLpUj6SAX0s/rRWWT35xnGhbvRjR1Uzpmu0e1
+         6ZnROGsCygkCnJYxectlxf9KsWpHCU7LV1yzkRT10TdPOwK1brbKarJZUpeL7Phj7m
+         c32IbIg7j+86wzKBAMJWSeU9x/6UhxYwKGuyE6T+ey8MEsyxiQq8j/WiOZOxeK/dsc
+         JRLUiEAzxNAEXxQ1OeLifGYpkisDBLdqj3JGjmujz5kK7uZkN+4FOV+bYibZ5/H4VH
+         ods7/8Xl+vpAH4WjTf85mrM+EGvVFdkFhrkrLAn9hFhPU0TUBynTQ3/qpI8kO2T91o
+         RfRmfmkOePH0Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9802AF0389D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8E44BF03936;
         Sun, 15 May 2022 15:11:00 +0000 (UTC)
-Subject: Re: [GIT PULL] Char/Misc driver fixes 5.18-rc7
+Subject: Re: [GIT PULL] Driver core fixes for 5.18-rc7
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YoEN7x8ZU9JAX1SC@kroah.com>
-References: <YoEN7x8ZU9JAX1SC@kroah.com>
+In-Reply-To: <YoEN35dp8yUoKcDA@kroah.com>
+References: <YoEN35dp8yUoKcDA@kroah.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YoEN7x8ZU9JAX1SC@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-5.18-rc7
-X-PR-Tracked-Commit-Id: d83ea024091e11d384f983f389a7853312c33c5d
+X-PR-Tracked-Message-Id: <YoEN35dp8yUoKcDA@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.18-rc7
+X-PR-Tracked-Commit-Id: 575f00edea0a7117e6a4337800ebf62e2a1d09d6
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 5becde60ed4e63858385aa10354cb87d7444b9cf
-Message-Id: <165262746061.2129.3565018966823272506.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 0cdd776ec92c0fec768c7079331804d3e52d4b27
+Message-Id: <165262746057.2129.15765567081971781458.pr-tracker-bot@kernel.org>
 Date:   Sun, 15 May 2022 15:11:00 +0000
 To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Saravana Kannan <saravanak@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 15 May 2022 16:27:59 +0200:
+The pull request you sent on Sun, 15 May 2022 16:27:43 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-5.18-rc7
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.18-rc7
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/5becde60ed4e63858385aa10354cb87d7444b9cf
+https://git.kernel.org/torvalds/c/0cdd776ec92c0fec768c7079331804d3e52d4b27
 
 Thank you!
 
