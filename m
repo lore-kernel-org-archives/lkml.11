@@ -2,35 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 10:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33564C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 10:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236348AbiEOKb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 06:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44162 "EHLO
+        id S236367AbiEOKbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 06:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234113AbiEOKbG (ORCPT
+        with ESMTP id S235377AbiEOKbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 15 May 2022 06:31:06 -0400
 Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918B67640
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 03:31:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3915A765E
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 03:31:05 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L1JZF6h2sz4xYX;
-        Sun, 15 May 2022 20:31:01 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L1JZH6CDzz4xYY;
+        Sun, 15 May 2022 20:31:03 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     Colin Leroy <colin@colino.net>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>
 Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-In-Reply-To: <04961364547fe4556e30cb302b0e20a939b83426.1648833027.git.christophe.leroy@csgroup.eu>
-References: <04961364547fe4556e30cb302b0e20a939b83426.1648833027.git.christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH] macintosh: Prepare cleanup of powerpc's asm/prom.h
-Message-Id: <165261053789.1047019.16084017881231482289.b4-ty@ellerman.id.au>
-Date:   Sun, 15 May 2022 20:28:57 +1000
+In-Reply-To: <d2610043419ce3e0e53a85386baf2c3625af5cfb.1647877442.git.christophe.leroy@csgroup.eu>
+References: <d2610043419ce3e0e53a85386baf2c3625af5cfb.1647877442.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH] powerpc/8xx: Simplify flush_tlb_kernel_range()
+Message-Id: <165261053042.1047019.17331367437728392692.b4-ty@ellerman.id.au>
+Date:   Sun, 15 May 2022 20:28:50 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -38,19 +39,20 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 19:15:53 +0200, Christophe Leroy wrote:
-> powerpc's asm/prom.h brings some headers that it doesn't
-> need itself.
+On Mon, 21 Mar 2022 16:44:18 +0100, Christophe Leroy wrote:
+> In the same spirit as commit 63f501e07a85 ("powerpc/8xx: Simplify TLB
+> handling"), simplify flush_tlb_kernel_range() for 8xx.
 > 
-> In order to clean it up, first add missing headers in
-> users of asm/prom.h
+> 8xx cannot be SMP, and has 'tlbie' and 'tlbia' instructions, so
+> an inline version of flush_tlb_kernel_range() for 8xx is worth it.
 > 
+> With this page, first leg of change_page_attr() is:
 > 
 > [...]
 
 Applied to powerpc/next.
 
-[1/1] macintosh: Prepare cleanup of powerpc's asm/prom.h
-      https://git.kernel.org/powerpc/c/a486e512d1f3fb93b0406ab125f35777d22b47ba
+[1/1] powerpc/8xx: Simplify flush_tlb_kernel_range()
+      https://git.kernel.org/powerpc/c/9290c379d19774d8de6e2b895d756004dbad9ce5
 
 cheers
