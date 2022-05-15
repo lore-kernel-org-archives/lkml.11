@@ -2,168 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33761C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 06:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 07:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235907AbiEOGm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 02:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
+        id S235901AbiEOHQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 03:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235889AbiEOGmq (ORCPT
+        with ESMTP id S233640AbiEOHQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 02:42:46 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F1E2DA93;
-        Sat, 14 May 2022 23:42:44 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id y41so11286373pfw.12;
-        Sat, 14 May 2022 23:42:44 -0700 (PDT)
+        Sun, 15 May 2022 03:16:31 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED7112D04;
+        Sun, 15 May 2022 00:16:28 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id i19so23214131eja.11;
+        Sun, 15 May 2022 00:16:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=D4Q6w6yEvGwJK0TRipYAGtfiK43Dmnd3tJ7ygkkWia4=;
-        b=IOLCGdIAmm3LunK3vBZkd/zL03BzIKvSMk+Utas+4Rbjc1kgqSnZVisi+yBAvrPSDX
-         y/Rykv02QICz7x6MMGfUNDMjOAi4QyP4CLjK2VAtFwUkiLT3BX177/DXaBBSNwn+3pqJ
-         /0ff8f8msGQ6Vt+K0aLeKn6GW8pHmSYYnpdjnAb62dJmQvKUMfH2MLQ535Rd7tTii5XG
-         3BaPorgEEpb36Ei2LBex0KVE+uwJOOByOUuGpxiizr+744YJpAdXdIbAHw92oxLozHGE
-         PhIFmkCTc9jLTwxecZUGpxlplo/YS2t1cDMhwxol4xU22WvCo5uuGreWf8bAEF0GIvfv
-         gW2A==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XfV9hrJZXlb0h+0qnGHB9w3BsPoOeIKqTaIxDjQSgbE=;
+        b=gIFRsC4Tael4SGkZtVqX6zuqUcpti8xiGrVjLWIznSYt8Ak7eytyqkUKv2hL12kfIg
+         7tlNHSU/rDAHzZZ76v38+cjJggiO1UGrSpBkL6CdzXkA8tLXL/fPC5JFky3xWDi2S/Hp
+         VJ7ZE2sZjo+hpFeAEldCXlQc8QMRnS1YikLS2qaOsguLrRIOrHchganJYgXFC65pp0To
+         mBYvKgkBlDLV8xNTr/YA7Uw43PEsQQi/Ef6wZZwECT7abKoejCLFz/Ip1kYgP+YPTrlC
+         5EyfKbS7tdehm635HPbgmi+Pzwn5KuFatTnY6ePj0yZxVPkIVUIzvIKBjgvIrPUVh8Cv
+         JRrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=D4Q6w6yEvGwJK0TRipYAGtfiK43Dmnd3tJ7ygkkWia4=;
-        b=I/FCBW0FE+Y+f0smgt8SoGbvoVK2tnHR7KuHWuaMRa7C2RXGUkrHGn9jHF4Q4jbBeO
-         C34ZFwZOiyOoy0sVDzKrYWl6ReNXGxC8dJ9/dkqHyOSSz/aLtIgBAoWrA5ZG8j5suH/Q
-         Y9lYzQdHsEuNOwPU5IVPps0rIF8b2sFvbeqwqw6UEyrSKO0EGXTljsfK6KSLSAyUVJ6l
-         vLCblO6aUX3oq9X5Xe2ETRxFzFccHHqHcQm3UYyICfiCD92e9CDGi6ILwv1wOuOzsYX/
-         uLnowzHy/9yIUxIhqp3MyxlV8h8KMvsXQcutJdnlP1hdt4544bvlXzTCPsOlw8mqq3IZ
-         dFzA==
-X-Gm-Message-State: AOAM532Hr9HK0RZSlk7QERx5K3WMbtjD1/sf9qxKqkIBD/VFlsYYpp/Y
-        5o+zrOmRyNhqKH4RxfAPlNg=
-X-Google-Smtp-Source: ABdhPJzaWlQJYvbQ+EagfN3qdp16Rk+tbk02UoNETO2+CAcbdrv7RLtNe2Z7jSDRK6RLvZbVgRfX3A==
-X-Received: by 2002:a62:1ad4:0:b0:510:c635:e516 with SMTP id a203-20020a621ad4000000b00510c635e516mr12359143pfa.42.1652596964160;
-        Sat, 14 May 2022 23:42:44 -0700 (PDT)
-Received: from alarm.. ([103.51.72.28])
-        by smtp.gmail.com with ESMTPSA id g24-20020a170902d5d800b0015e8d4eb2e3sm4568687plh.301.2022.05.14.23.42.40
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=XfV9hrJZXlb0h+0qnGHB9w3BsPoOeIKqTaIxDjQSgbE=;
+        b=WeF34qcVF8Vtx8kyQO7r30G0iGW0OYTKcftv2AQuQzLPK0fECeMtGseTNf72RvGFyC
+         lD2+WGjYa1+cCij2mDeuT11xOoImORJjZ6fFVwKFO0qyWmMy8JZRsxHxa7gPqPOA0oH2
+         h1CIFFjP431TI2JYzIFbw/wPRD1ZZ+H5GfrdRKJ+8MvlpsfVzFd7GoHsUFUMYJ6py1Js
+         1uLlka5E4BFEN+ImjM+/wmTN+1/iyuuAJipOi4KD9lYYrqfOFI/9BhLpev348A2LPMoM
+         9uuwpHW5M8C1sjdBaQs6+W2x5jtpNLaQnwYST5TjEFOLICk1HC31ya+nbJ6jypE/YDro
+         ALcA==
+X-Gm-Message-State: AOAM532cNyLgWFk3/1Hl5eJunIXHnJtETKbwI42312iDPKGcEep5EP9V
+        1pqr9G4pHjngssy9sYZA1+8=
+X-Google-Smtp-Source: ABdhPJyc0kfzDV3ltM6wM589GNkdV9+2UEw0opuQiGZBX/6yRcao9M3vPpR3xUZVEcJ5+IadJEhD0w==
+X-Received: by 2002:a17:907:3d91:b0:6f5:2b6a:ef55 with SMTP id he17-20020a1709073d9100b006f52b6aef55mr10966011ejc.352.1652598986830;
+        Sun, 15 May 2022 00:16:26 -0700 (PDT)
+Received: from eldamar (c-82-192-242-114.customer.ggaweb.ch. [82.192.242.114])
+        by smtp.gmail.com with ESMTPSA id qr48-20020a1709068cb000b006f3ef214e5csm2374912ejc.194.2022.05.15.00.16.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 May 2022 23:42:43 -0700 (PDT)
-From:   Anand Moon <linux.amoon@gmail.com>
-To:     Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Anand Moon <linux.amoon@gmail.com>
-Subject: [PATCHv2 6/6] thermal: exynos: Add runtime power management for tmu
-Date:   Sun, 15 May 2022 06:41:23 +0000
-Message-Id: <20220515064126.1424-7-linux.amoon@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220515064126.1424-1-linux.amoon@gmail.com>
-References: <20220515064126.1424-1-linux.amoon@gmail.com>
+        Sun, 15 May 2022 00:16:25 -0700 (PDT)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Date:   Sun, 15 May 2022 09:16:25 +0200
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        keyrings@vger.kernel.org, Adam Langley <agl@google.com>,
+        linux-kernel@vger.kernel.org, Eric Biggers <ebiggers@kernel.org>
+Subject: Re: [PATCH v2 1/1] sign-file: Do not attempt to use the ENGINE_* API
+ if it's not available
+Message-ID: <YoCoySEUSzu9zthg@eldamar.lan>
+References: <20211005161833.1522737-1-lee.jones@linaro.org>
+ <Yicwb+Ceiu8JjVIS@google.com>
+ <202203100851.C00D9AB73@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202203100851.C00D9AB73@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add runtime power management for exynos thermal driver.
+Hi,
 
-Cc: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
-Signed-off-by: Anand Moon <linux.amoon@gmail.com>
----
-v1: new patch in this series.
----
- drivers/thermal/samsung/exynos_tmu.c | 29 ++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+On Thu, Mar 10, 2022 at 08:51:56AM -0800, Kees Cook wrote:
+> On Tue, Mar 08, 2022 at 10:31:11AM +0000, Lee Jones wrote:
+> > OpenSSL's ENGINE API is deprecated in OpenSSL v3.0.
+> >
+> > Use OPENSSL_NO_ENGINE to ensure the ENGINE API is only used if it is
+> > present.  This will safeguard against compile errors when using SSL
+> > implementations which lack support for this deprecated API.
+> 
+> On Fedora rawhide, I'm still seeing a bunch of warnings:
+> 
+> scripts/sign-file.c: In function 'display_openssl_errors':
+> scripts/sign-file.c:89:9: warning: 'ERR_get_error_line' is deprecated: Since OpenSSL 3.0 [-Wdeprecat
+> ed-declarations]
+>    89 |         while ((e = ERR_get_error_line(&file, &line))) {
+>       |         ^~~~~
+> In file included from scripts/sign-file.c:29:
+> /usr/include/openssl/err.h:411:15: note: declared here
+>   411 | unsigned long ERR_get_error_line(const char **file, int *line);
+>       |               ^~~~~~~~~~~~~~~~~~
+> scripts/sign-file.c: In function 'drain_openssl_errors':
+> scripts/sign-file.c:102:9: warning: 'ERR_get_error_line' is deprecated: Since OpenSSL 3.0 [-Wdepreca
+> ted-declarations]
+>   102 |         while (ERR_get_error_line(&file, &line)) {}
+>       |         ^~~~~
+> /usr/include/openssl/err.h:411:15: note: declared here
+>   411 | unsigned long ERR_get_error_line(const char **file, int *line);
+>       |               ^~~~~~~~~~~~~~~~~~
 
-diff --git a/drivers/thermal/samsung/exynos_tmu.c b/drivers/thermal/samsung/exynos_tmu.c
-index f8a527f19383..be9b98caf2ba 100644
---- a/drivers/thermal/samsung/exynos_tmu.c
-+++ b/drivers/thermal/samsung/exynos_tmu.c
-@@ -20,6 +20,7 @@
- #include <linux/of_irq.h>
- #include <linux/platform_device.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/pm_runtime.h>
- 
- #include <dt-bindings/thermal/thermal_exynos.h>
- 
-@@ -1106,6 +1107,15 @@ static int exynos_tmu_probe(struct platform_device *pdev)
- 		goto err_thermal;
- 	}
- 
-+	pm_runtime_set_active(&pdev->dev);
-+	pm_runtime_set_autosuspend_delay(&pdev->dev, 1000);
-+	pm_runtime_use_autosuspend(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
-+
-+	ret = pm_runtime_resume_and_get(&pdev->dev);
-+	if (ret < 0)
-+		goto disable_runtime_pm;
-+
- 	ret = devm_request_irq(&pdev->dev, data->irq, exynos_tmu_irq,
- 		IRQF_TRIGGER_RISING | IRQF_SHARED, dev_name(&pdev->dev), data);
- 	if (ret) {
-@@ -1113,11 +1123,16 @@ static int exynos_tmu_probe(struct platform_device *pdev)
- 		goto err_thermal;
- 	}
- 
-+	pm_runtime_put(&pdev->dev);
-+
- 	exynos_tmu_control(pdev, true);
- 	return 0;
- 
- err_thermal:
- 	thermal_zone_of_sensor_unregister(&pdev->dev, data->tzd);
-+disable_runtime_pm:
-+	pm_runtime_put_noidle(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
- err_clk_sec:
- 	clk_disable_unprepare(data->clk_sec);
- err_sclk:
-@@ -1143,6 +1158,9 @@ static int exynos_tmu_remove(struct platform_device *pdev)
- 	clk_disable_unprepare(data->clk);
- 	clk_disable_unprepare(data->clk_sec);
- 
-+	pm_runtime_put_noidle(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+
- 	if (!IS_ERR(data->regulator))
- 		regulator_disable(data->regulator);
- 
-@@ -1151,18 +1169,25 @@ static int exynos_tmu_remove(struct platform_device *pdev)
- 
- static int __maybe_unused exynos_tmu_suspend(struct device *dev)
- {
--	exynos_tmu_control(to_platform_device(dev), false);
-+	struct platform_device *pdev = to_platform_device(dev);
- 
--	return 0;
-+	exynos_tmu_control(pdev, false);
-+
-+	return pm_runtime_force_suspend(&pdev->dev);
- }
- 
- static int __maybe_unused exynos_tmu_resume(struct device *dev)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
-+	int ret;
- 
- 	exynos_tmu_initialize(pdev);
- 	exynos_tmu_control(pdev, true);
- 
-+	ret = pm_runtime_force_resume(&pdev->dev);
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- }
- 
--- 
-2.36.1
+FWIW, we are seeing the same now on Debian as Debian unstable is
+moving to OpenSSL 3.0.
 
+https://lists.debian.org/debian-release/2022/05/msg00070.html
+
+Regards,
+Salvatore
