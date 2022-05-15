@@ -2,173 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36472C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 11:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC17C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 11:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236522AbiEOLRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 07:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
+        id S236544AbiEOLhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 07:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231134AbiEOLRN (ORCPT
+        with ESMTP id S231134AbiEOLhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 07:17:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA84659D
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 04:17:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0DCB60F4F
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 11:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B4AC385B8;
-        Sun, 15 May 2022 11:17:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652613430;
-        bh=d0TL17vMLRIGLh71PguP2wy7GGGqSL/xy2fQvHsvOL8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GrxZnQJi8vwlTzhfuxKigVFdkojTW2WthcuhEjXg/rKT5DICe8fYB8XsJSBQQTfI+
-         MeEFoOv1vX6QEoBfYMJVYdNeELfOQlrEb3aI5F+mYAkxC1+TWt6oRuAy3cHk9Ckcjq
-         bJ//p5emIVWUV+IF2sFSXQu5I2o9BamNlTdYpkfCzmYRz0uVYrI+uot0e40yhNaajY
-         n6JW1ipf1+iI4l76ol3h7R4UuFBIR5gt7q8XzHYPPaRgoVTYh+k9YFAHPbpcdHqEBS
-         LHk5BX2Rh9AKUFSri2SIYAsImfU8qxpFqLeEqMwK7R1lp9Galn/jkmv4eus6WoZMBl
-         1uEcdAlwtcTdw==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Chao Yu <chao.yu@oppo.com>
-Subject: [PATCH v2] f2fs: separate NOCoW and pinfile semantics
-Date:   Sun, 15 May 2022 18:39:34 +0800
-Message-Id: <20220515103934.5306-1-chao@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Sun, 15 May 2022 07:37:34 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288583B028
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 04:37:31 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652614649;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qALbpys+3AHBZg0ZIcIY92DAu5RuDTntt3Mqy3t4PlE=;
+        b=3X47OqRBuFJVxcmxA3as/j98DDZU39LxVtZksep/ofDSgR8XvFi+f9YHYuB93BKsNf/STE
+        BbVUPc3sMJeVwwZeFUiNxwH7gREAg0DFCB3ZVclIndMOf3YlLU+9VgzrY/phmT4vKqKojY
+        2AelW7ys+0EWOx50jURWLabzgpMHPUL0J9x9Sc9ONPjGscZAnItPhSEdkkUngFZLS0+iVs
+        JVc+aX72C62OIKnMDwTtvUYa5/bUiSv+kIJJzmcwZOgXlFLs+Dm+Re+Pl2cN7oEH30upNz
+        po1Aa5jwTbnTM22f26BwuTV/byG+uhMIDjwBjzsQCkWX95r8tYQng/4jJ7vb1Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652614649;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qALbpys+3AHBZg0ZIcIY92DAu5RuDTntt3Mqy3t4PlE=;
+        b=zVtd3PEwlrPkzSYBQwfQxOE00NLApylBZmpKoef4D5YYXGWZ0s4VR5os1Xjyse5R4vs8uk
+        nXdYT9SJ1+wLH/CQ==
+To:     Sean Christopherson <seanjc@google.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH] x86/nmi: Make register_nmi_handler() more robust
+In-Reply-To: <87zgjlsn75.ffs@tglx>
+References: <20220511234332.3654455-1-seanjc@google.com> <87zgjlsn75.ffs@tglx>
+Date:   Sun, 15 May 2022 13:37:29 +0200
+Message-ID: <87wnenqb5y.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pinning a file is heavy, because skipping pinned files make GC
-running with heavy load or no effect.
+On Fri, May 13 2022 at 13:10, Thomas Gleixner wrote:
+> @@ -157,7 +157,7 @@ int __register_nmi_handler(unsigned int
+>  	struct nmi_desc *desc = nmi_to_desc(type);
+>  	unsigned long flags;
+>  
+> -	if (!action->handler)
+> +	if (WARN_ON_ONCE(action->handler || !list_empty(&action->list)))
 
-So that this patch proposes to separate nocow and pinfile semantics:
-- NOCoW flag can only be set on regular file.
-- NOCoW file will only trigger IPU at common writeback/flush.
-- NOCow file will do OPU during GC.
-
-This flag can satisfying the demand of:
-1) avoiding fragment of file's physical block
-2) userspace doesn't want to pin file's physical address
-
-After commit 5d539245cb18 ("f2fs: export FS_NOCOW_FL flag to user"),
-Pin_file and NOCoW flags have already been twined closely. e.g.
-once we set pinfile flag in file, nocow flag will be shown; and after
-clearing pinfile flag, nocow flag will disappear.
-
-So, in order to keep backward compatibility, let use below semantics:
-
-f2fs_ioc_set_pin_file/f2fs_fileattr_set logic:
-		pinfile			nocow
-set		set pinfile | nocow	set nocow
-clear		clear pinfile | nocow	clear nocow
-
-File Behaviors:
-w/ pinfile, w/ nocow:		use pinfile semantics
-w/ pinfile, w/o nocow:		use pinfile semantics
-w/o pinfile, w/ nocow:		use nocow semantics
-w/o pinfile, w/o nocow:		no pinfile or nocow semantics
-
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
----
-v2:
-- keep compatibility in between pinfile and nocow flags
- fs/f2fs/data.c |  3 ++-
- fs/f2fs/f2fs.h |  8 +++++++-
- fs/f2fs/file.c | 16 +++++++++++++++-
- 3 files changed, 24 insertions(+), 3 deletions(-)
-
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 54a7a8ad994d..c8eab78f7d89 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -2495,7 +2495,8 @@ bool f2fs_should_update_inplace(struct inode *inode, struct f2fs_io_info *fio)
- 	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
- 		return false;
- 
--	if (f2fs_is_pinned_file(inode))
-+	if (f2fs_is_pinned_file(inode) ||
-+			F2FS_I(inode)->i_flags & F2FS_NOCOW_FL)
- 		return true;
- 
- 	/* if this is cold file, we should overwrite to avoid fragmentation */
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index 18a0335799ad..d9445fc62bd7 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -2929,6 +2929,7 @@ static inline void f2fs_change_bit(unsigned int nr, char *addr)
- #define F2FS_NOCOMP_FL			0x00000400 /* Don't compress */
- #define F2FS_INDEX_FL			0x00001000 /* hash-indexed directory */
- #define F2FS_DIRSYNC_FL			0x00010000 /* dirsync behaviour (directories only) */
-+#define F2FS_NOCOW_FL			0x00800000 /* Do not cow file */
- #define F2FS_PROJINHERIT_FL		0x20000000 /* Create with parents projid */
- #define F2FS_CASEFOLD_FL		0x40000000 /* Casefolded file */
- 
-@@ -2965,9 +2966,14 @@ static inline void __mark_inode_dirty_flag(struct inode *inode,
- 		if (set)
- 			return;
- 		fallthrough;
-+	case FI_PIN_FILE:
-+		if (set)
-+			F2FS_I(inode)->i_flags |= F2FS_NOCOW_FL;
-+		else
-+			F2FS_I(inode)->i_flags &= ~F2FS_NOCOW_FL;
-+		fallthrough;
- 	case FI_DATA_EXIST:
- 	case FI_INLINE_DOTS:
--	case FI_PIN_FILE:
- 	case FI_COMPRESS_RELEASED:
- 		f2fs_mark_inode_dirty_sync(inode, true);
- 	}
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index b857384ccd12..da635a904e69 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1854,6 +1854,18 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
- 	if (IS_NOQUOTA(inode))
- 		return -EPERM;
- 
-+	if ((iflags ^ masked_flags) & F2FS_NOCOW_FL) {
-+		int ret;
-+
-+		if (!S_ISREG(inode->i_mode))
-+			return -EINVAL;
-+		if (f2fs_should_update_outplace(inode, NULL))
-+			return -EINVAL;
-+		ret = f2fs_convert_inline_inode(inode);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	if ((iflags ^ masked_flags) & F2FS_CASEFOLD_FL) {
- 		if (!f2fs_sb_has_casefold(F2FS_I_SB(inode)))
- 			return -EOPNOTSUPP;
-@@ -1929,6 +1941,7 @@ static const struct {
- 	{ F2FS_NOCOMP_FL,	FS_NOCOMP_FL },
- 	{ F2FS_INDEX_FL,	FS_INDEX_FL },
- 	{ F2FS_DIRSYNC_FL,	FS_DIRSYNC_FL },
-+	{ F2FS_NOCOW_FL,	FS_NOCOW_FL },
- 	{ F2FS_PROJINHERIT_FL,	FS_PROJINHERIT_FL },
- 	{ F2FS_CASEFOLD_FL,	FS_CASEFOLD_FL },
- };
-@@ -1960,7 +1973,8 @@ static const struct {
- 		FS_NOCOMP_FL |		\
- 		FS_DIRSYNC_FL |		\
- 		FS_PROJINHERIT_FL |	\
--		FS_CASEFOLD_FL)
-+		FS_CASEFOLD_FL |	\
-+		FS_NOCOW_FL)
- 
- /* Convert f2fs on-disk i_flags to FS_IOC_{GET,SET}FLAGS flags */
- static inline u32 f2fs_iflags_to_fsflags(u32 iflags)
--- 
-2.32.0
+Bah. That should obviously be !action->handler. Let me send V2
 
