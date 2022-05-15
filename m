@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 14:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42ED2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 14:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237120AbiEOO2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 10:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        id S237172AbiEOO2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 10:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237330AbiEOO1Z (ORCPT
+        with ESMTP id S237385AbiEOO1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 10:27:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1A92A277;
-        Sun, 15 May 2022 07:27:24 -0700 (PDT)
+        Sun, 15 May 2022 10:27:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E555D2AC49
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 07:27:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E4FEB80D08;
-        Sun, 15 May 2022 14:27:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77B9C385B8;
-        Sun, 15 May 2022 14:27:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EB72B80D0E
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 14:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3449C385B8;
+        Sun, 15 May 2022 14:27:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652624842;
-        bh=jxfW/B8+kAu8FgXHxdJgKY55YrIJ9MHmfV08h5wnndg=;
+        s=korg; t=1652624866;
+        bh=t804RpIYnWcjF/lfKACrQrSZIkb6NHAI4OQAWijCIT8=;
         h=Date:From:To:Cc:Subject:From;
-        b=ahzaef+u+qCJLBoizgWyYHAbbArgT0kWT65aEnKpH5SZai2LlVhE8ypU+Ei/dYuCj
-         0eFYPPvW+5bYOb2AR/u22TjD0RS5ivy1HOSBekuklNDWBs+zdXV+rXOc4BwnJScsVV
-         Tu2XO7yRApmlD9SF/cdYgnffhkRlDTq4FlidVkEY=
-Date:   Sun, 15 May 2022 16:27:19 +0200
+        b=Lw1DeR+sRxp9P6gqvf4SngAnPoXpJ70u2pb+vqkKPfNqk9uWOozqwLlWmLjJBpqff
+         8+emS158IoD/6vpekj12JrTe4HN2L8n0dXwo1Y5MMx3ya2u3xWghvaUVO0R5e5tc3w
+         ph5jeqBwzvuByK3mxzuM9/XMyz4vK0SX1SkvNjmQ=
+Date:   Sun, 15 May 2022 16:27:43 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org,
         Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 5.18-rc7
-Message-ID: <YoENxyxFu4xUQD6b@kroah.com>
+        Saravana Kannan <saravanak@google.com>
+Subject: [GIT PULL] Driver core fixes for 5.18-rc7
+Message-ID: <YoEN35dp8yUoKcDA@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -51,45 +52,43 @@ The following changes since commit 672c0c5173427e6b3e2a9bbb7be51ceeec78093a:
 
 are available in the Git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc7
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.18-rc7
 
-for you to fetch changes up to 401fb66a355eb0f22096cf26864324f8e63c7d78:
+for you to fetch changes up to 575f00edea0a7117e6a4337800ebf62e2a1d09d6:
 
-  fsl_lpuart: Don't enable interrupts too early (2022-05-05 23:00:21 +0200)
+  Documentation/process: Update ARM contact for embargoed hardware issues (2022-05-10 19:10:16 +0200)
 
 ----------------------------------------------------------------
-TTY/Serial driver fixes for 5.18-rc7
+Driver core fixes for 5.18-rc7
 
-Here are some small tty n_gsm and serial driver fixes for 5.18-rc7 that
-resolve reported problems.  They include:
-	- n_gsm fixes for reported issues
-	- 8250_mtk driver fixes for some platforms
-	- fsl_lpuart driver fix for reported problem.
-	- digicolor driver fix for reported problem.
+Here is one fix, and 3 documentation updates for 5.18-rc7.
 
-All have been in linux-next for a while with no reported problems.
+The fix is for the firmware loader which resolves a long-reported
+problem where the credentials of the firmware loader could be set to a
+userspace process without enough permissions to actually load the
+firmware image.  Many Android vendors have been reporting this for quite
+some time.
+
+The documentation updates are for the embargoed-hardware-issues.rst file
+to add a new entry, change an existing one, and sort the list to make
+changes easier in the future.
+
+All of these have been in linux-next for a while with no reported
+issues.
 
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 ----------------------------------------------------------------
-AngeloGioacchino Del Regno (3):
-      serial: 8250_mtk: Fix UART_EFR register address
-      serial: 8250_mtk: Make sure to select the right FEATURE_SEL
-      serial: 8250_mtk: Fix register address for XON/XOFF character
+Catalin Marinas (1):
+      Documentation/process: Update ARM contact for embargoed hardware issues
 
-Daniel Starke (3):
-      tty: n_gsm: fix buffer over-read in gsm_dlci_data()
-      tty: n_gsm: fix mux activation issues in gsm_config()
-      tty: n_gsm: fix invalid gsmtty_write_room() result
+Darren Hart (2):
+      Documentation/process: Make groups alphabetical and use tabs consistently
+      Documentation/process: Add embargoed HW contact for Ampere Computing
 
-Indan Zupancic (1):
-      fsl_lpuart: Don't enable interrupts too early
+Thiébaud Weksteen (1):
+      firmware_loader: use kernel credentials when reading firmware
 
-Yang Yingliang (1):
-      tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
-
- drivers/tty/n_gsm.c                  | 20 ++++++++++++--------
- drivers/tty/serial/8250/8250_mtk.c   | 29 ++++++++++++++++++++---------
- drivers/tty/serial/digicolor-usart.c |  5 ++---
- drivers/tty/serial/fsl_lpuart.c      | 18 +++++++++---------
- 4 files changed, 43 insertions(+), 29 deletions(-)
+ Documentation/process/embargoed-hardware-issues.rst |  7 ++++---
+ drivers/base/firmware_loader/main.c                 | 17 +++++++++++++++++
+ 2 files changed, 21 insertions(+), 3 deletions(-)
