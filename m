@@ -2,70 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D54B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 18:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 607F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 18:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238453AbiEOSrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 14:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47514 "EHLO
+        id S238480AbiEOSrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 14:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238431AbiEOSrV (ORCPT
+        with ESMTP id S238455AbiEOSrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 14:47:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E182E031;
-        Sun, 15 May 2022 11:47:19 -0700 (PDT)
+        Sun, 15 May 2022 14:47:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDCD13D03;
+        Sun, 15 May 2022 11:47:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99F84B80E07;
-        Sun, 15 May 2022 18:47:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF8EDC385B8;
-        Sun, 15 May 2022 18:47:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C1586111F;
+        Sun, 15 May 2022 18:47:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F20B7C385B8;
+        Sun, 15 May 2022 18:47:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652640436;
-        bh=tgWxhcx8CrfP/cirT05J3G8iFvZV+2akjTVp4M2dFHs=;
+        s=korg; t=1652640439;
+        bh=JGTaoWPAqBPtqMgn2Prbh6SE6iO/ihNb5Kyq0E5dYfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qHVKbNSVP/+5lo2djR42tRsNCuddycXko4BYai5qrak17tfrAarELXl/JMQTO1vBW
-         H/hE/tWuJyhUrCOLNTxVD++/BWvuKPX7hRoD3zoKBPehNfCtWC2xxHaUNEZStdOHAT
-         V7UkWAKCfucPAR66B6WCzhrqJGODuTtF0Z+MqNPM=
+        b=PxzENaObkN4soPmW5VFraMfSxhbHq35LOTRGgfW9pbX1hIaDdsdqlSP7ZzNMZpzq3
+         SDedeMKvFCRSL2Q7g96vGZ8XxQKAP2PkTLSj1ZZlnyA8PoLMi8hjc3SXIRNG8FBI/r
+         8C8MSyEbVHZqmykohSDtne7BOm6eCJaOPj0MIbDk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.14.279
-Date:   Sun, 15 May 2022 20:47:04 +0200
-Message-Id: <165264042472114@kroah.com>
+Subject: Re: Linux 5.4.194
+Date:   Sun, 15 May 2022 20:47:10 +0200
+Message-Id: <165264042912892@kroah.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <165264042429201@kroah.com>
-References: <165264042429201@kroah.com>
+In-Reply-To: <165264042915756@kroah.com>
+References: <165264042915756@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+diff --git a/Documentation/vm/memory-model.rst b/Documentation/vm/memory-model.rst
+index 58a12376b7df..94db75ba7fbe 100644
+--- a/Documentation/vm/memory-model.rst
++++ b/Documentation/vm/memory-model.rst
+@@ -52,8 +52,7 @@ wrapper :c:func:`free_area_init`. Yet, the mappings array is not
+ usable until the call to :c:func:`memblock_free_all` that hands all
+ the memory to the page allocator.
+ 
+-If an architecture enables `CONFIG_ARCH_HAS_HOLES_MEMORYMODEL` option,
+-it may free parts of the `mem_map` array that do not cover the
++An architecture may free parts of the `mem_map` array that do not cover the
+ actual physical pages. In such case, the architecture specific
+ :c:func:`pfn_valid` implementation should take the holes in the
+ `mem_map` into account.
 diff --git a/Makefile b/Makefile
-index 9e6373f02d6c..efe93f82073a 100644
+index 888d89605855..044a85fea921 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
- VERSION = 4
- PATCHLEVEL = 14
--SUBLEVEL = 278
-+SUBLEVEL = 279
+ VERSION = 5
+ PATCHLEVEL = 4
+-SUBLEVEL = 193
++SUBLEVEL = 194
  EXTRAVERSION =
- NAME = Petit Gorille
+ NAME = Kleptomaniac Octopus
  
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 4b36bbcf5a5b..a1622b9290fd 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -26,7 +26,7 @@ config ARM
+ 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
+ 	select ARCH_HAVE_CUSTOM_GPIO_H
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+-	select ARCH_KEEP_MEMBLOCK if HAVE_ARCH_PFN_VALID || KEXEC
++	select ARCH_KEEP_MEMBLOCK
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_NO_SG_CHAIN if !ARM_HAS_SG_CHAIN
+ 	select ARCH_OPTIONAL_KERNEL_RWX if ARCH_HAS_STRICT_KERNEL_RWX
+@@ -521,7 +521,6 @@ config ARCH_S3C24XX
+ config ARCH_OMAP1
+ 	bool "TI OMAP1"
+ 	depends on MMU
+-	select ARCH_HAS_HOLES_MEMORYMODEL
+ 	select ARCH_OMAP
+ 	select CLKDEV_LOOKUP
+ 	select CLKSRC_MMIO
+@@ -1518,9 +1517,6 @@ config OABI_COMPAT
+ 	  UNPREDICTABLE (in fact it can be predicted that it won't work
+ 	  at all). If in doubt say N.
+ 
+-config ARCH_HAS_HOLES_MEMORYMODEL
+-	bool
+-
+ config ARCH_SPARSEMEM_ENABLE
+ 	bool
+ 
+@@ -1528,7 +1524,7 @@ config ARCH_SPARSEMEM_DEFAULT
+ 	def_bool ARCH_SPARSEMEM_ENABLE
+ 
+ config HAVE_ARCH_PFN_VALID
+-	def_bool ARCH_HAS_HOLES_MEMORYMODEL || !SPARSEMEM
++	def_bool y
+ 
+ config HIGHMEM
+ 	bool "High Memory Support"
+diff --git a/arch/arm/mach-bcm/Kconfig b/arch/arm/mach-bcm/Kconfig
+index 5e5f1fabc3d4..634d1bc3c011 100644
+--- a/arch/arm/mach-bcm/Kconfig
++++ b/arch/arm/mach-bcm/Kconfig
+@@ -214,7 +214,6 @@ config ARCH_BRCMSTB
+ 	select HAVE_ARM_ARCH_TIMER
+ 	select BRCMSTB_L2_IRQ
+ 	select BCM7120_L2_IRQ
+-	select ARCH_HAS_HOLES_MEMORYMODEL
+ 	select ZONE_DMA if ARM_LPAE
+ 	select SOC_BRCMSTB
+ 	select SOC_BUS
+diff --git a/arch/arm/mach-davinci/Kconfig b/arch/arm/mach-davinci/Kconfig
+index 02b180ad7245..4d3b7d0418c4 100644
+--- a/arch/arm/mach-davinci/Kconfig
++++ b/arch/arm/mach-davinci/Kconfig
+@@ -5,7 +5,6 @@ menuconfig ARCH_DAVINCI
+ 	depends on ARCH_MULTI_V5
+ 	select DAVINCI_TIMER
+ 	select ZONE_DMA
+-	select ARCH_HAS_HOLES_MEMORYMODEL
+ 	select PM_GENERIC_DOMAINS if PM
+ 	select PM_GENERIC_DOMAINS_OF if PM && OF
+ 	select REGMAP_MMIO
+diff --git a/arch/arm/mach-exynos/Kconfig b/arch/arm/mach-exynos/Kconfig
+index 9dab1f50a02f..fc01137628e4 100644
+--- a/arch/arm/mach-exynos/Kconfig
++++ b/arch/arm/mach-exynos/Kconfig
+@@ -8,7 +8,6 @@
+ menuconfig ARCH_EXYNOS
+ 	bool "Samsung EXYNOS"
+ 	depends on ARCH_MULTI_V7
+-	select ARCH_HAS_HOLES_MEMORYMODEL
+ 	select ARCH_SUPPORTS_BIG_ENDIAN
+ 	select ARM_AMBA
+ 	select ARM_GIC
+diff --git a/arch/arm/mach-highbank/Kconfig b/arch/arm/mach-highbank/Kconfig
+index 1bc68913d62c..9de38ce8124f 100644
+--- a/arch/arm/mach-highbank/Kconfig
++++ b/arch/arm/mach-highbank/Kconfig
+@@ -2,7 +2,6 @@
+ config ARCH_HIGHBANK
+ 	bool "Calxeda ECX-1000/2000 (Highbank/Midway)"
+ 	depends on ARCH_MULTI_V7
+-	select ARCH_HAS_HOLES_MEMORYMODEL
+ 	select ARCH_SUPPORTS_BIG_ENDIAN
+ 	select ARM_AMBA
+ 	select ARM_ERRATA_764369 if SMP
+diff --git a/arch/arm/mach-omap2/Kconfig b/arch/arm/mach-omap2/Kconfig
+index fdb6743760a2..0211f4aa8cc7 100644
+--- a/arch/arm/mach-omap2/Kconfig
++++ b/arch/arm/mach-omap2/Kconfig
+@@ -94,7 +94,7 @@ config SOC_DRA7XX
+ config ARCH_OMAP2PLUS
+ 	bool
+ 	select ARCH_HAS_BANDGAP
+-	select ARCH_HAS_HOLES_MEMORYMODEL
++	select ARCH_HAS_RESET_CONTROLLER
+ 	select ARCH_OMAP
+ 	select CLKSRC_MMIO
+ 	select GENERIC_IRQ_CHIP
+diff --git a/arch/arm/mach-s5pv210/Kconfig b/arch/arm/mach-s5pv210/Kconfig
+index 03984a791879..69ff1bb89f38 100644
+--- a/arch/arm/mach-s5pv210/Kconfig
++++ b/arch/arm/mach-s5pv210/Kconfig
+@@ -8,7 +8,6 @@
+ config ARCH_S5PV210
+ 	bool "Samsung S5PV210/S5PC110"
+ 	depends on ARCH_MULTI_V7
+-	select ARCH_HAS_HOLES_MEMORYMODEL
+ 	select ARM_VIC
+ 	select CLKSRC_SAMSUNG_PWM
+ 	select COMMON_CLK_SAMSUNG
+diff --git a/arch/arm/mach-tango/Kconfig b/arch/arm/mach-tango/Kconfig
+index 25b2fd434861..a9eeda36aeb1 100644
+--- a/arch/arm/mach-tango/Kconfig
++++ b/arch/arm/mach-tango/Kconfig
+@@ -3,7 +3,6 @@ config ARCH_TANGO
+ 	bool "Sigma Designs Tango4 (SMP87xx)"
+ 	depends on ARCH_MULTI_V7
+ 	# Cortex-A9 MPCore r3p0, PL310 r3p2
+-	select ARCH_HAS_HOLES_MEMORYMODEL
+ 	select ARM_ERRATA_754322
+ 	select ARM_ERRATA_764369 if SMP
+ 	select ARM_ERRATA_775420
 diff --git a/arch/mips/bmips/setup.c b/arch/mips/bmips/setup.c
-index 3b6f687f177c..32f8c501f6cb 100644
+index 2f81a94c71a6..7aee9ff19c1a 100644
 --- a/arch/mips/bmips/setup.c
 +++ b/arch/mips/bmips/setup.c
-@@ -174,7 +174,7 @@ void __init plat_mem_setup(void)
+@@ -167,7 +167,7 @@ void __init plat_mem_setup(void)
  		dtb = phys_to_virt(fw_arg2);
- 	else if (fw_passed_dtb) /* UHI interface */
+ 	else if (fw_passed_dtb) /* UHI interface or appended dtb */
  		dtb = (void *)fw_passed_dtb;
 -	else if (__dtb_start != __dtb_end)
 +	else if (&__dtb_start != &__dtb_end)
@@ -73,10 +212,10 @@ index 3b6f687f177c..32f8c501f6cb 100644
  	else
  		panic("no dtb found");
 diff --git a/arch/mips/lantiq/prom.c b/arch/mips/lantiq/prom.c
-index 9ff7ccde9de0..a26322ff57e0 100644
+index 51a218f04fe0..3f568f5aae2d 100644
 --- a/arch/mips/lantiq/prom.c
 +++ b/arch/mips/lantiq/prom.c
-@@ -82,7 +82,7 @@ void __init plat_mem_setup(void)
+@@ -79,7 +79,7 @@ void __init plat_mem_setup(void)
  
  	if (fw_passed_dtb) /* UHI interface */
  		dtb = (void *)fw_passed_dtb;
@@ -86,10 +225,10 @@ index 9ff7ccde9de0..a26322ff57e0 100644
  	else
  		panic("no dtb found");
 diff --git a/arch/mips/pic32/pic32mzda/init.c b/arch/mips/pic32/pic32mzda/init.c
-index 51599710472b..406c6c5cec29 100644
+index 50f376f058f4..f232c77ff526 100644
 --- a/arch/mips/pic32/pic32mzda/init.c
 +++ b/arch/mips/pic32/pic32mzda/init.c
-@@ -36,7 +36,7 @@ static ulong get_fdtaddr(void)
+@@ -28,7 +28,7 @@ static ulong get_fdtaddr(void)
  	if (fw_passed_dtb && !fw_arg2 && !fw_arg3)
  		return (ulong)fw_passed_dtb;
  
@@ -99,10 +238,10 @@ index 51599710472b..406c6c5cec29 100644
  
  	return ftaddr;
 diff --git a/arch/mips/ralink/of.c b/arch/mips/ralink/of.c
-index 92b3d4849996..1f7c686f7218 100644
+index 4e38a905ab38..e2c71c6c667d 100644
 --- a/arch/mips/ralink/of.c
 +++ b/arch/mips/ralink/of.c
-@@ -79,7 +79,7 @@ void __init plat_mem_setup(void)
+@@ -77,7 +77,7 @@ void __init plat_mem_setup(void)
  	 */
  	if (fw_passed_dtb)
  		dtb = (void *)fw_passed_dtb;
@@ -111,11 +250,341 @@ index 92b3d4849996..1f7c686f7218 100644
  		dtb = (void *)__dtb_start;
  
  	__dt_setup_arch(dtb);
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index 3ff577c0b102..1b563f9167ea 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -7,9 +7,11 @@
+ # define __ASM_FORM_RAW(x)     x
+ # define __ASM_FORM_COMMA(x) x,
+ #else
+-# define __ASM_FORM(x)	" " #x " "
+-# define __ASM_FORM_RAW(x)     #x
+-# define __ASM_FORM_COMMA(x) " " #x ","
++#include <linux/stringify.h>
++
++# define __ASM_FORM(x)	" " __stringify(x) " "
++# define __ASM_FORM_RAW(x)     __stringify(x)
++# define __ASM_FORM_COMMA(x) " " __stringify(x) ","
+ #endif
+ 
+ #ifndef __x86_64__
+diff --git a/arch/x86/include/asm/emulate_prefix.h b/arch/x86/include/asm/emulate_prefix.h
+new file mode 100644
+index 000000000000..70f5b98a5286
+--- /dev/null
++++ b/arch/x86/include/asm/emulate_prefix.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_EMULATE_PREFIX_H
++#define _ASM_X86_EMULATE_PREFIX_H
++
++/*
++ * Virt escape sequences to trigger instruction emulation;
++ * ideally these would decode to 'whole' instruction and not destroy
++ * the instruction stream; sadly this is not true for the 'kvm' one :/
++ */
++
++#define __XEN_EMULATE_PREFIX  0x0f,0x0b,0x78,0x65,0x6e  /* ud2 ; .ascii "xen" */
++#define __KVM_EMULATE_PREFIX  0x0f,0x0b,0x6b,0x76,0x6d	/* ud2 ; .ascii "kvm" */
++
++#endif
+diff --git a/arch/x86/include/asm/insn.h b/arch/x86/include/asm/insn.h
+index a51ffeea6d87..a8c3d284fa46 100644
+--- a/arch/x86/include/asm/insn.h
++++ b/arch/x86/include/asm/insn.h
+@@ -45,6 +45,7 @@ struct insn {
+ 		struct insn_field immediate2;	/* for 64bit imm or seg16 */
+ 	};
+ 
++	int	emulate_prefix_size;
+ 	insn_attr_t attr;
+ 	unsigned char opnd_bytes;
+ 	unsigned char addr_bytes;
+@@ -128,6 +129,11 @@ static inline int insn_is_evex(struct insn *insn)
+ 	return (insn->vex_prefix.nbytes == 4);
+ }
+ 
++static inline int insn_has_emulate_prefix(struct insn *insn)
++{
++	return !!insn->emulate_prefix_size;
++}
++
+ /* Ensure this instruction is decoded completely */
+ static inline int insn_complete(struct insn *insn)
+ {
+diff --git a/arch/x86/include/asm/xen/interface.h b/arch/x86/include/asm/xen/interface.h
+index 62ca03ef5c65..9139b3e86316 100644
+--- a/arch/x86/include/asm/xen/interface.h
++++ b/arch/x86/include/asm/xen/interface.h
+@@ -379,12 +379,9 @@ struct xen_pmu_arch {
+  * Prefix forces emulation of some non-trapping instructions.
+  * Currently only CPUID.
+  */
+-#ifdef __ASSEMBLY__
+-#define XEN_EMULATE_PREFIX .byte 0x0f,0x0b,0x78,0x65,0x6e ;
+-#define XEN_CPUID          XEN_EMULATE_PREFIX cpuid
+-#else
+-#define XEN_EMULATE_PREFIX ".byte 0x0f,0x0b,0x78,0x65,0x6e ; "
+-#define XEN_CPUID          XEN_EMULATE_PREFIX "cpuid"
+-#endif
++#include <asm/emulate_prefix.h>
++
++#define XEN_EMULATE_PREFIX __ASM_FORM(.byte __XEN_EMULATE_PREFIX ;)
++#define XEN_CPUID          XEN_EMULATE_PREFIX __ASM_FORM(cpuid)
+ 
+ #endif /* _ASM_X86_XEN_INTERFACE_H */
+diff --git a/arch/x86/kernel/kprobes/core.c b/arch/x86/kernel/kprobes/core.c
+index c205d77d57da..3700dc94847c 100644
+--- a/arch/x86/kernel/kprobes/core.c
++++ b/arch/x86/kernel/kprobes/core.c
+@@ -358,6 +358,10 @@ int __copy_instruction(u8 *dest, u8 *src, u8 *real, struct insn *insn)
+ 	kernel_insn_init(insn, dest, MAX_INSN_SIZE);
+ 	insn_get_length(insn);
+ 
++	/* We can not probe force emulate prefixed instruction */
++	if (insn_has_emulate_prefix(insn))
++		return 0;
++
+ 	/* Another subsystem puts a breakpoint, failed to recover */
+ 	if (insn->opcode.bytes[0] == BREAKPOINT_INSTRUCTION)
+ 		return 0;
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index e0e3776059af..32561431acde 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -143,7 +143,6 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ {
+ 	unsigned config, type = PERF_TYPE_RAW;
+-	u8 event_select, unit_mask;
+ 	struct kvm *kvm = pmc->vcpu->kvm;
+ 	struct kvm_pmu_event_filter *filter;
+ 	int i;
+@@ -175,17 +174,12 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ 	if (!allow_event)
+ 		return;
+ 
+-	event_select = eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
+-	unit_mask = (eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
+-
+ 	if (!(eventsel & (ARCH_PERFMON_EVENTSEL_EDGE |
+ 			  ARCH_PERFMON_EVENTSEL_INV |
+ 			  ARCH_PERFMON_EVENTSEL_CMASK |
+ 			  HSW_IN_TX |
+ 			  HSW_IN_TX_CHECKPOINTED))) {
+-		config = kvm_x86_ops->pmu_ops->find_arch_event(pmc_to_pmu(pmc),
+-						      event_select,
+-						      unit_mask);
++		config = kvm_x86_ops->pmu_ops->pmc_perf_hw_id(pmc);
+ 		if (config != PERF_COUNT_HW_MAX)
+ 			type = PERF_TYPE_HARDWARE;
+ 	}
+diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
+index 3fc98afd72a8..b63859e340e4 100644
+--- a/arch/x86/kvm/pmu.h
++++ b/arch/x86/kvm/pmu.h
+@@ -22,8 +22,7 @@ struct kvm_event_hw_type_mapping {
+ };
+ 
+ struct kvm_pmu_ops {
+-	unsigned (*find_arch_event)(struct kvm_pmu *pmu, u8 event_select,
+-				    u8 unit_mask);
++	unsigned int (*pmc_perf_hw_id)(struct kvm_pmc *pmc);
+ 	unsigned (*find_fixed_event)(int idx);
+ 	bool (*pmc_is_enabled)(struct kvm_pmc *pmc);
+ 	struct kvm_pmc *(*pmc_idx_to_pmc)(struct kvm_pmu *pmu, int pmc_idx);
+diff --git a/arch/x86/kvm/pmu_amd.c b/arch/x86/kvm/pmu_amd.c
+index 6bc656abbe66..799b9a3144e3 100644
+--- a/arch/x86/kvm/pmu_amd.c
++++ b/arch/x86/kvm/pmu_amd.c
+@@ -44,6 +44,22 @@ static struct kvm_event_hw_type_mapping amd_event_mapping[] = {
+ 	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
+ };
+ 
++/* duplicated from amd_f17h_perfmon_event_map. */
++static struct kvm_event_hw_type_mapping amd_f17h_event_mapping[] = {
++	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
++	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
++	[2] = { 0x60, 0xff, PERF_COUNT_HW_CACHE_REFERENCES },
++	[3] = { 0x64, 0x09, PERF_COUNT_HW_CACHE_MISSES },
++	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
++	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
++	[6] = { 0x87, 0x02, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
++	[7] = { 0x87, 0x01, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
++};
++
++/* amd_pmc_perf_hw_id depends on these being the same size */
++static_assert(ARRAY_SIZE(amd_event_mapping) ==
++	     ARRAY_SIZE(amd_f17h_event_mapping));
++
+ static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
+ {
+ 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
+@@ -126,21 +142,27 @@ static inline struct kvm_pmc *get_gp_pmc_amd(struct kvm_pmu *pmu, u32 msr,
+ 	return &pmu->gp_counters[msr_to_index(msr)];
+ }
+ 
+-static unsigned amd_find_arch_event(struct kvm_pmu *pmu,
+-				    u8 event_select,
+-				    u8 unit_mask)
++static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
+ {
++	struct kvm_event_hw_type_mapping *event_mapping;
++	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
++	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
+ 	int i;
+ 
++	if (guest_cpuid_family(pmc->vcpu) >= 0x17)
++		event_mapping = amd_f17h_event_mapping;
++	else
++		event_mapping = amd_event_mapping;
++
+ 	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
+-		if (amd_event_mapping[i].eventsel == event_select
+-		    && amd_event_mapping[i].unit_mask == unit_mask)
++		if (event_mapping[i].eventsel == event_select
++		    && event_mapping[i].unit_mask == unit_mask)
+ 			break;
+ 
+ 	if (i == ARRAY_SIZE(amd_event_mapping))
+ 		return PERF_COUNT_HW_MAX;
+ 
+-	return amd_event_mapping[i].event_type;
++	return event_mapping[i].event_type;
+ }
+ 
+ /* return PERF_COUNT_HW_MAX as AMD doesn't have fixed events */
+@@ -300,7 +322,7 @@ static void amd_pmu_reset(struct kvm_vcpu *vcpu)
+ }
+ 
+ struct kvm_pmu_ops amd_pmu_ops = {
+-	.find_arch_event = amd_find_arch_event,
++	.pmc_perf_hw_id = amd_pmc_perf_hw_id,
+ 	.find_fixed_event = amd_find_fixed_event,
+ 	.pmc_is_enabled = amd_pmc_is_enabled,
+ 	.pmc_idx_to_pmc = amd_pmc_idx_to_pmc,
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 181e352d38de..395566018ba9 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -64,10 +64,11 @@ static void global_ctrl_changed(struct kvm_pmu *pmu, u64 data)
+ 		reprogram_counter(pmu, bit);
+ }
+ 
+-static unsigned intel_find_arch_event(struct kvm_pmu *pmu,
+-				      u8 event_select,
+-				      u8 unit_mask)
++static unsigned int intel_pmc_perf_hw_id(struct kvm_pmc *pmc)
+ {
++	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
++	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
++	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
+ 	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(intel_arch_events); i++)
+@@ -374,7 +375,7 @@ static void intel_pmu_reset(struct kvm_vcpu *vcpu)
+ }
+ 
+ struct kvm_pmu_ops intel_pmu_ops = {
+-	.find_arch_event = intel_find_arch_event,
++	.pmc_perf_hw_id = intel_pmc_perf_hw_id,
+ 	.find_fixed_event = intel_find_fixed_event,
+ 	.pmc_is_enabled = intel_pmc_is_enabled,
+ 	.pmc_idx_to_pmc = intel_pmc_idx_to_pmc,
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 1f7dfa5aa42d..6dd77e426889 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -68,6 +68,7 @@
+ #include <asm/mshyperv.h>
+ #include <asm/hypervisor.h>
+ #include <asm/intel_pt.h>
++#include <asm/emulate_prefix.h>
+ #include <clocksource/hyperv_timer.h>
+ 
+ #define CREATE_TRACE_POINTS
+@@ -5583,6 +5584,7 @@ EXPORT_SYMBOL_GPL(kvm_write_guest_virt_system);
+ 
+ int handle_ud(struct kvm_vcpu *vcpu)
+ {
++	static const char kvm_emulate_prefix[] = { __KVM_EMULATE_PREFIX };
+ 	int emul_type = EMULTYPE_TRAP_UD;
+ 	char sig[5]; /* ud2; .ascii "kvm" */
+ 	struct x86_exception e;
+@@ -5590,7 +5592,7 @@ int handle_ud(struct kvm_vcpu *vcpu)
+ 	if (force_emulation_prefix &&
+ 	    kvm_read_guest_virt(vcpu, kvm_get_linear_rip(vcpu),
+ 				sig, sizeof(sig), &e) == 0 &&
+-	    memcmp(sig, "\xf\xbkvm", sizeof(sig)) == 0) {
++	    memcmp(sig, kvm_emulate_prefix, sizeof(sig)) == 0) {
+ 		kvm_rip_write(vcpu, kvm_rip_read(vcpu) + sizeof(sig));
+ 		emul_type = EMULTYPE_TRAP_UD_FORCED;
+ 	}
+diff --git a/arch/x86/lib/insn.c b/arch/x86/lib/insn.c
+index 0b5862ba6a75..404279563891 100644
+--- a/arch/x86/lib/insn.c
++++ b/arch/x86/lib/insn.c
+@@ -13,6 +13,8 @@
+ #include <asm/inat.h>
+ #include <asm/insn.h>
+ 
++#include <asm/emulate_prefix.h>
++
+ /* Verify next sizeof(t) bytes can be on the same instruction */
+ #define validate_next(t, insn, n)	\
+ 	((insn)->next_byte + sizeof(t) + n <= (insn)->end_kaddr)
+@@ -58,6 +60,36 @@ void insn_init(struct insn *insn, const void *kaddr, int buf_len, int x86_64)
+ 		insn->addr_bytes = 4;
+ }
+ 
++static const insn_byte_t xen_prefix[] = { __XEN_EMULATE_PREFIX };
++static const insn_byte_t kvm_prefix[] = { __KVM_EMULATE_PREFIX };
++
++static int __insn_get_emulate_prefix(struct insn *insn,
++				     const insn_byte_t *prefix, size_t len)
++{
++	size_t i;
++
++	for (i = 0; i < len; i++) {
++		if (peek_nbyte_next(insn_byte_t, insn, i) != prefix[i])
++			goto err_out;
++	}
++
++	insn->emulate_prefix_size = len;
++	insn->next_byte += len;
++
++	return 1;
++
++err_out:
++	return 0;
++}
++
++static void insn_get_emulate_prefix(struct insn *insn)
++{
++	if (__insn_get_emulate_prefix(insn, xen_prefix, sizeof(xen_prefix)))
++		return;
++
++	__insn_get_emulate_prefix(insn, kvm_prefix, sizeof(kvm_prefix));
++}
++
+ /**
+  * insn_get_prefixes - scan x86 instruction prefix bytes
+  * @insn:	&struct insn containing instruction
+@@ -76,6 +108,8 @@ void insn_get_prefixes(struct insn *insn)
+ 	if (prefixes->got)
+ 		return;
+ 
++	insn_get_emulate_prefix(insn);
++
+ 	nb = 0;
+ 	lb = 0;
+ 	b = peek_next(insn_byte_t, insn);
 diff --git a/drivers/block/drbd/drbd_nl.c b/drivers/block/drbd/drbd_nl.c
-index 5543876ec0e2..bfefa8c4fa16 100644
+index bfb00d3b091f..52dd517ff541 100644
 --- a/drivers/block/drbd/drbd_nl.c
 +++ b/drivers/block/drbd/drbd_nl.c
-@@ -774,9 +774,11 @@ int drbd_adm_set_role(struct sk_buff *skb, struct genl_info *info)
+@@ -791,9 +791,11 @@ int drbd_adm_set_role(struct sk_buff *skb, struct genl_info *info)
  	mutex_lock(&adm_ctx.resource->adm_mutex);
  
  	if (info->genlhdr->cmd == DRBD_ADM_PRIMARY)
@@ -129,7 +598,7 @@ index 5543876ec0e2..bfefa8c4fa16 100644
  
  	mutex_unlock(&adm_ctx.resource->adm_mutex);
  	genl_lock();
-@@ -1941,7 +1943,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
+@@ -1971,7 +1973,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
  	drbd_flush_workqueue(&connection->sender_work);
  
  	rv = _drbd_request_state(device, NS(disk, D_ATTACHING), CS_VERBOSE);
@@ -138,7 +607,7 @@ index 5543876ec0e2..bfefa8c4fa16 100644
  	drbd_resume_io(device);
  	if (rv < SS_SUCCESS)
  		goto fail;
-@@ -2671,7 +2673,8 @@ int drbd_adm_connect(struct sk_buff *skb, struct genl_info *info)
+@@ -2696,7 +2698,8 @@ int drbd_adm_connect(struct sk_buff *skb, struct genl_info *info)
  	}
  	rcu_read_unlock();
  
@@ -148,7 +617,7 @@ index 5543876ec0e2..bfefa8c4fa16 100644
  
  	conn_reconfig_done(connection);
  	mutex_unlock(&adm_ctx.resource->adm_mutex);
-@@ -2777,7 +2780,7 @@ int drbd_adm_disconnect(struct sk_buff *skb, struct genl_info *info)
+@@ -2809,7 +2812,7 @@ int drbd_adm_disconnect(struct sk_buff *skb, struct genl_info *info)
  	mutex_lock(&adm_ctx.resource->adm_mutex);
  	rv = conn_try_disconnect(connection, parms.force_disconnect);
  	if (rv < SS_SUCCESS)
@@ -157,97 +626,73 @@ index 5543876ec0e2..bfefa8c4fa16 100644
  	else
  		retcode = NO_ERROR;
  	mutex_unlock(&adm_ctx.resource->adm_mutex);
-diff --git a/drivers/mmc/host/rtsx_pci_sdmmc.c b/drivers/mmc/host/rtsx_pci_sdmmc.c
-index 9de6a32f0c9f..0b1d4f2b5862 100644
---- a/drivers/mmc/host/rtsx_pci_sdmmc.c
-+++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
-@@ -49,10 +49,7 @@ struct realtek_pci_sdmmc {
- 	bool			double_clk;
- 	bool			eject;
- 	bool			initial_mode;
--	int			power_state;
--#define SDMMC_POWER_ON		1
--#define SDMMC_POWER_OFF		0
--
-+	int			prev_power_state;
- 	int			sg_count;
- 	s32			cookie;
- 	int			cookie_sg_count;
-@@ -913,14 +910,21 @@ static int sd_set_bus_width(struct realtek_pci_sdmmc *host,
- 	return err;
- }
+diff --git a/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c b/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
+index d03165e71dc6..0be817f8cae6 100644
+--- a/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
++++ b/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.c
+@@ -53,8 +53,8 @@
+  */
  
--static int sd_power_on(struct realtek_pci_sdmmc *host)
-+static int sd_power_on(struct realtek_pci_sdmmc *host, unsigned char power_mode)
+ struct gpio_service *dal_gpio_service_create(
+-	enum dce_version dce_version_major,
+-	enum dce_version dce_version_minor,
++	enum dce_version dce_version,
++	enum dce_environment dce_environment,
+ 	struct dc_context *ctx)
  {
- 	struct rtsx_pcr *pcr = host->pcr;
- 	int err;
+ 	struct gpio_service *service;
+@@ -67,14 +67,14 @@ struct gpio_service *dal_gpio_service_create(
+ 		return NULL;
+ 	}
  
--	if (host->power_state == SDMMC_POWER_ON)
-+	if (host->prev_power_state == MMC_POWER_ON)
- 		return 0;
+-	if (!dal_hw_translate_init(&service->translate, dce_version_major,
+-			dce_version_minor)) {
++	if (!dal_hw_translate_init(&service->translate, dce_version,
++			dce_environment)) {
+ 		BREAK_TO_DEBUGGER();
+ 		goto failure_1;
+ 	}
  
-+	if (host->prev_power_state == MMC_POWER_UP) {
-+		rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, 0);
-+		goto finish;
-+	}
-+
-+	msleep(100);
-+
- 	rtsx_pci_init_cmd(pcr);
- 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SELECT, 0x07, SD_MOD_SEL);
- 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SHARE_MODE,
-@@ -939,11 +943,17 @@ static int sd_power_on(struct realtek_pci_sdmmc *host)
- 	if (err < 0)
- 		return err;
+-	if (!dal_hw_factory_init(&service->factory, dce_version_major,
+-			dce_version_minor)) {
++	if (!dal_hw_factory_init(&service->factory, dce_version,
++			dce_environment)) {
+ 		BREAK_TO_DEBUGGER();
+ 		goto failure_1;
+ 	}
+diff --git a/drivers/gpu/drm/amd/display/include/gpio_service_interface.h b/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
+index 9c55d247227e..7e3240e73c1f 100644
+--- a/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
++++ b/drivers/gpu/drm/amd/display/include/gpio_service_interface.h
+@@ -42,8 +42,8 @@ void dal_gpio_destroy(
+ 	struct gpio **ptr);
  
-+	mdelay(1);
-+
- 	err = rtsx_pci_write_register(pcr, CARD_OE, SD_OUTPUT_EN, SD_OUTPUT_EN);
- 	if (err < 0)
- 		return err;
+ struct gpio_service *dal_gpio_service_create(
+-	enum dce_version dce_version_major,
+-	enum dce_version dce_version_minor,
++	enum dce_version dce_version,
++	enum dce_environment dce_environment,
+ 	struct dc_context *ctx);
  
--	host->power_state = SDMMC_POWER_ON;
-+	/* send at least 74 clocks */
-+	rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, SD_CLK_TOGGLE_EN);
-+
-+finish:
-+	host->prev_power_state = power_mode;
- 	return 0;
- }
+ struct gpio *dal_gpio_service_create_irq(
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
+index 198a91c76531..5c21c06189c1 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
+@@ -1452,7 +1452,7 @@ static int eb_relocate_vma(struct i915_execbuffer *eb, struct i915_vma *vma)
  
-@@ -952,7 +962,7 @@ static int sd_power_off(struct realtek_pci_sdmmc *host)
- 	struct rtsx_pcr *pcr = host->pcr;
- 	int err;
+ 	urelocs = u64_to_user_ptr(entry->relocs_ptr);
+ 	remain = entry->relocation_count;
+-	if (unlikely(remain > N_RELOC(ULONG_MAX)))
++	if (unlikely((unsigned long)remain > N_RELOC(ULONG_MAX)))
+ 		return -EINVAL;
  
--	host->power_state = SDMMC_POWER_OFF;
-+	host->prev_power_state = MMC_POWER_OFF;
- 
- 	rtsx_pci_init_cmd(pcr);
- 
-@@ -978,7 +988,7 @@ static int sd_set_power_mode(struct realtek_pci_sdmmc *host,
- 	if (power_mode == MMC_POWER_OFF)
- 		err = sd_power_off(host);
- 	else
--		err = sd_power_on(host);
-+		err = sd_power_on(host, power_mode);
- 
- 	return err;
- }
-@@ -1416,7 +1426,7 @@ static int rtsx_pci_sdmmc_drv_probe(struct platform_device *pdev)
- 	host->mmc = mmc;
- 	host->pdev = pdev;
- 	host->cookie = -1;
--	host->power_state = SDMMC_POWER_OFF;
-+	host->prev_power_state = MMC_POWER_OFF;
- 	INIT_WORK(&host->work, sd_request);
- 	platform_set_drvdata(pdev, host);
- 	pcr->slots[RTSX_SD_CARD].p_dev = pdev;
+ 	/*
 diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
-index 05a59b9946cb..4eb196d7f4a6 100644
+index 3496dfa1b521..e613cd5707e2 100644
 --- a/drivers/net/can/grcan.c
 +++ b/drivers/net/can/grcan.c
-@@ -245,7 +245,7 @@ struct grcan_device_config {
+@@ -241,7 +241,7 @@ struct grcan_device_config {
  		.rxsize		= GRCAN_DEFAULT_BUFFER_SIZE,	\
  		}
  
@@ -256,7 +701,7 @@ index 05a59b9946cb..4eb196d7f4a6 100644
  #define GRLIB_VERSION_MASK		0xffff
  
  /* GRCAN private data structure */
-@@ -1141,7 +1141,7 @@ static int grcan_close(struct net_device *dev)
+@@ -1137,7 +1137,7 @@ static int grcan_close(struct net_device *dev)
  	return 0;
  }
  
@@ -265,7 +710,7 @@ index 05a59b9946cb..4eb196d7f4a6 100644
  {
  	struct grcan_priv *priv = netdev_priv(dev);
  	unsigned long flags;
-@@ -1149,7 +1149,7 @@ static int grcan_transmit_catch_up(struct net_device *dev, int budget)
+@@ -1145,7 +1145,7 @@ static int grcan_transmit_catch_up(struct net_device *dev, int budget)
  
  	spin_lock_irqsave(&priv->lock, flags);
  
@@ -274,7 +719,7 @@ index 05a59b9946cb..4eb196d7f4a6 100644
  	if (work_done) {
  		if (!priv->resetting && !priv->closing &&
  		    !(priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
-@@ -1163,8 +1163,6 @@ static int grcan_transmit_catch_up(struct net_device *dev, int budget)
+@@ -1159,8 +1159,6 @@ static int grcan_transmit_catch_up(struct net_device *dev, int budget)
  	}
  
  	spin_unlock_irqrestore(&priv->lock, flags);
@@ -283,7 +728,7 @@ index 05a59b9946cb..4eb196d7f4a6 100644
  }
  
  static int grcan_receive(struct net_device *dev, int budget)
-@@ -1246,19 +1244,13 @@ static int grcan_poll(struct napi_struct *napi, int budget)
+@@ -1242,19 +1240,13 @@ static int grcan_poll(struct napi_struct *napi, int budget)
  	struct net_device *dev = priv->dev;
  	struct grcan_registers __iomem *regs = priv->regs;
  	unsigned long flags;
@@ -307,7 +752,7 @@ index 05a59b9946cb..4eb196d7f4a6 100644
  		napi_complete(napi);
  
  		/* Guarantee no interference with a running reset that otherwise
-@@ -1275,7 +1267,7 @@ static int grcan_poll(struct napi_struct *napi, int budget)
+@@ -1271,7 +1263,7 @@ static int grcan_poll(struct napi_struct *napi, int budget)
  		spin_unlock_irqrestore(&priv->lock, flags);
  	}
  
@@ -316,7 +761,7 @@ index 05a59b9946cb..4eb196d7f4a6 100644
  }
  
  /* Work tx bug by waiting while for the risky situation to clear. If that fails,
-@@ -1665,6 +1657,7 @@ static int grcan_setup_netdev(struct platform_device *ofdev,
+@@ -1656,6 +1648,7 @@ static int grcan_setup_netdev(struct platform_device *ofdev,
  static int grcan_probe(struct platform_device *ofdev)
  {
  	struct device_node *np = ofdev->dev.of_node;
@@ -324,7 +769,7 @@ index 05a59b9946cb..4eb196d7f4a6 100644
  	struct resource *res;
  	u32 sysid, ambafreq;
  	int irq, err;
-@@ -1674,10 +1667,15 @@ static int grcan_probe(struct platform_device *ofdev)
+@@ -1665,10 +1658,15 @@ static int grcan_probe(struct platform_device *ofdev)
  	/* Compare GRLIB version number with the first that does not
  	 * have the tx bug (see start_xmit)
  	 */
@@ -344,28 +789,85 @@ index 05a59b9946cb..4eb196d7f4a6 100644
  
  	err = of_property_read_u32(np, "freq", &ambafreq);
  	if (err) {
-diff --git a/fs/namespace.c b/fs/namespace.c
-index 683668a20bed..a0c549f2721c 100644
---- a/fs/namespace.c
-+++ b/fs/namespace.c
-@@ -2570,9 +2570,12 @@ static int do_new_mount(struct path *path, const char *fstype, int sb_flags,
- 		return -ENODEV;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_asm.c b/drivers/net/ethernet/netronome/nfp/nfp_asm.c
+index b04b83687fe2..488615434e4a 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_asm.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_asm.c
+@@ -196,7 +196,7 @@ int swreg_to_unrestricted(swreg dst, swreg lreg, swreg rreg,
+ 	}
  
- 	mnt = vfs_kern_mount(type, sb_flags, name, data);
--	if (!IS_ERR(mnt) && (type->fs_flags & FS_HAS_SUBTYPE) &&
--	    !mnt->mnt_sb->s_subtype)
--		mnt = fs_set_subtype(mnt, fstype);
-+	if (!IS_ERR(mnt) && (type->fs_flags & FS_HAS_SUBTYPE)) {
-+		down_write(&mnt->mnt_sb->s_umount);
-+		if (!mnt->mnt_sb->s_subtype)
-+			mnt = fs_set_subtype(mnt, fstype);
-+		up_write(&mnt->mnt_sb->s_umount);
-+	}
+ 	reg->dst_lmextn = swreg_lmextn(dst);
+-	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
++	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
  
- 	put_filesystem(type);
- 	if (IS_ERR(mnt))
+ 	return 0;
+ }
+@@ -277,7 +277,7 @@ int swreg_to_restricted(swreg dst, swreg lreg, swreg rreg,
+ 	}
+ 
+ 	reg->dst_lmextn = swreg_lmextn(dst);
+-	reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
++	reg->src_lmextn = swreg_lmextn(lreg) || swreg_lmextn(rreg);
+ 
+ 	return 0;
+ }
+diff --git a/fs/proc/kcore.c b/fs/proc/kcore.c
+index e2ed8e08cc7a..d1cabccc02b7 100644
+--- a/fs/proc/kcore.c
++++ b/fs/proc/kcore.c
+@@ -193,8 +193,6 @@ kclist_add_private(unsigned long pfn, unsigned long nr_pages, void *arg)
+ 		return 1;
+ 
+ 	p = pfn_to_page(pfn);
+-	if (!memmap_valid_within(pfn, p, page_zone(p)))
+-		return 1;
+ 
+ 	ent = kmalloc(sizeof(*ent), GFP_KERNEL);
+ 	if (!ent)
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index e4f9df955040..b138ddad619e 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -1438,37 +1438,6 @@ void memory_present(int nid, unsigned long start, unsigned long end);
+ #define pfn_valid_within(pfn) (1)
+ #endif
+ 
+-#ifdef CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
+-/*
+- * pfn_valid() is meant to be able to tell if a given PFN has valid memmap
+- * associated with it or not. This means that a struct page exists for this
+- * pfn. The caller cannot assume the page is fully initialized in general.
+- * Hotplugable pages might not have been onlined yet. pfn_to_online_page()
+- * will ensure the struct page is fully online and initialized. Special pages
+- * (e.g. ZONE_DEVICE) are never onlined and should be treated accordingly.
+- *
+- * In FLATMEM, it is expected that holes always have valid memmap as long as
+- * there is valid PFNs either side of the hole. In SPARSEMEM, it is assumed
+- * that a valid section has a memmap for the entire section.
+- *
+- * However, an ARM, and maybe other embedded architectures in the future
+- * free memmap backing holes to save memory on the assumption the memmap is
+- * never used. The page_zone linkages are then broken even though pfn_valid()
+- * returns true. A walker of the full memmap must then do this additional
+- * check to ensure the memmap they are looking at is sane by making sure
+- * the zone and PFN linkages are still valid. This is expensive, but walkers
+- * of the full memmap are extremely rare.
+- */
+-bool memmap_valid_within(unsigned long pfn,
+-					struct page *page, struct zone *zone);
+-#else
+-static inline bool memmap_valid_within(unsigned long pfn,
+-					struct page *page, struct zone *zone)
+-{
+-	return true;
+-}
+-#endif /* CONFIG_ARCH_HAS_HOLES_MEMORYMODEL */
+-
+ #endif /* !__GENERATING_BOUNDS.H */
+ #endif /* !__ASSEMBLY__ */
+ #endif /* _LINUX_MMZONE_H */
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 51afaaa68408..d42288a06af6 100644
+index 14d00cc10e22..ecad25900ad7 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
 @@ -34,6 +34,9 @@
@@ -378,24 +880,11 @@ index 51afaaa68408..d42288a06af6 100644
  /* HCI Core structures */
  struct inquiry_data {
  	bdaddr_t	bdaddr;
-diff --git a/include/sound/pcm.h b/include/sound/pcm.h
-index 24febf9e177c..0a4770cc3691 100644
---- a/include/sound/pcm.h
-+++ b/include/sound/pcm.h
-@@ -396,6 +396,8 @@ struct snd_pcm_runtime {
- 	wait_queue_head_t sleep;	/* poll sleep */
- 	wait_queue_head_t tsleep;	/* transfer sleep */
- 	struct fasync_struct *fasync;
-+	struct mutex buffer_mutex;	/* protect for buffer changes */
-+	atomic_t buffer_accessing;	/* >0: in r/w operation, <0: blocked */
- 
- 	/* -- private section -- */
- 	void *private_data;
 diff --git a/mm/memory.c b/mm/memory.c
-index cec495ecffae..4154fb45ac0f 100644
+index 8a72fd3e73bf..d416e329442d 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -4836,6 +4836,8 @@ long copy_huge_page_from_user(struct page *dst_page,
+@@ -4801,6 +4801,8 @@ long copy_huge_page_from_user(struct page *dst_page,
  		if (rc)
  			break;
  
@@ -404,11 +893,55 @@ index cec495ecffae..4154fb45ac0f 100644
  		cond_resched();
  	}
  	return ret_val;
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 5092ef2aa8a1..6948d6ec0fd0 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -994,9 +994,12 @@ static int move_to_new_page(struct page *newpage, struct page *page,
+ 		if (!PageMappingFlags(page))
+ 			page->mapping = NULL;
+ 
+-		if (likely(!is_zone_device_page(newpage)))
+-			flush_dcache_page(newpage);
++		if (likely(!is_zone_device_page(newpage))) {
++			int i, nr = compound_nr(newpage);
+ 
++			for (i = 0; i < nr; i++)
++				flush_dcache_page(newpage + i);
++		}
+ 	}
+ out:
+ 	return rc;
+diff --git a/mm/mmzone.c b/mm/mmzone.c
+index 4686fdc23bb9..f337831affc2 100644
+--- a/mm/mmzone.c
++++ b/mm/mmzone.c
+@@ -72,20 +72,6 @@ struct zoneref *__next_zones_zonelist(struct zoneref *z,
+ 	return z;
+ }
+ 
+-#ifdef CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
+-bool memmap_valid_within(unsigned long pfn,
+-					struct page *page, struct zone *zone)
+-{
+-	if (page_to_pfn(page) != pfn)
+-		return false;
+-
+-	if (page_zone(page) != zone)
+-		return false;
+-
+-	return true;
+-}
+-#endif /* CONFIG_ARCH_HAS_HOLES_MEMORYMODEL */
+-
+ void lruvec_init(struct lruvec *lruvec)
+ {
+ 	enum lru_list lru;
 diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
-index ee8a68863089..3f08453e703d 100644
+index 640ff2bd9a69..6fa66e2111ea 100644
 --- a/mm/userfaultfd.c
 +++ b/mm/userfaultfd.c
-@@ -56,6 +56,8 @@ static int mcopy_atomic_pte(struct mm_struct *dst_mm,
+@@ -53,6 +53,8 @@ static int mcopy_atomic_pte(struct mm_struct *dst_mm,
  			/* don't free the page */
  			goto out;
  		}
@@ -417,7 +950,7 @@ index ee8a68863089..3f08453e703d 100644
  	} else {
  		page = *pagep;
  		*pagep = NULL;
-@@ -565,6 +567,7 @@ static __always_inline ssize_t __mcopy_atomic(struct mm_struct *dst_mm,
+@@ -572,6 +574,7 @@ static __always_inline ssize_t __mcopy_atomic(struct mm_struct *dst_mm,
  				err = -EFAULT;
  				goto out;
  			}
@@ -425,11 +958,26 @@ index ee8a68863089..3f08453e703d 100644
  			goto retry;
  		} else
  			BUG_ON(page);
+diff --git a/mm/vmstat.c b/mm/vmstat.c
+index a8222041bd44..240fe2153ca9 100644
+--- a/mm/vmstat.c
++++ b/mm/vmstat.c
+@@ -1444,10 +1444,6 @@ static void pagetypeinfo_showblockcount_print(struct seq_file *m,
+ 		if (!page)
+ 			continue;
+ 
+-		/* Watch for unexpected holes punched in the memmap */
+-		if (!memmap_valid_within(pfn, page, zone))
+-			continue;
+-
+ 		if (page_zone(page) != zone)
+ 			continue;
+ 
 diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 687b4d0e4c67..a6f186a04fe7 100644
+index 2edaa601df13..2ebb6480b6ec 100644
 --- a/net/bluetooth/hci_core.c
 +++ b/net/bluetooth/hci_core.c
-@@ -3100,10 +3100,10 @@ int hci_register_dev(struct hci_dev *hdev)
+@@ -3304,10 +3304,10 @@ int hci_register_dev(struct hci_dev *hdev)
  	 */
  	switch (hdev->dev_type) {
  	case HCI_PRIMARY:
@@ -442,7 +990,7 @@ index 687b4d0e4c67..a6f186a04fe7 100644
  		break;
  	default:
  		return -EINVAL;
-@@ -3112,7 +3112,7 @@ int hci_register_dev(struct hci_dev *hdev)
+@@ -3316,7 +3316,7 @@ int hci_register_dev(struct hci_dev *hdev)
  	if (id < 0)
  		return id;
  
@@ -451,286 +999,145 @@ index 687b4d0e4c67..a6f186a04fe7 100644
  	hdev->id = id;
  
  	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
-diff --git a/sound/core/pcm.c b/sound/core/pcm.c
-index a228bf933110..de48803f2be2 100644
---- a/sound/core/pcm.c
-+++ b/sound/core/pcm.c
-@@ -1032,6 +1032,8 @@ int snd_pcm_attach_substream(struct snd_pcm *pcm, int stream,
- 	init_waitqueue_head(&runtime->tsleep);
- 
- 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
-+	mutex_init(&runtime->buffer_mutex);
-+	atomic_set(&runtime->buffer_accessing, 0);
- 
- 	substream->runtime = runtime;
- 	substream->private_data = pcm->private_data;
-@@ -1063,6 +1065,7 @@ void snd_pcm_detach_substream(struct snd_pcm_substream *substream)
- 	substream->runtime = NULL;
- 	if (substream->timer)
- 		spin_unlock_irq(&substream->timer->lock);
-+	mutex_destroy(&runtime->buffer_mutex);
- 	kfree(runtime);
- 	put_pid(substream->pid);
- 	substream->pid = NULL;
-diff --git a/sound/core/pcm_lib.c b/sound/core/pcm_lib.c
-index 82a7387ba9d2..82d4b72dcb64 100644
---- a/sound/core/pcm_lib.c
-+++ b/sound/core/pcm_lib.c
-@@ -2226,10 +2226,15 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(struct snd_pcm_substream *substream,
- 			snd_pcm_stream_unlock_irq(substream);
- 			return -EINVAL;
- 		}
-+		if (!atomic_inc_unless_negative(&runtime->buffer_accessing)) {
-+			err = -EBUSY;
-+			goto _end_unlock;
-+		}
- 		snd_pcm_stream_unlock_irq(substream);
- 		err = writer(substream, appl_ofs, data, offset, frames,
- 			     transfer);
- 		snd_pcm_stream_lock_irq(substream);
-+		atomic_dec(&runtime->buffer_accessing);
- 		if (err < 0)
- 			goto _end_unlock;
- 		err = pcm_accessible_state(runtime);
-diff --git a/sound/core/pcm_memory.c b/sound/core/pcm_memory.c
-index ae33e456708c..adc5f3c2379b 100644
---- a/sound/core/pcm_memory.c
-+++ b/sound/core/pcm_memory.c
-@@ -160,19 +160,20 @@ static void snd_pcm_lib_preallocate_proc_write(struct snd_info_entry *entry,
- 	size_t size;
- 	struct snd_dma_buffer new_dmab;
- 
-+	mutex_lock(&substream->pcm->open_mutex);
- 	if (substream->runtime) {
- 		buffer->error = -EBUSY;
--		return;
-+		goto unlock;
- 	}
- 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
- 		snd_info_get_str(str, line, sizeof(str));
- 		size = simple_strtoul(str, NULL, 10) * 1024;
- 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
- 			buffer->error = -EINVAL;
--			return;
-+			goto unlock;
- 		}
- 		if (substream->dma_buffer.bytes == size)
--			return;
-+			goto unlock;
- 		memset(&new_dmab, 0, sizeof(new_dmab));
- 		new_dmab.dev = substream->dma_buffer.dev;
- 		if (size > 0) {
-@@ -180,7 +181,7 @@ static void snd_pcm_lib_preallocate_proc_write(struct snd_info_entry *entry,
- 						substream->dma_buffer.dev.dev,
- 						size, &new_dmab) < 0) {
- 				buffer->error = -ENOMEM;
--				return;
-+				goto unlock;
- 			}
- 			substream->buffer_bytes_max = size;
- 		} else {
-@@ -192,6 +193,8 @@ static void snd_pcm_lib_preallocate_proc_write(struct snd_info_entry *entry,
- 	} else {
- 		buffer->error = -EINVAL;
- 	}
-+ unlock:
-+	mutex_unlock(&substream->pcm->open_mutex);
- }
- 
- static inline void preallocate_info_init(struct snd_pcm_substream *substream)
-diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
-index c530d008fe01..c57d82402220 100644
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -634,6 +634,30 @@ static int snd_pcm_hw_params_choose(struct snd_pcm_substream *pcm,
- 	return 0;
- }
- 
-+/* acquire buffer_mutex; if it's in r/w operation, return -EBUSY, otherwise
-+ * block the further r/w operations
+diff --git a/tools/arch/x86/include/asm/emulate_prefix.h b/tools/arch/x86/include/asm/emulate_prefix.h
+new file mode 100644
+index 000000000000..70f5b98a5286
+--- /dev/null
++++ b/tools/arch/x86/include/asm/emulate_prefix.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_EMULATE_PREFIX_H
++#define _ASM_X86_EMULATE_PREFIX_H
++
++/*
++ * Virt escape sequences to trigger instruction emulation;
++ * ideally these would decode to 'whole' instruction and not destroy
++ * the instruction stream; sadly this is not true for the 'kvm' one :/
 + */
-+static int snd_pcm_buffer_access_lock(struct snd_pcm_runtime *runtime)
-+{
-+	if (!atomic_dec_unless_positive(&runtime->buffer_accessing))
-+		return -EBUSY;
-+	mutex_lock(&runtime->buffer_mutex);
-+	return 0; /* keep buffer_mutex, unlocked by below */
-+}
 +
-+/* release buffer_mutex and clear r/w access flag */
-+static void snd_pcm_buffer_access_unlock(struct snd_pcm_runtime *runtime)
-+{
-+	mutex_unlock(&runtime->buffer_mutex);
-+	atomic_inc(&runtime->buffer_accessing);
-+}
++#define __XEN_EMULATE_PREFIX  0x0f,0x0b,0x78,0x65,0x6e  /* ud2 ; .ascii "xen" */
++#define __KVM_EMULATE_PREFIX  0x0f,0x0b,0x6b,0x76,0x6d	/* ud2 ; .ascii "kvm" */
 +
-+#if IS_ENABLED(CONFIG_SND_PCM_OSS)
-+#define is_oss_stream(substream)	((substream)->oss.oss)
-+#else
-+#define is_oss_stream(substream)	false
 +#endif
+diff --git a/tools/arch/x86/include/asm/insn.h b/tools/arch/x86/include/asm/insn.h
+index d7f0ae8f3c44..52c6262e6bfd 100644
+--- a/tools/arch/x86/include/asm/insn.h
++++ b/tools/arch/x86/include/asm/insn.h
+@@ -45,6 +45,7 @@ struct insn {
+ 		struct insn_field immediate2;	/* for 64bit imm or seg16 */
+ 	};
+ 
++	int	emulate_prefix_size;
+ 	insn_attr_t attr;
+ 	unsigned char opnd_bytes;
+ 	unsigned char addr_bytes;
+@@ -128,6 +129,11 @@ static inline int insn_is_evex(struct insn *insn)
+ 	return (insn->vex_prefix.nbytes == 4);
+ }
+ 
++static inline int insn_has_emulate_prefix(struct insn *insn)
++{
++	return !!insn->emulate_prefix_size;
++}
 +
- static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
- 			     struct snd_pcm_hw_params *params)
+ /* Ensure this instruction is decoded completely */
+ static inline int insn_complete(struct insn *insn)
  {
-@@ -645,22 +669,25 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
- 	if (PCM_RUNTIME_CHECK(substream))
- 		return -ENXIO;
- 	runtime = substream->runtime;
-+	err = snd_pcm_buffer_access_lock(runtime);
-+	if (err < 0)
-+		return err;
- 	snd_pcm_stream_lock_irq(substream);
- 	switch (runtime->status->state) {
- 	case SNDRV_PCM_STATE_OPEN:
- 	case SNDRV_PCM_STATE_SETUP:
- 	case SNDRV_PCM_STATE_PREPARED:
-+		if (!is_oss_stream(substream) &&
-+		    atomic_read(&substream->mmap_count))
-+			err = -EBADFD;
- 		break;
- 	default:
--		snd_pcm_stream_unlock_irq(substream);
--		return -EBADFD;
-+		err = -EBADFD;
-+		break;
- 	}
- 	snd_pcm_stream_unlock_irq(substream);
--#if IS_ENABLED(CONFIG_SND_PCM_OSS)
--	if (!substream->oss.oss)
--#endif
--		if (atomic_read(&substream->mmap_count))
--			return -EBADFD;
-+	if (err)
-+		goto unlock;
+diff --git a/tools/arch/x86/lib/insn.c b/tools/arch/x86/lib/insn.c
+index 79e048f1d902..0151dfc6da61 100644
+--- a/tools/arch/x86/lib/insn.c
++++ b/tools/arch/x86/lib/insn.c
+@@ -13,6 +13,8 @@
+ #include "../include/asm/inat.h"
+ #include "../include/asm/insn.h"
  
- 	params->rmask = ~0U;
- 	err = snd_pcm_hw_refine(substream, params);
-@@ -737,14 +764,19 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
- 	if ((usecs = period_to_usecs(runtime)) >= 0)
- 		pm_qos_add_request(&substream->latency_pm_qos_req,
- 				   PM_QOS_CPU_DMA_LATENCY, usecs);
--	return 0;
-+	err = 0;
-  _error:
--	/* hardware might be unusable from this time,
--	   so we force application to retry to set
--	   the correct hardware parameter settings */
--	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
--	if (substream->ops->hw_free != NULL)
--		substream->ops->hw_free(substream);
-+	if (err) {
-+		/* hardware might be unusable from this time,
-+		 * so we force application to retry to set
-+		 * the correct hardware parameter settings
-+		 */
-+		snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
-+		if (substream->ops->hw_free != NULL)
-+			substream->ops->hw_free(substream);
++#include "../include/asm/emulate_prefix.h"
++
+ /* Verify next sizeof(t) bytes can be on the same instruction */
+ #define validate_next(t, insn, n)	\
+ 	((insn)->next_byte + sizeof(t) + n <= (insn)->end_kaddr)
+@@ -58,6 +60,36 @@ void insn_init(struct insn *insn, const void *kaddr, int buf_len, int x86_64)
+ 		insn->addr_bytes = 4;
+ }
+ 
++static const insn_byte_t xen_prefix[] = { __XEN_EMULATE_PREFIX };
++static const insn_byte_t kvm_prefix[] = { __KVM_EMULATE_PREFIX };
++
++static int __insn_get_emulate_prefix(struct insn *insn,
++				     const insn_byte_t *prefix, size_t len)
++{
++	size_t i;
++
++	for (i = 0; i < len; i++) {
++		if (peek_nbyte_next(insn_byte_t, insn, i) != prefix[i])
++			goto err_out;
 +	}
-+ unlock:
-+	snd_pcm_buffer_access_unlock(runtime);
- 	return err;
- }
++
++	insn->emulate_prefix_size = len;
++	insn->next_byte += len;
++
++	return 1;
++
++err_out:
++	return 0;
++}
++
++static void insn_get_emulate_prefix(struct insn *insn)
++{
++	if (__insn_get_emulate_prefix(insn, xen_prefix, sizeof(xen_prefix)))
++		return;
++
++	__insn_get_emulate_prefix(insn, kvm_prefix, sizeof(kvm_prefix));
++}
++
+ /**
+  * insn_get_prefixes - scan x86 instruction prefix bytes
+  * @insn:	&struct insn containing instruction
+@@ -76,6 +108,8 @@ void insn_get_prefixes(struct insn *insn)
+ 	if (prefixes->got)
+ 		return;
  
-@@ -777,22 +809,29 @@ static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
- 	if (PCM_RUNTIME_CHECK(substream))
- 		return -ENXIO;
- 	runtime = substream->runtime;
-+	result = snd_pcm_buffer_access_lock(runtime);
-+	if (result < 0)
-+		return result;
- 	snd_pcm_stream_lock_irq(substream);
- 	switch (runtime->status->state) {
- 	case SNDRV_PCM_STATE_SETUP:
- 	case SNDRV_PCM_STATE_PREPARED:
-+		if (atomic_read(&substream->mmap_count))
-+			result = -EBADFD;
- 		break;
- 	default:
--		snd_pcm_stream_unlock_irq(substream);
--		return -EBADFD;
-+		result = -EBADFD;
-+		break;
- 	}
- 	snd_pcm_stream_unlock_irq(substream);
--	if (atomic_read(&substream->mmap_count))
--		return -EBADFD;
-+	if (result)
-+		goto unlock;
- 	if (substream->ops->hw_free)
- 		result = substream->ops->hw_free(substream);
- 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
- 	pm_qos_remove_request(&substream->latency_pm_qos_req);
-+ unlock:
-+	snd_pcm_buffer_access_unlock(runtime);
- 	return result;
- }
++	insn_get_emulate_prefix(insn);
++
+ 	nb = 0;
+ 	lb = 0;
+ 	b = peek_next(insn_byte_t, insn);
+diff --git a/tools/objtool/sync-check.sh b/tools/objtool/sync-check.sh
+index c3ae1e8ae119..2a1261bfbb62 100755
+--- a/tools/objtool/sync-check.sh
++++ b/tools/objtool/sync-check.sh
+@@ -4,6 +4,7 @@
+ FILES='
+ arch/x86/include/asm/inat_types.h
+ arch/x86/include/asm/orc_types.h
++arch/x86/include/asm/emulate_prefix.h
+ arch/x86/lib/x86-opcode-map.txt
+ arch/x86/tools/gen-insn-attr-x86.awk
+ '
+@@ -46,4 +47,4 @@ done
+ check arch/x86/include/asm/inat.h     '-I "^#include [\"<]\(asm/\)*inat_types.h[\">]"'
+ check arch/x86/include/asm/insn.h     '-I "^#include [\"<]\(asm/\)*inat.h[\">]"'
+ check arch/x86/lib/inat.c             '-I "^#include [\"<]\(../include/\)*asm/insn.h[\">]"'
+-check arch/x86/lib/insn.c             '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]"'
++check arch/x86/lib/insn.c             '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]" -I "^#include [\"<]\(../include/\)*asm/emulate_prefix.h[\">]"'
+diff --git a/tools/perf/check-headers.sh b/tools/perf/check-headers.sh
+index cea13cb987d0..499235a41162 100755
+--- a/tools/perf/check-headers.sh
++++ b/tools/perf/check-headers.sh
+@@ -28,6 +28,7 @@ arch/x86/include/asm/disabled-features.h
+ arch/x86/include/asm/required-features.h
+ arch/x86/include/asm/cpufeatures.h
+ arch/x86/include/asm/inat_types.h
++arch/x86/include/asm/emulate_prefix.h
+ arch/x86/include/uapi/asm/prctl.h
+ arch/x86/lib/x86-opcode-map.txt
+ arch/x86/tools/gen-insn-attr-x86.awk
+@@ -116,7 +117,7 @@ check lib/ctype.c		      '-I "^EXPORT_SYMBOL" -I "^#include <linux/export.h>" -B
+ check arch/x86/include/asm/inat.h     '-I "^#include [\"<]\(asm/\)*inat_types.h[\">]"'
+ check arch/x86/include/asm/insn.h     '-I "^#include [\"<]\(asm/\)*inat.h[\">]"'
+ check arch/x86/lib/inat.c	      '-I "^#include [\"<]\(../include/\)*asm/insn.h[\">]"'
+-check arch/x86/lib/insn.c	      '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]"'
++check arch/x86/lib/insn.c             '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]" -I "^#include [\"<]\(../include/\)*asm/emulate_prefix.h[\">]"'
  
-@@ -1029,15 +1068,17 @@ struct action_ops {
-  */
- static int snd_pcm_action_group(const struct action_ops *ops,
- 				struct snd_pcm_substream *substream,
--				int state, int do_lock)
-+				int state, int stream_lock)
- {
- 	struct snd_pcm_substream *s = NULL;
- 	struct snd_pcm_substream *s1;
- 	int res = 0, depth = 1;
- 
- 	snd_pcm_group_for_each_entry(s, substream) {
--		if (do_lock && s != substream) {
--			if (s->pcm->nonatomic)
-+		if (s != substream) {
-+			if (!stream_lock)
-+				mutex_lock_nested(&s->runtime->buffer_mutex, depth);
-+			else if (s->pcm->nonatomic)
- 				mutex_lock_nested(&s->self_group.mutex, depth);
- 			else
- 				spin_lock_nested(&s->self_group.lock, depth);
-@@ -1065,18 +1106,18 @@ static int snd_pcm_action_group(const struct action_ops *ops,
- 		ops->post_action(s, state);
- 	}
-  _unlock:
--	if (do_lock) {
--		/* unlock streams */
--		snd_pcm_group_for_each_entry(s1, substream) {
--			if (s1 != substream) {
--				if (s1->pcm->nonatomic)
--					mutex_unlock(&s1->self_group.mutex);
--				else
--					spin_unlock(&s1->self_group.lock);
--			}
--			if (s1 == s)	/* end */
--				break;
-+	/* unlock streams */
-+	snd_pcm_group_for_each_entry(s1, substream) {
-+		if (s1 != substream) {
-+			if (!stream_lock)
-+				mutex_unlock(&s1->runtime->buffer_mutex);
-+			else if (s1->pcm->nonatomic)
-+				mutex_unlock(&s1->self_group.mutex);
-+			else
-+				spin_unlock(&s1->self_group.lock);
- 		}
-+		if (s1 == s)	/* end */
-+			break;
- 	}
- 	return res;
- }
-@@ -1157,10 +1198,15 @@ static int snd_pcm_action_nonatomic(const struct action_ops *ops,
- 	int res;
- 
- 	down_read(&snd_pcm_link_rwsem);
-+	res = snd_pcm_buffer_access_lock(substream->runtime);
-+	if (res < 0)
-+		goto unlock;
- 	if (snd_pcm_stream_linked(substream))
- 		res = snd_pcm_action_group(ops, substream, state, 0);
- 	else
- 		res = snd_pcm_action_single(ops, substream, state);
-+	snd_pcm_buffer_access_unlock(substream->runtime);
-+ unlock:
- 	up_read(&snd_pcm_link_rwsem);
- 	return res;
- }
+ # diff non-symmetric files
+ check_2 tools/perf/arch/x86/entry/syscalls/syscall_64.tbl arch/x86/entry/syscalls/syscall_64.tbl
