@@ -2,189 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B113C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 14:50:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D48C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 14:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237180AbiEOOuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 10:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
+        id S237274AbiEOOwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 10:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237252AbiEOOt5 (ORCPT
+        with ESMTP id S232579AbiEOOwJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 10:49:57 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E2A8186F9
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 07:49:51 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id a5so13617099wrp.7
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 07:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zVVOCTvJRX3Olou6oLL+JZw4cMsITWwHrp/zHjilPa0=;
-        b=C+eq1A7HiHDaSo0p27ThkLSdQenQd4sfQWLvzP0ajbo/oIGxBN5Dqaz1SVvL3dcQg5
-         t1uahCp1gCZeu50g/nzqoHTK9vjJ/C0ZgQkiYK91Gz+8A77RE5kE24SdXAZBKZ8YfWmE
-         GhtKVZoYXFFfnhdpOr3Q4FiqiiEJ+Hgxcjwv7iEiGvRwPr3Asj16nr+DD/v7VBgmWDJU
-         FUekiYTa1EJCHbTByoXJh84MoSbXSRqwb8GZFr1qOFJXXbB7DWbuVIlt/EPOK2Qxmu2c
-         IkMnzinehd0xbC62K3YmNbctekwEuM7AfuCWVF0c0bXJwPSwDbL+YliNlRdn/M0H/ggv
-         6GgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zVVOCTvJRX3Olou6oLL+JZw4cMsITWwHrp/zHjilPa0=;
-        b=VZQEtdo9l7iLu91W6qjLEERJGjjdnaEVGwaoA9zhDDXDqRdafjFUQ3Gget9PJmnozG
-         ScoMq9wRUbkVOJwxcXTeB1oTn2vQJlUU23ZNB3r1o0NNa53sHMCYtq3CHs0lgscyFHKT
-         qSpinETDYXyUwFqurcdBzyWf7YrEBcl+09F2T+Dphs8yS9NvfzjAJjmc1X0JN2GNY85J
-         KcQk8frzlRBfc9wjew7d7wV2D9OfqO+xZzrCIVSc5iw0hOqzUJfbFFWY1KU1GCLQIx88
-         cGN2xp9WUSzOsVjdln1iEUXbv4p69OANokih2xDmD+jCW7yiFMyALzkYXO4MhlYnGX9T
-         WuYA==
-X-Gm-Message-State: AOAM5302nd8pOjssW09HvDpcER6RXi+xCPvZuKv2fJ9UghgQp8jOWPsR
-        9XQLfzk6wozf5Cx/nobpCaFPrMTs79xH/8wKL6HJYafrWSKS8w==
-X-Google-Smtp-Source: ABdhPJwvR7potoC48hgEHBhyQ61tXNCGwdKt+L5cAyYYXHe31JWD4GvHiG2bEfrFRSngiArwFWJ2URXkxCY1N53mvkc=
-X-Received: by 2002:adf:f001:0:b0:20d:22b:183c with SMTP id
- j1-20020adff001000000b0020d022b183cmr4176252wro.313.1652626190014; Sun, 15
- May 2022 07:49:50 -0700 (PDT)
+        Sun, 15 May 2022 10:52:09 -0400
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10622A45B
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 07:52:08 -0700 (PDT)
+Received: from epcas1p1.samsung.com (unknown [182.195.41.45])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220515145206epoutp0404d538a6d4311a77a16dd2966a666520~vTuM0zZzi2430724307epoutp04Y
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 14:52:06 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220515145206epoutp0404d538a6d4311a77a16dd2966a666520~vTuM0zZzi2430724307epoutp04Y
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1652626326;
+        bh=YecPhC80F8OYFafQAk1lG9Dp3FXRZApg8GB4Gfqp7Es=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=fbWugHz7ChVxNnpksUUhZYmpz3ElOHvS2zKE5E9KGZgHQLg5ngGuz+44hBA8omcUV
+         Pgu+YYAdN9VNqWhNLW7/fyDqI0zGXQE1br7hxNvGUqjYkxeIRnHz/Mfaj4GSBTZpNy
+         CO3ofyF81Y7v0G89s4Mmt/7e3ab8l7trZI2syxgk=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas1p3.samsung.com (KnoxPortal) with ESMTP id
+        20220515145205epcas1p361c3a642e954a05905a00adc0c066f14~vTuMJnz752825028250epcas1p3K;
+        Sun, 15 May 2022 14:52:05 +0000 (GMT)
+Received: from epsmges1p2.samsung.com (unknown [182.195.38.248]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4L1QMS5LVdz4x9Pt; Sun, 15 May
+        2022 14:52:04 +0000 (GMT)
+Received: from epcas1p4.samsung.com ( [182.195.41.48]) by
+        epsmges1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        01.99.09785.49311826; Sun, 15 May 2022 23:52:04 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220515145203epcas1p26cb049179c6116ecf6f0316f61f793d5~vTuKyB0k70904109041epcas1p2Q;
+        Sun, 15 May 2022 14:52:03 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220515145203epsmtrp1051a7b9242fe484a5a2f97ccc5120f34~vTuKuBAoz1949719497epsmtrp1U;
+        Sun, 15 May 2022 14:52:03 +0000 (GMT)
+X-AuditID: b6c32a36-c9dff70000002639-f1-628113944e86
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B2.F4.08924.39311826; Sun, 15 May 2022 23:52:03 +0900 (KST)
+Received: from W10PB11329 (unknown [10.253.152.129]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220515145203epsmtip17dc50ce0893c9f9353e75ebe88b4538d~vTuKgcPVn2152621526epsmtip1J;
+        Sun, 15 May 2022 14:52:03 +0000 (GMT)
+From:   "Sungjong Seo" <sj1557.seo@samsung.com>
+To:     "'Tadeusz Struk'" <tadeusz.struk@linaro.org>,
+        <linkinjeon@kernel.org>
+Cc:     <linux-fsdevel@vger.kernel.org>, <stable@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com>,
+        <sj1557.seo@samsung.com>
+In-Reply-To: <20220511185909.175110-2-tadeusz.struk@linaro.org>
+Subject: RE: [PATCH v2 2/2] exfat: check if cluster num is valid
+Date:   Sun, 15 May 2022 23:52:03 +0900
+Message-ID: <000101d8686b$56d88750$048995f0$@samsung.com>
 MIME-Version: 1.0
-References: <20220508160749.984-1-jszhang@kernel.org> <20220508160749.984-3-jszhang@kernel.org>
- <CAK9=C2Xinc6Y9ue+3ZOvKOOgru7wvJNcEPLvO4aZGuQqETXi2w@mail.gmail.com>
- <YnkoKxaPbrTnZPQv@xhacker> <CAOnJCU+XR5mtqKBQLMj3JgsTPgvAQdO_jj2FWqcu7f9MezNCKA@mail.gmail.com>
- <YoCollqhS93NJZjL@xhacker>
-In-Reply-To: <YoCollqhS93NJZjL@xhacker>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Sun, 15 May 2022 20:19:37 +0530
-Message-ID: <CAAhSdy3_av5H-V_d5ynwgfeZYsCnCSd5pFSEKCzDSDBbD+pGLA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/4] riscv: introduce unified static key mechanism for
- CPU features
-To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        kasan-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 15.0
+Thread-Index: AQF3Brc3FXm9T2wCvxI2g4ISsAr4jwHO2GdrArq74xStvnjDkA==
+Content-Language: ko
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNJsWRmVeSWpSXmKPExsWy7bCmge4U4cYkgycX1SwmTlvKbLFn70kW
+        i8u75rBZbPl3hNViwcZHjBbPbk5gtnjw8D+rA7vHplWdbB53ru1h8+jbsorRY+ZbNY/Pm+QC
+        WKMaGG0Si5IzMstSFVLzkvNTMvPSbZVCQ9x0LZQUMvKLS2yVog0NjfQMDcz1jIyM9IwtY62M
+        TJUU8hJzU22VKnShepUUipILgGpzK4uBBuSk6kHF9YpT81IcsvJLQU7XK07MLS7NS9dLzs9V
+        UihLzCkFGqGkn/CNMWPxz+eMBTfEK67/ecrYwDhHpIuRk0NCwETi4LXJjF2MXBxCAjsYJRb2
+        PYByPjFKfJm9lhnC+cwo8WHdM7YuRg6wlknHtSHiuxglTt2fyw7hvGSUmPp6MRvIXDYBXYkn
+        N34yg9giAp4SDR/mg41lFtjGKNG8fCkrSIJTwF7iy89DLCC2sICDxL47s9lBbBYBVYkd36aB
+        2bwClhI3OvcyQ9iCEidnPgGrZxaQl9j+dg4zxBMKErs/HWWFWOYksX5lHzNEjYjE7M42sBck
+        BKZySCy7NJEFosFF4s2q96wQtrDEq+Nb2CFsKYmX/W1QdjPQpY1GEHYHo8TTjbIQ79tLvL9k
+        AWIyC2hKrN+lD1GhKLHz91xGCFtQ4vS1bqgT+CTefe1hhejklehoE4IoUZH4/mEnywRG5VlI
+        HpuF5LFZSB6YhbBsASPLKkax1ILi3PTUYsMCI+T43sQITrdaZjsYJ739oHeIkYmD8RCjBAez
+        kgivQUVDkhBvSmJlVWpRfnxRaU5q8SHGZGBQT2SWEk3OByb8vJJ4QxNjAwMjYDI0tzQ3JkLY
+        0sDEzMjEwtjS2ExJnHfVtNOJQgLpiSWp2ampBalFMFuYODilGpjY6lzYrJOehTLXzH8sIvj2
+        2talKXWLV04Vu5Y+i037w/MSf1eVQoWCjV2dE+uP+UpbR7iuFL4pZz1/3t3Nzze+84jZvM2j
+        8aPlwqtid7bL2xtaewVGy/3f+GZ1SZfLGfu99+3/e567Ldlpco35cl/uNO2+Vye11lrHXpnW
+        pP+7uv+2wr/aO5Krnl7ICRaaP1HC6bH40mVd+ZHPfOK+3PAx6GZefKXeZEZm0tyFuifjvNfs
+        PLv+y+W2lMVTN3o81D6/8rwYt3OCi8SuSZfc2fqiZG0XmFrWzF6WxHjj1nHbuX8Mvr448uO9
+        wcUO1TAfw8UnzZZdrDhg2z2TMXkyp0/MS1uvlRYLVy3/IHG1Ol5QiaU4I9FQi7moOBEA7vO8
+        Wm4EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrHLMWRmVeSWpSXmKPExsWy7bCSnO5k4cYkgzcb1SwmTlvKbLFn70kW
+        i8u75rBZbPl3hNViwcZHjBbPbk5gtnjw8D+rA7vHplWdbB53ru1h8+jbsorRY+ZbNY/Pm+QC
+        WKO4bFJSczLLUov07RK4Mhb/fM5YcEO84vqfp4wNjHNEuhg5OCQETCQmHdfuYuTkEBLYwSgx
+        pTELIiwlcXCfJoQpLHH4cHEXIxdQxXNGiVl325lAytkEdCWe3PjJDGKLCHhLvDzYyQpSxAwy
+        5tquF2wQHYcZJV7seQpWxSlgL/Hl5yEWEFtYwEFi353Z7CA2i4CqxI5v08BsXgFLiRude5kh
+        bEGJkzOfsIBcwSygJ9G2kREkzCwgL7H97RywEgkBBYndn46yQhzhJLF+ZR8zRI2IxOzONuYJ
+        jMKzkEyahTBpFpJJs5B0LGBkWcUomVpQnJueW2xYYJSXWq5XnJhbXJqXrpecn7uJERxFWlo7
+        GPes+qB3iJGJg/EQowQHs5IIr0FFQ5IQb0piZVVqUX58UWlOavEhRmkOFiVx3gtdJ+OFBNIT
+        S1KzU1MLUotgskwcnFINTMKKClFnj0v2zXJWXWpSFvGKc6nJ5qVcj+1Ovy9O/pvAw2PWHzn3
+        ptuEC3cULzo4neSovWs+fV203yl283eb9X+dedPp7CHtXF672yemQUXNqC5E99s7zWDLC2oa
+        MdM/XHc4m230XvhS1+ac50sK/n5emfmaK+NP8zOVUvN/37ILLnEpHv1Q3OgmqWXWkFVlamqV
+        E6u8jdtt817Xv1oTZrxY4B/IN1MxefuEn4ac/dsUd52MYzh+STNb5YJTsOrePCm1NwtLHh7f
+        0bpVynfCqwPZfz7m/u3+qhdQtVHa27Hr3xXZV0dY1ncsnDDtcerzVVsl2s66LVbMvblVb9f1
+        J84F+58vYk2OOT0vJfbTBSWW4oxEQy3mouJEAASdrIURAwAA
+X-CMS-MailID: 20220515145203epcas1p26cb049179c6116ecf6f0316f61f793d5
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+X-ArchiveUser: EV
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220511185940epcas1p1e51c30e41ff82ae642f8f949ffa4b189
+References: <20220511185909.175110-1-tadeusz.struk@linaro.org>
+        <CGME20220511185940epcas1p1e51c30e41ff82ae642f8f949ffa4b189@epcas1p1.samsung.com>
+        <20220511185909.175110-2-tadeusz.struk@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 15, 2022 at 12:54 PM Jisheng Zhang <jszhang@kernel.org> wrote:
->
-> On Wed, May 11, 2022 at 11:29:32PM -0700, Atish Patra wrote:
-> > On Mon, May 9, 2022 at 7:50 AM Jisheng Zhang <jszhang@kernel.org> wrote:
-> > >
-> > > On Mon, May 09, 2022 at 09:17:10AM +0530, Anup Patel wrote:
-> > > > On Sun, May 8, 2022 at 9:47 PM Jisheng Zhang <jszhang@kernel.org> wrote:
-> > > > >
-> > > > > Currently, riscv has several features why may not be supported on all
-> > > > > riscv platforms, for example, FPU, SV48 and so on. To support unified
-> > > > > kernel Image style, we need to check whether the feature is suportted
-> > > > > or not. If the check sits at hot code path, then performance will be
-> > > > > impacted a lot. static key can be used to solve the issue. In the past
-> > > > > FPU support has been converted to use static key mechanism. I believe
-> > > > > we will have similar cases in the future.
-> > > >
-> > > > It's not just FPU and Sv48. There are several others such as Svinval,
-> > > > Vector, Svnapot, Svpbmt, and many many others.
-> > > >
-> > > > Overall, I agree with the approach of using static key array but I
-> > > > disagree with the semantics and the duplicate stuff being added.
-> > > >
-> > > > Please see more comments below ..
-> > > >
-> > > > >
-> > > > > Similar as arm64 does(in fact, some code is borrowed from arm64), this
-> > > > > patch tries to add an unified mechanism to use static keys for all
-> > > > > the cpu features by implementing an array of default-false static keys
-> > > > > and enabling them when detected. The cpus_have_*_cap() check uses the
-> > > > > static keys if riscv_const_caps_ready is finalized, otherwise the
-> > > > > compiler generates the bitmap test.
-> > > >
-> > > > First of all, we should stop calling this a feature (like ARM does). Rather,
-> > > > we should call these as isa extensions ("isaext") to align with the RISC-V
-> > > > priv spec and RISC-V profiles spec. For all the ISA optionalities which do
-> > > > not have distinct extension name, the RISC-V profiles spec is assigning
-> > > > names to all such optionalities.
-> > >
-> > > Same as the reply a few minutes ago, the key problem here is do all
-> > > CPU features belong to *ISA* extensions? For example, SV48, SV57 etc.
-> > > I agree with Atish's comments here:
-> > >
-> > > "I think the cpu feature is a superset of the ISA extension.
-> > > cpu feature != ISA extension"
-> > >
-> >
-> > It seems to be accurate at that point in time. However, the latest
-> > profile spec seems to
-> > define everything as an extension including sv48.
-> >
-> > https://github.com/riscv/riscv-profiles/blob/main/profiles.adoc#623-rva22s64-supported-optional-extensions
-> >
-> > It may be a redundant effort and confusing to create two sets i.e.
-> > feature and extension in this case.
-> > But this specification is not frozen yet and may change in the future.
-> > We at least know that that is the current intention.
-> >
-> > Array of static keys is definitely useful and should be used for all
-> > well defined ISA extensions by the ratified priv spec.
-> > This will simplify this patch as well. For any feature/extensions
-> > (i.e. sv48/sv57) which was never defined as an extension
-> > in the priv spec but profile seems to define it now, I would leave it
-> > alone for the time being. Converting the existing code
-> > to static key probably has value but please do not include it in the
-> > static key array setup.
-> >
-> > Once the profile spec is frozen, we can decide which direction the
-> > Linux kernel should go.
-> >
->
-> Hi Atish, Anup,
->
-> I see your points and thanks for the information of the profile
-> spec. Now, I have other two points about isa VS features:
->
-> 1. Not all isa extenstions need static key mechanism, so if we
-> make a static key array with 1:1 riscv_isa <-> static key relationship
-> there may be waste.
->
-> For example, the 'a', 'c', 'i', 'm' and so on don't have static
-> key usage.
+> Syzbot reported slab-out-of-bounds read in exfat_clear_bitmap.
+> This was triggered by reproducer calling truncute with size 0, which
+> causes the following trace:
+> 
+> BUG: KASAN: slab-out-of-bounds in exfat_clear_bitmap+0x147/0x490
+> fs/exfat/balloc.c:174 Read of size 8 at addr ffff888115aa9508 by task syz-
+> executor251/365
+> 
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]  dump_stack_lvl+0x1e2/0x24b
+> lib/dump_stack.c:118
+>  print_address_description+0x81/0x3c0 mm/kasan/report.c:233
+> __kasan_report mm/kasan/report.c:419 [inline]
+>  kasan_report+0x1a4/0x1f0 mm/kasan/report.c:436
+>  __asan_report_load8_noabort+0x14/0x20 mm/kasan/report_generic.c:309
+>  exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+>  exfat_free_cluster+0x25a/0x4a0 fs/exfat/fatent.c:181
+>  __exfat_truncate+0x99e/0xe00 fs/exfat/file.c:217
+>  exfat_truncate+0x11b/0x4f0 fs/exfat/file.c:243
+>  exfat_setattr+0xa03/0xd40 fs/exfat/file.c:339
+>  notify_change+0xb76/0xe10 fs/attr.c:336
+>  do_truncate+0x1ea/0x2d0 fs/open.c:65
+> 
+> Add checks to validate if cluster number is within valid range in
+> exfat_clear_bitmap() and exfat_set_bitmap()
+> 
+> Cc: Namjae Jeon <linkinjeon@kernel.org>
+> Cc: Sungjong Seo <sj1557.seo@samsung.com>
+> Cc: linux-fsdevel@vger.kernel.org
+> Cc: stable@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> 
+> Link: https://protect2.fireeye.com/v1/url?k=24a746d8-45dcec51-24a6cd97-
+> 74fe48600034-8e4653a49a463f3c&q=1&e=0efc824d-6463-4253-9cd7-
+> ce3199dbf513&u=https%3A%2F%2Fsyzkaller.appspot.com%2Fbug%3Fid%3D50381fc738
+> 21ecae743b8cf24b4c9a04776f767c
+> Reported-by: syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
+> Fixes: 1e49a94cf707 ("exfat: add bitmap operations")
+> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-Not all isa extensions but a large number of them will need a static
-key. It's better to always have one static key per ISA extension
-defined in cpufeatures.c
+Looks good.
+And it seems that WARN_ON() is no longer needed.
 
-For example, F, D, V, Sstc, Svinval, Ssofpmt, Zb*, AIA, etc.
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
 
->
-> 2.We may need riscv architecture static keys for non-isa, this is
-> usually related with the linux os itself, for example
-> a static key for "unmap kernelspace at userspace".
-> static keys for "spectre CVE mitigations"
-> etc.
+> ---
+> v2:
+>  - Use is_valid_cluster() helper to validate clu
+> ---
+>  fs/exfat/balloc.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/fs/exfat/balloc.c b/fs/exfat/balloc.c index
+> 03f142307174..92f5b5b5a0d0 100644
+> --- a/fs/exfat/balloc.c
+> +++ b/fs/exfat/balloc.c
+> @@ -149,6 +149,9 @@ int exfat_set_bitmap(struct inode *inode, unsigned int
+> clu, bool sync)
+>  	struct exfat_sb_info *sbi = EXFAT_SB(sb);
+> 
+>  	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
+> +	if (!is_valid_cluster(sbi, clu))
+> +		return -EINVAL;
+> +
+>  	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+>  	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+>  	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx); @@ -167,6 +170,9 @@
+> void exfat_clear_bitmap(struct inode *inode, unsigned int clu, bool sync)
+>  	struct exfat_mount_options *opts = &sbi->options;
+> 
+>  	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
+> +	if (!is_valid_cluster(sbi, clu))
+> +		return;
+> +
+>  	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+>  	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+>  	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+> --
+> 2.36.1
 
-These things look more like errata or workarounds so better
-to use that framework instead of ISA extensions (or features).
 
-Some of these things might even use ALTERNATIVEs instead
-of static keys.
-
->
-> In summary, I can see riscv_isa doesn't cover features which need static
-> keys, and vice vesa.
->
-> Could you please comment?
->
-> Thanks in advance,
-> Jisheng
-
-Regards,
-Anup
