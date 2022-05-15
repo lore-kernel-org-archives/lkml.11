@@ -2,57 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1CFC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 19:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3589AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 15 May 2022 20:01:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238568AbiEOTvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 15:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
+        id S238536AbiEOUB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 16:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238537AbiEOTvr (ORCPT
+        with ESMTP id S229623AbiEOUBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 15:51:47 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1081934659;
-        Sun, 15 May 2022 12:51:47 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nqKHE-00065r-GO; Sun, 15 May 2022 21:51:40 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Cyril Jean <Cyril.Jean@microchip.com>,
-        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v5 09/10] riscv: microchip: icicle: readability fixes
-Date:   Sun, 15 May 2022 21:51:37 +0200
-Message-ID: <2247302.ElGaqSPkdT@diego>
-In-Reply-To: <20220509142610.128590-10-conor.dooley@microchip.com>
-References: <20220509142610.128590-1-conor.dooley@microchip.com> <20220509142610.128590-10-conor.dooley@microchip.com>
+        Sun, 15 May 2022 16:01:24 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C3C108A
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 13:01:22 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id t25so15939133ljd.6
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 13:01:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gp1BBNbZ42X2QQArBCdHGs3vRj6i0vfmgJdrQAenEi8=;
+        b=KaYlgWABpd6a3tNDr5IgU145YKsThgKBIjyTd4jrNPrzi2nb1bueC3Xy82RlkV9vQ/
+         yOBRpZnEHtedYLPJ05sfQjJWeWLP2iLHEMC+vqAB16psAn+GkZYuoZVNijh+EmbB87oh
+         KKt8qa++8sziMV5BFeFPUcrISPtqGsonKj4ouLj8xshJgmU2jS3aQagGgK/rUyUqBxEI
+         q7mpIexGUZJ+DsYkDYQvkOxvMmvrxCz3LzxViPIoRZRGejSyIW5WH1BiZQGdbI2DRgQL
+         NwgkQI6o3P+lAn0Pm6t5WghxFjGcSiOHcu6uCll+BpgLq2V57kjcXdwyFEAUV09fw1rz
+         nO9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gp1BBNbZ42X2QQArBCdHGs3vRj6i0vfmgJdrQAenEi8=;
+        b=rWmMwM1S77oTu0mcU9LVacdN/1RL3BXzgPflDFigrUFPBX+5nZ7SIcnRfFQYl/znd7
+         urEMGJoNkY85EmFUXQ0gWkY0JAE4hqIbQdRAwMxbxZr8+zVwXyaBoKaLxODSuG30DyGY
+         qI065ztSCt3e8Ve3kb2wT+9og8aV4a50M1LMYd4n5HIbf1z5iuNxGvIiQJOV60pcHEBY
+         lXRrMfOKxLdwczLK9cj93Pegu90/HpsEb0rF6+7CUd46fdFXJgQ3I3iczFbbFESU0iI9
+         Y5hCcRBXcfZk3FW3AdVAnF18LWYv4LCunUJC71Ng+ZlJL5GPWtxdKBJ3UmZWA69GJPCv
+         QeTw==
+X-Gm-Message-State: AOAM531rfB/Dz+6eYsoJwPL+liZVHPuyQMqHzn5mv54HPpLl4w+4VEW6
+        wGdu5JCqEgAaWToRozmvmTg=
+X-Google-Smtp-Source: ABdhPJwOSzSWFgoL3e9QR6GHMUfWEHBZOf7c/bjyfVeBDKmOZCSFVEDUldjICnUZ5ADXEnxg9cHzCw==
+X-Received: by 2002:a05:651c:1077:b0:24f:10fb:5d80 with SMTP id y23-20020a05651c107700b0024f10fb5d80mr9515287ljm.207.1652644880593;
+        Sun, 15 May 2022 13:01:20 -0700 (PDT)
+Received: from localhost ([178.170.168.3])
+        by smtp.gmail.com with ESMTPSA id b18-20020a056512219200b0047255d210f9sm1099424lft.40.2022.05.15.13.01.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 May 2022 13:01:20 -0700 (PDT)
+From:   Maxim Zhukov <crazycdeveloper@gmail.com>
+X-Google-Original-From: Maxim Zhukov <mussitantesmortem@gmail.com>
+To:     chi.minghao@zte.com.cn, varad.gautam@suse.com, arnd@arndb.de
+Cc:     akpm@linux-foundation.org, shakeelb@google.com,
+        vasily.averin@linux.dev, manfred@colorfullife.com, dbueso@suse.de,
+        linux-kernel@vger.kernel.org,
+        Maxim Zhukov <mussitantesmortem@gmail.com>
+Subject: [RFC PATCH 0/1] Fix handling semctl on x86-32 kernels
+Date:   Sun, 15 May 2022 23:01:02 +0300
+Message-Id: <20220515200103.1408370-1-mussitantesmortem@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Montag, 9. Mai 2022, 16:26:10 CEST schrieb Conor Dooley:
-> Fix the sort order of the status properties, remove some
-> extra whitespace in the mmc entry & add whitespace to the mac entry
-> containing the phys so that the dt is easier to read.
-> 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+I'm not sure about this patch. Maybe there is a better way to solve this problem:
+all libc sends with cmd IPC_64 flag[1][2][3], but x86-32 kernel does not have compat
+syscall layer to handle correctly semctl command.
 
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+[1]: https://elixir.bootlin.com/uclibc-ng/v1.0.40/source/libc/misc/sysvipc/sem.c#L58
+[2]: https://elixir.bootlin.com/musl/v1.2.3/source/src/ipc/semctl.c#L48 -> https://elixir.bootlin.com/musl/v1.2.3/source/src/ipc/ipc.h#L22
+[3]: https://elixir.bootlin.com/glibc/glibc-2.35/source/sysdeps/unix/sysv/linux/semctl.c#L124
 
+Maxim Zhukov (1):
+  ipc, sem: fix backward compatibility with x86-32 kernels
 
+ ipc/sem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+2.36.1
 
