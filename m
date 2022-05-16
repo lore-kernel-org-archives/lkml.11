@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D2D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C40C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243273AbiEPMtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
+        id S242691AbiEPMta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242458AbiEPMsv (ORCPT
+        with ESMTP id S241978AbiEPMsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 08:48:51 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC647393E7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:48:48 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id i19so28407058eja.11
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:48:48 -0700 (PDT)
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA05393E9
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:48:47 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id g6so28477775ejw.1
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:48:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sartura-hr.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XOIsMkVmGezvt0k2UbO/nvlinQdml5F2/hETUMz5pr0=;
-        b=gQeT7fNxv1xTox6fLGdVHDt29rB58Z5yXSFzAznvZOJ9pYu7+s6rZhKxCKhJ0p3p7V
-         lO4Rnk553EHNk34QcoDWjHZW0kuEXdwAuQ8rhpmBri7GwGHNlLMzTxNT6FOLEVTIvX34
-         yDBuZ1SYKFKU7cn8/8JGvzefgF3B+kK45zpzzTQFOyt+g7gwYlOlLZ50ZxVnLS9uav5V
-         Fxgb6flNjPHDGmEpoMYa4JzZIFmRJBqrtvXZXItKiQLKjZ55XrfSuNEBSGVJkA2C/VMk
-         jHLEXk2igoGFNcp6u6rLUt5MWq+yWpEWZlK/gpKnY5M2leQ4wkXf95jyW/p2dyqiY27W
-         vDwA==
+        bh=y53eYrcLwAmSangpxuxMdMd0doZQvJz1NFbwjAei7+g=;
+        b=qduStgQH2a1Hn/UX3HcVj9SM1/RM5O9Ujys6kdPprHxFm7+eoZDUhJtzS4mPWZm9e6
+         f09CIa+Gfi1ujpbm0s+g8AGN8tJyeuz/glsYLsbeom4ER2K05lvwUb1O72Vn12fHo7bV
+         a8VCLML3ANzLAL15BlljKMtessPx+YKGimlntugEnMCsQKysA9NAVHjhflEYkBY5J1yV
+         kJjL1Kl03ye4Ah6sTsHHO6353LijJA9WWgklojE6iIKR9mHhk3Ch6l8jV+Tet5U/mbRi
+         nyI4yB8ud2ClGB7aJu8zzCV6+UaL1zO7LRnG35OgwkJdDORntSJZWuvj4n6bSTsDm4vZ
+         BVGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XOIsMkVmGezvt0k2UbO/nvlinQdml5F2/hETUMz5pr0=;
-        b=13o4F7j2/j7PnZc/4DSh4XlNa4ikRz6kFx2GHe0QG4Molyj609IxwpBuQOAf/a//dN
-         71eTekz5zH1gl/Ii61hLwxih3DT73YwoSkl3kWNEknbkbNxzMbFgN0FLqYSI4gcFKfFD
-         2VxekKNvOKrB0dM15QU48tfzUlnh6jBPVrRrKdEqAH9FKTzTzfYZuyVagOWLPjxZqyFb
-         OMsjzAXDeiceXj/iWAq4Lpf2PmjBU3oUAXINt/hq0iheNQpQBhagUEwZnvOLB6Dpu5eS
-         nZIgl73rr1K6k9XsQ1CgVmmfBo+p609tZ1V7fNDoqwcssf7M569Swv2auyIMRWP0A68v
-         /Gfg==
-X-Gm-Message-State: AOAM533fU6EkiA0ueAHoOoAgXfjuDQ7quo2q9PO+3BqoP3eA7N/8IDdK
-        +S0ICYNDQdrxOHLWNbA6f8szog==
-X-Google-Smtp-Source: ABdhPJzZLLWyWwN17/gsmp3IByCaASEp5VfudNyT7/mbBFClrbAA7Ruebh76N6Ws2GicRR6tPQYtcA==
-X-Received: by 2002:a17:906:7315:b0:6f4:c84f:9eab with SMTP id di21-20020a170906731500b006f4c84f9eabmr15064528ejc.759.1652705328285;
-        Mon, 16 May 2022 05:48:48 -0700 (PDT)
+        bh=y53eYrcLwAmSangpxuxMdMd0doZQvJz1NFbwjAei7+g=;
+        b=vqUPE9cDiDl11cSfIlzoYUl9rJ7E/gZUaj5pT9Gw97HIl3dzuCMM+Xv6u8+6bVBdef
+         7c5vw/j4L56yKOrYbmeFVfUdGnyQV1jVMriC+up98rDpBuiT297S+tOCnw5DyUz3BOc5
+         Dvm317gcgUSbaNmolZrjOnl19Pfq2jdYCUMe9X3k7/lVO1uMOUBqCQ0yJi0nie6oBmtq
+         o1IXjwgzeyNLVGlrV2M/olbEBjTQXQXVA6c5omhb5UEzM71oOack/VfqypbBOok9Ii7H
+         /mWUy6VV4ndYoF6E7Xv8ot33NWQGVJJxH8tLiT5kp62c4z3/ohA+yXbGIAyq9QHecYV4
+         MqsA==
+X-Gm-Message-State: AOAM532VhMml2+6+TWfMqof52rjEe11q1TEKhL08D1MizUGarSTWfEp6
+        A+gICxJqPSTGCKueZbSxUgwzOA==
+X-Google-Smtp-Source: ABdhPJzeNOXCTq2Ruk0Ljy0J5la2oXmZVDgdt15vJSfMC51mUDRZPFvlPi/iKh4EfW+xI+AhNAorlA==
+X-Received: by 2002:a17:907:d16:b0:6f8:c054:29ac with SMTP id gn22-20020a1709070d1600b006f8c05429acmr15297923ejc.96.1652705325507;
+        Mon, 16 May 2022 05:48:45 -0700 (PDT)
 Received: from fedora.robimarko.hr (dh207-98-105.xnet.hr. [88.207.98.105])
-        by smtp.googlemail.com with ESMTPSA id e10-20020a056402330a00b0042617ba6386sm5093331eda.16.2022.05.16.05.48.47
+        by smtp.googlemail.com with ESMTPSA id e10-20020a056402330a00b0042617ba6386sm5093331eda.16.2022.05.16.05.48.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 05:48:47 -0700 (PDT)
+        Mon, 16 May 2022 05:48:45 -0700 (PDT)
 From:   Robert Marko <robert.marko@sartura.hr>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         andrew@lunn.ch, gregory.clement@bootlin.com,
@@ -56,9 +56,9 @@ To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         linux-arm-kernel@lists.infradead.org
 Cc:     Robert Marko <robert.marko@sartura.hr>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 07/10] arm64: dts: marvell: rename temp sensor nodes
-Date:   Mon, 16 May 2022 14:48:25 +0200
-Message-Id: <20220516124828.45144-7-robert.marko@sartura.hr>
+Subject: [PATCH v4 05/10] arm64: dts: marvell: uDPU: align LED-s with bindings
+Date:   Mon, 16 May 2022 14:48:23 +0200
+Message-Id: <20220516124828.45144-5-robert.marko@sartura.hr>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516124828.45144-1-robert.marko@sartura.hr>
 References: <20220516124828.45144-1-robert.marko@sartura.hr>
@@ -68,38 +68,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename the temperature sensor nodes to use "temp-sensor" which matches
-their device class instead of IC specific naming.
-
-Remove the status = "okay" which is not required as its default anyway.
+According to bindings they LED-s should be prefixed with "led" in this
+use case, so fix accordingly.
 
 Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-index b89c7455612d..f21a855fc608 100644
+index 4ae1688e6627..f216777acacc 100644
 --- a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
 +++ b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-@@ -152,14 +152,12 @@ &i2c1 {
- 	scl-gpios = <&gpionb 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	sda-gpios = <&gpionb 3 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+@@ -31,32 +31,32 @@ leds {
+ 		pinctrl-names = "default";
+ 		compatible = "gpio-leds";
  
--	nct375@48 {
--		status = "okay";
-+	temp-sensor@48 {
- 		compatible = "ti,tmp75c";
- 		reg = <0x48>;
- 	};
+-		power1 {
++		led-power1 {
+ 			label = "udpu:green:power";
+ 			gpios = <&gpionb 11 GPIO_ACTIVE_LOW>;
+ 		};
  
--	nct375@49 {
--		status = "okay";
-+	temp-sensor@49 {
- 		compatible = "ti,tmp75c";
- 		reg = <0x49>;
- 	};
+-		power2 {
++		led-power2 {
+ 			label = "udpu:red:power";
+ 			gpios = <&gpionb 12 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+-		network1 {
++		led-network1 {
+ 			label = "udpu:green:network";
+ 			gpios = <&gpionb 13 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+-		network2 {
++		led-network2 {
+ 			label = "udpu:red:network";
+ 			gpios = <&gpionb 14 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+-		alarm1 {
++		led-alarm1 {
+ 			label = "udpu:green:alarm";
+ 			gpios = <&gpionb 15 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+-		alarm2 {
++		led-alarm2 {
+ 			label = "udpu:red:alarm";
+ 			gpios = <&gpionb 16 GPIO_ACTIVE_LOW>;
+ 		};
 -- 
 2.36.1
 
