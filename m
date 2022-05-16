@@ -2,132 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D07C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AEABC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236255AbiEPLUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
+        id S235787AbiEPLWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234457AbiEPLUg (ORCPT
+        with ESMTP id S229795AbiEPLWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:20:36 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A05134BB0
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 04:20:34 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GA1tEZ027622;
-        Mon, 16 May 2022 11:20:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=0sDcy/5NqNqinaz/rCWyl/8Vhyljw4xe8o9woHQh1Ig=;
- b=ArzzKyxtAykXd5sFX4sdhGF6C/zs8q0X/Cl8227uTjnwWdlwNr/dAXL4svcEWt9feTy0
- bJaqfG50A3ro/a6kiFO97HsPrb+0fqaIpU6dH+4/z3ulhEVnmEwdUDkw7KG+XGJi/Imp
- bLiBmT32ErkeRCNgi/U2jTaribwq3eEaFKUqBZBu8xOnyRSHNOzJa9CpJ3XtVAhvBLiY
- DPRzBKm+oudkf0y/4UjbLqoU71zeZf4Gd5ibYisl39MNfCaoY1WYLD66my3JnjUwxeBX
- dsV70Ik9DPUy7bcDUEGoBLYVupZjqynYI0GonTO0o3qvCOjLM8Qx4ZhgBRKmskiz/P4l ng== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3mgm9dej-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 11:20:13 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24GAmWxa011771;
-        Mon, 16 May 2022 11:20:13 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3mgm9ddu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 11:20:13 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24GBF3KD032765;
-        Mon, 16 May 2022 11:20:11 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma05fra.de.ibm.com with ESMTP id 3g24291ye4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 11:20:11 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24GBK8m341288040
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 16 May 2022 11:20:08 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A7E24A405F;
-        Mon, 16 May 2022 11:20:08 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3CA2AA405B;
-        Mon, 16 May 2022 11:20:08 +0000 (GMT)
-Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.152.224.205])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 16 May 2022 11:20:08 +0000 (GMT)
-Date:   Mon, 16 May 2022 13:20:06 +0200
-From:   Halil Pasic <pasic@linux.ibm.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Cornelia Huck <cohuck@redhat.com>, mst <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, eperezma <eperezma@redhat.com>,
-        Cindy Lu <lulu@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH V4 0/9] rework on the IRQ hardening of virtio
-Message-ID: <20220516132006.29d28fbe.pasic@linux.ibm.com>
-In-Reply-To: <CACGkMEtaN6tZrwp3rsxu4Hn1Rev2P06X3BaR4X1cqDxnRdPCKg@mail.gmail.com>
-References: <20220507071954.14455-1-jasowang@redhat.com>
-        <875ymd3fd1.fsf@redhat.com>
-        <CACGkMEvfkUpsY4LRTuH7w18DZdq+w3=Ef6b-0sG0XvzVUVKdzg@mail.gmail.com>
-        <20220511160147.46cbf2fb.pasic@linux.ibm.com>
-        <CACGkMEtaN6tZrwp3rsxu4Hn1Rev2P06X3BaR4X1cqDxnRdPCKg@mail.gmail.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        Mon, 16 May 2022 07:22:08 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4CD36E08;
+        Mon, 16 May 2022 04:22:07 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id bg25so8483543wmb.4;
+        Mon, 16 May 2022 04:22:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=xRQD9okv6pCRuhdD2Ev4lqdq+NiQcQKauHb9Si4I5AY=;
+        b=UIrbuHSGZgvRTRYLyIThlQQTa2F/xVWll/DExMs/ReDofS9sHpJXMo4zQGc3z67wqb
+         G9Y0RZ/pMjXfAU7rpDcm1NUOVvinQwtsCOc2lzgl9IwgzPvBgslxgobmLrDetHbZzXia
+         XXWfgkCH8aedhk7iEkeTG+zyTrY7it8/LRG7tpMe9AXy7E4Nj7TRUZDATB/AmTwolzvt
+         ULbebZwrl8BamS3mTe05dL9UjGJhKZzDT6vDbUIOa1WylvDWHoTGUiW2k2vBUSTjUErA
+         MSSM5qZuOzXcfmeAhQBhO0WltUkbuWPU3Yu9hl0GnABIcANK9q0IKdwcZEV6KlYjPSjJ
+         ayJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=xRQD9okv6pCRuhdD2Ev4lqdq+NiQcQKauHb9Si4I5AY=;
+        b=R/qz4VfpdXLolCI2yQYb+uRn1vqdVSA93h0h2eZ8wo5IaM8XDS5nXryymk/l4ClSaz
+         17m4h9LrfTHDb/yNYZ+ZUEzxi8Bkfvi3Ny1AuW7rb8q+BtB1pA9ML7fPImMbF8CH7+d2
+         1ClRVeyXX4hrpNvfkUN8w7B4eE7TBgdXG7IAs1pkL8zpReMVhhF1c93Zqe7NyOloM8NG
+         EhhgvAAZ09xtx5pzQinWgKTZQlDh26DxT5frm3c6uRmusq5jFPO7b0eNMunIn/ameIbE
+         slPgNm9xxkT7xufFKqr7ZKd8T+xZ2eJaUJDq4pE2RHbKEeqIRG2juA9yVsYXVnNB7B1O
+         xMrg==
+X-Gm-Message-State: AOAM5306oE+8o2Xl5ttXZH7W8KqFjXRyKUgsclTcHuspxE0rEwRSn0XS
+        wVnvJ+vIPtVFyWUxAUxkuY4=
+X-Google-Smtp-Source: ABdhPJwMcfCA7vMag5vL9bP6oBjOMaKc5Z6P6CEbF5uwePd5wD3VxizOMCVoFud2PQcaMYaik8AUhQ==
+X-Received: by 2002:a7b:c10d:0:b0:393:fbff:24a9 with SMTP id w13-20020a7bc10d000000b00393fbff24a9mr16348404wmi.53.1652700125779;
+        Mon, 16 May 2022 04:22:05 -0700 (PDT)
+Received: from elementary ([94.73.36.128])
+        by smtp.gmail.com with ESMTPSA id e3-20020a05600c4e4300b003942a244ec5sm9805901wmq.10.2022.05.16.04.22.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 04:22:05 -0700 (PDT)
+Date:   Mon, 16 May 2022 13:21:59 +0200
+From:   =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+To:     Stefan Berzl <stefanberzl@gmail.com>
+Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com, spbnick@gmail.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Status on hid xppen patch
+Message-ID: <20220516112159.GA74406@elementary>
+References: <941a793a-d2f7-9c2c-59be-b3930e1acfec@gmail.com>
+ <20220423172330.32585-1-jose.exposito89@gmail.com>
+ <95576534-1f5e-c2e3-4f73-c1b0a8300b56@gmail.com>
+ <20220424093239.GA4380@elementary>
+ <20220512205952.GA8936@elementary>
+ <ebb6d627-4974-beed-1dc6-60634ab2f034@gmail.com>
+ <20220516090829.GA20623@elementary>
+ <140fe69a-c37a-cce4-c7c1-0344de6f1bf1@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: NypXikSCMvLQ1iQroLyffUfvmf3iPEFe
-X-Proofpoint-GUID: mWAhWuEU_dMPLR8NB5vNWHv6vAcsNqNI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-16_06,2022-05-16_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- lowpriorityscore=0 clxscore=1011 malwarescore=0 adultscore=0 mlxscore=0
- impostorscore=0 priorityscore=1501 mlxlogscore=761 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205160065
+In-Reply-To: <140fe69a-c37a-cce4-c7c1-0344de6f1bf1@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 11:31:08 +0800
-Jason Wang <jasowang@redhat.com> wrote:
-
-> > > It looks to me we need to use write_lock_irq()/write_unlock_irq() to
-> > > do the synchronization.
-> > >
-> > > And we probably need to keep the
-> > > read_lock_irqsave()/read_lock_irqrestore() logic since I can see the
-> > > virtio_ccw_int_handler() to be called from process context (e.g from
-> > > the io_subchannel_quiesce()).
-> > >  
-> >
-> > Sounds correct.  
+On Mon, May 16, 2022 at 12:45:48PM +0200, Stefan Berzl wrote:
+> Yo José,
 > 
-> As Cornelia and Vineeth pointed out, all the paths the vring_interrupt
-> is called with irq disabled.
+> > Also, I don't know if you have seen this error after connecting the
+> > tablet:
+> > 
+> >   xhci_hcd 0000:2a:00.3: WARN urb submitted to disabled ep
+> >   usb 3-2: reset full-speed USB device number 6 using xhci_hcd
+> >   usb 3-2: reset full-speed USB device number 6 using xhci_hcd
+> >   [...]
+> > 
+> > It happens with the Deco Mini 4, even when using the hid-generic
+> > driver. I need to rebase my patches on 5.19 and test again, just to
+> > make sure the problem is not somewhere else.
 > 
-> So I will use spin_lock()/spin_unlock() in the next version.
+> Can't say I have seen it. The only thing I can think of is that I was
+> using the async urb functions and that delay did something about it.
 
-Can we do some sort of an assertion that if the kernel is built with
-the corresponding debug features will make sure this assumption holds
-(and warn if it does not)? That assertion would also document the fact.
+Thanks, I'll give it a try. I hope is not some kind of time based
+condition.
 
-If an assertion is not possible, I think we should at least place a
-strategic comment that documents our assumption.
+By the way, I only see the error when the tablet is connected. If I run
+"usbhid-dump" or unload and load the driver, it works as expected.
+I don't know if this could be related to the driver failing to process
+the response to the magic data... Investigating.
 
-Regards,
-Halil
+Thanks,
+Jose
 
-> 
-> Thanks
