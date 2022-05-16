@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49221C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:29:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4977C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347202AbiEPU3m (ORCPT
+        id S1347300AbiEPU3t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
+        Mon, 16 May 2022 16:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350458AbiEPUBN (ORCPT
+        with ESMTP id S1350484AbiEPUBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C0E4A3E3;
-        Mon, 16 May 2022 12:55:25 -0700 (PDT)
+        Mon, 16 May 2022 16:01:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DED24A907;
+        Mon, 16 May 2022 12:55:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57DB9B81614;
-        Mon, 16 May 2022 19:55:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E30C34100;
-        Mon, 16 May 2022 19:55:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFC4960EBF;
+        Mon, 16 May 2022 19:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E311BC385AA;
+        Mon, 16 May 2022 19:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730922;
-        bh=JA2/oYAgXRg4g+FaAARNmweTRaIIvfxrciRC50sgets=;
+        s=korg; t=1652730916;
+        bh=9J3SP8rPHrHOr2ImRk6zzs2MXVHm4hDJT+RPQkhF9ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=POmqdK7ta3ftYq7xX6k+152Q8Zo8fvmD1ZzC8ypeCKBu5zK7VlMGJ6qIjU3/snd6U
-         rQgvA1WpzXS7dIh/KWhn3q5LznbKcrgnAeqw1/lAUCbIIvUsoyocmkID+oeK/rJlLT
-         AsaiivwSz6fkrL4iT6aHZAgHV8kveqBygzV3dL60=
+        b=QUkm4dVQfdxWuFR22O9ALmuUi+FaOIrdDlAo7aNtUsBCjbc4P4Q8IXnfLnJpF+0Z+
+         jREIMrkfXFBBaE4tax/a+t7yDz16HDfD/pWOAUd1Vmf59zTP5qTZcJyTDVvOEGdjnr
+         Q94bWBYyRuhXQ+1mtleRe06/RK0K5FoGVwtPTbBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 009/114] net: mscc: ocelot: restrict tc-trap actions to VCAP IS2 lookup 0
-Date:   Mon, 16 May 2022 21:35:43 +0200
-Message-Id: <20220516193625.765249279@linuxfoundation.org>
+Subject: [PATCH 5.17 007/114] net: mscc: ocelot: fix last VCAP IS1/IS2 filter persisting in hardware when deleted
+Date:   Mon, 16 May 2022 21:35:41 +0200
+Message-Id: <20220516193625.707724110@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -52,48 +52,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 477d2b91623e682e9a8126ea92acb8f684969cc7 ]
+[ Upstream commit 16bbebd35629c93a8c68c6d8d28557e100bcee73 ]
 
-Once the CPU port was added to the destination port mask of a packet, it
-can never be cleared, so even packets marked as dropped by the MASK_MODE
-of a VCAP IS2 filter will still reach it. This is why we need the
-OCELOT_POLICER_DISCARD to "kill dropped packets dead" and make software
-stop seeing them.
+ocelot_vcap_filter_del() works by moving the next filters over the
+current one, and then deleting the last filter by calling vcap_entry_set()
+with a del_filter which was specially created by memsetting its memory
+to zeroes. vcap_entry_set() then programs this to the TCAM and action
+RAM via the cache registers.
 
-We disallow policer rules from being put on any other chain than the one
-for the first lookup, but we don't do this for "drop" rules, although we
-should. This change is merely ascertaining that the rules dont't
-(completely) work and letting the user know.
+The problem is that vcap_entry_set() is a dispatch function which looks
+at del_filter->block_id. But since del_filter is zeroized memory, the
+block_id is 0, or otherwise said, VCAP_ES0. So practically, what we do
+is delete the entry at the same TCAM index from VCAP ES0 instead of IS1
+or IS2.
 
-The blamed commit is the one that introduced the multi-chain architecture
-in ocelot. Prior to that, we should have always offloaded the filters to
-VCAP IS2 lookup 0, where they did work.
+The code was not always like this. vcap_entry_set() used to simply be
+is2_entry_set(), and then, the logic used to work.
+
+Restore the functionality by populating the block_id of the del_filter
+based on the VCAP block of the filter that we're deleting. This makes
+vcap_entry_set() know what to do.
 
 Fixes: 1397a2eb52e2 ("net: mscc: ocelot: create TCAM skeleton from tc filter chains")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot_flower.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_vcap.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index fdb4d7e7296c..cb602a226149 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -278,9 +278,10 @@ static int ocelot_flower_parse_action(struct ocelot *ocelot, int port,
- 			filter->type = OCELOT_VCAP_FILTER_OFFLOAD;
- 			break;
- 		case FLOW_ACTION_TRAP:
--			if (filter->block_id != VCAP_IS2) {
-+			if (filter->block_id != VCAP_IS2 ||
-+			    filter->lookup != 0) {
- 				NL_SET_ERR_MSG_MOD(extack,
--						   "Trap action can only be offloaded to VCAP IS2");
-+						   "Trap action can only be offloaded to VCAP IS2 lookup 0");
- 				return -EOPNOTSUPP;
- 			}
- 			if (filter->goto_target != -1) {
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index d3544413a8a4..e650afef12af 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -1221,7 +1221,11 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
+ 	struct ocelot_vcap_filter del_filter;
+ 	int i, index;
+ 
++	/* Need to inherit the block_id so that vcap_entry_set()
++	 * does not get confused and knows where to install it.
++	 */
+ 	memset(&del_filter, 0, sizeof(del_filter));
++	del_filter.block_id = filter->block_id;
+ 
+ 	/* Gets index of the filter */
+ 	index = ocelot_vcap_block_get_filter_index(block, filter);
 -- 
 2.35.1
 
