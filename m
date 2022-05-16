@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1759C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348311AbiEPUN6 (ORCPT
+        id S1346471AbiEPUP4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
+        Mon, 16 May 2022 16:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348233AbiEPT6a (ORCPT
+        with ESMTP id S1351047AbiEPUB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE91F4968B;
-        Mon, 16 May 2022 12:50:21 -0700 (PDT)
+        Mon, 16 May 2022 16:01:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8347F473AF;
+        Mon, 16 May 2022 12:57:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A483B81614;
-        Mon, 16 May 2022 19:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9738FC385AA;
-        Mon, 16 May 2022 19:50:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 386F1B81611;
+        Mon, 16 May 2022 19:57:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68D9BC385AA;
+        Mon, 16 May 2022 19:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730619;
-        bh=eOL8HGcogLE/QMMh03izHa5VQCJCsdTi45AIy9Uu/Vw=;
+        s=korg; t=1652731039;
+        bh=nHCPrEtDuSjJ96w8i2Zd8GckMSt702jjQBW4XUFJnXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HsVw4vTr+rzzWGwCbB335B+t9rvynaNwFvAmrERXopMuENttzK5gWqT3MW2qfIoh7
-         TlUD/+V+BHxT/bbRiGFEHdawGh8rb7ixIMhdjDUmd9hZDMipGEE0fxwEx20jhd6Zq/
-         AsUvkYL4PA34UZt1dO0OFhfC2SpTdINAY/IO3Z9c=
+        b=wyA9+4/BjTzCswFdnWJM32W9ncjD7V0tOX9gZM9XAsK5cSBBVNRj/ymciflIHpI+f
+         O3Mps53ymQHjBKRjJ40rTqeSnEcqKxBDIfqzwyUga72kEeL3EOiyDwmxNMBfche99l
+         kKz//I47+/uyGtx/gQ0hWS8wnDbfg1VjM2qi30ns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 016/102] ipv4: drop dst in multicast routing path
-Date:   Mon, 16 May 2022 21:35:50 +0200
-Message-Id: <20220516193624.464706471@linuxfoundation.org>
+        stable@vger.kernel.org, Macpaul Lin <macpaul.lin@mediatek.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Fabien Parent <fparent@baylibre.com>
+Subject: [PATCH 5.17 082/114] usb: typec: tcpci_mt6360: Update for BMC PHY setting
+Date:   Mon, 16 May 2022 21:36:56 +0200
+Message-Id: <20220516193627.838870506@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
+In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
+References: <20220516193625.489108457@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,67 +52,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-[ Upstream commit 9e6c6d17d1d6a3f1515ce399f9a011629ec79aa0 ]
+commit 4031cd95cba70c72e4cadc2d46624bcd31e5a6c0 upstream.
 
-kmemleak reports the following when routing multicast traffic over an
-ipsec tunnel.
+Update MT6360 BMC PHY Tx/Rx setting for the compatibility.
 
-Kmemleak output:
-unreferenced object 0x8000000044bebb00 (size 256):
-  comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
-    80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000f83947e0>] __kmalloc+0x1e8/0x300
-    [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
-    [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
-    [<00000000824f6cf1>] gre_rcv+0x178/0x540
-    [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
-    [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
-    [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
-    [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
-    [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
-    [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
-    [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
-    [<00000000013d7914>] irq_exit+0xc4/0xe0
-    [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
-    [<000000000751eb8e>] handle_int+0x16c/0x178
-    [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
+Macpaul reported this CtoDP cable attention message cannot be received from
+MT6360 TCPC. But actually, attention message really sent from UFP_D
+device.
 
-The metadata dst is leaked when ip_route_input_mc() updates the dst for
-the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
-handled dropping the dst in ip_route_input_slow() but missed the
-multicast case which is handled by ip_route_input_mc(). Drop the dst in
-ip_route_input_mc() avoiding the leak.
+After RD's comment, there may be BMC PHY Tx/Rx setting causes this issue.
 
-Fixes: f38a9eb1f77b ("dst: Metadata destinations")
-Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Below's the detailed TCPM log and DP attention message didn't received from 6360
+TCPCI.
+[ 1206.367775] Identity: 0000:0000.0000
+[ 1206.416570] Alternate mode 0: SVID 0xff01, VDO 1: 0x00000405
+[ 1206.447378] AMS DFP_TO_UFP_ENTER_MODE start
+[ 1206.447383] PD TX, header: 0x1d6f
+[ 1206.449393] PD TX complete, status: 0
+[ 1206.454110] PD RX, header: 0x184f [1]
+[ 1206.456867] Rx VDM cmd 0xff018144 type 1 cmd 4 len 1
+[ 1206.456872] AMS DFP_TO_UFP_ENTER_MODE finished
+[ 1206.456873] cc:=4
+[ 1206.473100] AMS STRUCTURED_VDMS start
+[ 1206.473103] PD TX, header: 0x2f6f
+[ 1206.475397] PD TX complete, status: 0
+[ 1206.480442] PD RX, header: 0x2a4f [1]
+[ 1206.483145] Rx VDM cmd 0xff018150 type 1 cmd 16 len 2
+[ 1206.483150] AMS STRUCTURED_VDMS finished
+[ 1206.483151] cc:=4
+[ 1206.505643] AMS STRUCTURED_VDMS start
+[ 1206.505646] PD TX, header: 0x216f
+[ 1206.507933] PD TX complete, status: 0
+[ 1206.512664] PD RX, header: 0x1c4f [1]
+[ 1206.515456] Rx VDM cmd 0xff018151 type 1 cmd 17 len 1
+[ 1206.515460] AMS STRUCTURED_VDMS finished
+[ 1206.515461] cc:=4
+
+Fixes: e1aefcdd394fd ("usb typec: mt6360: Add support for mt6360 Type-C driver")
+Cc: stable <stable@vger.kernel.org>
+Reported-by: Macpaul Lin <macpaul.lin@mediatek.com>
+Tested-by: Macpaul Lin <macpaul.lin@mediatek.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Link: https://lore.kernel.org/r/1652159580-30959-1-git-send-email-u0084500@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/route.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/typec/tcpm/tcpci_mt6360.c |   26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index ed9b6842a9a0..6e8020a3bd67 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1754,6 +1754,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- #endif
- 	RT_CACHE_STAT_INC(in_slow_mc);
+--- a/drivers/usb/typec/tcpm/tcpci_mt6360.c
++++ b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+@@ -15,6 +15,9 @@
  
-+	skb_dst_drop(skb);
- 	skb_dst_set(skb, &rth->dst);
- 	return 0;
+ #include "tcpci.h"
+ 
++#define MT6360_REG_PHYCTRL1	0x80
++#define MT6360_REG_PHYCTRL3	0x82
++#define MT6360_REG_PHYCTRL7	0x86
+ #define MT6360_REG_VCONNCTRL1	0x8C
+ #define MT6360_REG_MODECTRL2	0x8F
+ #define MT6360_REG_SWRESET	0xA0
+@@ -22,6 +25,8 @@
+ #define MT6360_REG_DRPCTRL1	0xA2
+ #define MT6360_REG_DRPCTRL2	0xA3
+ #define MT6360_REG_I2CTORST	0xBF
++#define MT6360_REG_PHYCTRL11	0xCA
++#define MT6360_REG_RXCTRL1	0xCE
+ #define MT6360_REG_RXCTRL2	0xCF
+ #define MT6360_REG_CTDCTRL2	0xEC
+ 
+@@ -106,6 +111,27 @@ static int mt6360_tcpc_init(struct tcpci
+ 	if (ret)
+ 		return ret;
+ 
++	/* BMC PHY */
++	ret = mt6360_tcpc_write16(regmap, MT6360_REG_PHYCTRL1, 0x3A70);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(regmap, MT6360_REG_PHYCTRL3,  0x82);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(regmap, MT6360_REG_PHYCTRL7, 0x36);
++	if (ret)
++		return ret;
++
++	ret = mt6360_tcpc_write16(regmap, MT6360_REG_PHYCTRL11, 0x3C60);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(regmap, MT6360_REG_RXCTRL1, 0xE8);
++	if (ret)
++		return ret;
++
+ 	/* Set shipping mode off, AUTOIDLE on */
+ 	return regmap_write(regmap, MT6360_REG_MODECTRL2, 0x7A);
  }
--- 
-2.35.1
-
 
 
