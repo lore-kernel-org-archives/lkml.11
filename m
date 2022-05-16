@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1670AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347249AbiEPUZn (ORCPT
+        id S1347350AbiEPUZ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44926 "EHLO
+        Mon, 16 May 2022 16:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347921AbiEPT6Q (ORCPT
+        with ESMTP id S1347865AbiEPT6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4658143498;
-        Mon, 16 May 2022 12:49:59 -0700 (PDT)
+        Mon, 16 May 2022 15:58:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2C0433BA;
+        Mon, 16 May 2022 12:49:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B5B460AC3;
-        Mon, 16 May 2022 19:49:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AF33C385AA;
-        Mon, 16 May 2022 19:49:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4A99B81612;
+        Mon, 16 May 2022 19:49:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A1B5C34100;
+        Mon, 16 May 2022 19:49:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730597;
-        bh=Z3rLPS+jBk9yzNvGeXe6K5znMwWULIfK34dAsS47NhQ=;
+        s=korg; t=1652730594;
+        bh=EdXBI+t7Z+CJBmYfgvbfu0giiu3XH2CkqB+Azf5RDVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2nhjifIdOBE7ndmD2A/NaVNEpExnDwJr0CWOW8ne1d58Od8hsILpTtsuzqPx+ZOcE
-         CD/dyv/9IKit5icKVwqGxZYmAOT/VEdFqmH1gnwsLBmji6nyIaoipLUNlEtHwR2g0G
-         wl6LPHEwOzoqCG985/88iNbw5ttaq9VC/n2Deg04=
+        b=OgcJLSHIKcKMNtGY9KY3C1sv1iwkVEqCCcXhUPDfaFv0HqmfP2vxo1p16ZcTHW7iy
+         repdL8pkUn2gIouRh8FsL4D4D8wWX7n0RrRrkhkzadQtjq2WndAJnXQ/bcLKDJGsGL
+         RWAINahU7JXoXaGf8EUa0acxy4NTMstEeewoaZYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 012/102] fbdev: vesafb: Cleanup fb_info in .fb_destroy rather than .remove
-Date:   Mon, 16 May 2022 21:35:46 +0200
-Message-Id: <20220516193624.349174778@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Pritesh Raithatha <praithatha@nvidia.com>,
+        Ashish Mhetre <amhetre@nvidia.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 047/102] iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu
+Date:   Mon, 16 May 2022 21:36:21 +0200
+Message-Id: <20220516193625.349499464@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -51,73 +52,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Ashish Mhetre <amhetre@nvidia.com>
 
-[ Upstream commit b3c9a924aab61adbc29df110006aa03afe1a78ba ]
+[ Upstream commit 4a25f2ea0e030b2fc852c4059a50181bfc5b2f57 ]
 
-The driver is calling framebuffer_release() in its .remove callback, but
-this will cause the struct fb_info to be freed too early. Since it could
-be that a reference is still hold to it if user-space opened the fbdev.
+Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
+entries to not be invalidated correctly. The problem is that the walk
+cache index generated for IOVA is not same across translation and
+invalidation requests. This is leading to page faults when PMD entry is
+released during unmap and populated with new PTE table during subsequent
+map request. Disabling large page mappings avoids the release of PMD
+entry and avoid translations seeing stale PMD entry in walk cache.
+Fix this by limiting the page mappings to PAGE_SIZE for Tegra194 and
+Tegra234 devices. This is recommended fix from Tegra hardware design
+team.
 
-This would lead to a use-after-free error if the framebuffer device was
-unregistered but later a user-space process tries to close the fbdev fd.
-
-To prevent this, move the framebuffer_release() call to fb_ops.fb_destroy
-instead of doing it in the driver's .remove callback.
-
-Strictly speaking, the code flow in the driver is still wrong because all
-the hardware cleanupd (i.e: iounmap) should be done in .remove while the
-software cleanup (i.e: releasing the framebuffer) should be done in the
-.fb_destroy handler. But this at least makes to match the behavior before
-commit 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal").
-
-Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220505220631.366371-1-javierm@redhat.com
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Krishna Reddy <vdumpa@nvidia.com>
+Co-developed-by: Pritesh Raithatha <praithatha@nvidia.com>
+Signed-off-by: Pritesh Raithatha <praithatha@nvidia.com>
+Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+Link: https://lore.kernel.org/r/20220421081504.24678-1-amhetre@nvidia.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/vesafb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 30 ++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
-index df6de5a9dd4c..e25e8de5ff67 100644
---- a/drivers/video/fbdev/vesafb.c
-+++ b/drivers/video/fbdev/vesafb.c
-@@ -179,6 +179,10 @@ static int vesafb_setcolreg(unsigned regno, unsigned red, unsigned green,
- 	return err;
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+index 01e9b50b10a1..87bf522b9d2e 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+@@ -258,6 +258,34 @@ static void nvidia_smmu_probe_finalize(struct arm_smmu_device *smmu, struct devi
+ 			dev_name(dev), err);
  }
  
-+/*
-+ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
-+ * of unregister_framebuffer() or fb_release(). Do any cleanup here.
-+ */
- static void vesafb_destroy(struct fb_info *info)
- {
- 	struct vesafb_par *par = info->par;
-@@ -188,6 +192,8 @@ static void vesafb_destroy(struct fb_info *info)
- 	if (info->screen_base)
- 		iounmap(info->screen_base);
- 	release_mem_region(info->apertures->ranges[0].base, info->apertures->ranges[0].size);
++static int nvidia_smmu_init_context(struct arm_smmu_domain *smmu_domain,
++				    struct io_pgtable_cfg *pgtbl_cfg,
++				    struct device *dev)
++{
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	const struct device_node *np = smmu->dev->of_node;
 +
-+	framebuffer_release(info);
- }
++	/*
++	 * Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
++	 * entries to not be invalidated correctly. The problem is that the walk
++	 * cache index generated for IOVA is not same across translation and
++	 * invalidation requests. This is leading to page faults when PMD entry
++	 * is released during unmap and populated with new PTE table during
++	 * subsequent map request. Disabling large page mappings avoids the
++	 * release of PMD entry and avoid translations seeing stale PMD entry in
++	 * walk cache.
++	 * Fix this by limiting the page mappings to PAGE_SIZE on Tegra194 and
++	 * Tegra234.
++	 */
++	if (of_device_is_compatible(np, "nvidia,tegra234-smmu") ||
++	    of_device_is_compatible(np, "nvidia,tegra194-smmu")) {
++		smmu->pgsize_bitmap = PAGE_SIZE;
++		pgtbl_cfg->pgsize_bitmap = smmu->pgsize_bitmap;
++	}
++
++	return 0;
++}
++
+ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.read_reg = nvidia_smmu_read_reg,
+ 	.write_reg = nvidia_smmu_write_reg,
+@@ -268,10 +296,12 @@ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.global_fault = nvidia_smmu_global_fault,
+ 	.context_fault = nvidia_smmu_context_fault,
+ 	.probe_finalize = nvidia_smmu_probe_finalize,
++	.init_context = nvidia_smmu_init_context,
+ };
  
- static struct fb_ops vesafb_ops = {
-@@ -484,10 +490,10 @@ static int vesafb_remove(struct platform_device *pdev)
- {
- 	struct fb_info *info = platform_get_drvdata(pdev);
+ static const struct arm_smmu_impl nvidia_smmu_single_impl = {
+ 	.probe_finalize = nvidia_smmu_probe_finalize,
++	.init_context = nvidia_smmu_init_context,
+ };
  
-+	/* vesafb_destroy takes care of info cleanup */
- 	unregister_framebuffer(info);
- 	if (((struct vesafb_par *)(info->par))->region)
- 		release_region(0x3c0, 32);
--	framebuffer_release(info);
- 
- 	return 0;
- }
+ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
 -- 
 2.35.1
 
