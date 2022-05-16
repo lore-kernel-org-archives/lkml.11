@@ -2,96 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 380B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82643C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234121AbiEPKno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50380 "EHLO
+        id S242866AbiEPKn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236729AbiEPKna (ORCPT
+        with ESMTP id S242788AbiEPKng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:43:30 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA3718B05
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:42:52 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id 191so2542553pgf.4
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:42:52 -0700 (PDT)
+        Mon, 16 May 2022 06:43:36 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDFD924951
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:43:10 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id m23so17614738ljc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:43:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gGywS9bHxk5TZLlg9cekFTB0weMYTqUUeiNtr9tZHho=;
-        b=aF8Vk35o5gqPuerIPs6Aw+pBQ/K6j6dF1s+VEzN+mv48EULn6pi4887t2cp7eG1SuV
-         Cg5So539af0OUXOeoR0S8BqNWeEEh72naBPz0RlsSudJ5mqA5Q4b1SZJ1Sm7pyluQGG2
-         Rt3Fr0G55MrmNV1QJwj3LwOPs5TGPB+XMwDJQ=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HMrxutDweeUYQ3ATxwWpcqN8/976PlWz92Z8YtqbWzw=;
+        b=RgimAa0q2u5zJ5ZY0mkEsPOVENHf5WfOmpAWknPRBcfPpvBBLO6fUtB83DFiEptqPI
+         hS+THU5KI73w//qfz++JIoya54tm65L34Endgdg9ROFNZFZV8wg8Tkx/pj6L7OfcckRN
+         2ooJEHGAUw8tyw092xdvEYnL3uE3o+aHyb+Zm2NjBMUHp4lrmyitnEKO2xr/4prLRMsl
+         Dz4RMqtNZNrHxTiRgog9rtg/dX+dj/clXXMMXkp6OgMQMJXlhuQpdoMPkwko0UZjd16T
+         GZF6f4HlcET6rZfRwWlifKuNFCD4pGAe/sgQfvplFTt0ovrn9mTLR+FNo46Ri82VZ4HL
+         FVSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=gGywS9bHxk5TZLlg9cekFTB0weMYTqUUeiNtr9tZHho=;
-        b=R4tFdj1RsMRMqAwVTqciqso+923JePk7lrQHtyhdglGK4ZfGsXnmoAQnrOuEDRyHid
-         q3oezvcDNfQDNIJAEN7nyZJjw8Qi322gUDVp1jkaKraG7P/gN8Yxjk3gkKCL/W2KNZk/
-         HTnOVkscxythNAW2B42nHMDZlWXzAOTkGg6hRCGfxSbZAp4OpZEWHaYXKdK+rVpq4hGF
-         P9MnZFeaECqmasHkWERoRjGIikLoRoAhwbn+FYBeRp1q9oA9aElbLO7dT9tB9vHujjX6
-         oM5cITlZ8+eqXQ9SxPPyzknqOjtGDvWSJKI/M4J5uB/KKHhzLxLX9i3T/0xZXRZ8krlI
-         hf+Q==
-X-Gm-Message-State: AOAM533/ZMz5/qLl67bm+v9QLbo5mdOY6B+u+kAI/rkzh2xLHL6V4ZBw
-        VaPY58jBUbY/7dUQPfiejBQdNg==
-X-Google-Smtp-Source: ABdhPJyncUK3MZU/GJsE8dgsnjOCQKmWoiGt3yIx9nl/FcnEK7brtYhcPM7Q3kN1VggUz9jh08uisg==
-X-Received: by 2002:a62:6410:0:b0:4f3:9654:266d with SMTP id y16-20020a626410000000b004f39654266dmr16640705pfb.59.1652697772064;
-        Mon, 16 May 2022 03:42:52 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:cdcb:c865:6f65:d875])
-        by smtp.gmail.com with ESMTPSA id 10-20020a17090a01ca00b001cd4989ff70sm6191232pjd.55.2022.05.16.03.42.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 03:42:51 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Phillip Lougher <phillip@squashfs.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>
-Cc:     Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] Implement readahead for squashfs
-Date:   Mon, 16 May 2022 18:42:08 +0800
-Message-Id: <20220516104209.1407388-1-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+        bh=HMrxutDweeUYQ3ATxwWpcqN8/976PlWz92Z8YtqbWzw=;
+        b=35iWLeOU8Yzm50d4+j4AEOxS0LOXREUqeZSNOSqb3eurW6nHBvLuo28xwTJSoeSt/f
+         jgrjIcKcy2y17+ac2j+loIyYHAbQz7rKgD1Id5/hVVIVPND1kdlmnEl8Ky0BgqZTSvqQ
+         JKpSJ6dd7LWu91GX5OEC/JTut3cDa6Es4RM6H3AlvRrshEllqpMmEgRkj19jXqTeSlvD
+         3ePNz4fPeZtXWElBfC1p9Td9AK4DoFyxJMFhPy9+8TQgd/Z9eYxnD0iHbK5Jy2zQcWPb
+         o/ADTLiIoQWY8E/xg+xy6gjQMIKS2oljh6VDc4CAip9gKLa/lBL83BIxvfDX6D6vUYGK
+         3BzQ==
+X-Gm-Message-State: AOAM530XQe01AF7kD1q4efPKJU6lmYQa2UwTvNorZ4d8SdOydvYgdoFJ
+        aDgEKpnU1k51UfT5j4Lvvfcihw==
+X-Google-Smtp-Source: ABdhPJw91cQ2XfbmgzGL8D01LEHR3rpwl6a3yuvXOYVaArq35Nl0sdSUqVPITn5NbhfalGLcCIiavA==
+X-Received: by 2002:a05:651c:1542:b0:249:a87f:8a34 with SMTP id y2-20020a05651c154200b00249a87f8a34mr10770319ljp.442.1652697789158;
+        Mon, 16 May 2022 03:43:09 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id z15-20020ac25def000000b0047255d21180sm1264983lfq.175.2022.05.16.03.43.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 03:43:08 -0700 (PDT)
+Message-ID: <ea2af2f9-002a-5681-4293-a05718ce9dcd@linaro.org>
+Date:   Mon, 16 May 2022 12:43:07 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net] NFC: hci: fix sleep in atomic context bugs in
+ nfc_hci_hcp_message_tx
+Content-Language: en-US
+To:     duoming@zju.edu.cn
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
+        broonie@kernel.org, netdev@vger.kernel.org
+References: <20220516021028.54063-1-duoming@zju.edu.cn>
+ <d5fdfe27-a6de-3030-ce51-9f4f45d552f3@linaro.org>
+ <6aba1413.196eb.180cc609bf1.Coremail.duoming@zju.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <6aba1413.196eb.180cc609bf1.Coremail.duoming@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c1f6925e1091("mm: put readahead pages in cache earlier") requires
-fs to implement readahead callback. Otherwise there will be a
-performance regression.
+On 16/05/2022 12:18, duoming@zju.edu.cn wrote:
+> Hello,
+> 
+> On Mon, 16 May 2022 08:44:39 +0200 Krzysztof wrote:
+> 
+>>> There are sleep in atomic context bugs when the request to secure
+>>> element of st21nfca is timeout. The root cause is that kzalloc and
+>>> alloc_skb with GFP_KERNEL parameter is called in st21nfca_se_wt_timeout
+>>> which is a timer handler. The call tree shows the execution paths that
+>>> could lead to bugs:
+>>>
+>>>    (Interrupt context)
+>>> st21nfca_se_wt_timeout
+>>>   nfc_hci_send_event
+>>>     nfc_hci_hcp_message_tx
+>>>       kzalloc(..., GFP_KERNEL) //may sleep
+>>>       alloc_skb(..., GFP_KERNEL) //may sleep
+>>>
+>>> This patch changes allocation mode of kzalloc and alloc_skb from
+>>> GFP_KERNEL to GFP_ATOMIC in order to prevent atomic context from
+>>> sleeping. The GFP_ATOMIC flag makes memory allocation operation
+>>> could be used in atomic context.
+>>>
+>>> Fixes: 8b8d2e08bf0d ("NFC: HCI support")
+>>> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+>>> ---
+>>>  net/nfc/hci/hcp.c | 4 ++--
+>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/net/nfc/hci/hcp.c b/net/nfc/hci/hcp.c
+>>> index 05c60988f59..1caf9c2086f 100644
+>>> --- a/net/nfc/hci/hcp.c
+>>> +++ b/net/nfc/hci/hcp.c
+>>> @@ -30,7 +30,7 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
+>>>  	int hci_len, err;
+>>>  	bool firstfrag = true;
+>>>  
+>>> -	cmd = kzalloc(sizeof(struct hci_msg), GFP_KERNEL);
+>>> +	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
+>>
+>> No, this does not look correct. This function can sleep, so it can use
+>> GFP_KERNEL. Please just look at the function before replacing any flags...
+> 
+> I am sorry, I don`t understand why nfc_hci_hcp_message_tx() can sleep.
 
-Commit 9eec1d897139("squashfs: provide backing_dev_info in order to
-disable read-ahead") mitigates the performance drop issue for squashfs
-by closing readahead for it.
+Why? because in line 93 it uses a mutex (which is a sleeping primitve).
 
-This series implements readahead callback for squashfs. The previous
-discussion are in [1] and [2].
+> 
+> I think st21nfca_se_wt_timeout() is a timer handler, which is in interrupt context.
+> The call tree shows the execution paths that could lead to bugs:
+> 
+> st21nfca_hci_se_io()
+>   mod_timer(&info->se_info.bwi_timer,...)
+>     st21nfca_se_wt_timeout()  //timer handler, interrupt context
+>       nfc_hci_send_event()
+>         nfc_hci_hcp_message_tx()
+>           kzalloc(..., GFP_KERNEL) //may sleep
+>           alloc_skb(..., GFP_KERNEL) //may sleep
+> 
+> What`s more, I think the "mutex_lock(&hdev->msg_tx_mutex)" called by nfc_hci_hcp_message_tx()
+> is also improper.
+> 
+> Please correct me, If you think I am wrong. Thanks for your time.
 
-[1] https://lore.kernel.org/all/CAJMQK-g9G6KQmH-V=BRGX0swZji9Wxe_2c7ht-MMAapdFy2pXw@mail.gmail.com/T/
-[2] https://lore.kernel.org/linux-mm/Yn5Yij9pRPCzDozt@casper.infradead.org/t/#m4af4473b94f98a4996cb11756b633a07e5e059d1
+Your patch is not correct in current semantics of this function. This
+function can sleep (because it uses a mutex), so the mistake is rather
+calling it from interrupt context.
 
-Hsin-Yi Wang (3):
-  Revert "squashfs: Convert squashfs to read_folio"
-  Revert "squashfs: provide backing_dev_info in order to disable
-    read-ahead"
-  squashfs: implement readahead
 
- fs/squashfs/file.c    | 82 +++++++++++++++++++++++++++++++++++++++++--
- fs/squashfs/super.c   | 33 -----------------
- fs/squashfs/symlink.c |  5 ++-
- 3 files changed, 81 insertions(+), 39 deletions(-)
-
--- 
-2.36.0.550.gb090851708-goog
-
+Best regards,
+Krzysztof
