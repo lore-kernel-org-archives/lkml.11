@@ -2,110 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73666C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CE1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:14:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243767AbiEPNOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S243794AbiEPNOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243074AbiEPNOa (ORCPT
+        with ESMTP id S243771AbiEPNOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:14:30 -0400
+        Mon, 16 May 2022 09:14:41 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2974B1EEC9
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:14:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D2CC3A18E
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:14:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652706867;
+        s=mimecast20190719; t=1652706880;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=t3lctaNrBtVMkpYbjYsFBRjqmR6Zj0/iB9OndQ2l2RQ=;
-        b=Sbr+6ZiN6wBFtCzOwIj+5Lml9q5aCO9GkpCtHIMdt1ZrHu/oWCc20LG8KVTbnQXzLVvXhY
-        3toYbr4lT3Iea/+IiQptfr6sw14/TwcfJgLRBHRh0KMhW1pri8WRmHJP9iRLvX2XzYPO+N
-        9m5Xv7BeQ3AOggMQK+4puGfUXr2oPig=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=JJ97JlAV6zFIz097rsMrqoY03C5F3dZPF0NCbznRE10=;
+        b=BoVnPPGGDYkx1/TbDBe9UDZvI9s0J41vD+iFhpGtEl64OJ3pJMwRIMEo/1w3/FWwGnmYZB
+        9PYRlfi5H8cbJIxvaC+wDsxB4hmkps9GCdD6zChqqGwP8I/eMftNeFbDh+fkSkJZaXIKe/
+        FdOcoirqLPl5gsIgy+2/sShFnam4F/s=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-315-lnw4ZYTWPK-tmYpbSkeHHA-1; Mon, 16 May 2022 09:14:25 -0400
-X-MC-Unique: lnw4ZYTWPK-tmYpbSkeHHA-1
-Received: by mail-wm1-f70.google.com with SMTP id m26-20020a7bcb9a000000b0039455e871b6so5627902wmi.8
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:14:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=t3lctaNrBtVMkpYbjYsFBRjqmR6Zj0/iB9OndQ2l2RQ=;
-        b=d3dJQLtA6IHNtuRjBhW5Og0T0mUoUQG/64kLPFDqWezarbe/9ckRTLDlYuRJrOFegb
-         TnVKl6/wxdtWYh3P+TEwgrmr47dK5gMsB6F3XOsYXvn8fs0eXFh4uETM7bkh2vN0+7+u
-         bND4WijzInQnMTNa0z7/SFFN+/mywQ5TiZIe4Y0T+VrdqIySyZDjyVUwZbV66KMH9DQ1
-         cN+3T8eTe6dIP6ilVfHpsoJ/k36XjkaUwdaEMsr3pfGNoLE7inzVw+XO70/9rJIum1x/
-         6XsoF9lSbcl6Cftc3iVW2Vxr5Ute1ajobgKxYRf4gWgcj/cUjf+tksqyEBi7Q6XgA80a
-         D4Hw==
-X-Gm-Message-State: AOAM531syK0HBNPwfZV6CmV6EZB/mUP9Fo1qX/FQlufahMUf46F6/uux
-        Nnr6mb4XOctPk9HnKVv4vYU2MV0wsTjq+p6YCOQFoe6gkn/zWoV0RWoWG9nk2ndv+5KXXHoMwqN
-        4KUX8YPcJrZSw0BHsYbxWcKcE
-X-Received: by 2002:adf:eacb:0:b0:20d:230:906 with SMTP id o11-20020adfeacb000000b0020d02300906mr7563065wrn.245.1652706864360;
-        Mon, 16 May 2022 06:14:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxFI6gXt4bC663XUr9rT/BI3UPCcyDYX/mLi0lrUd3uM4RTBILVBdH8a5Eavbo/0XSfGWAJBg==
-X-Received: by 2002:adf:eacb:0:b0:20d:230:906 with SMTP id o11-20020adfeacb000000b0020d02300906mr7563049wrn.245.1652706864169;
-        Mon, 16 May 2022 06:14:24 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id x13-20020a7bc20d000000b0039429bfebebsm15025003wmi.3.2022.05.16.06.14.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 06:14:23 -0700 (PDT)
-Message-ID: <f0fb2ffbde15b2939ed76545b549bdcd33b92ae8.camel@redhat.com>
-Subject: Re: [PATCH net-next v3 03/10] udp/ipv6: prioritise the ip6 path
- over ip4 checks
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 16 May 2022 15:14:22 +0200
-In-Reply-To: <50cca375d8730b5bf74b975d0fede64b1a3744c4.1652368648.git.asml.silence@gmail.com>
-References: <cover.1652368648.git.asml.silence@gmail.com>
-         <50cca375d8730b5bf74b975d0fede64b1a3744c4.1652368648.git.asml.silence@gmail.com>
+ us-mta-417-vb0tcTncOW6xQRoSVjL4CA-1; Mon, 16 May 2022 09:14:36 -0400
+X-MC-Unique: vb0tcTncOW6xQRoSVjL4CA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2275C1DB28A0;
+        Mon, 16 May 2022 13:14:36 +0000 (UTC)
+Received: from starship (unknown [10.40.192.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D487140D1B98;
+        Mon, 16 May 2022 13:14:32 +0000 (UTC)
+Message-ID: <f05dcf66ed2bfb7d113ce0d9a261569959265c68.camel@redhat.com>
+Subject: Re: [PATCH] KVM: x86: fix a typo in __try_cmpxchg_user that caused
+ cmpxchg to be not atomic
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Date:   Mon, 16 May 2022 16:14:31 +0300
+In-Reply-To: <Yn17urxf7vprODed@google.com>
+References: <20220202004945.2540433-5-seanjc@google.com>
+         <20220512101420.306759-1-mlevitsk@redhat.com>
+         <87e16c11-d57b-92cd-c10b-21d855f475ef@redhat.com>
+         <Yn17urxf7vprODed@google.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-13 at 16:26 +0100, Pavel Begunkov wrote:
-> For AF_INET6 sockets we care the most about ipv6 but not ip4 mappings as
-> it's requires some extra hops anyway. Take AF_INET6 case from the address
-> parsing switch and add an explicit path for it. It removes some extra
-> ifs from the path and removes the switch overhead.
+On Thu, 2022-05-12 at 21:27 +0000, Sean Christopherson wrote:
+> On Thu, May 12, 2022, Paolo Bonzini wrote:
+> > On 5/12/22 12:14, Maxim Levitsky wrote:
+> > > Yes, this is the root cause of the TDP mmu leak I was doing debug of in the last week.
+> > > Non working cmpxchg on which TDP mmu relies makes it install two differnt shadow pages
+> > > under same spte.
+> > 
+> > Awesome!  And queued, thanks.
 > 
-> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-> ---
->  net/ipv6/udp.c | 37 +++++++++++++++++--------------------
->  1 file changed, 17 insertions(+), 20 deletions(-)
+> If you haven't done so already, can you add 
 > 
-> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> index 85bff1252f5c..e0b1bea998ce 100644
-> --- a/net/ipv6/udp.c
-> +++ b/net/ipv6/udp.c
-> @@ -1360,30 +1360,27 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
->  
->  	/* destination address check */
->  	if (sin6) {
-> -		if (addr_len < offsetof(struct sockaddr, sa_data))
-> -			return -EINVAL;
-> +		if (addr_len < SIN6_LEN_RFC2133 || sin6->sin6_family != AF_INET6) {
-> +			if (addr_len < offsetof(struct sockaddr, sa_data))
-> +				return -EINVAL;
+>   Cc: stable@vger.kernel.org
 
-I think you can't access 'sin6->sin6_family' before validating the
-socket address len, that is before doing:
+When I posted my patch, I checked that the patch didn't reach mainline yet,
+so I assumed that it won't be in -stable either yet, although it was CCed there.
 
-if (addr_len < offsetof(struct sockaddr, sa_data))
 
-Paolo
+> 
+> Also, given that we have concrete proof that not honoring atomic accesses can have
+> dire consequences for the guest, what about adding a capability to turn the emul_write
+> path into an emulation error?
+> 
+
+
+This is a good idea. It might though break some guests - I did see that
+warning few times, that is why I wasn't alert by the fact that it started showing up more often.
+
+I'll take a look at this soon.
+
+Best regards,
+	Maxim Levitsky
 
