@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B83CC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348780AbiEPUXI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
+        id S234929AbiEPUXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348871AbiEPT7B (ORCPT
+        with ESMTP id S1348869AbiEPT7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854D27659;
-        Mon, 16 May 2022 12:51:43 -0700 (PDT)
+        Mon, 16 May 2022 15:59:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4779A47A;
+        Mon, 16 May 2022 12:51:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2261260A50;
-        Mon, 16 May 2022 19:51:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 124CEC385AA;
-        Mon, 16 May 2022 19:51:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66694B81612;
+        Mon, 16 May 2022 19:51:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C214AC385AA;
+        Mon, 16 May 2022 19:51:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730702;
-        bh=K0e//h/6PydWP4sS4t8OnODJz9/3dzWamQ2oJbLLZmc=;
+        s=korg; t=1652730699;
+        bh=zAIK8Scdfpm+47u/CP5vmP3dy1T/MXT6kt+ys0EhElw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HYAYjQPV4E0c70EE31WguZE9SEYOrA9grzQJ8eoTiL8s0NHFf0MgqDJ4n/Znpetjp
-         6UtaWGC/ee49ZeciYWCXumohWE+8rQ0OdzfJiPZFtgycNgkxWzab1t7MG76NhBd6Nt
-         DawYpiCRPN3GTvFK6t3QU6GRFSil7F3ktcecphH0=
+        b=aKXp8y5UHDCqVT+NEXyRte9AbUlcsAS6KiaFDXvbF1jVBApEFcBlXlq0Bjz8ii4uP
+         uOzLtTtfceVxoIZApX4kCWJl04IZX+sakz3449zenCEQe+WGHvVxMt10zfaOelC9zy
+         AjhSPzN4UlQsLNMgW2xeY7gDHKDY3YpXjEUHQ4qU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Fortin <fortinj66@gmail.com>,
-        Sri Ramanujam <sri@ramanujam.io>,
-        Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.15 081/102] ceph: fix setting of xattrs on async created inodes
-Date:   Mon, 16 May 2022 21:36:55 +0200
-Message-Id: <20220516193626.318984890@linuxfoundation.org>
+        stable@vger.kernel.org, Matthew Hagan <mnhagan88@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 054/102] net: sfp: Add tx-fault workaround for Huawei MA5671A SFP ONT
+Date:   Mon, 16 May 2022 21:36:28 +0200
+Message-Id: <20220516193625.547213760@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -51,62 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Matthew Hagan <mnhagan88@gmail.com>
 
-commit 620239d9a32e9fe27c9204ec11e40058671aeeb6 upstream.
+[ Upstream commit 2069624dac19d62c558bb6468fe03678553ab01d ]
 
-Currently when we create a file, we spin up an xattr buffer to send
-along with the create request. If we end up doing an async create
-however, then we currently pass down a zero-length xattr buffer.
+As noted elsewhere, various GPON SFP modules exhibit non-standard
+TX-fault behaviour. In the tested case, the Huawei MA5671A, when used
+in combination with a Marvell mv88e6085 switch, was found to
+persistently assert TX-fault, resulting in the module being disabled.
 
-Fix the code to send down the xattr buffer in req->r_pagelist. If the
-xattrs span more than a page, however give up and don't try to do an
-async create.
+This patch adds a quirk to ignore the SFP_F_TX_FAULT state, allowing the
+module to function.
 
-Cc: stable@vger.kernel.org
-URL: https://bugzilla.redhat.com/show_bug.cgi?id=2063929
-Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
-Reported-by: John Fortin <fortinj66@gmail.com>
-Reported-by: Sri Ramanujam <sri@ramanujam.io>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Change from v1: removal of erroneous return statment (Andrew Lunn)
+
+Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220502223315.1973376-1-mnhagan88@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/file.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/net/phy/sfp.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -592,9 +592,15 @@ static int ceph_finish_async_create(stru
- 	iinfo.change_attr = 1;
- 	ceph_encode_timespec64(&iinfo.btime, &now);
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 4720b24ca51b..90dfefc1f5f8 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -250,6 +250,7 @@ struct sfp {
+ 	struct sfp_eeprom_id id;
+ 	unsigned int module_power_mW;
+ 	unsigned int module_t_start_up;
++	bool tx_fault_ignore;
  
--	iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
--	iinfo.xattr_data = xattr_buf;
--	memset(iinfo.xattr_data, 0, iinfo.xattr_len);
-+	if (req->r_pagelist) {
-+		iinfo.xattr_len = req->r_pagelist->length;
-+		iinfo.xattr_data = req->r_pagelist->mapped_tail;
-+	} else {
-+		/* fake it */
-+		iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
-+		iinfo.xattr_data = xattr_buf;
-+		memset(iinfo.xattr_data, 0, iinfo.xattr_len);
-+	}
+ #if IS_ENABLED(CONFIG_HWMON)
+ 	struct sfp_diag diag;
+@@ -1945,6 +1946,12 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+ 	else
+ 		sfp->module_t_start_up = T_START_UP;
  
- 	in.ino = cpu_to_le64(vino.ino);
- 	in.snapid = cpu_to_le64(CEPH_NOSNAP);
-@@ -706,6 +712,10 @@ int ceph_atomic_open(struct inode *dir,
- 		err = ceph_security_init_secctx(dentry, mode, &as_ctx);
- 		if (err < 0)
- 			goto out_ctx;
-+		/* Async create can't handle more than a page of xattrs */
-+		if (as_ctx.pagelist &&
-+		    !list_is_singular(&as_ctx.pagelist->head))
-+			try_async = false;
- 	} else if (!d_in_lookup(dentry)) {
- 		/* If it's not being looked up, it's negative */
- 		return -ENOENT;
++	if (!memcmp(id.base.vendor_name, "HUAWEI          ", 16) &&
++	    !memcmp(id.base.vendor_pn, "MA5671A         ", 16))
++		sfp->tx_fault_ignore = true;
++	else
++		sfp->tx_fault_ignore = false;
++
+ 	return 0;
+ }
+ 
+@@ -2397,7 +2404,10 @@ static void sfp_check_state(struct sfp *sfp)
+ 	mutex_lock(&sfp->st_mutex);
+ 	state = sfp_get_state(sfp);
+ 	changed = state ^ sfp->state;
+-	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
++	if (sfp->tx_fault_ignore)
++		changed &= SFP_F_PRESENT | SFP_F_LOS;
++	else
++		changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
+ 
+ 	for (i = 0; i < GPIO_MAX; i++)
+ 		if (changed & BIT(i))
+-- 
+2.35.1
+
 
 
