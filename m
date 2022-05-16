@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D33FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232873AbiEPUKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
+        id S238845AbiEPUKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347246AbiEPT5M (ORCPT
+        with ESMTP id S1347259AbiEPT5N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:57:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27C24832E;
-        Mon, 16 May 2022 12:49:31 -0700 (PDT)
+        Mon, 16 May 2022 15:57:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB74248322;
+        Mon, 16 May 2022 12:49:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36BF160BB5;
-        Mon, 16 May 2022 19:49:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40900C34115;
-        Mon, 16 May 2022 19:49:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA6DBB8160E;
+        Mon, 16 May 2022 19:49:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F5FCC385AA;
+        Mon, 16 May 2022 19:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730569;
-        bh=ynx/7QHVVjHV4bOAXzGkWyMuH2sZpWlvcEwXWOxepes=;
+        s=korg; t=1652730566;
+        bh=oKUq3ahdpov0ZIOK2pIDkvBQ76LZxb00R113HUGe/Sc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ufKsylYrUC2JtowH35sc9DR6gmBfdUU/ldCRqn2r98ZYHouRGyzu7sD0XxMRG3nMU
-         bpIHSf2+Evug9+ROwgK4Rt2ZR7mEaooRE6zOWHqVDyI1T0Qm2xY6/Vqv6Nl7fBKWdZ
-         hoWNGGE9JKwORmx24CqLMzKDYYgQxn6Si+6l8ePI=
+        b=Das1GHH4SslbI7btY/+jWv+FTJZG3zFUZm7Kszh30rCFk2p3dB0kxAgpKzle5SbYa
+         rwcTIK6AjjRWJUsalQ+IazX4+34rTdFgwB2lRAogmUWshhtYPjEvsFW7zR+JST8SBh
+         TjeBzSW2vLpRBKxGmkQaRM3DVGJ1A0IRxxri405U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Hui Tang <tanghui20@huawei.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 039/102] net: dsa: bcm_sf2: Fix Wake-on-LAN with mac_link_down()
-Date:   Mon, 16 May 2022 21:36:13 +0200
-Message-Id: <20220516193625.122578225@linuxfoundation.org>
+Subject: [PATCH 5.15 038/102] drm/vc4: hdmi: Fix build error for implicit function declaration
+Date:   Mon, 16 May 2022 21:36:12 +0200
+Message-Id: <20220516193625.094526815@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -49,41 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Hui Tang <tanghui20@huawei.com>
 
-[ Upstream commit b7be130c5d52e5224ac7d89568737b37b4c4b785 ]
+[ Upstream commit 6fed53de560768bde6d701a7c79c253b45b259e3 ]
 
-After commit 2d1f90f9ba83 ("net: dsa/bcm_sf2: fix incorrect usage of
-state->link") the interface suspend path would call our mac_link_down()
-call back which would forcibly set the link down, thus preventing
-Wake-on-LAN packets from reaching our management port.
+drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_connector_detect’:
+drivers/gpu/drm/vc4/vc4_hdmi.c:228:7: error: implicit declaration of function ‘gpiod_get_value_cansleep’; did you mean ‘gpio_get_value_cansleep’? [-Werror=implicit-function-declaration]
+   if (gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio))
+       ^~~~~~~~~~~~~~~~~~~~~~~~
+       gpio_get_value_cansleep
+  CC [M]  drivers/gpu/drm/vc4/vc4_validate.o
+  CC [M]  drivers/gpu/drm/vc4/vc4_v3d.o
+  CC [M]  drivers/gpu/drm/vc4/vc4_validate_shaders.o
+  CC [M]  drivers/gpu/drm/vc4/vc4_debugfs.o
+drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_bind’:
+drivers/gpu/drm/vc4/vc4_hdmi.c:2883:23: error: implicit declaration of function ‘devm_gpiod_get_optional’; did you mean ‘devm_clk_get_optional’? [-Werror=implicit-function-declaration]
+  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
+                       ^~~~~~~~~~~~~~~~~~~~~~~
+                       devm_clk_get_optional
+drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: error: ‘GPIOD_IN’ undeclared (first use in this function); did you mean ‘GPIOF_IN’?
+  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
+                                                           ^~~~~~~~
+                                                           GPIOF_IN
+drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: note: each undeclared identifier is reported only once for each function it appears in
+cc1: all warnings being treated as errors
 
-Fix this by looking at whether the port is enabled for Wake-on-LAN and
-not clearing the link status in that case to let packets go through.
-
-Fixes: 2d1f90f9ba83 ("net: dsa/bcm_sf2: fix incorrect usage of state->link")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220512021731.2494261-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6800234ceee0 ("drm/vc4: hdmi: Convert to gpiod")
+Signed-off-by: Hui Tang <tanghui20@huawei.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220510135148.247719-1-tanghui20@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/bcm_sf2.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 2e314e3021d8..b3a43a3d90e4 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -796,6 +796,9 @@ static void bcm_sf2_sw_mac_link_down(struct dsa_switch *ds, int port,
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	u32 reg, offset;
- 
-+	if (priv->wol_ports_mask & BIT(port))
-+		return;
-+
- 	if (port != core_readl(priv, CORE_IMP0_PRT_ID)) {
- 		if (priv->type == BCM4908_DEVICE_ID ||
- 		    priv->type == BCM7445_DEVICE_ID)
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 07887cbfd9cb..ef7bea7c43a0 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -38,6 +38,7 @@
+ #include <drm/drm_scdc_helper.h>
+ #include <linux/clk.h>
+ #include <linux/component.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
+ #include <linux/of_address.h>
+ #include <linux/of_gpio.h>
 -- 
 2.35.1
 
