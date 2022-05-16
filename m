@@ -2,101 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF009C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 06:13:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B070AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 06:15:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239963AbiEPGNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 02:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34872 "EHLO
+        id S240097AbiEPGPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 02:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234700AbiEPGNQ (ORCPT
+        with ESMTP id S231199AbiEPGP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 02:13:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2122C20F70;
-        Sun, 15 May 2022 23:13:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE1E9B80B46;
-        Mon, 16 May 2022 06:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77732C34113;
-        Mon, 16 May 2022 06:13:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652681592;
-        bh=UTUuhN0um7hJQqdQeOchUoEm+GyHH2sayGEMfRN9Os8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FjmE/Rc7ORV8WRQjYTNUGobIKVgFeXTEOjVGR4nyEF5YtfXcvP9paEhosnuQEeU64
-         3lomSFPmaOqPvhAQfXKtGMZwCW6m9487+Tbh2APx3PS8PJr9DEoWRU73OKFxEMXw5v
-         A8VcQ13S3nlqdWbmMYtZNRe2Oodx3X+X4wAoPj+M=
-Date:   Mon, 16 May 2022 08:13:08 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Yonglin Tan <yonglin.tan@outlook.com>
-Cc:     mani@kernel.org, loic.poulain@linaro.org, quic_hemantk@quicinc.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mhi@lists.linux.dev
-Subject: Re: [PATCH v2] bus: mhi: host: Add support for Quectel EM120 FCCL.
-Message-ID: <YoHrdGsEdWL8Yrui@kroah.com>
-References: <MEYP282MB2374B1DA0004F6E5821A2FB5FDCF9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+        Mon, 16 May 2022 02:15:26 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9131020F72
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:15:25 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id j4so23966843lfh.8
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:15:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=MbrhUEcuzEes1MO/m14edarYcpIuUGvSuSikQjaR1hE=;
+        b=Sn1TX8yMxUDd9dFA7JN1VX/5hSF1sGO4sZJvAzgFrgMg1KXO5tIaUzIjFIZ9K2BPOB
+         xAdm3v8nzF/lx8oqHsP5ByfhezClrPlVVlyFcGU/XexJ/7j/lMWCuSmdl84r8qbZ1Gsv
+         d9I0ztX9ncvkuMuoKamGjK/HpjX2oklR6ZyuoJUkLK5+1SUKYJamnGJClMypAGH/qou/
+         5Lvcdfx7GsGyi4TDqQ92OSF3jHdSB/GSGbu4K5qKMIYA7OWUXtkA+s/eQpVUgU1zepug
+         fr85TEl+F00+3CxP7RNa9jKISw8ZB0zNbEXrAFxi47SQgc6UWXMkss91/96FCJr/9DxD
+         9ssQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MbrhUEcuzEes1MO/m14edarYcpIuUGvSuSikQjaR1hE=;
+        b=STJphGoc2Sy/0+dJvF2hRNsbPKbcUoOK2Bgfx5sDgzFFVI5SYpj3h64ptONyH3Zk1d
+         /HPzobC7SMkIYmz/Rkccp8GJ4CSfuIKPr9mCxQgL1AvPCUtOL8gbLQtkZnV5L0OFZD2B
+         /2ZcnAKczrhu/RAvE47t2/S9WnAWC+3diBqMv86CrvbHUTfhSNxzSYhnyklwxrIaQdbz
+         G/2e4n0qYoV0jlkkLdX1h52EQOGpk/vPva5wWrxBrRlKoTS98yoGQQWS57Kktk1zktZA
+         uYvlwAd1A6CjQcYb04DuhTMzA9eAHUzfdhBZ+JOSGUwTY5StUulUTPqO77pEEHWRMf/P
+         ijFg==
+X-Gm-Message-State: AOAM532UB/CHfM9qKy4Dbdp7GWC/FOV6i6yeiaGDgAhmMSQQzXmajj0j
+        wNhxnbky+DCpyAkF+speREE5zw==
+X-Google-Smtp-Source: ABdhPJxWTtShK0m+i18kqeRDZwPku8a+AeCJwwbzUGTS9yC3+7/TdhrxlcYcBIMyy++49F3f2Rek/w==
+X-Received: by 2002:a05:6512:3d06:b0:473:fe9a:25e9 with SMTP id d6-20020a0565123d0600b00473fe9a25e9mr12487447lfv.449.1652681723885;
+        Sun, 15 May 2022 23:15:23 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id e13-20020ac2546d000000b0047255d211fcsm1203927lfn.299.2022.05.15.23.15.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 May 2022 23:15:23 -0700 (PDT)
+Message-ID: <9a7514ab-4c01-6abf-68e2-5945d9415867@linaro.org>
+Date:   Mon, 16 May 2022 08:15:22 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MEYP282MB2374B1DA0004F6E5821A2FB5FDCF9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net] NFC: nci: fix sleep in atomic context bugs caused by
+ nci_skb_alloc
+Content-Language: en-US
+To:     Duoming Zhou <duoming@zju.edu.cn>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
+        broonie@kernel.org
+References: <20220513133355.113222-1-duoming@zju.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220513133355.113222-1-duoming@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 02:09:34PM +0800, Yonglin Tan wrote:
-> The product's enumeration align with previous 
-> Quectel EM120R-GL, so the EM120 FCCL would use 
-> the same config as Quectel EM120R-GL. 
+On 13/05/2022 15:33, Duoming Zhou wrote:
+> There are sleep in atomic context bugs when the request to secure
+> element of st-nci is timeout. The root cause is that nci_skb_alloc
+> with GFP_KERNEL parameter is called in st_nci_se_wt_timeout which is
+> a timer handler. The call paths that could trigger bugs are shown below:
 > 
-> Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
-> ---
->  drivers/bus/mhi/host/pci_generic.c | 2 ++
->  1 file changed, 2 insertions(+)
+>     (interrupt context 1)
+> st_nci_se_wt_timeout
+>   nci_hci_send_event
+>     nci_hci_send_data
+>       nci_skb_alloc(..., GFP_KERNEL) //may sleep
 > 
-> diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
-> index 8416267..0a6469c 100644
-> --- a/drivers/bus/mhi/host/pci_generic.c
-> +++ b/drivers/bus/mhi/host/pci_generic.c
-> @@ -557,6 +557,8 @@ static const struct pci_device_id mhi_pci_id_table[] = {
->  		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
->  	{ PCI_DEVICE(0x1eac, 0x1002), /* EM160R-GL (sdx24) */
->  		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
-> +	{ PCI_DEVICE(0x1eac, 0x2001), /* EM120R-GL for FCCL (sdx24) */
-> +		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
->  	/* T99W175 (sdx55), Both for eSIM and Non-eSIM */
->  	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0ab),
->  		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-> -- 
-> 2.7.4
+>    (interrupt context 2)
+> st_nci_se_wt_timeout
+>   nci_hci_send_event
+>     nci_hci_send_data
+>       nci_send_data
+>         nci_queue_tx_data_frags
+>           nci_skb_alloc(..., GFP_KERNEL) //may sleep
 > 
+> This patch changes allocation mode of nci_skb_alloc from GFP_KERNEL to
+> GFP_ATOMIC in order to prevent atomic context sleeping. The GFP_ATOMIC
+> flag makes memory allocation operation could be used in atomic context.
+> 
+> Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation ")
+> Fixes: 11f54f228643 ("NFC: nci: Add HCI over NCI protocol support")
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 
-Hi,
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-You are receiving this message because of the following common error(s)
-as indicated below:
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Best regards,
+Krzysztof
