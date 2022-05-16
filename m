@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBA9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96596C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346358AbiEPTuP (ORCPT
+        id S1346378AbiEPTuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
+        Mon, 16 May 2022 15:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346111AbiEPToi (ORCPT
+        with ESMTP id S1346103AbiEPToi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:44:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A08403F2;
-        Mon, 16 May 2022 12:43:03 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786FF3F327;
+        Mon, 16 May 2022 12:43:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9725B815F8;
-        Mon, 16 May 2022 19:43:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2704EC385AA;
-        Mon, 16 May 2022 19:42:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5E6861512;
+        Mon, 16 May 2022 19:43:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2694C34100;
+        Mon, 16 May 2022 19:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730180;
-        bh=6PHLkbO2Qv6DIi06nCR/kXNEUJQD4z+5jPF8ugPX/Fk=;
+        s=korg; t=1652730186;
+        bh=yJl8Cd9PvqsmdGwl2MJYBhuRJUxLCHlEUkl8TnA/s2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EpcsS7BMOPUz+s2fhi+EDp5nAFK9RKFUPxYanvYF9lAdyIR24NbUFvbjPvFTLIMeX
-         7wwOT3OAVix5lMVppBfFK2+SLAtg51BRTbh6gq6fjgCy9wCrXk/k/8fxrtJIlv9mVV
-         LJufmGvBZjTi8EQLWH+qJI9md6/tBss/y371Nqfw=
+        b=pHmMdn9GSCuAObs4pDEILGTxP69lA4X04BOm3Cbk+5LvsCM4SlapQlJrSSZD/1Nxy
+         vuZWDT2yeN7DTZraQnMNBwT12MmpDDzy4xu8+0z8EBSjL4Bgzoz2I+7R8s+gHdSGo8
+         a0P47RlU+ttqwwF0vjhr88s/w6cMEnv+6EETF/w0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
-        Johannes Berg <johannes.berg@intel.com>,
+        Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 03/43] mac80211: Reset MBSSID parameters upon connection
-Date:   Mon, 16 May 2022 21:36:14 +0200
-Message-Id: <20220516193614.818226367@linuxfoundation.org>
+Subject: [PATCH 5.4 05/43] ipv4: drop dst in multicast routing path
+Date:   Mon, 16 May 2022 21:36:16 +0200
+Message-Id: <20220516193614.877057845@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -51,58 +53,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
 
-[ Upstream commit 86af062f40a73bf63321694e6bf637144f0383fe ]
+[ Upstream commit 9e6c6d17d1d6a3f1515ce399f9a011629ec79aa0 ]
 
-Currently MBSSID parameters in struct ieee80211_bss_conf
-are not reset upon connection. This could be problematic
-with some drivers in a scenario where the device first
-connects to a non-transmit BSS and then connects to a
-transmit BSS of a Multi BSS AP. The MBSSID parameters
-which are set after connecting to a non-transmit BSS will
-not be reset and the same parameters will be passed on to
-the driver during the subsequent connection to a transmit
-BSS of a Multi BSS AP.
+kmemleak reports the following when routing multicast traffic over an
+ipsec tunnel.
 
-For example, firmware running on the ath11k device uses the
-Multi BSS data for tracking the beacon of a non-transmit BSS
-and reports the driver when there is a beacon miss. If we do
-not reset the MBSSID parameters during the subsequent
-connection to a transmit BSS, then the driver would have
-wrong MBSSID data and FW would be looking for an incorrect
-BSSID in the MBSSID beacon of a Multi BSS AP and reports
-beacon loss leading to an unstable connection.
+Kmemleak output:
+unreferenced object 0x8000000044bebb00 (size 256):
+  comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
+    80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000f83947e0>] __kmalloc+0x1e8/0x300
+    [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
+    [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
+    [<00000000824f6cf1>] gre_rcv+0x178/0x540
+    [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
+    [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
+    [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
+    [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
+    [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
+    [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
+    [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
+    [<00000000013d7914>] irq_exit+0xc4/0xe0
+    [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
+    [<000000000751eb8e>] handle_int+0x16c/0x178
+    [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
 
-Reset the MBSSID parameters upon every connection to solve this
-problem.
+The metadata dst is leaked when ip_route_input_mc() updates the dst for
+the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
+handled dropping the dst in ip_route_input_slow() but missed the
+multicast case which is handled by ip_route_input_mc(). Drop the dst in
+ip_route_input_mc() avoiding the leak.
 
-Fixes: 78ac51f81532 ("mac80211: support multi-bssid")
-Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
-Link: https://lore.kernel.org/r/20220428052744.27040-1-quic_mpubbise@quicinc.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: f38a9eb1f77b ("dst: Metadata destinations")
+Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mlme.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/ipv4/route.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index ad00f31e2002..5415e566e09d 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -3406,6 +3406,12 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
- 				cbss->transmitted_bss->bssid);
- 		bss_conf->bssid_indicator = cbss->max_bssid_indicator;
- 		bss_conf->bssid_index = cbss->bssid_index;
-+	} else {
-+		bss_conf->nontransmitted = false;
-+		memset(bss_conf->transmitter_bssid, 0,
-+		       sizeof(bss_conf->transmitter_bssid));
-+		bss_conf->bssid_indicator = 0;
-+		bss_conf->bssid_index = 0;
- 	}
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index d1feec97fa06..9280e5087159 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1775,6 +1775,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ #endif
+ 	RT_CACHE_STAT_INC(in_slow_mc);
  
- 	/*
++	skb_dst_drop(skb);
+ 	skb_dst_set(skb, &rth->dst);
+ 	return 0;
+ }
 -- 
 2.35.1
 
