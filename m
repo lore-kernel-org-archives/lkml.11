@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE48C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16BCC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346794AbiEPUQO (ORCPT
+        id S1346607AbiEPUQA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:16:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56676 "EHLO
+        Mon, 16 May 2022 16:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346651AbiEPTy5 (ORCPT
+        with ESMTP id S1351052AbiEPUB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:54:57 -0400
+        Mon, 16 May 2022 16:01:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8315747065;
-        Mon, 16 May 2022 12:49:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9221F47573;
+        Mon, 16 May 2022 12:57:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 301B660C71;
-        Mon, 16 May 2022 19:49:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F4C2C385AA;
-        Mon, 16 May 2022 19:49:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D74F60EC4;
+        Mon, 16 May 2022 19:57:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C118C385AA;
+        Mon, 16 May 2022 19:57:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730549;
-        bh=AmaYw6vlMJ/ix2gnSAYCW40hx5gE0o8hqHhm/0kGeeA=;
+        s=korg; t=1652731042;
+        bh=knJ3yMlGUTuXhvAdX0tjShihmMNx/PRKpMM6L/mJ3F0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DUZ8Y5EuqluPGgwl3UTGYZHjK0rD1lyeDl4moUU0c9rcJImGgbvxeDoLq/x4AAgQv
-         vAsjFyJMj/6uWT1wt9J2QQcKe0iWVVhzKWlstelBW2vbcPqaIYvwqTmWNpqqKWrfXS
-         +FledJ7Hr+P5g186nAckpcxfx7Jk33AEH0GCmXJc=
+        b=J1W5IkoEDeCi4qgF0RV2dSB5Dffd5uxsYS9EBsj/F62El3aJJoNFTIvKGs2rb5MS9
+         CNHjDYeW5b3/26Z+tOsPle98Hx50ZWWZi9Qj7ODVU04/HB1QDqZOvmSoxTBYgb6ipB
+         B2gJupuED2+j6qa1Ur0sh0ZdlcehpxZqYVFmwoO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexandra Winter <wintera@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 034/102] s390/lcs: fix variable dereferenced before check
-Date:   Mon, 16 May 2022 21:36:08 +0200
-Message-Id: <20220516193624.979735177@linuxfoundation.org>
+        stable@vger.kernel.org, Scott Chen <scott@labau.com.tw>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.17 083/114] USB: serial: pl2303: add device id for HP LM930 Display
+Date:   Mon, 16 May 2022 21:36:57 +0200
+Message-Id: <20220516193627.866562868@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
+In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
+References: <20220516193625.489108457@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
+From: Scott Chen <scott@labau.com.tw>
 
-[ Upstream commit 671bb35c8e746439f0ed70815968f9a4f20a8deb ]
+commit 26a08f8bad3e1f98d3153f939fb8cd330da4cb26 upstream.
 
-smatch complains about
-drivers/s390/net/lcs.c:1741 lcs_get_control() warn: variable dereferenced before check 'card->dev' (see line 1739)
+Add the device id for the HPLM930Display which is a PL2303GC based
+device.
 
-Fixes: 27eb5ac8f015 ("[PATCH] s390: lcs driver bug fixes and improvements [1/2]")
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Scott Chen <scott@labau.com.tw>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/net/lcs.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/usb/serial/pl2303.c |    1 +
+ drivers/usb/serial/pl2303.h |    1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
-index 440219bcaa2b..06a322bdced6 100644
---- a/drivers/s390/net/lcs.c
-+++ b/drivers/s390/net/lcs.c
-@@ -1735,10 +1735,11 @@ lcs_get_control(struct lcs_card *card, struct lcs_cmd *cmd)
- 			lcs_schedule_recovery(card);
- 			break;
- 		case LCS_CMD_STOPLAN:
--			pr_warn("Stoplan for %s initiated by LGW\n",
--				card->dev->name);
--			if (card->dev)
-+			if (card->dev) {
-+				pr_warn("Stoplan for %s initiated by LGW\n",
-+					card->dev->name);
- 				netif_carrier_off(card->dev);
-+			}
- 			break;
- 		default:
- 			LCS_DBF_TEXT(5, trace, "noLGWcmd");
--- 
-2.35.1
-
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -106,6 +106,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM220_PRODUCT_ID) },
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM960_PRODUCT_ID) },
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_LM920_PRODUCT_ID) },
++	{ USB_DEVICE(HP_VENDOR_ID, HP_LM930_PRODUCT_ID) },
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_LM940_PRODUCT_ID) },
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_TD620_PRODUCT_ID) },
+ 	{ USB_DEVICE(CRESSI_VENDOR_ID, CRESSI_EDY_PRODUCT_ID) },
+--- a/drivers/usb/serial/pl2303.h
++++ b/drivers/usb/serial/pl2303.h
+@@ -135,6 +135,7 @@
+ #define HP_TD620_PRODUCT_ID	0x0956
+ #define HP_LD960_PRODUCT_ID	0x0b39
+ #define HP_LD381_PRODUCT_ID	0x0f7f
++#define HP_LM930_PRODUCT_ID	0x0f9b
+ #define HP_LCM220_PRODUCT_ID	0x3139
+ #define HP_LCM960_PRODUCT_ID	0x3239
+ #define HP_LD220_PRODUCT_ID	0x3524
 
 
