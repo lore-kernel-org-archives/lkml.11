@@ -2,128 +2,458 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A0E4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE7AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242917AbiEPLKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43882 "EHLO
+        id S235645AbiEPLLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231337AbiEPLKb (ORCPT
+        with ESMTP id S239007AbiEPLLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:10:31 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E412F004;
-        Mon, 16 May 2022 04:10:29 -0700 (PDT)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L1xK23xzzz6GCX1;
-        Mon, 16 May 2022 19:06:46 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 16 May 2022 13:10:26 +0200
-Received: from [10.47.25.151] (10.47.25.151) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
- 2022 12:10:25 +0100
-Message-ID: <f1f932f1-1b0b-120d-f082-f9df32b7b9c4@huawei.com>
-Date:   Mon, 16 May 2022 12:10:24 +0100
+        Mon, 16 May 2022 07:11:42 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4535AB4E;
+        Mon, 16 May 2022 04:11:36 -0700 (PDT)
+X-UUID: 320265e3c520413c8fd81ca39fa0cb6f-20220516
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:54658e7a-5966-439f-9a87-76030a7ca113,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:38872f94-563e-4fc2-8a0d-fda4821947ab,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 320265e3c520413c8fd81ca39fa0cb6f-20220516
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 798951414; Mon, 16 May 2022 19:11:32 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 16 May 2022 19:11:32 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 16 May 2022 19:11:31 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
+        <hsinyi@google.com>, <khilman@baylibre.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
+Subject: [PATCH v7 1/3] arm64: dts: mediatek: Add opp table and clock property for MT8183 cpufreq
+Date:   Mon, 16 May 2022 19:11:28 +0800
+Message-ID: <20220516111130.13325-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220516111130.13325-1-rex-bc.chen@mediatek.com>
+References: <20220516111130.13325-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 00/20] perf vendors events arm64: Multiple Arm CPUs
-To:     Ian Rogers <irogers@google.com>
-CC:     Nick Forrington <nick.forrington@arm.com>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        Will Deacon <will@kernel.org>,
-        "Mathieu Poirier" <mathieu.poirier@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Qi Liu <liuqi115@huawei.com>
-References: <20220510104758.64677-1-nick.forrington@arm.com>
- <YnqJwMfi/bcDmN4H@kernel.org>
- <b1081013-2cd9-f223-8125-d7e51d784f90@huawei.com>
- <eec03f0d-d491-511c-d9b0-694c6d527b38@arm.com>
- <1062b28d-9c7b-89fb-d3bf-519f84029b96@huawei.com>
- <CAP-5=fWYU1hzhGTc6q_u9r82g+rbn18+-i9o0W8sUVyk+t694w@mail.gmail.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <CAP-5=fWYU1hzhGTc6q_u9r82g+rbn18+-i9o0W8sUVyk+t694w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.25.151]
-X-ClientProxiedBy: lhreml714-chm.china.huawei.com (10.201.108.65) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/05/2022 23:03, Ian Rogers wrote:
-> I'll raise John's "ok" and say this looks great!:-D  Some thoughts:
-> 
-> The mapfile.csv cpuid values don't directly align with:
-> https://github.com/ARM-software/data/blob/master/cpus.json
-> but this definitely looks deliberate.
-> 
+- Add cpufreq opp table.
+- Add MediaTek cci opp table.
+- Add property of opp table and clock fro cpufreq.
 
-Hi Ian,
+Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  32 +++
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 270 ++++++++++++++++++++
+ 2 files changed, 302 insertions(+)
 
-> The new events lack the PMU "Unit" value.
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+index f3fd3cca23e9..8953dbf84f3e 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+@@ -412,6 +412,38 @@
+ 
+ };
+ 
++&cpu0 {
++	proc-supply = <&mt6358_vproc12_reg>;
++};
++
++&cpu1 {
++	proc-supply = <&mt6358_vproc12_reg>;
++};
++
++&cpu2 {
++	proc-supply = <&mt6358_vproc12_reg>;
++};
++
++&cpu3 {
++	proc-supply = <&mt6358_vproc12_reg>;
++};
++
++&cpu4 {
++	proc-supply = <&mt6358_vproc11_reg>;
++};
++
++&cpu5 {
++	proc-supply = <&mt6358_vproc11_reg>;
++};
++
++&cpu6 {
++	proc-supply = <&mt6358_vproc11_reg>;
++};
++
++&cpu7 {
++	proc-supply = <&mt6358_vproc11_reg>;
++};
++
+ &uart0 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index 01e650251928..cecf96b628b7 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -42,6 +42,244 @@
+ 		rdma1 = &rdma1;
+ 	};
+ 
++	cluster0_opp: opp-table-cluster0 {
++		compatible = "operating-points-v2";
++		opp-shared;
++		opp0-793000000 {
++			opp-hz = /bits/ 64 <793000000>;
++			opp-microvolt = <650000>;
++			required-opps = <&opp2_00>;
++		};
++		opp0-910000000 {
++			opp-hz = /bits/ 64 <910000000>;
++			opp-microvolt = <687500>;
++			required-opps = <&opp2_01>;
++		};
++		opp0-1014000000 {
++			opp-hz = /bits/ 64 <1014000000>;
++			opp-microvolt = <718750>;
++			required-opps = <&opp2_02>;
++		};
++		opp0-1131000000 {
++			opp-hz = /bits/ 64 <1131000000>;
++			opp-microvolt = <756250>;
++			required-opps = <&opp2_03>;
++		};
++		opp0-1248000000 {
++			opp-hz = /bits/ 64 <1248000000>;
++			opp-microvolt = <800000>;
++			required-opps = <&opp2_04>;
++		};
++		opp0-1326000000 {
++			opp-hz = /bits/ 64 <1326000000>;
++			opp-microvolt = <818750>;
++			required-opps = <&opp2_05>;
++		};
++		opp0-1417000000 {
++			opp-hz = /bits/ 64 <1417000000>;
++			opp-microvolt = <850000>;
++			required-opps = <&opp2_06>;
++		};
++		opp0-1508000000 {
++			opp-hz = /bits/ 64 <1508000000>;
++			opp-microvolt = <868750>;
++			required-opps = <&opp2_07>;
++		};
++		opp0-1586000000 {
++			opp-hz = /bits/ 64 <1586000000>;
++			opp-microvolt = <893750>;
++			required-opps = <&opp2_08>;
++		};
++		opp0-1625000000 {
++			opp-hz = /bits/ 64 <1625000000>;
++			opp-microvolt = <906250>;
++			required-opps = <&opp2_09>;
++		};
++		opp0-1677000000 {
++			opp-hz = /bits/ 64 <1677000000>;
++			opp-microvolt = <931250>;
++			required-opps = <&opp2_10>;
++		};
++		opp0-1716000000 {
++			opp-hz = /bits/ 64 <1716000000>;
++			opp-microvolt = <943750>;
++			required-opps = <&opp2_11>;
++		};
++		opp0-1781000000 {
++			opp-hz = /bits/ 64 <1781000000>;
++			opp-microvolt = <975000>;
++			required-opps = <&opp2_12>;
++		};
++		opp0-1846000000 {
++			opp-hz = /bits/ 64 <1846000000>;
++			opp-microvolt = <1000000>;
++			required-opps = <&opp2_13>;
++		};
++		opp0-1924000000 {
++			opp-hz = /bits/ 64 <1924000000>;
++			opp-microvolt = <1025000>;
++			required-opps = <&opp2_14>;
++		};
++		opp0-1989000000 {
++			opp-hz = /bits/ 64 <1989000000>;
++			opp-microvolt = <1050000>;
++			required-opps = <&opp2_15>;
++		};	};
++
++	cluster1_opp: opp-table-cluster1 {
++		compatible = "operating-points-v2";
++		opp-shared;
++		opp1-793000000 {
++			opp-hz = /bits/ 64 <793000000>;
++			opp-microvolt = <700000>;
++			required-opps = <&opp2_00>;
++		};
++		opp1-910000000 {
++			opp-hz = /bits/ 64 <910000000>;
++			opp-microvolt = <725000>;
++			required-opps = <&opp2_01>;
++		};
++		opp1-1014000000 {
++			opp-hz = /bits/ 64 <1014000000>;
++			opp-microvolt = <750000>;
++			required-opps = <&opp2_02>;
++		};
++		opp1-1131000000 {
++			opp-hz = /bits/ 64 <1131000000>;
++			opp-microvolt = <775000>;
++			required-opps = <&opp2_03>;
++		};
++		opp1-1248000000 {
++			opp-hz = /bits/ 64 <1248000000>;
++			opp-microvolt = <800000>;
++			required-opps = <&opp2_04>;
++		};
++		opp1-1326000000 {
++			opp-hz = /bits/ 64 <1326000000>;
++			opp-microvolt = <825000>;
++			required-opps = <&opp2_05>;
++		};
++		opp1-1417000000 {
++			opp-hz = /bits/ 64 <1417000000>;
++			opp-microvolt = <850000>;
++			required-opps = <&opp2_06>;
++		};
++		opp1-1508000000 {
++			opp-hz = /bits/ 64 <1508000000>;
++			opp-microvolt = <875000>;
++			required-opps = <&opp2_07>;
++		};
++		opp1-1586000000 {
++			opp-hz = /bits/ 64 <1586000000>;
++			opp-microvolt = <900000>;
++			required-opps = <&opp2_08>;
++		};
++		opp1-1625000000 {
++			opp-hz = /bits/ 64 <1625000000>;
++			opp-microvolt = <912500>;
++			required-opps = <&opp2_09>;
++		};
++		opp1-1677000000 {
++			opp-hz = /bits/ 64 <1677000000>;
++			opp-microvolt = <931250>;
++			required-opps = <&opp2_10>;
++		};
++		opp1-1716000000 {
++			opp-hz = /bits/ 64 <1716000000>;
++			opp-microvolt = <950000>;
++			required-opps = <&opp2_11>;
++		};
++		opp1-1781000000 {
++			opp-hz = /bits/ 64 <1781000000>;
++			opp-microvolt = <975000>;
++			required-opps = <&opp2_12>;
++		};
++		opp1-1846000000 {
++			opp-hz = /bits/ 64 <1846000000>;
++			opp-microvolt = <1000000>;
++			required-opps = <&opp2_13>;
++		};
++		opp1-1924000000 {
++			opp-hz = /bits/ 64 <1924000000>;
++			opp-microvolt = <1025000>;
++			required-opps = <&opp2_14>;
++		};
++		opp1-1989000000 {
++			opp-hz = /bits/ 64 <1989000000>;
++			opp-microvolt = <1050000>;
++			required-opps = <&opp2_15>;
++		};
++	};
++
++	cci_opp: opp-table-cci {
++		compatible = "operating-points-v2";
++		opp-shared;
++		opp2_00: opp-273000000 {
++			opp-hz = /bits/ 64 <273000000>;
++			opp-microvolt = <650000>;
++		};
++		opp2_01: opp-338000000 {
++			opp-hz = /bits/ 64 <338000000>;
++			opp-microvolt = <687500>;
++		};
++		opp2_02: opp-403000000 {
++			opp-hz = /bits/ 64 <403000000>;
++			opp-microvolt = <718750>;
++		};
++		opp2_03: opp-463000000 {
++			opp-hz = /bits/ 64 <463000000>;
++			opp-microvolt = <756250>;
++		};
++		opp2_04: opp-546000000 {
++			opp-hz = /bits/ 64 <546000000>;
++			opp-microvolt = <800000>;
++		};
++		opp2_05: opp-624000000 {
++			opp-hz = /bits/ 64 <624000000>;
++			opp-microvolt = <818750>;
++		};
++		opp2_06: opp-689000000 {
++			opp-hz = /bits/ 64 <689000000>;
++			opp-microvolt = <850000>;
++		};
++		opp2_07: opp-767000000 {
++			opp-hz = /bits/ 64 <767000000>;
++			opp-microvolt = <868750>;
++		};
++		opp2_08: opp-845000000 {
++			opp-hz = /bits/ 64 <845000000>;
++			opp-microvolt = <893750>;
++		};
++		opp2_09: opp-871000000 {
++			opp-hz = /bits/ 64 <871000000>;
++			opp-microvolt = <906250>;
++		};
++		opp2_10: opp-923000000 {
++			opp-hz = /bits/ 64 <923000000>;
++			opp-microvolt = <931250>;
++		};
++		opp2_11: opp-962000000 {
++			opp-hz = /bits/ 64 <962000000>;
++			opp-microvolt = <943750>;
++		};
++		opp2_12: opp-1027000000 {
++			opp-hz = /bits/ 64 <1027000000>;
++			opp-microvolt = <975000>;
++		};
++		opp2_13: opp-1092000000 {
++			opp-hz = /bits/ 64 <1092000000>;
++			opp-microvolt = <1000000>;
++		};
++		opp2_14: opp-1144000000 {
++			opp-hz = /bits/ 64 <1144000000>;
++			opp-microvolt = <1025000>;
++		};
++		opp2_15: opp-1196000000 {
++			opp-hz = /bits/ 64 <1196000000>;
++			opp-microvolt = <1050000>;
++		};
++	};
++
+ 	cpus {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -85,6 +323,10 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <741>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
++			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
++				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
+ 			dynamic-power-coefficient = <84>;
+ 			#cooling-cells = <2>;
+ 		};
+@@ -96,6 +338,10 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <741>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
++			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
++				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
+ 			dynamic-power-coefficient = <84>;
+ 			#cooling-cells = <2>;
+ 		};
+@@ -107,6 +353,10 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <741>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
++			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
++				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
+ 			dynamic-power-coefficient = <84>;
+ 			#cooling-cells = <2>;
+ 		};
+@@ -118,6 +368,10 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <741>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
++			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
++				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
+ 			dynamic-power-coefficient = <84>;
+ 			#cooling-cells = <2>;
+ 		};
+@@ -129,6 +383,10 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <1024>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
++			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
++				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster1_opp>;
+ 			dynamic-power-coefficient = <211>;
+ 			#cooling-cells = <2>;
+ 		};
+@@ -140,6 +398,10 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <1024>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
++			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
++				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster1_opp>;
+ 			dynamic-power-coefficient = <211>;
+ 			#cooling-cells = <2>;
+ 		};
+@@ -151,6 +413,10 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <1024>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
++			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
++				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster1_opp>;
+ 			dynamic-power-coefficient = <211>;
+ 			#cooling-cells = <2>;
+ 		};
+@@ -162,6 +428,10 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <1024>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
++			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
++				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster1_opp>;
+ 			dynamic-power-coefficient = <211>;
+ 			#cooling-cells = <2>;
+ 		};
+-- 
+2.18.0
 
-For arm support we work on the basis that no "Unit" means CPU PMU. I 
-assume the same for other archs, but maybe this hybrid PMU support 
-changes that.
-
-> The current perf json is
-> pretty free form and leads to problems if two PMUs are present.
-
-Can you clarify - for my benefit - exactly what you mean by "two PMUs 
-are present"?
-
-> Context is here:
-> https://lore.kernel.org/lkml/CAP-5=fWRRZsyJZ-gky-FOFz79zW_3r78d_0APpj5sf66HqTpLw@mail.gmail.com/
-> 
-
-We have another problem but I am not sure if exactly the same.
-
-The issue is that if we have an event alias "cycles" for an uncore PMU, 
-then if we use "stat" command then perf tool matches "cycles" to CPU 
-cycles and not the uncore PMU, which we would not want.
-
-We have ways to work around it, though.
-
-> My idea to rationalize this is to mirror what is already done in
-> sysfs, that is the event data is specific to a PMU. As a lot of "Unit"
-> values are missing from events on x86 a reasonable guess if the "Unit"
-> is missing is to use "cpu". 
-
-This sounds like what I mentioned in the reply to 1/20:
-
-"I had a patch series which makes perf read the armv8 pmu
-sysfs event file to learn all the events which the core supports and
-create the aliases from that. So, in this, we don't require the JSONs to
-list these events explicitly. "
-
-Is this like what Andi was talking about in terms of runtime loading?
-
-> Poking a Google Pixel 4a, I see that all
-> PMU data is in "armv8_pmuv3". So for ARM I could guess this is always
-> the case, ie all events should belong to armv8_pmuv3. This may not be
-> right and could lead to confusion like an event BR_COND_MIS_PRED
-> having an alias of "armv8_pmuv3/BR_COND_MIS_PRED/" but it really
-> should have some other PMU name in there. I just raise this in case
-> there is a fix for this we could incorporate into this patch series,
-> maybe "armv8_pmuv3" is always the PMU and my life is easy.
-
-Thanks,
-John
