@@ -2,102 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC513C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB06C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344774AbiEPS1j (ORCPT
+        id S1344797AbiEPS1n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 14:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45136 "EHLO
+        Mon, 16 May 2022 14:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344779AbiEPS1c (ORCPT
+        with ESMTP id S1344792AbiEPS1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 14:27:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B20243DDD3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 11:27:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652725650;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=q+4QwzbSZp2bNTgsjIzHj4mmv53hcboZAM1lkwTA8ZE=;
-        b=ZbuG7G/0ggDirWpPFIfPuyQpsTjJrBNBO6s3Y8JX8gdnr2rcXekIjuKwKyoUhKnfsmidm9
-        90dI3Da71oThkAW7iMP/m6UR2W9reUKDGFIOkjUGJcSiSaA7Mtv3jWW7RZRNX96a3UijfB
-        9I9B+NLKIBGuawLuJ1f08rP1Mhp7wIs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-570-pC3RWEnNNa2uYIEl3ffSbA-1; Mon, 16 May 2022 14:27:26 -0400
-X-MC-Unique: pC3RWEnNNa2uYIEl3ffSbA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E97918C5ABD;
-        Mon, 16 May 2022 18:27:15 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6C163C27EBB;
-        Mon, 16 May 2022 18:27:11 +0000 (UTC)
-Date:   Mon, 16 May 2022 20:27:08 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf 1/4] bpf_trace: check size for overflow in
- bpf_kprobe_multi_link_attach
-Message-ID: <20220516182708.GA29437@asgard.redhat.com>
+        Mon, 16 May 2022 14:27:37 -0400
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927D03DA64;
+        Mon, 16 May 2022 11:27:36 -0700 (PDT)
+Received: by mail-oo1-f50.google.com with SMTP id q7-20020a4adc47000000b0035f4d798376so4185084oov.6;
+        Mon, 16 May 2022 11:27:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eGkfhUFgjWI/Bjo7LSuv+5m0MHqyEX6fPWIcrjvd4Gg=;
+        b=8Esa8Pv/ZAqUjK5vDxvmsID1YfAJ//euZStkd00+cqbEtKWbRjDNDB4pY/Arqfoo/p
+         /b+qGvFDa3QivFhyWYMrf8Qhj/k0wpAxq4S2BX5FeGY5XUiJ1r8zXypAK6iRh1kmpSWF
+         RsBBg8MBDXZ8GiQBZgcR7I2rOTq4kE7RB+ECL5ds8NtDSGErZS8t347yhJmSqqBUNv+b
+         xQAgkLXVNwrWy0SkGCZ5IDU3CqPfaY9nPcBUXbf/869xL8dsZEBBpq8446nriFAiybJ7
+         8VUzcX8jtzPOZhfAzQS1e6Kem86i4TpPdyir+nRHcHR/aO04oI42SFdS472EnpQXjQk7
+         Hr3g==
+X-Gm-Message-State: AOAM5320NeR3jthMApHxo56zLTKsLyjzZjWTmn2XsQw95TiQhPpHj9m5
+        En0ugjBlc47osSxFhsvn0Q==
+X-Google-Smtp-Source: ABdhPJxGa8SVbc2owUr356FqfNxkiSRJC0NLZKMzV2XtAcN7cf8aVrGPgfIUC5ekoMb1Bk9Pc3u+bw==
+X-Received: by 2002:a4a:de4b:0:b0:35e:bac9:807f with SMTP id z11-20020a4ade4b000000b0035ebac9807fmr6525697oot.16.1652725655870;
+        Mon, 16 May 2022 11:27:35 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id i7-20020a056870890700b000ead8b89484sm6026613oao.5.2022.05.16.11.27.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 11:27:35 -0700 (PDT)
+Received: (nullmailer pid 3032272 invoked by uid 1000);
+        Mon, 16 May 2022 18:27:34 -0000
+Date:   Mon, 16 May 2022 13:27:34 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Ken Kurematsu <k.kurematsu@nskint.co.jp>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Yoshitaka Ikeda <ikeda@nskint.co.jp>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Masahiro Mizutani <m.mizutani@nskint.co.jp>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] dt-bindings: arm: fix typos in compatible
+Message-ID: <20220516182734.GA3032199-robh@kernel.org>
+References: <OSBPR01MB32880CB4C49E50DAB7C6B664DBC89@OSBPR01MB3288.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+In-Reply-To: <OSBPR01MB32880CB4C49E50DAB7C6B664DBC89@OSBPR01MB3288.jpnprd01.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check that size would not overflow before calculation (and return
--EOVERFLOW if it will), to prevent potential out-of-bounds write
-with the following copy_from_user.  Add the same check
-to kprobe_multi_resolve_syms in case it will be called from elsewhere
-in the future.
+On Wed, 11 May 2022 07:01:56 +0000, Ken Kurematsu wrote:
+> Fix typo "cortex"
+> 
+> Signed-off-by: Ken Kurematsu <k.kurematsu@nskint.co.jp>
+> ---
+>  Documentation/devicetree/bindings/arm/bcm/brcm,bcm63138.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- kernel/trace/bpf_trace.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index d8553f4..e90c4ce7 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2358,6 +2358,8 @@ kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
- 	unsigned int i;
- 	char *func;
- 
-+	if (check_mul_overflow(cnt, sizeof(*syms), &size))
-+		return -EOVERFLOW;
- 	size = cnt * sizeof(*syms);
- 	syms = kvzalloc(size, GFP_KERNEL);
- 	if (!syms)
-@@ -2429,6 +2431,8 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 	if (!cnt)
- 		return -EINVAL;
- 
-+	if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size))
-+		return -EOVERFLOW;
- 	size = cnt * sizeof(*addrs);
- 	addrs = kvmalloc(size, GFP_KERNEL);
- 	if (!addrs)
--- 
-2.1.4
-
+Applied, thanks!
