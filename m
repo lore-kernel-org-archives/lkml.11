@@ -2,115 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B796CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 02:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 02:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239479AbiEPCqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 22:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
+        id S239491AbiEPCvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 22:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231318AbiEPCqg (ORCPT
+        with ESMTP id S239483AbiEPCvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 22:46:36 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666301402A
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 19:46:35 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id x74so12082912ybe.4
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 19:46:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qs6KzmNvqi948FGwp/fLhqN7zczHoIBbeoB+SvqJ72Y=;
-        b=BCnP2xhE6Ob/d+gt4ZTBLwa0Dtcr/c2wsmjwxm8K77+x6RvJkK0jJAT/5eUnmAAQT/
-         qJAd1Vy7qGoEizlwBmUqFDispatPNG9bMJqKp0AsYWSCLBiqJxA4jyuPz5z4IjxlMCCu
-         DfLpoMaTJe+AwZvcPAMOEVO7r0++WXpzd9hDTQjdQ1BRVnFJsz+ZzJoTJrt4atjSn4Hc
-         O6YOAj3+BfEstQEo3vF/2NcL6Vp+JA4gz0ih6VlvyZ2yK8p/jW+xxEsJlhkvQ25FORLt
-         /nJhTCB5M80sZVl4y1VmSZIE+iM115E5AvyleTP0kkNsZhAy9jR/AUTnrCMdjvb25BDY
-         fDSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qs6KzmNvqi948FGwp/fLhqN7zczHoIBbeoB+SvqJ72Y=;
-        b=KtLY8pa3f5n+qYpEiWiOzRujGoPXh/pQ1NZNwTVJ1r82kCv1KEuemV1qkYIOJkDH3t
-         wc8B6l14rb+uA4GNKyTOAe4dX2QfgL4Lkk3MJygeoiLEvlGVHwX4akexYsUkgDnYKL2G
-         glAjLQicovg+aJFGdH0/XGE0HP2EN0XMy3cvKvzGL64srrU7C/OAK5zcRouH5FGTwItC
-         2Jov3APRLVRmss4iVgJCASZ5sUn9NIPvGKVcY9nlTVQXDhK98msCcSVP9e5ffbOCGSds
-         zlv+JjwGltHRWuMccLLZs4a6xNAcuwmWeylZtrIsFkPTkETn/qIazSz463fb4j+AhEKb
-         dEtQ==
-X-Gm-Message-State: AOAM532iUSZo39vaBRpIGN0h0XOvIQM9TzpOH478zfQYD29uBwHWItpz
-        WxC+6bATFidITVdYnxvGgwcloqbKU4LXiHYuCjX9TQ==
-X-Google-Smtp-Source: ABdhPJwb9h9mJYmHGsuwFhWI1uHb0LK9seKGiF0DwaqJTNtk5nU+naQY4h5vM98rjRAljFgSPt7qzYWx3iBQVaTT1Wg=
-X-Received: by 2002:a5b:30d:0:b0:64b:4193:7911 with SMTP id
- j13-20020a5b030d000000b0064b41937911mr14912687ybp.509.1652669194393; Sun, 15
- May 2022 19:46:34 -0700 (PDT)
+        Sun, 15 May 2022 22:51:14 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB55FCE39;
+        Sun, 15 May 2022 19:51:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=aeIiodYHNThScuod1GW5LkC5SMWKdFNGndzQilLs9lY=; b=DBFHslQ4kVTac7kIIocJyO0sUs
+        QUZje+acCpNESTHr4kcevQ1jDHf8qkTE/h/8IOI3ay+VcQbxXDAPZsnJosNka2BKONFX4GTJ0+Zbg
+        I/aB5Vd6xe+33jY/J5cuO0jTUc0CfAZyzp7e2huZaPcR9TJgaVDmU6yDn7RTvFdywE8k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nqQp5-002wrJ-HM; Mon, 16 May 2022 04:51:03 +0200
+Date:   Mon, 16 May 2022 04:51:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH net-next v2 1/5] net: ipqess: introduce the Qualcomm
+ IPQESS driver
+Message-ID: <YoG8F8V0Z+7hz/jw@lunn.ch>
+References: <20220514150656.122108-1-maxime.chevallier@bootlin.com>
+ <20220514150656.122108-2-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
-References: <20220510030014.3842475-1-surenb@google.com> <20220510030014.3842475-3-surenb@google.com>
- <Ynpj3TsPcWVL7K7F@dhcp22.suse.cz>
-In-Reply-To: <Ynpj3TsPcWVL7K7F@dhcp22.suse.cz>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Sun, 15 May 2022 19:46:23 -0700
-Message-ID: <CAJuCfpGO0E82uY7vfhqeFNKeyxmrFa6PnbmwN6qgf68oAdzD_Q@mail.gmail.com>
-Subject: Re: [PATCH 3/3] mm: delete unused MMF_OOM_VICTIM flag
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
-        kernel-team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220514150656.122108-2-maxime.chevallier@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 6:08 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Mon 09-05-22 20:00:14, Suren Baghdasaryan wrote:
-> > With the last usage of MMF_OOM_VICTIM in exit_mmap gone, this flag is
-> > now unused and can be removed.
-> >
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
->
-> LGTM
-> Acked-by: Michal Hocko <mhocko@suse.com>
->
-> One question below
-> [...]
-> > diff --git a/include/linux/sched/coredump.h b/include/linux/sched/coredump.h
-> > index 4d9e3a656875..746f6cb07a20 100644
-> > --- a/include/linux/sched/coredump.h
-> > +++ b/include/linux/sched/coredump.h
-> > @@ -70,7 +70,6 @@ static inline int get_dumpable(struct mm_struct *mm)
-> >  #define MMF_UNSTABLE         22      /* mm is unstable for copy_from_user */
-> >  #define MMF_HUGE_ZERO_PAGE   23      /* mm has ever used the global huge zero page */
-> >  #define MMF_DISABLE_THP              24      /* disable THP for all VMAs */
-> > -#define MMF_OOM_VICTIM               25      /* mm is the oom victim */
-> >  #define MMF_OOM_REAP_QUEUED  26      /* mm was queued for oom_reaper */
-> >  #define MMF_MULTIPROCESS     27      /* mm is shared between processes */
->
-> Have you consider renumbering the follow up flags so that we do not have
-> holes in there. Nothing really important but it can confuse somebody in
-> the future.
+> +static int ipqess_tx_ring_alloc(struct ipqess *ess)
+> +{
+> +	struct device *dev = &ess->pdev->dev;
+> +	int i;
+> +
+> +	for (i = 0; i < IPQESS_NETDEV_QUEUES; i++) {
+> +		struct ipqess_tx_ring *tx_ring = &ess->tx_ring[i];
+> +		size_t size;
+> +		u32 idx;
+> +
+> +		tx_ring->ess = ess;
+> +		tx_ring->ring_id = i;
+> +		tx_ring->idx = i * 4;
+> +		tx_ring->count = IPQESS_TX_RING_SIZE;
+> +		tx_ring->nq = netdev_get_tx_queue(ess->netdev, i);
+> +
+> +		size = sizeof(struct ipqess_buf) * IPQESS_TX_RING_SIZE;
+> +		tx_ring->buf = devm_kzalloc(dev, size, GFP_KERNEL);
+> +		if (!tx_ring->buf) {
+> +			netdev_err(ess->netdev, "buffer alloc of tx ring failed");
+> +			return -ENOMEM;
+> +		}
 
-Missed this note until now. I will renumber the constants to avoid confusion.
-Thanks,
-Suren.
+kzalloc() is pretty loud when there is no memory. So you see patches
+removing such warning messages.
 
->
-> --
-> Michal Hocko
-> SUSE Labs
+> +static int ipqess_rx_napi(struct napi_struct *napi, int budget)
+> +{
+> +	struct ipqess_rx_ring *rx_ring = container_of(napi, struct ipqess_rx_ring,
+> +						    napi_rx);
+> +	struct ipqess *ess = rx_ring->ess;
+> +	u32 rx_mask = BIT(rx_ring->idx);
+> +	int remain_budget = budget;
+> +	int rx_done;
+> +	u32 status;
+> +
+> +poll_again:
+> +	ipqess_w32(ess, IPQESS_REG_RX_ISR, rx_mask);
+> +	rx_done = ipqess_rx_poll(rx_ring, remain_budget);
+> +
+> +	if (rx_done == remain_budget)
+> +		return budget;
+> +
+> +	status = ipqess_r32(ess, IPQESS_REG_RX_ISR);
+> +	if (status & rx_mask) {
+> +		remain_budget -= rx_done;
+> +		goto poll_again;
+> +	}
+
+Could this be turned into a do while() loop?
+
+> +static void ipqess_irq_enable(struct ipqess *ess)
+> +{
+> +	int i;
+> +
+> +	ipqess_w32(ess, IPQESS_REG_RX_ISR, 0xff);
+> +	ipqess_w32(ess, IPQESS_REG_TX_ISR, 0xffff);
+> +	for (i = 0; i < IPQESS_NETDEV_QUEUES; i++) {
+> +		ipqess_w32(ess, IPQESS_REG_RX_INT_MASK_Q(ess->rx_ring[i].idx), 1);
+> +		ipqess_w32(ess, IPQESS_REG_TX_INT_MASK_Q(ess->tx_ring[i].idx), 1);
+> +	}
+> +}
+> +
+> +static void ipqess_irq_disable(struct ipqess *ess)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < IPQESS_NETDEV_QUEUES; i++) {
+> +		ipqess_w32(ess, IPQESS_REG_RX_INT_MASK_Q(ess->rx_ring[i].idx), 0);
+> +		ipqess_w32(ess, IPQESS_REG_TX_INT_MASK_Q(ess->tx_ring[i].idx), 0);
+> +	}
+> +}
+
+Enable and disable are not symmetric?
+
+
+> +static inline void ipqess_kick_tx(struct ipqess_tx_ring *tx_ring)
+
+No inline functions please in .c files. Let the compiler decide.
+
+   Andrew
