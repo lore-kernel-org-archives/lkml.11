@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57C5C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D749C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346843AbiEPT4D (ORCPT
+        id S1348740AbiEPT6t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
+        Mon, 16 May 2022 15:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346889AbiEPTv3 (ORCPT
+        with ESMTP id S1348563AbiEPTwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:51:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F3840917;
-        Mon, 16 May 2022 12:46:00 -0700 (PDT)
+        Mon, 16 May 2022 15:52:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C21246148;
+        Mon, 16 May 2022 12:48:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA7256151D;
-        Mon, 16 May 2022 19:45:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E6EC385AA;
-        Mon, 16 May 2022 19:45:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1904F60BAD;
+        Mon, 16 May 2022 19:48:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C62C385AA;
+        Mon, 16 May 2022 19:48:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730359;
-        bh=tp+iY+5N+WnKZV1bBz/lKDeRyBo9XckND8D3YCkF+Ps=;
+        s=korg; t=1652730519;
+        bh=p6ago/YST1g5eL3V30HoLhU7ZufykKWvRgnn7qiaM9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8IcxtN5sHgIkor5hwOBmAdp4iJNXsh5k3ByqDdIDRo1Faz5OJf1yWw397H+G+9Nt
-         FxwmuJ4yRjYYQSM5MwemvoXdGfkPFlP6C998T9wBotuG3kJPSQkRZgDvZV6blA367u
-         13h8ZtlvYmRuGTaokEKu5Xqd72xgEtzbWZZRxqu8=
+        b=Cq9INTqZGJ8J5Zoit1Y1dL8NAbC+vHfYMBgXzT28RsQjbGw7yEC8m9usCM58XTwNy
+         RRcIZDKQDCOLlGh31XU/Czci4bjSjL/2h6ged7CaV7IqNgiRL3j0oyOa29Ktogxl9v
+         /019QXkJ8f+leNaiEGhfeX4XEB3whior189uXVs8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 41/66] tty: n_gsm: fix mux activation issues in gsm_config()
-Date:   Mon, 16 May 2022 21:36:41 +0200
-Message-Id: <20220516193620.602120115@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 025/102] ionic: fix missing pci_release_regions() on error in ionic_probe()
+Date:   Mon, 16 May 2022 21:35:59 +0200
+Message-Id: <20220516193624.722496486@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
-References: <20220516193619.400083785@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,60 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit edd5f60c340086891fab094ad61270d6c80f9ca4 upstream.
+[ Upstream commit e4b1045bf9cfec6f70ac6d3783be06c3a88dcb25 ]
 
-The current implementation activates the mux if it was restarted and opens
-the control channel if the mux was previously closed and we are now acting
-as initiator instead of responder, which is the default setting.
-This has two issues.
-1) No mux is activated if we keep all default values and only switch to
-initiator. The control channel is not allocated but will be opened next
-which results in a NULL pointer dereference.
-2) Switching the configuration after it was once configured while keeping
-the initiator value the same will not reopen the control channel if it was
-closed due to parameter incompatibilities. The mux remains dead.
+If ionic_map_bars() fails, pci_release_regions() need be called.
 
-Fix 1) by always activating the mux if it is dead after configuration.
-Fix 2) by always opening the control channel after mux activation.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220504081733.3494-2-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220506034040.2614129-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2276,6 +2276,7 @@ static void gsm_copy_config_values(struc
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index 40fa5bce2ac2..d324c292318b 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -255,7 +255,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- {
-+	int ret = 0;
- 	int need_close = 0;
- 	int need_restart = 0;
+ 	err = ionic_map_bars(ionic);
+ 	if (err)
+-		goto err_out_pci_disable_device;
++		goto err_out_pci_release_regions;
  
-@@ -2343,10 +2344,13 @@ static int gsm_config(struct gsm_mux *gs
- 	 * FIXME: We need to separate activation/deactivation from adding
- 	 * and removing from the mux array
- 	 */
--	if (need_restart)
--		gsm_activate_mux(gsm);
--	if (gsm->initiator && need_close)
--		gsm_dlci_begin_open(gsm->dlci[0]);
-+	if (gsm->dead) {
-+		ret = gsm_activate_mux(gsm);
-+		if (ret)
-+			return ret;
-+		if (gsm->initiator)
-+			gsm_dlci_begin_open(gsm->dlci[0]);
-+	}
- 	return 0;
- }
+ 	/* Configure the device */
+ 	err = ionic_setup(ionic);
+@@ -359,6 +359,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
+ err_out_unmap_bars:
+ 	ionic_unmap_bars(ionic);
++err_out_pci_release_regions:
+ 	pci_release_regions(pdev);
+ err_out_pci_disable_device:
+ 	pci_disable_device(pdev);
+-- 
+2.35.1
+
 
 
