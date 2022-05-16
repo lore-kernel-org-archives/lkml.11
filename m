@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A03C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:40:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240657AbiEPTkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
+        id S1345635AbiEPTkJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:40:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345723AbiEPTj3 (ORCPT
+        with ESMTP id S1345686AbiEPTjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:39:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1983FBD3;
-        Mon, 16 May 2022 12:39:00 -0700 (PDT)
+        Mon, 16 May 2022 15:39:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13043F318;
+        Mon, 16 May 2022 12:38:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21F3DB81609;
-        Mon, 16 May 2022 19:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AAF5C34100;
-        Mon, 16 May 2022 19:38:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4AE00B81612;
+        Mon, 16 May 2022 19:38:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 457D5C385AA;
+        Mon, 16 May 2022 19:38:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729937;
-        bh=c6H6uT453FJj/S682LTuF94r4kc19KUPHVJ/lsirPBo=;
+        s=korg; t=1652729927;
+        bh=j7ZooHmaClS9S4qOtKsehZJ8Qvk3HAQOrkyyAM1/SXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J8c9we1fqjEJKIeh13+tffBB41v4uKp8TZF4dTuA425pA1yKAyQMlCfE1XWE/X2wO
-         orMZm9MYl5+LOu09uI+7IawAker621BCqcJ8xkXYyfzqR5V0bt39oEqbI4ELGrsHdM
-         bGXec0CycDK/FbTqbxFqUuSfJxZ8C/qNaT6gYjPw=
+        b=kftfilW+kFtkEhVSQSlrETk9o+l28U8SkgKfRfFTx/FgDowSwahs7OHGfqPfZfvJg
+         VqXFQbmX0cpeHLb696/ytjT7bsDPQ2lqtMOxHgCgBNKK2lzL8ZmE35o0wl6GSWaWEb
+         s+y40dONCynsD3BYMuLbe3JGbYke/Su4tCejE0Lo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
+        stable@vger.kernel.org, Martin Habets <habetsm.xilinx@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 01/19] net: Fix features skip in for_each_netdev_feature()
-Date:   Mon, 16 May 2022 21:36:14 +0200
-Message-Id: <20220516193613.542452230@linuxfoundation.org>
+Subject: [PATCH 4.9 08/19] net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
+Date:   Mon, 16 May 2022 21:36:21 +0200
+Message-Id: <20220516193613.747790647@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
 References: <20220516193613.497233635@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,47 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 85db6352fc8a158a893151baa1716463d34a20d0 ]
+[ Upstream commit 1fa89ffbc04545b7582518e57f4b63e2a062870f ]
 
-The find_next_netdev_feature() macro gets the "remaining length",
-not bit index.
-Passing "bit - 1" for the following iteration is wrong as it skips
-the adjacent bit. Pass "bit" instead.
+In the NIC ->probe() callback, ->mtd_probe() callback is called.
+If NIC has 2 ports, ->probe() is called twice and ->mtd_probe() too.
+In the ->mtd_probe(), which is efx_ef10_mtd_probe() it allocates and
+initializes mtd partiion.
+But mtd partition for sfc is shared data.
+So that allocated mtd partition data from last called
+efx_ef10_mtd_probe() will not be used.
+Therefore it must be freed.
+But it doesn't free a not used mtd partition data in efx_ef10_mtd_probe().
 
-Fixes: 3b89ea9c5902 ("net: Fix for_each_netdev_feature on Big endian")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Link: https://lore.kernel.org/r/20220504080914.1918-1-tariqt@nvidia.com
+kmemleak reports:
+unreferenced object 0xffff88811ddb0000 (size 63168):
+  comm "systemd-udevd", pid 265, jiffies 4294681048 (age 348.586s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffffa3767749>] kmalloc_order_trace+0x19/0x120
+    [<ffffffffa3873f0e>] __kmalloc+0x20e/0x250
+    [<ffffffffc041389f>] efx_ef10_mtd_probe+0x11f/0x270 [sfc]
+    [<ffffffffc0484c8a>] efx_pci_probe.cold.17+0x3df/0x53d [sfc]
+    [<ffffffffa414192c>] local_pci_probe+0xdc/0x170
+    [<ffffffffa4145df5>] pci_device_probe+0x235/0x680
+    [<ffffffffa443dd52>] really_probe+0x1c2/0x8f0
+    [<ffffffffa443e72b>] __driver_probe_device+0x2ab/0x460
+    [<ffffffffa443e92a>] driver_probe_device+0x4a/0x120
+    [<ffffffffa443f2ae>] __driver_attach+0x16e/0x320
+    [<ffffffffa4437a90>] bus_for_each_dev+0x110/0x190
+    [<ffffffffa443b75e>] bus_add_driver+0x39e/0x560
+    [<ffffffffa4440b1e>] driver_register+0x18e/0x310
+    [<ffffffffc02e2055>] 0xffffffffc02e2055
+    [<ffffffffa3001af3>] do_one_initcall+0xc3/0x450
+    [<ffffffffa33ca574>] do_init_module+0x1b4/0x700
+
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Fixes: 8127d661e77f ("sfc: Add support for Solarflare SFC9100 family")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Link: https://lore.kernel.org/r/20220512054709.12513-1-ap420073@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdev_features.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/sfc/ef10.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index b692edeb0b90..27abbd7fbb2b 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -139,7 +139,7 @@ enum {
- #define NETIF_F_BUSY_POLL	__NETIF_F(BUSY_POLL)
- #define NETIF_F_HW_TC		__NETIF_F(HW_TC)
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 22bc3dc44298..aa2cef8675f4 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -5197,6 +5197,11 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
+ 		n_parts++;
+ 	}
  
--/* Finds the next feature with the highest number of the range of start till 0.
-+/* Finds the next feature with the highest number of the range of start-1 till 0.
-  */
- static inline int find_next_netdev_feature(u64 feature, unsigned long start)
- {
-@@ -158,7 +158,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
- 	for ((bit) = find_next_netdev_feature((mask_addr),		\
- 					      NETDEV_FEATURE_COUNT);	\
- 	     (bit) >= 0;						\
--	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
-+	     (bit) = find_next_netdev_feature((mask_addr), (bit)))
- 
- /* Features valid for ethtool to change */
- /* = all defined minus driver/device-class-related */
++	if (!n_parts) {
++		kfree(parts);
++		return 0;
++	}
++
+ 	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
+ fail:
+ 	if (rc)
 -- 
 2.35.1
 
