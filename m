@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC13C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E741C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243338AbiEPMAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
+        id S237762AbiEPMAH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243319AbiEPL7j (ORCPT
+        with ESMTP id S243348AbiEPL7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:59:39 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1964715FCE;
-        Mon, 16 May 2022 04:59:30 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id tk15so4685667ejc.6;
-        Mon, 16 May 2022 04:59:30 -0700 (PDT)
+        Mon, 16 May 2022 07:59:50 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3B516596;
+        Mon, 16 May 2022 04:59:33 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id l18so28140973ejc.7;
+        Mon, 16 May 2022 04:59:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gk+Al3GhpVx5YnHdlxIQSiRQjppttTaoPkIXQqKosHE=;
-        b=MwShmOxoYa0ud8MhJ0NOSqRZ0X6ErVSIQhCK4u/i0r1M1PWmYQYxw3bb9scmXjtLOn
-         QpUoAnvoNsA7XDVffaXiR5y6SnzhxiCh5n/bCT8CGkCqiQEDJzzMyE4F1FGzfoH541Dj
-         anpBu3nzp/hOJ0rugwRES6jYaINHfj5CSF0GpWyNAyqQrVa54xJgyaggPjVvO0Cc/qiT
-         aXU9oXiYR1YV7VqvDH5vfWkp5EA7F5vw44Ots1Y1/DT4TkpWhSZ7hjrMF0ASMKFshlBD
-         Oz+2kk5vcjjJC+t+19KqfAFXoeetpLYvPH2X3aG+Zcos0XT+3sdmu34kirMMxzlUg10U
-         oqlQ==
+        bh=ijndZeMokX/hEJkaDxQ/IoPAmAy206jKv8vbR7k2snk=;
+        b=h5qaa5vCkXXVcZNO1QqCMQAIp7ZLuKfNhYWysWVgoyL66gim/KjrgSjoS65AU29ud7
+         42VkFP/v6+QpOYN/xvPYgOYU7pH+d45e76LDj8m9c2kQkMkKimDNw8Ujco05BgFBpb7J
+         oGdHvEM6WK24fYWFs7UZaAtskaF/aEXdNkLFoYB+NKQX2Ka4121gbkk14WQ7HN7Q29M+
+         1ph4E5IbWsypBG4iqZGa0m5ERGhCvYQbTlYmYfcOoW2bjSnOtZp5GY1S5XOctWlGouGx
+         cplv1akofNnKwSptEpphegTQdkQGS7Ndbrt5UZ1rCz88Da1v/OIIkv/C5Ff0tpSDH40u
+         Qfrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gk+Al3GhpVx5YnHdlxIQSiRQjppttTaoPkIXQqKosHE=;
-        b=1phZgIj+mfMJ+uZI0NYMJFGmOLeB+4BQqBDwiAPlIPNRWWxBi08TSMOx+OWiNy029I
-         7mKzprufgz/xgm5q+gQK7nkyhmuFVFzwQ0w+er3neXG4z96XImO9zjE0t+DmsFLzfv4S
-         29jDbPXD3PuQg6JBh0H5j3HfOBQbQjN9wYFAPCTnjuRDeFyCoCP6E0bBfxMkU9y0jGn4
-         TjJs7xE3UNjZGo9YsSgwKXwlCu9ZWs7EGMtRduTMrQ6MxxGkL4JELw9dp/9QsNkwLm/E
-         2Sa5ql9Cb63XWMrHUlzgKFdgfH8dU6IrmG7EQPDVPDt86a7BobY37QyPsIo/nKMAyuMi
-         FMgw==
-X-Gm-Message-State: AOAM531VRuJYCRhOjMHVPX82HzTN0hJaMtp9DULj0jpMtlMnbQu5GFjQ
-        5Y92zdqn4yw6SO8YXflHowPn0rWCNpo=
-X-Google-Smtp-Source: ABdhPJzpRcXV4iJUcMwBSRRFb2kS/v+knGeN0ueBE0f3EzuoxkNiKtYs5eBBHfhqMIFojNbojaAgIQ==
-X-Received: by 2002:a17:907:3f16:b0:6f4:c54:2700 with SMTP id hq22-20020a1709073f1600b006f40c542700mr14812849ejc.615.1652702368590;
-        Mon, 16 May 2022 04:59:28 -0700 (PDT)
+        bh=ijndZeMokX/hEJkaDxQ/IoPAmAy206jKv8vbR7k2snk=;
+        b=l3VxZvDAFIG7TiOeJfZ3GSscF8h+WLpZzvdsE/KP8AZF96qbk9xmD8UKMcdj+7ULcy
+         vMPwfybA65M2GeH80OPOzWv/lqgnFKv0FdZfNQSzs2qgj+t/SLzzSiDLtzR4zVr4TUOS
+         dnJKCTGpcV4as+lZyiNLEaubMq1kPoLz9To9Ui5QOnqu/uXTu1L1Cpd52KdxuOZs18Dl
+         Yiwt2qKOBpHZm/kKwqwyosCm0+mEimYdHWIgpgr7wmdtInp1UTFmh2g0ELnTmyKAL0cq
+         QUG8vSB7fOLtuF7uWBopFGHcT2Y6kX/Vb+xOCwFaO50EnLcn8LFU+LQNzTfsvaehYyvl
+         Yj0A==
+X-Gm-Message-State: AOAM5317w/LdiiOPiiwT2PB1meY1Dj/9ZcDxze1HZEepVVMBx52dHcMN
+        Rja6tDvh3jfCO6xVP5J1hgF7Vh85djo=
+X-Google-Smtp-Source: ABdhPJx/cDamiwiWlibYkBKC8V1pm/jPhnUWDYI8f8yVrHf0mOBKx1FpuyesASQq63NRQGd9mplA5Q==
+X-Received: by 2002:a17:906:4786:b0:6f9:635f:72a7 with SMTP id cw6-20020a170906478600b006f9635f72a7mr15385967ejc.326.1652702371721;
+        Mon, 16 May 2022 04:59:31 -0700 (PDT)
 Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
-        by smtp.gmail.com with ESMTPSA id s18-20020a170906779200b006f3ef214dacsm3711008ejm.18.2022.05.16.04.59.27
+        by smtp.gmail.com with ESMTPSA id s18-20020a170906779200b006f3ef214dacsm3711008ejm.18.2022.05.16.04.59.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 04:59:28 -0700 (PDT)
+        Mon, 16 May 2022 04:59:31 -0700 (PDT)
 From:   Max Krummenacher <max.oss.09@gmail.com>
 To:     max.krummenacher@toradex.com
 Cc:     Fabio Estevam <festevam@gmail.com>,
@@ -58,9 +58,9 @@ Cc:     Fabio Estevam <festevam@gmail.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 07/17] ARM: dts: imx6q-apalis: Move Atmel MXT touch ctrl to SoM dtsi
-Date:   Mon, 16 May 2022 13:58:35 +0200
-Message-Id: <20220516115846.58328-8-max.oss.09@gmail.com>
+Subject: [PATCH v1 09/17] ARM: dts: imx6q-apalis: Disable HDMI
+Date:   Mon, 16 May 2022 13:58:37 +0200
+Message-Id: <20220516115846.58328-10-max.oss.09@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220516115846.58328-1-max.oss.09@gmail.com>
 References: <20220516115846.58328-1-max.oss.09@gmail.com>
@@ -72,112 +72,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Max Krummenacher <max.krummenacher@toradex.com>
 
-Reduces code duplication. While at it drop the comments which do not
-apply on Apalis iMX6 but add the correct SoM pin names.
+This allows to enable it in an overlay per the current system
+configuration.
 
 Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 ---
 
- arch/arm/boot/dts/imx6q-apalis-eval.dts       | 13 -------------
- arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts | 13 -------------
- arch/arm/boot/dts/imx6q-apalis-ixora.dts      | 13 -------------
- arch/arm/boot/dts/imx6qdl-apalis.dtsi         | 11 +++++++++++
- 4 files changed, 11 insertions(+), 39 deletions(-)
+ arch/arm/boot/dts/imx6q-apalis-eval.dts       | 4 ----
+ arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts | 4 ----
+ arch/arm/boot/dts/imx6q-apalis-ixora.dts      | 4 ----
+ 3 files changed, 12 deletions(-)
 
 diff --git a/arch/arm/boot/dts/imx6q-apalis-eval.dts b/arch/arm/boot/dts/imx6q-apalis-eval.dts
-index fe5d491e1399..5985d1169be1 100644
+index 948bbece3ab5..2436f9a1e18c 100644
 --- a/arch/arm/boot/dts/imx6q-apalis-eval.dts
 +++ b/arch/arm/boot/dts/imx6q-apalis-eval.dts
-@@ -82,19 +82,6 @@
- &i2c1 {
+@@ -74,10 +74,6 @@
  	status = "okay";
- 
--	/*
--	 * Touchscreen is using SODIMM 28/30, also used for PWM<B>, PWM<C>,
--	 * aka pwm2, pwm3. so if you enable touchscreen, disable the pwms
--	 */
--	touchscreen@4a {
--		compatible = "atmel,maxtouch";
--		reg = <0x4a>;
--		interrupt-parent = <&gpio6>;
--		interrupts = <10 IRQ_TYPE_EDGE_FALLING>;
--		reset-gpios = <&gpio6 9 GPIO_ACTIVE_LOW>; /* SODIMM 13 */
--		status = "disabled";
--	};
--
- 	pcie-switch@58 {
- 		compatible = "plx,pex8605";
- 		reg = <0x58>;
-diff --git a/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts b/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
-index 8febfc0aea93..21f88e19e87d 100644
---- a/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
-+++ b/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
-@@ -89,19 +89,6 @@
- &i2c1 {
- 	status = "okay";
- 
--	/*
--	 * Touchscreen is using SODIMM 28/30, also used for PWM<B>, PWM<C>,
--	 * aka pwm2, pwm3. so if you enable touchscreen, disable the pwms
--	 */
--	touchscreen@4a {
--		compatible = "atmel,maxtouch";
--		reg = <0x4a>;
--		interrupt-parent = <&gpio6>;
--		interrupts = <10 IRQ_TYPE_EDGE_FALLING>;
--		reset-gpios = <&gpio6 9 GPIO_ACTIVE_LOW>; /* SODIMM 13 */
--		status = "disabled";
--	};
--
- 	/* M41T0M6 real time clock on carrier board */
- 	rtc_i2c: rtc@68 {
- 		compatible = "st,m41t0";
-diff --git a/arch/arm/boot/dts/imx6q-apalis-ixora.dts b/arch/arm/boot/dts/imx6q-apalis-ixora.dts
-index 78cf1d9583c1..6743617ad1c1 100644
---- a/arch/arm/boot/dts/imx6q-apalis-ixora.dts
-+++ b/arch/arm/boot/dts/imx6q-apalis-ixora.dts
-@@ -88,19 +88,6 @@
- &i2c1 {
- 	status = "okay";
- 
--	/*
--	 * Touchscreen is using SODIMM 28/30, also used for PWM<B>, PWM<C>,
--	 * aka pwm2, pwm3. so if you enable touchscreen, disable the pwms
--	 */
--	touchscreen@4a {
--		compatible = "atmel,maxtouch";
--		reg = <0x4a>;
--		interrupt-parent = <&gpio6>;
--		interrupts = <10 IRQ_TYPE_EDGE_FALLING>;
--		reset-gpios = <&gpio6 9 GPIO_ACTIVE_LOW>; /* SODIMM 13 */
--		status = "disabled";
--	};
--
- 	eeprom@50 {
- 		compatible = "atmel,24c02";
- 		reg = <0x50>;
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index 9413c14ce5f6..3aa66b6d0c88 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -416,6 +416,17 @@
- 	scl-gpios = <&gpio5 27 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	sda-gpios = <&gpio5 26 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	status = "disabled";
-+
-+	atmel_mxt_ts: touchscreen@4a {
-+		compatible = "atmel,maxtouch";
-+		/* These GPIOs are muxed with the iomuxc node */
-+		interrupt-parent = <&gpio6>;
-+		interrupts = <10 IRQ_TYPE_EDGE_FALLING>;	/* MXM3_11 */
-+		reg = <0x4a>;
-+		reset-gpios = <&gpio6 9 GPIO_ACTIVE_LOW>;	/* MXM3_13 */
-+		status = "disabled";
-+	};
-+
  };
  
- /*
+-&hdmi {
+-	status = "okay";
+-};
+-
+ /* I2C1_SDA/SCL on MXM3 209/211 (e.g. RTC on carrier board) */
+ &i2c1 {
+ 	status = "okay";
+diff --git a/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts b/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
+index beb1981fc775..b254e96d194a 100644
+--- a/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
++++ b/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
+@@ -81,10 +81,6 @@
+ 	status = "okay";
+ };
+ 
+-&hdmi {
+-	status = "okay";
+-};
+-
+ /* I2C1_SDA/SCL on MXM3 209/211 (e.g. RTC on carrier board) */
+ &i2c1 {
+ 	status = "okay";
+diff --git a/arch/arm/boot/dts/imx6q-apalis-ixora.dts b/arch/arm/boot/dts/imx6q-apalis-ixora.dts
+index 28e5d6b68530..97ddf4621bdf 100644
+--- a/arch/arm/boot/dts/imx6q-apalis-ixora.dts
++++ b/arch/arm/boot/dts/imx6q-apalis-ixora.dts
+@@ -80,10 +80,6 @@
+ 	status = "okay";
+ };
+ 
+-&hdmi {
+-	status = "okay";
+-};
+-
+ /* I2C1_SDA/SCL on MXM3 209/211 (e.g. RTC on carrier board) */
+ &i2c1 {
+ 	status = "okay";
 -- 
 2.20.1
 
