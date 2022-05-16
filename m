@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28EC0C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36035C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232230AbiEPTxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        id S1343853AbiEPTxZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346286AbiEPTsf (ORCPT
+        with ESMTP id S1346182AbiEPTsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:48:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFD33FDB6;
-        Mon, 16 May 2022 12:44:45 -0700 (PDT)
+        Mon, 16 May 2022 15:48:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CC342EF8;
+        Mon, 16 May 2022 12:44:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA106B81604;
-        Mon, 16 May 2022 19:44:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8C5C385AA;
-        Mon, 16 May 2022 19:44:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06389B81618;
+        Mon, 16 May 2022 19:44:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 597F4C385AA;
+        Mon, 16 May 2022 19:44:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730282;
-        bh=ChImXpjtgjpTtnXmQs8NpQ/onN5MXvDvL7xnp3VQaEU=;
+        s=korg; t=1652730285;
+        bh=Br3lB6GtFz/MXTAndSiBppGFrOKcpvhd6MgDFSkSPQM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rMrmwKnw8F1A64QjRJnShtd7h2rKvp2cOLyRZiXRsQD9TDtYEjYk3w8mczzn1gW9s
-         9871icy2hsUj+t7m0JfOh+9xS5/r2nicCg/Bvwf4M8qXCIrGebswuuEkrSODEg+8Ip
-         tt8wc7XMt0Qs9FCAYv+XOuJ2X/gRcKL14vsU3cys=
+        b=IGXqZvTUDU0ixYf1mtFy6We7g7RN0Njk/jSuqotCUTOVhsbRGzKnIuXcJaaIVgrJ4
+         F7Dw4Vv7xpRuCxe01EMtykiqKymYSlx0Rh++6sXOU+Dr156MsFPRvSYW8uAfP+EkPJ
+         ZumQg4tYG++4Lp5oW86QcpbicNYyiCJu7McZt16Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 15/66] mac80211_hwsim: call ieee80211_tx_prepare_skb under RCU protection
-Date:   Mon, 16 May 2022 21:36:15 +0200
-Message-Id: <20220516193619.858719313@linuxfoundation.org>
+Subject: [PATCH 5.10 16/66] nfs: fix broken handling of the softreval mount option
+Date:   Mon, 16 May 2022 21:36:16 +0200
+Message-Id: <20220516193619.887269240@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -48,50 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Dan Aloni <dan.aloni@vastdata.com>
 
-[ Upstream commit 9e2db50f1ef2238fc2f71c5de1c0418b7a5b0ea2 ]
+[ Upstream commit 085d16d5f949b64713d5e960d6c9bbf51bc1d511 ]
 
-This is needed since it might use (and pass out) pointers to
-e.g. keys protected by RCU. Can't really happen here as the
-frames aren't encrypted, but we need to still adhere to the
-rules.
+Turns out that ever since this mount option was added, passing
+`softreval` in NFS mount options cancelled all other flags while not
+affecting the underlying flag `NFS_MOUNT_SOFTREVAL`.
 
-Fixes: cacfddf82baf ("mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220505230421.5f139f9de173.I77ae111a28f7c0e9fd1ebcee7f39dbec5c606770@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: c74dfe97c104 ("NFS: Add mount option 'softreval'")
+Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/nfs/fs_context.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index cc550ba0c9df..afd2d5add04b 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2264,11 +2264,13 @@ static void hw_scan_work(struct work_struct *work)
- 			if (req->ie_len)
- 				skb_put_data(probe, req->ie, req->ie_len);
- 
-+			rcu_read_lock();
- 			if (!ieee80211_tx_prepare_skb(hwsim->hw,
- 						      hwsim->hw_scan_vif,
- 						      probe,
- 						      hwsim->tmp_chan->band,
- 						      NULL)) {
-+				rcu_read_unlock();
- 				kfree_skb(probe);
- 				continue;
- 			}
-@@ -2276,6 +2278,7 @@ static void hw_scan_work(struct work_struct *work)
- 			local_bh_disable();
- 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
- 						hwsim->tmp_chan);
-+			rcu_read_unlock();
- 			local_bh_enable();
- 		}
- 	}
+diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
+index 05b39e8f97b9..d60c086c6e9c 100644
+--- a/fs/nfs/fs_context.c
++++ b/fs/nfs/fs_context.c
+@@ -476,7 +476,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 		if (result.negated)
+ 			ctx->flags &= ~NFS_MOUNT_SOFTREVAL;
+ 		else
+-			ctx->flags &= NFS_MOUNT_SOFTREVAL;
++			ctx->flags |= NFS_MOUNT_SOFTREVAL;
+ 		break;
+ 	case Opt_posix:
+ 		if (result.negated)
 -- 
 2.35.1
 
