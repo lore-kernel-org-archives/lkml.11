@@ -2,129 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23DEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 05:56:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 538A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 05:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237336AbiEPF4x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 01:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
+        id S240008AbiEPF5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 01:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232736AbiEPF4v (ORCPT
+        with ESMTP id S237462AbiEPF5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 01:56:51 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E4AB86D;
-        Sun, 15 May 2022 22:56:48 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id h186so10495116pgc.3;
-        Sun, 15 May 2022 22:56:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=Pwpzkyg77kk5VIp6vnvsVEKNPdGamfy1+A/pVOWozEo=;
-        b=Jk2vNxB4sP9tleDrsu/ul6d1rZruz8DjlZfh8DZoItv8Exyw5PgKRV2jx3UM4EYpmS
-         AKL2xNAejWYXaFz5G/hqczXQBwx0G+BG0R63CQv6x+Cgaph2Z6kSTmYGu2ed+MTf+t7L
-         dSzgJ99PNaz7xQJvD+m5gisD3oWJHd3W6kO7+veftGp2yUEyJ5GBSUA0Gxu2kx15r+8+
-         s1jeN3PNm9jjjYkiaFFnH9jHsxvGxGy8zLWYapv5nIeetsR/LqKBZ0eTdSjYdbn3DKa+
-         b+zTyTM1+/XMjMnLB1SbUkbRa6CM3mgtHbLBQ9NI9MA9UEo7FlkFxQYmukZwwpeso8HP
-         TBtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Pwpzkyg77kk5VIp6vnvsVEKNPdGamfy1+A/pVOWozEo=;
-        b=uTOFYk25LLsOmqf+pNE7mg88aT/PL8/+DR06dFkwkCqpsAX5FOAfZcaDYoDVuusFd1
-         jAR7EArgJN1dO8+kZ9yXY3tdFrrSD/X8JOSNfF0XodCi6Me+1o/TblKNQwQGjt+NnXWb
-         Yb4M8vw6DPJy2xbMXdwxr6gX4zwHr+m10/UQyrXE51I/r56cQ408LsdSC4J0AR3jaga7
-         UCFxiFV41l6rJnnqiS4OXxWSooCScpwn8uV2mmR5ayx6CwTCqfLIfS41sN9I9THT0v02
-         FlDxsw29Ig3Rqlk+/ktE8W5NUPe+bIo2uXOTMeQcCaEmRJ/NWWIbg4pRgGwQsM5gSiNJ
-         V94g==
-X-Gm-Message-State: AOAM53363XRF04Yj5mbBQ0oz5foa+/ekHFaE3EUHCJAU/sLYUmPFKBKC
-        PEKWDByf/9d4BxvMRkKyuSU=
-X-Google-Smtp-Source: ABdhPJw5eg5a50VutqqwvkEAmuKtFjouViHMxzDmbCqdE2G1lbPuIm7B3ySqs2ZRUQZCWittsNON+Q==
-X-Received: by 2002:aa7:8757:0:b0:50d:48a9:f021 with SMTP id g23-20020aa78757000000b0050d48a9f021mr15866354pfo.24.1652680607401;
-        Sun, 15 May 2022 22:56:47 -0700 (PDT)
-Received: from [172.16.10.243] ([106.39.150.71])
-        by smtp.gmail.com with ESMTPSA id n11-20020a170902f60b00b0015ec71f72d6sm6047182plg.253.2022.05.15.22.56.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 May 2022 22:56:47 -0700 (PDT)
-Message-ID: <b659bba8-0de9-4159-4311-bb13036bef05@gmail.com>
-Date:   Mon, 16 May 2022 13:56:39 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] dmaengine: ti: Fix refcount leak in
- ti_dra7_xbar_route_allocate
-Content-Language: en-US
-To:     Dave Jiang <dave.jiang@intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220512051815.11946-1-linmq006@gmail.com>
- <d1017a7a-4f3d-4218-13da-71f89cf81c81@intel.com>
-From:   Miaoqian Lin <linmq006@gmail.com>
-In-Reply-To: <d1017a7a-4f3d-4218-13da-71f89cf81c81@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 16 May 2022 01:57:09 -0400
+X-Greylist: delayed 581 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 15 May 2022 22:57:07 PDT
+Received: from mail-m2839.qiye.163.com (mail-m2839.qiye.163.com [103.74.28.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110C9B86D;
+        Sun, 15 May 2022 22:57:06 -0700 (PDT)
+Received: from localhost.localdomain (unknown [218.94.118.90])
+        by mail-m2839.qiye.163.com (Hmail) with ESMTPA id 2F8F5C0463;
+        Mon, 16 May 2022 13:47:22 +0800 (CST)
+From:   mingzhe.zou@easystack.cn
+To:     torvalds@linux-foundation.org, zgrieee@gmail.com,
+        martin.petersen@oracle.com, michael.christie@oracle.com
+Cc:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, dongsheng.yang@easystack.cn,
+        zoumingzhe@qq.com
+Subject: [PATCH v2] scsi: target: fixup incorrect use of 'cpumask_t'
+Date:   Mon, 16 May 2022 13:47:21 +0800
+Message-Id: <20220516054721.1548-1-mingzhe.zou@easystack.cn>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUlCN1dZLVlBSVdZDwkaFQgSH1lBWUNDGEtWS00YSUpPGkgdQ0
+        4eVRkRExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PSo6Vio4DzIjCgxWUSIZSDAP
+        Og0aCTFVSlVKTU5JTUNLS09JQ09IVTMWGhIXVRYSFRwBEx5VARQOOx4aCAIIDxoYEFUYFUVZV1kS
+        C1lBWUlKQ1VCT1VKSkNVQktZV1kIAVlBTktOTjcG
+X-HM-Tid: 0a80cb6828168421kuqw2f8f5c0463
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Dave
+From: mingzhe <mingzhe.zou@easystack.cn>
 
-On 2022/5/13 1:03, Dave Jiang wrote:
->
-> On 5/11/2022 10:18 PM, Miaoqian Lin wrote:
->> 1. of_find_device_by_node() takes reference, we should use put_device()
->> to release it when not need anymore.
->> 2. of_parse_phandle() returns a node pointer with refcount
->> incremented, we should use of_node_put() on it when not needed anymore.
->>
->> Add put_device() and of_node_put() in some error paths to fix.
-> Sounds like you need 2 patches for this? One just for the put_device() and the other for the of_node_put()?
+In commit d72d827f2f26, I used 'cpumask_t' incorrectly.
+```
+void iscsit_thread_get_cpumask(struct iscsi_conn *conn)
+{
+        int ord, cpu;
+        cpumask_t conn_allowed_cpumask;
+        ......
+}
 
-Thanks for your response, I will split it into 2 patches.
+static ssize_t lio_target_wwn_cpus_allowed_list_store(
+               struct config_item *item, const char *page, size_t count)
+{
+        int ret;
+        char *orig;
+        cpumask_t new_allowed_cpumask;
+        ......
+}
+```
 
+So, that the correct pattern should be as follows:
+```
+cpumask_var_t mask;
 
->>
->> Fixes: ec9bfa1e1a79 ("dmaengine: ti-dma-crossbar: dra7: Use bitops instead of idr")
->> Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
->> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->> ---
->>   drivers/dma/ti/dma-crossbar.c | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/dma/ti/dma-crossbar.c b/drivers/dma/ti/dma-crossbar.c
->> index 71d24fc07c00..f744ddbbbad7 100644
->> --- a/drivers/dma/ti/dma-crossbar.c
->> +++ b/drivers/dma/ti/dma-crossbar.c
->> @@ -245,6 +245,7 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->>       if (dma_spec->args[0] >= xbar->xbar_requests) {
->>           dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
->>               dma_spec->args[0]);
->> +        put_device(&pdev->dev);
->>           return ERR_PTR(-EINVAL);
->>       }
->>   @@ -252,12 +253,14 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->>       dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
->>       if (!dma_spec->np) {
->>           dev_err(&pdev->dev, "Can't get DMA master\n");
->> +        put_device(&pdev->dev);
->>           return ERR_PTR(-EINVAL);
->>       }
->>         map = kzalloc(sizeof(*map), GFP_KERNEL);
->>       if (!map) {
->>           of_node_put(dma_spec->np);
->> +        put_device(&pdev->dev);
->>           return ERR_PTR(-ENOMEM);
->>       }
->>   @@ -268,6 +271,8 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->>           mutex_unlock(&xbar->mutex);
->>           dev_err(&pdev->dev, "Run out of free DMA requests\n");
->>           kfree(map);
->> +        of_node_put(dma_spec->np);
->> +        put_device(&pdev->dev);
->>           return ERR_PTR(-ENOMEM);
->>       }
->>       set_bit(map->xbar_out, xbar->dma_inuse);
+if (!zalloc_cpumask_var(&mask, GFP_KERNEL))
+        return -ENOMEM;
+... use 'mask' here as a  ...
+free_cpumask_var(mask);
+```
+
+Fixes: d72d827f2f26 ("scsi: target: Add iscsi/cpus_allowed_list in configfs")
+Reported-by: Test Bot <zgrieee@gmail.com>
+Signed-off-by: mingzhe <mingzhe.zou@easystack.cn>
+---
+ drivers/target/iscsi/iscsi_target.c          | 32 ++++++++++++++------
+ drivers/target/iscsi/iscsi_target_configfs.c | 24 +++++++++------
+ 2 files changed, 36 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/target/iscsi/iscsi_target.c b/drivers/target/iscsi/iscsi_target.c
+index 6fe6a6bab3f4..ddf6c2a7212b 100644
+--- a/drivers/target/iscsi/iscsi_target.c
++++ b/drivers/target/iscsi/iscsi_target.c
+@@ -3596,10 +3596,7 @@ static int iscsit_send_reject(
+ void iscsit_thread_get_cpumask(struct iscsi_conn *conn)
+ {
+ 	int ord, cpu;
+-	cpumask_t conn_allowed_cpumask;
+-
+-	cpumask_and(&conn_allowed_cpumask, iscsit_global->allowed_cpumask,
+-		    cpu_online_mask);
++	cpumask_var_t conn_allowed_cpumask;
+ 
+ 	/*
+ 	 * bitmap_id is assigned from iscsit_global->ts_bitmap from
+@@ -3609,13 +3606,28 @@ void iscsit_thread_get_cpumask(struct iscsi_conn *conn)
+ 	 * iSCSI connection's RX/TX threads will be scheduled to
+ 	 * execute upon.
+ 	 */
+-	cpumask_clear(conn->conn_cpumask);
+-	ord = conn->bitmap_id % cpumask_weight(&conn_allowed_cpumask);
+-	for_each_cpu(cpu, &conn_allowed_cpumask) {
+-		if (ord-- == 0) {
+-			cpumask_set_cpu(cpu, conn->conn_cpumask);
+-			return;
++	if (!zalloc_cpumask_var(&conn_allowed_cpumask, GFP_KERNEL)) {
++		ord = conn->bitmap_id % cpumask_weight(cpu_online_mask);
++		for_each_online_cpu(cpu) {
++			if (ord-- == 0) {
++				cpumask_set_cpu(cpu, conn->conn_cpumask);
++				return;
++			}
++		}
++	} else {
++		cpumask_and(conn_allowed_cpumask, iscsit_global->allowed_cpumask,
++			cpu_online_mask);
++
++		cpumask_clear(conn->conn_cpumask);
++		ord = conn->bitmap_id % cpumask_weight(conn_allowed_cpumask);
++		for_each_cpu(cpu, conn_allowed_cpumask) {
++			if (ord-- == 0) {
++				cpumask_set_cpu(cpu, conn->conn_cpumask);
++				free_cpumask_var(conn_allowed_cpumask);
++				return;
++			}
+ 		}
++		free_cpumask_var(conn_allowed_cpumask);
+ 	}
+ 	/*
+ 	 * This should never be reached..
+diff --git a/drivers/target/iscsi/iscsi_target_configfs.c b/drivers/target/iscsi/iscsi_target_configfs.c
+index 0cedcfe207b5..57b4fd56d92a 100644
+--- a/drivers/target/iscsi/iscsi_target_configfs.c
++++ b/drivers/target/iscsi/iscsi_target_configfs.c
+@@ -1137,23 +1137,27 @@ static ssize_t lio_target_wwn_cpus_allowed_list_show(
+ static ssize_t lio_target_wwn_cpus_allowed_list_store(
+ 		struct config_item *item, const char *page, size_t count)
+ {
+-	int ret;
++	int ret = -ENOMEM;
+ 	char *orig;
+-	cpumask_t new_allowed_cpumask;
++	cpumask_var_t new_allowed_cpumask;
++
++	if (!zalloc_cpumask_var(&new_allowed_cpumask, GFP_KERNEL))
++		goto out;
+ 
+ 	orig = kstrdup(page, GFP_KERNEL);
+ 	if (!orig)
+-		return -ENOMEM;
++		goto out_free_cpumask;
+ 
+-	cpumask_clear(&new_allowed_cpumask);
+-	ret = cpulist_parse(orig, &new_allowed_cpumask);
++	ret = cpulist_parse(orig, new_allowed_cpumask);
++	if (!ret)
++		cpumask_copy(iscsit_global->allowed_cpumask,
++			     new_allowed_cpumask);
+ 
+ 	kfree(orig);
+-	if (ret != 0)
+-		return ret;
+-
+-	cpumask_copy(iscsit_global->allowed_cpumask, &new_allowed_cpumask);
+-	return count;
++out_free_cpumask:
++	free_cpumask_var(new_allowed_cpumask);
++out:
++	return ret ? ret : count;
+ }
+ 
+ CONFIGFS_ATTR(lio_target_wwn_, cpus_allowed_list);
+-- 
+2.17.1
+
