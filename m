@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13333C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92F4FC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347077AbiEPUFi (ORCPT
+        id S1347057AbiEPUF4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
+        Mon, 16 May 2022 16:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347057AbiEPTvg (ORCPT
+        with ESMTP id S1347052AbiEPTvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:51:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972CA3FBEB;
-        Mon, 16 May 2022 12:47:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CEE83FBDB;
+        Mon, 16 May 2022 12:47:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31A5260AB7;
-        Mon, 16 May 2022 19:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2636DC34115;
-        Mon, 16 May 2022 19:47:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD5D2B81609;
+        Mon, 16 May 2022 19:47:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10B61C385AA;
+        Mon, 16 May 2022 19:47:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730424;
-        bh=h7O+ZQ7Dk7UQgGNRz+YHWm/UTPmQCkR1sawCP73nZKI=;
+        s=korg; t=1652730421;
+        bh=eBC7r2zEJsCISV5SGvi7yf/yurad+4tTdXFlbCsj+X4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yTXbuBQj4Z8xXhDEtffEx74rLvyeWzZD2/P4OXhlxO7agyWIWWME+cwWbnVsEDEvz
-         VmwY5xNqH78lq7nRg2PaIbATzfjkX5739oQiGgb80go77jBMzR9aBlGffx0hCj9F4m
-         YZtOJiu+1T94Md9mhfXv6UyklzOWm/LAn+gNNeSU=
+        b=pzeckpypn3Gnx+INIqDTffEMXWwUq/dttW8kQeMpi1DQJ8a2cMFTv7r2fIHGsox96
+         w69xBNxM8ING9TrHxfYYGAtSx8ia4zoDCu37ZPURueqJFnZ7rCY/izwbAYTqq3KC4C
+         s1meh+ywKGur+yRhw5m5ZqpymZ4beLfhs6YJqKuI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Enrico Scholz <enrico.scholz@sigma-chemnitz.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Meena Shanmugam <meenashanmugam@google.com>
-Subject: [PATCH 5.10 60/66] SUNRPC: Dont call connect() more than once on a TCP socket
-Date:   Mon, 16 May 2022 21:37:00 +0200
-Message-Id: <20220516193621.147348223@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 33/66] ASoC: max98090: Generate notifications on changes for custom control
+Date:   Mon, 16 May 2022 21:36:33 +0200
+Message-Id: <20220516193620.373895707@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -51,79 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit 89f42494f92f448747bd8a7ab1ae8b5d5520577d upstream.
+[ Upstream commit 13fcf676d9e102594effc686d98521ff5c90b925 ]
 
-Avoid socket state races due to repeated calls to ->connect() using the
-same socket. If connect() returns 0 due to the connection having
-completed, but we are in fact in a closing state, then we may leave the
-XPRT_CONNECTING flag set on the transport.
+The max98090 driver has some custom controls which share a put() function
+which returns 0 unconditionally, meaning that events are not generated
+when the value changes. Fix that.
 
-Reported-by: Enrico Scholz <enrico.scholz@sigma-chemnitz.de>
-Fixes: 3be232f11a3c ("SUNRPC: Prevent immediate close+reconnect")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-[meenashanmugam: Backported to 5.10: Fixed merge conflict in xs_tcp_setup_socket]
-Signed-off-by: Meena Shanmugam <meenashanmugam@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220420193454.2647908-2-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sunrpc/xprtsock.h |    1 +
- net/sunrpc/xprtsock.c           |   21 +++++++++++----------
- 2 files changed, 12 insertions(+), 10 deletions(-)
+ sound/soc/codecs/max98090.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/sunrpc/xprtsock.h
-+++ b/include/linux/sunrpc/xprtsock.h
-@@ -89,5 +89,6 @@ struct sock_xprt {
- #define XPRT_SOCK_WAKE_WRITE	(5)
- #define XPRT_SOCK_WAKE_PENDING	(6)
- #define XPRT_SOCK_WAKE_DISCONNECT	(7)
-+#define XPRT_SOCK_CONNECT_SENT	(8)
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index 779845e3a9e3..5b6405392f08 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -430,7 +430,7 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 		mask << mc->shift,
+ 		sel << mc->shift);
  
- #endif /* _LINUX_SUNRPC_XPRTSOCK_H */
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2260,10 +2260,14 @@ static void xs_tcp_setup_socket(struct w
- 	struct rpc_xprt *xprt = &transport->xprt;
- 	int status = -EIO;
+-	return 0;
++	return *select != val;
+ }
  
--	if (!sock) {
--		sock = xs_create_sock(xprt, transport,
--				xs_addr(xprt)->sa_family, SOCK_STREAM,
--				IPPROTO_TCP, true);
-+	if (xprt_connected(xprt))
-+		goto out;
-+	if (test_and_clear_bit(XPRT_SOCK_CONNECT_SENT,
-+			       &transport->sock_state) ||
-+	    !sock) {
-+		xs_reset_transport(transport);
-+		sock = xs_create_sock(xprt, transport, xs_addr(xprt)->sa_family,
-+				      SOCK_STREAM, IPPROTO_TCP, true);
- 		if (IS_ERR(sock)) {
- 			status = PTR_ERR(sock);
- 			goto out;
-@@ -2294,6 +2298,7 @@ static void xs_tcp_setup_socket(struct w
- 		break;
- 	case 0:
- 	case -EINPROGRESS:
-+		set_bit(XPRT_SOCK_CONNECT_SENT, &transport->sock_state);
- 	case -EALREADY:
- 		xprt_unlock_connect(xprt, transport);
- 		return;
-@@ -2345,13 +2350,9 @@ static void xs_connect(struct rpc_xprt *
- 
- 	WARN_ON_ONCE(!xprt_lock_connect(xprt, task, transport));
- 
--	if (transport->sock != NULL && !xprt_connecting(xprt)) {
-+	if (transport->sock != NULL) {
- 		dprintk("RPC:       xs_connect delayed xprt %p for %lu "
--				"seconds\n",
--				xprt, xprt->reestablish_timeout / HZ);
--
--		/* Start by resetting any existing state */
--		xs_reset_transport(transport);
-+			"seconds\n", xprt, xprt->reestablish_timeout / HZ);
- 
- 		delay = xprt_reconnect_delay(xprt);
- 		xprt_reconnect_backoff(xprt, XS_TCP_INIT_REEST_TO);
+ static const char *max98090_perf_pwr_text[] =
+-- 
+2.35.1
+
 
 
