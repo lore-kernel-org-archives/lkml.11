@@ -2,169 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA219C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F630C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245412AbiEPPgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 11:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
+        id S245408AbiEPPhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 11:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245342AbiEPPgW (ORCPT
+        with ESMTP id S244903AbiEPPhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 11:36:22 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBA720F54
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:36:18 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4L23J04XPKz9sv6;
-        Mon, 16 May 2022 17:36:16 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id UNIQeZVrcqmx; Mon, 16 May 2022 17:36:16 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4L23J03kcSz9sv5;
-        Mon, 16 May 2022 17:36:16 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7154C8B76E;
-        Mon, 16 May 2022 17:36:16 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id ziEXgnIYi9U0; Mon, 16 May 2022 17:36:16 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4FE728B763;
-        Mon, 16 May 2022 17:36:16 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 24GFa7Ol2667221
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 17:36:07 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 24GFa6232667218;
-        Mon, 16 May 2022 17:36:06 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH] powerpc/irq: Remove arch_local_irq_restore() for !CONFIG_CC_HAS_ASM_GOTO
-Date:   Mon, 16 May 2022 17:36:04 +0200
-Message-Id: <58df50c9e77e2ed945bacdead30412770578886b.1652715336.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Mon, 16 May 2022 11:37:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E04C72458A
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:37:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652715425;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DIRR+/4xP3PcsIIpPjK0T2ZfAKws5p6jyUGEq00/P8o=;
+        b=IXAl6qc7SwSNaHHtBqvRLdsbEiCysOSgngXi2/Nn+FmP2MLVEbU8WUw3qqLyeIYnafuHRX
+        01D1Wi65Gmnaw3Sx4cLs4MhUpBWM3xyqyf/q6CpKMdmB5xsHZ7jxxy8AszAVioCYSi55mu
+        uwnpmV++hU3Xgaem/+U1JYSMhr2JrPo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-455-9Rov6n1COPmSVID0SU7tbA-1; Mon, 16 May 2022 11:37:01 -0400
+X-MC-Unique: 9Rov6n1COPmSVID0SU7tbA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D8F1D395AFE5;
+        Mon, 16 May 2022 15:37:00 +0000 (UTC)
+Received: from starship (unknown [10.40.192.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 71B61400E880;
+        Mon, 16 May 2022 15:36:57 +0000 (UTC)
+Message-ID: <874fad1e8443a88ef962775a960aac219c838b17.camel@redhat.com>
+Subject: Re: [PATCH] locking/atomic/x86: Introduce try_cmpxchg64
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Uros Bizjak <ubizjak@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Marco Elver <elver@google.com>
+Date:   Mon, 16 May 2022 18:36:56 +0300
+In-Reply-To: <YoJqXMN38b8dYwyY@google.com>
+References: <20220510154217.5216-1-ubizjak@gmail.com>
+         <20220510165506.GP76023@worktop.programming.kicks-ass.net>
+         <CAFULd4aNME5s2zGOO0A11kdjfHekH=ceSH7jUfAhmZaJWHv9cQ@mail.gmail.com>
+         <20220511075409.GX76023@worktop.programming.kicks-ass.net>
+         <CAFULd4aXpt_pnCR5OK5B1m5sErfB3uj_ez=-KW7=0qQheEdVzA@mail.gmail.com>
+         <Ynven5y2u9WNfwK+@google.com>
+         <CAFULd4bZDO5-3T4q9fanHFrRTDj8v6fypiTc=dFPO9Rp61g9eQ@mail.gmail.com>
+         <fcf55234cfb95600d412322fba4dc9d0c9a1d7f4.camel@redhat.com>
+         <YoJayBWZF3mUnYS6@google.com>
+         <9ed2fc294bf2c21b41b22605ff8039bb71903712.camel@redhat.com>
+         <YoJqXMN38b8dYwyY@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652715344; l=3201; s=20211009; h=from:subject:message-id; bh=C31tbK0iwmtdja7r/jhK/x9hBYZZUMb/QQwP/WTCnUY=; b=dptpsagpthJSiCP0y80IMh2sPCLb/+m+bpXU237qpmhqJz9mqWXsRUwKqQ/ZcgPiX0TaeQjj4ysM yrtfFei9CHM591sAlc+JeuEV7DEWbOT+CfG8VzwNdg5LLl1UJNMk
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All supported versions of GCC support asm goto.
+On Mon, 2022-05-16 at 15:14 +0000, Sean Christopherson wrote:
+> On Mon, May 16, 2022, Maxim Levitsky wrote:
+> > On Mon, 2022-05-16 at 14:08 +0000, Sean Christopherson wrote:
+> > > On Mon, May 16, 2022, Maxim Levitsky wrote:
+> > > > On Wed, 2022-05-11 at 21:54 +0200, Uros Bizjak wrote:
+> > > > > On Wed, May 11, 2022 at 6:04 PM Sean Christopherson <seanjc@google.com> wrote:
+> > > > > > On Wed, May 11, 2022, Uros Bizjak wrote:
+> > > > > > > On Wed, May 11, 2022 at 9:54 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> > > > > > > > Still, does 32bit actually support that stuff?
+> > > > > > > 
+> > > > > > > Unfortunately, it does:
+> > > > > > > 
+> > > > > > > kvm-intel-y        += vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
+> > > > > > >                vmx/evmcs.o vmx/nested.o vmx/posted_intr.o
+> > > > > > > 
+> > > > > > > And when existing cmpxchg64 is substituted with cmpxchg, the
+> > > > > > > compilation dies for 32bits with:
+> > > > > > 
+> > > > > > ...
+> > > > > > 
+> > > > > > > > Anyway, your patch looks about right, but I find it *really* hard to
+> > > > > > > > care about 32bit code these days.
+> > > > > > > 
+> > > > > > > Thanks, this is also my sentiment, but I hope the patch will enable
+> > > > > > > better code and perhaps ease similar situation I have had elsewhere.
+> > > > > > 
+> > > > > > IMO, if we merge this it should be solely on the benefits to 64-bit code.  Yes,
+> > > > > > KVM still supports 32-bit kernels, but I'm fairly certain the only people that
+> > > > > > run 32-bit KVM are KVM developers.  32-bit KVM has been completely broken for
+> > > > > > multiple releases at least once, maybe twice, and no one ever complained.
+> > > > > 
+> > > > > Yes, the idea was to improve cmpxchg64 with the implementation of
+> > > > > try_cmpxchg64 for 64bit targets. However, the issue with 32bit targets
+> > > > > stood in the way, so the effort with 32-bit implementation was mainly
+> > > > > to unblock progression for 64-bit targets.
+> > > > 
+> > > > Would that allow tdp mmu to work on 32 bit?
+> > > 
+> > > From a purely technical perspective, there's nothing that prevents enabling the
+> > > TDP MMU on 32-bit kernels.  The TDP MMU is 64-bit only to simplify the implementation
+> > > and to reduce the maintenance and validation costs.
+> > 
+> > I understand exactly that, so the question, will this patch help make the tdp
+> > mmu work transparently on 32 bit kernels? I  heard that 64 bit cmpxchg was
+> > one of the main reasons that it is 64 bit only.
+> 
+> I don't think it moves the needled much, e.g. non-atomic 64-bit accesses are still
+> problematic, and we'd have to update the TDP MMU to deal with PAE paging (thanks
+> NPT).  All those problems are solvable, it's purely a matter of the ongoing costs
+> to solve them.
+> 
+> > I am asking because there was some talk to eliminate the direct mode from the
+> > legacy non tdp mmu, which would simplify its code by a lot, but then it will
+> > make 32 bit kernel fail back to shadowing mmu.
+> 
+> Simplify which code?  Between the nonpaging code and direct shadow pages in
+> indirect MMUs, the vast majority of the "direct" support in the legacy MMU needs
+> to be kept even if TDP support is dropped.  And the really nasty stuff, e.g. PAE
+> roots, would need to be carried over to the TDP MMU.
+> 
 
-Remove the !CONFIG_CC_HAS_ASM_GOTO version of arch_local_irq_restore()
+I guess this makes sense. I haven't researched the code well enough to know the exact answer.
+I was just curious if this patch makes any difference :)
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/kernel/irq.c | 77 ---------------------------------------
- 1 file changed, 77 deletions(-)
+Thanks!
 
-diff --git a/arch/powerpc/kernel/irq.c b/arch/powerpc/kernel/irq.c
-index c768cde03e36..dd09919c3c66 100644
---- a/arch/powerpc/kernel/irq.c
-+++ b/arch/powerpc/kernel/irq.c
-@@ -216,7 +216,6 @@ static inline void replay_soft_interrupts_irqrestore(void)
- #define replay_soft_interrupts_irqrestore() replay_soft_interrupts()
- #endif
- 
--#ifdef CONFIG_CC_HAS_ASM_GOTO
- notrace void arch_local_irq_restore(unsigned long mask)
- {
- 	unsigned char irq_happened;
-@@ -312,82 +311,6 @@ notrace void arch_local_irq_restore(unsigned long mask)
- 	__hard_irq_enable();
- 	preempt_enable();
- }
--#else
--notrace void arch_local_irq_restore(unsigned long mask)
--{
--	unsigned char irq_happened;
--
--	/* Write the new soft-enabled value */
--	irq_soft_mask_set(mask);
--	if (mask)
--		return;
--
--	if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
--		WARN_ON_ONCE(in_nmi() || in_hardirq());
--
--	/*
--	 * From this point onward, we can take interrupts, preempt,
--	 * etc... unless we got hard-disabled. We check if an event
--	 * happened. If none happened, we know we can just return.
--	 *
--	 * We may have preempted before the check below, in which case
--	 * we are checking the "new" CPU instead of the old one. This
--	 * is only a problem if an event happened on the "old" CPU.
--	 *
--	 * External interrupt events will have caused interrupts to
--	 * be hard-disabled, so there is no problem, we
--	 * cannot have preempted.
--	 */
--	irq_happened = get_irq_happened();
--	if (!irq_happened) {
--		if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
--			WARN_ON_ONCE(!(mfmsr() & MSR_EE));
--		return;
--	}
--
--	/* We need to hard disable to replay. */
--	if (!(irq_happened & PACA_IRQ_HARD_DIS)) {
--		if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
--			WARN_ON_ONCE(!(mfmsr() & MSR_EE));
--		__hard_irq_disable();
--		local_paca->irq_happened |= PACA_IRQ_HARD_DIS;
--	} else {
--		/*
--		 * We should already be hard disabled here. We had bugs
--		 * where that wasn't the case so let's dbl check it and
--		 * warn if we are wrong. Only do that when IRQ tracing
--		 * is enabled as mfmsr() can be costly.
--		 */
--		if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG)) {
--			if (WARN_ON_ONCE(mfmsr() & MSR_EE))
--				__hard_irq_disable();
--		}
--
--		if (irq_happened == PACA_IRQ_HARD_DIS) {
--			local_paca->irq_happened = 0;
--			__hard_irq_enable();
--			return;
--		}
--	}
--
--	/*
--	 * Disable preempt here, so that the below preempt_enable will
--	 * perform resched if required (a replayed interrupt may set
--	 * need_resched).
--	 */
--	preempt_disable();
--	irq_soft_mask_set(IRQS_ALL_DISABLED);
--	trace_hardirqs_off();
--
--	replay_soft_interrupts_irqrestore();
--	local_paca->irq_happened = 0;
--
--	trace_hardirqs_on();
--	irq_soft_mask_set(IRQS_ENABLED);
--	__hard_irq_enable();
--	preempt_enable();
--}
--#endif
- EXPORT_SYMBOL(arch_local_irq_restore);
- 
- /*
--- 
-2.35.1
+Best regards,
+	Maxim Levitsky
+
 
