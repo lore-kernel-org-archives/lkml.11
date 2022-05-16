@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 699CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D11C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347392AbiEPUsA (ORCPT
+        id S1348300AbiEPUsI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:48:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        Mon, 16 May 2022 16:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344946AbiEPUpD (ORCPT
+        with ESMTP id S245613AbiEPUpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:45:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4131483AD
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:22:45 -0700 (PDT)
+        Mon, 16 May 2022 16:45:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF10F483A1
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:22:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652732565;
+        s=mimecast20190719; t=1652732560;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a3sk0Kg+x7hgril7kpmaVqy1YQpLRjOv9hNg1DEjNQg=;
-        b=ePg3+2jqtqUm0Q2T8M31swBHWERSABD68Mpsw3oHQmXwQrcpTehvL5/0v0CtZm8XEPi7kL
-        j+AJCp9XiFLDIQ5UIwyHeCQZ8lbLHI6N/qNMzDpmc5db2lX5b45Dw4KrDuThMqBWsEQQ9g
-        rZv8ZUreSAzYRMF5Nt2YApAiMu/yI/w=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=X/hW8heDuAXy8YNMnWK8A1edgrFI+3cNEUxDQuZBP/o=;
+        b=UQeDOVHCYtY5VXaBS1VP0SqjLx7lfaTm2deatoxkjZQ8JECGgukXIn2Q0SgO9vEWv847AH
+        4WHL5Tv9uJhuSxVbCOCzuI6vR7o59GQJHcuAiVWnUwxkD/RMwWfqVKjRn4cU6ZjlGp9pSR
+        atbe6GEIPOaC0xhZ3D25vzLrXCJcQWs=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-380-X4qdOPM-Phqj4Q5GmDnttg-1; Mon, 16 May 2022 16:22:41 -0400
-X-MC-Unique: X4qdOPM-Phqj4Q5GmDnttg-1
+ us-mta-595-0tAPI_2OPfONwKeE-BDOkg-1; Mon, 16 May 2022 16:22:36 -0400
+X-MC-Unique: 0tAPI_2OPfONwKeE-BDOkg-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B64C58032EA;
-        Mon, 16 May 2022 20:22:40 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 26CC1811E75;
+        Mon, 16 May 2022 20:22:36 +0000 (UTC)
 Received: from madcap2.tricolour.com (unknown [10.22.50.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 625D940CF8E2;
-        Mon, 16 May 2022 20:22:39 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A783840CF8E2;
+        Mon, 16 May 2022 20:22:34 +0000 (UTC)
 From:   Richard Guy Briggs <rgb@redhat.com>
 To:     Linux-Audit Mailing List <linux-audit@redhat.com>,
         LKML <linux-kernel@vger.kernel.org>,
@@ -48,11 +47,9 @@ Cc:     Paul Moore <paul@paul-moore.com>,
         Steve Grubb <sgrubb@redhat.com>,
         Richard Guy Briggs <rgb@redhat.com>, Jan Kara <jack@suse.cz>,
         Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH v3 3/3] fanotify: Allow audit to use the full permission event response
-Date:   Mon, 16 May 2022 16:22:24 -0400
-Message-Id: <81264e038b7b1e0d8fd8bafb25452fb777cd664a.1652730821.git.rgb@redhat.com>
-In-Reply-To: <cover.1652730821.git.rgb@redhat.com>
-References: <cover.1652730821.git.rgb@redhat.com>
+Subject: [PATCH v3 0/3] fanotify: Allow user space to pass back additional audit info
+Date:   Mon, 16 May 2022 16:22:21 -0400
+Message-Id: <cover.1652730821.git.rgb@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
@@ -61,117 +58,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch passes the full value so that the audit function can use all
-of it. The audit function was updated to log the additional information in
-the AUDIT_FANOTIFY record. The following is an example of the new record
+The Fanotify API can be used for access control by requesting permission
+event notification. The user space tooling that uses it may have a
+complicated policy that inherently contains additional context for the
+decision. If this information were available in the audit trail, policy
+writers can close the loop on debugging policy. Also, if this additional
+information were available, it would enable the creation of tools that
+can suggest changes to the policy similar to how audit2allow can help
+refine labeled security.
+
+This patch defines 2 additional fields within the response structure
+returned from user space on a permission event. The first field is 32
+bits for the context type. The context type will describe what the
+meaning is of the second field. The audit system will separate the
+pieces and log them individually.
+
+The audit function was updated to log the additional information in the
+AUDIT_FANOTIFY record. The following is an example of the new record
 format:
 
 type=FANOTIFY msg=audit(1600385147.372:590): resp=2 fan_type=1 fan_ctx=17
 
-Suggested-by: Steve Grubb <sgrubb@redhat.com>
-Link: https://lore.kernel.org/r/3075502.aeNJFYEL58@x2
-Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
----
- fs/notify/fanotify/fanotify.c |  4 +++-
- include/linux/audit.h         |  9 +++++----
- kernel/auditsc.c              | 18 +++++++++++++++---
- 3 files changed, 23 insertions(+), 8 deletions(-)
+changelog:
+v1:
+- first version by Steve Grubb <sgrubb@redhat.com>
+Link: https://lore.kernel.org/r/2042449.irdbgypaU6@x2
 
-diff --git a/fs/notify/fanotify/fanotify.c b/fs/notify/fanotify/fanotify.c
-index ea0e60488f12..85ce36e59e0c 100644
---- a/fs/notify/fanotify/fanotify.c
-+++ b/fs/notify/fanotify/fanotify.c
-@@ -273,7 +273,9 @@ static int fanotify_get_response(struct fsnotify_group *group,
- 
- 	/* Check if the response should be audited */
- 	if (event->response & FAN_AUDIT)
--		audit_fanotify(event->response & ~FAN_AUDIT);
-+		audit_fanotify(event->response & ~FAN_AUDIT,
-+			       event->extra_info_type,
-+			       &event->extra_info);
- 
- 	pr_debug("%s: group=%p event=%p about to return ret=%d\n", __func__,
- 		 group, event, ret);
-diff --git a/include/linux/audit.h b/include/linux/audit.h
-index 217784d602b3..737f1c109aa1 100644
---- a/include/linux/audit.h
-+++ b/include/linux/audit.h
-@@ -14,6 +14,7 @@
- #include <linux/audit_arch.h>
- #include <uapi/linux/audit.h>
- #include <uapi/linux/netfilter/nf_tables.h>
-+#include <uapi/linux/fanotify.h>
- 
- #define AUDIT_INO_UNSET ((unsigned long)-1)
- #define AUDIT_DEV_UNSET ((dev_t)-1)
-@@ -419,7 +420,7 @@ extern void __audit_log_capset(const struct cred *new, const struct cred *old);
- extern void __audit_mmap_fd(int fd, int flags);
- extern void __audit_openat2_how(struct open_how *how);
- extern void __audit_log_kern_module(char *name);
--extern void __audit_fanotify(u32 response);
-+extern void __audit_fanotify(u32 response, u32 type, union fanotify_response_extra *info);
- extern void __audit_tk_injoffset(struct timespec64 offset);
- extern void __audit_ntp_log(const struct audit_ntp_data *ad);
- extern void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
-@@ -526,10 +527,10 @@ static inline void audit_log_kern_module(char *name)
- 		__audit_log_kern_module(name);
- }
- 
--static inline void audit_fanotify(u32 response)
-+static inline void audit_fanotify(u32 response, u32 type, union fanotify_response_extra *info)
- {
- 	if (!audit_dummy_context())
--		__audit_fanotify(response);
-+		__audit_fanotify(response, type, info);
- }
- 
- static inline void audit_tk_injoffset(struct timespec64 offset)
-@@ -686,7 +687,7 @@ static inline void audit_log_kern_module(char *name)
- {
- }
- 
--static inline void audit_fanotify(u32 response)
-+static inline void audit_fanotify(u32 response, u32 type, union fanotify_response_extra *info)
- { }
- 
- static inline void audit_tk_injoffset(struct timespec64 offset)
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index 6973be0bf6c9..cb93c6ed07cd 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -64,6 +64,7 @@
- #include <uapi/linux/limits.h>
- #include <uapi/linux/netfilter/nf_tables.h>
- #include <uapi/linux/openat2.h> // struct open_how
-+#include <uapi/linux/fanotify.h>
- 
- #include "audit.h"
- 
-@@ -2893,10 +2894,21 @@ void __audit_log_kern_module(char *name)
- 	context->type = AUDIT_KERN_MODULE;
- }
- 
--void __audit_fanotify(u32 response)
-+void __audit_fanotify(u32 response, u32 type, union fanotify_response_extra *info)
- {
--	audit_log(audit_context(), GFP_KERNEL,
--		AUDIT_FANOTIFY,	"resp=%u", response);
-+	switch (type) {
-+	case FAN_RESPONSE_INFO_AUDIT_RULE:
-+		audit_log(audit_context(), GFP_KERNEL, AUDIT_FANOTIFY,
-+			  "resp=%u fan_type=%u fan_ctx=%u",
-+			  response, type, info->audit_rule);
-+		break;
-+	case FAN_RESPONSE_INFO_NONE:
-+	default:
-+		audit_log(audit_context(), GFP_KERNEL, AUDIT_FANOTIFY,
-+			  "resp=%u fan_type=%u fan_ctx=?",
-+			  response, type);
-+		break;
-+	}
- }
- 
- void __audit_tk_injoffset(struct timespec64 offset)
+v2:
+- enhancements suggested by Jan Kara <jack@suse.cz>
+- 1/3 change %d to %u in pr_debug
+- 2/3 change response from __u32 to __u16
+- mod struct fanotify_response and fanotify_perm_event add extra_info_type, extra_info_buf
+- extra_info_buf size max FANOTIFY_MAX_RESPONSE_EXTRA_LEN, add struct fanotify_response_audit_rule
+- extend debug statements
+- remove unneeded macros
+- [internal] change interface to finish_permission_event() and process_access_response()
+- 3/3 update format of extra information
+- [internal] change interface to audit_fanotify()
+- change ctx_type= to fan_type=
+Link: https://lore.kernel.org/r/cover.1651174324.git.rgb@redhat.com
+
+v3:
+- 1/3 switch {,__}audit_fanotify() from uint to u32
+- 2/3 re-add fanotify_get_response switch case FAN_DENY: to avoid unnecessary churn
+- add FAN_EXTRA flag to indicate more info and break with old kernel
+- change response from u16 to u32 to avoid endian issues
+- change extra_info_buf to union
+- move low-cost fd check earlier
+- change FAN_RESPONSE_INFO_AUDIT_NONE to FAN_RESPONSE_INFO_NONE
+- switch to u32 for internal and __u32 for uapi
+Link: https://lore.kernel.org/r/cover.1652724390.git.rgb@redhat.com
+
+Richard Guy Briggs (3):
+  fanotify: Ensure consistent variable type for response
+  fanotify: define struct members to hold response decision context
+  fanotify: Allow audit to use the full permission event response
+
+ fs/notify/fanotify/fanotify.c      |  6 ++-
+ fs/notify/fanotify/fanotify.h      |  4 +-
+ fs/notify/fanotify/fanotify_user.c | 76 +++++++++++++++++++-----------
+ include/linux/audit.h              |  9 ++--
+ include/linux/fanotify.h           |  3 ++
+ include/uapi/linux/fanotify.h      | 22 ++++++++-
+ kernel/auditsc.c                   | 18 +++++--
+ 7 files changed, 100 insertions(+), 38 deletions(-)
+
 -- 
 2.27.0
 
