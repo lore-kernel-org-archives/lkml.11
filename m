@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9129BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28FE7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242976AbiEPUdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
+        id S1348027AbiEPUd5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351136AbiEPUCD (ORCPT
+        with ESMTP id S1351133AbiEPUCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:02:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FE9B3D;
-        Mon, 16 May 2022 12:59:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863742AE9;
+        Mon, 16 May 2022 12:59:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55B7460BAC;
-        Mon, 16 May 2022 19:59:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B9C3C385AA;
-        Mon, 16 May 2022 19:59:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49A5DB81613;
+        Mon, 16 May 2022 19:59:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A953DC385AA;
+        Mon, 16 May 2022 19:59:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731164;
-        bh=kmphfhQU/g2Vah4OmHGp155rYUCsLBN72nFjKWY/2lI=;
+        s=korg; t=1652731161;
+        bh=hxQr3HJrF4KGHrYdn2UKe4Ty6jxRkxNLvEZh7rMK530=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M96Jlncjd0HFg76qd4GQ8mFoeRKsKVmz9rru9GF53aTH8ZoSzQpaa57Z6/c1DNCux
-         lYjFov5XM5AOsmzp0DMtVIz80R10nb+9qpebfSe8pSSiS5ZI4El49Xl7kHahSxzhLv
-         fh/Yhd866IjWcR8V1QOKMErK6GLLK31lQTDAOpwc=
+        b=qnkWxOVs1r2pB4v8Do/JVyBn0/brXu9HynnLj2s/jSf/ia4hw0FxREJmAsqj6sSzZ
+         upXEnw8b0xDTzSHQUpr+IcgO+xhxt0tZMfP43Zw6QJF11X+3JmQNbsiDYv7FiNsj1M
+         8KR6qneWaZ8nm6q0vZRCvBipa66b1pq2ck8mzqQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Fortin <fortinj66@gmail.com>,
-        Sri Ramanujam <sri@ramanujam.io>,
-        Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.17 092/114] ceph: fix setting of xattrs on async created inodes
-Date:   Mon, 16 May 2022 21:37:06 +0200
-Message-Id: <20220516193628.117586608@linuxfoundation.org>
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 5.17 091/114] serial: 8250_mtk: Fix register address for XON/XOFF character
+Date:   Mon, 16 May 2022 21:37:05 +0200
+Message-Id: <20220516193628.089977074@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,62 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-commit 620239d9a32e9fe27c9204ec11e40058671aeeb6 upstream.
+commit e1bfdbc7daca171c74a577b3dd0b36d76bb0ffcc upstream.
 
-Currently when we create a file, we spin up an xattr buffer to send
-along with the create request. If we end up doing an async create
-however, then we currently pass down a zero-length xattr buffer.
+The XON1/XOFF1 character registers are at offset 0xa0 and 0xa8
+respectively, so we cannot use the definition in serial_port.h.
 
-Fix the code to send down the xattr buffer in req->r_pagelist. If the
-xattrs span more than a page, however give up and don't try to do an
-async create.
-
-Cc: stable@vger.kernel.org
-URL: https://bugzilla.redhat.com/show_bug.cgi?id=2063929
-Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
-Reported-by: John Fortin <fortinj66@gmail.com>
-Reported-by: Sri Ramanujam <sri@ramanujam.io>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Fixes: bdbd0a7f8f03 ("serial: 8250-mtk: modify baudrate setting")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220427132328.228297-4-angelogioacchino.delregno@collabora.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/file.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/tty/serial/8250/8250_mtk.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -598,9 +598,15 @@ static int ceph_finish_async_create(stru
- 	iinfo.change_attr = 1;
- 	ceph_encode_timespec64(&iinfo.btime, &now);
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -54,6 +54,9 @@
+ #define MTK_UART_TX_TRIGGER	1
+ #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
  
--	iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
--	iinfo.xattr_data = xattr_buf;
--	memset(iinfo.xattr_data, 0, iinfo.xattr_len);
-+	if (req->r_pagelist) {
-+		iinfo.xattr_len = req->r_pagelist->length;
-+		iinfo.xattr_data = req->r_pagelist->mapped_tail;
-+	} else {
-+		/* fake it */
-+		iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
-+		iinfo.xattr_data = xattr_buf;
-+		memset(iinfo.xattr_data, 0, iinfo.xattr_len);
-+	}
++#define MTK_UART_XON1		40	/* I/O: Xon character 1 */
++#define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
++
+ #ifdef CONFIG_SERIAL_8250_DMA
+ enum dma_rx_status {
+ 	DMA_RX_START = 0,
+@@ -275,8 +278,8 @@ static void mtk8250_set_flow_ctrl(struct
+ 			(serial_in(up, MTK_UART_EFR) &
+ 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK))));
  
- 	in.ino = cpu_to_le64(vino.ino);
- 	in.snapid = cpu_to_le64(CEPH_NOSNAP);
-@@ -712,6 +718,10 @@ int ceph_atomic_open(struct inode *dir,
- 		err = ceph_security_init_secctx(dentry, mode, &as_ctx);
- 		if (err < 0)
- 			goto out_ctx;
-+		/* Async create can't handle more than a page of xattrs */
-+		if (as_ctx.pagelist &&
-+		    !list_is_singular(&as_ctx.pagelist->head))
-+			try_async = false;
- 	} else if (!d_in_lookup(dentry)) {
- 		/* If it's not being looked up, it's negative */
- 		return -ENOENT;
+-		serial_out(up, UART_XON1, START_CHAR(port->state->port.tty));
+-		serial_out(up, UART_XOFF1, STOP_CHAR(port->state->port.tty));
++		serial_out(up, MTK_UART_XON1, START_CHAR(port->state->port.tty));
++		serial_out(up, MTK_UART_XOFF1, STOP_CHAR(port->state->port.tty));
+ 		serial_out(up, UART_LCR, lcr);
+ 		mtk8250_disable_intrs(up, MTK_UART_IER_CTSI|MTK_UART_IER_RTSI);
+ 		mtk8250_enable_intrs(up, MTK_UART_IER_XOFFI);
 
 
