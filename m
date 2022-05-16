@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DCEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346030AbiEPTnp (ORCPT
+        id S1346303AbiEPTlz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44944 "EHLO
+        Mon, 16 May 2022 15:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346087AbiEPTld (ORCPT
+        with ESMTP id S1345691AbiEPTkS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:41:33 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E34140919;
-        Mon, 16 May 2022 12:40:08 -0700 (PDT)
+        Mon, 16 May 2022 15:40:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760693EF3C;
+        Mon, 16 May 2022 12:39:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 74427CE1799;
-        Mon, 16 May 2022 19:40:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 833C3C34100;
-        Mon, 16 May 2022 19:40:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B85CB81613;
+        Mon, 16 May 2022 19:39:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627BBC34100;
+        Mon, 16 May 2022 19:39:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730004;
-        bh=hzboKld9sQdFcFiWMi6bIJfWfIDWpBPdbUIopwxzx7A=;
+        s=korg; t=1652729963;
+        bh=otwVBSNI0rywwn53sxFGDiMQg+fR5EjSFvuunSnPYgM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qIkk1krBSfCU+b7BS8P5eA6fymJv+SRyYnAfEt1eGc/i93U2hNZfMYfb+Ad6HKlrE
-         /+zZXLSE5YSazLhXEAsI5U2Yuk2TAD7wI85xLy8J+yPD51HdUA6/Z9UV8uxFVdD3O+
-         gSnUGeiLMYJXarzH3tjtXKHxMbKVDPX0oeXFnHrc=
+        b=EbOViEsSj6uqUuhoC/W6uhNFJk9yVOEhSNNRSNotAFOLv6MOrzOcOeIZbYqRdgPlu
+         IF/p7f4/y/CECkPXQDmBRhpvpjobRJ01c6IoNjizDfrGDnGm4UMGhEcqmJgRfZHLKL
+         VCgecaO5ajgdDMWNoi/m3Di9Y77JM8Nln4YyqISs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 03/25] ipv4: drop dst in multicast routing path
-Date:   Mon, 16 May 2022 21:36:17 +0200
-Message-Id: <20220516193614.787442919@linuxfoundation.org>
+Subject: [PATCH 4.14 15/25] ASoC: ops: Validate input values in snd_soc_put_volsw_range()
+Date:   Mon, 16 May 2022 21:36:29 +0200
+Message-Id: <20220516193615.145811404@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
 References: <20220516193614.678319286@linuxfoundation.org>
@@ -53,65 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 9e6c6d17d1d6a3f1515ce399f9a011629ec79aa0 ]
+[ Upstream commit aa22125c57f9e577f0a667e4fa07fc3fa8ca1e60 ]
 
-kmemleak reports the following when routing multicast traffic over an
-ipsec tunnel.
+Check that values written via snd_soc_put_volsw_range() are
+within the range advertised by the control, ensuring that we
+don't write out of spec values to the hardware.
 
-Kmemleak output:
-unreferenced object 0x8000000044bebb00 (size 256):
-  comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
-    80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000f83947e0>] __kmalloc+0x1e8/0x300
-    [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
-    [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
-    [<00000000824f6cf1>] gre_rcv+0x178/0x540
-    [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
-    [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
-    [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
-    [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
-    [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
-    [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
-    [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
-    [<00000000013d7914>] irq_exit+0xc4/0xe0
-    [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
-    [<000000000751eb8e>] handle_int+0x16c/0x178
-    [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
-
-The metadata dst is leaked when ip_route_input_mc() updates the dst for
-the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
-handled dropping the dst in ip_route_input_slow() but missed the
-multicast case which is handled by ip_route_input_mc(). Drop the dst in
-ip_route_input_mc() avoiding the leak.
-
-Fixes: f38a9eb1f77b ("dst: Metadata destinations")
-Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220423131239.3375261-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/route.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/soc-ops.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 34cf572cc5dc..52c4098e1deb 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1697,6 +1697,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- #endif
- 	RT_CACHE_STAT_INC(in_slow_mc);
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index d6d72595fbd0..0848aec1bd24 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -528,7 +528,15 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 	unsigned int mask = (1 << fls(max)) - 1;
+ 	unsigned int invert = mc->invert;
+ 	unsigned int val, val_mask;
+-	int err, ret;
++	int err, ret, tmp;
++
++	tmp = ucontrol->value.integer.value[0];
++	if (tmp < 0)
++		return -EINVAL;
++	if (mc->platform_max && tmp > mc->platform_max)
++		return -EINVAL;
++	if (tmp > mc->max - mc->min + 1)
++		return -EINVAL;
  
-+	skb_dst_drop(skb);
- 	skb_dst_set(skb, &rth->dst);
- 	return 0;
- }
+ 	if (invert)
+ 		val = (max - ucontrol->value.integer.value[0]) & mask;
+@@ -543,6 +551,14 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 	ret = err;
+ 
+ 	if (snd_soc_volsw_is_stereo(mc)) {
++		tmp = ucontrol->value.integer.value[1];
++		if (tmp < 0)
++			return -EINVAL;
++		if (mc->platform_max && tmp > mc->platform_max)
++			return -EINVAL;
++		if (tmp > mc->max - mc->min + 1)
++			return -EINVAL;
++
+ 		if (invert)
+ 			val = (max - ucontrol->value.integer.value[1]) & mask;
+ 		else
 -- 
 2.35.1
 
