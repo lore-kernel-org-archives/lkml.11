@@ -2,146 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D234BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E06C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241784AbiEPJIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 05:08:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
+        id S241847AbiEPJJR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 05:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241773AbiEPJIf (ORCPT
+        with ESMTP id S233408AbiEPJJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 05:08:35 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB11522B2C;
-        Mon, 16 May 2022 02:08:33 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id n6-20020a05600c3b8600b0039492b44ce7so8221206wms.5;
-        Mon, 16 May 2022 02:08:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DbwlhGlNKP/GOpbAeD4xPGjFcllAu7o315UPeOpEeyU=;
-        b=CxOeoldsv2HbmBTaajEpo3Tkl9Gk25dW8aWLkB2oOyZTqf7EKAIm4x9cD96zpHdSKG
-         wx9h5cRz7nAgq5faFt3OnR34+Sc9y+ClpVN/gUwFRHZiy3x8Wg/2G0yd0QNtxRwX1s4S
-         66I8ixhE0I9q44/UmFRPB89Gse9V1fzngkNDa5FvwOvajT0QFL/bhABYcy5mBHD/svPH
-         +iAMItZmqJR6RXUuaiXV0ZJeqTGrbq0JNQdreZGrqoqAEruSqaVhnXiUGnaIn0aQYuZH
-         cz/WN/N0mJttBo4Z1tK6vgl7z/YQ3Csqr6Y+sFu0xgvB4PS8zKGw8ZVnmdq2Iw4rHPxZ
-         xIQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DbwlhGlNKP/GOpbAeD4xPGjFcllAu7o315UPeOpEeyU=;
-        b=0PsIQ0Iuffs1td3GCpSx9Iy/+l9BKdKdBqU3AfJo2SuefanZ6dtNa7B99/M7ip1JJZ
-         H7Q6H+3gstKXm4fPzYYkErakTz3V8vO5qtQjFdaGDpywkOJ3H0Dwkhq6dubgVxKIi72K
-         HxyqCUdA+tV1TQForfgTXj5cwVrZDIzNU5I1dKJ5sG4NqKzo/HRg0tfY3xIAzfcJdZo7
-         fvho1rxmMWaJWxPApfNTT2g5DDep/bUKP9cLjw3ao8G/WdQFpukwr7HhddFB8umCdtnH
-         L/wUiDpGqOCuUT+rmrW64PtJAntt6K0T500B+vw908EZTNt0JKcNkHI7ljbNmh9It9Ye
-         EPsQ==
-X-Gm-Message-State: AOAM533MmtK9Xfb64D8K+D0uMpiwdrgc2q4NNRRysfZHtQ6/SiLw3tUR
-        Eaf1IOKAs7Ww8DrBRKZ5KRA=
-X-Google-Smtp-Source: ABdhPJzPozxn0bDxJUwV0PT6jJ+mRjLbazeRvzPdImLmRzzygJHWYRqmNcOW4fzcXQCGMtylTDNqfg==
-X-Received: by 2002:a7b:c081:0:b0:394:789b:915 with SMTP id r1-20020a7bc081000000b00394789b0915mr15494028wmh.105.1652692112175;
-        Mon, 16 May 2022 02:08:32 -0700 (PDT)
-Received: from elementary ([94.73.36.128])
-        by smtp.gmail.com with ESMTPSA id h12-20020adf9ccc000000b0020adc114136sm11046252wre.0.2022.05.16.02.08.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 02:08:31 -0700 (PDT)
-Date:   Mon, 16 May 2022 11:08:29 +0200
-From:   =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
-To:     Stefan Berzl <stefanberzl@gmail.com>
-Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com, spbnick@gmail.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Status on hid xppen patch
-Message-ID: <20220516090829.GA20623@elementary>
-References: <941a793a-d2f7-9c2c-59be-b3930e1acfec@gmail.com>
- <20220423172330.32585-1-jose.exposito89@gmail.com>
- <95576534-1f5e-c2e3-4f73-c1b0a8300b56@gmail.com>
- <20220424093239.GA4380@elementary>
- <20220512205952.GA8936@elementary>
- <ebb6d627-4974-beed-1dc6-60634ab2f034@gmail.com>
+        Mon, 16 May 2022 05:09:03 -0400
+Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48A2C22B27;
+        Mon, 16 May 2022 02:08:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Message-ID:Date:MIME-Version:Subject:From; bh=SJzeR
+        opa97b+y4ikvwq8pQd3JkFOAJvJtPN1447zVMU=; b=OYFMch/JvS5zRHMSkFQy2
+        6+npR9/hT5fhljyMlbai5peBOLYvad8xghCvHdv6UTqdplMHc6ZNiZm7w79DG5yq
+        5Ela9Pwau9h4KnGD2tgptGrmXJq0K15Un486eThtgQ+3fZw1LxwcLth6EK4dxIM1
+        9eRidqHRafP+X9Spj9aF8I=
+Received: from [192.168.3.102] (unknown [218.201.129.19])
+        by smtp7 (Coremail) with SMTP id C8CowAB3CplRFIJiwNRICw--.41526S2;
+        Mon, 16 May 2022 17:07:30 +0800 (CST)
+Message-ID: <145f9b94-1eb1-8a66-9f9b-36a8395bde70@163.com>
+Date:   Mon, 16 May 2022 17:07:29 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v4 2/2] ARM: dts: sun8i-r40: add opp table for cpu
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+References: <20220516021516.23216-1-qianfanguijin@163.com>
+ <20220516021516.23216-3-qianfanguijin@163.com>
+ <20220516085309.jp5yautmb3veocvl@houat>
+From:   qianfan <qianfanguijin@163.com>
+In-Reply-To: <20220516085309.jp5yautmb3veocvl@houat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ebb6d627-4974-beed-1dc6-60634ab2f034@gmail.com>
+X-CM-TRANSID: C8CowAB3CplRFIJiwNRICw--.41526S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7WFWDuFWxKr4rKw1ftry5Jwb_yoW8tr1Upr
+        ZrCr4Ykr4kWr17JrySgw1UJFn3uFWkuFyUGry7GFy8Jwn8Zr1DGFn7trnxKrW8Xr4fZ3y2
+        9rnaqr9Fkw1DC3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jjtC7UUUUU=
+X-Originating-IP: [218.201.129.19]
+X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiXBID7VXl25gMPQAAsi
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stefan,
 
-On Fri, May 13, 2022 at 07:22:49PM +0200, Stefan Berzl wrote:
-> Hello Jos�,
-> 
-> > The tablets are the Deco Mini 4 and the Deco L, both of them are UGEE
-> > tablets. I already had a UGEE Parblo A610 Pro tablet and after having a
-> > look to the Windows driver traffic, I found out that after sending a
-> > chunk of magic data to enable the tablet, it requests a string
-> > descriptor ("uclogic_params_get_str_desc" can be used here) and the
-> > tablets respond with their parameters.
-> > 
-> > The information is encoded, in bytes, as:
-> > 
-> >  02 + 03 - UCLOGIC_RDESC_PEN_PH_ID_X_LM
-> >  04 + 05 - UCLOGIC_RDESC_PEN_PH_ID_Y_LM
-> >  06      - Number of buttons
-> >  07      - Dial present or not
-> >  08 + 09 - UCLOGIC_RDESC_PEN_PH_ID_PRESSURE_LM
-> >  10 + 11 - Resolution
-> > 
-> > Bytes 12 and 13 are present but set to 0, probably indicating my
-> > tablets are lacking some feature.
-> > 
-> > Could you confirm that your tablet returns similar information, please?
-> 
-> yes, you can haz string descriptor:
-> 0e 03 0b 8b cb 56 08 00 ff 1f d8 13
-> 
-> Byte 12 are 13 are set and zero, as in your case.
 
-Sweet, that means that we are on the right track and the implementation
-can be generic... Meaning that we won't need to write and maintain a
-bunch of HID descriptors :)
- 
-> > In case you want to have a look to the implementation, I'm working on
-> > this branch:
-> > https://github.com/JoseExposito/linux/commits/patch-xppen-deco-l
-> > 
-> > I had to introduce new functionalities to the templating system of the
-> > driver, that's the reason for the KUnit tests.
-> > The last patch is work in progress (hopefully I'll have time to finish
-> > it this weekend), only the HID descriptors are missing.
-> 
-> I hope you make it, but otherwise you can always use mine, as it's quite
-> the same as yours. Only the logical minimum and maximum are -60 and 60.
+在 2022/5/16 16:53, Maxime Ripard 写道:
+> On Mon, May 16, 2022 at 10:15:16AM +0800, qianfanguijin@163.com wrote:
+>> From: qianfan Zhao <qianfanguijin@163.com>
+>>
+>> OPP table value is get from allwinner lichee linux-3.10 kernel driver
+>>
+>> Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+>> ---
+>>   arch/arm/boot/dts/sun8i-r40.dtsi | 42 ++++++++++++++++++++++++++++++++
+>>   1 file changed, 42 insertions(+)
+>>
+>> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
+>> index 291f4784e86c..8949153eb0eb 100644
+>> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
+>> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+>> @@ -54,6 +54,36 @@ / {
+>>   	#size-cells = <1>;
+>>   	interrupt-parent = <&gic>;
+>>   
+>> +	cpu0_opp_table: opp_table0 {
+>> +		compatible = "operating-points-v2";
+>> +		opp-shared;
+>> +
+>> +		opp-720000000 {
+>> +			opp-hz = /bits/ 64 <720000000>;
+>> +			opp-microvolt = <1000000 1000000 1300000>;
+>> +			clock-latency-ns = <2000000>;
+>> +		};
+>> +
+>> +		opp-912000000 {
+>> +			opp-hz = /bits/ 64 <912000000>;
+>> +			opp-microvolt = <1100000 1100000 1300000>;
+>> +			clock-latency-ns = <2000000>;
+>> +		};
+>> +
+>> +		opp-1008000000 {
+>> +			opp-hz = /bits/ 64 <1008000000>;
+>> +			opp-microvolt = <1160000 1160000 1300000>;
+>> +			clock-latency-ns = <2000000>;
+>> +		};
+>> +
+>> +		/* The opp table of the cpu frequency that exceeds 1G
+>> +		 * is not defined here. They require higher operating
+>> +		 * current, which may exceed the 500mA limited if the
+>> +		 * system is powered by USB. You can add them to the
+>> +		 * board's DTS is you make sure.
+>> +		 */
+> That's not the issue though. The issue is that the board is setup with a
+> CPU voltage at 1160mV, and if we raise the frequency to a higher OPP
+> without raising the voltage as well, the CPU will crash.
+Yes, this is a issue and if the dts doesn't has "cpu-supply" node.
+The comment above is found while testing. 100% cpu load @ 4x1.2G
+will consume about 800mA@5V current, the board will reboot if it
+is powered by USB. So I leave those comments.
 
-You are right, 60 and not 127 is the right value. Actually, I think
-that -61 - 60 is the correct range, because of the 0.
-Running "libinput-debug-tablet" makes it easier to debug.
+I am thinking your suggestion to write the opp part to a dtsi like
+A64. Should I adding all supported freq?
 
-I also had to fix the descriptor to avoid an issue with the pressure
-causing issues with the Deco L, but other than that, it should be
-correct now.
+I am preparing a new version which including cpu cooling.
+>
+> Maxime
 
-> > I'll cc you when in the patchset so you can add your IDs :)
-> 
-> Is that all you want me to do?
-
-Code comments and suggestions are very welcome, as well as testing.
-
-Also, I don't know if you have seen this error after connecting the
-tablet:
-
-  xhci_hcd 0000:2a:00.3: WARN urb submitted to disabled ep
-  usb 3-2: reset full-speed USB device number 6 using xhci_hcd
-  usb 3-2: reset full-speed USB device number 6 using xhci_hcd
-  [...]
-
-It happens with the Deco Mini 4, even when using the hid-generic
-driver. I need to rebase my patches on 5.19 and test again, just to
-make sure the problem is not somewhere else.
-
-Jose
