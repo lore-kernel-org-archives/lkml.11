@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E75FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F194EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:47:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231732AbiEPMre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54326 "EHLO
+        id S233155AbiEPMrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234272AbiEPMrJ (ORCPT
+        with ESMTP id S234855AbiEPMrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 08:47:09 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9301E38BE1
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:47:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADBB39177
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:47:08 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id C54871F42F4E
+        with ESMTPSA id B8BD01F42F50
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652705225;
-        bh=ALr3bte5ObWK9QXi4TwG41I7mS1thOAooIulWi4FCTA=;
+        s=mail; t=1652705227;
+        bh=rU3HMUqW9dWRUgBD1kOKJz9+OYOFxEoj5qLLiVQ3VwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQGztHSJ2tpk2rKbZFcJL4FE2NxgvoXChGVLXlxO8whXjmjUxTlCD0sDZ1lZPucoh
-         Vcg7uPrFNNgwJyoJFsqMElRod4OvlYhd4sDaSs9Vapj5AsnyUcK1cwzrkewRvPAi0/
-         zVxTesjdnD6dhABiqP51kngmvKzhl1xAq4T1e0gGVC7XrploNqhPULOibH2q9/pdsR
-         rO1FQkfqCIdOOe1NoMFjC6rc5VvpgYwkBWuHd8Ls4Zf8501fHfOD8GFlCBmjut+deQ
-         qev/5NSWDSBOnwwDGlecMlG//eKZVZM3CYQ4K0WcLDtpgxFaCdFLBNksgb4mkBJ31X
-         n0ic5NrBVL0rw==
+        b=UuUqWrd/NaLBeyNWs6OBsad9vy+o0FVY9Y2FKgELcvowSX9hwr5AE/ZgoP6o6Bl2x
+         t9H7zK8cK4MH2ROSyB28un3Lqizky0z+uOlDcH9aRrQVEd7p6eFFjpqoLv1D2+K+jR
+         jl4rWD6Zqec11tb8TcQ8mSCpi8Ooy4cvI7im+zLiSnmnkB+XOfBWbQHD+xZl6rWqzU
+         atJdOBeji2TQ7NNJVlZWCecjyWASFEu/Fkej0up15/n9UfOax1sJOHj94J3PjXq61R
+         o2AeiIMxByFFPxajf/G2YNQVzofoXzoEQ/3Ct8YO4VzotN7iKWzR4hBpUJZGih3Zvd
+         lJO+Ich+NgTBw==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     matthias.bgg@gmail.com
@@ -37,213 +37,186 @@ Cc:     linux-arm-kernel@lists.infradead.org,
         zhiyong.tao@mediatek.com,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3 1/5] soc: mediatek: pwrap: Use readx_poll_timeout() instead of custom function
-Date:   Mon, 16 May 2022 14:46:55 +0200
-Message-Id: <20220516124659.69484-2-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v3 4/5] soc: mediatek: pwrap: Move IO pointers to new structure
+Date:   Mon, 16 May 2022 14:46:58 +0200
+Message-Id: <20220516124659.69484-5-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220516124659.69484-1-angelogioacchino.delregno@collabora.com>
 References: <20220516124659.69484-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Function pwrap_wait_for_state() is a function that polls an address
-through a helper function, but this is the very same operation that
-the readx_poll_timeout macro means to do.
-Convert all instances of calling pwrap_wait_for_state() to instead
-use the read_poll_timeout macro.
+In the PMIC Wrapper driver each PMIC has its own regmap configuration
+and its own pwrap_{read/write}() callbacks, but it's just about either
+a 32 bits vs 16 bits register, and only one of them uses 32bits regs:
+this means that the same ops are assigned over and over again to all
+of the supported PMICs.
+
+It is therefore possible to avoid reassigning the same things over
+and over, reducing the amount of lines, without any impact on human
+readability of this driver: add a pwrap_slv_regops structure and
+move the callbacks and regmap_config pointer in there instead.
+This allows to assign just one pointer to that shared data in the
+per-pmic struct pwrap_slv_type.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 ---
- drivers/soc/mediatek/mtk-pmic-wrap.c | 60 +++++++++++++++-------------
- 1 file changed, 33 insertions(+), 27 deletions(-)
+ drivers/soc/mediatek/mtk-pmic-wrap.c | 61 +++++++++++++++-------------
+ 1 file changed, 32 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
-index bf39a64f3ecc..54a5300ab72b 100644
+index 332cbcabc299..7d02e1d4faf4 100644
 --- a/drivers/soc/mediatek/mtk-pmic-wrap.c
 +++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
-@@ -13,6 +13,9 @@
- #include <linux/regmap.h>
- #include <linux/reset.h>
+@@ -1143,12 +1143,9 @@ enum pwrap_type {
+ };
  
-+#define PWRAP_POLL_DELAY_US	10
-+#define PWRAP_POLL_TIMEOUT_US	10000
+ struct pmic_wrapper;
+-struct pwrap_slv_type {
+-	const u32 *dew_regs;
+-	enum pmic_type type;
 +
- #define PWRAP_MT8135_BRIDGE_IORD_ARB_EN		0x4
- #define PWRAP_MT8135_BRIDGE_WACS3_EN		0x10
- #define PWRAP_MT8135_BRIDGE_INIT_DONE3		0x14
-@@ -1241,27 +1244,14 @@ static bool pwrap_is_fsm_idle_and_sync_idle(struct pmic_wrapper *wrp)
- 		(val & PWRAP_STATE_SYNC_IDLE0);
++struct pwrap_slv_regops {
+ 	const struct regmap_config *regmap;
+-	/* Flags indicating the capability for the target slave */
+-	u32 caps;
+ 	/*
+ 	 * pwrap operations are highly associated with the PMIC types,
+ 	 * so the pointers added increases flexibility allowing determination
+@@ -1158,6 +1155,14 @@ struct pwrap_slv_type {
+ 	int (*pwrap_write)(struct pmic_wrapper *wrp, u32 adr, u32 wdata);
+ };
+ 
++struct pwrap_slv_type {
++	const u32 *dew_regs;
++	enum pmic_type type;
++	const struct pwrap_slv_regops *regops;
++	/* Flags indicating the capability for the target slave */
++	u32 caps;
++};
++
+ struct pmic_wrapper {
+ 	struct device *dev;
+ 	void __iomem *base;
+@@ -1313,7 +1318,7 @@ static int pwrap_read32(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
+ 
+ static int pwrap_read(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
+ {
+-	return wrp->slave->pwrap_read(wrp, adr, rdata);
++	return wrp->slave->regops->pwrap_read(wrp, adr, rdata);
  }
  
--static int pwrap_wait_for_state(struct pmic_wrapper *wrp,
--		bool (*fp)(struct pmic_wrapper *))
--{
--	unsigned long timeout;
--
--	timeout = jiffies + usecs_to_jiffies(10000);
--
--	do {
--		if (time_after(jiffies, timeout))
--			return fp(wrp) ? 0 : -ETIMEDOUT;
--		if (fp(wrp))
--			return 0;
--	} while (1);
--}
--
- static int pwrap_read16(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- {
-+	bool tmp;
- 	int ret;
- 	u32 val;
- 
--	ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle);
-+	ret = readx_poll_timeout(pwrap_is_fsm_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		pwrap_leave_fsm_vldclr(wrp);
- 		return ret;
-@@ -1273,7 +1263,8 @@ static int pwrap_read16(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- 		val = (adr >> 1) << 16;
- 	pwrap_writel(wrp, val, PWRAP_WACS2_CMD);
- 
--	ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_vldclr);
-+	ret = readx_poll_timeout(pwrap_is_fsm_vldclr, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret)
- 		return ret;
- 
-@@ -1290,11 +1281,14 @@ static int pwrap_read16(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- 
- static int pwrap_read32(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- {
-+	bool tmp;
- 	int ret, msb;
- 
- 	*rdata = 0;
- 	for (msb = 0; msb < 2; msb++) {
--		ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle);
-+		ret = readx_poll_timeout(pwrap_is_fsm_idle, wrp, tmp, tmp,
-+					 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
-+
- 		if (ret) {
- 			pwrap_leave_fsm_vldclr(wrp);
- 			return ret;
-@@ -1303,7 +1297,8 @@ static int pwrap_read32(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- 		pwrap_writel(wrp, ((msb << 30) | (adr << 16)),
- 			     PWRAP_WACS2_CMD);
- 
--		ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_vldclr);
-+		ret = readx_poll_timeout(pwrap_is_fsm_vldclr, wrp, tmp, tmp,
-+					 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 		if (ret)
- 			return ret;
- 
-@@ -1323,9 +1318,11 @@ static int pwrap_read(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- 
  static int pwrap_write16(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
+@@ -1372,7 +1377,7 @@ static int pwrap_write32(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
+ 
+ static int pwrap_write(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
  {
-+	bool tmp;
- 	int ret;
+-	return wrp->slave->pwrap_write(wrp, adr, wdata);
++	return wrp->slave->regops->pwrap_write(wrp, adr, wdata);
+ }
  
--	ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle);
-+	ret = readx_poll_timeout(pwrap_is_fsm_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		pwrap_leave_fsm_vldclr(wrp);
- 		return ret;
-@@ -1344,10 +1341,12 @@ static int pwrap_write16(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
+ static int pwrap_regmap_read(void *context, u32 adr, u32 *rdata)
+@@ -1891,69 +1896,67 @@ static const struct regmap_config pwrap_regmap_config32 = {
+ 	.max_register = 0xffff,
+ };
  
- static int pwrap_write32(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
- {
-+	bool tmp;
- 	int ret, msb, rdata;
++static const struct pwrap_slv_regops pwrap_regops16 = {
++	.pwrap_read = pwrap_read16,
++	.pwrap_write = pwrap_write16,
++	.regmap = &pwrap_regmap_config16,
++};
++
++static const struct pwrap_slv_regops pwrap_regops32 = {
++	.pwrap_read = pwrap_read32,
++	.pwrap_write = pwrap_write32,
++	.regmap = &pwrap_regmap_config32,
++};
++
+ static const struct pwrap_slv_type pmic_mt6323 = {
+ 	.dew_regs = mt6323_regs,
+ 	.type = PMIC_MT6323,
+-	.regmap = &pwrap_regmap_config16,
++	.regops = &pwrap_regops16,
+ 	.caps = PWRAP_SLV_CAP_SPI | PWRAP_SLV_CAP_DUALIO |
+ 		PWRAP_SLV_CAP_SECURITY,
+-	.pwrap_read = pwrap_read16,
+-	.pwrap_write = pwrap_write16,
+ };
  
- 	for (msb = 0; msb < 2; msb++) {
--		ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle);
-+		ret = readx_poll_timeout(pwrap_is_fsm_idle, wrp, tmp, tmp,
-+					 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 		if (ret) {
- 			pwrap_leave_fsm_vldclr(wrp);
- 			return ret;
-@@ -1388,6 +1387,7 @@ static int pwrap_regmap_write(void *context, u32 adr, u32 wdata)
+ static const struct pwrap_slv_type pmic_mt6351 = {
+ 	.dew_regs = mt6351_regs,
+ 	.type = PMIC_MT6351,
+-	.regmap = &pwrap_regmap_config16,
++	.regops = &pwrap_regops16,
+ 	.caps = 0,
+-	.pwrap_read = pwrap_read16,
+-	.pwrap_write = pwrap_write16,
+ };
  
- static int pwrap_reset_spislave(struct pmic_wrapper *wrp)
- {
-+	bool tmp;
- 	int ret, i;
+ static const struct pwrap_slv_type pmic_mt6357 = {
+ 	.dew_regs = mt6357_regs,
+ 	.type = PMIC_MT6357,
+-	.regmap = &pwrap_regmap_config16,
++	.regops = &pwrap_regops16,
+ 	.caps = 0,
+-	.pwrap_read = pwrap_read16,
+-	.pwrap_write = pwrap_write16,
+ };
  
- 	pwrap_writel(wrp, 0, PWRAP_HIPRIO_ARB_EN);
-@@ -1407,7 +1407,8 @@ static int pwrap_reset_spislave(struct pmic_wrapper *wrp)
- 		pwrap_writel(wrp, wrp->master->spi_w | PWRAP_MAN_CMD_OP_OUTS,
- 				PWRAP_MAN_CMD);
+ static const struct pwrap_slv_type pmic_mt6358 = {
+ 	.dew_regs = mt6358_regs,
+ 	.type = PMIC_MT6358,
+-	.regmap = &pwrap_regmap_config16,
++	.regops = &pwrap_regops16,
+ 	.caps = PWRAP_SLV_CAP_SPI | PWRAP_SLV_CAP_DUALIO,
+-	.pwrap_read = pwrap_read16,
+-	.pwrap_write = pwrap_write16,
+ };
  
--	ret = pwrap_wait_for_state(wrp, pwrap_is_sync_idle);
-+	ret = readx_poll_timeout(pwrap_is_sync_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev, "%s fail, ret=%d\n", __func__, ret);
- 		return ret;
-@@ -1458,14 +1459,15 @@ static int pwrap_init_sidly(struct pmic_wrapper *wrp)
- static int pwrap_init_dual_io(struct pmic_wrapper *wrp)
- {
- 	int ret;
-+	bool tmp;
- 	u32 rdata;
+ static const struct pwrap_slv_type pmic_mt6359 = {
+ 	.dew_regs = mt6359_regs,
+ 	.type = PMIC_MT6359,
+-	.regmap = &pwrap_regmap_config16,
++	.regops = &pwrap_regops16,
+ 	.caps = PWRAP_SLV_CAP_DUALIO,
+-	.pwrap_read = pwrap_read16,
+-	.pwrap_write = pwrap_write16,
+ };
  
- 	/* Enable dual IO mode */
- 	pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_DIO_EN], 1);
+ static const struct pwrap_slv_type pmic_mt6380 = {
+ 	.dew_regs = NULL,
+ 	.type = PMIC_MT6380,
+-	.regmap = &pwrap_regmap_config32,
++	.regops = &pwrap_regops32,
+ 	.caps = 0,
+-	.pwrap_read = pwrap_read32,
+-	.pwrap_write = pwrap_write32,
+ };
  
- 	/* Check IDLE & INIT_DONE in advance */
--	ret = pwrap_wait_for_state(wrp,
--				   pwrap_is_fsm_idle_and_sync_idle);
-+	ret = readx_poll_timeout(pwrap_is_fsm_idle_and_sync_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev, "%s fail, ret=%d\n", __func__, ret);
- 		return ret;
-@@ -1570,6 +1572,7 @@ static bool pwrap_is_pmic_cipher_ready(struct pmic_wrapper *wrp)
- static int pwrap_init_cipher(struct pmic_wrapper *wrp)
- {
- 	int ret;
-+	bool tmp;
- 	u32 rdata = 0;
+ static const struct pwrap_slv_type pmic_mt6397 = {
+ 	.dew_regs = mt6397_regs,
+ 	.type = PMIC_MT6397,
+-	.regmap = &pwrap_regmap_config16,
++	.regops = &pwrap_regops16,
+ 	.caps = PWRAP_SLV_CAP_SPI | PWRAP_SLV_CAP_DUALIO |
+ 		PWRAP_SLV_CAP_SECURITY,
+-	.pwrap_read = pwrap_read16,
+-	.pwrap_write = pwrap_write16,
+ };
  
- 	pwrap_writel(wrp, 0x1, PWRAP_CIPHER_SWRST);
-@@ -1624,14 +1627,16 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
- 	}
+ static const struct of_device_id of_slave_match_tbl[] = {
+@@ -2326,7 +2329,7 @@ static int pwrap_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_out2;
  
- 	/* wait for cipher data ready@AP */
--	ret = pwrap_wait_for_state(wrp, pwrap_is_cipher_ready);
-+	ret = readx_poll_timeout(pwrap_is_cipher_ready, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev, "cipher data ready@AP fail, ret=%d\n", ret);
- 		return ret;
- 	}
- 
- 	/* wait for cipher data ready@PMIC */
--	ret = pwrap_wait_for_state(wrp, pwrap_is_pmic_cipher_ready);
-+	ret = readx_poll_timeout(pwrap_is_pmic_cipher_ready, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev,
- 			"timeout waiting for cipher data ready@PMIC\n");
-@@ -1640,7 +1645,8 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
- 
- 	/* wait for cipher mode idle */
- 	pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_CIPHER_MODE], 0x1);
--	ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle_and_sync_idle);
-+	ret = readx_poll_timeout(pwrap_is_fsm_idle_and_sync_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev, "cipher mode idle fail, ret=%d\n", ret);
- 		return ret;
+-	wrp->regmap = devm_regmap_init(wrp->dev, NULL, wrp, wrp->slave->regmap);
++	wrp->regmap = devm_regmap_init(wrp->dev, NULL, wrp, wrp->slave->regops->regmap);
+ 	if (IS_ERR(wrp->regmap)) {
+ 		ret = PTR_ERR(wrp->regmap);
+ 		goto err_out2;
 -- 
 2.35.1
 
