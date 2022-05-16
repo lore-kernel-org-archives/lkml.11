@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E516C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8870DC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346772AbiEPTzt (ORCPT
+        id S1346894AbiEPT4J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33106 "EHLO
+        Mon, 16 May 2022 15:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346867AbiEPTv2 (ORCPT
+        with ESMTP id S1346854AbiEPTv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:51:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FE444A1E;
-        Mon, 16 May 2022 12:45:57 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252EF40930;
+        Mon, 16 May 2022 12:45:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6D5361596;
-        Mon, 16 May 2022 19:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0354BC34100;
-        Mon, 16 May 2022 19:45:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C195DB815F6;
+        Mon, 16 May 2022 19:45:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30AD7C34100;
+        Mon, 16 May 2022 19:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730356;
-        bh=4bf/UsuSgVW7vJNOHxwczts9LNMMkWBw0O6Z5qy8XRo=;
+        s=korg; t=1652730353;
+        bh=dqGJrAtPidqdAuURN3Fc4hrf77CRMjagVDGDWlQjCsM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=otu145GOJM6twhz8/Z1zeEPoDwos9H5zQyi3DEvirtqMFm4uzX+C7udy/87GjWyTN
-         JNEUGmeJdEZZK8IXwc4Ycjj2GcIE/v8W08Y+4nRUgg/533hrEW0UTjDYnbVR1fuIi6
-         mXsW/oZiRQU3NxmnR6FJ6/7JMw61nwbcstwgYHoY=
+        b=BvlbMmheiw3W2l4DqzBNbdC3tGFrqTyY7On4BYdYJR93/vzMFEChY+AnTX7t43jOi
+         efCZwgE7RH3yjEDh5chrKA1Ag4ulh6sHBSLP0Xa9zryubPOxqlxToR4xYTkOiqcLxR
+         MEBowVcndNwqVbIAqIItjxeN9a3Ik/W7suwo3tkc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH 5.10 40/66] tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
-Date:   Mon, 16 May 2022 21:36:40 +0200
-Message-Id: <20220516193620.574237944@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 31/66] hwmon: (f71882fg) Fix negative temperature
+Date:   Mon, 16 May 2022 21:36:31 +0200
+Message-Id: <20220516193620.315967122@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -49,40 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Ji-Ze Hong (Peter Hong) <hpeter@gmail.com>
 
-commit 447ee1516f19f534a228dda237eddb202f23e163 upstream.
+[ Upstream commit 4aaaaf0f279836f06d3b9d0ffeec7a1e1a04ceef ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+All temperature of Fintek superio hwmonitor that using 1-byte reg will use
+2's complement.
 
-Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Baruch Siach <baruch@tkos.co.il>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220505124621.1592697-1-yangyingliang@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In show_temp()
+	temp = data->temp[nr] * 1000;
+
+When data->temp[nr] read as 255, it indicate -1C, but this code will report
+255C to userspace. It'll be ok when change to:
+	temp = ((s8)data->temp[nr]) * 1000;
+
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+Link: https://lore.kernel.org/r/20220418090706.6339-1-hpeter+linux_kernel@gmail.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/digicolor-usart.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/hwmon/f71882fg.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -471,11 +471,10 @@ static int digicolor_uart_probe(struct p
- 	if (IS_ERR(uart_clk))
- 		return PTR_ERR(uart_clk);
+diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
+index 4dec793fd07d..94b35723ee7a 100644
+--- a/drivers/hwmon/f71882fg.c
++++ b/drivers/hwmon/f71882fg.c
+@@ -1577,8 +1577,9 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
+ 		temp *= 125;
+ 		if (sign)
+ 			temp -= 128000;
+-	} else
+-		temp = data->temp[nr] * 1000;
++	} else {
++		temp = ((s8)data->temp[nr]) * 1000;
++	}
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	dp->port.mapbase = res->start;
--	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
-+	dp->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(dp->port.membase))
- 		return PTR_ERR(dp->port.membase);
-+	dp->port.mapbase = res->start;
- 
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0)
+ 	return sprintf(buf, "%d\n", temp);
+ }
+-- 
+2.35.1
+
 
 
