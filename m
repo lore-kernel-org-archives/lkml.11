@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CDE1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83E5C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349272AbiEPUcS (ORCPT
+        id S1349472AbiEPUc0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
+        Mon, 16 May 2022 16:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351035AbiEPUB4 (ORCPT
+        with ESMTP id S1351027AbiEPUB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A536947556;
-        Mon, 16 May 2022 12:57:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A633F4755A;
+        Mon, 16 May 2022 12:56:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66548B81611;
-        Mon, 16 May 2022 19:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0D7C385AA;
-        Mon, 16 May 2022 19:56:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 407B960A50;
+        Mon, 16 May 2022 19:56:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39BA9C385AA;
+        Mon, 16 May 2022 19:56:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731019;
-        bh=dnvnD4wOYv/W41vvkBX2ig3zfn3cZ3W/OKvfDpWC2js=;
+        s=korg; t=1652731003;
+        bh=piennx7MVGXwLZLl+LxhpdRLDGUtTDyOZL9IGWdufG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aSIbHBXpwTW7M/UCLoxVCD5X4tSBfguv77s23zQO0oB9BH0f7tHcIqGfXoNvhbMk8
-         JTYqdHS7ZxoNRPW1rq0T+Na3rw3ze3pWSSBQevyq9F32kHLgcvcIy30zyszicc2/4a
-         zBF2BhEqN1TOcrLvafzXRKtcNSRYIPSRck00DeVM=
+        b=cBMY1TC9eUWm6iopozjzioAzXaRMd1miNFdmS5FClZ1X4xWWgWr6s/PhK1taLNS15
+         OnCEyDn5P+sd5rrW195aL5PG8AjU9SA7Y60wNIyDUWokEJQFu2xgdm6ScTSFPfbydI
+         e/y8xLUi5xlJ6zY4BFzzJTGmzFmT3gSkuJaK6hS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.17 077/114] tty: n_gsm: fix mux activation issues in gsm_config()
-Date:   Mon, 16 May 2022 21:36:51 +0200
-Message-Id: <20220516193627.697618705@linuxfoundation.org>
+        stable@vger.kernel.org, Matt Evans <matt@ozlabs.org>,
+        Alexander Graf <graf@amazon.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.17 072/114] KVM: PPC: Book3S PR: Enable MSR_DR for switch_mmu_context()
+Date:   Mon, 16 May 2022 21:36:46 +0200
+Message-Id: <20220516193627.558495278@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -48,60 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Alexander Graf <graf@amazon.com>
 
-commit edd5f60c340086891fab094ad61270d6c80f9ca4 upstream.
+commit ee8348496c77e3737d0a6cda307a521f2cff954f upstream.
 
-The current implementation activates the mux if it was restarted and opens
-the control channel if the mux was previously closed and we are now acting
-as initiator instead of responder, which is the default setting.
-This has two issues.
-1) No mux is activated if we keep all default values and only switch to
-initiator. The control channel is not allocated but will be opened next
-which results in a NULL pointer dereference.
-2) Switching the configuration after it was once configured while keeping
-the initiator value the same will not reopen the control channel if it was
-closed due to parameter incompatibilities. The mux remains dead.
+Commit 863771a28e27 ("powerpc/32s: Convert switch_mmu_context() to C")
+moved the switch_mmu_context() to C. While in principle a good idea, it
+meant that the function now uses the stack. The stack is not accessible
+from real mode though.
 
-Fix 1) by always activating the mux if it is dead after configuration.
-Fix 2) by always opening the control channel after mux activation.
+So to keep calling the function, let's turn on MSR_DR while we call it.
+That way, all pointer references to the stack are handled virtually.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220504081733.3494-2-daniel.starke@siemens.com
+In addition, make sure to save/restore r12 on the stack, as it may get
+clobbered by the C function.
+
+Fixes: 863771a28e27 ("powerpc/32s: Convert switch_mmu_context() to C")
+Cc: stable@vger.kernel.org # v5.14+
+Reported-by: Matt Evans <matt@ozlabs.org>
+Signed-off-by: Alexander Graf <graf@amazon.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220510123717.24508-1-graf@amazon.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ arch/powerpc/kvm/book3s_32_sr.S |   26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2352,6 +2352,7 @@ static void gsm_copy_config_values(struc
+--- a/arch/powerpc/kvm/book3s_32_sr.S
++++ b/arch/powerpc/kvm/book3s_32_sr.S
+@@ -122,11 +122,27 @@
  
- static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- {
-+	int ret = 0;
- 	int need_close = 0;
- 	int need_restart = 0;
+ 	/* 0x0 - 0xb */
  
-@@ -2419,10 +2420,13 @@ static int gsm_config(struct gsm_mux *gs
- 	 * FIXME: We need to separate activation/deactivation from adding
- 	 * and removing from the mux array
- 	 */
--	if (need_restart)
--		gsm_activate_mux(gsm);
--	if (gsm->initiator && need_close)
--		gsm_dlci_begin_open(gsm->dlci[0]);
-+	if (gsm->dead) {
-+		ret = gsm_activate_mux(gsm);
-+		if (ret)
-+			return ret;
-+		if (gsm->initiator)
-+			gsm_dlci_begin_open(gsm->dlci[0]);
-+	}
- 	return 0;
- }
+-	/* 'current->mm' needs to be in r4 */
+-	tophys(r4, r2)
+-	lwz	r4, MM(r4)
+-	tophys(r4, r4)
+-	/* This only clobbers r0, r3, r4 and r5 */
++	/* switch_mmu_context() needs paging, let's enable it */
++	mfmsr   r9
++	ori     r11, r9, MSR_DR
++	mtmsr   r11
++	sync
++
++	/* switch_mmu_context() clobbers r12, rescue it */
++	SAVE_GPR(12, r1)
++
++	/* Calling switch_mmu_context(<inv>, current->mm, <inv>); */
++	lwz	r4, MM(r2)
+ 	bl	switch_mmu_context
  
++	/* restore r12 */
++	REST_GPR(12, r1)
++
++	/* Disable paging again */
++	mfmsr   r9
++	li      r6, MSR_DR
++	andc    r9, r9, r6
++	mtmsr	r9
++	sync
++
+ .endm
 
 
