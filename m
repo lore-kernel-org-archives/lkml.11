@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 920C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB66C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243003AbiEPUKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44148 "EHLO
+        id S239473AbiEPUKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346941AbiEPT4U (ORCPT
+        with ESMTP id S1347094AbiEPT4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:56:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E22947ACE;
-        Mon, 16 May 2022 12:49:21 -0700 (PDT)
+        Mon, 16 May 2022 15:56:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF364831A;
+        Mon, 16 May 2022 12:49:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8993560ABE;
-        Mon, 16 May 2022 19:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C44CC385AA;
-        Mon, 16 May 2022 19:49:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D2DA60AC3;
+        Mon, 16 May 2022 19:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6590C385AA;
+        Mon, 16 May 2022 19:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730559;
-        bh=GZmT6UyDgzYGY7TSs0kpvPrztQ8Bwwl5DZCnoBnMDac=;
+        s=korg; t=1652730562;
+        bh=gYuOSwOplNOZ86rx3lwd6aBtKMyJJ7fBekEVduqVy0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dwk3n0bOcPT1ibDGtrMYlHyWevz3Pxj4OTFN7NoAnvFwjefN0LByX6AZ3JGWQJNB5
-         8fSUQqzQlpf9Sv/wTR3JFl5CjOeqKD+zGevT+FLMM2jFBgszuzAn9FpL3nOeF0GdTW
-         iFMaSDYBOWYsVHmBymc4qaAXC4uv5R8Pedv9FI3M=
+        b=SJqYpIpCb7/wD1Wryg+ZOXC5ZIcgqc42Poyx+31zkTO29zS9hJQQxT43xRWBYa4lb
+         Usw5DRYCO7rVvlR9vDNJVPIPBMwUOlFYt571BJYhonvWE+uYRoA3ebJWCcZAN8Jj6/
+         clUDFece5KaBA2np0L9pxmW3JU0VtWqTSKfga1yQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 037/102] net: bcmgenet: Check for Wake-on-LAN interrupt probe deferral
-Date:   Mon, 16 May 2022 21:36:11 +0200
-Message-Id: <20220516193625.065740411@linuxfoundation.org>
+Subject: [PATCH 5.15 011/102] fbdev: efifb: Cleanup fb_info in .fb_destroy rather than .remove
+Date:   Mon, 16 May 2022 21:35:45 +0200
+Message-Id: <20220516193624.319357282@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -50,42 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-[ Upstream commit 6b77c06655b8a749c1a3d9ebc51e9717003f7e5a ]
+[ Upstream commit d258d00fb9c7c0cdf9d10c1ded84f10339d2d349 ]
 
-The interrupt controller supplying the Wake-on-LAN interrupt line maybe
-modular on some platforms (irq-bcm7038-l1.c) and might be probed at a
-later time than the GENET driver. We need to specifically check for
--EPROBE_DEFER and propagate that error to ensure that we eventually
-fetch the interrupt descriptor.
+The driver is calling framebuffer_release() in its .remove callback, but
+this will cause the struct fb_info to be freed too early. Since it could
+be that a reference is still hold to it if user-space opened the fbdev.
 
-Fixes: 9deb48b53e7f ("bcmgenet: add WOL IRQ check")
-Fixes: 5b1f0e62941b ("net: bcmgenet: Avoid touching non-existent interrupt")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Stefan Wahren <stefan.wahren@i2se.com>
-Link: https://lore.kernel.org/r/20220511031752.2245566-1-f.fainelli@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+This would lead to a use-after-free error if the framebuffer device was
+unregistered but later a user-space process tries to close the fbdev fd.
+
+To prevent this, move the framebuffer_release() call to fb_ops.fb_destroy
+instead of doing it in the driver's .remove callback.
+
+Strictly speaking, the code flow in the driver is still wrong because all
+the hardware cleanupd (i.e: iounmap) should be done in .remove while the
+software cleanup (i.e: releasing the framebuffer) should be done in the
+.fb_destroy handler. But this at least makes to match the behavior before
+commit 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal").
+
+Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220505220540.366218-1-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/video/fbdev/efifb.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 8bcc39b1575c..ea1391753752 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -3950,6 +3950,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
- 		goto err;
- 	}
- 	priv->wol_irq = platform_get_irq_optional(pdev, 2);
-+	if (priv->wol_irq == -EPROBE_DEFER) {
-+		err = priv->wol_irq;
-+		goto err;
-+	}
+diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
+index ea42ba6445b2..cfa3dc0b4eee 100644
+--- a/drivers/video/fbdev/efifb.c
++++ b/drivers/video/fbdev/efifb.c
+@@ -243,6 +243,10 @@ static void efifb_show_boot_graphics(struct fb_info *info)
+ static inline void efifb_show_boot_graphics(struct fb_info *info) {}
+ #endif
  
- 	priv->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(priv->base)) {
++/*
++ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
++ * of unregister_framebuffer() or fb_release(). Do any cleanup here.
++ */
+ static void efifb_destroy(struct fb_info *info)
+ {
+ 	if (efifb_pci_dev)
+@@ -254,6 +258,9 @@ static void efifb_destroy(struct fb_info *info)
+ 		else
+ 			memunmap(info->screen_base);
+ 	}
++
++	framebuffer_release(info);
++
+ 	if (request_mem_succeeded)
+ 		release_mem_region(info->apertures->ranges[0].base,
+ 				   info->apertures->ranges[0].size);
+@@ -620,9 +627,9 @@ static int efifb_remove(struct platform_device *pdev)
+ {
+ 	struct fb_info *info = platform_get_drvdata(pdev);
+ 
++	/* efifb_destroy takes care of info cleanup */
+ 	unregister_framebuffer(info);
+ 	sysfs_remove_groups(&pdev->dev.kobj, efifb_groups);
+-	framebuffer_release(info);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
