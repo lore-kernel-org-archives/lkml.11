@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92F4FC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4930FC3527D
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347057AbiEPUF4 (ORCPT
+        id S1347522AbiEPUGJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
+        Mon, 16 May 2022 16:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347052AbiEPTvg (ORCPT
+        with ESMTP id S1347051AbiEPTvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:51:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CEE83FBDB;
-        Mon, 16 May 2022 12:47:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FABC396;
+        Mon, 16 May 2022 12:46:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD5D2B81609;
-        Mon, 16 May 2022 19:47:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10B61C385AA;
-        Mon, 16 May 2022 19:47:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B1B16090A;
+        Mon, 16 May 2022 19:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B823EC34100;
+        Mon, 16 May 2022 19:46:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730421;
-        bh=eBC7r2zEJsCISV5SGvi7yf/yurad+4tTdXFlbCsj+X4=;
+        s=korg; t=1652730415;
+        bh=LzEXUYiiWBvZ1HSbHjZP/HaeYKzIK/cqGI29QFgkIcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pzeckpypn3Gnx+INIqDTffEMXWwUq/dttW8kQeMpi1DQJ8a2cMFTv7r2fIHGsox96
-         w69xBNxM8ING9TrHxfYYGAtSx8ia4zoDCu37ZPURueqJFnZ7rCY/izwbAYTqq3KC4C
-         s1meh+ywKGur+yRhw5m5ZqpymZ4beLfhs6YJqKuI=
+        b=KwWts5kM8Uj8CgWJxy29iR8oZYlM2WhiNLrZ0a5JwkY6yOTy0W9Kd/yLNLxJjsKmi
+         XR9IyziSATHhTCivrG/ReGz5czqqBSV22APg4to1bsldPZ2KbJUV981xYhmXjKB6Lk
+         81FpG/zUthFw9Xet4/pzbl7BxLRf6pwChB1a3lho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 33/66] ASoC: max98090: Generate notifications on changes for custom control
-Date:   Mon, 16 May 2022 21:36:33 +0200
-Message-Id: <20220516193620.373895707@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Meena Shanmugam <meenashanmugam@google.com>
+Subject: [PATCH 5.10 58/66] SUNRPC: Clean up scheduling of autoclose
+Date:   Mon, 16 May 2022 21:36:58 +0200
+Message-Id: <20220516193621.089029920@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -49,37 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 13fcf676d9e102594effc686d98521ff5c90b925 ]
+commit e26d9972720e2484f44cdd94ca4e31cc372ed2ed upstream.
 
-The max98090 driver has some custom controls which share a put() function
-which returns 0 unconditionally, meaning that events are not generated
-when the value changes. Fix that.
+Consolidate duplicated code in xprt_force_disconnect() and
+xprt_conditional_disconnect().
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220420193454.2647908-2-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Meena Shanmugam <meenashanmugam@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/max98090.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/xprt.c |   28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index 779845e3a9e3..5b6405392f08 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -430,7 +430,7 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
- 		mask << mc->shift,
- 		sel << mc->shift);
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -732,6 +732,20 @@ void xprt_disconnect_done(struct rpc_xpr
+ EXPORT_SYMBOL_GPL(xprt_disconnect_done);
  
--	return 0;
-+	return *select != val;
+ /**
++ * xprt_schedule_autoclose_locked - Try to schedule an autoclose RPC call
++ * @xprt: transport to disconnect
++ */
++static void xprt_schedule_autoclose_locked(struct rpc_xprt *xprt)
++{
++	set_bit(XPRT_CLOSE_WAIT, &xprt->state);
++	if (test_and_set_bit(XPRT_LOCKED, &xprt->state) == 0)
++		queue_work(xprtiod_workqueue, &xprt->task_cleanup);
++	else if (xprt->snd_task && !test_bit(XPRT_SND_IS_COOKIE, &xprt->state))
++		rpc_wake_up_queued_task_set_status(&xprt->pending,
++						   xprt->snd_task, -ENOTCONN);
++}
++
++/**
+  * xprt_force_disconnect - force a transport to disconnect
+  * @xprt: transport to disconnect
+  *
+@@ -742,13 +756,7 @@ void xprt_force_disconnect(struct rpc_xp
+ 
+ 	/* Don't race with the test_bit() in xprt_clear_locked() */
+ 	spin_lock(&xprt->transport_lock);
+-	set_bit(XPRT_CLOSE_WAIT, &xprt->state);
+-	/* Try to schedule an autoclose RPC call */
+-	if (test_and_set_bit(XPRT_LOCKED, &xprt->state) == 0)
+-		queue_work(xprtiod_workqueue, &xprt->task_cleanup);
+-	else if (xprt->snd_task && !test_bit(XPRT_SND_IS_COOKIE, &xprt->state))
+-		rpc_wake_up_queued_task_set_status(&xprt->pending,
+-						   xprt->snd_task, -ENOTCONN);
++	xprt_schedule_autoclose_locked(xprt);
+ 	spin_unlock(&xprt->transport_lock);
  }
- 
- static const char *max98090_perf_pwr_text[] =
--- 
-2.35.1
-
+ EXPORT_SYMBOL_GPL(xprt_force_disconnect);
+@@ -788,11 +796,7 @@ void xprt_conditional_disconnect(struct
+ 		goto out;
+ 	if (test_bit(XPRT_CLOSING, &xprt->state))
+ 		goto out;
+-	set_bit(XPRT_CLOSE_WAIT, &xprt->state);
+-	/* Try to schedule an autoclose RPC call */
+-	if (test_and_set_bit(XPRT_LOCKED, &xprt->state) == 0)
+-		queue_work(xprtiod_workqueue, &xprt->task_cleanup);
+-	xprt_wake_pending_tasks(xprt, -EAGAIN);
++	xprt_schedule_autoclose_locked(xprt);
+ out:
+ 	spin_unlock(&xprt->transport_lock);
+ }
 
 
