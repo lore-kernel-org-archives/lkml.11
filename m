@@ -2,349 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 399A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22FA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243892AbiEPNRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39100 "EHLO
+        id S238909AbiEPNUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243901AbiEPNRm (ORCPT
+        with ESMTP id S232120AbiEPNUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:17:42 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253983A5FC
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:17:31 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id m12so14412272plb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:17:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yNLH3g4oey3zSyxe+H2t8uP9EGdvCmwPMhX5Etl/GJY=;
-        b=bgkcSbE/jBQG8HN5gGcom2Ik6rP6OVJC4RgHkF7II5JVJiPATV/HQmgqNfKHLF4Dkx
-         QJn+cchJ205TcH/0sbKhn5diZ7r9Qbzw7JwurPgcIGj1Oc4sFdJmScHL9xvimbVscmyh
-         VqEIg97hB9V0JlfNCyw7kfa5cSRFAM64yibQvhdFCaSEg/buIgf3mKqf/IEFoI64ygO6
-         zW8YuN0/Rk/Kva310hsf0HOkYqfs8c2G1yIkAIuNqRal2AeCW9C11ZXNUpp5WplhlrB2
-         LXzARbhUnbEpx8+euVtpVFAd8rp2Qz357/cvuBjkqGz3ZfQQcxh6h6CtjNhkxM8KEht5
-         JEUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yNLH3g4oey3zSyxe+H2t8uP9EGdvCmwPMhX5Etl/GJY=;
-        b=AbCefHk5BEwvfqpwG+VJD83JsVegNY5TClsv8B73bLm8L3/D+/cJFnHFvlms3VG422
-         4heOK0A6QeFXVD3Eh/Fn+7gOamEioX0cno4A8pFRY2Es4MWOAz/A5OcAdR1osjLukF2T
-         DoETIMibMXhUM1ySrDrPwvCvuj8zWMbLPaAneEQEpuBg0NpEGqB6iVE5LRJfc6Wtft+6
-         KHz4jscZBkW25FBkYjm0biReTjwPuEiE8eKVj0egkthMjNTzshT5Uz5ni+8wLbozTEtp
-         DDTg8DpHzbOC66Iknrnd+ussPMQGN/ldJZyeHHGLGho8J+wFZnAHM4bkAfy48Cjhdeom
-         3I4w==
-X-Gm-Message-State: AOAM533XD8IsUDcbRY4aOQ5iS8CIxaaVvkH7GolIbg3yaB3wgIFPFQ5v
-        6aUJNBHcvTL09vyGdULjaudWU2U48GM=
-X-Google-Smtp-Source: ABdhPJwd4yznxcfDwX53COSduv50H7QUd0+1h/DL78zPEmBWOIdRQ8vYCvjr7Z+rAZDtkvRpUHhkRg==
-X-Received: by 2002:a17:903:2042:b0:161:53e9:c7b7 with SMTP id q2-20020a170903204200b0016153e9c7b7mr10510701pla.122.1652707050974;
-        Mon, 16 May 2022 06:17:30 -0700 (PDT)
-Received: from localhost ([47.251.4.198])
-        by smtp.gmail.com with ESMTPSA id s17-20020a17090302d100b0015e8d4eb243sm7006029plk.141.2022.05.16.06.17.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 16 May 2022 06:17:30 -0700 (PDT)
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>
-Subject: [PATCH V2 7/7] x86/entry: Implement the whole error_entry() as C code
-Date:   Mon, 16 May 2022 21:17:38 +0800
-Message-Id: <20220516131739.521817-8-jiangshanlai@gmail.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
-In-Reply-To: <20220516131739.521817-1-jiangshanlai@gmail.com>
-References: <20220516131739.521817-1-jiangshanlai@gmail.com>
+        Mon, 16 May 2022 09:20:48 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215E93AA
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:20:45 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L20Gx4KJKzhZ14;
+        Mon, 16 May 2022 21:20:09 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 21:20:43 +0800
+Received: from mdc.huawei.com (10.175.112.208) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 21:20:42 +0800
+From:   Chen Jun <chenjun102@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <zhangshaokun@hisilicon.com>, <will@kernel.org>,
+        <mark.rutland@arm.com>
+CC:     <xuqiang36@huawei.com>
+Subject: [PATCH 1/1] perf: hisi: Extract hisi_pmu_init
+Date:   Mon, 16 May 2022 13:16:01 +0000
+Message-ID: <20220516131601.48383-1-chenjun102@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Extract the initialization code of hisi_pmu->pmu into a function
 
-Implement error_entry() as C code in arch/x86/entry/entry64.c and
-replace the ASM version of error_entry().
-
-The code might be in the user CR3 and user GS base at the start of
-the function so it calls __always_inline C function only until the GS
-and CR3 is switched.
-
-No functional change intended and comments are also copied.
-
-The C version generally has better readability and easier to be
-updated/improved.
-
-Note:
-To avoid using goto, the C code has two call sites of sync_regs().
-It calls sync_regs() directly after fixup_bad_iret() returns while the
-ASM code uses JMP instruction to jump to the start of the first call
-site.
-
-The complier uses tail-call-optimization for calling sync_regs().  It
-uses "JMP sync_regs" while the ASM code uses "CALL+RET".
-
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
 ---
- arch/x86/entry/entry64.c     | 69 +++++++++++++++++++++++++++++
- arch/x86/entry/entry_64.S    | 85 ++----------------------------------
- arch/x86/include/asm/proto.h |  1 +
- arch/x86/include/asm/traps.h |  1 +
- arch/x86/kernel/traps.c      |  2 -
- 5 files changed, 74 insertions(+), 84 deletions(-)
+ drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c | 16 +---------------
+ drivers/perf/hisilicon/hisi_uncore_hha_pmu.c  | 16 +---------------
+ drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c  | 16 +---------------
+ drivers/perf/hisilicon/hisi_uncore_pa_pmu.c   | 16 +---------------
+ drivers/perf/hisilicon/hisi_uncore_pmu.c      | 18 ++++++++++++++++++
+ drivers/perf/hisilicon/hisi_uncore_pmu.h      |  2 ++
+ drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c | 15 +--------------
+ 7 files changed, 25 insertions(+), 74 deletions(-)
 
-diff --git a/arch/x86/entry/entry64.c b/arch/x86/entry/entry64.c
-index f7f23800cee4..bd047c329622 100644
---- a/arch/x86/entry/entry64.c
-+++ b/arch/x86/entry/entry64.c
-@@ -13,6 +13,8 @@
-  */
- #include <asm/traps.h>
+diff --git a/drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c b/drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c
+index 62299ab5a9be..50d0c0a2f1fe 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c
+@@ -516,21 +516,7 @@ static int hisi_ddrc_pmu_probe(struct platform_device *pdev)
+ 				      "hisi_sccl%u_ddrc%u", ddrc_pmu->sccl_id,
+ 				      ddrc_pmu->index_id);
  
-+extern unsigned char asm_load_gs_index_gs_change[];
-+
- #ifdef CONFIG_PAGE_TABLE_ISOLATION
- static __always_inline void pti_switch_to_kernel_cr3(unsigned long user_cr3)
- {
-@@ -66,3 +68,70 @@ static __always_inline void user_entry_swapgs_and_fence(void)
- 	native_swapgs();
- 	fence_swapgs_user_entry();
- }
-+
-+/*
-+ * Put pt_regs onto the task stack and switch GS and CR3 if needed.
-+ * The actual stack switch is done in entry_64.S.
-+ *
-+ * Be careful, it might be in the user CR3 and user GS base at the start
-+ * of the function.
-+ */
-+asmlinkage __visible __entry_text
-+struct pt_regs *error_entry(struct pt_regs *eregs)
-+{
-+	unsigned long iret_ip = (unsigned long)native_irq_return_iret;
-+
-+	if (user_mode(eregs)) {
-+		/*
-+		 * We entered from user mode.
-+		 * Switch to kernel gsbase and CR3.
-+		 */
-+		user_entry_swapgs_and_fence();
-+		switch_to_kernel_cr3();
-+
-+		/* Put pt_regs onto the task stack. */
-+		return sync_regs(eregs);
-+	}
-+
-+	/*
-+	 * There are two places in the kernel that can potentially fault with
-+	 * usergs. Handle them here.  B stepping K8s sometimes report a
-+	 * truncated RIP for IRET exceptions returning to compat mode. Check
-+	 * for these here too.
-+	 */
-+	if ((eregs->ip == iret_ip) || (eregs->ip == (unsigned int)iret_ip)) {
-+		eregs->ip = iret_ip; /* Fix truncated RIP */
-+
-+		/*
-+		 * We came from an IRET to user mode, so we have user
-+		 * gsbase and CR3.  Switch to kernel gsbase and CR3:
-+		 */
-+		user_entry_swapgs_and_fence();
-+		switch_to_kernel_cr3();
-+
-+		/*
-+		 * Pretend that the exception came from user mode: set up
-+		 * pt_regs as if we faulted immediately after IRET and then
-+		 * put pt_regs onto the real task stack.
-+		 */
-+		return sync_regs(fixup_bad_iret(eregs));
-+	}
-+
-+	/*
-+	 * Hack: asm_load_gs_index_gs_change can fail with user gsbase.
-+	 * If this happens, fix up gsbase and proceed.  We'll fix up the
-+	 * exception and land in asm_load_gs_index_gs_change's error
-+	 * handler with kernel gsbase.
-+	 */
-+	if (eregs->ip == (unsigned long)asm_load_gs_index_gs_change)
-+		native_swapgs();
-+
-+	/*
-+	 * Issue an LFENCE to prevent GS speculation, regardless of whether
-+	 * it is a kernel or user gsbase.
-+	 */
-+	fence_swapgs_kernel_entry();
-+
-+	/* Enter from kernel, don't move pt_regs */
-+	return eregs;
-+}
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 3a1e3f215617..b678189b029e 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -343,7 +343,7 @@ SYM_CODE_END(push_and_clear_regs)
- 	 * own pvops for IRET and load_gs_index().  And it doesn't need to
- 	 * switch the CR3.  So it can skip invoking error_entry().
+-	ddrc_pmu->pmu = (struct pmu) {
+-		.name		= name,
+-		.module		= THIS_MODULE,
+-		.task_ctx_nr	= perf_invalid_context,
+-		.event_init	= hisi_uncore_pmu_event_init,
+-		.pmu_enable	= hisi_uncore_pmu_enable,
+-		.pmu_disable	= hisi_uncore_pmu_disable,
+-		.add		= hisi_uncore_pmu_add,
+-		.del		= hisi_uncore_pmu_del,
+-		.start		= hisi_uncore_pmu_start,
+-		.stop		= hisi_uncore_pmu_stop,
+-		.read		= hisi_uncore_pmu_read,
+-		.attr_groups	= ddrc_pmu->pmu_events.attr_groups,
+-		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+-	};
++	hisi_pmu_init(&ddrc_pmu->pmu, name, ddrc_pmu->pmu_events.attr_groups, THIS_MODULE);
+ 
+ 	ret = perf_pmu_register(&ddrc_pmu->pmu, name, -1);
+ 	if (ret) {
+diff --git a/drivers/perf/hisilicon/hisi_uncore_hha_pmu.c b/drivers/perf/hisilicon/hisi_uncore_hha_pmu.c
+index 393513150106..13017b3412a5 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_hha_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_hha_pmu.c
+@@ -519,21 +519,7 @@ static int hisi_hha_pmu_probe(struct platform_device *pdev)
+ 
+ 	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sccl%u_hha%u",
+ 			      hha_pmu->sccl_id, hha_pmu->index_id);
+-	hha_pmu->pmu = (struct pmu) {
+-		.name		= name,
+-		.module		= THIS_MODULE,
+-		.task_ctx_nr	= perf_invalid_context,
+-		.event_init	= hisi_uncore_pmu_event_init,
+-		.pmu_enable	= hisi_uncore_pmu_enable,
+-		.pmu_disable	= hisi_uncore_pmu_disable,
+-		.add		= hisi_uncore_pmu_add,
+-		.del		= hisi_uncore_pmu_del,
+-		.start		= hisi_uncore_pmu_start,
+-		.stop		= hisi_uncore_pmu_stop,
+-		.read		= hisi_uncore_pmu_read,
+-		.attr_groups	= hha_pmu->pmu_events.attr_groups,
+-		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+-	};
++	hisi_pmu_init(&hha_pmu->pmu, name, hha_pmu->pmu_events.attr_groups, THIS_MODULE);
+ 
+ 	ret = perf_pmu_register(&hha_pmu->pmu, name, -1);
+ 	if (ret) {
+diff --git a/drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c b/drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c
+index 560ab964c8b5..2995f3630d49 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c
+@@ -557,21 +557,7 @@ static int hisi_l3c_pmu_probe(struct platform_device *pdev)
  	 */
--	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
-+	ALTERNATIVE "movq %rsp, %rdi; call error_entry; movq %rax, %rsp", \
- 		"", X86_FEATURE_XENPV
+ 	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sccl%u_l3c%u",
+ 			      l3c_pmu->sccl_id, l3c_pmu->ccl_id);
+-	l3c_pmu->pmu = (struct pmu) {
+-		.name		= name,
+-		.module		= THIS_MODULE,
+-		.task_ctx_nr	= perf_invalid_context,
+-		.event_init	= hisi_uncore_pmu_event_init,
+-		.pmu_enable	= hisi_uncore_pmu_enable,
+-		.pmu_disable	= hisi_uncore_pmu_disable,
+-		.add		= hisi_uncore_pmu_add,
+-		.del		= hisi_uncore_pmu_del,
+-		.start		= hisi_uncore_pmu_start,
+-		.stop		= hisi_uncore_pmu_stop,
+-		.read		= hisi_uncore_pmu_read,
+-		.attr_groups	= l3c_pmu->pmu_events.attr_groups,
+-		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+-	};
++	hisi_pmu_init(&l3c_pmu->pmu, name, l3c_pmu->pmu_events.attr_groups, THIS_MODULE);
  
- 	ENCODE_FRAME_POINTER
-@@ -778,7 +778,7 @@ _ASM_NOKPROBE(common_interrupt_return)
- SYM_FUNC_START(asm_load_gs_index)
- 	FRAME_BEGIN
- 	swapgs
--.Lgs_change:
-+SYM_INNER_LABEL(asm_load_gs_index_gs_change, SYM_L_GLOBAL)
- 	ANNOTATE_NOENDBR // error_entry
- 	movl	%edi, %gs
- 2:	ALTERNATIVE "", "mfence", X86_BUG_SWAPGS_FENCE
-@@ -799,7 +799,7 @@ SYM_FUNC_START(asm_load_gs_index)
- 	movl	%eax, %gs
- 	jmp	2b
+ 	ret = perf_pmu_register(&l3c_pmu->pmu, name, -1);
+ 	if (ret) {
+diff --git a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+index bad99d149172..2103fb5ee7bb 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+@@ -416,21 +416,7 @@ static int hisi_pa_pmu_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
--	_ASM_EXTABLE(.Lgs_change, .Lbad_gs)
-+	_ASM_EXTABLE(asm_load_gs_index_gs_change, .Lbad_gs)
+-	pa_pmu->pmu = (struct pmu) {
+-		.module		= THIS_MODULE,
+-		.task_ctx_nr	= perf_invalid_context,
+-		.event_init	= hisi_uncore_pmu_event_init,
+-		.pmu_enable	= hisi_uncore_pmu_enable,
+-		.pmu_disable	= hisi_uncore_pmu_disable,
+-		.add		= hisi_uncore_pmu_add,
+-		.del		= hisi_uncore_pmu_del,
+-		.start		= hisi_uncore_pmu_start,
+-		.stop		= hisi_uncore_pmu_stop,
+-		.read		= hisi_uncore_pmu_read,
+-		.attr_groups    = pa_pmu->pmu_events.attr_groups,
+-		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+-	};
+-
++	hisi_pmu_init(&pa_pmu->pmu, name, pa_pmu->pmu_events.attr_groups, THIS_MODULE);
+ 	ret = perf_pmu_register(&pa_pmu->pmu, name, -1);
+ 	if (ret) {
+ 		dev_err(pa_pmu->dev, "PMU register failed, ret = %d\n", ret);
+diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+index 358e4e284a62..5dd2694dbdf8 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+@@ -527,4 +527,22 @@ int hisi_uncore_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
+ }
+ EXPORT_SYMBOL_GPL(hisi_uncore_pmu_offline_cpu);
  
- SYM_FUNC_END(asm_load_gs_index)
- EXPORT_SYMBOL(asm_load_gs_index)
-@@ -1006,85 +1006,6 @@ SYM_CODE_START_LOCAL(paranoid_exit)
- 	jmp		restore_regs_and_return_to_kernel
- SYM_CODE_END(paranoid_exit)
++void hisi_pmu_init(struct pmu *pmu, const char *name,
++		const struct attribute_group **attr_groups, struct module *module)
++{
++	pmu->name               = name;
++	pmu->module             = module;
++	pmu->task_ctx_nr        = perf_invalid_context;
++	pmu->event_init         = hisi_uncore_pmu_event_init;
++	pmu->pmu_enable         = hisi_uncore_pmu_enable;
++	pmu->pmu_disable        = hisi_uncore_pmu_disable;
++	pmu->add                = hisi_uncore_pmu_add;
++	pmu->del                = hisi_uncore_pmu_del;
++	pmu->start              = hisi_uncore_pmu_start;
++	pmu->stop               = hisi_uncore_pmu_stop;
++	pmu->read               = hisi_uncore_pmu_read;
++	pmu->attr_groups        = attr_groups;
++}
++EXPORT_SYMBOL_GPL(hisi_pmu_init);
++
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.h b/drivers/perf/hisilicon/hisi_uncore_pmu.h
+index 7f5841d6f592..6e2523e4aa36 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_pmu.h
++++ b/drivers/perf/hisilicon/hisi_uncore_pmu.h
+@@ -120,4 +120,6 @@ ssize_t hisi_uncore_pmu_identifier_attr_show(struct device *dev,
+ int hisi_uncore_pmu_init_irq(struct hisi_pmu *hisi_pmu,
+ 			     struct platform_device *pdev);
  
--/*
-- * Switch GS and CR3 if needed.
-- */
--SYM_CODE_START_LOCAL(error_entry)
--	UNWIND_HINT_FUNC
--	testb	$3, CS+8(%rsp)
--	jz	.Lerror_kernelspace
--
--	/*
--	 * We entered from user mode or we're pretending to have entered
--	 * from user mode due to an IRET fault.
--	 */
--	swapgs
--	FENCE_SWAPGS_USER_ENTRY
--	/* We have user CR3.  Change to kernel CR3. */
--	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
--
--	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
--.Lerror_entry_from_usermode_after_swapgs:
--	/* Put us onto the real thread stack. */
--	call	sync_regs
--	RET
--
--	/*
--	 * There are two places in the kernel that can potentially fault with
--	 * usergs. Handle them here.  B stepping K8s sometimes report a
--	 * truncated RIP for IRET exceptions returning to compat mode. Check
--	 * for these here too.
--	 */
--.Lerror_kernelspace:
--	leaq	native_irq_return_iret(%rip), %rcx
--	cmpq	%rcx, RIP+8(%rsp)
--	je	.Lerror_bad_iret
--	movl	%ecx, %eax			/* zero extend */
--	cmpq	%rax, RIP+8(%rsp)
--	je	.Lbstep_iret
--	cmpq	$.Lgs_change, RIP+8(%rsp)
--	jne	.Lerror_entry_done_lfence
--
--	/*
--	 * hack: .Lgs_change can fail with user gsbase.  If this happens, fix up
--	 * gsbase and proceed.  We'll fix up the exception and land in
--	 * .Lgs_change's error handler with kernel gsbase.
--	 */
--	swapgs
--
--	/*
--	 * Issue an LFENCE to prevent GS speculation, regardless of whether it is a
--	 * kernel or user gsbase.
--	 */
--.Lerror_entry_done_lfence:
--	FENCE_SWAPGS_KERNEL_ENTRY
--	leaq	8(%rsp), %rax			/* return pt_regs pointer */
--	RET
--
--.Lbstep_iret:
--	/* Fix truncated RIP */
--	movq	%rcx, RIP+8(%rsp)
--	/* fall through */
--
--.Lerror_bad_iret:
--	/*
--	 * We came from an IRET to user mode, so we have user
--	 * gsbase and CR3.  Switch to kernel gsbase and CR3:
--	 */
--	swapgs
--	FENCE_SWAPGS_USER_ENTRY
--	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
--
--	/*
--	 * Pretend that the exception came from user mode: set up pt_regs
--	 * as if we faulted immediately after IRET.
--	 */
--	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
--	call	fixup_bad_iret
--	mov	%rax, %rdi
--	jmp	.Lerror_entry_from_usermode_after_swapgs
--SYM_CODE_END(error_entry)
--
- SYM_CODE_START_LOCAL(error_return)
- 	UNWIND_HINT_REGS
- 	DEBUG_ENTRY_ASSERT_IRQS_OFF
-diff --git a/arch/x86/include/asm/proto.h b/arch/x86/include/asm/proto.h
-index 0f899c8d7a4e..95d6d3a53cd5 100644
---- a/arch/x86/include/asm/proto.h
-+++ b/arch/x86/include/asm/proto.h
-@@ -13,6 +13,7 @@ void syscall_init(void);
- #ifdef CONFIG_X86_64
- void entry_SYSCALL_64(void);
- void entry_SYSCALL_64_safe_stack(void);
-+extern unsigned char native_irq_return_iret[];
- long do_arch_prctl_64(struct task_struct *task, int option, unsigned long arg2);
- #endif
++void hisi_pmu_init(struct pmu *pmu, const char *name,
++		const struct attribute_group **attr_groups, struct module *module);
+ #endif /* __HISI_UNCORE_PMU_H__ */
+diff --git a/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c b/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c
+index 6aedc303ff56..b9c79f17230c 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c
+@@ -445,20 +445,7 @@ static int hisi_sllc_pmu_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
-diff --git a/arch/x86/include/asm/traps.h b/arch/x86/include/asm/traps.h
-index 47ecfff2c83d..2d00100d3e03 100644
---- a/arch/x86/include/asm/traps.h
-+++ b/arch/x86/include/asm/traps.h
-@@ -14,6 +14,7 @@
- asmlinkage __visible notrace struct pt_regs *sync_regs(struct pt_regs *eregs);
- asmlinkage __visible notrace
- struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs);
-+asmlinkage __visible notrace struct pt_regs *error_entry(struct pt_regs *eregs);
- void __init trap_init(void);
- asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *eregs);
- #endif
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index d62b2cb85cea..f76a15f654c5 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -436,8 +436,6 @@ DEFINE_IDTENTRY_DF(exc_double_fault)
- #endif
+-	sllc_pmu->pmu = (struct pmu) {
+-		.module		= THIS_MODULE,
+-		.task_ctx_nr	= perf_invalid_context,
+-		.event_init	= hisi_uncore_pmu_event_init,
+-		.pmu_enable	= hisi_uncore_pmu_enable,
+-		.pmu_disable	= hisi_uncore_pmu_disable,
+-		.add		= hisi_uncore_pmu_add,
+-		.del		= hisi_uncore_pmu_del,
+-		.start		= hisi_uncore_pmu_start,
+-		.stop		= hisi_uncore_pmu_stop,
+-		.read		= hisi_uncore_pmu_read,
+-		.attr_groups    = sllc_pmu->pmu_events.attr_groups,
+-		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+-	};
++	hisi_pmu_init(&sllc_pmu->pmu, name, sllc_pmu->pmu_events.attr_groups, THIS_MODULE);
  
- #ifdef CONFIG_X86_ESPFIX64
--	extern unsigned char native_irq_return_iret[];
--
- 	/*
- 	 * If IRET takes a non-IST fault on the espfix64 stack, then we
- 	 * end up promoting it to a doublefault.  In that case, take
+ 	ret = perf_pmu_register(&sllc_pmu->pmu, name, -1);
+ 	if (ret) {
 -- 
-2.19.1.6.gb485710b
+2.17.1
 
