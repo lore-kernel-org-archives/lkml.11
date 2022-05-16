@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D6FBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D9D4C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347333AbiEPUVP (ORCPT
+        id S1347372AbiEPUVa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
+        Mon, 16 May 2022 16:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348999AbiEPT7G (ORCPT
+        with ESMTP id S1348983AbiEPT7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBFBF3F890;
-        Mon, 16 May 2022 12:53:15 -0700 (PDT)
+        Mon, 16 May 2022 15:59:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303BD3F8A9;
+        Mon, 16 May 2022 12:53:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47D0760ECB;
-        Mon, 16 May 2022 19:53:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EEE5C385AA;
-        Mon, 16 May 2022 19:53:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE93CB8161D;
+        Mon, 16 May 2022 19:53:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EB50C341C4;
+        Mon, 16 May 2022 19:53:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730794;
-        bh=k65DtTU2vvNlDdg6/ZLzXSKHnoEpBYZW9qfIbyoDY9U=;
+        s=korg; t=1652730791;
+        bh=LMigjxs/GhOcgK0CYE3ZX307ovltBW8/BXsQRGgWBM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N/q6Hc1LubRmK7TzaZsuwsMcMyDi+vlkUqab+WvBpZO1mXjohf15fX+jp342rd3ep
-         hXTrViBGeFDstE7xpbMLYjTN4WmC1Gw7h+rT0V//XIE8JGPmYdY/9yUtFXpLvVTH6+
-         GTRsowMM1Tu5akUO1jhFqf9aqI2eWV3nppHsXp5w=
+        b=NT0GQBnp2wyTxfxUvPPCy+BqXqdYAZOFwzzfu25jD+F+M5CtRQ8JJlXDykV6sT0RI
+         ldfpoL8Uzd4Sc5NRarOQiQ8egIk1ck51mvXD2Q36sGfJpkMHqtm63rz9k09f1WwsBT
+         7esMGG19p9DczSA0w901yBUXhOZovAk+6ql7+zHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.15 094/102] SUNRPC: Ensure that the gssproxy client can start in a connected state
-Date:   Mon, 16 May 2022 21:37:08 +0200
-Message-Id: <20220516193626.696341017@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
+Subject: [PATCH 5.15 102/102] usb: gadget: uvc: allow for application to cleanly shutdown
+Date:   Mon, 16 May 2022 21:37:16 +0200
+Message-Id: <20220516193626.930467139@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -49,106 +48,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Dan Vacura <w36195@motorola.com>
 
-commit fd13359f54ee854f00134abc6be32da94ec53dbf upstream.
+commit b81ac4395bbeaf36e078dea1a48c02dd97b76235 upstream.
 
-Ensure that the gssproxy client connects to the server from the gssproxy
-daemon process context so that the AF_LOCAL socket connection is done
-using the correct path and namespaces.
+Several types of kernel panics can occur due to timing during the uvc
+gadget removal. This appears to be a problem with gadget resources being
+managed by both the client application's v4l2 open/close and the UDC
+gadget bind/unbind. Since the concept of USB_GADGET_DELAYED_STATUS
+doesn't exist for unbind, add a wait to allow for the application to
+close out.
 
-Fixes: 1d658336b05f ("SUNRPC: Add RPC based upcall mechanism for RPCGSS auth")
-Cc: stable@vger.kernel.org
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Some examples of the panics that can occur are:
+
+<1>[ 1147.652313] Unable to handle kernel NULL pointer dereference at
+virtual address 0000000000000028
+<4>[ 1147.652510] Call trace:
+<4>[ 1147.652514]  usb_gadget_disconnect+0x74/0x1f0
+<4>[ 1147.652516]  usb_gadget_deactivate+0x38/0x168
+<4>[ 1147.652520]  usb_function_deactivate+0x54/0x90
+<4>[ 1147.652524]  uvc_function_disconnect+0x14/0x38
+<4>[ 1147.652527]  uvc_v4l2_release+0x34/0xa0
+<4>[ 1147.652537]  __fput+0xdc/0x2c0
+<4>[ 1147.652540]  ____fput+0x10/0x1c
+<4>[ 1147.652545]  task_work_run+0xe4/0x12c
+<4>[ 1147.652549]  do_notify_resume+0x108/0x168
+
+<1>[  282.950561][ T1472] Unable to handle kernel NULL pointer
+dereference at virtual address 00000000000005b8
+<6>[  282.953111][ T1472] Call trace:
+<6>[  282.953121][ T1472]  usb_function_deactivate+0x54/0xd4
+<6>[  282.953134][ T1472]  uvc_v4l2_release+0xac/0x1e4
+<6>[  282.953145][ T1472]  v4l2_release+0x134/0x1f0
+<6>[  282.953167][ T1472]  __fput+0xf4/0x428
+<6>[  282.953178][ T1472]  ____fput+0x14/0x24
+<6>[  282.953193][ T1472]  task_work_run+0xac/0x130
+
+<3>[  213.410077][   T29] configfs-gadget gadget: uvc: Failed to queue
+request (-108).
+<1>[  213.410116][   T29] Unable to handle kernel NULL pointer
+dereference at virtual address 0000000000000003
+<6>[  213.413460][   T29] Call trace:
+<6>[  213.413474][   T29]  uvcg_video_pump+0x1f0/0x384
+<6>[  213.413489][   T29]  process_one_work+0x2a4/0x544
+<6>[  213.413502][   T29]  worker_thread+0x350/0x784
+<6>[  213.413515][   T29]  kthread+0x2ac/0x320
+<6>[  213.413528][   T29]  ret_from_fork+0x10/0x30
+
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220503201039.71720-1-w36195@motorola.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/sunrpc/clnt.h          |    1 +
- net/sunrpc/auth_gss/gss_rpc_upcall.c |    1 +
- net/sunrpc/clnt.c                    |   33 +++++++++++++++++++++++++++++++++
- 3 files changed, 35 insertions(+)
+ drivers/usb/gadget/function/f_uvc.c    |   25 +++++++++++++++++++++++++
+ drivers/usb/gadget/function/uvc.h      |    2 ++
+ drivers/usb/gadget/function/uvc_v4l2.c |    3 ++-
+ 3 files changed, 29 insertions(+), 1 deletion(-)
 
---- a/include/linux/sunrpc/clnt.h
-+++ b/include/linux/sunrpc/clnt.h
-@@ -159,6 +159,7 @@ struct rpc_add_xprt_test {
- #define RPC_CLNT_CREATE_NO_RETRANS_TIMEOUT	(1UL << 9)
- #define RPC_CLNT_CREATE_SOFTERR		(1UL << 10)
- #define RPC_CLNT_CREATE_REUSEPORT	(1UL << 11)
-+#define RPC_CLNT_CREATE_CONNECTED	(1UL << 12)
- 
- struct rpc_clnt *rpc_create(struct rpc_create_args *args);
- struct rpc_clnt	*rpc_bind_new_program(struct rpc_clnt *,
---- a/net/sunrpc/auth_gss/gss_rpc_upcall.c
-+++ b/net/sunrpc/auth_gss/gss_rpc_upcall.c
-@@ -98,6 +98,7 @@ static int gssp_rpc_create(struct net *n
- 		 * done without the correct namespace:
- 		 */
- 		.flags		= RPC_CLNT_CREATE_NOPING |
-+				  RPC_CLNT_CREATE_CONNECTED |
- 				  RPC_CLNT_CREATE_NO_IDLE_TIMEOUT
- 	};
- 	struct rpc_clnt *clnt;
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -76,6 +76,7 @@ static int	rpc_encode_header(struct rpc_
- static int	rpc_decode_header(struct rpc_task *task,
- 				  struct xdr_stream *xdr);
- static int	rpc_ping(struct rpc_clnt *clnt);
-+static int	rpc_ping_noreply(struct rpc_clnt *clnt);
- static void	rpc_check_timeout(struct rpc_task *task);
- 
- static void rpc_register_client(struct rpc_clnt *clnt)
-@@ -483,6 +484,12 @@ static struct rpc_clnt *rpc_create_xprt(
- 			rpc_shutdown_client(clnt);
- 			return ERR_PTR(err);
- 		}
-+	} else if (args->flags & RPC_CLNT_CREATE_CONNECTED) {
-+		int err = rpc_ping_noreply(clnt);
-+		if (err != 0) {
-+			rpc_shutdown_client(clnt);
-+			return ERR_PTR(err);
-+		}
- 	}
- 
- 	clnt->cl_softrtry = 1;
-@@ -2704,6 +2711,10 @@ static const struct rpc_procinfo rpcproc
- 	.p_decode = rpcproc_decode_null,
- };
- 
-+static const struct rpc_procinfo rpcproc_null_noreply = {
-+	.p_encode = rpcproc_encode_null,
-+};
-+
- static void
- rpc_null_call_prepare(struct rpc_task *task, void *data)
+--- a/drivers/usb/gadget/function/f_uvc.c
++++ b/drivers/usb/gadget/function/f_uvc.c
+@@ -889,13 +889,37 @@ static void uvc_function_unbind(struct u
  {
-@@ -2753,6 +2764,28 @@ static int rpc_ping(struct rpc_clnt *cln
- 	if (IS_ERR(task))
- 		return PTR_ERR(task);
- 	status = task->tk_status;
-+	rpc_put_task(task);
-+	return status;
-+}
+ 	struct usb_composite_dev *cdev = c->cdev;
+ 	struct uvc_device *uvc = to_uvc(f);
++	long wait_ret = 1;
+ 
+ 	uvcg_info(f, "%s()\n", __func__);
+ 
++	/* If we know we're connected via v4l2, then there should be a cleanup
++	 * of the device from userspace either via UVC_EVENT_DISCONNECT or
++	 * though the video device removal uevent. Allow some time for the
++	 * application to close out before things get deleted.
++	 */
++	if (uvc->func_connected) {
++		uvcg_dbg(f, "waiting for clean disconnect\n");
++		wait_ret = wait_event_interruptible_timeout(uvc->func_connected_queue,
++				uvc->func_connected == false, msecs_to_jiffies(500));
++		uvcg_dbg(f, "done waiting with ret: %ld\n", wait_ret);
++	}
 +
-+static int rpc_ping_noreply(struct rpc_clnt *clnt)
-+{
-+	struct rpc_message msg = {
-+		.rpc_proc = &rpcproc_null_noreply,
-+	};
-+	struct rpc_task_setup task_setup_data = {
-+		.rpc_client = clnt,
-+		.rpc_message = &msg,
-+		.callback_ops = &rpc_null_ops,
-+		.flags = RPC_TASK_SOFT | RPC_TASK_SOFTCONN | RPC_TASK_NULLCREDS,
-+	};
-+	struct rpc_task	*task;
-+	int status;
+ 	device_remove_file(&uvc->vdev.dev, &dev_attr_function_name);
+ 	video_unregister_device(&uvc->vdev);
+ 	v4l2_device_unregister(&uvc->v4l2_dev);
+ 
++	if (uvc->func_connected) {
++		/* Wait for the release to occur to ensure there are no longer any
++		 * pending operations that may cause panics when resources are cleaned
++		 * up.
++		 */
++		uvcg_warn(f, "%s no clean disconnect, wait for release\n", __func__);
++		wait_ret = wait_event_interruptible_timeout(uvc->func_connected_queue,
++				uvc->func_connected == false, msecs_to_jiffies(1000));
++		uvcg_dbg(f, "done waiting for release with ret: %ld\n", wait_ret);
++	}
 +
-+	task = rpc_run_task(&task_setup_data);
-+	if (IS_ERR(task))
-+		return PTR_ERR(task);
-+	status = task->tk_status;
- 	rpc_put_task(task);
- 	return status;
+ 	usb_ep_free_request(cdev->gadget->ep0, uvc->control_req);
+ 	kfree(uvc->control_buf);
+ 
+@@ -914,6 +938,7 @@ static struct usb_function *uvc_alloc(st
+ 
+ 	mutex_init(&uvc->video.mutex);
+ 	uvc->state = UVC_STATE_DISCONNECTED;
++	init_waitqueue_head(&uvc->func_connected_queue);
+ 	opts = fi_to_f_uvc_opts(fi);
+ 
+ 	mutex_lock(&opts->lock);
+--- a/drivers/usb/gadget/function/uvc.h
++++ b/drivers/usb/gadget/function/uvc.h
+@@ -14,6 +14,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/usb/composite.h>
+ #include <linux/videodev2.h>
++#include <linux/wait.h>
+ 
+ #include <media/v4l2-device.h>
+ #include <media/v4l2-dev.h>
+@@ -127,6 +128,7 @@ struct uvc_device {
+ 	struct usb_function func;
+ 	struct uvc_video video;
+ 	bool func_connected;
++	wait_queue_head_t func_connected_queue;
+ 
+ 	/* Descriptors */
+ 	struct {
+--- a/drivers/usb/gadget/function/uvc_v4l2.c
++++ b/drivers/usb/gadget/function/uvc_v4l2.c
+@@ -252,10 +252,11 @@ uvc_v4l2_subscribe_event(struct v4l2_fh
+ 
+ static void uvc_v4l2_disable(struct uvc_device *uvc)
+ {
+-	uvc->func_connected = false;
+ 	uvc_function_disconnect(uvc);
+ 	uvcg_video_enable(&uvc->video, 0);
+ 	uvcg_free_buffers(&uvc->video.queue);
++	uvc->func_connected = false;
++	wake_up_interruptible(&uvc->func_connected_queue);
  }
+ 
+ static int
 
 
