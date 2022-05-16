@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D4FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4519FC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347565AbiEPU0Z (ORCPT
+        id S1347632AbiEPU0b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48852 "EHLO
+        Mon, 16 May 2022 16:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347731AbiEPT6I (ORCPT
+        with ESMTP id S1347571AbiEPT54 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:08 -0400
+        Mon, 16 May 2022 15:57:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E4E483BB;
-        Mon, 16 May 2022 12:49:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA1248328;
+        Mon, 16 May 2022 12:49:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B05FB81612;
-        Mon, 16 May 2022 19:49:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF329C385AA;
-        Mon, 16 May 2022 19:49:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F59FB81613;
+        Mon, 16 May 2022 19:49:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8539FC34100;
+        Mon, 16 May 2022 19:49:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730585;
-        bh=cT2tFWx4y6h1jKST9Xbxf3XHUjKuhrR4MsISZKADkV0=;
+        s=korg; t=1652730579;
+        bh=SA/u6TfraJ4HVYA3POmKSQ4ZBz9ogmdGYvSFcf8IZ14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rgKj8meFidk7GIqPThSsOtGJaOp+kDE5BTEDNLzpVdODbMZzxbFw9fyz+ND0gt+e5
-         iDcs0T6TigRjt5niW/WIpAAqKvA6QRGcjtHP89FjyOUSopblomoqjDPRoB3avrQajM
-         aZP7/XfON4uwPclOx2+KJh6T+AJ+pldqwLCeyxvY=
+        b=pFLEKuEPiqf4Nu780VqcEKAq6ujFGom+svEyZkmDfvxFsz89F/QRuxaRuykF7nl5A
+         tP9LFKXYYCWIVi/AR9shO1+iAiFr/zlsOeh1NfhD+PSY6wo3dH7j+RMPFtpiPzMT6U
+         0BxeKMFr8gf5RqRS8h+gJcgQ4Yt/VivRi18jaexg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 044/102] gfs2: Fix filesystem block deallocation for short writes
-Date:   Mon, 16 May 2022 21:36:18 +0200
-Message-Id: <20220516193625.264729898@linuxfoundation.org>
+Subject: [PATCH 5.15 042/102] tls: Fix context leak on tls_device_down
+Date:   Mon, 16 May 2022 21:36:16 +0200
+Message-Id: <20220516193625.208088763@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -49,51 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit d031a8866e709c9d1ee5537a321b6192b4d2dc5b ]
+[ Upstream commit 3740651bf7e200109dd42d5b2fb22226b26f960a ]
 
-When a write cannot be carried out in full, gfs2_iomap_end() releases
-blocks that have been allocated for this write but haven't been used.
+The commit cited below claims to fix a use-after-free condition after
+tls_device_down. Apparently, the description wasn't fully accurate. The
+context stayed alive, but ctx->netdev became NULL, and the offload was
+torn down without a proper fallback, so a bug was present, but a
+different kind of bug.
 
-To compute the end of the allocation, gfs2_iomap_end() incorrectly
-rounded the end of the attempted write down to the next block boundary
-to arrive at the end of the allocation.  It would have to round up, but
-the end of the allocation is also available as iomap->offset +
-iomap->length, so just use that instead.
+Due to misunderstanding of the issue, the original patch dropped the
+refcount_dec_and_test line for the context to avoid the alleged
+premature deallocation. That line has to be restored, because it matches
+the refcount_inc_not_zero from the same function, otherwise the contexts
+that survived tls_device_down are leaked.
 
-In addition, use round_up() for computing the start of the unused range.
+This patch fixes the described issue by restoring refcount_dec_and_test.
+After this change, there is no leak anymore, and the fallback to
+software kTLS still works.
 
-Fixes: 64bc06bb32ee ("gfs2: iomap buffered write support")
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Fixes: c55dcdd435aa ("net/tls: Fix use-after-free after the TLS device goes down and up")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Link: https://lore.kernel.org/r/20220512091830.678684-1-maximmi@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/bmap.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ net/tls/tls_device.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/gfs2/bmap.c b/fs/gfs2/bmap.c
-index fbdb7a30470a..f785af2aa23c 100644
---- a/fs/gfs2/bmap.c
-+++ b/fs/gfs2/bmap.c
-@@ -1154,13 +1154,12 @@ static int gfs2_iomap_end(struct inode *inode, loff_t pos, loff_t length,
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index a40553e83f8b..f3e3d009cf1c 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1347,7 +1347,10 @@ static int tls_device_down(struct net_device *netdev)
  
- 	if (length != written && (iomap->flags & IOMAP_F_NEW)) {
- 		/* Deallocate blocks that were just allocated. */
--		loff_t blockmask = i_blocksize(inode) - 1;
--		loff_t end = (pos + length) & ~blockmask;
-+		loff_t hstart = round_up(pos + written, i_blocksize(inode));
-+		loff_t hend = iomap->offset + iomap->length;
- 
--		pos = (pos + written + blockmask) & ~blockmask;
--		if (pos < end) {
--			truncate_pagecache_range(inode, pos, end - 1);
--			punch_hole(ip, pos, end - pos);
-+		if (hstart < hend) {
-+			truncate_pagecache_range(inode, hstart, hend - 1);
-+			punch_hole(ip, hstart, hend - hstart);
- 		}
+ 		/* Device contexts for RX and TX will be freed in on sk_destruct
+ 		 * by tls_device_free_ctx. rx_conf and tx_conf stay in TLS_HW.
++		 * Now release the ref taken above.
+ 		 */
++		if (refcount_dec_and_test(&ctx->refcount))
++			tls_device_free_ctx(ctx);
  	}
  
+ 	up_write(&device_offload_lock);
 -- 
 2.35.1
 
