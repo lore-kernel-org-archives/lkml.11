@@ -2,95 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB05C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1075AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348708AbiEPVE6 (ORCPT
+        id S1348290AbiEPVFB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 17:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53324 "EHLO
+        Mon, 16 May 2022 17:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346316AbiEPVE2 (ORCPT
+        with ESMTP id S1348999AbiEPVE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 17:04:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCBD5C66E
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:40:06 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nqhVa-0007jS-Ks; Mon, 16 May 2022 22:40:02 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 860AB7FBBC;
-        Mon, 16 May 2022 20:40:01 +0000 (UTC)
-Date:   Mon, 16 May 2022 22:40:00 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] can: slcan: use can_dropped_invalid_skb() instead
- of manual check
-Message-ID: <20220516204000.t7yhhtp3jtekg7ar@pengutronix.de>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-2-mailhol.vincent@wanadoo.fr>
+        Mon, 16 May 2022 17:04:26 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA565BE4D;
+        Mon, 16 May 2022 13:40:01 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id hh4so12958863qtb.10;
+        Mon, 16 May 2022 13:40:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qRyYZy7MUY9Z/ZyS1jq+AuFFP7q0GxQUZ1g6iG97tyM=;
+        b=jRAPfAxvk37A+4zg3JePp6ctoOo27aHfPQzvPO/cLLDVov8JMSdbL5Goe5mzQ1GHVI
+         e1KgC/HsHj91CoO2A327UT8DcApUlzJIiPG5K38EJXtL5Vs+JLfh4mAoXfQQ/873B7EG
+         AIrLk+0G9EcwbbiYW2BGLPLYVFzo1g70p+B64FCCRYzTi6CCMkyQzG4rFAtzMZskHrUa
+         g238LZVFMqIHDDcFq8qJOGTvvMVmCyVIsDi3iLIy6iqzK0x4ZHwVnxSDwBlPpA6Uh9JR
+         ZrcCXwJZoMI0V4RLN5EVsFxxHRyuf5sTNC13xv4Btbgo37b+APRDSSp/tmoo+p5j77jI
+         XjLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qRyYZy7MUY9Z/ZyS1jq+AuFFP7q0GxQUZ1g6iG97tyM=;
+        b=dauOcV08lfg+FmpNJVDRRO8fSs+d84+shxfrDnp4ivITeRiV8UCqPcSJxFtAEg7Jeb
+         auX5gyubBlHAUEol/ZGEPt0VBpajoBBDJS/kZg4PmKFe8bjgIvanl/6kX++cGqZ5saOB
+         gzGjJX1FSL/9oJ4ILeNVf1pzZl9O3n52p/qEi9QPy1qfJLPnShH+31Mwo5khhAgsb15m
+         qxrj/qD6GCkagXcz8V7ICEnE3Ver0tNv36bGaqaRdZ77FhcL9VhS0IzGK9ULcSEs8PL4
+         Wz0MqytTKvy59hku2KdkHZQ5iNQ0svKO+poE6NbajJr1ZBnGC5DxJh/MiByy46mTCJQP
+         ys5w==
+X-Gm-Message-State: AOAM530TKNeJaPaP3d9xGRTzPywbINb51XmygLXLGNMdR1bH/3r9x4Cg
+        L/TRUfr9E6Ag/NB5jdMnBw7A9RmVXqd9FA==
+X-Google-Smtp-Source: ABdhPJzxCGqOh+bB58fssYdqVlJzJSN0fs2Z5kI37E/iSL/1fO8Hyo71gRgar0YDeHHlg4FAjH1MeA==
+X-Received: by 2002:a05:622a:19a2:b0:2f3:cb4d:d4d9 with SMTP id u34-20020a05622a19a200b002f3cb4dd4d9mr16554824qtc.245.1652733599224;
+        Mon, 16 May 2022 13:39:59 -0700 (PDT)
+Received: from grrm.lan (bras-base-mtrlpq4809w-grc-17-70-53-205-21.dsl.bell.ca. [70.53.205.21])
+        by smtp.gmail.com with ESMTPSA id k67-20020a378846000000b006a00fabde68sm6364016qkd.10.2022.05.16.13.39.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 13:39:58 -0700 (PDT)
+From:   Yannick Brosseau <yannick.brosseau@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
+        olivier.moysan@foss.st.com
+Cc:     paul@crapouillou.net, linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Yannick Brosseau <yannick.brosseau@gmail.com>
+Subject: [PATCH v2 0/2] iio: adc: stm32: Fix ADC IRQ handling on STM32F4
+Date:   Mon, 16 May 2022 16:39:37 -0400
+Message-Id: <20220516203939.3498673-1-yannick.brosseau@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qi7wwt46b6orgwpu"
-Content-Disposition: inline
-In-Reply-To: <20220514141650.1109542-2-mailhol.vincent@wanadoo.fr>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Changes to the STM32 ADC irq handling broke the STM32F4 platforms
+These two patches bring it back to a working state.
 
---qi7wwt46b6orgwpu
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Changes:
+ * Removed spurious IRQs detection
+ * Updated comments and commit messages
 
-On 14.05.2022 23:16:47, Vincent Mailhol wrote:
-> slcan does a manual check in slc_xmit() to verify if the skb is
-> valid. This check is incomplete, use instead
-> can_dropped_invalid_skb().
->=20
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Yannick Brosseau (2):
+  iio: adc: stm32: Fix ADCs iteration in irq handler
+  iio: adc: stm32: Fix IRQs on STM32F4 by removing custom spurious IRQs
+    message
 
-I've taken this patch into the latest pull request to net-next.
+ drivers/iio/adc/stm32-adc-core.c |  7 ++++++-
+ drivers/iio/adc/stm32-adc.c      | 10 ----------
+ 2 files changed, 6 insertions(+), 11 deletions(-)
 
-regards,
-Marc
+-- 
+2.36.1
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---qi7wwt46b6orgwpu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKCtp4ACgkQrX5LkNig
-0112AAf9EDMHiYNZoWtjw22NJonJySrZp/LhwR3Zxjqt8dzAScwqNu7By00++gid
-y2c/5koi0tRHl3dEfYwT+JqmaS2ywuHCIaovOFR9/8XW6gz3risdRyWisdKL1QaV
-ICgGVgWr0PdlmkKzacM2VAZjLfFQTrE4pjuTexPGNv+NGwdcoPQbvnlNVkFWFaCf
-EcDZT4X7I140UPwlA+59MPQkOp0WphjudRS6PeYprC6Io3m4fvQ/LCCCt33q4b1n
-JrkRLvNA5u0do0+4rq0ygbAYZUPLeJ8i6TWTDEagLQ8EFicGrOV57DifMrxGBHJu
-0Ejnhezuqw8XE0FgkIFmfCI2cjLAWg==
-=gWnZ
------END PGP SIGNATURE-----
-
---qi7wwt46b6orgwpu--
