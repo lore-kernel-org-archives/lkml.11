@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0127C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7060EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245424AbiEPTpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
+        id S1344736AbiEPTpR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345012AbiEPTm2 (ORCPT
+        with ESMTP id S1346054AbiEPTmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:42:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3106E41606;
-        Mon, 16 May 2022 12:40:50 -0700 (PDT)
+        Mon, 16 May 2022 15:42:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B77F3F336;
+        Mon, 16 May 2022 12:41:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1FD96151A;
-        Mon, 16 May 2022 19:40:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6995C34100;
-        Mon, 16 May 2022 19:40:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAE3161553;
+        Mon, 16 May 2022 19:41:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C38ECC385AA;
+        Mon, 16 May 2022 19:41:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730049;
-        bh=WAduFJFa3CFc950X3WswslQ+M+QR7v0/wxma3qRrsQY=;
+        s=korg; t=1652730073;
+        bh=D+cWIivvvb18D1z64YksZpWq4orH49aktHKFoUickBg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGBw5ooL1ZQrlbG0PNJQg2uO5lObKowE1HJp5OD5lTe+35tBSIcE6mhr5JVtnj6Pp
-         xwZGdLrToDCVHHm8xyButcC3ZQOMocaq/BXmy0UHW6wi6RnNKWMOLgSabGE0n+vPsZ
-         Z+qKz+hcBeKwVsPpfjYFn/2DKfZCBX1+2/iIPnqM=
+        b=QE2epMeT7JS8fLRvth91+yl5z0sSNWXGnqcqk7IOpdi83a/j7diGAbLH/7buwPQgq
+         8THtsMG9IP8QSKHWlSHq1bYNgBwjsuED+/e5OK0Tfbe6u4D7UHU5vlwYXfZg4AhfV0
+         yJEsy3lQ4VPq0k6enElzva8Jan8TxbySTH2k/KP4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 15/32] hwmon: (f71882fg) Fix negative temperature
-Date:   Mon, 16 May 2022 21:36:29 +0200
-Message-Id: <20220516193615.226998336@linuxfoundation.org>
+Subject: [PATCH 4.19 04/32] ipv4: drop dst in multicast routing path
+Date:   Mon, 16 May 2022 21:36:18 +0200
+Message-Id: <20220516193614.907366857@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
 References: <20220516193614.773450018@linuxfoundation.org>
@@ -50,43 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ji-Ze Hong (Peter Hong) <hpeter@gmail.com>
+From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
 
-[ Upstream commit 4aaaaf0f279836f06d3b9d0ffeec7a1e1a04ceef ]
+[ Upstream commit 9e6c6d17d1d6a3f1515ce399f9a011629ec79aa0 ]
 
-All temperature of Fintek superio hwmonitor that using 1-byte reg will use
-2's complement.
+kmemleak reports the following when routing multicast traffic over an
+ipsec tunnel.
 
-In show_temp()
-	temp = data->temp[nr] * 1000;
+Kmemleak output:
+unreferenced object 0x8000000044bebb00 (size 256):
+  comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
+    80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000f83947e0>] __kmalloc+0x1e8/0x300
+    [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
+    [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
+    [<00000000824f6cf1>] gre_rcv+0x178/0x540
+    [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
+    [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
+    [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
+    [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
+    [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
+    [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
+    [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
+    [<00000000013d7914>] irq_exit+0xc4/0xe0
+    [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
+    [<000000000751eb8e>] handle_int+0x16c/0x178
+    [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
 
-When data->temp[nr] read as 255, it indicate -1C, but this code will report
-255C to userspace. It'll be ok when change to:
-	temp = ((s8)data->temp[nr]) * 1000;
+The metadata dst is leaked when ip_route_input_mc() updates the dst for
+the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
+handled dropping the dst in ip_route_input_slow() but missed the
+multicast case which is handled by ip_route_input_mc(). Drop the dst in
+ip_route_input_mc() avoiding the leak.
 
-Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
-Link: https://lore.kernel.org/r/20220418090706.6339-1-hpeter+linux_kernel@gmail.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: f38a9eb1f77b ("dst: Metadata destinations")
+Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/f71882fg.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ipv4/route.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
-index ca54ce5c8e10..4010b61743f5 100644
---- a/drivers/hwmon/f71882fg.c
-+++ b/drivers/hwmon/f71882fg.c
-@@ -1590,8 +1590,9 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
- 		temp *= 125;
- 		if (sign)
- 			temp -= 128000;
--	} else
--		temp = data->temp[nr] * 1000;
-+	} else {
-+		temp = ((s8)data->temp[nr]) * 1000;
-+	}
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index b41d4acc57e6..d7f17581df7d 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1728,6 +1728,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ #endif
+ 	RT_CACHE_STAT_INC(in_slow_mc);
  
- 	return sprintf(buf, "%d\n", temp);
++	skb_dst_drop(skb);
+ 	skb_dst_set(skb, &rth->dst);
+ 	return 0;
  }
 -- 
 2.35.1
