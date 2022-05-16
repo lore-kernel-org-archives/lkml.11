@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1759C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E50C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346471AbiEPUP4 (ORCPT
+        id S1346715AbiEPUQF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
+        Mon, 16 May 2022 16:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351047AbiEPUB5 (ORCPT
+        with ESMTP id S1346654AbiEPTy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8347F473AF;
-        Mon, 16 May 2022 12:57:21 -0700 (PDT)
+        Mon, 16 May 2022 15:54:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A903D4754A;
+        Mon, 16 May 2022 12:49:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 386F1B81611;
-        Mon, 16 May 2022 19:57:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68D9BC385AA;
-        Mon, 16 May 2022 19:57:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC1C760BBB;
+        Mon, 16 May 2022 19:49:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAEBCC34100;
+        Mon, 16 May 2022 19:48:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731039;
-        bh=nHCPrEtDuSjJ96w8i2Zd8GckMSt702jjQBW4XUFJnXU=;
+        s=korg; t=1652730540;
+        bh=Ev+knGsV3BnS3a2c6ZPe8WPOAA0Zw2vLoqqN59ypFgE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wyA9+4/BjTzCswFdnWJM32W9ncjD7V0tOX9gZM9XAsK5cSBBVNRj/ymciflIHpI+f
-         O3Mps53ymQHjBKRjJ40rTqeSnEcqKxBDIfqzwyUga72kEeL3EOiyDwmxNMBfche99l
-         kKz//I47+/uyGtx/gQ0hWS8wnDbfg1VjM2qi30ns=
+        b=x952K86Qtc+oumdPptaa2hkzkX1o39DMrs5TKQArGpbCJV2GxuheuHgP3Rg4nO+cI
+         838ma/eU+VOEBjlsyGOvFnouCWLbvIB//xtQFbyw2sv+6t0WwHi7aCbzzoFor156B/
+         kreCu9fpn3aEHNyFu/mpd4FWhDGphYWjzxXitGkA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Macpaul Lin <macpaul.lin@mediatek.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Fabien Parent <fparent@baylibre.com>
-Subject: [PATCH 5.17 082/114] usb: typec: tcpci_mt6360: Update for BMC PHY setting
-Date:   Mon, 16 May 2022 21:36:56 +0200
-Message-Id: <20220516193627.838870506@linuxfoundation.org>
+        stable@vger.kernel.org, Shunsuke Mie <mie@igel.co.jp>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 031/102] virtio: fix virtio transitional ids
+Date:   Mon, 16 May 2022 21:36:05 +0200
+Message-Id: <20220516193624.894398566@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,106 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiYuan Huang <cy_huang@richtek.com>
+From: Shunsuke Mie <mie@igel.co.jp>
 
-commit 4031cd95cba70c72e4cadc2d46624bcd31e5a6c0 upstream.
+[ Upstream commit 7ff960a6fe399fdcbca6159063684671ae57eee9 ]
 
-Update MT6360 BMC PHY Tx/Rx setting for the compatibility.
+This commit fixes the transitional PCI device ID.
 
-Macpaul reported this CtoDP cable attention message cannot be received from
-MT6360 TCPC. But actually, attention message really sent from UFP_D
-device.
-
-After RD's comment, there may be BMC PHY Tx/Rx setting causes this issue.
-
-Below's the detailed TCPM log and DP attention message didn't received from 6360
-TCPCI.
-[ 1206.367775] Identity: 0000:0000.0000
-[ 1206.416570] Alternate mode 0: SVID 0xff01, VDO 1: 0x00000405
-[ 1206.447378] AMS DFP_TO_UFP_ENTER_MODE start
-[ 1206.447383] PD TX, header: 0x1d6f
-[ 1206.449393] PD TX complete, status: 0
-[ 1206.454110] PD RX, header: 0x184f [1]
-[ 1206.456867] Rx VDM cmd 0xff018144 type 1 cmd 4 len 1
-[ 1206.456872] AMS DFP_TO_UFP_ENTER_MODE finished
-[ 1206.456873] cc:=4
-[ 1206.473100] AMS STRUCTURED_VDMS start
-[ 1206.473103] PD TX, header: 0x2f6f
-[ 1206.475397] PD TX complete, status: 0
-[ 1206.480442] PD RX, header: 0x2a4f [1]
-[ 1206.483145] Rx VDM cmd 0xff018150 type 1 cmd 16 len 2
-[ 1206.483150] AMS STRUCTURED_VDMS finished
-[ 1206.483151] cc:=4
-[ 1206.505643] AMS STRUCTURED_VDMS start
-[ 1206.505646] PD TX, header: 0x216f
-[ 1206.507933] PD TX complete, status: 0
-[ 1206.512664] PD RX, header: 0x1c4f [1]
-[ 1206.515456] Rx VDM cmd 0xff018151 type 1 cmd 17 len 1
-[ 1206.515460] AMS STRUCTURED_VDMS finished
-[ 1206.515461] cc:=4
-
-Fixes: e1aefcdd394fd ("usb typec: mt6360: Add support for mt6360 Type-C driver")
-Cc: stable <stable@vger.kernel.org>
-Reported-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Tested-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-Link: https://lore.kernel.org/r/1652159580-30959-1-git-send-email-u0084500@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d61914ea6ada ("virtio: update virtio id table, add transitional ids")
+Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
+Link: https://lore.kernel.org/r/20220510102723.87666-1-mie@igel.co.jp
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/tcpm/tcpci_mt6360.c |   26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ include/uapi/linux/virtio_ids.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
---- a/drivers/usb/typec/tcpm/tcpci_mt6360.c
-+++ b/drivers/usb/typec/tcpm/tcpci_mt6360.c
-@@ -15,6 +15,9 @@
+diff --git a/include/uapi/linux/virtio_ids.h b/include/uapi/linux/virtio_ids.h
+index 80d76b75bccd..7aa2eb766205 100644
+--- a/include/uapi/linux/virtio_ids.h
++++ b/include/uapi/linux/virtio_ids.h
+@@ -73,12 +73,12 @@
+  * Virtio Transitional IDs
+  */
  
- #include "tcpci.h"
+-#define VIRTIO_TRANS_ID_NET		1000 /* transitional virtio net */
+-#define VIRTIO_TRANS_ID_BLOCK		1001 /* transitional virtio block */
+-#define VIRTIO_TRANS_ID_BALLOON		1002 /* transitional virtio balloon */
+-#define VIRTIO_TRANS_ID_CONSOLE		1003 /* transitional virtio console */
+-#define VIRTIO_TRANS_ID_SCSI		1004 /* transitional virtio SCSI */
+-#define VIRTIO_TRANS_ID_RNG		1005 /* transitional virtio rng */
+-#define VIRTIO_TRANS_ID_9P		1009 /* transitional virtio 9p console */
++#define VIRTIO_TRANS_ID_NET		0x1000 /* transitional virtio net */
++#define VIRTIO_TRANS_ID_BLOCK		0x1001 /* transitional virtio block */
++#define VIRTIO_TRANS_ID_BALLOON		0x1002 /* transitional virtio balloon */
++#define VIRTIO_TRANS_ID_CONSOLE		0x1003 /* transitional virtio console */
++#define VIRTIO_TRANS_ID_SCSI		0x1004 /* transitional virtio SCSI */
++#define VIRTIO_TRANS_ID_RNG		0x1005 /* transitional virtio rng */
++#define VIRTIO_TRANS_ID_9P		0x1009 /* transitional virtio 9p console */
  
-+#define MT6360_REG_PHYCTRL1	0x80
-+#define MT6360_REG_PHYCTRL3	0x82
-+#define MT6360_REG_PHYCTRL7	0x86
- #define MT6360_REG_VCONNCTRL1	0x8C
- #define MT6360_REG_MODECTRL2	0x8F
- #define MT6360_REG_SWRESET	0xA0
-@@ -22,6 +25,8 @@
- #define MT6360_REG_DRPCTRL1	0xA2
- #define MT6360_REG_DRPCTRL2	0xA3
- #define MT6360_REG_I2CTORST	0xBF
-+#define MT6360_REG_PHYCTRL11	0xCA
-+#define MT6360_REG_RXCTRL1	0xCE
- #define MT6360_REG_RXCTRL2	0xCF
- #define MT6360_REG_CTDCTRL2	0xEC
- 
-@@ -106,6 +111,27 @@ static int mt6360_tcpc_init(struct tcpci
- 	if (ret)
- 		return ret;
- 
-+	/* BMC PHY */
-+	ret = mt6360_tcpc_write16(regmap, MT6360_REG_PHYCTRL1, 0x3A70);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(regmap, MT6360_REG_PHYCTRL3,  0x82);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(regmap, MT6360_REG_PHYCTRL7, 0x36);
-+	if (ret)
-+		return ret;
-+
-+	ret = mt6360_tcpc_write16(regmap, MT6360_REG_PHYCTRL11, 0x3C60);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(regmap, MT6360_REG_RXCTRL1, 0xE8);
-+	if (ret)
-+		return ret;
-+
- 	/* Set shipping mode off, AUTOIDLE on */
- 	return regmap_write(regmap, MT6360_REG_MODECTRL2, 0x7A);
- }
+ #endif /* _LINUX_VIRTIO_IDS_H */
+-- 
+2.35.1
+
 
 
