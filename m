@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43304C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347664AbiEPUdI (ORCPT
+        id S1347893AbiEPUdT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:33:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        Mon, 16 May 2022 16:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351063AbiEPUB5 (ORCPT
+        with ESMTP id S1351043AbiEPUB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D5F473B4;
-        Mon, 16 May 2022 12:57:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48B947386;
+        Mon, 16 May 2022 12:57:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3D4DB81615;
-        Mon, 16 May 2022 19:57:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25369C34100;
-        Mon, 16 May 2022 19:57:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F02760EC4;
+        Mon, 16 May 2022 19:57:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6088CC385AA;
+        Mon, 16 May 2022 19:57:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731075;
-        bh=FM2KypQaSM0lg4NGsv+JVQ8dLweljGPy3xbFEFrdZyU=;
+        s=korg; t=1652731031;
+        bh=6LqK2gRtrSxLO9Pee6wcg+TmBTLaOGWl7RyUdZFPLQM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pRwdl+Dii0GTLCNdShtR9NjKSbcU2bgAZksxJKOC6dgK8PG5WnFM1hDxM6d04aW3u
-         XS9svh2MhpDy9lpBREMr6ZehVy19O9xtYw/HvMswVfjpsva+wWmS/ciuix35tu/JyT
-         tGbUITJ3P2X4a3qBLjNnVFFsggLz2yi72VwxZdzk=
+        b=eDHsHVJvYAHX6i2Rb9r45GVX/GCjQ4vl/WqLU2qegR59H5DaIHjwI9DHmyZI03spc
+         njH94DO8VfJfl7zAE3HxSRAfGJQmnqPQXYumfB+mfs1vgVkQz+PfClIwlEaJzGCgIa
+         a5usNHuFaADqKG3TWg+0ZEa/jnJq3ec5/PZAVlKM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.17 095/114] mm: mremap: fix sign for EFAULT error return value
-Date:   Mon, 16 May 2022 21:37:09 +0200
-Message-Id: <20220516193628.201513069@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Habets <habetsm.xilinx@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 045/114] net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
+Date:   Mon, 16 May 2022 21:36:19 +0200
+Message-Id: <20220516193626.788107537@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -51,39 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-commit 7d1e6496616275f3830e2f2f91fa69a66953e95b upstream.
+[ Upstream commit 1fa89ffbc04545b7582518e57f4b63e2a062870f ]
 
-The mremap syscall is supposed to return a pointer to the new virtual
-memory area on success, and a negative value of the error code in case of
-failure.  Currently, EFAULT is returned when the VMA is not found, instead
-of -EFAULT.  The users of this syscall will therefore believe the syscall
-succeeded in case the VMA didn't exist, as it returns a pointer to address
-0xe (0xe being the value of EFAULT).  Fix the sign of the error value.
+In the NIC ->probe() callback, ->mtd_probe() callback is called.
+If NIC has 2 ports, ->probe() is called twice and ->mtd_probe() too.
+In the ->mtd_probe(), which is efx_ef10_mtd_probe() it allocates and
+initializes mtd partiion.
+But mtd partition for sfc is shared data.
+So that allocated mtd partition data from last called
+efx_ef10_mtd_probe() will not be used.
+Therefore it must be freed.
+But it doesn't free a not used mtd partition data in efx_ef10_mtd_probe().
 
-Link: https://lkml.kernel.org/r/20220427224439.23828-2-dossche.niels@gmail.com
-Fixes: 550a7d60bd5e ("mm, hugepages: add mremap() support for hugepage backed vma")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Cc: Mina Almasry <almasrymina@google.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+kmemleak reports:
+unreferenced object 0xffff88811ddb0000 (size 63168):
+  comm "systemd-udevd", pid 265, jiffies 4294681048 (age 348.586s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffffa3767749>] kmalloc_order_trace+0x19/0x120
+    [<ffffffffa3873f0e>] __kmalloc+0x20e/0x250
+    [<ffffffffc041389f>] efx_ef10_mtd_probe+0x11f/0x270 [sfc]
+    [<ffffffffc0484c8a>] efx_pci_probe.cold.17+0x3df/0x53d [sfc]
+    [<ffffffffa414192c>] local_pci_probe+0xdc/0x170
+    [<ffffffffa4145df5>] pci_device_probe+0x235/0x680
+    [<ffffffffa443dd52>] really_probe+0x1c2/0x8f0
+    [<ffffffffa443e72b>] __driver_probe_device+0x2ab/0x460
+    [<ffffffffa443e92a>] driver_probe_device+0x4a/0x120
+    [<ffffffffa443f2ae>] __driver_attach+0x16e/0x320
+    [<ffffffffa4437a90>] bus_for_each_dev+0x110/0x190
+    [<ffffffffa443b75e>] bus_add_driver+0x39e/0x560
+    [<ffffffffa4440b1e>] driver_register+0x18e/0x310
+    [<ffffffffc02e2055>] 0xffffffffc02e2055
+    [<ffffffffa3001af3>] do_one_initcall+0xc3/0x450
+    [<ffffffffa33ca574>] do_init_module+0x1b4/0x700
+
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Fixes: 8127d661e77f ("sfc: Add support for Solarflare SFC9100 family")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Link: https://lore.kernel.org/r/20220512054709.12513-1-ap420073@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/mremap.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/ef10.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/mm/mremap.c
-+++ b/mm/mremap.c
-@@ -947,7 +947,7 @@ SYSCALL_DEFINE5(mremap, unsigned long, a
- 		return -EINTR;
- 	vma = find_vma(mm, addr);
- 	if (!vma || vma->vm_start > addr) {
--		ret = EFAULT;
-+		ret = -EFAULT;
- 		goto out;
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index cf366ed2557c..1ab725d554a5 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -3579,6 +3579,11 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
+ 		n_parts++;
  	}
  
++	if (!n_parts) {
++		kfree(parts);
++		return 0;
++	}
++
+ 	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
+ fail:
+ 	if (rc)
+-- 
+2.35.1
+
 
 
