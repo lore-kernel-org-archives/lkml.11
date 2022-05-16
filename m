@@ -2,130 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FCF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18852C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:18:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241591AbiEPISu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 04:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56370 "EHLO
+        id S241597AbiEPISx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 04:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241581AbiEPISt (ORCPT
+        with ESMTP id S241580AbiEPISt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 04:18:49 -0400
 Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C0A36E2B
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8744136E23
         for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 01:18:45 -0700 (PDT)
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6FCD01A0475;
-        Mon, 16 May 2022 10:18:44 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7083D1A0473;
+        Mon, 16 May 2022 10:18:43 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 38D331A0474;
-        Mon, 16 May 2022 10:18:44 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 394351A0470;
+        Mon, 16 May 2022 10:18:43 +0200 (CEST)
 Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id B841F180031D;
-        Mon, 16 May 2022 16:18:42 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id AD80E180219B;
+        Mon, 16 May 2022 16:18:41 +0800 (+08)
 From:   Shengjiu Wang <shengjiu.wang@nxp.com>
 To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
         shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
         perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
 Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] ASoC: fsl_sai: Add support for i.MX8MM
-Date:   Mon, 16 May 2022 16:06:10 +0800
-Message-Id: <1652688372-10274-2-git-send-email-shengjiu.wang@nxp.com>
+Subject: [PATCH 0/3] ASoC: fsl_sai: Add support for i.MX8MM, MP, ULP
+Date:   Mon, 16 May 2022 16:06:09 +0800
+Message-Id: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On i.MX8MM the max register is FSL_SAI_MCTL, which is
-different with previous platform, so add max_register in
-soc data to distinguish platforms.
-And add specific soc data for i.MX8MM
+ASoC: fsl_sai: Add support for i.MX8MM, MP, ULP platforms
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/fsl_sai.c | 17 +++++++++++++++++
+Shengjiu Wang (3):
+  ASoC: fsl_sai: Add support for i.MX8MM
+  ASoC: fsl_sai: Add support for i.MX8M Plus
+  ASoC: fsl_sai: Add support for i.MX8ULP
+
+ sound/soc/fsl/fsl_sai.c | 43 ++++++++++++++++++++++++++++++++++++++++-
  sound/soc/fsl/fsl_sai.h |  1 +
- 2 files changed, 18 insertions(+)
+ 2 files changed, 43 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
-index ffc24afb5a7a..1ac65de094b9 100644
---- a/sound/soc/fsl/fsl_sai.c
-+++ b/sound/soc/fsl/fsl_sai.c
-@@ -1203,6 +1203,7 @@ static const struct fsl_sai_soc_data fsl_sai_vf610_data = {
- 	.reg_offset = 0,
- 	.mclk0_is_mclk1 = false,
- 	.flags = 0,
-+	.max_register = FSL_SAI_RMR,
- };
- 
- static const struct fsl_sai_soc_data fsl_sai_imx6sx_data = {
-@@ -1213,6 +1214,7 @@ static const struct fsl_sai_soc_data fsl_sai_imx6sx_data = {
- 	.reg_offset = 0,
- 	.mclk0_is_mclk1 = true,
- 	.flags = 0,
-+	.max_register = FSL_SAI_RMR,
- };
- 
- static const struct fsl_sai_soc_data fsl_sai_imx7ulp_data = {
-@@ -1223,6 +1225,7 @@ static const struct fsl_sai_soc_data fsl_sai_imx7ulp_data = {
- 	.reg_offset = 8,
- 	.mclk0_is_mclk1 = false,
- 	.flags = PMQOS_CPU_LATENCY,
-+	.max_register = FSL_SAI_RMR,
- };
- 
- static const struct fsl_sai_soc_data fsl_sai_imx8mq_data = {
-@@ -1233,6 +1236,7 @@ static const struct fsl_sai_soc_data fsl_sai_imx8mq_data = {
- 	.reg_offset = 8,
- 	.mclk0_is_mclk1 = false,
- 	.flags = 0,
-+	.max_register = FSL_SAI_RMR,
- };
- 
- static const struct fsl_sai_soc_data fsl_sai_imx8qm_data = {
-@@ -1243,6 +1247,18 @@ static const struct fsl_sai_soc_data fsl_sai_imx8qm_data = {
- 	.reg_offset = 0,
- 	.mclk0_is_mclk1 = false,
- 	.flags = 0,
-+	.max_register = FSL_SAI_RMR,
-+};
-+
-+static const struct fsl_sai_soc_data fsl_sai_imx8mm_data = {
-+	.use_imx_pcm = true,
-+	.use_edma = false,
-+	.fifo_depth = 128,
-+	.reg_offset = 8,
-+	.mclk0_is_mclk1 = false,
-+	.pins = 8,
-+	.flags = 0,
-+	.max_register = FSL_SAI_MCTL,
- };
- 
- static const struct of_device_id fsl_sai_ids[] = {
-@@ -1252,6 +1268,7 @@ static const struct of_device_id fsl_sai_ids[] = {
- 	{ .compatible = "fsl,imx7ulp-sai", .data = &fsl_sai_imx7ulp_data },
- 	{ .compatible = "fsl,imx8mq-sai", .data = &fsl_sai_imx8mq_data },
- 	{ .compatible = "fsl,imx8qm-sai", .data = &fsl_sai_imx8qm_data },
-+	{ .compatible = "fsl,imx8mm-sai", .data = &fsl_sai_imx8mm_data },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, fsl_sai_ids);
-diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
-index 7310fd02cc3c..e4965efe6102 100644
---- a/sound/soc/fsl/fsl_sai.h
-+++ b/sound/soc/fsl/fsl_sai.h
-@@ -223,6 +223,7 @@ struct fsl_sai_soc_data {
- 	unsigned int pins;
- 	unsigned int reg_offset;
- 	unsigned int flags;
-+	unsigned int max_register;
- };
- 
- /**
 -- 
 2.17.1
 
