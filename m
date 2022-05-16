@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50226C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A472C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348048AbiEPTwi (ORCPT
+        id S1348232AbiEPTwp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35674 "EHLO
+        Mon, 16 May 2022 15:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346440AbiEPTqO (ORCPT
+        with ESMTP id S1346104AbiEPTr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:46:14 -0400
+        Mon, 16 May 2022 15:47:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E6B41334;
-        Mon, 16 May 2022 12:43:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CBB2DD72;
+        Mon, 16 May 2022 12:44:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BD0E61551;
-        Mon, 16 May 2022 19:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64A44C385AA;
-        Mon, 16 May 2022 19:43:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBA546155B;
+        Mon, 16 May 2022 19:44:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0BCCC385AA;
+        Mon, 16 May 2022 19:44:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730218;
-        bh=ZY7r6g2FfkeLnQCs4ZNZ/uMW7ITBX/uqL8DkAAxNV/c=;
+        s=korg; t=1652730267;
+        bh=H9gUrGoNniifNCLtgHBaeOvSZApWkJs6YJlT3InkpjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=adhaVVSowr8Jebbll8TuQ9QzfeTtGKF4rrBtmBORBiUZiywnhrBCNRay/SUyANdVe
-         dKxbFCvRCPEpcOazxeFfakZCi6Rc0oueIkpEfHjdeK38T6md+E00nhzdrYBXH9mz4m
-         OV6c0mxIjLT5bKMXKxfqKfCVOWWEqQmmRGIKlEl0=
+        b=hja0TbSwhp7oUDNccAQICLDXx6a4Wmpy3WpCwLRO3v/sEpQLep04xKc+rP/5BVayO
+         jop+Xdvis2yjElYNFR7ImZRHm/23RI5/1m4fw+5ptFVOrdD2gfoqDoO3M68Yszb4Gz
+         Wt/0yk9uJe0fVP5/cTQD6lGqUo33Shb9cgOj/lIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Martin Krastev <krastevm@vmware.com>,
-        Maaz Mombasawala <mombasawalam@vmware.com>
-Subject: [PATCH 5.4 38/43] drm/vmwgfx: Initialize drm_mode_fb_cmd2
-Date:   Mon, 16 May 2022 21:36:49 +0200
-Message-Id: <20220516193615.843741341@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 10/66] ipv4: drop dst in multicast routing path
+Date:   Mon, 16 May 2022 21:36:10 +0200
+Message-Id: <20220516193619.715148481@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
-References: <20220516193614.714657361@linuxfoundation.org>
+In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
+References: <20220516193619.400083785@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +53,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
 
-commit 3059d9b9f6aa433a55b9d0d21b566396d5497c33 upstream.
+[ Upstream commit 9e6c6d17d1d6a3f1515ce399f9a011629ec79aa0 ]
 
-Transition to drm_mode_fb_cmd2 from drm_mode_fb_cmd left the structure
-unitialized. drm_mode_fb_cmd2 adds a few additional members, e.g. flags
-and modifiers which were never initialized. Garbage in those members
-can cause random failures during the bringup of the fbcon.
+kmemleak reports the following when routing multicast traffic over an
+ipsec tunnel.
 
-Initializing the structure fixes random blank screens after bootup due
-to flags/modifiers mismatches during the fbcon bring up.
+Kmemleak output:
+unreferenced object 0x8000000044bebb00 (size 256):
+  comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
+    80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000f83947e0>] __kmalloc+0x1e8/0x300
+    [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
+    [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
+    [<00000000824f6cf1>] gre_rcv+0x178/0x540
+    [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
+    [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
+    [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
+    [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
+    [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
+    [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
+    [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
+    [<00000000013d7914>] irq_exit+0xc4/0xe0
+    [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
+    [<000000000751eb8e>] handle_int+0x16c/0x178
+    [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
 
-Fixes: dabdcdc9822a ("drm/vmwgfx: Switch to mode_cmd2")
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Cc: Daniel Vetter <daniel.vetter@intel.com>
-Cc: <stable@vger.kernel.org> # v4.10+
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Reviewed-by: Maaz Mombasawala <mombasawalam@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220302152426.885214-7-zack@kde.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The metadata dst is leaked when ip_route_input_mc() updates the dst for
+the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
+handled dropping the dst in ip_route_input_slow() but missed the
+multicast case which is handled by ip_route_input_mc(). Drop the dst in
+ip_route_input_mc() avoiding the leak.
+
+Fixes: f38a9eb1f77b ("dst: Metadata destinations")
+Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_fb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/route.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_fb.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fb.c
-@@ -498,7 +498,7 @@ static int vmw_fb_kms_detach(struct vmw_
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index c72d0de8bf71..4080e3c6c50d 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1792,6 +1792,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ #endif
+ 	RT_CACHE_STAT_INC(in_slow_mc);
  
- static int vmw_fb_kms_framebuffer(struct fb_info *info)
- {
--	struct drm_mode_fb_cmd2 mode_cmd;
-+	struct drm_mode_fb_cmd2 mode_cmd = {0};
- 	struct vmw_fb_par *par = info->par;
- 	struct fb_var_screeninfo *var = &info->var;
- 	struct drm_framebuffer *cur_fb;
++	skb_dst_drop(skb);
+ 	skb_dst_set(skb, &rth->dst);
+ 	return 0;
+ }
+-- 
+2.35.1
+
 
 
