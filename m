@@ -2,91 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE471C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240886AbiEPKZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
+        id S233811AbiEPK12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233509AbiEPKZi (ORCPT
+        with ESMTP id S232153AbiEPK1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:25:38 -0400
-X-Greylist: delayed 387 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 03:25:29 PDT
-Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 4D82C11A29;
-        Mon, 16 May 2022 03:25:28 -0700 (PDT)
-Received: by ajax-webmail-mail-app2 (Coremail) ; Mon, 16 May 2022 18:18:45
- +0800 (GMT+08:00)
-X-Originating-IP: [220.246.124.53]
-Date:   Mon, 16 May 2022 18:18:45 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
-        broonie@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net] NFC: hci: fix sleep in atomic context bugs in
- nfc_hci_hcp_message_tx
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <d5fdfe27-a6de-3030-ce51-9f4f45d552f3@linaro.org>
-References: <20220516021028.54063-1-duoming@zju.edu.cn>
- <d5fdfe27-a6de-3030-ce51-9f4f45d552f3@linaro.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Mon, 16 May 2022 06:27:25 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB3162F4;
+        Mon, 16 May 2022 03:27:24 -0700 (PDT)
+Message-ID: <20220516101901.475557433@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652696841;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=j7+SEaG22y86oiQDofQYoIZSbt/LwEsJzpV9z7EO1eI=;
+        b=xvd46nbolPvlZD1EZvzgk3fI3dALuSgRRpx4dfljkrojWv9Cy+ZsGPIM7MPpSBMQgE8pcD
+        szHMwyF0EmlnzL89Wt8XjOIjTirhREgZeUoh/5ksasqsaR/R155NBUnMMRZbihp4gSuJMs
+        maNjsQ4sp9uLt5fKYQVe+CBVBWXBIcigwG6sMoDwhOe+VrxthJVeNAmw84hplEa+N9ucmh
+        ljYh9CuKXOAY6oUjKaYjS68iy2zmGI/BPQ8Z/mZ4Au4p0Ojc09+tCsNXUm6tGgAwrsfHOZ
+        Fh5N97NS5MrKg0O54iVXGpzFNg2+WJqjnWR82tpZ4o9WWbYcfKBEWfQW5ucd0Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652696841;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=j7+SEaG22y86oiQDofQYoIZSbt/LwEsJzpV9z7EO1eI=;
+        b=PmzjwdOipsu+dv4S+KY9mCFdUJBn7Ogt6JT4MzFn3cf5zz6qbrATdlOn+H5ydo6aEn1RxD
+        Yqinny8z0+jdmnCg==
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     linux-spdx@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [patch 0/9] scripts/spdxcheck: Better statistics and exclude handling
 MIME-Version: 1.0
-Message-ID: <6aba1413.196eb.180cc609bf1.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: by_KCgDH3EAFJYJiSn9MAA--.7122W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIMAVZdtZs8KwAAs-
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Date:   Mon, 16 May 2022 12:27:21 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBNb24sIDE2IE1heSAyMDIyIDA4OjQ0OjM5ICswMjAwIEtyenlzenRvZiB3cm90
-ZToKCj4gPiBUaGVyZSBhcmUgc2xlZXAgaW4gYXRvbWljIGNvbnRleHQgYnVncyB3aGVuIHRoZSBy
-ZXF1ZXN0IHRvIHNlY3VyZQo+ID4gZWxlbWVudCBvZiBzdDIxbmZjYSBpcyB0aW1lb3V0LiBUaGUg
-cm9vdCBjYXVzZSBpcyB0aGF0IGt6YWxsb2MgYW5kCj4gPiBhbGxvY19za2Igd2l0aCBHRlBfS0VS
-TkVMIHBhcmFtZXRlciBpcyBjYWxsZWQgaW4gc3QyMW5mY2Ffc2Vfd3RfdGltZW91dAo+ID4gd2hp
-Y2ggaXMgYSB0aW1lciBoYW5kbGVyLiBUaGUgY2FsbCB0cmVlIHNob3dzIHRoZSBleGVjdXRpb24g
-cGF0aHMgdGhhdAo+ID4gY291bGQgbGVhZCB0byBidWdzOgo+ID4gCj4gPiAgICAoSW50ZXJydXB0
-IGNvbnRleHQpCj4gPiBzdDIxbmZjYV9zZV93dF90aW1lb3V0Cj4gPiAgIG5mY19oY2lfc2VuZF9l
-dmVudAo+ID4gICAgIG5mY19oY2lfaGNwX21lc3NhZ2VfdHgKPiA+ICAgICAgIGt6YWxsb2MoLi4u
-LCBHRlBfS0VSTkVMKSAvL21heSBzbGVlcAo+ID4gICAgICAgYWxsb2Nfc2tiKC4uLiwgR0ZQX0tF
-Uk5FTCkgLy9tYXkgc2xlZXAKPiA+IAo+ID4gVGhpcyBwYXRjaCBjaGFuZ2VzIGFsbG9jYXRpb24g
-bW9kZSBvZiBremFsbG9jIGFuZCBhbGxvY19za2IgZnJvbQo+ID4gR0ZQX0tFUk5FTCB0byBHRlBf
-QVRPTUlDIGluIG9yZGVyIHRvIHByZXZlbnQgYXRvbWljIGNvbnRleHQgZnJvbQo+ID4gc2xlZXBp
-bmcuIFRoZSBHRlBfQVRPTUlDIGZsYWcgbWFrZXMgbWVtb3J5IGFsbG9jYXRpb24gb3BlcmF0aW9u
-Cj4gPiBjb3VsZCBiZSB1c2VkIGluIGF0b21pYyBjb250ZXh0Lgo+ID4gCj4gPiBGaXhlczogOGI4
-ZDJlMDhiZjBkICgiTkZDOiBIQ0kgc3VwcG9ydCIpCj4gPiBTaWduZWQtb2ZmLWJ5OiBEdW9taW5n
-IFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4KPiA+IC0tLQo+ID4gIG5ldC9uZmMvaGNpL2hjcC5j
-IHwgNCArKy0tCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlv
-bnMoLSkKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL25ldC9uZmMvaGNpL2hjcC5jIGIvbmV0L25mYy9o
-Y2kvaGNwLmMKPiA+IGluZGV4IDA1YzYwOTg4ZjU5Li4xY2FmOWMyMDg2ZiAxMDA2NDQKPiA+IC0t
-LSBhL25ldC9uZmMvaGNpL2hjcC5jCj4gPiArKysgYi9uZXQvbmZjL2hjaS9oY3AuYwo+ID4gQEAg
-LTMwLDcgKzMwLDcgQEAgaW50IG5mY19oY2lfaGNwX21lc3NhZ2VfdHgoc3RydWN0IG5mY19oY2lf
-ZGV2ICpoZGV2LCB1OCBwaXBlLAo+ID4gIAlpbnQgaGNpX2xlbiwgZXJyOwo+ID4gIAlib29sIGZp
-cnN0ZnJhZyA9IHRydWU7Cj4gPiAgCj4gPiAtCWNtZCA9IGt6YWxsb2Moc2l6ZW9mKHN0cnVjdCBo
-Y2lfbXNnKSwgR0ZQX0tFUk5FTCk7Cj4gPiArCWNtZCA9IGt6YWxsb2Moc2l6ZW9mKCpjbWQpLCBH
-RlBfQVRPTUlDKTsKPiAKPiBObywgdGhpcyBkb2VzIG5vdCBsb29rIGNvcnJlY3QuIFRoaXMgZnVu
-Y3Rpb24gY2FuIHNsZWVwLCBzbyBpdCBjYW4gdXNlCj4gR0ZQX0tFUk5FTC4gUGxlYXNlIGp1c3Qg
-bG9vayBhdCB0aGUgZnVuY3Rpb24gYmVmb3JlIHJlcGxhY2luZyBhbnkgZmxhZ3MuLi4KCkkgYW0g
-c29ycnksIEkgZG9uYHQgdW5kZXJzdGFuZCB3aHkgbmZjX2hjaV9oY3BfbWVzc2FnZV90eCgpIGNh
-biBzbGVlcC4KCkkgdGhpbmsgc3QyMW5mY2Ffc2Vfd3RfdGltZW91dCgpIGlzIGEgdGltZXIgaGFu
-ZGxlciwgd2hpY2ggaXMgaW4gaW50ZXJydXB0IGNvbnRleHQuClRoZSBjYWxsIHRyZWUgc2hvd3Mg
-dGhlIGV4ZWN1dGlvbiBwYXRocyB0aGF0IGNvdWxkIGxlYWQgdG8gYnVnczoKCnN0MjFuZmNhX2hj
-aV9zZV9pbygpCiAgbW9kX3RpbWVyKCZpbmZvLT5zZV9pbmZvLmJ3aV90aW1lciwuLi4pCiAgICBz
-dDIxbmZjYV9zZV93dF90aW1lb3V0KCkgIC8vdGltZXIgaGFuZGxlciwgaW50ZXJydXB0IGNvbnRl
-eHQKICAgICAgbmZjX2hjaV9zZW5kX2V2ZW50KCkKICAgICAgICBuZmNfaGNpX2hjcF9tZXNzYWdl
-X3R4KCkKICAgICAgICAgIGt6YWxsb2MoLi4uLCBHRlBfS0VSTkVMKSAvL21heSBzbGVlcAogICAg
-ICAgICAgYWxsb2Nfc2tiKC4uLiwgR0ZQX0tFUk5FTCkgLy9tYXkgc2xlZXAKCldoYXRgcyBtb3Jl
-LCBJIHRoaW5rIHRoZSAibXV0ZXhfbG9jaygmaGRldi0+bXNnX3R4X211dGV4KSIgY2FsbGVkIGJ5
-IG5mY19oY2lfaGNwX21lc3NhZ2VfdHgoKQppcyBhbHNvIGltcHJvcGVyLgoKUGxlYXNlIGNvcnJl
-Y3QgbWUsIElmIHlvdSB0aGluayBJIGFtIHdyb25nLiBUaGFua3MgZm9yIHlvdXIgdGltZS4KCkJl
-c3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cgo=
+c3BkeGNoZWNrIC12IG91dHB1dCBpcyBqdXN0IHByb3ZpZGluZyBiYXNpYyBzdGF0aXN0aWNzLCBi
+dXQgbGFja3MgcGVyCmRpcmVjdG9yeSBzdGF0aXN0aWNzLgoKRmluZGluZyBmaWxlcyB3aXRob3V0
+IFNQRFggaWRlbnRpZmllcnMgaXMgY3VtYmVyc29tZSB3aXRoIHNwZHhjaGVjaywgdGhvdWdoCml0
+IGhhcyBhbGwgdGhlIGluZm9ybWF0aW9uIHJlcXVpcmVkLgoKVGhlIGV4Y2x1ZGUgb2YgZmlsZXMg
+YW5kIGRpcmVjdG9yaWVzIGlzIGhhcmRjb2RlZCBpbiB0aGUgc2NyaXB0IHdoaWNoIG1ha2VzCml0
+IGhhcmQgdG8gbWFpbnRhaW4gYW5kIHRoZSBpbmZvcm1hdGlvbiBjYW5ub3QgYmUgYWNjZXNzZWQg
+YnkgZXh0ZXJuYWwgdG9vbHMuCgpUaGUgZm9sbG93aW5nIHNlcmllcyBhZGRyZXNzZXMgdGhpcyBi
+eSBhZGRpbmc6CgogMSkgRGlyZWN0b3J5IHN0YXRpc3RpY3MKCiAgICBJbmNvbXBsZXRlIGRpcmVj
+dG9yaWVzOiBTUERYIGluIEZpbGVzCiAgICAuLyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICA6ICAgICA2IG9mICAgIDEzICAgNDYlCiAgICAuL0RvY3VtZW50YXRpb24gICAgICAgICAgICAg
+ICAgICA6ICA0MDk2IG9mICA4NDUxICAgNDglCiAgICAuL2FyY2ggICAgICAgICAgICAgICAgICAg
+ICAgICAgICA6IDEzNDc2IG9mIDE2NDAyICAgODIlCiAgICAuL2Jsb2NrICAgICAgICAgICAgICAg
+ICAgICAgICAgICA6ICAgMTAwIG9mICAgMTAxICAgOTklCiAgICAuL2NlcnRzICAgICAgICAgICAg
+ICAgICAgICAgICAgICA6ICAgIDExIG9mICAgIDE0ICAgNzglCiAgICAuL2NyeXB0byAgICAgICAg
+ICAgICAgICAgICAgICAgICA6ICAgMTQ1IG9mICAgMTc2ICAgODIlCiAgICAuL2RyaXZlcnMgICAg
+ICAgICAgICAgICAgICAgICAgICA6IDI0NjgyIG9mIDMwNzQ1ICAgODAlCgogMikgVGhlIGFiaWxp
+dHkgdG8gc2hvdyBmaWxlcyB3aXRob3V0IFNQRFgKCiAgICBGaWxlcyB3aXRob3V0IFNQRFg6CiAg
+ICAuL2tlcm5lbC9jcHUuYwogICAgLi9rZXJuZWwva21vZC5jCiAgICAuL2tlcm5lbC9yZWxheS5j
+CgogMykgQSBmaWxlIGJhc2VkIGhhbmRsaW5nIGZvciBleGNsdWRlIHBhdHRlcm5zCgpUaGFua3Ms
+CgoJdGdseAo=
