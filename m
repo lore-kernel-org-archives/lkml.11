@@ -2,77 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35790C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DEEFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241554AbiEPKHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
+        id S242240AbiEPKHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242312AbiEPKFh (ORCPT
+        with ESMTP id S233451AbiEPKFa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:05:37 -0400
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C1C5F8F;
-        Mon, 16 May 2022 03:04:45 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id E5918300002A8;
-        Mon, 16 May 2022 12:04:43 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id D9D7925050A; Mon, 16 May 2022 12:04:43 +0200 (CEST)
-Date:   Mon, 16 May 2022 12:04:43 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-gpio@vger.kernel.org,
-        Octavian Purdila <octavian.purdila@nxp.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] genirq: Deduplicate WARN_ON_ONCE() in
- generic_handle_domain_irq()
-Message-ID: <20220516100443.GA13963@wunner.de>
-References: <c3caf60bfa78e5fdbdf483096b7174da65d1813a.1652168866.git.lukas@wunner.de>
- <YoHvXpo8PJUDbs08@linutronix.de>
+        Mon, 16 May 2022 06:05:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6E011452;
+        Mon, 16 May 2022 03:04:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 842D46093C;
+        Mon, 16 May 2022 10:04:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ACDCC385AA;
+        Mon, 16 May 2022 10:04:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652695478;
+        bh=qwMeOyDxZFuqD6KQw3J705rH3w/y6FDNYmqKPSYVm3A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=S4+qYbgBDMnf8CrM8i8T2yYLJPx1EV2O2H38OZ5tqHfCxdkSXqk8pyNa08HtDr67z
+         SEVEnjYWSiiWsRTm/hk44FievUyDqWPKuOJ/pq2TIHZMfk68koO+NrCbzasdePVmkI
+         v8EEXJtDc0QFP7KKYnUm+SqpPube4SIbgOXWh4rE0rllYmPE5XtRxPfs48bEYd3lfy
+         0yl/F4GqtV9PQUZmwqqkWq3XMWks5PzdVdXgH2EhdIgp2h0PPrR04+HI87c/1kOSOz
+         /MveAJXcC3QHS/v8YG1LdpZO7t2b1lCqg0YOK1T1Y1jfJ5TZhQ1l2B+fah2lsWRWo9
+         b2PZJ+RctXEeA==
+From:   Miguel Ojeda <ojeda@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     rust-for-linux@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Li Li <dualli@google.com>, linux-kernel@vger.kernel.org,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Subject: [PATCH v1] binder: convert `BINDER_*` ioctl `#define`s into an `enum`
+Date:   Mon, 16 May 2022 12:04:01 +0200
+Message-Id: <20220516100401.7639-1-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoHvXpo8PJUDbs08@linutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 08:29:50AM +0200, Sebastian Andrzej Siewior wrote:
-> From looking at gpio-dln2
-> this is called from USB URB's callback which is softirq. In the end
-> dln2_gpio_event() is invoked while dln2_dev::event_cb_lock is acquired.
-> That lock is acquired by disabling interrupts which is what gets the
-> locking right for generic_handle_domain_irq(). If that lock lifted to
-> spin_lock_bh() (because it is always in urb's calback context and all
-> HCDs complete in one context unlike now) then this breaks.
+bindgen (a tool which generates the "raw" C bindings for Rust) only
+works (so far) with "simple" C `#define`s. In order to avoid having
+to manually maintain these constants in the (potential) Rust side,
+this patch converts them into an `enum`.
 
-I think you want WARN_ON(!irqs_disabled) to catch that,
-not WARN_ON_ONCE(!in_hardirq()).
+There may be support in the future for expanding macros that end up in
+a "numeric" one: https://github.com/rust-lang/rust-bindgen/issues/753.
 
+Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
+Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+---
+Two notes:
+  - Let me know if you prefer that I base this on top of a binder branch.
+  - Wedson should OK the changes for his `Signed-off-by` tag (and probably
+    he should be the author of the patch).
 
-> and sadly I missed dln2. Please let me know if you have more users
-> similar to dln2. I will add those to my list once upstream buys that
-> interface.
+ include/uapi/linux/android/binder.h | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
-There's another USB GPIO irqchip queued up for 5.19 now:
-https://git.kernel.org/netdev/net-next/c/1ce8b37241ed
+diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
+index 11157fae8a8e..ed4d11a0bb99 100644
+--- a/include/uapi/linux/android/binder.h
++++ b/include/uapi/linux/android/binder.h
+@@ -236,19 +236,21 @@ struct binder_frozen_status_info {
+ 	__u32            async_recv;
+ };
+ 
+-#define BINDER_WRITE_READ		_IOWR('b', 1, struct binder_write_read)
+-#define BINDER_SET_IDLE_TIMEOUT		_IOW('b', 3, __s64)
+-#define BINDER_SET_MAX_THREADS		_IOW('b', 5, __u32)
+-#define BINDER_SET_IDLE_PRIORITY	_IOW('b', 6, __s32)
+-#define BINDER_SET_CONTEXT_MGR		_IOW('b', 7, __s32)
+-#define BINDER_THREAD_EXIT		_IOW('b', 8, __s32)
+-#define BINDER_VERSION			_IOWR('b', 9, struct binder_version)
+-#define BINDER_GET_NODE_DEBUG_INFO	_IOWR('b', 11, struct binder_node_debug_info)
+-#define BINDER_GET_NODE_INFO_FOR_REF	_IOWR('b', 12, struct binder_node_info_for_ref)
+-#define BINDER_SET_CONTEXT_MGR_EXT	_IOW('b', 13, struct flat_binder_object)
+-#define BINDER_FREEZE			_IOW('b', 14, struct binder_freeze_info)
+-#define BINDER_GET_FROZEN_INFO		_IOWR('b', 15, struct binder_frozen_status_info)
+-#define BINDER_ENABLE_ONEWAY_SPAM_DETECTION	_IOW('b', 16, __u32)
++enum {
++	BINDER_WRITE_READ			= _IOWR('b', 1, struct binder_write_read),
++	BINDER_SET_IDLE_TIMEOUT			= _IOW('b', 3, __s64),
++	BINDER_SET_MAX_THREADS			= _IOW('b', 5, __u32),
++	BINDER_SET_IDLE_PRIORITY		= _IOW('b', 6, __s32),
++	BINDER_SET_CONTEXT_MGR			= _IOW('b', 7, __s32),
++	BINDER_THREAD_EXIT			= _IOW('b', 8, __s32),
++	BINDER_VERSION				= _IOWR('b', 9, struct binder_version),
++	BINDER_GET_NODE_DEBUG_INFO		= _IOWR('b', 11, struct binder_node_debug_info),
++	BINDER_GET_NODE_INFO_FOR_REF		= _IOWR('b', 12, struct binder_node_info_for_ref),
++	BINDER_SET_CONTEXT_MGR_EXT		= _IOW('b', 13, struct flat_binder_object),
++	BINDER_FREEZE				= _IOW('b', 14, struct binder_freeze_info),
++	BINDER_GET_FROZEN_INFO			= _IOWR('b', 15, struct binder_frozen_status_info),
++	BINDER_ENABLE_ONEWAY_SPAM_DETECTION	= _IOW('b', 16, __u32),
++};
+ 
+ /*
+  * NOTE: Two special error codes you should check for when calling
 
-And there's one more in drivers/hid/hid-cp2112.c, but that calls
-handle_nested_irq(), which disables hardirqs.
+base-commit: 42226c989789d8da4af1de0c31070c96726d990c
+-- 
+2.36.1
 
-Thanks,
-
-Lukas
