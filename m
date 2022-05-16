@@ -2,105 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9228C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A18C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349376AbiEPVPx (ORCPT
+        id S1349186AbiEPVRp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 17:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
+        Mon, 16 May 2022 17:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349058AbiEPVPS (ORCPT
+        with ESMTP id S1349137AbiEPVRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 17:15:18 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C7317E17
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 14:10:10 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id d188-20020a25cdc5000000b00648429e5ab9so14101407ybf.13
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 14:10:10 -0700 (PDT)
+        Mon, 16 May 2022 17:17:12 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9243E1EE
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 14:14:54 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id c24so18511552lfv.11
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 14:14:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gJH2vNlNQIo9Al56TVOkq6UollYkHvbAT4XCJVkzPlo=;
-        b=q8K57O1NPaavHFGg8uevoHd8vdNfGOvgh5pa5KLXfjH6qslBYym5QnuEHVweXdP12g
-         z6txr4GPWzThnSCbUR1Orzix+VGdmbg0HPNmI2AuqbeGHQX7Z0AkjtITu67cNr1l+0jC
-         XkhOp95c5xWDmHOByjvnElyeG9S5e4uHfneDqEY8KNrD3QDyEZE34jzN/5MiJxTf+Qmb
-         7NulqRHaMKEATCJL4wIHfiBsXD7osQCwMOrqbtPOK2maO8352MdpFqyf8uLLu9iYXjAC
-         YsKgZ+iz4mWWqQfSBbQH8PkBBmd1FA0Xgc5Se+YF86Ca9/poFTbVnlz1hqbkifIXWyr0
-         rVMg==
+        bh=mVc949hLeA39MqSMbzTaJoP2sRl/dspbJRT8NSeNYX4=;
+        b=qJZIvLrGTuenzqr1yf456WkkwoQYRzEEhmvaKPROjmxi48ert0UqLLwuTsHL38UIzV
+         sUgW6e+E65UYTYc0N0GdjDaxi403ptbmk5FG17xpyGT6bfEWfYKawemPaS+zZVGjAPjC
+         CvRtjh2cCi4S8f8Xvxa6tYN9hR/zLhuq4D7FvfV9pymJr7N5SCAcqEwHZqmTQDlZQBhz
+         oyngojxpRgIECN0bthFX+TJedFsSLqUg4Hoi8SopeOcWPbAlw30v51yhzc60Ul4f33Uc
+         JFQRw+WiccEgtCRW8MUUL2Ik396GpL/BbsXBfWWkkXFCQURW+22M6evy6BZEppdTHKkN
+         C9ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=gJH2vNlNQIo9Al56TVOkq6UollYkHvbAT4XCJVkzPlo=;
-        b=118Hw8Grkh7twK7B15oRtS81DxYK479WvN8JXHHJoV6bXELDRKNQEyHrg95G616Np4
-         X9myAEvL/vH6rCp/8QezPYEyly55Gajq66Acb3wu13cG5oyiYCJj5UWJ6AKNmZgWeUAM
-         05FssSFl67bmONJLsOkr5Ak4ui9UdgmJ5g2eNYt4vk4jJpMYRw9qiStXwAmbzVkn/v7C
-         axI7gtSHE8Kja46HN8wFV2Ic8DeCznMyGfffJjyYOuk9pO3XmXWdKXZa3w0nvZD1z54n
-         Ax9ZjCrvp9oB5vRaWPtBWCwKG4N55QmknAaJXxeIj1SH+cahXuSK0zlJ7HDEV+yKQwaW
-         uPRg==
-X-Gm-Message-State: AOAM530G5nj0W/I4oR359YoN21YiAPqUrbJE9tXM49F2Ftu7umfZqIvQ
-        cR7PL8kGP4kERxF4BWVEe9V1Mj3ohixCqHNqb08=
-X-Google-Smtp-Source: ABdhPJyCTvkarlEdqOvsqNv4kNm1LQOPAQvPW5Wh+33cc828J7QmhJc760oZpsnGrmxMB0MDS1kB3BoYZFYpEhJuP8U=
-X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:2ef0:b8de:b9c8:da45])
- (user=ndesaulniers job=sendgmr) by 2002:a25:54c:0:b0:64d:69bb:e090 with SMTP
- id 73-20020a25054c000000b0064d69bbe090mr12087349ybf.429.1652735409881; Mon,
- 16 May 2022 14:10:09 -0700 (PDT)
-Date:   Mon, 16 May 2022 14:09:53 -0700
-In-Reply-To: <20220516210954.1660716-1-ndesaulniers@google.com>
-Message-Id: <20220516210954.1660716-4-ndesaulniers@google.com>
-Mime-Version: 1.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mVc949hLeA39MqSMbzTaJoP2sRl/dspbJRT8NSeNYX4=;
+        b=0la7Cafxnz5Uy1lhE8a7kZvN6dbfhKdQrUr9Op+q3X/NUo1atSMzRiUcmJoRY/s5Rg
+         vXHF3OJ1dx/+FsbXnBKg9IQofJlq22FcWa2knzlLizqRljXWUmigRKY1FTzmKS1zLIHJ
+         rFCLQbDyuEI61yxHqOSms3MbFWy2LRWp5QNnScYudXrI6Qucrl2mAOH7toLU3fptdR62
+         pg2pnOy8w9LvfIo3RCtB7c6+hEWQUIi9SUJcKsQ8P79Mlj7pBTdiKbe016nMVNNtDwGc
+         MNjk3dPMPnoZny/fkVy8NOzjDDaXYlsKwC/Q/cPNpQMeCzgGUn6v+h5K7qEmRHn7l31d
+         /RSQ==
+X-Gm-Message-State: AOAM530+4D9s/E/2rr+Q+Q84G2H37gRuq0jO1WyDO1lm/TbpJW1LYWUY
+        efl5iX7GIqN5DY5docDmu6w037VS881OGt9B1dr8aw==
+X-Google-Smtp-Source: ABdhPJzcKckoHka00EJ/30FITGJtcoKgaVot2sHBtqy0fyvD5CZtw9xZHCwaV33GZBOg5Zh9WwV9MDsANeWz/ofXqX8=
+X-Received: by 2002:a05:6512:3047:b0:473:cf43:6d8f with SMTP id
+ b7-20020a056512304700b00473cf436d8fmr14956460lfb.380.1652735692632; Mon, 16
+ May 2022 14:14:52 -0700 (PDT)
+MIME-Version: 1.0
 References: <20220516210954.1660716-1-ndesaulniers@google.com>
-X-Developer-Key: i=ndesaulniers@google.com; a=ed25519; pk=lvO/pmg+aaCb6dPhyGC1GyOCvPueDrrc8Zeso5CaGKE=
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652735394; l=938; s=20211004;
- h=from:subject; bh=T9BSmoUTZZ/l/4cKzU/17oPppOyCGzetEds5NOZIrWQ=;
- b=8FrOhkyvfC7vArFsPvAnd24amfcR4JlfF0QbPfyYrJ5dNOBuwKcXRFBPcYEjIvovyC8NaU6XW8kg
- 0rstkQerBW6KdT7Rc+cTUyjdSir5seoBM0spKRrjhKOvZ+34H6kG
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [PATCH v3 3/4] ARM: only use -mtp=cp15 for the compiler
+In-Reply-To: <20220516210954.1660716-1-ndesaulniers@google.com>
 From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Ard@google.com,
-        Biesheuvel@google.com
+Date:   Mon, 16 May 2022 14:14:41 -0700
+Message-ID: <CAKwvOd=SkLwa-0i873oUDt9hRQxA=8dbc26v4Di_rysnE=pJpg@mail.gmail.com>
+Subject: Re: [PATCH v3 0/4] pass -march= only to compiler
+To:     Arnd Bergmann <arnd@arndb.de>, Ard Biesheuvel <ardb@kernel.org>
 Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
         Masahiro Yamada <masahiroy@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Nick Desaulniers <ndesaulniers@google.com>
+        llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoids an error from the assembler for CONFIG_THUMB2 kernels:
++ Ard (I messed up my command line invocation of git send-email, sorry
+for more noise)
+https://lore.kernel.org/llvm/20220516210954.1660716-1-ndesaulniers@google.com/
 
-clang-15: error: hardware TLS register is not supported for the thumbv4t
-sub-architecture
+On Mon, May 16, 2022 at 2:10 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> When both -march= and -Wa,-march= are specified for assembler or
+> assembler-with-cpp sources, GCC and Clang will prefer the -Wa,-march=
+> value but Clang will warn that -march= is unused.
+>
+> warning: argument unused during compilation: '-march=armv6k'
+> [-Wunused-command-line-argument]
+>
+> This is the top group of warnings we observe when using clang to
+> assemble the kernel via `ARCH=arm make LLVM=1`.
+>
+> Arnd sent a v2 of my previous patch
+> https://lore.kernel.org/linux-arm-kernel/20210928154143.2106903-14-arnd@kernel.org/
+> I added yet a few more instances I found since then.
+>
+> Fixing this will allow us to enable
+> -Werror=unused-command-line-argument for clang builds.
+>
+> Nick Desaulniers (4):
+>   ARM: remove lazy evaluation in Makefile
+>   ARM: use .arch directives instead of assembler command line flags
+>   ARM: only use -mtp=cp15 for the compiler
+>   ARM: pass -march= only to compiler
+>
+>  arch/arm/Makefile                   | 76 ++++++++++++++++-------------
+>  arch/arm/boot/compressed/Makefile   |  1 -
+>  arch/arm/common/Makefile            |  2 -
+>  arch/arm/common/mcpm_head.S         |  2 +
+>  arch/arm/common/vlock.S             |  2 +
+>  arch/arm/kernel/Makefile            |  2 -
+>  arch/arm/kernel/hyp-stub.S          |  2 +
+>  arch/arm/kernel/swp_emulate.c       |  1 +
+>  arch/arm/lib/Makefile               |  4 --
+>  arch/arm/lib/delay-loop.S           |  4 ++
+>  arch/arm/mach-at91/Makefile         |  3 --
+>  arch/arm/mach-at91/pm_suspend.S     |  4 ++
+>  arch/arm/mach-imx/Makefile          |  3 --
+>  arch/arm/mach-imx/headsmp.S         |  2 +
+>  arch/arm/mach-imx/resume-imx6.S     |  2 +
+>  arch/arm/mach-imx/suspend-imx6.S    |  2 +
+>  arch/arm/mach-mvebu/Makefile        |  3 --
+>  arch/arm/mach-mvebu/coherency_ll.S  |  1 +
+>  arch/arm/mach-mvebu/pmsu.c          |  1 +
+>  arch/arm/mach-npcm/Makefile         |  2 -
+>  arch/arm/mach-npcm/headsmp.S        |  2 +
+>  arch/arm/mach-tegra/Makefile        |  2 -
+>  arch/arm/mach-tegra/reset-handler.S |  2 +
+>  arch/arm/mach-tegra/sleep-tegra20.S |  2 +
+>  arch/arm/mach-tegra/sleep-tegra30.S |  2 +
+>  arch/arm/mm/Makefile                | 15 ------
+>  arch/arm/mm/abort-ev6.S             |  1 +
+>  arch/arm/mm/abort-ev7.S             |  1 +
+>  arch/arm/mm/cache-v6.S              |  2 +
+>  arch/arm/mm/cache-v7.S              |  2 +
+>  arch/arm/mm/cache-v7m.S             |  2 +
+>  arch/arm/mm/copypage-feroceon.c     |  1 +
+>  arch/arm/mm/proc-v6.S               |  2 +
+>  arch/arm/mm/proc-v7-2level.S        |  2 +
+>  arch/arm/mm/proc-v7.S               |  2 +
+>  arch/arm/mm/tlb-v6.S                |  2 +
+>  arch/arm/mm/tlb-v7.S                |  2 +
+>  drivers/memory/Makefile             |  2 -
+>  drivers/memory/ti-emif-sram-pm.S    |  1 +
+>  drivers/soc/bcm/brcmstb/pm/Makefile |  1 -
+>  drivers/soc/bcm/brcmstb/pm/s2-arm.S |  1 +
+>  41 files changed, 94 insertions(+), 74 deletions(-)
+>
+>
+> base-commit: 0ac824f379fba2c2b17b75fd5ada69cd68c66348
+> --
+> 2.36.0.550.gb090851708-goog
+>
 
-This flag only makes sense to pass to the compiler, not the assembler.
 
-Perhaps CFLAGS_ABI can be renamed to CPPFLAGS_ABI to reflect that they
-will be passed to both the compiler and assembler for sources that
-require pre-processing.
-
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
----
- arch/arm/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index 99a7ed7e9f09..1029c2503aef 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
-@@ -108,7 +108,7 @@ CFLAGS_ABI	+= -meabi gnu
- endif
- 
- ifeq ($(CONFIG_CURRENT_POINTER_IN_TPIDRURO),y)
--CFLAGS_ABI	+= -mtp=cp15
-+KBUILD_CFLAGS	+= -mtp=cp15
- endif
- 
- # Accept old syntax despite ".syntax unified"
 -- 
-2.36.0.550.gb090851708-goog
-
+Thanks,
+~Nick Desaulniers
