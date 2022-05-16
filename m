@@ -2,704 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76026C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F723C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241104AbiEPONo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
+        id S244414AbiEPOPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244408AbiEPONi (ORCPT
+        with ESMTP id S233895AbiEPOPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:13:38 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26AA3B001;
-        Mon, 16 May 2022 07:13:36 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MCc0S-1nysvc1IKA-009TOo;
- Mon, 16 May 2022 16:13:18 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Olof Johansson <olof@lixom.net>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, soc@kernel.org
-Subject: [PATCH v2 24/24] ARM: dts: imx7-colibri: add support for Toradex Iris carrier boards
-Date:   Mon, 16 May 2022 16:13:13 +0200
-Message-Id: <20220516141313.494569-1-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220516134734.493065-1-marcel@ziswiler.com>
-References: <20220516134734.493065-1-marcel@ziswiler.com>
+        Mon, 16 May 2022 10:15:47 -0400
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955EDF589
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:15:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1652710544; x=1684246544;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zOv+Wev7E5lt7EeSM9kcmJh0rO5V+6OnlZIVl0tMHMU=;
+  b=Jtw68JZ804SXa/8zmg9rJaKxZbmzm2kH9/YW8cLkeeHDUwGdiSDdfKXX
+   bUZmLNt8nKZvBs/T+8oRWNJsylYb9f69xs91AOb+TnbR3h0vziGj2Kyrp
+   o2ng6uLujOEDCaISIAqNcs3E/738vC3dDGdUWBkMPOT6N8XzpooUrbuyX
+   RrXW91y3uQLxGiudM63UaUdKJ9oOX6MDrvtmpSi84Mwmn5YyGrtIHhVFp
+   aYHFlSRnq4ngVa+L4JekJtzr1DeH6wHALttsGXWdRdBbEuBNYTrS9A73c
+   N2SZVGm4e4FXDVzWn+mDk0azdfdaVqQxM+eivsCXmux/4LbQJgMvI/wdr
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,230,1647273600"; 
+   d="scan'208";a="205308057"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 16 May 2022 22:15:43 +0800
+IronPort-SDR: dC5DP9u+ZVdvIoJ0epG1Hw4P5yQ7O5CCLC7X31mD6HdEFvV40vJuZAwfmKtaT7bJY+h/kbQnBx
+ u9o2b3S1xF5V0caiQudwL1lTAP+frwSRyP8j7wRBHAeMXtEAVUwEF0ozsP+GA0Po4yIUH86ppn
+ eRjcaYo/jm6opPizWyJmXnu8vJnSxqnSrnQNIBvp4HGyvf6S2A5vxRJ3xQMCJEdEpIbYL5Ve/r
+ 0wMcg1nGsZCre5V46t/SwenUzFOSyLnXEMA2xhqlCg8NhSK/OdCjLqXv8TKnafspf14arv1B1B
+ mWQ8DYmdtsyEiHLZc3f8vh8c
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 06:41:26 -0700
+IronPort-SDR: mJFS+bmiKpbFUqqzT5ahmkPk+hYLJnUeBMeMD4HUPm7/PY61RrXPuz/CSTO9OZkJdXNmuvesiq
+ H+QZuoHH33QloEBLXHqVJNNEcWXA6+cGgeSNHpGA1OEJNqSmeIM+NU0fC+dOYg34CSScLdw3B5
+ Qofk6G0n0iXgsR4QbZXS4otIyf8jxMW0ditAoakZiGMbZtf/UnPCVACZ1BeT0JxM1N+gvfYH50
+ jwWTOohIxmcbOeHQjVwYUvC5srJIu7nCaEW9IlR1QvJPRAb+zTspvncuXJoJ2P3Q2iAtO+7PZf
+ EX0=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 07:15:45 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4L21W31rd2z1SVpC
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:15:43 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1652710542; x=1655302543; bh=zOv+Wev7E5lt7EeSM9kcmJh0rO5V+6OnlZI
+        Vl0tMHMU=; b=i4y52IglqHa1njsCmAT+LslWANsFjmGWNuC+BQusYwJboYbqlpx
+        1K5trb7R/DS0LQM7zIGMW36j5tKV1MkXjwyqWyIuVDc9mYbpFnl/PFabswil526a
+        8PiySSAYXnoSsIriKA/fIQIfIzGNus805nNa9Qt91pNUX3WFWNouE47CHlBB9rel
+        maqyn8618u1OIr5FZQpjtBkmCq16SVwivVnZFernknGS9rgAJn+4/1wc9xKfDMsc
+        KdcjDRBgvTZk1H8sIVIYRnv8T+1SqXKjglgem7sY9T2qTTW/b7gkVCrv7G4sfF23
+        zShZbGhGxHLSBwjGLH9SpFHHDxkqgHQgncw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 0DU_CklKXEkm for <linux-kernel@vger.kernel.org>;
+        Mon, 16 May 2022 07:15:42 -0700 (PDT)
+Received: from [10.225.1.43] (unknown [10.225.1.43])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4L21Vw31VPz1Rvlc;
+        Mon, 16 May 2022 07:15:36 -0700 (PDT)
+Message-ID: <31e03f27-6610-c4e4-58b9-6b9db000a753@opensource.wdc.com>
+Date:   Mon, 16 May 2022 16:15:34 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:gJ7wOm1eo5meT2vDVGz+o1rdcGL9zqiyzJHwYUg6lrRTERJmyGj
- fZEZ9dDjlUzt2LsTf+b/p9bjiIQqBQFkZ+Ry+nHeV6s3vqT5AOWM7J21oW2cvyEkjbOqcan
- y9cUan3dSji1oNNMWeJJbBUd2iKcshJ7pK30VJmQPDYJrA4Wu6C5WeT5aWITAvYIMGXl7UK
- 46BVcOpGkn6xpMVzMK/Bw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SA1kIogk4Js=:Ou40Mej/z7gI1C6zRERqEZ
- qvE5s1FxULrtuB+La64QJ1xjLeMTVOEseD+Tii6Cnxk3SOsFu3hKQ2jLZOsD87E5mh5U7OIin
- 6ca472/Wmml3CpjEJwEiq+hS7grfW8SfMW19MrY5gGzPdqVXnsalO+6rjJsIsnXwclj4uqUOy
- K31L65EChVtnh67yovCg83s9rhMeRXh/Jwdoeuvyl5IAA5oR00S2xAXXuG9JaqNQQ1dkiOffB
- agDhiVOvCzgkAzW42tiq9V2US4QVo1s/DVBTjlQKPRtRBxuNtw1URUpszRJPJcaMnNox5GShw
- y35uxQgYjhF/S2qlmEVvUlj2fh+cNHN/6S1/LXp5cQyCiXLoDgOJB/fpS/jNKhPgrnhQYkjxH
- KOzsCdYeEGhxH+srRJOuACbKLCuhYcdBPip88W2PA/bJLbOlVDJTQOrm43DXFGB1lFHQTvxaa
- 1P/HfztiAAES6NC1ROIStOxs8xF443rqCPu3Ao99weSYuHP8KtjZnlyTzKV3Yd2gceUP6j49C
- R33Pe+bzKVDLbuTXSRMtpRv4TfVxpY5CrVTJIxHj5KkXO8H2PagrvYe0WJabz3zuNOcNd+JcM
- rJGMeVUKu0VE0WfHNUJkTHW2Do3mklBUcNy1fiNFagQsp01PgplqV/+QmX3MDoa41gM4f2sv7
- 8OgI4lErGYh8lCRZWAHvXfq8h1lXD4hE6vjYx36GNP7OioSz8oPaUb4eYG+vKD56FjG811pS6
- qHvoZIYpFjd0kgeX
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [dm-devel] [PATCH v4 00/13] support non power of 2 zoned devices
+Content-Language: en-US
+To:     Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
+        naohiro.aota@wdc.com, Johannes.Thumshirn@wdc.com,
+        snitzer@kernel.org, dsterba@suse.com, jaegeuk@kernel.org,
+        hch@lst.de
+Cc:     jiangbo.365@bytedance.com, Jens Axboe <axboe@fb.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>, bvanassche@acm.org,
+        Chris Mason <clm@fb.com>, matias.bjorling@wdc.com,
+        gost.dev@samsung.com, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org, Josef Bacik <josef@toxicpanda.com>,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        dm-devel@redhat.com, Alasdair Kergon <agk@redhat.com>,
+        jonathan.derrick@linux.dev, Keith Busch <kbusch@kernel.org>,
+        Johannes Thumshirn <jth@kernel.org>,
+        linux-btrfs@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>
+References: <CGME20220516133922eucas1p1c891cd1d82539b4e792acb5d1aa74444@eucas1p1.samsung.com>
+ <20220516133921.126925-1-p.raghav@samsung.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220516133921.126925-1-p.raghav@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On 2022/05/16 15:39, Pankaj Raghav wrote:
+[...]
+> - Patchset description:
+> This patchset aims at adding support to non power of 2 zoned devices in
+> the block layer, nvme layer, null blk and adds support to btrfs and
+> zonefs.
+> 
+> This round of patches **will not** support DM layer for non
+> power of 2 zoned devices. More about this in the future work section.
+> 
+> Patches 1-2 deals with removing the po2 constraint from the
+> block layer.
+> 
+> Patches 3-4 deals with removing the constraint from nvme zns.
+> 
+> Patches 5-9 adds support to btrfs for non po2 zoned devices.
+> 
+> Patch 10 removes the po2 constraint in ZoneFS
+> 
+> Patch 11-12 removes the po2 contraint in null blk
+> 
+> Patches 13 adds conditions to not allow non power of 2 devices in
+> DM.
 
-Add support for Toradex Iris, small form-factor Pico-ITX Colibri Arm
-Computer Module family Carrier Board.
 
-Additional details available at
-https://www.toradex.com/products/carrier-board/iris-carrier-board
+Not sure what is going on but I only got the first 4 patches and I do not see
+the remaining patches on the lists anywhere.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
----
-
-Changes in v2:
-- Revert change on arch/arm/boot/dts/imx6dl-colibri-iris.dts which
-  slipped into this patch set by error.
-- Re-based on top of Shawn's for-next.
-
- arch/arm/boot/dts/Makefile                    |   6 +
- arch/arm/boot/dts/imx7-colibri-iris-v2.dtsi   | 112 ++++++++++++++++++
- arch/arm/boot/dts/imx7-colibri-iris.dtsi      | 108 +++++++++++++++++
- .../boot/dts/imx7d-colibri-emmc-iris-v2.dts   |  21 ++++
- arch/arm/boot/dts/imx7d-colibri-emmc-iris.dts |  21 ++++
- arch/arm/boot/dts/imx7d-colibri-iris-v2.dts   |  83 +++++++++++++
- arch/arm/boot/dts/imx7d-colibri-iris.dts      |  56 +++++++++
- arch/arm/boot/dts/imx7s-colibri-iris-v2.dts   |  78 ++++++++++++
- arch/arm/boot/dts/imx7s-colibri-iris.dts      |  51 ++++++++
- 9 files changed, 536 insertions(+)
- create mode 100644 arch/arm/boot/dts/imx7-colibri-iris-v2.dtsi
- create mode 100644 arch/arm/boot/dts/imx7-colibri-iris.dtsi
- create mode 100644 arch/arm/boot/dts/imx7d-colibri-emmc-iris-v2.dts
- create mode 100644 arch/arm/boot/dts/imx7d-colibri-emmc-iris.dts
- create mode 100644 arch/arm/boot/dts/imx7d-colibri-iris-v2.dts
- create mode 100644 arch/arm/boot/dts/imx7d-colibri-iris.dts
- create mode 100644 arch/arm/boot/dts/imx7s-colibri-iris-v2.dts
- create mode 100644 arch/arm/boot/dts/imx7s-colibri-iris.dts
-
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index a496c4751c86..e8c109d5e3bd 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -735,8 +735,12 @@ dtb-$(CONFIG_SOC_IMX7D) += \
- 	imx7d-cl-som-imx7.dtb \
- 	imx7d-colibri-aster.dtb \
- 	imx7d-colibri-emmc-aster.dtb \
-+	imx7d-colibri-emmc-iris.dtb \
-+	imx7d-colibri-emmc-iris-v2.dtb \
- 	imx7d-colibri-emmc-eval-v3.dtb \
- 	imx7d-colibri-eval-v3.dtb \
-+	imx7d-colibri-iris.dtb \
-+	imx7d-colibri-iris-v2.dtb \
- 	imx7d-flex-concentrator.dtb \
- 	imx7d-flex-concentrator-mfg.dtb \
- 	imx7d-mba7.dtb \
-@@ -756,6 +760,8 @@ dtb-$(CONFIG_SOC_IMX7D) += \
- 	imx7d-zii-rpu2.dtb \
- 	imx7s-colibri-aster.dtb \
- 	imx7s-colibri-eval-v3.dtb \
-+	imx7s-colibri-iris.dtb \
-+	imx7s-colibri-iris-v2.dtb \
- 	imx7s-mba7.dtb \
- 	imx7s-warp.dtb
- dtb-$(CONFIG_SOC_IMX7ULP) += \
-diff --git a/arch/arm/boot/dts/imx7-colibri-iris-v2.dtsi b/arch/arm/boot/dts/imx7-colibri-iris-v2.dtsi
-new file mode 100644
-index 000000000000..6e199613583c
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7-colibri-iris-v2.dtsi
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright 2022 Toradex
-+ */
-+
-+/ {
-+	reg_3v3_vmmc: regulator-3v3-vmmc {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		gpio = <&gpio5 16 GPIO_ACTIVE_HIGH>; /* SODIMM 100 */
-+		regulator-max-microvolt = <3300000>;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-name = "3v3_vmmc";
-+		startup-delay-us = <100>;
-+	};
-+};
-+
-+/* Colibri AD0 to AD3 */
-+&adc1 {
-+	status = "okay";
-+};
-+
-+/* Colibri SSP */
-+&ecspi3 {
-+	status = "okay";
-+};
-+
-+/* Colibri Fast Ethernet */
-+&fec1 {
-+	status = "okay";
-+};
-+
-+&gpio2 {
-+	/*
-+	 * uart_b_c_on_x14_enable turns the UART transceiver for UART2 and 5 on. If one wants to
-+	 * turn the transceiver off, that property has to be deleted and the gpio handled in
-+	 * userspace.
-+	 * The same applies to uart_a_on_x13_enable where the UART_A transceiver is turned on.
-+	 */
-+	uart-b-c-on-x14-enable-hog {
-+		gpio-hog;
-+		gpios = <27 GPIO_ACTIVE_HIGH>; /* SODIMM 104 */
-+		output-high;
-+	};
-+};
-+
-+&gpio5 {
-+	uart-a-on-x13-enable-hog {
-+		gpio-hog;
-+		gpios = <17 GPIO_ACTIVE_HIGH>; /* SODIMM 102 */
-+		output-high;
-+	};
-+};
-+
-+/* Colibri I2C: I2C3_SDA/SCL on SODIMM 194/196 */
-+&i2c4 {
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<A> */
-+&pwm1 {
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<B> */
-+&pwm2 {
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<C> */
-+&pwm3 {
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<D> */
-+&pwm4 {
-+	status = "okay";
-+};
-+
-+/* M41T0M6 real time clock */
-+&rtc {
-+	status = "okay";
-+};
-+
-+/* Colibri UART_A */
-+&uart1 {
-+	status = "okay";
-+};
-+
-+/* Colibri UART_B */
-+&uart2 {
-+	status = "okay";
-+};
-+
-+/* Colibri UART_C */
-+&uart3 {
-+	status = "okay";
-+};
-+
-+/* Colibri USBC */
-+&usbotg1 {
-+	status = "okay";
-+};
-+
-+/* Colibri MMC/SD, UHS-I capable uSD slot */
-+&usdhc1 {
-+	cap-power-off-card;
-+	/delete-property/ keep-power-in-suspend;
-+	/delete-property/ no-1-8-v;
-+	vmmc-supply = <&reg_3v3_vmmc>;
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/imx7-colibri-iris.dtsi b/arch/arm/boot/dts/imx7-colibri-iris.dtsi
-new file mode 100644
-index 000000000000..175c5d478d2e
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7-colibri-iris.dtsi
-@@ -0,0 +1,108 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright 2022 Toradex
-+ */
-+
-+/* Colibri AD0 to AD3 */
-+&adc1 {
-+	status = "okay";
-+};
-+
-+/*
-+ * The Atmel maxtouch controller uses SODIMM 28/30, also used for PWM<B>, PWM<C>, aka pwm2, pwm3.
-+ * So if you enable following capacitive touch controller, disable pwm2/pwm3 first.
-+ */
-+&atmel_mxt_ts {
-+	interrupt-parent = <&gpio1>;
-+	interrupts = <9 IRQ_TYPE_EDGE_FALLING>;		/* SODIMM 28 / INT */
-+	pinctrl-0 = <&pinctrl_atmel_adapter>;
-+	reset-gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;	/* SODIMM 30 / RST */
-+};
-+
-+/* Colibri SSP */
-+&ecspi3 {
-+	status = "okay";
-+};
-+
-+/* Colibri Fast Ethernet */
-+&fec1 {
-+	status = "okay";
-+};
-+
-+&gpio2 {
-+	/*
-+	 * uart25 turns the UART transceiver for UART2 and 5 on. If one wants to turn the
-+	 * transceiver off, that property has to be deleted and the gpio handled in userspace.
-+	 * The same applies to uart1_tx_on where the UART1 transceiver is turned on.
-+	 */
-+	uart25-tx-on-hog {
-+		gpio-hog;
-+		gpios = <27 GPIO_ACTIVE_HIGH>; /* SODIMM 104 */
-+		output-high;
-+	};
-+};
-+
-+&gpio5 {
-+	uart1-tx-on-hog {
-+		gpio-hog;
-+		gpios = <17 GPIO_ACTIVE_HIGH>; /* SODIMM 102 */
-+		output-high;
-+	};
-+};
-+
-+/* Colibri I2C: I2C3_SDA/SCL on SODIMM 194/196 */
-+&i2c4 {
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<A> */
-+&pwm1 {
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<B> */
-+&pwm2 {
-+	/* The pwm2 should be disabled to enable atmel_mxt_ts touchscreen for adapter. */
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<C> */
-+&pwm3 {
-+	/* The pwm3 should be disabled to enable atmel_mxt_ts touchscreen for adapter. */
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<D> */
-+&pwm4 {
-+	status = "okay";
-+};
-+
-+/* M41T0M6 real time clock */
-+&rtc {
-+	status = "okay";
-+};
-+
-+/* Colibri UART_A */
-+&uart1 {
-+	status = "okay";
-+};
-+
-+/* Colibri UART_B */
-+&uart2 {
-+	status = "okay";
-+};
-+
-+/* Colibri UART_C */
-+&uart3 {
-+	status = "okay";
-+};
-+
-+/* Colibri USBC */
-+&usbotg1 {
-+	status = "okay";
-+};
-+
-+/* Colibri MMC/SD */
-+&usdhc1 {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc-iris-v2.dts b/arch/arm/boot/dts/imx7d-colibri-emmc-iris-v2.dts
-new file mode 100644
-index 000000000000..7347659557f3
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7d-colibri-emmc-iris-v2.dts
-@@ -0,0 +1,21 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright 2022 Toradex
-+ */
-+
-+/dts-v1/;
-+#include "imx7d-colibri-emmc.dtsi"
-+#include "imx7-colibri-iris-v2.dtsi"
-+
-+/ {
-+	model = "Toradex Colibri iMX7D 1GB on Iris V2 Carrier Board";
-+	compatible = "toradex,colibri-imx7d-emmc-iris-v2",
-+		     "toradex,colibri-imx7d-emmc",
-+		     "toradex,colibri-imx7d",
-+		     "fsl,imx7d";
-+};
-+
-+/* Colibri USBH */
-+&usbotg2 {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc-iris.dts b/arch/arm/boot/dts/imx7d-colibri-emmc-iris.dts
-new file mode 100644
-index 000000000000..5324c92e368d
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7d-colibri-emmc-iris.dts
-@@ -0,0 +1,21 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright 2022 Toradex
-+ */
-+
-+/dts-v1/;
-+#include "imx7d-colibri-emmc.dtsi"
-+#include "imx7-colibri-iris.dtsi"
-+
-+/ {
-+	model = "Toradex Colibri iMX7D 1GB on Iris Carrier Board";
-+	compatible = "toradex,colibri-imx7d-emmc-iris",
-+		     "toradex,colibri-imx7d-emmc",
-+		     "toradex,colibri-imx7d",
-+		     "fsl,imx7d";
-+};
-+
-+/* Colibri USBH */
-+&usbotg2 {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/imx7d-colibri-iris-v2.dts b/arch/arm/boot/dts/imx7d-colibri-iris-v2.dts
-new file mode 100644
-index 000000000000..5762f51d5f0f
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7d-colibri-iris-v2.dts
-@@ -0,0 +1,83 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright 2022 Toradex
-+ */
-+
-+/dts-v1/;
-+#include "imx7d-colibri.dtsi"
-+#include "imx7-colibri-iris-v2.dtsi"
-+
-+/ {
-+	model = "Toradex Colibri iMX7D on Iris V2 Carrier Board";
-+	compatible = "toradex,colibri-imx7d-iris-v2",
-+		     "toradex,colibri-imx7d",
-+		     "fsl,imx7d";
-+};
-+
-+&ad7879_ts {
-+	status = "okay";
-+};
-+
-+&atmel_mxt_ts {
-+	status = "okay";
-+};
-+
-+&backlight {
-+	status = "okay";
-+};
-+
-+&gpio2 {
-+	/*
-+	 * This switches the LVDS transceiver to VESA color mapping mode.
-+	 */
-+	lvds-color-map-hog {
-+		gpio-hog;
-+		gpios = <13 GPIO_ACTIVE_HIGH>; /* SODIMM 95 */
-+		line-name = "LVDS_COLOR_MAP";
-+		output-low;
-+	};
-+};
-+
-+&gpio7 {
-+	/*
-+	 * This switches the LVDS transceiver to the 24-bit RGB mode.
-+	 */
-+	lvds-rgb-mode-hog {
-+		gpio-hog;
-+		gpios = <2 GPIO_ACTIVE_HIGH>; /* SODIMM 63 */
-+		line-name = "LVDS_RGB_MODE";
-+		output-low;
-+	};
-+
-+	/*
-+	 * This switches the LVDS transceiver to the single-channel
-+	 * output mode.
-+	 */
-+	lvds-ch-mode-hog {
-+		gpio-hog;
-+		gpios = <3 GPIO_ACTIVE_HIGH>; /* SODIMM 55 */
-+		line-name = "LVDS_CH_MODE";
-+		output-high;
-+	};
-+
-+	/* This turns the LVDS transceiver on */
-+	lvds-power-on-hog {
-+		gpio-hog;
-+		gpios = <11 GPIO_ACTIVE_HIGH>; /* SODIMM 99 */
-+		line-name = "LVDS_POWER_ON";
-+		output-high;
-+	};
-+};
-+
-+&lcdif {
-+	status = "okay";
-+};
-+
-+&panel_dpi {
-+	status = "okay";
-+};
-+
-+/* Colibri USBH */
-+&usbotg2 {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/imx7d-colibri-iris.dts b/arch/arm/boot/dts/imx7d-colibri-iris.dts
-new file mode 100644
-index 000000000000..9c63cb9d9a64
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7d-colibri-iris.dts
-@@ -0,0 +1,56 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright 2022 Toradex
-+ */
-+
-+/dts-v1/;
-+#include "imx7d-colibri.dtsi"
-+#include "imx7-colibri-iris.dtsi"
-+
-+/ {
-+	model = "Toradex Colibri iMX7D on Iris Carrier Board";
-+	compatible = "toradex,colibri-imx7d-iris",
-+		     "toradex,colibri-imx7d",
-+		     "fsl,imx7d";
-+};
-+
-+&ad7879_ts {
-+	status = "okay";
-+};
-+
-+/*
-+ * The Atmel maxtouch controller uses SODIMM 28/30, also used for PWM<B>, PWM<C>, aka pwm2, pwm3.
-+ * So if you enable following capacitive touch controller, disable pwm2/pwm3 first.
-+ */
-+&atmel_mxt_ts {
-+	status = "disabled";
-+};
-+
-+&backlight {
-+	status = "okay";
-+};
-+
-+&lcdif {
-+	status = "okay";
-+};
-+
-+&panel_dpi {
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<B> */
-+&pwm2 {
-+	/* The pwm2 should be disabled to enable atmel_mxt_ts touchscreen for adapter. */
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<C> */
-+&pwm3 {
-+	/* The pwm3 should be disabled to enable atmel_mxt_ts touchscreen for adapter. */
-+	status = "okay";
-+};
-+
-+/* Colibri USBH */
-+&usbotg2 {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/imx7s-colibri-iris-v2.dts b/arch/arm/boot/dts/imx7s-colibri-iris-v2.dts
-new file mode 100644
-index 000000000000..72b5c17ab1ab
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7s-colibri-iris-v2.dts
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright 2022 Toradex
-+ */
-+
-+/dts-v1/;
-+#include "imx7s-colibri.dtsi"
-+#include "imx7-colibri-iris-v2.dtsi"
-+
-+/ {
-+	model = "Toradex Colibri iMX7S on Iris V2 Carrier Board";
-+	compatible = "toradex,colibri-imx7s-iris-v2",
-+		     "toradex,colibri-imx7s",
-+		     "fsl,imx7s";
-+};
-+
-+&ad7879_ts {
-+	status = "okay";
-+};
-+
-+&atmel_mxt_ts {
-+	status = "okay";
-+};
-+
-+&backlight {
-+	status = "okay";
-+};
-+
-+&gpio2 {
-+	/*
-+	 * This switches the LVDS transceiver to VESA color mapping mode.
-+	 */
-+	lvds-color-map-hog {
-+		gpio-hog;
-+		gpios = <13 GPIO_ACTIVE_HIGH>; /* SODIMM 95 */
-+		line-name = "LVDS_COLOR_MAP";
-+		output-low;
-+	};
-+};
-+
-+&gpio7 {
-+	/*
-+	 * This switches the LVDS transceiver to the 24-bit RGB mode.
-+	 */
-+	lvds-rgb-mode-hog {
-+		gpio-hog;
-+		gpios = <2 GPIO_ACTIVE_HIGH>; /* SODIMM 63 */
-+		line-name = "LVDS_RGB_MODE";
-+		output-low;
-+	};
-+
-+	/*
-+	 * This switches the LVDS transceiver to the single-channel
-+	 * output mode.
-+	 */
-+	lvds-ch-mode-hog {
-+		gpio-hog;
-+		gpios = <3 GPIO_ACTIVE_HIGH>; /* SODIMM 55 */
-+		line-name = "LVDS_CH_MODE";
-+		output-high;
-+	};
-+
-+	/* This turns the LVDS transceiver on */
-+	lvds-power-on-hog {
-+		gpio-hog;
-+		gpios = <11 GPIO_ACTIVE_HIGH>; /* SODIMM 99 */
-+		line-name = "LVDS_POWER_ON";
-+		output-high;
-+	};
-+};
-+
-+&lcdif {
-+	status = "okay";
-+};
-+
-+&panel_dpi {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/imx7s-colibri-iris.dts b/arch/arm/boot/dts/imx7s-colibri-iris.dts
-new file mode 100644
-index 000000000000..26ba72c17feb
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7s-colibri-iris.dts
-@@ -0,0 +1,51 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright 2022 Toradex
-+ */
-+
-+/dts-v1/;
-+#include "imx7s-colibri.dtsi"
-+#include "imx7-colibri-iris.dtsi"
-+
-+/ {
-+	model = "Toradex Colibri iMX7S on Iris Carrier Board";
-+	compatible = "toradex,colibri-imx7s-iris",
-+		     "toradex,colibri-imx7s",
-+		     "fsl,imx7s";
-+};
-+
-+&ad7879_ts {
-+	status = "okay";
-+};
-+
-+/*
-+ * The Atmel maxtouch controller uses SODIMM 28/30, also used for PWM<B>, PWM<C>, aka pwm2, pwm3.
-+ * So if you enable following capacitive touch controller, disable pwm2/pwm3 first.
-+ */
-+&atmel_mxt_ts {
-+	status = "disabled";
-+};
-+
-+&backlight {
-+	status = "okay";
-+};
-+
-+&lcdif {
-+	status = "okay";
-+};
-+
-+&panel_dpi {
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<B> */
-+&pwm2 {
-+	/* The pwm2 should be disabled to enable atmel_mxt_ts touchscreen for adapter. */
-+	status = "okay";
-+};
-+
-+/* Colibri PWM<C> */
-+&pwm3 {
-+	/* The pwm3 should be disabled to enable atmel_mxt_ts touchscreen for adapter. */
-+	status = "okay";
-+};
 -- 
-2.35.1
-
+Damien Le Moal
+Western Digital Research
