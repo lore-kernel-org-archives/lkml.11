@@ -2,87 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0095FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242006AbiEPIvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 04:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
+        id S242026AbiEPIxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 04:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiEPIvt (ORCPT
+        with ESMTP id S229627AbiEPIxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 04:51:49 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D9D388B;
-        Mon, 16 May 2022 01:51:48 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 8F8C11F407CE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652691107;
-        bh=gV9kB7ivZNyAdhSFNP1wk4K4CwcgA76yv2I+a7JWfyg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=YoFKzksDbBZNLg5EvKENN0GqsHSebAGPsYmisWzx/3PKbAn+FxzB1wSvHECYq75z0
-         2CrtSBGa4usFd2gFvY35Ld/+ec2frrs6NJtvafPe8B4Z9/HQpDr1sLWIUFFRGNUazb
-         c8z2LV3fPBryI42a//xFvhkD/8sIJIZldQGpGqzrX1uPidLBW6pKIzVBTliXJ3MQSY
-         V0K470gXhu3Ydl9xoSWZKHUxGk1PrXWv0TwGBPu6hWb/GYj+6dRLSyvUtcgn1JHHqS
-         Vh+QtQqE+jSuQgV8I2QLruXX35ODzyrRWauKwQSk3syvwBVq9FVD5bbi9dOp+JTzX6
-         uXM5G0La9lXMA==
-Message-ID: <0f303425-3b12-7573-b201-030d4d044db8@collabora.com>
-Date:   Mon, 16 May 2022 10:51:44 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 5/7] arm64: dts: mediatek: mt6795: Add fixed clocks for
- 32kHz and 26MHz XOs
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        robh+dt@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        Mon, 16 May 2022 04:53:19 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01C613EA5;
+        Mon, 16 May 2022 01:53:16 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 6E08B3200930;
+        Mon, 16 May 2022 04:53:14 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Mon, 16 May 2022 04:53:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1652691193; x=
+        1652777593; bh=+Xd3PLAvDk9oWGFHPx+CW0Qh/oAyEPqTd5DjSbxGME0=; b=D
+        tKU0DACi1vO/P+Q3BY7U+Dngk5OeXRwGSjw6sAgClTTvNQ/kEic0vMclukz7iYVg
+        TsUF6UvLTvk+p7vxqXzFt2oz9JLN58srGNTsq4sz8coViK0KjD1XnqY+nuOwqNNH
+        FoF8QatRwcgWl+sXckWBSIEeWsJQTI6bYc+XYW8qZ8TvGW8IkKKiDOKdwuriwz7U
+        9v5HVyulxIVnWQInrnDFhRdqyr7alERUa5wcSJ6/kgAfSZT/+DGEuanDSSXF+UO2
+        sNbM5vBd9R/t+McGJzB//bPet2brlxme92GLm/nXHZGXcPaVgZqD3hkugbVgHz53
+        lWNmp6hVvA18bLXSmo2IQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1652691193; x=1652777593; bh=+Xd3PLAvDk9oW
+        GFHPx+CW0Qh/oAyEPqTd5DjSbxGME0=; b=Tp8ZS+t1MQwMeT2DiiCVpW3RY9rAs
+        u18kmVGDJDrEV8jVrUOPlrSj03zkhZIaP8+IqAcpcUfniJThz3qLDX4LlHN5u4fe
+        okqkBWYHVJK+HboR8CPFZ7DzBzREZnH3RRAtaN1SmeiYeYUI/zKg+eBVYzbC9fxs
+        SsblbKJUG0bwGbqwBew9/GtK3bma9AINh2VYjD1+h8PW08AJthc9YRtzcMxRFxgK
+        sTL0U0IHhZiBL893rEY0o6tI1S5KLKErRcCaeQ3NvZ3BQFRyoc24efKjNsAxptU5
+        JENIMXhSKIauCzefEQ+Rc7Tp/8vhGnshhmralujBjDIGYcWlmnNQ6ifLA==
+X-ME-Sender: <xms:-RCCYvtlF57rD14MAdZsMzqWPoG2-CEFUbQ1xeZ-yu2pFS3slFkMLQ>
+    <xme:-RCCYgcK8ErZMrzy9Z1mhd3tDa7s7aIy4wt7OkkY1tJAbd2JkauGaXvpBxF2AtOUW
+    57OS5wuLWcMKTXHHxQ>
+X-ME-Received: <xmr:-RCCYiznCtmKfiL3P4kdsB-h9O8PnanGXMpDHa1y4cS_3ZGt7B0evIjgqvg42LE_6Orb9S_Ayyr1VnYIFze8roDreS7HvtEQELkCswc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrheehgddtkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtugfgjgesthhqredttddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeetgfelgefggeekkefggfeludeiudffjeffgeevveekjedukedtudeuteef
+    teefgfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:-RCCYuNhyb6KgmKHuD2-6jjJ8J74sbQTtyYXJnZZ1K6OssQ575Spgg>
+    <xmx:-RCCYv9jOH14-609woY2dmX34nupuYQpc4I0AI1oEuI3pcJs9C2Vaw>
+    <xmx:-RCCYuVJ1MxAmk6lJlI_aDcjDSvabA1NBdrHrOPeodq5gnDVZVNhtw>
+    <xmx:-RCCYmbB1puiO02N3N3yjP1qSteUQK-i-X-dgeXJ1XDX-dEdSkaHSw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 16 May 2022 04:53:12 -0400 (EDT)
+Date:   Mon, 16 May 2022 10:53:09 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     qianfanguijin@163.com
+Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        kernel@collabora.com
-References: <20220513171617.504430-1-angelogioacchino.delregno@collabora.com>
- <20220513171617.504430-6-angelogioacchino.delregno@collabora.com>
- <03e99a02-1233-3882-e1e5-24ab1bbaf257@linaro.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <03e99a02-1233-3882-e1e5-24ab1bbaf257@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] ARM: dts: sun8i-r40: add opp table for cpu
+Message-ID: <20220516085309.jp5yautmb3veocvl@houat>
+References: <20220516021516.23216-1-qianfanguijin@163.com>
+ <20220516021516.23216-3-qianfanguijin@163.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220516021516.23216-3-qianfanguijin@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 16/05/22 09:10, Krzysztof Kozlowski ha scritto:
-> On 13/05/2022 19:16, AngeloGioacchino Del Regno wrote:
->> Add the 32kHz and 26MHz oscillators as fixed clocks in devicetree to
->> provide a good initial clock spec, since this SoC features two always
-> 
-> I don't understand that part with actual patch. You claim here you add
-> clocks, but in DTS they were already before.
-> 
-> Additionally, these clocks do not belong to DTSI because, AFAIU, these
-> are properties of boards. At least their frequencies should be moved to
-> the board DTS.
-> 
-> 
+On Mon, May 16, 2022 at 10:15:16AM +0800, qianfanguijin@163.com wrote:
+> From: qianfan Zhao <qianfanguijin@163.com>
+>=20
+> OPP table value is get from allwinner lichee linux-3.10 kernel driver
+>=20
+> Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+> ---
+>  arch/arm/boot/dts/sun8i-r40.dtsi | 42 ++++++++++++++++++++++++++++++++
+>  1 file changed, 42 insertions(+)
+>=20
+> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r=
+40.dtsi
+> index 291f4784e86c..8949153eb0eb 100644
+> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
+> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+> @@ -54,6 +54,36 @@ / {
+>  	#size-cells =3D <1>;
+>  	interrupt-parent =3D <&gic>;
+> =20
+> +	cpu0_opp_table: opp_table0 {
+> +		compatible =3D "operating-points-v2";
+> +		opp-shared;
+> +
+> +		opp-720000000 {
+> +			opp-hz =3D /bits/ 64 <720000000>;
+> +			opp-microvolt =3D <1000000 1000000 1300000>;
+> +			clock-latency-ns =3D <2000000>;
+> +		};
+> +
+> +		opp-912000000 {
+> +			opp-hz =3D /bits/ 64 <912000000>;
+> +			opp-microvolt =3D <1100000 1100000 1300000>;
+> +			clock-latency-ns =3D <2000000>;
+> +		};
+> +
+> +		opp-1008000000 {
+> +			opp-hz =3D /bits/ 64 <1008000000>;
+> +			opp-microvolt =3D <1160000 1160000 1300000>;
+> +			clock-latency-ns =3D <2000000>;
+> +		};
+> +
+> +		/* The opp table of the cpu frequency that exceeds 1G
+> +		 * is not defined here. They require higher operating
+> +		 * current, which may exceed the 500mA limited if the
+> +		 * system is powered by USB. You can add them to the
+> +		 * board's DTS is you make sure.
+> +		 */
 
-I should reword the commit description to be clearer, sorry about that: I
-went with "exactly what I've done", but looking at the actual diff, it is
-just a rename. What my brain was ticking on here was about removing clocks
-that didn't really exist (uart_clk is not a fixed clock, etc), and adding
-the ones that do exist.... but then again, the result, casually, is a rename.
+That's not the issue though. The issue is that the board is setup with a
+CPU voltage at 1160mV, and if we raise the frequency to a higher OPP
+without raising the voltage as well, the CPU will crash.
 
-In any case... no, these clocks are not board-specific for two reasons:
-1. AFAIK, these fixed clock outputs are from the SoC itself, not from
-    external components placed on the board, and
-2. Even if these were from external components, the SoC *needs* these
-    ones to work and any board that doesn't have these fixed XOs simply
-    wouldn't be able to work.
-
-Cheers,
-Angelo
+Maxime
