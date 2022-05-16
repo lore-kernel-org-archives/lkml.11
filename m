@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4977C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB235C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347300AbiEPU3t (ORCPT
+        id S1347194AbiEPU17 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
+        Mon, 16 May 2022 16:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350484AbiEPUBR (ORCPT
+        with ESMTP id S244096AbiEPUAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DED24A907;
-        Mon, 16 May 2022 12:55:28 -0700 (PDT)
+        Mon, 16 May 2022 16:00:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F45345043;
+        Mon, 16 May 2022 12:54:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFC4960EBF;
-        Mon, 16 May 2022 19:55:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E311BC385AA;
-        Mon, 16 May 2022 19:55:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4CDFB8161C;
+        Mon, 16 May 2022 19:54:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEE79C385AA;
+        Mon, 16 May 2022 19:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730916;
-        bh=9J3SP8rPHrHOr2ImRk6zzs2MXVHm4hDJT+RPQkhF9ko=;
+        s=korg; t=1652730881;
+        bh=fpxOQ0rPho95+qYGMbd1myF+tFU1OPuQFXf6fsc2o4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QUkm4dVQfdxWuFR22O9ALmuUi+FaOIrdDlAo7aNtUsBCjbc4P4Q8IXnfLnJpF+0Z+
-         jREIMrkfXFBBaE4tax/a+t7yDz16HDfD/pWOAUd1Vmf59zTP5qTZcJyTDVvOEGdjnr
-         Q94bWBYyRuhXQ+1mtleRe06/RK0K5FoGVwtPTbBU=
+        b=cTl5vTZV9uwJeH1sOcBYm2LMqYOkAPbkRECKR8uDUURhhwxz9Yhy6BTdqFKX3FsFZ
+         B2kmWHOWrfC4WoFciAsZoteJNZsKvNiH8gIaBaKR1EERTCspNRIVGz5qFBPpCpCR+V
+         +U9K0bOF7UTe7bjfYh6jjgcL2H7kZm7tI5WzXVUM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 007/114] net: mscc: ocelot: fix last VCAP IS1/IS2 filter persisting in hardware when deleted
-Date:   Mon, 16 May 2022 21:35:41 +0200
-Message-Id: <20220516193625.707724110@linuxfoundation.org>
+        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 033/114] arm64: vdso: fix makefile dependency on vdso.so
+Date:   Mon, 16 May 2022 21:36:07 +0200
+Message-Id: <20220516193626.441761277@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,53 +52,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Joey Gouly <joey.gouly@arm.com>
 
-[ Upstream commit 16bbebd35629c93a8c68c6d8d28557e100bcee73 ]
+[ Upstream commit 205f3991a273cac6008ef4db3d1c0dc54d14fb56 ]
 
-ocelot_vcap_filter_del() works by moving the next filters over the
-current one, and then deleting the last filter by calling vcap_entry_set()
-with a del_filter which was specially created by memsetting its memory
-to zeroes. vcap_entry_set() then programs this to the TCAM and action
-RAM via the cache registers.
+There is currently no dependency for vdso*-wrap.S on vdso*.so, which means that
+you can get a build that uses a stale vdso*-wrap.o.
 
-The problem is that vcap_entry_set() is a dispatch function which looks
-at del_filter->block_id. But since del_filter is zeroized memory, the
-block_id is 0, or otherwise said, VCAP_ES0. So practically, what we do
-is delete the entry at the same TCAM index from VCAP ES0 instead of IS1
-or IS2.
+In commit a5b8ca97fbf8, the file that includes the vdso.so was moved and renamed
+from arch/arm64/kernel/vdso/vdso.S to arch/arm64/kernel/vdso-wrap.S, when this
+happened the Makefile was not updated to force the dependcy on vdso.so.
 
-The code was not always like this. vcap_entry_set() used to simply be
-is2_entry_set(), and then, the logic used to work.
-
-Restore the functionality by populating the block_id of the del_filter
-based on the VCAP block of the filter that we're deleting. This makes
-vcap_entry_set() know what to do.
-
-Fixes: 1397a2eb52e2 ("net: mscc: ocelot: create TCAM skeleton from tc filter chains")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: a5b8ca97fbf8 ("arm64: do not descend to vdso directories twice")
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Masahiro Yamada <masahiroy@kernel.org>
+Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220510102721.50811-1-joey.gouly@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot_vcap.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/kernel/Makefile        | 4 ++++
+ arch/arm64/kernel/vdso/Makefile   | 3 ---
+ arch/arm64/kernel/vdso32/Makefile | 3 ---
+ 3 files changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index d3544413a8a4..e650afef12af 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -1221,7 +1221,11 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
- 	struct ocelot_vcap_filter del_filter;
- 	int i, index;
+diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+index 88b3e2a21408..db557856854e 100644
+--- a/arch/arm64/kernel/Makefile
++++ b/arch/arm64/kernel/Makefile
+@@ -74,6 +74,10 @@ obj-$(CONFIG_ARM64_MTE)			+= mte.o
+ obj-y					+= vdso-wrap.o
+ obj-$(CONFIG_COMPAT_VDSO)		+= vdso32-wrap.o
  
-+	/* Need to inherit the block_id so that vcap_entry_set()
-+	 * does not get confused and knows where to install it.
-+	 */
- 	memset(&del_filter, 0, sizeof(del_filter));
-+	del_filter.block_id = filter->block_id;
++# Force dependency (vdso*-wrap.S includes vdso.so through incbin)
++$(obj)/vdso-wrap.o: $(obj)/vdso/vdso.so
++$(obj)/vdso32-wrap.o: $(obj)/vdso32/vdso.so
++
+ obj-y					+= probes/
+ head-y					:= head.o
+ extra-y					+= $(head-y) vmlinux.lds
+diff --git a/arch/arm64/kernel/vdso/Makefile b/arch/arm64/kernel/vdso/Makefile
+index 172452f79e46..ac1964ebed1e 100644
+--- a/arch/arm64/kernel/vdso/Makefile
++++ b/arch/arm64/kernel/vdso/Makefile
+@@ -52,9 +52,6 @@ GCOV_PROFILE := n
+ targets += vdso.lds
+ CPPFLAGS_vdso.lds += -P -C -U$(ARCH)
  
- 	/* Gets index of the filter */
- 	index = ocelot_vcap_block_get_filter_index(block, filter);
+-# Force dependency (incbin is bad)
+-$(obj)/vdso.o : $(obj)/vdso.so
+-
+ # Link rule for the .so file, .lds has to be first
+ $(obj)/vdso.so.dbg: $(obj)/vdso.lds $(obj-vdso) FORCE
+ 	$(call if_changed,vdsold_and_vdso_check)
+diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
+index 6c01b63ff56d..2c2036eb0df7 100644
+--- a/arch/arm64/kernel/vdso32/Makefile
++++ b/arch/arm64/kernel/vdso32/Makefile
+@@ -130,9 +130,6 @@ obj-vdso := $(c-obj-vdso) $(c-obj-vdso-gettimeofday) $(asm-obj-vdso)
+ targets += vdso.lds
+ CPPFLAGS_vdso.lds += -P -C -U$(ARCH)
+ 
+-# Force dependency (vdso.s includes vdso.so through incbin)
+-$(obj)/vdso.o: $(obj)/vdso.so
+-
+ include/generated/vdso32-offsets.h: $(obj)/vdso.so.dbg FORCE
+ 	$(call if_changed,vdsosym)
+ 
 -- 
 2.35.1
 
