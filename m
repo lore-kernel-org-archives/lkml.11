@@ -2,98 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB62C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C580FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345602AbiEPTox (ORCPT
+        id S1345732AbiEPTpA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
+        Mon, 16 May 2022 15:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346033AbiEPTms (ORCPT
+        with ESMTP id S1346056AbiEPTmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:42:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D163F322;
-        Mon, 16 May 2022 12:41:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91FD161548;
-        Mon, 16 May 2022 19:41:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83CF5C385AA;
-        Mon, 16 May 2022 19:41:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730070;
-        bh=Kt5dt3FlKV7eGa6zGiDS99m4kzuj0Lcok+UidDRxhSg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mYlZp30pplIMgRb7HrACecRuAGPNxdUK0mRJdDlWWgDpWDLDbhFaT4eeZJ5adcbqD
-         G6mz4TmwJRFef8QyCYSRIdYN1k7KWdwOFKotT/NqsXrM02teBY3Wub9z6/UufRSe+8
-         h9IHhqlXQ3NO98LORAaxV0wpwp11V8Fj86x4pIsQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 03/32] net: Fix features skip in for_each_netdev_feature()
-Date:   Mon, 16 May 2022 21:36:17 +0200
-Message-Id: <20220516193614.877806329@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
-References: <20220516193614.773450018@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 16 May 2022 15:42:49 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995273F334
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:41:12 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id s14so15431643plk.8
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:41:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NkuNZUIBL8MZdXmO1J6bie/4FoMF9dlGbvJ/EnJshUg=;
+        b=YSYkkeSYlazR/KnZ9A3FW/RivmtBBtfwOD590Y2/k8rYpyPkbUuOO+rwGs2/8RHYhV
+         jvz06DdSkgy4vQhhjr/YXryV5B9qyTetWcD0yxlDdQKdQD6xsBfjHe6w35CK+ecaogDy
+         t8NbscOxGVlR++e0P74FmdEVrpyZPXXKOWEko8abAtjkWwU5ME5mPT5c/rvp4azYvIga
+         QBkUI8VqyqQ0723yj0rYnoB9KlDwuBoqWUzd7kALSg45s1LqvYiDqdwAVytXc3sTyQFy
+         LYY/6iAlFXwrmbY1qhWCKl4EbDHptbmMarKlWiRWblBkCUhKixRRpXbfjJ636mxb9x8G
+         tgPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NkuNZUIBL8MZdXmO1J6bie/4FoMF9dlGbvJ/EnJshUg=;
+        b=h79+NfK4n2HsT6wkG+4McM+OjWiva4HI7IQr0wCwGmXnfysGRIda2Fa6ijvHw9SYkQ
+         tHCD2ZSDpi3KvQ3mDtk0YPFW0uwuriTksEEOe/RvKx0M8AiXRy3ejkPOJzPfhK6esqTX
+         Nd+mj7tqoDvaAK3LM9P4AkENFvMh/+GjbcTzI6Ux7lwxVx1z/la8KrgXnkR/r266qJ9X
+         hVaWED6KeOT1jrgfvjGJDG7nDUYyRPgOQEX0SH2VF4lff5zQTez656b1WIB4usi31qTD
+         TGe4Al4d5et/E0pFuUUqfckjsT2GcWDdL66fVmnoqR9q3JBoAILyYizEBN+Vex2+kbY/
+         h4EQ==
+X-Gm-Message-State: AOAM5333ezj5izO+4LdkB94Hm5HZfgyzyCdNu++Ab2NJrs27SBS1Vqh/
+        yXFYMQY3HA3LpMf1mBEkVWoJWw==
+X-Google-Smtp-Source: ABdhPJzhqjOIS7ooa6ljXBdDLvsM/Pulyqi/qmAlcWfUFcQwQ8Rv2LI1aAxACX8ZVtfXOR3acBcAow==
+X-Received: by 2002:a17:90b:33c6:b0:1dc:ba92:41bb with SMTP id lk6-20020a17090b33c600b001dcba9241bbmr20912338pjb.26.1652730071981;
+        Mon, 16 May 2022 12:41:11 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id e13-20020a170902ed8d00b0015e8d4eb1fcsm7467421plj.70.2022.05.16.12.41.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 12:41:11 -0700 (PDT)
+Date:   Mon, 16 May 2022 19:41:08 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 04/34] KVM: x86: hyper-v: Handle
+ HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
+Message-ID: <YoKo1An5t7+owfzR@google.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+ <20220414132013.1588929-5-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414132013.1588929-5-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+On Thu, Apr 14, 2022, Vitaly Kuznetsov wrote:
+> @@ -1862,15 +1890,58 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+>  {
+>  	struct kvm_vcpu_hv_tlb_flush_ring *tlb_flush_ring;
+>  	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+> +	struct kvm_vcpu_hv_tlb_flush_entry *entry;
+> +	int read_idx, write_idx;
+> +	u64 address;
+> +	u32 count;
+> +	int i, j;
+>  
+> -	kvm_vcpu_flush_tlb_guest(vcpu);
+> -
+> -	if (!hv_vcpu)
+> +	if (!tdp_enabled || !hv_vcpu) {
+> +		kvm_vcpu_flush_tlb_guest(vcpu);
+>  		return;
+> +	}
+>  
+>  	tlb_flush_ring = &hv_vcpu->tlb_flush_ring;
+>  
+> -	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
+> +	/*
+> +	 * TLB flush must be performed on the target vCPU so 'read_idx'
+> +	 * (AKA 'tail') cannot change underneath, the compiler is free
+> +	 * to re-read it.
+> +	 */
+> +	read_idx = tlb_flush_ring->read_idx;
+> +
+> +	/*
+> +	 * 'write_idx' (AKA 'head') can be concurently updated by a different
+> +	 * vCPU so we must be sure it's read once.
+> +	 */
+> +	write_idx = READ_ONCE(tlb_flush_ring->write_idx);
+> +
+> +	/* Pairs with smp_wmb() in hv_tlb_flush_ring_enqueue() */
+> +	smp_rmb();
+> +
+> +	for (i = read_idx; i != write_idx; i = (i + 1) % KVM_HV_TLB_FLUSH_RING_SIZE) {
+> +		entry = &tlb_flush_ring->entries[i];
+> +
+> +		if (entry->flush_all)
+> +			goto out_flush_all;
+> +
+> +		/*
+> +		 * Lower 12 bits of 'address' encode the number of additional
+> +		 * pages to flush.
+> +		 */
+> +		address = entry->addr & PAGE_MASK;
+> +		count = (entry->addr & ~PAGE_MASK) + 1;
+> +		for (j = 0; j < count; j++)
+> +			static_call(kvm_x86_flush_tlb_gva)(vcpu, address + j * PAGE_SIZE);
+> +	}
+> +	++vcpu->stat.tlb_flush;
 
-[ Upstream commit 85db6352fc8a158a893151baa1716463d34a20d0 ]
+Bumping tlb_flush is inconsistent with how KVM handles INVLPG, and could be wrong
+if the ring is empty (might be impossible without a bug?).  And if my math is right,
+or at least in the ballpark, tlb_flush will be incremented once regardless of whether
+the loop flushed 1 page or 64k pages (completely full ring, full count on every one).
 
-The find_next_netdev_feature() macro gets the "remaining length",
-not bit index.
-Passing "bit - 1" for the following iteration is wrong as it skips
-the adjacent bit. Pass "bit" instead.
+I'd prefer to either drop the stat adjustment entirely, or bump invlpg in the loop, e.g.
 
-Fixes: 3b89ea9c5902 ("net: Fix for_each_netdev_feature on Big endian")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Link: https://lore.kernel.org/r/20220504080914.1918-1-tariqt@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/linux/netdev_features.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index 56f06cf85282..5654c9d56289 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1945,10 +1945,11 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+        for (i = read_idx; i != write_idx; i = (i + 1) % KVM_HV_TLB_FLUSH_RING_SIZE) {
+                address = tlb_flush_ring->entries[i] & PAGE_MASK;
+                count = (tlb_flush_ring->entries[i] & ~PAGE_MASK) + 1;
+-               for (j = 0; j < count; j++)
++               for (j = 0; j < count; j++) {
+                        static_call(kvm_x86_flush_tlb_gva)(vcpu, address + j * PAGE_SIZE);
++                       ++vcpu->stat.invlpg;
++               }
+        }
+-       ++vcpu->stat.tlb_flush;
 
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index 2a8105d204a9..78411dc4a040 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -156,7 +156,7 @@ enum {
- #define NETIF_F_HW_TLS_TX	__NETIF_F(HW_TLS_TX)
- #define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
- 
--/* Finds the next feature with the highest number of the range of start till 0.
-+/* Finds the next feature with the highest number of the range of start-1 till 0.
-  */
- static inline int find_next_netdev_feature(u64 feature, unsigned long start)
- {
-@@ -175,7 +175,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
- 	for ((bit) = find_next_netdev_feature((mask_addr),		\
- 					      NETDEV_FEATURE_COUNT);	\
- 	     (bit) >= 0;						\
--	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
-+	     (bit) = find_next_netdev_feature((mask_addr), (bit)))
- 
- /* Features valid for ethtool to change */
- /* = all defined minus driver/device-class-related */
--- 
-2.35.1
+ out_empty_ring:
+        tlb_flush_ring->read_idx = write_idx;
 
 
-
+> +	goto out_empty_ring;
+> +
+> +out_flush_all:
+> +	kvm_vcpu_flush_tlb_guest(vcpu);
+> +
+> +out_empty_ring:
+> +	tlb_flush_ring->read_idx = write_idx;
+>  }
+>  
