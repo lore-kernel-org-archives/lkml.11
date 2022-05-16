@@ -2,101 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D52C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 07:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86ACFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 07:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240804AbiEPHK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 03:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
+        id S240881AbiEPHMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 03:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240709AbiEPHKt (ORCPT
+        with ESMTP id S240978AbiEPHLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 03:10:49 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9FADFF4
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 00:10:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652685048; x=1684221048;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=osVtCMIQYinX4FphV0D5a3TGESr9bXGCHbW430bzhC8=;
-  b=AogQl1wrHkOlNUgWKSHxPoPdnaa2gUq3SF6mMWJia36tsupsUnPnhO2S
-   S/GQMM5y/VjrhvKKC4f4+FXXl9QI2dYBH36v0ajr/Fn6ArFeNEO+0YO0s
-   YOBJb4vy915BtB7vjcSJFAiXLjRiJHY/4WHpW29QWh3zi+SjDyg7yAukA
-   RAKnUwm5cWiBhsu023w82pUauK8V3pyuOATYTUvf9kYU0qWFhPnLMAB4H
-   qkxTZiiOPIpYK2pN0/ILFPCZyTV/YJ1KfdRG/efEm9kKgJZIP25SR/PjI
-   zukVB08wilucOaTq8JrOJZIPtbsk/KoL8AupTmnBJQHrn1rvUQoy+OFuG
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="269577251"
-X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
-   d="scan'208";a="269577251"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 00:10:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
-   d="scan'208";a="555128297"
-Received: from lkp-server01.sh.intel.com (HELO d1462bc4b09b) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 16 May 2022 00:10:43 -0700
-Received: from kbuild by d1462bc4b09b with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqUsM-0002EF-4u;
-        Mon, 16 May 2022 07:10:42 +0000
-Date:   Mon, 16 May 2022 15:09:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [nsaenz-rpi:ct-work-defer-wip 22/25]
- kernel/context_tracking.c:719:47: error: 'struct context_tracking' has no
- member named 'active'
-Message-ID: <202205161511.pldvqjB0-lkp@intel.com>
+        Mon, 16 May 2022 03:11:16 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4F7B1D4
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 00:11:14 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id y32so24160452lfa.6
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 00:11:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=A8n5NqBF8eiI63GzxK/IUYJgZos9yERKjGW1rbv7zxg=;
+        b=emeGxsdreO/uEDfJ4oREHvWiB12JVp56nF0pafJi3R9OKjRFf2JGCvNtfVjFxlSdpY
+         pE232FlSiaJXMlwIjhLHfDgbXNQFXJBDEtt9uEwYdSItjeo2eYQUW6cxmRpo5ifiWnrY
+         Knhs9/RWgMbkNqHlNBXD7+TBKVdc/cASl5GCqMlWWB83McSh2XS8JEFgRmPfk4ux1+Zx
+         GH47Ouv11aJ0TtJC5sHg7pIqM+92i7U8bvTubpXcFoCQyaU+yY0VypcEmnu3q8z19B57
+         zS8Ml7S9/64EwVYJ2Hq880C76u11jin8rKOhlzqct+N8WkpeZsa6d7RfgiecsTag6cmR
+         iTCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=A8n5NqBF8eiI63GzxK/IUYJgZos9yERKjGW1rbv7zxg=;
+        b=sT0PwwVwso4p3KtHp3MgB05MgRlkmgKtFGBwe25cWAPp/ggVB24PJdaKCF2wuyPJ+s
+         6OwYnNecfkaaqv+IzDSNplMSvLadnLwlZ7vonGUUQ2On/KwYCQP2llnJGpX+YrkQzifz
+         cinRsEONFoE5JiHxxgoWEXHwy81dJVrBoZwEdzvFUwafDE0e6XIn6B20HmpRNiIUvOBL
+         HxYoIBBLe4UB3RyUhBXo9Q3w6CdoEf/eXpAoP5JUiVWg2neebl2x+C37BtDX2vx2Zave
+         PWW7omE9fq6DJ9vBRV9aNTEY0Rz/234kyAy45bWMIXP79vtJy8ST2fR3oBY6vD0r+XLO
+         eD4Q==
+X-Gm-Message-State: AOAM533JMNL2+TNbHXqvn8qd5dl7RhT982zfeV/Zxw6Fi3FJc3l/9/+X
+        9TlcSvWm6r1yck9MXNn1qz4Uzw==
+X-Google-Smtp-Source: ABdhPJzGJNyk3ngpENl93DzIF49UfQH5FyPJS9+J6d9kc/q8lHaBvK24mhQHZKq9hsJOS1mW5yonAQ==
+X-Received: by 2002:a19:4343:0:b0:474:d7a:634d with SMTP id m3-20020a194343000000b004740d7a634dmr12034699lfj.168.1652685073277;
+        Mon, 16 May 2022 00:11:13 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id u26-20020ac248ba000000b0047255d21202sm1216927lfg.305.2022.05.16.00.11.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 00:11:12 -0700 (PDT)
+Message-ID: <8b47e106-a567-8d8f-ddd9-34b71211002e@linaro.org>
+Date:   Mon, 16 May 2022 09:11:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/3] dt-bindings: phy: qcom,qmp: Add compatible for
+ SC8280XP USB3 UNI phy
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220513225348.1671639-1-bjorn.andersson@linaro.org>
+ <20220513225348.1671639-2-bjorn.andersson@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220513225348.1671639-2-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/nsaenz/linux-rpi.git ct-work-defer-wip
-head:   ed63029652239a6befad96dd473b16332913f889
-commit: 54d59ad9b9db31d840346a4196c3b83b5410a1bf [22/25] context-tracking: Introduce work deferral infrastructure
-config: microblaze-randconfig-r036-20220512 (https://download.01.org/0day-ci/archive/20220516/202205161511.pldvqjB0-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/nsaenz/linux-rpi.git/commit/?id=54d59ad9b9db31d840346a4196c3b83b5410a1bf
-        git remote add nsaenz-rpi https://git.kernel.org/pub/scm/linux/kernel/git/nsaenz/linux-rpi.git
-        git fetch --no-tags nsaenz-rpi ct-work-defer-wip
-        git checkout 54d59ad9b9db31d840346a4196c3b83b5410a1bf
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash
+On 14/05/2022 00:53, Bjorn Andersson wrote:
+> The SC8280XP platform has a pair of 5nm USB3 UNI phys, add a compatible
+> for these.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+> index 8b850c5ab116..0a9ee5b7600d 100644
+> --- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+> +++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+> @@ -33,6 +33,7 @@ properties:
+>        - qcom,sc8180x-qmp-ufs-phy
+>        - qcom,sc8180x-qmp-usb3-phy
+>        - qcom,sc8280xp-qmp-ufs-phy
+> +      - qcom,sc8280xp-qmp-usb3-uni-phy
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   kernel/context_tracking.c: In function 'context_tracking_set_cpu_work':
->> kernel/context_tracking.c:719:47: error: 'struct context_tracking' has no member named 'active'
-     719 |         if (!context_tracking_enabled() || !ct->active)
-         |                                               ^~
+What about the clocks/resets/supplies in allOf:if:then?
 
 
-vim +719 kernel/context_tracking.c
-
-   709	
-   710	bool context_tracking_set_cpu_work(unsigned int cpu, unsigned int context,
-   711					   unsigned int work)
-   712	{
-   713		struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
-   714		unsigned int state;
-   715	
-   716		if (!IS_ENABLED(CONFIG_HAVE_CONTEXT_TRACKING_WORK))
-   717			return false;
-   718	
- > 719		if (!context_tracking_enabled() || !ct->active)
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
