@@ -2,87 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B98C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B80ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345417AbiEPTas (ORCPT
+        id S1345421AbiEPTbJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
+        Mon, 16 May 2022 15:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241824AbiEPTao (ORCPT
+        with ESMTP id S1345479AbiEPTbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:30:44 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB0A396
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:30:41 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id p12-20020a9d4e0c000000b00606b40860a3so10750470otf.11
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:30:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YCWtu0aA9CxSyLGzITwZE2RFoiQ9ONEqkxjQ2xXJpA8=;
-        b=N1DvjCOaQM6sCQEEes2mVcUTdjUIrlF10i/geaVSLrHdW9DHYM9RSOwUNdSe7sw5ML
-         iI3+X/2W5j8/acTRzANF1jt2JabJjE9l79gK36u0DlbQpjUQmO+2vvqMqvrd8/hCtNxN
-         h3GpKGPOdbbBsUh+4HGkoE9XTVtn8oJ6wJDYGY6w1Wl1O1sP7dtZAJAbloyhxxl9R4kJ
-         r/lqjcKKIuaM1mV77JcWxk6aaIAec1SVa5DDVsoV9KwfHA28PP5JzR1Hn97cZceOoQF8
-         /yuJWqUkk8aq21QpukmMZWeXguHH0Vk1JAmGo80S4cRvkDK/djzob22EKoiPPQn3x5Vd
-         XlSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YCWtu0aA9CxSyLGzITwZE2RFoiQ9ONEqkxjQ2xXJpA8=;
-        b=HVarSf9IGaNNXVcpZrB92+xYh7+5FjUWLBA4H/Y81kzsXHY0BXkQjcTz2rAaqQ/dgm
-         yWWUQnG/N0k55TSv3OpNtrmZusDTEvKhhm83KKBfgEJLu8lYLZc0CbegcxCFHB9RLqnH
-         Ifzxhm/aNvS69W01c5bjA/oo2THh6SeM1HMJTMHJDlEEsZ1dQIIjbWzfQN10NkfbdVJN
-         oR4s6WrBM9msI7y0DuO3INiZAQlQmXcCJ1NqQS37ZTe5sYx2AuOVPOnt9ipg4v1dYda1
-         I+WT3FuHAuTVzAYfF2EJ6kvEgfryRNY0PlwIUBYR732u9OVcJ0k2qagm/6mb6ENfN/oC
-         GCNw==
-X-Gm-Message-State: AOAM530Gr6TrQzRoGAUyKF+YfBSLCHhdgTVZ34GlRin19OSdRC+fIXp7
-        rwyOtyMccHFEfydGaW+QJbyKrA3bVixLiGx4fjNl5Q==
-X-Google-Smtp-Source: ABdhPJz23KWYvAC+Yv7AxHe5ZYX+hLIjlHHyYF2clYPjWK/Y+R+Tix4W90Th4qCk0Q61fhRXkvUaf+iddyNwXNkW368=
-X-Received: by 2002:a9d:6e83:0:b0:605:4a01:1d8c with SMTP id
- a3-20020a9d6e83000000b006054a011d8cmr6598748otr.174.1652729439301; Mon, 16
- May 2022 12:30:39 -0700 (PDT)
+        Mon, 16 May 2022 15:31:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BA32B1A0;
+        Mon, 16 May 2022 12:31:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 298AD614FC;
+        Mon, 16 May 2022 19:31:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1246BC34100;
+        Mon, 16 May 2022 19:31:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652729463;
+        bh=yeLKZJHgwtKyYalDbvtHzvDVJBp8BddUkRB8jSjYmvk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=l5rAc7KKzPIJ5XgwaXvyndiN4iGjm3znK/7LgNlPxvRwvkGO3WTpCFqvSj0RF1b2K
+         dworej4sH9GS4G5mBbnPNSk2nTXp/UG99pjDqVHzvvg3wONppB634PmCh1wKxm1ftE
+         UbHTgZ9PcLqy/bidEY6GfAWnew4NmXMYqA0HJb3kTGY7pZo3EPnWv1NyFV6D635dpm
+         V7RwNH8RUz/rLgig0xAZyXQ4ssgC9EQzO6EOv61lpdyws3sdk00YEZNApqeZX15Czy
+         LJzfMloi2TFl42c/scsHb3gUbNS9ZRaCJLTarD+5WA89RK0bhmPm8rvufa1BXroqN+
+         QMqFd8SdetJiw==
+Date:   Mon, 16 May 2022 12:31:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Kahurani <k.kahurani@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
+        davem@davemloft.net, jgg@ziepe.ca, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, phil@philpotter.co.uk,
+        syzkaller-bugs@googlegroups.com, arnd@arndb.de,
+        dan.carpenter@oracle.com
+Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
+ errors
+Message-ID: <20220516123101.467ad206@kernel.org>
+In-Reply-To: <20220514133234.33796-1-k.kahurani@gmail.com>
+References: <20220514133234.33796-1-k.kahurani@gmail.com>
 MIME-Version: 1.0
-References: <20220412195846.3692374-1-zhanwei@google.com> <YnmqgFkhqWklrQIw@google.com>
- <CAN86XOYNpzEUN0aL9g=_GQFz5zdXX9Pvcs_TDmBVyJZDTfXREg@mail.gmail.com> <YnwRld0aH8489+XQ@google.com>
-In-Reply-To: <YnwRld0aH8489+XQ@google.com>
-From:   Wei Zhang <zhanwei@google.com>
-Date:   Mon, 16 May 2022 21:30:00 +0200
-Message-ID: <CAN86XOZdW7aZXhSU2=gP5TrRQc8wLmtTQui0J2kwhchp2pnbeQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] KVM: x86: Fix incorrect VM-exit profiling
-To:     Sean Christopherson <seanjc@google.com>,
-        Suleiman Souhlal <suleiman@google.com>
-Cc:     Sangwhan Moon <sxm@google.com>, Ingo Molnar <mingo@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jing Zhang <jingzhangos@google.com>,
-        David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Please don't top-post.  From https://people.kernel.org/tglx/notes-about-netiquette:
+On Sat, 14 May 2022 16:32:34 +0300 David Kahurani wrote:
+> -			ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
+> -					 1, 1, &buf);
+> +			ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
+> +					       1, 1, &buf);
+> +			if (ret) {
+> +				netdev_dbg(dev->net,
+> +					   "Failed to read SROM_CMD: %d\n",
+> +					   ret);
+> +				return ret;
+> +			}
+>  
+>  			if (time_after(jiffies, jtimeout))
+>  				return -EINVAL;
+>  
+>  		} while (buf & EEP_BUSY);
 
-Ah, I didn't know this should be avoided. Thanks for the info!
+I agree with Pavel, this seems unnecessarily strict. If the error is
+not ENODEV we can keep looping.
 
-> My preference would be to find a more complete, KVM-specific solution.  The
-> profiling stuff seems like it's a dead end, i.e. will always be flawed in some
-> way.  If this cleanup didn't require a new hypercall then I wouldn't care, but
-> I don't love having to extend KVM's guest/host ABI for something that ideally
-> will become obsolete sooner than later.
+> @@ -1581,7 +1731,13 @@ static int ax88179_link_reset(struct usbnet *dev)
+>  				  &ax179_data->rxctl);
+>  
+>  		/*link up, check the usb device control TX FIFO full or empty*/
+> -		ax88179_read_cmd(dev, 0x81, 0x8c, 0, 4, &tmp32);
+> +		ret = ax88179_read_cmd(dev, 0x81, 0x8c, 0, 4, &tmp32);
+> +
+> +		if (ret) {
+> +			netdev_dbg(dev->net, "Failed to read TX FIFO: %d\n",
+> +				   ret);
+> +			return ret;
+> +		}
 
-I also feel that adding a new hypercall is too much here. A
-KVM-specific solution is definitely better, and the eBPF based
-approach you mentioned sounds like the ultimate solution (at least for
-inspecting exit reasons).
-
-+Suleiman What do you think? The on-going work Sean described sounds
-promising, perhaps we should put this patch aside for the time being.
+Please don't add any empty lines within the error checking.
+Empty lines are supposed to separate logically separate blocks of code.
+Error checking is very much logically part of the call. And no empty
+line betwee netdev_dbg() and return ret; either. In this submission you
+have all possible configurations of having or not having empty lines
+before the if or before the return. None of them should be there, and
+please be consistent.
