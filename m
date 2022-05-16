@@ -2,121 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5164C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 356FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345779AbiEPTkZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
+        id S245555AbiEPTk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:40:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345602AbiEPTi5 (ORCPT
+        with ESMTP id S1345763AbiEPTjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:38:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A71EF3F88E
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:38:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652729923;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+tK7o+o7Kj2BQK1w3k57mXkaPLoN/4QFNnxgOKxEuBU=;
-        b=LfTk844feNuMvpixAdumjrUNDcHZdcpR2OOLbwIT6WZkwqyRUUUSo14HjfSQmi5O+qx0uF
-        GVY5iJrG+oTUNovTVw91mVu849UNw6zx5KTMSEQzuUyYFleWYIsDAMKJuH9c5BasnkoBXF
-        eZMNUm3iNy3Yy0DceMnkWUketa94lPM=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-113-DBgmTOhsPc6xdxXVZ6Sw1Q-1; Mon, 16 May 2022 15:38:42 -0400
-X-MC-Unique: DBgmTOhsPc6xdxXVZ6Sw1Q-1
-Received: by mail-il1-f199.google.com with SMTP id s6-20020a056e021a0600b002d0fe2b6d2fso3810751ild.12
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:38:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=+tK7o+o7Kj2BQK1w3k57mXkaPLoN/4QFNnxgOKxEuBU=;
-        b=h8W40qIVLnqzZuLoUWzizxjijmmUdOmfaeo05QwjGhVv5wLNEk5F8HDQcY1WC8XQGh
-         STjVziEBXYgvA+nrCTgBPyjCoSG6VqxA0NphqZ38f1XPAQXx0iBjb27JQDRjBtDSgeYQ
-         xyhXd8L0NbWFHDFb3ttvm2N/omI9fL72Mki8GWtZGJxOSl+V44A+t4+cstonjO/dNV/e
-         kNqU+DQjYp66eCXWmxGxpvJqvxcEmeh0bWrDG5UiIjn9bt1PY7GDv2XVDBlm7vFLEZAv
-         LiOxDPQhRlRgeLETXMHmO9/39ehQVJ8A6x24U9vRwzGnVcSn7O9HKONpEu3Er1VI9sx4
-         Lkxw==
-X-Gm-Message-State: AOAM5320PxkkNAc0ip+NRIxzyw/0QIgYdoMVNrTfohKDS9RQXWoBbdjr
-        8J1Fa2YlKxpNYcxNra6pwAoAYghBnkUnRXPUDJoXs0e3myPN0gWfokPouInsCji5XvnUg5E4GZ2
-        JlJB9OT/riZP8ZicBwhDjZDXl
-X-Received: by 2002:a05:6638:41a9:b0:32e:415a:a8a9 with SMTP id az41-20020a05663841a900b0032e415aa8a9mr2168794jab.101.1652729921713;
-        Mon, 16 May 2022 12:38:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy1ASRKUsHnS3u0hy5oNZdsYdaQJ/MYozulGQvgUeh7FSJ+d//YDvBT7RymfdniEX5hlCY/9Q==
-X-Received: by 2002:a05:6638:41a9:b0:32e:415a:a8a9 with SMTP id az41-20020a05663841a900b0032e415aa8a9mr2168777jab.101.1652729921515;
-        Mon, 16 May 2022 12:38:41 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id v20-20020a02b914000000b0032e049b2949sm2803562jan.101.2022.05.16.12.38.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 12:38:41 -0700 (PDT)
-Date:   Mon, 16 May 2022 13:38:39 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Matthew Rosato <mjrosato@linux.ibm.com>,
-        linux-s390@vger.kernel.org, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 17/22] vfio-pci/zdev: add open/close device hooks
-Message-ID: <20220516133839.7e116489.alex.williamson@redhat.com>
-In-Reply-To: <20220516183558.GN1343366@nvidia.com>
-References: <20220513191509.272897-1-mjrosato@linux.ibm.com>
-        <20220513191509.272897-18-mjrosato@linux.ibm.com>
-        <20220516172734.GE1343366@nvidia.com>
-        <7a31ec36-ceaf-dcef-8bd0-2b4732050aed@linux.ibm.com>
-        <20220516183558.GN1343366@nvidia.com>
-Organization: Red Hat
+        Mon, 16 May 2022 15:39:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224C63F32B;
+        Mon, 16 May 2022 12:39:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 263F061518;
+        Mon, 16 May 2022 19:39:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00918C385AA;
+        Mon, 16 May 2022 19:39:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652729944;
+        bh=QBVFwe9/B0/gTWZPeQv0UHVuzXXJbmaX+xE2j7nt2Ys=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BNYpfewBLDYezjuIRVQ14Ue0hQ3nN5VwC8mXt53Fs+nkWfiOftvqc+hRjWEZldWg4
+         2Cjbemi2RI+tSsuZ1dwx/VfJ9vNW3pEu48E85RsDhc8QYuNoNPAjCs58mzTn6auo5L
+         XwxsnF7/ynAjzy0dNhf+s9M6btd4fMNt966HuYPs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 10/25] net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
+Date:   Mon, 16 May 2022 21:36:24 +0200
+Message-Id: <20220516193614.995948401@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
+References: <20220516193614.678319286@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 15:35:58 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 
-> On Mon, May 16, 2022 at 02:30:46PM -0400, Matthew Rosato wrote:
-> 
-> > Conceptually I think this would work for QEMU anyway (it always sets the kvm
-> > before we open the device).  I tried to test the idea quickly but couldn't
-> > get the following to apply on vfio-next or your vfio_group_locking -- but I
-> > understand what you're trying to do so I'll re-work and try it out.  
-> 
-> I created it on 8c9350e9bf43de1ebab3cc8a80703671e6495ab4 which is the
-> vfio_group_locking.. I can send you a github if it helps
-> https://github.com/jgunthorpe/linux/commits/vfio_group_lockin
-> 
-> > @Alex can you think of any usecase/reason why we would need to be able to
-> > set the KVM sometime after the device was opened?  Doing something like
-> > below would break that, as this introduces the assumption that the group is
-> > associated with the KVM before the device is opened (and if it's not, the
-> > device open fails).  
-> 
-> Keep in mind that GVT already hard requires this ordering to even
-> allow open_device to work - so it already sets a floor for what
-> userspace can do..
+[ Upstream commit f3c46e41b32b6266cf60b0985c61748f53bf1c61 ]
 
-How is this going to work when vfio devices are exposed directly?  We
-currently have a strict ordering through the group to get to the
-device, and it's therefore a reasonable requirement for userspace to
-register the group with kvm before opening the device.  Is the notifier
-and async KVM registration necessary to support this dependency with
-direct device access?  I don't have as clear a picture of the ordering
-with with direct access.  Thanks,
+Non blocking sendmsg will return -EAGAIN when any signal pending
+and no send space left, while non blocking recvmsg return -EINTR
+when signal pending and no data received. This may makes confused.
+As TCP returns -EAGAIN in the conditions described above. Align the
+behavior of smc with TCP.
 
-Alex
+Fixes: 846e344eb722 ("net/smc: add receive timeout check")
+Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220512030820.73848-1-guangguan.wang@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/smc/smc_rx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/smc/smc_rx.c b/net/smc/smc_rx.c
+index cbf58637ee14..0d5146d6d105 100644
+--- a/net/smc/smc_rx.c
++++ b/net/smc/smc_rx.c
+@@ -145,12 +145,12 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg, size_t len,
+ 				}
+ 				break;
+ 			}
++			if (!timeo)
++				return -EAGAIN;
+ 			if (signal_pending(current)) {
+ 				read_done = sock_intr_errno(timeo);
+ 				break;
+ 			}
+-			if (!timeo)
+-				return -EAGAIN;
+ 		}
+ 
+ 		if (!atomic_read(&conn->bytes_to_rcv)) {
+-- 
+2.35.1
+
+
 
