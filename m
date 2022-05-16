@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53101C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236041AbiEPUQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:16:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
+        id S241941AbiEPURB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348383AbiEPT6g (ORCPT
+        with ESMTP id S1348441AbiEPT6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EC343AE0;
-        Mon, 16 May 2022 12:50:37 -0700 (PDT)
+        Mon, 16 May 2022 15:58:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A7343AEB;
+        Mon, 16 May 2022 12:50:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C037B81616;
-        Mon, 16 May 2022 19:50:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70EE0C34100;
-        Mon, 16 May 2022 19:50:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09665B81612;
+        Mon, 16 May 2022 19:50:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 705A1C385AA;
+        Mon, 16 May 2022 19:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730634;
-        bh=ow4X7BELWr3tuZ00ceGXC+8opjw2E6B2OH2F918kbsY=;
+        s=korg; t=1652730637;
+        bh=Vac/Rm/MDFZxlgiWjKxf+XFwWFW0KieGzwYBnwj+aXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HfmosbmBYq928PKudTEnpUxgcTd1qA7Z5Wbwq/RubGON57sg+2hCDGMmoq0j+vVBN
-         e3t5BPkMYgl9JfJLxVTm8haDiBRe3LWiNWETSbtd7B+MI0cjQWZMkO8Lz3MewtxZMb
-         nMj6wsVdfc5zyqi58gNkme5z28SVJTI5ZMIwQtAQ=
+        b=wO8UhFEtozfu/FGe+btJz5vAsfKxAF51WelY1KewYYYTSRNk3UlHbT7uSk+PNSc9a
+         6OZnZNkPsBQjFz3M/NXdE+8J6wosaLpgjhrsANUFS8s67eDjWd2XRtQGQTHWnXDLE7
+         KRyoR2wZR8ezcenUkdprWZAZDq1H2lO0p7gBqhFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Alex Elder <elder@linaro.org>,
-        Taniya Das <quic_tdas@quicinc.com>,
-        Mike Tipton <quic_mdtipton@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 062/102] interconnect: Restore sync state by ignoring ipa-virt in provider count
-Date:   Mon, 16 May 2022 21:36:36 +0200
-Message-Id: <20220516193625.776136833@linuxfoundation.org>
+        =?UTF-8?q?Thi=C3=A9baud=20Weksteen?= <tweek@google.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Luis Chamberlain <mcgrof@kernel.org>
+Subject: [PATCH 5.15 063/102] firmware_loader: use kernel credentials when reading firmware
+Date:   Mon, 16 May 2022 21:36:37 +0200
+Message-Id: <20220516193625.805119386@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -55,60 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Thiébaud Weksteen <tweek@google.com>
 
-[ Upstream commit 20ce30fb4750f2ffc130cdcb26232b1dd87cd0a5 ]
+commit 581dd69830341d299b0c097fc366097ab497d679 upstream.
 
-Ignore compatible strings for the IPA virt drivers that were removed in
-commits 2fb251c26560 ("interconnect: qcom: sdx55: Drop IP0
-interconnects") and 2f3724930eb4 ("interconnect: qcom: sc7180: Drop IP0
-interconnects") so that the sync state logic can kick in again.
-Otherwise all the interconnects in the system will stay pegged at max
-speeds because 'providers_count' is always going to be one larger than
-the number of drivers that will ever probe on sc7180 or sdx55. This
-fixes suspend on sc7180 and sdx55 devices when you don't have a
-devicetree patch to remove the ipa-virt compatible node.
+Device drivers may decide to not load firmware when probed to avoid
+slowing down the boot process should the firmware filesystem not be
+available yet. In this case, the firmware loading request may be done
+when a device file associated with the driver is first accessed. The
+credentials of the userspace process accessing the device file may be
+used to validate access to the firmware files requested by the driver.
+Ensure that the kernel assumes the responsibility of reading the
+firmware.
 
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Doug Anderson <dianders@chromium.org>
-Cc: Alex Elder <elder@linaro.org>
-Cc: Taniya Das <quic_tdas@quicinc.com>
-Cc: Mike Tipton <quic_mdtipton@quicinc.com>
-Fixes: 2fb251c26560 ("interconnect: qcom: sdx55: Drop IP0 interconnects")
-Fixes: 2f3724930eb4 ("interconnect: qcom: sc7180: Drop IP0 interconnects")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Alex Elder <elder@linaro.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Link: https://lore.kernel.org/r/20220427013226.341209-1-swboyd@chromium.org
-Signed-off-by: Georgi Djakov <djakov@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This was observed on Android for a graphic driver loading their firmware
+when the device file (e.g. /dev/mali0) was first opened by userspace
+(i.e. surfaceflinger). The security context of surfaceflinger was used
+to validate the access to the firmware file (e.g.
+/vendor/firmware/mali.bin).
+
+Previously, Android configurations were not setting up the
+firmware_class.path command line argument and were relying on the
+userspace fallback mechanism. In this case, the security context of the
+userspace daemon (i.e. ueventd) was consistently used to read firmware
+files. More Android devices are now found to set firmware_class.path
+which gives the kernel the opportunity to read the firmware directly
+(via kernel_read_file_from_path_initns). In this scenario, the current
+process credentials were used, even if unrelated to the loading of the
+firmware file.
+
+Signed-off-by: Thiébaud Weksteen <tweek@google.com>
+Cc: <stable@vger.kernel.org> # 5.10
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+Link: https://lore.kernel.org/r/20220502004952.3970800-1-tweek@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/interconnect/core.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/base/firmware_loader/main.c |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/interconnect/core.c b/drivers/interconnect/core.c
-index 9050ca1f4285..808f6e7a8048 100644
---- a/drivers/interconnect/core.c
-+++ b/drivers/interconnect/core.c
-@@ -1087,9 +1087,15 @@ static int of_count_icc_providers(struct device_node *np)
+--- a/drivers/base/firmware_loader/main.c
++++ b/drivers/base/firmware_loader/main.c
+@@ -795,6 +795,8 @@ _request_firmware(const struct firmware
+ 		  size_t offset, u32 opt_flags)
  {
- 	struct device_node *child;
- 	int count = 0;
-+	const struct of_device_id __maybe_unused ignore_list[] = {
-+		{ .compatible = "qcom,sc7180-ipa-virt" },
-+		{ .compatible = "qcom,sdx55-ipa-virt" },
-+		{}
-+	};
+ 	struct firmware *fw = NULL;
++	struct cred *kern_cred = NULL;
++	const struct cred *old_cred;
+ 	bool nondirect = false;
+ 	int ret;
  
- 	for_each_available_child_of_node(np, child) {
--		if (of_property_read_bool(child, "#interconnect-cells"))
-+		if (of_property_read_bool(child, "#interconnect-cells") &&
-+		    likely(!of_match_node(ignore_list, child)))
- 			count++;
- 		count += of_count_icc_providers(child);
- 	}
--- 
-2.35.1
-
+@@ -811,6 +813,18 @@ _request_firmware(const struct firmware
+ 	if (ret <= 0) /* error or already assigned */
+ 		goto out;
+ 
++	/*
++	 * We are about to try to access the firmware file. Because we may have been
++	 * called by a driver when serving an unrelated request from userland, we use
++	 * the kernel credentials to read the file.
++	 */
++	kern_cred = prepare_kernel_cred(NULL);
++	if (!kern_cred) {
++		ret = -ENOMEM;
++		goto out;
++	}
++	old_cred = override_creds(kern_cred);
++
+ 	ret = fw_get_filesystem_firmware(device, fw->priv, "", NULL);
+ 
+ 	/* Only full reads can support decompression, platform, and sysfs. */
+@@ -836,6 +850,9 @@ _request_firmware(const struct firmware
+ 	} else
+ 		ret = assign_fw(fw, device);
+ 
++	revert_creds(old_cred);
++	put_cred(kern_cred);
++
+  out:
+ 	if (ret < 0) {
+ 		fw_abort_batch_reqs(fw);
 
 
