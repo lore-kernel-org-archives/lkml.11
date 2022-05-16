@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B899C3A59D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05121C38A2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348589AbiEPUGi (ORCPT
+        id S1348387AbiEPUGd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56166 "EHLO
+        Mon, 16 May 2022 16:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347030AbiEPTvf (ORCPT
+        with ESMTP id S1347037AbiEPTvf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:51:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC1E3EB82;
-        Mon, 16 May 2022 12:46:43 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEF028A;
+        Mon, 16 May 2022 12:46:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 414E7B815F6;
-        Mon, 16 May 2022 19:46:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D4EBC385AA;
-        Mon, 16 May 2022 19:46:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D414609D0;
+        Mon, 16 May 2022 19:46:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A154C385AA;
+        Mon, 16 May 2022 19:46:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730400;
-        bh=icSuAv8bKxjkgQCS0+EKtkHmPx2uqUq5zHY0/SpG3nk=;
+        s=korg; t=1652730406;
+        bh=pBZPEgcwSWzTvVDiYZyVpK3hnXuf2CTVNp7A4sC+rao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xj77AOwJaNvWloM7psr6fTzNSXEzToFcHqKBRHpYcsZmg5CLwl3xqv/b2YDznZIS+
-         a/Lre+N97soNDe25+Zpxq+NDAZHgM8yMv2iUR2Y1X5QBkzWI+YJELXtWEPTND8Wb8c
-         b1BQ2EGbDKTxw66hEOjvd09zMc7lij6me43nV6Xc=
+        b=LayEnuD8R2isTzh0OoNoARX4xHZPRg+BuTu5qcNdQ4P8C8vfdaCBYomtOWfsWy02y
+         MjgxmcxTScJVT+ucUZXwMlQS9naLlYdKHuNtx+siU3hB8efJ89dQhFbn4izM9rwtkO
+         0qA/JYCo604w5vmB06tfd62koznTGvZMSuzGatCo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.10 53/66] drm/nouveau/tegra: Stop using iommu_present()
-Date:   Mon, 16 May 2022 21:36:53 +0200
-Message-Id: <20220516193620.942202204@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jordan Leppert <jordanleppert@protonmail.com>,
+        Holger Hoffstaette <holger@applied-asynchrony.com>,
+        Manuel Ullmann <labre@posteo.de>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.10 55/66] net: atlantic: always deep reset on pm op, fixing up my null deref regression
+Date:   Mon, 16 May 2022 21:36:55 +0200
+Message-Id: <20220516193621.001311470@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -49,35 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Manuel Ullmann <labre@posteo.de>
 
-commit 87fd2b091fb33871a7f812658a0971e8e26f903f upstream.
+commit 1809c30b6e5a83a1de1435fe01aaa4de4d626a7c upstream.
 
-Even if some IOMMU has registered itself on the platform "bus", that
-doesn't necessarily mean it provides translation for the device we
-care about. Replace iommu_present() with a more appropriate check.
+The impact of this regression is the same for resume that I saw on
+thaw: the kernel hangs and nothing except SysRq rebooting can be done.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-[added cc for stable]
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: stable@vger.kernel.org # v5.0+
-Link: https://patchwork.freedesktop.org/patch/msgid/70d40ea441da3663c2824d54102b471e9a621f8a.1649168494.git.robin.murphy@arm.com
+Fixes regression in commit cbe6c3a8f8f4 ("net: atlantic: invert deep
+par in pm functions, preventing null derefs"), where I disabled deep
+pm resets in suspend and resume, trying to make sense of the
+atl_resume_common() deep parameter in the first place.
+
+It turns out, that atlantic always has to deep reset on pm
+operations. Even though I expected that and tested resume, I screwed
+up by kexec-rebooting into an unpatched kernel, thus missing the
+breakage.
+
+This fixup obsoletes the deep parameter of atl_resume_common, but I
+leave the cleanup for the maintainers to post to mainline.
+
+Suspend and hibernation were successfully tested by the reporters.
+
+Fixes: cbe6c3a8f8f4 ("net: atlantic: invert deep par in pm functions, preventing null derefs")
+Link: https://lore.kernel.org/regressions/9-Ehc_xXSwdXcvZqKD5aSqsqeNj5Izco4MYEwnx5cySXVEc9-x_WC4C3kAoCqNTi-H38frroUK17iobNVnkLtW36V6VWGSQEOHXhmVMm5iQ=@protonmail.com/
+Reported-by: Jordan Leppert <jordanleppert@protonmail.com>
+Reported-by: Holger Hoffstaette <holger@applied-asynchrony.com>
+Tested-by: Jordan Leppert <jordanleppert@protonmail.com>
+Tested-by: Holger Hoffstaette <holger@applied-asynchrony.com>
+CC: <stable@vger.kernel.org> # 5.10+
+Signed-off-by: Manuel Ullmann <labre@posteo.de>
+Link: https://lore.kernel.org/r/87bkw8dfmp.fsf@posteo.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-@@ -123,7 +123,7 @@ nvkm_device_tegra_probe_iommu(struct nvk
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -455,7 +455,7 @@ static int aq_pm_freeze(struct device *d
  
- 	mutex_init(&tdev->iommu.mutex);
+ static int aq_pm_suspend_poweroff(struct device *dev)
+ {
+-	return aq_suspend_common(dev, false);
++	return aq_suspend_common(dev, true);
+ }
  
--	if (iommu_present(&platform_bus_type)) {
-+	if (device_iommu_mapped(dev)) {
- 		tdev->iommu.domain = iommu_domain_alloc(&platform_bus_type);
- 		if (!tdev->iommu.domain)
- 			goto error;
+ static int aq_pm_thaw(struct device *dev)
+@@ -465,7 +465,7 @@ static int aq_pm_thaw(struct device *dev
+ 
+ static int aq_pm_resume_restore(struct device *dev)
+ {
+-	return atl_resume_common(dev, false);
++	return atl_resume_common(dev, true);
+ }
+ 
+ static const struct dev_pm_ops aq_pm_ops = {
 
 
