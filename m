@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26BBAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:13:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241242AbiEPUKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        id S244304AbiEPULF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347544AbiEPT5z (ORCPT
+        with ESMTP id S1347516AbiEPT5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:57:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D3642EF2;
-        Mon, 16 May 2022 12:49:36 -0700 (PDT)
+        Mon, 16 May 2022 15:57:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604F63EF09;
+        Mon, 16 May 2022 12:49:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71A2B60ABE;
-        Mon, 16 May 2022 19:49:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E154C385AA;
-        Mon, 16 May 2022 19:49:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31E0CB81611;
+        Mon, 16 May 2022 19:49:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85A8FC34116;
+        Mon, 16 May 2022 19:49:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730575;
-        bh=k/5VGV2x40AoixLUsfvacPeVCkHLS+UHpXnvrAZCHTI=;
+        s=korg; t=1652730572;
+        bh=EKHLVJ0B5gO/0XT4+R4tsAOPsdsBtZj0QkVOL2dLksI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nhXd5sUXeuPw+T/a8gQxFLlPyM7iA4pGZ5Ryhtv2aAPaygdbSxFWGHE7wruU88LZO
-         pOhVr5moHuW5DPai+dd3yZJnqfu1Z/bN6FCnwM2sEhtlQoPGG8P1MXxrJ/dg+Dzl1P
-         gONlNJKWpKipGrTUoz+j1QiHoks2TjiaJwQ1PhDQ=
+        b=C7fEFF3psMZH99fLjQYjbAJtSYtiQs3AYxPYaxRV1mCP8ay8fGYPCASjKe70d4Pet
+         zKiACiEa/3ONNEUS33p2Jaa0vEG5nICo6jZ02Nxw8slknVcyXY4UyaCpRbzBW97Guq
+         c5AiBSGBSoMa+E9t7ZmClbMbtdFPhTvXuE/BlJbQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Habets <habetsm.xilinx@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>,
+        stable@vger.kernel.org,
+        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 041/102] net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
-Date:   Mon, 16 May 2022 21:36:15 +0200
-Message-Id: <20220516193625.180192763@linuxfoundation.org>
+Subject: [PATCH 5.15 040/102] net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
+Date:   Mon, 16 May 2022 21:36:14 +0200
+Message-Id: <20220516193625.151763696@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -50,70 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 
-[ Upstream commit 1fa89ffbc04545b7582518e57f4b63e2a062870f ]
+[ Upstream commit f3c46e41b32b6266cf60b0985c61748f53bf1c61 ]
 
-In the NIC ->probe() callback, ->mtd_probe() callback is called.
-If NIC has 2 ports, ->probe() is called twice and ->mtd_probe() too.
-In the ->mtd_probe(), which is efx_ef10_mtd_probe() it allocates and
-initializes mtd partiion.
-But mtd partition for sfc is shared data.
-So that allocated mtd partition data from last called
-efx_ef10_mtd_probe() will not be used.
-Therefore it must be freed.
-But it doesn't free a not used mtd partition data in efx_ef10_mtd_probe().
+Non blocking sendmsg will return -EAGAIN when any signal pending
+and no send space left, while non blocking recvmsg return -EINTR
+when signal pending and no data received. This may makes confused.
+As TCP returns -EAGAIN in the conditions described above. Align the
+behavior of smc with TCP.
 
-kmemleak reports:
-unreferenced object 0xffff88811ddb0000 (size 63168):
-  comm "systemd-udevd", pid 265, jiffies 4294681048 (age 348.586s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffffa3767749>] kmalloc_order_trace+0x19/0x120
-    [<ffffffffa3873f0e>] __kmalloc+0x20e/0x250
-    [<ffffffffc041389f>] efx_ef10_mtd_probe+0x11f/0x270 [sfc]
-    [<ffffffffc0484c8a>] efx_pci_probe.cold.17+0x3df/0x53d [sfc]
-    [<ffffffffa414192c>] local_pci_probe+0xdc/0x170
-    [<ffffffffa4145df5>] pci_device_probe+0x235/0x680
-    [<ffffffffa443dd52>] really_probe+0x1c2/0x8f0
-    [<ffffffffa443e72b>] __driver_probe_device+0x2ab/0x460
-    [<ffffffffa443e92a>] driver_probe_device+0x4a/0x120
-    [<ffffffffa443f2ae>] __driver_attach+0x16e/0x320
-    [<ffffffffa4437a90>] bus_for_each_dev+0x110/0x190
-    [<ffffffffa443b75e>] bus_add_driver+0x39e/0x560
-    [<ffffffffa4440b1e>] driver_register+0x18e/0x310
-    [<ffffffffc02e2055>] 0xffffffffc02e2055
-    [<ffffffffa3001af3>] do_one_initcall+0xc3/0x450
-    [<ffffffffa33ca574>] do_init_module+0x1b4/0x700
-
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
-Fixes: 8127d661e77f ("sfc: Add support for Solarflare SFC9100 family")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Link: https://lore.kernel.org/r/20220512054709.12513-1-ap420073@gmail.com
+Fixes: 846e344eb722 ("net/smc: add receive timeout check")
+Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220512030820.73848-1-guangguan.wang@linux.alibaba.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/smc/smc_rx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index e7e2223aebbf..f5a4d8f4fd11 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -3579,6 +3579,11 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
- 		n_parts++;
- 	}
+diff --git a/net/smc/smc_rx.c b/net/smc/smc_rx.c
+index 170b733bc736..45b0575520da 100644
+--- a/net/smc/smc_rx.c
++++ b/net/smc/smc_rx.c
+@@ -354,12 +354,12 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
+ 				}
+ 				break;
+ 			}
++			if (!timeo)
++				return -EAGAIN;
+ 			if (signal_pending(current)) {
+ 				read_done = sock_intr_errno(timeo);
+ 				break;
+ 			}
+-			if (!timeo)
+-				return -EAGAIN;
+ 		}
  
-+	if (!n_parts) {
-+		kfree(parts);
-+		return 0;
-+	}
-+
- 	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
- fail:
- 	if (rc)
+ 		if (!smc_rx_data_available(conn)) {
 -- 
 2.35.1
 
