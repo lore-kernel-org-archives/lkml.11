@@ -2,83 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA75C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D211DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242846AbiEPKu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35524 "EHLO
+        id S242769AbiEPKwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242347AbiEPKuQ (ORCPT
+        with ESMTP id S242980AbiEPKvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:50:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98218275D3;
-        Mon, 16 May 2022 03:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DE7BB81056;
-        Mon, 16 May 2022 10:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CDA67C3411C;
-        Mon, 16 May 2022 10:50:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652698212;
-        bh=GmnZSzClyr9TWR4VzkC2aSeu6x1a6npWkK+f0m1rsUU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SJrDcwPmRqhefkLm5zGhAKF8dW304IeaT2BFPuoS/68axnad9oKhgDt48cdjzqlAJ
-         LqLHvQ/jNIYc4QXG4MQ1BSLBbgqBTjdyS8G6nVSGQUUI6c0WW+2/kA4Rq2JdXBQo0Y
-         mJKcG2PA/HK2zfXmhH0YvadYO9fTdbtHu2q/m1zUtT5kQDuVTmLHW7vtWLikJSTZpu
-         htTfIfxMXF5qUOlYV/TDHv8ypXGJ9UBncyGeSdvwUbjsvkl51NRcPFv4qavo2vdOey
-         CxXxxbmaQjSK5WX4bMkgvTWrxG9644bXggwZY7mHw+auYZa97g7wn2vEd4KlQYbwTx
-         0RFz2Yo7fq4Bg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD220F0393B;
-        Mon, 16 May 2022 10:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 16 May 2022 06:51:17 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB45BF72
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:51:16 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id i8so110595plr.13
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:51:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5qABwBGQeqRGyH4s8D1h5zI8q8n2HwL4/08QSvpU+KQ=;
+        b=VSDQMlv8C2J9HnzLs/CYYNTmLUOIJa3xmXUvEFaE+GppMb+UfDrfgb9MvmDs2L4DgE
+         fAw8N2GLUo5h45FxctT4TbOBV7xvP5WLkymIZTfaMtTUwmiFhjVIi+IE9N+TRYbne3W/
+         xUqNzX7bvQkIEWp/4H5F17zPthIGutwTcK3pg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5qABwBGQeqRGyH4s8D1h5zI8q8n2HwL4/08QSvpU+KQ=;
+        b=m05Zgg6LyULmXeu2ZsdblF3el+JBfIiW8omyCWZhjNWe+he2eo3XkGegz9ecvok2lY
+         AJjl0UlooN/ZK7pkmbVs/5CyGkaE/ZHB+Mq+g0hhDRHiEFz3dTRFRQhhax/bb4/v6BkG
+         j4F+xEzXvwjuwc+yBCGD/TuG6lBbCJEzD+jQKIjafVW0kjPH4GEduuCZatXMAAanOdek
+         dNWL2GdIQr9RLNQEYfPEW7TbPVbSCTtAU5WhDGKgGBw30MiVppmdsFsOPcQoYT6crmTq
+         9fimt6zw7cvu+VNFsrXRvwl5EvVMmN1JC0bDXZ3iSb2aBVB16Esn8lb3BIx9xXpzhJkF
+         n54w==
+X-Gm-Message-State: AOAM533B4rjAaFm8JjvfvBYlKdkphJtNMGii6e31s4lDKC5Kvu/QGQGB
+        BrzoRpyHElUd7JFCvlr0lM4pLA==
+X-Google-Smtp-Source: ABdhPJzEhc6Nq+jLxQgfZOwbXkTmoQiUhXix3nS4TzvMkiag7XSXc+R5p+oyIy22fYfHXoiCxcP8fQ==
+X-Received: by 2002:a17:90b:33ca:b0:1dc:e5b8:482b with SMTP id lk10-20020a17090b33ca00b001dce5b8482bmr29885251pjb.165.1652698275616;
+        Mon, 16 May 2022 03:51:15 -0700 (PDT)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:cdcb:c865:6f65:d875])
+        by smtp.gmail.com with ESMTPSA id o14-20020a655bce000000b003db8dd388afsm6332778pgr.10.2022.05.16.03.51.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 03:51:15 -0700 (PDT)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     Phillip Lougher <phillip@squashfs.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Xiongwei Song <Xiongwei.Song@windriver.com>
+Cc:     Zheng Liang <zhengliang6@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
+        "squashfs-devel @ lists . sourceforge . net" 
+        <squashfs-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Implement readahead for squashfs
+Date:   Mon, 16 May 2022 18:50:59 +0800
+Message-Id: <20220516105100.1412740-1-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] net: wwan: t7xx: Fix return type of
- t7xx_dl_add_timedout()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165269821270.15644.10547033316337959014.git-patchwork-notify@kernel.org>
-Date:   Mon, 16 May 2022 10:50:12 +0000
-References: <20220513075611.1972-1-yuehaibing@huawei.com>
-In-Reply-To: <20220513075611.1972-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        m.chetan.kumar@linux.intel.com, ricardo.martinez@linux.intel.com,
-        loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
-        johannes@sipsolutions.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Commit c1f6925e1091("mm: put readahead pages in cache earlier") requires
+fs to implement readahead callback. Otherwise there will be a
+performance regression.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Commit 9eec1d897139("squashfs: provide backing_dev_info in order to
+disable read-ahead") mitigates the performance drop issue for squashfs
+by closing readahead for it.
 
-On Fri, 13 May 2022 15:56:11 +0800 you wrote:
-> t7xx_dl_add_timedout() now return int 'ret', but the return type
-> is bool. Change the return type to int for furthor errcode upstream.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
-> v2: Remove unneeded ret variable
-> 
-> [...]
+This series implements readahead callback for squashfs. The previous
+discussion are in [1] and [2].
 
-Here is the summary with links:
-  - [v2,net-next] net: wwan: t7xx: Fix return type of t7xx_dl_add_timedout()
-    https://git.kernel.org/netdev/net-next/c/b321dfafb0b9
+[1] https://lore.kernel.org/all/CAJMQK-g9G6KQmH-V=BRGX0swZji9Wxe_2c7ht-MMAapdFy2pXw@mail.gmail.com/T/
+[2] https://lore.kernel.org/linux-mm/Yn5Yij9pRPCzDozt@casper.infradead.org/t/#m4af4473b94f98a4996cb11756b633a07e5e059d1
 
-You are awesome, thank you!
+Hsin-Yi Wang (2):
+  Revert "squashfs: provide backing_dev_info in order to disable
+    read-ahead"
+  squashfs: implement readahead
+
+ fs/squashfs/file.c  | 77 +++++++++++++++++++++++++++++++++++++++++++++
+ fs/squashfs/super.c | 33 -------------------
+ 2 files changed, 77 insertions(+), 33 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.0.550.gb090851708-goog
 
