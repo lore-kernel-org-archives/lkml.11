@@ -2,93 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E1EC38A04
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A9EC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349573AbiEPUis (ORCPT
+        id S1349798AbiEPUiy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
+        Mon, 16 May 2022 16:38:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350065AbiEPUAr (ORCPT
+        with ESMTP id S1350021AbiEPUAp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2685345ADB;
-        Mon, 16 May 2022 12:54:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BE6460EC3;
-        Mon, 16 May 2022 19:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BDA2C385AA;
-        Mon, 16 May 2022 19:54:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730887;
-        bh=PzICwLjlQo99NgdyMEC1XtS6+gYXW+gJUuLaUJcbn10=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LBjqai4n4eolnBlpLGbRt0Z4P8HEt2T61RBTKCFGOpW3OtgK2UQX1KST9hqXPyPgv
-         gAozdYFhuawEA6tr/JUMYDeSWNLPTcf0hrRQZOT9FIDOm2u851z3Rv9IHDUSjyTj63
-         gGEfibbqJjJhl4EqKZMCiIusC/vE7qdDzYhxueBM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 035/114] s390/ctcm: fix variable dereferenced before check
-Date:   Mon, 16 May 2022 21:36:09 +0200
-Message-Id: <20220516193626.498278092@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 16 May 2022 16:00:45 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F053A45AC7;
+        Mon, 16 May 2022 12:54:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652730891; x=1684266891;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fScrN08znRDZaq3DWOz2/SzfYqSDlpSGins4k3VDQok=;
+  b=C8vYxgEMQEXCfuZ2a8yqVSQ0BC12xHGEhkOND/PbkXlE0SpPHcoJXNzW
+   MnYO9PhcBwK1BbolpV3g0sB+JllxsEh6fzlK4x2JDenD08emyZ7ZC1Cg5
+   eD9Myq/CD1N4Tnzn5ydKCIzJk6rv+oYjGDbo79TzCwtKW2ZzIi0W8vZ+2
+   q6eaABVq2wGqvxppv1EkTWqEEygLwqnR+K4fFC3RUQ9UwJZ4VXW3OUwXZ
+   jz9sX4f1X5u/PetbjRxx3qs1EW/qbe8oSoImr3Km/IXwsBOQ38jmO1HKg
+   qxdPmVeLnvaBNVAPZBzCGBIsv/aR/HWs549P2GqzF0gZajeqA6oLU+480
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="333990653"
+X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
+   d="scan'208";a="333990653"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 12:53:55 -0700
+X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
+   d="scan'208";a="568501950"
+Received: from csalmon-mobl.amr.corp.intel.com (HELO localhost) ([10.212.118.70])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 12:53:54 -0700
+Date:   Mon, 16 May 2022 12:53:54 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Evgeniy Dushistov <dushistov@mail.ru>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] fs/ufs: Replace kmap() with kmap_local_page()
+Message-ID: <YoKr0rUEA6q2wYs4@iweiny-desk3>
+References: <20220516101925.15272-1-fmdefrancesco@gmail.com>
+ <YoJl+lh0QELbv/TL@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoJl+lh0QELbv/TL@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
+On Mon, May 16, 2022 at 03:55:54PM +0100, Matthew Wilcox wrote:
+> On Mon, May 16, 2022 at 12:19:25PM +0200, Fabio M. De Francesco wrote:
+> > The use of kmap() is being deprecated in favor of kmap_local_page(). With
+> > kmap_local_page(), the mapping is per thread, CPU local and not globally
+> > visible.
+> > 
+> > The usage of kmap_local_page() in fs/ufs is pre-thread, therefore replace
+> > kmap() / kunmap() calls with kmap_local_page() / kunmap_local().
+> > 
+> > kunmap_local() requires the mapping address, so return that address from
+> > ufs_get_page() to be used in ufs_put_page().
+> > 
+> > These changes are essentially ported from fs/ext2 and are largely based on
+> > commit 782b76d7abdf ("fs/ext2: Replace kmap() with kmap_local_page()").
+> > 
+> > Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> > Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> 
+> Have you done more than compile-tested this?  I'd like to know that it's
+> been tested on a machine with HIGHMEM enabled (in a VM, presumably).
+> UFS doesn't get a lot of testing, and it'd be annoying to put out a
+> patch that breaks the kmap_local() rules.
 
-[ Upstream commit 2c50c6867c85afee6f2b3bcbc50fc9d0083d1343 ]
+I'm not against trying to test.  But did you see a place which might break
+the kmap_local() rules?
 
-Found by cppcheck and smatch.
-smatch complains about
-drivers/s390/net/ctcm_sysfs.c:43 ctcm_buffer_write() warn: variable dereferenced before check 'priv' (see line 42)
-
-Fixes: 3c09e2647b5e ("ctcm: rename READ/WRITE defines to avoid redefinitions")
-Reported-by: Colin Ian King <colin.i.king@gmail.com>
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/s390/net/ctcm_sysfs.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/s390/net/ctcm_sysfs.c b/drivers/s390/net/ctcm_sysfs.c
-index ded1930a00b2..e3813a7aa5e6 100644
---- a/drivers/s390/net/ctcm_sysfs.c
-+++ b/drivers/s390/net/ctcm_sysfs.c
-@@ -39,11 +39,12 @@ static ssize_t ctcm_buffer_write(struct device *dev,
- 	struct ctcm_priv *priv = dev_get_drvdata(dev);
- 	int rc;
- 
--	ndev = priv->channel[CTCM_READ]->netdev;
--	if (!(priv && priv->channel[CTCM_READ] && ndev)) {
-+	if (!(priv && priv->channel[CTCM_READ] &&
-+	      priv->channel[CTCM_READ]->netdev)) {
- 		CTCM_DBF_TEXT(SETUP, CTC_DBF_ERROR, "bfnondev");
- 		return -ENODEV;
- 	}
-+	ndev = priv->channel[CTCM_READ]->netdev;
- 
- 	rc = kstrtouint(buf, 0, &bs1);
- 	if (rc)
--- 
-2.35.1
-
-
-
+Ira
