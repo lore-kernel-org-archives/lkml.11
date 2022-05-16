@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A99C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 316AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233059AbiEPUXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48934 "EHLO
+        id S238177AbiEPUXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348837AbiEPT67 (ORCPT
+        with ESMTP id S1349273AbiEPT7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD1F3F326;
-        Mon, 16 May 2022 12:51:18 -0700 (PDT)
+        Mon, 16 May 2022 15:59:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9256241637;
+        Mon, 16 May 2022 12:53:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2665E60EC4;
-        Mon, 16 May 2022 19:51:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1573EC385AA;
-        Mon, 16 May 2022 19:51:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 091D560ABE;
+        Mon, 16 May 2022 19:53:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A49C385AA;
+        Mon, 16 May 2022 19:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730677;
-        bh=gAF9QkJ8n4r0KvHDf7oKdqFvbg1AdydfWIN71I3LAy8=;
+        s=korg; t=1652730810;
+        bh=Z3rLPS+jBk9yzNvGeXe6K5znMwWULIfK34dAsS47NhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=slttH2wrqt227XK1xmcJWXOyf80KV+oKJO4Tu5sBDLecrNtNkcC3xriFgVEvMNgq5
-         EW4vzzzIizFxx5g3zXfo4DB9Xg6muKQDUPV5XEOBbQmBWixPsiTu1K9bM6B0/P1PCR
-         uWakKEQtVw+nw/PSLyVIbvbyYZn3/S10DRq7GVNI=
+        b=uAhfGzXLxHp9QlqAn24aTQKTN0xitUrO44BcS3kiZQLTZ9iRhXN4UBg1xoQgN1pfd
+         yedE+sImHu/gw2IutW430Ly2cYU/TgSLhh1h91fy99kMiZIhXA4Q9YgkHsp2hI2VCk
+         fsRt6m9nTKrrLNj9J9npD7S+mzOKQ1Hucr0gXdo4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ethan Yang <etyang@sierrawireless.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 074/102] USB: serial: qcserial: add support for Sierra Wireless EM7590
-Date:   Mon, 16 May 2022 21:36:48 +0200
-Message-Id: <20220516193626.121266293@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 013/114] fbdev: vesafb: Cleanup fb_info in .fb_destroy rather than .remove
+Date:   Mon, 16 May 2022 21:35:47 +0200
+Message-Id: <20220516193625.877058010@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
+In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
+References: <20220516193625.489108457@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,31 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ethan Yang <etyang@sierrawireless.com>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-commit 870b1eee2d844727b06e238c121d260bc5645580 upstream.
+[ Upstream commit b3c9a924aab61adbc29df110006aa03afe1a78ba ]
 
-Add support for Sierra Wireless EM7590 0xc080/0xc081 compositions.
+The driver is calling framebuffer_release() in its .remove callback, but
+this will cause the struct fb_info to be freed too early. Since it could
+be that a reference is still hold to it if user-space opened the fbdev.
 
-Signed-off-by: Ethan Yang <etyang@sierrawireless.com>
-Link: https://lore.kernel.org/r/20220425055840.5693-1-etyang@sierrawireless.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This would lead to a use-after-free error if the framebuffer device was
+unregistered but later a user-space process tries to close the fbdev fd.
+
+To prevent this, move the framebuffer_release() call to fb_ops.fb_destroy
+instead of doing it in the driver's .remove callback.
+
+Strictly speaking, the code flow in the driver is still wrong because all
+the hardware cleanupd (i.e: iounmap) should be done in .remove while the
+software cleanup (i.e: releasing the framebuffer) should be done in the
+.fb_destroy handler. But this at least makes to match the behavior before
+commit 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal").
+
+Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220505220631.366371-1-javierm@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/qcserial.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/video/fbdev/vesafb.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/serial/qcserial.c
-+++ b/drivers/usb/serial/qcserial.c
-@@ -166,6 +166,8 @@ static const struct usb_device_id id_tab
- 	{DEVICE_SWI(0x1199, 0x9090)},	/* Sierra Wireless EM7565 QDL */
- 	{DEVICE_SWI(0x1199, 0x9091)},	/* Sierra Wireless EM7565 */
- 	{DEVICE_SWI(0x1199, 0x90d2)},	/* Sierra Wireless EM9191 QDL */
-+	{DEVICE_SWI(0x1199, 0xc080)},	/* Sierra Wireless EM7590 QDL */
-+	{DEVICE_SWI(0x1199, 0xc081)},	/* Sierra Wireless EM7590 */
- 	{DEVICE_SWI(0x413c, 0x81a2)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
- 	{DEVICE_SWI(0x413c, 0x81a3)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
- 	{DEVICE_SWI(0x413c, 0x81a4)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
+index df6de5a9dd4c..e25e8de5ff67 100644
+--- a/drivers/video/fbdev/vesafb.c
++++ b/drivers/video/fbdev/vesafb.c
+@@ -179,6 +179,10 @@ static int vesafb_setcolreg(unsigned regno, unsigned red, unsigned green,
+ 	return err;
+ }
+ 
++/*
++ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
++ * of unregister_framebuffer() or fb_release(). Do any cleanup here.
++ */
+ static void vesafb_destroy(struct fb_info *info)
+ {
+ 	struct vesafb_par *par = info->par;
+@@ -188,6 +192,8 @@ static void vesafb_destroy(struct fb_info *info)
+ 	if (info->screen_base)
+ 		iounmap(info->screen_base);
+ 	release_mem_region(info->apertures->ranges[0].base, info->apertures->ranges[0].size);
++
++	framebuffer_release(info);
+ }
+ 
+ static struct fb_ops vesafb_ops = {
+@@ -484,10 +490,10 @@ static int vesafb_remove(struct platform_device *pdev)
+ {
+ 	struct fb_info *info = platform_get_drvdata(pdev);
+ 
++	/* vesafb_destroy takes care of info cleanup */
+ 	unregister_framebuffer(info);
+ 	if (((struct vesafb_par *)(info->par))->region)
+ 		release_region(0x3c0, 32);
+-	framebuffer_release(info);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
+
 
 
