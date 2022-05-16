@@ -2,113 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA634C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 606A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243181AbiEPLbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
+        id S229699AbiEPLce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243256AbiEPLbX (ORCPT
+        with ESMTP id S231422AbiEPLca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:31:23 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A28938D83;
-        Mon, 16 May 2022 04:31:22 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id nk9-20020a17090b194900b001df2fcdc165so3891777pjb.0;
-        Mon, 16 May 2022 04:31:22 -0700 (PDT)
+        Mon, 16 May 2022 07:32:30 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB8538D8B;
+        Mon, 16 May 2022 04:32:29 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id w4so20048493wrg.12;
+        Mon, 16 May 2022 04:32:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2x/YZTWpso9swO5trJb/RJGTgZBqmDziz1tzroGtZ5M=;
-        b=QqF8ZXVBp0jPQY5phyXStCS80kubX+LGHH+mJjNE/AT0rPa6iJ5t0K+PdMrge+JMZi
-         VrU1lfXZxoZFU+K1I7S1nlf5+cZpz6aKFhlWOuv0eEOByg3mRZDfOU/T8KcRwp/w14u3
-         sCJohhYIJGuuWkhnSUeHuHaFZyD2W3USoTsss7onlqHRUhUB8RHed6sKS7BU15HZ0/vZ
-         Cmzpfc1nA1eaRTei7Osr0bETH0nruoNtSb7bRnxNTqjzC8jaW4a2qi3ZDCRfvDV5FHDi
-         mytr1qgJE8xzpyFuSzj5LZQK3xLOzxEdVD3C6LXRW9yDnkjiCoq/Ybk3fhv9P/HRtOAM
-         gm3g==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zNR2zgstDynxCnsgIvM+YFx8Mm5SD6bvInuiy+HlYH4=;
+        b=UyLd39lQXbSVZDC9Xe9aH0rJ2WKhYevQ0+yihicysr7I1lEyV0fbrXdI4kHtic0clt
+         oPex+0nC7Cflv6YTxnjp9D1s0oeGZvDcKRfE2b5gt3BzFjqRj29cxZth70WtoSOkHybZ
+         fkjHRYvNi0p9zdWjobA8DVTsQQJ5LqiJzGs6OHpZHT8qae7duw3R5YXawfiMpNyPgKx5
+         MumHCn8i5fLFkGibvUcLBCc8+ZRkRl8o+hGuZcUfhmGtnUy9r+RGqyIM2bkEIAbqVZWm
+         WNnwJoTOVhtDKr5Hg8kp7ZABxX/ClcW5Al3UKFgvHBTG8zmoCI5RuHL36vQ4Pz2pOO7Y
+         uN5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2x/YZTWpso9swO5trJb/RJGTgZBqmDziz1tzroGtZ5M=;
-        b=wbQ9sFVAcmI6DzSHjivJmRshCqodQfguWTBxHTOnA0o5Qs7wg/EtochwyV+2FRuI2V
-         As3xp62ddOvNqZb47WBVLWuQR5eVnGCfuOFgd6imY7JtPtnEKefrpB8EMc2c/yEoJSkQ
-         kdjGXa8lHoL9QwzeXa9hWsrWeCARqAxNJJv9NqSt/snE98nVpOAA9OPciCKVxa3/d+uL
-         +h3MQgo72nZYALUMjwwT7bSMNpnqAgg+wbqYqim8Gym7lWtOfxSr0H//dTtaN8msDMsQ
-         /Ve7XrofsVbjv3dBUwXzIQARXD9t6QmWiNK7VYhWhheaGAofQ9ZKOl3qUdlCfR0LvQTR
-         28Kw==
-X-Gm-Message-State: AOAM530aqSU0EVXXE1p1GTK9OscSU+Re9NdB2bL+VqEmCDuIyAUiWMrv
-        KAIORtESUn4PuNrY4livpbB9TVTuQAwp5QbDFhQ=
-X-Google-Smtp-Source: ABdhPJzbS19BUa6xsJhEW4azdS140qDYeO/ZcYJtDkoBfBVC6624ZEJLR2LKndMTUaLO0HtQghBVYA==
-X-Received: by 2002:a17:902:e3d4:b0:161:888e:e707 with SMTP id r20-20020a170902e3d400b00161888ee707mr2878655ple.118.1652700681606;
-        Mon, 16 May 2022 04:31:21 -0700 (PDT)
-Received: from localhost.localdomain ([49.37.196.1])
-        by smtp.gmail.com with ESMTPSA id c14-20020a170902848e00b0015e8da1f9e8sm6774160plo.77.2022.05.16.04.31.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 04:31:21 -0700 (PDT)
-From:   Saranya Panjarathina <plsaranya@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Saranya_Panjarathina@dell.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        g_balaji1@dell.com, Saranya Panjarathina <plsaranya@gmail.com>
-Subject: [PATCH net-next] net: PIM register decapsulation and Forwarding.
-Date:   Mon, 16 May 2022 04:29:06 -0700
-Message-Id: <20220516112906.2095-1-plsaranya@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220512070138.19170-1-plsaranya@gmail.com>
-References: <20220512070138.19170-1-plsaranya@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zNR2zgstDynxCnsgIvM+YFx8Mm5SD6bvInuiy+HlYH4=;
+        b=keZo2JhdqJskw1NxxhWaUl1IKfJz1T6di5WQuoU+UtVhgyd5b5rPZoEn9bt+FydmIU
+         z867I39pzJoqju2GCTXWgrVx9FqzvYgfyf8KBiERluBCZZyasyYutaPty8FYYFnpf8M+
+         GFAQRHE4KsNCNdRIrAl0vA2q2JhQYg9v6/BobMdo3sTGqifXkaT7wDn+UR5jIQOfmlqQ
+         PLxiFL/GMBIhUtKKA59vNlhdW0we/StExhaxQG9nTl28z4OetN0sOp1/X4x+6EuWF+ES
+         gwFMj+2QKdYzC1B47WFekFMDIVFu5mxgWDBOBlTIOu/sgtvoukm+Mw/j5wTbXxUBZU1c
+         wv9w==
+X-Gm-Message-State: AOAM53275WHHCqf/CQcdpNZ7vQU/wF65MvV7GRkklF0NFeoB7u6ITT6e
+        8UzWBrOQ7+OTn3buW8AR0TQ=
+X-Google-Smtp-Source: ABdhPJyub9eU480qKQjh8jFlPz4AgCb1FDgUdJPm9VqXaaDrLbu652HkHldv3AQz72yMU3flgGVLZQ==
+X-Received: by 2002:a5d:4dcc:0:b0:20a:ddaa:1c30 with SMTP id f12-20020a5d4dcc000000b0020addaa1c30mr13203540wru.419.1652700747506;
+        Mon, 16 May 2022 04:32:27 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id p2-20020adfaa02000000b0020cd0762f37sm9224270wrd.107.2022.05.16.04.32.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 04:32:26 -0700 (PDT)
+Message-ID: <6f96e6f2-b614-3219-3302-da1679565722@gmail.com>
+Date:   Mon, 16 May 2022 13:32:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 2/2] memory: mtk-smi: Add support for MT6795 Helio X10
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, yong.wu@mediatek.com
+Cc:     krzysztof.kozlowski@linaro.org, robh+dt@kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
+        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
+        kernel@collabora.com
+References: <20220513150633.387200-1-angelogioacchino.delregno@collabora.com>
+ <20220513150633.387200-3-angelogioacchino.delregno@collabora.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220513150633.387200-3-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PIM register packet is decapsulated but not forwarded in RP
 
-__pim_rcv decapsulates the PIM register packet and reinjects for forwarding
-after replacing the skb->dev to reg_dev (vif with VIFF_Register)
 
-Ideally the incoming device should be same as skb->dev where the
-original PIM register packet is received. mcache would not have
-reg_vif as IIF. Decapsulated packet forwarding is failing
-because of IIF mismatch. In RP for this S,G RPF interface would be
-skb->dev vif only, so that would be IIF for the cache entry.
+On 13/05/2022 17:06, AngeloGioacchino Del Regno wrote:
+> The MediaTek Helio X10 (MT6795) SoC has 5 LARBs and one common SMI
+> instance without any sub-common and without GALS.
+> 
+> While the smi-common configuration is specific to this SoC, on the
+> LARB side, this is similar to MT8173, in the sense that it doesn't
+> need the port in LARB, and the register layout is also compatible
+> with that one, which makes us able to fully reuse the smi-larb
+> platform data struct that was introduced for MT8173.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Signed-off-by: Saranya Panjarathina <plsaranya@gmail.com>
----
- net/ipv4/ipmr.c  | 2 +-
- net/ipv6/ip6mr.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 13e6329784fb..7b9586335fb7 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -598,7 +598,7 @@ static int __pim_rcv(struct mr_table *mrt, struct sk_buff *skb,
- 	skb->protocol = htons(ETH_P_IP);
- 	skb->ip_summed = CHECKSUM_NONE;
- 
--	skb_tunnel_rx(skb, reg_dev, dev_net(reg_dev));
-+	skb_tunnel_rx(skb, skb->dev, dev_net(skb->dev));
- 
- 	netif_rx(skb);
- 
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 4e74bc61a3db..147e29a818ca 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -566,7 +566,7 @@ static int pim6_rcv(struct sk_buff *skb)
- 	skb->protocol = htons(ETH_P_IPV6);
- 	skb->ip_summed = CHECKSUM_NONE;
- 
--	skb_tunnel_rx(skb, reg_dev, dev_net(reg_dev));
-+	skb_tunnel_rx(skb, skb->dev, net);
- 
- 	netif_rx(skb);
- 
--- 
-2.20.1
-
+> ---
+>   drivers/memory/mtk-smi.c | 17 +++++++++++++++++
+>   1 file changed, 17 insertions(+)
+> 
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index 86a3d34f418e..7e7c3ede19e4 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -21,11 +21,13 @@
+>   /* SMI COMMON */
+>   #define SMI_L1LEN			0x100
+>   
+> +#define SMI_L1_ARB			0x200
+>   #define SMI_BUS_SEL			0x220
+>   #define SMI_BUS_LARB_SHIFT(larbid)	((larbid) << 1)
+>   /* All are MMU0 defaultly. Only specialize mmu1 here. */
+>   #define F_MMU1_LARB(larbid)		(0x1 << SMI_BUS_LARB_SHIFT(larbid))
+>   
+> +#define SMI_FIFO_TH0			0x230
+>   #define SMI_M4U_TH			0x234
+>   #define SMI_FIFO_TH1			0x238
+>   #define SMI_FIFO_TH2			0x23c
+> @@ -360,6 +362,7 @@ static const struct of_device_id mtk_smi_larb_of_ids[] = {
+>   	{.compatible = "mediatek,mt2701-smi-larb", .data = &mtk_smi_larb_mt2701},
+>   	{.compatible = "mediatek,mt2712-smi-larb", .data = &mtk_smi_larb_mt2712},
+>   	{.compatible = "mediatek,mt6779-smi-larb", .data = &mtk_smi_larb_mt6779},
+> +	{.compatible = "mediatek,mt6795-smi-larb", .data = &mtk_smi_larb_mt8173},
+>   	{.compatible = "mediatek,mt8167-smi-larb", .data = &mtk_smi_larb_mt8167},
+>   	{.compatible = "mediatek,mt8173-smi-larb", .data = &mtk_smi_larb_mt8173},
+>   	{.compatible = "mediatek,mt8183-smi-larb", .data = &mtk_smi_larb_mt8183},
+> @@ -541,6 +544,13 @@ static struct platform_driver mtk_smi_larb_driver = {
+>   	}
+>   };
+>   
+> +static const struct mtk_smi_reg_pair mtk_smi_common_mt6795_init[SMI_COMMON_INIT_REGS_NR] = {
+> +	{SMI_L1_ARB, 0x1b},
+> +	{SMI_M4U_TH, 0xce810c85},
+> +	{SMI_FIFO_TH1, 0x43214c8},
+> +	{SMI_FIFO_TH0, 0x191f},
+> +};
+> +
+>   static const struct mtk_smi_reg_pair mtk_smi_common_mt8195_init[SMI_COMMON_INIT_REGS_NR] = {
+>   	{SMI_L1LEN, 0xb},
+>   	{SMI_M4U_TH, 0xe100e10},
+> @@ -565,6 +575,12 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt6779 = {
+>   		    F_MMU1_LARB(5) | F_MMU1_LARB(6) | F_MMU1_LARB(7),
+>   };
+>   
+> +static const struct mtk_smi_common_plat mtk_smi_common_mt6795 = {
+> +	.type	  = MTK_SMI_GEN2,
+> +	.bus_sel  = BIT(0),
+> +	.init     = mtk_smi_common_mt6795_init,
+> +};
+> +
+>   static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
+>   	.type     = MTK_SMI_GEN2,
+>   	.has_gals = true,
+> @@ -609,6 +625,7 @@ static const struct of_device_id mtk_smi_common_of_ids[] = {
+>   	{.compatible = "mediatek,mt2701-smi-common", .data = &mtk_smi_common_gen1},
+>   	{.compatible = "mediatek,mt2712-smi-common", .data = &mtk_smi_common_gen2},
+>   	{.compatible = "mediatek,mt6779-smi-common", .data = &mtk_smi_common_mt6779},
+> +	{.compatible = "mediatek,mt6795-smi-common", .data = &mtk_smi_common_mt6795},
+>   	{.compatible = "mediatek,mt8167-smi-common", .data = &mtk_smi_common_gen2},
+>   	{.compatible = "mediatek,mt8173-smi-common", .data = &mtk_smi_common_gen2},
+>   	{.compatible = "mediatek,mt8183-smi-common", .data = &mtk_smi_common_mt8183},
