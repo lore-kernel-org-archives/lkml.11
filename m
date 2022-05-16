@@ -2,139 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 02:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB1BC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 02:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239302AbiEPCMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 22:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
+        id S239344AbiEPCQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 22:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231318AbiEPCMi (ORCPT
+        with ESMTP id S230396AbiEPCQO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 22:12:38 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D7222518;
-        Sun, 15 May 2022 19:12:36 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L1jSf01XSz4xXJ;
-        Mon, 16 May 2022 12:12:33 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652667155;
-        bh=IEla7Gt7PCntdFnq1ZgeZ7O6mAGwQWBXpjY0hOvftAM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Mj/STyxhI8LA9SuvEgRau5+Jj/i7FAChIXCBJF6egDgq4DvdqXWySPxf/LM0Fw7s1
-         0Ns0o+0IuA/liUOZTjEhcaM5tzugw25BsJWYldfd9cQaad0rB/8f+oQJ0aPk9bHMNy
-         lH80e3Bf25kjXYXlWMbTVBAq6Ro/1MIijkrXp9cTFOvT09Y2hlAeu7nB/p2KIbxHe7
-         IAvZJUvdbufNINaPGWqIU077kWSqtAFoEpLRMNkpitJSqaYNsNlejuj5/6wzxwANoJ
-         NM/IBmX4j+BMf1SMllSN+hBwHnASJI5010n1uVCGui5k0eh6FMx1pGxxCqJnbp9ZUO
-         HEOxz8OPezVqQ==
-Date:   Mon, 16 May 2022 12:12:32 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Sterba <dsterba@suse.cz>
-Cc:     Steven Whitehouse <swhiteho@redhat.com>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        David Sterba <dsterba@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the gfs2 tree with the btrfs tree
-Message-ID: <20220516121232.6cf7660b@canb.auug.org.au>
-In-Reply-To: <20220510102458.0ab0172f@canb.auug.org.au>
-References: <20220510102458.0ab0172f@canb.auug.org.au>
+        Sun, 15 May 2022 22:16:14 -0400
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F17628993;
+        Sun, 15 May 2022 19:16:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=yJNGb
+        iMjW6rW2oUi41YYZWCz/tahmAPLKD7bIx55rSo=; b=JBoxfjGqpyvnDvM5EQVYP
+        5gdwDs/cunPbRhhwsaiPyxcnHUmAVd+HdfOrTKPpNxEuO47jMUT0Q/bHm3KE8gOI
+        0v8nKfo1IFgAzOOJkE8zkctwCZfHQENuYCQPSrE8aAC1bj4xFpoiLaoqlzMuM7Xt
+        v9UOHVQ/uOElfsqUjr9fo8=
+Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.19])
+        by smtp8 (Coremail) with SMTP id DMCowACHYyG1s4Fi8FLcCg--.16808S4;
+        Mon, 16 May 2022 10:15:20 +0800 (CST)
+From:   qianfanguijin@163.com
+To:     linux-sunxi@lists.linux.dev
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        qianfan Zhao <qianfanguijin@163.com>
+Subject: [PATCH v4 2/2] ARM: dts: sun8i-r40: add opp table for cpu
+Date:   Mon, 16 May 2022 10:15:16 +0800
+Message-Id: <20220516021516.23216-3-qianfanguijin@163.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220516021516.23216-1-qianfanguijin@163.com>
+References: <20220516021516.23216-1-qianfanguijin@163.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/h.ZQG5ILS8Fc//hgr+A6fQm";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMCowACHYyG1s4Fi8FLcCg--.16808S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uw47XryfXry3Xw4xJryfXrb_yoW8uFyfpr
+        4ak3yFkF48Wr12qw1aqw10qFyruayvvF4UJrnrC3y8t34YqryDtryxtry3K3yDXr47X3yS
+        qrsIqry2kw1DA3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UbjjDUUUUU=
+X-Originating-IP: [218.201.129.19]
+X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbB2AgD7WBHKdE-OgAAsk
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/h.ZQG5ILS8Fc//hgr+A6fQm
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: qianfan Zhao <qianfanguijin@163.com>
 
-Hi all,
+OPP table value is get from allwinner lichee linux-3.10 kernel driver
 
-On Tue, 10 May 2022 10:24:58 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Today's linux-next merge of the gfs2 tree got a conflict in:
->=20
->   fs/gfs2/file.c
->=20
-> between commit:
->=20
->   39c93b0bf7a6 ("iomap: add per-iomap_iter private data")
->=20
-> from the btrfs tree and commit:
->=20
->   db0c1968e935 ("gfs2: Variable rename")
->=20
-> from the gfs2 tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
->=20
-> diff --cc fs/gfs2/file.c
-> index 76307a90bf81,d18a7c2201c0..000000000000
-> --- a/fs/gfs2/file.c
-> +++ b/fs/gfs2/file.c
-> @@@ -839,11 -839,12 +839,12 @@@ retry_under_glock
->   	pagefault_disable();
->   	to->nofault =3D true;
->   	ret =3D iomap_dio_rw(iocb, to, &gfs2_iomap_ops, NULL,
-> - 			   IOMAP_DIO_PARTIAL, NULL, written);
->  -			   IOMAP_DIO_PARTIAL, read);
-> ++			   IOMAP_DIO_PARTIAL, NULL, read);
->   	to->nofault =3D false;
->   	pagefault_enable();
-> + 	/* No increment (+=3D) because iomap_dio_rw returns a cumulative value=
-. */
->   	if (ret > 0)
-> - 		written =3D ret;
-> + 		read =3D ret;
->  =20
->   	if (should_fault_in_pages(ret, to, &prev_count, &window_size)) {
->   		size_t leftover;
-> @@@ -906,7 -908,7 +908,7 @@@ retry_under_glock
->  =20
->   	from->nofault =3D true;
->   	ret =3D iomap_dio_rw(iocb, from, &gfs2_iomap_ops, NULL,
-> - 			   IOMAP_DIO_PARTIAL, NULL, read);
->  -			   IOMAP_DIO_PARTIAL, written);
-> ++			   IOMAP_DIO_PARTIAL, NULL, written);
->   	from->nofault =3D false;
->  =20
->   	if (ret =3D=3D -ENOTBLK)
+Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+---
+ arch/arm/boot/dts/sun8i-r40.dtsi | 42 ++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-This is now a conflict between the btrfs tree and Linus' tree.
+diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
+index 291f4784e86c..8949153eb0eb 100644
+--- a/arch/arm/boot/dts/sun8i-r40.dtsi
++++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+@@ -54,6 +54,36 @@ / {
+ 	#size-cells = <1>;
+ 	interrupt-parent = <&gic>;
+ 
++	cpu0_opp_table: opp_table0 {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp-720000000 {
++			opp-hz = /bits/ 64 <720000000>;
++			opp-microvolt = <1000000 1000000 1300000>;
++			clock-latency-ns = <2000000>;
++		};
++
++		opp-912000000 {
++			opp-hz = /bits/ 64 <912000000>;
++			opp-microvolt = <1100000 1100000 1300000>;
++			clock-latency-ns = <2000000>;
++		};
++
++		opp-1008000000 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <1160000 1160000 1300000>;
++			clock-latency-ns = <2000000>;
++		};
++
++		/* The opp table of the cpu frequency that exceeds 1G
++		 * is not defined here. They require higher operating
++		 * current, which may exceed the 500mA limited if the
++		 * system is powered by USB. You can add them to the
++		 * board's DTS is you make sure.
++		 */
++	};
++
+ 	clocks {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+@@ -84,24 +114,36 @@ cpu0: cpu@0 {
+ 			compatible = "arm,cortex-a7";
+ 			device_type = "cpu";
+ 			reg = <0>;
++			clocks = <&ccu CLK_CPU>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+ 			compatible = "arm,cortex-a7";
+ 			device_type = "cpu";
+ 			reg = <1>;
++			clocks = <&ccu CLK_CPU>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+ 			compatible = "arm,cortex-a7";
+ 			device_type = "cpu";
+ 			reg = <2>;
++			clocks = <&ccu CLK_CPU>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+ 			compatible = "arm,cortex-a7";
+ 			device_type = "cpu";
+ 			reg = <3>;
++			clocks = <&ccu CLK_CPU>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 	};
+ 
+-- 
+2.25.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/h.ZQG5ILS8Fc//hgr+A6fQm
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKBsxAACgkQAVBC80lX
-0GwqAgf/eoaGzhH2Jk43nCQIyBR9KIrveoOKlNQ1UA/yrJmsF+k9H+vQVsth/G/I
-lLHIXUeq47tT8lZwCdIJ9QylRqf+28Cnm8cQzX8CjcV3SdY8+KjlSWmlHCrLfHw4
-ScG4ZVae1px3kcvbm5K9pnmKx+SNyG0rlgKuXsg3kF65XAWCPoe5QL/ivixUl9pL
-gKg4RrctB1HCugoHrtiqsr0H2/mnUPoRfgCMi3o7JdWzuUb8qtJhIIRKpAP/8fp2
-nGiVXSg+HZmP5Gs50LiNDhzlvm7udfgurdfYGMg5TZt1MZ+N60I0r0oLYFutzISS
-JJFPDOWFw30RVQTFiHhF+xJbK9klgw==
-=mSgV
------END PGP SIGNATURE-----
-
---Sig_/h.ZQG5ILS8Fc//hgr+A6fQm--
