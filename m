@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D4DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CD5C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348436AbiEPUgc (ORCPT
+        id S1348479AbiEPUgk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
+        Mon, 16 May 2022 16:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351109AbiEPUCC (ORCPT
+        with ESMTP id S1351103AbiEPUCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:02:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBE12BB13;
-        Mon, 16 May 2022 12:59:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBEE05F84;
+        Mon, 16 May 2022 12:58:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D900260A50;
-        Mon, 16 May 2022 19:58:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 176F4C34100;
-        Mon, 16 May 2022 19:58:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DEB5B81611;
+        Mon, 16 May 2022 19:58:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF13AC34100;
+        Mon, 16 May 2022 19:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731139;
-        bh=5bHYyMg0u2G126dGM145icqPb4Svx7lJgmg+c/EJrJg=;
+        s=korg; t=1652731132;
+        bh=HmGUBe0x93Fyp4SHu7EWZrecH5EDBrIut2MMvpPE8Q4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eD+pRxoN0LT+tM70azR5ukYrxS0RgLOyda+TSS1xmGeYhNfweA1RrnZpCo5ATMXk2
-         iknpiRtGKas/+tTvwvqvsS688vvdpAKX9gUhcyeHa7Tq8ZsVQHTS/P5hTNUF+4D9yE
-         nTSlRxaNfWKE2gM2eAx7LvLLl9ydQh1fG4Y8Zhww=
+        b=DzmbyuTLll1A1lsz6/6fc0csW1G4LRlXvdDztrfEQEs1BkV6Fy8K6JiOhVQCBxk3K
+         /ELhqH0toc4HExBJpf0pZ+4hSRRksucliDM0gF+MLXoBuGAFQ/bcMKO3pH+1ZeCyHj
+         QghEWDRe+C+WxLR0V36SR+WzKlSfZBYAimQRNAQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.17 112/114] mm/hwpoison: use pr_err() instead of dump_page() in get_any_page()
-Date:   Mon, 16 May 2022 21:37:26 +0200
-Message-Id: <20220516193628.688800703@linuxfoundation.org>
+        stable@vger.kernel.org, Lijo Lazar <lijo.lazar@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.17 110/114] Revert "drm/amd/pm: keep the BACO feature enabled for suspend"
+Date:   Mon, 16 May 2022 21:37:24 +0200
+Message-Id: <20220516193628.632120218@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -55,93 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-commit 1825b93b626e99eb9a0f9f50342c7b2fa201b387 upstream.
+commit a56f445f807b0276fc0660c330bf93a9ea78e8ea upstream.
 
-The following VM_BUG_ON_FOLIO() is triggered when memory error event
-happens on the (thp/folio) pages which are about to be freed:
+This reverts commit eaa090538e8d21801c6d5f94590c3799e6a528b5.
 
-  [ 1160.232771] page:00000000b36a8a0f refcount:1 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
-  [ 1160.236916] page:00000000b36a8a0f refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
-  [ 1160.240684] flags: 0x57ffffc0800000(hwpoison|node=1|zone=2|lastcpupid=0x1fffff)
-  [ 1160.243458] raw: 0057ffffc0800000 dead000000000100 dead000000000122 0000000000000000
-  [ 1160.246268] raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-  [ 1160.249197] page dumped because: VM_BUG_ON_FOLIO(!folio_test_large(folio))
-  [ 1160.251815] ------------[ cut here ]------------
-  [ 1160.253438] kernel BUG at include/linux/mm.h:788!
-  [ 1160.256162] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-  [ 1160.258172] CPU: 2 PID: 115368 Comm: mceinj.sh Tainted: G            E     5.18.0-rc1-v5.18-rc1-220404-2353-005-g83111+ #3
-  [ 1160.262049] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
-  [ 1160.265103] RIP: 0010:dump_page.cold+0x27e/0x2bd
-  [ 1160.266757] Code: fe ff ff 48 c7 c6 81 f1 5a 98 e9 4c fe ff ff 48 c7 c6 a1 95 59 98 e9 40 fe ff ff 48 c7 c6 50 bf 5a 98 48 89 ef e8 9d 04 6d ff <0f> 0b 41 f7 c4 ff 0f 00 00 0f 85 9f fd ff ff 49 8b 04 24 a9 00 00
-  [ 1160.273180] RSP: 0018:ffffaa2c4d59fd18 EFLAGS: 00010292
-  [ 1160.274969] RAX: 000000000000003e RBX: 0000000000000001 RCX: 0000000000000000
-  [ 1160.277263] RDX: 0000000000000001 RSI: ffffffff985995a1 RDI: 00000000ffffffff
-  [ 1160.279571] RBP: ffffdc9c45a80000 R08: 0000000000000000 R09: 00000000ffffdfff
-  [ 1160.281794] R10: ffffaa2c4d59fb08 R11: ffffffff98940d08 R12: ffffdc9c45a80000
-  [ 1160.283920] R13: ffffffff985b6f94 R14: 0000000000000000 R15: ffffdc9c45a80000
-  [ 1160.286641] FS:  00007eff54ce1740(0000) GS:ffff99c67bd00000(0000) knlGS:0000000000000000
-  [ 1160.289498] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [ 1160.291106] CR2: 00005628381a5f68 CR3: 0000000104712003 CR4: 0000000000170ee0
-  [ 1160.293031] Call Trace:
-  [ 1160.293724]  <TASK>
-  [ 1160.294334]  get_hwpoison_page+0x47d/0x570
-  [ 1160.295474]  memory_failure+0x106/0xaa0
-  [ 1160.296474]  ? security_capable+0x36/0x50
-  [ 1160.297524]  hard_offline_page_store+0x43/0x80
-  [ 1160.298684]  kernfs_fop_write_iter+0x11c/0x1b0
-  [ 1160.299829]  new_sync_write+0xf9/0x160
-  [ 1160.300810]  vfs_write+0x209/0x290
-  [ 1160.301835]  ksys_write+0x4f/0xc0
-  [ 1160.302718]  do_syscall_64+0x3b/0x90
-  [ 1160.303664]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-  [ 1160.304981] RIP: 0033:0x7eff54b018b7
+Commit ebc002e3ee78 ("drm/amdgpu: don't use BACO for reset in S3")
+stops using BACO for reset during suspend, so it's no longer
+necessary to leave BACO enabled during suspend.  This fixes
+resume from suspend on the navy flounder dGPU in the ASUS ROG
+Strix G513QY.
 
-As shown in the RIP address, this VM_BUG_ON in folio_entire_mapcount() is
-called from dump_page("hwpoison: unhandlable page") in get_any_page().
-The below explains the mechanism of the race:
-
-  CPU 0                                       CPU 1
-
-    memory_failure
-      get_hwpoison_page
-        get_any_page
-          dump_page
-            compound = PageCompound
-                                                free_pages_prepare
-                                                  page->flags &= ~PAGE_FLAGS_CHECK_AT_PREP
-            folio_entire_mapcount
-              VM_BUG_ON_FOLIO(!folio_test_large(folio))
-
-So replace dump_page() with safer one, pr_err().
-
-Link: https://lkml.kernel.org/r/20220427053220.719866-1-naoya.horiguchi@linux.dev
-Fixes: 74e8ee4708a8 ("mm: Turn head_compound_mapcount() into folio_entire_mapcount()")
-Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Christoph Hellwig <hch@infradead.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>
-Cc: William Kucharski <william.kucharski@oracle.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2008
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1982
+Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
+Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory-failure.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c |    8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1275,7 +1275,7 @@ try_again:
- 	}
- out:
- 	if (ret == -EIO)
--		dump_page(p, "hwpoison: unhandlable page");
-+		pr_err("Memory failure: %#lx: unhandlable page.\n", page_to_pfn(p));
+--- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+@@ -1405,14 +1405,8 @@ static int smu_disable_dpms(struct smu_c
+ {
+ 	struct amdgpu_device *adev = smu->adev;
+ 	int ret = 0;
+-	/*
+-	 * TODO: (adev->in_suspend && !adev->in_s0ix) is added to pair
+-	 * the workaround which always reset the asic in suspend.
+-	 * It's likely that workaround will be dropped in the future.
+-	 * Then the change here should be dropped together.
+-	 */
+ 	bool use_baco = !smu->is_apu &&
+-		(((amdgpu_in_reset(adev) || (adev->in_suspend && !adev->in_s0ix)) &&
++		((amdgpu_in_reset(adev) &&
+ 		  (amdgpu_asic_reset_method(adev) == AMD_RESET_METHOD_BACO)) ||
+ 		 ((adev->in_runpm || adev->in_s4) && amdgpu_asic_supports_baco(adev)));
  
- 	return ret;
- }
 
 
