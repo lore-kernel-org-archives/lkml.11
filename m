@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 567A5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA2DC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347795AbiEPU0l (ORCPT
+        id S1347857AbiEPU0u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        Mon, 16 May 2022 16:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349539AbiEPUAF (ORCPT
+        with ESMTP id S1349574AbiEPUAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF186427F5;
-        Mon, 16 May 2022 12:54:04 -0700 (PDT)
+        Mon, 16 May 2022 16:00:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F49742A0D;
+        Mon, 16 May 2022 12:54:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58E0AB81612;
-        Mon, 16 May 2022 19:54:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AA37C385AA;
-        Mon, 16 May 2022 19:53:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCA5DB81616;
+        Mon, 16 May 2022 19:53:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12CCBC36AE3;
+        Mon, 16 May 2022 19:53:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730839;
-        bh=tvt3VPT3sUjfD+Yw/+5I3ea0kxUmHKnrj4n+CmedKmo=;
+        s=korg; t=1652730813;
+        bh=T5cKcbqNML6arv7QQQM24bE8NTNyNMhal71VRn243Vs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=skw6uXvLDQEh8si1S+1+Ad4hPIMRA0SMdMn0FOO6cq8x4ICYSlacen8P0cJNdhgFH
-         UL6fL0L0vuDGIgB1bdw072D4mYCtQ+s/klk8GxHmjQpHW14RQ7VrFXiLPDVBORf0HC
-         z28tNF+3sPNGLeSY03sVPWtHebQRbE2zM4HfYTQE=
+        b=FmQMNl0whcMUor/zwmD8cd+ovkdpQ88WjsJ0VBYACEDj2v1YCLQNdilu7DJi3OYMj
+         NMFwLMo6wIcQF1M9PIfowWBYXoH64A2UwZWKmCNTrJbumAhQMmqqlfEROSECwumY7o
+         a7m4RcbGyRDEHuuH/gXR8TBgpj332pGAlIf3nqTU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Bla=C5=BE=20Hrastnik?= <blaz@mxxn.io>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 021/114] net: chelsio: cxgb4: Avoid potential negative array offset
-Date:   Mon, 16 May 2022 21:35:55 +0200
-Message-Id: <20220516193626.103551273@linuxfoundation.org>
+Subject: [PATCH 5.17 014/114] platform/surface: aggregator: Fix initialization order when compiling as builtin module
+Date:   Mon, 16 May 2022 21:35:48 +0200
+Message-Id: <20220516193625.904984101@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -54,94 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Maximilian Luz <luzmaximilian@gmail.com>
 
-[ Upstream commit 1c7ab9cd98b78bef1657a5db7204d8d437e24c94 ]
+[ Upstream commit 44acfc22c7d055d9c4f8f0974ee28422405b971a ]
 
-Using min_t(int, ...) as a potential array index implies to the compiler
-that negative offsets should be allowed. This is not the case, though.
-Replace "int" with "unsigned int". Fixes the following warning exposed
-under future CONFIG_FORTIFY_SOURCE improvements:
+When building the Surface Aggregator Module (SAM) core, registry, and
+other SAM client drivers as builtin modules (=y), proper initialization
+order is not guaranteed. Due to this, client driver registration
+(triggered by device registration in the registry) races against bus
+initialization in the core.
 
-In file included from include/linux/string.h:253,
-                 from include/linux/bitmap.h:11,
-                 from include/linux/cpumask.h:12,
-                 from include/linux/smp.h:13,
-                 from include/linux/lockdep.h:14,
-                 from include/linux/rcupdate.h:29,
-                 from include/linux/rculist.h:11,
-                 from include/linux/pid.h:5,
-                 from include/linux/sched.h:14,
-                 from include/linux/delay.h:23,
-                 from drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:35:
-drivers/net/ethernet/chelsio/cxgb4/t4_hw.c: In function 't4_get_raw_vpd_params':
-include/linux/fortify-string.h:46:33: warning: '__builtin_memcpy' pointer overflow between offset 29 and size [2147483648, 4294967295] [-Warray-bounds]
-   46 | #define __underlying_memcpy     __builtin_memcpy
-      |                                 ^
-include/linux/fortify-string.h:388:9: note: in expansion of macro '__underlying_memcpy'
-  388 |         __underlying_##op(p, q, __fortify_size);                        \
-      |         ^~~~~~~~~~~~~
-include/linux/fortify-string.h:433:26: note: in expansion of macro '__fortify_memcpy_chk'
-  433 | #define memcpy(p, q, s)  __fortify_memcpy_chk(p, q, s,                  \
-      |                          ^~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:2796:9: note: in expansion of macro 'memcpy'
- 2796 |         memcpy(p->id, vpd + id, min_t(int, id_len, ID_LEN));
-      |         ^~~~~~
-include/linux/fortify-string.h:46:33: warning: '__builtin_memcpy' pointer overflow between offset 0 and size [2147483648, 4294967295] [-Warray-bounds]
-   46 | #define __underlying_memcpy     __builtin_memcpy
-      |                                 ^
-include/linux/fortify-string.h:388:9: note: in expansion of macro '__underlying_memcpy'
-  388 |         __underlying_##op(p, q, __fortify_size);                        \
-      |         ^~~~~~~~~~~~~
-include/linux/fortify-string.h:433:26: note: in expansion of macro '__fortify_memcpy_chk'
-  433 | #define memcpy(p, q, s)  __fortify_memcpy_chk(p, q, s,                  \
-      |                          ^~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:2798:9: note: in expansion of macro 'memcpy'
- 2798 |         memcpy(p->sn, vpd + sn, min_t(int, sn_len, SERNUM_LEN));
-      |         ^~~~~~
+If any attempt is made at registering the device driver before the bus
+has been initialized (i.e. if bus initialization fails this race) driver
+registration will fail with a message similar to:
 
-Additionally remove needless cast from u8[] to char * in last strim()
-call.
+    Driver surface_battery was unable to register with bus_type surface_aggregator because the bus was not initialized
 
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/202205031926.FVP7epJM-lkp@intel.com
-Fixes: fc9279298e3a ("cxgb4: Search VPD with pci_vpd_find_ro_info_keyword()")
-Fixes: 24c521f81c30 ("cxgb4: Use pci_vpd_find_id_string() to find VPD ID string")
-Cc: Raju Rangoju <rajur@chelsio.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220505233101.1224230-1-keescook@chromium.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Switch from module_init() to subsys_initcall() to resolve this issue.
+Note that the serdev subsystem uses postcore_initcall() so we are still
+able to safely register the serdev device driver for the core.
+
+Fixes: c167b9c7e3d6 ("platform/surface: Add Surface Aggregator subsystem")
+Reported-by: Blaž Hrastnik <blaz@mxxn.io>
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Link: https://lore.kernel.org/r/20220429195738.535751-1-luzmaximilian@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/platform/surface/aggregator/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index e7b4e3ed056c..8d719f82854a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -2793,14 +2793,14 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
- 		goto out;
- 	na = ret;
+diff --git a/drivers/platform/surface/aggregator/core.c b/drivers/platform/surface/aggregator/core.c
+index d384d36098c2..a62c5dfe42d6 100644
+--- a/drivers/platform/surface/aggregator/core.c
++++ b/drivers/platform/surface/aggregator/core.c
+@@ -817,7 +817,7 @@ static int __init ssam_core_init(void)
+ err_bus:
+ 	return status;
+ }
+-module_init(ssam_core_init);
++subsys_initcall(ssam_core_init);
  
--	memcpy(p->id, vpd + id, min_t(int, id_len, ID_LEN));
-+	memcpy(p->id, vpd + id, min_t(unsigned int, id_len, ID_LEN));
- 	strim(p->id);
--	memcpy(p->sn, vpd + sn, min_t(int, sn_len, SERNUM_LEN));
-+	memcpy(p->sn, vpd + sn, min_t(unsigned int, sn_len, SERNUM_LEN));
- 	strim(p->sn);
--	memcpy(p->pn, vpd + pn, min_t(int, pn_len, PN_LEN));
-+	memcpy(p->pn, vpd + pn, min_t(unsigned int, pn_len, PN_LEN));
- 	strim(p->pn);
--	memcpy(p->na, vpd + na, min_t(int, na_len, MACADDR_LEN));
--	strim((char *)p->na);
-+	memcpy(p->na, vpd + na, min_t(unsigned int, na_len, MACADDR_LEN));
-+	strim(p->na);
- 
- out:
- 	vfree(vpd);
+ static void __exit ssam_core_exit(void)
+ {
 -- 
 2.35.1
 
