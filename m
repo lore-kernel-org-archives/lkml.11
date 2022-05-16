@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D54C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D2BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233622AbiEPTsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
+        id S1346020AbiEPTsP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346003AbiEPTnS (ORCPT
+        with ESMTP id S1346227AbiEPTlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:43:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F323FD8C;
-        Mon, 16 May 2022 12:42:30 -0700 (PDT)
+        Mon, 16 May 2022 15:41:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BE33FDBE;
+        Mon, 16 May 2022 12:40:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 901B961554;
-        Mon, 16 May 2022 19:42:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E6AFC34100;
-        Mon, 16 May 2022 19:42:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1112CB81609;
+        Mon, 16 May 2022 19:40:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 505E2C385AA;
+        Mon, 16 May 2022 19:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730150;
-        bh=fYk9sa272+H7wd9sV6cIn/uXsi9S8XwUuJHWAZfnW9g=;
+        s=korg; t=1652730020;
+        bh=EUKmFJo7bK41wq6UsNj86tOlUmXEXrc/8iptNfF0V6U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZnO27bwVK72UXzxlKYje1p02/eHwdW5gHZfjLg1eEyQVlPs2vYEkJ0QpJxHIEFG52
-         1gI87sl7Kw+fk7o+UNZtPdtHL48oiiWPdjgd099UDZmQta4f13ujNVT1ORtJsFnmc9
-         TcVkvfkQmRrpWeDL1G10JgLTflQGT4BFykBlcmj8=
+        b=C6OsQHcFst2BFShohwfjnKXRet5zbI8/Nbcmmj2tkZJUVwUJx4a+8ysRvD1nvVT57
+         XwY6o1ITkphnYkJJWyMAHmFW77CZz+OC96dGuJ9U3xlwoc+CY26LJASV9rLFPGNTNS
+         KblOnVJgTpmmJpLO1VCpFcjTMkXUVqlq6y/yIHps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Alexandra Winter <wintera@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 15/43] net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
-Date:   Mon, 16 May 2022 21:36:26 +0200
-Message-Id: <20220516193615.167822630@linuxfoundation.org>
+Subject: [PATCH 4.14 08/25] s390/ctcm: fix potential memory leak
+Date:   Mon, 16 May 2022 21:36:22 +0200
+Message-Id: <20220516193614.936922155@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
-References: <20220516193614.714657361@linuxfoundation.org>
+In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
+References: <20220516193614.678319286@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,46 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+From: Alexandra Winter <wintera@linux.ibm.com>
 
-[ Upstream commit f3c46e41b32b6266cf60b0985c61748f53bf1c61 ]
+[ Upstream commit 0c0b20587b9f25a2ad14db7f80ebe49bdf29920a ]
 
-Non blocking sendmsg will return -EAGAIN when any signal pending
-and no send space left, while non blocking recvmsg return -EINTR
-when signal pending and no data received. This may makes confused.
-As TCP returns -EAGAIN in the conditions described above. Align the
-behavior of smc with TCP.
+smatch complains about
+drivers/s390/net/ctcm_mpc.c:1210 ctcmpc_unpack_skb() warn: possible memory leak of 'mpcginfo'
 
-Fixes: 846e344eb722 ("net/smc: add receive timeout check")
-Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220512030820.73848-1-guangguan.wang@linux.alibaba.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+mpc_action_discontact() did not free mpcginfo. Consolidate the freeing in
+ctcmpc_unpack_skb().
+
+Fixes: 293d984f0e36 ("ctcm: infrastructure for replaced ctc driver")
+Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_rx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/s390/net/ctcm_mpc.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/net/smc/smc_rx.c b/net/smc/smc_rx.c
-index 97e8369002d7..9e89bd1f706b 100644
---- a/net/smc/smc_rx.c
-+++ b/net/smc/smc_rx.c
-@@ -348,12 +348,12 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
- 				}
- 				break;
- 			}
-+			if (!timeo)
-+				return -EAGAIN;
- 			if (signal_pending(current)) {
- 				read_done = sock_intr_errno(timeo);
- 				break;
- 			}
--			if (!timeo)
--				return -EAGAIN;
- 		}
+diff --git a/drivers/s390/net/ctcm_mpc.c b/drivers/s390/net/ctcm_mpc.c
+index e02f295d38a9..07d9668137df 100644
+--- a/drivers/s390/net/ctcm_mpc.c
++++ b/drivers/s390/net/ctcm_mpc.c
+@@ -625,8 +625,6 @@ static void mpc_rcvd_sweep_resp(struct mpcg_info *mpcginfo)
+ 		ctcm_clear_busy_do(dev);
+ 	}
  
- 		if (!smc_rx_data_available(conn)) {
+-	kfree(mpcginfo);
+-
+ 	return;
+ 
+ }
+@@ -1205,10 +1203,10 @@ static void ctcmpc_unpack_skb(struct channel *ch, struct sk_buff *pskb)
+ 						CTCM_FUNTAIL, dev->name);
+ 			priv->stats.rx_dropped++;
+ 			/* mpcginfo only used for non-data transfers */
+-			kfree(mpcginfo);
+ 			if (do_debug_data)
+ 				ctcmpc_dump_skb(pskb, -8);
+ 		}
++		kfree(mpcginfo);
+ 	}
+ done:
+ 
+@@ -1991,7 +1989,6 @@ static void mpc_action_rcvd_xid0(fsm_instance *fsm, int event, void *arg)
+ 		}
+ 		break;
+ 	}
+-	kfree(mpcginfo);
+ 
+ 	CTCM_PR_DEBUG("ctcmpc:%s() %s xid2:%i xid7:%i xidt_p2:%i \n",
+ 		__func__, ch->id, grp->outstanding_xid2,
+@@ -2052,7 +2049,6 @@ static void mpc_action_rcvd_xid7(fsm_instance *fsm, int event, void *arg)
+ 		mpc_validate_xid(mpcginfo);
+ 		break;
+ 	}
+-	kfree(mpcginfo);
+ 	return;
+ }
+ 
 -- 
 2.35.1
 
