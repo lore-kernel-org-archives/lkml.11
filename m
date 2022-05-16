@@ -2,83 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C799C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E964C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242759AbiEPKk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
+        id S238785AbiEPKmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242710AbiEPKkS (ORCPT
+        with ESMTP id S242947AbiEPKlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:40:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ED923BFC;
-        Mon, 16 May 2022 03:40:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66D0BB81095;
-        Mon, 16 May 2022 10:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 18AB2C34116;
-        Mon, 16 May 2022 10:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652697614;
-        bh=Y6hxtYOR0XmRhsmlJDZ1vs1lnO++NYaI1tisxd71by8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pkSoOexawVRnmAg30AS9iRwT3Dxx/oVtp4QAt6D+HAVZIX9sIc8xTZQLtdiM7rQ5V
-         /DSRPWhJdo86gO7qiZ5HNvX74eEzwzF202ATYTSy66UjgxeSNpCU2umxCZxfDPDrK6
-         3cAKGJWn5dsROw1w0fuAJjOkxF9P4lzaqt/UlLssZQmJSmzwqSS31gtTtdGl3dy/3o
-         rNZj78zcGz1NLW2YXGplf49zKUqr2HhjETOGnSWhDPjuQ8r5N8kfMXKT+zXUDu93Rz
-         OyrA3A3p/nKeif8b3xF9pLJwE+C04bQWZX9GVTpVnZaOUodUcbRM5atg2+RMeFd/f5
-         S3evtcMXF5moA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA577F0392C;
-        Mon, 16 May 2022 10:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 16 May 2022 06:41:40 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEEF9261C;
+        Mon, 16 May 2022 03:41:37 -0700 (PDT)
+X-UUID: 6456a25257d540899786888d20ed49f0-20220516
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:14da1c38-918c-4adf-b92e-1cf13a3a5ae1,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:89bb2e94-563e-4fc2-8a0d-fda4821947ab,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 6456a25257d540899786888d20ed49f0-20220516
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1875934610; Mon, 16 May 2022 18:41:33 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 16 May 2022 18:41:31 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 16 May 2022 18:41:31 +0800
+Message-ID: <e1dffbf98c034b99b1d7fd10aa009a645812abdc.camel@mediatek.com>
+Subject: Re: [PATCH v6 09/10] arm64: dts: mediatek: Add MediaTek CCI node
+ for MT8183
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Chen-Yu Tsai <wenst@chromium.org>
+CC:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
+        <roger.lu@mediatek.com>, <hsinyi@google.com>,
+        <khilman@baylibre.com>, <angelogioacchino.delregno@collabora.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
+Date:   Mon, 16 May 2022 18:41:31 +0800
+In-Reply-To: <CAGXv+5FW59B1Dq8eH=5KjEdTxgT64GuvYZHZ9LnnTuaVrK3XpQ@mail.gmail.com>
+References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
+         <20220505115226.20130-10-rex-bc.chen@mediatek.com>
+         <CAGXv+5FW59B1Dq8eH=5KjEdTxgT64GuvYZHZ9LnnTuaVrK3XpQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 -next] octeon_ep: add missing destroy_workqueue in
- octep_init_module
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165269761395.8728.8751910697744909015.git-patchwork-notify@kernel.org>
-Date:   Mon, 16 May 2022 10:40:13 +0000
-References: <20220513071018.3279210-1-zhengbin13@huawei.com>
-In-Reply-To: <20220513071018.3279210-1-zhengbin13@huawei.com>
-To:     Zheng Bin <zhengbin13@huawei.com>
-Cc:     vburru@marvell.com, aayarekar@marvell.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gaochao49@huawei.com
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 13 May 2022 15:10:18 +0800 you wrote:
-> octep_init_module misses destroy_workqueue in error path,
-> this patch fixes that.
+On Mon, 2022-05-16 at 13:35 +0800, Chen-Yu Tsai wrote:
+> On Thu, May 5, 2022 at 8:04 PM Rex-BC Chen <rex-bc.chen@mediatek.com>
+> wrote:
+> > 
+> > Add MediaTek CCI devfreq node for MT8183.
+> > 
+> > Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > Reviewed-by: AngeloGioacchino Del Regno <
+> > angelogioacchino.delregno@collabora.com>
+> > ---
+> >  arch/arm64/boot/dts/mediatek/mt8183-evb.dts    | 4 ++++
+> >  arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 4 ++++
+> >  arch/arm64/boot/dts/mediatek/mt8183.dtsi       | 7 +++++++
+> >  3 files changed, 15 insertions(+)
+> > 
+> > diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+> > b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+> > index 8953dbf84f3e..7ac9864db9de 100644
+> > --- a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+> > +++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+> > @@ -412,6 +412,10 @@
+> > 
+> >  };
+> > 
+> > +&cci {
+> > +       proc-supply = <&mt6358_vproc12_reg>;
+> > +};
+> > +
+> >  &cpu0 {
+> >         proc-supply = <&mt6358_vproc12_reg>;
+> >  };
+> > diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+> > b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+> > index 8d5bf73a9099..b035e06840e6 100644
+> > --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+> > +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+> > @@ -230,6 +230,10 @@
+> >         status = "okay";
+> >  };
+> > 
+> > +&cci {
+> > +       proc-supply = <&mt6358_vproc12_reg>;
+> > +};
+> > +
+> >  &cpu0 {
+> >         proc-supply = <&mt6358_vproc12_reg>;
+> >  };
+> > diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> > b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> > index cecf96b628b7..11caf3dd85cd 100644
+> > --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> > +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> > @@ -280,6 +280,13 @@
+> >                 };
+> >         };
+> > 
+> > +       cci: cci {
+> > +               compatible = "mediatek,mt8183-cci";
+> > +               clocks = <&apmixedsys CLK_APMIXED_CCIPLL>;
+> > +               clock-names = "cci_clock";
 > 
-> Fixes: 862cd659a6fb ("octeon_ep: Add driver framework and device initialization")
-> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-> ---
-> v1->v2: add Fixes tag
->  drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 1 +
->  1 file changed, 1 insertion(+)
+> Binding says there should be two clocks: the actual clock that drives
+> CCI, and a stable "intermediate" clock to switch to during clock rate
+> changes. So I think this should look like:
 > 
-> [...]
+>     clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+>              <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
+>     clock-names = "cci", "intermediate";
+> 
+> 
+> ChenYu
+> 
 
-Here is the summary with links:
-  - [v2,-next] octeon_ep: add missing destroy_workqueue in octep_init_module
-    https://git.kernel.org/netdev/net-next/c/e68372efb9fe
+Hello Chen-Yu,
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks for your reminder.
+I will update this and sned next version.
 
+BRs,
+Rex
+
+> > +               operating-points-v2 = <&cci_opp>;
+> > +       };
+> > +
+> >         cpus {
+> >                 #address-cells = <1>;
+> >                 #size-cells = <0>;
+> > --
+> > 2.18.0
+> > 
+> > 
+> > _______________________________________________
+> > Linux-mediatek mailing list
+> > Linux-mediatek@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-mediatek
 
