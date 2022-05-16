@@ -2,83 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B97C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 922E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243013AbiEPLSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:18:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
+        id S229549AbiEPLUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243044AbiEPLSu (ORCPT
+        with ESMTP id S229735AbiEPLUg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:18:50 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D19340DB
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 04:18:49 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id z2so27978498ejj.3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 04:18:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pmfsIHbJLueJ35bgeNRJJDeDJTrJmP4/XqfMWtgXDDU=;
-        b=LYQ5GtiwSVm7LNB+PreZgfk443WWrmBicaCw3pTCFbG34FCjiXhosbAYFm87ix7mRR
-         DJbuykytG5jHe5EG6osBFZxVeuf8Z9hE8BDt9SzTkRybx6abf40mMW5G+xJSRv/p/a1f
-         qTRa7keeTPtp1GGGOXHQM8N0eQoLXj7ea7UHeT88fG/iZdc4Xg9jPafY821hsfF0XHEy
-         zJoRgyRZjzvJpPyk/BgrDPkinijKPpOc1RW0z0SVAEEADPXcaVQInavPQMoLhiRkc7Qu
-         2Crt2OFfk1vkgIzdYsOgdea//NZRgRHX6lwxGlINBvHBd7IctLjbcdlueThFG4D5/uMU
-         o+wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pmfsIHbJLueJ35bgeNRJJDeDJTrJmP4/XqfMWtgXDDU=;
-        b=egFot1TMcgpCAUwbqy0F5oYCf/Rk27oeyWWVWDjl1x5aweU7oX2tQlZ53VnTvzy0s5
-         Kvn3xV10aWyRa6oSfNvV/9hunzsWNrtG4Sev5QGgabohXwBEonNZmKK92ddutd9NopgC
-         xlPfQtr9MO39iS85FH7IlNC5ELYoTOYkL2EYnjgpspMJO5RJct2TUSFnfcurImv1BBpd
-         gs8fweCcPObvxBfa4GG2IDhzMHuVpBiGzqZfentjo3YQ+1ii4KT9EkLIzfX+8ZH8QnIX
-         hjHjgIIPgESg0/LLDJWMcg29a0/Vp8fH73mMTRvl4nidRNQ6nH1W0WMumbm8OX4RLUjN
-         De4Q==
-X-Gm-Message-State: AOAM532oAmfuOCeMO/K6g+mCsY6guY8y8M0p+b5lCe3IZWDHXFAZzN1h
-        eGJnky8Nm7yR5m+FiuVqz7Zw/mp8YLeNrxp9Ds8=
-X-Google-Smtp-Source: ABdhPJwgrDSEMVCmTZL7/2CDNe+hDmsyDMJ6mbkGGNi7nbYA9oDjQdMYkNNbKIpX/huxznQlvqJnWRbR8UjgvHonpTk=
-X-Received: by 2002:a17:907:7b9f:b0:6f4:d8c5:392c with SMTP id
- ne31-20020a1709077b9f00b006f4d8c5392cmr14484077ejc.652.1652699928032; Mon, 16
- May 2022 04:18:48 -0700 (PDT)
+        Mon, 16 May 2022 07:20:36 -0400
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F2534BBE;
+        Mon, 16 May 2022 04:20:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=LUKhFyWGsJws4jt1m41drcAy5kgxr8adnAp720eLM7Y=; b=KlbgSdflonmdW6hPspTw/oFJYR
+        yLr4OzBTS5jTqa88i7yjnmsG6GpnO3VrGHQvwpaLGB2sica6hBO1nPPepUxvCjDJ/qMSWv2bqHO+b
+        ZmAAhzszkvaGdABMHDNLbFKBA/0X2cZLpA26IbwG1J+/WKn3BSeYHWPzAy1E2IXsArxpSxY1jKaNf
+        G7qksyN1vqqi7dVGF3f0eawRTnGOVi0UUGB2fOyVmQ+Pmj57atz5AZx29cjIHEp8OKaSWq9LTUTaz
+        ANu8h4V4ZNvvD3woDjGX8sWZqSmMJ69f3GKZYxGyFvG3KOEc3VaTNtMLpx3ov/1arKmls2ipz2Eax
+        IJtGDvbg==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=[192.168.1.10])
+        by mail.kapsi.fi with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1nqYlv-0001Dw-4J; Mon, 16 May 2022 14:20:19 +0300
+Message-ID: <020a8244-760e-fe7c-594a-1d85e5645dbe@kapsi.fi>
+Date:   Mon, 16 May 2022 14:20:18 +0300
 MIME-Version: 1.0
-References: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
-In-Reply-To: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Mon, 16 May 2022 08:18:38 -0300
-Message-ID: <CAOMZO5DB9xNfdqffk6k8vLaC6efvGPtUx7NaA5AF1BYL37yaOw@mail.gmail.com>
-Subject: Re: [PATCH 0/3] ASoC: fsl_sai: Add support for i.MX8MM, MP, ULP
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>
-Cc:     Nicolin Chen <nicoleotsuka@gmail.com>,
-        Xiubo Li <Xiubo.Lee@gmail.com>,
-        Shengjiu Wang <shengjiu.wang@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v5 5/9] iommu/arm-smmu: Attach to host1x context device
+ bus
+Content-Language: en-US
+To:     Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Cc:     thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Mikko Perttunen <mperttunen@nvidia.com>
+References: <20220516085258.1227691-1-cyndis@kapsi.fi>
+ <20220516085258.1227691-6-cyndis@kapsi.fi>
+ <20220516100721.GA1927@willie-the-truck>
+ <4a170997-c893-1788-dcaa-8ed2193146ae@kapsi.fi>
+ <099cf0f9-5c27-0247-7c5e-6704a9527b11@arm.com>
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+In-Reply-To: <099cf0f9-5c27-0247-7c5e-6704a9527b11@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Shengjiu,
+On 5/16/22 13:44, Robin Murphy wrote:
+> On 2022-05-16 11:13, Mikko Perttunen wrote:
+>> On 5/16/22 13:07, Will Deacon wrote:
+>>> On Mon, May 16, 2022 at 11:52:54AM +0300, cyndis@kapsi.fi wrote:
+>>>> From: Mikko Perttunen <mperttunen@nvidia.com>
+>>>>
+>>>> Set itself as the IOMMU for the host1x context device bus, containing
+>>>> "dummy" devices used for Host1x context isolation.
+>>>>
+>>>> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+>>>> ---
+>>>>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 13 +++++++++++++
+>>>>   1 file changed, 13 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>>> index 568cce590ccc..9ff54eaecf81 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>>> @@ -39,6 +39,7 @@
+>>>>   #include <linux/amba/bus.h>
+>>>>   #include <linux/fsl/mc.h>
+>>>> +#include <linux/host1x_context_bus.h>
+>>>>   #include "arm-smmu.h"
+>>>> @@ -2053,8 +2054,20 @@ static int arm_smmu_bus_init(struct iommu_ops 
+>>>> *ops)
+>>>>               goto err_reset_pci_ops;
+>>>>       }
+>>>>   #endif
+>>>> +#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
+>>>> +    if (!iommu_present(&host1x_context_device_bus_type)) {
+>>>> +        err = bus_set_iommu(&host1x_context_device_bus_type, ops);
+>>>> +        if (err)
+>>>> +            goto err_reset_fsl_mc_ops;
+>>>> +    }
+>>>> +#endif
+>>>> +
+>>>>       return 0;
+>>>> +err_reset_fsl_mc_ops: __maybe_unused;
+>>>> +#ifdef CONFIG_FSL_MC_BUS
+>>>> +    bus_set_iommu(&fsl_mc_bus_type, NULL);
+>>>> +#endif
+>>>
+>>> bus_set_iommu() is going away:
+>>>
+>>> https://lore.kernel.org/r/cover.1650890638.git.robin.murphy@arm.com
+>>>
+>>> Will
+>>
+>> Thanks for the heads-up. Robin had pointed out that this work was 
+>> ongoing but I hadn't seen the patches yet. I'll look into it.
+> 
+> Although that *is* currently blocked on the mystery intel-iommu problem 
+> that I can't reproduce... If this series is ready to land right now for 
+> 5.19 then in principle that might be the easiest option overall. 
+> Hopefully at least patch #2 could sneak in so that the compile-time 
+> dependencies are ready for me to roll up host1x into the next rebase of 
+> "iommu: Always register bus notifiers".
+> 
+> Cheers,
+> Robin.
 
-On Mon, May 16, 2022 at 5:18 AM Shengjiu Wang <shengjiu.wang@nxp.com> wrote:
->
-> ASoC: fsl_sai: Add support for i.MX8MM, MP, ULP platforms
->
-> Shengjiu Wang (3):
->   ASoC: fsl_sai: Add support for i.MX8MM
->   ASoC: fsl_sai: Add support for i.MX8M Plus
->   ASoC: fsl_sai: Add support for i.MX8ULP
+My guess is that the series as a whole is not ready to land in the 5.19 
+timeframe, but #2 could be possible.
 
-For the series:
+Thierry, any opinion?
 
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Thanks,
+Mikko
