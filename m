@@ -2,110 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233267AbiEPMuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33006 "EHLO
+        id S239670AbiEPMxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243500AbiEPMtW (ORCPT
+        with ESMTP id S229963AbiEPMxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 08:49:22 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C8239697
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:49:20 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nqa9y-0007e3-D2; Mon, 16 May 2022 14:49:14 +0200
-Message-ID: <86815346-209e-304e-3565-b4160afa48e8@pengutronix.de>
-Date:   Mon, 16 May 2022 14:49:12 +0200
+        Mon, 16 May 2022 08:53:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177B838BD7;
+        Mon, 16 May 2022 05:53:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A928561234;
+        Mon, 16 May 2022 12:53:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD947C34115;
+        Mon, 16 May 2022 12:53:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652705586;
+        bh=d0V/0ZiraPuikLUZIARcVrTTk104Z792nf2cQhVOy4w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=R459vo/A9TSusKVWDf9u1xbODjoNrhhRZCQWOmf0nYpof2ADJiDmP20+4a/BVpWID
+         0X+AXe4cNRd0L1+GTSHCj9Ssj2SBQvaO1WGXDbUJ4Ytg66Y549mdDQM63haY0KygBA
+         heiZkL8JObByASP4CnDc16sT7iCEOBxufLbAgZ93ennwJ8zDZM/oxEJe3OVrYLzXLH
+         hDIzNM2oJ1JaBEFY5ZhYsX6+BdxAagbFXmjyYTvBd/M5M4iT4PR6Mtk0X6hDXErklP
+         CW5xlXBbesGkr/tBW7MIDM8FPmxDNOm/TQXgHHUqRCOZ//e0GxEr27eW6JaLuVobzC
+         CsdukcnIAbALg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id B4778400B1; Mon, 16 May 2022 09:53:03 -0300 (-03)
+Date:   Mon, 16 May 2022 09:53:03 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ravi Bangoria <ravi.bangoria@amd.com>
+Cc:     jolsa@kernel.org, peterz@infradead.org, rrichter@amd.com,
+        mingo@redhat.com, mark.rutland@arm.com, namhyung@kernel.org,
+        tglx@linutronix.de, bp@alien8.de, irogers@google.com,
+        yao.jin@linux.intel.com, james.clark@arm.com, leo.yan@linaro.org,
+        kan.liang@linux.intel.com, ak@linux.intel.com, eranian@google.com,
+        like.xu.linux@gmail.com, x86@kernel.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sandipan.das@amd.com, ananth.narayan@amd.com, kim.phillips@amd.com,
+        santosh.shukla@amd.com
+Subject: Re: [PATCH v2 6/8] perf header: Parse non-cpu pmu capabilities
+Message-ID: <YoJJL4Z5ICamRjYO@kernel.org>
+References: <20220509044914.1473-1-ravi.bangoria@amd.com>
+ <20220509044914.1473-7-ravi.bangoria@amd.com>
+ <3e3c1d82-581e-5a44-deed-05b5f880746c@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v1 02/17] Revert "ARM: dts: imx6qdl-apalis: Avoid
- underscore in node name"
-Content-Language: en-US
-To:     Max Krummenacher <max.oss.09@gmail.com>,
-        max.krummenacher@toradex.com
-Cc:     devicetree@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220516115846.58328-1-max.oss.09@gmail.com>
- <20220516115846.58328-3-max.oss.09@gmail.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <20220516115846.58328-3-max.oss.09@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3e3c1d82-581e-5a44-deed-05b5f880746c@amd.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16.05.22 13:58, Max Krummenacher wrote:
-> From: Max Krummenacher <max.krummenacher@toradex.com>
+Em Mon, May 16, 2022 at 09:45:44AM +0530, Ravi Bangoria escreveu:
 > 
-> The STMPE MFD device binding requires the child node to have a fixed
-> name, i.e. with '_', not '-'. Otherwise the stmpe_adc, stmpe_touchscreen
-> drivers will not be probed.
-
-IMO, the Linux driver should be fixed and the requirement to use a fixed
-node name be dropped from the binding. The driver itself already probes
-by compatible, the node name seems only to be used by the MFD driver to
-detect which functions to enable. It could do the same by checking for
-compatibles. Otherwise you invite a game of cat and mouse, where in
-future, this is changed back again reintroducing the regression..
- 
-> Fixes: 56086b5e804f ("ARM: dts: imx6qdl-apalis: Avoid underscore in node name")
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-
-Anyway, as a fix, this looks ok for now:
-
-Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-
-Cheers,
-Ahmad
-
-> ---
+> On 09-May-22 10:19 AM, Ravi Bangoria wrote:
+> > Pmus advertise their capabilities via sysfs attribute files but
+> > perf tool currently parses only core(cpu) pmu capabilities. Add
+> > support for parsing non-cpu pmu capabilities.
 > 
->  arch/arm/boot/dts/imx6qdl-apalis.dtsi | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Arnaldo, Jiri,
 > 
-> diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-> index bd763bae596b..da919d0544a8 100644
-> --- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-> +++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-> @@ -315,7 +315,7 @@
->  		/* ADC conversion time: 80 clocks */
->  		st,sample-time = <4>;
->  
-> -		stmpe_touchscreen: stmpe-touchscreen {
-> +		stmpe_touchscreen: stmpe_touchscreen {
->  			compatible = "st,stmpe-ts";
->  			/* 8 sample average control */
->  			st,ave-ctrl = <3>;
-> @@ -332,7 +332,7 @@
->  			st,touch-det-delay = <5>;
->  		};
->  
-> -		stmpe_adc: stmpe-adc {
-> +		stmpe_adc: stmpe_adc {
->  			compatible = "st,stmpe-adc";
->  			/* forbid to use ADC channels 3-0 (touch) */
->  			st,norequest-mask = <0x0F>;
+> Does tool side patches looks good to you? Please consider pulling them.
 
+So the kernel part was merged, ok, will look into it.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+- Arnaldo
