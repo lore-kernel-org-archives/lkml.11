@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 715BEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345708AbiEPTrK (ORCPT
+        id S1346043AbiEPTrO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
+        Mon, 16 May 2022 15:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346081AbiEPTmu (ORCPT
+        with ESMTP id S1346083AbiEPTmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:42:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522FA3F88E;
-        Mon, 16 May 2022 12:41:23 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34853F32B;
+        Mon, 16 May 2022 12:41:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E30DD61510;
-        Mon, 16 May 2022 19:41:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECD60C34100;
-        Mon, 16 May 2022 19:41:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 197F561512;
+        Mon, 16 May 2022 19:41:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17105C385AA;
+        Mon, 16 May 2022 19:41:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730082;
-        bh=cAb6iKZxKeujnO0Osi+5GaP0dphhqEkPS32XNa6ZaxU=;
+        s=korg; t=1652730079;
+        bh=jXsRJZlhkkVNE5KFJ6uMHiXK5LPb7EkwA2pg9EW8UoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BF3MT4EjxBMJrUN4Lg8+AMOnQseFQRGiIJWQOmrby+9tRNlP0su/LMIRAHaAWT8yR
-         D04r5Y9M1pzzDACzckoiDnHsEbndgQB3qw6ZHrJPUhx2Jxhh9XARvJHn0woE38rCj0
-         3lxmsde9UT5CGcz2D3TWJkxC/ezYsDLmpVnZLTvw=
+        b=jeIF6155DwepFbd8POLDNrVPixbVbwQo4llPFQD0tlC3sp5+sOa+xJGgNC8PjXaRx
+         ftF29XpFT3739QteWs+ctzPAbizNeFwVO6/Xc+Fr9hzURQSghZ1HCmxZIq1jyUnFvC
+         jFSGmDcej8qYjzFbJggU6almYzGwDOoiAKzf62LQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Florian Eckert <fe@dev.tdt.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 07/32] hwmon: (ltq-cputemp) restrict it to SOC_XWAY
-Date:   Mon, 16 May 2022 21:36:21 +0200
-Message-Id: <20220516193614.995667923@linuxfoundation.org>
+Subject: [PATCH 4.19 06/32] mac80211_hwsim: call ieee80211_tx_prepare_skb under RCU protection
+Date:   Mon, 16 May 2022 21:36:20 +0200
+Message-Id: <20220516193614.966264764@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
 References: <20220516193614.773450018@linuxfoundation.org>
@@ -53,54 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 151d6dcbed836270c6c240932da66f147950cbdb ]
+[ Upstream commit 9e2db50f1ef2238fc2f71c5de1c0418b7a5b0ea2 ]
 
-Building with SENSORS_LTQ_CPUTEMP=y with SOC_FALCON=y causes build
-errors since FALCON does not support the same features as XWAY.
+This is needed since it might use (and pass out) pointers to
+e.g. keys protected by RCU. Can't really happen here as the
+frames aren't encrypted, but we need to still adhere to the
+rules.
 
-Change this symbol to depend on SOC_XWAY since that provides the
-necessary interfaces.
-
-Repairs these build errors:
-
-../drivers/hwmon/ltq-cputemp.c: In function 'ltq_cputemp_enable':
-../drivers/hwmon/ltq-cputemp.c:23:9: error: implicit declaration of function 'ltq_cgu_w32'; did you mean 'ltq_ebu_w32'? [-Werror=implicit-function-declaration]
-   23 |         ltq_cgu_w32(ltq_cgu_r32(CGU_GPHY1_CR) | CGU_TEMP_PD, CGU_GPHY1_CR);
-../drivers/hwmon/ltq-cputemp.c:23:21: error: implicit declaration of function 'ltq_cgu_r32'; did you mean 'ltq_ebu_r32'? [-Werror=implicit-function-declaration]
-   23 |         ltq_cgu_w32(ltq_cgu_r32(CGU_GPHY1_CR) | CGU_TEMP_PD, CGU_GPHY1_CR);
-../drivers/hwmon/ltq-cputemp.c: In function 'ltq_cputemp_probe':
-../drivers/hwmon/ltq-cputemp.c:92:31: error: 'SOC_TYPE_VR9_2' undeclared (first use in this function)
-   92 |         if (ltq_soc_type() != SOC_TYPE_VR9_2)
-
-Fixes: 7074d0a92758 ("hwmon: (ltq-cputemp) add cpu temp sensor driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Florian Eckert <fe@dev.tdt.de>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: linux-hwmon@vger.kernel.org
-Link: https://lore.kernel.org/r/20220509234740.26841-1-rdunlap@infradead.org
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: cacfddf82baf ("mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20220505230421.5f139f9de173.I77ae111a28f7c0e9fd1ebcee7f39dbec5c606770@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mac80211_hwsim.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index c7adaca2ab01..d150d0cab1b6 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -791,7 +791,7 @@ config SENSORS_LTC4261
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index c84ee5ba5381..3d8e17bb8a10 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -2082,11 +2082,13 @@ static void hw_scan_work(struct work_struct *work)
+ 			if (req->ie_len)
+ 				skb_put_data(probe, req->ie, req->ie_len);
  
- config SENSORS_LTQ_CPUTEMP
- 	bool "Lantiq cpu temperature sensor driver"
--	depends on LANTIQ
-+	depends on SOC_XWAY
- 	help
- 	  If you say yes here you get support for the temperature
- 	  sensor inside your CPU.
++			rcu_read_lock();
+ 			if (!ieee80211_tx_prepare_skb(hwsim->hw,
+ 						      hwsim->hw_scan_vif,
+ 						      probe,
+ 						      hwsim->tmp_chan->band,
+ 						      NULL)) {
++				rcu_read_unlock();
+ 				kfree_skb(probe);
+ 				continue;
+ 			}
+@@ -2094,6 +2096,7 @@ static void hw_scan_work(struct work_struct *work)
+ 			local_bh_disable();
+ 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
+ 						hwsim->tmp_chan);
++			rcu_read_unlock();
+ 			local_bh_enable();
+ 		}
+ 	}
 -- 
 2.35.1
 
