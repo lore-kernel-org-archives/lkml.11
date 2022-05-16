@@ -2,162 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C42BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 01:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F10E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 01:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239075AbiEPBXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 21:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
+        id S239101AbiEPB3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 21:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236470AbiEPBXk (ORCPT
+        with ESMTP id S235072AbiEPB3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 21:23:40 -0400
-Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492DB32045;
-        Sun, 15 May 2022 18:23:39 -0700 (PDT)
-Received: by mail-ua1-x934.google.com with SMTP id p1so5290760uak.1;
-        Sun, 15 May 2022 18:23:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7wuXO57c0JtXqV5NdAvSdjaT7cOyGnW8IqIXRcho3Sc=;
-        b=jLxemqpwDv3YIlAWxavQtM/R0fB+JS+RanuyHTfmcZVVq1IsYjB7/tbyLeXAnMlWtc
-         t1ATdP3DVFy4V8JCbAObbLpC0n5K6OGz4aePehxPCYiKVRfzBB+lfEuxkFK7ziSxLA3X
-         F/X1wg1G9xTIQevmNjxcApVZnbyVSnVuwbaUQoVEQXOtqcdB4jYIx4IxNKH7uGa48RTB
-         OHXcEHP9GslvHInoVwaPl7bvXCeBJVCjo6DsFtqNZCoh0JMNoAMaFine049A86yv4yqn
-         tKQq2RVNInTXx8wj2kycJW9+CBDKflXYyO4nF3cJKtmTJdJcUoiFmRZZy7xOXwd1k7gH
-         eHjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7wuXO57c0JtXqV5NdAvSdjaT7cOyGnW8IqIXRcho3Sc=;
-        b=3BCvRBnJd2Jor6bYZFWJjD1IulJ0w8yeZ5tYPjnhbXc15OCZE2gDg6k0+K8rNDM1v4
-         JWftgD/wA7lujOpbEGkKRtj9pOFcZz4aaT/T2u71vH1kT7A2xbFQl//D1tooxwd7S3W1
-         L92dz1vZViZfVIzHIg2C5pUc2/oQUZ4RukltbVRBef9HXoJAs/x8oGyS4NG2xJnTJcl6
-         cATSrTz3ktBGkxiFuTAwaFVNjMgl8dIxKWW0u8aInFgYn8+kPI1+3Ro6UESoxcASgvtZ
-         4roZQwB6kEmwxMLAN8LqtTRq17MTeq8jQKURKNiedv/jlwsWacSFyNsL4GBs2BsVBYdY
-         efRQ==
-X-Gm-Message-State: AOAM533VwNBE3tJovfXavtu/zGFOzd/NY6S4DTUMJOAXMn0r9i4RYUD+
-        xv34yFKbZAErcNQQpGsPDj07C87DVtXRVgpbJCM+hF3hbVvu
-X-Google-Smtp-Source: ABdhPJwNLMRahavW5whCZBPGo059+0UY3efbiL9iQ4RtWbjJJpSVEhPXj0XzodbmI/P/D96ykhaUca+cEqub5JmtEXs=
-X-Received: by 2002:a9f:31ce:0:b0:360:4d8:3eeb with SMTP id
- w14-20020a9f31ce000000b0036004d83eebmr5136218uad.73.1652664217430; Sun, 15
- May 2022 18:23:37 -0700 (PDT)
+        Sun, 15 May 2022 21:29:13 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED01113D4E;
+        Sun, 15 May 2022 18:29:12 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L1hRG6072zGpqF;
+        Mon, 16 May 2022 09:26:18 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 09:29:11 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 09:29:10 +0800
+Subject: Re: [PATCH] rcu/nocb: Delete local variable 'need_rcu_nocb_mask' in
+ rcu_init_nohz()
+To:     <paulmck@kernel.org>
+CC:     Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        "Steven Rostedt" <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, <rcu@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220426073626.967-1-thunder.leizhen@huawei.com>
+ <20220513150556.GH1790663@paulmck-ThinkPad-P17-Gen-1>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <5b8cfec7-198e-1e6c-6ab7-b6bea747c621@huawei.com>
+Date:   Mon, 16 May 2022 09:29:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20220510091654.8498-1-warp5tw@gmail.com> <20220510091654.8498-9-warp5tw@gmail.com>
- <Yno8KMycNbJ+VGtc@smile.fi.intel.com> <CACD3sJYVyV_fFJu9zXJGL1ro02KnkHoeNNSNB8O46FRwd6=-BA@mail.gmail.com>
-In-Reply-To: <CACD3sJYVyV_fFJu9zXJGL1ro02KnkHoeNNSNB8O46FRwd6=-BA@mail.gmail.com>
-From:   Tyrone Ting <warp5tw@gmail.com>
-Date:   Mon, 16 May 2022 09:23:25 +0800
-Message-ID: <CACD3sJZxzs28Ruxifw1vjgKmOr0Z3WgC6SpciwjyvkRMZh8ykw@mail.gmail.com>
-Subject: Re: [PATCH v4 8/9] i2c: npcm: Remove own slave addresses 2:10
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        wsa@kernel.org, jarkko.nikula@linux.intel.com,
-        semen.protsenko@linaro.org, sven@svenpeter.dev, jsd@semihalf.com,
-        lukas.bulwahn@gmail.com, olof@lixom.net, arnd@arndb.de,
-        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220513150556.GH1790663@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy:
 
-I would like to have your comments about the "Fancy indentation"
-because I'm not sure if I get the point.
 
-I remove extra empty lines and reformat the commit message.
+On 2022/5/13 23:05, Paul E. McKenney wrote:
+> On Tue, Apr 26, 2022 at 03:36:26PM +0800, Zhen Lei wrote:
+>> The local variable 'need_rcu_nocb_mask' is true only if CONFIG_NO_HZ_FULL
+>> is defined. So branch "if (need_rcu_nocb_mask)" can be moved within the
+>> scope of "#if defined(CONFIG_NO_HZ_FULL)". At this point, using variable
+>> 'need_rcu_nocb_mask' is not necessary, so delete it.
+>>
+>> No functional changes, but the code looks a little more concise.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> 
+> First, please accept my apologies for the late reply and for the
+> overly active spam filters.
+> 
+> One question below.
+> 
+> 							Thanx, Paul
+> 
+>> ---
+>>  kernel/rcu/tree_nocb.h | 8 ++------
+>>  1 file changed, 2 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+>> index 636d0546a4e932e..1e334e217f0afb7 100644
+>> --- a/kernel/rcu/tree_nocb.h
+>> +++ b/kernel/rcu/tree_nocb.h
+>> @@ -1165,15 +1165,10 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
+>>  void __init rcu_init_nohz(void)
+>>  {
+>>  	int cpu;
+>> -	bool need_rcu_nocb_mask = false;
+>>  	struct rcu_data *rdp;
+>>  
+>>  #if defined(CONFIG_NO_HZ_FULL)
+>> -	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
+>> -		need_rcu_nocb_mask = true;
+>> -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
+>> -
+>> -	if (need_rcu_nocb_mask) {
+> 
+> Could you please test this on a kernel built with CONFIG_NO_HZ_FULL=n
+> and CONFIG_RCU_NOCB_CPU=y?  If that works, please add an explanation
 
-Please see the details below.
+OK, I will test it.
 
-Thank you.
+> of why it works to the commit log above and repost the patch.
 
-Tyrone Ting <warp5tw@gmail.com> =E6=96=BC 2022=E5=B9=B45=E6=9C=8811=E6=97=
-=A5 =E9=80=B1=E4=B8=89 =E4=B8=8A=E5=8D=889:39=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> Hi Andy:
->
-> Thank you for your comments and they will be addressed.
->
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> =E6=96=BC 2022=E5=B9=
-=B45=E6=9C=8810=E6=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=886:19=E5=AF=AB=
-=E9=81=93=EF=BC=9A
-> >
-> > On Tue, May 10, 2022 at 05:16:53PM +0800, Tyrone Ting wrote:
-> > > From: Tali Perry <tali.perry1@gmail.com>
-> > >
-> > > NPCM can support up to 10 own slave addresses.
-> > > In practice, only one address is actually being used.
-> > > In order to access addresses 2 and above, need to switch
-> > > register banks. The switch needs spinlock.
-> > > To avoid using spinlock for this useless feature
-> > > removed support of SA >=3D 2.
-> >
-> > > Also fix returned slave event enum.
-> > >
-> > > Remove some comment since the bank selection is not
-> > > required. The bank selection is not required since
-> > > the supported slave addresses are reduced.
-> >
-> > Fancy indentation. Please fix it in all your commit messages where it a=
-pplies.
-> >
+Sorry, If I had written pseudocode in the commit log, it would have been clear, as below:
 
-I modify the commit message as following:
+-----------------before-----------------
+        bool need_rcu_nocb_mask = false;
 
-NPCM can support up to 10 own slave addresses. In practice, only one
-address is actually being used. In order to access addresses 2 and above,
-need to switch register banks. The switch needs spinlock.
-To avoid using spinlock for this useless feature removed support of SA >=3D
-2. Also fix returned slave event enum.
+#if defined(CONFIG_NO_HZ_FULL)
+        if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
+                need_rcu_nocb_mask = true;      <----	//Move it here, then delete all 'need_rcu_nocb_mask' related code
+#endif /* #if defined(CONFIG_NO_HZ_FULL) */          |
+                                                     |
+        if (need_rcu_nocb_mask) {                    |  //Can only be true above
+                ...                             -----
+        }
 
-Remove some comment since the bank selection is not required. The bank
-selection is not required since the supported slave addresses are reduced.
+-----------------after-----------------
+#if defined(CONFIG_NO_HZ_FULL)
+        if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
+                ...
+	}
+#endif /* #if defined(CONFIG_NO_HZ_FULL) */
 
-> > ...
-> >
-> > > +     if (addr_type > I2C_SLAVE_ADDR2 && addr_type <=3D I2C_SLAVE_ADD=
-R10) {
-> > > +             dev_err(bus->dev,
-> > > +                     "try to enable more then 2 SA not supported\n")=
-;
-> >
-> > Make it one line and drop {}.
-> >
-> > > +     }
-> >
-> > ...
-> >
-> > > +     if (addr_type > I2C_SLAVE_ADDR2 && addr_type <=3D I2C_SLAVE_ADD=
-R10) {
-> > > +             dev_err(bus->dev,
-> > > +                     "get slave: try to use more then 2 slave addres=
-ses not supported\n");
-> >
-> > As per above be consistent with abbreviations ("SA" here, which makes l=
-ine
-> > shorter) and follow the above recommendation.
-> >
-> > > +     }
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> >
->
-> Best Regards,
-> Tyrone
+I'm doing clean up on the premise that the original code is correct.
 
-Best Regards,
-Tyrone
+
+> 
+>> +	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
+>>  		if (!cpumask_available(rcu_nocb_mask)) {
+>>  			if (!zalloc_cpumask_var(&rcu_nocb_mask, GFP_KERNEL)) {
+>>  				pr_info("rcu_nocb_mask allocation failed, callback offloading disabled.\n");
+>> @@ -1182,6 +1177,7 @@ void __init rcu_init_nohz(void)
+>>  		}
+>>  		rcu_nocb_is_setup = true;
+>>  	}
+>> +#endif /* #if defined(CONFIG_NO_HZ_FULL) */
+>>  
+>>  	if (!rcu_nocb_is_setup)
+>>  		return;
+>> -- 
+>> 2.26.0.106.g9fadedd
+>>
+> .
+> 
+
+-- 
+Regards,
+  Zhen Lei
