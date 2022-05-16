@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A084C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB9FC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346929AbiEPUQj (ORCPT
+        id S1346877AbiEPUQY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        Mon, 16 May 2022 16:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348275AbiEPT6c (ORCPT
+        with ESMTP id S1346572AbiEPTy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676CC496A0;
-        Mon, 16 May 2022 12:50:25 -0700 (PDT)
+        Mon, 16 May 2022 15:54:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8929473A0;
+        Mon, 16 May 2022 12:49:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A35D8B81615;
-        Mon, 16 May 2022 19:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3FB2C34115;
-        Mon, 16 May 2022 19:50:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F06D60AC3;
+        Mon, 16 May 2022 19:49:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE52C34116;
+        Mon, 16 May 2022 19:49:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730622;
-        bh=QtSTpg4s7bW+z7cb5PjOt/RnDgPxZ0RF5p2u0Qr7maU=;
+        s=korg; t=1652730546;
+        bh=E9F+Jz03oi36UVkpC75eyzGai8lyuc95aHZVdhHpZOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kl8RjbC956fYRtKzIBjeApzPxgj++7vOxAlSLlz5Z6LkvUzIS62IHey680LY81e/0
-         biVBxOFUjTJB+LNgIoYvNvUg0AjYi9wFWrbjap6M1PXYMpf9Tlmst3QXk+SIhfKYgE
-         L+6RXk4RTGmSl0zfxRPGyMspAJ0X/f21vsu2moA8=
+        b=PQTZ72v3vung7d1sQOfUB00n2++yYaWg+WA961bc4288rXbHlJTy3bLmM9XyOHR8n
+         uNzZgD5B4lSbcgunJrKpqds4+6u326qrPf4C80/mkKtdr8BoZBsNis2wWwu1YBVSyo
+         1l9LkpxYf3KyBi9u3lSYDxMaTRbBeIDKbaImlBM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 017/102] drm/nouveau: Fix a potential theorical leak in nouveau_get_backlight_name()
-Date:   Mon, 16 May 2022 21:35:51 +0200
-Message-Id: <20220516193624.493092068@linuxfoundation.org>
+        stable@vger.kernel.org, Alexandra Winter <wintera@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 033/102] s390/ctcm: fix potential memory leak
+Date:   Mon, 16 May 2022 21:36:07 +0200
+Message-Id: <20220516193624.951332130@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -50,69 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Alexandra Winter <wintera@linux.ibm.com>
 
-[ Upstream commit ab244be47a8f111bc82496a8a20c907236e37f95 ]
+[ Upstream commit 0c0b20587b9f25a2ad14db7f80ebe49bdf29920a ]
 
-If successful ida_simple_get() calls are not undone when needed, some
-additional memory may be allocated and wasted.
+smatch complains about
+drivers/s390/net/ctcm_mpc.c:1210 ctcmpc_unpack_skb() warn: possible memory leak of 'mpcginfo'
 
-Here, an ID between 0 and MAX_INT is required. If this ID is >=100, it is
-not taken into account and is wasted. It should be released.
+mpc_action_discontact() did not free mpcginfo. Consolidate the freeing in
+ctcmpc_unpack_skb().
 
-Instead of calling ida_simple_remove(), take advantage of the 'max'
-parameter to require the ID not to be too big. Should it be too big, it
-is not allocated and don't need to be freed.
-
-While at it, use ida_alloc_xxx()/ida_free() instead to
-ida_simple_get()/ida_simple_remove().
-The latter is deprecated and more verbose.
-
-Fixes: db1a0ae21461 ("drm/nouveau/bl: Assign different names to interfaces")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-[Fixed formatting warning from checkpatch]
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr
+Fixes: 293d984f0e36 ("ctcm: infrastructure for replaced ctc driver")
+Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_backlight.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/s390/net/ctcm_mpc.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-index 12965a832f94..aa8ed08fe9a7 100644
---- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-@@ -46,8 +46,9 @@ static bool
- nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
- 			   struct nouveau_backlight *bl)
- {
--	const int nb = ida_simple_get(&bl_ida, 0, 0, GFP_KERNEL);
--	if (nb < 0 || nb >= 100)
-+	const int nb = ida_alloc_max(&bl_ida, 99, GFP_KERNEL);
-+
-+	if (nb < 0)
- 		return false;
- 	if (nb > 0)
- 		snprintf(backlight_name, BL_NAME_SIZE, "nv_backlight%d", nb);
-@@ -411,7 +412,7 @@ nouveau_backlight_init(struct drm_connector *connector)
- 					    nv_encoder, ops, &props);
- 	if (IS_ERR(bl->dev)) {
- 		if (bl->id >= 0)
--			ida_simple_remove(&bl_ida, bl->id);
-+			ida_free(&bl_ida, bl->id);
- 		ret = PTR_ERR(bl->dev);
- 		goto fail_alloc;
+diff --git a/drivers/s390/net/ctcm_mpc.c b/drivers/s390/net/ctcm_mpc.c
+index f0436f555c62..be03cb123ef4 100644
+--- a/drivers/s390/net/ctcm_mpc.c
++++ b/drivers/s390/net/ctcm_mpc.c
+@@ -626,8 +626,6 @@ static void mpc_rcvd_sweep_resp(struct mpcg_info *mpcginfo)
+ 		ctcm_clear_busy_do(dev);
  	}
-@@ -439,7 +440,7 @@ nouveau_backlight_fini(struct drm_connector *connector)
- 		return;
  
- 	if (bl->id >= 0)
--		ida_simple_remove(&bl_ida, bl->id);
-+		ida_free(&bl_ida, bl->id);
+-	kfree(mpcginfo);
+-
+ 	return;
  
- 	backlight_device_unregister(bl->dev);
- 	nv_conn->backlight = NULL;
+ }
+@@ -1192,10 +1190,10 @@ static void ctcmpc_unpack_skb(struct channel *ch, struct sk_buff *pskb)
+ 						CTCM_FUNTAIL, dev->name);
+ 			priv->stats.rx_dropped++;
+ 			/* mpcginfo only used for non-data transfers */
+-			kfree(mpcginfo);
+ 			if (do_debug_data)
+ 				ctcmpc_dump_skb(pskb, -8);
+ 		}
++		kfree(mpcginfo);
+ 	}
+ done:
+ 
+@@ -1977,7 +1975,6 @@ static void mpc_action_rcvd_xid0(fsm_instance *fsm, int event, void *arg)
+ 		}
+ 		break;
+ 	}
+-	kfree(mpcginfo);
+ 
+ 	CTCM_PR_DEBUG("ctcmpc:%s() %s xid2:%i xid7:%i xidt_p2:%i \n",
+ 		__func__, ch->id, grp->outstanding_xid2,
+@@ -2038,7 +2035,6 @@ static void mpc_action_rcvd_xid7(fsm_instance *fsm, int event, void *arg)
+ 		mpc_validate_xid(mpcginfo);
+ 		break;
+ 	}
+-	kfree(mpcginfo);
+ 	return;
+ }
+ 
 -- 
 2.35.1
 
