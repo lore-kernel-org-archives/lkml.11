@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 469BCC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61370C38162
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347344AbiEPT5Y (ORCPT
+        id S1347365AbiEPT5b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52940 "EHLO
+        Mon, 16 May 2022 15:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347039AbiEPTvf (ORCPT
+        with ESMTP id S1347090AbiEPTvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:51:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76D13FBD6;
-        Mon, 16 May 2022 12:46:44 -0700 (PDT)
+        Mon, 16 May 2022 15:51:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8423FD96;
+        Mon, 16 May 2022 12:47:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C2F6604F5;
-        Mon, 16 May 2022 19:46:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D02FC385AA;
-        Mon, 16 May 2022 19:46:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93807B8160E;
+        Mon, 16 May 2022 19:47:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0814CC385AA;
+        Mon, 16 May 2022 19:47:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730403;
-        bh=2dqIFbD/1xq+mInJPqNxPK1QhNRQ0cRRfbZNWQ5TaYg=;
+        s=korg; t=1652730427;
+        bh=83GQTNq/tBaD7g1NIWDbJ9kE3GD7vyzp8ZZH6TRSWDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tc6pIGK1Equlu00j8A3VasCvTZPuMoSJl+NNlxt+nwXfNf4iBvaLcFAkDvC3CT5FQ
-         CqDY/m6JGoTOFo7QIVmMEAdiSs3LNat3XkpL4/t9rZKChfJgJSggudGE3JKNceMvTr
-         yeL18T2qm2CGz16zgj7fIogtqe2e8qmupkAPdOH4=
+        b=xDK3Jf9GD6VCxhlD09KMyG7eC0sWRbjSgECpTfw0B3DzhHDy+w+t1dCTxSQSeMraj
+         T3MEHL7qkonOcQlYYa3vadCDqbLtT/Nb2ux4YxGY8RJcwjOiye/2COEOubAscTLXmu
+         dU8t10SmUPVFA1joRl89UVss3Zb7KhjRyuO2UJW4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.10 54/66] i40e: i40e_main: fix a missing check on list iterator
-Date:   Mon, 16 May 2022 21:36:54 +0200
-Message-Id: <20220516193620.971383985@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Fu <foyjog@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Meena Shanmugam <meenashanmugam@google.com>
+Subject: [PATCH 5.10 61/66] SUNRPC: Ensure we flush any closed sockets before xs_xprt_free()
+Date:   Mon, 16 May 2022 21:37:01 +0200
+Message-Id: <20220516193621.174798907@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -51,92 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 3f95a7472d14abef284d8968734fe2ae7ff4845f upstream.
+commit f00432063db1a0db484e85193eccc6845435b80e upstream.
 
-The bug is here:
-	ret = i40e_add_macvlan_filter(hw, ch->seid, vdev->dev_addr, &aq_err);
+We must ensure that all sockets are closed before we call xprt_free()
+and release the reference to the net namespace. The problem is that
+calling fput() will defer closing the socket until delayed_fput() gets
+called.
+Let's fix the situation by allowing rpciod and the transport teardown
+code (which runs on the system wq) to call __fput_sync(), and directly
+close the socket.
 
-The list iterator 'ch' will point to a bogus position containing
-HEAD if the list is empty or no element is found. This case must
-be checked before any use of the iterator, otherwise it will
-lead to a invalid memory access.
-
-To fix this bug, use a new variable 'iter' as the list iterator,
-while use the origin variable 'ch' as a dedicated pointer to
-point to the found element.
-
-Cc: stable@vger.kernel.org
-Fixes: 1d8d80b4e4ff6 ("i40e: Add macvlan support on i40e")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220510204846.2166999-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Felix Fu <foyjog@gmail.com>
+Acked-by: Al Viro <viro@zeniv.linux.org.uk>
+Fixes: a73881c96d73 ("SUNRPC: Fix an Oops in udp_poll()")
+Cc: stable@vger.kernel.org # 5.1.x: 3be232f11a3c: SUNRPC: Prevent immediate close+reconnect
+Cc: stable@vger.kernel.org # 5.1.x: 89f42494f92f: SUNRPC: Don't call connect() more than once on a TCP socket
+Cc: stable@vger.kernel.org # 5.1.x
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Meena Shanmugam <meenashanmugam@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ fs/file_table.c               |    1 +
+ include/trace/events/sunrpc.h |    1 -
+ net/sunrpc/xprt.c             |    7 +------
+ net/sunrpc/xprtsock.c         |   16 +++++++++++++---
+ 4 files changed, 15 insertions(+), 10 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -7175,42 +7175,43 @@ static void i40e_free_macvlan_channels(s
- static int i40e_fwd_ring_up(struct i40e_vsi *vsi, struct net_device *vdev,
- 			    struct i40e_fwd_adapter *fwd)
+--- a/fs/file_table.c
++++ b/fs/file_table.c
+@@ -376,6 +376,7 @@ void __fput_sync(struct file *file)
+ }
+ 
+ EXPORT_SYMBOL(fput);
++EXPORT_SYMBOL(__fput_sync);
+ 
+ void __init files_init(void)
  {
-+	struct i40e_channel *ch = NULL, *ch_tmp, *iter;
- 	int ret = 0, num_tc = 1,  i, aq_err;
--	struct i40e_channel *ch, *ch_tmp;
- 	struct i40e_pf *pf = vsi->back;
- 	struct i40e_hw *hw = &pf->hw;
+--- a/include/trace/events/sunrpc.h
++++ b/include/trace/events/sunrpc.h
+@@ -1006,7 +1006,6 @@ DEFINE_RPC_XPRT_LIFETIME_EVENT(connect);
+ DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_auto);
+ DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_done);
+ DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_force);
+-DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_cleanup);
+ DEFINE_RPC_XPRT_LIFETIME_EVENT(destroy);
  
--	if (list_empty(&vsi->macvlan_list))
--		return -EINVAL;
+ DECLARE_EVENT_CLASS(rpc_xprt_event,
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -886,12 +886,7 @@ void xprt_connect(struct rpc_task *task)
+ 	if (!xprt_lock_write(xprt, task))
+ 		return;
+ 
+-	if (test_and_clear_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
+-		trace_xprt_disconnect_cleanup(xprt);
+-		xprt->ops->close(xprt);
+-	}
 -
- 	/* Go through the list and find an available channel */
--	list_for_each_entry_safe(ch, ch_tmp, &vsi->macvlan_list, list) {
--		if (!i40e_is_channel_macvlan(ch)) {
--			ch->fwd = fwd;
-+	list_for_each_entry_safe(iter, ch_tmp, &vsi->macvlan_list, list) {
-+		if (!i40e_is_channel_macvlan(iter)) {
-+			iter->fwd = fwd;
- 			/* record configuration for macvlan interface in vdev */
- 			for (i = 0; i < num_tc; i++)
- 				netdev_bind_sb_channel_queue(vsi->netdev, vdev,
- 							     i,
--							     ch->num_queue_pairs,
--							     ch->base_queue);
--			for (i = 0; i < ch->num_queue_pairs; i++) {
-+							     iter->num_queue_pairs,
-+							     iter->base_queue);
-+			for (i = 0; i < iter->num_queue_pairs; i++) {
- 				struct i40e_ring *tx_ring, *rx_ring;
- 				u16 pf_q;
+-	if (!xprt_connected(xprt)) {
++	if (!xprt_connected(xprt) && !test_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
+ 		task->tk_rqstp->rq_connect_cookie = xprt->connect_cookie;
+ 		rpc_sleep_on_timeout(&xprt->pending, task, NULL,
+ 				xprt_request_timeout(task->tk_rqstp));
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -871,7 +871,7 @@ static int xs_local_send_request(struct
  
--				pf_q = ch->base_queue + i;
-+				pf_q = iter->base_queue + i;
- 
- 				/* Get to TX ring ptr */
- 				tx_ring = vsi->tx_rings[pf_q];
--				tx_ring->ch = ch;
-+				tx_ring->ch = iter;
- 
- 				/* Get the RX ring ptr */
- 				rx_ring = vsi->rx_rings[pf_q];
--				rx_ring->ch = ch;
-+				rx_ring->ch = iter;
- 			}
-+			ch = iter;
- 			break;
- 		}
+ 	/* Close the stream if the previous transmission was incomplete */
+ 	if (xs_send_request_was_aborted(transport, req)) {
+-		xs_close(xprt);
++		xprt_force_disconnect(xprt);
+ 		return -ENOTCONN;
  	}
  
-+	if (!ch)
-+		return -EINVAL;
-+
- 	/* Guarantee all rings are updated before we update the
- 	 * MAC address filter.
- 	 */
+@@ -909,7 +909,7 @@ static int xs_local_send_request(struct
+ 			-status);
+ 		fallthrough;
+ 	case -EPIPE:
+-		xs_close(xprt);
++		xprt_force_disconnect(xprt);
+ 		status = -ENOTCONN;
+ 	}
+ 
+@@ -1191,6 +1191,16 @@ static void xs_reset_transport(struct so
+ 
+ 	if (sk == NULL)
+ 		return;
++	/*
++	 * Make sure we're calling this in a context from which it is safe
++	 * to call __fput_sync(). In practice that means rpciod and the
++	 * system workqueue.
++	 */
++	if (!(current->flags & PF_WQ_WORKER)) {
++		WARN_ON_ONCE(1);
++		set_bit(XPRT_CLOSE_WAIT, &xprt->state);
++		return;
++	}
+ 
+ 	if (atomic_read(&transport->xprt.swapper))
+ 		sk_clear_memalloc(sk);
+@@ -1214,7 +1224,7 @@ static void xs_reset_transport(struct so
+ 	mutex_unlock(&transport->recv_mutex);
+ 
+ 	trace_rpc_socket_close(xprt, sock);
+-	fput(filp);
++	__fput_sync(filp);
+ 
+ 	xprt_disconnect_done(xprt);
+ }
 
 
