@@ -2,126 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 335C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 396A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244758AbiEPOvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
+        id S244754AbiEPOvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240695AbiEPOvZ (ORCPT
+        with ESMTP id S244764AbiEPOvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:51:25 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E443C2ED56
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:51:24 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso14652782pjg.0
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:51:24 -0700 (PDT)
+        Mon, 16 May 2022 10:51:49 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BA22F020
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:51:43 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id l18so29153963ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:51:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9ILjHyAIIUvPIkL8gw9Y2opgc0fTj0MnOokGYowj0Rg=;
-        b=HPW1lLGvgicxdIdZx7J6FbwBhdhc/E/k/7kHKn89BOmoeaDSgeHpnnjs8nqWACIkrr
-         ksXHnX1pSxp3n29FSh3Pn+BH5hgRJjzsu2zn+w1VBZgeVihTe2yJC1rMoust4Jvydotl
-         ChH6TGn7uq7uTIim+10hIsSIB/h/cAivTqAB0S0BcYdOrJWLFbNZAaEoRdG79mY53PrW
-         hfIRLJbId9CzttGZmuIXsR+WtOO4n6/yyMrm+nj0mJeyLriKqQ+lSj4leGc3IRWq7NCu
-         lSIeygFSQjFnFP6ur2hviyw6k4IIGChgtK/Jdf0rYjc35lv0En9ii84aw4OpXmBB0Y9E
-         soHQ==
+        bh=uOxNWh7yabHDrbMrM0Z54oCYMU6X2Tmhhr4bpaZlq8s=;
+        b=fRNJSoxj7giRSyQy0TVYlxEPinl12dnHdkFzDvk1D/dHyFl1VZXFh4KWjRwx8lB8lr
+         m4jpauyK4bAZcNzAWg+/V4WUux4FUyrEQka080XO4bipiNeA9kzXpEvqqC2dTINgx3oa
+         RuWuz1NvyuJ/arOWE63/iU3+BpG8Z96CoPVntmaPbEO/7+3/jiChIGPDuKds61vUTwM0
+         +NPNeOCoqvtwV4qQAX+ZwplH+WT/0o1tRCeufiOslW7dlU5GwY/cSPM1nPWVtxF8IfGs
+         E8ub98BW4pYJ7a9i+4Dh25pMUsT8SQ+Bt1NbE4VUhd3MJTC3TvWaeLRfnBU4Sj3mqnPO
+         6SmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=9ILjHyAIIUvPIkL8gw9Y2opgc0fTj0MnOokGYowj0Rg=;
-        b=P9Xk0FZpzpX/vDYEdCEXFAD2TeVygVwsRYaflxYTNDcyLY9D/fUDpmkwtJDu3HNzLi
-         bLV29zA94X9k1azV4mST7zI7H8AEtCE5DiVaxPBjky1w1+s5iEISbY+aEffqcJ9GlKY5
-         SF3VOAMyC3RG+SH6Tsw9GX9lrMIm6jdbpbsF4aBxUGbfihepWCLl5RuwcUzSBgVLwgVd
-         ww4W3nU3QXoTNRUdXYE/lVm4caSK9IlnqU6Pjv+ZUucEBjAEVdE0DoFywkoFOtvxI4N3
-         ixsaxN26I0PdOgIk4TlaXgOjjGW7AIP7AKUYbCzxRTJhcxW7Eg+FEnicaHk+F9LbaWTV
-         B5pA==
-X-Gm-Message-State: AOAM53245OtltEB873JTb3kLMJX5fATw1UF4UcxGRd0FTqVNNeoZU1NP
-        6DbgR+emXeR9+NS0Fp6P9jgX1w==
-X-Google-Smtp-Source: ABdhPJx5miUuYsn/qO3rSuAb1jzPXw7RaKWKRjd2bBzppVypLUjUx4PdgtMAga4y6yQ4W7Srwp1Xgw==
-X-Received: by 2002:a17:902:ec88:b0:15e:c17d:b092 with SMTP id x8-20020a170902ec8800b0015ec17db092mr18075607plg.88.1652712684426;
-        Mon, 16 May 2022 07:51:24 -0700 (PDT)
-Received: from [192.168.254.17] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id 74-20020a62174d000000b00512ee2f22acsm5531100pfx.97.2022.05.16.07.51.23
+        bh=uOxNWh7yabHDrbMrM0Z54oCYMU6X2Tmhhr4bpaZlq8s=;
+        b=2iHOeTJtqTMc+PwJ9lqJi1+1GJFe9vSEqESx57B7RnHbvRaamkXpj2waSQwVr++cQq
+         gm93nkX7FEHkdrpD2lvsnyVEvE6IE8bWrOgbCmKH5eY/nxKANmjcu73NjGW3AaKqLJ/R
+         Ve2uFvpFw94e4Cfrb2HqcWz5/KoC56wH7sadPZK/UwyA+YPgPk4YAGrBTjPAayAlEUIb
+         rvPwwrXS75+2pRmBOCA2b0ye9uqapptbE/ETLnbxcKT5OjsdSVxAixoHDzMmIGyZXJKG
+         m1rn0qzZrsWI1m4Ddzu1Mi25HHbBCc1rFTf6ENQa5Rh60E/iS/qjQ0CC4PykSmzfkMty
+         Evmg==
+X-Gm-Message-State: AOAM531fX/EDTPXOcBOu3fRZ8IZmpkAh4ex+t4PBRdyzMUBf0YsGeo5K
+        Rc9C08xPBAQlYSpMbud/r73JBw==
+X-Google-Smtp-Source: ABdhPJxaAJZbuIA8SR9ZufnKLS++8KuZsJE84jXP4tu+xwDtfpKQXu3jisHIZIVRufznRUYH6G6c4A==
+X-Received: by 2002:a17:906:4cd8:b0:6db:372:c4ba with SMTP id q24-20020a1709064cd800b006db0372c4bamr15448039ejt.57.1652712702161;
+        Mon, 16 May 2022 07:51:42 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id 3-20020a170906100300b006f3ef214e40sm3733974ejm.166.2022.05.16.07.51.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 07:51:23 -0700 (PDT)
-Message-ID: <c9ab0896-b19b-b8b8-cf63-ad437a123270@linaro.org>
-Date:   Mon, 16 May 2022 07:51:22 -0700
+        Mon, 16 May 2022 07:51:41 -0700 (PDT)
+Message-ID: <d78e1936-a0ab-663d-1381-b537bfd7f07d@linaro.org>
+Date:   Mon, 16 May 2022 16:51:40 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 2/2] exfat: check if cluster num is valid
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 5/7] arm64: dts: mediatek: mt6795: Add fixed clocks for
+ 32kHz and 26MHz XOs
 Content-Language: en-US
-To:     Sungjong Seo <sj1557.seo@samsung.com>, linkinjeon@kernel.org
-Cc:     linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
-References: <20220511185909.175110-1-tadeusz.struk@linaro.org>
- <CGME20220511185940epcas1p1e51c30e41ff82ae642f8f949ffa4b189@epcas1p1.samsung.com>
- <20220511185909.175110-2-tadeusz.struk@linaro.org>
- <000101d8686b$56d88750$048995f0$@samsung.com>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-In-Reply-To: <000101d8686b$56d88750$048995f0$@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
+        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
+        kernel@collabora.com
+References: <20220513171617.504430-1-angelogioacchino.delregno@collabora.com>
+ <20220513171617.504430-6-angelogioacchino.delregno@collabora.com>
+ <03e99a02-1233-3882-e1e5-24ab1bbaf257@linaro.org>
+ <0f303425-3b12-7573-b201-030d4d044db8@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <0f303425-3b12-7573-b201-030d4d044db8@collabora.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/15/22 07:52, Sungjong Seo wrote:
->> Syzbot reported slab-out-of-bounds read in exfat_clear_bitmap.
->> This was triggered by reproducer calling truncute with size 0, which
->> causes the following trace:
->>
->> BUG: KASAN: slab-out-of-bounds in exfat_clear_bitmap+0x147/0x490
->> fs/exfat/balloc.c:174 Read of size 8 at addr ffff888115aa9508 by task syz-
->> executor251/365
->>
->> Call Trace:
->>   __dump_stack lib/dump_stack.c:77 [inline]  dump_stack_lvl+0x1e2/0x24b
->> lib/dump_stack.c:118
->>   print_address_description+0x81/0x3c0 mm/kasan/report.c:233
->> __kasan_report mm/kasan/report.c:419 [inline]
->>   kasan_report+0x1a4/0x1f0 mm/kasan/report.c:436
->>   __asan_report_load8_noabort+0x14/0x20 mm/kasan/report_generic.c:309
->>   exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
->>   exfat_free_cluster+0x25a/0x4a0 fs/exfat/fatent.c:181
->>   __exfat_truncate+0x99e/0xe00 fs/exfat/file.c:217
->>   exfat_truncate+0x11b/0x4f0 fs/exfat/file.c:243
->>   exfat_setattr+0xa03/0xd40 fs/exfat/file.c:339
->>   notify_change+0xb76/0xe10 fs/attr.c:336
->>   do_truncate+0x1ea/0x2d0 fs/open.c:65
->>
->> Add checks to validate if cluster number is within valid range in
->> exfat_clear_bitmap() and exfat_set_bitmap()
->>
->> Cc: Namjae Jeon<linkinjeon@kernel.org>
->> Cc: Sungjong Seo<sj1557.seo@samsung.com>
->> Cc:linux-fsdevel@vger.kernel.org
->> Cc:stable@vger.kernel.org
->> Cc:linux-kernel@vger.kernel.org
->>
->> Link:https://protect2.fireeye.com/v1/url?k=24a746d8-45dcec51-24a6cd97-
->> 74fe48600034-8e4653a49a463f3c&q=1&e=0efc824d-6463-4253-9cd7-
->> ce3199dbf513&u=https%3A%2F%2Fsyzkaller.appspot.com%2Fbug%3Fid%3D50381fc738
->> 21ecae743b8cf24b4c9a04776f767c
->> Reported-by:syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
->> Fixes: 1e49a94cf707 ("exfat: add bitmap operations")
->> Signed-off-by: Tadeusz Struk<tadeusz.struk@linaro.org>
-> Looks good.
-> And it seems that WARN_ON() is no longer needed.
+On 16/05/2022 10:51, AngeloGioacchino Del Regno wrote:
 
-Right. Do you want me to send a follow up patch that drops the WARN_ONs?
-
-> Reviewed-by: Sungjong Seo<sj1557.seo@samsung.com>
+>>
+>>
 > 
+> I should reword the commit description to be clearer, sorry about that: I
+> went with "exactly what I've done", but looking at the actual diff, it is
+> just a rename. What my brain was ticking on here was about removing clocks
+> that didn't really exist (uart_clk is not a fixed clock, etc), and adding
+> the ones that do exist.... but then again, the result, casually, is a rename.
 
-Thank you.
+Yes, some better explanation would help.
 
--- 
-Thanks,
-Tadeusz
+> 
+> In any case... no, these clocks are not board-specific for two reasons:
+> 1. AFAIK, these fixed clock outputs are from the SoC itself, not from
+>     external components placed on the board, and
+
+This would be fine.
+
+> 2. Even if these were from external components, the SoC *needs* these
+>     ones to work and any board that doesn't have these fixed XOs simply
+>     wouldn't be able to work.
+
+This is common pattern and Mediatek is not different here. In all cases
+these are needed by SoC and in (almost?) all cases these should be
+provided by board DTS. The DTS describes here the hardware, the board
+has the clock thus the board DTS should define it.
+
+
+Best regards,
+Krzysztof
