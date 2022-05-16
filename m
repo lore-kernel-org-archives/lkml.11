@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E553C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346101AbiEPTpr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44128 "EHLO
+        id S244324AbiEPTpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346107AbiEPTmv (ORCPT
+        with ESMTP id S1346108AbiEPTmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:42:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E573F33C;
-        Mon, 16 May 2022 12:41:43 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D203F899;
+        Mon, 16 May 2022 12:41:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76608B8160F;
-        Mon, 16 May 2022 19:41:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4452C385AA;
-        Mon, 16 May 2022 19:41:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10ADE6154E;
+        Mon, 16 May 2022 19:41:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03B1FC385AA;
+        Mon, 16 May 2022 19:41:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730101;
-        bh=BTB41/R4kJKDuRFtO1AJT/GmcZ1Qb1obV1+MMcxmR6s=;
+        s=korg; t=1652730094;
+        bh=B/wBU/3yYMoyIDUGiDWU4G/wdyYj+h+8bde02J7E3ag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w6PIbCaiOtq8n+3445NzxGdmGS9hWADa8OrVBpdpbULYOEi53T1ib77+++k3oA8qh
-         cebAxGwwT81x0ggxwPdVpz/qyF3cQQU4ar2qstoL6CLrhPV2R1P95LJRA6RZGGWjTh
-         jhp+v97+uEH0DvQ5jKxO1sm/DBCW7ZacM+Hc/owU=
+        b=GSW/aoaR7PqQjnQaGNEix7nJMtjJmstMhJTdV048IglRg47gD+doqQrYVZyarFrIi
+         Wk2c9odsUnaiHexq6nK829zGIQlN9VdKZ4P1i4ockgzjGn2CP1zZXTPS6AoyfYTnDq
+         2MALkRwRXhmh3MYFztdEkDeg6Ylg+Wyni5sUFEPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH 4.19 32/32] tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
-Date:   Mon, 16 May 2022 21:36:46 +0200
-Message-Id: <20220516193615.726528551@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 4.19 22/32] usb: typec: tcpci: Dont skip cleanup in .remove() on error
+Date:   Mon, 16 May 2022 21:36:36 +0200
+Message-Id: <20220516193615.431436430@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
 References: <20220516193614.773450018@linuxfoundation.org>
@@ -49,38 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit 447ee1516f19f534a228dda237eddb202f23e163 upstream.
+commit bbc126ae381cf0a27822c1f822d0aeed74cc40d9 upstream.
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+Returning an error value in an i2c remove callback results in an error
+message being emitted by the i2c core, but otherwise it doesn't make a
+difference. The device goes away anyhow and the devm cleanups are
+called.
 
-Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Baruch Siach <baruch@tkos.co.il>
+In this case the remove callback even returns early without stopping the
+tcpm worker thread and various timers. A work scheduled on the work
+queue, or a firing timer after tcpci_remove() returned probably results
+in a use-after-free situation because the regmap and driver data were
+freed. So better make sure that tcpci_unregister_port() is called even
+if disabling the irq failed.
+
+Also emit a more specific error message instead of the i2c core's
+"remove failed (EIO), will be ignored" and return 0 to suppress the
+core's warning.
+
+This patch is (also) a preparation for making i2c remove callbacks
+return void.
+
+Fixes: 3ba76256fc4e ("usb: typec: tcpci: mask event interrupts when remove driver")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220505124621.1592697-1-yangyingliang@huawei.com
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220502080456.21568-1-u.kleine-koenig@pengutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/digicolor-usart.c |    2 +-
+ drivers/usb/typec/tcpci.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -472,10 +472,10 @@ static int digicolor_uart_probe(struct p
- 		return PTR_ERR(uart_clk);
+--- a/drivers/usb/typec/tcpci.c
++++ b/drivers/usb/typec/tcpci.c
+@@ -601,7 +601,7 @@ static int tcpci_remove(struct i2c_clien
+ 	/* Disable chip interrupts before unregistering port */
+ 	err = tcpci_write16(chip->tcpci, TCPC_ALERT_MASK, 0);
+ 	if (err < 0)
+-		return err;
++		dev_warn(&client->dev, "Failed to disable irqs (%pe)\n", ERR_PTR(err));
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	dp->port.mapbase = res->start;
- 	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(dp->port.membase))
- 		return PTR_ERR(dp->port.membase);
-+	dp->port.mapbase = res->start;
+ 	tcpci_unregister_port(chip->tcpci);
  
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0)
 
 
