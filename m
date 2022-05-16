@@ -2,186 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B441FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244058AbiEPN5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
+        id S244233AbiEPN6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237808AbiEPNyz (ORCPT
+        with ESMTP id S244227AbiEPN6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:54:55 -0400
-Received: from mail.bitwise.fi (mail.bitwise.fi [109.204.228.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFB73915D;
-        Mon, 16 May 2022 06:54:40 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.bitwise.fi (Postfix) with ESMTP id BA982460028;
-        Mon, 16 May 2022 16:48:59 +0300 (EEST)
-X-Virus-Scanned: Debian amavisd-new at 
-Received: from mail.bitwise.fi ([127.0.0.1])
-        by localhost (mustetatti.dmz.bitwise.fi [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id mcG4Um4CIPgK; Mon, 16 May 2022 16:48:57 +0300 (EEST)
-Received: from localhost.net (fw1.dmz.bitwise.fi [192.168.69.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: anssiha)
-        by mail.bitwise.fi (Postfix) with ESMTPSA id F214B46001C;
-        Mon, 16 May 2022 16:48:56 +0300 (EEST)
-From:   Anssi Hannula <anssi.hannula@bitwise.fi>
-To:     Jimmy Assarsson <extja@kvaser.com>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 01/12] can: kvaser_usb_leaf: Fix overread with an invalid command
-Date:   Mon, 16 May 2022 16:47:37 +0300
-Message-Id: <20220516134748.3724796-2-anssi.hannula@bitwise.fi>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
-References: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
+        Mon, 16 May 2022 09:58:00 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2059.outbound.protection.outlook.com [40.107.92.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91423A5E3
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:57:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n3gEotI/TXuJAfA98sODQ70r81ieEvZdeido2l86JzzCoyr3Sc75m0VLTCAETV2xgoDLD+dydsB2CRJ2AbL07CvnAZyKm5ETbDQx1WFkIDuQ1xi/XvLm/4xIvwzo1Ja+GLJN5oXdTO8ZTThGYl0Qpm5jwtp/r8jOp+jQhBXgVriSN/V9eIZ+NAbPmuhnd8EFp1SBraVNKeFnSZ9W9dW1W21K02V4qnkKOZx5vUReLj07D4XydPdTq9TA1e9R2o/RZ1BQOiZ0FcxbBwcI1gTDUE/U5imneEyRPmXw4ZYfWkItjLCI9mD7AqfU9UsE2gT1EAAiKOdmttQHAcxD97Z4zw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yyzbf5Srst20Ph1P7tvjZjUvTeGnczC8+FU3A+VB69g=;
+ b=Ef3Z2XiOEY44JwFoAW46L3LjZKsJ5IgbPkFzjawwAq37gss71zzdf0ay4Yj+P234BUQ2+LVSuXAjl1U0N4Rnj3QcXyBJtFZtv80JC8LD3/1KslhZR54BpMCogKIlAFIUcWUuHiMOZFa3SWWKUQrUAvOBQxb58+i5uFrxdc1Ub+sdsqzCA8Ssf2Q7xMxA/RKRS0Sm1zVJV5C5roTvzMClCRpa3ei1V42kQ67BdXSMZoXqlFp7GSX1oB93ip67DLm/6BCXuPVmkH1CMzVWvtZ7a7q4iNDAsSgWrSJCO+iMy3Qv5icSl4oMZdyr0vR4qPdbVhPGATRSFboGG3QD/ojgWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yyzbf5Srst20Ph1P7tvjZjUvTeGnczC8+FU3A+VB69g=;
+ b=XxD/DGNJ/Ri7QEtaemPbHDikLiFrNduqxz9wzgFKaiTLT20hrpk49xF95AIc9BHJjAgFkBAWniZr6LjTulMLq/l39HDffhrneTDT317/bXBRxLO0qHQeW23fyD1+zKnnnfGXreeKOVdjkNdzGlgwlm13GbOqc9JkdyhA0tyz6b8rEKYsWCbOl7pKvCOO4Tqlx9H5IP5M314Vi1rQq87aGdis+lxjw4l2DjQW4/EY2WJOa7BZkZ0rpx4U0kyZTQAwbNDbFwXMYY7mQEtnhnShMkehwqDOsxnMHJ+32qyMoQcvi5pFixMVHSQO1ZMxYAcvQ+1seF4Jpshe5PTr/ha5/Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BYAPR12MB2839.namprd12.prod.outlook.com (2603:10b6:a03:72::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Mon, 16 May
+ 2022 13:57:43 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2%5]) with mapi id 15.20.5250.018; Mon, 16 May 2022
+ 13:57:42 +0000
+Date:   Mon, 16 May 2022 10:57:41 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/5] iommu: Add blocking_domain_ops field in iommu_ops
+Message-ID: <20220516135741.GV1343366@nvidia.com>
+References: <20220516015759.2952771-1-baolu.lu@linux.intel.com>
+ <20220516015759.2952771-3-baolu.lu@linux.intel.com>
+ <8a0fc6cf-f46e-f17e-2b76-099ada1683c3@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8a0fc6cf-f46e-f17e-2b76-099ada1683c3@arm.com>
+X-ClientProxiedBy: MN2PR05CA0045.namprd05.prod.outlook.com
+ (2603:10b6:208:236::14) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 79d89509-280f-4e2f-f990-08da37440c18
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2839:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB28394CB65834C923D03BBC35C2CF9@BYAPR12MB2839.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Hj7nZMZ5XMoWpcZr2MmIyjJxVeLXqES282XFAX72aRxF55/dsNilYWwxiXljiYxkKkzk2866/5lfo7b423jXBOSQRUgy4223WSOcrgiqPWfxtF3Sy2vM8vn+RW5nsoiTWxUQkK6gBHTh0/Z9qrHlac0cKbAUbDmYRQfMLfl7ZeeAbQk4xVxawx1vbAK7DmqdyaO7ivzhoE97HpXVSccmlR3JzzwdBkmuUK8OoF/x5p79xMfLCIdzxhxDYahVLEDnhEtSNWeha4Ay0RYE2R6fzNzq5ljCyOWb16dI862UMiAMuyyb9twczVoHsVTt02ZrFTVrMkLSL8ZiMjILyaQVXOCv7WhfZB2d4vuIkI8Vlu2+Bmh1gj87ncbVDRj2K7ESg0mOtoVt1fXb0FdGRlH+OMNfjz6HA6CMI1dgI2qGTtI2hSYEUxaYuruvS6BSmXw11I1FaezG8ebyT5DJJynL5CCj7izCw2yUcvVcvHuQxyPJXqB0CF+Uvjti39AGLksGEOVp8gvNbEZWgdsR2l8mbaKCjCoL5tmievHANgWCQ8twMsqdKBB84/T64yBMXZ1RKKs64YLQjii/cTPmAlVeKsEZQPgt/U1QZozghXsLvAn4O/GEi8eA/bQDe6bnKHI2a/Flnd9kwnofym2NHakYQg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(6916009)(36756003)(86362001)(8676002)(66476007)(4326008)(53546011)(66946007)(66556008)(54906003)(33656002)(6506007)(1076003)(316002)(26005)(5660300002)(508600001)(2616005)(6512007)(38100700002)(7416002)(2906002)(6486002)(8936002)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SFSmsdRuXsnKV7GnL3Kz0IamvxHofmDar0tK8uNQX35sUvM7acJb0DSNHBAk?=
+ =?us-ascii?Q?fsRIwDKitfz6Vxk7RUnbTYLUy5e6rBGuKlqGRSh/m8VYm99CKTCMPPHu/aA+?=
+ =?us-ascii?Q?TqTMMk727U3KBzL8ANqGWbU7nDcE+CLeOEoWSUk+IYLwavCIIlmU59876mVa?=
+ =?us-ascii?Q?tlKbHtVgJcGfIb+TKQ83AzbTJqJCtMWRxLsCSAPb2bwIYCrP4mNVqT8n5iBX?=
+ =?us-ascii?Q?zmxz4L9t2jNGYMmkbdbu4RjoOCiDtDE+Vg2/A3v6KIWS/hnBtdidfV3Go3f0?=
+ =?us-ascii?Q?if4S4B3fNDEgpan+46Zrppm4oWptMUa/p/15Y0KdR8DkD9q4gcMso5MuAe/x?=
+ =?us-ascii?Q?U6z4pZsBpiKuP5sNDpNDCPcrBQEewTBOcbFfPKwBN3YvZLlDwzPSZv6LjJOj?=
+ =?us-ascii?Q?mZPpjKNc60f/40WcHPHVRyBakHTYFl3cgbPDXQD1/ZoZ/rOzSrSln2XZwcYy?=
+ =?us-ascii?Q?6FjlHtT+6YzUAAym+O1hIpwMlozJudPAixHQrJ+N2zyDBy+nCwjSlI+XV59r?=
+ =?us-ascii?Q?bRVH1yOt92gUdDIdVSnfeLXZW9kENykD2wzy9359cmdKjKo3i+kUtCQLFUK+?=
+ =?us-ascii?Q?5O+uCj9v1vk+2hUWyYMco+Fz6fjuNNVIQoyF4UtQTKbbQv3mZhAGLw1+1ZYg?=
+ =?us-ascii?Q?lNfxHYRJa3Yq+D/H7Lxy3Uk59dsmXw//vmvxUKjClL8BSzD9DO/rty9vh/Yk?=
+ =?us-ascii?Q?pSup+vS2XHl13aQsBn3DOdENuiSphr2fkUh4KjC0kVG3322NwdDVwnkAkNMf?=
+ =?us-ascii?Q?vZS1QolrIVMmu5c98hQhK7y+er8C7Axh2kAW3B7bgkthLd62dlu3D3MvsnFR?=
+ =?us-ascii?Q?1dX61t+Pb+erjE2rXn+rlj06/pY73iWV1866cZFvGbFMaZb1/TIpnkOVvN02?=
+ =?us-ascii?Q?FJRdbULP/G/ZpJvej5q1ypUqqjQIpRAR3Bv82YH2BFOWOnljH/SXfmuC5Kft?=
+ =?us-ascii?Q?k9mJEdG0EYYag6jfVQRxK39LsZwEMWX2W5X4p4wKejenWSc1r58SzaXvGPPC?=
+ =?us-ascii?Q?QnnUnwdH55yBRnEt4HxupwR1lCP1Pp0FIgle1tojUKxV5KAxd+xWlMvyIM9y?=
+ =?us-ascii?Q?RFY0rfe8VUMLjrrkT5blvD6zwmi7ku5K60OXRgTuxJlZixdnBNLXUgEinLys?=
+ =?us-ascii?Q?3kUasciw20AzkH15Cn2/I4n3ATEZ2pq482X7/x1DTq0opamLNDEseCxvKLLE?=
+ =?us-ascii?Q?WZJH4RIwQcRSHOHNXOpYPss0nWRIp8kxs2zZqbed9FxRYZUqDd+1g9ESXQu6?=
+ =?us-ascii?Q?RKl8jEgyOQ4LD6gbXBdG4njdKWZzZsFvKzwBZKxM2z1hioqiiG0OA3YQha80?=
+ =?us-ascii?Q?GyG7LolwuSDR8gBfTjnQGdrx0t9WeLryaaLWLk4CVOB0chHYK8JFBYeii9E7?=
+ =?us-ascii?Q?K6A4tkWlVUYSss4MGSMgT/m6EKJRaqyXvjb41W/w2+1/rX/P8giz2XF2keZq?=
+ =?us-ascii?Q?X822u/tich8fPb2peVL0ax9enb/gCbBO/Hu9ivrYeTqVLATdpehaR1/ItI4i?=
+ =?us-ascii?Q?SOyBTZ2pl29D66Bm5Q4RJHXogLPupv4aDzEN9QRSZFaHaoSZh9vmGx1z3wE5?=
+ =?us-ascii?Q?0qqB+4XsIhGCvKxmP0ufgWnJ/Vhes9dqsqXkQZZqSH2D8j2XjtCywTuADT65?=
+ =?us-ascii?Q?KpDEd9AzHAq7TQuwx98kDFHZzg5FSHTQrMTQDPKmFHbhW3FEQ1oh3N0gxBBq?=
+ =?us-ascii?Q?ZPSpDIG4XLtk9SEcMjEkvqIo2czqJpGmgSPHTa6D+uZ1as0Ft1S5x9luIW4k?=
+ =?us-ascii?Q?qluheJCEAQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79d89509-280f-4e2f-f990-08da37440c18
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 13:57:42.8488
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UPaAnEXXN4yMi4aLeM1IZH1BwU31hSPlhbis3OYspc400GtCb/H86gAm5nGKLc6Z
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2839
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For command events read from the device,
-kvaser_usb_leaf_read_bulk_callback() verifies that cmd->len does not
-exceed the size of the received data, but the actual kvaser_cmd handlers
-will happily read any kvaser_cmd fields without checking for cmd->len.
+On Mon, May 16, 2022 at 12:22:08PM +0100, Robin Murphy wrote:
+> On 2022-05-16 02:57, Lu Baolu wrote:
+> > Each IOMMU driver must provide a blocking domain ops. If the hardware
+> > supports detaching domain from device, setting blocking domain equals
+> > detaching the existing domain from the deivce. Otherwise, an UNMANAGED
+> > domain without any mapping will be used instead.
+> 
+> Unfortunately that's backwards - most of the implementations of .detach_dev
+> are disabling translation entirely, meaning the device ends up effectively
+> in passthrough rather than blocked.
 
-This can cause an overread if the last cmd in the buffer is shorter than
-expected for the command type (with cmd->len showing the actual short
-size).
+Ideally we'd convert the detach_dev of every driver into either
+a blocking or identity domain. The trick is knowing which is which..
 
-Maximum overread seems to be 22 bytes (CMD_LEAF_LOG_MESSAGE), some of
-which are delivered to userspace as-is.
+Guessing going down the list:
+ apple dart - blocking, detach_dev calls apple_dart_hw_disable_dma() same as
+              IOMMU_DOMAIN_BLOCKED
+	      [I wonder if this drive ris wrong in other ways though because
+               I dont see a remove_streams in attach_dev]
+ exynos - this seems to disable the 'sysmmu' so I'm guessing this is
+          identity
+ iommu-vmsa - Comment says 'disable mmu translaction' so I'm guessing
+              this is idenity
+ mkt_v1 - Code looks similar to mkt, which is probably identity.
+ rkt - No idea
+ sprd - No idea
+ sun50i - This driver confusingly treats identity the same as
+          unmanaged, seems wrong, no idea.
+ amd - Not sure, clear_dte_entry() seems to set translation on but points
+       the PTE to 0 ? Based on the spec table 8 I would have expected
+       TV to be clear which would be blocking. Maybe a bug??
+ arm smmu qcomm - not sure
+ intel - blocking
 
-Fix that by verifying the length of command before handling it.
+These doesn't support default domains, so detach_dev should return 
+back to DMA API ownership, which is either identity or something weird:
+ fsl_pamu - identity due to the PPC use of dma direct
+ msm
+ mkt
+ omap
+ s390 - platform DMA ops
+ terga-gart - Usually something called a GART would be 0 length once
+              disabled, guessing blocking?
+ tegra-smmu
 
-This issue can only occur after RX URBs have been set up, i.e. the
-interface has been opened at least once.
+So, the approach here should be to go driver by driver and convert
+detach_dev to either identity, blocking or just delete it entirely,
+excluding the above 7 that don't support default domains. And get acks
+from the driver owners.
 
-Fixes: 080f40a6fa28 ("can: kvaser_usb: Add support for Kvaser CAN/USB devices")
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+> Conversely, at least arm-smmu and arm-smmu-v3 could implement
+> IOMMU_DOMAIN_BLOCKED properly with fault-type S2CRs and STEs
+> respectively, it just needs a bit of wiring up.
 
----
+Given that vfio now uses them it seems worthwhile to do..
 
-A simpler option would be to just zero-pad the data into a
-stack-allocated struct kvaser_cmd without knowledge of the needed
-minimum size (so no tables needed), though that would mean incomplete
-commands would get passed on silently.
-
- .../net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 75 +++++++++++++++++++
- 1 file changed, 75 insertions(+)
-
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-index c805b999c543..d9f40b9702a5 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -320,6 +320,38 @@ struct kvaser_cmd {
- 	} u;
- } __packed;
- 
-+#define CMD_SIZE_ANY 0xff
-+#define kvaser_fsize(field) sizeof_field(struct kvaser_cmd, field)
-+
-+static const u8 kvaser_usb_leaf_cmd_sizes_leaf[] = {
-+	[CMD_START_CHIP_REPLY]		= kvaser_fsize(u.simple),
-+	[CMD_STOP_CHIP_REPLY]		= kvaser_fsize(u.simple),
-+	[CMD_GET_CARD_INFO_REPLY]	= kvaser_fsize(u.cardinfo),
-+	[CMD_TX_ACKNOWLEDGE]		= kvaser_fsize(u.tx_acknowledge_header),
-+	[CMD_GET_SOFTWARE_INFO_REPLY]	= kvaser_fsize(u.leaf.softinfo),
-+	[CMD_RX_STD_MESSAGE]		= kvaser_fsize(u.leaf.rx_can),
-+	[CMD_RX_EXT_MESSAGE]		= kvaser_fsize(u.leaf.rx_can),
-+	[CMD_LEAF_LOG_MESSAGE]		= kvaser_fsize(u.leaf.log_message),
-+	[CMD_CHIP_STATE_EVENT]		= kvaser_fsize(u.leaf.chip_state_event),
-+	[CMD_CAN_ERROR_EVENT]		= kvaser_fsize(u.leaf.error_event),
-+	/* ignored events: */
-+	[CMD_FLUSH_QUEUE_REPLY]		= CMD_SIZE_ANY,
-+};
-+
-+static const u8 kvaser_usb_leaf_cmd_sizes_usbcan[] = {
-+	[CMD_START_CHIP_REPLY]		= kvaser_fsize(u.simple),
-+	[CMD_STOP_CHIP_REPLY]		= kvaser_fsize(u.simple),
-+	[CMD_GET_CARD_INFO_REPLY]	= kvaser_fsize(u.cardinfo),
-+	[CMD_TX_ACKNOWLEDGE]		= kvaser_fsize(u.tx_acknowledge_header),
-+	[CMD_GET_SOFTWARE_INFO_REPLY]	= kvaser_fsize(u.usbcan.softinfo),
-+	[CMD_RX_STD_MESSAGE]		= kvaser_fsize(u.usbcan.rx_can),
-+	[CMD_RX_EXT_MESSAGE]		= kvaser_fsize(u.usbcan.rx_can),
-+	[CMD_CHIP_STATE_EVENT]		= kvaser_fsize(u.usbcan.chip_state_event),
-+	[CMD_CAN_ERROR_EVENT]		= kvaser_fsize(u.usbcan.error_event),
-+	/* ignored events: */
-+	[CMD_USBCAN_CLOCK_OVERFLOW_EVENT] = CMD_SIZE_ANY,
-+};
-+
- /* Summary of a kvaser error event, for a unified Leaf/Usbcan error
-  * handling. Some discrepancies between the two families exist:
-  *
-@@ -387,6 +419,43 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_32mhz = {
- 	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
- };
- 
-+static int kvaser_usb_leaf_verify_size(const struct kvaser_usb *dev,
-+				       const struct kvaser_cmd *cmd)
-+{
-+	/* buffer size >= cmd->len ensured by caller */
-+	u8 min_size = 0;
-+
-+	switch (dev->card_data.leaf.family) {
-+	case KVASER_LEAF:
-+		if (cmd->id < ARRAY_SIZE(kvaser_usb_leaf_cmd_sizes_leaf))
-+			min_size = kvaser_usb_leaf_cmd_sizes_leaf[cmd->id];
-+		break;
-+	case KVASER_USBCAN:
-+		if (cmd->id < ARRAY_SIZE(kvaser_usb_leaf_cmd_sizes_usbcan))
-+			min_size = kvaser_usb_leaf_cmd_sizes_usbcan[cmd->id];
-+		break;
-+	}
-+
-+	if (min_size == CMD_SIZE_ANY)
-+		return 0;
-+
-+	if (min_size) {
-+		min_size += CMD_HEADER_LEN;
-+		if (cmd->len >= min_size)
-+			return 0;
-+
-+		dev_err_ratelimited(&dev->intf->dev,
-+				    "Received command %u too short (size %u, needed %u)",
-+				    cmd->id, cmd->len, min_size);
-+		return -EIO;
-+	}
-+
-+	dev_warn_ratelimited(&dev->intf->dev,
-+			     "Unhandled command (%d, size %d)\n",
-+			     cmd->id, cmd->len);
-+	return -EINVAL;
-+}
-+
- static void *
- kvaser_usb_leaf_frame_to_cmd(const struct kvaser_usb_net_priv *priv,
- 			     const struct sk_buff *skb, int *cmd_len,
-@@ -492,6 +561,9 @@ static int kvaser_usb_leaf_wait_cmd(const struct kvaser_usb *dev, u8 id,
- end:
- 	kfree(buf);
- 
-+	if (err == 0)
-+		err = kvaser_usb_leaf_verify_size(dev, cmd);
-+
- 	return err;
- }
- 
-@@ -1113,6 +1185,9 @@ static void kvaser_usb_leaf_stop_chip_reply(const struct kvaser_usb *dev,
- static void kvaser_usb_leaf_handle_command(const struct kvaser_usb *dev,
- 					   const struct kvaser_cmd *cmd)
- {
-+	if (kvaser_usb_leaf_verify_size(dev, cmd) < 0)
-+		return;
-+
- 	switch (cmd->id) {
- 	case CMD_START_CHIP_REPLY:
- 		kvaser_usb_leaf_start_chip_reply(dev, cmd);
--- 
-2.34.1
-
+Jason
