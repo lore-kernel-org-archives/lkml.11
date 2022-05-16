@@ -2,102 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7145C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:39:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D041BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241862AbiEPIjb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 04:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        id S241900AbiEPIlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 04:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241852AbiEPIjU (ORCPT
+        with ESMTP id S241869AbiEPIlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 04:39:20 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455D5E0DD;
-        Mon, 16 May 2022 01:39:19 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id t25so24484799lfg.7;
-        Mon, 16 May 2022 01:39:19 -0700 (PDT)
+        Mon, 16 May 2022 04:41:06 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD7F10E7
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 01:41:03 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id q4so13762982plr.11
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 01:41:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=58VJTyS91eGqmdDXfaHsOWtLLXLnqdoRzKRAXC8kYBg=;
-        b=YVTJUSj/06UfDPLrm20dENmoGpPw2RJnksjmdtiMqOazR5RCC88+ZWL6zRO18B/o/B
-         9y/kX/HElg8zwwc6TZ5LZQET02cIH1M1OFTXBOSeyOgSS6KNwYbAuCjzIxCuLbxvjsDD
-         8EyhjCSDPM1Plw3hWzHYzL/z5yoiDWwlNvpZSXmFpi0t3lhmU2Bv1J8zGdXMJKFZHjJF
-         rUhIAPPwq+z+xJhJMOjJLVUwp60NbkpUQqNqPldCGMvk3ZrIKrm+GFvaurLQHmTVARhm
-         hDlKB2gdpPNayypGBUyaAuvpNymHS80rgVgB42nObLLsRGHhih+TH6JYo91Vsw4A0Kg1
-         yOMA==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M0tCKoDzsPTdc59i5aDsXZipsRf0A5iHp7WUamBhVp0=;
+        b=hp6/uhCc1vISll7TeQVh3UtY9N1H5PpJx964CmK3VKM2/cWxxbK9p36HVeUHT61Nc0
+         dprPwhpblfcBwOKtiih1xvq5ACP1/nETYJ2IcJTNzWU1R3QaeiIigM9Aa7lpMt0su1SY
+         SXNTjwZ8o4nYFEvhIFC6iGnMLKShkjX6dJgUGzYWDetNuoo69vqCGCWLSPqmG3yU/UpC
+         ZBecOJb0vRZDna24r7Y2NrVNCINeqZZw7NMAKe1MpHvYv61jQwR9rf4iuNVgp5Zc7bZt
+         dt8unfIFP58o5ciDcckvrKJAWmJ6k7hGG7dGcFe8JwyPpHqXPLpK+ns57b4z27tdTuax
+         L4wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=58VJTyS91eGqmdDXfaHsOWtLLXLnqdoRzKRAXC8kYBg=;
-        b=QqML4grVSPGqaCJBbJEoRkRuhmFb7/On7F5IeWlt7omOHvVOb2GqZ20nafIdCI3Lvj
-         JbJUKnx3rr/eIR0iJXFY4oPuIXfvJoHh+0BD1Yvc72L7yl5Pg66SFgf/jHlDZ5D/eO+j
-         eeDl7L5qmVMUJ/v7EMYjigOT7Uto8EIQXGQg+nWWkQ16pRri4rwCbSO83Aq6DigEnL+M
-         E9dz/MT8v0f269nYxlf71nW6HbYlVa9YwMqXeMtFNnFI+9X3mQjXd4LpLKP+8vCvwDrP
-         o4iaf8tmNxiU6VheDGeYm9FPrt3Y5OpnSxfZQJMmdMOGhN9D0uS8MTy57eFnfivim8mu
-         2xkg==
-X-Gm-Message-State: AOAM533wzo95DEg9bSrm1LTpbaqvUFPJ7NrfJ72gnjWHj1jtV6bgc22h
-        dOigWxiqiHMLXZIqZqH8ZXKMBcqhZDSz/xwR4b3FlUl3ZjI=
-X-Google-Smtp-Source: ABdhPJxEEbo+EAFfwfotAw1nk3krfv5ObqZpSLA1blGFWBxMNNAv0SeoagqdByHHQifh2R6BT5Gjsga8Q/x372A24ZQ=
-X-Received: by 2002:ac2:5456:0:b0:471:f9e6:7388 with SMTP id
- d22-20020ac25456000000b00471f9e67388mr11665162lfn.504.1652690357642; Mon, 16
- May 2022 01:39:17 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M0tCKoDzsPTdc59i5aDsXZipsRf0A5iHp7WUamBhVp0=;
+        b=dHOZU8p34XH1NJMtOj0rd8MXbcgrMyiwLXJxkMUXlk6l+DeKq342/bnj1CuKPHyfcg
+         kLnp/1jcLEsgvtrZHdXCHnZE0a5RTYcc8WMh8pFGL+meO5VrTVZf/1lQkR4/ar0Myktu
+         jQMOedRjxzIVZa5R36hRi2V/VCbwZix0eP+VRhKt9hOhS2mHMAT701yPJE4HWFlFDhqF
+         8+g5HqO6JC+6/G9G7/c8bTBS5h/9W1rmEjjpWNDlPol0/ZWuz4oGPRl8LaCjiJC76HU9
+         xTT9rZD3DQclT4ZWT0iFpse+mupxFiVf4SrDuq74sISbq9XliNmgZOWJLEKDjRqYW5/0
+         03Mg==
+X-Gm-Message-State: AOAM530iNu7HX6o9g/qBO59JqFZ+HxYxhZnQbw3INFRPzKOihWRCdkAt
+        qQOmgq2zUYM5HFj4qD0x58BKug==
+X-Google-Smtp-Source: ABdhPJwsfheq9ax2SfLs9SSyrtzzkZ954A2+1dyAFeSwkGK4ND2OiKKuyQ3hvNB7yKwYvE95gD8+DA==
+X-Received: by 2002:a17:90a:ec01:b0:1df:56aa:6b7b with SMTP id l1-20020a17090aec0100b001df56aa6b7bmr3847686pjy.230.1652690462892;
+        Mon, 16 May 2022 01:41:02 -0700 (PDT)
+Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.240])
+        by smtp.gmail.com with ESMTPSA id n8-20020a170902968800b0015e8d4eb26bsm6398763plp.181.2022.05.16.01.40.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 01:41:02 -0700 (PDT)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     tj@kernel.org, axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH] blk-iocost: fix very large vtime when iocg activate
+Date:   Mon, 16 May 2022 16:40:45 +0800
+Message-Id: <20220516084045.96004-1-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220429201717.1946178-1-martin.fernandez@eclypsium.com>
- <YnKr+aMf4PspDpHZ@zn.tnic> <CAKgze5YDD02AsrF0yESv2sptZ4qxyTMgCDmnOKcbQWjKQsJRsw@mail.gmail.com>
- <YnUYLDjIThbIz/Uf@zn.tnic> <6d90c832-af4a-7ed6-4f72-dae08bb69c37@intel.com>
- <CAPcyv4i73m6iPPfJE9CBdxf-OWGXahvGqvh6G-pqVO=3LB6ktQ@mail.gmail.com>
- <47140A56-D3F8-4292-B355-5F92E3BA9F67@alien8.de> <6abea873-52a2-f506-b21b-4b567bee1874@intel.com>
- <FDABC5C8-B80A-4977-9F97-5A8FC47F69D6@alien8.de> <4bc56567-e2ce-40ec-19ab-349c8de8d969@intel.com>
- <CE52D65A-C9F4-408D-B18A-72D87495A433@alien8.de>
-In-Reply-To: <CE52D65A-C9F4-408D-B18A-72D87495A433@alien8.de>
-From:   Richard Hughes <hughsient@gmail.com>
-Date:   Mon, 16 May 2022 09:39:06 +0100
-Message-ID: <CAD2FfiHe3hCSNHEA0mSWPbH4LEWhj+FgxkhO83U1GgYEJR6wrw@mail.gmail.com>
-Subject: Re: [PATCH v8 0/8] x86: Show in sysfs if a memory node is able to do encryption
-To:     Boris Petkov <bp@alien8.de>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Martin Fernandez <martin.fernandez@eclypsium.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, daniel.gutson@eclypsium.com,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, X86 ML <x86@kernel.org>,
-        "Schofield, Alison" <alison.schofield@intel.com>,
-        alex.bazhaniuk@eclypsium.com, Greg KH <gregkh@linuxfoundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        "Huang, Kai" <kai.huang@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 6 May 2022 at 20:02, Boris Petkov <bp@alien8.de> wrote:
-> Remember - this all started with "i wanna say that mem enc is active" and now we're so far deep down the rabbit hole...
+When the first iocg activate after blk_iocost_init(), now->vnow
+maybe smaller than ioc->margins.target, cause very large vtarget
+since it's u64.
 
-This is still something consumers need; at the moment users have no
-idea if data is *actually* being encrypted. I think Martin has done an
-admirable job going down the rabbit hole to add this functionality in
-the proper manner -- so it's actually accurate and useful for other
-use cases to that of fwupd.
+	vtarget = now->vnow - ioc->margins.target;
+	atomic64_add(vtarget - vtime, &iocg->vtime);
 
-At the moment my professional advice to people asking about Intel
-memory encryption is to assume there is none, as there's no way of
-verifying that it's actually enabled and working. This is certainly a
-shame for something so promising, touted as an enterprise security
-feature.
+Then the iocg's vtime will be very large too, larger than now->vnow.
 
-Richard
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+---
+ block/blk-iocost.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/block/blk-iocost.c b/block/blk-iocost.c
+index 5019dff524a4..a2ee12175c49 100644
+--- a/block/blk-iocost.c
++++ b/block/blk-iocost.c
+@@ -1248,7 +1248,7 @@ static bool iocg_activate(struct ioc_gq *iocg, struct ioc_now *now)
+ {
+ 	struct ioc *ioc = iocg->ioc;
+ 	u64 last_period, cur_period;
+-	u64 vtime, vtarget;
++	u64 vtime, vtarget = 0;
+ 	int i;
+ 
+ 	/*
+@@ -1290,7 +1290,8 @@ static bool iocg_activate(struct ioc_gq *iocg, struct ioc_now *now)
+ 	 * Always start with the target budget. On deactivation, we throw away
+ 	 * anything above it.
+ 	 */
+-	vtarget = now->vnow - ioc->margins.target;
++	if (now->vnow > ioc->margins.target)
++		vtarget = now->vnow - ioc->margins.target;
+ 	vtime = atomic64_read(&iocg->vtime);
+ 
+ 	atomic64_add(vtarget - vtime, &iocg->vtime);
+-- 
+2.36.1
+
