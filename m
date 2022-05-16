@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A861AC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A72CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348724AbiEPUhB (ORCPT
+        id S1348842AbiEPUhN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:37:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55552 "EHLO
+        Mon, 16 May 2022 16:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351091AbiEPUB7 (ORCPT
+        with ESMTP id S1351079AbiEPUB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E4A403FA;
-        Mon, 16 May 2022 12:58:35 -0700 (PDT)
+        Mon, 16 May 2022 16:01:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C686403C3;
+        Mon, 16 May 2022 12:58:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BECAB81613;
-        Mon, 16 May 2022 19:58:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60138C385AA;
-        Mon, 16 May 2022 19:58:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC430B81613;
+        Mon, 16 May 2022 19:58:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52AF0C385AA;
+        Mon, 16 May 2022 19:58:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731112;
-        bh=NUUAaRS3HV3WEHGZ/66i7K9w837n4zX+KoeLR0mRNFs=;
+        s=korg; t=1652731095;
+        bh=53WI7OpkL2i7EK66z0m46kGr/WBAR9Uvgphfip65p9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rR2FK/nKtxF0zXZKZoN/83vtPRj4UNh4+Qv9zY/UxfDTSpbcXYbF3ReX2h7SSFNfb
-         KP1It4MQhaUto4NlOLYRW3RGxxC7bp3AigeZHvvqV81l6HGg7HfGO9ba74ON6eFSwu
-         OX5CeSgh1puwp9xEq0DWZn94XmJ6dyPRNdqqYnQY=
+        b=f2+YG/WSmPQN7NPITbJ/lqoHG9aYRbJUyflwocxnEpnQZcLpzAcxAdC0p5kg6H8Gi
+         FGTPmfVzKj3k50VD9LE5hzQvH2GyUsWRDP8O6YOFL9yPBzd/v3X9xKjzso9pa1CzWJ
+         zcqmwfNJjYQyR9sjaIKIwtQJPXU2Quh3K0khywI8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.17 104/114] ath11k: reduce the wait time of 11d scan and hw scan while add interface
-Date:   Mon, 16 May 2022 21:37:18 +0200
-Message-Id: <20220516193628.461187580@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>, Jing Xia <jing.xia@unisoc.com>
+Subject: [PATCH 5.17 101/114] writeback: Avoid skipping inode writeback
+Date:   Mon, 16 May 2022 21:37:15 +0200
+Message-Id: <20220516193628.376212768@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,410 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Jing Xia <jing.xia@unisoc.com>
 
-commit bb300130e47fcefbe938f06dbacaef0312e28416 upstream.
+commit 846a3351ddfe4a86eede4bb26a205c3f38ef84d3 upstream.
 
-(cherry picked from commit 1f682dc9fb3790aa7ec27d3d122ff32b1eda1365 in wireless-next)
+We have run into an issue that a task gets stuck in
+balance_dirty_pages_ratelimited() when perform I/O stress testing.
+The reason we observed is that an I_DIRTY_PAGES inode with lots
+of dirty pages is in b_dirty_time list and standard background
+writeback cannot writeback the inode.
+After studing the relevant code, the following scenario may lead
+to the issue:
 
-Currently ath11k will wait 11d scan complete while add interface in
-ath11k_mac_op_add_interface(), when system resume without enable
-wowlan, ath11k_mac_op_add_interface() is called for each resume, thus
-it increase the resume time of system. And ath11k_mac_op_hw_scan()
-after ath11k_mac_op_add_interface() also needs some time cost because
-the previous 11d scan need more than 5 seconds when 6 GHz is enabled,
-then the scan started event will indicated to ath11k after the 11d
-scan completed.
+task1                                   task2
+-----                                   -----
+fuse_flush
+ write_inode_now //in b_dirty_time
+  writeback_single_inode
+   __writeback_single_inode
+                                 fuse_write_end
+                                  filemap_dirty_folio
+                                   __xa_set_mark:PAGECACHE_TAG_DIRTY
+    lock inode->i_lock
+    if mapping tagged PAGECACHE_TAG_DIRTY
+    inode->i_state |= I_DIRTY_PAGES
+    unlock inode->i_lock
+                                   __mark_inode_dirty:I_DIRTY_PAGES
+                                      lock inode->i_lock
+                                      -was dirty,inode stays in
+                                      -b_dirty_time
+                                      unlock inode->i_lock
 
-While 11d scan/hw scan is running in firmware, if ath11k update channel
-list to firmware by WMI_SCAN_CHAN_LIST_CMDID, then firmware will cancel
-the current scan which is running, it lead the scan failed. The patch
-commit 9dcf6808b253 ("ath11k: add 11d scan offload support") used
-finish_11d_scan/finish_11d_ch_list/pending_11d to synchronize the 11d
-scan/hw scan/channel list between ath11k/firmware/mac80211 and to avoid
-the scan fail.
+   if(!(inode->i_state & I_DIRTY_All))
+      -not true,so nothing done
 
-Add wait operation before ath11k update channel list, function
-ath11k_reg_update_chan_list() will wait until the current 11d scan/hw
-scan completed. And remove the wait operation of start 11d scan and
-waiting channel list complete in hw scan. After these changes, resume
-time cost reduce about 5 seconds and also hw scan time cost reduced
-obviously, and scan failed not seen.
+This patch moves the dirty inode to b_dirty list when the inode
+currently is not queued in b_io or b_more_io list at the end of
+writeback_single_inode.
 
-The 11d scan is sent to firmware only one time for each interface added
-in mac.c, and it is moved after the 1st hw scan because 11d scan will
-cost some time and thus leads the AP scan result update to UI delay.
-Currently priority of ath11k's hw scan is WMI_SCAN_PRIORITY_LOW, and
-priority of 11d scan in firmware is WMI_SCAN_PRIORITY_MEDIUM, then the
-11d scan which sent after hw scan will cancel the hw scan in firmware,
-so change the priority to WMI_SCAN_PRIORITY_MEDIUM for the hw scan which
-is in front of the 11d scan, thus it will not happen scan cancel in
-firmware.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
-
-Fixes: 9dcf6808b253 ("ath11k: add 11d scan offload support")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215777
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220427111619.9758-1-kvalo@kernel.org
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+CC: stable@vger.kernel.org
+Fixes: 0ae45f63d4ef ("vfs: add support for a lazytime mount option")
+Signed-off-by: Jing Xia <jing.xia@unisoc.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220510023514.27399-1-jing.xia@unisoc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath11k/core.c |    1 
- drivers/net/wireless/ath/ath11k/core.h |   13 ++++--
- drivers/net/wireless/ath/ath11k/mac.c  |   71 +++++++++++++--------------------
- drivers/net/wireless/ath/ath11k/mac.h  |    2 
- drivers/net/wireless/ath/ath11k/reg.c  |   43 +++++++++++++------
- drivers/net/wireless/ath/ath11k/reg.h  |    2 
- drivers/net/wireless/ath/ath11k/wmi.c  |   16 ++++++-
- 7 files changed, 84 insertions(+), 64 deletions(-)
+ fs/fs-writeback.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/wireless/ath/ath11k/core.c
-+++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1275,6 +1275,7 @@ static void ath11k_core_restart(struct w
- 
- 		ieee80211_stop_queues(ar->hw);
- 		ath11k_mac_drain_tx(ar);
-+		complete(&ar->completed_11d_scan);
- 		complete(&ar->scan.started);
- 		complete(&ar->scan.completed);
- 		complete(&ar->peer_assoc_done);
---- a/drivers/net/wireless/ath/ath11k/core.h
-+++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -38,6 +38,8 @@
- 
- extern unsigned int ath11k_frame_mode;
- 
-+#define ATH11K_SCAN_TIMEOUT_HZ (20 * HZ)
+--- a/fs/fs-writeback.c
++++ b/fs/fs-writeback.c
+@@ -1749,6 +1749,10 @@ static int writeback_single_inode(struct
+ 	 */
+ 	if (!(inode->i_state & I_DIRTY_ALL))
+ 		inode_cgwb_move_to_attached(inode, wb);
++	else if (!(inode->i_state & I_SYNC_QUEUED) &&
++		 (inode->i_state & I_DIRTY))
++		redirty_tail_locked(inode, wb);
 +
- #define ATH11K_MON_TIMER_INTERVAL  10
- 
- enum ath11k_supported_bw {
-@@ -189,6 +191,12 @@ enum ath11k_scan_state {
- 	ATH11K_SCAN_ABORTING,
- };
- 
-+enum ath11k_11d_state {
-+	ATH11K_11D_IDLE,
-+	ATH11K_11D_PREPARING,
-+	ATH11K_11D_RUNNING,
-+};
-+
- enum ath11k_dev_flags {
- 	ATH11K_CAC_RUNNING,
- 	ATH11K_FLAG_CORE_REGISTERED,
-@@ -599,9 +607,8 @@ struct ath11k {
- 	bool dfs_block_radar_events;
- 	struct ath11k_thermal thermal;
- 	u32 vdev_id_11d_scan;
--	struct completion finish_11d_scan;
--	struct completion finish_11d_ch_list;
--	bool pending_11d;
-+	struct completion completed_11d_scan;
-+	enum ath11k_11d_state state_11d;
- 	bool regdom_set_by_user;
- };
- 
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3596,26 +3596,6 @@ static int ath11k_mac_op_hw_scan(struct
- 	if (ret)
- 		goto exit;
- 
--	/* Currently the pending_11d=true only happened 1 time while
--	 * wlan interface up in ath11k_mac_11d_scan_start(), it is called by
--	 * ath11k_mac_op_add_interface(), after wlan interface up,
--	 * pending_11d=false always.
--	 * If remove below wait, it always happened scan fail and lead connect
--	 * fail while wlan interface up, because it has a 11d scan which is running
--	 * in firmware, and lead this scan failed.
--	 */
--	if (ar->pending_11d) {
--		long time_left;
--		unsigned long timeout = 5 * HZ;
--
--		if (ar->supports_6ghz)
--			timeout += 5 * HZ;
--
--		time_left = wait_for_completion_timeout(&ar->finish_11d_ch_list, timeout);
--		ath11k_dbg(ar->ab, ATH11K_DBG_MAC,
--			   "mac wait 11d channel list time left %ld\n", time_left);
--	}
--
- 	memset(&arg, 0, sizeof(arg));
- 	ath11k_wmi_start_scan_init(ar, &arg);
- 	arg.vdev_id = arvif->vdev_id;
-@@ -3681,6 +3661,10 @@ exit:
- 		kfree(arg.extraie.ptr);
- 
- 	mutex_unlock(&ar->conf_mutex);
-+
-+	if (ar->state_11d == ATH11K_11D_PREPARING)
-+		ath11k_mac_11d_scan_start(ar, arvif->vdev_id);
-+
- 	return ret;
- }
- 
-@@ -5809,7 +5793,7 @@ static int ath11k_mac_op_start(struct ie
- 
- 	/* TODO: Do we need to enable ANI? */
- 
--	ath11k_reg_update_chan_list(ar);
-+	ath11k_reg_update_chan_list(ar, false);
- 
- 	ar->num_started_vdevs = 0;
- 	ar->num_created_vdevs = 0;
-@@ -5876,6 +5860,11 @@ static void ath11k_mac_op_stop(struct ie
- 	cancel_work_sync(&ar->ab->update_11d_work);
- 	cancel_work_sync(&ar->ab->rfkill_work);
- 
-+	if (ar->state_11d == ATH11K_11D_PREPARING) {
-+		ar->state_11d = ATH11K_11D_IDLE;
-+		complete(&ar->completed_11d_scan);
-+	}
-+
- 	spin_lock_bh(&ar->data_lock);
- 	list_for_each_entry_safe(ppdu_stats, tmp, &ar->ppdu_stats_info, list) {
- 		list_del(&ppdu_stats->list);
-@@ -6046,7 +6035,7 @@ static bool ath11k_mac_vif_ap_active_any
- 	return false;
- }
- 
--void ath11k_mac_11d_scan_start(struct ath11k *ar, u32 vdev_id, bool wait)
-+void ath11k_mac_11d_scan_start(struct ath11k *ar, u32 vdev_id)
- {
- 	struct wmi_11d_scan_start_params param;
- 	int ret;
-@@ -6074,28 +6063,22 @@ void ath11k_mac_11d_scan_start(struct at
- 
- 	ath11k_dbg(ar->ab, ATH11K_DBG_MAC, "mac start 11d scan\n");
- 
--	if (wait)
--		reinit_completion(&ar->finish_11d_scan);
--
- 	ret = ath11k_wmi_send_11d_scan_start_cmd(ar, &param);
- 	if (ret) {
- 		ath11k_warn(ar->ab, "failed to start 11d scan vdev %d ret: %d\n",
- 			    vdev_id, ret);
- 	} else {
- 		ar->vdev_id_11d_scan = vdev_id;
--		if (wait) {
--			ar->pending_11d = true;
--			ret = wait_for_completion_timeout(&ar->finish_11d_scan,
--							  5 * HZ);
--			ath11k_dbg(ar->ab, ATH11K_DBG_MAC,
--				   "mac 11d scan left time %d\n", ret);
--
--			if (!ret)
--				ar->pending_11d = false;
--		}
-+		if (ar->state_11d == ATH11K_11D_PREPARING)
-+			ar->state_11d = ATH11K_11D_RUNNING;
- 	}
- 
- fin:
-+	if (ar->state_11d == ATH11K_11D_PREPARING) {
-+		ar->state_11d = ATH11K_11D_IDLE;
-+		complete(&ar->completed_11d_scan);
-+	}
-+
- 	mutex_unlock(&ar->ab->vdev_id_11d_lock);
- }
- 
-@@ -6118,12 +6101,15 @@ void ath11k_mac_11d_scan_stop(struct ath
- 		vdev_id = ar->vdev_id_11d_scan;
- 
- 		ret = ath11k_wmi_send_11d_scan_stop_cmd(ar, vdev_id);
--		if (ret)
-+		if (ret) {
- 			ath11k_warn(ar->ab,
- 				    "failed to stopt 11d scan vdev %d ret: %d\n",
- 				    vdev_id, ret);
--		else
-+		} else {
- 			ar->vdev_id_11d_scan = ATH11K_11D_INVALID_VDEV_ID;
-+			ar->state_11d = ATH11K_11D_IDLE;
-+			complete(&ar->completed_11d_scan);
-+		}
- 	}
- 	mutex_unlock(&ar->ab->vdev_id_11d_lock);
- }
-@@ -6319,8 +6305,10 @@ static int ath11k_mac_op_add_interface(s
- 			goto err_peer_del;
- 		}
- 
--		ath11k_mac_11d_scan_start(ar, arvif->vdev_id, true);
--
-+		if (test_bit(WMI_TLV_SERVICE_11D_OFFLOAD, ab->wmi_ab.svc_map)) {
-+			reinit_completion(&ar->completed_11d_scan);
-+			ar->state_11d = ATH11K_11D_PREPARING;
-+		}
- 		break;
- 	case WMI_VDEV_TYPE_MONITOR:
- 		set_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
-@@ -7144,7 +7132,7 @@ ath11k_mac_op_unassign_vif_chanctx(struc
- 	}
- 
- 	if (arvif->vdev_type == WMI_VDEV_TYPE_STA)
--		ath11k_mac_11d_scan_start(ar, arvif->vdev_id, false);
-+		ath11k_mac_11d_scan_start(ar, arvif->vdev_id);
- 
- 	mutex_unlock(&ar->conf_mutex);
- }
-@@ -8625,8 +8613,7 @@ int ath11k_mac_allocate(struct ath11k_ba
- 		ar->monitor_vdev_id = -1;
- 		clear_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
- 		ar->vdev_id_11d_scan = ATH11K_11D_INVALID_VDEV_ID;
--		init_completion(&ar->finish_11d_scan);
--		init_completion(&ar->finish_11d_ch_list);
-+		init_completion(&ar->completed_11d_scan);
- 	}
- 
- 	return 0;
---- a/drivers/net/wireless/ath/ath11k/mac.h
-+++ b/drivers/net/wireless/ath/ath11k/mac.h
-@@ -130,7 +130,7 @@ extern const struct htt_rx_ring_tlv_filt
- #define ATH11K_SCAN_11D_INTERVAL		600000
- #define ATH11K_11D_INVALID_VDEV_ID		0xFFFF
- 
--void ath11k_mac_11d_scan_start(struct ath11k *ar, u32 vdev_id, bool wait);
-+void ath11k_mac_11d_scan_start(struct ath11k *ar, u32 vdev_id);
- void ath11k_mac_11d_scan_stop(struct ath11k *ar);
- void ath11k_mac_11d_scan_stop_all(struct ath11k_base *ab);
- 
---- a/drivers/net/wireless/ath/ath11k/reg.c
-+++ b/drivers/net/wireless/ath/ath11k/reg.c
-@@ -93,7 +93,7 @@ ath11k_reg_notifier(struct wiphy *wiphy,
- 	ar->regdom_set_by_user = true;
- }
- 
--int ath11k_reg_update_chan_list(struct ath11k *ar)
-+int ath11k_reg_update_chan_list(struct ath11k *ar, bool wait)
- {
- 	struct ieee80211_supported_band **bands;
- 	struct scan_chan_list_params *params;
-@@ -102,7 +102,32 @@ int ath11k_reg_update_chan_list(struct a
- 	struct channel_param *ch;
- 	enum nl80211_band band;
- 	int num_channels = 0;
--	int i, ret;
-+	int i, ret, left;
-+
-+	if (wait && ar->state_11d != ATH11K_11D_IDLE) {
-+		left = wait_for_completion_timeout(&ar->completed_11d_scan,
-+						   ATH11K_SCAN_TIMEOUT_HZ);
-+		if (!left) {
-+			ath11k_dbg(ar->ab, ATH11K_DBG_REG,
-+				   "failed to receive 11d scan complete: timed out\n");
-+			ar->state_11d = ATH11K_11D_IDLE;
-+		}
-+		ath11k_dbg(ar->ab, ATH11K_DBG_REG,
-+			   "reg 11d scan wait left time %d\n", left);
-+	}
-+
-+	if (wait &&
-+	    (ar->scan.state == ATH11K_SCAN_STARTING ||
-+	    ar->scan.state == ATH11K_SCAN_RUNNING)) {
-+		left = wait_for_completion_timeout(&ar->scan.completed,
-+						   ATH11K_SCAN_TIMEOUT_HZ);
-+		if (!left)
-+			ath11k_dbg(ar->ab, ATH11K_DBG_REG,
-+				   "failed to receive hw scan complete: timed out\n");
-+
-+		ath11k_dbg(ar->ab, ATH11K_DBG_REG,
-+			   "reg hw scan wait left time %d\n", left);
-+	}
- 
- 	bands = hw->wiphy->bands;
- 	for (band = 0; band < NUM_NL80211_BANDS; band++) {
-@@ -184,11 +209,6 @@ int ath11k_reg_update_chan_list(struct a
- 	ret = ath11k_wmi_send_scan_chan_list_cmd(ar, params);
- 	kfree(params);
- 
--	if (ar->pending_11d) {
--		complete(&ar->finish_11d_ch_list);
--		ar->pending_11d = false;
--	}
--
- 	return ret;
- }
- 
-@@ -254,15 +274,8 @@ int ath11k_regd_update(struct ath11k *ar
- 		goto err;
- 	}
- 
--	if (ar->pending_11d)
--		complete(&ar->finish_11d_scan);
--
- 	rtnl_lock();
- 	wiphy_lock(ar->hw->wiphy);
--
--	if (ar->pending_11d)
--		reinit_completion(&ar->finish_11d_ch_list);
--
- 	ret = regulatory_set_wiphy_regd_sync(ar->hw->wiphy, regd_copy);
- 	wiphy_unlock(ar->hw->wiphy);
- 	rtnl_unlock();
-@@ -273,7 +286,7 @@ int ath11k_regd_update(struct ath11k *ar
- 		goto err;
- 
- 	if (ar->state == ATH11K_STATE_ON) {
--		ret = ath11k_reg_update_chan_list(ar);
-+		ret = ath11k_reg_update_chan_list(ar, true);
- 		if (ret)
- 			goto err;
- 	}
---- a/drivers/net/wireless/ath/ath11k/reg.h
-+++ b/drivers/net/wireless/ath/ath11k/reg.h
-@@ -32,5 +32,5 @@ struct ieee80211_regdomain *
- ath11k_reg_build_regd(struct ath11k_base *ab,
- 		      struct cur_regulatory_info *reg_info, bool intersect);
- int ath11k_regd_update(struct ath11k *ar);
--int ath11k_reg_update_chan_list(struct ath11k *ar);
-+int ath11k_reg_update_chan_list(struct ath11k *ar, bool wait);
- #endif
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2013,7 +2013,10 @@ void ath11k_wmi_start_scan_init(struct a
- {
- 	/* setup commonly used values */
- 	arg->scan_req_id = 1;
--	arg->scan_priority = WMI_SCAN_PRIORITY_LOW;
-+	if (ar->state_11d == ATH11K_11D_PREPARING)
-+		arg->scan_priority = WMI_SCAN_PRIORITY_MEDIUM;
-+	else
-+		arg->scan_priority = WMI_SCAN_PRIORITY_LOW;
- 	arg->dwell_time_active = 50;
- 	arg->dwell_time_active_2g = 0;
- 	arg->dwell_time_passive = 150;
-@@ -6177,8 +6180,10 @@ static void ath11k_wmi_op_ep_tx_credits(
- static int ath11k_reg_11d_new_cc_event(struct ath11k_base *ab, struct sk_buff *skb)
- {
- 	const struct wmi_11d_new_cc_ev *ev;
-+	struct ath11k *ar;
-+	struct ath11k_pdev *pdev;
- 	const void **tb;
--	int ret;
-+	int ret, i;
- 
- 	tb = ath11k_wmi_tlv_parse_alloc(ab, skb->data, skb->len, GFP_ATOMIC);
- 	if (IS_ERR(tb)) {
-@@ -6204,6 +6209,13 @@ static int ath11k_reg_11d_new_cc_event(s
- 
- 	kfree(tb);
- 
-+	for (i = 0; i < ab->num_radios; i++) {
-+		pdev = &ab->pdevs[i];
-+		ar = pdev->ar;
-+		ar->state_11d = ATH11K_11D_IDLE;
-+		complete(&ar->completed_11d_scan);
-+	}
-+
- 	queue_work(ab->workqueue, &ab->update_11d_work);
- 
- 	return 0;
+ 	spin_unlock(&wb->list_lock);
+ 	inode_sync_complete(inode);
+ out:
 
 
