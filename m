@@ -2,203 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A99B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 391E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344531AbiEPSLf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 14:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
+        id S240843AbiEPSNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 14:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344594AbiEPSLG (ORCPT
+        with ESMTP id S229638AbiEPSNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 14:11:06 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2085.outbound.protection.outlook.com [40.107.220.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8497D2DCF;
-        Mon, 16 May 2022 11:11:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HqBiMliB1dMUjl7NqXG6xDZiV3G2ZXhaMTukul88rrl4YtlSBOqewr1CxNgGYj5NkyfW6Qa7Egyga3pKhGAeGWoVChz8lh1z56O8cKfGUjTg4MNt0qJVSUgpna4kTmwhEd8M8bFlfYhq7626L+AzxWSVdDuLsJChnxf6+A4qH0OSIOGqHY5fj6flYsMFyDRzHLbXiU0umAHrkmGezm5FBbKOwcQO1mwFN3m/mqQkBH48u1CWc2qV1zU4jzEbdTp6hFRZBP7uwIWC0cxnabrmBZj2Zy8peMY+uYSNKqHvNJ8MS46WRjiiqIwOKZAShCe0ofNRLsvi9XSOF67q6xMThA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NJcGDmtRFT62t6blsYCuFow79wNBOkPGC45xJ/D60Eo=;
- b=kt5hv8OW6lc0+Xlem42GhQNTMsswd8hKEx6KDg7KUQ1EFImqHPhS/8ejLaYdhZIvKUh3MAPrS9rKWVu8Kq3Ezz0QzEYJCng+K+DXnxzz0yMBQx8h6mUJ3yXjvnoh9Q0keH7+3E0H0wM9z3k4Ozev5uVCknX+MPop9RtTjY/4EcL9l/97w8RP4Tm1dGWgbzwKVuq5xaQFov/7MX/WHrniFrnNFRO4Vwfh3uzqP0eMPJDeRYA8gtTJTkXL1QLDNOpt6koej9qDGiqh4ObpBhLg3zb4lSGhzcGAxE7RwkgW1f6g9e9tUq0GB6S7BCT77xf8PQ0mG1IfF9kwfymHuKJxTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NJcGDmtRFT62t6blsYCuFow79wNBOkPGC45xJ/D60Eo=;
- b=3o4IaRKfxGFnc2B2VelWukeZXvQN9Jbw4A4R3JN/S7LGI+hm425anovMUgjJn5bpSVkTnoHo/ReowQdBlFU9S88oOqOCV6q8IFSLxRey1Fw+RFEtxb4XeNik8uxmU8KKLpr3aT2wdPnw6lDYcLMyk465hq9AtClQobv1i67K6HI=
-Received: from SN6PR12MB2767.namprd12.prod.outlook.com (2603:10b6:805:75::23)
- by BYAPR12MB3382.namprd12.prod.outlook.com (2603:10b6:a03:a9::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Mon, 16 May
- 2022 18:11:02 +0000
-Received: from SN6PR12MB2767.namprd12.prod.outlook.com
- ([fe80::25d7:1ecc:64f2:f9c0]) by SN6PR12MB2767.namprd12.prod.outlook.com
- ([fe80::25d7:1ecc:64f2:f9c0%6]) with mapi id 15.20.5250.018; Mon, 16 May 2022
- 18:11:02 +0000
-From:   "Kalra, Ashish" <Ashish.Kalra@amd.com>
-To:     Sean Christopherson <seanjc@google.com>
-CC:     Peter Gonda <pgonda@google.com>,
-        "Allen, John" <John.Allen@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Nguyen <theflow@google.com>,
-        David Rientjes <rientjes@google.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH v2] crypto: ccp - Use kzalloc for sev ioctl interfaces to
- prevent kernel memory leak
-Thread-Topic: [PATCH v2] crypto: ccp - Use kzalloc for sev ioctl interfaces to
- prevent kernel memory leak
-Thread-Index: AQHYaTwUxoMisTo8TEW3VgseD18R+K0hp6QAgAABb8CAABTegIAAAVcAgAAG6gCAAAO/wA==
-Date:   Mon, 16 May 2022 18:11:02 +0000
-Message-ID: <SN6PR12MB276737E018DBCA12EF6EB3218ECF9@SN6PR12MB2767.namprd12.prod.outlook.com>
-References: <20220516154512.259759-1-john.allen@amd.com>
- <CAMkAt6oUxUFtNS4W0bzu13oWMdfnzfNrphH3OqwAkmxJcXhOqw@mail.gmail.com>
- <SN6PR12MB27678261F176C5D9B5BF64EF8ECF9@SN6PR12MB2767.namprd12.prod.outlook.com>
- <CAMkAt6q7kTGS5QgZRq9xc0HaEYyntmj3GRWehr-3Sb4y2eQ=HQ@mail.gmail.com>
- <SN6PR12MB2767B4A3919E38C7F429CC2D8ECF9@SN6PR12MB2767.namprd12.prod.outlook.com>
- <YoKNDoiXKGbBhuIk@google.com>
-In-Reply-To: <YoKNDoiXKGbBhuIk@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Enabled=true;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SetDate=2022-05-16T17:56:02Z;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Method=Standard;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Name=General;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ActionId=4f3af9bd-17d2-42da-b60e-56a7ee097c15;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ContentBits=1
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_enabled: true
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_setdate: 2022-05-16T18:11:00Z
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_method: Standard
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_name: General
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_actionid: f15d382c-8246-4249-9184-64548c71154b
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_contentbits: 0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2ef49790-10c6-4e72-6f07-08da37676ffd
-x-ms-traffictypediagnostic: BYAPR12MB3382:EE_
-x-microsoft-antispam-prvs: <BYAPR12MB33824D65726DEC5E4638138D8ECF9@BYAPR12MB3382.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hByThre5heXecrH9MSLGWQl58dmbI+hiB5rsfEdPWYq7CzCBQFJkD4WcVHvdCEzJnpWTqcRsBEeXzvKmtNb8UpmTQO96V1rBeBqNqeFHmci0v8LbQCiQtZ9oNZ67Uwl1An0ZtZIElRzZwNYDY4jelD1moGrMTn2UY5WfKQv8e8oIBDKHsZvp4u6jyTo0Zhd7YUcM72GZjxBzhNSTkikctIpiWP9z7zMAggchdooDoKuL099+T8aAmqS2vwIa6ehcFof0fXTBEjrg+fxNZBybH4WVlYQNconiWeiNzOtqwW4FK700jzF+670ALOWLPMNxxIKlsyKlPXVLpWGjzew4ZXD4UWVHYWFscemY2VwogcT84Nb9NVO5S5FA3J8/VRBPIv58wlGPI/FTm9O6UsBoNdg14AZuOsnQIUh8gyG7Tb3EEFy51P4fGjnYRmCgcUwJLDQh7YaZyuNUfwUEFHRoLHyF1E3WZdUdLK0mWsuCyeAoYtb0EGPNV+4fg3aXrNO+a959TzKnkHjS4myzQDImMW5bzy1K6qkdOCfaP+2IEP4NhZ5HTecP8jVM2TkLtYGmAqvCHAuTyM8t4zhjS8fVSHgHmTd3JLdNYlCmKhwyLvCdZwbydt2oVw96Rk+0hfAxvDS6eYMlbgKkLSQVnn60oNgqRg/3iCWHGFkPmLGrBoxVhq4ZODr1V4xW6w1TIjQoM6niHNc4hrbNRt7UUasQWw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR12MB2767.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(8676002)(53546011)(64756008)(66446008)(66476007)(71200400001)(54906003)(38100700002)(316002)(83380400001)(8936002)(4326008)(26005)(38070700005)(5660300002)(9686003)(33656002)(6916009)(66556008)(508600001)(52536014)(86362001)(7696005)(122000001)(2906002)(186003)(55016003)(66946007)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fT+4Fv8runMJg6vo3TF6Ib7E4mB3ItAMd8+GNv8wyC9Dg3zTDKROXiyj2OZg?=
- =?us-ascii?Q?9uyjKmLs20be+K/uuhR6Tdqy7puMUvsUfcpfT/Fn4RHbC2MNX32V34z9gRXm?=
- =?us-ascii?Q?W+7TUTAwsQzUDN5sWetNV2fIv35ooKNt18pjmY3EQGnwIgbSMVILDfvVsSWm?=
- =?us-ascii?Q?5DVYnpGrQkLO/+rSagKp7/4h7U+YGDR5zg4NSpXc1SD6/d8FmeV/BcyisfHG?=
- =?us-ascii?Q?/KEoHVbD5PcKc4zajGSWSqU1Tq6bx1LEGjPkH2f8oGKX66Rz0qW65eyYDwTf?=
- =?us-ascii?Q?fAv8dhFlL8hziQjahfRo8JGwIpMdClZsSVciRfed4USJXpe+OwAcdzGmaEuz?=
- =?us-ascii?Q?K2wXSBFYrF/h0RPk7mdMHIBMOJwssGJqHo5koCBOGGYzd7/VzkUx4QqtFOtL?=
- =?us-ascii?Q?KlnWlWOznNCbqr9hT33YxeMa1RJInbHAmYTXm5bpCGJRu/viSbKekqvnUmrM?=
- =?us-ascii?Q?EGWe0Th6wINFqLok/ti7D2vTAcpZkEFJssbWSlyD36uEB+3IaMxcOfO7OtMf?=
- =?us-ascii?Q?D/BDXCl8tIA0H7cRBMGvsa4b6o4xlVG5f/mGOMLVTrkjMoZThqUJ43Cz8pT1?=
- =?us-ascii?Q?vJyLCLqKyiTnHM7jP7gBa07ZZ0+3Gq3dFJoYzEuOjYfw4xMVdBVQwKMNkhTl?=
- =?us-ascii?Q?x2UTMZHYODwD2MkDUeyJnSjrdz8aG2ew/oCaL9pBtYIAX6/3rgUvqSCZlHBB?=
- =?us-ascii?Q?huf/dSaj6P34XDRGCfoq6Ang5WyH1cU1wQw6vfCRGc4vVboiLdOSfWFfXe9o?=
- =?us-ascii?Q?KQ/p1s9mJ7oTlw2f2zM/Clp69wV61YIyTIAHJeQDGdtsljP3kqRnNkeF6B0g?=
- =?us-ascii?Q?fSrhvFXlyjulTuEaMEMjP1zXn65mBxDImpDwDeoZl2LO7ZA8tZGnOLDarCSR?=
- =?us-ascii?Q?ZalZmh8mZYoe+hdd39DscBJWIfrnSPij95cRNh7AGznnA+gyGL1+H8XgAF5j?=
- =?us-ascii?Q?9Rpl/FllpczkPTz0oFV2KJ3rg6HIefvi7VcqHY2m+G4h8o3RjYsqvwYSLUsO?=
- =?us-ascii?Q?MZrMWWUhjrLde7N4cyN9QiZLhcNMTexLPRoRF9qyNmNcEsRzSQ0VUUFgOBSg?=
- =?us-ascii?Q?OUAcov3LnQeoOIsWjNn6l76Gqiyca61QJMYhZ9GKhQ1Aue/NAc+8f1ujBHjZ?=
- =?us-ascii?Q?djcygDAy48TTnisqD044yesaHfcxdSZeIKAqSgR8UE+PbkTDPX/E3kj8t+pZ?=
- =?us-ascii?Q?yLtIqOD6uX/3j8E7WIMMzgVNJyMG92NL9mRB1bnvf3xz6Wgal5LashuqlPzl?=
- =?us-ascii?Q?B3mdMciQvV1R2+KYemg5fg4l0UG6zXfH6qZQ/kuyiORKDoZJtT8wLWDCPWVW?=
- =?us-ascii?Q?cbegA1AOp4rDDqgeRQtHOmamgDXXWE0pRQb3vcr1PDD9O37QUNVX96ABbHei?=
- =?us-ascii?Q?1V0VvXigM/ArcROeQu7vDgjTDfy/YtsliKSLGIC36vleg80Myws9hXE/OnDy?=
- =?us-ascii?Q?ozNLhREJPVzMLikbRlPzn+ohCbxClaRaUdle2UPqXEkIXqSdcx8EgTjTjNZr?=
- =?us-ascii?Q?NZvdOx2k/iEO5Yyl95cB/V4wzONz6JqgXKZXpEJmwC5fe2bUV5T57gh8p/Up?=
- =?us-ascii?Q?oxkYexo9NL+vYwUbLfWzq2Ovopl18Oj4DHmjY5/Urlc+eIhg2OMBC95VjPoj?=
- =?us-ascii?Q?iD3iPL66s6m9sSxp+u4h8np7lYZkp4te/xR4E2MPfRXXQeXoMAR6cF7FqIzS?=
- =?us-ascii?Q?B+yhnyqR/5ErkJYu1vLdULYbD0dkL+ToTcdVQ0kkegr8JAvm?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 16 May 2022 14:13:43 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B843A1A4;
+        Mon, 16 May 2022 11:13:42 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id l38-20020a05600c1d2600b00395b809dfbaso50436wms.2;
+        Mon, 16 May 2022 11:13:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nysVKRQ7mo2MtvA99LcZLT9qlQggYwLJPzhkhaFBf5s=;
+        b=MybMj0jX8oTKU6IznGZJJq5NMYteTiQ5ynNuJ/fr/tJIF7vL7mKCB/KcCtbQmVO2FI
+         9597Y87bZAMzqBnXDtyWXNaddmf9cLF96zJzmClJPb9reHn+LP6tTujzzlMqoJk8LNn7
+         JpzNLiL1B/eYF45/nHY6vUJTexSpx2HsiEoHYyxsDCmFtszPzddn6rZUUaMn1vRqLCqV
+         l1GtWjyo24pFxp29XwSiM5XdcQeSXGj81GHC5i5ULtMZJsiqeOTUi3CYow9aFKIw/lPi
+         68Ge4o4El9fS7Rpo0gJFg59w4G+0KHDxLZnlJn2Gw05V+am3KS4WbzvPLYV5uCGI8PvJ
+         IEEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nysVKRQ7mo2MtvA99LcZLT9qlQggYwLJPzhkhaFBf5s=;
+        b=jXnxxy9U53ehXLhL4AMD5TSrYWb9GyGdOI67zIc0l1rld+Eb4CfEQqwZx8q2etC3Yu
+         Vpnh6/UE3jQcZ6A+OyqJnNa+oW3kP2W1dMZRPzcguRcaz4VCo06GsTFC+DjuwbQ/JfMH
+         E5nDjwY8cmdPspWxoXbPVeut076YgaV8iVAHAzyUgjR4w9UKHErJ40pvuhp5KAWQEVqD
+         tc6HOJbPsU8r5/Y78L+tTLKnumtooLptPX0FkKneQXN+nr3hz2euAG+ESNGe8/AXaE+O
+         TxSHfjjEVPiAPvoieUEWHogUQFi8I4lYYPV1ED0R7nHryLrpkXraH6PeiK+Xcea54B0j
+         bBQA==
+X-Gm-Message-State: AOAM530IFA80hL1/nXVCOvBM4x3hBwsjEktBjjHooB9O8ymBaeajtSQT
+        aUgXE51qi6xTBSpDs73SdG5bvdf5F7FmJQ==
+X-Google-Smtp-Source: ABdhPJx1skdulVYiVTOfqmLDV0HrFjS9K7mqO2dGU5uD4KmJ8n6W1ojAvvRkOAPG/gEzwqZcDFVaAw==
+X-Received: by 2002:a05:600c:4ed3:b0:394:789b:913 with SMTP id g19-20020a05600c4ed300b00394789b0913mr17634924wmq.175.1652724820389;
+        Mon, 16 May 2022 11:13:40 -0700 (PDT)
+Received: from localhost.localdomain ([94.73.36.128])
+        by smtp.gmail.com with ESMTPSA id o15-20020a05600002cf00b0020d0c9c95d3sm3276382wry.77.2022.05.16.11.13.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 11:13:39 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     jikos@kernel.org
+Cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stefanberzl@gmail.com,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH for-5.19/uclogic 0/4] Add support for XP-PEN Deco L
+Date:   Mon, 16 May 2022 20:13:19 +0200
+Message-Id: <20220516181323.59554-1-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2767.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ef49790-10c6-4e72-6f07-08da37676ffd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2022 18:11:02.5916
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xtJizT+mF2/HQR4tH7mY/s7HXltWJp/7Ewg7G54n1fF5OfKV06R3dLg1ZeaeiPV1gspDHP8uSIXgaj3Co/UsLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3382
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[AMD Official Use Only - General]
+Hello everyone,
 
-Hello Sean,
+This patchset adds support for the UGEE XP-PEN Deco L tablet.
+This device belongs to a family of tablets that must receive a chunk of
+magic data in order to be enabled (named UGEE v2 internally).
 
------Original Message-----
-From: Sean Christopherson <seanjc@google.com>=20
-Sent: Monday, May 16, 2022 12:43 PM
-To: Kalra, Ashish <Ashish.Kalra@amd.com>
-Cc: Peter Gonda <pgonda@google.com>; Allen, John <John.Allen@amd.com>; Herb=
-ert Xu <herbert@gondor.apana.org.au>; Linux Crypto Mailing List <linux-cryp=
-to@vger.kernel.org>; Lendacky, Thomas <Thomas.Lendacky@amd.com>; LKML <linu=
-x-kernel@vger.kernel.org>; Andy Nguyen <theflow@google.com>; David Rientjes=
- <rientjes@google.com>; stable@vger.kernel.org
-Subject: Re: [PATCH v2] crypto: ccp - Use kzalloc for sev ioctl interfaces =
-to prevent kernel memory leak
+Once the device is enabled, its parameters can be discovered by parsing
+a report descriptor. HUION v1 tablets have a similar report descriptor
+but, in the case of UGEE v2 tablets, the number of buttons are also
+discoverable [1].
 
-On Mon, May 16, 2022, Kalra, Ashish wrote:
-> > >Would it be safer to memset @data here to all zeros too?
-> >
-> > It will be, but this command/function is safe as firmware will fill=20
-> > in the whole buffer here with the PLATFORM STATUS data retuned to the u=
-ser.
->=20
-> > That does seem safe for now but I thought we decided it would be=20
-> > prudent to not trust the PSPs implementation here and clear all the=20
-> > buffers that eventually get sent to userspace?
->=20
-> Yes, but the issue is when the user programs a buffer size larger the=20
-> one filled in by the firmware. In this case firmware is always going=20
-> to fill up the whole buffer with PLATFORM_STATUS data, so it will be=20
-> always be safe. The issue is mainly with the kernel side doing a=20
-> copy_to_user() based on user programmed length instead of the firmware re=
-turned buffer length.
+The ability to discover the number of buttons is the reason for the
+first 3 patches. They enable frame templates.
+Because I lack the hardware to fully test this driver, I added some
+KUnit tests to make sure no bugs are introduced.
+I didn't see any other test in the subsystem (and I doubt I'm the first
+person writing one) so please let me know if I need to move the test to
+a different place.
 
->Peter's point is that it costs the kernel very little to be paranoid and n=
-ot make assumptions about whether or not the PSP will fill an entire struct=
- as expected.
+The last patch enables the tablet and it should give Stefan a stable
+code to work on his XP-PEN Deco Mini 7 tablet.
 
->I agree it feels a bit silly since all fields are output, but on the other=
- hand the PSP spec just says:
+Stefan: I didn't include the code for the Mini 4 because once connected
+no events are received until I unload and load the driver.
+If anyone has a clue about why this could happen, I'd really appreciate
+some help. [2]
 
->  The following data structure is written to memory at STATUS_PADDR
+Best wishes,
+José Expósito
 
->and the data structure has several reserved fields.  I don't love assuming=
- that the PSP will always write zeros for the reserved fields and not do so=
-mething like:
+[1] I don't own a HUION v1 device, so I'm not sure if the information
+    about the number of buttons is also present and it is not used in
+    the driver for some reason.
+[2] https://lore.kernel.org/linux-input/20220516112159.GA74406@elementary/T/#t
 
->	if (rmp_initialized)
->		data[3] |=3D IS_RMP_INIT;
->	else
->		data[3] &=3D ~IS_RMP_INIT;
+José Expósito (4):
+  HID: uclogic: Make template placeholder IDs generic
+  HID: uclogic: Add KUnit tests for uclogic_rdesc_template_apply()
+  HID: uclogic: Allow to generate frame templates
+  HID: uclogic: Add support for XP-PEN Deco L
 
->Given that zeroing @data in the kernel is easy and this is not a hot patch=
-, I prefer the paranoid approach unless the PSP spec is much more explicit =
-in saying that it writes all bits and bytes on success.
+ drivers/hid/Kconfig                  |   7 +
+ drivers/hid/Makefile                 |   2 +
+ drivers/hid/hid-ids.h                |   1 +
+ drivers/hid/hid-uclogic-core.c       |   2 +
+ drivers/hid/hid-uclogic-params.c     | 203 ++++++++++++++++++++++++-
+ drivers/hid/hid-uclogic-rdesc-test.c | 215 +++++++++++++++++++++++++++
+ drivers/hid/hid-uclogic-rdesc.c      | 124 ++++++++++++++-
+ drivers/hid/hid-uclogic-rdesc.h      |  24 ++-
+ 8 files changed, 564 insertions(+), 14 deletions(-)
+ create mode 100644 drivers/hid/hid-uclogic-rdesc-test.c
 
-I agree with that and we will resend a v3 of the crypto patch with this cha=
-nge added.
 
-Thanks,
-Ashish
+base-commit: f7d8e387d9aeff963e6691c0166269b8042b4ff9
+-- 
+2.25.1
+
