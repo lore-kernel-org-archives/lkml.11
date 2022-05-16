@@ -2,95 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4281C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 958F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236535AbiEPP4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 11:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58306 "EHLO
+        id S245506AbiEPP4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 11:56:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244552AbiEPP41 (ORCPT
+        with ESMTP id S245495AbiEPP4f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 11:56:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1B519FF4
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:56:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652716585;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CgyJ1bZZA2Xr1Oc6Ya/N2yM31d0pFi9AId2A5XTR4BY=;
-        b=fmtrZst76bd9l1CpdVZwlZvL++C3VUtpEApcNzM5VjpT3BMkmfotbD4hgjEdRl638NYCw6
-        Ae6WNKmMSh3UmddIlj3de4dVqIdp4d47vV2YVLmz7UooxZcSnr/z0SHepIPyT1LJyyb85M
-        qxQFkHZTsZwdeEDUuu9euhdhDp5hkPo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-528-J5Nz8hgrOHueTZmlA0JEew-1; Mon, 16 May 2022 11:56:22 -0400
-X-MC-Unique: J5Nz8hgrOHueTZmlA0JEew-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E8DED803D45;
-        Mon, 16 May 2022 15:56:21 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E06A440C1244;
-        Mon, 16 May 2022 15:56:21 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 24GFuLGH031395;
-        Mon, 16 May 2022 11:56:21 -0400
-Received: from localhost (mpatocka@localhost)
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 24GFuLp9031391;
-        Mon, 16 May 2022 11:56:21 -0400
-X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
-Date:   Mon, 16 May 2022 11:56:21 -0400 (EDT)
-From:   Mikulas Patocka <mpatocka@redhat.com>
-X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
-To:     Peter Zijlstra <peterz@infradead.org>
-cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] objtool: fix objtool regression on x32 systems
-In-Reply-To: <YoJwtCeVzYUm6Uhg@hirez.programming.kicks-ass.net>
-Message-ID: <alpine.LRH.2.02.2205161145070.30905@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com> <YoJwtCeVzYUm6Uhg@hirez.programming.kicks-ass.net>
-User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
+        Mon, 16 May 2022 11:56:35 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D599A19A;
+        Mon, 16 May 2022 08:56:31 -0700 (PDT)
+Received: from localhost.localdomain (unknown [112.20.109.92])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxoNoqdIJicm4YAA--.22361S3;
+        Mon, 16 May 2022 23:56:28 +0800 (CST)
+From:   Yanteng Si <siyanteng@loongson.cn>
+To:     corbet@lwn.net, alexs@kernel.org, seakeel@gmail.com,
+        bobwxc@email.cn, tangyeechou@gmail.com
+Cc:     Yanteng Si <siyanteng@loongson.cn>, chenhuacai@kernel.org,
+        jiaxun.yang@flygoat.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, siyanteng01@gmail.com
+Subject: [PATCH v2 1/1] MAINTAINERS: Become the docs/zh_CN maintainer
+Date:   Mon, 16 May 2022 23:57:48 +0800
+Message-Id: <b0c1324d1d63846d700ab354446a6deaf30754c0.1652712771.git.siyanteng@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <cover.1652712771.git.siyanteng@loongson.cn>
+References: <cover.1652712771.git.siyanteng@loongson.cn>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9BxoNoqdIJicm4YAA--.22361S3
+X-Coremail-Antispam: 1UD129KBjvdXoW7Gr1UJw45AryDGF4ftF1kZrb_yoWxArg_t3
+        yUta93uF4Utr97Kws5CF9rAr4Y9r4xGF1fu3ZIqwsrJw1DKayDAr9Fk3Za93ZxJr48uF9I
+        qay7JFnakFsrAjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbgAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUGwA2048vs2IY02
+        0Ec7CjxVAFwI0_Gr0_Xr1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xv
+        wVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l84
+        ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I2
+        62IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcV
+        AFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG
+        0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI
+        1lc2xSY4AK67AK6ryrMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I
+        3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxV
+        WUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8I
+        cVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aV
+        AFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZE
+        Xa7VUU6pBDUUUUU==
+X-CM-SenderInfo: pvl1t0pwhqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+It's time to become a maintainer of Chinese documentation, and Yanteng's plan
+is to help everyone with the utmost enthusiasm and patience.
 
+Signed-off-by: Yanteng Si <siyanteng@loongson.cn>
+Reviewed-by: Alex Shi <alexs@kernel.org>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Mon, 16 May 2022, Peter Zijlstra wrote:
-
-> On Mon, May 16, 2022 at 11:06:36AM -0400, Mikulas Patocka wrote:
-> > The patch 4abff6d48dbc ("objtool: Fix code relocs vs weak symbols") makes
-> > the kernel unbootable.  The patch c087c6e7b551 ("objtool: Fix type of
-> > reloc::addend") attempts to fix it by replacing 'int' with 'long'.
-> > 
-> > However, we may be running on a system with x32 ABI and 'long' on x32 is
-> > 32-bit, thus the patch c087c6e7b551 doesn't really change anything and we
-> > still end up with miscompiled kernel.  This patch replaces 'long' with
-> > 'long long', so that the 64-bit kernel is correctly compiled on a x32
-> > system.
-> 
-> Hurmph.. you're building a 64bit kernel on a x32 hosted machine? And
-> this is the *only* thing that goes sideways?
-
-I use the x32 ABI (that is 64-bit mode with addresses truncated to 
-32-bit). gcc compiled for the x32 ABI is about 5% to 10% faster than gcc 
-compiled for the amd64 ABI. I installed the x32 gcc from Debian Ports.
-
-> I suspect quite a bit of objtool assumes LP64 and won't quite work right
-> on ILP32 and we've just been lucky so far.
-
-With this patch, the compiled kernel works. With kernels 5.17 or older, it 
-also works. I bisected it and the breakage is caused by the commit 
-4abff6d48dbc.
-
-Mikulas
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9ce78f2275dc..ff1364d9f7cc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4649,6 +4649,7 @@ F:	Documentation/dev-tools/checkpatch.rst
+ 
+ CHINESE DOCUMENTATION
+ M:	Alex Shi <alexs@kernel.org>
++M:	Yanteng Si <siyanteng@loongson.cn>
+ S:	Maintained
+ F:	Documentation/translations/zh_CN/
+ 
+-- 
+2.27.0
 
