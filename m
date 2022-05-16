@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CEEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE45CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243603AbiEPMAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        id S243632AbiEPMBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243378AbiEPL75 (ORCPT
+        with ESMTP id S243440AbiEPMAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:59:57 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0FF167C0;
-        Mon, 16 May 2022 04:59:36 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id gh6so28276322ejb.0;
-        Mon, 16 May 2022 04:59:36 -0700 (PDT)
+        Mon, 16 May 2022 08:00:14 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C3971705D;
+        Mon, 16 May 2022 04:59:42 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id ks9so28180673ejb.2;
+        Mon, 16 May 2022 04:59:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eKqWeVdKRXTC0PRCpQ3WiXZdLhshSKyjEsxqGUT/HYc=;
-        b=HOVL5KjJ8vLZnRuUW2KIYcrGAxudGUnJ+hwrzYqmdVzZkAxlxfk9QerQIxCDD//Rbk
-         VmVqhnrTCkQ/ySHwiQzlUsEGPifjqJP2fBC8EatI00V+kHqzDJASctQl95vHmaaHmI6t
-         XVg7JAKTze24nTs/M9dV9rl6Rpd83vbr3EtHjjBhFwZWhRc6TsJ0ARikICwP/UjbuuyR
-         9faK/4Y3L35YjxpIUMFMCtbJ2S3TSShiA/4f61RzQcu2opkQqSdjMaVIjlihZDnBptFR
-         92qdBE+7DzgWbU3zfbpyClqXH0gKOpyTFZQ7jEWkcH8eM2a0S0foyZDkigUXt42sjmmJ
-         JPYA==
+        bh=HQ+/zAYDYzlIVwhBZOjr+9YmcuxLFRWGYnq8noCNm6Q=;
+        b=Ul2ALb+PwrpKLFgrqQ2ddPMSS6EGneglWSb29zDFP9QO3F6HpYV3GsIJX/TX4FeKaS
+         sh3REtOmRVVysBbyRKetx2mvKsIXfVdAj7wliiqyzPCYjKNE+kI5wQAluPX5QlHNqEkY
+         m5teKtGq2++zpS5nHhe9BuoCXPbXOEyeraV/OdrT3su3IgHf5qG/TzhXiWOrmKpyuisG
+         hFX9vCQx2Ic27oP2qY96k4SKtI92Mp3CHaF1nmJ9u1/Ml+wRe0Dwp1qFj6CA4ET+gbG1
+         U/UjXG3quk5naFPEEDv/8bTVNrnEgc7ra7Q4y7iMoRfHsScr+UCuszL82TontIj8x74f
+         8DqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eKqWeVdKRXTC0PRCpQ3WiXZdLhshSKyjEsxqGUT/HYc=;
-        b=lnQOI1Z0eEV1zwv8m7iuFeiMZ2hMo1KnQ+PEFyb86Zx019ZrN7G+YVxMgGmLXolc0J
-         98sUPsZqLcLap383OALEeVD+TuWA+HYcuS4lelVV4uXZv5xoFW0OZU5YRTbbxml0cwBL
-         yyM7bHKh7cNhJQs7o/1zT490A84zPYf5enrRZAKqPzfU7eZ4s4tn1Yjool934T61Qudf
-         3q8M/DwDlbh9tEtB5IMCcqi0iRs47oeaeN6gtHlVALX1Y7mARR2F7iDzcA/B9pEyAlxX
-         9lbl+f9pgmSa/GUgCYizs31KHpjumw/SJVgIa5apCjW6UNl7A3kliVjaM1pIsEaNk1kH
-         58wg==
-X-Gm-Message-State: AOAM533L0+DluHcj89CWTwlvbB7T8f0oLTsvTglVJjqU02spAFRzmfaE
-        NJiltqLp5etLjERqPN8o7DA=
-X-Google-Smtp-Source: ABdhPJzjRyVMdvgn2cmwrSPAdySFmjd6bAJZiiS1JEC/F0scx+NlGXVoK/y8QYY59y9r0SKSK6JBfA==
-X-Received: by 2002:a17:906:8306:b0:6f3:da72:5ca1 with SMTP id j6-20020a170906830600b006f3da725ca1mr15039625ejx.606.1652702374743;
-        Mon, 16 May 2022 04:59:34 -0700 (PDT)
+        bh=HQ+/zAYDYzlIVwhBZOjr+9YmcuxLFRWGYnq8noCNm6Q=;
+        b=nRy/oh3VdY4yePJ3OpH7vR+wckGKmztLOtClQuBZ0fZwLnfgWjK2Sz+olBOC6HO85F
+         SxcERnn2QOXQFIxvMlSGCsoTKI1kXmGqJfLHxeyYJwa9WySX2E/yWCNtJw3hlqBmia8d
+         iSLfSTPIWrU/yAU5kb/+zWK+PLcbsxx2cOgwdot4fujRMdcLC/k0d1SJBxMrBq5nl7MB
+         7rzILK52w3MnaturHJzY9fJM9+HoVnx5kW/0SMmj4a+3jMidgouX1g3ShF8zV6a/vVQu
+         orPuGeYVeQwlCAx4H/dcPaAVCAh1BiqboktI5ha9D6GzExv0Lx6mTVVf/rTxtxNIrEn7
+         5ZUA==
+X-Gm-Message-State: AOAM532SLWUb86jTr31ovcUlPJb91mpknJCJq9O3DvyP+lvm+SFFktqU
+        FstkclZgQbsyWvoQcv62J/A=
+X-Google-Smtp-Source: ABdhPJzGegeYVw0NU99xQNbBARJB4zkYwREXhG0v+IXsvWmsBLwKH/JJ1PRgnOJT6uwK5uUAGF+YGQ==
+X-Received: by 2002:a17:906:7952:b0:6fe:1e0b:6343 with SMTP id l18-20020a170906795200b006fe1e0b6343mr9096414ejo.337.1652702380993;
+        Mon, 16 May 2022 04:59:40 -0700 (PDT)
 Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
-        by smtp.gmail.com with ESMTPSA id s18-20020a170906779200b006f3ef214dacsm3711008ejm.18.2022.05.16.04.59.33
+        by smtp.gmail.com with ESMTPSA id s18-20020a170906779200b006f3ef214dacsm3711008ejm.18.2022.05.16.04.59.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 04:59:34 -0700 (PDT)
+        Mon, 16 May 2022 04:59:40 -0700 (PDT)
 From:   Max Krummenacher <max.oss.09@gmail.com>
 To:     max.krummenacher@toradex.com
-Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
+Cc:     Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
@@ -59,9 +58,9 @@ Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 11/17] ARM: dts: imx6q-apalis: Add ov5640 mipi csi camera
-Date:   Mon, 16 May 2022 13:58:39 +0200
-Message-Id: <20220516115846.58328-12-max.oss.09@gmail.com>
+Subject: [PATCH v1 15/17] ARM: dts: imx6q-apalis: backlight pwm: Simplify inverted backlight
+Date:   Mon, 16 May 2022 13:58:43 +0200
+Message-Id: <20220516115846.58328-16-max.oss.09@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220516115846.58328-1-max.oss.09@gmail.com>
 References: <20220516115846.58328-1-max.oss.09@gmail.com>
@@ -71,126 +70,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-The Apalis iMX6 modules allow connecting a mipi-csi video input.
-Add support for our OV5640 camera module but have it disabled.
-This allows to enable it in an overlay per the current system
-configuration.
+Set #pwm-cells to the default 3 to gain access to the parameter
+which allows inverting the PWM signal. This is useful to specify
+a backlight which has its highest brightness at 0.
 
-Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+With the change to use the PWM with inverted polarity the PWM signal
+is inverted to how it was before this patch.
+This changes the meaning of the values in the brightness-levels
+property. I.e. the duty-cycle changes from x/255 to (255-x)/255.
+Keeping the brightness-levels will then have a big brightness
+jump from 0 to 127 duty cycle, the other 6 steps will then be
+barely noticeable.
+
+Change the brightness-levels to provide the same brightness-levels
+as before.
+
 Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 ---
 
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 67 ++++++++++++++++++++++++++-
- 1 file changed, 66 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6qdl-apalis.dtsi | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index 506d040ea37a..0d1004eede62 100644
+index 57642aefe349..49669caac8b7 100644
 --- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
 +++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -29,6 +29,12 @@
- 		status = "disabled";
- 	};
+@@ -6,6 +6,7 @@
+  */
  
-+	clk_ov5640_osc: clk_ov5640_osc_int {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <24000000>;
-+	};
-+
- 	lcd_display: disp0 {
- 		compatible = "fsl,imx-parallel-display";
- 		#address-cells = <1>;
-@@ -96,6 +102,26 @@
- 		regulator-always-on;
- 	};
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/pwm/pwm.h>
  
-+	reg_ov5640_1v8_d_o_vdd: regulator-ov5640-1v8-d-o-vdd {
-+		compatible = "regulator-fixed";
-+		regulator-always-on;
-+		regulator-max-microvolt = <1800000>;
-+		regulator-min-microvolt = <1800000>;
-+		regulator-name = "DOVDD/DVDD_1.8V";
-+		/* Note: The CSI module uses on-board 3.3V_SW supply */
-+		vin-supply = <&reg_module_3v3>;
-+	};
-+
-+	reg_ov5640_2v8_a_vdd: regulator-ov5640-2v8-a-vdd {
-+		compatible = "regulator-fixed";
-+		regulator-always-on;
-+		regulator-max-microvolt = <2800000>;
-+		regulator-min-microvolt = <2800000>;
-+		regulator-name = "AVDD/AFVDD_2.8V";
-+		/* Note: The CSI module uses on-board 3.3V_SW supply */
-+		vin-supply = <&reg_module_3v3>;
-+	};
-+
- 	reg_usb_otg_vbus: regulator-usb-otg-vbus {
- 		compatible = "regulator-fixed";
+ / {
+ 	model = "Toradex Apalis iMX6Q/D Module";
+@@ -19,13 +20,13 @@
+ 
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
++		brightness-levels = <0 4 8 16 32 64 128 255>;
++		default-brightness-level = <6>;
++		enable-gpios = <&gpio3 13 GPIO_ACTIVE_HIGH>;
  		pinctrl-names = "default";
-@@ -438,7 +464,6 @@
- 		reset-gpios = <&gpio6 9 GPIO_ACTIVE_LOW>;	/* MXM3_13 */
+ 		pinctrl-0 = <&pinctrl_gpio_bl_on>;
+-		brightness-levels = <0 127 191 223 239 247 251 255>;
+-		default-brightness-level = <1>;
+-		enable-gpios = <&gpio3 13 GPIO_ACTIVE_HIGH>;
+ 		power-supply = <&reg_module_3v3>;
+-		pwms = <&pwm4 0 5000000>;
++		pwms = <&pwm4 0 5000000 PWM_POLARITY_INVERTED>;
  		status = "disabled";
  	};
--
+ 
+@@ -761,7 +762,6 @@
  };
  
- /*
-@@ -617,6 +642,30 @@
- 	scl-gpios = <&gpio3 17 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	sda-gpios = <&gpio3 18 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	status = "disabled";
-+
-+	ov5640_csi_cam: ov5640_mipi@3c {
-+		compatible = "ovti,ov5640";
-+		AVDD-supply = <&reg_ov5640_2v8_a_vdd>;
-+		DOVDD-supply = <&reg_ov5640_1v8_d_o_vdd>;
-+		DVDD-supply = <&reg_ov5640_1v8_d_o_vdd>;
-+		clocks = <&clks IMX6QDL_CLK_CKO2>;
-+		clock-names = "xclk";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_cam_mclk>;
-+		/* These GPIOs are muxed with the iomuxc node */
-+		powerdown-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
-+		reg = <0x3c>;
-+		reset-gpios = <&gpio2 4 GPIO_ACTIVE_LOW>;
-+		status = "disabled";
-+
-+		port {
-+			ov5640_to_mipi_csi2: endpoint {
-+				clock-lanes = <0>;
-+				data-lanes = <1 2>;
-+				remote-endpoint = <&mipi_csi_from_ov5640>;
-+			};
-+		};
-+	};
- };
- 
- &ipu1_di1_disp1 {
-@@ -647,6 +696,22 @@
- 	};
- };
- 
-+&mipi_csi {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	status = "disabled";
-+
-+	port@0 {
-+		reg = <0>;
-+
-+		mipi_csi_from_ov5640: endpoint {
-+			clock-lanes = <0>;
-+			data-lanes = <1 2>;
-+			remote-endpoint = <&ov5640_to_mipi_csi2>;
-+		};
-+	};
-+};
-+
- &pwm1 {
+ &pwm4 {
+-	#pwm-cells = <2>;
  	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_pwm1>;
+ 	pinctrl-0 = <&pinctrl_pwm4>;
+ 	status = "disabled";
 -- 
 2.20.1
 
