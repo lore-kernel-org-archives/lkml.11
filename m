@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2446CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9219C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348217AbiEPUfp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:35:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56594 "EHLO
+        id S244644AbiEPUf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351119AbiEPUCC (ORCPT
+        with ESMTP id S1351116AbiEPUCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:02:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2642E13C;
-        Mon, 16 May 2022 12:59:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535C72BE;
+        Mon, 16 May 2022 12:59:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C59A9B81611;
-        Mon, 16 May 2022 19:59:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E9FC385AA;
-        Mon, 16 May 2022 19:59:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0088BB81613;
+        Mon, 16 May 2022 19:59:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6310DC385AA;
+        Mon, 16 May 2022 19:59:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731145;
-        bh=VMbYmNs67UPfayg47OoF8phgYXKB0mbdTrEmCm1IkK8=;
+        s=korg; t=1652731151;
+        bh=f2hGEdwI5KESCq279unJLIm61lGflU5bE9/b18+OZzw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eVoykfajD2VdoodD4DFRIjJmpEeSgyA8Xx7naHAq2faVx05RAJ2AnNEeH1f3WHsUZ
-         2aBf6tJt490tl2t8TnYovg4OOMfd+XhhM/qKCki5QSuMum3KkR7CwmBIvlW2V1gtMB
-         ZbjnlOf/oZ4JxpH3U2ezqpstCXFhrCP5o7jB6Jd8=
+        b=S/89c5PhfSpOQrFsyL6GqaeYi3EH5BOEobIP6SQTZvclPlXbC7qS1ZCDpKrUOwpmI
+         l4n4u1/GcDFi4iB6NtjqTObBVVKEiQK1Jfki8IhNFXqzoyPqiARuOo1V6RjWThbaHi
+         0MRn868D6XqjAmOEpl9JIxtZ7BbJnZjR+jz2b6BQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 5.17 087/114] slimbus: qcom: Fix IRQ check in qcom_slim_probe
-Date:   Mon, 16 May 2022 21:37:01 +0200
-Message-Id: <20220516193627.977914165@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Indan Zupancic <Indan.Zupancic@mep-info.com>
+Subject: [PATCH 5.17 088/114] fsl_lpuart: Dont enable interrupts too early
+Date:   Mon, 16 May 2022 21:37:02 +0200
+Message-Id: <20220516193628.005676316@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -49,43 +48,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Indan Zupancic <Indan.Zupancic@mep-info.com>
 
-commit fe503887eed6ea528e144ec8dacfa1d47aa701ac upstream.
+commit 401fb66a355eb0f22096cf26864324f8e63c7d78 upstream.
 
-platform_get_irq() returns non-zero IRQ number on success,
-negative error number on failure.
-And the doc of platform_get_irq() provides a usage example:
+If an irq is pending when devm_request_irq() is called, the irq
+handler will cause a NULL pointer access because initialisation
+is not done yet.
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
-
-Fix the check of return value to catch errors correctly.
-
-Fixes: ad7fcbc308b0 ("slimbus: qcom: Add Qualcomm Slimbus controller driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220429164917.5202-2-srinivas.kandagatla@linaro.org
+Fixes: 9d7ee0e28da59 ("tty: serial: lpuart: avoid report NULL interrupt")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Indan Zupancic <Indan.Zupancic@mep-info.com>
+Link: https://lore.kernel.org/r/20220505114750.45423-1-Indan.Zupancic@mep-info.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/slimbus/qcom-ctrl.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
---- a/drivers/slimbus/qcom-ctrl.c
-+++ b/drivers/slimbus/qcom-ctrl.c
-@@ -510,9 +510,9 @@ static int qcom_slim_probe(struct platfo
- 	}
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2658,6 +2658,7 @@ static int lpuart_probe(struct platform_
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct lpuart_port *sport;
+ 	struct resource *res;
++	irq_handler_t handler;
+ 	int ret;
  
- 	ctrl->irq = platform_get_irq(pdev, 0);
--	if (!ctrl->irq) {
-+	if (ctrl->irq < 0) {
- 		dev_err(&pdev->dev, "no slimbus IRQ\n");
--		return -ENODEV;
-+		return ctrl->irq;
- 	}
+ 	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
+@@ -2735,17 +2736,11 @@ static int lpuart_probe(struct platform_
  
- 	sctrl = &ctrl->ctrl;
+ 	if (lpuart_is_32(sport)) {
+ 		lpuart_reg.cons = LPUART32_CONSOLE;
+-		ret = devm_request_irq(&pdev->dev, sport->port.irq, lpuart32_int, 0,
+-					DRIVER_NAME, sport);
++		handler = lpuart32_int;
+ 	} else {
+ 		lpuart_reg.cons = LPUART_CONSOLE;
+-		ret = devm_request_irq(&pdev->dev, sport->port.irq, lpuart_int, 0,
+-					DRIVER_NAME, sport);
++		handler = lpuart_int;
+ 	}
+-
+-	if (ret)
+-		goto failed_irq_request;
+-
+ 	ret = uart_add_one_port(&lpuart_reg, &sport->port);
+ 	if (ret)
+ 		goto failed_attach_port;
+@@ -2767,13 +2762,18 @@ static int lpuart_probe(struct platform_
+ 
+ 	sport->port.rs485_config(&sport->port, &sport->port.rs485);
+ 
++	ret = devm_request_irq(&pdev->dev, sport->port.irq, handler, 0,
++				DRIVER_NAME, sport);
++	if (ret)
++		goto failed_irq_request;
++
+ 	return 0;
+ 
++failed_irq_request:
+ failed_get_rs485:
+ failed_reset:
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ failed_attach_port:
+-failed_irq_request:
+ 	lpuart_disable_clks(sport);
+ failed_clock_enable:
+ failed_out_of_range:
 
 
