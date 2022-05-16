@@ -2,113 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DEEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E409C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242240AbiEPKHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
+        id S240639AbiEPKHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233451AbiEPKFa (ORCPT
+        with ESMTP id S242285AbiEPKHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:05:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6E011452;
-        Mon, 16 May 2022 03:04:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 842D46093C;
-        Mon, 16 May 2022 10:04:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ACDCC385AA;
-        Mon, 16 May 2022 10:04:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652695478;
-        bh=qwMeOyDxZFuqD6KQw3J705rH3w/y6FDNYmqKPSYVm3A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=S4+qYbgBDMnf8CrM8i8T2yYLJPx1EV2O2H38OZ5tqHfCxdkSXqk8pyNa08HtDr67z
-         SEVEnjYWSiiWsRTm/hk44FievUyDqWPKuOJ/pq2TIHZMfk68koO+NrCbzasdePVmkI
-         v8EEXJtDc0QFP7KKYnUm+SqpPube4SIbgOXWh4rE0rllYmPE5XtRxPfs48bEYd3lfy
-         0yl/F4GqtV9PQUZmwqqkWq3XMWks5PzdVdXgH2EhdIgp2h0PPrR04+HI87c/1kOSOz
-         /MveAJXcC3QHS/v8YG1LdpZO7t2b1lCqg0YOK1T1Y1jfJ5TZhQ1l2B+fah2lsWRWo9
-         b2PZJ+RctXEeA==
-From:   Miguel Ojeda <ojeda@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     rust-for-linux@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Li Li <dualli@google.com>, linux-kernel@vger.kernel.org,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Subject: [PATCH v1] binder: convert `BINDER_*` ioctl `#define`s into an `enum`
-Date:   Mon, 16 May 2022 12:04:01 +0200
-Message-Id: <20220516100401.7639-1-ojeda@kernel.org>
+        Mon, 16 May 2022 06:07:12 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344E595A7;
+        Mon, 16 May 2022 03:07:01 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 58EF61F42B2B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652695620;
+        bh=f6jwulb2NLULA/5oaTqgRp/7nSTOiexmXap/G6mpgmQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=K3sXLj7fAWivUuYK3E1gThr/SRZt6RsQxqFySXNUH9sG3uZ73T3VYxUpGWDlTLHgG
+         dTR4g96sT+ayvxJVZalEkVc5f+s2mQrd+R7OQ3f2r4YPE9u4pFV+f3ipZTQx+0FTkD
+         dywnvP7JfxbKkFL/vgoK7NzkSRvHwhcQPCR4T0tTrrnbEmzzB7RrBcJn3d1GoDr//c
+         Dt32cFurWFMVJNN3/cXqLBMLhJ6zP/MVIBAUex9o+5q7ttnJijAroA/7QdvdOZwici
+         Q7foSG414T8SIjIMG81oDq9cxwcFyCu2d+vtCFxpxy//dcvaqvzdEVXAQMHMLkmvt/
+         7pBs8xU9fUqdA==
+Message-ID: <1c0b5dfc-4eb0-aa9d-cf38-657124022ed5@collabora.com>
+Date:   Mon, 16 May 2022 12:06:56 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] soc: mediatek: mtk-mmsys: Add support for MT6795 Helio
+ X10
+Content-Language: en-US
+To:     CK Hu <ck.hu@mediatek.com>, matthias.bgg@gmail.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
+        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
+        kernel@collabora.com
+References: <20220513170350.502501-1-angelogioacchino.delregno@collabora.com>
+ <7c996c665a57fdd9ba8d6df4dc085f70afc1b933.camel@mediatek.com>
+ <a7afc559-4e0a-6552-190c-19e58851ce68@collabora.com>
+ <4b5d6607b90f3e36fce7e61e1768da55693546aa.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <4b5d6607b90f3e36fce7e61e1768da55693546aa.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bindgen (a tool which generates the "raw" C bindings for Rust) only
-works (so far) with "simple" C `#define`s. In order to avoid having
-to manually maintain these constants in the (potential) Rust side,
-this patch converts them into an `enum`.
+Il 16/05/22 11:50, CK Hu ha scritto:
+> On Mon, 2022-05-16 at 10:44 +0200, AngeloGioacchino Del Regno wrote:
+>> Il 16/05/22 07:43, CK Hu ha scritto:
+>>> Hi, Angelo:
+>>>
+>>> On Fri, 2022-05-13 at 19:03 +0200, AngeloGioacchino Del Regno
+>>> wrote:
+>>>> Add MM support for the MT6795 SoC, using the mmsys default
+>>>> routing
+>>>> table.
+>>>>
+>>>> Signed-off-by: AngeloGioacchino Del Regno <
+>>>> angelogioacchino.delregno@collabora.com>
+>>>> ---
+>>>>
+>>>> In order for this patch to have any meaning and functionality, it
+>>>> is
+>>>> required to also have in-tree the [1] MT6795 clocks series, even
+>>>> though that's not required to actually compile this code.
+>>>>
+>>>> [1]
+>>>>
+> https://urldefense.com/v3/__https://patchwork.kernel.org/project/linux-mediatek/list/?series=641493__;!!CTRNKA9wMg0ARbw!ywDb_Gj4oV0iYHK_PbtJSNejzsJGlFVjX-1O0G1mR0vZX_5VeMtlZJ_AS6K_Mg$
+>>>>    
+>>>>
+>>>>    drivers/soc/mediatek/mtk-mmsys.c | 11 +++++++++++
+>>>>    1 file changed, 11 insertions(+)
+>>>>
+>>>> diff --git a/drivers/soc/mediatek/mtk-mmsys.c
+>>>> b/drivers/soc/mediatek/mtk-mmsys.c
+>>>> index 06d8e83a2cb5..38b36b881a3b 100644
+>>>> --- a/drivers/soc/mediatek/mtk-mmsys.c
+>>>> +++ b/drivers/soc/mediatek/mtk-mmsys.c
+>>>> @@ -57,6 +57,13 @@ static const struct mtk_mmsys_match_data
+>>>> mt6779_mmsys_match_data = {
+>>>>    	},
+>>>>    };
+>>>>    
+>>>> +static const struct mtk_mmsys_driver_data
+>>>> mt6795_mmsys_driver_data =
+>>>> {
+>>>> +	.clk_driver = "clk-mt6795-mm",
+>>>> +	.routes = mmsys_default_routing_table,
+>>>
+>>> mt6795 should have its own routing table instead of default one.
+>>> The
+>>> default one is used for mt8173, mt2701, mt2712 which no one knows
+>>> how
+>>> to separate them. If you don't know the routing table of mt6795,
+>>> just
+>>> left this as NULL.
+>>>
+>>
+>> Hello CK,
+>>
+>> I agree with you, in fact the first test that I've done was with
+>> leaving
+>> routes to NULL, but that did not work (I couldn't get the display to
+>> work),
+>> while assigning the default routing table resulted in having a
+>> working
+>> internal (DSI) display et al, which is why I have done that.
+>>
+>> I am sure that this may be a quirk that is required due to my
+>> platform's
+>> bootloader, but still, it won't work otherwise.
+>>
+>> If anyone from MediaTek wants to help with providing a better
+>> solution for
+>> that, you're welcome to - but otherwise, my proposal is to configure
+>> MT6795
+>> with that default routing table and eventually come back to this
+>> later if
+>> any issue with this gets discovered... I couldn't find any, though.
+> 
+> So you have a drm driver which support mt6795 and it would call
+> mtk_mmsys_ddp_connect() to setup routing routing register. You could
+> generate mt6795 routing table from default one by partial element that
+> you use in mt6795. I think this table would be smaller than the default
+> one.
+> 
 
-There may be support in the future for expanding macros that end up in
-a "numeric" one: https://github.com/rust-lang/rust-bindgen/issues/753.
+Okay, that makes a lot of sense: I'll try following this advice.
 
-Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
-Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
----
-Two notes:
-  - Let me know if you prefer that I base this on top of a binder branch.
-  - Wedson should OK the changes for his `Signed-off-by` tag (and probably
-    he should be the author of the patch).
-
- include/uapi/linux/android/binder.h | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
-
-diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
-index 11157fae8a8e..ed4d11a0bb99 100644
---- a/include/uapi/linux/android/binder.h
-+++ b/include/uapi/linux/android/binder.h
-@@ -236,19 +236,21 @@ struct binder_frozen_status_info {
- 	__u32            async_recv;
- };
- 
--#define BINDER_WRITE_READ		_IOWR('b', 1, struct binder_write_read)
--#define BINDER_SET_IDLE_TIMEOUT		_IOW('b', 3, __s64)
--#define BINDER_SET_MAX_THREADS		_IOW('b', 5, __u32)
--#define BINDER_SET_IDLE_PRIORITY	_IOW('b', 6, __s32)
--#define BINDER_SET_CONTEXT_MGR		_IOW('b', 7, __s32)
--#define BINDER_THREAD_EXIT		_IOW('b', 8, __s32)
--#define BINDER_VERSION			_IOWR('b', 9, struct binder_version)
--#define BINDER_GET_NODE_DEBUG_INFO	_IOWR('b', 11, struct binder_node_debug_info)
--#define BINDER_GET_NODE_INFO_FOR_REF	_IOWR('b', 12, struct binder_node_info_for_ref)
--#define BINDER_SET_CONTEXT_MGR_EXT	_IOW('b', 13, struct flat_binder_object)
--#define BINDER_FREEZE			_IOW('b', 14, struct binder_freeze_info)
--#define BINDER_GET_FROZEN_INFO		_IOWR('b', 15, struct binder_frozen_status_info)
--#define BINDER_ENABLE_ONEWAY_SPAM_DETECTION	_IOW('b', 16, __u32)
-+enum {
-+	BINDER_WRITE_READ			= _IOWR('b', 1, struct binder_write_read),
-+	BINDER_SET_IDLE_TIMEOUT			= _IOW('b', 3, __s64),
-+	BINDER_SET_MAX_THREADS			= _IOW('b', 5, __u32),
-+	BINDER_SET_IDLE_PRIORITY		= _IOW('b', 6, __s32),
-+	BINDER_SET_CONTEXT_MGR			= _IOW('b', 7, __s32),
-+	BINDER_THREAD_EXIT			= _IOW('b', 8, __s32),
-+	BINDER_VERSION				= _IOWR('b', 9, struct binder_version),
-+	BINDER_GET_NODE_DEBUG_INFO		= _IOWR('b', 11, struct binder_node_debug_info),
-+	BINDER_GET_NODE_INFO_FOR_REF		= _IOWR('b', 12, struct binder_node_info_for_ref),
-+	BINDER_SET_CONTEXT_MGR_EXT		= _IOW('b', 13, struct flat_binder_object),
-+	BINDER_FREEZE				= _IOW('b', 14, struct binder_freeze_info),
-+	BINDER_GET_FROZEN_INFO			= _IOWR('b', 15, struct binder_frozen_status_info),
-+	BINDER_ENABLE_ONEWAY_SPAM_DETECTION	= _IOW('b', 16, __u32),
-+};
- 
- /*
-  * NOTE: Two special error codes you should check for when calling
-
-base-commit: 42226c989789d8da4af1de0c31070c96726d990c
--- 
-2.36.1
-
+Regards,
+Angelo
