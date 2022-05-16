@@ -2,107 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:43:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A67C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346303AbiEPTlz (ORCPT
+        id S1345742AbiEPTmG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45096 "EHLO
+        Mon, 16 May 2022 15:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345691AbiEPTkS (ORCPT
+        with ESMTP id S1345778AbiEPTkZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:40:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760693EF3C;
-        Mon, 16 May 2022 12:39:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B85CB81613;
-        Mon, 16 May 2022 19:39:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627BBC34100;
-        Mon, 16 May 2022 19:39:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729963;
-        bh=otwVBSNI0rywwn53sxFGDiMQg+fR5EjSFvuunSnPYgM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EbOViEsSj6uqUuhoC/W6uhNFJk9yVOEhSNNRSNotAFOLv6MOrzOcOeIZbYqRdgPlu
-         IF/p7f4/y/CECkPXQDmBRhpvpjobRJ01c6IoNjizDfrGDnGm4UMGhEcqmJgRfZHLKL
-         VCgecaO5ajgdDMWNoi/m3Di9Y77JM8Nln4YyqISs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 15/25] ASoC: ops: Validate input values in snd_soc_put_volsw_range()
-Date:   Mon, 16 May 2022 21:36:29 +0200
-Message-Id: <20220516193615.145811404@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
-References: <20220516193614.678319286@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 16 May 2022 15:40:25 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED893EF05;
+        Mon, 16 May 2022 12:39:38 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id v11so14938896pff.6;
+        Mon, 16 May 2022 12:39:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GYimId1+Z3hhnSt3/2nNJtZTsF0tDudFtRYq4c1fKfY=;
+        b=R5Sk0i4/JyOhBJzBZp0K+RPNVt9HIka8OnOU+L2bHdV9YE2hWPmLIotmoiIZF8LZQz
+         66O7qWnBam0wZ/0whB93uSJVskDVMvHpzgCU2Mx8msc5Tdd1Ol1iQWq3gefC+JCK1rmS
+         b6ViDXxnzhTXexN/pWzDNBV6ZoSAOqS97ZXIxmbpSngi2n4HTDRElMO4v1s5YmxaX5tE
+         dxzDcIhljQenRUkMeyc/GfyfFeHvaVGJQ29jhYz6zLccANx9a6u7kVXG0iaK2JShglMp
+         C1PeVtT5MCq0I2hHMg+Xb3mcsgzvW9WWkeKUqVlBh306S+SLkBRla0iI3hrwd6u+vr4h
+         otwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=GYimId1+Z3hhnSt3/2nNJtZTsF0tDudFtRYq4c1fKfY=;
+        b=6TixvMxQ5UXauvQAJUSmedtn2di1jmSO7dky5m2wzlhzvBsZx9+9LsOXINmVL/udCu
+         h1jUqTFtTqbeBmeIAWX1WDkbMN47X//dl4CEAyNoOcCmHmVXblmnseicfz6IVj12EWNw
+         WtmVIENzOcWkdDkrhtIg2OLef9TYLvGqwYFNKcQzyttTbN0JinVg93diCa9kUusjzqzh
+         cBE620KlF4VdzJiNP4Wh0Ao4OZEGN2tcCsrDOv2q9QvGsR0qexGXQigrZhCGhHd0TmSZ
+         ZrLE6HUeV6OdlEmzXiUAAwg0DSvkOzQ0GW+ctoYBhGcO2iLkw9NqvxU6Q9YZsXqltvUk
+         ETsQ==
+X-Gm-Message-State: AOAM53096tXKH2CF3bPv3QIbqMJJKAxaGmhTjJsPojn+EdzTeLB2/NSS
+        uxm/WQHR0Nv6E+IKFXoDfrNusZA4Zc8=
+X-Google-Smtp-Source: ABdhPJyXzvwdQQ1UkYpxbYcYeTRiIKhHn0gzw4eDZjZeYj3t6YO9WJZtqDkNi2Ywf7TEKBylyV0nLA==
+X-Received: by 2002:a63:e64d:0:b0:3f2:470f:c45 with SMTP id p13-20020a63e64d000000b003f2470f0c45mr10044647pgj.208.1652729977580;
+        Mon, 16 May 2022 12:39:37 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:62fc])
+        by smtp.gmail.com with ESMTPSA id q19-20020a17090a2e1300b001df78f27c10sm59447pjd.42.2022.05.16.12.39.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 12:39:37 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 16 May 2022 09:39:35 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next v2 0/7] bpf: rstat: cgroup hierarchical stats
+Message-ID: <YoKod9FdpAe0L5dz@slm.duckdns.org>
+References: <20220515023504.1823463-1-yosryahmed@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220515023504.1823463-1-yosryahmed@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+Hello,
 
-[ Upstream commit aa22125c57f9e577f0a667e4fa07fc3fa8ca1e60 ]
+Looks good from cgroup side.
 
-Check that values written via snd_soc_put_volsw_range() are
-within the range advertised by the control, ensuring that we
-don't write out of spec values to the hardware.
+Thanks.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220423131239.3375261-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/soc-ops.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
-index d6d72595fbd0..0848aec1bd24 100644
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -528,7 +528,15 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
- 	unsigned int val, val_mask;
--	int err, ret;
-+	int err, ret, tmp;
-+
-+	tmp = ucontrol->value.integer.value[0];
-+	if (tmp < 0)
-+		return -EINVAL;
-+	if (mc->platform_max && tmp > mc->platform_max)
-+		return -EINVAL;
-+	if (tmp > mc->max - mc->min + 1)
-+		return -EINVAL;
- 
- 	if (invert)
- 		val = (max - ucontrol->value.integer.value[0]) & mask;
-@@ -543,6 +551,14 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	ret = err;
- 
- 	if (snd_soc_volsw_is_stereo(mc)) {
-+		tmp = ucontrol->value.integer.value[1];
-+		if (tmp < 0)
-+			return -EINVAL;
-+		if (mc->platform_max && tmp > mc->platform_max)
-+			return -EINVAL;
-+		if (tmp > mc->max - mc->min + 1)
-+			return -EINVAL;
-+
- 		if (invert)
- 			val = (max - ucontrol->value.integer.value[1]) & mask;
- 		else
 -- 
-2.35.1
-
-
-
+tejun
