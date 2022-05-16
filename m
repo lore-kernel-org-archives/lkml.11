@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3A1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D2EC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345874AbiEPTmM (ORCPT
+        id S1345777AbiEPTmk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43046 "EHLO
+        Mon, 16 May 2022 15:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345744AbiEPTkW (ORCPT
+        with ESMTP id S1345965AbiEPTlD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:40:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79C13EF2B;
-        Mon, 16 May 2022 12:39:28 -0700 (PDT)
+        Mon, 16 May 2022 15:41:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D0B3FBFE;
+        Mon, 16 May 2022 12:39:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73CD1614FD;
-        Mon, 16 May 2022 19:39:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C12FC34100;
-        Mon, 16 May 2022 19:39:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79600B81609;
+        Mon, 16 May 2022 19:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5EF2C385AA;
+        Mon, 16 May 2022 19:39:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729967;
-        bh=KuVmxcN1RR5gLpFNGJGar/lGk7b6M9imhOEuY6GRs6Y=;
+        s=korg; t=1652729995;
+        bh=VR2NdeGIoN7GonqQz+a24puCz48aAXmEH6UzNVfIOGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HLMgldmpPfB+GSNvLzDRShKOPEGkmmSdKB6IaD2epFo/AnH8T1S5q9Xw4fagoP+/E
-         NJ1SKW9VLgSh3+OAoKDKNnsRYoMYoIhLYtDuAvrSWk3XVdrMY0J31Qz4DA+BxyNNkX
-         EY9XW7py6wWVSA24+wsLqoLETnvBF4qfE4cKlack=
+        b=N6Lnyc+i7OYVKz705C7BAXqulXXQwvtVDnRAbPTUx5bsIaONEo3meY75PZBnvS6dD
+         cBdTlcV4UhaJIW67GNlwy95mI9ZuxjAAufakdCsf6lHyK/G7Rz6wGnoiAjRsS4deK2
+         GWv8a6oZgrrP/2Vek4s3uj07VHciuWKN0ISdy01w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>, Willy Tarreau <w@1wt.eu>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 16/25] tcp: resalt the secret every 10 seconds
-Date:   Mon, 16 May 2022 21:36:30 +0200
-Message-Id: <20220516193615.175963347@linuxfoundation.org>
+        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Martin Krastev <krastevm@vmware.com>,
+        Maaz Mombasawala <mombasawalam@vmware.com>
+Subject: [PATCH 4.14 23/25] drm/vmwgfx: Initialize drm_mode_fb_cmd2
+Date:   Mon, 16 May 2022 21:36:37 +0200
+Message-Id: <20220516193615.384517538@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
 References: <20220516193614.678319286@linuxfoundation.org>
@@ -54,70 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Zack Rusin <zackr@vmware.com>
 
-[ Upstream commit 4dfa9b438ee34caca4e6a4e5e961641807367f6f ]
+commit 3059d9b9f6aa433a55b9d0d21b566396d5497c33 upstream.
 
-In order to limit the ability for an observer to recognize the source
-ports sequence used to contact a set of destinations, we should
-periodically shuffle the secret. 10 seconds looks effective enough
-without causing particular issues.
+Transition to drm_mode_fb_cmd2 from drm_mode_fb_cmd left the structure
+unitialized. drm_mode_fb_cmd2 adds a few additional members, e.g. flags
+and modifiers which were never initialized. Garbage in those members
+can cause random failures during the bringup of the fbcon.
 
-Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Cc: Amit Klein <aksecurity@gmail.com>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Tested-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Initializing the structure fixes random blank screens after bootup due
+to flags/modifiers mismatches during the fbcon bring up.
+
+Fixes: dabdcdc9822a ("drm/vmwgfx: Switch to mode_cmd2")
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Cc: Daniel Vetter <daniel.vetter@intel.com>
+Cc: <stable@vger.kernel.org> # v4.10+
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Reviewed-by: Maaz Mombasawala <mombasawalam@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220302152426.885214-7-zack@kde.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/secure_seq.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/vmwgfx/vmwgfx_fb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-index 7232274de334..17683aea8a35 100644
---- a/net/core/secure_seq.c
-+++ b/net/core/secure_seq.c
-@@ -22,6 +22,8 @@
- static siphash_key_t net_secret __read_mostly;
- static siphash_key_t ts_secret __read_mostly;
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_fb.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fb.c
+@@ -522,7 +522,7 @@ static int vmw_fb_kms_detach(struct vmw_
  
-+#define EPHEMERAL_PORT_SHUFFLE_PERIOD (10 * HZ)
-+
- static __always_inline void net_secret_init(void)
+ static int vmw_fb_kms_framebuffer(struct fb_info *info)
  {
- 	net_get_random_once(&net_secret, sizeof(net_secret));
-@@ -100,11 +102,13 @@ u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 	const struct {
- 		struct in6_addr saddr;
- 		struct in6_addr daddr;
-+		unsigned int timeseed;
- 		__be16 dport;
- 	} __aligned(SIPHASH_ALIGNMENT) combined = {
- 		.saddr = *(struct in6_addr *)saddr,
- 		.daddr = *(struct in6_addr *)daddr,
--		.dport = dport
-+		.timeseed = jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+		.dport = dport,
- 	};
- 	net_secret_init();
- 	return siphash(&combined, offsetofend(typeof(combined), dport),
-@@ -144,8 +148,10 @@ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
- u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
- {
- 	net_secret_init();
--	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
--			    (__force u16)dport, &net_secret);
-+	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
-+			    (__force u16)dport,
-+			    jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+			    &net_secret);
- }
- EXPORT_SYMBOL_GPL(secure_ipv4_port_ephemeral);
- #endif
--- 
-2.35.1
-
+-	struct drm_mode_fb_cmd2 mode_cmd;
++	struct drm_mode_fb_cmd2 mode_cmd = {0};
+ 	struct vmw_fb_par *par = info->par;
+ 	struct fb_var_screeninfo *var = &info->var;
+ 	struct drm_framebuffer *cur_fb;
 
 
