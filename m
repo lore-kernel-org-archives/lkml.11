@@ -2,80 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1ED5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 02:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24918C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 02:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239363AbiEPCQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 22:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
+        id S239372AbiEPCZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 22:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239328AbiEPCQR (ORCPT
+        with ESMTP id S234618AbiEPCZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 22:16:17 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F5D9289AB;
-        Sun, 15 May 2022 19:16:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=e8hR3
-        bhFJ25k1+0lwJ2r27cDbS9JSZXAViwx9EEkoCo=; b=MRmp/elM5x/rdLRi8ceBP
-        Md6NgxvrQo9ByRu/Fs+Bp5UpTI4O6YffUrKcwoK32iSB3I+6dGct7KOxOKbsFW9P
-        JCgXg0BVYriZDtNlreOaogPlRBGDWsxJxr46VXDVRxpxPZXARNIBFRWGey/Cf5QJ
-        l+fsNMRvdlWByBBerSMSQM=
-Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.19])
-        by smtp8 (Coremail) with SMTP id DMCowACHYyG1s4Fi8FLcCg--.16808S2;
-        Mon, 16 May 2022 10:15:17 +0800 (CST)
-From:   qianfanguijin@163.com
-To:     linux-sunxi@lists.linux.dev
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        qianfan Zhao <qianfanguijin@163.com>
-Subject: [PATCH v4 0/2] ARM: sun8i-r40: Add cpufreq support
-Date:   Mon, 16 May 2022 10:15:14 +0800
-Message-Id: <20220516021516.23216-1-qianfanguijin@163.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 15 May 2022 22:25:17 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9854D22B3C
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 19:25:11 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id ev18so2499623pjb.4
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 19:25:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WfneCJ7ubjXm5v0nJIFpBjx951ZQW+Ht588NQ+ae43Y=;
+        b=ieA2QnR1LlaeKK4Ml2MD2KPgnJh0CR+kVbWD2XLdXNcZpYWwZsg7yaicyIs7Fh/lwS
+         68ZXWiD6HQqanAgfqoWYmCrFDgVx8cFjeJj3z6QSsJPfhpYh8xrdpe7p0jn++NZdJbO8
+         j7hq+XlHeP04YToORz4E3cquojfidJY7BD+4xvs4/y6P7Z2OiN4G/vv8jsuYRhKFu3FE
+         XlvTdFrrE1BaFMAsUCDoj1ZhrMk2yCod30SFtci3oFufHmMjgNz/MEv8ik1rIt2emCJV
+         gdGv6diKd3f8ZlGTuezTJWEUvQyrcnmHbs+MFz/cz/HbPiXCUD7lxVQdCl2kInCQqvRA
+         cbQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WfneCJ7ubjXm5v0nJIFpBjx951ZQW+Ht588NQ+ae43Y=;
+        b=CiqNpxhVh1OxZSp8EIrSgBH62weH2foUBMl5XlwVvcZZ9oOlQJ1kp9lK6jO7XmQGsu
+         0TDX2BzNnU2PPsIptxpJjPBxeAYbQagLb+rqZoZjmzR9nrqKsHCgMU25P94K/MfT3wsc
+         lgNpNzGx3S1HqSdgo4ARADx2FT7K8Cx3YYw8EdChtf3lcYRje7+KWni+V9/srGxjKVvh
+         zbslZjf8g/yKuXWKiQDQShuyIGVKzpWoZlZbNqDemDcAsG3zf9Qd3e1eksyvqHx2vATH
+         aCeIuWCV9eSFn2JSX/El+vup5PKPO8SJfYRpY4MANd64w6SyZS3K3wDe5aaZUHJl0OzW
+         ZV7w==
+X-Gm-Message-State: AOAM533purx4lL6TkibFirjiHe+4ZBGpWGhXW5VpFEkFbjKgYw2++z4z
+        OVldmsEZWOtf8l6EZBGFOLNWXw==
+X-Google-Smtp-Source: ABdhPJx861tOUkl71zH5U9XehMVj6VQ9T4Q7NrI1B/1Gjhsr/+Az8f5dudSh1SGp6PlfGvit69j6Pw==
+X-Received: by 2002:a17:90b:4c0a:b0:1dc:e81a:f0c with SMTP id na10-20020a17090b4c0a00b001dce81a0f0cmr17311851pjb.2.1652667910767;
+        Sun, 15 May 2022 19:25:10 -0700 (PDT)
+Received: from C02F52LSML85.bytedance.net ([139.177.225.225])
+        by smtp.gmail.com with ESMTPSA id q2-20020a170902edc200b0016173113c50sm1454013plk.92.2022.05.15.19.25.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 15 May 2022 19:25:10 -0700 (PDT)
+From:   Feng zhou <zhoufeng.zf@bytedance.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, jolsa@kernel.org, davemarchevsky@fb.com,
+        joannekoong@fb.com, geliang.tang@suse.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
+        cong.wang@bytedance.com, zhouchengming@bytedance.com,
+        zhoufeng.zf@bytedance.com, yosryahmed@google.com
+Subject: [PATCH bpf-next] selftests/bpf: fix some bugs in map_lookup_percpu_elem testcase
+Date:   Mon, 16 May 2022 10:24:53 +0800
+Message-Id: <20220516022453.68420-1-zhoufeng.zf@bytedance.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMCowACHYyG1s4Fi8FLcCg--.16808S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWruF4furW3Zr18Gw1UuF43Awb_yoWxKFbEq3
-        WSgFW8Ja95ZFyDtFZ5Jr4UXryxZr45GryDJay0yFyUJw1Yyrs8JFyDtayDW34rGFy3KFs8
-        tw4UJF1rW34avjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRmJm7UUUUUU==
-X-Originating-IP: [218.201.129.19]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiXBcD7VXl25DG-QAAsl
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: qianfan Zhao <qianfanguijin@163.com>
+From: Feng Zhou <zhoufeng.zf@bytedance.com>
 
-Change history:
-===============
+comments from Andrii Nakryiko, details in here:
+https://lore.kernel.org/lkml/20220511093854.411-1-zhoufeng.zf@bytedance.com/T/
 
-v4(2022-05-16):
-- Invert two patches.
-- Drop the cpufreqs that exceeds 1G in opp tables.
+use /* */ instead of //
+use libbpf_num_possible_cpus() instead of sysconf(_SC_NPROCESSORS_ONLN)
+use 8 bytes for value size
+fix memory leak
+use ASSERT_EQ instead of ASSERT_OK
+add bpf_loop to fetch values on each possible CPU
 
-v3:
-- remove "allwinner-r40" compatible from allowlist.
-- split dts in two part.
+Fixes: ed7c13776e20c74486b0939a3c1de984c5efb6aa ("selftests/bpf: add test case for bpf_map_lookup_percpu_elem")
+Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+---
+ .../bpf/prog_tests/map_lookup_percpu_elem.c   | 49 +++++++++------
+ .../bpf/progs/test_map_lookup_percpu_elem.c   | 61 ++++++++++++-------
+ 2 files changed, 70 insertions(+), 40 deletions(-)
 
-qianfan Zhao (2):
-  ARM: dts: sun8i-r40: Add "cpu-supply" node for sun8i-r40 based board
-  ARM: dts: sun8i-r40: add opp table for cpu
-
- .../boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |  4 ++
- arch/arm/boot/dts/sun8i-r40-feta40i.dtsi      |  4 ++
- arch/arm/boot/dts/sun8i-r40.dtsi              | 42 +++++++++++++++++++
- arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts      |  4 ++
- .../boot/dts/sun8i-v40-bananapi-m2-berry.dts  |  4 ++
- 5 files changed, 58 insertions(+)
-
---
-2.25.1
+diff --git a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
+index 58b24c2112b0..89ca170f1c25 100644
+--- a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
++++ b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
+@@ -1,30 +1,39 @@
+-// SPDX-License-Identifier: GPL-2.0
+-// Copyright (c) 2022 Bytedance
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2022 Bytedance */
+ 
+ #include <test_progs.h>
+ 
+ #include "test_map_lookup_percpu_elem.skel.h"
+ 
+-#define TEST_VALUE  1
+-
+ void test_map_lookup_percpu_elem(void)
+ {
+ 	struct test_map_lookup_percpu_elem *skel;
+-	int key = 0, ret;
+-	int nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+-	int *buf;
++	__u64 key = 0, sum;
++	int ret, i;
++	int nr_cpus = libbpf_num_possible_cpus();
++	__u64 *buf;
+ 
+-	buf = (int *)malloc(nr_cpus*sizeof(int));
++	buf = (__u64 *)malloc(nr_cpus*sizeof(__u64));
+ 	if (!ASSERT_OK_PTR(buf, "malloc"))
+ 		return;
+-	memset(buf, 0, nr_cpus*sizeof(int));
+-	buf[0] = TEST_VALUE;
+ 
+-	skel = test_map_lookup_percpu_elem__open_and_load();
+-	if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open_and_load"))
+-		return;
++	for (i=0; i<nr_cpus; i++)
++		buf[i] = i;
++	sum = (nr_cpus-1)*nr_cpus/2;
++
++	skel = test_map_lookup_percpu_elem__open();
++	if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open"))
++		goto exit;
++
++	skel->rodata->nr_cpus = nr_cpus;
++
++	ret = test_map_lookup_percpu_elem__load(skel);
++	if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__load"))
++		goto cleanup;
++
+ 	ret = test_map_lookup_percpu_elem__attach(skel);
+-	ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach");
++	if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach"))
++		goto cleanup;
+ 
+ 	ret = bpf_map_update_elem(bpf_map__fd(skel->maps.percpu_array_map), &key, buf, 0);
+ 	ASSERT_OK(ret, "percpu_array_map update");
+@@ -37,10 +46,14 @@ void test_map_lookup_percpu_elem(void)
+ 
+ 	syscall(__NR_getuid);
+ 
+-	ret = skel->bss->percpu_array_elem_val == TEST_VALUE &&
+-	      skel->bss->percpu_hash_elem_val == TEST_VALUE &&
+-	      skel->bss->percpu_lru_hash_elem_val == TEST_VALUE;
+-	ASSERT_OK(!ret, "bpf_map_lookup_percpu_elem success");
++	test_map_lookup_percpu_elem__detach(skel);
++
++	ASSERT_EQ(skel->bss->percpu_array_elem_sum, sum, "percpu_array lookup percpu elem");
++	ASSERT_EQ(skel->bss->percpu_hash_elem_sum, sum, "percpu_hash lookup percpu elem");
++	ASSERT_EQ(skel->bss->percpu_lru_hash_elem_sum, sum, "percpu_lru_hash lookup percpu elem");
+ 
++cleanup:
+ 	test_map_lookup_percpu_elem__destroy(skel);
++exit:
++	free(buf);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_map_lookup_percpu_elem.c b/tools/testing/selftests/bpf/progs/test_map_lookup_percpu_elem.c
+index 5d4ef86cbf48..75479180571f 100644
+--- a/tools/testing/selftests/bpf/progs/test_map_lookup_percpu_elem.c
++++ b/tools/testing/selftests/bpf/progs/test_map_lookup_percpu_elem.c
+@@ -1,52 +1,69 @@
+-// SPDX-License-Identifier: GPL-2.0
+-// Copyright (c) 2022 Bytedance
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2022 Bytedance */
+ 
+ #include "vmlinux.h"
+ #include <bpf/bpf_helpers.h>
+ 
+-int percpu_array_elem_val = 0;
+-int percpu_hash_elem_val = 0;
+-int percpu_lru_hash_elem_val = 0;
++__u64 percpu_array_elem_sum = 0;
++__u64 percpu_hash_elem_sum = 0;
++__u64 percpu_lru_hash_elem_sum = 0;
++const volatile int nr_cpus;
+ 
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+ 	__uint(max_entries, 1);
+ 	__type(key, __u32);
+-	__type(value, __u32);
++	__type(value, __u64);
+ } percpu_array_map SEC(".maps");
+ 
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_PERCPU_HASH);
+ 	__uint(max_entries, 1);
+-	__type(key, __u32);
+-	__type(value, __u32);
++	__type(key, __u64);
++	__type(value, __u64);
+ } percpu_hash_map SEC(".maps");
+ 
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_LRU_PERCPU_HASH);
+ 	__uint(max_entries, 1);
+-	__type(key, __u32);
+-	__type(value, __u32);
++	__type(key, __u64);
++	__type(value, __u64);
+ } percpu_lru_hash_map SEC(".maps");
+ 
++struct read_percpu_elem_ctx {
++	void *map;
++	__u64 sum;
++};
++
++static int read_percpu_elem_callback(__u32 index, struct read_percpu_elem_ctx *ctx)
++{
++	__u64 key = 0;
++	__u64 *value;
++	value = bpf_map_lookup_percpu_elem(ctx->map, &key, index);
++	if (value)
++		ctx->sum += *value;
++	return 0;
++}
++
+ SEC("tp/syscalls/sys_enter_getuid")
+ int sysenter_getuid(const void *ctx)
+ {
+-	__u32 key = 0;
+-	__u32 cpu = 0;
+-	__u32 *value;
++	struct read_percpu_elem_ctx map_ctx;
+ 
+-	value = bpf_map_lookup_percpu_elem(&percpu_array_map, &key, cpu);
+-	if (value)
+-		percpu_array_elem_val = *value;
++	map_ctx.map = &percpu_array_map;
++	map_ctx.sum = 0;
++	bpf_loop(nr_cpus, read_percpu_elem_callback, &map_ctx, 0);
++	percpu_array_elem_sum = map_ctx.sum;
+ 
+-	value = bpf_map_lookup_percpu_elem(&percpu_hash_map, &key, cpu);
+-	if (value)
+-		percpu_hash_elem_val = *value;
++	map_ctx.map = &percpu_hash_map;
++	map_ctx.sum = 0;
++	bpf_loop(nr_cpus, read_percpu_elem_callback, &map_ctx, 0);
++	percpu_hash_elem_sum = map_ctx.sum;
+ 
+-	value = bpf_map_lookup_percpu_elem(&percpu_lru_hash_map, &key, cpu);
+-	if (value)
+-		percpu_lru_hash_elem_val = *value;
++	map_ctx.map = &percpu_lru_hash_map;
++	map_ctx.sum = 0;
++	bpf_loop(nr_cpus, read_percpu_elem_callback, &map_ctx, 0);
++	percpu_lru_hash_elem_sum = map_ctx.sum;
+ 
+ 	return 0;
+ }
+-- 
+2.20.1
 
