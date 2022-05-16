@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2911C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9542C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:09:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235749AbiEPUJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
+        id S242938AbiEPUJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346465AbiEPTu3 (ORCPT
+        with ESMTP id S1346807AbiEPT4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:50:29 -0400
+        Mon, 16 May 2022 15:56:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46FC43ADE;
-        Mon, 16 May 2022 12:45:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EAA47AC0;
+        Mon, 16 May 2022 12:49:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A62A2B81604;
-        Mon, 16 May 2022 19:45:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F5DC385AA;
-        Mon, 16 May 2022 19:45:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21754B81613;
+        Mon, 16 May 2022 19:49:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 834A2C385AA;
+        Mon, 16 May 2022 19:49:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730318;
-        bh=sBNFGDHK2fsl+hkbfNDprXdpmW3c6JSB43OoPzzX5yE=;
+        s=korg; t=1652730555;
+        bh=AhnYl+ZcmT/1PsCkh76SmPzD+wrnGfBbdCPSpLDGwLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jLmWENYD8SAaEJEkB2qsVfyYT6dnlNV9tF4lj9tPK49bkf+yoR5t+TiGwAjh+mjR8
-         CGt7BNmGUyYg29ZgrwuwUSc2McryxUneomagovKuHInX0YjhZzTqsY9/FdvALQPe07
-         FZteOwVcZV/mFNIJ+KmB9n0B31HfpOyHlxEO/IrU=
+        b=E2xGjpU1ibEwvJEEdfsIGAlVM68RZA+3FTVLqAWA/6FbAFaP4CTdqXEasNyO9SkaN
+         dIPVlZ2j0K32+5wDxbqNfVkXJkOyjrIrikD8rM+kgWGNbn9DcMLQ9nAhn2pwQZml6r
+         T8zpZCSqDwXlU0UfREnQRRlVY6TMX2597HdfdImw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Felix Fietkau <nbd@nbd.name>, Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 26/66] net: dsa: bcm_sf2: Fix Wake-on-LAN with mac_link_down()
-Date:   Mon, 16 May 2022 21:36:26 +0200
-Message-Id: <20220516193620.173990378@linuxfoundation.org>
+Subject: [PATCH 5.15 036/102] net: ethernet: mediatek: ppe: fix wrong size passed to memset()
+Date:   Mon, 16 May 2022 21:36:10 +0200
+Message-Id: <20220516193625.036877528@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
-References: <20220516193619.400083785@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit b7be130c5d52e5224ac7d89568737b37b4c4b785 ]
+[ Upstream commit 00832b1d1a393dfb1b9491d085e5b27e8c25d103 ]
 
-After commit 2d1f90f9ba83 ("net: dsa/bcm_sf2: fix incorrect usage of
-state->link") the interface suspend path would call our mac_link_down()
-call back which would forcibly set the link down, thus preventing
-Wake-on-LAN packets from reaching our management port.
+'foe_table' is a pointer, the real size of struct mtk_foe_entry
+should be pass to memset().
 
-Fix this by looking at whether the port is enabled for Wake-on-LAN and
-not clearing the link status in that case to let packets go through.
-
-Fixes: 2d1f90f9ba83 ("net: dsa/bcm_sf2: fix incorrect usage of state->link")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220512021731.2494261-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: ba37b7caf1ed ("net: ethernet: mtk_eth_soc: add support for initializing the PPE")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Acked-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220511030829.3308094-1-yangyingliang@huawei.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/bcm_sf2.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mediatek/mtk_ppe.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 08a675a5328d..b712b4f27efd 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -710,6 +710,9 @@ static void bcm_sf2_sw_mac_link_down(struct dsa_switch *ds, int port,
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	u32 reg, offset;
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 3ad10c793308..66298e2235c9 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -395,7 +395,7 @@ static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
+ 	static const u8 skip[] = { 12, 25, 38, 51, 76, 89, 102 };
+ 	int i, k;
  
-+	if (priv->wol_ports_mask & BIT(port))
-+		return;
-+
- 	if (port != core_readl(priv, CORE_IMP0_PRT_ID)) {
- 		if (priv->type == BCM7445_DEVICE_ID)
- 			offset = CORE_STS_OVERRIDE_GMIIP_PORT(port);
+-	memset(ppe->foe_table, 0, MTK_PPE_ENTRIES * sizeof(ppe->foe_table));
++	memset(ppe->foe_table, 0, MTK_PPE_ENTRIES * sizeof(*ppe->foe_table));
+ 
+ 	if (!IS_ENABLED(CONFIG_SOC_MT7621))
+ 		return;
 -- 
 2.35.1
 
