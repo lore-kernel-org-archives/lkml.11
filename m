@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D587BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343545AbiEPUPo (ORCPT
+        id S1348311AbiEPUN6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
+        Mon, 16 May 2022 16:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351045AbiEPUB5 (ORCPT
+        with ESMTP id S1348233AbiEPT6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D006A473AE;
-        Mon, 16 May 2022 12:57:17 -0700 (PDT)
+        Mon, 16 May 2022 15:58:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE91F4968B;
+        Mon, 16 May 2022 12:50:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 777ABB81613;
-        Mon, 16 May 2022 19:57:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0243C385AA;
-        Mon, 16 May 2022 19:57:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A483B81614;
+        Mon, 16 May 2022 19:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9738FC385AA;
+        Mon, 16 May 2022 19:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731035;
-        bh=18TsozEqMlpQhPgYryuK9UP4KaIWqrgwWG2uxJOE024=;
+        s=korg; t=1652730619;
+        bh=eOL8HGcogLE/QMMh03izHa5VQCJCsdTi45AIy9Uu/Vw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cXbRQaNQZqSw8/0tJF5crQ+Lt00WCPxLtPwTmROZ1VozFA/z/GxElg1vhlzY+K+/H
-         6ag+i68y/Hd4Kjp1R3w7Z74EdM0oIuccLtVh8NcevH4oLqLjHUOmNsCE3xcAvym9Wn
-         QY5EniPgkHqWGlPxYfgv7rNxY6j1dWf85taonFkU=
+        b=HsVw4vTr+rzzWGwCbB335B+t9rvynaNwFvAmrERXopMuENttzK5gWqT3MW2qfIoh7
+         TlUD/+V+BHxT/bbRiGFEHdawGh8rb7ixIMhdjDUmd9hZDMipGEE0fxwEx20jhd6Zq/
+         AsUvkYL4PA34UZt1dO0OFhfC2SpTdINAY/IO3Z9c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.17 081/114] usb: typec: tcpci: Dont skip cleanup in .remove() on error
-Date:   Mon, 16 May 2022 21:36:55 +0200
-Message-Id: <20220516193627.811077315@linuxfoundation.org>
+        Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 016/102] ipv4: drop dst in multicast routing path
+Date:   Mon, 16 May 2022 21:35:50 +0200
+Message-Id: <20220516193624.464706471@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,50 +53,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
 
-commit bbc126ae381cf0a27822c1f822d0aeed74cc40d9 upstream.
+[ Upstream commit 9e6c6d17d1d6a3f1515ce399f9a011629ec79aa0 ]
 
-Returning an error value in an i2c remove callback results in an error
-message being emitted by the i2c core, but otherwise it doesn't make a
-difference. The device goes away anyhow and the devm cleanups are
-called.
+kmemleak reports the following when routing multicast traffic over an
+ipsec tunnel.
 
-In this case the remove callback even returns early without stopping the
-tcpm worker thread and various timers. A work scheduled on the work
-queue, or a firing timer after tcpci_remove() returned probably results
-in a use-after-free situation because the regmap and driver data were
-freed. So better make sure that tcpci_unregister_port() is called even
-if disabling the irq failed.
+Kmemleak output:
+unreferenced object 0x8000000044bebb00 (size 256):
+  comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
+    80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000f83947e0>] __kmalloc+0x1e8/0x300
+    [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
+    [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
+    [<00000000824f6cf1>] gre_rcv+0x178/0x540
+    [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
+    [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
+    [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
+    [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
+    [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
+    [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
+    [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
+    [<00000000013d7914>] irq_exit+0xc4/0xe0
+    [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
+    [<000000000751eb8e>] handle_int+0x16c/0x178
+    [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
 
-Also emit a more specific error message instead of the i2c core's
-"remove failed (EIO), will be ignored" and return 0 to suppress the
-core's warning.
+The metadata dst is leaked when ip_route_input_mc() updates the dst for
+the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
+handled dropping the dst in ip_route_input_slow() but missed the
+multicast case which is handled by ip_route_input_mc(). Drop the dst in
+ip_route_input_mc() avoiding the leak.
 
-This patch is (also) a preparation for making i2c remove callbacks
-return void.
-
-Fixes: 3ba76256fc4e ("usb: typec: tcpci: mask event interrupts when remove driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: stable <stable@vger.kernel.org>
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220502080456.21568-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f38a9eb1f77b ("dst: Metadata destinations")
+Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/tcpm/tcpci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/route.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/typec/tcpm/tcpci.c
-+++ b/drivers/usb/typec/tcpm/tcpci.c
-@@ -877,7 +877,7 @@ static int tcpci_remove(struct i2c_clien
- 	/* Disable chip interrupts before unregistering port */
- 	err = tcpci_write16(chip->tcpci, TCPC_ALERT_MASK, 0);
- 	if (err < 0)
--		return err;
-+		dev_warn(&client->dev, "Failed to disable irqs (%pe)\n", ERR_PTR(err));
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index ed9b6842a9a0..6e8020a3bd67 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1754,6 +1754,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ #endif
+ 	RT_CACHE_STAT_INC(in_slow_mc);
  
- 	tcpci_unregister_port(chip->tcpci);
- 
++	skb_dst_drop(skb);
+ 	skb_dst_set(skb, &rth->dst);
+ 	return 0;
+ }
+-- 
+2.35.1
+
 
 
