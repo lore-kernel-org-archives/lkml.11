@@ -2,123 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B86C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB4BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241701AbiEPOfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
+        id S242368AbiEPOiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbiEPOfC (ORCPT
+        with ESMTP id S229536AbiEPOh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:35:02 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17909D5F;
-        Mon, 16 May 2022 07:35:02 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id C56F71FB2E;
-        Mon, 16 May 2022 14:35:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652711700; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=W7ceyTjxid5l9ZGGTqZ+wt/EPfbFdKSX+/F4lyNdDKg=;
-        b=g3iVVHUtSyQWBN3Y59HjcBDj1p/IZFTO1o2s8CWmnszg6wBpymi4LOQIZAcNlK/seWQfW5
-        OTdSKo9VL5YnbQyO5U7Jfrl+JZ6OG/lh8V2pkehTwaRN9l9VeiSd8KtqESYl+sNjIGZ0wr
-        /r1jDJWacCJhVoSdrQMTgwD1CqqpyIo=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 883E513AAB;
-        Mon, 16 May 2022 14:35:00 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id KL9RIBRhgmL0GwAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Mon, 16 May 2022 14:35:00 +0000
-Date:   Mon, 16 May 2022 16:34:59 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Minchan Kim <minchan@kernel.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH v2 6/6] zswap: memcg accounting
-Message-ID: <20220516143459.GA17557@blackbody.suse.cz>
-References: <20220510152847.230957-1-hannes@cmpxchg.org>
- <20220510152847.230957-7-hannes@cmpxchg.org>
- <20220511173218.GB31592@blackbody.suse.cz>
- <YnwJUL90fuoHs3YW@cmpxchg.org>
- <20220513151426.GC16096@blackbody.suse.cz>
- <Yn6QfdouzkcrygTR@cmpxchg.org>
+        Mon, 16 May 2022 10:37:59 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71ECD2C11E
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:37:57 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2f863469afbso156101427b3.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:37:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kTB0WxbI7pNKziLAOm0Rj4onIqJzYX3pDVUnNfUI1io=;
+        b=f2noysl2zQeqrEgraTrbm5eIDW9y7aF4He2L+WhdMWL3Jed6jjFrGT5Z7TR9vRbBOi
+         Nq9r+fbYtjXvN+13e+UP7dAUDCPan7jRMMp7+Xk+ssS7cIIf9gRVKKmMxkddMUq+BYTA
+         srFAOGlacayVNCmaEBD+GPMTrRuN+D2r1CYdIY2+4FdOauuGGeVeTupX+TWgGZD4jO9a
+         /u6GQ/x16tfcv8GEUHVmZ7vY9oRHY4fqgc4u+Z50SpGqAbnzw8nUh79MVOPdoPD2CHab
+         /ph5+GQw4CQagic4Js86pIR468L9yuQqnrtFnWF2o3gMCTRufY2w56Vg5p0vpdiGxWX5
+         NN9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kTB0WxbI7pNKziLAOm0Rj4onIqJzYX3pDVUnNfUI1io=;
+        b=sDIszf+mJmQow3ylSIn/nVNHDyHtdWv6Y8x1FTAdow5Nkd8qysUzd5PZAuKol9ZTAW
+         JGzUNl9huz+wryZIKrzlns/WGtwZAvelR6Z8u0vZcrX8Vq30oVa0JyVCF/mKi4X2FzHm
+         D/116WbVSQN2r1YdTorMnleA81d8s/23Xl34KV+DFJ0unSfBChsM5xZr7clT21YcqQlU
+         tsili4q2rP8vYF/WJYLJHSOSNgP0vgvkc9rtLR+CaJPwQ74XAvJd1N7BWH+rGgy16vV2
+         MDO5ncMN734uwG02a9CX6/pmGMO76u3Wjhgu6HJdYudiVKYVThnK7VYZg1ieU7vUCSWN
+         jyBg==
+X-Gm-Message-State: AOAM530tWgns8L0QA8n1TJ7kN/cFdwQPTqE7OcIivmlKwiDJLxOxB8GP
+        cgmvAEVWc9sTjQ/RmP60gTN/v2otQ8proY/S/op61g==
+X-Google-Smtp-Source: ABdhPJwv43CtwkpKD1bPIxvSd/VT/IBz3YSs4otXb88oEdQFyDBVIq5Q8MhVJ5VPRySQku9SwyVn/AAVGsWYUp8h7bE=
+X-Received: by 2002:a81:478b:0:b0:2ea:da8c:5c21 with SMTP id
+ u133-20020a81478b000000b002eada8c5c21mr20894327ywa.189.1652711876582; Mon, 16
+ May 2022 07:37:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yn6QfdouzkcrygTR@cmpxchg.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <CA+G9fYtsp-1pi6d4J71BPYh-msjzbVt_-v3YrUu12dXPeyqTDg@mail.gmail.com>
+ <87o7zylztd.wl-maz@kernel.org> <CA+G9fYtLP1Kf1Ck-33XrLFQ5uc_p1z1S5Sr1x=9ZRGi=D851PQ@mail.gmail.com>
+In-Reply-To: <CA+G9fYtLP1Kf1Ck-33XrLFQ5uc_p1z1S5Sr1x=9ZRGi=D851PQ@mail.gmail.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 16 May 2022 20:07:45 +0530
+Message-ID: <CA+G9fYtW58D057A=gdA2JCk5QTHwXywpEeRfLXBELouUzBsugw@mail.gmail.com>
+Subject: Re: Unexpected kernel BRK exception at EL1 - Internal error: BRK
+ handler: f20003e8 - gic_dist_config
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>, pali@kernel.org,
+        Ingo Molnar <mingo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 01:08:13PM -0400, Johannes Weiner <hannes@cmpxchg.org> wrote:
-> Right, it's accounted as a subset rather than fully disjointed. But it
-> is a limitable counter of its own, so I exported it as such, with a
-> current and a max knob. This is comparable to the kmem counter in v1.
+Hi Marc,
 
-That counter and limit didn't turn out well. I liked the analogy to
-writeback (and dirty limit) better.
+FYI,
 
-> From an API POV it would be quite strange to have max for a counter
-> that has no current. Likewise it would be strange for a major memory
-> consumer to be missing from memory.stat.
+On Mon, 16 May 2022 at 19:28, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+>
+> Hi Marc,
+>
+> Thanks for looking into this report.
+>
+> On Mon, 16 May 2022 at 12:38, Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > On Mon, 16 May 2022 07:16:22 +0100,
+> > Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> > >
+> > > The kernel crash reported on arm64 juno-r2 device with kselftest-merge config
+> > > while booting Linux next-20220513 kernel  [1].
 
-My understanding would be to have all memory.stat entries as you
-propose, no extra .current counter and the .max knob for zswap
-configuration.
+This is happening only with the gcc-7.3.x built kernel on arm64 juno-r2 device.
 
-> It needs to be configured to the workload's access frequency curve,
-> which can be done with trial-and-error (reasonable balance between
-> zswpins and pswpins) or in a more targeted manner using tools such as
-> page_idle, damon etc.
-> [...]
-> Because for load tuning, bytes make much more sense. That's how you
-> measure the workingset, so a percentage is an awkward indirection. At
-> the cgroup level, it makes even less sense: all memcg tunables are in
-> bytes, it would be quite weird to introduce a "max" that is 0-100. Add
-> the confusion of how percentages would propagate down the hierarchy...
-
-Thanks for the explanation. I guess there's no simple tranformation of
-in-kernel available information that'd allow a more semantic
-configuration of this value. The rather crude absolute value requires
-(but also simply allows) some calibration or responsive tuning.
-
-> I don't traverse all ancestors, I bail on disabled groups and skip
-> unlimited ones.
-
-I admit I missed that.
-
-> Flushing unnecessary groups with a ratelimit doesn't sound like an
-> improvement to me.
-
-Then I'm only concerned about a situation when there's a single deep
-memcg that undergoes both workingset_refault() and zswap querying.
-The latter (bare call to cgroup_rstat_flush()) won't reset
-stats_flush_threshold, so the former (or the async flush more likely)
-would attempt a flush too. The flush work (on the leaf memcg) would be
-done twice even though it may be within the tolerance of cumulated
-error the second time.
-
-This is a thing that might require attention in the future (depending on
-some data how it actually performs). I see how the current approach is
-justified.
-
-
-Regards,
-Michal
+- Naresh
