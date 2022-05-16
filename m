@@ -2,259 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9844CC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 395EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239672AbiEPOCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
+        id S244259AbiEPOCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235347AbiEPOCD (ORCPT
+        with ESMTP id S235347AbiEPOCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:02:03 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290271A389;
-        Mon, 16 May 2022 07:02:02 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2362F21F5C;
-        Mon, 16 May 2022 14:02:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652709720; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6xX/Xo1YcyoxhDGVtD+3aF7M9NKMVvtDcsL11SFSAQU=;
-        b=UAEfoymfYf+QAbCzE3oYFS/LnW9rFBs924Unv93LKXY9GoxfXpJbDSZbNYQc1AwPujLxjA
-        jmh7TvIJcQUwFXF0iE9L66PiKtfkKtU88t+hUCpM3m0czPO3TM37NQr+8KouKC5lf5Okex
-        k2McswvfGUIvb+tozWKmApBRPL9ucl0=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D43112C141;
-        Mon, 16 May 2022 14:01:57 +0000 (UTC)
-Date:   Mon, 16 May 2022 16:01:57 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        David Gow <davidgow@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Evan Green <evgreen@chromium.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Julius Werner <jwerner@chromium.org>,
-        Justin Chen <justinpopo6@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        zhenwei pi <pizhenwei@bytedance.com>
-Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Message-ID: <YoJZVZl/MH0KiE/J@alley>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com>
+        Mon, 16 May 2022 10:02:32 -0400
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84F439176
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:02:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1652709750; x=1684245750;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=xGZDTf4qfj90dVVU9I5TmSQhq50AE4kFyxK7baB8oU4=;
+  b=h3sjEqPLIkfrG1Z8UNreXTrxEt7PqT5s/TCKzqlfz2UVTdvnkw9FVbdY
+   mJYI5VWS0uga1DQWHVz5xx5syTiijYGfksrRUbX8zkHc50RME41rs/jkp
+   A58uwWZKzRLS4hqBDGTI7SJgqkDwWIMTmD8mnA0BOwFMU9Kr5DSQTPIbd
+   /pmMGG9Mj5jiEXneInFeXS6vPUsNPqHM7maoPjn42zfjNJp167PdBExzk
+   bL+jfQWU+kzcvM6g0LxDfov2wRXdh+8eIhF+Xe6yIOB9q8pyJeW291jZx
+   aqwG6bG4MxQ+w9dcfjnkSdhqOKlnv2V0xhLmMYokAoPCSGCUtT4wq8JVO
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,230,1647273600"; 
+   d="scan'208";a="205306646"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 16 May 2022 22:02:27 +0800
+IronPort-SDR: JxXELMoCwXGsluAfC8G5CdiElAtDfDRN/HcELpsAtX7En6JAaM3N82YZ+nJ+zRaAc0zbB6YbAc
+ Kn73q30kBzqkjshfp+4H6sKv6+n+SrU7m/lnNdCAdrCkHRVRgsBXDIhiZikSwS2hJOY8jkmFpP
+ j1shQXRE1rx79g8uQrPQLjGGDGi8nuhHDD4dB75KN0LpDN1v8oYw4IoUc8AKu/fQxv+mFHww32
+ MhqkAmrqro0nIpUafd4XbDCMnYX6aCUWocG7RBNMdeIpao5MNa4jFM+22dL/sKpVF5xJVy+6dk
+ 2U3L5Mjb8UnAFq+ylGBVOZ5o
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 06:28:10 -0700
+IronPort-SDR: o8xbXSNY1v7+RZzXDuD5FUdce6KuoY7/qqH+NyT3YlW4OEq97zQXkcy+jcthgL3ssaKzXg4miF
+ 2HXwAY8dy6ZNi8vzxLqPFo5JxBQxo1IQ7WcoNKvuUnbMdHB5ls3OYK3iNsq53NOXiyVD14ka1E
+ dUrnhharUw8cbW6lg6Jy7aOAQNymhyzLt+tiiuk3gPigQu5tk3GpV91LLBuNsBQ4oEmdO95vb4
+ MHtnmvWp2QlN3oxRjvU5xu6jfC9E4YirGFyEp3Eg5aoN5CfWYoyObSnjnGrkUv2zUuKELqexvN
+ IyM=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 07:02:28 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4L21Cm0pnFz1SVp4
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:02:28 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1652709747; x=1655301748; bh=xGZDTf4qfj90dVVU9I5TmSQhq50AE4kFyxK
+        7baB8oU4=; b=BfBYgNsZ+siIAOaFFV8ORNyI1hHayTk2+IZ97SuE/RQw3f85/g+
+        iOHRQ6DIbLehX2BUg43EH2PfJ84Mhi1w7NepehdOw0H3+rdx6hosakiN8UFeC/ZZ
+        qrqwo60Sqgsl3aoxlvs3BcQ/dsdIOjV4/UH253I9MDD1EKQccyOkMEXjWDM+laUP
+        48HjBexyerRk07a4NhdGMFwEniePnYNtolwQkfP2dQ297lFyVth1X4bTN8zMPPD/
+        z42+sRJ9viAKZSWKafIgxT5YvljUKLuprFO0yFNAhCR4Rqa1SG6W/5JiFmqJNdeb
+        iHbO8fFnXQN9uxrsANwRUroe3kkzWhokSWQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id HQd6WaBtS1ZT for <linux-kernel@vger.kernel.org>;
+        Mon, 16 May 2022 07:02:27 -0700 (PDT)
+Received: from [10.225.1.43] (unknown [10.225.1.43])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4L21Cb6yPlz1Rvlc;
+        Mon, 16 May 2022 07:02:19 -0700 (PDT)
+Message-ID: <501aba4d-f4a3-8a4d-ec2a-99c7319b6a4d@opensource.wdc.com>
+Date:   Mon, 16 May 2022 16:02:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427224924.592546-20-gpiccoli@igalia.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [dm-devel] [PATCH v4 03/13] nvme: zns: Allow ZNS drives that have
+ non-power_of_2 zone size
+Content-Language: en-US
+To:     Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
+        naohiro.aota@wdc.com, Johannes.Thumshirn@wdc.com,
+        snitzer@kernel.org, dsterba@suse.com, jaegeuk@kernel.org,
+        hch@lst.de
+Cc:     jiangbo.365@bytedance.com, Jens Axboe <axboe@fb.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>, bvanassche@acm.org,
+        Chris Mason <clm@fb.com>, matias.bjorling@wdc.com,
+        gost.dev@samsung.com, Luis Chamberlain <mcgrof@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        Josef Bacik <josef@toxicpanda.com>,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        dm-devel@redhat.com, Alasdair Kergon <agk@redhat.com>,
+        jonathan.derrick@linux.dev, Keith Busch <kbusch@kernel.org>,
+        Johannes Thumshirn <jth@kernel.org>,
+        linux-btrfs@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>
+References: <20220516133921.126925-1-p.raghav@samsung.com>
+ <CGME20220516133926eucas1p15c7ba425b67ce4ac824c6bd3263e2dd4@eucas1p1.samsung.com>
+ <20220516133921.126925-4-p.raghav@samsung.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220516133921.126925-4-p.raghav@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-04-27 19:49:13, Guilherme G. Piccoli wrote:
-> The goal of this new panic notifier is to allow its users to register
-> callbacks to run very early in the panic path. This aims hypervisor/FW
-> notification mechanisms as well as simple LED functions, and any other
-> simple and safe mechanism that should run early in the panic path; more
-> dangerous callbacks should execute later.
+On 2022/05/16 15:39, Pankaj Raghav wrote:
+> Remove the condition which disallows non-power_of_2 zone size ZNS drive
+> to be updated and use generic method to calculate number of zones
+> instead of relying on log and shift based calculation on zone size.
 > 
-> For now, the patch is almost a no-op (although it changes a bit the
-> ordering in which some panic notifiers are executed). In a subsequent
-> patch, the panic path will be refactored, then the panic hypervisor
-> notifiers will effectively run very early in the panic path.
+> The power_of_2 calculation has been replaced directly with generic
+> calculation without special handling. Both modified functions are not
+> used in hot paths, they are only used during initialization &
+> revalidation of the ZNS device.
 > 
-> We also defer documenting it all properly in the subsequent refactor
-> patch. While at it, we removed some useless header inclusions and
-> fixed some notifiers return too (by using the standard NOTIFY_DONE).
-
-> --- a/arch/mips/sgi-ip22/ip22-reset.c
-> +++ b/arch/mips/sgi-ip22/ip22-reset.c
-> @@ -195,7 +195,7 @@ static int __init reboot_setup(void)
+> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+> Reviewed by: Adam Manzanares <a.manzanares@samsung.com>
+> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+> ---
+>  drivers/nvme/host/zns.c | 24 +++++++++++++++---------
+>  1 file changed, 15 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/zns.c b/drivers/nvme/host/zns.c
+> index 9f81beb4d..65d2aa68a 100644
+> --- a/drivers/nvme/host/zns.c
+> +++ b/drivers/nvme/host/zns.c
+> @@ -101,13 +101,6 @@ int nvme_update_zone_info(struct nvme_ns *ns, unsigned lbaf)
 >  	}
 >  
->  	timer_setup(&blink_timer, blink_timeout, 0);
-> -	atomic_notifier_chain_register(&panic_notifier_list, &panic_block);
-> +	atomic_notifier_chain_register(&panic_hypervisor_list, &panic_block);
-
-This notifier enables blinking. It is not much safe. It calls
-mod_timer() that takes a lock internally.
-
-This kind of functionality should go into the last list called
-before panic() enters the infinite loop. IMHO, all the blinking
-stuff should go there.
-
+>  	ns->zsze = nvme_lba_to_sect(ns, le64_to_cpu(id->lbafe[lbaf].zsze));
+> -	if (!is_power_of_2(ns->zsze)) {
+> -		dev_warn(ns->ctrl->device,
+> -			"invalid zone size:%llu for namespace:%u\n",
+> -			ns->zsze, ns->head->ns_id);
+> -		status = -ENODEV;
+> -		goto free_data;
+> -	}
 >  
->  	return 0;
->  }
-> diff --git a/arch/mips/sgi-ip32/ip32-reset.c b/arch/mips/sgi-ip32/ip32-reset.c
-> index 18d1c115cd53..9ee1302c9d13 100644
-> --- a/arch/mips/sgi-ip32/ip32-reset.c
-> +++ b/arch/mips/sgi-ip32/ip32-reset.c
-> @@ -145,7 +144,7 @@ static __init int ip32_reboot_setup(void)
->  	pm_power_off = ip32_machine_halt;
+>  	blk_queue_set_zoned(ns->disk, BLK_ZONED_HM);
+>  	blk_queue_flag_set(QUEUE_FLAG_ZONE_RESETALL, q);
+> @@ -128,8 +121,13 @@ static void *nvme_zns_alloc_report_buffer(struct nvme_ns *ns,
+>  	const size_t min_bufsize = sizeof(struct nvme_zone_report) +
+>  				   sizeof(struct nvme_zone_descriptor);
 >  
->  	timer_setup(&blink_timer, blink_timeout, 0);
-> -	atomic_notifier_chain_register(&panic_notifier_list, &panic_block);
-> +	atomic_notifier_chain_register(&panic_hypervisor_list, &panic_block);
+> +	/*
+> +	 * Division is used to calculate nr_zones with no special handling
+> +	 * for power of 2 zone sizes as this function is not invoked in a
+> +	 * hot path
+> +	 */
 
-Same here. Should be done only before the "loop".
+Comment not very useful.
 
+>  	nr_zones = min_t(unsigned int, nr_zones,
+> -			 get_capacity(ns->disk) >> ilog2(ns->zsze));
+> +			 div64_u64(get_capacity(ns->disk), ns->zsze));
 >  
->  	return 0;
->  }
-> --- a/drivers/firmware/google/gsmi.c
-> +++ b/drivers/firmware/google/gsmi.c
-> @@ -1034,7 +1034,7 @@ static __init int gsmi_init(void)
+>  	bufsize = sizeof(struct nvme_zone_report) +
+>  		nr_zones * sizeof(struct nvme_zone_descriptor);
+> @@ -182,6 +180,7 @@ int nvme_ns_report_zones(struct nvme_ns *ns, sector_t sector,
+>  	int ret, zone_idx = 0;
+>  	unsigned int nz, i;
+>  	size_t buflen;
+> +	u64 remainder = 0;
 >  
->  	register_reboot_notifier(&gsmi_reboot_notifier);
->  	register_die_notifier(&gsmi_die_notifier);
-> -	atomic_notifier_chain_register(&panic_notifier_list,
-> +	atomic_notifier_chain_register(&panic_hypervisor_list,
->  				       &gsmi_panic_notifier);
-
-I am not sure about this one. It looks like some logging or
-pre_reboot stuff.
-
-
+>  	if (ns->head->ids.csi != NVME_CSI_ZNS)
+>  		return -EINVAL;
+> @@ -197,7 +196,14 @@ int nvme_ns_report_zones(struct nvme_ns *ns, sector_t sector,
+>  	c.zmr.zrasf = NVME_ZRASF_ZONE_REPORT_ALL;
+>  	c.zmr.pr = NVME_REPORT_ZONE_PARTIAL;
 >  
->  	printk(KERN_INFO "gsmi version " DRIVER_VERSION " loaded\n");
-> --- a/drivers/leds/trigger/ledtrig-activity.c
-> +++ b/drivers/leds/trigger/ledtrig-activity.c
-> @@ -247,7 +247,7 @@ static int __init activity_init(void)
->  	int rc = led_trigger_register(&activity_led_trigger);
+> -	sector &= ~(ns->zsze - 1);
+> +	/*
+> +	 * rounddown the sector value to the nearest zone size. roundown macro
+> +	 * provided in math.h will not work for 32 bit architectures.
+> +	 * Division is used here with no special handling for power of 2
+> +	 * zone sizes as this function is not invoked in a hot path
+> +	 */
+
+Please simplify this to:
+
+	/* Round down the sector value to the nearest zone start */
+
+> +	div64_u64_rem(sector, ns->zsze, &remainder);
+> +	sector -= remainder;
+>  	while (zone_idx < nr_zones && sector < get_capacity(ns->disk)) {
+>  		memset(report, 0, buflen);
 >  
->  	if (!rc) {
-> -		atomic_notifier_chain_register(&panic_notifier_list,
-> +		atomic_notifier_chain_register(&panic_hypervisor_list,
->  					       &activity_panic_nb);
-
-The notifier is trivial. It just sets a variable.
-
-But still, it is about blinking and should be done
-in the last "loop" list.
 
 
->  		register_reboot_notifier(&activity_reboot_nb);
->  	}
-> --- a/drivers/leds/trigger/ledtrig-heartbeat.c
-> +++ b/drivers/leds/trigger/ledtrig-heartbeat.c
-> @@ -190,7 +190,7 @@ static int __init heartbeat_trig_init(void)
->  	int rc = led_trigger_register(&heartbeat_led_trigger);
->  
->  	if (!rc) {
-> -		atomic_notifier_chain_register(&panic_notifier_list,
-> +		atomic_notifier_chain_register(&panic_hypervisor_list,
->  					       &heartbeat_panic_nb);
-
-Same here. Blinking => loop list.
-
->  		register_reboot_notifier(&heartbeat_reboot_nb);
->  	}
-> diff --git a/drivers/misc/bcm-vk/bcm_vk_dev.c b/drivers/misc/bcm-vk/bcm_vk_dev.c
-> index a16b99bdaa13..d9d5199cdb2b 100644
-> --- a/drivers/misc/bcm-vk/bcm_vk_dev.c
-> +++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
-> @@ -1446,7 +1446,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  
->  	/* register for panic notifier */
->  	vk->panic_nb.notifier_call = bcm_vk_on_panic;
-> -	err = atomic_notifier_chain_register(&panic_notifier_list,
-> +	err = atomic_notifier_chain_register(&panic_hypervisor_list,
->  					     &vk->panic_nb);
-
-It seems to reset some hardware or so. IMHO, it should go into the
-pre-reboot list.
-
-
->  	if (err) {
->  		dev_err(dev, "Fail to register panic notifier\n");
-> --- a/drivers/power/reset/ltc2952-poweroff.c
-> +++ b/drivers/power/reset/ltc2952-poweroff.c
-> @@ -279,7 +279,7 @@ static int ltc2952_poweroff_probe(struct platform_device *pdev)
->  	pm_power_off = ltc2952_poweroff_kill;
->  
->  	data->panic_notifier.notifier_call = ltc2952_poweroff_notify_panic;
-> -	atomic_notifier_chain_register(&panic_notifier_list,
-> +	atomic_notifier_chain_register(&panic_hypervisor_list,
->  				       &data->panic_notifier);
-
-I looks like this somehow triggers the reboot. IMHO, it should go
-into the pre_reboot list.
-
->  	dev_info(&pdev->dev, "probe successful\n");
->  
-> --- a/drivers/soc/bcm/brcmstb/pm/pm-arm.c
-> +++ b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
-> @@ -814,7 +814,7 @@ static int brcmstb_pm_probe(struct platform_device *pdev)
->  		goto out;
->  	}
->  
-> -	atomic_notifier_chain_register(&panic_notifier_list,
-> +	atomic_notifier_chain_register(&panic_hypervisor_list,
->  				       &brcmstb_pm_panic_nb);
-
-I am not sure about this one. It instruct some HW to preserve DRAM.
-IMHO, it better fits into pre_reboot category but I do not have
-strong opinion.
-
->  
->  	pm_power_off = brcmstb_pm_poweroff;
-
-Best Regards,
-Petr
+-- 
+Damien Le Moal
+Western Digital Research
