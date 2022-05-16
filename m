@@ -2,124 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91731C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9FF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234426AbiEPUjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
+        id S243334AbiEPUjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347378AbiEPUZ7 (ORCPT
+        with ESMTP id S1348606AbiEPU1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:25:59 -0400
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDC84BB88;
-        Mon, 16 May 2022 13:10:19 -0700 (PDT)
-Received: from g550jk.localnet (a246182.upc-a.chello.nl [62.163.246.182])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 790ADC77E6;
-        Mon, 16 May 2022 20:09:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1652731787; bh=n3KNc/SOocoBncfkRYrY0TOgCH0gJ+eKHj2WvbuIB3M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=NRUUgsnHwtW8aASLKkBWkdcWUDFz8pZ3h0gi84MBp8qz+D9ilRjeM5RJWfNjwPyqM
-         qAmBlRqxyNNOoviG85T98fDlnY2+aKS96dcCCk3vrEyenaRyaOuOkP8h2IxsDVl8xy
-         66vDh8UiKYZjHfS9BcDKiG+RIIogqF7I67BKVd6o=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Subject: Re: [PATCH 1/2] ARM: dts: qcom: Add LPG node to pm8941
-Date:   Mon, 16 May 2022 22:09:47 +0200
-Message-ID: <2629354.mvXUDI8C0e@g550jk>
-In-Reply-To: <YnSazu3rcBMFPxYw@builder.lan>
-References: <20220504205411.1510667-1-bjorn.andersson@linaro.org> <12122358.O9o76ZdvQC@g550jk> <YnSazu3rcBMFPxYw@builder.lan>
+        Mon, 16 May 2022 16:27:35 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6A217E16;
+        Mon, 16 May 2022 13:10:58 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id er5so6257947edb.12;
+        Mon, 16 May 2022 13:10:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=j+pGwvii1jc/tNdHYIgSpOrAOOK3r8Jt2vj3y0L4fGM=;
+        b=U2JZNJI3sulLCkpj0n+9znizP3kQ8boz6tjbcSmp3lf+CQLXQhV+0RQFIHcIAtzGD2
+         XSAy44rTYzOQjFYDrjea1aTdngZDRFrWETv4+EWwm/bRXfoR9oQWShgTec5QDyqahXYU
+         cyvHpRaLeRgujgKl4nRPQxIyKxA+CVlDlhxA7QdYu4dKMuZfuVpMA+RSrQZpBOaNCmC7
+         RGczdslQx3geJ0AsaxfrDjxc9WQ0sTRwQfar/Cn4LEyWaCiH/ZBByD/KhKR9ZxmaR0ZO
+         SwQJ9erDavhIr4UXcNPnx03KoQRPH5bgcQLZZrelBBAcfuHEDvZwDdRX7Fkt0lH3FK/r
+         1G2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=j+pGwvii1jc/tNdHYIgSpOrAOOK3r8Jt2vj3y0L4fGM=;
+        b=qcEE/xk9vBDiBpQTT/XgwGiuLLFo05NhEnnnJusqLElli/6idlfZA27SfirKmj3tWO
+         FW5l8qq68thXF7J4L3khV1Einakk14m4OBRxsgIu98FgxWnfdHhYQqJXMEsX1/6sJYHN
+         C1yiEpcT5opne1rD09fPukrW0G4iyqZlgoF9bo7tfKBVh/1T6ZsDhtdUmarBkFUc28I4
+         onmbFh9J1mtVpJX6mFF61zKLLeJgozDjObF6uCfZA0sxzgTWbMKxp+YApZwOdRSh9q1V
+         bZLYCqr8vJEoMY2gZtcFkO/EXNaSxvdTsEQmKMEQ1LN0jkD8mRCrgyk1nb2Zx+wQTGTf
+         EJLw==
+X-Gm-Message-State: AOAM533cUUccZN/wPnEHu434f6zh3jSIQffmde7fnhhvSVTyAWbYb4tR
+        kCxzygl9P9qcVNPVMOHyaqo=
+X-Google-Smtp-Source: ABdhPJxylhJTYmg6HhuUBuaR84WYzenXA4sDeCzrc+yAfT2f2j7gNohWKKabRT6wAuKGq7/bTasfAA==
+X-Received: by 2002:aa7:d659:0:b0:42a:b0d5:a64e with SMTP id v25-20020aa7d659000000b0042ab0d5a64emr7475335edr.157.1652731857280;
+        Mon, 16 May 2022 13:10:57 -0700 (PDT)
+Received: from [192.168.8.198] ([85.255.232.74])
+        by smtp.gmail.com with ESMTPSA id en21-20020a17090728d500b006f3ef214e6csm108579ejc.210.2022.05.16.13.10.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 13:10:56 -0700 (PDT)
+Message-ID: <c8b30350-6e1c-8ad5-0150-a38996bef13f@gmail.com>
+Date:   Mon, 16 May 2022 21:09:55 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next v3 02/10] udp/ipv6: move pending section of
+ udpv6_sendmsg
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org
+References: <cover.1652368648.git.asml.silence@gmail.com>
+ <a0e7477985ef08c5f08f35b8c7336587c8adce12.1652368648.git.asml.silence@gmail.com>
+ <b9844f3ce486c5aff8547e79abf4344488db6568.camel@redhat.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <b9844f3ce486c5aff8547e79abf4344488db6568.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
-
-On Freitag, 6. Mai 2022 05:49:34 CEST Bjorn Andersson wrote:
-> On Thu 05 May 03:01 CDT 2022, Luca Weiss wrote:
-> > Hi Bjorn,
-> > 
-> > On Mittwoch, 4. Mai 2022 22:54:10 CEST Bjorn Andersson wrote:
-> > > The PM8941 contains 8 LPG channels, as well as TRILED and LUT blocks.
-> > > Add a node for these.
-> > > 
-> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > > ---
-> > > 
-> > >  arch/arm/boot/dts/qcom-pm8941.dtsi | 9 +++++++++
-> > >  1 file changed, 9 insertions(+)
-> > > 
-> > > diff --git a/arch/arm/boot/dts/qcom-pm8941.dtsi
-> > > b/arch/arm/boot/dts/qcom-pm8941.dtsi index cdd2bdb77b32..7881a071b372
-> > > 100644
-> > > --- a/arch/arm/boot/dts/qcom-pm8941.dtsi
-> > > +++ b/arch/arm/boot/dts/qcom-pm8941.dtsi
-> > > @@ -144,6 +144,15 @@ pm8941_1: pm8941@1 {
-> > > 
-> > >  		#address-cells = <1>;
-> > >  		#size-cells = <0>;
-> > > 
-> > > +		pm8941_lpg: lpg {
-> > > +			compatible = "qcom,pm8941-lpg";
-> > > +
-> > > +			#address-cells = <1>;
-> > > +			#size-cells = <0>;
-> > 
-> > Just curious, why doesn't pm8941 have #pwm-cells = <2>; like the other lpg
-> > nodes in [0]?
+On 5/16/22 14:11, Paolo Abeni wrote:
+> On Fri, 2022-05-13 at 16:26 +0100, Pavel Begunkov wrote:
+>> Move up->pending section of udpv6_sendmsg() to the beginning of the
+>> function. Even though it require some code duplication for sin6 parsing,
+>> it clearly localises the pending handling in one place, removes an extra
+>> if and more importantly will prepare the code for further patches.
+>>
+>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+>> ---
+>>   net/ipv6/udp.c | 70 ++++++++++++++++++++++++++++++--------------------
+>>   1 file changed, 42 insertions(+), 28 deletions(-)
+>>
+>> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+>> index 11d44ed46953..85bff1252f5c 100644
+>> --- a/net/ipv6/udp.c
+>> +++ b/net/ipv6/udp.c
+>> @@ -1318,6 +1318,46 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>>   	ipc6.sockc.tsflags = sk->sk_tsflags;
+>>   	ipc6.sockc.mark = sk->sk_mark;
+>>   
+>> +	/* Rough check on arithmetic overflow,
+>> +	   better check is made in ip6_append_data().
+>> +	   */
+>> +	if (unlikely(len > INT_MAX - sizeof(struct udphdr)))
+>> +		return -EMSGSIZE;
+>> +
+>> +	getfrag  =  is_udplite ?  udplite_getfrag : ip_generic_getfrag;
+>> +
+>> +	/* There are pending frames. */
+>> +	if (up->pending) {
+>> +		if (up->pending == AF_INET)
+>> +			return udp_sendmsg(sk, msg, len);
+>> +
+>> +		/* Do a quick destination sanity check before corking. */
+>> +		if (sin6) {
+>> +			if (msg->msg_namelen < offsetof(struct sockaddr, sa_data))
+>> +				return -EINVAL;
+>> +			if (sin6->sin6_family == AF_INET6) {
+>> +				if (msg->msg_namelen < SIN6_LEN_RFC2133)
+>> +					return -EINVAL;
+>> +				if (ipv6_addr_any(&sin6->sin6_addr) &&
+>> +				    ipv6_addr_v4mapped(&np->saddr))
+>> +					return -EINVAL;
 > 
-> I guess I didn't have a need for the lpg to be a pwm-chip on this pmic,
-> yet. This could be added now, or at a later point when someone has a
-> usecase for the pwm-chip.
+> It looks like 'any' destination with ipv4 mapped source is now
+> rejected, while the existing code accept it.
 
-While I don't know the use case for using the lpg as pwm on consumer hardware, 
-it's maybe a good idea to add now?
+It should be up->pending == AF_INET6 to get there, and previously it'd
+fall into udp_sendmsg() and fail
 
-> 
-> > Other than that, the node works fine on pm8941. Will send a patch for
-> > enabling notification LED on msm8974-FP2 soon.
-> 
-> If you turn that into a Tested-by, and preferably a Reviewed-by, I would
-> have what I need to merge the two changes.
+if (unlikely(up->pending != AF_INET))
+         return -EINVAL;
 
-In any case:
+I don't see it anyhow rejecting cases that were working before.
+Can you elaborate a bit?
 
-Tested-by: Luca Weiss <luca@z3ntu.xyz>
-Reviewed-by: Luca Weiss <luca@z3ntu.xyz>
-
-Regards
-Luca
-
-> 
-> Looking forward to the FP2 patch.
-> 
-> Thanks,
-> Bjorn
-> 
-> > Regards
-> > Luca
-> > 
-> > [0]
-> > https://lore.kernel.org/linux-arm-msm/20220505022706.1692554-2-bjorn.ande
-> > rsson@linaro.org/> 
-> > > +
-> > > +			status = "disabled";
-> > > +		};
-> > > +
-> > > 
-> > >  		pm8941_wled: wled@d800 {
-> > >  		
-> > >  			compatible = "qcom,pm8941-wled";
-> > >  			reg = <0xd800>;
-
-
-
-
+-- 
+Pavel Begunkov
