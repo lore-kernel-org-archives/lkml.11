@@ -2,134 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB058C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 01:14:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C513C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 01:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238959AbiEPBOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 21:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
+        id S238999AbiEPBOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 21:14:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231937AbiEPBOK (ORCPT
+        with ESMTP id S236470AbiEPBOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 21:14:10 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05553E0C2;
-        Sun, 15 May 2022 18:14:07 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L1h8H5sVvzhZ8f;
-        Mon, 16 May 2022 09:13:19 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
- 2022 09:14:05 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next v3] ext4: fix bug_on in ext4_writepages
-Date:   Mon, 16 May 2022 09:27:52 +0800
-Message-ID: <20220516012752.17241-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Sun, 15 May 2022 21:14:47 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C705BF76;
+        Sun, 15 May 2022 18:14:43 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L1h9n4gxCz4xZ2;
+        Mon, 16 May 2022 11:14:37 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652663679;
+        bh=DOzVSuiLWwoYauUsaFUFtUlDaTPA5dFC/+2t4lAmiiQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=sz3TvfnJY8/DEszo2jtX9bR2X2E6DMRuEIuGGe1dQWldZLo/Er3IjTt9bb4MQIXZg
+         51oi+N72LCnpd0XZtTnnBhm6zcnNj161w4nwo6q0Vjx/XQ5aReIhPvPGBh6W7o7TS/
+         HFKXzNQWXFlK+5ZBE9X7ilZzQUAP5E3Ykif10aLjYtXXnS7P6seYRRHEYUqPH+TkBc
+         iuRInUIWZ88OnzgICWtrr1gu6e7h7Xwlwlxzuc+Hn9dCOvLWaNB3yu3iIAL4QIe335
+         I0vthRCHJSacyFbvcuZ9W0fWcfExTz2B+bl4o28hDEVP2tCpX3u3YrsgyPiI2tz49H
+         KoEn8KAqbCfoA==
+Date:   Mon, 16 May 2022 11:14:35 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kishen Maloor <kishen.maloor@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20220516111435.72f35dca@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/=bSpMFCrknkyhKjg7.oo9ho";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-we got issue as follows:
-EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
-------------[ cut here ]------------
-kernel BUG at fs/ext4/inode.c:2708!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
-RIP: 0010:ext4_writepages+0x1977/0x1c10
-RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
-RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
-RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
-R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
-R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
-FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- do_writepages+0x130/0x3a0
- filemap_fdatawrite_wbc+0x83/0xa0
- filemap_flush+0xab/0xe0
- ext4_alloc_da_blocks+0x51/0x120
- __ext4_ioctl+0x1534/0x3210
- __x64_sys_ioctl+0x12c/0x170
- do_syscall_64+0x3b/0x90
+--Sig_/=bSpMFCrknkyhKjg7.oo9ho
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-It may happen as follows:
-1. write inline_data inode
-vfs_write
-  new_sync_write
-    ext4_file_write_iter
-      ext4_buffered_write_iter
-        generic_perform_write
-          ext4_da_write_begin
-            ext4_da_write_inline_data_begin -> If inline data size too
-            small will allocate block to write, then mapping will has
-            dirty page
-                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
-2. fallocate
-do_vfs_ioctl
-  ioctl_preallocate
-    vfs_fallocate
-      ext4_fallocate
-        ext4_convert_inline_data
-          ext4_convert_inline_data_nolock
-            ext4_map_blocks -> fail will goto restore data
-            ext4_restore_inline_data
-              ext4_create_inline_data
-              ext4_write_inline_data
-              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
-3. writepages
-__ext4_ioctl
-  ext4_alloc_da_blocks
-    filemap_flush
-      filemap_fdatawrite_wbc
-        do_writepages
-          ext4_writepages
-            if (ext4_has_inline_data(inode))
-              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
+Hi all,
 
-The root cause of this issue is we destory inline data until call ext4_writepages
-under delay allocation mode. But there maybe already covert from inline to extent.
-To solved this issue, we call filemap_flush firstly.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/ext4/inline.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+  net/mptcp/pm.c
 
-diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
-index 6d253edebf9f..79a7d5d700f7 100644
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -2002,6 +2002,12 @@ int ext4_convert_inline_data(struct inode *inode)
- 	if (!ext4_has_inline_data(inode)) {
- 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
- 		return 0;
-+	} else if (!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)) {
-+		error = filemap_flush(inode->i_mapping);
-+		if (error)
-+			return error;
-+		if (!ext4_has_inline_data(inode))
-+			return 0;
- 	}
- 
- 	needed_blocks = ext4_writepage_trans_blocks(inode);
--- 
-2.31.1
+between commit:
 
+  95d686517884 ("mptcp: fix subflow accounting on close")
+
+from the net tree and commit:
+
+  4d25247d3ae4 ("mptcp: bypass in-kernel PM restrictions for non-kernel PMs=
+")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/mptcp/pm.c
+index aa51b100e033,cdc2d79071f8..000000000000
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@@ -178,7 -181,9 +181,8 @@@ void mptcp_pm_subflow_check_next(struc
+  	struct mptcp_pm_data *pm =3D &msk->pm;
+  	bool update_subflows;
+ =20
+- 	update_subflows =3D subflow->request_join || subflow->mp_join;
+ -	update_subflows =3D (ssk->sk_state =3D=3D TCP_CLOSE) &&
+ -			  (subflow->request_join || subflow->mp_join) &&
+++	update_subflows =3D (subflow->request_join || subflow->mp_join) &&
++ 			  mptcp_pm_is_kernel(msk);
+  	if (!READ_ONCE(pm->work_pending) && !update_subflows)
+  		return;
+ =20
+
+--Sig_/=bSpMFCrknkyhKjg7.oo9ho
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKBpXsACgkQAVBC80lX
+0Gwu7wf5AfjCT4pglRirSN4IKmmpw1HVddjVaRGqwydlR/RdVwyZxaRCZDRhltZY
++Fl633ZPSog1AhX6YbsZN9rSz5wb9KVIEwbtlAetWtdNqQfF1RDkeGm3dYQVnP/C
+kA883Z2I+sb33t9DGUinZsBuM/HG6qpqjKFouAgYzV6zNKR8g7AOpClcbPzBYpQT
+XJ8DlEkhLtQ59dJu//Tg7/Ap9T4FdPkj56LtevP8pLPoI4AeV5vP0s0iHTdloQrH
+bG7RyB/8fWA2CfMRVVv8+LgoFM7JfKmlq/I3b/H9srAuxlH4DbLUTgscR6cP3HCl
+IqdRzR6rHxcBi30tiBOUTi5GPntqFA==
+=E97s
+-----END PGP SIGNATURE-----
+
+--Sig_/=bSpMFCrknkyhKjg7.oo9ho--
