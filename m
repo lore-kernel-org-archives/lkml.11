@@ -2,236 +2,401 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F15F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240273AbiEPKce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
+        id S238113AbiEPKdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234217AbiEPKcV (ORCPT
+        with ESMTP id S234217AbiEPKdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:32:21 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A44419C2C;
-        Mon, 16 May 2022 03:32:20 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24G9GC45022936;
-        Mon, 16 May 2022 10:32:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=akLgE8JmtI978ECDEba7uWKzQivTvZxU+oj4apcHYgU=;
- b=Q41Fg0DUFTDDN+oa4GGQ3caABT4ovWd4zf90XaiwTE2LS9TR5sVTvZyq5z9gGwCusjMA
- Ddvj2GGVNqge0ZgluefcFlaXY6/UZ0E06V2OAlEa5SZ2BMo21ncRi/bsW1Pd2U+w1G53
- o+ZfVj7g85ay0pinzR1SvuHSHLGAuZTmn7rCni/JLtgSInWWxx2x8JU1z8uQNtGtsaPA
- /ahY29L8cvkdUVkguyYAUJbrVRqY9xpCHmT21CB3C8WCZT2oWo5558FfsxKupih7omvC
- SGExt7Jve8H4bYilg8ThdO2UgvuMO/PFED/paB4M4u8zxhkDDxMBDB6nvkh6suHXkpdt 3Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3ku5hd1g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:32:19 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24GATXCs001083;
-        Mon, 16 May 2022 10:32:19 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3ku5hd0q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:32:19 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24GAJlHr010951;
-        Mon, 16 May 2022 10:32:16 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04fra.de.ibm.com with ESMTP id 3g2428swth-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:32:16 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24GAWDGG49873180
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 16 May 2022 10:32:13 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 82598A4057;
-        Mon, 16 May 2022 10:32:13 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AD22AA4055;
-        Mon, 16 May 2022 10:32:12 +0000 (GMT)
-Received: from [9.171.15.172] (unknown [9.171.15.172])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 16 May 2022 10:32:12 +0000 (GMT)
-Message-ID: <adb213f6-728f-65c1-8afd-3afd0c9a40c9@linux.ibm.com>
-Date:   Mon, 16 May 2022 12:36:01 +0200
+        Mon, 16 May 2022 06:33:40 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B511C13C;
+        Mon, 16 May 2022 03:33:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652697219; x=1684233219;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=m7KZ12gy0apI74yaJ3tlcm5G7JwMgp7ptlA0Gz5juBE=;
+  b=mdgdjXSFhEMh9XEik+bmF0+Sbtcj1Xb0kPQHs1HG4cyG4+SmouXPyyPO
+   vtXJVMwIXytD/RoQzXvCigXjxNDOIdqenB45A4G315VTllDyo9+PwvQaN
+   eOzOQcpYaPgaFBVi/IwP3mhNzXnpRrJzZYtQD9LaQ6KInXMJNKNOb8IxB
+   k=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 May 2022 03:33:38 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 03:33:38 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 16 May 2022 03:33:37 -0700
+Received: from [10.79.142.210] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 16 May
+ 2022 03:33:33 -0700
+Message-ID: <fb6dc88c-0829-11f8-b6f4-7eec3409e8bf@quicinc.com>
+Date:   Mon, 16 May 2022 16:02:53 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 3/3] s390x: KVM: resetting the Topology-Change-Report
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH V7 2/7] soc: qcom: dcc:Add driver support for Data Capture
+ and Compare unit(DCC)
 Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
-        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
-        nrb@linux.ibm.com
-References: <20220506092403.47406-1-pmorel@linux.ibm.com>
- <20220506092403.47406-4-pmorel@linux.ibm.com>
- <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        "Alex Elder" <elder@ieee.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Rajendra Nayak <quic_rjendra@codeaurora.org>,
+        <vkoul@kernel.org>
+References: <cover.1646285069.git.quic_schowdhu@quicinc.com>
+ <bc8504bdaf24d98762e2dbad7d084ca247380f06.1646285069.git.quic_schowdhu@quicinc.com>
+ <YnFuXYEXxLQkak24@builder.lan>
+ <0997f2bc-e8ce-24cc-da90-0ecd3201350c@quicinc.com> <YnSNvHVrJruVbE53@ripper>
+From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+In-Reply-To: <YnSNvHVrJruVbE53@ripper>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: IA1QXhJbV6JHVF0uUDIt9rHCLDO5bPWE
-X-Proofpoint-GUID: crkt81Jk07ExuRTOKhjmCa7G-XYl234c
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-16_06,2022-05-16_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=0 spamscore=0 adultscore=0 clxscore=1015 bulkscore=0
- impostorscore=0 mlxlogscore=999 malwarescore=0 mlxscore=0
- priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205160062
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-
-On 5/12/22 11:31, David Hildenbrand wrote:
-> On 06.05.22 11:24, Pierre Morel wrote:
->> During a subsystem reset the Topology-Change-Report is cleared.
->> Let's give userland the possibility to clear the MTCR in the case
->> of a subsystem reset.
+On 5/6/2022 8:23 AM, Bjorn Andersson wrote:
+> On Thu 05 May 05:53 PDT 2022, Souradeep Chowdhury wrote:
+>
+>> On 5/3/2022 11:33 PM, Bjorn Andersson wrote:
+>>> On Thu 03 Mar 00:27 CST 2022, Souradeep Chowdhury wrote:
+>>>
+>>>> The DCC is a DMA Engine designed to capture and store data
+>>>> during system crash or software triggers. The DCC operates
+>>>> based on user inputs via the sysfs interface. The user gives
+>>>> addresses as inputs and these addresses are stored in the
+>>>> dcc sram. In case of a system crash or a manual software
+>>>> trigger by the user through the debugfs interface,
+>>>> the dcc captures and stores the values at these addresses.
+>>>> This patch contains the driver which has all the methods
+>>>> pertaining to the debugfs interface, auxiliary functions to
+>>>> support all the four fundamental operations of dcc namely
+>>>> read, write, read/modify/write and loop. The probe method
+>>>> here instantiates all the resources necessary for dcc to
+>>>> operate mainly the dedicated dcc sram where it stores the
+>>>> values. The DCC driver can be used for debugging purposes
+>>>> without going for a reboot since it can perform software
+>>>> triggers as well based on user inputs.
+>>>>
+>>>> Also added the documentation for debugfs entries and explained
+>>>> the functionalities of each debugfs file that has been created
+>>>> for dcc.
+>>>>
+>>>> The following is the justification of using debugfs interface
+>>>> over the other alternatives like sysfs/ioctls
+>>>>
+>>>> i) As can be seen from the debugfs attribute descriptions,
+>>>> some of the debugfs attribute files here contains multiple
+>>>> arguments which needs to be accepted from the user. This goes
+>>>> against the design style of sysfs.
+>>>>
+>>>> ii) The user input patterns have been made simple and convenient
+>>>> in this case with the use of debugfs interface as user doesn't
+>>>> need to shuffle between different files to execute one instruction
+>>>> as was the case on using other alternatives.
+>>>>
+>>>> Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> ---
+>>>>    Documentation/ABI/testing/debugfs-driver-dcc |  124 +++
+>>>>    drivers/soc/qcom/Kconfig                     |    8 +
+>>>>    drivers/soc/qcom/Makefile                    |    1 +
+>>>>    drivers/soc/qcom/dcc.c                       | 1465 ++++++++++++++++++++++++++
+>>>>    4 files changed, 1598 insertions(+)
+>>>>    create mode 100644 Documentation/ABI/testing/debugfs-driver-dcc
+>>>>    create mode 100644 drivers/soc/qcom/dcc.c
+>>>>
+>>>> diff --git a/Documentation/ABI/testing/debugfs-driver-dcc b/Documentation/ABI/testing/debugfs-driver-dcc
+>>>> new file mode 100644
+>>>> index 0000000..70029ab
+>>>> --- /dev/null
+>>>> +++ b/Documentation/ABI/testing/debugfs-driver-dcc
+>>>> @@ -0,0 +1,124 @@
+>>>> +What:          /sys/kernel/debug/dcc/.../trigger
+>>>> +Date:          March 2022
+>>>> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This is the debugfs interface for manual software
+>>>> +		triggers. The user can simply enter a 1 against
+>>>> +		the debugfs file and enable a manual trigger.
+>>>> +		Example:
+>>>> +		echo  1 > /sys/kernel/debug/dcc/.../trigger
+>>>> +
+>>>> +What:          /sys/kernel/debug/dcc/.../enable
+>>>> +Date:          March 2022
+>>>> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This debugfs interface is used for enabling the
+>>>> +		the dcc hardware. On enabling the dcc, all the
+>>>> +		addresses entered by the user is written into
+>>>> +		dcc sram which is read by the dcc hardware on
+>>>> +		manual or crash induced triggers.
+>>>> +		Example:
+>>>> +		echo  0 > /sys/bus/platform/devices/.../enable
+>>>> +		(disable dcc)
+>>>> +		echo  1 > /sys/bus/platform/devices/.../enable
+>>>> +		(enable dcc)
+>>>> +
+>>>> +What:          /sys/kernel/debug/dcc/.../config_read
+>>> As mentioned last time, I don't like this interface of having 6 files
+>>> that the user can write to in order to append items in the currently
+>>> selected linked list.
+>>>
+>>> Why can't this be a single "config" which takes a multiline string of
+>>> operations? (Bonus point for supporting appending to the list).
+>>>
+>>>
+>>> This would also serve as a natural place to dump the linked list back to
+>>> the user for inspection.
+>> Following is the justification of having multiple files in debugfs
 >>
->> To migrate the MTCR, let's give userland the possibility to
->> query the MTCR state.
+>> 1-> Since there are fundamentally 4 instructions for DCC, Read,Write,Read
+>> and then Write and Loop,having separate debugfs files for the same makes it
 >>
->> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
->> ---
->>   arch/s390/include/uapi/asm/kvm.h |  5 ++
->>   arch/s390/kvm/kvm-s390.c         | 79 ++++++++++++++++++++++++++++++++
->>   2 files changed, 84 insertions(+)
+>> convenient for the user to use this tool and also to document.This
+>> also is consistent with the design principles of debugfs as it supports
+>> logical segregation of Debugfs files based on the user instructions.
 >>
->> diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
->> index 7a6b14874d65..abdcf4069343 100644
->> --- a/arch/s390/include/uapi/asm/kvm.h
->> +++ b/arch/s390/include/uapi/asm/kvm.h
->> @@ -74,6 +74,7 @@ struct kvm_s390_io_adapter_req {
->>   #define KVM_S390_VM_CRYPTO		2
->>   #define KVM_S390_VM_CPU_MODEL		3
->>   #define KVM_S390_VM_MIGRATION		4
->> +#define KVM_S390_VM_CPU_TOPOLOGY	5
->>   
->>   /* kvm attributes for mem_ctrl */
->>   #define KVM_S390_VM_MEM_ENABLE_CMMA	0
->> @@ -171,6 +172,10 @@ struct kvm_s390_vm_cpu_subfunc {
->>   #define KVM_S390_VM_MIGRATION_START	1
->>   #define KVM_S390_VM_MIGRATION_STATUS	2
->>   
->> +/* kvm attributes for cpu topology */
->> +#define KVM_S390_VM_CPU_TOPO_MTR_CLEAR	0
->> +#define KVM_S390_VM_CPU_TOPO_MTR_SET	1
->> +
->>   /* for KVM_GET_REGS and KVM_SET_REGS */
->>   struct kvm_regs {
->>   	/* general purpose regs for s390 */
->> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->> index c8bdce31464f..80a1244f0ead 100644
->> --- a/arch/s390/kvm/kvm-s390.c
->> +++ b/arch/s390/kvm/kvm-s390.c
->> @@ -1731,6 +1731,76 @@ static void kvm_s390_sca_set_mtcr(struct kvm *kvm)
->>   	ipte_unlock(kvm);
->>   }
->>   
->> +/**
->> + * kvm_s390_sca_clear_mtcr
->> + * @kvm: guest KVM description
->> + *
->> + * Is only relevant if the topology facility is present,
->> + * the caller should check KVM facility 11
->> + *
->> + * Updates the Multiprocessor Topology-Change-Report to signal
->> + * the guest with a topology change.
->> + */
->> +static void kvm_s390_sca_clear_mtcr(struct kvm *kvm)
->> +{
->> +	struct bsca_block *sca = kvm->arch.sca; /* SCA version doesn't matter */
->> +
->> +	ipte_lock(kvm);
->> +	sca->utility  &= ~SCA_UTILITY_MTCR;
-> 
-> 
-> One space too much.
-> 
-> sca->utility &= ~SCA_UTILITY_MTCR;
-> 
->> +	ipte_unlock(kvm);
->> +}
->> +
->> +static int kvm_s390_set_topology(struct kvm *kvm, struct kvm_device_attr *attr)
->> +{
->> +	if (!test_kvm_facility(kvm, 11))
->> +		return -ENXIO;
->> +
->> +	switch (attr->attr) {
->> +	case KVM_S390_VM_CPU_TOPO_MTR_SET:
->> +		kvm_s390_sca_set_mtcr(kvm);
->> +		break;
->> +	case KVM_S390_VM_CPU_TOPO_MTR_CLEAR:
->> +		kvm_s390_sca_clear_mtcr(kvm);
->> +		break;
->> +	}
->> +	return 0;
->> +}
->> +
->> +/**
->> + * kvm_s390_sca_get_mtcr
->> + * @kvm: guest KVM description
->> + *
->> + * Is only relevant if the topology facility is present,
->> + * the caller should check KVM facility 11
->> + *
->> + * reports to QEMU the Multiprocessor Topology-Change-Report.
->> + */
->> +static int kvm_s390_sca_get_mtcr(struct kvm *kvm)
->> +{
->> +	struct bsca_block *sca = kvm->arch.sca; /* SCA version doesn't matter */
->> +	int val;
->> +
->> +	ipte_lock(kvm);
->> +	val = !!(sca->utility & SCA_UTILITY_MTCR);
->> +	ipte_unlock(kvm);
->> +
->> +	return val;
->> +}
->> +
->> +static int kvm_s390_get_topology(struct kvm *kvm, struct kvm_device_attr *attr)
->> +{
->> +	int mtcr;
-> 
-> I think we prefer something like u16 when copying to user space.
+> So say the user of DCC wants to read a register 10 times, they know that
+> the DCC operates on lists of operations, so they want to tell the
+> computer "read X, loop 10 times".
+>
+> But the API is "write to loop file", "write to read file" and "write to
+> loop file".
+>
+> You're achieving the same thing, but the user and the driver thinks in
+> terms of lists of operations and inbetween is a API which provides
+> "logical segregation" of the different parts of that list.
+>
+>> 2-> We are maintaining a common linkedlist inside the driver and it can be
+>> viewed by the user through the "config_read" debugfs file. Will be adding
+>> this to the documentation as well.
+>>
+> So I use a mix of config_* files to build the lists, and then
+> config_read is used to look at the list?
+>
+> So some config_* files will when written append to the list, some
+> config_* files will perform some action (e.g. reset) and reading some
+> config_* files will return something useful.
+>
+>> Let me know your thoughts regarding the above.
+>>
+> I am not convinced that having multiple files provides a nice user
+> interface. But I certain that the use of the word "config" in various
+> different ways is wrong.
+>
+> There are files in the interface which purpose is to append items to the
+> linked list, name them append_*. Reading the appended items on the list
+> should not be overloaded on one of the "append" files.
+>
+>
+> So perhaps:
+>
+> append_read
+> append_write
+> append_rmw
+> append_loop
+> config (to dump the current config)
+> enable
+> ready
+> reset
+> trigger
+>
+>
+> But then looking at the append_* functions again and the examples below.
+> You could easily have a single append which takes read, write, rmw and
+> loop as a first keyword - and build a crude parser based on sscanf to
+> decode the strings.
+>
+> Then all append_* becomes "append", which is a single file for adding to
+> the list and "config" is a single point to read the current list.
+> Perhaps you could name this file just "config", reading will dump the
+> list, writing will append to the list.
+>
+> Here you would have a cleaner interface.
+>
+>
+> But as you write your own fops you could differentiate between write
+> and append, so you could make this slightly cleaner by manifesting the
+> "append" part by allowing the user to do:
+>
+>    echo read 1, 2, 3 > config
+>    echo read 4, 5, 6 >> config
+>
+> Which clearly shows that the first writes to the config and second
+> appends to the current config. With this interface reset would become:
+>
+>    echo > config
+>
+> You can still require that only single operation is written to or
+> appended to the list per write - to allow you to continue to rely on the
+> crude sscanf based parser.
+>
+> With this your interface is reduced to:
+>
+> config
+> enable
+> ready
+> trigger
 
-If you prefer.
-The original idea was to have something like a bool but then I should 
-have change get_mtcr to has_mtcr.
+Ack. Will create a single config for this interface.
 
+>
+>>>> +Date:          March 2022
+>>>> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This stores the addresses of the registers which
+>>>> +		needs to be read in case of a hardware crash or
+>>>> +		manual software triggers. The address entered here
+>>>> +		are considered under read type instruction.
+>>>> +		Example:
+>>>> +		echo <1> <2> <3> >/sys/kernel/debug/dcc/../config_read
+>>>> +		1->Address to be considered for reading the value.
+>>>> +		2->The word count of the addresses, read n words
+>>>> +		   starting from address <1>.
+>>>> +		3->Can be a 1 or 0 which indicates if it is apb or ahb
+>>>> +		bus respectively.
+>>>> +
+>>>> +What:          /sys/kernel/debug/dcc/.../config_write
+>>>> +Date:          March 2022
+>>>> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This file allows user to write a value to the register
+>>>> +		address given as argument. The reason for this feature
+>>>> +		of dcc is that for accessing certain registers it is
+>>>> +		necessary to set some bits of some other register.
+>>>> +		Example:
+>>>> +		echo <1> <2> <3> > /sys/bus/platform/devices/.../config_write
+>>>> +		1->Address to be considered for writing the value.
+>>>> +		2->The value that needs to be written at the location.
+>>>> +		3->Can be a 1 or 0 which indicates if it is apb or ahb
+>>>> +		bus respectively.
+>>>> +
+>>>> +What:          /sys/kernel/debug/dcc/.../config_reset
+>>>> +Date:          March 2022
+>>>> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This file is used to reset the configuration of
+>>>> +		a dcc driver to the default configuration. This
+>>>> +		means that all the previous addresses stored in
+>>>> +		the driver gets removed and user needs to enter
+>>>> +		the address values from the start.
+>>>> +		Example:
+>>>> +		echo  1 > /sys/bus/platform/devices/.../config_reset
+>>>> +
+>>>> +What:          /sys/kernel/debug/dcc/.../config_loop
+>>>> +Date:		March 2022
+>>>> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This file is used to enter the loop type addresses for
+>>>> +		dcc. DCC hardware provides feature to loop among multiple
+>>>> +		addresses. For debugging purposes register values need to
+>>>> +		be captured repeatedly in a loop. On giving the loop count
+>>>> +		as n, the value at address will be captured n times in a
+>>>> +		loop. At most 8 loop addresses can be configured at once.
+>>>> +		Example:
+>>>> +		echo <1> <2> <3> > /sys/kernel/debug/dcc/../config_loop
+>>>> +		1->The loop count, the number of times the value of the
+>>>> +		   addresses will be captured.
+>>>> +		2->The address count, total number of addresses to be
+>>>> +		   entered in this instruction.
+>>>> +		3->The series of addresses to be entered separated by a
+>>>> +		   space like <addr1> <addr2>... and so on.
+>>>> +
+>>>> +What:          /sys/kernel/debug/dcc/.../config_read_write
+>>>> +Date:          March 2022
+>>>> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This file is used to read the value of the register
+>>>> +		and then write the value given as an argument to the
+>>>> +		register address. The address argument should be given
+>>>> +		of the form <addr> <mask> <value>.For debugging purposes
+>>>> +		sometimes we need to first read from a register and then
+>>>> +		set some values to the register.
+>>>> +		Example:
+>>>> +		echo <1> <2> <3> > /sys/kernel/debug/dcc/.../config_read_write
+>>>> +		1->The address which needs to be considered for read then write.
+>>>> +		2->The value that needs to be written on the address.
+>>>> +		3->The mask of the value to be written.
+>>>> +
+>>>> +What:		/sys/kernel/debug/dcc/.../ready
+>>>> +Date:		March 2022
+>>>> +Contact	Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This file is used to check the status of the dcc
+>>>> +		hardware if it's ready to take the inputs. A 0
+>>>> +		here indicates dcc is in a ready condition.
+>>>> +		Example:
+>>>> +		cat /sys/kernel/debug/dcc/.../ready
+>>>> +
+>>>> +What:		/sys/kernel/debug/dcc/.../curr_list
+>>> I still don't like the idea of having a single set of files to interface
+>>> with all N lists. I think you should discover how many lists you have
+>>> and create N directories of files, each on operating on a given list.
+>> As explained before there cannot be different files based on lists as
+>> the number of lists to be used varies across platforms where DCC is
+>> used.
+> Isn't this dcc->nr_link_list?
+Yes. This varies across different SoCs and also user may not have access 
+to all the lists supported by DCC.
+>
+>> Also we are giving the user the flexibility to configure
+>> multiple lists at one go whereas the dumps are collected in the form
+>> of separate lists that are configured by the user.
+>>
+> I'm not sure I follow what you're trying to say here.
+>
+> If we determine that nr_link_list is 2, you create a directory named 0
+> and one named 1, fill them with the interface files to operate on list 0
+> and list 1 respectively. Then you still allow the user to configure and
+> enable the 2 available lists?
+>
+> The difference is that it's clear how many lists you have and it's clear
+> when you poke at 0/config_read that you're referring to the first list
+> and poking 0/enable will mean the same list - there's no curr_list to
+> mux between them in the interface.
 
-> 
->> +
->> +	if (!test_kvm_facility(kvm, 11))
->> +		return -ENXIO;
->> +
->> +	mtcr = kvm_s390_sca_get_mtcr(kvm);
->> +	if (copy_to_user((void __user *)attr->addr, &mtcr, sizeof(mtcr)))
->> +		return -EFAULT;
->> +
->> +	return 0;
->> +}
-> 
-> You should probably add documentation, and document that only the last
-> bit (0x1) has a meaning.
-> 
-> Apart from that LGTM.
-> 
+So from DCC hardware perspective, it needs to be told that "list n 
+begins at x and ends at y". That is why the limitation of DCC
 
--- 
-Pierre Morel
-IBM Lab Boeblingen
+hardware is that the lists can only be configured sequentially and not 
+in a overlapping manner. So for example we need to enter
+
+all the addresses to be stored for list n before jumping to any other 
+lists. Seeing this limitation, will it be advantageous to have
+
+different set of files for different lists as we will be configuring 
+them sequentially anyway?
+
+>
+> Regards,
+> Bjorn
+>
+>>>> +Date:		March 2022
+>>>> +Contact:	Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+>>>> +Description:
+>>>> +		This attribute is used to enter the linklist to be
+>>>> +		used while appending addresses. The range of values
+>>>> +		for this is advertised either by a register or is
+>>>> +		predefined. Max value for this can be till 8.
+>>>> +		Example:
+>>>> +		echo 0 > /sys/kernel/debug/dcc/...curr_list
+>>>> +
+>>> Regards,
+>>> Bjorn
