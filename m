@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DBCDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DCA0C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347666AbiEPUWB (ORCPT
+        id S1347486AbiEPUVu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
+        Mon, 16 May 2022 16:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349146AbiEPT7R (ORCPT
+        with ESMTP id S1348972AbiEPT7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:17 -0400
+        Mon, 16 May 2022 15:59:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6881540E4F;
-        Mon, 16 May 2022 12:53:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72FB3F884;
+        Mon, 16 May 2022 12:53:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70B7760EE8;
-        Mon, 16 May 2022 19:53:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73C08C36AE5;
-        Mon, 16 May 2022 19:53:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3877C60A50;
+        Mon, 16 May 2022 19:53:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F2EFC385AA;
+        Mon, 16 May 2022 19:53:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730803;
-        bh=IbgkNa3Guz0qgnKUphoyCTvQihicvFTMv/ZnW1y5jqg=;
+        s=korg; t=1652730788;
+        bh=XClndHM4mSOpn/rg2RQmerQfwqK3Wvfp5PXXIXjpmio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jio/O7u203V8NUaZLx/SVFluL5j0Rw+G/2R/KxhFIIZzn3VGW9Fvjzk2RtzAdt7l5
-         0A4wgmWxSdJ8KvXXinHDDqQam8GEly7G/JLLADOKlMPGaYkgaLA9oWH/L97wH7MK7i
-         TZ+rHI1K+TRfgnmpzrPEUejDcPwQAFu82gdq0ksk=
+        b=gGpx2SlTRm5ZsNBAqyGi9f80gAvL7WUbpJJR9G/dpdqFbBMoKI9vvxsYxmdwdnzzw
+         aahKT/3/JhxYDHsDiq20KTdYZqa2IKUuXIPIKFouQMkeU15r/pht+muwiv2Y00yvI6
+         jzktW6eFU0TnB5PscIAn1+cIf3UoidYtNvLud+Nw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 011/114] fbdev: simplefb: Cleanup fb_info in .fb_destroy rather than .remove
-Date:   Mon, 16 May 2022 21:35:45 +0200
-Message-Id: <20220516193625.820751003@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Paul Elder <paul.elder@ideasonboard.com>,
+        Michael Tretter <m.tretter@pengutronix.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: [PATCH 5.15 101/102] usb: gadget: uvc: rename function to be more consistent
+Date:   Mon, 16 May 2022 21:37:15 +0200
+Message-Id: <20220516193626.901310288@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,72 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Michael Tretter <m.tretter@pengutronix.de>
 
-[ Upstream commit 666b90b3ce9e4aac1e1deba266c3a230fb3913b0 ]
+commit e6bab2b66329b40462fb1bed6f98bc3fcf543a1c upstream.
 
-The driver is calling framebuffer_release() in its .remove callback, but
-this will cause the struct fb_info to be freed too early. Since it could
-be that a reference is still hold to it if user-space opened the fbdev.
+When enabling info debugging for the uvc gadget, the bind and unbind
+infos use different formats. Change the unbind to visually match the
+bind.
 
-This would lead to a use-after-free error if the framebuffer device was
-unregistered but later a user-space process tries to close the fbdev fd.
-
-To prevent this, move the framebuffer_release() call to fb_ops.fb_destroy
-instead of doing it in the driver's .remove callback.
-
-Strictly speaking, the code flow in the driver is still wrong because all
-the hardware cleanupd (i.e: iounmap) should be done in .remove while the
-software cleanup (i.e: releasing the framebuffer) should be done in the
-.fb_destroy handler. But this at least makes to match the behavior before
-commit 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal").
-
-Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220505220456.366090-1-javierm@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Reviewed-by: Paul Elder <paul.elder@ideasonboard.com>
+Signed-off-by: Michael Tretter <m.tretter@pengutronix.de>
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Link: https://lore.kernel.org/r/20211017215017.18392-3-m.grzeschik@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/simplefb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/usb/gadget/function/f_uvc.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-index 57541887188b..efce6ef8532d 100644
---- a/drivers/video/fbdev/simplefb.c
-+++ b/drivers/video/fbdev/simplefb.c
-@@ -70,12 +70,18 @@ struct simplefb_par;
- static void simplefb_clocks_destroy(struct simplefb_par *par);
- static void simplefb_regulators_destroy(struct simplefb_par *par);
- 
-+/*
-+ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
-+ * of unregister_framebuffer() or fb_release(). Do any cleanup here.
-+ */
- static void simplefb_destroy(struct fb_info *info)
- {
- 	simplefb_regulators_destroy(info->par);
- 	simplefb_clocks_destroy(info->par);
- 	if (info->screen_base)
- 		iounmap(info->screen_base);
-+
-+	framebuffer_release(info);
+--- a/drivers/usb/gadget/function/f_uvc.c
++++ b/drivers/usb/gadget/function/f_uvc.c
+@@ -884,12 +884,13 @@ static void uvc_free(struct usb_function
+ 	kfree(uvc);
  }
  
- static const struct fb_ops simplefb_ops = {
-@@ -520,8 +526,8 @@ static int simplefb_remove(struct platform_device *pdev)
+-static void uvc_unbind(struct usb_configuration *c, struct usb_function *f)
++static void uvc_function_unbind(struct usb_configuration *c,
++				struct usb_function *f)
  {
- 	struct fb_info *info = platform_get_drvdata(pdev);
+ 	struct usb_composite_dev *cdev = c->cdev;
+ 	struct uvc_device *uvc = to_uvc(f);
  
-+	/* simplefb_destroy takes care of info cleanup */
- 	unregister_framebuffer(info);
--	framebuffer_release(info);
+-	uvcg_info(f, "%s\n", __func__);
++	uvcg_info(f, "%s()\n", __func__);
  
- 	return 0;
- }
--- 
-2.35.1
-
+ 	device_remove_file(&uvc->vdev.dev, &dev_attr_function_name);
+ 	video_unregister_device(&uvc->vdev);
+@@ -943,7 +944,7 @@ static struct usb_function *uvc_alloc(st
+ 	/* Register the function. */
+ 	uvc->func.name = "uvc";
+ 	uvc->func.bind = uvc_function_bind;
+-	uvc->func.unbind = uvc_unbind;
++	uvc->func.unbind = uvc_function_unbind;
+ 	uvc->func.get_alt = uvc_function_get_alt;
+ 	uvc->func.set_alt = uvc_function_set_alt;
+ 	uvc->func.disable = uvc_function_disable;
 
 
