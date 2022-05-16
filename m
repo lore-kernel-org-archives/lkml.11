@@ -2,76 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A02C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 757F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344229AbiEPQ63 (ORCPT
+        id S1343990AbiEPQ6j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 12:58:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52172 "EHLO
+        Mon, 16 May 2022 12:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344132AbiEPQ6Q (ORCPT
+        with ESMTP id S1344145AbiEPQ6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 12:58:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D502A73E;
-        Mon, 16 May 2022 09:56:54 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B2F2A721;
+        Mon, 16 May 2022 09:56:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BAD1B81544;
-        Mon, 16 May 2022 16:56:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A043EC34113;
+        by sin.source.kernel.org (Postfix) with ESMTPS id B5623CE1715;
         Mon, 16 May 2022 16:56:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652720212;
-        bh=OX8Lhwf0tAzODnumDj4GdfrqfSfR+PGuBYa4nSOfujk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2wNhp/RjUnWOHv62mY/PaMLBzWj2C91Iws2xBmyR/QnC/4Dnqo4IiH7pY5ICvXx27
-         jzYDW6HcN+aQvXp04to7Pau4DELeHeH/IC60a6ObWA6X/0oF6YNz1HBlubMoHV34Qr
-         o/Uwi0bTqbWlBxAbCU2XFieWFJRLcPM1uMFB8jBw=
-Date:   Mon, 16 May 2022 18:56:49 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     rust-for-linux@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Li Li <dualli@google.com>, linux-kernel@vger.kernel.org,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Subject: Re: [PATCH v1] binder: convert `BINDER_*` ioctl `#define`s into an
- `enum`
-Message-ID: <YoKCUfSw2SPJXS04@kroah.com>
-References: <20220516100401.7639-1-ojeda@kernel.org>
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 488E4C385AA;
+        Mon, 16 May 2022 16:56:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652720210;
+        bh=7LDkU1QG3vKPlm+RwVOsAsHB0Xs2kYOwv5HCE8k9Ar0=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=gCnPCryUpGddOoqXzIOq4Kuvunuf9GDht5uqYOu345QySBHjYjj3GN6VJDeNDB4tc
+         yF9RXK6nW1pjeUqMSmeLaaEBwUF3piJSStpYIjPIsL1T3PygwSgKqq7plW1IX/5uLV
+         ItFDVY0ajXAkQdCNvY1Ip0bgJxPLevf9ra4W1SvzJWjy/E5DU5aLo2axtNWD4A2/87
+         i9wOvURYCMBuJsqmIPGlArnfhZO5ntNgpYXMM8PXgyH90UBmAn5meJ1jtB3cdTU+D+
+         zQy8ojiSXcGs8k5R4vyWl+h9NIbDumlj8Hn7Yqo4ys9GurSW8M3NXKQU6lTmB0OkN4
+         BIhUbnuSifp3Q==
+From:   Mark Brown <broonie@kernel.org>
+To:     guozhengkui@vivo.com, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     zhengkui_guo@outlook.com
+In-Reply-To: <20220513130333.58379-1-guozhengkui@vivo.com>
+References: <20220513130333.58379-1-guozhengkui@vivo.com>
+Subject: Re: [PATCH] drivers: spi: spi-au1550: replace ternary operator with min()
+Message-Id: <165272020902.601738.18027494295826342656.b4-ty@kernel.org>
+Date:   Mon, 16 May 2022 17:56:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516100401.7639-1-ojeda@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 12:04:01PM +0200, Miguel Ojeda wrote:
-> bindgen (a tool which generates the "raw" C bindings for Rust) only
-> works (so far) with "simple" C `#define`s. In order to avoid having
-> to manually maintain these constants in the (potential) Rust side,
-> this patch converts them into an `enum`.
+On Fri, 13 May 2022 21:03:33 +0800, Guo Zhengkui wrote:
+> Fix the following coccicheck warnings:
 > 
-> There may be support in the future for expanding macros that end up in
-> a "numeric" one: https://github.com/rust-lang/rust-bindgen/issues/753.
+> drivers/spi/spi-au1550.c:408:21-22: WARNING opportunity for min()
+> drivers/spi/spi-au1550.c:542:21-22: WARNING opportunity for min()
 > 
-> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
-> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
-> ---
-> Two notes:
->   - Let me know if you prefer that I base this on top of a binder branch.
+> min() macro is defined in include/linux/minmax.h. It avoids multiple
+> evaluations of the arguments when non-constant and performs strict
+> type-checking.
+> 
+> [...]
 
-Yes, this does not apply to my char-misc.git tree in the char-misc-next
-branch on git.kernel.org as I think we have added some new binder ioctls
-recently.
+Applied to
 
-Or you can make it against linux-next with the rust stuff removed, that
-also would work as well.  But as-is, this patch does not work.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-thanks,
+Thanks!
 
-greg k-h
+[1/1] drivers: spi: spi-au1550: replace ternary operator with min()
+      commit: dcc6394db3c8cf6c1d4077a288e6967c4f0a4e43
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
