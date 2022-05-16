@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D16BCC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A084C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346607AbiEPUQA (ORCPT
+        id S1346929AbiEPUQj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
+        Mon, 16 May 2022 16:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351052AbiEPUB5 (ORCPT
+        with ESMTP id S1348275AbiEPT6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9221F47573;
-        Mon, 16 May 2022 12:57:23 -0700 (PDT)
+        Mon, 16 May 2022 15:58:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676CC496A0;
+        Mon, 16 May 2022 12:50:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D74F60EC4;
-        Mon, 16 May 2022 19:57:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C118C385AA;
-        Mon, 16 May 2022 19:57:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A35D8B81615;
+        Mon, 16 May 2022 19:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3FB2C34115;
+        Mon, 16 May 2022 19:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731042;
-        bh=knJ3yMlGUTuXhvAdX0tjShihmMNx/PRKpMM6L/mJ3F0=;
+        s=korg; t=1652730622;
+        bh=QtSTpg4s7bW+z7cb5PjOt/RnDgPxZ0RF5p2u0Qr7maU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J1W5IkoEDeCi4qgF0RV2dSB5Dffd5uxsYS9EBsj/F62El3aJJoNFTIvKGs2rb5MS9
-         CNHjDYeW5b3/26Z+tOsPle98Hx50ZWWZi9Qj7ODVU04/HB1QDqZOvmSoxTBYgb6ipB
-         B2gJupuED2+j6qa1Ur0sh0ZdlcehpxZqYVFmwoO0=
+        b=kl8RjbC956fYRtKzIBjeApzPxgj++7vOxAlSLlz5Z6LkvUzIS62IHey680LY81e/0
+         biVBxOFUjTJB+LNgIoYvNvUg0AjYi9wFWrbjap6M1PXYMpf9Tlmst3QXk+SIhfKYgE
+         L+6RXk4RTGmSl0zfxRPGyMspAJ0X/f21vsu2moA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Chen <scott@labau.com.tw>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.17 083/114] USB: serial: pl2303: add device id for HP LM930 Display
-Date:   Mon, 16 May 2022 21:36:57 +0200
-Message-Id: <20220516193627.866562868@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 017/102] drm/nouveau: Fix a potential theorical leak in nouveau_get_backlight_name()
+Date:   Mon, 16 May 2022 21:35:51 +0200
+Message-Id: <20220516193624.493092068@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Scott Chen <scott@labau.com.tw>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 26a08f8bad3e1f98d3153f939fb8cd330da4cb26 upstream.
+[ Upstream commit ab244be47a8f111bc82496a8a20c907236e37f95 ]
 
-Add the device id for the HPLM930Display which is a PL2303GC based
-device.
+If successful ida_simple_get() calls are not undone when needed, some
+additional memory may be allocated and wasted.
 
-Signed-off-by: Scott Chen <scott@labau.com.tw>
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Here, an ID between 0 and MAX_INT is required. If this ID is >=100, it is
+not taken into account and is wasted. It should be released.
+
+Instead of calling ida_simple_remove(), take advantage of the 'max'
+parameter to require the ID not to be too big. Should it be too big, it
+is not allocated and don't need to be freed.
+
+While at it, use ida_alloc_xxx()/ida_free() instead to
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
+
+Fixes: db1a0ae21461 ("drm/nouveau/bl: Assign different names to interfaces")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+[Fixed formatting warning from checkpatch]
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/pl2303.c |    1 +
- drivers/usb/serial/pl2303.h |    1 +
- 2 files changed, 2 insertions(+)
+ drivers/gpu/drm/nouveau/nouveau_backlight.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -106,6 +106,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM220_PRODUCT_ID) },
- 	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM960_PRODUCT_ID) },
- 	{ USB_DEVICE(HP_VENDOR_ID, HP_LM920_PRODUCT_ID) },
-+	{ USB_DEVICE(HP_VENDOR_ID, HP_LM930_PRODUCT_ID) },
- 	{ USB_DEVICE(HP_VENDOR_ID, HP_LM940_PRODUCT_ID) },
- 	{ USB_DEVICE(HP_VENDOR_ID, HP_TD620_PRODUCT_ID) },
- 	{ USB_DEVICE(CRESSI_VENDOR_ID, CRESSI_EDY_PRODUCT_ID) },
---- a/drivers/usb/serial/pl2303.h
-+++ b/drivers/usb/serial/pl2303.h
-@@ -135,6 +135,7 @@
- #define HP_TD620_PRODUCT_ID	0x0956
- #define HP_LD960_PRODUCT_ID	0x0b39
- #define HP_LD381_PRODUCT_ID	0x0f7f
-+#define HP_LM930_PRODUCT_ID	0x0f9b
- #define HP_LCM220_PRODUCT_ID	0x3139
- #define HP_LCM960_PRODUCT_ID	0x3239
- #define HP_LD220_PRODUCT_ID	0x3524
+diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+index 12965a832f94..aa8ed08fe9a7 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
++++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+@@ -46,8 +46,9 @@ static bool
+ nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
+ 			   struct nouveau_backlight *bl)
+ {
+-	const int nb = ida_simple_get(&bl_ida, 0, 0, GFP_KERNEL);
+-	if (nb < 0 || nb >= 100)
++	const int nb = ida_alloc_max(&bl_ida, 99, GFP_KERNEL);
++
++	if (nb < 0)
+ 		return false;
+ 	if (nb > 0)
+ 		snprintf(backlight_name, BL_NAME_SIZE, "nv_backlight%d", nb);
+@@ -411,7 +412,7 @@ nouveau_backlight_init(struct drm_connector *connector)
+ 					    nv_encoder, ops, &props);
+ 	if (IS_ERR(bl->dev)) {
+ 		if (bl->id >= 0)
+-			ida_simple_remove(&bl_ida, bl->id);
++			ida_free(&bl_ida, bl->id);
+ 		ret = PTR_ERR(bl->dev);
+ 		goto fail_alloc;
+ 	}
+@@ -439,7 +440,7 @@ nouveau_backlight_fini(struct drm_connector *connector)
+ 		return;
+ 
+ 	if (bl->id >= 0)
+-		ida_simple_remove(&bl_ida, bl->id);
++		ida_free(&bl_ida, bl->id);
+ 
+ 	backlight_device_unregister(bl->dev);
+ 	nv_conn->backlight = NULL;
+-- 
+2.35.1
+
 
 
