@@ -2,157 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F059FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 07:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20132C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 07:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241040AbiEPHU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 03:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57164 "EHLO
+        id S241028AbiEPHVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 03:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241015AbiEPHUy (ORCPT
+        with ESMTP id S241090AbiEPHVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 03:20:54 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A0DBE0F;
-        Mon, 16 May 2022 00:20:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652685653; x=1684221653;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5Bmrym4ZBrZuWxcL4DbvzKLGJFYIJDTX69S3vd8Egxg=;
-  b=HHdhJkt4Uy0JAko18zXwuDaZT6xuJolbnr3XuUNobk5SBtZHx5oSomxI
-   XPh+IL6jTkA9xnJgtJ/6QPqup/R/NiprPlXLbKz93josntWePfubuPAUS
-   Mo4tSUAkiBGd02ZKRsiJXrI5U/fBU6ZlK2/c0RGo06kGo+HkN4e3OLUcH
-   K0glFQ9b0q07Ww1FpsPbgJhIe9H5FUUzb0xy4ir3LBQ0g5Qcj3IuBqJD2
-   ARpttl5x9MFpWuZnCQTOKCJZaqXgDVy6li27nHuvEZPuNJXZETEk4fx02
-   a7Iz4jdQqjK4fyCriIFhL5dqTY2qIDubCCEEcwFMP908t5vr+BI5HWvqt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="269579094"
-X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
-   d="scan'208";a="269579094"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 00:20:52 -0700
-X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
-   d="scan'208";a="596388661"
-Received: from rhudecze-mobl.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.36.15])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 00:20:46 -0700
-Message-ID: <dd53c419-efc4-5b2f-9fdc-e23e7145dbd1@intel.com>
-Date:   Mon, 16 May 2022 10:20:42 +0300
+        Mon, 16 May 2022 03:21:45 -0400
+X-Greylist: delayed 907 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 00:21:41 PDT
+Received: from sender11-op-o11.zoho.eu (sender11-op-o11.zoho.eu [31.186.226.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6439D17076
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 00:21:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1652684772; cv=none; 
+        d=zohomail.eu; s=zohoarc; 
+        b=Ngw7i+0UWu7Qdbil8j+grmG8yJ1wunVJtZJGAOxIqr/+JVsg6BMwqoocN/3bRvzdiiMgziQxTSHQEMO8cUSsqBFTE7PB93xr79hBNJBI7Vz5anbq0rGrrmrXd0LvNzvdd+OxhFfYcZ67TMi8yChrNpZLPGIRpH7T8V4GnDlRqnk=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
+        t=1652684772; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=LehfBAU/QvIra7OAgcW4TPq9bLABt9XwCeJZGewh1TA=; 
+        b=X0RAg8jgQ/SeF7bxmUVmj8bn3Vc4WNbf1DexcrxorAZL8Evkq7kfTL0l5WLmD/+dRgmS/6OuU5KJKI3FnkpiPX+t2YUnpT/gquf6W35yk5g6G/WB8ZuZCFAsHggzZW7vevpPk1hgwYsuLGrR3/TmyJNE4jW0PhP5PF0M2PQG5fA=
+ARC-Authentication-Results: i=1; mx.zohomail.eu;
+        dkim=pass  header.i=kempniu.pl;
+        spf=pass  smtp.mailfrom=kernel@kempniu.pl;
+        dmarc=pass header.from=<kernel@kempniu.pl>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1652684772;
+        s=zmail; d=kempniu.pl; i=kernel@kempniu.pl;
+        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=LehfBAU/QvIra7OAgcW4TPq9bLABt9XwCeJZGewh1TA=;
+        b=QhGQBq5FWlhvbilFYEJvQteh6s5HQJjUrrvUDpGtDn8+UoVoHhbNe0XKO9RCWXYb
+        PdTjTIww0Dg+n3cg3TvhkvnClCqcwIbfzMsJs6b5Xs4UZKSGV/j2XdSQ3GpmqH4Pg0k
+        /OMz2Ipt1wHfGC7YOPXBFIXL+jfIwiZGpl8ATyyc=
+Received: from larwa.hq.kempniu.pl (212.180.138.61 [212.180.138.61]) by mx.zoho.eu
+        with SMTPS id 16526847706676.485162993223867; Mon, 16 May 2022 09:06:10 +0200 (CEST)
+From:   =?UTF-8?q?Micha=C5=82=20K=C4=99pie=C5=84?= <kernel@kempniu.pl>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Message-ID: <20220516070601.11428-3-kernel@kempniu.pl>
+Subject: [PATCH 2/2] mtdchar: use kvmalloc() for potentially large allocations
+Date:   Mon, 16 May 2022 09:06:01 +0200
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516070601.11428-1-kernel@kempniu.pl>
+References: <20220516070601.11428-1-kernel@kempniu.pl>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.8.1
-Subject: Re: [PATCH V2 03/11] perf/x86: Add support for TSC in nanoseconds as
- a perf event clock
-Content-Language: en-US
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        H Peter Anvin <hpa@zytor.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "sdeep@vmware.com" <sdeep@vmware.com>,
-        "pv-drivers@vmware.com" <pv-drivers@vmware.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "Andrew.Cooper3@citrix.com" <Andrew.Cooper3@citrix.com>,
-        "Hall, Christopher S" <christopher.s.hall@intel.com>
-References: <20220214110914.268126-1-adrian.hunter@intel.com>
- <20220214110914.268126-4-adrian.hunter@intel.com>
- <YiIXFmA4vpcTSk2L@hirez.programming.kicks-ass.net>
- <853ce127-25f0-d0fe-1d8f-0b0dd4f3ce71@intel.com>
- <YiXVgEk/1UClkygX@hirez.programming.kicks-ass.net>
- <30383f92-59cb-2875-1e1b-ff1a0eacd235@intel.com>
- <YiYZv+LOmjzi5wcm@hirez.programming.kicks-ass.net>
- <013b5425-2a60-e4d4-b846-444a576f2b28@intel.com>
- <6f07a7d4e1ad4440bf6c502c8cb6c2ed@intel.com>
- <c3e1842b-79c3-634a-3121-938b5160ca4c@intel.com>
- <50fd2671-6070-0eba-ea68-9df9b79ccac3@intel.com> <87ilqx33vk.ffs@tglx>
- <ff1e190a-95e6-e2a6-dc01-a46f7ffd2162@intel.com> <87fsm114ax.ffs@tglx>
- <c8033229-97a0-3e4c-66d5-74c0d1d4e15c@intel.com> <87ee1iw2ao.ffs@tglx>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <87ee1iw2ao.ffs@tglx>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/04/22 02:10, Thomas Gleixner wrote:
-> On Tue, Apr 26 2022 at 09:51, Adrian Hunter wrote:
->> On 25/04/22 20:05, Thomas Gleixner wrote:
->>> On Mon, Apr 25 2022 at 16:15, Adrian Hunter wrote:
->>>> On 25/04/22 12:32, Thomas Gleixner wrote:
->>>>> It's hillarious, that we still cling to this pvclock abomination, while
->>>>> we happily expose TSC deadline timer to the guest. TSC virt scaling was
->>>>> implemented in hardware for a reason.
->>>>
->>>> So you are talking about changing VMX TCS Offset on every VM-Entry to try to hide
->>>> the time jumps when the VM is scheduled out?  Or neglect that and just let the time
->>>> jumps happen?
->>>>
->>>> If changing VMX TCS Offset, how can TSC be kept consistent between each VCPU i.e.
->>>> wouldn't that mean each VCPU has to have the same VMX TSC Offset?
->>>
->>> Obviously so. That's the only thing which makes sense, no?
->>
->> [ Sending this again, because I notice I messed up the email "From" ]
->>
->> But wouldn't that mean changing all the VCPUs VMX TSC Offset at the same time,
->> which means when none are currently executing?  How could that be done?
-> 
-> Why would you change TSC offset after the point where a VM is started
-> and why would it be different per vCPU?
-> 
-> Time is global and time moves on when a vCPU is scheduled out. Anything
-> else is bonkers, really. If the hypervisor tries to screw with that then
-> how does the guest do timekeeping in a consistent way?
-> 
->     CLOCK_REALTIME = CLOCK_MONOTONIC + offset
-> 
-> That offset changes when something sets the clock, i.e. clock_settime(),
-> settimeofday() or adjtimex() in case that NTP cannot compensate or for
-> the beloved leap seconds adjustment. At any other time the offset is
-> constant.
-> 
-> CLOCK_MONOTONIC is derived from the underlying clocksource which is
-> expected to increment with constant frequency and that has to be
-> consistent accross _all_ vCPUs of a particular VM.
-> 
-> So how would a hypervisor 'hide' scheduled out time w/o screwing up
-> timekeeping completely?
-> 
-> The guest TSC which is based on the host TSC is:
-> 
->     guestTSC = offset + hostTSC * factor;
-> 
-> If you make offset different between guest vCPUs then timekeeping in the
-> guest is screwed.
-> 
-> The whole point of that paravirt clock was to handle migration between
-> hosts which did not have the VMCS TSC scaling/offset mechanism. The CPUs
-> which did not have that went EOL at least 10 years ago.
-> 
-> So what are you concerned about?
+mtdchar_write_ioctl() calls kmalloc() with the 'size' argument set to
+the smaller of two values: the write request's data/OOB length provided
+by user space and the erase block size of the MTD device.  If the latter
+is large, kmalloc() may not be able to serve such allocation requests.
+Use kvmalloc() instead.  Correspondingly, replace kfree() calls with
+kvfree() calls.
 
-Thanks for the explanation.
+Suggested-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Micha=C5=82 K=C4=99pie=C5=84 <kernel@kempniu.pl>
+---
+ drivers/mtd/mtdchar.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Changing TSC offset / scaling makes it much harder for Intel PT on
-the host to use, so there is no sense in my pushing for that at this
-time when there is anyway kernel option no-kvmclock.
+diff --git a/drivers/mtd/mtdchar.c b/drivers/mtd/mtdchar.c
+index b2700f8467ff..05860288a7af 100644
+--- a/drivers/mtd/mtdchar.c
++++ b/drivers/mtd/mtdchar.c
+@@ -623,16 +623,16 @@ static int mtdchar_write_ioctl(struct mtd_info *mtd,
+=20
+ =09datbuf_len =3D min_t(size_t, req.len, mtd->erasesize);
+ =09if (datbuf_len > 0) {
+-=09=09datbuf =3D kmalloc(datbuf_len, GFP_KERNEL);
++=09=09datbuf =3D kvmalloc(datbuf_len, GFP_KERNEL);
+ =09=09if (!datbuf)
+ =09=09=09return -ENOMEM;
+ =09}
+=20
+ =09oobbuf_len =3D min_t(size_t, req.ooblen, mtd->erasesize);
+ =09if (oobbuf_len > 0) {
+-=09=09oobbuf =3D kmalloc(oobbuf_len, GFP_KERNEL);
++=09=09oobbuf =3D kvmalloc(oobbuf_len, GFP_KERNEL);
+ =09=09if (!oobbuf) {
+-=09=09=09kfree(datbuf);
++=09=09=09kvfree(datbuf);
+ =09=09=09return -ENOMEM;
+ =09=09}
+ =09}
+@@ -682,8 +682,8 @@ static int mtdchar_write_ioctl(struct mtd_info *mtd,
+ =09=09usr_oob +=3D ops.oobretlen;
+ =09}
+=20
+-=09kfree(datbuf);
+-=09kfree(oobbuf);
++=09kvfree(datbuf);
++=09kvfree(oobbuf);
+=20
+ =09return ret;
+ }
+--=20
+2.36.1
+
 
