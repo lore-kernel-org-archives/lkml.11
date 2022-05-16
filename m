@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC53FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB62C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234731AbiEPTor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
+        id S1345602AbiEPTox (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346032AbiEPTms (ORCPT
+        with ESMTP id S1346033AbiEPTms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:42:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3513ED3C;
-        Mon, 16 May 2022 12:41:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D163F322;
+        Mon, 16 May 2022 12:41:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36347B81610;
-        Mon, 16 May 2022 19:41:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C514C385AA;
-        Mon, 16 May 2022 19:41:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91FD161548;
+        Mon, 16 May 2022 19:41:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83CF5C385AA;
+        Mon, 16 May 2022 19:41:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730067;
-        bh=fBLJJBa4HMdeOHZr3X0XZgfHZVV7cWYDol4q08834Zo=;
+        s=korg; t=1652730070;
+        bh=Kt5dt3FlKV7eGa6zGiDS99m4kzuj0Lcok+UidDRxhSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2PevbTgmTh5noRfno/eAfl0/2LvvRRm50XevKap5qYI2wFQZKPNBhcqwVkYP1o/MC
-         L+19tNLs4homqN1kgPO9DeuYUbV0wqmxokFxMex5WLq9KIxSw0an2UPmEbkRtI78NZ
-         m/GEaeyo+UjaJV5ZMe1cLklBveEYwqWMmemM2pSM=
+        b=mYlZp30pplIMgRb7HrACecRuAGPNxdUK0mRJdDlWWgDpWDLDbhFaT4eeZJ5adcbqD
+         G6mz4TmwJRFef8QyCYSRIdYN1k7KWdwOFKotT/NqsXrM02teBY3Wub9z6/UufRSe+8
+         h9IHhqlXQ3NO98LORAaxV0wpwp11V8Fj86x4pIsQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>, Willy Tarreau <w@1wt.eu>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 20/32] tcp: resalt the secret every 10 seconds
-Date:   Mon, 16 May 2022 21:36:34 +0200
-Message-Id: <20220516193615.372887470@linuxfoundation.org>
+Subject: [PATCH 4.19 03/32] net: Fix features skip in for_each_netdev_feature()
+Date:   Mon, 16 May 2022 21:36:17 +0200
+Message-Id: <20220516193614.877806329@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
 References: <20220516193614.773450018@linuxfoundation.org>
@@ -53,68 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-[ Upstream commit 4dfa9b438ee34caca4e6a4e5e961641807367f6f ]
+[ Upstream commit 85db6352fc8a158a893151baa1716463d34a20d0 ]
 
-In order to limit the ability for an observer to recognize the source
-ports sequence used to contact a set of destinations, we should
-periodically shuffle the secret. 10 seconds looks effective enough
-without causing particular issues.
+The find_next_netdev_feature() macro gets the "remaining length",
+not bit index.
+Passing "bit - 1" for the following iteration is wrong as it skips
+the adjacent bit. Pass "bit" instead.
 
-Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Cc: Amit Klein <aksecurity@gmail.com>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Tested-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Fixes: 3b89ea9c5902 ("net: Fix for_each_netdev_feature on Big endian")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
+Link: https://lore.kernel.org/r/20220504080914.1918-1-tariqt@nvidia.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/secure_seq.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ include/linux/netdev_features.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-index af6ad467ed61..3a8128341e6a 100644
---- a/net/core/secure_seq.c
-+++ b/net/core/secure_seq.c
-@@ -22,6 +22,8 @@
- static siphash_key_t net_secret __read_mostly;
- static siphash_key_t ts_secret __read_mostly;
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index 2a8105d204a9..78411dc4a040 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -156,7 +156,7 @@ enum {
+ #define NETIF_F_HW_TLS_TX	__NETIF_F(HW_TLS_TX)
+ #define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
  
-+#define EPHEMERAL_PORT_SHUFFLE_PERIOD (10 * HZ)
-+
- static __always_inline void net_secret_init(void)
+-/* Finds the next feature with the highest number of the range of start till 0.
++/* Finds the next feature with the highest number of the range of start-1 till 0.
+  */
+ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
  {
- 	net_get_random_once(&net_secret, sizeof(net_secret));
-@@ -100,11 +102,13 @@ u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 	const struct {
- 		struct in6_addr saddr;
- 		struct in6_addr daddr;
-+		unsigned int timeseed;
- 		__be16 dport;
- 	} __aligned(SIPHASH_ALIGNMENT) combined = {
- 		.saddr = *(struct in6_addr *)saddr,
- 		.daddr = *(struct in6_addr *)daddr,
--		.dport = dport
-+		.timeseed = jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+		.dport = dport,
- 	};
- 	net_secret_init();
- 	return siphash(&combined, offsetofend(typeof(combined), dport),
-@@ -145,8 +149,10 @@ EXPORT_SYMBOL_GPL(secure_tcp_seq);
- u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
- {
- 	net_secret_init();
--	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
--			    (__force u16)dport, &net_secret);
-+	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
-+			    (__force u16)dport,
-+			    jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+			    &net_secret);
- }
- EXPORT_SYMBOL_GPL(secure_ipv4_port_ephemeral);
- #endif
+@@ -175,7 +175,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ 	for ((bit) = find_next_netdev_feature((mask_addr),		\
+ 					      NETDEV_FEATURE_COUNT);	\
+ 	     (bit) >= 0;						\
+-	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
++	     (bit) = find_next_netdev_feature((mask_addr), (bit)))
+ 
+ /* Features valid for ethtool to change */
+ /* = all defined minus driver/device-class-related */
 -- 
 2.35.1
 
