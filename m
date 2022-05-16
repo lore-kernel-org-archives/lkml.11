@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CBAC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B463EC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346344AbiEPTqF (ORCPT
+        id S1346487AbiEPTqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
+        Mon, 16 May 2022 15:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346136AbiEPTmv (ORCPT
+        with ESMTP id S231874AbiEPTmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:42:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD643F89E;
-        Mon, 16 May 2022 12:41:49 -0700 (PDT)
+        Mon, 16 May 2022 15:42:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB353FBC2;
+        Mon, 16 May 2022 12:42:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46D7FB8160F;
-        Mon, 16 May 2022 19:41:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95A8FC385AA;
-        Mon, 16 May 2022 19:41:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF84F61510;
+        Mon, 16 May 2022 19:42:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDBA9C36AF6;
+        Mon, 16 May 2022 19:42:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730107;
-        bh=gAF9QkJ8n4r0KvHDf7oKdqFvbg1AdydfWIN71I3LAy8=;
+        s=korg; t=1652730125;
+        bh=KhyYJBe1zq4w8/BrBLLGT3YQik0FWXZFDkLKsh4CQ9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AjEm5k7y2nfwwNpffsL4ww7bhA8ja52a/GkoyeSMzssdpLql2iXUxWbmhEA+mX2tt
-         6zhueFxQe8mAJSOoYspmk8ZqUnBZocPDxFxJZdkEqHCjHZY2+QI8JL1dPND+PZl7k6
-         UhA3YiS121I1Cj79fCVP61tR2OG8kce5yjaa4ENk=
+        b=CQGXfjVM6y0FP5HQT3daGP+BEGaTnYQgePGKboFDrTJlGFhixMkn2K7/Nv63IArRi
+         wQWFzkY8veaGKtm+CzbzSb2H1PcQLrwWaiQ4W6ClQVCpGU5BTZ5BoQPfwIzQztp8ue
+         +F9b0p1/f0u7/Ow8RKQqv9pff/yyGhh37tkvxF9A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ethan Yang <etyang@sierrawireless.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 24/32] USB: serial: qcserial: add support for Sierra Wireless EM7590
-Date:   Mon, 16 May 2022 21:36:38 +0200
-Message-Id: <20220516193615.491311549@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.19 30/32] MIPS: fix allmodconfig build with latest mkimage
+Date:   Mon, 16 May 2022 21:36:44 +0200
+Message-Id: <20220516193615.666983839@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
 References: <20220516193614.773450018@linuxfoundation.org>
@@ -49,31 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ethan Yang <etyang@sierrawireless.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 
-commit 870b1eee2d844727b06e238c121d260bc5645580 upstream.
+With the latest mkimage from U-Boot 2021.04+ the allmodconfig build
+fails. 822564cd3aa1 ("MIPS: generic: Update node names to avoid unit
+addresses") was applied for similar build failure, but it was not
+applied to 'arch/mips/generic/board-ocelot_pcb123.its.S' as that was
+removed from upstream when the patch was applied.
 
-Add support for Sierra Wireless EM7590 0xc080/0xc081 compositions.
-
-Signed-off-by: Ethan Yang <etyang@sierrawireless.com>
-Link: https://lore.kernel.org/r/20220425055840.5693-1-etyang@sierrawireless.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Fixes: 822564cd3aa1 ("MIPS: generic: Update node names to avoid unit addresses")
+Cc: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/qcserial.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/mips/generic/board-ocelot_pcb123.its.S |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/drivers/usb/serial/qcserial.c
-+++ b/drivers/usb/serial/qcserial.c
-@@ -166,6 +166,8 @@ static const struct usb_device_id id_tab
- 	{DEVICE_SWI(0x1199, 0x9090)},	/* Sierra Wireless EM7565 QDL */
- 	{DEVICE_SWI(0x1199, 0x9091)},	/* Sierra Wireless EM7565 */
- 	{DEVICE_SWI(0x1199, 0x90d2)},	/* Sierra Wireless EM9191 QDL */
-+	{DEVICE_SWI(0x1199, 0xc080)},	/* Sierra Wireless EM7590 QDL */
-+	{DEVICE_SWI(0x1199, 0xc081)},	/* Sierra Wireless EM7590 */
- 	{DEVICE_SWI(0x413c, 0x81a2)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
- 	{DEVICE_SWI(0x413c, 0x81a3)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
- 	{DEVICE_SWI(0x413c, 0x81a4)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+--- a/arch/mips/generic/board-ocelot_pcb123.its.S
++++ b/arch/mips/generic/board-ocelot_pcb123.its.S
+@@ -1,23 +1,23 @@
+ /* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
+ / {
+ 	images {
+-		fdt@ocelot_pcb123 {
++		fdt-ocelot_pcb123 {
+ 			description = "MSCC Ocelot PCB123 Device Tree";
+ 			data = /incbin/("boot/dts/mscc/ocelot_pcb123.dtb");
+ 			type = "flat_dt";
+ 			arch = "mips";
+ 			compression = "none";
+-			hash@0 {
++			hash {
+ 				algo = "sha1";
+ 			};
+ 		};
+ 	};
+ 
+ 	configurations {
+-		conf@ocelot_pcb123 {
++		conf-ocelot_pcb123 {
+ 			description = "Ocelot Linux kernel";
+-			kernel = "kernel@0";
+-			fdt = "fdt@ocelot_pcb123";
++			kernel = "kernel";
++			fdt = "fdt-ocelot_pcb123";
+ 		};
+ 	};
+ };
 
 
