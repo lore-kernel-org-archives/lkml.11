@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95526C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CBAC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346428AbiEPTqO (ORCPT
+        id S1346344AbiEPTqF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
+        Mon, 16 May 2022 15:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346151AbiEPTmw (ORCPT
+        with ESMTP id S1346136AbiEPTmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:42:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A33C3F8B2;
-        Mon, 16 May 2022 12:41:59 -0700 (PDT)
+        Mon, 16 May 2022 15:42:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD643F89E;
+        Mon, 16 May 2022 12:41:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F16DBCE1795;
-        Mon, 16 May 2022 19:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A642C385AA;
-        Mon, 16 May 2022 19:41:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46D7FB8160F;
+        Mon, 16 May 2022 19:41:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95A8FC385AA;
+        Mon, 16 May 2022 19:41:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730116;
-        bh=Dd5bm4NtHHEFcaFf5w6xNS60nrturXKLQxOMwNfw/2U=;
+        s=korg; t=1652730107;
+        bh=gAF9QkJ8n4r0KvHDf7oKdqFvbg1AdydfWIN71I3LAy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l6hXsEk84R2jlOTtRICZ1YULgdZzunQFe2P8/oTD9ZtTpru0Z42XsSQz+UN6kii1T
-         qvUlnLcfABN83B7USRoK4breyxYck1E+EHfhfBdkVQgwj/501VfjFjNHaAAGrUjGG2
-         xRgCFnNAYHjOBMRibsqB3NaMCBvEy8PMs2phtRpw=
+        b=AjEm5k7y2nfwwNpffsL4ww7bhA8ja52a/GkoyeSMzssdpLql2iXUxWbmhEA+mX2tt
+         6zhueFxQe8mAJSOoYspmk8ZqUnBZocPDxFxJZdkEqHCjHZY2+QI8JL1dPND+PZl7k6
+         UhA3YiS121I1Cj79fCVP61tR2OG8kce5yjaa4ENk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 4.19 27/32] slimbus: qcom: Fix IRQ check in qcom_slim_probe
-Date:   Mon, 16 May 2022 21:36:41 +0200
-Message-Id: <20220516193615.578081188@linuxfoundation.org>
+        stable@vger.kernel.org, Ethan Yang <etyang@sierrawireless.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.19 24/32] USB: serial: qcserial: add support for Sierra Wireless EM7590
+Date:   Mon, 16 May 2022 21:36:38 +0200
+Message-Id: <20220516193615.491311549@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
 References: <20220516193614.773450018@linuxfoundation.org>
@@ -49,43 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ethan Yang <etyang@sierrawireless.com>
 
-commit fe503887eed6ea528e144ec8dacfa1d47aa701ac upstream.
+commit 870b1eee2d844727b06e238c121d260bc5645580 upstream.
 
-platform_get_irq() returns non-zero IRQ number on success,
-negative error number on failure.
-And the doc of platform_get_irq() provides a usage example:
+Add support for Sierra Wireless EM7590 0xc080/0xc081 compositions.
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
-
-Fix the check of return value to catch errors correctly.
-
-Fixes: ad7fcbc308b0 ("slimbus: qcom: Add Qualcomm Slimbus controller driver")
+Signed-off-by: Ethan Yang <etyang@sierrawireless.com>
+Link: https://lore.kernel.org/r/20220425055840.5693-1-etyang@sierrawireless.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220429164917.5202-2-srinivas.kandagatla@linaro.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/slimbus/qcom-ctrl.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/serial/qcserial.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/slimbus/qcom-ctrl.c
-+++ b/drivers/slimbus/qcom-ctrl.c
-@@ -515,9 +515,9 @@ static int qcom_slim_probe(struct platfo
- 	}
- 
- 	ctrl->irq = platform_get_irq(pdev, 0);
--	if (!ctrl->irq) {
-+	if (ctrl->irq < 0) {
- 		dev_err(&pdev->dev, "no slimbus IRQ\n");
--		return -ENODEV;
-+		return ctrl->irq;
- 	}
- 
- 	sctrl = &ctrl->ctrl;
+--- a/drivers/usb/serial/qcserial.c
++++ b/drivers/usb/serial/qcserial.c
+@@ -166,6 +166,8 @@ static const struct usb_device_id id_tab
+ 	{DEVICE_SWI(0x1199, 0x9090)},	/* Sierra Wireless EM7565 QDL */
+ 	{DEVICE_SWI(0x1199, 0x9091)},	/* Sierra Wireless EM7565 */
+ 	{DEVICE_SWI(0x1199, 0x90d2)},	/* Sierra Wireless EM9191 QDL */
++	{DEVICE_SWI(0x1199, 0xc080)},	/* Sierra Wireless EM7590 QDL */
++	{DEVICE_SWI(0x1199, 0xc081)},	/* Sierra Wireless EM7590 */
+ 	{DEVICE_SWI(0x413c, 0x81a2)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
+ 	{DEVICE_SWI(0x413c, 0x81a3)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
+ 	{DEVICE_SWI(0x413c, 0x81a4)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
 
 
