@@ -2,107 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7614BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62AF4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:58:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244818AbiEPO6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
+        id S244827AbiEPO6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244895AbiEPO4w (ORCPT
+        with ESMTP id S244822AbiEPO6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:56:52 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF5B37A9B;
-        Mon, 16 May 2022 07:56:51 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 8A94B21FE9;
-        Mon, 16 May 2022 14:56:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652713009; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oTDrZeo/UdLI29Tuaw8mlcdG/RkPgJLQM7cePAnlqRg=;
-        b=qMST7ia3BcKl3UtC1W2uQ0qkLBJP5Q7YC0oT0Qsb2KbEzU3Or4Q8r5PYsshuphM/GEHsx/
-        3TbgfR0/0E5XpsXnd9OyJN2pbUs6sglf0Hs/rZTi2wLDZTO2OOnHvkd7qA4fAmNZA1vdry
-        3XHA87WfjJ2L5kh4VZznBS1IZ/1m/S0=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 028062C141;
-        Mon, 16 May 2022 14:56:49 +0000 (UTC)
-Date:   Mon, 16 May 2022 16:56:41 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-Subject: Re: [PATCH 25/30] panic, printk: Add console flush parameter and
- convert panic_print to a notifier
-Message-ID: <YoJmKYLzPZqCDDim@alley>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-26-gpiccoli@igalia.com>
+        Mon, 16 May 2022 10:58:10 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0AD839143
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:58:05 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id a22-20020a9d3e16000000b00606aeb12ab6so10210159otd.7
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=K+Y70coh+Lp+roExSs0REYyqTm2S4dimkeJMPuEY3ro=;
+        b=a2LKmOSvf8pekx9Ba50+WsLfSfczKYD5qYZ0CvNasNSqyAbqFoydfY2gx89tJxtr2y
+         c6V12q8E0n4xIF1oGIXmZ6+uBA97B7Z1UJqB4t17GUOyxAf2pXUwws57sW7wLjvNQUoE
+         i+oAg1OCuAOCthZ7bVwuYfhu7ZAyX6AKyOZXHNSTYB+gW8Ieci6qyQlxHQwO9CPGJ2Dx
+         YqlGNlTQlwKE0obNLvF1sweC4Qz3/TKbLPBkYfFqxFVfCyxNfoxNTobOqtotw1w3qVio
+         J4LpXmPH+pDm9LPti4oTg2sL+AMWAByuxCkYC9tODNdF+XhZJb9HlqKHWPK5tQQHqQJh
+         SNEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=K+Y70coh+Lp+roExSs0REYyqTm2S4dimkeJMPuEY3ro=;
+        b=VuW8I511VVlaOiG6Ua7fbB3VUbylVhgi2uq4BPA4H+IkQbZ62/T8qiXv65pR/0Nzv6
+         VIEeWquZT1pDLeOBGJowAQdySFxJWccmiBEnb9FD9kQok4N/hbDJOIIctA3IOowgLveU
+         b2MPApouX0My8EUCxtqLknsQc6Kb6jEq4g61WXqu61fnQWxsv+xjQ3/b5oMU8nDOwVQs
+         wn9IJVsywOfFbelrEGBn3tn/iUlZTbqRtTU72PuNgBeUE3e64DbQ+UgzmBPZ7Omh0xpk
+         UgDnufhBRu6kdOQzJo+EtnZZKy9/ZeMssQqAh+y0flldyxc5byDMxI/rKSKi9y4WNbET
+         /7zw==
+X-Gm-Message-State: AOAM531pnv4ycIODHGUPO6ZrAY8ZWlLLgl5MnyH4ar70AIPmhpuI7x3L
+        VLGR7VcThfwaH7j0XL7Iywzl9g==
+X-Google-Smtp-Source: ABdhPJw4N5aCDpS5ff2CufYGmp786lJ7RNGJHCtFjbTmuAq8MExGgtUzZ2Sa7rZJBeZwP5bNxHqKXQ==
+X-Received: by 2002:a9d:4b14:0:b0:605:d4b1:a0a0 with SMTP id q20-20020a9d4b14000000b00605d4b1a0a0mr6401833otf.134.1652713084987;
+        Mon, 16 May 2022 07:58:04 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id w15-20020a056830144f00b00606a6c09a0csm3953648otp.12.2022.05.16.07.58.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 07:58:04 -0700 (PDT)
+Date:   Mon, 16 May 2022 08:00:28 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/7] dt-bindings: pinctrl: qcom-pmic-gpio: Add pm6125
+ compatible
+Message-ID: <YoJnDGI3gVyIITe4@ripper>
+References: <20220511220613.1015472-1-marijn.suijten@somainline.org>
+ <20220511220613.1015472-3-marijn.suijten@somainline.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427224924.592546-26-gpiccoli@igalia.com>
+In-Reply-To: <20220511220613.1015472-3-marijn.suijten@somainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-04-27 19:49:19, Guilherme G. Piccoli wrote:
-> Currently the parameter "panic_print" relies in a function called
-> directly on panic path; one of the flags the users can set for
-> panic_print triggers a console replay mechanism, to show the
-> entire kernel log buffer (from the beginning) in a panic event.
-> 
-> Two problems with that: the dual nature of the panic_print
-> isn't really appropriate, the function was originally meant
-> to allow users dumping system information on panic events,
-> and was "overridden" to also force a console flush of the full
-> kernel log buffer. It also turns the code a bit more complex
-> and duplicate than it needs to be.
-> 
-> This patch proposes 2 changes: first, we decouple panic_print
-> from the console flushing mechanism, in the form of a new kernel
-> core parameter (panic_console_replay); we kept the functionality
-> on panic_print to avoid userspace breakage, although we comment
-> in both code and documentation that this panic_print usage is
-> deprecated.
-> 
-> We converted panic_print function to a panic notifier too, adding
-> it on the panic informational notifier list, executed as the final
-> callback. This allows a more clear code and makes sense, as
-> panic_print_sys_info() is really a panic-time only function.
-> We also moved its code to kernel/printk.c, it seems to make more
-> sense given it's related to printing stuff.
+On Wed 11 May 15:06 PDT 2022, Marijn Suijten wrote:
 
-I really like both changes. Just please split it them into two
-patchset. I mean one patch for the new "panic_console_replay"
-parameter and 2nd that moves "printk_info" into the notifier.
+> The pm6125 comes with 9 GPIOs, without holes.
+> 
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 
-Best Regards,
-Petr
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Regards,
+Bjorn
+
+> ---
+>  Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
+> index 22dbcba752d0..ef7a4a9450a4 100644
+> --- a/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
+> +++ b/Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml
+> @@ -20,6 +20,7 @@ properties:
+>            - qcom,pm2250-gpio
+>            - qcom,pm660-gpio
+>            - qcom,pm660l-gpio
+> +          - qcom,pm6125-gpio
+>            - qcom,pm6150-gpio
+>            - qcom,pm6150l-gpio
+>            - qcom,pm6350-gpio
+> @@ -107,6 +108,7 @@ $defs:
+>          description:
+>            List of gpio pins affected by the properties specified in
+>            this subnode.  Valid pins are
+> +                 - gpio1-gpio9 for pm6125
+>                   - gpio1-gpio10 for pm6150
+>                   - gpio1-gpio12 for pm6150l
+>                   - gpio1-gpio9 for pm6350
+> -- 
+> 2.36.1
+> 
