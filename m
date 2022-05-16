@@ -2,124 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E7CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A87C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244427AbiEPOST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
+        id S244353AbiEPOUA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230302AbiEPOSP (ORCPT
+        with ESMTP id S230302AbiEPOT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:18:15 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2E83AA6B;
-        Mon, 16 May 2022 07:18:14 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GE252R018504;
-        Mon, 16 May 2022 14:18:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=yMNOKF07RUOwX1GCechJUNCl+HJAsH8hPOrtwMkUF3w=;
- b=i6+FF2JagaDhRxk6dpZgrOngcOMkTECHhcjd/vlP13567dQA3Tf0qdQn7qvkNu+r9WRP
- Q8ftkQKXJrb+6cWkcUJZen7k52gLl8RvkT2kJbYlKYSHMthUyYUy0eWIqOp+ybLbMBRy
- vUSbYJrLbVmRs9cBYFUhvr/UGxplRgXeMudWkh4ZGbxiq86l9AR7dVVTk7NQhGOZbPr8
- O286iPFGbNsZRpA752rj+xHlMXY+oKnu+9Tq6ow0AIIfwg2EMco2/SQxow95U1Nksvuk
- OEyWTY6ku2g+jcRnK5tdvd4bT6Hwnk8A8y/IjS45ba5ukv/k7jd+lGsXXTLHmCvAlODC jQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3r150dnr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 14:18:14 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24GE2JXk019751;
-        Mon, 16 May 2022 14:18:14 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3r150dmb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 14:18:13 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24GEI3Cx014376;
-        Mon, 16 May 2022 14:18:11 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3g23pjatnm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 14:18:10 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24GEHaLp34341120
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 16 May 2022 14:17:36 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 74292A404D;
-        Mon, 16 May 2022 14:18:07 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C489BA4040;
-        Mon, 16 May 2022 14:18:06 +0000 (GMT)
-Received: from [9.171.15.172] (unknown [9.171.15.172])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 16 May 2022 14:18:06 +0000 (GMT)
-Message-ID: <bae4e416-b0e9-31c6-c9d0-df6b5a5fd46f@linux.ibm.com>
-Date:   Mon, 16 May 2022 16:21:54 +0200
+        Mon, 16 May 2022 10:19:58 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363993AA6D;
+        Mon, 16 May 2022 07:19:58 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id n24so18724392oie.12;
+        Mon, 16 May 2022 07:19:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Mpj75KaCiBDC1z0Gq3wmQiK0bCjZ+/g+r2qV0jF0QRs=;
+        b=h7hGFYuETN0Js7lA4HRVafJbtT3J3KaiOp2PQl9zOveXQ58rogRbhMTVG+EEvFEUGm
+         mgiDgExHRSy3NmnDXGWIG/eqz8sOxhVtpQ6zdEtd6pXK3aHPuSX8NvSDLFQn8q3SxzKn
+         qPbJoCpOhtLyQtknnmObrNRPcp65M/9lc5+nMQH9EZ6DJ9zvyrxEPJUqB4ZpHgN65UT/
+         pZ6wxDTkwgT5vkbieo6BPojGLMCZK/KMf51dzWWT6GmojtBDWnBo2DB6cb2VCY+ARVbR
+         DGTOsgB1Jn3+eY0XLFzfo/yyoRwisMfFzPLHaOR+iwIgr/tYqlQaBS1PasQQKYWGO8WS
+         WSEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Mpj75KaCiBDC1z0Gq3wmQiK0bCjZ+/g+r2qV0jF0QRs=;
+        b=c6gEg18svntrKpDEkI+bVp1NjN660QCV2DBcKIwrNDMO+GSyn0EOJRdh5ezXeGsg56
+         3H7/qiH4tXWtSwi24VE+CZqnaeg7KKdzMJPahmv3q6mLjOaiAoM8QXRH5YTQvHODdX7W
+         jnGa6FI5LxiNo60VBv+4ZrxWM0pP7XaDnOITN1pYWEnkDOy50gLVu+461Q6TmNINnQvT
+         C3UawnXAbPn9tOHswBQzM4IUlq0L4XjxcyJHYi43dDqa07azurKycR0sVEEg6ZQ34pW9
+         eBgBQPgjbDt5P/X+IDJyptzUSY9BtUS8no3Hu4++ZPFdHi2tu4b+AErgV6f2RxNHYus/
+         Mljw==
+X-Gm-Message-State: AOAM531aHd1fxlDQIIdCpWiitYYCpb767rojc69tmyyBTUlNDsupgyq7
+        zg5OoYqVvUZwdwC6s/A4tAY=
+X-Google-Smtp-Source: ABdhPJzHIEB8K5ECnXXfF0FVsk0B1nV5R/BR/kSU8cshU+jwA1/3rjPaKr6PQiWtdpcKDnk1QewaaA==
+X-Received: by 2002:a05:6808:a11:b0:325:e5c1:5912 with SMTP id n17-20020a0568080a1100b00325e5c15912mr8321388oij.204.1652710797515;
+        Mon, 16 May 2022 07:19:57 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id i1-20020a9d6241000000b005b22a0d826csm3916917otk.1.2022.05.16.07.19.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 07:19:56 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <9510474d-5555-42b3-5a9c-90e3078df499@roeck-us.net>
+Date:   Mon, 16 May 2022 07:19:53 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 3/3] s390x: KVM: resetting the Topology-Change-Report
+ Thunderbird/91.8.1
+Subject: Re: [greybus-dev] Re: [PATCH] [v2] Kbuild: move to -std=gnu11
 Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, borntraeger@de.ibm.com,
-        frankja@linux.ibm.com, cohuck@redhat.com, thuth@redhat.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
-        seiden@linux.ibm.com, nrb@linux.ibm.com
-References: <20220506092403.47406-1-pmorel@linux.ibm.com>
- <20220506092403.47406-4-pmorel@linux.ibm.com>
- <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
- <20220512115250.2e20bfdf@p-imbrenda>
- <70a7d93c-c1b1-fa72-0eb4-02e3e2235f94@redhat.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <70a7d93c-c1b1-fa72-0eb4-02e3e2235f94@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>, linux-kbuild@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
+        Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        linux-arm-kernel@lists.infradead.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-btrfs@vger.kernel.org
+References: <20220228103142.3301082-1-arnd@kernel.org>
+ <20220516131023.GA2329080@roeck-us.net> <YoJSF8T5K9pPx3Ap@kroah.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <YoJSF8T5K9pPx3Ap@kroah.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: G9x7Bk-epVV11i7POlxqSnH3IOodtMW3
-X-Proofpoint-ORIG-GUID: Qcb0VTL_5kUfnZA07UnfESspfT1_K6bq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-16_13,2022-05-16_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
- phishscore=0 suspectscore=0 spamscore=0 impostorscore=0 lowpriorityscore=0
- mlxlogscore=966 bulkscore=0 priorityscore=1501 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205160079
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/12/22 12:01, David Hildenbrand wrote:
+On 5/16/22 06:31, Greg KH wrote:
+> On Mon, May 16, 2022 at 06:10:23AM -0700, Guenter Roeck wrote:
+>> On Mon, Feb 28, 2022 at 11:27:43AM +0100, Arnd Bergmann wrote:
+>>> From: Arnd Bergmann <arnd@arndb.de>
 >>>
->>> I think we prefer something like u16 when copying to user space.
+>>> During a patch discussion, Linus brought up the option of changing
+>>> the C standard version from gnu89 to gnu99, which allows using variable
+>>> declaration inside of a for() loop. While the C99, C11 and later standards
+>>> introduce many other features, most of these are already available in
+>>> gnu89 as GNU extensions as well.
 >>
->> but then userspace also has to expect a u16, right?
+>> The downside is that backporting affected patches to older kernel branches
+>> now fails with error messages such as
+>>
+>> mm/kfence/core.c: In function ‘kfence_init_pool’:
+>> mm/kfence/core.c:595:2: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
+>>
+>> Just something to keep in mind when writing patches.
 > 
-> Yep.
+> I just ran across this very issue on this commit.  It's an easy fixup
+> for 5.17.y to make this work, so I did that in my tree.  If this gets to
+> be too much, we might need to reconsider adding c11 to older stable
+> kernels.
 > 
 
-Yes but in fact, inspired by previous discussion I had on the VFIO 
-interface, that is the reason why I did prefer an int.
-It is much simpler than a u16 and the definition of a bit.
+I think I'll do just that for ChromeOS; I don't want to have to deal
+with the backports, and we are using recent compilers anyway.
 
-Despite a bit in a u16 is what the s3990 achitecture proposes I thought 
-we could make it easier on the KVM/QEMU interface.
-
-But if the discussion stops here, I will do as you both propose change 
-to u16 in KVM and userland and add the documentation for the interface.
-
-Regards,
-Pierre
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
+Guenter
