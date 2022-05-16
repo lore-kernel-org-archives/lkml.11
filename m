@@ -2,82 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDCEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343623AbiEPQ1y (ORCPT
+        id S1343598AbiEPQ3C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 12:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
+        Mon, 16 May 2022 12:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343615AbiEPQ1v (ORCPT
+        with ESMTP id S1343554AbiEPQ3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 12:27:51 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED04393EE;
-        Mon, 16 May 2022 09:27:50 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-e93bbb54f9so20752757fac.12;
-        Mon, 16 May 2022 09:27:50 -0700 (PDT)
+        Mon, 16 May 2022 12:29:01 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554F53B012
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 09:29:00 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id j2so28041226ybu.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 09:29:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0bOl+fIEQwkyHpsAzPSpEA4t7EJjG4W9SophqswqviQ=;
+        b=bdD+55o79GwcDBvWafpfYRSlZ2cIsVtsEzWN8lNQZowpdfgforgqMt8qYsM397aVOm
+         YiVGsBjyCQ4/nzJb8pjgE6jjFdcKLpF5wOOcJodQ1RZ4iNIvX0CENTxmrtn9+/UciHyW
+         EKnHHqZErG9LECr8b32WdjMLnN2pXB4+B7zMmAvfkaPu7l6jzIfy0MhMILwvn73/9VQ/
+         MkHv6wCf5C5mFtWTtxiMgZBPV2qCW1bp6lyYTE56bmlfFrfQylzrQZmpH8+PR5FUV1/R
+         OxVBsmGQ396NviKrlt0o6WZ5PsTDAzdbxxcSej5Osw7CXNEecq4EKHR7E8NkFpIkBOAc
+         v+/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=osVfxhsQi2p2dlDrhzZDuOBV7X+Ps662PG/MDdJu9W0=;
-        b=R8Uy/8TgWLgSj8dnANBcz9ev3bYcDCylCkLNtSkoJKYdoUfUCQFlm2JyK/5CzWtvq5
-         Zua7+YAtjyd0BOh733TOLhmy8kww4tK3NMLnn3ssHxBzZ1TpPHIwdS4torhBIfvRDAAi
-         M8yYnl05epDcUdtkiFBsi8afwfEA3ZvQ9wt+2QNGYDt3UJcawRVmLakFa++ID8AETReB
-         np/lvpNCOp6LJo9RCYOOUwBynwl1R2zQelVr/sw8OaouPTWU6Asi5Lr3SqEpbg4OU+tD
-         5tezWO0aAOhl9115zSmqIn10KPdA14MRs1F5wu/7qfrkHVC7weY5auKgYfpu9Wqnm23U
-         7CPw==
-X-Gm-Message-State: AOAM5309w0IVaIoJJ9/B9/KEYA7Y1RredSMmtU52QhJWBdA/9Tbqn6hx
-        MiM4j2H9V/HPhINB3eOX2ww1ROZtYQ==
-X-Google-Smtp-Source: ABdhPJxaunhi1VLlqHvgFaK+EgjKjq0gVMM8ayHjAQzaIw/eUPKQEHsbfeLNaMcAuwFJet/LLjQYYg==
-X-Received: by 2002:a05:6870:890f:b0:e1:c92d:d84 with SMTP id i15-20020a056870890f00b000e1c92d0d84mr9757652oao.49.1652718469152;
-        Mon, 16 May 2022 09:27:49 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id b18-20020a9d6b92000000b00606b1f72fcbsm4071686otq.31.2022.05.16.09.27.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 09:27:48 -0700 (PDT)
-Received: (nullmailer pid 2793161 invoked by uid 1000);
-        Mon, 16 May 2022 16:27:47 -0000
-Date:   Mon, 16 May 2022 11:27:47 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     cyndis@kapsi.fi
-Cc:     krzysztof.kozlowski@canonical.com,
-        linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        joro@8bytes.org, thierry.reding@gmail.com, robh+dt@kernel.org,
-        linux-tegra@vger.kernel.org, will@kernel.org, jonathanh@nvidia.com,
-        devicetree@vger.kernel.org, iommu@lists.linux-foundation.org,
-        Mikko Perttunen <mperttunen@nvidia.com>
-Subject: Re: [PATCH v5 1/9] dt-bindings: host1x: Add iommu-map property
-Message-ID: <20220516162747.GA2793126-robh@kernel.org>
-References: <20220516085258.1227691-1-cyndis@kapsi.fi>
- <20220516085258.1227691-2-cyndis@kapsi.fi>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0bOl+fIEQwkyHpsAzPSpEA4t7EJjG4W9SophqswqviQ=;
+        b=Hw0ri4gzmk5OzZCqoNM3ZsRc2+KEHPdxMZ8XZf0y9aqXqZJhNWGGmUWkNtXzetv7yV
+         UZT4UpOXcmX99uE0R97d3M2Pq3DC+gOSJrdOjhDT8RTcZdv9wU9cdIp7+Ewfjq20vKgB
+         Xa+iTNWHV8avzQiT3I/MCJo7UjexucvV6ivsTBtRsIJ8+Txr7rF5F6v9XXvxkhlBVHdK
+         4EHg0hq0c+XaKY/10DnW3nGAfDthF2qTs4qE3aSS1fvNc9ofPk/IexKEaiSkDLfT0nhE
+         kh6XZSaYLLRg1BW/n/Va5eeDrpLYWLbdgeuAJxKTafp2ALz+6HihSC8mIG0aPYy3kOSJ
+         iiLg==
+X-Gm-Message-State: AOAM531/AUfl6IwjDZzPu6OSyOLApwNaPDS4LNqJ1NAlfyyCtiv15q5k
+        cNiI6LNzZgzhYKXpRTmEKRQtoZJR8DAvdqRsi0H7pg==
+X-Google-Smtp-Source: ABdhPJwCEGLuNBoujfx+BIv6GEik4LbJeGm6Fda7U5MlIv3LPv1HXUgO10cPIMseX62+HYUEsnBRjf+KqqvWact8dkE=
+X-Received: by 2002:a05:6902:90b:b0:64b:233d:8e03 with SMTP id
+ bu11-20020a056902090b00b0064b233d8e03mr18071522ybb.428.1652718539243; Mon, 16
+ May 2022 09:28:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516085258.1227691-2-cyndis@kapsi.fi>
+References: <20220513202159.1550547-1-samitolvanen@google.com>
+ <20220513202159.1550547-12-samitolvanen@google.com> <202205141453.44171359E3@keescook>
+In-Reply-To: <202205141453.44171359E3@keescook>
+From:   Sami Tolvanen <samitolvanen@google.com>
+Date:   Mon, 16 May 2022 09:28:23 -0700
+Message-ID: <CABCJKudJZUsRjwAEzWszOGY6G5igwWVpEy1OsAWrhyKr3csUSA@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 11/21] arm64: Drop unneeded __nocfi attributes
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 11:52:50 +0300, cyndis@kapsi.fi wrote:
-> From: Mikko Perttunen <mperttunen@nvidia.com>
-> 
-> Add schema information for specifying context stream IDs. This uses
-> the standard iommu-map property.
-> 
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> v3:
-> * New patch
-> v4:
-> * Remove memory-contexts subnode.
-> ---
->  .../bindings/display/tegra/nvidia,tegra20-host1x.yaml        | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
+On Sat, May 14, 2022 at 2:54 PM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Fri, May 13, 2022 at 01:21:49PM -0700, Sami Tolvanen wrote:
+> > With -fsanitize=kcfi, CONFIG_CFI_CLANG no longer has issues
+> > with address space confusion in functions that switch to linear
+> > mapping. Now that the indirectly called assembly functions have
+> > type annotations, drop the __nocfi attributes.
+> >
+> > Suggested-by: Mark Rutland <mark.rutland@arm.com>
+> > Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+>
+> It looks like there are still other cases that continue to require
+> __nocfi, yes? It looks like after this series, it's still BPF?
 
-Acked-by: Rob Herring <robh@kernel.org>
+Yes, BPF is the only remaining user of __nocfi after this series.
+
+Sami
