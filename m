@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4ACBC38162
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C325DC4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347887AbiEPTwY (ORCPT
+        id S1347937AbiEPTwf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:52:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36950 "EHLO
+        Mon, 16 May 2022 15:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346528AbiEPTq3 (ORCPT
+        with ESMTP id S1346425AbiEPTqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:46:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708FE3FD86;
-        Mon, 16 May 2022 12:43:44 -0700 (PDT)
+        Mon, 16 May 2022 15:46:14 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DB441330;
+        Mon, 16 May 2022 12:43:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00DD9B815F6;
-        Mon, 16 May 2022 19:43:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6277BC385AA;
-        Mon, 16 May 2022 19:43:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 360A7CE1795;
+        Mon, 16 May 2022 19:43:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FBC9C34115;
+        Mon, 16 May 2022 19:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730221;
-        bh=Rg44HkJDgpVLxYjTCgMXa57aUQsSoFIyEN5tEb4DCzI=;
+        s=korg; t=1652730215;
+        bh=eNeYEQzZlS21APqbNXgI7gda0OfLzSZQEYKhOTtXuio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fHYMF7DmOKIoRVuY3CjLZaSqEgVpzrU9FIF0hAFEZGu9wb3CmFj4ldiGrfJc+13uA
-         GJMKzwXrJTx7QFqnSLL+T8BkjvffC6/9Vrs6KiimFK9dTfvLkZYhmz4Uh3ttMJpaAX
-         7PhjEnLxlX6JXU72TCOzdsfjPNpbe7uEcSTTbhPk=
+        b=DI8kQbxT5bPtYaHNkbe79DkAdMDVgrkP2gZwZ6NIA7mrHbowXXsiEnz/TTWO5f5Pi
+         0tx0QOMHbHp4sVyDmoPkkyL6So3BlO7l2bTBmpU0inOcsNCq4rSe7q5sI1nrX3TMdj
+         12GHFT6nh/L8Huau5g4XnK4CEV/lE900lKWl1Osg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "stable@vger.kernel.org, Sudip Mukherjee" 
-        <sudipm.mukherjee@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 39/43] MIPS: fix build with gcc-12
-Date:   Mon, 16 May 2022 21:36:50 +0200
-Message-Id: <20220516193615.874013453@linuxfoundation.org>
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.4 37/43] cgroup/cpuset: Remove cpus_allowed/mems_allowed setup in cpuset_init_smp()
+Date:   Mon, 16 May 2022 21:36:48 +0200
+Message-Id: <20220516193615.814914177@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -51,34 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+From: Waiman Long <longman@redhat.com>
 
-Some mips builds with gcc-12 fails with the error:
-arch/mips/jz4740/setup.c:64:25: error: comparison between two arrays
-	[-Werror=array-compare]
-   	64 |         if (__dtb_start != __dtb_end)
+commit 2685027fca387b602ae565bff17895188b803988 upstream.
 
-'d24f48767d5e ("MIPS: Use address-of operator on section symbols")' has
-been applied which fixes most of the error, but it missed one file which
-was not available upstream when the change was done.
+There are 3 places where the cpu and node masks of the top cpuset can
+be initialized in the order they are executed:
+ 1) start_kernel -> cpuset_init()
+ 2) start_kernel -> cgroup_init() -> cpuset_bind()
+ 3) kernel_init_freeable() -> do_basic_setup() -> cpuset_init_smp()
 
-Fixes: d24f48767d5e ("MIPS: Use address-of operator on section symbols")
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+The first cpuset_init() call just sets all the bits in the masks.
+The second cpuset_bind() call sets cpus_allowed and mems_allowed to the
+default v2 values. The third cpuset_init_smp() call sets them back to
+v1 values.
+
+For systems with cgroup v2 setup, cpuset_bind() is called once.  As a
+result, cpu and memory node hot add may fail to update the cpu and node
+masks of the top cpuset to include the newly added cpu or node in a
+cgroup v2 environment.
+
+For systems with cgroup v1 setup, cpuset_bind() is called again by
+rebind_subsystem() when the v1 cpuset filesystem is mounted as shown
+in the dmesg log below with an instrumented kernel.
+
+  [    2.609781] cpuset_bind() called - v2 = 1
+  [    3.079473] cpuset_init_smp() called
+  [    7.103710] cpuset_bind() called - v2 = 0
+
+smp_init() is called after the first two init functions.  So we don't
+have a complete list of active cpus and memory nodes until later in
+cpuset_init_smp() which is the right time to set up effective_cpus
+and effective_mems.
+
+To fix this cgroup v2 mask setup problem, the potentially incorrect
+cpus_allowed & mems_allowed setting in cpuset_init_smp() are removed.
+For cgroup v2 systems, the initial cpuset_bind() call will set the masks
+correctly.  For cgroup v1 systems, the second call to cpuset_bind()
+will do the right setup.
+
+cc: stable@vger.kernel.org
+Signed-off-by: Waiman Long <longman@redhat.com>
+Tested-by: Feng Tang <feng.tang@intel.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/jz4740/setup.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/cgroup/cpuset.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/arch/mips/jz4740/setup.c
-+++ b/arch/mips/jz4740/setup.c
-@@ -61,7 +61,7 @@ void __init plat_mem_setup(void)
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -3289,8 +3289,11 @@ static struct notifier_block cpuset_trac
+  */
+ void __init cpuset_init_smp(void)
+ {
+-	cpumask_copy(top_cpuset.cpus_allowed, cpu_active_mask);
+-	top_cpuset.mems_allowed = node_states[N_MEMORY];
++	/*
++	 * cpus_allowd/mems_allowed set to v2 values in the initial
++	 * cpuset_bind() call will be reset to v1 values in another
++	 * cpuset_bind() call when v1 cpuset is mounted.
++	 */
+ 	top_cpuset.old_mems_allowed = top_cpuset.mems_allowed;
  
- 	jz4740_reset_init();
- 
--	if (__dtb_start != __dtb_end)
-+	if (&__dtb_start != &__dtb_end)
- 		dtb = __dtb_start;
- 	else
- 		dtb = (void *)fw_passed_dtb;
+ 	cpumask_copy(top_cpuset.effective_cpus, cpu_active_mask);
 
 
