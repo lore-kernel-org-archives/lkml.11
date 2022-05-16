@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A16C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346643AbiEPUES (ORCPT
+        id S1345272AbiEPUEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
+        Mon, 16 May 2022 16:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240366AbiEPTxL (ORCPT
+        with ESMTP id S1347380AbiEPTwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:53:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D8F4705E;
-        Mon, 16 May 2022 12:48:58 -0700 (PDT)
+        Mon, 16 May 2022 15:52:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1311A41323;
+        Mon, 16 May 2022 12:47:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CE1160A51;
-        Mon, 16 May 2022 19:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 199F9C385AA;
-        Mon, 16 May 2022 19:48:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 718C360A52;
+        Mon, 16 May 2022 19:47:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E946C36AE3;
+        Mon, 16 May 2022 19:47:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730537;
-        bh=iNEA1otyYCS9SAn71pT/qSEdfQsOHHUEf/bp2C3W/q8=;
+        s=korg; t=1652730439;
+        bh=B8EOM9vBbkPdhtar3ADGJ5aolP581yg23JlHQd8gLLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PRb/ftSJ0jWzJZ5M/vOxJi1FHyekzRBWkoRkHhCZM2MPhKGPymuEpBliQZRxPwCLH
-         vTGwah4s3YpOHjyhBxyoaQcN9g6xI1Bgh78DfeHLNFUKqAY/26CiBRB/yc5jDOZrHA
-         9ZVTPxhozPap8/e/Nf6z7gLyEuvmTZGk5OTIBprU=
+        b=OUCOh0m8BcEcM8O6D84YX+0zdh02oBicH8Z9q1ATY7S/Tphlxd+7fymon2XDZupuz
+         sUv1Y//luXEKXWN9/LWv6Fp8XsavdDEu7yFid2Yw4fGzZ1pLvAkN+yuuFEUwgEJx3m
+         eGWO6wxJnMkw1YiX6BkcYwuzrfEQdesD3JLgxVq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 030/102] arm64: vdso: fix makefile dependency on vdso.so
-Date:   Mon, 16 May 2022 21:36:04 +0200
-Message-Id: <20220516193624.866185878@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Paul Elder <paul.elder@ideasonboard.com>,
+        Michael Tretter <m.tretter@pengutronix.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: [PATCH 5.10 65/66] usb: gadget: uvc: rename function to be more consistent
+Date:   Mon, 16 May 2022 21:37:05 +0200
+Message-Id: <20220516193621.291427951@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
+In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
+References: <20220516193619.400083785@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,77 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Michael Tretter <m.tretter@pengutronix.de>
 
-[ Upstream commit 205f3991a273cac6008ef4db3d1c0dc54d14fb56 ]
+commit e6bab2b66329b40462fb1bed6f98bc3fcf543a1c upstream.
 
-There is currently no dependency for vdso*-wrap.S on vdso*.so, which means that
-you can get a build that uses a stale vdso*-wrap.o.
+When enabling info debugging for the uvc gadget, the bind and unbind
+infos use different formats. Change the unbind to visually match the
+bind.
 
-In commit a5b8ca97fbf8, the file that includes the vdso.so was moved and renamed
-from arch/arm64/kernel/vdso/vdso.S to arch/arm64/kernel/vdso-wrap.S, when this
-happened the Makefile was not updated to force the dependcy on vdso.so.
-
-Fixes: a5b8ca97fbf8 ("arm64: do not descend to vdso directories twice")
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Masahiro Yamada <masahiroy@kernel.org>
-Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220510102721.50811-1-joey.gouly@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Reviewed-by: Paul Elder <paul.elder@ideasonboard.com>
+Signed-off-by: Michael Tretter <m.tretter@pengutronix.de>
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Link: https://lore.kernel.org/r/20211017215017.18392-3-m.grzeschik@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/Makefile        | 4 ++++
- arch/arm64/kernel/vdso/Makefile   | 3 ---
- arch/arm64/kernel/vdso32/Makefile | 3 ---
- 3 files changed, 4 insertions(+), 6 deletions(-)
+ drivers/usb/gadget/function/f_uvc.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-index 3f1490bfb938..749e31475e41 100644
---- a/arch/arm64/kernel/Makefile
-+++ b/arch/arm64/kernel/Makefile
-@@ -74,6 +74,10 @@ obj-$(CONFIG_ARM64_MTE)			+= mte.o
- obj-y					+= vdso-wrap.o
- obj-$(CONFIG_COMPAT_VDSO)		+= vdso32-wrap.o
+--- a/drivers/usb/gadget/function/f_uvc.c
++++ b/drivers/usb/gadget/function/f_uvc.c
+@@ -883,12 +883,13 @@ static void uvc_free(struct usb_function
+ 	kfree(uvc);
+ }
  
-+# Force dependency (vdso*-wrap.S includes vdso.so through incbin)
-+$(obj)/vdso-wrap.o: $(obj)/vdso/vdso.so
-+$(obj)/vdso32-wrap.o: $(obj)/vdso32/vdso.so
-+
- obj-y					+= probes/
- head-y					:= head.o
- extra-y					+= $(head-y) vmlinux.lds
-diff --git a/arch/arm64/kernel/vdso/Makefile b/arch/arm64/kernel/vdso/Makefile
-index 945e6bb326e3..b5d8f72e8b32 100644
---- a/arch/arm64/kernel/vdso/Makefile
-+++ b/arch/arm64/kernel/vdso/Makefile
-@@ -48,9 +48,6 @@ GCOV_PROFILE := n
- targets += vdso.lds
- CPPFLAGS_vdso.lds += -P -C -U$(ARCH)
+-static void uvc_unbind(struct usb_configuration *c, struct usb_function *f)
++static void uvc_function_unbind(struct usb_configuration *c,
++				struct usb_function *f)
+ {
+ 	struct usb_composite_dev *cdev = c->cdev;
+ 	struct uvc_device *uvc = to_uvc(f);
  
--# Force dependency (incbin is bad)
--$(obj)/vdso.o : $(obj)/vdso.so
--
- # Link rule for the .so file, .lds has to be first
- $(obj)/vdso.so.dbg: $(obj)/vdso.lds $(obj-vdso) FORCE
- 	$(call if_changed,vdsold_and_vdso_check)
-diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
-index 3514269ac75f..83e9399e3836 100644
---- a/arch/arm64/kernel/vdso32/Makefile
-+++ b/arch/arm64/kernel/vdso32/Makefile
-@@ -144,9 +144,6 @@ obj-vdso := $(c-obj-vdso) $(c-obj-vdso-gettimeofday) $(asm-obj-vdso)
- targets += vdso.lds
- CPPFLAGS_vdso.lds += -P -C -U$(ARCH)
+-	uvcg_info(f, "%s\n", __func__);
++	uvcg_info(f, "%s()\n", __func__);
  
--# Force dependency (vdso.s includes vdso.so through incbin)
--$(obj)/vdso.o: $(obj)/vdso.so
--
- include/generated/vdso32-offsets.h: $(obj)/vdso.so.dbg FORCE
- 	$(call if_changed,vdsosym)
- 
--- 
-2.35.1
-
+ 	device_remove_file(&uvc->vdev.dev, &dev_attr_function_name);
+ 	video_unregister_device(&uvc->vdev);
+@@ -942,7 +943,7 @@ static struct usb_function *uvc_alloc(st
+ 	/* Register the function. */
+ 	uvc->func.name = "uvc";
+ 	uvc->func.bind = uvc_function_bind;
+-	uvc->func.unbind = uvc_unbind;
++	uvc->func.unbind = uvc_function_unbind;
+ 	uvc->func.get_alt = uvc_function_get_alt;
+ 	uvc->func.set_alt = uvc_function_set_alt;
+ 	uvc->func.disable = uvc_function_disable;
 
 
