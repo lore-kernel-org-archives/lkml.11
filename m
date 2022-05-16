@@ -2,95 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B80ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA41C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345421AbiEPTbJ (ORCPT
+        id S1345425AbiEPTb1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        Mon, 16 May 2022 15:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345479AbiEPTbG (ORCPT
+        with ESMTP id S1345426AbiEPTbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:31:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BA32B1A0;
-        Mon, 16 May 2022 12:31:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 16 May 2022 15:31:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C18D51A394
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:31:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652729471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to; bh=RAcicosbrzNtKq22oJlMdmRA4Z34sYOSW6vqrZPUyF0=;
+        b=D2doh2R20EbfNVDoMUyerpLzgZaEOmXMkkwuu/jX8nK8ndYHrfvAVLJoaLnf69jsh1gs1G
+        O+HvvbkVfVuo9Ncobos5511FC32B+wlXmYbxsUbLrIg/haahNZAP/GGRzH5xKHCK7Hcp3p
+        juQZgNb9eta8f2ovz9BRRJpsqXxNQDg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-500-DCgS7vFaPTi9XkWYiP2xVw-1; Mon, 16 May 2022 15:31:09 -0400
+X-MC-Unique: DCgS7vFaPTi9XkWYiP2xVw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 298AD614FC;
-        Mon, 16 May 2022 19:31:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1246BC34100;
-        Mon, 16 May 2022 19:31:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652729463;
-        bh=yeLKZJHgwtKyYalDbvtHzvDVJBp8BddUkRB8jSjYmvk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=l5rAc7KKzPIJ5XgwaXvyndiN4iGjm3znK/7LgNlPxvRwvkGO3WTpCFqvSj0RF1b2K
-         dworej4sH9GS4G5mBbnPNSk2nTXp/UG99pjDqVHzvvg3wONppB634PmCh1wKxm1ftE
-         UbHTgZ9PcLqy/bidEY6GfAWnew4NmXMYqA0HJb3kTGY7pZo3EPnWv1NyFV6D635dpm
-         V7RwNH8RUz/rLgig0xAZyXQ4ssgC9EQzO6EOv61lpdyws3sdk00YEZNApqeZX15Czy
-         LJzfMloi2TFl42c/scsHb3gUbNS9ZRaCJLTarD+5WA89RK0bhmPm8rvufa1BXroqN+
-         QMqFd8SdetJiw==
-Date:   Mon, 16 May 2022 12:31:01 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Kahurani <k.kahurani@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
-        davem@davemloft.net, jgg@ziepe.ca, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, phil@philpotter.co.uk,
-        syzkaller-bugs@googlegroups.com, arnd@arndb.de,
-        dan.carpenter@oracle.com
-Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
- errors
-Message-ID: <20220516123101.467ad206@kernel.org>
-In-Reply-To: <20220514133234.33796-1-k.kahurani@gmail.com>
-References: <20220514133234.33796-1-k.kahurani@gmail.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DCE983C1E321;
+        Mon, 16 May 2022 19:31:08 +0000 (UTC)
+Received: from localhost (unknown [10.39.192.88])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 714ED555087;
+        Mon, 16 May 2022 19:31:08 +0000 (UTC)
+Date:   Mon, 16 May 2022 20:29:25 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     ming.lei@redhat.com
+Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        kwolf@redhat.com, sgarzare@redhat.com
+Subject: Re: [RFC PATCH] ubd: add io_uring based userspace block driver
+Message-ID: <YoKmFYjIe1AWk/P8@stefanha-x1.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="6o93nD4/ZHY926/y"
+Content-Disposition: inline
+In-Reply-To: <20220509092312.254354-1-ming.lei@redhat.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 14 May 2022 16:32:34 +0300 David Kahurani wrote:
-> -			ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
-> -					 1, 1, &buf);
-> +			ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
-> +					       1, 1, &buf);
-> +			if (ret) {
-> +				netdev_dbg(dev->net,
-> +					   "Failed to read SROM_CMD: %d\n",
-> +					   ret);
-> +				return ret;
-> +			}
->  
->  			if (time_after(jiffies, jtimeout))
->  				return -EINVAL;
->  
->  		} while (buf & EEP_BUSY);
 
-I agree with Pavel, this seems unnecessarily strict. If the error is
-not ENODEV we can keep looping.
+--6o93nD4/ZHY926/y
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> @@ -1581,7 +1731,13 @@ static int ax88179_link_reset(struct usbnet *dev)
->  				  &ax179_data->rxctl);
->  
->  		/*link up, check the usb device control TX FIFO full or empty*/
-> -		ax88179_read_cmd(dev, 0x81, 0x8c, 0, 4, &tmp32);
-> +		ret = ax88179_read_cmd(dev, 0x81, 0x8c, 0, 4, &tmp32);
-> +
-> +		if (ret) {
-> +			netdev_dbg(dev->net, "Failed to read TX FIFO: %d\n",
-> +				   ret);
-> +			return ret;
-> +		}
+Hi,
+This looks interesting! I have some questions:
 
-Please don't add any empty lines within the error checking.
-Empty lines are supposed to separate logically separate blocks of code.
-Error checking is very much logically part of the call. And no empty
-line betwee netdev_dbg() and return ret; either. In this submission you
-have all possible configurations of having or not having empty lines
-before the if or before the return. None of them should be there, and
-please be consistent.
+1. What is the ubdsrv permission model?
+
+A big usability challenge for *-in-userspace interfaces is the balance
+between security and allowing unprivileged processes to use these
+features.
+
+- Does /dev/ubd-control need to be privileged? I guess the answer is
+  yes since an evil ubdsrv can hang I/O and corrupt data in hopes of
+  triggering file system bugs.
+- Can multiple processes that don't trust each other use UBD at the same
+  time? I guess not since ubd_index_idr is global.
+- What about containers and namespaces? They currently have (write)
+  access to the same global ubd_index_idr.
+- Maybe there should be a struct ubd_device "owner" (struct
+  task_struct *) so only devices created by the current process can be
+  modified?
+
+2. io_uring_cmd design
+
+The rationale for the io_uring_cmd design is not explained in the cover
+letter. I think it's worth explaining the design. Here are my guesses:
+
+The same thing can be achieved with just file_operations and io_uring.
+ubdsrv could read I/O submissions with IORING_OP_READ and write I/O
+completions with IORING_OP_WRITE. That would require 2 sqes per
+roundtrip instead of 1, but the same number of io_uring_enter(2) calls
+since multiple sqes/cqes can be batched per syscall:
+
+- IORING_OP_READ, addr=(struct ubdsrv_io_desc*) (for submission)
+- IORING_OP_WRITE, addr=(struct ubdsrv_io_cmd*) (for completion)
+
+Both operations require a copy_to/from_user() to access the command
+metadata.
+
+The io_uring_cmd approach works differently. The IORING_OP_URING_CMD sqe
+carries a 40-byte payload so it's possible to embed struct ubdsrv_io_cmd
+inside it. The struct ubdsrv_io_desc mmap gets around the fact that
+io_uring cqes contain no payload. The driver therefore needs a
+side-channel to transfer the request submission details to ubdsrv. I
+don't see much of a difference between IORING_OP_READ and the mmap
+approach though.
+
+It's not obvious to me how much more efficient the io_uring_cmd approach
+is, but taking fewer trips around the io_uring submission/completion
+code path is likely to be faster. Something similar can be done with
+file_operations ->ioctl(), but I guess the point of using io_uring is
+that is composes. If ubdsrv itself wants to use io_uring for other I/O
+activity (e.g. networking, disk I/O, etc) then it can do so and won't be
+stuck in a blocking ioctl() syscall.
+
+It would be nice if you could write 2 or 3 paragraphs explaining why the
+io_uring_cmd design and the struct ubdsrv_io_desc mmap was chosen.
+
+3. Miscellaneous stuff
+
+- There isn't much in the way of memory ordering in the code. I worry a
+  little that changes to the struct ubdsrv_io_desc mmap may not be
+  visible at the expected time with respect to the io_uring cq ring.
+
+Thanks,
+Stefan
+
+--6o93nD4/ZHY926/y
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmKCphUACgkQnKSrs4Gr
+c8hrNAgAm3whe7oUQEB6dbQEsZj/jlnxPIiZq/Fr9/qmzrwAuaYZbQb7wxSij7gS
+agI4tPMiNTdweZSwBQgDzsfaKTZPVJ1Hg7e3a2a8KO2rXgIpuroUVG9D5UIU5cbv
+H1DysO+LRPe82xUkKTzeU6i4iUdIXar5R7hUCPUPZq/0+VMYHfbwwnXz3D37w/4i
+YPYKxaq6uPB75kcC95XiztGm69CXTsSu8Uy6VRE11WEqy0fI5T+mkCx0CecxpKQW
+fMpCO8VMcQKD4el7KiexTboeqA2kxbi1PxJninlh5S9zA8roQpUpLDS6LhwNlQeb
+43+1hxRTFOsSai6oZzonuQaQdYi2Cg==
+=vNPr
+-----END PGP SIGNATURE-----
+
+--6o93nD4/ZHY926/y--
+
