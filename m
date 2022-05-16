@@ -2,146 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA41C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C66C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345425AbiEPTb1 (ORCPT
+        id S1345426AbiEPTbi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
+        Mon, 16 May 2022 15:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345426AbiEPTbW (ORCPT
+        with ESMTP id S1345442AbiEPTba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:31:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C18D51A394
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:31:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652729471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to; bh=RAcicosbrzNtKq22oJlMdmRA4Z34sYOSW6vqrZPUyF0=;
-        b=D2doh2R20EbfNVDoMUyerpLzgZaEOmXMkkwuu/jX8nK8ndYHrfvAVLJoaLnf69jsh1gs1G
-        O+HvvbkVfVuo9Ncobos5511FC32B+wlXmYbxsUbLrIg/haahNZAP/GGRzH5xKHCK7Hcp3p
-        juQZgNb9eta8f2ovz9BRRJpsqXxNQDg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-500-DCgS7vFaPTi9XkWYiP2xVw-1; Mon, 16 May 2022 15:31:09 -0400
-X-MC-Unique: DCgS7vFaPTi9XkWYiP2xVw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DCE983C1E321;
-        Mon, 16 May 2022 19:31:08 +0000 (UTC)
-Received: from localhost (unknown [10.39.192.88])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 714ED555087;
-        Mon, 16 May 2022 19:31:08 +0000 (UTC)
-Date:   Mon, 16 May 2022 20:29:25 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     ming.lei@redhat.com
-Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        kwolf@redhat.com, sgarzare@redhat.com
-Subject: Re: [RFC PATCH] ubd: add io_uring based userspace block driver
-Message-ID: <YoKmFYjIe1AWk/P8@stefanha-x1.localdomain>
+        Mon, 16 May 2022 15:31:30 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED9717E30;
+        Mon, 16 May 2022 12:31:27 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 735D730B2945;
+        Mon, 16 May 2022 21:31:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
+        :content-type:date:from:from:in-reply-to:message-id:mime-version
+        :references:reply-to:subject:subject:to:to; s=felkmail; bh=bxOMg
+        wvqttgq9P/9WQqucB3rNYax4JIqpBYk4OHI+2Y=; b=cWfow5MnS9l8mZEBD4rnO
+        0FPD7BIyeff9uSiJ0/BhSupm3Kh+l6VgeNeCTBNc8/tgsx9ZDGytLvraipGeY5Zq
+        l1zqKtwkYUgHVfYkcRGuGGNojiz0RjX5/SXmbAl5SmmBnRoDlnZvhS2ww4HMQOcq
+        OQeGOnpWvfFxR8YVnwpVnnxv9vss3Lz71sXB7xjiLqOCJrGj5/vHonBqHPiGjNhA
+        Y+svEq5w+rdxjGPbu8NueIruX4Pg6hCcwWxYpwudSy462eg4KyqRf7LYoUa7d89g
+        gvj0hMxEPNlDXHaBcNVf3XfUc6mwfzT+QGA1uP6yleP5PwBvI8JiPT/GWIPokwrT
+        A==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id A639830B2942;
+        Mon, 16 May 2022 21:31:25 +0200 (CEST)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24GJVPET031998;
+        Mon, 16 May 2022 21:31:25 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24GJVP0i031997;
+        Mon, 16 May 2022 21:31:25 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Subject: Re: [PATCH net-next v2] docs: ctucanfd: Use 'kernel-figure' directive instead of 'figure'
+Date:   Mon, 16 May 2022 21:31:02 +0200
+User-Agent: KMail/1.9.10
+Cc:     "Marc Kleine-Budde" <mkl@pengutronix.de>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com> <5986752a-1c2a-5d64-f91d-58b1e6decd17@gmail.com> <38d102ab-d0b6-3467-4dce-4a9d4aa9e39d@gmail.com>
+In-Reply-To: <38d102ab-d0b6-3467-4dce-4a9d4aa9e39d@gmail.com>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="6o93nD4/ZHY926/y"
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-In-Reply-To: <20220509092312.254354-1-ming.lei@redhat.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Message-Id: <202205162131.02560.pisa@cmp.felk.cvut.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Dear Akira,
 
---6o93nD4/ZHY926/y
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Monday 16 of May 2022 13:24:49 Akira Yokosawa wrote:
+> On Wed, 11 May 2022 08:45:43 +0900, Akira Yokosawa wrote:
+> > Two issues were observed in the ReST doc added by commit c3a0addefbde
+> > ("docs: ctucanfd: CTU CAN FD open-source IP core documentation.")
+> > with Sphinx versions 2.4.4 and 4.5.0.
+> >
+> > The plain "figure" directive broke "make pdfdocs" due to a missing
+> > PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"
+> > directive, which is an extension for kernel documentation, should
+> > be used instead.
+> >
+> > The directive of "code:: raw" causes a warning from both
+> > "make htmldocs" and "make pdfdocs", which reads:
+> >
+> >     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
+> >     'raw' is not known
+> >
+> > A plain literal-block marker should suffice where no syntax
+> > highlighting is intended.
+> >
+> > Fix the issues by using suitable directive and marker.
+> >
+> > Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> > Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
+> > documentation.") Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> > Cc: Martin Jerabek <martin.jerabek01@gmail.com>
+> > Cc: Ondrej Ille <ondrej.ille@gmail.com>
+> > Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> > ---
+> > Changes in v1 -> v2
+> >  - no change in diff
+> >  - added explicit Sphinx versions the issues were observed
+> >  - picked Pavel's Acked-by
+>
+> Gentle ping to netdev maintainers.
+>
+> I believe this one should go upstream together with the
+> offending commit.
 
-Hi,
-This looks interesting! I have some questions:
+I think that the patch is on the right route thanks
+to Marc Kleine-Budde already, it is in the linux-can-next
+testing
 
-1. What is the ubdsrv permission model?
+https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/commit/?h=testing&id=f898bbb9c92e33dcbe7ee29b8861b707c2cd509e
 
-A big usability challenge for *-in-userspace interfaces is the balance
-between security and allowing unprivileged processes to use these
-features.
+I hope that it would reach net-next after next
+linux-can-next merge.
 
-- Does /dev/ubd-control need to be privileged? I guess the answer is
-  yes since an evil ubdsrv can hang I/O and corrupt data in hopes of
-  triggering file system bugs.
-- Can multiple processes that don't trust each other use UBD at the same
-  time? I guess not since ubd_index_idr is global.
-- What about containers and namespaces? They currently have (write)
-  access to the same global ubd_index_idr.
-- Maybe there should be a struct ubd_device "owner" (struct
-  task_struct *) so only devices created by the current process can be
-  modified?
+Best wishes,
 
-2. io_uring_cmd design
-
-The rationale for the io_uring_cmd design is not explained in the cover
-letter. I think it's worth explaining the design. Here are my guesses:
-
-The same thing can be achieved with just file_operations and io_uring.
-ubdsrv could read I/O submissions with IORING_OP_READ and write I/O
-completions with IORING_OP_WRITE. That would require 2 sqes per
-roundtrip instead of 1, but the same number of io_uring_enter(2) calls
-since multiple sqes/cqes can be batched per syscall:
-
-- IORING_OP_READ, addr=(struct ubdsrv_io_desc*) (for submission)
-- IORING_OP_WRITE, addr=(struct ubdsrv_io_cmd*) (for completion)
-
-Both operations require a copy_to/from_user() to access the command
-metadata.
-
-The io_uring_cmd approach works differently. The IORING_OP_URING_CMD sqe
-carries a 40-byte payload so it's possible to embed struct ubdsrv_io_cmd
-inside it. The struct ubdsrv_io_desc mmap gets around the fact that
-io_uring cqes contain no payload. The driver therefore needs a
-side-channel to transfer the request submission details to ubdsrv. I
-don't see much of a difference between IORING_OP_READ and the mmap
-approach though.
-
-It's not obvious to me how much more efficient the io_uring_cmd approach
-is, but taking fewer trips around the io_uring submission/completion
-code path is likely to be faster. Something similar can be done with
-file_operations ->ioctl(), but I guess the point of using io_uring is
-that is composes. If ubdsrv itself wants to use io_uring for other I/O
-activity (e.g. networking, disk I/O, etc) then it can do so and won't be
-stuck in a blocking ioctl() syscall.
-
-It would be nice if you could write 2 or 3 paragraphs explaining why the
-io_uring_cmd design and the struct ubdsrv_io_desc mmap was chosen.
-
-3. Miscellaneous stuff
-
-- There isn't much in the way of memory ordering in the code. I worry a
-  little that changes to the struct ubdsrv_io_desc mmap may not be
-  visible at the expected time with respect to the io_uring cq ring.
-
-Thanks,
-Stefan
-
---6o93nD4/ZHY926/y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmKCphUACgkQnKSrs4Gr
-c8hrNAgAm3whe7oUQEB6dbQEsZj/jlnxPIiZq/Fr9/qmzrwAuaYZbQb7wxSij7gS
-agI4tPMiNTdweZSwBQgDzsfaKTZPVJ1Hg7e3a2a8KO2rXgIpuroUVG9D5UIU5cbv
-H1DysO+LRPe82xUkKTzeU6i4iUdIXar5R7hUCPUPZq/0+VMYHfbwwnXz3D37w/4i
-YPYKxaq6uPB75kcC95XiztGm69CXTsSu8Uy6VRE11WEqy0fI5T+mkCx0CecxpKQW
-fMpCO8VMcQKD4el7KiexTboeqA2kxbi1PxJninlh5S9zA8roQpUpLDS6LhwNlQeb
-43+1hxRTFOsSai6oZzonuQaQdYi2Cg==
-=vNPr
------END PGP SIGNATURE-----
-
---6o93nD4/ZHY926/y--
+                Pavel
+-- 
+                Pavel Pisa
+    phone:      +420 603531357
+    e-mail:     pisa@cmp.felk.cvut.cz
+    Department of Control Engineering FEE CVUT
+    Karlovo namesti 13, 121 35, Prague 2
+    university: http://control.fel.cvut.cz/
+    personal:   http://cmp.felk.cvut.cz/~pisa
+    projects:   https://www.openhub.net/accounts/ppisa
+    CAN related:http://canbus.pages.fel.cvut.cz/
+    Open Technologies Research Education and Exchange Services
+    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
 
