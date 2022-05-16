@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F17C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346188AbiEPTuC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
+        id S240670AbiEPTuK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345994AbiEPTof (ORCPT
+        with ESMTP id S1346095AbiEPTn0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:44:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084F54090F;
-        Mon, 16 May 2022 12:43:04 -0700 (PDT)
+        Mon, 16 May 2022 15:43:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0A63EF14;
+        Mon, 16 May 2022 12:42:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0674161554;
-        Mon, 16 May 2022 19:43:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 190E3C34100;
-        Mon, 16 May 2022 19:43:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D97461512;
+        Mon, 16 May 2022 19:42:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DC97C3411B;
+        Mon, 16 May 2022 19:42:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730183;
-        bh=z32HWa6td2alq4ISPAdSC/cfDQihTGTfN7yRTzcmYVE=;
+        s=korg; t=1652730173;
+        bh=sAbBE4ZK/Gtrs3Du8M9bUK9bxR4OSTLCtTqbA3WnEw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gpRlGvbka91RYGw28QQYoUJpJb8t3EsDGnad0WN9bdkQMoobIMxHo90+yrNAKvd6r
-         OLZU2gYcH57zSUqO7nSuHHUkO9mtFRA8L35uXGaMEkCpc9a2HmNUWWacX0nLxy59Xw
-         QMLc9uR2MC74SQcccaiifQtYho/VgF2Vz2IsecHw=
+        b=FCLMqMWF+/fSbyXlFtjKTjpJm1akJwJp3O7EWEXCefpcBGl+xfD67ngmQMG0q2QaS
+         xsJB5r/gGSHBP4oMswLva0hHNOTtI/KalnHZLxaUu7brU0GabFudGf4ER+zs3i/kpi
+         /aMCp9KCy0GosjfH65WLHPoK5PSRcAEJm648pXg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 04/43] net: Fix features skip in for_each_netdev_feature()
-Date:   Mon, 16 May 2022 21:36:15 +0200
-Message-Id: <20220516193614.847404487@linuxfoundation.org>
+Subject: [PATCH 5.4 22/43] s390: disable -Warray-bounds
+Date:   Mon, 16 May 2022 21:36:33 +0200
+Message-Id: <20220516193615.373763803@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -51,47 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Sven Schnelle <svens@linux.ibm.com>
 
-[ Upstream commit 85db6352fc8a158a893151baa1716463d34a20d0 ]
+[ Upstream commit 8b202ee218395319aec1ef44f72043e1fbaccdd6 ]
 
-The find_next_netdev_feature() macro gets the "remaining length",
-not bit index.
-Passing "bit - 1" for the following iteration is wrong as it skips
-the adjacent bit. Pass "bit" instead.
+gcc-12 shows a lot of array bound warnings on s390. This is caused
+by the S390_lowcore macro which uses a hardcoded address of 0.
 
-Fixes: 3b89ea9c5902 ("net: Fix for_each_netdev_feature on Big endian")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Link: https://lore.kernel.org/r/20220504080914.1918-1-tariqt@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Wrapping that with absolute_pointer() works, but gcc no longer knows
+that a 12 bit displacement is sufficient to access lowcore. So it
+emits instructions like 'lghi %r1,0; l %rx,xxx(%r1)' instead of a
+single load/store instruction. As s390 stores variables often
+read/written in lowcore, this is considered problematic. Therefore
+disable -Warray-bounds on s390 for gcc-12 for the time being, until
+there is a better solution.
+
+Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+Link: https://lore.kernel.org/r/yt9dzgkelelc.fsf@linux.ibm.com
+Link: https://lore.kernel.org/r/20220422134308.1613610-1-svens@linux.ibm.com
+Link: https://lore.kernel.org/r/20220425121742.3222133-1-svens@linux.ibm.com
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdev_features.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/s390/Makefile | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index 640e7279f161..75be8886783e 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -151,7 +151,7 @@ enum {
- #define NETIF_F_HW_TLS_TX	__NETIF_F(HW_TLS_TX)
- #define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
- 
--/* Finds the next feature with the highest number of the range of start till 0.
-+/* Finds the next feature with the highest number of the range of start-1 till 0.
-  */
- static inline int find_next_netdev_feature(u64 feature, unsigned long start)
- {
-@@ -170,7 +170,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
- 	for ((bit) = find_next_netdev_feature((mask_addr),		\
- 					      NETDEV_FEATURE_COUNT);	\
- 	     (bit) >= 0;						\
--	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
-+	     (bit) = find_next_netdev_feature((mask_addr), (bit)))
- 
- /* Features valid for ethtool to change */
- /* = all defined minus driver/device-class-related */
+diff --git a/arch/s390/Makefile b/arch/s390/Makefile
+index 2faaf456956a..71e3d7c0b870 100644
+--- a/arch/s390/Makefile
++++ b/arch/s390/Makefile
+@@ -31,6 +31,16 @@ KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-option,-ffreestanding)
+ KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, address-of-packed-member)
+ KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO),-g)
+ KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO_DWARF4), $(call cc-option, -gdwarf-4,))
++
++ifdef CONFIG_CC_IS_GCC
++	ifeq ($(call cc-ifversion, -ge, 1200, y), y)
++		ifeq ($(call cc-ifversion, -lt, 1300, y), y)
++			KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)
++			KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, array-bounds)
++		endif
++	endif
++endif
++
+ UTS_MACHINE	:= s390x
+ STACK_SIZE	:= $(if $(CONFIG_KASAN),65536,16384)
+ CHECKFLAGS	+= -D__s390__ -D__s390x__
 -- 
 2.35.1
 
