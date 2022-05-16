@@ -2,123 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E79BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345458AbiEPTfP (ORCPT
+        id S1345490AbiEPTiG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60072 "EHLO
+        Mon, 16 May 2022 15:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232405AbiEPTfL (ORCPT
+        with ESMTP id S232405AbiEPTh5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:35:11 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926153EB8E
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:35:10 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id ev18so4759448pjb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:35:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=L7HskJWRuMiU99+hkHXykGvfHtSWUlmm80hgvb21NIA=;
-        b=gJrVJGg9f8wooWOkKB64seNV3Y9DZXpcdjoXjuuPOxiXlcP66WigXuu+Amy9BJUtn3
-         u3HIuSQ3Vj7xMV3RjDAAp9HbBGxztYKpqVq1zxv8ClC5y3HQj0KT172tBAjS7GdbFELT
-         yrt6iQxwGu49aljDYpDwbqHc5KCh9Ncmv1wbECFIGmCXHLRNvhWI4rbCeLkBLbfDIsGI
-         VIr+rdcZn/lP13UJSV7X1aOdA/55R5a+xJP1EK7t/pmevOLtcMui/qXpmKuvkrfZKmnW
-         gWfJXYJG4AhssF4f4ESfctbEvscFLqg+V+t56mdNMogk454u6SS5Fonr+BWU0aivVmYA
-         OIGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=L7HskJWRuMiU99+hkHXykGvfHtSWUlmm80hgvb21NIA=;
-        b=fS7b6ulRKQft9P02vfKohL7ofmOvaiVjNRz5XG8H9ssAZ7O7VR3G1Pgo8SdVzIRh5g
-         4y4jP8lVwR1hlLMy8rh2ud6P1lyiQVGpFe9sNtqVpqYJ5CS/pTRpA97rBlwMImFtmh3r
-         UagCYI6MH6CsmKz7rqgtB1Bpp2anGqWC0Z1VwR7KpjrMyp8EI71OIO6S+MtBwGHf96AO
-         GQnAwh1Eb4H2TwZQ2YXONWBiqkyNBX7kRi8BVRQoYQqnSyv53ipRSiWLZK6rfuDzyBNl
-         lL433eOwTyFzrMDNdSa9wi1CX1H8VXlrKYznUFivyRH1k11aIyICv9TCMfFMmVWtCv5T
-         e25A==
-X-Gm-Message-State: AOAM533DNzjY1TXIvWYz1boqNrDm2K1TEkcEM8X3VizwkoLPZCG9Zqut
-        zHfkNXE/mK0rLjaXzzL/Z5g=
-X-Google-Smtp-Source: ABdhPJy3GngRJ0n4QNJAd+T8tx3PdZjnc7aplXGOLXY5LunKkZNBOK7Bd1JY8RjBWpSSa6k0JJeiog==
-X-Received: by 2002:a17:90b:3ecd:b0:1dc:945e:41b1 with SMTP id rm13-20020a17090b3ecd00b001dc945e41b1mr21009292pjb.208.1652729709941;
-        Mon, 16 May 2022 12:35:09 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:62fc])
-        by smtp.gmail.com with ESMTPSA id p23-20020a62ab17000000b0050dc76281d6sm7427269pff.176.2022.05.16.12.35.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 12:35:09 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 16 May 2022 09:35:07 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] kernfs: make ->attr.open RCU protected.
-Message-ID: <YoKna/Ty+k9O+pjt@slm.duckdns.org>
-References: <20220428055431.3826852-1-imran.f.khan@oracle.com>
- <20220428055431.3826852-3-imran.f.khan@oracle.com>
- <YnQtL7+GYHwpo4n2@slm.duckdns.org>
- <f5ff2554-580c-c817-b77f-25e2ef46411f@oracle.com>
- <Yn0/RrgMRie2YPEb@slm.duckdns.org>
- <526b46a7-7daa-9050-1276-e19836816991@oracle.com>
+        Mon, 16 May 2022 15:37:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ABC3E0DC;
+        Mon, 16 May 2022 12:37:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B084AB8160E;
+        Mon, 16 May 2022 19:37:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF2DC385AA;
+        Mon, 16 May 2022 19:37:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652729873;
+        bh=vSFsfOGIJlRY/kZML/lb9EWGHYK6r12i+65aoQr0mk0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=b/EMh+hMEDLfLbORJfUZyasYDxX7dLPczfbYOeM1L1WUAWgzQjHzx6W8lAEtmrmj/
+         u5jiHqdAWOvowMLlE7kbij9yQUMYoSlFkjmbokd5BwCGsl89kDw96GoKxWg1tJ+M7e
+         eEUsQ7Dbe/tsdPfXVQGVlqnefbxZw3g0Bsadz6+k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.9 00/19] 4.9.315-rc1 review
+Date:   Mon, 16 May 2022 21:36:13 +0200
+Message-Id: <20220516193613.497233635@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <526b46a7-7daa-9050-1276-e19836816991@oracle.com>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.315-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.315-rc1
+X-KernelTest-Deadline: 2022-05-18T19:36+00:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+This is the start of the stable review cycle for the 4.9.315 release.
+There are 19 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-On Mon, May 16, 2022 at 02:00:50AM +1000, Imran Khan wrote:
-> +/*
-> + * Deref RCU protected kn->attr.open.
-> + * If both @of->list and @kn->attr.open->files are non empty, we can safely
-> + * assume that @of is on @kn->attr.open and hence @kn->attr.open will not
-> + * vanish and derefeencing is safe here.
-> + */
+Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
+Anything received after that time might be too late.
 
-Maybe use proper function comment starting with /**?
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.315-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+and the diffstat can be found below.
 
-> +static struct kernfs_open_node *
-> +kernfs_deref_on_check(struct kernfs_open_file *of, struct kernfs_node *kn)
-> +{
-> +       struct kernfs_open_node *on;
-> +
-> +       on = rcu_dereference_check(kn->attr.open, !list_empty(&of->list));
-> +
-> +       if (on && list_empty(&on->files))
-> +               return NULL;
-> +       else
-> +               return on;
-> +}
+thanks,
 
-Why does it need to return NULL on empty on->files? We wanna trigger lockdep
-warning cuz that's a bug but it's not like the caller can recover from it
-(short of causing unexpected user visible error), so I don't see what the
-point is.
+greg k-h
 
-> If this looks okay then I can replace usage of kernfs_deref_on_raw with
-> kernfs_deref_on_check.
+-------------
+Pseudo-Shortlog of commits:
 
-So, this is the main deref function without holding the mutex, right? Then
-name it kernfs_deref_open_node() (or on but it seem a bit confusing to me).
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.9.315-rc1
 
-> > and in the check condition, add the conditions that you need to make this
-> > not trigger warning when used in all the places that you wanna use it.
-> > 
-> 
-> Since ->attr.open is always accessed/modified under kernfs_open_file_mutex, I
-> have included this check in helper which should be used only while holding this
-> mutex. Do you mean that I should include some additional checks as well in the
-> below helper:
+Yang Yingliang <yangyingliang@huawei.com>
+    tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
 
-Yeah, you're right. _protected makes sense for this one.
+Nicolas Dichtel <nicolas.dichtel@6wind.com>
+    ping: fix address binding wrt vrf
 
-Thanks.
+Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+    USB: serial: option: add Fibocom MA510 modem
 
--- 
-tejun
+Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+    USB: serial: option: add Fibocom L610 modem
+
+Ethan Yang <etyang@sierrawireless.com>
+    USB: serial: qcserial: add support for Sierra Wireless EM7590
+
+Scott Chen <scott@labau.com.tw>
+    USB: serial: pl2303: add device id for HP LM930 Display
+
+Sergey Ryazanov <ryazanov.s.a@gmail.com>
+    usb: cdc-wdm: fix reading stuck on device close
+
+Mark Brown <broonie@kernel.org>
+    ASoC: ops: Validate input values in snd_soc_put_volsw_range()
+
+Mark Brown <broonie@kernel.org>
+    ASoC: max98090: Generate notifications on changes for custom control
+
+Mark Brown <broonie@kernel.org>
+    ASoC: max98090: Reject invalid values in custom control put()
+
+Ji-Ze Hong (Peter Hong) <hpeter@gmail.com>
+    hwmon: (f71882fg) Fix negative temperature
+
+Taehee Yoo <ap420073@gmail.com>
+    net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
+
+Alexandra Winter <wintera@linux.ibm.com>
+    s390/lcs: fix variable dereferenced before check
+
+Alexandra Winter <wintera@linux.ibm.com>
+    s390/ctcm: fix potential memory leak
+
+Alexandra Winter <wintera@linux.ibm.com>
+    s390/ctcm: fix variable dereferenced before check
+
+Johannes Berg <johannes.berg@intel.com>
+    mac80211_hwsim: call ieee80211_tx_prepare_skb under RCU protection
+
+Eric Dumazet <edumazet@google.com>
+    netlink: do not reset transport header in netlink_recvmsg()
+
+Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+    ipv4: drop dst in multicast routing path
+
+Tariq Toukan <tariqt@nvidia.com>
+    net: Fix features skip in for_each_netdev_feature()
+
+
+-------------
+
+Diffstat:
+
+ Makefile                              |  4 ++--
+ drivers/hwmon/f71882fg.c              |  5 +++--
+ drivers/net/ethernet/sfc/ef10.c       |  5 +++++
+ drivers/net/wireless/mac80211_hwsim.c |  3 +++
+ drivers/s390/net/ctcm_mpc.c           |  6 +-----
+ drivers/s390/net/ctcm_sysfs.c         |  5 +++--
+ drivers/s390/net/lcs.c                |  7 ++++---
+ drivers/tty/serial/digicolor-usart.c  |  2 +-
+ drivers/usb/class/cdc-wdm.c           |  1 +
+ drivers/usb/serial/option.c           |  4 ++++
+ drivers/usb/serial/pl2303.c           |  1 +
+ drivers/usb/serial/pl2303.h           |  1 +
+ drivers/usb/serial/qcserial.c         |  2 ++
+ include/linux/netdev_features.h       |  4 ++--
+ net/ipv4/ping.c                       | 12 +++++++++++-
+ net/ipv4/route.c                      |  1 +
+ net/netlink/af_netlink.c              |  1 -
+ sound/soc/codecs/max98090.c           |  5 ++++-
+ sound/soc/soc-ops.c                   | 18 +++++++++++++++++-
+ 19 files changed, 66 insertions(+), 21 deletions(-)
+
+
