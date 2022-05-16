@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8807C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345533AbiEPTi1 (ORCPT
+        id S1345479AbiEPTif (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
+        Mon, 16 May 2022 15:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345497AbiEPTiJ (ORCPT
+        with ESMTP id S1345517AbiEPTiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:38:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B14E3ED34;
-        Mon, 16 May 2022 12:38:08 -0700 (PDT)
+        Mon, 16 May 2022 15:38:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612AB3EF05;
+        Mon, 16 May 2022 12:38:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C785E61518;
-        Mon, 16 May 2022 19:38:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC6DC385AA;
-        Mon, 16 May 2022 19:38:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8809B81607;
+        Mon, 16 May 2022 19:38:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D9B1C385AA;
+        Mon, 16 May 2022 19:38:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729887;
-        bh=ScNpsefaV/IRFOSh0a6YjQXpA8urLYr9F4cqdHvF6c8=;
+        s=korg; t=1652729890;
+        bh=C6fcos56HLZvJDeIHxko5ZFfqpC2z8ez7/GKRQgVHmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IQa55R49YUHnRvpCJ3ek0tzq54Hrh9yT6waLrqECeaSDcECUNu03VfeHslG2yB8gN
-         8qrwdrKsCH2GYIZJ/kTj33+hQ8tSAnbyWuo5PEfom6azECzb7HOoJ79acsJJ8+G70K
-         +GXNCCZ0CQGOjcrI10hLGtxhvuBtOjRVLqA5WUKU=
+        b=jHJGPDOYffcAyau1Zqr6wUk67wU4Uee/w1exi9f6DLZ4crbl79ncKxXbNyycOgcWa
+         zHDUpBpl31gBpOXF3Ck53CDCcLQO9ZIyi4XxSQl8OxR9xD+g+p6sak0LHPIL7RBIdK
+         fUEGedG1f4jJw31ot2GHypV7eUIK8pSj5hwNsDDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>
-Subject: [PATCH 4.9 13/19] usb: cdc-wdm: fix reading stuck on device close
-Date:   Mon, 16 May 2022 21:36:26 +0200
-Message-Id: <20220516193613.891833115@linuxfoundation.org>
+        stable@vger.kernel.org, Scott Chen <scott@labau.com.tw>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.9 14/19] USB: serial: pl2303: add device id for HP LM930 Display
+Date:   Mon, 16 May 2022 21:36:27 +0200
+Message-Id: <20220516193613.921213214@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
 References: <20220516193613.497233635@linuxfoundation.org>
@@ -49,56 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+From: Scott Chen <scott@labau.com.tw>
 
-commit 01e01f5c89773c600a9f0b32c888de0146066c3a upstream.
+commit 26a08f8bad3e1f98d3153f939fb8cd330da4cb26 upstream.
 
-cdc-wdm tracks whether a response reading request is in-progress and
-blocks the next request from being sent until the previous request is
-completed. As soon as last user closes the cdc-wdm device file, the
-driver cancels any ongoing requests, resets the pending response
-counter, but leaves the response reading in-progress flag
-(WDM_RESPONDING) untouched.
+Add the device id for the HPLM930Display which is a PL2303GC based
+device.
 
-So if the user closes the device file during the response receive
-request is being performed, no more data will be obtained from the
-modem. The request will be cancelled, effectively preventing the
-WDM_RESPONDING flag from being reseted. Keeping the flag set will
-prevent a new response receive request from being sent, permanently
-blocking the read path. The read path will staying blocked until the
-module will be reloaded or till the modem will be re-attached.
-
-This stuck has been observed with a Huawei E3372 modem attached to an
-OpenWrt router and using the comgt utility to set up a network
-connection.
-
-Fix this issue by clearing the WDM_RESPONDING flag on the device file
-close.
-
-Without this fix, the device reading stuck can be easily reproduced in a
-few connection establishing attempts. With this fix, a load test for
-modem connection re-establishing worked for several hours without any
-issues.
-
-Fixes: 922a5eadd5a3 ("usb: cdc-wdm: Fix race between autosuspend and reading from the device")
-Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc: stable <stable@vger.kernel.org>
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220501175828.8185-1-ryazanov.s.a@gmail.com
+Signed-off-by: Scott Chen <scott@labau.com.tw>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/class/cdc-wdm.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/serial/pl2303.c |    1 +
+ drivers/usb/serial/pl2303.h |    1 +
+ 2 files changed, 2 insertions(+)
 
---- a/drivers/usb/class/cdc-wdm.c
-+++ b/drivers/usb/class/cdc-wdm.c
-@@ -744,6 +744,7 @@ static int wdm_release(struct inode *ino
- 			kill_urbs(desc);
- 			spin_lock_irq(&desc->iuspin);
- 			desc->resp_count = 0;
-+			clear_bit(WDM_RESPONDING, &desc->flags);
- 			spin_unlock_irq(&desc->iuspin);
- 			desc->manage_power(desc->intf, 0);
- 		} else {
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -95,6 +95,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM220_PRODUCT_ID) },
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM960_PRODUCT_ID) },
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_LM920_PRODUCT_ID) },
++	{ USB_DEVICE(HP_VENDOR_ID, HP_LM930_PRODUCT_ID) },
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_LM940_PRODUCT_ID) },
+ 	{ USB_DEVICE(HP_VENDOR_ID, HP_TD620_PRODUCT_ID) },
+ 	{ USB_DEVICE(CRESSI_VENDOR_ID, CRESSI_EDY_PRODUCT_ID) },
+--- a/drivers/usb/serial/pl2303.h
++++ b/drivers/usb/serial/pl2303.h
+@@ -133,6 +133,7 @@
+ #define HP_TD620_PRODUCT_ID	0x0956
+ #define HP_LD960_PRODUCT_ID	0x0b39
+ #define HP_LD381_PRODUCT_ID	0x0f7f
++#define HP_LM930_PRODUCT_ID	0x0f9b
+ #define HP_LCM220_PRODUCT_ID	0x3139
+ #define HP_LCM960_PRODUCT_ID	0x3239
+ #define HP_LD220_PRODUCT_ID	0x3524
 
 
