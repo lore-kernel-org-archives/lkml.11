@@ -2,162 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A92C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 01:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26878C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 01:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239060AbiEPBdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 21:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
+        id S239135AbiEPBq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 21:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231853AbiEPBdC (ORCPT
+        with ESMTP id S239107AbiEPBq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 21:33:02 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D473C10FF4
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 18:33:00 -0700 (PDT)
-Received: from fsav413.sakura.ne.jp (fsav413.sakura.ne.jp [133.242.250.112])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 24G1WmNd085346;
-        Mon, 16 May 2022 10:32:48 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav413.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav413.sakura.ne.jp);
- Mon, 16 May 2022 10:32:48 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav413.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 24G1WmWw085343
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 16 May 2022 10:32:48 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <7b2fecdb-59ae-2c54-5a5b-774ef7054d1b@I-love.SAKURA.ne.jp>
-Date:   Mon, 16 May 2022 10:32:43 +0900
+        Sun, 15 May 2022 21:46:56 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6C7B389B;
+        Sun, 15 May 2022 18:46:51 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3AY1UVBahwIWT95TrbS51G7n3NX1619BIKZh0ujC4?=
+ =?us-ascii?q?5NGQNrF6WrkVWzDBNXDuDMq2DMDemc9h1OYi/phwAu5+Em4BkT1Nl/3w8FHgiR?=
+ =?us-ascii?q?ejtX4rAdhiqV8+xwmwvdGo+toNGLICowPkcFhcwnT/wdOixxZVA/fvQHOCkUra?=
+ =?us-ascii?q?dYnkZqTJME0/NtzoywobVvaY42bBVMyvV0T/Di5W31G2NglaYAUpIg063ky6Di?=
+ =?us-ascii?q?dyp0N8uUvPSUtgQ1LPWvyF94JvyvshdJVOgKmVfNrbSq+ouUNiEEm3lExcFUrt?=
+ =?us-ascii?q?Jk57wdAsEX7zTIROTzHFRXsBOgDAb/mprjPl9b6FaNC+7iB3Q9zx14NFMp5yxS?=
+ =?us-ascii?q?wYgOIXCheYcTwJFVSp5OMWq/ZeeeyTl7JTPkRSun3zEhq8G4FsNFYYY9+B4EGZ?=
+ =?us-ascii?q?T3fgZLi0dKBmHhui/yrv9Qe5p7uwyJc/pIYVZqHF95TXYC+s2B5zOXc3i5dZR3?=
+ =?us-ascii?q?zA2wMpTEvnTT80DYDFrYVLLZBgnElMWDo8u2eSlnH/ydxVGp1+P46k6+W7eyEp?=
+ =?us-ascii?q?2yreFGN7UfMGaAN9Zm0+wuG3L5SL6DwscOdjZziCKmlquieDnjyL2QI9UH7TQy?=
+ =?us-ascii?q?xLAqDV/3URKUFtPCwT9+qL/1yaDtxtkAxR80kITQWIarSRHluXAYiA=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A1YA7Q6565j8rJVOCUQPXwPTXdLJyesId70hD?=
+ =?us-ascii?q?6qkRc20wTiX8ra2TdZsguyMc9wx6ZJhNo7G90cq7MBbhHPxOkOos1N6ZNWGIhI?=
+ =?us-ascii?q?LCFvAB0WKN+V3dMhy73utc+IMlSKJmFeD3ZGIQse/KpCW+DPYsqePqzJyV?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="124250461"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 16 May 2022 09:46:50 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id CFF234D68A22;
+        Mon, 16 May 2022 09:46:44 +0800 (CST)
+Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Mon, 16 May 2022 09:46:45 +0800
+Received: from localhost.localdomain (10.167.225.141) by
+ G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Mon, 16 May 2022 09:46:46 +0800
+From:   Li Zhijian <lizhijian@fujitsu.com>
+To:     Yanjun Zhu <yanjun.zhu@linux.dev>, Jason Gunthorpe <jgg@ziepe.ca>,
+        "Haakon Bugge" <haakon.bugge@oracle.com>,
+        Cheng Xu <chengyou@linux.alibaba.com>,
+        <linux-rdma@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
+Subject: [PATCH v3 0/2] RDMA/rxe: Fix no completion event issue
+Date:   Mon, 16 May 2022 09:53:27 +0800
+Message-ID: <20220516015329.445474-1-lizhijian@fujitsu.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: [PATCH v2] workqueue: Wrap flush_workqueue() using a macro
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-References: <d34dac10-c12f-8bda-35c4-9cb158781db2@I-love.SAKURA.ne.jp>
- <a6288570ed3534b0316723061f5604e3871accef.camel@perches.com>
- <6e4ed62e-888b-6e7a-c13d-67656f39ca94@I-love.SAKURA.ne.jp>
- <738afe71-2983-05d5-f0fc-d94efbdf7634@I-love.SAKURA.ne.jp>
- <YnQKNea6KWFaWNis@slm.duckdns.org>
- <a0d6b5e4-b9c8-1a43-570f-4c73b0f6fc0c@I-love.SAKURA.ne.jp>
- <Yn0538VavQPv+/Ws@slm.duckdns.org>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <Yn0538VavQPv+/Ws@slm.duckdns.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: CFF234D68A22.AFB2E
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since flush operation synchronously waits for completion, flushing
-system-wide WQs (e.g. system_wq) might introduce possibility of deadlock
-due to unexpected locking dependency. Tejun Heo commented at [1] that it
-makes no sense at all to call flush_workqueue() on the shared WQs as the
-caller has no idea what it's gonna end up waiting for.
+Since RXE always posts RDMA_WRITE successfully, it's observed that
+no more completion occurs after a few incorrect posts. Actually, it
+will block the polling. we can easily reproduce it by the below pattern.
 
-Although there is flush_scheduled_work() which flushes system_wq WQ with
-"Think twice before calling this function! It's very easy to get into
-trouble if you don't take great care." warning message, syzbot found a
-circular locking dependency caused by flushing system_wq WQ [2].
+a. post correct RDMA_WRITE
+b. poll completion event
+while true {
+  c. post incorrect RDMA_WRITE(wrong rkey for example)
+  d. poll completion event <<<< block after 2 incorrect RDMA_WRITE posts
+}
 
-Therefore, let's change the direction to that developers had better use
-their local WQs if flush_scheduled_work()/flush_workqueue(system_*_wq) is
-inevitable.
 
-Steps for converting system-wide WQs into local WQs are explained at [3],
-and a conversion to stop flushing system-wide WQs is in progress. Now we
-want some mechanism for preventing developers who are not aware of this
-conversion from again start flushing system-wide WQs.
+Li Zhijian (2):
+  RDMA/rxe: Update wqe_index for each wqe error completion
+  RDMA/rxe: Generate error completion for error requester QP state
 
-Since I found that WARN_ON() is complete but awkward approach for teaching
-developers about this problem, let's use BUILD_BUG_ON() for incomplete but
-handy approach. For completeness, we will also insert WARN_ON() into
-flush_workqueue() after all users stopped calling flush_scheduled_work().
+ drivers/infiniband/sw/rxe/rxe_req.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Link: https://lore.kernel.org/all/YgnQGZWT%2Fn3VAITX@slm.duckdns.org/ [1]
-Link: https://syzkaller.appspot.com/bug?extid=bde0f89deacca7c765b8 [2]
-Link: https://lkml.kernel.org/r/49925af7-78a8-a3dd-bce6-cfc02e1a9236@I-love.SAKURA.ne.jp [3]
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
-Changes in v2:
-  Use "void (flush_workqueue)(struct workqueue_struct *wq)" and remove
-  "#undef flush_workqueue", suggested by Joe Perches <joe@perches.com>.
-
-This patch is expected to be sent to linux.git immediately before the merge
-window for 5.19 closes, for we need to wait until patches for removing
-flush_workqueue(system_*_wq) calls reached linux.git during the merge window
-for 5.19. Due to this ordering dependency, the kernel build bots complain like
-https://lkml.kernel.org/r/202205021448.6SzhD1Cz-lkp@intel.com , but it seems
-that simply ignoring these reports is the best choice.
-
-If it is inconvenient for you to send pull request twice from your wq.git tree
-(once for immediately after 5.18 is released, the other for immediately before
-the merge window for 5.19 closes), I can send pull request for this patch from
-my tree. In that case, please give me Acked-by: or Reviewed-by: response regarding
-this patch.
-
- include/linux/workqueue.h | 31 +++++++++++++++++++++++++++++++
- kernel/workqueue.c        |  2 +-
- 2 files changed, 32 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/workqueue.h b/include/linux/workqueue.h
-index 7fee9b6cfede..5bad503925de 100644
---- a/include/linux/workqueue.h
-+++ b/include/linux/workqueue.h
-@@ -663,4 +663,35 @@ int workqueue_offline_cpu(unsigned int cpu);
- void __init workqueue_init_early(void);
- void __init workqueue_init(void);
- 
-+/*
-+ * Detect attempt to flush system-wide workqueues at compile time when possible.
-+ * See https://lkml.kernel.org/r/49925af7-78a8-a3dd-bce6-cfc02e1a9236@I-love.SAKURA.ne.jp for
-+ * reasons and steps for converting system-wide workqueues into local workqueues.
-+ */
-+#define flush_workqueue(wq)						\
-+({									\
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_wq) &&	\
-+			 &(wq) == &system_wq,				\
-+			 "Please avoid flushing system_wq.");		\
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_highpri_wq) && \
-+			 &(wq) == &system_highpri_wq,			\
-+			 "Please avoid flushing system_highpri_wq.");	\
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_long_wq) && \
-+			 &(wq) == &system_long_wq,			\
-+			 "Please avoid flushing system_long_wq.");	\
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_unbound_wq) && \
-+			 &(wq) == &system_unbound_wq,			\
-+			 "Please avoid flushing system_unbound_wq.");	\
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_freezable_wq) &&	\
-+			 &(wq) == &system_freezable_wq,			\
-+			 "Please avoid flushing system_freezable_wq."); \
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_power_efficient_wq) && \
-+			 &(wq) == &system_power_efficient_wq,		\
-+			 "Please avoid flushing system_power_efficient_wq."); \
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_freezable_power_efficient_wq) &&	\
-+			 &(wq) == &system_freezable_power_efficient_wq, \
-+			 "Please avoid flushing system_freezable_power_efficient_wq."); \
-+	flush_workqueue(wq);						\
-+})
-+
- #endif
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 0d2514b4ff0d..071a4eb7fd94 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -2794,7 +2794,7 @@ static bool flush_workqueue_prep_pwqs(struct workqueue_struct *wq,
-  * This function sleeps until all work items which were queued on entry
-  * have finished execution, but it is not livelocked by new incoming ones.
-  */
--void flush_workqueue(struct workqueue_struct *wq)
-+void (flush_workqueue)(struct workqueue_struct *wq)
- {
- 	struct wq_flusher this_flusher = {
- 		.list = LIST_HEAD_INIT(this_flusher.list),
 -- 
-2.18.4
+2.31.1
+
 
 
