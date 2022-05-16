@@ -2,109 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 212C0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:05:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244307AbiEPOFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
+        id S244170AbiEPOGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244286AbiEPOF0 (ORCPT
+        with ESMTP id S244439AbiEPOGW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:05:26 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0AC3A724;
-        Mon, 16 May 2022 07:05:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652709925; x=1684245925;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pFt4HO1TD5VHhoCWTbjb6hXEj0azWY0q/flWLQdVPx8=;
-  b=CBgQjeZcJFhufuZvmuRLg0EplJ2zcJ/34W9DKCHfOqMSIUHIHjdU6VQY
-   u7xGsw8vtddTu4U1tyPZYhb9eCh3+hlsxD93eMku5/ueHW0sGdWn4a0l9
-   RwLnztk0+Alw1wdAAMpdHpYmwbCxKgyZJLmAD2iAS78LBE5BbY2PKcNsy
-   trixv4gr8jUdPwwUCjW+diXRzGdQA8VkilJUdOePBz+pHstlY+oC2bH5j
-   nw/XAYLyafixci73zyVjj376dO4QFBo7AIBAuyotlRWCF7QAjEq8+X3mz
-   2HkDTOlcLEoOYGhCbhj+YpwLhNM/6dRolyj9GPhmE3XexYMEX8UQyTXGR
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="270537503"
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="270537503"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 07:05:22 -0700
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="574028618"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 07:05:16 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nqbLU-0006iR-9q;
-        Mon, 16 May 2022 17:05:12 +0300
-Date:   Mon, 16 May 2022 17:05:12 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Mark Brown <broonie@kernel.org>,
-        chris.packham@alliedtelesis.co.nz,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Subject: Re: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
-Message-ID: <YoJaGGwfoSYhaT13@smile.fi.intel.com>
-References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
- <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
- <877d6l7fmy.fsf@mpe.ellerman.id.au>
+        Mon, 16 May 2022 10:06:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB05F3A71F
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:06:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652709980;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=C02Jr/UCyAq1WaiVEroFuXNF23GLqP5faeBDBUBpdVo=;
+        b=IKVVFppdi5fnlBvEfjSrWK3z3DTe82XcVsaE2lfo1UcQDEr5xfxTFa03JsZnp4JPtaoZCq
+        6oUZpMLJ/AAZBctBg2fWFsK4uxU7/4Xq9Bym8zU2Fuz1aCXBje1kJQcI+5z58PZCf9pqMy
+        5p7vW8t0YrGmFKRwdnTTCezWemOTlvg=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-417-xtgPWEM7P7mqJHpB7JN5zw-1; Mon, 16 May 2022 10:06:18 -0400
+X-MC-Unique: xtgPWEM7P7mqJHpB7JN5zw-1
+Received: by mail-qt1-f200.google.com with SMTP id q13-20020a05622a04cd00b002f3c0e197afso11573956qtx.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:06:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=C02Jr/UCyAq1WaiVEroFuXNF23GLqP5faeBDBUBpdVo=;
+        b=oLkEdHtBR3r9D+5dtaL4AGMP9p3OFvsCZBm4g+525gS+yKtp2JDyyC2RAI4MfcnusM
+         RwleKd3TEkYyLwrrR/omkigMVBWwL8Whkg46ijy3wC4skH6GhYHV9VmpNYDoBjoM7UwZ
+         o1e+BfJY1wVMKu1cWAsetr09tXU7/SDtVCoU7+QUpOEgTTCNmqj/OB1LbmWy32777ygZ
+         /uUs3kHFzOWokMKAIgSBP+W0diArrG9dhiSM4jUfLb4YsoBC8NeVDdNutHhXw0On5QyA
+         oaCVVx3baWDD1MUE22Pz2ogJGlY8QF73g3UOlUGLJU+0Q8IvesX260DNZk29dz0EREZZ
+         v8OQ==
+X-Gm-Message-State: AOAM530YHZ9881NUtKWUlutJ1RARc8lx0qg755dmmGyCQ9pTvyeCmVrS
+        SA5aF3krGfIysxmX2OdE/qwQZNerEUwvm7x3a2PyhWTj3LuwvLYnrX+7OsSSIZRNKEqsyRlBqch
+        c7J9rQYADqUlUh/SogvM7fXu4
+X-Received: by 2002:ad4:5dc5:0:b0:45a:82c0:bc4a with SMTP id m5-20020ad45dc5000000b0045a82c0bc4amr15306802qvh.82.1652709977051;
+        Mon, 16 May 2022 07:06:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzeK4bI4hwRVpDCN8+j2vIlpM3R4Nn0BJi7TfSN2Dqsq24DwAdv9J6x56912JHzM7MP3DkjJA==
+X-Received: by 2002:ad4:5dc5:0:b0:45a:82c0:bc4a with SMTP id m5-20020ad45dc5000000b0045a82c0bc4amr15306748qvh.82.1652709976709;
+        Mon, 16 May 2022 07:06:16 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id p18-20020ac87412000000b002f3d23cf87esm5991936qtq.27.2022.05.16.07.06.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 07:06:15 -0700 (PDT)
+Message-ID: <6431569f-fb09-096e-7a89-284a71aa5c0f@redhat.com>
+Date:   Mon, 16 May 2022 10:06:14 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877d6l7fmy.fsf@mpe.ellerman.id.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH net-next v3] bond: add mac filter option for balance-xor
+Content-Language: en-US
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     toke@redhat.com, Long Xin <lxin@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <b32eb6656d5a54c0cde6277e9fc5c249c63489ca.1652463336.git.jtoppins@redhat.com>
+ <4c9db6ac-aa24-2ca2-3e44-18cfb23ac1bc@blackwall.org>
+ <da6bbb3b-344c-f032-fe03-5e8c8ac3c388@blackwall.org>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <da6bbb3b-344c-f032-fe03-5e8c8ac3c388@blackwall.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 11:48:05PM +1000, Michael Ellerman wrote:
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> > We may convert the GPT driver to use fwnode API for the sake
-> > of consistency of the used APIs inside the driver.
+On 5/15/22 02:32, Nikolay Aleksandrov wrote:
+> On 15/05/2022 00:41, Nikolay Aleksandrov wrote:
+>> On 13/05/2022 20:43, Jonathan Toppins wrote:
+>>> Implement a MAC filter that prevents duplicate frame delivery when
+>>> handling BUM traffic. This attempts to partially replicate OvS SLB
+>>> Bonding[1] like functionality without requiring significant change
+>>> in the Linux bridging code.
+>>>
+>>> A typical network setup for this feature would be:
+>>>
+>>>              .--------------------------------------------.
+>>>              |         .--------------------.             |
+>>>              |         |                    |             |
+>>>         .-------------------.               |             |
+>>>         |    | Bond 0  |    |               |             |
+>>>         | .--'---. .---'--. |               |             |
+>>>    .----|-| eth0 |-| eth1 |-|----.    .-----+----.   .----+------.
+>>>    |    | '------' '------' |    |    | Switch 1 |   | Switch 2  |
+>>>    |    '---,---------------'    |    |          +---+           |
+>>>    |       /                     |    '----+-----'   '----+------'
+>>>    |  .---'---.    .------.      |         |              |
+>>>    |  |  br0  |----| VM 1 |      |      ~~~~~~~~~~~~~~~~~~~~~
+>>>    |  '-------'    '------'      |     (                     )
+>>>    |      |        .------.      |     ( Rest of Network     )
+>>>    |      '--------| VM # |      |     (_____________________)
+>>>    |               '------'      |
+>>>    |  Host 1                     |
+>>>    '-----------------------------'
+>>>
+>>> Where 'VM1' and 'VM#' are hosts connected to a Linux bridge, br0, with
+>>> bond0 and its associated links, eth0 & eth1, provide ingress/egress. One
+>>> can assume bond0, br1, and hosts VM1 to VM# are all contained in a
+>>> single box, as depicted. Interfaces eth0 and eth1 provide redundant
+>>> connections to the data center with the requirement to use all bandwidth
+>>> when the system is functioning normally. Switch 1 and Switch 2 are
+>>> physical switches that do not implement any advanced L2 management
+>>> features such as MLAG, Cisco's VPC, or LACP.
+>>>
+>>> Combining this feature with vlan+srcmac hash policy allows a user to
+>>> create an access network without the need to use expensive switches that
+>>> support features like Cisco's VCP.
+>>>
+>>> [1] https://docs.openvswitch.org/en/latest/topics/bonding/#slb-bonding
+>>>
+>>> Co-developed-by: Long Xin <lxin@redhat.com>
+>>> Signed-off-by: Long Xin <lxin@redhat.com>
+>>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>>> ---
+>>>
+>>> Notes:
+>>>      v2:
+>>>       * dropped needless abstraction functions and put code in module init
+>>>       * renamed variable "rc" to "ret" to stay consistent with most of the
+>>>         code
+>>>       * fixed parameter setting management, when arp-monitor is turned on
+>>>         this feature will be turned off similar to how miimon and arp-monitor
+>>>         interact
+>>>       * renamed bond_xor_recv to bond_mac_filter_recv for a little more
+>>>         clarity
+>>>       * it appears the implied default return code for any bonding recv probe
+>>>         must be `RX_HANDLER_ANOTHER`. Changed the default return code of
+>>>         bond_mac_filter_recv to use this return value to not break skb
+>>>         processing when the skb dev is switched to the bond dev:
+>>>           `skb->dev = bond->dev`
+>>>      
+>>>      v3: Nik's comments
+>>>       * clarified documentation
+>>>       * fixed inline and basic reverse Christmas tree formatting
+>>>       * zero'ed entry in mac_create
+>>>       * removed read_lock taking in bond_mac_filter_recv
+>>>       * made has_expired() atomic and removed critical sections
+>>>         surrounding calls to has_expired(), this also removed the
+>>>         use-after-free that would have occurred:
+>>>             spin_lock_irqsave(&entry->lock, flags);
+>>>                 if (has_expired(bond, entry))
+>>>                     mac_delete(bond, entry);
+>>>             spin_unlock_irqrestore(&entry->lock, flags); <---
+>>>       * moved init/destroy of mac_filter_tbl to bond_open/bond_close
+>>>         this removed the complex option dependencies, the only behavioural
+>>>         change the user will see is if the bond is up and mac_filter is
+>>>         enabled if they try and set arp_interval they will receive -EBUSY
+>>>       * in bond_changelink moved processing of mac_filter option just below
+>>>         mode processing
+>>>
+>>>   Documentation/networking/bonding.rst  |  20 +++
+>>>   drivers/net/bonding/Makefile          |   2 +-
+>>>   drivers/net/bonding/bond_mac_filter.c | 201 ++++++++++++++++++++++++++
+>>>   drivers/net/bonding/bond_mac_filter.h |  37 +++++
+>>>   drivers/net/bonding/bond_main.c       |  30 ++++
+>>>   drivers/net/bonding/bond_netlink.c    |  13 ++
+>>>   drivers/net/bonding/bond_options.c    |  81 +++++++++--
+>>>   drivers/net/bonding/bonding_priv.h    |   1 +
+>>>   include/net/bond_options.h            |   1 +
+>>>   include/net/bonding.h                 |   3 +
+>>>   include/uapi/linux/if_link.h          |   1 +
+>>>   11 files changed, 373 insertions(+), 17 deletions(-)
+>>>   create mode 100644 drivers/net/bonding/bond_mac_filter.c
+>>>   create mode 100644 drivers/net/bonding/bond_mac_filter.h
+>>>
+>>
+> [snip]
 > 
-> I'm not sure about this one.
+> The same problem solved using a few nftables rules (in case you don't want to load eBPF):
+> $ nft 'add table netdev nt'
+> $ nft 'add chain netdev nt bond0EgressFilter { type filter hook egress device bond0 priority 0; }'
+> $ nft 'add chain netdev nt bond0IngressFilter { type filter hook ingress device bond0 priority 0; }'
+> $ nft 'add set netdev nt macset { type ether_addr; flags timeout; }'
+> $ nft 'add rule netdev nt bond0EgressFilter set update ether saddr timeout 5s @macset'
+> $ nft 'add rule netdev nt bond0IngressFilter ether saddr @macset counter drop'
 > 
-> It's more consistent to use fwnode in this driver, but it's very
-> inconsistent with the rest of the powerpc code. We have basically no
-> uses of the fwnode APIs at the moment.
 
-Fair point!
+I get the following when trying to apply this on a fedora 35 install.
 
-> It seems like a pretty straight-forward conversion, but there could
-> easily be a bug in there, I don't have any way to test it. Do you?
-
-Nope, only compile testing. The important part of this series is to
-clean up of_node from GPIO library, so since here it's a user of
-it I want to do that. This patch is just ad-hoc conversion that I
-noticed is possible. But there is no any requirement to do so.
-
-Lemme drop this from v3.
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+root@fedora ~]# ip link add bond0 type bond mode balance-xor 
+xmit_hash_policy vlan+srcmac
+[root@fedora ~]# nft 'add table netdev nt'
+[root@fedora ~]# nft 'add chain netdev nt bond0EgressFilter { type 
+filter hook egress device bond0 priority 0; }'
+Error: unknown chain hook
+add chain netdev nt bond0EgressFilter { type filter hook egress device 
+bond0 priority 0; }
+                                                          ^^^^^^
+[root@fedora ~]# uname -a
+Linux fedora 5.17.5-200.fc35.x86_64 #1 SMP PREEMPT Thu Apr 28 15:41:41 
+UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
 
