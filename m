@@ -2,87 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 121C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239401AbiEPJuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 05:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
+        id S240356AbiEPJud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 05:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231350AbiEPJuH (ORCPT
+        with ESMTP id S239666AbiEPJuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 05:50:07 -0400
-X-Greylist: delayed 346 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 02:50:05 PDT
-Received: from vik-lap.sysgo.cz (dynamic-2a01-0c22-9170-4b00-8d03-2ed4-b08c-7f42.c22.pool.telefonica.de [IPv6:2a01:c22:9170:4b00:8d03:2ed4:b08c:7f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD8137034;
-        Mon, 16 May 2022 02:50:05 -0700 (PDT)
-Received: from vik-lap.sysgo.cz (localhost [127.0.0.1])
-        by vik-lap.sysgo.cz (8.15.2/8.15.2/Debian-22) with ESMTP id 24G9hnss011800;
-        Mon, 16 May 2022 11:43:49 +0200
-Received: (from vik@localhost)
-        by vik-lap.sysgo.cz (8.15.2/8.15.2/Submit) id 24G9hmTC011799;
-        Mon, 16 May 2022 11:43:48 +0200
-X-Authentication-Warning: vik-lap.sysgo.cz: vik set sender to vit@kabele.me using -f
-Date:   Mon, 16 May 2022 11:43:48 +0200
-From:   Vit Kabele <vit@kabele.me>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     platform-driver-x86@vger.kernel.org, r.marek@assembler.cz,
-        x86@kernel.org, linux-kernel@vger.kernel.org, rafael@kernel.org,
-        mingo@redhat.com
-Subject: Re: [PATCH v2] arch/x86: Check validity of EBDA pointer in mpparse.c
-Message-ID: <YoIc1AHLK4pfR4AI@czspare1-lap.sysgo.cz>
-References: <CAJZ5v0gBbdzUO9MRxbKESEnaeaNAu-+3oP6ADMretch=iHPNJA@mail.gmail.com>
- <Yk/2dh4kDobivStp@czspare1-lap.sysgo.cz>
- <YnFoIzmt1qJSucAd@zn.tnic>
+        Mon, 16 May 2022 05:50:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6245437034;
+        Mon, 16 May 2022 02:50:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2839CB8103F;
+        Mon, 16 May 2022 09:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BF5E3C3411B;
+        Mon, 16 May 2022 09:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652694611;
+        bh=K7RtQLBUXvDluU8d53MMK5CuRaFQr50f2uQr8Nl/bgk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TyZVSoJCgbEvCNDNtPeRVIGCnhv8f2wJmGbKsP9ywas6i6RJsftaHtzhVASAA3YVT
+         kBt84PaBmDafBZEiCUWpppruXC5ZbHLIC/4k/HU7CfpMOFCKbYsf6hrpSw62CiV8vz
+         MEJXFXvcliHkJ3t1tFCYWtYzRJOVpDtzBfKg+Leze1EN3rIIqzDRLxBIn1tuycsMhX
+         Jvk4IUyK7ofuSwLneDD3YbMkOEKS4WPzEOZc2S3ulRZm9AY2mU3XOMcczoF1hsj614
+         dcgGf6CRn9TaStwsRfFBl7FtIP/wdmkfQ0peyTHDln187mAH4xedjGVS1NjBXmxq9W
+         TkbEL2hMcbvGg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9A408E8DBDA;
+        Mon, 16 May 2022 09:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnFoIzmt1qJSucAd@zn.tnic>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] net/smc: align the connect behaviour with TCP
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165269461162.15960.10529231601090799406.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 May 2022 09:50:11 +0000
+References: <20220513022453.7256-1-guangguan.wang@linux.alibaba.com>
+In-Reply-To: <20220513022453.7256-1-guangguan.wang@linux.alibaba.com>
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 07:36:35PM +0200, Borislav Petkov wrote:
-> > diff --git a/arch/x86/kernel/mpparse.c b/arch/x86/kernel/mpparse.c
-> > index fed721f90116..9e0b4820f33b 100644
-> > --- a/arch/x86/kernel/mpparse.c
-> > +++ b/arch/x86/kernel/mpparse.c
-> > @@ -633,8 +633,18 @@ void __init default_find_smp_config(void)
-> >  	 */
-> >  
-> >  	address = get_bios_ebda();
-> > -	if (address)
-> > -		smp_scan_config(address, 0x400);
-> > +
-> > +	/*
-> > +	 * Check that the EBDA address is sane and the get_bios_ebda() did not
-> > +	 * return just garbage from memory.
-> > +	 * The upper bound is considered valid if it points below 1K before
-> > +	 * end of the lower memory (i.e. 639K). The EBDA can be smaller
-> > +	 * than 1K in which case the pointer will point above 639K but that
-> > +	 * case is handled in step 2) above, and we don't need to adjust scan
-> > +	 * size to not bump into the memory above 640K.
-> > +	 */
-> > +	if (address >= BIOS_START_MIN && address < (BIOS_START_MAX - 1024))
-> > +		smp_scan_config(address, 1024);
-> >  }
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri, 13 May 2022 10:24:53 +0800 you wrote:
+> Connect with O_NONBLOCK will not be completed immediately
+> and returns -EINPROGRESS. It is possible to use selector/poll
+> for completion by selecting the socket for writing. After select
+> indicates writability, a second connect function call will return
+> 0 to indicate connected successfully as TCP does, but smc returns
+> -EISCONN. Use socket state for smc to indicate connect state, which
+> can help smc aligning the connect behaviour with TCP.
 > 
-> I guess but looking at reserve_bios_regions(), that function is already
-> doing kinda the same along with being a bit more careful to figure out
-> bios_start so you could unify the code into a common helper and use it
-> at both places?
-I also initially thought of extracting the check to a separate method,
-but imo this decreases the overall code readability. Any function
-calling the get_bios_ebda() must check the returned value anyway, so
-there will be always at least one if statement involved. And the valid
-upper bound of the EBDA pointer is also different for these two use-cases.
-(The mpparse.c usage is interested in EBDA pointer only if it ends 1KiB
-before the end of low memory, while the ebda.c accepts even the values in the
-last KiB below 640KiB).
+> [...]
 
-I also consider it unlikely that there will be some new code using
-the same bounds check, so I'd prefer to leave it inline.
+Here is the summary with links:
+  - [net-next,v2] net/smc: align the connect behaviour with TCP
+    https://git.kernel.org/netdev/net-next/c/3aba103006bc
 
+You are awesome, thank you!
 -- 
-Best regards,
-Vit Kabele
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
