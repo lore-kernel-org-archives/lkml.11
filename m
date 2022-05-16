@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5094AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8ADBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235149AbiEPShP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 14:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46544 "EHLO
+        id S1344990AbiEPShr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 14:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343802AbiEPShM (ORCPT
+        with ESMTP id S1344838AbiEPSho (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 14:37:12 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E033E5D4;
-        Mon, 16 May 2022 11:37:11 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id nk9-20020a17090b194900b001df2fcdc165so182899pjb.0;
-        Mon, 16 May 2022 11:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ucmDp5IzFuPRpFg8Mq5P7wooU1Npp+faC1DqXB9wtjE=;
-        b=i5Yf/L0Z+vNQ7EdbispPOwLZNQIbBLcBjMrgWhq72LLHdSqB7/vDL24CrPd7yTBMPz
-         fD3KqlKztR7v2v2613awCLQadniOsTIDByTpLUSvCr91wQ86TdYXeTk+nszOFn3jYjIZ
-         4SF3D0P7KHJvWK8YhoV4fe4zu1lT/YmSZnxIGJ0NSMKv2543I1pdtjyFJ937LVeJECF1
-         I51Iqf0LANjmy62M6HuhHVOShLBREAbEOA6O5pKxODz8a91OW3ioSGCQbcFqazi1FiZc
-         YFc904cCMEZMNmrUKAVDM5e+5PmIBMhu7lBjBTrC0HwJwxPj3IpImKlYL5Izp2GwKEZ6
-         bLsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=ucmDp5IzFuPRpFg8Mq5P7wooU1Npp+faC1DqXB9wtjE=;
-        b=l7Eh1N/aVCcTXUWegSRSr9wvvhv1pwAYA+aCJ3WUgFYEb7Xkjta46DN8U7T/vk8iCs
-         f2bokiUiMyGzw5Pi8QhZv/F4ljNvHTKBkR5mvb6jPEk50f84EE5+4k/a9ySqCoMMqCk3
-         lfk+iAnrz+phXeeGP4aqNw5IeY05CWZjQhYLAKr1TnStDJNhaRIk4W4PPHa0+qKoUj/x
-         Msi06wga8Az39TodVR6OMKnVC6YGLxaZ2VkBsEjeThQd63Vi9VI+dyNJlBVx6x5qY5Ie
-         GDntbCD4b6iB7d/kOC/kWlRqowd9nVA8mtB6a1ak3vIcZKxGSRW1jh+WghnQIQgRF24Q
-         uVNw==
-X-Gm-Message-State: AOAM531QxYJysuF80xzrGHzAPdqjV8ax9cjqVSjZ2rNxGin5AjSKKmE0
-        OkxGI3ie1ANo/PoKdiEVPWqaz5Pn+0I=
-X-Google-Smtp-Source: ABdhPJyB3pQVPbA6/qaOrkePJzCcnpi3O4B1/naaPRe5FI8Nd7Y4LRR1ixKXS+FnQFw4HiGqhWqo7A==
-X-Received: by 2002:a17:903:241:b0:15c:ee52:cbf2 with SMTP id j1-20020a170903024100b0015cee52cbf2mr18809518plh.10.1652726230437;
-        Mon, 16 May 2022 11:37:10 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:62fc])
-        by smtp.gmail.com with ESMTPSA id q5-20020a17090311c500b0015e8d4eb271sm7508595plh.187.2022.05.16.11.37.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 11:37:09 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 16 May 2022 08:37:08 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com
-Subject: Re: [PATCH] blk-iocos: fix inuse clamp when iocg deactivate or free
-Message-ID: <YoKZ1BnPjqYIUW1k@slm.duckdns.org>
-References: <20220516101909.99768-1-zhouchengming@bytedance.com>
+        Mon, 16 May 2022 14:37:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E243E0D2;
+        Mon, 16 May 2022 11:37:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2901B815B8;
+        Mon, 16 May 2022 18:37:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12983C385AA;
+        Mon, 16 May 2022 18:37:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652726260;
+        bh=hdvI2TLp4kCgPxPsSGeo5VgFz8oTtk9oTkBzXAHZV9U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tV0zH4gix4mGWAoh4FgqNOspZQOJ/h4nbxRGJR6eJyRofKbCKf6jXRNJBmy64TS8K
+         bzk8cfFxBtCM0ixeLLUWToRNRSdQ0g1PxEgXirLPRpyZzBbFAA8E4wy1eWIP04VPJ/
+         4yRd4DVCn2ZSKbIT29kSQ9tx66QQ4fw4bc8hU/hN3EwpkpaDHwnzJ9oVTkVKPtCoeR
+         WnQMGYR2Dc6HzW6mUSou1ITbqVMfC3aefGULexWSjALVr+qGpS5NxzqZHu0soxcFt4
+         JHUOGTas62n5okSVJiQiuxqggHzJYEkb9UMgg6n3/b3NANl7o1+33pr3s+mJJsP+B1
+         qVYeM7igfestA==
+Date:   Mon, 16 May 2022 21:36:05 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+Cc:     linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        peterhuewe@gmx.de, jgg@ziepe.ca, jsnitsel@redhat.com,
+        nayna@linux.vnet.ibm.com, alexander.steffen@infineon.com
+Subject: Re: [PATCH v2 2/2] tpm: Add field upgrade mode support for Infineon
+ TPM2 modules
+Message-ID: <YoKZlTwRnEfzgApR@kernel.org>
+References: <20220513134152.270442-1-stefan.mahnke-hartmann@infineon.com>
+ <20220513134152.270442-2-stefan.mahnke-hartmann@infineon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220516101909.99768-1-zhouchengming@bytedance.com>
+In-Reply-To: <20220513134152.270442-2-stefan.mahnke-hartmann@infineon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 06:19:09PM +0800, Chengming Zhou wrote:
-> For an active leaf node, its inuse shouldn't be zero or exceed
-> its active, but it's not true when deactivate idle iocg or delete
-> iocg in ioc_pd_free().
+On Fri, May 13, 2022 at 03:41:53PM +0200, Stefan Mahnke-Hartmann wrote:
+> TPM2_GetCapability with a capability that has the property type value
+> of TPM_PT_TOTAL_COMMANDS returns a zero length list, when an Infineon
+> TPM2 is in field upgrade mode.
+> Since an Infineon TPM2.0 in field upgrade mode returns RC_SUCCESS on
+> TPM2_Startup, the field upgrade mode has to be detected by
+> TPM2_GetCapability.
 > 
-> Although inuse of 1 is very small, it could cause noticeable hwi
-> decrease in the long running server. So we'd better fix it.
+> Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+> ---
+> Changelog:
+>  * v2:
+>    * Move check of -ENODATA to if condition below.
+>    * Change 'field upgrade mode' to lower case.
 > 
-> And check iocg->child_active_sum is enough for inner iocg, remove
-> the needless list_empty check by the way.
+>  drivers/char/tpm/tpm2-cmd.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/char/tpm/tpm2-cmd.c b/drivers/char/tpm/tpm2-cmd.c
+> index 04a3e23a4afc..c1eb5d223839 100644
+> --- a/drivers/char/tpm/tpm2-cmd.c
+> +++ b/drivers/char/tpm/tpm2-cmd.c
+> @@ -754,7 +754,11 @@ int tpm2_auto_startup(struct tpm_chip *chip)
+>  	rc = tpm2_get_cc_attrs_tbl(chip);
+>  
+>  out:
+> -	if (rc == TPM2_RC_UPGRADE) {
+> +	/*
+> +	 * Infineon TPM in field upgrade mode will return no data for the number
+> +	 * of supported commands.
+> +	 */
+> +	if (rc == TPM2_RC_UPGRADE || rc == -ENODATA) {
+>  		dev_info(&chip->dev, "TPM in field upgrade mode, requires firmware upgrade\n");
+>  		chip->flags |= TPM_CHIP_FLAG_FIRMWARE_UPGRADE;
+>  		rc = 0;
+> -- 
+> 2.25.1
+> 
 
-Hey, so, I'm not a fan of these "I read code a bit and thought this could be
-changed here and there" patches. There's no theme, overarching direction, or
-comprehensive view of the structure. The suggested changes can often be
-really subtle, which is likely why it may not seem immediately intuitive on
-the first look and triggered the submitter to write up the patch. There's no
-practical gain from these changes while there's substantical risk of subtle
-breakages.
+Looks good to me.
 
-Here, setting inuse to 1 would cause divide by one in the donation logic and
-there are comments about the in the code too. So, nack on the patch, and
-plase reconsider your approach to sending patches. The current approach
-costs more than helps.
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-Thanks.
-
--- 
-tejun
+BR, Jarkko
