@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06467C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 808FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347334AbiEPU2l (ORCPT
+        id S1346366AbiEPU2w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55994 "EHLO
+        Mon, 16 May 2022 16:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350180AbiEPUAx (ORCPT
+        with ESMTP id S1350235AbiEPUA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DE246678;
-        Mon, 16 May 2022 12:55:04 -0700 (PDT)
+        Mon, 16 May 2022 16:00:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A1046B23;
+        Mon, 16 May 2022 12:55:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EADAB60EC5;
-        Mon, 16 May 2022 19:54:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC574C385AA;
-        Mon, 16 May 2022 19:54:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E102DB81617;
+        Mon, 16 May 2022 19:55:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D5C0C385AA;
+        Mon, 16 May 2022 19:55:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730878;
-        bh=JmpcYXscK83DlcoDFesJzDB+yzA4kDzMTLDl4wun3Rw=;
+        s=korg; t=1652730904;
+        bh=/65BHHgEn+1gWgXBEcRBKSvFqIkhOUARj7hbRXS6LD8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ohrXyAK7I4o6WtzKd0DDtboiP6yCVe5OXfj2RyxPcpYTpddGF3aCrvWbprLgMAVL0
-         7GiMDcvyojUj66Ep+2Xze0rmfgYayjXUosGyRXymEwc3LXhWrbaG2CGRV9T7D6vCZJ
-         tRNSKRDP2ugHkmq0xTsxCn7LwtHebkrSbLshVXoo=
+        b=UZPIl9FU2XKMVCutHrXuny8SDLQXA3WtITDOEuYYcSygbyeSNwqL5jW1h+j4K6ww7
+         FzKUnZN9GVR49y/jwleJalLHs/shmbc/299LMKwyZM29kJ4w2QdnNWH8T3ANAUM6Sg
+         Lpe4zMjdIG+js0qp2u4VjZ4x3sWYsSxlPTLnyrOc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 032/114] net: dsa: flush switchdev workqueue on bridge join error path
-Date:   Mon, 16 May 2022 21:36:06 +0200
-Message-Id: <20220516193626.413082272@linuxfoundation.org>
+Subject: [PATCH 5.17 004/114] mac80211: Reset MBSSID parameters upon connection
+Date:   Mon, 16 May 2022 21:35:38 +0200
+Message-Id: <20220516193625.621927793@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,64 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
 
-[ Upstream commit 630fd4822af2374cd75c682b7665dcb367613765 ]
+[ Upstream commit 86af062f40a73bf63321694e6bf637144f0383fe ]
 
-There is a race between switchdev_bridge_port_offload() and the
-dsa_port_switchdev_sync_attrs() call right below it.
+Currently MBSSID parameters in struct ieee80211_bss_conf
+are not reset upon connection. This could be problematic
+with some drivers in a scenario where the device first
+connects to a non-transmit BSS and then connects to a
+transmit BSS of a Multi BSS AP. The MBSSID parameters
+which are set after connecting to a non-transmit BSS will
+not be reset and the same parameters will be passed on to
+the driver during the subsequent connection to a transmit
+BSS of a Multi BSS AP.
 
-When switchdev_bridge_port_offload() finishes, FDB entries have been
-replayed by the bridge, but are scheduled for deferred execution later.
+For example, firmware running on the ath11k device uses the
+Multi BSS data for tracking the beacon of a non-transmit BSS
+and reports the driver when there is a beacon miss. If we do
+not reset the MBSSID parameters during the subsequent
+connection to a transmit BSS, then the driver would have
+wrong MBSSID data and FW would be looking for an incorrect
+BSSID in the MBSSID beacon of a Multi BSS AP and reports
+beacon loss leading to an unstable connection.
 
-However dsa_port_switchdev_sync_attrs -> dsa_port_can_apply_vlan_filtering()
-may impose restrictions on the vlan_filtering attribute and refuse
-offloading.
+Reset the MBSSID parameters upon every connection to solve this
+problem.
 
-When this happens, the delayed FDB entries will dereference dp->bridge,
-which is a NULL pointer because we have stopped the process of
-offloading this bridge.
-
-Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-Workqueue: dsa_ordered dsa_slave_switchdev_event_work
-pc : dsa_port_bridge_host_fdb_del+0x64/0x100
-lr : dsa_slave_switchdev_event_work+0x130/0x1bc
-Call trace:
- dsa_port_bridge_host_fdb_del+0x64/0x100
- dsa_slave_switchdev_event_work+0x130/0x1bc
- process_one_work+0x294/0x670
- worker_thread+0x80/0x460
----[ end trace 0000000000000000 ]---
-Error: dsa_core: Must first remove VLAN uppers having VIDs also present in bridge.
-
-Fix the bug by doing what we do on the normal bridge leave path as well,
-which is to wait until the deferred FDB entries complete executing, then
-exit.
-
-The placement of dsa_flush_workqueue() after switchdev_bridge_port_unoffload()
-guarantees that both the FDB additions and deletions on rollback are waited for.
-
-Fixes: d7d0d423dbaa ("net: dsa: flush switchdev workqueue when leaving the bridge")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220507134550.1849834-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 78ac51f81532 ("mac80211: support multi-bssid")
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Link: https://lore.kernel.org/r/20220428052744.27040-1-quic_mpubbise@quicinc.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/port.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/mac80211/mlme.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 4368fd32c4a5..f4bd063f8315 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -367,6 +367,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
- 	switchdev_bridge_port_unoffload(brport_dev, dp,
- 					&dsa_slave_switchdev_notifier,
- 					&dsa_slave_switchdev_blocking_notifier);
-+	dsa_flush_workqueue();
- out_rollback_unbridge:
- 	dsa_broadcast(DSA_NOTIFIER_BRIDGE_LEAVE, &info);
- out_rollback:
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index c4d3e2da73f2..b5ac06b96329 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -3574,6 +3574,12 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
+ 				cbss->transmitted_bss->bssid);
+ 		bss_conf->bssid_indicator = cbss->max_bssid_indicator;
+ 		bss_conf->bssid_index = cbss->bssid_index;
++	} else {
++		bss_conf->nontransmitted = false;
++		memset(bss_conf->transmitter_bssid, 0,
++		       sizeof(bss_conf->transmitter_bssid));
++		bss_conf->bssid_indicator = 0;
++		bss_conf->bssid_index = 0;
+ 	}
+ 
+ 	/*
 -- 
 2.35.1
 
