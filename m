@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9219C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE9BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244644AbiEPUf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
+        id S1348370AbiEPUgQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351116AbiEPUCC (ORCPT
+        with ESMTP id S1351110AbiEPUCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:02:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535C72BE;
-        Mon, 16 May 2022 12:59:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECF73FDAD;
+        Mon, 16 May 2022 12:59:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0088BB81613;
-        Mon, 16 May 2022 19:59:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6310DC385AA;
-        Mon, 16 May 2022 19:59:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1997060EC4;
+        Mon, 16 May 2022 19:59:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27F1C34100;
+        Mon, 16 May 2022 19:59:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731151;
-        bh=f2hGEdwI5KESCq279unJLIm61lGflU5bE9/b18+OZzw=;
+        s=korg; t=1652731142;
+        bh=7khydkx0BQWaFOefmzXaho4J/9bSL+sjZKoItobPse8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S/89c5PhfSpOQrFsyL6GqaeYi3EH5BOEobIP6SQTZvclPlXbC7qS1ZCDpKrUOwpmI
-         l4n4u1/GcDFi4iB6NtjqTObBVVKEiQK1Jfki8IhNFXqzoyPqiARuOo1V6RjWThbaHi
-         0MRn868D6XqjAmOEpl9JIxtZ7BbJnZjR+jz2b6BQ=
+        b=FakKAJ8QextSzUG17dYCIGQ7RbL9OSnUMBdFlGJKZSmvw+qa9sULOAZQHlndhX0tz
+         +1Stl8bcWt9eR5xIMbWflt6F1yyMMIzr74gPtc6vVxliei4lyl4geVN+mg/zG74tuf
+         p/N0HLSMbPa7+L8nlYXaYRo7Jt6UfkeNBxBahBhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Indan Zupancic <Indan.Zupancic@mep-info.com>
-Subject: [PATCH 5.17 088/114] fsl_lpuart: Dont enable interrupts too early
-Date:   Mon, 16 May 2022 21:37:02 +0200
-Message-Id: <20220516193628.005676316@linuxfoundation.org>
+        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 113/114] net: phy: micrel: Fix incorrect variable type in micrel
+Date:   Mon, 16 May 2022 21:37:27 +0200
+Message-Id: <20220516193628.717414239@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -48,72 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Indan Zupancic <Indan.Zupancic@mep-info.com>
+From: Wan Jiabing <wanjiabing@vivo.com>
 
-commit 401fb66a355eb0f22096cf26864324f8e63c7d78 upstream.
+commit 12a4d677b1c34717443470c1492fe520638ef39a upstream.
 
-If an irq is pending when devm_request_irq() is called, the irq
-handler will cause a NULL pointer access because initialisation
-is not done yet.
+In lanphy_read_page_reg, calling __phy_read() might return a negative
+error code. Use 'int' to check the error code.
 
-Fixes: 9d7ee0e28da59 ("tty: serial: lpuart: avoid report NULL interrupt")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Indan Zupancic <Indan.Zupancic@mep-info.com>
-Link: https://lore.kernel.org/r/20220505114750.45423-1-Indan.Zupancic@mep-info.com
+Fixes: 7c2dcfa295b1 ("net: phy: micrel: Add support for LAN8804 PHY")
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220509144519.2343399-1-wanjiabing@vivo.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/fsl_lpuart.c |   18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/phy/micrel.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2658,6 +2658,7 @@ static int lpuart_probe(struct platform_
- 	struct device_node *np = pdev->dev.of_node;
- 	struct lpuart_port *sport;
- 	struct resource *res;
-+	irq_handler_t handler;
- 	int ret;
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1594,7 +1594,7 @@ static int ksz886x_cable_test_get_status
  
- 	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
-@@ -2735,17 +2736,11 @@ static int lpuart_probe(struct platform_
+ static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
+ {
+-	u32 data;
++	int data;
  
- 	if (lpuart_is_32(sport)) {
- 		lpuart_reg.cons = LPUART32_CONSOLE;
--		ret = devm_request_irq(&pdev->dev, sport->port.irq, lpuart32_int, 0,
--					DRIVER_NAME, sport);
-+		handler = lpuart32_int;
- 	} else {
- 		lpuart_reg.cons = LPUART_CONSOLE;
--		ret = devm_request_irq(&pdev->dev, sport->port.irq, lpuart_int, 0,
--					DRIVER_NAME, sport);
-+		handler = lpuart_int;
- 	}
--
--	if (ret)
--		goto failed_irq_request;
--
- 	ret = uart_add_one_port(&lpuart_reg, &sport->port);
- 	if (ret)
- 		goto failed_attach_port;
-@@ -2767,13 +2762,18 @@ static int lpuart_probe(struct platform_
- 
- 	sport->port.rs485_config(&sport->port, &sport->port.rs485);
- 
-+	ret = devm_request_irq(&pdev->dev, sport->port.irq, handler, 0,
-+				DRIVER_NAME, sport);
-+	if (ret)
-+		goto failed_irq_request;
-+
- 	return 0;
- 
-+failed_irq_request:
- failed_get_rs485:
- failed_reset:
- 	uart_remove_one_port(&lpuart_reg, &sport->port);
- failed_attach_port:
--failed_irq_request:
- 	lpuart_disable_clks(sport);
- failed_clock_enable:
- failed_out_of_range:
+ 	phy_lock_mdio_bus(phydev);
+ 	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
 
 
