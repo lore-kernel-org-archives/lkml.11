@@ -2,110 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 000F8C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB7AC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229886AbiEPT7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54730 "EHLO
+        id S1348549AbiEPT6n (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348363AbiEPTws (ORCPT
+        with ESMTP id S1347956AbiEPTwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:52:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325C045AFC;
-        Mon, 16 May 2022 12:48:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DD4AB81614;
-        Mon, 16 May 2022 19:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7AF4C34100;
-        Mon, 16 May 2022 19:48:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730507;
-        bh=znV21qZFVkqKMsTnlgXtFCej6unW8FIKPNFdWDbXKZc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EqvPp8E5xgcZS/TWdo+3KwIcf/DvqUE/XNNOUNxf5EXz9wCRes3hnC7yDKgoFJQKv
-         OSXTFphj8imUDawrRA2buohwOk8ZHGfsX+pWVSDVpudY0ekQNpTCo5M+JW41XYvuIb
-         S/3+yUL7BsceaWctAHgVFJYWxALVsetEH9JB1lcw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 021/102] sfc: Use swap() instead of open coding it
-Date:   Mon, 16 May 2022 21:35:55 +0200
-Message-Id: <20220516193624.609133677@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 16 May 2022 15:52:35 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73BD45054
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:48:07 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id h13-20020a170902f70d00b0015f4cc5d19aso6146070plo.18
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:48:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Qkg0VjWV3dsGLC/CTbEN1HI3toMCNaiLgVonfkXEzUI=;
+        b=ELl/+bvBtXGZEAVx8mem5Q3fzIyUxLAZGICbsmjVju4tZ944Iwcorx7cGW1jTq1iYe
+         ktSPcF4PizIiRw0N0DST0B1W3+to2EnvgNTAv9TXxjOGKn7LubfIoqpPLlMhOA6+bwBm
+         BXaevB4q+4AcFdXD98nI4UDZoDP27eMKHOKqaTwOufzSl1HLCiZOrKbruZnnN4BXEOSg
+         D76Qm4xAyw/pTTdIyEUXvh3tcyRqCi8MqQszIB6DB+NcoXAULeUsSU60PL29iVlFkB3n
+         QAnltMu6gSJA9SeEJx6l8qjBmc9ZUy4LjMJg+CRP+1+NAQvzhI3eeHQUsDlR4OK8tn6q
+         iHfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Qkg0VjWV3dsGLC/CTbEN1HI3toMCNaiLgVonfkXEzUI=;
+        b=vnYhKpSVwB7cZgc9M1pKEGo1DfA+v+/SGlX2N0g/1eo4uYDht5As22QjfqWsP1Stss
+         OnsfAPJs32snTqIUAI8YtztVCoKwn0Z6TQcM1SXxwlVGctEpAOCpxzmHOvNPMM4qXWVy
+         KR2hvL5l0me2iQaU6VN5dLt/fu65oOoUdMjbCTU/FlkVxFkjgJmw4ykuDnS6iyIHAYki
+         n/LxccXn4EsRDlhSVTt2R7aSlNyUrMdSjxHhpF7p2CsPYMuX/euDIjt6zUCHQ54SZLrr
+         u5fHTUb9OViBpSZ6+uyK3NxUchC9GcznwCzNGmR6viKlwAb75NtvkIRWqpL2aSnxYu9f
+         s0lw==
+X-Gm-Message-State: AOAM531Xaufbjat7pgDCgqzZUKNHU6ISlYK4BUaJ7yTLdrjzs/hb8jvE
+        e4qMM/Q/QRDX/LrqS6IxTZc6Vkn9zLlQgQ==
+X-Google-Smtp-Source: ABdhPJz0foU0ikc41QMADjDWwlkzr82FMjEnCkBdlOiEAm5yyAiZw9tbfdq+oePhNzVyIsOmA4tEa+4C3+OyWQ==
+X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:8f91:3848:5672:cb59])
+ (user=dlatypov job=sendgmr) by 2002:a17:90a:990c:b0:1df:fb1:bc2f with SMTP id
+ b12-20020a17090a990c00b001df0fb1bc2fmr14623551pjp.79.1652730486427; Mon, 16
+ May 2022 12:48:06 -0700 (PDT)
+Date:   Mon, 16 May 2022 12:47:28 -0700
+Message-Id: <20220516194730.1546328-1-dlatypov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+Subject: [PATCH 1/3] kunit: tool: drop unused load_config argument
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+It's always set to true except in one test case.
+And in that test case it can safely be set to true anyways.
 
-[ Upstream commit 0cf765fb00ce083c017f2571ac449cf7912cdb06 ]
-
-Clean the following coccicheck warning:
-
-./drivers/net/ethernet/sfc/efx_channels.c:870:36-37: WARNING opportunity
-for swap().
-
-./drivers/net/ethernet/sfc/efx_channels.c:824:36-37: WARNING opportunity
-for swap().
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
 ---
- drivers/net/ethernet/sfc/efx_channels.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ tools/testing/kunit/kunit_kernel.py    | 4 ----
+ tools/testing/kunit/kunit_tool_test.py | 2 +-
+ 2 files changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index 1f8cfd806008..2623df1fa741 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -897,11 +897,8 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	old_txq_entries = efx->txq_entries;
- 	efx->rxq_entries = rxq_entries;
- 	efx->txq_entries = txq_entries;
--	for (i = 0; i < efx->n_channels; i++) {
--		channel = efx->channel[i];
--		efx->channel[i] = other_channel[i];
--		other_channel[i] = channel;
--	}
-+	for (i = 0; i < efx->n_channels; i++)
-+		swap(efx->channel[i], other_channel[i]);
+diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
+index 3539efaf99ba..8bc8305ba817 100644
+--- a/tools/testing/kunit/kunit_kernel.py
++++ b/tools/testing/kunit/kunit_kernel.py
+@@ -219,7 +219,6 @@ class LinuxSourceTree:
+ 	def __init__(
+ 	      self,
+ 	      build_dir: str,
+-	      load_config=True,
+ 	      kunitconfig_path='',
+ 	      kconfig_add: Optional[List[str]]=None,
+ 	      arch=None,
+@@ -233,9 +232,6 @@ class LinuxSourceTree:
+ 			self._arch = 'um' if arch is None else arch
+ 			self._ops = get_source_tree_ops(self._arch, cross_compile)
  
- 	/* Restart buffer table allocation */
- 	efx->next_buffer_table = next_buffer_table;
-@@ -944,11 +941,8 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	/* Swap back */
- 	efx->rxq_entries = old_rxq_entries;
- 	efx->txq_entries = old_txq_entries;
--	for (i = 0; i < efx->n_channels; i++) {
--		channel = efx->channel[i];
--		efx->channel[i] = other_channel[i];
--		other_channel[i] = channel;
--	}
-+	for (i = 0; i < efx->n_channels; i++)
-+		swap(efx->channel[i], other_channel[i]);
- 	goto out;
- }
+-		if not load_config:
+-			return
+-
+ 		if kunitconfig_path:
+ 			if os.path.isdir(kunitconfig_path):
+ 				kunitconfig_path = os.path.join(kunitconfig_path, KUNITCONFIG_PATH)
+diff --git a/tools/testing/kunit/kunit_tool_test.py b/tools/testing/kunit/kunit_tool_test.py
+index 25a2eb3bf114..b9158017ece6 100755
+--- a/tools/testing/kunit/kunit_tool_test.py
++++ b/tools/testing/kunit/kunit_tool_test.py
+@@ -393,7 +393,7 @@ class LinuxSourceTreeTest(unittest.TestCase):
+ 			return subprocess.Popen(['echo "hi\nbye"'], shell=True, text=True, stdout=subprocess.PIPE)
  
+ 		with tempfile.TemporaryDirectory('') as build_dir:
+-			tree = kunit_kernel.LinuxSourceTree(build_dir, load_config=False)
++			tree = kunit_kernel.LinuxSourceTree(build_dir)
+ 			mock.patch.object(tree._ops, 'start', side_effect=fake_start).start()
+ 
+ 			with self.assertRaises(ValueError):
+
+base-commit: 8a7ccad38f8b25c8202efd69371a022357286400
 -- 
-2.35.1
-
-
+2.36.1.124.g0e6072fb45-goog
 
