@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5995C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4ABEC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348447AbiEPUW5 (ORCPT
+        id S1348683AbiEPUXD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
+        Mon, 16 May 2022 16:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348889AbiEPT7C (ORCPT
+        with ESMTP id S1348876AbiEPT7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:02 -0400
+        Mon, 16 May 2022 15:59:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD442BE;
-        Mon, 16 May 2022 12:51:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BABDF10;
+        Mon, 16 May 2022 12:51:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B8C360A14;
-        Mon, 16 May 2022 19:51:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76DA9C385AA;
-        Mon, 16 May 2022 19:51:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3362360ABE;
+        Mon, 16 May 2022 19:51:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2332CC385AA;
+        Mon, 16 May 2022 19:51:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730715;
-        bh=icSuAv8bKxjkgQCS0+EKtkHmPx2uqUq5zHY0/SpG3nk=;
+        s=korg; t=1652730705;
+        bh=xeK6HRxi1mPhpbtlWLLpg+A8vnqO0N4E6B3fLZdB0xw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GETKMs2BitX4VKmCQ+NtIjxQo0CIrQJsrmwjUvUfzapn6yPjd91PUescJ07xM28bp
-         jxyxEoS4ubQtk+hW0ORtP8+aRA1axJHAlo72nIGvulvSUSfppRHWWRvKbwQ0gpEw//
-         DySGE6WBWQ4GsiBkAVx7xww3jXFDX+8FRcUakQp4=
+        b=Ffp/RtRGNdeLSduB+03h4TXnRwqbWqzlXPmARafLLnAEt9sj0UYBq0jkNe0dMOrvg
+         urlqwmAGBb7aMh0UycQn7GwEevtNs9AliWEusXIF9Qpl3AuVX8FgdmVwdtSN5oH0cO
+         KKyMxDaGDWxTOx06C912jXwcPfkQ1vd2MXrVdQ68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.15 085/102] drm/nouveau/tegra: Stop using iommu_present()
-Date:   Mon, 16 May 2022 21:36:59 +0200
-Message-Id: <20220516193626.435644944@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Yu <xuyu@linux.alibaba.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 082/102] Revert "mm/memory-failure.c: skip huge_zero_page in memory_failure()"
+Date:   Mon, 16 May 2022 21:36:56 +0200
+Message-Id: <20220516193626.346807892@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -49,35 +52,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Xu Yu <xuyu@linux.alibaba.com>
 
-commit 87fd2b091fb33871a7f812658a0971e8e26f903f upstream.
+commit b4e61fc031b11dd807dffc46cebbf0e25966d3d1 upstream.
 
-Even if some IOMMU has registered itself on the platform "bus", that
-doesn't necessarily mean it provides translation for the device we
-care about. Replace iommu_present() with a more appropriate check.
+Patch series "mm/memory-failure: rework fix on huge_zero_page splitting".
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-[added cc for stable]
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: stable@vger.kernel.org # v5.0+
-Link: https://patchwork.freedesktop.org/patch/msgid/70d40ea441da3663c2824d54102b471e9a621f8a.1649168494.git.robin.murphy@arm.com
+
+This patch (of 2):
+
+This reverts commit d173d5417fb67411e623d394aab986d847e47dad.
+
+The commit d173d5417fb6 ("mm/memory-failure.c: skip huge_zero_page in
+memory_failure()") explicitly skips huge_zero_page in memory_failure(), in
+order to avoid triggering VM_BUG_ON_PAGE on huge_zero_page in
+split_huge_page_to_list().
+
+This works, but Yang Shi thinks that,
+
+    Raising BUG is overkilling for splitting huge_zero_page. The
+    huge_zero_page can't be met from normal paths other than memory
+    failure, but memory failure is a valid caller. So I tend to replace
+    the BUG to WARN + returning -EBUSY. If we don't care about the
+    reason code in memory failure, we don't have to touch memory
+    failure.
+
+And for the issue that huge_zero_page will be set PG_has_hwpoisoned,
+Yang Shi comments that,
+
+    The anonymous page fault doesn't check if the page is poisoned or
+    not since it typically gets a fresh allocated page and assumes the
+    poisoned page (isolated successfully) can't be reallocated again.
+    But huge zero page and base zero page are reused every time. So no
+    matter what fix we pick, the issue is always there.
+
+Finally, Yang, David, Anshuman and Naoya all agree to fix the bug, i.e.,
+to split huge_zero_page, in split_huge_page_to_list().
+
+This reverts the commit d173d5417fb6 ("mm/memory-failure.c: skip
+huge_zero_page in memory_failure()"), and the original bug will be fixed
+by the next patch.
+
+Link: https://lkml.kernel.org/r/872cefb182ba1dd686b0e7db1e6b2ebe5a4fff87.1651039624.git.xuyu@linux.alibaba.com
+Fixes: d173d5417fb6 ("mm/memory-failure.c: skip huge_zero_page in memory_failure()")
+Fixes: 6a46079cf57a ("HWPOISON: The high level memory error handler in the VM v7")
+Signed-off-by: Xu Yu <xuyu@linux.alibaba.com>
+Suggested-by: Yang Shi <shy828301@gmail.com>
+Reviewed-by: Yang Shi <shy828301@gmail.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/memory-failure.c |   13 -------------
+ 1 file changed, 13 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-@@ -123,7 +123,7 @@ nvkm_device_tegra_probe_iommu(struct nvk
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1692,19 +1692,6 @@ try_again:
  
- 	mutex_init(&tdev->iommu.mutex);
- 
--	if (iommu_present(&platform_bus_type)) {
-+	if (device_iommu_mapped(dev)) {
- 		tdev->iommu.domain = iommu_domain_alloc(&platform_bus_type);
- 		if (!tdev->iommu.domain)
- 			goto error;
+ 	if (PageTransHuge(hpage)) {
+ 		/*
+-		 * Bail out before SetPageHasHWPoisoned() if hpage is
+-		 * huge_zero_page, although PG_has_hwpoisoned is not
+-		 * checked in set_huge_zero_page().
+-		 *
+-		 * TODO: Handle memory failure of huge_zero_page thoroughly.
+-		 */
+-		if (is_huge_zero_page(hpage)) {
+-			action_result(pfn, MF_MSG_UNSPLIT_THP, MF_IGNORED);
+-			res = -EBUSY;
+-			goto unlock_mutex;
+-		}
+-
+-		/*
+ 		 * The flag must be set after the refcount is bumped
+ 		 * otherwise it may race with THP split.
+ 		 * And the flag can't be set in get_hwpoison_page() since
 
 
