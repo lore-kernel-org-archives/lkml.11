@@ -2,188 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74056C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 06:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A94FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 06:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240587AbiEPGzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 02:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S240595AbiEPG5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 02:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240570AbiEPGzo (ORCPT
+        with ESMTP id S238086AbiEPG5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 02:55:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460E6366A8
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:55:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7E743CE1101
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:55:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9F5EC36AE7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:55:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652684136;
-        bh=VqIRCv2LMNB0QFdFUt96jLC25HR73ExKxi3u86pjpWE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Qru5duK8wRBYYrhrERVxr3VWex79J7Nw+63a7Aegi/amXc63tnm9Lnl4KH2VR3bjy
-         WezbNMt1G3ZeDuJeUN2+cOU0TL/R6HOlmcxTmaym2uH5d7nEqmiFuLFs5R3zYD/ZHC
-         qZBuX6hY8fYIHQ2h+E7Bam7Cbg+2mbGDswRhsloejAvGDtm1Ijkmni3pjg+Ejekgoh
-         hhICXed1kIIujYIoqSN/DUaKtjlPo3QfCY6kKbQFiULvN8A4M3LIahmO7LwyjUB9U4
-         qHCVxD0kFrldnbmhQoaYMf1nz9Eb/98f7rLlorzE3RdfteoYAMOlhaBzFaCP6+9kki
-         oGHUU1S/6bIBg==
-Received: by mail-ua1-f51.google.com with SMTP id ay15so5450314uab.9
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:55:36 -0700 (PDT)
-X-Gm-Message-State: AOAM5319E2FSIiiiahVcJKqvPykBPSf5DjQw6thBBZzUHN1hcBuI0uP5
-        /g7qDrwoKgtz+AaLooEjsi47PcWhw+vQEo/0MKU=
-X-Google-Smtp-Source: ABdhPJxmtz2zRffn70WwdXZCEN/EtZzhyD5YAzH08JCQyLUCluirTTig9RHWjzPE9xvnfEBH+E790EU75vYagB1kBNc=
-X-Received: by 2002:a9f:23c2:0:b0:365:958:e807 with SMTP id
- 60-20020a9f23c2000000b003650958e807mr5603921uao.114.1652684135694; Sun, 15
- May 2022 23:55:35 -0700 (PDT)
+        Mon, 16 May 2022 02:57:37 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418EF63E7
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:57:36 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id bu29so24202936lfb.0
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:57:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Y8Vesh/AmVxnxCJXnP8z5e4vW7ZUtRIGODEmp5Y/tbk=;
+        b=j+ewMwyt9KnUxhaGO1rvjPKYvlgUgV6AeNdbrnBaLqnjcyVqfDu0GUypwCPnLmUfsD
+         zkSoH1jYNVPSOPe6eUhcqRbhEsMZ88DMjXd1LSyUzvyKITTJOttCYw6H46grPm+ZQs1V
+         zAlj3dBeuBFWcEdjQaOuo88H5SBZTQSj88DGW7SQZ8PGT5jngSUxmB/lwp5omgxLiVVx
+         q0dNoWkQjhnCpiEHtSeEeusdVspm1Ptuv1kGMMPgfegiMI+qAQXue5ZcKPTvOkqREFj5
+         cnY+35Wbd6y9tZVAFOlWByU9Furgbn2sWkZeFqwr3dvr6Ar2tHveng6vOdMURVG2hOw4
+         h+mQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Y8Vesh/AmVxnxCJXnP8z5e4vW7ZUtRIGODEmp5Y/tbk=;
+        b=LHUuDaQ4nS1pKDqsWnrWhBPJspzgedOGi82l878friwjOY89JcS2wxTXqO1q8DK6ZA
+         2k/Y/R+sMeZqXt34OAp3H3sgZPSXJxj0qyVr8TJsjJ67G3wu+x1bumUdZZ091iKbbX8c
+         SLfRe+8VI5nBhMtcuYlRCLvtEaC9vPON27TMgdHA2GPseGJT6hK6I7p+37XnbSyRPnkU
+         dJUS0ko15i6UOOVUIAjdf6ne1S39+w5jTeiDPf/EAvhttbLFN+yJscEtoJlUViK1YAKo
+         zUBL3bVyyB3LTve4NZynLzWnmNDQ4iFSkhAz1Ms6xxKojh349bJPaJW3jOYe3t9KdDrY
+         nI4w==
+X-Gm-Message-State: AOAM532ojhyrrrwdI8QfipJFQx5vEERTeV1azIiOPjoxYA2qE9LMSQvc
+        CG7n9RmE+0I/GXHVXssK6CR8XYwfuM+aEhs3
+X-Google-Smtp-Source: ABdhPJynSi/6C1PC63okLI4+titLAFaZWYwfsXSIet5E4k6/frGVrPt/Dk4pS0A7DbvLwuzW7eXvLw==
+X-Received: by 2002:a05:6512:2090:b0:472:2764:1f0c with SMTP id t16-20020a056512209000b0047227641f0cmr12585920lfr.482.1652684254591;
+        Sun, 15 May 2022 23:57:34 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id r8-20020ac252a8000000b0047415cd1ec3sm1217283lfm.165.2022.05.15.23.57.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 May 2022 23:57:34 -0700 (PDT)
+Message-ID: <d5438d2e-f387-170a-cea1-d5936cc8e15a@linaro.org>
+Date:   Mon, 16 May 2022 08:57:33 +0200
 MIME-Version: 1.0
-References: <20220511192921.2223629-1-heiko@sntech.de> <20220511192921.2223629-7-heiko@sntech.de>
-In-Reply-To: <20220511192921.2223629-7-heiko@sntech.de>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Mon, 16 May 2022 14:55:24 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTTDnqXKuEBGttN-1sJD9GH8Y5FLP2R5cpxnWnkfyqaFVA@mail.gmail.com>
-Message-ID: <CAJF2gTTDnqXKuEBGttN-1sJD9GH8Y5FLP2R5cpxnWnkfyqaFVA@mail.gmail.com>
-Subject: Re: [PATCH 06/12] riscv: prevent compressed instructions in alternatives
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wei Fu <wefu@redhat.com>, liush <liush@allwinnertech.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>,
-        Drew Fustini <drew@beagleboard.org>,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Greg Favor <gfavor@ventanamicro.com>,
-        Andrea Mondelli <andrea.mondelli@huawei.com>,
-        Jonathan Behrens <behrensj@mit.edu>,
-        "Xinhaoqu (Freddie)" <xinhaoqu@huawei.com>,
-        Nick Kossifidis <mick@ics.forth.gr>,
-        Allen Baum <allen.baum@esperantotech.com>,
-        Josh Scheid <jscheid@ventanamicro.com>,
-        Richard Trauben <rtrauben@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Christoph Muellner <cmuellner@linux.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 1/4] dt-bindings: Document how Chromebooks with
+ depthcharge boot
+Content-Language: en-US
+To:     Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220513095722.v2.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220513095722.v2.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Guo Ren <guoren@kernel.org>
-
-On Thu, May 12, 2022 at 3:29 AM Heiko Stuebner <heiko@sntech.de> wrote:
->
-> Instructions are opportunistically compressed by the RISC-V assembler
-> when possible, but in alternatives-blocks both the old and new content
-> need to be the same size, so having the toolchain do somewhat random
-> optimizations will cause strange side-effects like
-> "attempt to move .org backwards" compile-time errors.
->
-> Already a simple "and" used in alternatives assembly will cause these
-> mismatched code sizes.
->
-> So prevent compressed instructions to be generated in alternatives-
-> code and use option-push and -pop to only limit this to the relevant
-> code blocks
->
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Reviewed-by: Philipp Tomsich <philipp.tomsich@vrull.eu>
+On 13/05/2022 18:59, Douglas Anderson wrote:
+> This documents how many Chromebooks pick the device tree that will be
+> passed to the OS and can help understand the revisions / skus listed
+> as the top-level "compatible" in many Chromebooks.
+> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 > ---
->  arch/riscv/include/asm/alternative-macros.h | 24 +++++++++++++++++++++
->  1 file changed, 24 insertions(+)
->
-> diff --git a/arch/riscv/include/asm/alternative-macros.h b/arch/riscv/include/asm/alternative-macros.h
-> index 8c2bbc7bbe50..e13b1f6bb400 100644
-> --- a/arch/riscv/include/asm/alternative-macros.h
-> +++ b/arch/riscv/include/asm/alternative-macros.h
-> @@ -21,7 +21,11 @@
->         .popsection
->         .subsection 1
->  888 :
-> +       .option push
-> +       .option norvc
-> +       .option norelax
->         \new_c
-> +       .option pop
->  889 :
->         .previous
->         .org    . - (889b - 888b) + (887b - 886b)
-> @@ -31,7 +35,11 @@
->
->  .macro __ALTERNATIVE_CFG old_c, new_c, vendor_id, errata_id, enable
->  886 :
-> +       .option push
-> +       .option norvc
-> +       .option norelax
->         \old_c
-> +       .option pop
->  887 :
->         ALT_NEW_CONTENT \vendor_id, \errata_id, \enable, \new_c
->  .endm
-> @@ -42,7 +50,11 @@
->  .macro __ALTERNATIVE_CFG_2 old_c, new_c_1, vendor_id_1, errata_id_1, enable_1, \
->                                   new_c_2, vendor_id_2, errata_id_2, enable_2
->  886 :
-> +       .option push
-> +       .option norvc
-> +       .option norelax
->         \old_c
-> +       .option pop
->  887 :
->         ALT_NEW_CONTENT \vendor_id_1, \errata_id_1, \enable_1, \new_c_1
->         ALT_NEW_CONTENT \vendor_id_2, \errata_id_2, \enable_2, \new_c_2
-> @@ -76,7 +88,11 @@
->         ".popsection\n"                                                 \
->         ".subsection 1\n"                                               \
->         "888 :\n"                                                       \
-> +       ".option push\n"                                                \
-> +       ".option norvc\n"                                               \
-> +       ".option norelax\n"                                             \
->         new_c "\n"                                                      \
-> +       ".option pop\n"                                                 \
->         "889 :\n"                                                       \
->         ".previous\n"                                                   \
->         ".org   . - (887b - 886b) + (889b - 888b)\n"                    \
-> @@ -85,7 +101,11 @@
->
->  #define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable)  \
->         "886 :\n"                                                       \
-> +       ".option push\n"                                                \
-> +       ".option norvc\n"                                               \
-> +       ".option norelax\n"                                             \
->         old_c "\n"                                                      \
-> +       ".option pop\n"                                                 \
->         "887 :\n"                                                       \
->         ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
->
-> @@ -97,7 +117,11 @@
->                                    new_c_2, vendor_id_2, errata_id_2,   \
->                                         enable_2)                       \
->         "886 :\n"                                                       \
-> +       ".option push\n"                                                \
-> +       ".option norvc\n"                                               \
-> +       ".option norelax\n"                                             \
->         old_c "\n"                                                      \
-> +       ".option pop\n"                                                 \
->         "887 :\n"                                                       \
->         ALT_NEW_CONTENT(vendor_id_1, errata_id_1, enable_1, new_c_1)    \
->         ALT_NEW_CONTENT(vendor_id_2, errata_id_2, enable_2, new_c_2)
-> --
-> 2.35.1
->
+> 
+> Changes in v2:
+> - ("Document how Chromebooks with depthcharge boot") new for v2.
+> 
+>  .../devicetree/chromebook-boot-flow.rst       | 63 +++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>  create mode 100644 Documentation/devicetree/chromebook-boot-flow.rst
+
+This is not a Devicetree (generic) document, so it is not the best place
+for it. Maybe regular vendor place, e.g . Documentation/arm/google/ ?
+
+> 
+> diff --git a/Documentation/devicetree/chromebook-boot-flow.rst b/Documentation/devicetree/chromebook-boot-flow.rst
+> new file mode 100644
+> index 000000000000..84aeb0a17ee4
+> --- /dev/null
+> +++ b/Documentation/devicetree/chromebook-boot-flow.rst
+> @@ -0,0 +1,63 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +======================================
+> +Chromebook Boot Flow
+> +======================================
+> +
+> +Most recent Chromebooks that use device tree boot using the opensource
+> +depthcharge bootloader. Depthcharge expects the OS to be packaged as a "FIT
+> +Image" which contains an OS image as well as a collection of device trees. It
+> +is up to depthcharge to pick the right device tree from the FIT Image and
+> +provide it to the OS.
+> +
+> +The scheme that depthcharge uses to pick the device tree takes into account
+> +three variables:
+> +- Board name, specified at compile time.
+> +- Board revision number, read from GPIO strappings at boot time.
+> +- SKU number, read from GPIO strappings at boot time.
+> +
+> +For recent Chromebooks, depthcharge creates a match list that looks like this:
+> +- google,$(BOARD)-rev$(REV)-sku$(SKU)
+> +- google,$(BOARD)-rev$(REV)
+> +- google,$(BOARD)-sku$(SKU)
+> +- google,$(BOARD)
+> +
+> +Note that some older Chromebooks may use a slightly different list that may
+> +not include sku matching or may prioritize sku/rev differently.
+> +
+> +Note that for some boards there may be extra board-specific logic to inject
+> +extra compatibles into the list, but this is uncommon.
+> +
+> +Depthcharge will look through all device trees in the FIT image trying to
+> +find one that matches the most specific compatible. It will then look
+> +through all device trees in the FIT image trying to find the one that
+> +matches the _second most_ specific compatible, etc.
+> +
+> +When searching for a device tree, depthcharge doesn't care where the
+> +compatible falls within a given device tree. As an example, if we're on
+> +board "lazor", rev 4, sku 0 and we have two device trees:
+> +- "google,lazor-rev5-sku0", "google,lazor-rev4-sku0", "qcom,sc7180"
+> +- "google,lazor", "qcom,sc7180"
+> +
+> +Then depthcharge will pick the first device tree even though
+> +"google,lazor-rev4-sku0" was the second compatible listed in that device tree.
+> +This is because it is a more specific compatible than "google,lazor".
+> +
+> +It should be noted that depthcharge does not have any smarts to try to
+> +match board or SKU revisions that are "close by". That is to say that
+> +if depthcharge knows it's on "rev4" of a board but there is no "rev4"
+> +device tree that depthcharge _won't_ look for a "rev3" device tree.
+> +
+> +In general when any significant changes are made to a board the board
+> +revision number is increased even if none of those changes need to
+> +be reflected in the device tree. Thus it's fairly common to see device
+> +trees with multiple revisions.
+> +
+> +It should be noted that, taking into account the above system that the
+> +depthcharge has, the most flexibility is achieved if the device tree
+> +supporting the newest revision(s) of a board omits the "-rev{REV}"
+> +compatible strings. When this is done then if you get a new board
+> +revision and try to run old software on it then we'll at pick the most
+> +reasonable device tree. If it turns out that the new revision actually
+> +has no device-tree visible changes then we'll not only pick the most
+> +reasonable device tree, we'll pick the exact right one.
+> \ No newline at end of file
+
+Missing new line.
 
 
--- 
-Best Regards
- Guo Ren
-
-ML: https://lore.kernel.org/linux-csky/
+Best regards,
+Krzysztof
