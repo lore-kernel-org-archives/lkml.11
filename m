@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC17C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D54C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346221AbiEPTsB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:48:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
+        id S233622AbiEPTsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346014AbiEPTnU (ORCPT
+        with ESMTP id S1346003AbiEPTnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:43:20 -0400
+        Mon, 16 May 2022 15:43:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBAF03FD8D;
-        Mon, 16 May 2022 12:42:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F323FD8C;
+        Mon, 16 May 2022 12:42:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87DB261553;
-        Mon, 16 May 2022 19:42:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82F99C385AA;
-        Mon, 16 May 2022 19:42:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 901B961554;
+        Mon, 16 May 2022 19:42:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E6AFC34100;
+        Mon, 16 May 2022 19:42:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730155;
-        bh=BO0DyT3J8Z8jJIztXuh6s6+Ts0kppFb2DcBZxBghirE=;
+        s=korg; t=1652730150;
+        bh=fYk9sa272+H7wd9sV6cIn/uXsi9S8XwUuJHWAZfnW9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OqgRdcMm63O5XhRNGCMDITAYW27c2PvkRwesoBJGwIpFM/nSvfS2tTJyofWWSoiAY
-         3R3Yaz1iPjTuj8palvfrxquCvQfKxaPN2f/7YMKGJrTPMIcE7TSCvZf5sNvAmWEaD1
-         7tm/EOvtZAnz8JU4RPpHxenCv7Br6xPrGHcNrcdc=
+        b=ZnO27bwVK72UXzxlKYje1p02/eHwdW5gHZfjLg1eEyQVlPs2vYEkJ0QpJxHIEFG52
+         1gI87sl7Kw+fk7o+UNZtPdtHL48oiiWPdjgd099UDZmQta4f13ujNVT1ORtJsFnmc9
+         TcVkvfkQmRrpWeDL1G10JgLTflQGT4BFykBlcmj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org,
+        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 17/43] gfs2: Fix filesystem block deallocation for short writes
-Date:   Mon, 16 May 2022 21:36:28 +0200
-Message-Id: <20220516193615.226395080@linuxfoundation.org>
+Subject: [PATCH 5.4 15/43] net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
+Date:   Mon, 16 May 2022 21:36:26 +0200
+Message-Id: <20220516193615.167822630@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -49,51 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 
-[ Upstream commit d031a8866e709c9d1ee5537a321b6192b4d2dc5b ]
+[ Upstream commit f3c46e41b32b6266cf60b0985c61748f53bf1c61 ]
 
-When a write cannot be carried out in full, gfs2_iomap_end() releases
-blocks that have been allocated for this write but haven't been used.
+Non blocking sendmsg will return -EAGAIN when any signal pending
+and no send space left, while non blocking recvmsg return -EINTR
+when signal pending and no data received. This may makes confused.
+As TCP returns -EAGAIN in the conditions described above. Align the
+behavior of smc with TCP.
 
-To compute the end of the allocation, gfs2_iomap_end() incorrectly
-rounded the end of the attempted write down to the next block boundary
-to arrive at the end of the allocation.  It would have to round up, but
-the end of the allocation is also available as iomap->offset +
-iomap->length, so just use that instead.
-
-In addition, use round_up() for computing the start of the unused range.
-
-Fixes: 64bc06bb32ee ("gfs2: iomap buffered write support")
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Fixes: 846e344eb722 ("net/smc: add receive timeout check")
+Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220512030820.73848-1-guangguan.wang@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/bmap.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ net/smc/smc_rx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/gfs2/bmap.c b/fs/gfs2/bmap.c
-index dec5285a02e9..77a497a4b236 100644
---- a/fs/gfs2/bmap.c
-+++ b/fs/gfs2/bmap.c
-@@ -1233,13 +1233,12 @@ static int gfs2_iomap_end(struct inode *inode, loff_t pos, loff_t length,
- 
- 	if (length != written && (iomap->flags & IOMAP_F_NEW)) {
- 		/* Deallocate blocks that were just allocated. */
--		loff_t blockmask = i_blocksize(inode) - 1;
--		loff_t end = (pos + length) & ~blockmask;
-+		loff_t hstart = round_up(pos + written, i_blocksize(inode));
-+		loff_t hend = iomap->offset + iomap->length;
- 
--		pos = (pos + written + blockmask) & ~blockmask;
--		if (pos < end) {
--			truncate_pagecache_range(inode, pos, end - 1);
--			punch_hole(ip, pos, end - pos);
-+		if (hstart < hend) {
-+			truncate_pagecache_range(inode, hstart, hend - 1);
-+			punch_hole(ip, hstart, hend - hstart);
+diff --git a/net/smc/smc_rx.c b/net/smc/smc_rx.c
+index 97e8369002d7..9e89bd1f706b 100644
+--- a/net/smc/smc_rx.c
++++ b/net/smc/smc_rx.c
+@@ -348,12 +348,12 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
+ 				}
+ 				break;
+ 			}
++			if (!timeo)
++				return -EAGAIN;
+ 			if (signal_pending(current)) {
+ 				read_done = sock_intr_errno(timeo);
+ 				break;
+ 			}
+-			if (!timeo)
+-				return -EAGAIN;
  		}
- 	}
  
+ 		if (!smc_rx_data_available(conn)) {
 -- 
 2.35.1
 
