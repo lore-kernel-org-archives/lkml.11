@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1D4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E308C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347746AbiEPU1u (ORCPT
+        id S1348827AbiEPU1z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55940 "EHLO
+        Mon, 16 May 2022 16:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349930AbiEPUAf (ORCPT
+        with ESMTP id S1349954AbiEPUAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF904551D;
+        Mon, 16 May 2022 16:00:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489FF45517;
         Mon, 16 May 2022 12:54:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2C8D60ABE;
-        Mon, 16 May 2022 19:54:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC63C385AA;
-        Mon, 16 May 2022 19:54:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3600FB81617;
+        Mon, 16 May 2022 19:53:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99FFFC385AA;
+        Mon, 16 May 2022 19:53:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730852;
-        bh=ize+Z2p1919wg9IWVHSx8lwSDKILqvYJ8heBHS0qlLo=;
+        s=korg; t=1652730832;
+        bh=cUzcoaeHTlTCzNsg517wxzSG6ZQ2TVLim9ksCWTVrj8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p3lvg7a+9e2yBVT7rvKqgh6o9rNjTdj0JLSJH+hoq/d+qTtMU312bEcu85FDEoJg9
-         kRgFOh62dkXZ1I5ZrtSmbw+xBEpSj2XHN2/4KcRjPiTdTS+aOBN0G9OZJHczQZZaLU
-         84H/E415VoFqpkfB9W0ITn8c/8rNzZaIAa/Lvqos=
+        b=iBDRPEr7+gCdGqduPf5vD8dHhPaw+BVhe7pZQRRCprysobcSJXUXAYBQc3f5vbISp
+         eUN+nJ+aKE6j7K0rdEkuvWtzSpQ+SkPrIQdZsdxTB3o03UZkQPqiSGsVqCISHq3Gbp
+         7HV2lkMBzNAKhjOxCIkNyB6H+FqXwsu6JGYQ2drY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 025/114] mac80211_hwsim: call ieee80211_tx_prepare_skb under RCU protection
-Date:   Mon, 16 May 2022 21:35:59 +0200
-Message-Id: <20220516193626.215203515@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 5.17 002/114] iwlwifi: iwl-dbg: Use del_timer_sync() before freeing
+Date:   Mon, 16 May 2022 21:35:36 +0200
+Message-Id: <20220516193625.563527053@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -49,49 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 9e2db50f1ef2238fc2f71c5de1c0418b7a5b0ea2 ]
+[ Upstream commit 7635a1ad8d92dcc8247b53f949e37795154b5b6f ]
 
-This is needed since it might use (and pass out) pointers to
-e.g. keys protected by RCU. Can't really happen here as the
-frames aren't encrypted, but we need to still adhere to the
-rules.
+In Chrome OS, a large number of crashes is observed due to corrupted timer
+lists. Steven Rostedt pointed out that this usually happens when a timer
+is freed while still active, and that the problem is often triggered
+by code calling del_timer() instead of del_timer_sync() just before
+freeing.
 
-Fixes: cacfddf82baf ("mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220505230421.5f139f9de173.I77ae111a28f7c0e9fd1ebcee7f39dbec5c606770@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Steven also identified the iwlwifi driver as one of the possible culprits
+since it does exactly that.
+
+Reported-by: Steven Rostedt <rostedt@goodmis.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Gregory Greenman <gregory.greenman@intel.com>
+Fixes: 60e8abd9d3e91 ("iwlwifi: dbg_ini: add periodic trigger new API support")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Acked-by: Gregory Greenman <gregory.greenman@intel.com>
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Linux v5.17.3-rc1 and Debian LLVM-14
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220411154210.1870008-1-linux@roeck-us.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index fc5725f6daee..4a91d5cb75c3 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2336,11 +2336,13 @@ static void hw_scan_work(struct work_struct *work)
- 			if (req->ie_len)
- 				skb_put_data(probe, req->ie, req->ie_len);
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+index 42f6f8bb83be..901600ca6f0e 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+@@ -362,7 +362,7 @@ void iwl_dbg_tlv_del_timers(struct iwl_trans *trans)
+ 	struct iwl_dbg_tlv_timer_node *node, *tmp;
  
-+			rcu_read_lock();
- 			if (!ieee80211_tx_prepare_skb(hwsim->hw,
- 						      hwsim->hw_scan_vif,
- 						      probe,
- 						      hwsim->tmp_chan->band,
- 						      NULL)) {
-+				rcu_read_unlock();
- 				kfree_skb(probe);
- 				continue;
- 			}
-@@ -2348,6 +2350,7 @@ static void hw_scan_work(struct work_struct *work)
- 			local_bh_disable();
- 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
- 						hwsim->tmp_chan);
-+			rcu_read_unlock();
- 			local_bh_enable();
- 		}
+ 	list_for_each_entry_safe(node, tmp, timer_list, list) {
+-		del_timer(&node->timer);
++		del_timer_sync(&node->timer);
+ 		list_del(&node->list);
+ 		kfree(node);
  	}
 -- 
 2.35.1
