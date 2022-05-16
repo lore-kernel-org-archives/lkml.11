@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C462C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:25:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346873AbiEPUYz (ORCPT
+        id S1347087AbiEPUZJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
+        Mon, 16 May 2022 16:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349382AbiEPT7o (ORCPT
+        with ESMTP id S1348198AbiEPT62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:44 -0400
+        Mon, 16 May 2022 15:58:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8EAF40A1C;
-        Mon, 16 May 2022 12:53:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B8349277;
+        Mon, 16 May 2022 12:50:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 900D5B80EB1;
-        Mon, 16 May 2022 19:53:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3103C36AE2;
-        Mon, 16 May 2022 19:53:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26053B81612;
+        Mon, 16 May 2022 19:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73249C385AA;
+        Mon, 16 May 2022 19:50:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730807;
-        bh=gYuOSwOplNOZ86rx3lwd6aBtKMyJJ7fBekEVduqVy0s=;
+        s=korg; t=1652730615;
+        bh=D0V9cvmne9QhS6Ya73lFpN8FSdSoxKiZMZLj42fZCRw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CjTSIzfL7v5/eCdi2mCb3rC7Q36nmBoPGL2DZGt8j/rcP5Exld+Q8Xn563Vm+eiiJ
-         1T8TTWpR/a4cgRbXTfAGa3xQbQmObQ3uSFmfO1jIcEHLuA2DFeasDvyw7xSMdJsxVa
-         wdm1SpEr5YmxI2uE8nrKrl5vMS5E3Vob/YJnkW1E=
+        b=Hex/4WaIeRNcSuFX7EMkm7jY0g5iUFxip+hh7m8KCg4nNNwD2OwFzhDU7L+yCQ+lf
+         mYVd+Gq766qdHts+R5WB/NB5etDeULN29t/KdCE7rFVDSMGj9lB0iWBfG3h6V8Ra1/
+         mbDYuJ7FKejyq1PuhJ3+cPsOxXKARvD2Lmq+Z2EY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 012/114] fbdev: efifb: Cleanup fb_info in .fb_destroy rather than .remove
-Date:   Mon, 16 May 2022 21:35:46 +0200
-Message-Id: <20220516193625.848864252@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michal Michalik <michal.michalik@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 015/102] ice: fix PTP stale Tx timestamps cleanup
+Date:   Mon, 16 May 2022 21:35:49 +0200
+Message-Id: <20220516193624.435938166@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,73 +54,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Michal Michalik <michal.michalik@intel.com>
 
-[ Upstream commit d258d00fb9c7c0cdf9d10c1ded84f10339d2d349 ]
+[ Upstream commit a11b6c1a383ff092f432e040c20e032503785d47 ]
 
-The driver is calling framebuffer_release() in its .remove callback, but
-this will cause the struct fb_info to be freed too early. Since it could
-be that a reference is still hold to it if user-space opened the fbdev.
+Read stale PTP Tx timestamps from PHY on cleanup.
 
-This would lead to a use-after-free error if the framebuffer device was
-unregistered but later a user-space process tries to close the fbdev fd.
+After running out of Tx timestamps request handlers, hardware (HW) stops
+reporting finished requests. Function ice_ptp_tx_tstamp_cleanup() used
+to only clean up stale handlers in driver and was leaving the hardware
+registers not read. Not reading stale PTP Tx timestamps prevents next
+interrupts from arriving and makes timestamping unusable.
 
-To prevent this, move the framebuffer_release() call to fb_ops.fb_destroy
-instead of doing it in the driver's .remove callback.
-
-Strictly speaking, the code flow in the driver is still wrong because all
-the hardware cleanupd (i.e: iounmap) should be done in .remove while the
-software cleanup (i.e: releasing the framebuffer) should be done in the
-.fb_destroy handler. But this at least makes to match the behavior before
-commit 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal").
-
-Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220505220540.366218-1-javierm@redhat.com
+Fixes: ea9b847cda64 ("ice: enable transmit timestamps for E810 devices")
+Signed-off-by: Michal Michalik <michal.michalik@intel.com>
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/efifb.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
-index ea42ba6445b2..cfa3dc0b4eee 100644
---- a/drivers/video/fbdev/efifb.c
-+++ b/drivers/video/fbdev/efifb.c
-@@ -243,6 +243,10 @@ static void efifb_show_boot_graphics(struct fb_info *info)
- static inline void efifb_show_boot_graphics(struct fb_info *info) {}
- #endif
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index eb9193682579..ef26ff351b57 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -1375,6 +1375,7 @@ ice_ptp_init_tx_e810(struct ice_pf *pf, struct ice_ptp_tx *tx)
  
-+/*
-+ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
-+ * of unregister_framebuffer() or fb_release(). Do any cleanup here.
-+ */
- static void efifb_destroy(struct fb_info *info)
+ /**
+  * ice_ptp_tx_tstamp_cleanup - Cleanup old timestamp requests that got dropped
++ * @hw: pointer to the hw struct
+  * @tx: PTP Tx tracker to clean up
+  *
+  * Loop through the Tx timestamp requests and see if any of them have been
+@@ -1383,7 +1384,7 @@ ice_ptp_init_tx_e810(struct ice_pf *pf, struct ice_ptp_tx *tx)
+  * timestamp will never be captured. This might happen if the packet gets
+  * discarded before it reaches the PHY timestamping block.
+  */
+-static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
++static void ice_ptp_tx_tstamp_cleanup(struct ice_hw *hw, struct ice_ptp_tx *tx)
  {
- 	if (efifb_pci_dev)
-@@ -254,6 +258,9 @@ static void efifb_destroy(struct fb_info *info)
- 		else
- 			memunmap(info->screen_base);
- 	}
-+
-+	framebuffer_release(info);
-+
- 	if (request_mem_succeeded)
- 		release_mem_region(info->apertures->ranges[0].base,
- 				   info->apertures->ranges[0].size);
-@@ -620,9 +627,9 @@ static int efifb_remove(struct platform_device *pdev)
- {
- 	struct fb_info *info = platform_get_drvdata(pdev);
+ 	u8 idx;
  
-+	/* efifb_destroy takes care of info cleanup */
- 	unregister_framebuffer(info);
- 	sysfs_remove_groups(&pdev->dev.kobj, efifb_groups);
--	framebuffer_release(info);
+@@ -1392,11 +1393,16 @@ static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
  
- 	return 0;
- }
+ 	for_each_set_bit(idx, tx->in_use, tx->len) {
+ 		struct sk_buff *skb;
++		u64 raw_tstamp;
+ 
+ 		/* Check if this SKB has been waiting for too long */
+ 		if (time_is_after_jiffies(tx->tstamps[idx].start + 2 * HZ))
+ 			continue;
+ 
++		/* Read tstamp to be able to use this register again */
++		ice_read_phy_tstamp(hw, tx->quad, idx + tx->quad_offset,
++				    &raw_tstamp);
++
+ 		spin_lock(&tx->lock);
+ 		skb = tx->tstamps[idx].skb;
+ 		tx->tstamps[idx].skb = NULL;
+@@ -1418,7 +1424,7 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
+ 
+ 	ice_ptp_update_cached_phctime(pf);
+ 
+-	ice_ptp_tx_tstamp_cleanup(&pf->ptp.port.tx);
++	ice_ptp_tx_tstamp_cleanup(&pf->hw, &pf->ptp.port.tx);
+ 
+ 	/* Run twice a second */
+ 	kthread_queue_delayed_work(ptp->kworker, &ptp->work,
 -- 
 2.35.1
 
