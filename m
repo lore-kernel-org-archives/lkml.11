@@ -2,106 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F46C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243080AbiEPLX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:23:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        id S243128AbiEPLYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243099AbiEPLXw (ORCPT
+        with ESMTP id S243148AbiEPLY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:23:52 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DBF387A2;
-        Mon, 16 May 2022 04:23:49 -0700 (PDT)
-Date:   Mon, 16 May 2022 13:23:46 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652700228;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S5NxAJPVWcMi6gSub2SnJmtVeydspv2dOKKX4Sgbo2E=;
-        b=lJ/ua/xT36CFkqAG2YmuUJzsMegjfmmNTNqFT+fjWUS0gy0CFATLEgN6pymWdJzZRXx+c2
-        +2tnuSQnhzScgw8CD400ykPzDIZ34DTelPol+ky2h5ZdINhBstvnNH2N6Xwral/bK94Srw
-        GcE97KmJQRokY9lLjkxkE0MajKpJCpKkpsFmmNGZLC0M4eGr2JrDlIkWq+IUovdVExg15j
-        ngczzWRkxsTGvHYwzULb4NfvLr1Zvc1S1egZzwo3HBfWnvIZhMwtnLjGw44Udvu5b7unJQ
-        2rRFDnGD6COThS/URwcxwBvcZchfuCohtpzk9klqe6WeAdWfuiCwwSPp0C+O9g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652700228;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S5NxAJPVWcMi6gSub2SnJmtVeydspv2dOKKX4Sgbo2E=;
-        b=54/Hu5OcF7w+aG2PdqmJIRu09tvXTti1VbEvmiab9M9zPRjw3PZQbf8xF5NEXBPzJfk2jw
-        5Mtg5wpN0Ua/JmBg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Gross <markgross@kernel.org>, Michael Buesch <m@bues.ch>,
-        Rafa?? Mi??ecki <zajec5@gmail.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org
-Subject: Re: [RFC PATCH] genirq: Provide generic_handle_domain_irq_safe().
-Message-ID: <YoI0QiM4ntJP/9fQ@linutronix.de>
-References: <YnkfWFzvusFFktSt@linutronix.de>
- <20220516101814.GA18490@wunner.de>
+        Mon, 16 May 2022 07:24:26 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE91B387A1;
+        Mon, 16 May 2022 04:24:24 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id z2so28005792ejj.3;
+        Mon, 16 May 2022 04:24:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=77gx/XLhnKSDiVibNMBRLIPjcw3E1r3YTb0F7inWImQ=;
+        b=iXVszanG6bjkeDIEEDw7fW2lVJpChg3S/DptMsSdJR93CW1yQd6530UO3dwLgnAQvk
+         +MpAW4yMSlqLZPsk+iARePydg9/ulzdCjc3sO2CjDy4Z6ooWofrHOBny5r0HHkjdsTh2
+         HARdrE0jAkfDHgAFGKJhrM9nqvgDsALmSE+q6XrnsaTmFq6t68wCqAvENjcE8Cjl87Tf
+         SQ7B/ICb7rpcro+mAmTzNSKnwbELGtP7UKfBd4cPnkZ/QwI/3OvNFs/hpgHCa6pbf/Q1
+         /NSrHLtAfFj5BSX5m1tWzCoKIurq65ViOy2cqVcLQtbff9kkZzkvuUB3Xso3kEkOU/7N
+         wzYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=77gx/XLhnKSDiVibNMBRLIPjcw3E1r3YTb0F7inWImQ=;
+        b=JP3krF9BmYIUwIMsfT5OmDI5f9Ci5638ZKTSOdkZfgr5Rz1YSUwATpVXud5xowpOwA
+         hy+ougdPF1ZJcdoWLjv5KSYsD5bTSkx6F8O0h0eAtBxueE50K5Z1bBAN2i+QdTz0TZMW
+         1vEBr8M++y8ypZ9fe+V5zrGHJT1i+YSyRgyFtFqmklDzi/Ra+RUoft7HGtza/rEq9A5s
+         7MCTjsZ/velu+Fj5LrVh6rPblWvxQ0HxRxofKRexfXK/s0FigxcBCpi3OEF708NE+iNo
+         SqxRV8Gd8fiSoBc36xkhigwohlP8bbU2rfuWHmFS1FXODEamOjKoXotY/s6TnXvQP+jJ
+         NrqQ==
+X-Gm-Message-State: AOAM532vC9SlprvN6PXVddV7rVU5GimmI+NkAIiiKw9QKk3i0AsiPQan
+        gMTWHpgtNQQu+f3J0dtEczg=
+X-Google-Smtp-Source: ABdhPJxT6XSfbzOLNrpQtOjop8bYz8T8iKdEu7rm4HQvaqRMsW3WRPuPU3WoD3SO2asQfdShRD+JVA==
+X-Received: by 2002:a17:907:94c6:b0:6f5:287a:2bf2 with SMTP id dn6-20020a17090794c600b006f5287a2bf2mr15551079ejc.124.1652700263341;
+        Mon, 16 May 2022 04:24:23 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id w27-20020a170907271b00b006f3ef214e12sm3563951ejk.120.2022.05.16.04.24.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 04:24:22 -0700 (PDT)
+Date:   Mon, 16 May 2022 14:24:21 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Marek Vasut <marex@denx.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [RFC Patch net-next v2 6/9] net: dsa: microchip: move
+ get_strings to ksz_common
+Message-ID: <20220516112421.ndzmocmw4opdpvbw@skbuf>
+References: <20220513102219.30399-1-arun.ramadoss@microchip.com>
+ <20220513102219.30399-7-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220516101814.GA18490@wunner.de>
+In-Reply-To: <20220513102219.30399-7-arun.ramadoss@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-16 12:18:14 [+0200], Lukas Wunner wrote:
-> On Mon, May 09, 2022 at 04:04:08PM +0200, Sebastian Andrzej Siewior wrote:
-> > The problem with generic_handle_domain_irq() is that with `threadirqs'
-> > it will trigger "WARN_ON_ONCE(!in_hardirq())".
+On Fri, May 13, 2022 at 03:52:16PM +0530, Arun Ramadoss wrote:
+> ksz8795 and ksz9477 uses the same algorithm for copying the ethtool
+> strings. Hence moved to ksz_common to remove the redundant code.
 > 
-> Now silenced by:
-> https://git.kernel.org/linus/792ea6a074ae
-> 
-> 
-> > +int generic_handle_domain_irq_safe(struct irq_domain *domain, unsigned int hwirq)
-> > +{
-> > +	unsigned long flags;
-> > +	int ret;
-> > +
-> > +	local_irq_save(flags);
-> > +	ret = handle_irq_desc(irq_resolve_mapping(domain, hwirq));
-> > +	local_irq_restore(flags);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(generic_handle_domain_irq_safe);
-> 
-> AFAICS you don't need to disable hardirqs at least for the "threadirqs"
-> case because irq_forced_thread_fn() already does that.
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
 
-PREEMPT_RT does not disable interrupts. Also completions in softirq
-won't disable interrupts.
-
-> 
-> >  drivers/bcma/driver_gpio.c                 |  2 +-
-> >  drivers/gpio/gpio-mlxbf2.c                 |  6 ++----
-> >  drivers/pinctrl/pinctrl-amd.c              |  2 +-
-> >  drivers/platform/x86/intel/int0002_vgpio.c |  3 +--
-> >  drivers/ssb/driver_gpio.c                  |  6 ++++--
-> 
-> From a quick look, the proper solution for all of those drivers is
-> probably to just add IRQF_NO_THREAD and be done with it.
-
-I think I mentioned that part in the commit description: IRQF_NO_THREAD
-must be specified by all handlers of a shared interrupt. It is an option
-for the handler that owns an interrupt exclusive.
-
-> Thanks,
-> 
-> Lukas
-
-Sebastian
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
