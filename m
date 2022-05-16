@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D374C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C354C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236898AbiEPUTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        id S1346798AbiEPUTn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348920AbiEPT7D (ORCPT
+        with ESMTP id S1348919AbiEPT7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:59:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1CE36B53;
-        Mon, 16 May 2022 12:52:53 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1189B369F1;
+        Mon, 16 May 2022 12:52:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEEDF60A50;
-        Mon, 16 May 2022 19:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8B92C385AA;
-        Mon, 16 May 2022 19:52:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7ED3B81615;
+        Mon, 16 May 2022 19:52:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B228C385AA;
+        Mon, 16 May 2022 19:52:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730772;
-        bh=4GxQ34/+ri7Qh6zlKXsr+5UTPU54ZBwlSGvG+PEYU6g=;
+        s=korg; t=1652730769;
+        bh=+jAIiC5hZc0qiAw1YZc47HOg1A0vzkyEEB8HhiK5GJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BmjGDpLWvbkypYEP6NojjKXF7hVuypjFUOyaBbdZ6PMqINNoiploo9NMbKZfMsohL
-         FBXj2Uc9aZVYikpiiVsLPitCd+FmiFC7dMdympbe7TZO7N68m9M+lyTcLpCOsIM58I
-         4v+cHBXJgHxy9IgJ64+1oZsRQpCTys5hqbc4tAtA=
+        b=apzxjR7+ha1hmlboF0E2ghYnP9qUELv/X+8DckYTc+8SFct4/SLWzVYdsabOfT46n
+         ++TFlmVPGdH8eklSrn16ggMl9gISxuQrMOw3SVvRbQr//z2cy1W5jRkT+YQ+yW//az
+         /y51KMcVYj0G3jNobDLGvKYwCoIyYfsg294YeV48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lijo Lazar <lijo.lazar@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 096/102] Revert "drm/amd/pm: keep the BACO feature enabled for suspend"
-Date:   Mon, 16 May 2022 21:37:10 +0200
-Message-Id: <20220516193626.757688026@linuxfoundation.org>
+        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Martin Krastev <krastevm@vmware.com>,
+        Maaz Mombasawala <mombasawalam@vmware.com>
+Subject: [PATCH 5.15 095/102] drm/vmwgfx: Initialize drm_mode_fb_cmd2
+Date:   Mon, 16 May 2022 21:37:09 +0200
+Message-Id: <20220516193626.725762936@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -49,46 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Zack Rusin <zackr@vmware.com>
 
-commit a56f445f807b0276fc0660c330bf93a9ea78e8ea upstream.
+commit 3059d9b9f6aa433a55b9d0d21b566396d5497c33 upstream.
 
-This reverts commit eaa090538e8d21801c6d5f94590c3799e6a528b5.
+Transition to drm_mode_fb_cmd2 from drm_mode_fb_cmd left the structure
+unitialized. drm_mode_fb_cmd2 adds a few additional members, e.g. flags
+and modifiers which were never initialized. Garbage in those members
+can cause random failures during the bringup of the fbcon.
 
-Commit ebc002e3ee78 ("drm/amdgpu: don't use BACO for reset in S3")
-stops using BACO for reset during suspend, so it's no longer
-necessary to leave BACO enabled during suspend.  This fixes
-resume from suspend on the navy flounder dGPU in the ASUS ROG
-Strix G513QY.
+Initializing the structure fixes random blank screens after bootup due
+to flags/modifiers mismatches during the fbcon bring up.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2008
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1982
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Fixes: dabdcdc9822a ("drm/vmwgfx: Switch to mode_cmd2")
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Cc: Daniel Vetter <daniel.vetter@intel.com>
+Cc: <stable@vger.kernel.org> # v4.10+
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Reviewed-by: Maaz Mombasawala <mombasawalam@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220302152426.885214-7-zack@kde.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c |    8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/gpu/drm/vmwgfx/vmwgfx_fb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-@@ -1386,14 +1386,8 @@ static int smu_disable_dpms(struct smu_c
- {
- 	struct amdgpu_device *adev = smu->adev;
- 	int ret = 0;
--	/*
--	 * TODO: (adev->in_suspend && !adev->in_s0ix) is added to pair
--	 * the workaround which always reset the asic in suspend.
--	 * It's likely that workaround will be dropped in the future.
--	 * Then the change here should be dropped together.
--	 */
- 	bool use_baco = !smu->is_apu &&
--		(((amdgpu_in_reset(adev) || (adev->in_suspend && !adev->in_s0ix)) &&
-+		((amdgpu_in_reset(adev) &&
- 		  (amdgpu_asic_reset_method(adev) == AMD_RESET_METHOD_BACO)) ||
- 		 ((adev->in_runpm || adev->in_s4) && amdgpu_asic_supports_baco(adev)));
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_fb.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fb.c
+@@ -490,7 +490,7 @@ static int vmw_fb_kms_detach(struct vmw_
  
+ static int vmw_fb_kms_framebuffer(struct fb_info *info)
+ {
+-	struct drm_mode_fb_cmd2 mode_cmd;
++	struct drm_mode_fb_cmd2 mode_cmd = {0};
+ 	struct vmw_fb_par *par = info->par;
+ 	struct fb_var_screeninfo *var = &info->var;
+ 	struct drm_framebuffer *cur_fb;
 
 
