@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E890C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D2D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241644AbiEPMtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59510 "EHLO
+        id S243273AbiEPMtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241512AbiEPMsq (ORCPT
+        with ESMTP id S242458AbiEPMsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 08:48:46 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C626F38BE3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:48:45 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id gh6so28549751ejb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:48:45 -0700 (PDT)
+        Mon, 16 May 2022 08:48:51 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC647393E7
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:48:48 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id i19so28407058eja.11
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:48:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sartura-hr.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CWmbjpF50fRkAy7B2nsI8Zqd1HdhGpan8qf1bwnnudo=;
-        b=jojLnmTeHwgPjo42nAF6jtXJY2kHpUWP8XMiUyo52Nvg2bYujjl12HsQw+sDCD5OB3
-         WJE6wnOJ7v6OEkilPD2aH2yr4TqI2DV76EwhRvp5H6ZDVcxKEYsagdiSitwR0T/0Wx3G
-         MZQpmlCPdxHclIL4HgmG5muKvZgWQUSysZdfFq5I3abov7xrqQmiiBX49pFWOgI63JIr
-         L6NiUNRJ5eFUwLZNlJfOzeMr3xRdFwj2G3yF42/GBMVP2RxCXQx3pSbk74ehKsDzbBR6
-         cH0Fvx/96WzZ5yKxE3uwdHpEeMIE5IYbx2oInk4bMpg+G5yIrLuJ0rggvkHGOAAf9oi7
-         C/Kw==
+        bh=XOIsMkVmGezvt0k2UbO/nvlinQdml5F2/hETUMz5pr0=;
+        b=gQeT7fNxv1xTox6fLGdVHDt29rB58Z5yXSFzAznvZOJ9pYu7+s6rZhKxCKhJ0p3p7V
+         lO4Rnk553EHNk34QcoDWjHZW0kuEXdwAuQ8rhpmBri7GwGHNlLMzTxNT6FOLEVTIvX34
+         yDBuZ1SYKFKU7cn8/8JGvzefgF3B+kK45zpzzTQFOyt+g7gwYlOlLZ50ZxVnLS9uav5V
+         Fxgb6flNjPHDGmEpoMYa4JzZIFmRJBqrtvXZXItKiQLKjZ55XrfSuNEBSGVJkA2C/VMk
+         jHLEXk2igoGFNcp6u6rLUt5MWq+yWpEWZlK/gpKnY5M2leQ4wkXf95jyW/p2dyqiY27W
+         vDwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CWmbjpF50fRkAy7B2nsI8Zqd1HdhGpan8qf1bwnnudo=;
-        b=fukvSu82Y/JJwskHKnLq4dLTFkvqTa0138qQDu3mtpBrkVKqHwaEbMkt/ZRlyDp2ew
-         D/bTeHI6MW7gmEKwj3o4jNTqGGOGJHKVIC+gZKsHQCX6jpVit29IsuEf91SVJW7mM97H
-         gO+isIaOhOAHeFFHIKwmkAtF1fz34nQlbixo8jjAywccO3TWerQNvSS/04R/KZxOLLHO
-         uDE3D1j4bbMf1uKCY2mBvSx1IHJO/U9aVdi+f2VSoX3pa3ba888iMyFCDDmvS8A2VW9o
-         ESbzZftlGEr9cGG1aEJ2V7FhEHNNwZLVLonEJR30SNTQLrnIwwyxfM/2kWqILMVGTA1L
-         Wkwg==
-X-Gm-Message-State: AOAM533HA8F9RWiP+q5ALD6vmEoGn+cc+i8ROlq3PeQrGcnYd2bHklkO
-        ZILq+tOdyDuDe7PDmdx/slSndA==
-X-Google-Smtp-Source: ABdhPJxy3qhYiFQf2sBQmCvFgN1Z6gLC6YwyvK4kACy8ZMrCLR/hu79twnkPAfPzOoCeQF6AkU2+7Q==
-X-Received: by 2002:a17:907:3f02:b0:6f3:5c42:321a with SMTP id hq2-20020a1709073f0200b006f35c42321amr15337949ejc.521.1652705324400;
-        Mon, 16 May 2022 05:48:44 -0700 (PDT)
+        bh=XOIsMkVmGezvt0k2UbO/nvlinQdml5F2/hETUMz5pr0=;
+        b=13o4F7j2/j7PnZc/4DSh4XlNa4ikRz6kFx2GHe0QG4Molyj609IxwpBuQOAf/a//dN
+         71eTekz5zH1gl/Ii61hLwxih3DT73YwoSkl3kWNEknbkbNxzMbFgN0FLqYSI4gcFKfFD
+         2VxekKNvOKrB0dM15QU48tfzUlnh6jBPVrRrKdEqAH9FKTzTzfYZuyVagOWLPjxZqyFb
+         OMsjzAXDeiceXj/iWAq4Lpf2PmjBU3oUAXINt/hq0iheNQpQBhagUEwZnvOLB6Dpu5eS
+         nZIgl73rr1K6k9XsQ1CgVmmfBo+p609tZ1V7fNDoqwcssf7M569Swv2auyIMRWP0A68v
+         /Gfg==
+X-Gm-Message-State: AOAM533fU6EkiA0ueAHoOoAgXfjuDQ7quo2q9PO+3BqoP3eA7N/8IDdK
+        +S0ICYNDQdrxOHLWNbA6f8szog==
+X-Google-Smtp-Source: ABdhPJzZLLWyWwN17/gsmp3IByCaASEp5VfudNyT7/mbBFClrbAA7Ruebh76N6Ws2GicRR6tPQYtcA==
+X-Received: by 2002:a17:906:7315:b0:6f4:c84f:9eab with SMTP id di21-20020a170906731500b006f4c84f9eabmr15064528ejc.759.1652705328285;
+        Mon, 16 May 2022 05:48:48 -0700 (PDT)
 Received: from fedora.robimarko.hr (dh207-98-105.xnet.hr. [88.207.98.105])
-        by smtp.googlemail.com with ESMTPSA id e10-20020a056402330a00b0042617ba6386sm5093331eda.16.2022.05.16.05.48.43
+        by smtp.googlemail.com with ESMTPSA id e10-20020a056402330a00b0042617ba6386sm5093331eda.16.2022.05.16.05.48.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 05:48:44 -0700 (PDT)
+        Mon, 16 May 2022 05:48:47 -0700 (PDT)
 From:   Robert Marko <robert.marko@sartura.hr>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         andrew@lunn.ch, gregory.clement@bootlin.com,
@@ -56,9 +56,9 @@ To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         linux-arm-kernel@lists.infradead.org
 Cc:     Robert Marko <robert.marko@sartura.hr>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 04/10] arm64: dts: marvell: uDPU: add missing SoC compatible
-Date:   Mon, 16 May 2022 14:48:22 +0200
-Message-Id: <20220516124828.45144-4-robert.marko@sartura.hr>
+Subject: [PATCH v4 07/10] arm64: dts: marvell: rename temp sensor nodes
+Date:   Mon, 16 May 2022 14:48:25 +0200
+Message-Id: <20220516124828.45144-7-robert.marko@sartura.hr>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516124828.45144-1-robert.marko@sartura.hr>
 References: <20220516124828.45144-1-robert.marko@sartura.hr>
@@ -68,29 +68,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to the bindings, all boards using Armada 37xx SoC-s must have
-"marvell,armada3710" compatible while 3720 based ones should also have
-"marvell,armada3720" before it.
+Rename the temperature sensor nodes to use "temp-sensor" which matches
+their device class instead of IC specific naming.
+
+Remove the status = "okay" which is not required as its default anyway.
 
 Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-index a35317d24d6c..4ae1688e6627 100644
+index b89c7455612d..f21a855fc608 100644
 --- a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
 +++ b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-@@ -16,7 +16,7 @@
+@@ -152,14 +152,12 @@ &i2c1 {
+ 	scl-gpios = <&gpionb 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpionb 3 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
  
- / {
- 	model = "Methode uDPU Board";
--	compatible = "methode,udpu", "marvell,armada3720";
-+	compatible = "methode,udpu", "marvell,armada3720", "marvell,armada3710";
+-	nct375@48 {
+-		status = "okay";
++	temp-sensor@48 {
+ 		compatible = "ti,tmp75c";
+ 		reg = <0x48>;
+ 	};
  
- 	chosen {
- 		stdout-path = "serial0:115200n8";
+-	nct375@49 {
+-		status = "okay";
++	temp-sensor@49 {
+ 		compatible = "ti,tmp75c";
+ 		reg = <0x49>;
+ 	};
 -- 
 2.36.1
 
