@@ -2,287 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E42C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C04EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232193AbiEPJHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 05:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
+        id S239355AbiEPJIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 05:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237440AbiEPJHl (ORCPT
+        with ESMTP id S238342AbiEPJH5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 05:07:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1D2DDF45
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 02:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652692056;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hv3r7ywwBY+MFq7sMrvzb8rnxuHrTSC23t3Ukqr2ZWk=;
-        b=f8esMoRCUFYJNe/dw3c8OQCeUENH1wCHNXT0URze3gKuymwMtwtzFv9/slye/hzxJew7EK
-        sYUo8CPWQ3LnGCiBPcWYIuPq6ZUv/dzKh3Wy7Iw4cgPbgKCc0RmjqH0fwcq1/J0defoKbi
-        T76M7rnAlei6DbW/9xyzgDgQqy73qZ8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-587-D8Jap-kMPe62Ez2CXTYLRQ-1; Mon, 16 May 2022 05:07:34 -0400
-X-MC-Unique: D8Jap-kMPe62Ez2CXTYLRQ-1
-Received: by mail-wm1-f72.google.com with SMTP id m124-20020a1c2682000000b00393fcd2722dso5352405wmm.4
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 02:07:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hv3r7ywwBY+MFq7sMrvzb8rnxuHrTSC23t3Ukqr2ZWk=;
-        b=cIksS2SJURuLzW9zPD4XrDsLu6Qr3Rx8X1fnA5IDmzk/KkRq1XdzjsPoUxy7IFM43D
-         St4ekP2PXScYLnBFpfZnnJteNY8YQpDRS62vWbTX6zTf2RQWWNHC4zT16MtsqZMGbN70
-         O851Yrdtk6lku2jNhKQW651PJm6tWZ/q0adaLBH336lDFAnDhlhYX0f2+mAh7AvrlBON
-         AAaBLe4aTejHeua2iFzHfrZ06hbTbqA7vt3Tj9ubpbqg7bnbbCzC75eDefq5Edl2f+G7
-         ibDJ3WVhni3opjZZL1KRpwHsBZQIUv8hQuNjM7XomBoDMMCYuGplCjp1E6N/oXxB16S8
-         G77w==
-X-Gm-Message-State: AOAM533WgenVpqbvVdhh6aNktoi55WTWrMKRLnCvF1hiqxUogudpDc9i
-        VbWxlyQ63Ba6uP21DC7OmvJ7ARz3oFlwFcI5t5tL6QDAEg2sPjHZGT+MNKQF7U+58kJeqmUd4rN
-        P/1Gt3Wfcc9wyccYjDa1nRzuE
-X-Received: by 2002:a5d:45c2:0:b0:20d:689:9a with SMTP id b2-20020a5d45c2000000b0020d0689009amr4375379wrs.17.1652692052380;
-        Mon, 16 May 2022 02:07:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzKeI/FnFQ0miz4j3jF7FyuiHc454mE3tyAvhhsESfbXImBd//z9fsY35jdX5QJBUFD/I/ngA==
-X-Received: by 2002:a5d:45c2:0:b0:20d:689:9a with SMTP id b2-20020a5d45c2000000b0020d0689009amr4375363wrs.17.1652692052125;
-        Mon, 16 May 2022 02:07:32 -0700 (PDT)
-Received: from redhat.com ([2.55.141.66])
-        by smtp.gmail.com with ESMTPSA id q29-20020adfab1d000000b0020c66310845sm4966393wrc.55.2022.05.16.02.07.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 02:07:31 -0700 (PDT)
-Date:   Mon, 16 May 2022 05:07:28 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, si-wei.liu@oracle.com
-Subject: Re: [PATCH] vdpa/mlx5: Use consistent RQT size
-Message-ID: <20220516045637-mutt-send-email-mst@kernel.org>
-References: <20220516084735.198165-1-elic@nvidia.com>
+        Mon, 16 May 2022 05:07:57 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4364E13CDD;
+        Mon, 16 May 2022 02:07:56 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24G7kGkK027609;
+        Mon, 16 May 2022 09:07:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=8fVya5SouKGDBotaRmB4/dF1qRiUasv0dXnWqkQaliQ=;
+ b=kkqN6jXEE0slsnjugc96mUDPeWc3jmDpUu1AE4kgzVZm1CEcO1X57HLTQYPA/pTGNQ32
+ IDGw8PSfmROQeHmOrlEIibigU1w+H7VMV5nGF/OXPJ2vJDIjxVayO7ZSquB7k9Njv2Ct
+ LTPnADtuQ6yFCUYR8KwfbibuUx1Q0VB9KKNjD0aTIBhptQa9fxJVkmKPds/cPDFDQ9ty
+ qNtFW9u38UbsvZiRGkBEnkqJBqJCG5zCjLqlSa5FPboUX3zSgy8ruw1LtSOXNA92vn4t
+ Wt3dQHm2Rf7NGdoX1Wbh5UQkj+RD8rTv9WMeCfe9IC2e3636/zTITChvkWVAI2XdLiT2 RQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3jgtsg7j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 09:07:53 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24G8i0bG017939;
+        Mon, 16 May 2022 09:07:52 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3jgtsg6p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 09:07:52 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24G95f9b013045;
+        Mon, 16 May 2022 09:07:49 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06fra.de.ibm.com with ESMTP id 3g23pj1trr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 09:07:49 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24G97iGT26935610
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 May 2022 09:07:44 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A4BFC4C040;
+        Mon, 16 May 2022 09:07:44 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 48E954C04E;
+        Mon, 16 May 2022 09:07:44 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon, 16 May 2022 09:07:44 +0000 (GMT)
+Date:   Mon, 16 May 2022 11:07:43 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Jonas Paulsson <paulsson@linux.vnet.ibm.com>,
+        Ulrich Weigand <ulrich.weigand@de.ibm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andreas Krebbel <krebbel@linux.ibm.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH 4/8] s390/entry: workaround llvm's IAS limitations
+Message-ID: <YoIUX864ULCwu4pz@tuxmaker.boeblingen.de.ibm.com>
+References: <20220511120532.2228616-1-hca@linux.ibm.com>
+ <20220511120532.2228616-5-hca@linux.ibm.com>
+ <YnvynSZfF/8I8vmT@dev-arch.thelio-3990X>
+ <Yn1CyTcrZk1Kgvoq@osiris>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220516084735.198165-1-elic@nvidia.com>
+In-Reply-To: <Yn1CyTcrZk1Kgvoq@osiris>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: MudZRC9NlkG1-HT2VIRnghBoTKpnAbix
+X-Proofpoint-ORIG-GUID: pKNbuxM8qjndItLrPEl2nnX3wFIhDla9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-16_03,2022-05-13_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ spamscore=0 suspectscore=0 clxscore=1011 lowpriorityscore=0
+ priorityscore=1501 adultscore=0 mlxlogscore=791 malwarescore=0
+ phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205160052
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 11:47:35AM +0300, Eli Cohen wrote:
-> The current code evaluates RQT size based on the configured number of
-> virtqueues. This can raise an issue in the following scenario:
+On Thu, May 12, 2022 at 07:24:25PM +0200, Heiko Carstens wrote:
+> From fe4fb0b014378d84ae517deaea338577b2ea6ae0 Mon Sep 17 00:00:00 2001
+> From: Heiko Carstens <hca@linux.ibm.com>
+> Date: Sat, 7 May 2022 15:00:40 +0200
+> Subject: [PATCH 3/7] s390/entry: workaround llvm's IAS limitations
 > 
-> Assume MQ was negotiated.
-> 1. mlx5_vdpa_set_map() gets called.
-> 2. handle_ctrl_mq() is called setting cur_num_vqs to some value, lower
->    than the configured max VQs.
-> 3. A second set_map gets called, but now a smaller number of VQs is used
->    to evaluate the size of the RQT.
-> 4. handle_ctrl_mq() is called with a value larger than what the RQT can
->    hold. This will emit errors and the driver state is compromised.
+> llvm's integrated assembler cannot handle immediate values which are
+> calculated with two local labels:
 > 
-> To fix this, we use a new field in struct mlx5_vdpa_net to hold the
-> required number of entries in the RQT. This value is evaluated in
-> mlx5_vdpa_set_driver_features() where we have the negotiated features
-> all set up.
+> <instantiation>:3:13: error: invalid operand for instruction
+>  clgfi %r14,.Lsie_done - .Lsie_gmap
 > 
-> In addition to that, we take into consideration the max capability of RQT
-> entries early when the device is added so we don't need to take consider
-> it when creating the RQT.
+> Workaround this by adding clang specific code which reads the specific
+> value from memory. Since this code is within the hot paths of the kernel
+> and adds an additional memory reference, keep the original code, and add
+> ifdef'ed code.
 > 
-> Last, we remove the use of mlx5_vdpa_max_qps() which just returns the
-> max_vas / 2 and make the code clearer.
-> 
-> Fixes: 52893733f2c5 ("vdpa/mlx5: Add multiqueue support")
-> Acked-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Eli Cohen <elic@nvidia.com>
-
-I picked this up. Thanks!
-
+> Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 > ---
->  drivers/vdpa/mlx5/net/mlx5_vnet.c | 61 +++++++++++--------------------
->  1 file changed, 21 insertions(+), 40 deletions(-)
+>  arch/s390/kernel/entry.S | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index 79001301b383..e0de44000d92 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -161,6 +161,7 @@ struct mlx5_vdpa_net {
->  	struct mlx5_flow_handle *rx_rule_mcast;
->  	bool setup;
->  	u32 cur_num_vqs;
-> +	u32 rqt_size;
->  	struct notifier_block nb;
->  	struct vdpa_callback config_cb;
->  	struct mlx5_vdpa_wq_ent cvq_ent;
-> @@ -204,17 +205,12 @@ static __virtio16 cpu_to_mlx5vdpa16(struct mlx5_vdpa_dev *mvdev, u16 val)
->  	return __cpu_to_virtio16(mlx5_vdpa_is_little_endian(mvdev), val);
->  }
->  
-> -static inline u32 mlx5_vdpa_max_qps(int max_vqs)
-> -{
-> -	return max_vqs / 2;
-> -}
-> -
->  static u16 ctrl_vq_idx(struct mlx5_vdpa_dev *mvdev)
->  {
->  	if (!(mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_MQ)))
->  		return 2;
->  
-> -	return 2 * mlx5_vdpa_max_qps(mvdev->max_vqs);
-> +	return mvdev->max_vqs;
->  }
->  
->  static bool is_ctrl_vq_idx(struct mlx5_vdpa_dev *mvdev, u16 idx)
-> @@ -1236,25 +1232,13 @@ static void teardown_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *
->  static int create_rqt(struct mlx5_vdpa_net *ndev)
->  {
->  	__be32 *list;
-> -	int max_rqt;
->  	void *rqtc;
->  	int inlen;
->  	void *in;
->  	int i, j;
->  	int err;
-> -	int num;
-> -
-> -	if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_MQ)))
-> -		num = 1;
-> -	else
-> -		num = ndev->cur_num_vqs / 2;
->  
-> -	max_rqt = min_t(int, roundup_pow_of_two(num),
-> -			1 << MLX5_CAP_GEN(ndev->mvdev.mdev, log_max_rqt_size));
-> -	if (max_rqt < 1)
-> -		return -EOPNOTSUPP;
-> -
-> -	inlen = MLX5_ST_SZ_BYTES(create_rqt_in) + max_rqt * MLX5_ST_SZ_BYTES(rq_num);
-> +	inlen = MLX5_ST_SZ_BYTES(create_rqt_in) + ndev->rqt_size * MLX5_ST_SZ_BYTES(rq_num);
->  	in = kzalloc(inlen, GFP_KERNEL);
->  	if (!in)
->  		return -ENOMEM;
-> @@ -1263,12 +1247,12 @@ static int create_rqt(struct mlx5_vdpa_net *ndev)
->  	rqtc = MLX5_ADDR_OF(create_rqt_in, in, rqt_context);
->  
->  	MLX5_SET(rqtc, rqtc, list_q_type, MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q);
-> -	MLX5_SET(rqtc, rqtc, rqt_max_size, max_rqt);
-> +	MLX5_SET(rqtc, rqtc, rqt_max_size, ndev->rqt_size);
->  	list = MLX5_ADDR_OF(rqtc, rqtc, rq_num[0]);
-> -	for (i = 0, j = 0; i < max_rqt; i++, j += 2)
-> -		list[i] = cpu_to_be32(ndev->vqs[j % (2 * num)].virtq_id);
-> +	for (i = 0, j = 0; i < ndev->rqt_size; i++, j += 2)
-> +		list[i] = cpu_to_be32(ndev->vqs[j % ndev->cur_num_vqs].virtq_id);
->  
-> -	MLX5_SET(rqtc, rqtc, rqt_actual_size, max_rqt);
-> +	MLX5_SET(rqtc, rqtc, rqt_actual_size, ndev->rqt_size);
->  	err = mlx5_vdpa_create_rqt(&ndev->mvdev, in, inlen, &ndev->res.rqtn);
->  	kfree(in);
->  	if (err)
-> @@ -1282,19 +1266,13 @@ static int create_rqt(struct mlx5_vdpa_net *ndev)
->  static int modify_rqt(struct mlx5_vdpa_net *ndev, int num)
->  {
->  	__be32 *list;
-> -	int max_rqt;
->  	void *rqtc;
->  	int inlen;
->  	void *in;
->  	int i, j;
->  	int err;
->  
-> -	max_rqt = min_t(int, roundup_pow_of_two(ndev->cur_num_vqs / 2),
-> -			1 << MLX5_CAP_GEN(ndev->mvdev.mdev, log_max_rqt_size));
-> -	if (max_rqt < 1)
-> -		return -EOPNOTSUPP;
-> -
-> -	inlen = MLX5_ST_SZ_BYTES(modify_rqt_in) + max_rqt * MLX5_ST_SZ_BYTES(rq_num);
-> +	inlen = MLX5_ST_SZ_BYTES(modify_rqt_in) + ndev->rqt_size * MLX5_ST_SZ_BYTES(rq_num);
->  	in = kzalloc(inlen, GFP_KERNEL);
->  	if (!in)
->  		return -ENOMEM;
-> @@ -1305,10 +1283,10 @@ static int modify_rqt(struct mlx5_vdpa_net *ndev, int num)
->  	MLX5_SET(rqtc, rqtc, list_q_type, MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q);
->  
->  	list = MLX5_ADDR_OF(rqtc, rqtc, rq_num[0]);
-> -	for (i = 0, j = 0; i < max_rqt; i++, j += 2)
-> +	for (i = 0, j = 0; i < ndev->rqt_size; i++, j += 2)
->  		list[i] = cpu_to_be32(ndev->vqs[j % num].virtq_id);
->  
-> -	MLX5_SET(rqtc, rqtc, rqt_actual_size, max_rqt);
-> +	MLX5_SET(rqtc, rqtc, rqt_actual_size, ndev->rqt_size);
->  	err = mlx5_vdpa_modify_rqt(&ndev->mvdev, in, inlen, ndev->res.rqtn);
->  	kfree(in);
->  	if (err)
-> @@ -1625,7 +1603,7 @@ static virtio_net_ctrl_ack handle_ctrl_mq(struct mlx5_vdpa_dev *mvdev, u8 cmd)
->  
->  		newqps = mlx5vdpa16_to_cpu(mvdev, mq.virtqueue_pairs);
->  		if (newqps < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
-> -		    newqps > mlx5_vdpa_max_qps(mvdev->max_vqs))
-> +		    newqps > ndev->rqt_size)
->  			break;
->  
->  		if (ndev->cur_num_vqs == 2 * newqps) {
-> @@ -1989,7 +1967,7 @@ static int setup_virtqueues(struct mlx5_vdpa_dev *mvdev)
->  	int err;
->  	int i;
->  
-> -	for (i = 0; i < 2 * mlx5_vdpa_max_qps(mvdev->max_vqs); i++) {
-> +	for (i = 0; i < mvdev->max_vqs; i++) {
->  		err = setup_vq(ndev, &ndev->vqs[i]);
->  		if (err)
->  			goto err_vq;
-> @@ -2060,9 +2038,11 @@ static int mlx5_vdpa_set_driver_features(struct vdpa_device *vdev, u64 features)
->  
->  	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
->  	if (ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_MQ))
-> -		ndev->cur_num_vqs = 2 * mlx5vdpa16_to_cpu(mvdev, ndev->config.max_virtqueue_pairs);
-> +		ndev->rqt_size = mlx5vdpa16_to_cpu(mvdev, ndev->config.max_virtqueue_pairs);
->  	else
-> -		ndev->cur_num_vqs = 2;
-> +		ndev->rqt_size = 1;
-> +
-> +	ndev->cur_num_vqs = 2 * ndev->rqt_size;
->  
->  	update_cvq_info(mvdev);
->  	return err;
-> @@ -2529,7 +2509,7 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
->  	struct mlx5_vdpa_virtqueue *mvq;
->  	int i;
->  
-> -	for (i = 0; i < 2 * mlx5_vdpa_max_qps(ndev->mvdev.max_vqs); ++i) {
-> +	for (i = 0; i < ndev->mvdev.max_vqs; ++i) {
->  		mvq = &ndev->vqs[i];
->  		memset(mvq, 0, offsetof(struct mlx5_vdpa_virtqueue, ri));
->  		mvq->index = i;
-> @@ -2671,7 +2651,8 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
->  		return -EOPNOTSUPP;
->  	}
->  
-> -	max_vqs = MLX5_CAP_DEV_VDPA_EMULATION(mdev, max_num_virtio_queues);
-> +	max_vqs = min_t(int, MLX5_CAP_DEV_VDPA_EMULATION(mdev, max_num_virtio_queues),
-> +			1 << MLX5_CAP_GEN(mdev, log_max_rqt_size));
->  	if (max_vqs < 2) {
->  		dev_warn(mdev->device,
->  			 "%d virtqueues are supported. At least 2 are required\n",
-> @@ -2742,7 +2723,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
->  		ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_NET_F_MAC);
->  	}
->  
-> -	config->max_virtqueue_pairs = cpu_to_mlx5vdpa16(mvdev, mlx5_vdpa_max_qps(max_vqs));
-> +	config->max_virtqueue_pairs = cpu_to_mlx5vdpa16(mvdev, max_vqs / 2);
->  	mvdev->vdev.dma_dev = &mdev->pdev->dev;
->  	err = mlx5_vdpa_alloc_resources(&ndev->mvdev);
->  	if (err)
-> @@ -2769,7 +2750,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
->  	ndev->nb.notifier_call = event_handler;
->  	mlx5_notifier_register(mdev, &ndev->nb);
->  	mvdev->vdev.mdev = &mgtdev->mgtdev;
-> -	err = _vdpa_register_device(&mvdev->vdev, 2 * mlx5_vdpa_max_qps(max_vqs) + 1);
-> +	err = _vdpa_register_device(&mvdev->vdev, max_vqs + 1);
->  	if (err)
->  		goto err_reg;
->  
-> -- 
-> 2.35.1
+> diff --git a/arch/s390/kernel/entry.S b/arch/s390/kernel/entry.S
+> index a6b45eaa3450..f2f30bfba1e9 100644
+> --- a/arch/s390/kernel/entry.S
+> +++ b/arch/s390/kernel/entry.S
+> @@ -172,9 +172,19 @@ _LPP_OFFSET	= __LC_LPP
+>  	lgr	%r14,\reg
+>  	larl	%r13,\start
+>  	slgr	%r14,%r13
+> -	lghi	%r13,\end - \start
+> -	clgr	%r14,%r13
+> +#ifdef CONFIG_AS_IS_LLVM
+> +	clgfrl	%r14,.Lrange_size\@
 
+
+
+
+> +#else
+> +	clgfi	%r14,\end - \start
+> +#endif
+>  	jhe	\outside_label
+> +#ifdef CONFIG_CC_IS_CLANG
+> +	.section .rodata, "a"
+> +	.align 4
+> +.Lrange_size\@:
+> +	.long	\end - \start
+
+Isn't the machine check handler refers to this memory before checking
+unrecoverable storage errors (with CHKSTG macro) as result of this change?
+
+> +	.previous
+> +#endif
+>  	.endm
+>  
+>  	.macro SIEEXIT
+> -- 
+> 2.32.0
