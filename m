@@ -2,115 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B938C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B63C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349974AbiEPUjB (ORCPT
+        id S1349493AbiEPUij (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
+        Mon, 16 May 2022 16:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347227AbiEPUMk (ORCPT
+        with ESMTP id S1350558AbiEPUBV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:12:40 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAAE1180A
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:05:56 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id n18so15490933plg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:05:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=V0FTGzMJBgyREqhxX8R65mAMakAJSuzxyomCAV6mgLc=;
-        b=SSzpkrzoHGzfaphBfgfEmNpvaSX+MugKbN6DbDP1EsOcaJ8wLG8aqjVoWEQHgIlmh/
-         NdFXDVSyhLg6TlGxSTu9LxYWpmPUPhNSrUgt7DZdL19+bfoaX1zmMDlt4UuHwK+JF4kC
-         iIeTYHtCHYH3+KL/KOn343UgU1cBy/wr21vLoJ2T+eEfbc9Dwc1jYgQ0O/O/rlIiUNFJ
-         UGcmJE2vl46RnTeV4GzEMW7TfhL23dctpd15mQMJdkHJ80Fv7sRNFw5SolNIRTjPVhle
-         exq7xjRyljp820JflaXAvMp96Vj+IILsbFSS6xSOHK1BW5W3NihRdkvIYBUT6ZOej/J3
-         Amvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=V0FTGzMJBgyREqhxX8R65mAMakAJSuzxyomCAV6mgLc=;
-        b=Po7BhCMntuYZwz7NBN0EMFcVxfBqiK0Qru3PUSTxjVczrvp9wyoGw8bnkxBH34Rj5F
-         ci4JygKnw3esqwLDc+bF2TZM4rCnuxKd/UzNHYGTC1sLctKQQ4JxxXUBwHuDFUqFKzi6
-         RX4e8xz63RtqsXaS6y5XUmuWJlEN26uuHsuM9ShsP4WsS1ooCrQtbpjoG6/xYOGYhIqf
-         6/XpCiVKHp1tFGfYyWaVTH+qNTzzTkY02oCpU1AhiV9wlTW+I7hQEqWw7pWs8aVgPtxx
-         j/aAAzOXSE2lKs0IQPwRRz535WxjUSGx2WmQGM/nk8H1e8+oTDrWVZ2iLk+rSrIN9QJD
-         FR2w==
-X-Gm-Message-State: AOAM5329jJzyvrdZBu5Rs1lmtpfiBlRANvQH6q6yrkTdgGpvHHeKjDm7
-        RIPQjfXVBpDkc8U5Ta2UKQHFuA==
-X-Google-Smtp-Source: ABdhPJwX1CuKym2vhkwKheHNZIwLKfvS20yrckaBa15rLs63cRodMdN8IvrD+yQdEkpAS2o2yBLveQ==
-X-Received: by 2002:a17:902:ba8c:b0:161:5ad4:1800 with SMTP id k12-20020a170902ba8c00b001615ad41800mr11177867pls.9.1652731553787;
-        Mon, 16 May 2022 13:05:53 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id b12-20020a170902650c00b0015e8d4eb268sm7406140plk.178.2022.05.16.13.05.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 13:05:53 -0700 (PDT)
-Date:   Mon, 16 May 2022 20:05:49 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 11/34] KVM: x86: hyper-v: Use preallocated buffer in
- 'struct kvm_vcpu_hv' instead of on-stack 'sparse_banks'
-Message-ID: <YoKunaNKDjYx7C21@google.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
- <20220414132013.1588929-12-vkuznets@redhat.com>
+        Mon, 16 May 2022 16:01:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84234A931;
+        Mon, 16 May 2022 12:55:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88FADB81613;
+        Mon, 16 May 2022 19:55:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D80B8C385AA;
+        Mon, 16 May 2022 19:55:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652730919;
+        bh=8F2+mQuyKJsVZ+YRZ5vP0LDsn3RVwXnNtAs05DEbjno=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EAAyZOnK5AsOW70mVs1STXGYyHWK5cd3Jr45eKIGzNB2RssBpey0ZvAaglPYZDOnx
+         0lPkeensYLB2xOq1sxrrSlLrjqyfmlzwUoFN3k0Zo6eDgpeUCUtZlcH5W1padPt9rw
+         LtXs51LL3HhbrYM140tN+nb2dAeW3bx0oGynlGSk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 008/114] net: mscc: ocelot: fix VCAP IS2 filters matching on both lookups
+Date:   Mon, 16 May 2022 21:35:42 +0200
+Message-Id: <20220516193625.736092657@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
+References: <20220516193625.489108457@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414132013.1588929-12-vkuznets@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022, Vitaly Kuznetsov wrote:
-> To make kvm_hv_flush_tlb() ready to handle L2 TLB flush requests, KVM needs
-> to allow for all 64 sparse vCPU banks regardless of KVM_MAX_VCPUs as L1
-> may use vCPU overcommit for L2. To avoid growing on-stack allocation, make
-> 'sparse_banks' part of per-vCPU 'struct kvm_vcpu_hv' which is allocated
-> dynamically.
-> 
-> Note: sparse_set_to_vcpu_mask() keeps using on-stack allocation as it
-> won't be used to handle L2 TLB flush requests.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I think it's worth using stronger language; handling TLB flushes for L2 _can't_
-use sparse_set_to_vcpu_mask() because KVM has no idea how to translate an L2
-vCPU index to an L1 vCPU.  I found the above mildly confusing because it didn't
-call out "vp_bitmap" and so I assumed the note referred to yet another sparse_banks
-"allocation".  And while vp_bitmap is related to sparse_banks, it tracks something
-entirely different.
+[ Upstream commit 6741e11880003e35802d78cc58035057934f4dab ]
 
-Something like?
+The VCAP IS2 TCAM is looked up twice per packet, and each filter can be
+configured to only match during the first, second lookup, or both, or
+none.
 
-Note: sparse_set_to_vcpu_mask() can never be used to handle L2 requests as
-KVM can't translate L2 vCPU indices to L1 vCPUs, i.e. its vp_bitmap array
-is still bounded by the number of L1 vCPUs and so can remain an on-stack
-allocation.
+The blamed commit wrote the code for making VCAP IS2 filters match only
+on the given lookup. But right below that code, there was another line
+that explicitly made the lookup a "don't care", and this is overwriting
+the lookup we've selected. So the code had no effect.
 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/include/asm/kvm_host.h | 3 +++
->  arch/x86/kvm/hyperv.c           | 6 ++++--
->  2 files changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 058061621872..837c07e213de 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -619,6 +619,9 @@ struct kvm_vcpu_hv {
->  	} cpuid_cache;
->  
->  	struct kvm_vcpu_hv_tlb_flush_ring tlb_flush_ring[HV_NR_TLB_FLUSH_RINGS];
-> +
-> +	/* Preallocated buffer for handling hypercalls passing sparse vCPU set */
-> +	u64 sparse_banks[64];
+Some of the more noticeable effects of having filters match on both
+lookups:
 
-Shouldn't this be HV_MAX_SPARSE_VCPU_BANKS?
+- in "tc -s filter show dev swp0 ingress", we see each packet matching a
+  VCAP IS2 filter counted twice. This throws off scripts such as
+  tools/testing/selftests/net/forwarding/tc_actions.sh and makes them
+  fail.
+
+- a "tc-drop" action offloaded to VCAP IS2 needs a policer as well,
+  because once the CPU port becomes a member of the destination port
+  mask of a packet, nothing removes it, not even a PERMIT/DENY mask mode
+  with a port mask of 0. But VCAP IS2 rules with the POLICE_ENA bit in
+  the action vector can only appear in the first lookup. What happens
+  when a filter matches both lookups is that the action vector is
+  combined, and this makes the POLICE_ENA bit ineffective, since the
+  last lookup in which it has appeared is the second one. In other
+  words, "tc-drop" actions do not drop packets for the CPU port, dropped
+  packets are still seen by software unless there was an FDB entry that
+  directed those packets to some other place different from the CPU.
+
+The last bit used to work, because in the initial commit b596229448dd
+("net: mscc: ocelot: Add support for tcam"), we were writing the FIRST
+field of the VCAP IS2 half key with a 1, not with a "don't care".
+The change to "don't care" was made inadvertently by me in commit
+c1c3993edb7c ("net: mscc: ocelot: generalize existing code for VCAP"),
+which I just realized, and which needs a separate fix from this one,
+for "stable" kernels that lack the commit blamed below.
+
+Fixes: 226e9cd82a96 ("net: mscc: ocelot: only install TCAM entries into a specific lookup and PAG")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/mscc/ocelot_vcap.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index e650afef12af..6c643936c675 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -373,7 +373,6 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
+ 			 OCELOT_VCAP_BIT_0);
+ 	vcap_key_set(vcap, &data, VCAP_IS2_HK_IGR_PORT_MASK, 0,
+ 		     ~filter->ingress_port_mask);
+-	vcap_key_bit_set(vcap, &data, VCAP_IS2_HK_FIRST, OCELOT_VCAP_BIT_ANY);
+ 	vcap_key_bit_set(vcap, &data, VCAP_IS2_HK_HOST_MATCH,
+ 			 OCELOT_VCAP_BIT_ANY);
+ 	vcap_key_bit_set(vcap, &data, VCAP_IS2_HK_L2_MC, filter->dmac_mc);
+-- 
+2.35.1
+
+
+
