@@ -2,100 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E3BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E05C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243321AbiEPMBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        id S233965AbiEPMEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243459AbiEPMAO (ORCPT
+        with ESMTP id S229781AbiEPMD5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 08:00:14 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B66B1707C;
-        Mon, 16 May 2022 04:59:44 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id i40so2959573eda.7;
-        Mon, 16 May 2022 04:59:44 -0700 (PDT)
+        Mon, 16 May 2022 08:03:57 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D181F1EC65
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:03:53 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id pt3-20020a17090b3d0300b001df448c8d79so3012023pjb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:03:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=U5klBQd+5VVDxjdh+quG2QVbCvgSx+FMLRBxcvrncEk=;
-        b=CIjZSaFko+8bhEs+vM+NHZRLIWaxag02GeoxPgnAnBPYuHptRPYOxjhBh4yiPk3KWi
-         lImIw6IM6aXA893VEOO5ACf6D0mIsHIaHMEqAhmJsTNy/mUTCpuRnmZzxtJcDrmX21Mc
-         c2uP4QbHlnJ9tlYnI5K6rRzIYXUU6UCbI3p2x2UStYk8HT2lEkHRAjSylYg+dq/pEiK+
-         4SrDV5LWLog34KJLk2Ef9uAe1T37AG+KCE2BxDMW2LZQayXcrk6uJx6n7enSwnmGq913
-         U9V8so1/AHdkDzGBXyiwYPxYaEpgZCOwgKS+ooKUxcZOpxlOZmm0Ew8l3C5p757jKtdw
-         xgvw==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=R84IxflJzQsjcs6liOC1xGi2RLfZVO/J/zvMOYtMBKI=;
+        b=W7DK2qATwEyfvh21pVCPdp+fSj3B28j0KvO+lqsOPxPZIH7RUOgXti2vLaZX56uPLi
+         Zf54oYdtq6IyZAvY5uSVv4DttuV81ENkrczCOrwjaDIK6BuZ9TEuvUnmtPYCDQda5SK1
+         2UJO3Wpu94Gdhwd/Yp8g9Rz4sXJ3VK/C2xxsZHY0ElYNMbFV7cttoOT3unYS/7uyE5ZQ
+         PCp8z3w4j1eNrioDSgF9sfHye+GKmDpwe/cqZLfIukhxqI9gEH+uocUTdY3ZuzdW8+Rr
+         8/PJoYZ+p6cGNJWT50couq1k2JPjXlYhEQyNWCCb7k0tVbkNVfl77lsAuuK09mYxx+sm
+         4Ttw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=U5klBQd+5VVDxjdh+quG2QVbCvgSx+FMLRBxcvrncEk=;
-        b=DqRqK6KqLmZPKYYTGmK7K03mQ/i/pUmYy+SeF7sKpnPJNtKNIgg324KKEI5iHNwlAP
-         DKWiA/5q74pmu94SMg125GjmqLDPYeb8jtxjo3OSi5oniQMYbUV0gagUo4ts2J0Juzdu
-         kTFFPUpCOdI5acCkk55AC3sMG41tu8pbkfx2daQMHevWXPQu++RMj88xCDhN1R7yRxPs
-         JQw/m29dIDZ4el5qzNrx5R3nSAZ4DRhtdTRfgnwVDMJz1djXXDYZsty7xdrYitMKdnF6
-         E55Yz28k3flqFdFWTDnEBmWyNlj8q2ASD6ldAl69UZ7v65BEBDEU+OGoqxycIvbZzzZ2
-         B2xA==
-X-Gm-Message-State: AOAM5309CWJe7+gMlFIt+28iKcXs2mlPBw4ynGrjP3DJgh4X0XuCHS+C
-        coSsIEtWJqM95SSeGhhO764=
-X-Google-Smtp-Source: ABdhPJx1JBFiuRd9VuE61SGGK9mBPT3srwZOBVe7F0qmyVKKeBVfcHi5qM+43lnihoMWKUkZKugJ8A==
-X-Received: by 2002:a05:6402:354a:b0:427:d0e1:8ef3 with SMTP id f10-20020a056402354a00b00427d0e18ef3mr12799717edd.66.1652702382458;
-        Mon, 16 May 2022 04:59:42 -0700 (PDT)
-Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
-        by smtp.gmail.com with ESMTPSA id s18-20020a170906779200b006f3ef214dacsm3711008ejm.18.2022.05.16.04.59.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R84IxflJzQsjcs6liOC1xGi2RLfZVO/J/zvMOYtMBKI=;
+        b=6ZCr5RcXFOGCeyaf3w8fOr0NFKPoKeu8dkBtmDMVkjosVXzm6557ffZfnCfYmoc0Xs
+         e7iTHBA8m5dvZNZl7KIRxpXxpsFBTAGjgjSoNAwRZgz5NQgM56ZpgbW78UTQZwNwliHP
+         Pne/tcYJ6ZN08ROHWD/MHAGJQFYw+0LLAqdhVJLBgjH26Io/mzZsHjCye4/cm+ULr2Sn
+         ShBqFyWYOMkkBfBMG68ijk5YeExQhr9+vrfWhNeXN1wcCVuuJ7fnrsUkhuRJ0yplQgRq
+         DNvvPN2Dazqmqu6Jhv7IUFIbnwF7MiE3Txr1uj65RWPhmoP3dLqyRZ6AaX2PgFMfejPT
+         jWSQ==
+X-Gm-Message-State: AOAM530PRrDP6kbR4cVoZ9cEMppgQ1ot26NT2Qg+DCoHwi2vevL/Unn2
+        9PUi+U0DbhwceVejWi9IJyjh+w==
+X-Google-Smtp-Source: ABdhPJzxfHYjLSn309uprN3vFeZ39gfOTL/8yBip6LIvpYKa3y23U3WenfTaxzCyUzgFpLJTj7UIKw==
+X-Received: by 2002:a17:90b:48d1:b0:1df:4fc8:c2d7 with SMTP id li17-20020a17090b48d100b001df4fc8c2d7mr5686526pjb.45.1652702633331;
+        Mon, 16 May 2022 05:03:53 -0700 (PDT)
+Received: from localhost ([139.177.225.234])
+        by smtp.gmail.com with ESMTPSA id n22-20020a056a0007d600b0050dc7628139sm7015117pfu.19.2022.05.16.05.03.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 04:59:42 -0700 (PDT)
-From:   Max Krummenacher <max.oss.09@gmail.com>
-To:     max.krummenacher@toradex.com
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 16/17] ARM: dts: imx6q-apalis: backlight pwm: Adapt brightness steps
-Date:   Mon, 16 May 2022 13:58:44 +0200
-Message-Id: <20220516115846.58328-17-max.oss.09@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220516115846.58328-1-max.oss.09@gmail.com>
-References: <20220516115846.58328-1-max.oss.09@gmail.com>
+        Mon, 16 May 2022 05:03:52 -0700 (PDT)
+Date:   Mon, 16 May 2022 20:03:49 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Oscar Salvador <osalvador@suse.de>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v12 4/7] mm: hotplug: introduce
+ SECTION_CANNOT_OPTIMIZE_VMEMMAP
+Message-ID: <YoI9pdLzB/V9Kw1y@FVFYT0MHHV2J.usts.net>
+References: <20220516102211.41557-1-songmuchun@bytedance.com>
+ <20220516102211.41557-5-songmuchun@bytedance.com>
+ <YoIptjs65NgT1/ed@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoIptjs65NgT1/ed@localhost.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Krummenacher <max.krummenacher@toradex.com>
+On Mon, May 16, 2022 at 12:38:46PM +0200, Oscar Salvador wrote:
+> On Mon, May 16, 2022 at 06:22:08PM +0800, Muchun Song wrote:
+> > --- a/mm/sparse.c
+> > +++ b/mm/sparse.c
+> > @@ -913,6 +913,13 @@ int __meminit sparse_add_section(int nid, unsigned long start_pfn,
+> >  	ms = __nr_to_section(section_nr);
+> >  	set_section_nid(section_nr, nid);
+> >  	__section_mark_present(ms, section_nr);
+> > +	/*
+> > +	 * Mark whole section as non-optimizable once there is a subsection
+> > +	 * whose vmemmap pages are allocated from alternative allocator. The
+> > +	 * early section is always optimizable.
+> > +	 */
+> > +	if (!early_section(ms) && altmap)
+> > +		section_mark_cannot_optimize_vmemmap(ms);
+> 
+> Because no one expects those sections to be removed?
+> IIRC, early_section + altmap only happened in case of sub-section pmem
+> scenario?
 
-Adapt the brightness steps as the backlight doesn't light up
-for very low duty cycles.
+Right. The commit ba72b4c8cf60 ("mm/sparsemem: support sub-section hotplug")
+has more information.
 
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
----
+> I guess my question is: can we really have early_sections coming
+> from alternative allocator?
+>
 
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+We can't. The early section does not consider partially being
+populated currently.
 
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index 49669caac8b7..62d9d907432c 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -20,8 +20,8 @@
- 
- 	backlight: backlight {
- 		compatible = "pwm-backlight";
--		brightness-levels = <0 4 8 16 32 64 128 255>;
--		default-brightness-level = <6>;
-+		brightness-levels = <0 45 63 88 119 158 203 255>;
-+		default-brightness-level = <4>;
- 		enable-gpios = <&gpio3 13 GPIO_ACTIVE_HIGH>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_gpio_bl_on>;
--- 
-2.20.1
+> I think this should be spelled out more.
+
+I think you mean add some comments here to describe the case
+of early_section + altmap, right?
+
+Thanks.
 
