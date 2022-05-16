@@ -2,162 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C735C38A06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 075D3C38A04
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347819AbiEPT6L (ORCPT
+        id S1347634AbiEPT6E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33112 "EHLO
+        Mon, 16 May 2022 15:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348163AbiEPTwm (ORCPT
+        with ESMTP id S1347900AbiEPTwY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:52:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091534552C;
-        Mon, 16 May 2022 12:48:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A8F3B81607;
-        Mon, 16 May 2022 19:48:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70487C385AA;
-        Mon, 16 May 2022 19:48:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730492;
-        bh=/Oks+nr+JGxMqRqVqWtXxyA40Fk18XVRbWUKGWN7zWM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mzbCgZ1uEg6tJNziPELf3qNQPZrmbK0pMzbWlkTMUSNdJ3t0pn/3P/9vZDK8Axmzr
-         msDxk2jFp0k5/xt1SXO2HKOgnthJQTr50IWFp7jzuSJ4Fp/89bnjsQEOWJMNJYJ8I/
-         tcR/ADi+TFvmAz7ZkUpDEMckjX0MM3nqyOpwQbwY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 009/102] net: mscc: ocelot: avoid corrupting hardware counters when moving VCAP filters
-Date:   Mon, 16 May 2022 21:35:43 +0200
-Message-Id: <20220516193624.262148362@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 16 May 2022 15:52:24 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734A444A39
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:48:04 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id q203so1312681iod.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:48:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jv0Y4sH5q/+cOZfXrfwTFO+h4KwTbyJ3ZtbRwi7S/Lw=;
+        b=ew4Tb8MqwPRgVuYAPzp9N7lmT/ezFUb7lubqLPv59RNbYaQaoA5L8MiagwGWoqJS+m
+         mJSCtEETbHjNrCvgJ3WxZXwSyGLzGP0KKuvPZ5QT89vJo9753DV3+XFIuNU2CrNgdlkq
+         AGGAZK+plrK3X/ebH1vd4e3nGfSjYYXbUQz5w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jv0Y4sH5q/+cOZfXrfwTFO+h4KwTbyJ3ZtbRwi7S/Lw=;
+        b=oLSPA3ZddYWzBMlE0+CktBKDiwsQvQFnwARRh6l2rsauwIO5MYhGousD1t4QvdILas
+         S3Rao7ulN0qAVLXXiehOi5xCTAyfEge8PkYkwjaw9HNrzD78oGtgW8w8E6rVzU5AxW0Q
+         zIELlnllsw99LTFbssTj9UPAtamV/q0/6u4p6diu+FfAYR6LKiuU4mw2GyqQCShQxdCC
+         jhbyNHqagxnWKvlz3xVd4y5DK9wU8APhN3dLusKQJgFuJ3R54SsCHybpPqY+trYBzTpr
+         KXTSMgwtmiL4Fg80CY47GEYQZGue6DWZhZALZsBArLGeywsPj8mvHlwLisFTGvbyZ/Hz
+         9dCA==
+X-Gm-Message-State: AOAM533uVd7JcIuGMXwixBrlq/mAIMyMYsutITymd/JZw6VGBL3ENmzn
+        /Ye6tm1vC2aq8+ikDeWO2Xp88A==
+X-Google-Smtp-Source: ABdhPJyAdniB3khueIn2Dh+Ov6csoMG5jsxnWQuJefh/OMfBiYSo9cbu73uQvNWHPrzQHmVDZjn2ww==
+X-Received: by 2002:a05:6638:2191:b0:32b:b7af:1228 with SMTP id s17-20020a056638219100b0032bb7af1228mr10056071jaj.13.1652730482764;
+        Mon, 16 May 2022 12:48:02 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id p12-20020a056e02104c00b002cd7dc16ae4sm88740ilj.1.2022.05.16.12.48.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 12:48:02 -0700 (PDT)
+Subject: Re: [PATCH] kselftests/ir : Improve readability of modprobe error
+ message
+To:     Gautam Menghani <gautammenghani201@gmail.com>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220513190721.16482-1-gautammenghani201@gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <a763b159-0072-b883-5e47-65f86bec66dd@linuxfoundation.org>
+Date:   Mon, 16 May 2022 13:48:01 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220513190721.16482-1-gautammenghani201@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 5/13/22 1:07 PM, Gautam Menghani wrote:
+> Improve the readability of error message which says module not found.
+> The new behaviour is consistent with the modprobe command.
+> 
+> Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+> ---
+>   tools/testing/selftests/ir/ir_loopback.sh | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/ir/ir_loopback.sh b/tools/testing/selftests/ir/ir_loopback.sh
+> index b90dc9939f45..aff9299c9416 100755
+> --- a/tools/testing/selftests/ir/ir_loopback.sh
+> +++ b/tools/testing/selftests/ir/ir_loopback.sh
+> @@ -10,7 +10,7 @@ if [ $UID != 0 ]; then
+>   fi
+>   
+>   if ! /sbin/modprobe -q -n rc-loopback; then
+> -        echo "ir_loopback: module rc-loopback is not found [SKIP]"
+> +        echo "ir_loopback: module rc-loopback is not found in /lib/modules/`uname -r` [SKIP]"
+>           exit $ksft_skip
+>   fi
+>   
+> 
 
-[ Upstream commit 93a8417088ea570b5721d2b526337a2d3aed9fa3 ]
+Applied to linux-kselftest next for 5.19-rc1
 
-Given the following order of operations:
-
-(1) we add filter A using tc-flower
-(2) we send a packet that matches it
-(3) we read the filter's statistics to find a hit count of 1
-(4) we add a second filter B with a higher preference than A, and A
-    moves one position to the right to make room in the TCAM for it
-(5) we send another packet, and this matches the second filter B
-(6) we read the filter statistics again.
-
-When this happens, the hit count of filter A is 2 and of filter B is 1,
-despite a single packet having matched each filter.
-
-Furthermore, in an alternate history, reading the filter stats a second
-time between steps (3) and (4) makes the hit count of filter A remain at
-1 after step (6), as expected.
-
-The reason why this happens has to do with the filter->stats.pkts field,
-which is written to hardware through the call path below:
-
-               vcap_entry_set
-               /      |      \
-              /       |       \
-             /        |        \
-            /         |         \
-es0_entry_set   is1_entry_set   is2_entry_set
-            \         |         /
-             \        |        /
-              \       |       /
-        vcap_data_set(data.counter, ...)
-
-The primary role of filter->stats.pkts is to transport the filter hit
-counters from the last readout all the way from vcap_entry_get() ->
-ocelot_vcap_filter_stats_update() -> ocelot_cls_flower_stats().
-The reason why vcap_entry_set() writes it to hardware is so that the
-counters (saturating and having a limited bit width) are cleared
-after each user space readout.
-
-The writing of filter->stats.pkts to hardware during the TCAM entry
-movement procedure is an unintentional consequence of the code design,
-because the hit count isn't up to date at this point.
-
-So at step (4), when filter A is moved by ocelot_vcap_filter_add() to
-make room for filter B, the hardware hit count is 0 (no packet matched
-on it in the meantime), but filter->stats.pkts is 1, because the last
-readout saw the earlier packet. The movement procedure programs the old
-hit count back to hardware, so this creates the impression to user space
-that more packets have been matched than they really were.
-
-The bug can be seen when running the gact_drop_and_ok_test() from the
-tc_actions.sh selftest.
-
-Fix the issue by reading back the hit count to tmp->stats.pkts before
-migrating the VCAP filter. Sure, this is a best-effort technique, since
-the packets that hit the rule between vcap_entry_get() and
-vcap_entry_set() won't be counted, but at least it allows the counters
-to be reliably used for selftests where the traffic is under control.
-
-The vcap_entry_get() name is a bit unintuitive, but it only reads back
-the counter portion of the TCAM entry, not the entire entry.
-
-The index from which we retrieve the counter is also a bit unintuitive
-(i - 1 during add, i + 1 during del), but this is the way in which TCAM
-entry movement works. The "entry index" isn't a stored integer for a
-TCAM filter, instead it is dynamically computed by
-ocelot_vcap_block_get_filter_index() based on the entry's position in
-the &block->rules list. That position (as well as block->count) is
-automatically updated by ocelot_vcap_filter_add_to_block() on add, and
-by ocelot_vcap_block_remove_filter() on del. So "i" is the new filter
-index, and "i - 1" or "i + 1" respectively are the old addresses of that
-TCAM entry (we only support installing/deleting one filter at a time).
-
-Fixes: b596229448dd ("net: mscc: ocelot: Add support for tcam")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/mscc/ocelot_vcap.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index c01cbc4f7a1a..732a4ef22518 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -1152,6 +1152,8 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
- 		struct ocelot_vcap_filter *tmp;
- 
- 		tmp = ocelot_vcap_block_find_filter_by_index(block, i);
-+		/* Read back the filter's counters before moving it */
-+		vcap_entry_get(ocelot, i - 1, tmp);
- 		vcap_entry_set(ocelot, i, tmp);
- 	}
- 
-@@ -1210,6 +1212,8 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
- 		struct ocelot_vcap_filter *tmp;
- 
- 		tmp = ocelot_vcap_block_find_filter_by_index(block, i);
-+		/* Read back the filter's counters before moving it */
-+		vcap_entry_get(ocelot, i + 1, tmp);
- 		vcap_entry_set(ocelot, i, tmp);
- 	}
- 
--- 
-2.35.1
-
-
-
+thanks,
+-- Shuah
