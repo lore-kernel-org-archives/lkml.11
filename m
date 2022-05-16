@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239318AbiEPTpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44742 "EHLO
+        id S1346101AbiEPTpr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346094AbiEPTmu (ORCPT
+        with ESMTP id S1346107AbiEPTmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:42:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725BA3F88B;
-        Mon, 16 May 2022 12:41:26 -0700 (PDT)
+        Mon, 16 May 2022 15:42:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E573F33C;
+        Mon, 16 May 2022 12:41:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBBC5614CF;
-        Mon, 16 May 2022 19:41:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCCF9C34100;
-        Mon, 16 May 2022 19:41:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76608B8160F;
+        Mon, 16 May 2022 19:41:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4452C385AA;
+        Mon, 16 May 2022 19:41:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730085;
-        bh=PzICwLjlQo99NgdyMEC1XtS6+gYXW+gJUuLaUJcbn10=;
+        s=korg; t=1652730101;
+        bh=BTB41/R4kJKDuRFtO1AJT/GmcZ1Qb1obV1+MMcxmR6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gx1Ct0czECIb4ET8ANbUwsd2YlM19ePT2AwRXSrMSfMLw0QkEI/fK93lijkje5M13
-         OUqNeUMzMCF77a6Ndnw6r5gBrn0d0jHjjNhIL+WIMTpmfElTHbzA9Is4Z0Uocd4uva
-         gkFAchkbUjcQVoXI+K0Xx4pnxEFX60kXTOA67OMg=
+        b=w6PIbCaiOtq8n+3445NzxGdmGS9hWADa8OrVBpdpbULYOEi53T1ib77+++k3oA8qh
+         cebAxGwwT81x0ggxwPdVpz/qyF3cQQU4ar2qstoL6CLrhPV2R1P95LJRA6RZGGWjTh
+         jhp+v97+uEH0DvQ5jKxO1sm/DBCW7ZacM+Hc/owU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 08/32] s390/ctcm: fix variable dereferenced before check
-Date:   Mon, 16 May 2022 21:36:22 +0200
-Message-Id: <20220516193615.024944143@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH 4.19 32/32] tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
+Date:   Mon, 16 May 2022 21:36:46 +0200
+Message-Id: <20220516193615.726528551@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
 References: <20220516193614.773450018@linuxfoundation.org>
@@ -50,44 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 2c50c6867c85afee6f2b3bcbc50fc9d0083d1343 ]
+commit 447ee1516f19f534a228dda237eddb202f23e163 upstream.
 
-Found by cppcheck and smatch.
-smatch complains about
-drivers/s390/net/ctcm_sysfs.c:43 ctcm_buffer_write() warn: variable dereferenced before check 'priv' (see line 42)
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Fixes: 3c09e2647b5e ("ctcm: rename READ/WRITE defines to avoid redefinitions")
-Reported-by: Colin Ian King <colin.i.king@gmail.com>
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Baruch Siach <baruch@tkos.co.il>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220505124621.1592697-1-yangyingliang@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/net/ctcm_sysfs.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/digicolor-usart.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/s390/net/ctcm_sysfs.c b/drivers/s390/net/ctcm_sysfs.c
-index ded1930a00b2..e3813a7aa5e6 100644
---- a/drivers/s390/net/ctcm_sysfs.c
-+++ b/drivers/s390/net/ctcm_sysfs.c
-@@ -39,11 +39,12 @@ static ssize_t ctcm_buffer_write(struct device *dev,
- 	struct ctcm_priv *priv = dev_get_drvdata(dev);
- 	int rc;
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -472,10 +472,10 @@ static int digicolor_uart_probe(struct p
+ 		return PTR_ERR(uart_clk);
  
--	ndev = priv->channel[CTCM_READ]->netdev;
--	if (!(priv && priv->channel[CTCM_READ] && ndev)) {
-+	if (!(priv && priv->channel[CTCM_READ] &&
-+	      priv->channel[CTCM_READ]->netdev)) {
- 		CTCM_DBF_TEXT(SETUP, CTC_DBF_ERROR, "bfnondev");
- 		return -ENODEV;
- 	}
-+	ndev = priv->channel[CTCM_READ]->netdev;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	dp->port.mapbase = res->start;
+ 	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(dp->port.membase))
+ 		return PTR_ERR(dp->port.membase);
++	dp->port.mapbase = res->start;
  
- 	rc = kstrtouint(buf, 0, &bs1);
- 	if (rc)
--- 
-2.35.1
-
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0)
 
 
