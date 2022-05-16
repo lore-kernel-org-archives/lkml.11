@@ -2,94 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC15BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 23:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0374BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 23:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349052AbiEPXtf (ORCPT
+        id S1349301AbiEPXtx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 19:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
+        Mon, 16 May 2022 19:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348163AbiEPXta (ORCPT
+        with ESMTP id S1349248AbiEPXtu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 19:49:30 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7144A3E5DF;
-        Mon, 16 May 2022 16:49:29 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-f189b07f57so8783064fac.1;
-        Mon, 16 May 2022 16:49:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RVhdYRsH1wOBb6tq7hHf/sKGXBHaPx+8CRN3GtKz0gI=;
-        b=VSOQoPnOy8osVldQ0JwVDTYvWM3/EyD9PV06enstwRLmpm+jLcj9+Jcrb5csxza22/
-         aFoDzUbdtJMPZxDM7n+vyxFburItyr+hfU3K3Ta+h0WtG6nUG2/np8NyeJQPwC/cIUjL
-         Dh1AI2Y1YN6ufAq6vk/5LUZ+EuEu322nPzsaAgMRYVL4fZjC3ei2lBL+2EEl0p/itzz8
-         n2tPl8aAyaC2131Q+bmZnAhLMDAwsNaFZinJ2xcuS+wJP6iXIkQvPLcmF0txENQzq7Qy
-         hFUWLhPcxqiMpPxQWu92EIDKBJoloUY2c69HoASrz93hocNUT1OIMcY+gpPHoqvvlXoE
-         UgXw==
-X-Gm-Message-State: AOAM533srDcxat7Mz9TrUEfJVemZJY3QCD7wLY5ATblqJ/5vC5OjoEbE
-        8+B4dIoWGlEalVJqYkcIDg==
-X-Google-Smtp-Source: ABdhPJw64qmMf6hF6uFHOu6opKTOZ5XCwwNHoa14aVFcSxQjLzTHedcTcj7LzCiWChH+py5Al0JXrw==
-X-Received: by 2002:a05:6870:73c9:b0:f1:86e3:fa15 with SMTP id a9-20020a05687073c900b000f186e3fa15mr6527074oan.248.1652744968802;
-        Mon, 16 May 2022 16:49:28 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id n20-20020a9d7414000000b0060603221276sm4361473otk.70.2022.05.16.16.49.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 16:49:28 -0700 (PDT)
-Received: (nullmailer pid 3564415 invoked by uid 1000);
-        Mon, 16 May 2022 23:49:26 -0000
-Date:   Mon, 16 May 2022 18:49:26 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Yassine Oudjana <yassine.oudjana@gmail.com>
-Cc:     linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-clk@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Miles Chen <miles.chen@mediatek.com>,
-        Ikjoon Jang <ikjn@chromium.org>,
-        Sam Shih <sam.shih@mediatek.com>, linux-kernel@vger.kernel.org,
-        Weiyi Lu <weiyi.lu@mediatek.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        devicetree@vger.kernel.org,
-        Yassine Oudjana <y.oudjana@protonmail.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [PATCH 02/13] dt-bindings: reset: Add MT6735 reset bindings
-Message-ID: <20220516234926.GA3564356-robh@kernel.org>
-References: <20220504122601.335495-1-y.oudjana@protonmail.com>
- <20220504122601.335495-3-y.oudjana@protonmail.com>
+        Mon, 16 May 2022 19:49:50 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182DC41632;
+        Mon, 16 May 2022 16:49:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652744987; x=1684280987;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=C0wuLfmuidoelOjih+JbLTyUs/xz5Dgrdv22ImXK0X0=;
+  b=MJ5M/NCs1oX0kqQ/jTe3V2SGRNmb9LcXc82h/cXodYired4V0sFFb73Y
+   TYn4w6k8MuFciCxijZHjdcLM/ClkJCw/ilVBJgMQOdVSCzyrvxWseRdgi
+   kbd675+1lCcrAyj1kZnfEh1Ltm484Kj7FYSHFU0s1oSOeTV8UhxzUpXEP
+   mPJaWfqDmsvyL7iBnXXAnQSFung6O5nblaIdaFFFH1iXvsNRScZrtpb3J
+   aClggCTVhmwD93472mcdJBwqRM3O7NRP6TVGI5Ynu3aGuRKU01Z/F7z5K
+   H3ySF5WTRJlVtW/xRsHU6Fmn9i9SDaGdjk8j4xVT0zooOlP46jg6hqqJZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="357408345"
+X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
+   d="scan'208";a="357408345"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 16:49:46 -0700
+X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
+   d="scan'208";a="522688208"
+Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.209.36.153])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 16:49:46 -0700
+From:   Russ Weight <russell.h.weight@intel.com>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        lee.jones@linaro.org, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
+        matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        Russ Weight <russell.h.weight@intel.com>
+Subject: [PATCH v20 1/5] mfd: intel-m10-bmc: Rename n3000bmc-secure driver
+Date:   Mon, 16 May 2022 16:49:37 -0700
+Message-Id: <20220516234941.592886-2-russell.h.weight@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220516234941.592886-1-russell.h.weight@intel.com>
+References: <20220516234941.592886-1-russell.h.weight@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220504122601.335495-3-y.oudjana@protonmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 04 May 2022 16:25:51 +0400, Yassine Oudjana wrote:
-> From: Yassine Oudjana <y.oudjana@protonmail.com>
-> 
-> Add reset definitions for Mediatek MT6735 resets provided by
-> infracfg and pericfg.
-> 
-> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
-> ---
->  MAINTAINERS                                   |  2 ++
->  .../reset/mediatek,mt6735-infracfg.h          | 31 +++++++++++++++++++
->  .../reset/mediatek,mt6735-pericfg.h           | 31 +++++++++++++++++++
->  3 files changed, 64 insertions(+)
->  create mode 100644 include/dt-bindings/reset/mediatek,mt6735-infracfg.h
->  create mode 100644 include/dt-bindings/reset/mediatek,mt6735-pericfg.h
-> 
+The n3000bmc-secure driver has changed to n3000bmc-sec-update. Update
+the name in the list of the intel-m10-bmc sub-drivers.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Russ Weight <russell.h.weight@intel.com>
+---
+v20:
+  - No change
+v19:
+  - No change
+v18:
+  - No change
+v17:
+  - This is a new patch to change in the name of the secure update
+    driver.
+---
+ drivers/mfd/intel-m10-bmc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mfd/intel-m10-bmc.c b/drivers/mfd/intel-m10-bmc.c
+index 8db3bcf5fccc..f4d0d72573c8 100644
+--- a/drivers/mfd/intel-m10-bmc.c
++++ b/drivers/mfd/intel-m10-bmc.c
+@@ -26,7 +26,7 @@ static struct mfd_cell m10bmc_d5005_subdevs[] = {
+ static struct mfd_cell m10bmc_pacn3000_subdevs[] = {
+ 	{ .name = "n3000bmc-hwmon" },
+ 	{ .name = "n3000bmc-retimer" },
+-	{ .name = "n3000bmc-secure" },
++	{ .name = "n3000bmc-sec-update" },
+ };
+ 
+ static struct mfd_cell m10bmc_n5010_subdevs[] = {
+-- 
+2.25.1
+
