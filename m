@@ -2,133 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB49DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 02:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A17C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 02:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239321AbiEPCBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 22:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
+        id S239170AbiEPCEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 22:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239284AbiEPCBd (ORCPT
+        with ESMTP id S231318AbiEPCEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 22:01:33 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43DDE13CC8
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 19:01:28 -0700 (PDT)
+        Sun, 15 May 2022 22:04:04 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656E9192BE
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 19:04:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652666488; x=1684202488;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3Hgd203HC0g1TyuguE1zfaQq4/xIrHOAw15KA4w3UCI=;
-  b=QoL5oRg1QK9im9fU54zVQ6CpArV2ppg8t5DrLYTreMM56e+Wsz/a7tJV
-   OoriwvPrhuMKbLvNWLUbBrbqdRaZ5ucvkj/XpPL0dxgCBGEmXllfl+tH3
-   R62XSSuwVpjws09MRh2XsZg/nrkoy96M/P4KpiRzFdmxmUrJiyBWEADEa
-   ZOpEXpcY5oed7L+Z+b1EhARtD8WrhnTMkQequYNNiTmHiPPplq3YzBB/N
-   nL+vLMFAI7ujJDIPE3z6GmFiv2QTBQrCGm8KFxl9M+Qr5f7ggEvpE9f+Y
-   JEmHUBejBe6y7uzq8/sTrVElOvrnYSVw1G+jZ/b0a9WbioEHQSkIoj50J
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="270659018"
+  t=1652666643; x=1684202643;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mw8DJE8yvOSuw3spkKWsSAhd7sIYW0oNHvTKwxzir2Y=;
+  b=ZArC2NGzT0y65F6cs+UgYiPWDubNdpfq+dJZ0Ty3J7Mwcts+9kgSi4dl
+   Jtf4TA+P6a/Sd/Dk7p7lcby5Oxci0GeI4VQQ8LGloFb1ZOS3zUGCgQK8u
+   XIO6LTE1unIC6Dc2cMCNniRnQMbQOKtTmuryCcUrhCwzmxCJvNg78VUdW
+   bC0rKNzuGtGzPVWFd004stWawg2miJt7JrArvlIinz7AAauq2mdjh7mCZ
+   OE3RCKAjZUDsbNjAvwSlK0JwaC963wP8h0BNpczBVCXvY6txVFLXjhQXM
+   oJZfI58Za5ydpdCyBeSDyDaJ4HIt+wgbntoOLXAMyWiYAf/fkQ1Fk0+DG
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="252778603"
 X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
-   d="scan'208";a="270659018"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2022 19:01:27 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="252778603"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2022 19:04:01 -0700
 X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
-   d="scan'208";a="713172191"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 15 May 2022 19:01:24 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>
-Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 4/5] iommu: Use blocking domain for empty domain attaching
-Date:   Mon, 16 May 2022 09:57:58 +0800
-Message-Id: <20220516015759.2952771-5-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220516015759.2952771-1-baolu.lu@linux.intel.com>
-References: <20220516015759.2952771-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="522254130"
+Received: from yanjiepa-mobl.ccr.corp.intel.com (HELO [10.249.192.19]) ([10.249.192.19])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2022 19:03:56 -0700
+Message-ID: <90619325-ea39-410e-2e8b-a38895f0dabf@linux.intel.com>
+Date:   Mon, 16 May 2022 10:03:52 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Cc:     baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 03/12] iommu: Add attach/detach_dev_pasid domain ops
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
+ <20220510061738.2761430-4-baolu.lu@linux.intel.com>
+ <20220510140238.GD49344@nvidia.com>
+ <f56ea479-aa82-37ae-91c3-754816a4ed8b@linux.intel.com>
+ <BN9PR11MB5276100AC9BBB7DE5CB800CF8CC89@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Yntrv+nq2t/IeVo2@myrica> <20220511120240.GY49344@nvidia.com>
+ <Ynywqxo4P+aEeS6c@myrica> <20220512115101.GU49344@nvidia.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220512115101.GU49344@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a NULL domain is about to set to a device, let's set the blocking
-domain instead.
+On 2022/5/12 19:51, Jason Gunthorpe wrote:
+> On Thu, May 12, 2022 at 08:00:59AM +0100, Jean-Philippe Brucker wrote:
+> 
+>>> It is not "missing" it is just renamed to blocking_domain->ops->set_dev_pasid()
+>>>
+>>> The implementation of that function would be identical to
+>>> detach_dev_pasid.
+>>
+>>    attach(dev, pasid, sva_domain)
+>>    detach(dev, pasid, sva_domain)
+>>
+>> versus
+>>
+>>    set_dev_pasid(dev, pasid, sva_domain)
+>>    set_dev_pasid(dev, pasid, blocking)
+>>
+>> we loose the information of the domain previously attached, and the SMMU
+>> driver has to retrieve it to find the ASID corresponding to the mm.
+> 
+> It would be easy to have the old domain be an input as well - the core
+> code knows it.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/iommu.c | 35 +++--------------------------------
- 1 file changed, 3 insertions(+), 32 deletions(-)
+Thanks a lot for all suggestions. I have posted a follow-up series for
+this:
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dcbc55c9d8d7..ba0f427c2823 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2058,16 +2058,6 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
- 	return 0;
- }
- 
--static void __iommu_detach_device(struct iommu_domain *domain,
--				  struct device *dev)
--{
--	if (iommu_is_attach_deferred(dev))
--		return;
--
--	domain->ops->detach_dev(domain, dev);
--	trace_detach_device_from_domain(dev);
--}
--
- void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
- {
- 	struct iommu_group *group;
-@@ -2160,15 +2150,6 @@ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_attach_group);
- 
--static int iommu_group_do_detach_device(struct device *dev, void *data)
--{
--	struct iommu_domain *domain = data;
--
--	__iommu_detach_device(domain, dev);
--
--	return 0;
--}
--
- static int __iommu_group_set_domain(struct iommu_group *group,
- 				    struct iommu_domain *new_domain)
- {
-@@ -2177,19 +2158,9 @@ static int __iommu_group_set_domain(struct iommu_group *group,
- 	if (group->domain == new_domain)
- 		return 0;
- 
--	/*
--	 * New drivers should support default domains and so the detach_dev() op
--	 * will never be called. Otherwise the NULL domain represents some
--	 * platform specific behavior.
--	 */
--	if (!new_domain) {
--		if (WARN_ON(!group->domain->ops->detach_dev))
--			return -EINVAL;
--		__iommu_group_for_each_dev(group, group->domain,
--					   iommu_group_do_detach_device);
--		group->domain = NULL;
--		return 0;
--	}
-+	/* The NULL domain represents some platform specific behavior. */
-+	if (!new_domain)
-+		new_domain = group->blocking_domain;
- 
- 	/*
- 	 * Changing the domain is done by calling set_dev() on the new
--- 
-2.25.1
+https://lore.kernel.org/linux-iommu/20220516015759.2952771-1-baolu.lu@linux.intel.com/
 
+Let's discuss this there.
+
+Best regards,
+baolu
