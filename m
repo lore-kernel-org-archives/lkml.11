@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6223FC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CDE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349072AbiEPUcK (ORCPT
+        id S1349272AbiEPUcS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
+        Mon, 16 May 2022 16:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351017AbiEPUB4 (ORCPT
+        with ESMTP id S1351035AbiEPUB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA92F4756B;
-        Mon, 16 May 2022 12:56:26 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A536947556;
+        Mon, 16 May 2022 12:57:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5752D60FEB;
-        Mon, 16 May 2022 19:56:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66FEDC385AA;
-        Mon, 16 May 2022 19:56:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66548B81611;
+        Mon, 16 May 2022 19:57:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0D7C385AA;
+        Mon, 16 May 2022 19:56:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730985;
-        bh=wvVEqKubDLAU8d+EGjBw6OMLzgm5quhGvEY1JhEPk9g=;
+        s=korg; t=1652731019;
+        bh=dnvnD4wOYv/W41vvkBX2ig3zfn3cZ3W/OKvfDpWC2js=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pfIgqcMEXwU0Ul1lQVRkAN6711bp26H8ebBq9xwvb6EYwxVnu7GkDDsyfIGbk0PUb
-         pgtz2xqLqajRu923KKbo5ox6ZR9z5A4TqtZL293089F2Y/ZL5/t11w+i9Hwd9eu14z
-         j90gVVvz0Vkoqui9t3tqS85GEzuwK8Xf53a8kO6A=
+        b=aSIbHBXpwTW7M/UCLoxVCD5X4tSBfguv77s23zQO0oB9BH0f7tHcIqGfXoNvhbMk8
+         JTYqdHS7ZxoNRPW1rq0T+Na3rw3ze3pWSSBQevyq9F32kHLgcvcIy30zyszicc2/4a
+         zBF2BhEqN1TOcrLvafzXRKtcNSRYIPSRck00DeVM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 067/114] tcp: drop the hash_32() part from the index calculation
-Date:   Mon, 16 May 2022 21:36:41 +0200
-Message-Id: <20220516193627.416052786@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.17 077/114] tty: n_gsm: fix mux activation issues in gsm_config()
+Date:   Mon, 16 May 2022 21:36:51 +0200
+Message-Id: <20220516193627.697618705@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -51,41 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit e8161345ddbb66e449abde10d2fdce93f867eba9 ]
+commit edd5f60c340086891fab094ad61270d6c80f9ca4 upstream.
 
-In commit 190cc82489f4 ("tcp: change source port randomizarion at
-connect() time"), the table_perturb[] array was introduced and an
-index was taken from the port_offset via hash_32(). But it turns
-out that hash_32() performs a multiplication while the input here
-comes from the output of SipHash in secure_seq, that is well
-distributed enough to avoid the need for yet another hash.
+The current implementation activates the mux if it was restarted and opens
+the control channel if the mux was previously closed and we are now acting
+as initiator instead of responder, which is the default setting.
+This has two issues.
+1) No mux is activated if we keep all default values and only switch to
+initiator. The control channel is not allocated but will be opened next
+which results in a NULL pointer dereference.
+2) Switching the configuration after it was once configured while keeping
+the initiator value the same will not reopen the control channel if it was
+closed due to parameter incompatibilities. The mux remains dead.
 
-Suggested-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix 1) by always activating the mux if it is dead after configuration.
+Fix 2) by always opening the control channel after mux activation.
+
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220504081733.3494-2-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/inet_hashtables.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index cc5f66328b47..a5d57fa679ca 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2352,6 +2352,7 @@ static void gsm_copy_config_values(struc
  
- 	net_get_random_once(table_perturb,
- 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
--	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
-+	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
+ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ {
++	int ret = 0;
+ 	int need_close = 0;
+ 	int need_restart = 0;
  
- 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
- 	offset %= remaining;
--- 
-2.35.1
-
+@@ -2419,10 +2420,13 @@ static int gsm_config(struct gsm_mux *gs
+ 	 * FIXME: We need to separate activation/deactivation from adding
+ 	 * and removing from the mux array
+ 	 */
+-	if (need_restart)
+-		gsm_activate_mux(gsm);
+-	if (gsm->initiator && need_close)
+-		gsm_dlci_begin_open(gsm->dlci[0]);
++	if (gsm->dead) {
++		ret = gsm_activate_mux(gsm);
++		if (ret)
++			return ret;
++		if (gsm->initiator)
++			gsm_dlci_begin_open(gsm->dlci[0]);
++	}
+ 	return 0;
+ }
+ 
 
 
