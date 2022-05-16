@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1631C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:14:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0517BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235618AbiEPUOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
+        id S241695AbiEPUO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351051AbiEPUB5 (ORCPT
+        with ESMTP id S1351060AbiEPUB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694C1473B8;
-        Mon, 16 May 2022 12:57:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCDE4757C;
+        Mon, 16 May 2022 12:57:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3197EB81613;
-        Mon, 16 May 2022 19:57:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9807CC385AA;
-        Mon, 16 May 2022 19:57:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0977C60EC4;
+        Mon, 16 May 2022 19:57:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19BD4C34100;
+        Mon, 16 May 2022 19:57:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731046;
-        bh=SA/u6TfraJ4HVYA3POmKSQ4ZBz9ogmdGYvSFcf8IZ14=;
+        s=korg; t=1652731066;
+        bh=I2eZm7HX5itsONxv7rc4LaVSnE80gzkI7KWWDSxNPnk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VFV2aFAdKdGzqaG+doSqvAbln0nN0rAQ9g82fzyuhkxfm1ixnr+AK8hM/2Tu00iLP
-         GvlMF84JEPInffWa88v1vE63/FydSFHOae7l2Fox8KMTbQ9UKtJx5jHb+ZMJ8iYB9z
-         Z8Z6hGyAQiVr0sF/fqWHO5L/Mr+lEK04gsY0uZuM=
+        b=2sSwCjlL3tPxpkD2TgRJ+CaFaDa4VMhHrEjzxx88tsErU57be9XUXL7lL/sPL2I4Q
+         uYNfo/glhopr9V+diM0orBrNCYAOXA9QEV4ZrI+apsOMI0phPLUAJD6CJfVPxROz1h
+         +bIjOnf64cvxICNc32r3OuiK0u8kXA3U/NWBiHko=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Hui Tang <tanghui20@huawei.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 046/114] tls: Fix context leak on tls_device_down
-Date:   Mon, 16 May 2022 21:36:20 +0200
-Message-Id: <20220516193626.815898749@linuxfoundation.org>
+Subject: [PATCH 5.17 041/114] drm/vc4: hdmi: Fix build error for implicit function declaration
+Date:   Mon, 16 May 2022 21:36:15 +0200
+Message-Id: <20220516193626.674038302@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,51 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Hui Tang <tanghui20@huawei.com>
 
-[ Upstream commit 3740651bf7e200109dd42d5b2fb22226b26f960a ]
+[ Upstream commit 6fed53de560768bde6d701a7c79c253b45b259e3 ]
 
-The commit cited below claims to fix a use-after-free condition after
-tls_device_down. Apparently, the description wasn't fully accurate. The
-context stayed alive, but ctx->netdev became NULL, and the offload was
-torn down without a proper fallback, so a bug was present, but a
-different kind of bug.
+drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_connector_detect’:
+drivers/gpu/drm/vc4/vc4_hdmi.c:228:7: error: implicit declaration of function ‘gpiod_get_value_cansleep’; did you mean ‘gpio_get_value_cansleep’? [-Werror=implicit-function-declaration]
+   if (gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio))
+       ^~~~~~~~~~~~~~~~~~~~~~~~
+       gpio_get_value_cansleep
+  CC [M]  drivers/gpu/drm/vc4/vc4_validate.o
+  CC [M]  drivers/gpu/drm/vc4/vc4_v3d.o
+  CC [M]  drivers/gpu/drm/vc4/vc4_validate_shaders.o
+  CC [M]  drivers/gpu/drm/vc4/vc4_debugfs.o
+drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_bind’:
+drivers/gpu/drm/vc4/vc4_hdmi.c:2883:23: error: implicit declaration of function ‘devm_gpiod_get_optional’; did you mean ‘devm_clk_get_optional’? [-Werror=implicit-function-declaration]
+  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
+                       ^~~~~~~~~~~~~~~~~~~~~~~
+                       devm_clk_get_optional
+drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: error: ‘GPIOD_IN’ undeclared (first use in this function); did you mean ‘GPIOF_IN’?
+  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
+                                                           ^~~~~~~~
+                                                           GPIOF_IN
+drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: note: each undeclared identifier is reported only once for each function it appears in
+cc1: all warnings being treated as errors
 
-Due to misunderstanding of the issue, the original patch dropped the
-refcount_dec_and_test line for the context to avoid the alleged
-premature deallocation. That line has to be restored, because it matches
-the refcount_inc_not_zero from the same function, otherwise the contexts
-that survived tls_device_down are leaked.
-
-This patch fixes the described issue by restoring refcount_dec_and_test.
-After this change, there is no leak anymore, and the fallback to
-software kTLS still works.
-
-Fixes: c55dcdd435aa ("net/tls: Fix use-after-free after the TLS device goes down and up")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Link: https://lore.kernel.org/r/20220512091830.678684-1-maximmi@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6800234ceee0 ("drm/vc4: hdmi: Convert to gpiod")
+Signed-off-by: Hui Tang <tanghui20@huawei.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220510135148.247719-1-tanghui20@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tls/tls_device.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index a40553e83f8b..f3e3d009cf1c 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -1347,7 +1347,10 @@ static int tls_device_down(struct net_device *netdev)
- 
- 		/* Device contexts for RX and TX will be freed in on sk_destruct
- 		 * by tls_device_free_ctx. rx_conf and tx_conf stay in TLS_HW.
-+		 * Now release the ref taken above.
- 		 */
-+		if (refcount_dec_and_test(&ctx->refcount))
-+			tls_device_free_ctx(ctx);
- 	}
- 
- 	up_write(&device_offload_lock);
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 3a1626f261e5..3f651364ed7a 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -38,6 +38,7 @@
+ #include <drm/drm_scdc_helper.h>
+ #include <linux/clk.h>
+ #include <linux/component.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
+ #include <linux/of_address.h>
+ #include <linux/of_gpio.h>
 -- 
 2.35.1
 
