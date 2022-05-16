@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3369DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 945E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345962AbiEPTsX (ORCPT
+        id S1346118AbiEPTs2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
+        Mon, 16 May 2022 15:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346262AbiEPTlv (ORCPT
+        with ESMTP id S1346283AbiEPTly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:41:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C399D3EF1C;
-        Mon, 16 May 2022 12:40:26 -0700 (PDT)
+        Mon, 16 May 2022 15:41:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB2D40A36;
+        Mon, 16 May 2022 12:40:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 623E1B81609;
-        Mon, 16 May 2022 19:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A94AC34100;
-        Mon, 16 May 2022 19:40:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38709614B6;
+        Mon, 16 May 2022 19:40:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11E8BC34100;
+        Mon, 16 May 2022 19:40:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730024;
-        bh=LzOdzcmpRSZsTFDChGqZYk1btoMeVCsuhOZcpQbkBNI=;
+        s=korg; t=1652730030;
+        bh=z1+2nVnSc/GOawDHb4ngkM+epa/7uzdH0Lo2gUqmGBg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZK9RP4WPpQoPd1tlaU82JTS8hCNFIAhdJrKsLAxSxJcQkhVHS1Dw7LKZoMG8MxSYV
-         nnAQYNjVixL3vWJt0PXgpwza1GB3dROhICKZ+N4/y2duYgCvLwNGN+jBktM5+VEKrM
-         hmUGjnt4PQxEpTRWX1AeDx9V4u/NkxxyLQ3m3oY8=
+        b=LkrTYIjNgoSsOQ5iLIzpNScQJXutuKMJkt+fJMTuQGEAQzOn719wZvcIfszCUqOe6
+         EZVWZcwjE/5GN+6Yn9VBuYhQn3DrihVjuchrW01RC0ET2Szq9Fdcleso3E7Z2F5fPN
+         zNi1R482bjNuSSPzj4qzaVvrmEQuhwrnOUkLEMWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexandra Winter <wintera@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Felix Kaechele <felix@kaechele.ca>,
+        Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 09/25] s390/lcs: fix variable dereferenced before check
-Date:   Mon, 16 May 2022 21:36:23 +0200
-Message-Id: <20220516193614.966872729@linuxfoundation.org>
+Subject: [PATCH 4.19 01/32] batman-adv: Dont skb_split skbuffs with frag_list
+Date:   Mon, 16 May 2022 21:36:15 +0200
+Message-Id: <20220516193614.819254679@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
-References: <20220516193614.678319286@linuxfoundation.org>
+In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
+References: <20220516193614.773450018@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,40 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit 671bb35c8e746439f0ed70815968f9a4f20a8deb ]
+[ Upstream commit a063f2fba3fa633a599253b62561051ac185fa99 ]
 
-smatch complains about
-drivers/s390/net/lcs.c:1741 lcs_get_control() warn: variable dereferenced before check 'card->dev' (see line 1739)
+The receiving interface might have used GRO to receive more fragments than
+MAX_SKB_FRAGS fragments. In this case, these will not be stored in
+skb_shinfo(skb)->frags but merged into the frag list.
 
-Fixes: 27eb5ac8f015 ("[PATCH] s390: lcs driver bug fixes and improvements [1/2]")
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+batman-adv relies on the function skb_split to split packets up into
+multiple smaller packets which are not larger than the MTU on the outgoing
+interface. But this function cannot handle frag_list entries and is only
+operating on skb_shinfo(skb)->frags. If it is still trying to split such an
+skb and xmit'ing it on an interface without support for NETIF_F_FRAGLIST,
+then validate_xmit_skb() will try to linearize it. But this fails due to
+inconsistent information. And __pskb_pull_tail will trigger a BUG_ON after
+skb_copy_bits() returns an error.
+
+In case of entries in frag_list, just linearize the skb before operating on
+it with skb_split().
+
+Reported-by: Felix Kaechele <felix@kaechele.ca>
+Fixes: c6c8fea29769 ("net: Add batman-adv meshing protocol")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Tested-by: Felix Kaechele <felix@kaechele.ca>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/net/lcs.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/batman-adv/fragmentation.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
-index d01b5c2a7760..da4d7284db67 100644
---- a/drivers/s390/net/lcs.c
-+++ b/drivers/s390/net/lcs.c
-@@ -1757,10 +1757,11 @@ lcs_get_control(struct lcs_card *card, struct lcs_cmd *cmd)
- 			lcs_schedule_recovery(card);
- 			break;
- 		case LCS_CMD_STOPLAN:
--			pr_warn("Stoplan for %s initiated by LGW\n",
--				card->dev->name);
--			if (card->dev)
-+			if (card->dev) {
-+				pr_warn("Stoplan for %s initiated by LGW\n",
-+					card->dev->name);
- 				netif_carrier_off(card->dev);
-+			}
- 			break;
- 		default:
- 			LCS_DBF_TEXT(5, trace, "noLGWcmd");
+diff --git a/net/batman-adv/fragmentation.c b/net/batman-adv/fragmentation.c
+index cc062b69fc8d..a62eedf889eb 100644
+--- a/net/batman-adv/fragmentation.c
++++ b/net/batman-adv/fragmentation.c
+@@ -490,6 +490,17 @@ int batadv_frag_send_packet(struct sk_buff *skb,
+ 		goto free_skb;
+ 	}
+ 
++	/* GRO might have added fragments to the fragment list instead of
++	 * frags[]. But this is not handled by skb_split and must be
++	 * linearized to avoid incorrect length information after all
++	 * batman-adv fragments were created and submitted to the
++	 * hard-interface
++	 */
++	if (skb_has_frag_list(skb) && __skb_linearize(skb)) {
++		ret = -ENOMEM;
++		goto free_skb;
++	}
++
+ 	/* Create one header to be copied to all fragments */
+ 	frag_header.packet_type = BATADV_UNICAST_FRAG;
+ 	frag_header.version = BATADV_COMPAT_VERSION;
 -- 
 2.35.1
 
