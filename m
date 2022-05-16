@@ -2,110 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245457AbiEPPjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 11:39:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
+        id S238592AbiEPPlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 11:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245441AbiEPPjk (ORCPT
+        with ESMTP id S232339AbiEPPlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 11:39:40 -0400
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4053C733;
-        Mon, 16 May 2022 08:39:39 -0700 (PDT)
-Received: by mail-ua1-f51.google.com with SMTP id p1so5963128uak.1;
-        Mon, 16 May 2022 08:39:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=v4AO4TvHBXHTDE7cylsD4nuz6SSH2GMvFgLvHL67nzg=;
-        b=oQvj+YtW4IrWIS+cbVofERrPNxoiZ8a1TfUizMKdXiF+oifQ8rMR6dMTD7xhC/yBT8
-         nIlW/vYFRGCmTNzy+RLefilKS93CS3r2u+KmhGJONUoBisSKGNjCJ4GGuhBvM6yJ3Wyo
-         cGZfRkJlXPUUXwbK4ElaFRRcOVBN+4fijkzafe5BaXNh3Lo8MvTTcF6ssID+xi6bBX8I
-         tKuPZu8AwwauFWuytr7C7kIpD1qnMZle7E14LHJGNXpSyHHc8HjsNR/3Co9ctkUpt6T0
-         9WNggDn7scmECNqDFk2r7BaKOivdy3hF0E0Ko1wINSACP7MFzmdbj+xDmWWb6Jq9LP91
-         WSzA==
-X-Gm-Message-State: AOAM533GXRf6SaXto10Vj8JWJoJrpyNdUUXQ091u6ARi2imeY/phE6Hl
-        yABpqvEU/LrqMcd/xidbhVuq5wR+KomV8A==
-X-Google-Smtp-Source: ABdhPJwr2O3FGik3cSKjaPSHku0LPtjeQtskgMWSj2/APW6/bM2WjQEqOOhYbESvhMt7lbawcfZW4A==
-X-Received: by 2002:ab0:349a:0:b0:35c:b898:a733 with SMTP id c26-20020ab0349a000000b0035cb898a733mr6082808uar.85.1652715578381;
-        Mon, 16 May 2022 08:39:38 -0700 (PDT)
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com. [209.85.217.41])
-        by smtp.gmail.com with ESMTPSA id y17-20020ac5c811000000b0034e98f6f2d8sm1281781vkl.55.2022.05.16.08.39.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 08:39:38 -0700 (PDT)
-Received: by mail-vs1-f41.google.com with SMTP id c62so15915004vsc.10;
-        Mon, 16 May 2022 08:39:37 -0700 (PDT)
-X-Received: by 2002:a67:b304:0:b0:32c:fb41:9f43 with SMTP id
- a4-20020a67b304000000b0032cfb419f43mr6526925vsm.83.1652715577451; Mon, 16 May
- 2022 08:39:37 -0700 (PDT)
+        Mon, 16 May 2022 11:41:47 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD72127B36
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:41:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=AyJBqgpz73uaiM8oXDPx2MhxDsj8LgRWS3TNA7ATI6M=; b=K0O3qejpmE2QUjNiIa/ko4USJv
+        KGzQxmKT0v8gaONRuBtau+H4FeHVKT9U67qUAXhtBQHhEpDJMcJbyvX8GKSGV/d3bfL6/VPfdOoeP
+        1WShfjajJbPX1ar/mzAo7Frr3rmQx8uGd5t7q0cCf3aF70mr6AFjB3J4OQAjRCapX/ho3Z32f3q4C
+        IOcYg4GS6p3QvP2MvOfHrym5ygBAjkiy9vOM0TJY45y6BqscPlpupjMvJJBAQKKjxjmXLecHiJJwk
+        v9IT0o5+uMcXj+wKx/xvnQg7uGYz2cRCfi3/zQpg6mP1+n6z6xMHJJ4NvwhWdSnihMwWXIEbfK3Dt
+        1Gqab9vA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nqcqs-000yQs-NB; Mon, 16 May 2022 15:41:43 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 705B830023F;
+        Mon, 16 May 2022 17:41:40 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 501B920225E5F; Mon, 16 May 2022 17:41:40 +0200 (CEST)
+Date:   Mon, 16 May 2022 17:41:40 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] objtool: fix objtool regression on x32 systems
+Message-ID: <YoJwtCeVzYUm6Uhg@hirez.programming.kicks-ass.net>
+References: <alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com>
 MIME-Version: 1.0
-References: <20220512071858.10805-1-qianfanguijin@163.com> <20220512071858.10805-2-qianfanguijin@163.com>
- <20220513073849.cu4jzykefat2sepg@houat> <1352b9d7-5219-af09-948b-6462def39ea5@163.com>
- <20220513081556.knd3tf6pangfblh3@houat> <666ead08-af1e-81f5-6fe1-e5e3370e6d6f@163.com>
- <20220516075326.hccburhu743t7p6r@houat>
-In-Reply-To: <20220516075326.hccburhu743t7p6r@houat>
-Reply-To: wens@csie.org
-From:   Chen-Yu Tsai <wens@csie.org>
-Date:   Mon, 16 May 2022 23:39:26 +0800
-X-Gmail-Original-Message-ID: <CAGb2v65xifgy4dXciron4yxiUQtHb-2ZRGTqOiSjLrdbFtqQEA@mail.gmail.com>
-Message-ID: <CAGb2v65xifgy4dXciron4yxiUQtHb-2ZRGTqOiSjLrdbFtqQEA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] ARM: dts: sun8i-r40: Add "cpu-supply" node for
- sun8i-r40 based board
-To:     qianfan <qianfanguijin@163.com>
-Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 3:53 PM Maxime Ripard <maxime@cerno.tech> wrote:
->
-> On Fri, May 13, 2022 at 04:23:20PM +0800, qianfan wrote:
-> > > > > There's a similar issue for all the boards that don't have a regulator
-> > > > > in the first place.
-> > > > >
-> > > > > The way we worked around this for the other SoCs is to have a DTSI with
-> > > > > the OPPs with a frequency higher than what U-Boot boots with (1008MHz?),
-> > > > > and only include that DTSI on boards that have a CPU regulator hooked in.
-> > > > Is this really necessary? It seems like every board based on sun8i-r40
-> > > > have a cpu regulator.
-> > > This probably won't be the case whenever someone starts a new design,
-> > > and then they'll face random crashes for no apparent reason, and waste a
-> > > lot of time in the process.
-> > >
-> > > Whereas the alternative is that you would be missing some OPPs,
-> > > something that is fairly easy to figure out.
-> >
-> > How about remove the OPPs which greate that 1.08G in sun8i-r40.dtsi,
-> > If some boards want to run at a higher frequency, can add them byself
-> > in the board's file.
->
-> You did all the work to support and test them already. It's a bit of a
-> waste to do that and not include it.
->
-> Just do a DTSI like we did for the A64 for example.
+On Mon, May 16, 2022 at 11:06:36AM -0400, Mikulas Patocka wrote:
+> The patch 4abff6d48dbc ("objtool: Fix code relocs vs weak symbols") makes
+> the kernel unbootable.  The patch c087c6e7b551 ("objtool: Fix type of
+> reloc::addend") attempts to fix it by replacing 'int' with 'long'.
+> 
+> However, we may be running on a system with x32 ABI and 'long' on x32 is
+> 32-bit, thus the patch c087c6e7b551 doesn't really change anything and we
+> still end up with miscompiled kernel.  This patch replaces 'long' with
+> 'long long', so that the 64-bit kernel is correctly compiled on a x32
+> system.
 
-There's also no guarantee that the board boots up at 1.08G. The board
-may be set to boot up at a slightly lower frequency / voltage combination.
-Or maybe the board's supply voltage simply isn't stable enough for sustained
-high CPU usage at 1.08G.
+Hurmph.. you're building a 64bit kernel on a x32 hosted machine? And
+this is the *only* thing that goes sideways?
 
-Letting the kernel assume that it is OK to run at some OPP is not a good
-idea. The boards should explicitly include the default OPP table, or define
-their own, while adding a proper CPU supply at the same time.
+I suspect quite a bit of objtool assumes LP64 and won't quite work right
+on ILP32 and we've just been lucky so far.
 
+> Index: linux-2.6/tools/objtool/elf.c
+> ===================================================================
+> --- linux-2.6.orig/tools/objtool/elf.c	2022-05-16 16:20:49.000000000 +0200
+> +++ linux-2.6/tools/objtool/elf.c	2022-05-16 16:22:21.000000000 +0200
+> @@ -546,7 +546,7 @@ static struct section *elf_create_reloc_
+>  						int reltype);
+>  
+>  int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+> -		  unsigned int type, struct symbol *sym, long addend)
+> +		  unsigned int type, struct symbol *sym, long long addend)
+>  {
+>  	struct reloc *reloc;
+>  
+> Index: linux-2.6/tools/objtool/include/objtool/elf.h
+> ===================================================================
+> --- linux-2.6.orig/tools/objtool/include/objtool/elf.h	2022-05-16 16:07:54.000000000 +0200
+> +++ linux-2.6/tools/objtool/include/objtool/elf.h	2022-05-16 16:22:45.000000000 +0200
+> @@ -73,7 +73,7 @@ struct reloc {
+>  	struct symbol *sym;
+>  	unsigned long offset;
+>  	unsigned int type;
+> -	long addend;
+> +	long long addend;
+>  	int idx;
+>  	bool jump_table_start;
+>  };
+> @@ -135,7 +135,7 @@ struct elf *elf_open_read(const char *na
+>  struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+>  
+>  int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+> -		  unsigned int type, struct symbol *sym, long addend);
+> +		  unsigned int type, struct symbol *sym, long long addend);
+>  int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+>  			  unsigned long offset, unsigned int type,
+>  			  struct section *insn_sec, unsigned long insn_off);
+> 
 
-Regards
-ChenYu
+I think I much prefer s64 there instead of 'long long'. But really I
+think all of objtool needs a bit of an audit to see what types need be
+used.
