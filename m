@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3161C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345683AbiEPTjO (ORCPT
+        id S1345712AbiEPTj2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44110 "EHLO
+        Mon, 16 May 2022 15:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345575AbiEPTii (ORCPT
+        with ESMTP id S1345638AbiEPTix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:38:38 -0400
+        Mon, 16 May 2022 15:38:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD513F33E;
-        Mon, 16 May 2022 12:38:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F10C3EF3C;
+        Mon, 16 May 2022 12:38:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B942B81614;
-        Mon, 16 May 2022 19:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E53CC34100;
-        Mon, 16 May 2022 19:38:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C957B81607;
+        Mon, 16 May 2022 19:38:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E800C385AA;
+        Mon, 16 May 2022 19:38:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729913;
-        bh=WLlyVgr2e+juArSHKjw7dxALncHO2utgAwjIxtsbS+o=;
+        s=korg; t=1652729916;
+        bh=10tgVETi0/0icrHOI5cWzODW+G7sx5Wwa+9DpVGgXQM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vGeDMtJODDc5aIo+4lL0jLjFBQOQMe3Fk0wYQVoK0h4rgMZIQ/kI8x9wggRGH4mXL
-         Y2LheIYHIVQbVKEoJD/UV8SjKTlo+ktzQQ75lKexU02txlqAWMm6iuM8W+vdg83+nM
-         ElUHqf8gsu64v5fSH4KkWxdbtAzSyVNbSezXymCg=
+        b=HmpElj9XCIRLsteH1iMptLvGHAjow00uLj3e0rVBkfjg7YdkvnnhdxCwBgyHs3hPe
+         ahFXm4n8its7SzljdQCvrqdom60t3Ikrull4wLwuD3orubfVy0vYet9HF57TT4/LY9
+         0Gr7DhP0Rxh0eHe29JGDPFpPv8KNWT9EAIAQqEuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 04/19] mac80211_hwsim: call ieee80211_tx_prepare_skb under RCU protection
-Date:   Mon, 16 May 2022 21:36:17 +0200
-Message-Id: <20220516193613.629673854@linuxfoundation.org>
+Subject: [PATCH 4.9 05/19] s390/ctcm: fix variable dereferenced before check
+Date:   Mon, 16 May 2022 21:36:18 +0200
+Message-Id: <20220516193613.657644555@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
 References: <20220516193613.497233635@linuxfoundation.org>
@@ -49,50 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Alexandra Winter <wintera@linux.ibm.com>
 
-[ Upstream commit 9e2db50f1ef2238fc2f71c5de1c0418b7a5b0ea2 ]
+[ Upstream commit 2c50c6867c85afee6f2b3bcbc50fc9d0083d1343 ]
 
-This is needed since it might use (and pass out) pointers to
-e.g. keys protected by RCU. Can't really happen here as the
-frames aren't encrypted, but we need to still adhere to the
-rules.
+Found by cppcheck and smatch.
+smatch complains about
+drivers/s390/net/ctcm_sysfs.c:43 ctcm_buffer_write() warn: variable dereferenced before check 'priv' (see line 42)
 
-Fixes: cacfddf82baf ("mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220505230421.5f139f9de173.I77ae111a28f7c0e9fd1ebcee7f39dbec5c606770@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 3c09e2647b5e ("ctcm: rename READ/WRITE defines to avoid redefinitions")
+Reported-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/s390/net/ctcm_sysfs.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index a34647efb5ea..2cd1b3cfcc09 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -1987,11 +1987,13 @@ static void hw_scan_work(struct work_struct *work)
- 				memcpy(skb_put(probe, req->ie_len), req->ie,
- 				       req->ie_len);
+diff --git a/drivers/s390/net/ctcm_sysfs.c b/drivers/s390/net/ctcm_sysfs.c
+index ddb0aa321339..07b7177abf26 100644
+--- a/drivers/s390/net/ctcm_sysfs.c
++++ b/drivers/s390/net/ctcm_sysfs.c
+@@ -38,11 +38,12 @@ static ssize_t ctcm_buffer_write(struct device *dev,
+ 	struct ctcm_priv *priv = dev_get_drvdata(dev);
+ 	int rc;
  
-+			rcu_read_lock();
- 			if (!ieee80211_tx_prepare_skb(hwsim->hw,
- 						      hwsim->hw_scan_vif,
- 						      probe,
- 						      hwsim->tmp_chan->band,
- 						      NULL)) {
-+				rcu_read_unlock();
- 				kfree_skb(probe);
- 				continue;
- 			}
-@@ -1999,6 +2001,7 @@ static void hw_scan_work(struct work_struct *work)
- 			local_bh_disable();
- 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
- 						hwsim->tmp_chan);
-+			rcu_read_unlock();
- 			local_bh_enable();
- 		}
+-	ndev = priv->channel[CTCM_READ]->netdev;
+-	if (!(priv && priv->channel[CTCM_READ] && ndev)) {
++	if (!(priv && priv->channel[CTCM_READ] &&
++	      priv->channel[CTCM_READ]->netdev)) {
+ 		CTCM_DBF_TEXT(SETUP, CTC_DBF_ERROR, "bfnondev");
+ 		return -ENODEV;
  	}
++	ndev = priv->channel[CTCM_READ]->netdev;
+ 
+ 	rc = kstrtouint(buf, 0, &bs1);
+ 	if (rc)
 -- 
 2.35.1
 
