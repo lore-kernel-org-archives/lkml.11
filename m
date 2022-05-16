@@ -2,117 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E58C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4570DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234972AbiEPONN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40262 "EHLO
+        id S237738AbiEPONS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241678AbiEPONK (ORCPT
+        with ESMTP id S244080AbiEPONN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:13:10 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2341393D4;
-        Mon, 16 May 2022 07:13:09 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LhPqo-1nUl6x3I6C-00mdzP;
- Mon, 16 May 2022 16:12:44 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 23/24] dt-bindings: arm: fsl: add toradex,colibri-imx7s/d/d-emmc-iris/-v2
-Date:   Mon, 16 May 2022 16:12:37 +0200
-Message-Id: <20220516141237.494514-1-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220516134734.493065-1-marcel@ziswiler.com>
-References: <20220516134734.493065-1-marcel@ziswiler.com>
+        Mon, 16 May 2022 10:13:13 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9D832066;
+        Mon, 16 May 2022 07:13:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652710392; x=1684246392;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=q8T0jBh7cGQQ4AUWl+1aBVbwpP+Txn2+ZD1GDsXUmwY=;
+  b=M49qI2RJYNeFyww4GpPEloAJZf3RvDjzRG/yy1d94WdKvwT70eNfFVah
+   rHztlRV/mWPf6deUpgZmot8zsEE3Sy4c/WuAal94+s7f8JXFx2DBmFSEJ
+   LJ/nAuUNJhgdsbdkTnhBU+aPmZqkuYbowLgerMOOuCzCnpZ7+BFG4OOUG
+   E5oQgCkYYpvy3ZH2pI4dWq1GLRVAS14Mc3vr9ZJme/SJAHxU9qCXD4JuQ
+   BDOOW2soJYlGtKzCHw7/1xW9gkEGPhH/YmvpaVjd9dorsFmN8inO1eeib
+   YgU4SB2U0qnzuooP5UuyHm64U2EzZu1f37bbqi0xs4zewgcHeRUaZ5voi
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="252906637"
+X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
+   d="scan'208";a="252906637"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 07:13:11 -0700
+X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
+   d="scan'208";a="638258613"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 07:13:05 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nqbQv-0006ib-VU;
+        Mon, 16 May 2022 17:10:49 +0300
+Date:   Mon, 16 May 2022 17:10:49 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Wolfram Sang <wsa@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Mark Brown <broonie@kernel.org>,
+        chris.packham@alliedtelesis.co.nz,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anatolij Gustschin <agust@denx.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>
+Subject: Re: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
+Message-ID: <YoJbaTNJFV2A1Etw@smile.fi.intel.com>
+References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
+ <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
+ <877d6l7fmy.fsf@mpe.ellerman.id.au>
+ <YoJaGGwfoSYhaT13@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:QXZsBH9AP8Ag+GcUc3c97MC0S70wiijv0zXp7qIC0zM+kGYldlq
- HMKA3tcL3/3wTst65F2eMkht4sUQQlRb1DNxi3QGdM+pjTuV7RDC3QCRTORwxAAbH/ME02U
- JPtYxGoJsUn4jIRHsgj7T6qlF6YWyU4By3ANnfvKKIzS2u/PBBPaKmBQvTLeIiNAx+dai2z
- EpAZJkXaKxljTLv/49CAg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BJqGSkfmk1Q=:vxPKyZai4WyVoLpTsaHRS/
- DOf9Mtc9MoENGm03sR8gQtrXOSV5V5uCV1zFxwr3hxo24lNIZ1jTBIUMkFVA3zXbJJtfY/JvX
- o8kUoNkBxs4kx9zSoYiD3pR0Hn4dMr/IDDvGyTilpDeKJJ4op8WCA8b9bs8kDsa8jIL09oVuf
- eO6lJqYCZeLjhqAMu/3NpOjH/fotyGvXFSIXZcPjv1OBEmBcQ/5DFUMF1MOBtUlsibFpVneKr
- kIU0V3/vh8AaH8CYTr7nyMw/WaPptFW27JwfjJDO44lA+bYT2dpOe7S/F28kMIRS+a+evut4f
- cPoYBjecRN7CcQWHF0kHxD75I9NZH2U99KvXDPQCoyWVqP+Yo/qOGH1cRiX8rJC5EJxks7jYW
- 68Ps+5VoMJih8YlBCgoJ/PqydUPRvsVsxDIt6XGtkfXreyuoXWH91zFnAF/9aE3Iz9P4fx3lT
- toOmXHpzgSWVNtvrZDAzcM+qyOv9f1847W80nV5l5OD48PLlbVkT984a7+7Z3O3Xx+e9RvN9h
- vLt6ULfH3AhVNLkY8v8lprhLSGtk7JaI3XI/xR7P0qcHz0kLIB5PQjFxiHOYrQPU4d4p2dK2T
- SQbk8CntVnza/KIPL+UHOesoPzbq+RfAwuYBJE8oSae18/Ya2p6L5yZadUTg/ADx3nrAU6xlB
- ODvurm8moLehHPuy//JN7YfHUGNmux1H3xV772y+8TRRY/9edB2Kg53OMJQYdXsGh6Ps=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoJaGGwfoSYhaT13@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Mon, May 16, 2022 at 05:05:12PM +0300, Andy Shevchenko wrote:
+> On Mon, May 16, 2022 at 11:48:05PM +1000, Michael Ellerman wrote:
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> > > We may convert the GPT driver to use fwnode API for the sake
+> > > of consistency of the used APIs inside the driver.
+> > 
+> > I'm not sure about this one.
+> > 
+> > It's more consistent to use fwnode in this driver, but it's very
+> > inconsistent with the rest of the powerpc code. We have basically no
+> > uses of the fwnode APIs at the moment.
+> 
+> Fair point!
+> 
+> > It seems like a pretty straight-forward conversion, but there could
+> > easily be a bug in there, I don't have any way to test it. Do you?
+> 
+> Nope, only compile testing. The important part of this series is to
+> clean up of_node from GPIO library, so since here it's a user of
+> it I want to do that. This patch is just ad-hoc conversion that I
+> noticed is possible. But there is no any requirement to do so.
+> 
+> Lemme drop this from v3.
 
-Based on toradex,colibri-imx7s, toradex,colibri-imx7d and
-toradex,colibri-imx7d-emmc module device trees add iris and iris-v2 for
-carrier board dts.
+I just realize that there is no point to send a v3. You can just apply
+first 3 patches. Or is your comment against entire series?
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
----
-
-Changes in v2:
-- Add Krzysztof's acked-by. Thanks!
-
- Documentation/devicetree/bindings/arm/fsl.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index ef524378d449..17f38cc8d5ee 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -738,6 +738,8 @@ properties:
-           - enum:
-               - toradex,colibri-imx7s-aster     # Module on Aster Carrier Board
-               - toradex,colibri-imx7s-eval-v3   # Module on Colibri Evaluation Board V3
-+              - toradex,colibri-imx7s-iris      # Module on Iris Carrier Board
-+              - toradex,colibri-imx7s-iris-v2   # Module on Iris Carrier Board V2
-           - const: toradex,colibri-imx7s
-           - const: fsl,imx7s
- 
-@@ -791,6 +793,8 @@ properties:
-           - enum:
-               - toradex,colibri-imx7d-aster   # Colibri iMX7D Module on Aster Carrier Board
-               - toradex,colibri-imx7d-eval-v3 # Colibri iMX7D Module on Colibri Evaluation Board V3
-+              - toradex,colibri-imx7d-iris    # Colibri iMX7D Module on Iris Carrier Board
-+              - toradex,colibri-imx7d-iris-v2 # Colibri iMX7D Module on Iris Carrier Board V2
-           - const: toradex,colibri-imx7d
-           - const: fsl,imx7d
- 
-@@ -799,6 +803,8 @@ properties:
-           - enum:
-               - toradex,colibri-imx7d-emmc-aster    # Module on Aster Carrier Board
-               - toradex,colibri-imx7d-emmc-eval-v3  # Module on Colibri Evaluation Board V3
-+              - toradex,colibri-imx7d-emmc-iris     # Module on Iris Carrier Board
-+              - toradex,colibri-imx7d-emmc-iris-v2  # Module on Iris Carrier Board V2
-           - const: toradex,colibri-imx7d-emmc
-           - const: fsl,imx7d
- 
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
