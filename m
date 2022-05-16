@@ -2,121 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D62B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6780BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347712AbiEPUkW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50184 "EHLO
+        id S237477AbiEPUkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347571AbiEPU3F (ORCPT
+        with ESMTP id S1349114AbiEPUcM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:29:05 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4EA1D31C;
-        Mon, 16 May 2022 13:12:02 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id j28so5757889eda.13;
-        Mon, 16 May 2022 13:12:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZCX9ZXrfBYFo8ppmGdS4vsd39cre5IyNg8Ul5W4QUOM=;
-        b=eY32+6QDOlX8sByrQ94OB6LdTcAwBGHjmkm7W4QoadC0WKyeoFc/FzBFsNFG/pekQh
-         1mB1HBgORPUarS13FEJNf06Xe7XbNHCqA/+O9kgoMIt9RfFUcpbKgsDoi1tCtVhH9uOZ
-         te2KmBASqNxltCbskYTG2ZCk4S6I/Ozv8mV1Ir7t+OPfTsgV+I3H7mlvScofOhPJwuzP
-         sFe9rWmvSQQ8t0JBigZRcUk4qupj3FwU585+BU4nm05vZrl+uRtQNlSbQFagmIDRgAXM
-         8JGZ/xiR+C6wuZ74bgWM5scodqIyXzyCK31IYs6Gfz25Cfn8oL9TvoUlKVaJ3hcTMrKu
-         Cdsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZCX9ZXrfBYFo8ppmGdS4vsd39cre5IyNg8Ul5W4QUOM=;
-        b=2UZoFgHw1oN1Du+6pMWwvnPMCS+AzGZe3z6u3Jk/POHcY0PSmhNcezwFi40Mj1/rBW
-         cm9IH5XkVvhHhfYm8VefdFf2nK/cSTZV9GBdYTFD+NnVsAkGyjJcJPmVuyGCgrkEWsQT
-         PtQjkfYf3PnuDcq4GwpHNdkLsnuowqVQrcPMKK74nU7KwAyimjuVcIgkR8xe+sOXGcDM
-         67/fq8XKcacNWUYViw1d2obfPAdgMy2ELmIuNVqi4+oUGWsDcp83RfRMuWx2y33hiY+S
-         rXKXduX8vGw8oeqGhF0e85vnp9Wz5TK4FkLHhbLgHJUg8As7v5wv/xlV7gr6cBfumbJq
-         CTzQ==
-X-Gm-Message-State: AOAM533ucZLkICWffpfDJfrtCRxSNSntroZ9FGYJQ6kymcOwpuM5YQUC
-        l9RRS9bigg4GebXZ3UuG1cc=
-X-Google-Smtp-Source: ABdhPJw0xaAds0qvtZ2horG5tUebFQY1UPZglOEYJu4PHfUnAhPU4JhfKfcmBH6586nh9Ug3gG1K7Q==
-X-Received: by 2002:a05:6402:4492:b0:428:a206:8912 with SMTP id er18-20020a056402449200b00428a2068912mr15185437edb.279.1652731921518;
-        Mon, 16 May 2022 13:12:01 -0700 (PDT)
-Received: from [192.168.8.198] ([85.255.232.74])
-        by smtp.gmail.com with ESMTPSA id es16-20020a056402381000b0042a96c77e9esm3807434edb.91.2022.05.16.13.11.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 13:12:01 -0700 (PDT)
-Message-ID: <cc171828-8ea8-bf5a-cdd8-b769f6beb7a1@gmail.com>
-Date:   Mon, 16 May 2022 21:10:59 +0100
+        Mon, 16 May 2022 16:32:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A431FA78;
+        Mon, 16 May 2022 13:15:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0F573CE1799;
+        Mon, 16 May 2022 20:15:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14BE4C385AA;
+        Mon, 16 May 2022 20:15:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652732147;
+        bh=zUURAcddULKH97MeOKJwmTGU6utdU5/s7G9WrHiCTFk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=r9VTZLEOTfzAv7DGyZZZMdbM3HengP/kdytlM1Z3v4rr2rs5wT/+XXfWaONGuKAdk
+         0Hkh+N+O3k81ITyO7C4CymO3qPbpFEH17ORbu9j/y1igx2xC7NhnLk7bot43sK5Py4
+         aWfuWEW+uYhS6dYE01EC4d4QjlvHJB0T0HjA84jOTeu68oFevqwJ0K9EhzmMQGKYhk
+         aYTqdMsAkD3i+VMZKcftkuPVmWFYAm6HzY6TqiTq7G9/REy9Z4bRzJEPi3YQadnBBf
+         vmZ/5W3hJzj5otJ63XqXYWXL9JgYQ2xIScbJpKez9ly9Yo713dmniTjdYrv+wG8Qz9
+         7bkb2WzqE49yw==
+Date:   Mon, 16 May 2022 15:15:45 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     bhelgaas@google.com, lorenzo.pieralisi@arm.com, kbusch@kernel.org,
+        hch@lst.de, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, svarbanov@mm-sol.com,
+        bjorn.andersson@linaro.org, axboe@fb.com,
+        quic_vbadigan@quicinc.com, quic_krichai@quicinc.com,
+        quic_nitirawa@quicinc.com, vidyas@nvidia.com, sagi@grimberg.me,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
+Subject: Re: [PATCH 0/3] PCI: Notify PCI drivers about powerdown during
+ suspend
+Message-ID: <20220516201545.GA1046888@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next v3 03/10] udp/ipv6: prioritise the ip6 path over
- ip4 checks
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org
-References: <cover.1652368648.git.asml.silence@gmail.com>
- <50cca375d8730b5bf74b975d0fede64b1a3744c4.1652368648.git.asml.silence@gmail.com>
- <f0fb2ffbde15b2939ed76545b549bdcd33b92ae8.camel@redhat.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <f0fb2ffbde15b2939ed76545b549bdcd33b92ae8.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513110027.31015-1-manivannan.sadhasivam@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/16/22 14:14, Paolo Abeni wrote:
-> On Fri, 2022-05-13 at 16:26 +0100, Pavel Begunkov wrote:
->> For AF_INET6 sockets we care the most about ipv6 but not ip4 mappings as
->> it's requires some extra hops anyway. Take AF_INET6 case from the address
->> parsing switch and add an explicit path for it. It removes some extra
->> ifs from the path and removes the switch overhead.
->>
->> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->> ---
->>   net/ipv6/udp.c | 37 +++++++++++++++++--------------------
->>   1 file changed, 17 insertions(+), 20 deletions(-)
->>
->> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
->> index 85bff1252f5c..e0b1bea998ce 100644
->> --- a/net/ipv6/udp.c
->> +++ b/net/ipv6/udp.c
->> @@ -1360,30 +1360,27 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
->>   
->>   	/* destination address check */
->>   	if (sin6) {
->> -		if (addr_len < offsetof(struct sockaddr, sa_data))
->> -			return -EINVAL;
->> +		if (addr_len < SIN6_LEN_RFC2133 || sin6->sin6_family != AF_INET6) {
->> +			if (addr_len < offsetof(struct sockaddr, sa_data))
->> +				return -EINVAL;
+[+cc Rafael, linux-pm, since this is power management stuff
+https://lore.kernel.org/all/20220513110027.31015-1-manivannan.sadhasivam@linaro.org/]
+
+On Fri, May 13, 2022 at 04:30:24PM +0530, Manivannan Sadhasivam wrote:
+> Hi,
 > 
-> I think you can't access 'sin6->sin6_family' before validating the
-> socket address len, that is before doing:
-
-Paolo, thanks for reviewing it!
-
-
-sin6_family is protected by
-
-if (addr_len < SIN6_LEN_RFC2133 ...)
-
-on the previous line. I can add a BUILD_BUG_ON() if that
-would be more reassuring.
-
-
+> This series adds support for notifying the PCI drivers like NVMe about the
+> transition of PCI devices into powerdown mode during system suspend.
 > 
-> if (addr_len < offsetof(struct sockaddr, sa_data))
-
--- 
-Pavel Begunkov
+> Background
+> ----------
+> 
+> On Qcom SC7280 based Chrome platforms, the OS will turn off the power to all
+> PCIe devices during system suspend for aggressive powersaving. Currently, there
+> is no way for the PCI device drivers to learn about this situation. Some of the
+> drivers assume that the power will be retained and some others assume that the
+> power may be taken down.
+> 
+> We faced the issue with NVMe PCI driver, where the driver expects the NVMe
+> device to be in APST (Autonomous Power State Transition) state for power saving
+> during system suspend. So when the power goes down, the NVMe driver fails to
+> bringup the device during resume.
+> 
+> Previous work
+> -------------
+> 
+> We tried to fix this issue in a couple of ways:
+> 
+> 1. The NVMe PCI driver checks for the existence of "StorageD3Enable" ACPI
+> property in the suspend path. If the property is found, the driver assumes that
+> the device may go to poweroff state and shutdowns the device accordingly.
+> 
+> As like the ACPI based systems, we also tried to get the support in place for
+> DT based systems. But that didn't get accepted:
+> https://lore.kernel.org/all/Yl+6V3pWuyRYuVV8@infradead.org/T/
+> 
+> 2. Keith Busch proposed a module params based approach. The parameter when set,
+> will allow the driver to support APST during suspend. Absence of that parameter
+> will let the driver shutdown the device.
+> 
+> This also did not get accepted:
+> https://lore.kernel.org/linux-nvme/20220201165006.3074615-1-kbusch@kernel.org/
+> 
+> Proposal
+> --------
+> 
+> Christoph suggested to add a notification in the PCI/PM core to let the NVMe
+> driver know that the device will go into powerdown state during suspend.
+> https://lore.kernel.org/all/Yg0wklcJ3ed76Jbk@infradead.org/ 
+> 
+> Hence in this series, a "suspend_poweroff" flag is introduced in the host bridge
+> struct. When this flag is set by the PCI RC drivers, the PCI device driver like
+> NVMe can shutdown the device during suspend.
+> 
+> In the coming days, the usage of this flag could be extended to other PCI
+> drivers as well.
+> 
+> Testing
+> -------
+> 
+> This series has been tested on SC7280 IDP board connected to a NVMe PCI device.
+> 
+> Thanks,
+> Mani
+> 
+> Manivannan Sadhasivam (3):
+>   PCI: Add a flag to notify PCI drivers about powerdown during suspend
+>   PCI: dwc: qcom: Set suspend_poweroff flag for SC7280
+>   nvme-pci: Make use of "suspend_poweroff" flag during system suspend
+> 
+>  drivers/nvme/host/pci.c                | 3 ++-
+>  drivers/pci/controller/dwc/pcie-qcom.c | 6 ++++++
+>  include/linux/pci.h                    | 1 +
+>  3 files changed, 9 insertions(+), 1 deletion(-)
+> 
+> -- 
+> 2.25.1
+> 
