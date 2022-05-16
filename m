@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8065BC38162
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 244D4C3527D
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349850AbiEPUcq (ORCPT
+        id S1349800AbiEPUcj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
+        Mon, 16 May 2022 16:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351036AbiEPUB4 (ORCPT
+        with ESMTP id S1351037AbiEPUB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B99547572;
-        Mon, 16 May 2022 12:57:07 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A201F47559;
+        Mon, 16 May 2022 12:57:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4CD5BB81611;
-        Mon, 16 May 2022 19:57:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A082CC34100;
-        Mon, 16 May 2022 19:57:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CB58B81613;
+        Mon, 16 May 2022 19:57:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7EB3C34100;
+        Mon, 16 May 2022 19:57:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731025;
-        bh=urjgqU4I+i/LzVlT3Ydpig5pMFXzKnWRvoTFWv0ka5M=;
+        s=korg; t=1652731022;
+        bh=l9vK0Sdh9FgyGUOPCCX0OfhhDLvjeRSbXgox8Ua7K8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PGetkuOMkLe/LZbp7NBkzuQOYfxfGSbk3ru9SUk9LmWJf8lhWhxrc6GTh5BYuZKmc
-         Jevwmb5q5jmse5DcYEHdy1IbdwBnXlV+13klfh7w/Z+66/DHSGlSF8Gbn4tHnT2UcO
-         hqNAZEJ/pdCh7RO1/0fwdX+7USGXK6IZnpkY9S/A=
+        b=ODrElaCuyQu9AEV1at5L/hGuAFwKMBsA9+qyGJuWfNYvlT6Lyv4j87Jb37w4mcDPq
+         ggDjeSERFmAlM0x6oY1JXr3NHzz8GvjzSqAph1L5rxiC8sNON/n9BwsRaTs7P846dO
+         qtWtd2FvrVvjGV8wywcUXXdnw0Tq/jYkiduJeC7w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
-Subject: [PATCH 5.17 079/114] usb: gadget: uvc: allow for application to cleanly shutdown
-Date:   Mon, 16 May 2022 21:36:53 +0200
-Message-Id: <20220516193627.754292531@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.17 078/114] tty: n_gsm: fix invalid gsmtty_write_room() result
+Date:   Mon, 16 May 2022 21:36:52 +0200
+Message-Id: <20220516193627.725542986@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -48,143 +48,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Vacura <w36195@motorola.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit b81ac4395bbeaf36e078dea1a48c02dd97b76235 upstream.
+commit 9361ebfbb79fd1bc8594a487c01ad52cdaa391ea upstream.
 
-Several types of kernel panics can occur due to timing during the uvc
-gadget removal. This appears to be a problem with gadget resources being
-managed by both the client application's v4l2 open/close and the UDC
-gadget bind/unbind. Since the concept of USB_GADGET_DELAYED_STATUS
-doesn't exist for unbind, add a wait to allow for the application to
-close out.
+gsmtty_write() does not prevent the user to use the full fifo size of 4096
+bytes as allocated in gsm_dlci_alloc(). However, gsmtty_write_room() tries
+to limit the return value by 'TX_SIZE' and returns a negative value if the
+fifo has more than 'TX_SIZE' bytes stored. This is obviously wrong as
+'TX_SIZE' is defined as 512.
+Define 'TX_SIZE' to the fifo size and use it accordingly for allocation to
+keep the current behavior. Return the correct remaining size of the fifo in
+gsmtty_write_room() via kfifo_avail().
 
-Some examples of the panics that can occur are:
-
-<1>[ 1147.652313] Unable to handle kernel NULL pointer dereference at
-virtual address 0000000000000028
-<4>[ 1147.652510] Call trace:
-<4>[ 1147.652514]  usb_gadget_disconnect+0x74/0x1f0
-<4>[ 1147.652516]  usb_gadget_deactivate+0x38/0x168
-<4>[ 1147.652520]  usb_function_deactivate+0x54/0x90
-<4>[ 1147.652524]  uvc_function_disconnect+0x14/0x38
-<4>[ 1147.652527]  uvc_v4l2_release+0x34/0xa0
-<4>[ 1147.652537]  __fput+0xdc/0x2c0
-<4>[ 1147.652540]  ____fput+0x10/0x1c
-<4>[ 1147.652545]  task_work_run+0xe4/0x12c
-<4>[ 1147.652549]  do_notify_resume+0x108/0x168
-
-<1>[  282.950561][ T1472] Unable to handle kernel NULL pointer
-dereference at virtual address 00000000000005b8
-<6>[  282.953111][ T1472] Call trace:
-<6>[  282.953121][ T1472]  usb_function_deactivate+0x54/0xd4
-<6>[  282.953134][ T1472]  uvc_v4l2_release+0xac/0x1e4
-<6>[  282.953145][ T1472]  v4l2_release+0x134/0x1f0
-<6>[  282.953167][ T1472]  __fput+0xf4/0x428
-<6>[  282.953178][ T1472]  ____fput+0x14/0x24
-<6>[  282.953193][ T1472]  task_work_run+0xac/0x130
-
-<3>[  213.410077][   T29] configfs-gadget gadget: uvc: Failed to queue
-request (-108).
-<1>[  213.410116][   T29] Unable to handle kernel NULL pointer
-dereference at virtual address 0000000000000003
-<6>[  213.413460][   T29] Call trace:
-<6>[  213.413474][   T29]  uvcg_video_pump+0x1f0/0x384
-<6>[  213.413489][   T29]  process_one_work+0x2a4/0x544
-<6>[  213.413502][   T29]  worker_thread+0x350/0x784
-<6>[  213.413515][   T29]  kthread+0x2ac/0x320
-<6>[  213.413528][   T29]  ret_from_fork+0x10/0x30
-
-Signed-off-by: Dan Vacura <w36195@motorola.com>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220503201039.71720-1-w36195@motorola.com
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220504081733.3494-3-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/f_uvc.c    |   25 +++++++++++++++++++++++++
- drivers/usb/gadget/function/uvc.h      |    2 ++
- drivers/usb/gadget/function/uvc_v4l2.c |    3 ++-
- 3 files changed, 29 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/gadget/function/f_uvc.c
-+++ b/drivers/usb/gadget/function/f_uvc.c
-@@ -890,13 +890,37 @@ static void uvc_function_unbind(struct u
- {
- 	struct usb_composite_dev *cdev = c->cdev;
- 	struct uvc_device *uvc = to_uvc(f);
-+	long wait_ret = 1;
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -137,6 +137,7 @@ struct gsm_dlci {
+ 	int retries;
+ 	/* Uplink tty if active */
+ 	struct tty_port port;	/* The tty bound to this DLCI if there is one */
++#define TX_SIZE		4096    /* Must be power of 2. */
+ 	struct kfifo fifo;	/* Queue fifo for the DLCI */
+ 	int adaption;		/* Adaption layer in use */
+ 	int prev_adaption;
+@@ -1731,7 +1732,7 @@ static struct gsm_dlci *gsm_dlci_alloc(s
+ 		return NULL;
+ 	spin_lock_init(&dlci->lock);
+ 	mutex_init(&dlci->mutex);
+-	if (kfifo_alloc(&dlci->fifo, 4096, GFP_KERNEL) < 0) {
++	if (kfifo_alloc(&dlci->fifo, TX_SIZE, GFP_KERNEL) < 0) {
+ 		kfree(dlci);
+ 		return NULL;
+ 	}
+@@ -2976,8 +2977,6 @@ static struct tty_ldisc_ops tty_ldisc_pa
+  *	Virtual tty side
+  */
  
- 	uvcg_info(f, "%s()\n", __func__);
- 
-+	/* If we know we're connected via v4l2, then there should be a cleanup
-+	 * of the device from userspace either via UVC_EVENT_DISCONNECT or
-+	 * though the video device removal uevent. Allow some time for the
-+	 * application to close out before things get deleted.
-+	 */
-+	if (uvc->func_connected) {
-+		uvcg_dbg(f, "waiting for clean disconnect\n");
-+		wait_ret = wait_event_interruptible_timeout(uvc->func_connected_queue,
-+				uvc->func_connected == false, msecs_to_jiffies(500));
-+		uvcg_dbg(f, "done waiting with ret: %ld\n", wait_ret);
-+	}
-+
- 	device_remove_file(&uvc->vdev.dev, &dev_attr_function_name);
- 	video_unregister_device(&uvc->vdev);
- 	v4l2_device_unregister(&uvc->v4l2_dev);
- 
-+	if (uvc->func_connected) {
-+		/* Wait for the release to occur to ensure there are no longer any
-+		 * pending operations that may cause panics when resources are cleaned
-+		 * up.
-+		 */
-+		uvcg_warn(f, "%s no clean disconnect, wait for release\n", __func__);
-+		wait_ret = wait_event_interruptible_timeout(uvc->func_connected_queue,
-+				uvc->func_connected == false, msecs_to_jiffies(1000));
-+		uvcg_dbg(f, "done waiting for release with ret: %ld\n", wait_ret);
-+	}
-+
- 	usb_ep_free_request(cdev->gadget->ep0, uvc->control_req);
- 	kfree(uvc->control_buf);
- 
-@@ -915,6 +939,7 @@ static struct usb_function *uvc_alloc(st
- 
- 	mutex_init(&uvc->video.mutex);
- 	uvc->state = UVC_STATE_DISCONNECTED;
-+	init_waitqueue_head(&uvc->func_connected_queue);
- 	opts = fi_to_f_uvc_opts(fi);
- 
- 	mutex_lock(&opts->lock);
---- a/drivers/usb/gadget/function/uvc.h
-+++ b/drivers/usb/gadget/function/uvc.h
-@@ -14,6 +14,7 @@
- #include <linux/spinlock.h>
- #include <linux/usb/composite.h>
- #include <linux/videodev2.h>
-+#include <linux/wait.h>
- 
- #include <media/v4l2-device.h>
- #include <media/v4l2-dev.h>
-@@ -129,6 +130,7 @@ struct uvc_device {
- 	struct usb_function func;
- 	struct uvc_video video;
- 	bool func_connected;
-+	wait_queue_head_t func_connected_queue;
- 
- 	/* Descriptors */
- 	struct {
---- a/drivers/usb/gadget/function/uvc_v4l2.c
-+++ b/drivers/usb/gadget/function/uvc_v4l2.c
-@@ -253,10 +253,11 @@ uvc_v4l2_subscribe_event(struct v4l2_fh
- 
- static void uvc_v4l2_disable(struct uvc_device *uvc)
- {
--	uvc->func_connected = false;
- 	uvc_function_disconnect(uvc);
- 	uvcg_video_enable(&uvc->video, 0);
- 	uvcg_free_buffers(&uvc->video.queue);
-+	uvc->func_connected = false;
-+	wake_up_interruptible(&uvc->func_connected_queue);
+-#define TX_SIZE		512
+-
+ /**
+  *	gsm_modem_upd_via_data	-	send modem bits via convergence layer
+  *	@dlci: channel
+@@ -3217,7 +3216,7 @@ static unsigned int gsmtty_write_room(st
+ 	struct gsm_dlci *dlci = tty->driver_data;
+ 	if (dlci->state == DLCI_CLOSED)
+ 		return 0;
+-	return TX_SIZE - kfifo_len(&dlci->fifo);
++	return kfifo_avail(&dlci->fifo);
  }
  
- static int
+ static unsigned int gsmtty_chars_in_buffer(struct tty_struct *tty)
 
 
