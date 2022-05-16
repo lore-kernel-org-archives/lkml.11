@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C868EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F17C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343941AbiEPTt6 (ORCPT
+        id S1346188AbiEPTuC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
+        Mon, 16 May 2022 15:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345863AbiEPTn1 (ORCPT
+        with ESMTP id S1345994AbiEPTof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:43:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73CC3ED2F;
-        Mon, 16 May 2022 12:42:57 -0700 (PDT)
+        Mon, 16 May 2022 15:44:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084F54090F;
+        Mon, 16 May 2022 12:43:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AFBD61512;
-        Mon, 16 May 2022 19:42:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2396EC385AA;
-        Mon, 16 May 2022 19:42:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0674161554;
+        Mon, 16 May 2022 19:43:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 190E3C34100;
+        Mon, 16 May 2022 19:43:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730176;
-        bh=0qaYJ6t+jGn0y50xO1gdfkgcxkO0fPq+vjA0LCRL1/s=;
+        s=korg; t=1652730183;
+        bh=z32HWa6td2alq4ISPAdSC/cfDQihTGTfN7yRTzcmYVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GNSVPWVCkaT9X7MIZrpRndcdafwpHqZbNJr0F2U+ylZ7R6zDj5Oq5qqaXElDJRK0P
-         45p+ZByKk1iCzGGalkP0rk1/blD96ZGCIIuwCdV5gJqvHcsHOvEnfoQ/bmrIo2NkGW
-         8DdBDCFg0ha6bFXafSbjquRi4XzuYFz1S4TuiCLg=
+        b=gpRlGvbka91RYGw28QQYoUJpJb8t3EsDGnad0WN9bdkQMoobIMxHo90+yrNAKvd6r
+         OLZU2gYcH57zSUqO7nSuHHUkO9mtFRA8L35uXGaMEkCpc9a2HmNUWWacX0nLxy59Xw
+         QMLc9uR2MC74SQcccaiifQtYho/VgF2Vz2IsecHw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 23/43] net: emaclite: Dont advertise 1000BASE-T and do auto negotiation
-Date:   Mon, 16 May 2022 21:36:34 +0200
-Message-Id: <20220516193615.402849285@linuxfoundation.org>
+Subject: [PATCH 5.4 04/43] net: Fix features skip in for_each_netdev_feature()
+Date:   Mon, 16 May 2022 21:36:15 +0200
+Message-Id: <20220516193614.847404487@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -52,60 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-[ Upstream commit b800528b97d0adc3a5ba42d78a8b0d3f07a31f44 ]
+[ Upstream commit 85db6352fc8a158a893151baa1716463d34a20d0 ]
 
-In xemaclite_open() function we are setting the max speed of
-emaclite to 100Mb using phy_set_max_speed() function so,
-there is no need to write the advertising registers to stop
-giga-bit speed and the phy_start() function starts the
-auto-negotiation so, there is no need to handle it separately
-using advertising registers. Remove the phy_read and phy_write
-of advertising registers in xemaclite_open() function.
+The find_next_netdev_feature() macro gets the "remaining length",
+not bit index.
+Passing "bit - 1" for the following iteration is wrong as it skips
+the adjacent bit. Pass "bit" instead.
 
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 3b89ea9c5902 ("net: Fix for_each_netdev_feature on Big endian")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
+Link: https://lore.kernel.org/r/20220504080914.1918-1-tariqt@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+ include/linux/netdev_features.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index bec09008997d..6e5ea68b6a7e 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -932,8 +932,6 @@ static int xemaclite_open(struct net_device *dev)
- 	xemaclite_disable_interrupts(lp);
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index 640e7279f161..75be8886783e 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -151,7 +151,7 @@ enum {
+ #define NETIF_F_HW_TLS_TX	__NETIF_F(HW_TLS_TX)
+ #define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
  
- 	if (lp->phy_node) {
--		u32 bmcr;
--
- 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
- 					     xemaclite_adjust_link, 0,
- 					     PHY_INTERFACE_MODE_MII);
-@@ -944,19 +942,6 @@ static int xemaclite_open(struct net_device *dev)
+-/* Finds the next feature with the highest number of the range of start till 0.
++/* Finds the next feature with the highest number of the range of start-1 till 0.
+  */
+ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ {
+@@ -170,7 +170,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ 	for ((bit) = find_next_netdev_feature((mask_addr),		\
+ 					      NETDEV_FEATURE_COUNT);	\
+ 	     (bit) >= 0;						\
+-	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
++	     (bit) = find_next_netdev_feature((mask_addr), (bit)))
  
- 		/* EmacLite doesn't support giga-bit speeds */
- 		phy_set_max_speed(lp->phy_dev, SPEED_100);
--
--		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
--		phy_write(lp->phy_dev, MII_CTRL1000, 0);
--
--		/* Advertise only 10 and 100mbps full/half duplex speeds */
--		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL |
--			  ADVERTISE_CSMA);
--
--		/* Restart auto negotiation */
--		bmcr = phy_read(lp->phy_dev, MII_BMCR);
--		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
--		phy_write(lp->phy_dev, MII_BMCR, bmcr);
--
- 		phy_start(lp->phy_dev);
- 	}
- 
+ /* Features valid for ethtool to change */
+ /* = all defined minus driver/device-class-related */
 -- 
 2.35.1
 
