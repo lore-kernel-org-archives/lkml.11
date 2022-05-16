@@ -2,130 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8047C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241490AbiEPIFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 04:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
+        id S241505AbiEPIHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 04:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238262AbiEPIFD (ORCPT
+        with ESMTP id S241375AbiEPIH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 04:05:03 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CACC31233;
-        Mon, 16 May 2022 01:05:02 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24G7NGuB015125;
-        Mon, 16 May 2022 08:05:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=4cG4fZ4FABvZZmQJ6VpIHom+4B7L/DL86KLk4eOIYK4=;
- b=KESwY1s3+VdVLFp5m7r5ueiRBHWfYIW9lCKb8DQqsNasuHN6KC1jPJpZuQ57/dcw9+mv
- nmPGIc10MBMsLfax3HWFI+ldKsxm5uN9liBaruv8gAuCW+B0hQXgGCjk1QNiEqJiXtEt
- ZudQn8a2EXfL4XIdmRGMNiFeyNK2viyz+gXeMB25XY0d0gVgUsMlyso9WS3F2mHDLqTM
- KtD4H2TZ1vQ3SttgT2Vkz6G8HulnBR4j+SjJhba081bF4sT8TvS9DxRbp7QBC5XIl2c0
- 76fv9f4E5mnck4BSS8Zs0fVuNerVN5OCyz3w4LiU20m8A3KDttQ0zUijKSNsb6D2nkRM Pg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3ey0c66c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 08:05:01 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24G7a1bS019675;
-        Mon, 16 May 2022 08:05:00 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3ey0c65u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 08:05:00 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24G84EdZ016964;
-        Mon, 16 May 2022 08:04:58 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3g2428hrr8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 08:04:58 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24G84t6Y49480168
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 16 May 2022 08:04:55 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5A3B611C054;
-        Mon, 16 May 2022 08:04:55 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D55ED11C04A;
-        Mon, 16 May 2022 08:04:54 +0000 (GMT)
-Received: from li-ca45c2cc-336f-11b2-a85c-c6e71de567f1.ibm.com (unknown [9.171.50.122])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 16 May 2022 08:04:54 +0000 (GMT)
-Message-ID: <6948806da404fd5822b59fd65b8a5a948e6bb317.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 04/19] KVM: s390: pv: refactor s390_reset_acc
-From:   Nico Boehr <nrb@linux.ibm.com>
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        mimu@linux.ibm.com
-Date:   Mon, 16 May 2022 10:04:54 +0200
-In-Reply-To: <20220414080311.1084834-5-imbrenda@linux.ibm.com>
-References: <20220414080311.1084834-1-imbrenda@linux.ibm.com>
-         <20220414080311.1084834-5-imbrenda@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        Mon, 16 May 2022 04:07:26 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2137.outbound.protection.outlook.com [40.107.20.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6F73207E;
+        Mon, 16 May 2022 01:07:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iUj47ZzfmHUcBfMxqhWjEt43CCMbUab43+s7CLyMEGyegf1APVqyOcvaYhqZkIlpljsJbr2BG76DLhVx1CanhXVx/f7qLt9dJxrLPFkkL88pczCPydPZCvG+mUfwjZmCZkBp5ktmGdFE9+hHNTJSI9VzDKdwBVpL8IZSB+lQoTPsI4IbHXFFajqiV4AVj8hFOT3QuufGuBSvyCJwLEIRvSHgQ+vwck9SBQo1r3nxkeH9GK+p7f/TN73XLhDb90RFZdyu/621NOx30tEhLXXNhjqrnWdwVKMihM0I8DtcnLYoab4JrxVh11ly9nc2maXEfJRh72vh2fZFWPRl2xUkvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=H5tPuQDIlZz83cnU1x1KMJlkpc/d2yE08UVy9YNT1UY=;
+ b=d75VMS4ayceATxBzQzvcC/he9J+Two6nlYqQBDcnhAh0Xizrn8YNYSd2JbAXrf7HBolcEGkGvEy5x5kbFMUdW8aA0tVaEBPxObGFBlQmUXZ230JG2cF1se3LiVKsQYDtoucXiYMjHuakwWTLh9ZYv9qjIo3BwcxRCCwhJoBHMneUFTUPP8c6NHxouLfU1DHsSudqqdwvtedIiDPycS/DJEuY88gV3TY8T0HdQl27hBFtYIH9VHJ54LhmSp97WYTqS83spO/g1elVoqrIs2KKrs4PZftbWw35z3OWAlPpzKS76JULCgVpvVDBcJt8hu6LQF9YQ+pT/4EGDcvN5I7mGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
+ dkim=pass header.d=axentia.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H5tPuQDIlZz83cnU1x1KMJlkpc/d2yE08UVy9YNT1UY=;
+ b=QT+NTZRB2e5yIWR9JI38oYzxt7ru34Fj2WL+vFKy8VPSc2i0NERkz0dqeBx88i0FoPuoOw1/9NzG4W/rXZPKeE3e+eWy8Qp4/2PIOlNLbWG/qGT6LwpwwztOBaQFvV9Npn8Ffnn4qPdPLCdEVvtJaAcHKjyTMPcZ0+GiYc530Sc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axentia.se;
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com (2603:10a6:208:ed::15)
+ by GVXPR02MB8256.eurprd02.prod.outlook.com (2603:10a6:150:6e::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Mon, 16 May
+ 2022 08:07:22 +0000
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::dcef:9022:d307:3e8a]) by AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::dcef:9022:d307:3e8a%4]) with mapi id 15.20.5250.018; Mon, 16 May 2022
+ 08:07:21 +0000
+Message-ID: <758ebcab-b0a2-29bd-d79c-1fbdc95212ae@axentia.se>
+Date:   Mon, 16 May 2022 10:07:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: i2c: add property to avoid device
+ detection
+Content-Language: sv
+From:   Peter Rosin <peda@axentia.se>
+To:     Wolfram Sang <wsa@kernel.org>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        kernel@axis.com, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, krzk+dt@kernel.org, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, luca@lucaceresoli.net
+References: <20220412085046.1110127-1-vincent.whitchurch@axis.com>
+ <20220412085046.1110127-2-vincent.whitchurch@axis.com>
+ <Yn+8CJ3j2SY2+Mq+@shikoro> <7ab1f387-3670-4b49-211d-3ff9a7c3d40b@axentia.se>
+In-Reply-To: <7ab1f387-3670-4b49-211d-3ff9a7c3d40b@axentia.se>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AS9PR05CA0058.eurprd05.prod.outlook.com
+ (2603:10a6:20b:489::32) To AM0PR02MB4436.eurprd02.prod.outlook.com
+ (2603:10a6:208:ed::15)
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: lsqWKg8fXlQr6SI_X27VJGgdaVMjHLwB
-X-Proofpoint-GUID: z3XyIGc9s1xEsN7Too8IHn4CIxKRVTGW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-16_03,2022-05-13_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- bulkscore=0 malwarescore=0 priorityscore=1501 impostorscore=0
- mlxlogscore=999 spamscore=0 phishscore=0 lowpriorityscore=0 clxscore=1015
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205160045
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b26e5a36-eac6-4334-1091-08da37131aa3
+X-MS-TrafficTypeDiagnostic: GVXPR02MB8256:EE_
+X-Microsoft-Antispam-PRVS: <GVXPR02MB8256B57245ED1F527DF9B308BCCF9@GVXPR02MB8256.eurprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XQy4Dqpk529XMCZD4eTaChAYQvmBwz0+fDfh0atlV8X9CyTKXOu9cp09K1mpRlZniO5psEZX2XryuTAgYmdITY4CJkuiG52sKlDPlh92CWk+gkTpVEuvnqyMg1a9lBG5Ys8UxvxewCt5Aca56oqS82p/GnEkwjNUe+vBrHGNoo0tUerBitfOizY2iMGNGkxSBeoUjJZ6HkJiPROAwWlIFR2nnc1sizSTsMdyy0FfjqnzCX/s4dKY4Qx1kF+50tm6NUpoRjs6/YzkTQOr0YJzB7blQCnTWKu3oXWXlgZxjA8KSF26oNB0S34HyhiSD+Je7IaW/1QmmpijMVhN5msdVJ2c4AF2sIrLXswTUwGedN4mYOu/JRvYXYpZO77FLs/gzKxqGgVqGI+BQ8uTyG0JS1TJRheaoOALhqg1oEKchJMA2hy/gUqtHD+lho6BQz5m2xrnY4p3UKU/snR77AIHZfxlJJgM4Df9JQXooXrMFmd8dEXGXAMaCBqA6pQpU6RhiAbMYGOWAQWd9zV+JTIYSpnLRGQPUzWQ/VtKk9z42spaWXFwLtKt5/n425KnGb3YOtoo7kZAsLgh8e0idiT+hornrsDut9OMYMO4SGcyIhICeQZaNbJ0ye1blygAY2L2czf8mVt//FroAim6ENTa3smUn3DG5zFluFuuqQJU7XgPkiRxNFQJOuGdz4iEcbD9MJ7vH3skucJ3lGN0Shm6mlqJZDHZBgEyxniq2Wg0ZYI8Fw6lwPazoJFWEf+WuHKA3UHPI1rrcx0g7Yi3CuMIqwRnHs8W3LJfRIxBZZDNTSnuGf9D3sulJN+yOGMxVdWygEm0cBvnfCv0HCbEuJ+RjA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB4436.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(376002)(396003)(39830400003)(346002)(136003)(31686004)(316002)(41300700001)(36756003)(66946007)(66556008)(31696002)(8676002)(38100700002)(86362001)(5660300002)(2616005)(66476007)(6486002)(186003)(6506007)(2906002)(110136005)(6512007)(8936002)(508600001)(26005)(83380400001)(966005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dnVnSmh0WXpOdGxHb1cwcHhzUFdQY01YLzY3L3ZTbmxueHhhSWhYWWlZcGlv?=
+ =?utf-8?B?YjdLTWJxajVzdU9YeFNWcVNGbzFyZ2J3ZCtvRHlFTkZPM25VdGhCQmgyNTRZ?=
+ =?utf-8?B?eEpZeGJFT05ObjUxRWV6dUhPd2VnNFhjelFmMmFYM3pYQzBFMTU5NE16Zmly?=
+ =?utf-8?B?ZXV1cDVDK3NKVHJUekk0TXFpcko1N1NmSjJxdjlXZzVHcktrRFJhUFg0bTVz?=
+ =?utf-8?B?WXQ4blZCQzA1b0U3MDdOTmIwaEV3Y3VORVJMc3BqQTcxS3U5ZzlOKzV3VStT?=
+ =?utf-8?B?V3hTT1R0cU1mbnMvbDRmQ29LMnBRcFdHbWpTTHdvejkwUnZMV0Z3ZGlGajd6?=
+ =?utf-8?B?QTZLVjlQVmR2SDlZR0p0ZW53SlAzeWgva2Y5VHdObStEeURGZ25ycW5GaXNh?=
+ =?utf-8?B?aWhZcTMxSkloaitmUTlpODV4NDRlaXFtaGVZOEp2bXAycTk0QmpWNnJjbGR0?=
+ =?utf-8?B?Y0lIaTJvSGllbW9oK1RJNmp5eXRrdDZIcWttTWhMUFkrZzJZeUJlaVdwMGs4?=
+ =?utf-8?B?UmJmU0VoWWJGd1kyVkkwWDNOOXJ5TDBkcENtS1ZXS3piMnBqRmlVTFl0NWpC?=
+ =?utf-8?B?cHp5SE5zYUVUdGIwVXVnbVYrN1pENlpVNGFadk5LYXVhajZTQmQzNTJxY2Jp?=
+ =?utf-8?B?alAwOEF1RDR2SGZGMDZIdE4xazZOdjAxenhzaVZ3MUVHVVBKRU96SU9uMVlr?=
+ =?utf-8?B?aXYwOHFTdXZYNXREQjh4cmJ4RVpHSUZHamQ4NTJkaFp2REJERXlUSVZhSjhK?=
+ =?utf-8?B?Q2MwcUtKcVNqTTdXNzZZY1p3WTdZSU1hdUIxaFByQzNVS1hUWTJLc0RSTTZ1?=
+ =?utf-8?B?VGVTcTV2T1lPTFdCd2FoZUpyNnFIbkF2MkFUTWZGT3k2NmZrU1lwMGtUUVQ4?=
+ =?utf-8?B?aUlEYkN5WmNUWno5b25KdTFnWXV0QXBSM1BqUXAyNVJiazV6MEhlWGJVTnI0?=
+ =?utf-8?B?Y2swc0hWK0NzenNhYzVJMTVVVWVtNlNvNEUzVW93U21QQ1hqcWJMUVZZMk5C?=
+ =?utf-8?B?ODZ1M3hISzl1NG13OStZeE5rd2U5ODVzZ0l2SGRiRmlUN0pnbmZ2S2g4MUJv?=
+ =?utf-8?B?OVdlSnl2czhiTGdYc2dDZXF1emMybjVpTElWemFsSlRzUjNPcTl0S3J5UmRC?=
+ =?utf-8?B?M2lFYjJJaUg4Q0toRmw0c1Nma004UDFzRnoxWU9wT2VGMzZTLzZNVktONkgr?=
+ =?utf-8?B?d0sxd01kenhoalFkbDE1V1hLSTVjR29RK01uVnFYcWVtZHlBVnVnK2FmdWtt?=
+ =?utf-8?B?di9LdDd5djVZOU5GTEJXbUsvdHltMi9ocmVRSWFleHMyOW10ZGhTV2pYMEl0?=
+ =?utf-8?B?K3VFdnJyQUJUUGlveDcrNWQ5L2RncEl5WUkrN1lZa1ArWThwcHRUZVpES0cy?=
+ =?utf-8?B?Vis5alMzZ29ieGlDME9vTmRZbjVkbkszWDlTVVByN1NqcXB4bXNjRGhleXpq?=
+ =?utf-8?B?ekdRWXZHc2x1aWc3OXFnVitFRGVWSDhtZjdnU29wYXNmSDhKZlpXOU9nVUJC?=
+ =?utf-8?B?eXdEYVpxY2llSzhoTE5XTlRtdDB3ekRGNStsa0lMTnZUb3YxUXF3RjIycmV5?=
+ =?utf-8?B?Ykg5TlZXdmpTYUdRd0JlaW1HaFN4Z1NEYllQcGFJSkFBYTVDR2JUT21uQThJ?=
+ =?utf-8?B?WHVIekFKcGZLakdNR0JKa2RJeUlJaS8vbEN0RHZFMkxmY3NLZlIxcVNnUjhR?=
+ =?utf-8?B?dFFnc2o3VXZFRVkvb3NDQVhMaXpYOVBYRFVucWJicTdlempZa083WmZBSmo0?=
+ =?utf-8?B?OEF2bnlWN2p6RzJLZG1TT2dpZE5zcmR5aktmUUFUMXpkekU0SDdNUnNSeUVn?=
+ =?utf-8?B?Y25BQWlUNitXYVBXVHBEWWFCK3JnUnJJbTBOc1A2QmdPOFBpTnlnajN1cDNq?=
+ =?utf-8?B?Z21VSGg0aFRoQ0lJKzZkc3orSElpMytqeVhYTEJXTGFONkhiU243UmdONlFz?=
+ =?utf-8?B?OVJaYkVzOEh4d3d6OG5sQ1NyQ0tWWk1mdFMrdnNGZVZzYmQ1RFYrdnhFdlJ4?=
+ =?utf-8?B?WkpFRTBHSjVUQ1dDU29pUHI3ZWVXZXhrZHpoNHRjQXRBUVBydTYrQnZoR0JX?=
+ =?utf-8?B?WHlzQ0s4VStWWVQ4eEdlK2N2Q1EzR292N1hlVURmaWNCbTZYTU5ZS2dpZWZP?=
+ =?utf-8?B?SEMzZExvYVUrdzNiV0xMWHhWRzY2c1BMYXZCdHdqRHYzeEpBNUY5N29ldHFn?=
+ =?utf-8?B?YWpvWWJaN3lhRnoxVmE0YVpTc1VJTEZZQWtTOFRaeWhhMm1JcDlkcnQ4NitT?=
+ =?utf-8?B?ZmpEeXE4Vk9BVnNjWFZvekxhV0YxQ1AzbUtvcXh0YzVTVTY3dHM4SGpsQ25S?=
+ =?utf-8?B?R1FWN2ZFTVFzMDNOWnNwdjkwWmNCancyWkdpbkkvanRKNXVValE4UT09?=
+X-OriginatorOrg: axentia.se
+X-MS-Exchange-CrossTenant-Network-Message-Id: b26e5a36-eac6-4334-1091-08da37131aa3
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB4436.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 08:07:21.9490
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CeQn6MxEoVpW4ENQK75ijQYoJJJ8p/+lFbxJWDN01ihXAIn6fapY3p/efy27B6zp
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR02MB8256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-14 at 10:02 +0200, Claudio Imbrenda wrote:
-> Refactor s390_reset_acc so that it can be reused in upcoming patches.
->=20
-> We don't want to hold all the locks used in a walk_page_range for too
-> long, and the destroy page UVC does take some time to complete.
-> Therefore we quickly gather the pages to destroy, and then destroy
-> them
-> without holding all the locks.
->=20
-> The new refactored function optionally allows to return early without
-> completing if a fatal signal is pending (and return and appropriate
-> error code). Two wrappers are provided to call the new function.
->=20
-> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+[Now with the proper email to Luca, sorry about that...]
 
-Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
-
-But see below with one naming suggestion you might want to take into
-account.
-
-[...]
-> diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
-> index e8904cb9dc38..a3a1f90f6ec1 100644
-> --- a/arch/s390/mm/gmap.c
-> +++ b/arch/s390/mm/gmap.c
-> @@ -2676,44 +2676,81 @@ void s390_reset_cmma(struct mm_struct *mm)
-> =C2=A0}
-> =C2=A0EXPORT_SYMBOL_GPL(s390_reset_cmma);
-> =C2=A0
-> -/*
-> - * make inaccessible pages accessible again
-> - */
-> -static int __s390_reset_acc(pte_t *ptep, unsigned long addr,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 unsigned long next, struct mm_walk *walk)
-> +#define DESTROY_LOOP_THRESHOLD 32
-
-maybe GATHER_NUM_PAGE_REFS_TO_TAKE?
+2022-05-16 at 09:57, Peter Rosin wrote:
+> 2022-05-14 at 16:26, Wolfram Sang wrote:
+>> On Tue, Apr 12, 2022 at 10:50:45AM +0200, Vincent Whitchurch wrote:
+>>> When drivers with ->detect callbacks are loaded, the I2C core does a
+>>> bunch of transactions to try to probe for these devices, regardless of
+>>> whether they are specified in the devicetree or not.  (This only happens
+>>> on I2C controllers whose drivers enable the I2C_CLASS* flags, but this
+>>> is the case for generic drivers like i2c-gpio.)
+>>>
+>>> These kinds of transactions are unnecessary on systems where the
+>>> devicetree specifies all the devices on the I2C bus, so add a property
+>>> to indicate that the devicetree description of the hardware is complete
+>>> and thus allow this discovery to be disabled.
+>> Hmm, I don't think the name is fitting. "no-detect" is the desired
+>> behaviour but a proper description is more like "bus-complete" or
+>> something?
+>>
+>> That aside, I am not sure we should handle this at DT level. Maybe we
+>> should better change the GPIO driver to not populate a class if we have
+>> a firmware node?
+> We also have the somewhat related address translation case (which I
+> still need to look at). [Adding Luca to Cc]
+>
+> https://lore.kernel.org/lkml/20220206115939.3091265-1-luca@lucaceresoli.net/
+>
+> If a bus is "bus-complete", then address translation could use
+> any unused address instead of from an explicit list of addresses.
+> I.e. the "i2c-alias-pool" in the binding in patch 4/6 of that
+> series could be made optional if the bus is "bus-complete".
+>
+> Not sure how much value there is in that?
+>
+> Cheers,
+> Peter
