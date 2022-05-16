@@ -2,124 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234091AbiEPItl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 04:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
+        id S242003AbiEPIuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 04:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbiEPItc (ORCPT
+        with ESMTP id S239384AbiEPIuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 04:49:32 -0400
-Received: from mail.schwermer.no (mail.schwermer.no [49.12.228.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C0011C16;
-        Mon, 16 May 2022 01:49:27 -0700 (PDT)
-X-Virus-Scanned: Yes
-From:   Sven Schwermer <sven@svenschwermer.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
-        s=mail; t=1652690964;
-        bh=6JI6nRxa4dp4XI16xrBF0shYaH4B8lhSnubceBvtvF8=;
-        h=From:To:Cc:Subject;
-        b=evzb4NjNJESXsEnNA97YibTqraCjzUGQMSUX6cR/hBFKeAYGto26ptyMspUL8hLAv
-         uDb0nd1L3R4GJ0jSgix+gOJaqjoBuYwKRAvEPETL1aTQI3G2BrsY7pKgLf6mkBcYBy
-         S1qPeRnwbgjFrYDcLqfiIIuZe+H99kthFup4tptOZqLVYyyMUxhCfgBkJDSE8/+QEN
-         LPIkoTpFfzsCUevM3HI+XxCnIwhOmcu3WUQueWvUSek2/MMvHyyikcjvvpRI9VIDbV
-         lyfkjCERP5drxkoIpf7OJlK2C/HV/k2RAwDiZRJW9hf64VWnK/OL1ny+pDaZL+V7Ev
-         1nI3HIj/nS3zA==
-To:     linux-usb@vger.kernel.org, oliver@neukum.org
-Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] net: usb: cdc_ether: Add Fibocom L610 modem
-Date:   Mon, 16 May 2022 10:48:46 +0200
-Message-Id: <20220516084847.77586-1-sven@svenschwermer.de>
-Mime-Version: 1.0
+        Mon, 16 May 2022 04:50:12 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2092.outbound.protection.outlook.com [40.107.215.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FCE12A96;
+        Mon, 16 May 2022 01:50:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ODEygzhUyu/jDrxxoX9u5oSmW8ir5QfClmyr6MncFfsJ2Q4PINbviR2ECwHFVpFO/HnrSGnAbm7blNlXaZTo+NWr4H+Ef0VXFgOsMvSkeopZKv8mu9QwU+uM2y4hCgIxglTIT3wROwGCFewQegFC78RRe1FK/g3GyR9lQ+YobH+Sx8D9uBdlVQHKw8vTBUuKV5zGPY3DuBYCAmCL0b/kVBz9jzKi7SRBPrnffBT0qXF4LB+7AkSs1AG79BO2axoQ1B7RVomqj+QSVX9LzuHQtPm6868YyDjTyp2s5wu71HVBZirPmyTsR7MXVrtQayCIa3ULee9knHbDl+4Uzkw0fw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vZoJzoLL29L/yWw73l0oO8lQJGy0l/bIbvEwWsTxeLw=;
+ b=YeW0La4f/vlSehXGibmlEkZ1GLkEEBSr1CViIhRXER5EBYW8KceE7ySXPKzmEhhbhfytxvbh8NxfySCgxlhZWNsdyOn5tjEbJ8s1UXcmManOrS9PcrJXvF5Y/o9CP7oWz6EQbqWRYylfkXyOzj7HFJc0QZo+aEDeWVHrvP3cJt3ZIZBO5xJR97ZCd6NFJRCra31Z3kRxEGRtFJC8GLDfu4k/U3ItTmrKU0nESl2Af3OUepy4K9RtjT9JvbJaEoM1BWhdG86mccKaOEzXsjRTAZ/2kNli1MigYFiHIwff8uASGB82IXvDQRXshUCjKDGe9oSPQzMkFxpiB/OYF1/jAQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vZoJzoLL29L/yWw73l0oO8lQJGy0l/bIbvEwWsTxeLw=;
+ b=EmX1Qx2JEckLRWcyoNZG2z1OTedhS2tjeiBpHk+GzDTpNknJSeAI9yQV1qOPL6SyQZpgMTdMiv10gULX2V0Y2dWZuH/QIsf2SDbfGKgWDdH0iIBG33ikI59pBTOQW9yTBRpCvyxXPquOTgs+6fj5E/+rfKm9hzroijwpC74Ma2U=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ HK0PR06MB2433.apcprd06.prod.outlook.com (2603:1096:203:60::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5250.14; Mon, 16 May 2022 08:50:08 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::ccb7:f612:80b2:64d5]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::ccb7:f612:80b2:64d5%4]) with mapi id 15.20.5250.018; Mon, 16 May 2022
+ 08:50:08 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] gpio: ftgpio: Remove unneeded ERROR check before clk_disable_unprepare
+Date:   Mon, 16 May 2022 16:50:00 +0800
+Message-Id: <20220516085000.9861-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.36.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR02CA0197.apcprd02.prod.outlook.com
+ (2603:1096:201:21::33) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c1e2f99d-8bde-410b-f707-08da3719149d
+X-MS-TrafficTypeDiagnostic: HK0PR06MB2433:EE_
+X-Microsoft-Antispam-PRVS: <HK0PR06MB24333BFF3F41B0853EA22921ABCF9@HK0PR06MB2433.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: oAnnNM/MQmQ96sdKSqqA3Qs20nXGAuhCqZIl5fx1b+OAI1foRgMIS4htGqldeHzl2rEHSSSMKTpUrwmnvqQxGRtBZbGGxkgKuazImg4NuzAygW4odSFTYdOqxLicqDvzeZmklKv3Go+XMCyclW8prLklI/FLel7kPZitUvjYfOAZYaW5fb6yMbpFRnz9dhboM4wPiLoF9bU9qYXYlMit5qIgaFDyE0aRzZCwaes7q+kuVPMqDBCbjZwg/vmfWBzR/DSDyeNSrg3exAMNmqY/0JDDFiiKH+yjvfGIdv9pH95LheA/agBkkAM1oXtcdu9rJvt6Hm5hwR2H/D2EH8QO72CTJLLz2Ro8uFKMK8uIY7zVWZE/BFfvp9VrfVsYhSExmADl/H7fw51eyaavz2Kk7OBCgggIOjueLaK8m+cS0dkTlEbG2rdM/FnPif8m+1IF0cw/zVeQA0K/Ixkz6j2KU46Wpy2PtM6H1umCY7GI0XLZK1e9Y4Q2E0EO/PrsJPQ9gwjNTBzCmaki7cNG5B8obZb7Cbrk85TTEEn3ZsQjBycEaz/dNmtVrUrFpAziMXsdjbMW163pcPJXaXqrr2bmjwk03iDmz/0PNMDDGq5I/Fw9FH2zy/VoO/OOqKk6Au8ZRWRJRfqil9F0N8wIRUKVLUM2RTi/ocOx3VdFJyz1hJd4fqehfmUhCCX9AiXsH/nQGByG294M2Pnij43m/OBQBg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(66556008)(86362001)(2616005)(8936002)(38350700002)(38100700002)(2906002)(6666004)(66946007)(52116002)(4744005)(66476007)(26005)(6512007)(6506007)(4326008)(8676002)(110136005)(36756003)(316002)(6486002)(508600001)(1076003)(107886003)(186003)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vpuScBugjw2eZxJzLJM0lnm0+6kDxn0gIFmDflo85EvGW3pFDXXBToHfXFJB?=
+ =?us-ascii?Q?yGEHnShXqXCUMg5o7wbTCbrsmxfzSY4iHhoLIPEg208yCce2Ow4S/YC4VVD8?=
+ =?us-ascii?Q?Ezyz42n4FQQDlU9sRTgraD6wrcbBlR6vxdIePiQL71mn//1zubF3mhAUHZ32?=
+ =?us-ascii?Q?S6SyvIWTSno2L1d+j3nZ0Xil2s5jV0MUpu/QI8c7kq1eqkX9rs5xJ91NtrAb?=
+ =?us-ascii?Q?bgmkVxjsIBj5OaDtZhnpbrPD/w1bU0ogudL1T+AOxv/N2f/Vf1xbF5y2DjkV?=
+ =?us-ascii?Q?BBOdyXlEBbnvqfsyiZKrijyfroB5bqwMQ0/fqqmnibm6BbHUf/i9Zsp7FxJC?=
+ =?us-ascii?Q?4bzDQ1/HgVlFLOeytSql1t4waodxkpnK+oSwN1w0cQth84uw4okfhiqaUkTu?=
+ =?us-ascii?Q?G1WxTiislww1f0SmEykuk0PerSOWZrPj2k+hLOvvZBSypI04NCZ3XHQgEz9c?=
+ =?us-ascii?Q?ZLPyBrnCrstxExzBa4lHVqitMopE8o0EfxIUA5waZRWcgoUHmIF/R4jxfrmB?=
+ =?us-ascii?Q?21T2RsA7NLRNg7ZRfpLwi8PV0cf/fcOBwuNU5H+EdZScS3OZ9Ah1MnjlqC7y?=
+ =?us-ascii?Q?46YwfX+yZ7DrdxOgnFtzV35JW6fsP+LPOTD7pCnTCWov06U6417KrCzODSg5?=
+ =?us-ascii?Q?0hzpR5A3+Rof3B95CCXkCsfDM8lwQo/r1aSmz9/gSZGdMyqbcpVDuQnL4jtI?=
+ =?us-ascii?Q?EIer8ie61V+Zoqy83NhBI/UUjoPwahWKVWDfJ8c5S6ktaNF7UxO6/CPc/yTx?=
+ =?us-ascii?Q?9vKreJmUKm9j11cy4djGU/F4OX4rx7Dt0hfB9lCeDLc15inRJ+98rgK2sdFu?=
+ =?us-ascii?Q?OsFmR/DQF/ODqpVdzqv8KuwbOrY178LL7jzQuJbdWSYWAtdvcxBcZ+ZUNuQs?=
+ =?us-ascii?Q?EyVDePKrn3eJUDT11XObLw2Fs8U39EjDT8VPOhCWTuJK1pRtmxGRiOnbHoYa?=
+ =?us-ascii?Q?cNmUhVbWtLNpODYMm+63hiiMJVtpxucSnBkuSrCseFPAgZKM3Eba03FzpfBO?=
+ =?us-ascii?Q?JDIbz54DCImyCLnjqWYMQ53PsOUuT1X9dyK+h20kvQv1YMpkq8Ep1TyxfR1Y?=
+ =?us-ascii?Q?bQH+KUxcybpdVPMlu4EJblYiWbvSicMygsdxgTOZGbM8OyT9Jd0/90Va8haE?=
+ =?us-ascii?Q?vrCdCZi7DdmS1IynIEZgEDS93Ovukfe/QrI2hCwJOX/IMQRkiHfaHFrHLO5I?=
+ =?us-ascii?Q?gw1Bj7fN5NSUuIo2yhw7CtgHEiYnSzyIWE5aPpCvUKWWjLVuTfKXZ24/xdzW?=
+ =?us-ascii?Q?Tkhi29YxdE2iAZxyg8726p92h8r74rqHEAXo9NFvTYOHytmQvDJ+SJ5GPcMM?=
+ =?us-ascii?Q?SLb4np9ISjKKotVw995qeDdVVm86eNdVNN2Us0Mnw1SipftU8K1Cm4AFXmGa?=
+ =?us-ascii?Q?sjbh+w+cQ9lHFCF2dnI0rAuQ6Yx0Lfnyns1/UHdStgQRJ5fpXbV5PFdpnspg?=
+ =?us-ascii?Q?LrkWeHOCHHiUDOJ602XH37R6oik9fn9RfOBzy34D2EQMhHSzmL0iOK4ayxjh?=
+ =?us-ascii?Q?Vyef2zkU+xnNbtu3xULvjGxUsf0cSLPi2T9yfdIIVf7E4dKqGS8Pqz/Wnqn0?=
+ =?us-ascii?Q?LHUEn7TC0YIydjdIKAT1o0CMNN88ptF5eOLr7HUeolVSg2IUO76pBwt+H6Fo?=
+ =?us-ascii?Q?JrqjR76gxXcg+Sdobm9Qy9BdcRG8aKULfstmMEjWEVUiU1dC6WQ0ACglRJIM?=
+ =?us-ascii?Q?YWlcgmwC4II7xyiRSzBTsCgG5CnhiWNUwux9AULrNMBy05dhv6XlKHxPchte?=
+ =?us-ascii?Q?7/0L36gnkg=3D=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1e2f99d-8bde-410b-f707-08da3719149d
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 08:50:08.8296
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fQ4YWBGG7S14MkOPrEUaQFSYHtF6+OG9R8fdXh11dHbgwjGvNukLpd1vM8QeHR/ZXHSfog86rANnRZXqb6E7bA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR06MB2433
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+clk_disable_unprepare() already checks ERROR by using IS_ERR_OR_NULL.
+Remove unneeded ERROR check for g->clk.
 
-Since this is a modem device enumerating as an Ethernet adapter, we need
-to whitelist it as a WWAN device which tells userspace that this device
-requires setup (via AT commands) before it can be used.
-
-The L610 modem has 3 USB configurations that are configurable via the AT
-command AT+GTUSBMODE={31,32,33} which make the modem enumerate with the
-following interfaces, respectively:
-
-31: Modem + NV + MOS + Diag + LOG + AT + AT
-32: ECM + Modem + NV + MOS + Diag + LOG + AT + AT
-33: RNDIS + Modem + NV + MOS + Diag + LOG + AT + AT
-
-A detailed description of the USB configuration for the ECM mode
-(+GTUSBMODE=32) follows:
-
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=122 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=1782 ProdID=4d11 Rev= 0.00
-S:  Manufacturer=FIBOCOM
-S:  Product=L610
-C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
-A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=32ms
-I:  If#= 1 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-I:* If#= 1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 ---
+ drivers/gpio/gpio-ftgpio010.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Notes:
-    Changes:
-    V1->V2: Add additional comments
-
- drivers/net/usb/cdc_ether.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
-index 9b4dfa3001d6..3a9c4935c180 100644
---- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -999,6 +999,12 @@ static const struct usb_device_id	products[] = {
- 				      USB_CDC_SUBCLASS_ETHERNET,
- 				      USB_CDC_PROTO_NONE),
- 	.driver_info = (unsigned long)&wwan_info,
-+}, {
-+	/* Fibocom L610 (ECM mode) */
-+	USB_DEVICE_AND_INTERFACE_INFO(0x1782, 0x4d11, USB_CLASS_COMM,
-+				      USB_CDC_SUBCLASS_ETHERNET,
-+				      USB_CDC_PROTO_NONE),
-+	.driver_info = (unsigned long)&wwan_info,
- }, {
- 	USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET,
- 			USB_CDC_PROTO_NONE),
-
-base-commit: 42226c989789d8da4af1de0c31070c96726d990c
+diff --git a/drivers/gpio/gpio-ftgpio010.c b/drivers/gpio/gpio-ftgpio010.c
+index b90a45c939a4..f422c3e129a0 100644
+--- a/drivers/gpio/gpio-ftgpio010.c
++++ b/drivers/gpio/gpio-ftgpio010.c
+@@ -315,8 +315,8 @@ static int ftgpio_gpio_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ dis_clk:
+-	if (!IS_ERR(g->clk))
+-		clk_disable_unprepare(g->clk);
++	clk_disable_unprepare(g->clk);
++
+ 	return ret;
+ }
+ 
+@@ -324,8 +324,8 @@ static int ftgpio_gpio_remove(struct platform_device *pdev)
+ {
+ 	struct ftgpio_gpio *g = platform_get_drvdata(pdev);
+ 
+-	if (!IS_ERR(g->clk))
+-		clk_disable_unprepare(g->clk);
++	clk_disable_unprepare(g->clk);
++
+ 	return 0;
+ }
+ 
 -- 
 2.36.1
 
