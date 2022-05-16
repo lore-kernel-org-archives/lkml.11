@@ -2,111 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F15C38A02
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44445C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349455AbiEPUig (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        id S232305AbiEPUjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350561AbiEPUBV (ORCPT
+        with ESMTP id S1348229AbiEPUNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC0A49FAE;
-        Mon, 16 May 2022 12:55:33 -0700 (PDT)
+        Mon, 16 May 2022 16:13:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C9A1402B;
+        Mon, 16 May 2022 13:07:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31D2E60FD9;
-        Mon, 16 May 2022 19:55:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 224E5C34115;
-        Mon, 16 May 2022 19:55:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730931;
-        bh=EwrlZFOvzJnjMTJ2FyUy85Q/vhUk54CTxzJFzMEnSow=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YRfmpfg2IkhsoTRP76maCmxcghA2OAjC3LhOKJWNVlaXLhvoaOO3PC8w2D0DLAKSD
-         7ppZUIPq1wX6zWJr1WiVefef3xCP2458mDKrFLVCbOlNNCQg7YtHTSNU8hFVWmi9Nd
-         wOrhzLvk8W8uimKOgBuurhTCkOZRKOUI6uIwO74I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 051/114] RDMA/irdma: Fix deadlock in irdma_cleanup_cm_core()
-Date:   Mon, 16 May 2022 21:36:25 +0200
-Message-Id: <20220516193626.959658720@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13263B8160D;
+        Mon, 16 May 2022 20:07:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C4BC385AA;
+        Mon, 16 May 2022 20:07:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652731627;
+        bh=2oHu2lhqVArxUeRpeWfK80VGG2Jg12XQxHaXI1SK7Es=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XDVyAo4+h6+CWwT6cHzq7d2W7k3WO47CMu0dQG3dXNvLZLO5dyKSAnVnqmOMJv4s9
+         OW13kfOyoB2P6HPuzrEcl/LduJfIzgJK9+bd5Ej0N0bf7gSjv/baSbJLb4oyWj6YBa
+         GSCW5DBt2mJDE5TXmXHF9rg3phBDUaS6/z9w/GwCoS/afRBohzMbDNQOnvndshnL6t
+         iiB97ztZP3HDj4jcNlwQfVEBmFIgL3DILIM9IbvIFa8UgBS4KVui0U8+3LjiL4zEhp
+         jXW4d5EG2/jdMq2siS4hoLop0VZMiUOcxpGKk+jNzm3swmviREhFOLTd+kGaugd9ug
+         FNimXEbGwesZA==
+Date:   Mon, 16 May 2022 13:07:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     netdev@vger.kernel.org, krzysztof.kozlowski@linaro.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, broonie@kernel.org
+Subject: Re: [PATCH net] NFC: nci: fix sleep in atomic context bugs caused
+ by nci_skb_alloc
+Message-ID: <20220516130705.2d51a6cf@kernel.org>
+In-Reply-To: <20220513133355.113222-1-duoming@zju.edu.cn>
+References: <20220513133355.113222-1-duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+On Fri, 13 May 2022 21:33:55 +0800 Duoming Zhou wrote:
+> Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation ")
+> Fixes: 11f54f228643 ("NFC: nci: Add HCI over NCI protocol support")
 
-[ Upstream commit 679ab61bf5f5f519377d812afb4fb93634782c74 ]
-
-There is a deadlock in irdma_cleanup_cm_core(), which is shown below:
-
-   (Thread 1)              |      (Thread 2)
-                           | irdma_schedule_cm_timer()
-irdma_cleanup_cm_core()    |  add_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | irdma_cm_timer_tick()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold cm_core->ht_lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler also need
-cm_core->ht_lock in position (2) of thread 2.  As a result,
-irdma_cleanup_cm_core() will block forever.
-
-This patch removes the check of timer_pending() in
-irdma_cleanup_cm_core(), because the del_timer_sync() function will just
-return directly if there isn't a pending timer. As a result, the lock is
-redundant, because there is no resource it could protect.
-
-Link: https://lore.kernel.org/r/20220418153322.42524-1-duoming@zju.edu.cn
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/infiniband/hw/irdma/cm.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index 082a3ddb0fa3..632f65e53b63 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -3242,15 +3242,10 @@ enum irdma_status_code irdma_setup_cm_core(struct irdma_device *iwdev,
-  */
- void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
- {
--	unsigned long flags;
--
- 	if (!cm_core)
- 		return;
- 
--	spin_lock_irqsave(&cm_core->ht_lock, flags);
--	if (timer_pending(&cm_core->tcp_timer))
--		del_timer_sync(&cm_core->tcp_timer);
--	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
-+	del_timer_sync(&cm_core->tcp_timer);
- 
- 	destroy_workqueue(cm_core->event_wq);
- 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
--- 
-2.35.1
-
-
-
+Are there more bad callers? If st_nci_se_wt_timeout is the only source
+of trouble then the fixes tag should point to when it was added, rather
+than when the callee was added.
