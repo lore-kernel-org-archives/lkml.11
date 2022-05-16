@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A06DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5D5EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236283AbiEPNt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
+        id S242422AbiEPNuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243906AbiEPNtD (ORCPT
+        with ESMTP id S244023AbiEPNtU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:49:03 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B89539164;
-        Mon, 16 May 2022 06:48:39 -0700 (PDT)
+        Mon, 16 May 2022 09:49:20 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A8D3A722;
+        Mon, 16 May 2022 06:48:46 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MC3mA-1nzQlx06Ou-008vD9;
- Mon, 16 May 2022 15:48:29 +0200
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0Mapv2-1o9mfO3mhu-00KNGT;
+ Mon, 16 May 2022 15:48:37 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
@@ -31,253 +31,199 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 09/24] ARM: dts: imx7-colibri: move regulators
-Date:   Mon, 16 May 2022 15:47:19 +0200
-Message-Id: <20220516134734.493065-10-marcel@ziswiler.com>
+Subject: [PATCH v2 11/24] ARM: dts: imx7-colibri: clean-up usdhc1 and add sleep config
+Date:   Mon, 16 May 2022 15:47:21 +0200
+Message-Id: <20220516134734.493065-12-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220516134734.493065-1-marcel@ziswiler.com>
 References: <20220516134734.493065-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:lBw1IeizW6AgwCUPS6nx9JlnKp3vgP7F/P4cN+FnSAtAoUHeJuZ
- CwLG1uAoFss21ZmQw1+i5lI/+KnDGnvASst1x+HI8SwrwuisO73VbrkhzuSWjf7/6utGACw
- PcoXzTa19wytXrDY6Rx7zZjwOWmAeyWNczDsiKzEpnvif4rLepwrY/NDz49SFaojMalS9w3
- Q+MPITw09LmYruXON2FOA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bybzdPiEJmM=:xZKOhaMXgJaZwdgTHspzpG
- lT5EV996CezuugJC4ekcSZ991Zvgz+ZlGxjW8VEpDuUVrsc2S0zJajDy4jgIvWlQKbIYYMiCr
- yCX6OhwxxD/YxRiNN81GWcPEYioIBfOlCaUvMa1+DWLNiNsqFxHbbjPTvPcYywliS0SC59N+7
- tVXyTAzQn3YPc3iFNM3r+LBLaY9rebV0GqMwGbDhtjTmMz5PTXVZ4UNvtuNQ79g1eC2q5Exft
- pkW/mwIHRJw99R5xs4T25x7pKQjFOAp3ZVu9kO3Z4OcMiXFl6WuS4lX/7LJc1tw4uLAErEbzT
- vmZrJCVIqh8ZWHuAHgDneoY2058H8yNS41NE6aC/BE91G0apkIoSC6thZPUH/Q4mSXI1/mI0l
- LfVkinY9yPQreeIR43nMdGGVdsOSC7VHE+QkP7s7yO7eRukNDcTr88EO/TltdkEek3UwI/INz
- CiCum+ynFe9DJOwaiQ4UMnPs1SjbRbCJ6gKlLnLypL4eXs9DE3a+gSrieozAFmtVfvBXEPB3l
- RB2aK/QG1mN9M/5UGROg2Rwo3VpH3S+w5nmQR+MtXu4jsjBiMvF2qgLjXYr0wLmDYu/aXd+Dj
- 4wqQVtx/QdCRQX1AvvfoO9KBS/OUZX8NO74nfeGEvZYQ1CjEVBuxm1FE0AUkAQ6pEoo7xylKk
- 3EahrCzJa27Tvk7UAJgXQ9AVBCnoCVEc3C51nurPkB9G0jbsC5wRYdU/6/aG5HxLl/MXpKwyK
- e4LVXgTaQ9SxvhaQ
+X-Provags-ID: V03:K1:ZRzc2gXZMKf3ghAXjPUT9TqYZgxorz496rHBn9Ig6p7AOfD7Kj1
+ 61AydMR9YZxrgkKnMrJvCHwhTNEMxUKKG7n0DDYaUA5+AuVLlvuf665SezJGojmDg8Zd7p7
+ OXTeurCkUywqLS/rHWu0m1lBR9TaxPEygEo6mAd17DfHMj49e9bTtkPjmqL9eZklIkK/z1Q
+ D4OBruByqETkX0dux5HjQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:SuGP2DzBcIg=:fynZZd6alUQKyCXZa+vtuZ
+ 1DgRHQ/d75HAMPk94zVpqEErTZnZ6DisECQWSb8WpePJ/8qJmxYeCoHcfaXxe/2BGncVBtnen
+ 77dp3rVStMIdbbPvWEt0EiZ1/v1mF7O5oyhbprvQ5i620/0SVeL8L9faNEA213LxKVf1349X1
+ 5wIL3YrgNzoXK1zbGdidaW1+0Lt4pE4yK0nWaEoOOtGw16E7xy60UTqPvtYjFrlLL+gStKuc7
+ 7ddqAGkAQnHpMAX6+Eu1/YZKvl+QPQaPT9EKPOBKAXp1/Y2duuqCRHVyiZ7ggnzbQVBci1yp8
+ /0cfbVzS7nmTC6H8YiEhtpsidPGg8m29mPH+hsyGNiW3gVZiPUMSxsOmLTtzIz/GFq2zjhhHF
+ CudEAsNvKkeyuhDdCyiJegpIFZvepzhGP5Jc/AoJOPvG2yNQlixLIgkIOsagoW7h4LGEbMNlu
+ OqpVXClDbF2kOKEdaKEuGEGEQDYkibIN0nyI1mIGxFUpRzn9d4bsHGOOJBKU+oNxZXwlLV9N5
+ deJ0P03r2aOavntFaVgGgvqjbtBvuCAWd40Sa43v01sMzsqHQTbsgmPvn7kRNSS+uvJ0BjWmj
+ Fjvsv692mWzLnEMNNTJ5VlcCGcg/w6ewkekj/+jK1vy6yy8ekX3zEiMvDhjNS7zj6cpTAQzY/
+ UfgoBYrl9bCLQICJLavzH+7E6pU8nImZqfcXPDBIn8gi1H/qqd3gWvLcdt4DoHJmW7BY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Move regulators to module-level device tree given they are standard
-Colibri functionalities.
+Adding no-1-8-v property to usdhc1 to disable +1.8V signaling (UHS-I)
+mode on SoM dtsi level.
+
+Clean up no-1-8-v from Aster carrier board dtsi, which is using defaults
+from SoM dtsi and is not UHS-I capable.
+
+A carrier board may have a MMC/SD card slot with a switchable power
+supply. Add a pinctrl sleep used when the card power is off to avoid
+backfeeding to the card and add the "sleep" pinctrl to the usdhc1
+controller.
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
 (no changes since v1)
 
- arch/arm/boot/dts/imx7-colibri-aster.dtsi     | 27 -------------
- arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi   | 25 ------------
- arch/arm/boot/dts/imx7-colibri.dtsi           | 39 ++++++++++++++++---
- arch/arm/boot/dts/imx7d-colibri-aster.dts     |  1 -
- .../arm/boot/dts/imx7d-colibri-emmc-aster.dts |  1 -
- .../boot/dts/imx7d-colibri-emmc-eval-v3.dts   |  1 -
- arch/arm/boot/dts/imx7d-colibri-emmc.dtsi     |  1 +
- arch/arm/boot/dts/imx7d-colibri-eval-v3.dts   |  1 -
- arch/arm/boot/dts/imx7d-colibri.dtsi          |  1 +
- 9 files changed, 35 insertions(+), 62 deletions(-)
+ arch/arm/boot/dts/imx7-colibri-aster.dtsi   |  5 +-
+ arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi |  3 -
+ arch/arm/boot/dts/imx7-colibri.dtsi         | 75 ++++++++++++++-------
+ 3 files changed, 51 insertions(+), 32 deletions(-)
 
 diff --git a/arch/arm/boot/dts/imx7-colibri-aster.dtsi b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-index c12de1861c05..440f98dc323d 100644
+index 440f98dc323d..f3a5cb7d6a0c 100644
 --- a/arch/arm/boot/dts/imx7-colibri-aster.dtsi
 +++ b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-@@ -3,33 +3,6 @@
-  * Copyright 2017-2022 Toradex
-  */
+@@ -61,10 +61,7 @@ &usbotg1 {
+ 	status = "okay";
+ };
  
--/ {
--	reg_3v3: regulator-3v3 {
--		compatible = "regulator-fixed";
--		regulator-name = "3.3V";
--		regulator-min-microvolt = <3300000>;
--		regulator-max-microvolt = <3300000>;
--	};
--
--	reg_5v0: regulator-5v0 {
--		compatible = "regulator-fixed";
--		regulator-name = "5V";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--	};
--
--	reg_usbh_vbus: regulator-usbh-vbus {
--		compatible = "regulator-fixed";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_usbh_reg>;
--		regulator-name = "VCC_USB[1-4]";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--		gpio = <&gpio4 7 GPIO_ACTIVE_LOW>;
--		vin-supply = <&reg_5v0>;
--	};
--};
--
- &adc1 {
++/* Colibri MMC/SD */
+ &usdhc1 {
+-	keep-power-in-suspend;
+-	no-1-8-v;
+-	wakeup-source;
+-	vmmc-supply = <&reg_3v3>;
  	status = "okay";
  };
 diff --git a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-index 2e6678f81af6..33a9cbbca0d2 100644
+index 33a9cbbca0d2..618831e89ce8 100644
 --- a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
 +++ b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-@@ -10,31 +10,6 @@ clk16m: clk16m {
- 		#clock-cells = <0>;
- 		clock-frequency = <16000000>;
- 	};
--
--	reg_3v3: regulator-3v3 {
--		compatible = "regulator-fixed";
--		regulator-name = "3.3V";
--		regulator-min-microvolt = <3300000>;
--		regulator-max-microvolt = <3300000>;
--	};
--
--	reg_5v0: regulator-5v0 {
--		compatible = "regulator-fixed";
--		regulator-name = "5V";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--	};
--
--	reg_usbh_vbus: regulator-usbh-vbus {
--		compatible = "regulator-fixed";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_usbh_reg>;
--		regulator-name = "VCC_USB[1-4]";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--		gpio = <&gpio4 7 GPIO_ACTIVE_LOW>;
--		vin-supply = <&reg_5v0>;
--	};
+@@ -97,8 +97,5 @@ &usbotg1 {
  };
  
- &adc1 {
+ &usdhc1 {
+-	keep-power-in-suspend;
+-	wakeup-source;
+-	vmmc-supply = <&reg_3v3>;
+ 	status = "okay";
+ };
 diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index c5a58949d664..329638985db6 100644
+index 09dbd262dad1..3da9ddc06aae 100644
 --- a/arch/arm/boot/dts/imx7-colibri.dtsi
 +++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -62,20 +62,47 @@ lcd_panel_in: endpoint {
- 		};
- 	};
- 
--	reg_module_3v3: regulator-module-3v3 {
-+	reg_3v3: regulator-3v3 {
- 		compatible = "regulator-fixed";
--		regulator-name = "+V3.3";
--		regulator-min-microvolt = <3300000>;
-+		regulator-always-on;
- 		regulator-max-microvolt = <3300000>;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-name = "3.3V";
-+	};
-+
-+	reg_5v0: regulator-5v0 {
-+		compatible = "regulator-fixed";
- 		regulator-always-on;
-+		regulator-max-microvolt = <5000000>;
-+		regulator-min-microvolt = <5000000>;
-+		regulator-name = "5V";
- 	};
- 
--	reg_module_3v3_avdd: regulator-module-3v3-avdd {
-+	reg_module_3v3: regulator-module-3v3 {
- 		compatible = "regulator-fixed";
--		regulator-name = "+V3.3_AVDD_AUDIO";
--		regulator-min-microvolt = <3300000>;
-+		regulator-always-on;
- 		regulator-max-microvolt = <3300000>;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-name = "+V3.3";
-+	};
-+
-+	reg_module_3v3_avdd: regulator-module-3v3-avdd {
-+		compatible = "regulator-fixed";
- 		regulator-always-on;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-name = "+V3.3_AVDD_AUDIO";
-+	};
-+
-+	reg_usbh_vbus: regulator-usbh-vbus {
-+		compatible = "regulator-fixed";
-+		gpio = <&gpio4 7 GPIO_ACTIVE_LOW>; /* SODIMM 129 / USBH_PEN */
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_usbh_reg>;
-+		regulator-max-microvolt = <5000000>;
-+		regulator-min-microvolt = <5000000>;
-+		regulator-name = "VCC_USB[1-4]";
-+		vin-supply = <&reg_5v0>;
- 	};
- 
- 	sound {
-diff --git a/arch/arm/boot/dts/imx7d-colibri-aster.dts b/arch/arm/boot/dts/imx7d-colibri-aster.dts
-index 2ed1823c4805..cfd75e3424fa 100644
---- a/arch/arm/boot/dts/imx7d-colibri-aster.dts
-+++ b/arch/arm/boot/dts/imx7d-colibri-aster.dts
-@@ -36,6 +36,5 @@ &panel_dpi {
+@@ -585,12 +585,19 @@ &usbotg1 {
+ 	extcon = <0>, <&extcon_usbc_det>;
  };
  
- &usbotg2 {
--	vbus-supply = <&reg_usbh_vbus>;
- 	status = "okay";
- };
-diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts b/arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts
-index 33e1034b75a4..7b4451699478 100644
---- a/arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts
-+++ b/arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts
-@@ -17,6 +17,5 @@ / {
- };
- 
- &usbotg2 {
--	vbus-supply = <&reg_usbh_vbus>;
- 	status = "okay";
- };
-diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts b/arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts
-index 25d8d4583289..3e84018392ee 100644
---- a/arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts
-+++ b/arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts
-@@ -16,6 +16,5 @@ / {
- };
- 
- &usbotg2 {
--	vbus-supply = <&reg_usbh_vbus>;
- 	status = "okay";
- };
-diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-index e77f0b26b6fb..45b12b0d8710 100644
---- a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-+++ b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-@@ -47,6 +47,7 @@ &gpio6 {
- 
- &usbotg2 {
- 	dr_mode = "host";
-+	vbus-supply = <&reg_usbh_vbus>;
++/* Colibri MMC/SD */
+ &usdhc1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_cd_usdhc1>;
+ 	cd-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
+ 	disable-wp;
++	no-1-8-v;
++	pinctrl-names = "default", "state_100mhz", "state_200mhz", "sleep";
++	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_cd_usdhc1>;
++	pinctrl-1 = <&pinctrl_usdhc1_100mhz &pinctrl_cd_usdhc1>;
++	pinctrl-2 = <&pinctrl_usdhc1_200mhz &pinctrl_cd_usdhc1>;
++	pinctrl-3 = <&pinctrl_usdhc1_sleep &pinctrl_cd_usdhc1_sleep>;
++	vmmc-supply = <&reg_3v3>;
+ 	vqmmc-supply = <&reg_LDO2>;
++	wakeup-source;
  };
  
  &usdhc3 {
-diff --git a/arch/arm/boot/dts/imx7d-colibri-eval-v3.dts b/arch/arm/boot/dts/imx7d-colibri-eval-v3.dts
-index 51561388fac5..7aabe5691459 100644
---- a/arch/arm/boot/dts/imx7d-colibri-eval-v3.dts
-+++ b/arch/arm/boot/dts/imx7d-colibri-eval-v3.dts
-@@ -47,6 +47,5 @@ &pwm3 {
- };
+@@ -949,36 +956,48 @@ MX7D_PAD_UART3_CTS_B__GPIO4_IO7	0x14 /* SODIMM 129 USBH PEN */
+ 		>;
+ 	};
  
- &usbotg2 {
--	vbus-supply = <&reg_usbh_vbus>;
- 	status = "okay";
- };
-diff --git a/arch/arm/boot/dts/imx7d-colibri.dtsi b/arch/arm/boot/dts/imx7d-colibri.dtsi
-index 48993abacae4..d1469aa8b025 100644
---- a/arch/arm/boot/dts/imx7d-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7d-colibri.dtsi
-@@ -29,4 +29,5 @@ &gpmi {
+-	pinctrl_usdhc1: usdhc1-grp {
++	pinctrl_usdhc1: usdhc1grp {
+ 		fsl,pins = <
+-			MX7D_PAD_SD1_CMD__SD1_CMD	0x59
+-			MX7D_PAD_SD1_CLK__SD1_CLK	0x19
+-			MX7D_PAD_SD1_DATA0__SD1_DATA0	0x59
+-			MX7D_PAD_SD1_DATA1__SD1_DATA1	0x59
+-			MX7D_PAD_SD1_DATA2__SD1_DATA2	0x59
+-			MX7D_PAD_SD1_DATA3__SD1_DATA3	0x59
++			MX7D_PAD_SD1_CLK__SD1_CLK		0x19 /* SODIMM 47 */
++			MX7D_PAD_SD1_CMD__SD1_CMD		0x59 /* SODIMM 190 */
++			MX7D_PAD_SD1_DATA0__SD1_DATA0		0x59 /* SODIMM 192 */
++			MX7D_PAD_SD1_DATA1__SD1_DATA1		0x59 /* SODIMM 49 */
++			MX7D_PAD_SD1_DATA2__SD1_DATA2		0x59 /* SODIMM 51 */
++			MX7D_PAD_SD1_DATA3__SD1_DATA3		0x59 /* SODIMM 53 */
+ 		>;
+ 	};
  
- &usbotg2 {
- 	dr_mode = "host";
-+	vbus-supply = <&reg_usbh_vbus>;
- };
+-	pinctrl_usdhc1_100mhz: usdhc1grp_100mhz {
++	pinctrl_usdhc1_100mhz: usdhc1-100mhzgrp {
+ 		fsl,pins = <
+-			MX7D_PAD_SD1_CMD__SD1_CMD	0x5a
+-			MX7D_PAD_SD1_CLK__SD1_CLK	0x1a
+-			MX7D_PAD_SD1_DATA0__SD1_DATA0	0x5a
+-			MX7D_PAD_SD1_DATA1__SD1_DATA1	0x5a
+-			MX7D_PAD_SD1_DATA2__SD1_DATA2	0x5a
+-			MX7D_PAD_SD1_DATA3__SD1_DATA3	0x5a
++			MX7D_PAD_SD1_CLK__SD1_CLK		0x1a
++			MX7D_PAD_SD1_CMD__SD1_CMD		0x5a
++			MX7D_PAD_SD1_DATA0__SD1_DATA0		0x5a
++			MX7D_PAD_SD1_DATA1__SD1_DATA1		0x5a
++			MX7D_PAD_SD1_DATA2__SD1_DATA2		0x5a
++			MX7D_PAD_SD1_DATA3__SD1_DATA3		0x5a
+ 		>;
+ 	};
+ 
+-	pinctrl_usdhc1_200mhz: usdhc1grp_200mhz {
++	pinctrl_usdhc1_200mhz: usdhc1-200mhzgrp {
+ 		fsl,pins = <
+-			MX7D_PAD_SD1_CMD__SD1_CMD	0x5b
+-			MX7D_PAD_SD1_CLK__SD1_CLK	0x1b
+-			MX7D_PAD_SD1_DATA0__SD1_DATA0	0x5b
+-			MX7D_PAD_SD1_DATA1__SD1_DATA1	0x5b
+-			MX7D_PAD_SD1_DATA2__SD1_DATA2	0x5b
+-			MX7D_PAD_SD1_DATA3__SD1_DATA3	0x5b
++			MX7D_PAD_SD1_CLK__SD1_CLK		0x1b
++			MX7D_PAD_SD1_CMD__SD1_CMD		0x5b
++			MX7D_PAD_SD1_DATA0__SD1_DATA0		0x5b
++			MX7D_PAD_SD1_DATA1__SD1_DATA1		0x5b
++			MX7D_PAD_SD1_DATA2__SD1_DATA2		0x5b
++			MX7D_PAD_SD1_DATA3__SD1_DATA3		0x5b
++		>;
++	};
++
++	/* Avoid backfeeding with removed card power. */
++	pinctrl_usdhc1_sleep: usdhc1-slpgrp {
++		fsl,pins = <
++			MX7D_PAD_SD1_CMD__SD1_CMD		0x10
++			MX7D_PAD_SD1_CLK__SD1_CLK		0x10
++			MX7D_PAD_SD1_DATA0__SD1_DATA0		0x10
++			MX7D_PAD_SD1_DATA1__SD1_DATA1		0x10
++			MX7D_PAD_SD1_DATA2__SD1_DATA2		0x10
++			MX7D_PAD_SD1_DATA3__SD1_DATA3		0x10
+ 		>;
+ 	};
+ 
+@@ -1077,9 +1096,15 @@ MX7D_PAD_LPSR_GPIO1_IO05__GPIO1_IO5	0x4000007f
+ 		>;
+ 	};
+ 
+-	pinctrl_cd_usdhc1: usdhc1-cd-grp {
++	pinctrl_cd_usdhc1: cdusdhc1grp {
++		fsl,pins = <
++			MX7D_PAD_LPSR_GPIO1_IO00__GPIO1_IO0	0x59 /* SODIMM 43 / MMC_CD */
++		>;
++	};
++
++	pinctrl_cd_usdhc1_sleep: cdusdhc1-slpgrp {
+ 		fsl,pins = <
+-			MX7D_PAD_LPSR_GPIO1_IO00__GPIO1_IO0	0x59 /* CD */
++			MX7D_PAD_LPSR_GPIO1_IO00__GPIO1_IO0	0x0
+ 		>;
+ 	};
+ 
 -- 
 2.35.1
 
