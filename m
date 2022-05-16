@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4ABEC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD8A4C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348683AbiEPUXD (ORCPT
+        id S1348582AbiEPUXB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42068 "EHLO
+        Mon, 16 May 2022 16:23:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348876AbiEPT7B (ORCPT
+        with ESMTP id S1348879AbiEPT7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BABDF10;
-        Mon, 16 May 2022 12:51:46 -0700 (PDT)
+        Mon, 16 May 2022 15:59:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63ABAB3;
+        Mon, 16 May 2022 12:51:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3362360ABE;
-        Mon, 16 May 2022 19:51:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2332CC385AA;
-        Mon, 16 May 2022 19:51:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DA7AB81611;
+        Mon, 16 May 2022 19:51:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33425C385AA;
+        Mon, 16 May 2022 19:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730705;
-        bh=xeK6HRxi1mPhpbtlWLLpg+A8vnqO0N4E6B3fLZdB0xw=;
+        s=korg; t=1652730712;
+        bh=YzW8u20XqcllyETUghHYrsk3AT8VdfEGOpmwGCOwdKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ffp/RtRGNdeLSduB+03h4TXnRwqbWqzlXPmARafLLnAEt9sj0UYBq0jkNe0dMOrvg
-         urlqwmAGBb7aMh0UycQn7GwEevtNs9AliWEusXIF9Qpl3AuVX8FgdmVwdtSN5oH0cO
-         KKyMxDaGDWxTOx06C912jXwcPfkQ1vd2MXrVdQ68=
+        b=dqAMblpB0aQZjL284RLaDNX97/mLfgJXE3oxUVosbvZDX+TSdC2L1jf4kxdkaKCOk
+         XPimweoj+UWq5zDz+lqK65x1tKB597alnRcwl7yENDUZz42hwSE1xKJTiLvPQEPT8i
+         7kEaa0gyjmFvuAFvd7AuGi4G4HrhZfTVsxiTKR6g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Yu <xuyu@linux.alibaba.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 082/102] Revert "mm/memory-failure.c: skip huge_zero_page in memory_failure()"
-Date:   Mon, 16 May 2022 21:36:56 +0200
-Message-Id: <20220516193626.346807892@linuxfoundation.org>
+        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        Martin Krastev <krastevm@vmware.com>
+Subject: [PATCH 5.15 084/102] drm/vmwgfx: Disable command buffers on svga3 without gbobjects
+Date:   Mon, 16 May 2022 21:36:58 +0200
+Message-Id: <20220516193626.404883946@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -52,83 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Yu <xuyu@linux.alibaba.com>
+From: Zack Rusin <zackr@vmware.com>
 
-commit b4e61fc031b11dd807dffc46cebbf0e25966d3d1 upstream.
+commit 21d1d192890ced87f2f04f8f4dea92406e0b162a upstream.
 
-Patch series "mm/memory-failure: rework fix on huge_zero_page splitting".
+With very limited vram on svga3 it's difficult to handle all the surface
+migrations. Without gbobjects, i.e. the ability to store surfaces in
+guest mobs, there's no reason to support intermediate svga2 features,
+especially because we can fall back to fb traces and svga3 will never
+support those in-between features.
 
+On svga3 we wither want to use fb traces or screen targets
+(i.e. gbobjects), nothing in between. This fixes presentation on a lot
+of fusion/esxi tech previews where the exposed svga3 caps haven't been
+finalized yet.
 
-This patch (of 2):
-
-This reverts commit d173d5417fb67411e623d394aab986d847e47dad.
-
-The commit d173d5417fb6 ("mm/memory-failure.c: skip huge_zero_page in
-memory_failure()") explicitly skips huge_zero_page in memory_failure(), in
-order to avoid triggering VM_BUG_ON_PAGE on huge_zero_page in
-split_huge_page_to_list().
-
-This works, but Yang Shi thinks that,
-
-    Raising BUG is overkilling for splitting huge_zero_page. The
-    huge_zero_page can't be met from normal paths other than memory
-    failure, but memory failure is a valid caller. So I tend to replace
-    the BUG to WARN + returning -EBUSY. If we don't care about the
-    reason code in memory failure, we don't have to touch memory
-    failure.
-
-And for the issue that huge_zero_page will be set PG_has_hwpoisoned,
-Yang Shi comments that,
-
-    The anonymous page fault doesn't check if the page is poisoned or
-    not since it typically gets a fresh allocated page and assumes the
-    poisoned page (isolated successfully) can't be reallocated again.
-    But huge zero page and base zero page are reused every time. So no
-    matter what fix we pick, the issue is always there.
-
-Finally, Yang, David, Anshuman and Naoya all agree to fix the bug, i.e.,
-to split huge_zero_page, in split_huge_page_to_list().
-
-This reverts the commit d173d5417fb6 ("mm/memory-failure.c: skip
-huge_zero_page in memory_failure()"), and the original bug will be fixed
-by the next patch.
-
-Link: https://lkml.kernel.org/r/872cefb182ba1dd686b0e7db1e6b2ebe5a4fff87.1651039624.git.xuyu@linux.alibaba.com
-Fixes: d173d5417fb6 ("mm/memory-failure.c: skip huge_zero_page in memory_failure()")
-Fixes: 6a46079cf57a ("HWPOISON: The high level memory error handler in the VM v7")
-Signed-off-by: Xu Yu <xuyu@linux.alibaba.com>
-Suggested-by: Yang Shi <shy828301@gmail.com>
-Reviewed-by: Yang Shi <shy828301@gmail.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Fixes: 2cd80dbd3551 ("drm/vmwgfx: Add basic support for SVGA3")
+Cc: <stable@vger.kernel.org> # v5.14+
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-5-zack@kde.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory-failure.c |   13 -------------
- 1 file changed, 13 deletions(-)
+ drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1692,19 +1692,6 @@ try_again:
- 
- 	if (PageTransHuge(hpage)) {
- 		/*
--		 * Bail out before SetPageHasHWPoisoned() if hpage is
--		 * huge_zero_page, although PG_has_hwpoisoned is not
--		 * checked in set_huge_zero_page().
--		 *
--		 * TODO: Handle memory failure of huge_zero_page thoroughly.
--		 */
--		if (is_huge_zero_page(hpage)) {
--			action_result(pfn, MF_MSG_UNSPLIT_THP, MF_IGNORED);
--			res = -EBUSY;
--			goto unlock_mutex;
--		}
--
--		/*
- 		 * The flag must be set after the refcount is bumped
- 		 * otherwise it may race with THP split.
- 		 * And the flag can't be set in get_hwpoison_page() since
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
+@@ -675,11 +675,14 @@ int vmw_cmd_emit_dummy_query(struct vmw_
+  */
+ bool vmw_cmd_supported(struct vmw_private *vmw)
+ {
+-	if ((vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
+-				  SVGA_CAP_CMD_BUFFERS_2)) != 0)
+-		return true;
++	bool has_cmdbufs =
++		(vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
++				      SVGA_CAP_CMD_BUFFERS_2)) != 0;
++	if (vmw_is_svga_v3(vmw))
++		return (has_cmdbufs &&
++			(vmw->capabilities & SVGA_CAP_GBOBJECTS) != 0);
+ 	/*
+ 	 * We have FIFO cmd's
+ 	 */
+-	return vmw->fifo_mem != NULL;
++	return has_cmdbufs || vmw->fifo_mem != NULL;
+ }
 
 
