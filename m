@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE5AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8067AC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:14:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234971AbiEPUNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:13:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
+        id S1344129AbiEPUOE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348133AbiEPT60 (ORCPT
+        with ESMTP id S1348512AbiEPT6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBE949250;
-        Mon, 16 May 2022 12:50:13 -0700 (PDT)
+        Mon, 16 May 2022 15:58:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48844496AF;
+        Mon, 16 May 2022 12:50:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D745B81612;
-        Mon, 16 May 2022 19:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B49C385AA;
-        Mon, 16 May 2022 19:50:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70EB660A14;
+        Mon, 16 May 2022 19:50:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7346DC385AA;
+        Mon, 16 May 2022 19:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730610;
-        bh=E6IEgSzYAeio9Qxj1EaJrujKdyR+K6hkdC/qFq7fLfw=;
+        s=korg; t=1652730643;
+        bh=AfvNImvSajbT2lRm2lCrt5R+aKpmDHKgaIumFgk1JSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tpXxfd5mBgi0D7dwb7R6DKO8VatY/KecuPsBaYcw4zt55w4NgQ+RCQR8s/TFvNvAP
-         B3qC+5P79njWpKe6qJQix1PD7Fnbj9GuGJkegrUpDIzp/7tCsyLoH/lfzjLwrjgaN+
-         u4U63OWwjgacB52l10p6bhp9N03mn94HMZXTj7fA=
+        b=NxFe8m/GYKlMGkLzwkix6WgYa2/QXvgEXo3eMBl5gbLjBz9zoDSqhe8Yi9E8NV1iy
+         hWY0ZqkNOQncoCJWfE+OOi2k49S8S4OAKS8/NTaV6Cmm+H3KODdIvnsFAjSpa8ZOxN
+         W1WfdfWWhm8OHsVGpkXcYNElIIFq/X6Agr4rDeWc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Bla=C5=BE=20Hrastnik?= <blaz@mxxn.io>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 013/102] platform/surface: aggregator: Fix initialization order when compiling as builtin module
-Date:   Mon, 16 May 2022 21:35:47 +0200
-Message-Id: <20220516193624.377408906@linuxfoundation.org>
+        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>
+Subject: [PATCH 5.15 065/102] usb: xhci-mtk: fix fs isocs transfer error
+Date:   Mon, 16 May 2022 21:36:39 +0200
+Message-Id: <20220516193625.863220429@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -51,52 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maximilian Luz <luzmaximilian@gmail.com>
+From: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
-[ Upstream commit 44acfc22c7d055d9c4f8f0974ee28422405b971a ]
+commit c237566b78ad8c72bc0431c5d6171db8d12e6f94 upstream.
 
-When building the Surface Aggregator Module (SAM) core, registry, and
-other SAM client drivers as builtin modules (=y), proper initialization
-order is not guaranteed. Due to this, client driver registration
-(triggered by device registration in the registry) races against bus
-initialization in the core.
+Due to the scheduler allocates the optimal bandwidth for FS ISOC endpoints,
+this may be not enough actually and causes data transfer error, so come up
+with an estimate that is no less than the worst case bandwidth used for
+any one mframe, but may be an over-estimate.
 
-If any attempt is made at registering the device driver before the bus
-has been initialized (i.e. if bus initialization fails this race) driver
-registration will fail with a message similar to:
-
-    Driver surface_battery was unable to register with bus_type surface_aggregator because the bus was not initialized
-
-Switch from module_init() to subsys_initcall() to resolve this issue.
-Note that the serdev subsystem uses postcore_initcall() so we are still
-able to safely register the serdev device driver for the core.
-
-Fixes: c167b9c7e3d6 ("platform/surface: Add Surface Aggregator subsystem")
-Reported-by: Blaž Hrastnik <blaz@mxxn.io>
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
-Link: https://lore.kernel.org/r/20220429195738.535751-1-luzmaximilian@gmail.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 451d3912586a ("usb: xhci-mtk: update fs bus bandwidth by bw_budget_table")
+Cc: stable@vger.kernel.org
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Link: https://lore.kernel.org/r/20220512064931.31670-1-chunfeng.yun@mediatek.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/surface/aggregator/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/host/xhci-mtk-sch.c |   16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/platform/surface/aggregator/core.c b/drivers/platform/surface/aggregator/core.c
-index c61bbeeec2df..54f86df77a37 100644
---- a/drivers/platform/surface/aggregator/core.c
-+++ b/drivers/platform/surface/aggregator/core.c
-@@ -816,7 +816,7 @@ static int __init ssam_core_init(void)
- err_bus:
- 	return status;
- }
--module_init(ssam_core_init);
-+subsys_initcall(ssam_core_init);
- 
- static void __exit ssam_core_exit(void)
+--- a/drivers/usb/host/xhci-mtk-sch.c
++++ b/drivers/usb/host/xhci-mtk-sch.c
+@@ -465,7 +465,7 @@ static int check_fs_bus_bw(struct mu3h_s
+ 		 */
+ 		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
+ 			k = XHCI_MTK_BW_INDEX(base + j);
+-			tmp = tt->fs_bus_bw[k] + sch_ep->bw_budget_table[j];
++			tmp = tt->fs_bus_bw[k] + sch_ep->bw_cost_per_microframe;
+ 			if (tmp > FS_PAYLOAD_MAX)
+ 				return -ESCH_BW_OVERFLOW;
+ 		}
+@@ -539,19 +539,17 @@ static int check_sch_tt(struct mu3h_sch_
+ static void update_sch_tt(struct mu3h_sch_ep_info *sch_ep, bool used)
  {
--- 
-2.35.1
-
+ 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
++	int bw_updated;
+ 	u32 base;
+-	int i, j, k;
++	int i, j;
++
++	bw_updated = sch_ep->bw_cost_per_microframe * (used ? 1 : -1);
+ 
+ 	for (i = 0; i < sch_ep->num_esit; i++) {
+ 		base = sch_ep->offset + i * sch_ep->esit;
+ 
+-		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
+-			k = XHCI_MTK_BW_INDEX(base + j);
+-			if (used)
+-				tt->fs_bus_bw[k] += sch_ep->bw_budget_table[j];
+-			else
+-				tt->fs_bus_bw[k] -= sch_ep->bw_budget_table[j];
+-		}
++		for (j = 0; j < sch_ep->num_budget_microframes; j++)
++			tt->fs_bus_bw[XHCI_MTK_BW_INDEX(base + j)] += bw_updated;
+ 	}
+ 
+ 	if (used)
 
 
