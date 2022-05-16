@@ -2,108 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A14DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238925AbiEPUUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
+        id S245629AbiEPUUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348898AbiEPT7C (ORCPT
+        with ESMTP id S1348896AbiEPT7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:59:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C035C1707D;
-        Mon, 16 May 2022 12:52:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59F6460AB8;
-        Mon, 16 May 2022 19:52:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6061FC34100;
-        Mon, 16 May 2022 19:52:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730741;
-        bh=toU+LSytb3raG+3uTnxifuzxSNtqE2Qud5xMlmbay4Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SQkjT62ACUf6V86KXDF7J14Glutm4XK35rHWlaZYEKf+gUeVnD+G5SCV1PJ4irZ6u
-         RfR1nwKiQapY1TjpshXFs2F+Ll61OQ+ZzcSQQk6PZEDbEJGS+aRnk6CPE4YEWwypl3
-         0rohF1gvvHCwHAeWHkWgZJM84WrJ1aT17dDcsDn0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 092/102] net: phy: micrel: Do not use kszphy_suspend/resume for KSZ8061
-Date:   Mon, 16 May 2022 21:37:06 +0200
-Message-Id: <20220516193626.639614033@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F88613F1C;
+        Mon, 16 May 2022 12:52:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652730726;
+        bh=UNy2J4fkb7uNrb3sdw6sHacgYSf5R/YKgMseuZ9qomo=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=Fjz4O2JLj2wqI2k0QgbiyH2kXrx6LvpDfEBAcTqr0ZI6FUW9j8PY4F53LE0I5Y83G
+         90d1QoQx8ZBtPauOijPKcTi7wYphQO5FOj1y8qejkCj2tJAm0hlUTfHaVdpSW1o0An
+         3QQ/CuTjDvIR5xI20pZe/RD95oSU661YFNG50dUQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.33] ([46.223.3.15]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MxUrx-1nfu511aQ5-00xrE8; Mon, 16
+ May 2022 21:52:06 +0200
+Subject: Re: [PATCH v4 1/6] tpm, tpm_tis_spi: Request threaded irq
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lukas@wunner.de,
+        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
+ <20220509080559.4381-2-LinoSanfilippo@gmx.de> <YnucgDH3I87RI8PN@kernel.org>
+ <486cec01-ec02-3f11-0b81-037e0700c503@gmx.de> <Yn6esMyUl+QhECq+@kernel.org>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <1b306d56-c6b3-e51f-1d63-2f6725fa7557@gmx.de>
+Date:   Mon, 16 May 2022 21:52:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yn6esMyUl+QhECq+@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:4mC90Cdt0908TfXcpU5kwIXZz/I20/o2aOoBpxBAi66+E7Wo5K/
+ 9HAf13p9g462Tnkmpi2VW7QmLUEFEzu2E2yb51VYlr+cJdI4tQKFFgjG7kaNn8nbbV0x/Cj
+ cs9pqMkVIibMHiar7fnJ5sFGY2MXVmfP32mgNCdnJbKWTOdvCOdRcyGOA9NPArg5lOrpAd5
+ Dm+Tom95PQVg2+AOS3mZg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Ali3R6o1Nco=:FAflsnwg8QiH9PVILyYXGD
+ GTRbwY9PsAKZwlgZiWSlnRQMZvVbiJXlEW2h2ORxTiHu8lmzir892Br2UPFmm29VM3Zn4pBRj
+ sgPIymAHRgL1RNmdZJoO5jCEtiFbLm85LWbF+YCU1+l2v/JAMa23JT7izUAoORyqhQbEvxOQV
+ 8C3WA9oIPfh5QhM6j+IbKYpCQcNVOaZB4rFZzfUzgb4mMGLLxaCQAgK3tkOJPlriChkZv8TiZ
+ 9WjDTtOICTWfJsjvLhd0+kYzuff+/rXriOSmi+Sp8baBqecFDQ+La1yhoaeDZvkza5k5uflFt
+ 1BbptbxzujRdpQW96/DRnBZ8d3j3zYpz4+94RxJbf27TwY3qnj4QT3DkAec2FBZxM8yzq+T6p
+ IIOEZgwFcag2kqCilP/xhaDJIKefkS+F97NiWf3j/JbrdVIhPMoRy8kJB2lMkO8zxFUUDORx2
+ 09CUiEYIA9JMglKC4bLNVafI+4WQSPUVJOFQVVZgMDlq88CxDOUOexSiaMmDeL0VMRDgw4Gui
+ VgRGm0h6R6EKjF6PpnhgEqdnGV5oownSbAdSvHmKJGcV8wI73Kt/YMf0d6ELseFen+21iuBq7
+ 9WLvuWUcUmxgJoPjGaG99E5X8JGQKjdcpq1w4u8T5v4YKWfkRZcYS0RCLAXJk7J1q05RTk8lG
+ B+lWKMaJuVTbQiygNvAFUknvJ3f5/BVkGy+QAy2hc5HoDUMgyP9v4kVIOGq4l3DEFOpqSW0Fo
+ ccbg20bVPoI+vZBr5JNBBBuiu8OpNPJWjDl3shd29Jdo32WrkP6EjGiVAj6CvCxMwtnT0znhX
+ cEELp9zRqFdPWpvZ/lwvQODWxgDX1K3qo99nyLPUI+iJu8nR0CzK8QZSrG6l4HTGHANA6SOAJ
+ o2+MT/Btwo3lBwzoocUeBiwTX1zVCltzJoFVUHiQRIft13S9gBg3bcYf+rsLMtNXvPiByjceb
+ wazeHzMOodKIJvtRZuxIIw4f4N8deNHpEgWKXI5BmbD2OIdwZTEXxWkjrnClHfAvbWgdSspHz
+ C9ZIaTp2qmEGPKuG0nCXKh4JvvZ1BdNmORkdYLgj1uqzsGq52ZS1/Gd32zipeZzHC+GeQW9q+
+ mEhon8fngHIfaaGq7CTTnNNhCGUK4MvrFbG3vVm0drApIfSvTyOuQVe0Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+Hi,
 
-commit e333eed63a091a09bd0db191b7710c594c6e995b upstream.
+On 13.05.22 at 20:08, Jarkko Sakkinen wrote:
+> On Wed, May 11, 2022 at 09:18:39PM +0200, Lino Sanfilippo wrote:
+>> Hi,
+>>
+>> On 11.05.22 at 13:22, Jarkko Sakkinen wrote:
+>>> On Mon, May 09, 2022 at 10:05:54AM +0200, Lino Sanfilippo wrote:
+>>>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>>>
+>>>> Interrupt handling at least includes reading and writing the interrup=
+t
+>>>> status register within the interrupt routine. Since accesses over the=
+ SPI
+>>>> bus are synchronized by a mutex, request a threaded interrupt handler=
+ to
+>>>> ensure a sleepable context during interrupt processing.
+>>>>
+>>>> Fixes: 1a339b658d9d ("tpm_tis_spi: Pass the SPI IRQ down to the drive=
+r")
+>>>> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>>
+>>> When you state that it needs a sleepable context, you should bring a
+>>> context why it needs it. This not to disregard the code change overall=
+y but
+>>> you cannot make even the most obvious claim without backing data.
+>>>
+>>
+>> so what kind of backing data do you have in mind? Would it help to emph=
+asize more
+>> that the irq handler is running in hard irq context in the current code=
+ and thus
+>> must not access registers over SPI since SPI uses a mutex (I consider i=
+t as basic
+>> knowledge that a mutex must not be taken in hard irq context)?
+>
+> There's zero mention about specific lock you are talking about. Providin=
+g
+> the basic knowledge what you are trying to do is the whole point of the
+> commit message in the first place. I'd presume this patch is related to =
+the
+> use bus_lock_mutex but it is fully ingored here.
+>
 
-Since commit f1131b9c23fb ("net: phy: micrel: use
-kszphy_suspend()/kszphy_resume for irq aware devices") the following
-NULL pointer dereference is observed on a board with KSZ8061:
+Ok, understood. I will amend the commit message to make more clear that
+reading and writing registers from the interrupt handler results in
+a call to tpm_tis_spi_transfer() which uses the bus_lock_mutex of the
+spi device and thus requires a sleepable context.
 
- # udhcpc -i eth0
-udhcpc: started, v1.35.0
-8<--- cut here ---
-Unable to handle kernel NULL pointer dereference at virtual address 00000008
-pgd = f73cef4e
-[00000008] *pgd=00000000
-Internal error: Oops: 5 [#1] SMP ARM
-Modules linked in:
-CPU: 0 PID: 196 Comm: ifconfig Not tainted 5.15.37-dirty #94
-Hardware name: Freescale i.MX6 SoloX (Device Tree)
-PC is at kszphy_config_reset+0x10/0x114
-LR is at kszphy_resume+0x24/0x64
-...
 
-The KSZ8061 phy_driver structure does not have the .probe/..driver_data
-fields, which means that priv is not allocated.
+Regards,
+Lino
 
-This causes the NULL pointer dereference inside kszphy_config_reset().
 
-Fix the problem by using the generic suspend/resume functions as before.
 
-Another alternative would be to provide the .probe and .driver_data
-information into the structure, but to be on the safe side, let's
-just restore Ethernet functionality by using the generic suspend/resume.
-
-Cc: stable@vger.kernel.org
-Fixes: f1131b9c23fb ("net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq aware devices")
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220504143104.1286960-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/phy/micrel.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1669,8 +1669,8 @@ static struct phy_driver ksphy_driver[]
- 	.config_init	= ksz8061_config_init,
- 	.config_intr	= kszphy_config_intr,
- 	.handle_interrupt = kszphy_handle_interrupt,
--	.suspend	= kszphy_suspend,
--	.resume		= kszphy_resume,
-+	.suspend	= genphy_suspend,
-+	.resume		= genphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ9021,
- 	.phy_id_mask	= 0x000ffffe,
-
+> BR, Jarkko
+>
 
