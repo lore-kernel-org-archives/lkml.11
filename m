@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8365C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346308AbiEPTt2 (ORCPT
+        id S1346320AbiEPTtg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
+        Mon, 16 May 2022 15:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346036AbiEPTnV (ORCPT
+        with ESMTP id S1346070AbiEPTnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:43:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F168A3FDA2;
-        Mon, 16 May 2022 12:42:42 -0700 (PDT)
+        Mon, 16 May 2022 15:43:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90E2B3D;
+        Mon, 16 May 2022 12:42:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E9AA61553;
-        Mon, 16 May 2022 19:42:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 940DFC385AA;
-        Mon, 16 May 2022 19:42:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2352FB81604;
+        Mon, 16 May 2022 19:42:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 694BBC34100;
+        Mon, 16 May 2022 19:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730162;
-        bh=atRy27yf9Vy/665sbn+jOCfM4MC2nSQBCmGmLlIUE8A=;
+        s=korg; t=1652730164;
+        bh=3UhGR+rXO9ZQXyV91VSoGXL3dlu5EfTzUjGml0Ff02Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdi/0IP+b4KjTr1vqVR99YHJis9IqNU3KVu2xyt7F9o9WLidWy6E/xLoddjoZH/2m
-         WhGjfl3u6c96Sa4i18VYHKdK9YAeoVeTx4/u4mskX/P4czr55pq5l79Q1UVI2n6aoh
-         jCoVNPoxhCNzIopN4WCL8LtrM526+FLqRULXK+40=
+        b=VKSH+Yg1bQ4h1r8UXk7A9VyEIPsK9+cAb+U65iacOlWzEUTtuIWsPxxXlf4nBeaSQ
+         teoDyvT1FUPTwmid+eYx/EFSXc3rgyIYKzjzJ1kI4tinr22EPH2U8ApYGWxBI81CA4
+         8adCihL8knlKNojHN0XfW48A5s7I7o3hsly9vcnI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Camel Guo <camel.guo@axis.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 19/43] ASoC: max98090: Reject invalid values in custom control put()
-Date:   Mon, 16 May 2022 21:36:30 +0200
-Message-Id: <20220516193615.286664317@linuxfoundation.org>
+Subject: [PATCH 5.4 02/43] hwmon: (tmp401) Add OF device ID table
+Date:   Mon, 16 May 2022 21:36:13 +0200
+Message-Id: <20220516193614.788971257@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -49,38 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Camel Guo <camel.guo@axis.com>
 
-[ Upstream commit 2fbe467bcbfc760a08f08475eea6bbd4c2874319 ]
+[ Upstream commit 3481551f035725fdc46885425eac3ef9b58ae7b7 ]
 
-The max98090 driver has a custom put function for some controls which can
-only be updated in certain circumstances which makes no effort to validate
-that input is suitable for the control, allowing out of spec values to be
-written to the hardware and presented to userspace. Fix this by returning
-an error when invalid values are written.
+This driver doesn't have of_match_table. This makes the kernel module
+tmp401.ko lack alias patterns (e.g: of:N*T*Cti,tmp411) to match DT node
+of the supported devices hence this kernel module will not be
+automatically loaded.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220420193454.2647908-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+After adding of_match_table to this driver, the folllowing alias will be
+added into tmp401.ko.
+$ modinfo drivers/hwmon/tmp401.ko
+filename: drivers/hwmon/tmp401.ko
+......
+author:         Hans de Goede <hdegoede@redhat.com>
+alias:          of:N*T*Cti,tmp435C*
+alias:          of:N*T*Cti,tmp435
+alias:          of:N*T*Cti,tmp432C*
+alias:          of:N*T*Cti,tmp432
+alias:          of:N*T*Cti,tmp431C*
+alias:          of:N*T*Cti,tmp431
+alias:          of:N*T*Cti,tmp411C*
+alias:          of:N*T*Cti,tmp411
+alias:          of:N*T*Cti,tmp401C*
+alias:          of:N*T*Cti,tmp401
+......
+
+Fixes: af503716ac14 ("i2c: core: report OF style module alias for devices registered via OF")
+Signed-off-by: Camel Guo <camel.guo@axis.com>
+Link: https://lore.kernel.org/r/20220503114333.456476-1-camel.guo@axis.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98090.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/hwmon/tmp401.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index 6b9d326e11b0..207cdcfb6ebb 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -413,6 +413,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+diff --git a/drivers/hwmon/tmp401.c b/drivers/hwmon/tmp401.c
+index fa361d9949db..debcece02dd3 100644
+--- a/drivers/hwmon/tmp401.c
++++ b/drivers/hwmon/tmp401.c
+@@ -731,10 +731,21 @@ static int tmp401_probe(struct i2c_client *client,
+ 	return 0;
+ }
  
- 	val = (val >> mc->shift) & mask;
- 
-+	if (sel < 0 || sel > mc->max)
-+		return -EINVAL;
++static const struct of_device_id __maybe_unused tmp4xx_of_match[] = {
++	{ .compatible = "ti,tmp401", },
++	{ .compatible = "ti,tmp411", },
++	{ .compatible = "ti,tmp431", },
++	{ .compatible = "ti,tmp432", },
++	{ .compatible = "ti,tmp435", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, tmp4xx_of_match);
 +
- 	*select = sel;
- 
- 	/* Setting a volume is only valid if it is already On */
+ static struct i2c_driver tmp401_driver = {
+ 	.class		= I2C_CLASS_HWMON,
+ 	.driver = {
+ 		.name	= "tmp401",
++		.of_match_table = of_match_ptr(tmp4xx_of_match),
+ 	},
+ 	.probe		= tmp401_probe,
+ 	.id_table	= tmp401_id,
 -- 
 2.35.1
 
