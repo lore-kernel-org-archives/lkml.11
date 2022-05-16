@@ -2,75 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F439C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242689AbiEPKjd convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
+        id S242704AbiEPKkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236823AbiEPKj3 (ORCPT
+        with ESMTP id S242699AbiEPKkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:39:29 -0400
-X-Greylist: delayed 954 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 03:39:29 PDT
-Received: from sender4-of-o58.zoho.com (sender4-of-o58.zoho.com [136.143.188.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B313237DD
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:39:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1652696606; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=Kx1bU6cM2rTQ45627TLaIrUmyuK8JKxe+6dp969h79UtC72vzaptU0KAgj+yR01SB944vwrFBEOUrv5e3GeHDr5wpbNgqKKhX+Ec69AwAwBKYdQyIPWyBF003aykHC/weZGvfvuwbuwCpe45CS/kCgfMkHkZBc6wewNUhlUJ77k=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1652696606; h=Content-Type:Content-Transfer-Encoding:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=aKy/2D1I+Ijo3H2U2qrIhNvqL3xXRiti3x//u1F3D3k=; 
-        b=eMhvNN6dhsImM1RDhgTfGczy4vtJCZgj5bQU8XN4ByPWOLVnroLJcfCcBXmFtQArvlItw5JXc15lPafwdUDB4dg4nztF4oEnpl+gC+VXWIK87IsXiAr+IXCCxQ/Y3StZhnoDckF2WHZfB3vR8LW+LuBgYe5rZ+R5p3itFGvitJ0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        spf=pass  smtp.mailfrom=linux@mniewoehner.de;
-        dmarc=pass header.from=<linux@mniewoehner.de>
-Received: from z3r0.lan (185.31.62.161 [185.31.62.161]) by mx.zohomail.com
-        with SMTPS id 1652696605359658.627437004699; Mon, 16 May 2022 03:23:25 -0700 (PDT)
-Message-ID: <50eb664046b0d036a434c4a602087b791b6e796f.camel@mniewoehner.de>
-Subject: [PATCH] platform/x86: intel-hid: fix _DSM function index handling
-From:   Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
-To:     Alex Hung <alex.hung@canonical.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Date:   Mon, 16 May 2022 12:23:22 +0200
+        Mon, 16 May 2022 06:40:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3473E23BDB;
+        Mon, 16 May 2022 03:40:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBB3260EED;
+        Mon, 16 May 2022 10:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 29273C34119;
+        Mon, 16 May 2022 10:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652697614;
+        bh=xZ+bmIZy2Tzsib4GeADejj/iCh2ccjEaKmgbT2GZatg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=b1zCi5thWIJ3gm4Mm5ePP3uI/qxKwl3USVQI8/DzwP4c+S3X/hxRbcdSXd9FA85a9
+         Le9ChjV1q8qWkIr6UXm90zNu1iEkmG9q8SjA3dzai9oQ47FBbIuUlMZvskpgqIdkix
+         4ExgTZoqvH1OpP+G3TIXHXn5NcITumk/4j9wL+xsn+Rls1Es5j6ktXHhC+2uRpCelH
+         WsID4ldLtjnMjI+VreNQpOyza4oqKvxqq9nvSzRRdfc6owRL9+Ye7pKWP1uQJ1FCrH
+         rmJUnqglQaZclVeEIjOnMO9GxyVQNzRi5mZTBm77Uoq3Nz2OPcUdisyNwcNY1nADuX
+         Eut3eIqw1/dWA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0AEBEF0393B;
+        Mon, 16 May 2022 10:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Evolution 3.42.2 
-Content-Transfer-Encoding: 8BIT
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] net: tulip: convert to devres
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165269761404.8728.16015739218131453967.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 May 2022 10:40:14 +0000
+References: <2630407.mvXUDI8C0e@eto.sf-tec.de>
+In-Reply-To: <2630407.mvXUDI8C0e@eto.sf-tec.de>
+To:     Rolf Eike Beer <eike-kernel@sf-tec.de>
+Cc:     kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
+        yangyingliang@huawei.com, davem@davemloft.net, edumazet@google.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-intel_hid_dsm_fn_mask is a bit mask containing one bit for each function
-index. Fix the function index check in intel_hid_evaluate_method
-accordingly, which was missed in commit 97ab4516205e ("platform/x86:
-intel-hid: fix _DSM function index handling").
+Hello:
 
-Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
----
- drivers/platform/x86/intel/hid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/platform/x86/intel/hid.c b/drivers/platform/x86/intel/hid.c
-index 13f8cf70b9ae..5c39d40a701b 100644
---- a/drivers/platform/x86/intel/hid.c
-+++ b/drivers/platform/x86/intel/hid.c
-@@ -238,7 +238,7 @@ static bool intel_hid_evaluate_method(acpi_handle handle,
- 
-        method_name = (char *)intel_hid_dsm_fn_to_method[fn_index];
- 
--       if (!(intel_hid_dsm_fn_mask & fn_index))
-+       if (!(intel_hid_dsm_fn_mask & BIT(fn_index)))
-                goto skip_dsm_eval;
- 
-        obj = acpi_evaluate_dsm_typed(handle, &intel_dsm_guid,
+On Fri, 13 May 2022 19:23:59 +0200 you wrote:
+> Works fine on my HP C3600:
+> 
+> [  274.452394] tulip0: no phy info, aborting mtable build
+> [  274.499041] tulip0:  MII transceiver #1 config 1000 status 782d advertising 01e1
+> [  274.750691] net eth0: Digital DS21142/43 Tulip rev 65 at MMIO 0xf4008000, 00:30:6e:08:7d:21, IRQ 17
+> [  283.104520] net eth0: Setting full-duplex based on MII#1 link partner capability of c1e1
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] net: tulip: convert to devres
+    https://git.kernel.org/netdev/net-next/c/3daebfbeb455
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
