@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0409CC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 958D6C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346882AbiEPTv3 (ORCPT
+        id S1348497AbiEPTwx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
+        Mon, 16 May 2022 15:52:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346597AbiEPTqg (ORCPT
+        with ESMTP id S1346263AbiEPTsM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:46:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0145241637;
-        Mon, 16 May 2022 12:43:51 -0700 (PDT)
+        Mon, 16 May 2022 15:48:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82CE3F306;
+        Mon, 16 May 2022 12:44:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 385306155B;
-        Mon, 16 May 2022 19:43:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33468C385AA;
-        Mon, 16 May 2022 19:43:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4337BB8160D;
+        Mon, 16 May 2022 19:44:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A279EC385AA;
+        Mon, 16 May 2022 19:44:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730230;
-        bh=NoWb0d6df3aDrsEXlBA7Y/GGKisEkrCDDOuGQ50H7yE=;
+        s=korg; t=1652730276;
+        bh=M3L8iA3uzVxubFSnpSF1lgZbXB1VocSXLu2v7J1vBmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oLPZCvSaQ34FmsRKATR0eIQR02nl2Xr44rMyyqtFXx8BnNCfo5CAHhx2spU2xbxY8
-         0LmnxZKulfwB+ayFB0ZzrLeMI6/5FYnfcAruvUj0pKYPWiF/DxGYhSslwVRF8PrPmH
-         ITGBIQZ9RLgR/PjNUvbqcqst9R1RjdEqrqaEPNHs=
+        b=zeaYJtuGGaVX6iO6CAXKY71KVTKgsoRvItZQxs6GXnObOe1QMvTHZtIiLxcbYyGKV
+         0kr0sBgtO2ZLlY2AHQMjHwep2SJ8tBAQySxv19P7P7iL6nrtX/67soYr3ouRN4KjiA
+         amKvWHv1MvfMvdmUJPS+QpJ8+uRGUB6EbLJR/Gto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 42/43] ping: fix address binding wrt vrf
-Date:   Mon, 16 May 2022 21:36:53 +0200
-Message-Id: <20220516193615.960978190@linuxfoundation.org>
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 13/66] sfc: Use swap() instead of open coding it
+Date:   Mon, 16 May 2022 21:36:13 +0200
+Message-Id: <20220516193619.800336883@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
-References: <20220516193614.714657361@linuxfoundation.org>
+In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
+References: <20220516193619.400083785@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,72 +52,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-commit e1a7ac6f3ba6e157adcd0ca94d92a401f1943f56 upstream.
+[ Upstream commit 0cf765fb00ce083c017f2571ac449cf7912cdb06 ]
 
-When ping_group_range is updated, 'ping' uses the DGRAM ICMP socket,
-instead of an IP raw socket. In this case, 'ping' is unable to bind its
-socket to a local address owned by a vrflite.
+Clean the following coccicheck warning:
 
-Before the patch:
-$ sysctl -w net.ipv4.ping_group_range='0  2147483647'
-$ ip link add blue type vrf table 10
-$ ip link add foo type dummy
-$ ip link set foo master blue
-$ ip link set foo up
-$ ip addr add 192.168.1.1/24 dev foo
-$ ip addr add 2001::1/64 dev foo
-$ ip vrf exec blue ping -c1 -I 192.168.1.1 192.168.1.2
-ping: bind: Cannot assign requested address
-$ ip vrf exec blue ping6 -c1 -I 2001::1 2001::2
-ping6: bind icmp socket: Cannot assign requested address
+./drivers/net/ethernet/sfc/efx_channels.c:870:36-37: WARNING opportunity
+for swap().
 
-CC: stable@vger.kernel.org
-Fixes: 1b69c6d0ae90 ("net: Introduce L3 Master device abstraction")
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+./drivers/net/ethernet/sfc/efx_channels.c:824:36-37: WARNING opportunity
+for swap().
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ping.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/efx_channels.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -304,6 +304,7 @@ static int ping_check_bind_addr(struct s
- 	struct net *net = sock_net(sk);
- 	if (sk->sk_family == AF_INET) {
- 		struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
-+		u32 tb_id = RT_TABLE_LOCAL;
- 		int chk_addr_ret;
+diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+index 0a8799a208cf..fe1ad682e3d5 100644
+--- a/drivers/net/ethernet/sfc/efx_channels.c
++++ b/drivers/net/ethernet/sfc/efx_channels.c
+@@ -797,11 +797,8 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
+ 	old_txq_entries = efx->txq_entries;
+ 	efx->rxq_entries = rxq_entries;
+ 	efx->txq_entries = txq_entries;
+-	for (i = 0; i < efx->n_channels; i++) {
+-		channel = efx->channel[i];
+-		efx->channel[i] = other_channel[i];
+-		other_channel[i] = channel;
+-	}
++	for (i = 0; i < efx->n_channels; i++)
++		swap(efx->channel[i], other_channel[i]);
  
- 		if (addr_len < sizeof(*addr))
-@@ -317,7 +318,8 @@ static int ping_check_bind_addr(struct s
- 		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
- 			 sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
+ 	/* Restart buffer table allocation */
+ 	efx->next_buffer_table = next_buffer_table;
+@@ -843,11 +840,8 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
+ 	/* Swap back */
+ 	efx->rxq_entries = old_rxq_entries;
+ 	efx->txq_entries = old_txq_entries;
+-	for (i = 0; i < efx->n_channels; i++) {
+-		channel = efx->channel[i];
+-		efx->channel[i] = other_channel[i];
+-		other_channel[i] = channel;
+-	}
++	for (i = 0; i < efx->n_channels; i++)
++		swap(efx->channel[i], other_channel[i]);
+ 	goto out;
+ }
  
--		chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
-+		tb_id = l3mdev_fib_table_by_index(net, sk->sk_bound_dev_if) ? : tb_id;
-+		chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
- 
- 		if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
- 			chk_addr_ret = RTN_LOCAL;
-@@ -356,6 +358,14 @@ static int ping_check_bind_addr(struct s
- 			if (!dev) {
- 				rcu_read_unlock();
- 				return -ENODEV;
-+			}
-+		}
-+
-+		if (!dev && sk->sk_bound_dev_if) {
-+			dev = dev_get_by_index_rcu(net, sk->sk_bound_dev_if);
-+			if (!dev) {
-+				rcu_read_unlock();
-+				return -ENODEV;
- 			}
- 		}
- 		has_addr = pingv6_ops.ipv6_chk_addr(net, &addr->sin6_addr, dev,
+-- 
+2.35.1
+
 
 
