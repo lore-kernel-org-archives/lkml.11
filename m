@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8184AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6223FC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349183AbiEPUcO (ORCPT
+        id S1349072AbiEPUcK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:32:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57564 "EHLO
+        Mon, 16 May 2022 16:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236369AbiEPUB4 (ORCPT
+        with ESMTP id S1351017AbiEPUB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A284C47564;
-        Mon, 16 May 2022 12:56:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA92F4756B;
+        Mon, 16 May 2022 12:56:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E20D60A50;
-        Mon, 16 May 2022 19:56:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F78FC34100;
-        Mon, 16 May 2022 19:56:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5752D60FEB;
+        Mon, 16 May 2022 19:56:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66FEDC385AA;
+        Mon, 16 May 2022 19:56:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731006;
-        bh=AfvNImvSajbT2lRm2lCrt5R+aKpmDHKgaIumFgk1JSE=;
+        s=korg; t=1652730985;
+        bh=wvVEqKubDLAU8d+EGjBw6OMLzgm5quhGvEY1JhEPk9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=stgbeMvYNaGxLAmkaPWNKaoLUH41aAaDVCQE1LnRT9kWbfbofbAQKAAXfwUqOCLAm
-         cwuzDrABGqbAN1a6etVTwVuZJ17WeWISjrA2wo3UgkbcavaVcMd/TDcdy0c7ahF/Rx
-         HLOLL9clkVxsMtSE+iTguKBQCc+BLAwmJ7CQ0LIc=
+        b=pfIgqcMEXwU0Ul1lQVRkAN6711bp26H8ebBq9xwvb6EYwxVnu7GkDDsyfIGbk0PUb
+         pgtz2xqLqajRu923KKbo5ox6ZR9z5A4TqtZL293089F2Y/ZL5/t11w+i9Hwd9eu14z
+         j90gVVvz0Vkoqui9t3tqS85GEzuwK8Xf53a8kO6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>
-Subject: [PATCH 5.17 073/114] usb: xhci-mtk: fix fs isocs transfer error
-Date:   Mon, 16 May 2022 21:36:47 +0200
-Message-Id: <20220516193627.587019284@linuxfoundation.org>
+        stable@vger.kernel.org, Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 067/114] tcp: drop the hash_32() part from the index calculation
+Date:   Mon, 16 May 2022 21:36:41 +0200
+Message-Id: <20220516193627.416052786@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -48,60 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunfeng Yun <chunfeng.yun@mediatek.com>
+From: Willy Tarreau <w@1wt.eu>
 
-commit c237566b78ad8c72bc0431c5d6171db8d12e6f94 upstream.
+[ Upstream commit e8161345ddbb66e449abde10d2fdce93f867eba9 ]
 
-Due to the scheduler allocates the optimal bandwidth for FS ISOC endpoints,
-this may be not enough actually and causes data transfer error, so come up
-with an estimate that is no less than the worst case bandwidth used for
-any one mframe, but may be an over-estimate.
+In commit 190cc82489f4 ("tcp: change source port randomizarion at
+connect() time"), the table_perturb[] array was introduced and an
+index was taken from the port_offset via hash_32(). But it turns
+out that hash_32() performs a multiplication while the input here
+comes from the output of SipHash in secure_seq, that is well
+distributed enough to avoid the need for yet another hash.
 
-Fixes: 451d3912586a ("usb: xhci-mtk: update fs bus bandwidth by bw_budget_table")
-Cc: stable@vger.kernel.org
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Link: https://lore.kernel.org/r/20220512064931.31670-1-chunfeng.yun@mediatek.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci-mtk-sch.c |   16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ net/ipv4/inet_hashtables.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/host/xhci-mtk-sch.c
-+++ b/drivers/usb/host/xhci-mtk-sch.c
-@@ -465,7 +465,7 @@ static int check_fs_bus_bw(struct mu3h_s
- 		 */
- 		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
- 			k = XHCI_MTK_BW_INDEX(base + j);
--			tmp = tt->fs_bus_bw[k] + sch_ep->bw_budget_table[j];
-+			tmp = tt->fs_bus_bw[k] + sch_ep->bw_cost_per_microframe;
- 			if (tmp > FS_PAYLOAD_MAX)
- 				return -ESCH_BW_OVERFLOW;
- 		}
-@@ -539,19 +539,17 @@ static int check_sch_tt(struct mu3h_sch_
- static void update_sch_tt(struct mu3h_sch_ep_info *sch_ep, bool used)
- {
- 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
-+	int bw_updated;
- 	u32 base;
--	int i, j, k;
-+	int i, j;
-+
-+	bw_updated = sch_ep->bw_cost_per_microframe * (used ? 1 : -1);
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index cc5f66328b47..a5d57fa679ca 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  
- 	for (i = 0; i < sch_ep->num_esit; i++) {
- 		base = sch_ep->offset + i * sch_ep->esit;
+ 	net_get_random_once(table_perturb,
+ 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+-	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
++	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
  
--		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
--			k = XHCI_MTK_BW_INDEX(base + j);
--			if (used)
--				tt->fs_bus_bw[k] += sch_ep->bw_budget_table[j];
--			else
--				tt->fs_bus_bw[k] -= sch_ep->bw_budget_table[j];
--		}
-+		for (j = 0; j < sch_ep->num_budget_microframes; j++)
-+			tt->fs_bus_bw[XHCI_MTK_BW_INDEX(base + j)] += bw_updated;
- 	}
- 
- 	if (used)
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
+-- 
+2.35.1
+
 
 
