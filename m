@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB90C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346734AbiEPUS1 (ORCPT
+        id S1346831AbiEPUSr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
+        Mon, 16 May 2022 16:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348858AbiEPT7A (ORCPT
+        with ESMTP id S1348851AbiEPT7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:59:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804A15FCF;
-        Mon, 16 May 2022 12:51:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761F813C;
+        Mon, 16 May 2022 12:51:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10D8E60A14;
-        Mon, 16 May 2022 19:51:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 220D6C385AA;
-        Mon, 16 May 2022 19:51:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 159D760AB8;
+        Mon, 16 May 2022 19:51:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 215F7C34100;
+        Mon, 16 May 2022 19:51:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730692;
-        bh=k3/81g5qlPZbnqT8EYIg1TFY+nbeoYo8soZiwtxXbI4=;
+        s=korg; t=1652730689;
+        bh=ccProHhun/zlF6hS7JP7T+bHG1ax79j7/ZabQXNbMgA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vShXZElJJ8gbMDDq3CQcrmja+mB45EGb/AnX9b8Y++mzqWI56U1yjT6x+lj+mPxFO
-         PMFSob4sWvABze4PokaqZd/643gylSI7jwqh7Hjap6kZave7Q1s89oMU7QvjGs79vn
-         4ZiByqnuFoDDMfpfRZw7e8o9H4nw81cdPFh8t9KQ=
+        b=ZwTQst87WWxUkrpl/F8ys50f+/gl7a+9WHN+e5J6Arq5qxxQEF+dTuvt7EGZt7K/P
+         Q+bisXKE4zw7Hc6LOMHI5S575LfIhxGj4AyhEbPICicQ3G61QPcchxdtEmAUVe3PDm
+         Wrjo7RcZOMImm7H5wWVLzbBXhg6POR/nAW3k9eHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 5.15 079/102] serial: 8250_mtk: Fix UART_EFR register address
-Date:   Mon, 16 May 2022 21:36:53 +0200
-Message-Id: <20220516193626.262014648@linuxfoundation.org>
+        Indan Zupancic <Indan.Zupancic@mep-info.com>
+Subject: [PATCH 5.15 078/102] fsl_lpuart: Dont enable interrupts too early
+Date:   Mon, 16 May 2022 21:36:52 +0200
+Message-Id: <20220516193626.233730510@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -50,92 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+From: Indan Zupancic <Indan.Zupancic@mep-info.com>
 
-commit bb0b197aadd928f52ce6f01f0ee977f0a08cf1be upstream.
+commit 401fb66a355eb0f22096cf26864324f8e63c7d78 upstream.
 
-On MediaTek SoCs, the UART IP is 16550A compatible, but there are some
-specific quirks: we are declaring a register shift of 2, but this is
-only valid for the majority of the registers, as there are some that
-are out of the standard layout.
+If an irq is pending when devm_request_irq() is called, the irq
+handler will cause a NULL pointer access because initialisation
+is not done yet.
 
-Specifically, this driver is using definitions from serial_reg.h, where
-we have a UART_EFR register defined as 2: this results in a 0x8 offset,
-but there we have the FCR register instead.
-
-The right offset for the EFR register on MediaTek UART is at 0x98,
-so, following the decimal definition convention in serial_reg.h and
-accounting for the register left shift of two, add and use the correct
-register address for this IP, defined as decimal 38, so that the final
-calculation results in (0x26 << 2) = 0x98.
-
-Fixes: bdbd0a7f8f03 ("serial: 8250-mtk: modify baudrate setting")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Fixes: 9d7ee0e28da59 ("tty: serial: lpuart: avoid report NULL interrupt")
 Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220427132328.228297-2-angelogioacchino.delregno@collabora.com
+Signed-off-by: Indan Zupancic <Indan.Zupancic@mep-info.com>
+Link: https://lore.kernel.org/r/20220505114750.45423-1-Indan.Zupancic@mep-info.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_mtk.c |   15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -37,6 +37,7 @@
- #define MTK_UART_IER_RTSI	0x40	/* Enable RTS Modem status interrupt */
- #define MTK_UART_IER_CTSI	0x80	/* Enable CTS Modem status interrupt */
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2650,6 +2650,7 @@ static int lpuart_probe(struct platform_
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct lpuart_port *sport;
+ 	struct resource *res;
++	irq_handler_t handler;
+ 	int ret;
  
-+#define MTK_UART_EFR		38	/* I/O: Extended Features Register */
- #define MTK_UART_EFR_EN		0x10	/* Enable enhancement feature */
- #define MTK_UART_EFR_RTS	0x40	/* Enable hardware rx flow control */
- #define MTK_UART_EFR_CTS	0x80	/* Enable hardware tx flow control */
-@@ -169,7 +170,7 @@ static void mtk8250_dma_enable(struct ua
- 		   MTK_UART_DMA_EN_RX | MTK_UART_DMA_EN_TX);
+ 	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
+@@ -2727,17 +2728,11 @@ static int lpuart_probe(struct platform_
  
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
--	serial_out(up, UART_EFR, UART_EFR_ECB);
-+	serial_out(up, MTK_UART_EFR, UART_EFR_ECB);
- 	serial_out(up, UART_LCR, lcr);
+ 	if (lpuart_is_32(sport)) {
+ 		lpuart_reg.cons = LPUART32_CONSOLE;
+-		ret = devm_request_irq(&pdev->dev, sport->port.irq, lpuart32_int, 0,
+-					DRIVER_NAME, sport);
++		handler = lpuart32_int;
+ 	} else {
+ 		lpuart_reg.cons = LPUART_CONSOLE;
+-		ret = devm_request_irq(&pdev->dev, sport->port.irq, lpuart_int, 0,
+-					DRIVER_NAME, sport);
++		handler = lpuart_int;
+ 	}
+-
+-	if (ret)
+-		goto failed_irq_request;
+-
+ 	ret = uart_add_one_port(&lpuart_reg, &sport->port);
+ 	if (ret)
+ 		goto failed_attach_port;
+@@ -2759,13 +2754,18 @@ static int lpuart_probe(struct platform_
  
- 	if (dmaengine_slave_config(dma->rxchan, &dma->rxconf) != 0)
-@@ -232,7 +233,7 @@ static void mtk8250_set_flow_ctrl(struct
- 	int lcr = serial_in(up, UART_LCR);
+ 	sport->port.rs485_config(&sport->port, &sport->port.rs485);
  
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
--	serial_out(up, UART_EFR, UART_EFR_ECB);
-+	serial_out(up, MTK_UART_EFR, UART_EFR_ECB);
- 	serial_out(up, UART_LCR, lcr);
- 	lcr = serial_in(up, UART_LCR);
++	ret = devm_request_irq(&pdev->dev, sport->port.irq, handler, 0,
++				DRIVER_NAME, sport);
++	if (ret)
++		goto failed_irq_request;
++
+ 	return 0;
  
-@@ -241,7 +242,7 @@ static void mtk8250_set_flow_ctrl(struct
- 		serial_out(up, MTK_UART_ESCAPE_DAT, MTK_UART_ESCAPE_CHAR);
- 		serial_out(up, MTK_UART_ESCAPE_EN, 0x00);
- 		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
--		serial_out(up, UART_EFR, serial_in(up, UART_EFR) &
-+		serial_out(up, MTK_UART_EFR, serial_in(up, MTK_UART_EFR) &
- 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK)));
- 		serial_out(up, UART_LCR, lcr);
- 		mtk8250_disable_intrs(up, MTK_UART_IER_XOFFI |
-@@ -255,8 +256,8 @@ static void mtk8250_set_flow_ctrl(struct
- 		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
- 
- 		/*enable hw flow control*/
--		serial_out(up, UART_EFR, MTK_UART_EFR_HW_FC |
--			(serial_in(up, UART_EFR) &
-+		serial_out(up, MTK_UART_EFR, MTK_UART_EFR_HW_FC |
-+			(serial_in(up, MTK_UART_EFR) &
- 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK))));
- 
- 		serial_out(up, UART_LCR, lcr);
-@@ -270,8 +271,8 @@ static void mtk8250_set_flow_ctrl(struct
- 		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
- 
- 		/*enable sw flow control */
--		serial_out(up, UART_EFR, MTK_UART_EFR_XON1_XOFF1 |
--			(serial_in(up, UART_EFR) &
-+		serial_out(up, MTK_UART_EFR, MTK_UART_EFR_XON1_XOFF1 |
-+			(serial_in(up, MTK_UART_EFR) &
- 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK))));
- 
- 		serial_out(up, UART_XON1, START_CHAR(port->state->port.tty));
++failed_irq_request:
+ failed_get_rs485:
+ failed_reset:
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ failed_attach_port:
+-failed_irq_request:
+ 	lpuart_disable_clks(sport);
+ failed_clock_enable:
+ failed_out_of_range:
 
 
