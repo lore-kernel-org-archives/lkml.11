@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F45BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67ED5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348921AbiEPUhV (ORCPT
+        id S1348955AbiEPUh1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57692 "EHLO
+        Mon, 16 May 2022 16:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351075AbiEPUB6 (ORCPT
+        with ESMTP id S1351074AbiEPUB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2640403D9;
-        Mon, 16 May 2022 12:58:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F0C3FDBE;
+        Mon, 16 May 2022 12:58:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6AD3DB81613;
-        Mon, 16 May 2022 19:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A027BC385AA;
-        Mon, 16 May 2022 19:58:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC328B81615;
+        Mon, 16 May 2022 19:58:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23EDBC385AA;
+        Mon, 16 May 2022 19:58:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731101;
-        bh=8LmLDU9jTLkqSze/oPj9ScEBGuEugmuQwF0jD1+K7Hw=;
+        s=korg; t=1652731092;
+        bh=6rNJoLS/Ojh91LhmB/MjVAf98QJkadN8ugt+pWo3vKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kOtm2WoU5wxLDnd+4YfXQFxzatx0HsUVphOf9dNopEHMC+Z4VgU5IL+lsOsENldKB
-         5V4BJ2DVuh/1st1CD+CJDGZrflsFkh9TRzPTxXEgs0WRrHjAPdiUO0FF0uD2dHIUdr
-         b0bf0VTeB2G/CrB4tnHPp84j6vVfS/9C+Tk8p3TY=
+        b=LKLGEqM67XboC17UF9U0QXB7Ky8jXaQBBZ7pyLgEbszHdgRBBJlHGYQu5DKr6NkYt
+         PMc3NZl7FcB2ojCzWRa4Kg34MU4CTdZDe0m1jjQS9SGMSoLUtwLsrdvhBprUGyh8NU
+         pZX+o//esFXc1ye5Doj2L9mBgI7TNoP6JBVm49u8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Feng Tang <feng.tang@intel.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.17 102/114] cgroup/cpuset: Remove cpus_allowed/mems_allowed setup in cpuset_init_smp()
-Date:   Mon, 16 May 2022 21:37:16 +0200
-Message-Id: <20220516193628.404163048@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 100/114] net: phy: Fix race condition on link status change
+Date:   Mon, 16 May 2022 21:37:14 +0200
+Message-Id: <20220516193628.348428146@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -51,70 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Francesco Dolcini <francesco.dolcini@toradex.com>
 
-commit 2685027fca387b602ae565bff17895188b803988 upstream.
+commit 91a7cda1f4b8bdf770000a3b60640576dafe0cec upstream.
 
-There are 3 places where the cpu and node masks of the top cpuset can
-be initialized in the order they are executed:
- 1) start_kernel -> cpuset_init()
- 2) start_kernel -> cgroup_init() -> cpuset_bind()
- 3) kernel_init_freeable() -> do_basic_setup() -> cpuset_init_smp()
+This fixes the following error caused by a race condition between
+phydev->adjust_link() and a MDIO transaction in the phy interrupt
+handler. The issue was reproduced with the ethernet FEC driver and a
+micrel KSZ9031 phy.
 
-The first cpuset_init() call just sets all the bits in the masks.
-The second cpuset_bind() call sets cpus_allowed and mems_allowed to the
-default v2 values. The third cpuset_init_smp() call sets them back to
-v1 values.
+[  146.195696] fec 2188000.ethernet eth0: MDIO read timeout
+[  146.201779] ------------[ cut here ]------------
+[  146.206671] WARNING: CPU: 0 PID: 571 at drivers/net/phy/phy.c:942 phy_error+0x24/0x6c
+[  146.214744] Modules linked in: bnep imx_vdoa imx_sdma evbug
+[  146.220640] CPU: 0 PID: 571 Comm: irq/128-2188000 Not tainted 5.18.0-rc3-00080-gd569e86915b7 #9
+[  146.229563] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[  146.236257]  unwind_backtrace from show_stack+0x10/0x14
+[  146.241640]  show_stack from dump_stack_lvl+0x58/0x70
+[  146.246841]  dump_stack_lvl from __warn+0xb4/0x24c
+[  146.251772]  __warn from warn_slowpath_fmt+0x5c/0xd4
+[  146.256873]  warn_slowpath_fmt from phy_error+0x24/0x6c
+[  146.262249]  phy_error from kszphy_handle_interrupt+0x40/0x48
+[  146.268159]  kszphy_handle_interrupt from irq_thread_fn+0x1c/0x78
+[  146.274417]  irq_thread_fn from irq_thread+0xf0/0x1dc
+[  146.279605]  irq_thread from kthread+0xe4/0x104
+[  146.284267]  kthread from ret_from_fork+0x14/0x28
+[  146.289164] Exception stack(0xe6fa1fb0 to 0xe6fa1ff8)
+[  146.294448] 1fa0:                                     00000000 00000000 00000000 00000000
+[  146.302842] 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[  146.311281] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[  146.318262] irq event stamp: 12325
+[  146.321780] hardirqs last  enabled at (12333): [<c01984c4>] __up_console_sem+0x50/0x60
+[  146.330013] hardirqs last disabled at (12342): [<c01984b0>] __up_console_sem+0x3c/0x60
+[  146.338259] softirqs last  enabled at (12324): [<c01017f0>] __do_softirq+0x2c0/0x624
+[  146.346311] softirqs last disabled at (12319): [<c01300ac>] __irq_exit_rcu+0x138/0x178
+[  146.354447] ---[ end trace 0000000000000000 ]---
 
-For systems with cgroup v2 setup, cpuset_bind() is called once.  As a
-result, cpu and memory node hot add may fail to update the cpu and node
-masks of the top cpuset to include the newly added cpu or node in a
-cgroup v2 environment.
+With the FEC driver phydev->adjust_link() calls fec_enet_adjust_link()
+calls fec_stop()/fec_restart() and both these function reset and
+temporary disable the FEC disrupting any MII transaction that
+could be happening at the same time.
 
-For systems with cgroup v1 setup, cpuset_bind() is called again by
-rebind_subsystem() when the v1 cpuset filesystem is mounted as shown
-in the dmesg log below with an instrumented kernel.
+fec_enet_adjust_link() and phy_read() can be running at the same time
+when we have one additional interrupt before the phy_state_machine() is
+able to terminate.
 
-  [    2.609781] cpuset_bind() called - v2 = 1
-  [    3.079473] cpuset_init_smp() called
-  [    7.103710] cpuset_bind() called - v2 = 0
+Thread 1 (phylib WQ)       | Thread 2 (phy interrupt)
+                           |
+                           | phy_interrupt()            <-- PHY IRQ
+                           |  handle_interrupt()
+                           |   phy_read()
+                           |   phy_trigger_machine()
+                           |    --> schedule phylib WQ
+                           |
+                           |
+phy_state_machine()        |
+ phy_check_link_status()   |
+  phy_link_change()        |
+   phydev->adjust_link()   |
+    fec_enet_adjust_link() |
+     --> FEC reset         | phy_interrupt()            <-- PHY IRQ
+                           |  phy_read()
+                           |
 
-smp_init() is called after the first two init functions.  So we don't
-have a complete list of active cpus and memory nodes until later in
-cpuset_init_smp() which is the right time to set up effective_cpus
-and effective_mems.
+Fix this by acquiring the phydev lock in phy_interrupt().
 
-To fix this cgroup v2 mask setup problem, the potentially incorrect
-cpus_allowed & mems_allowed setting in cpuset_init_smp() are removed.
-For cgroup v2 systems, the initial cpuset_bind() call will set the masks
-correctly.  For cgroup v1 systems, the second call to cpuset_bind()
-will do the right setup.
-
-cc: stable@vger.kernel.org
-Signed-off-by: Waiman Long <longman@redhat.com>
-Tested-by: Feng Tang <feng.tang@intel.com>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Link: https://lore.kernel.org/all/20220422152612.GA510015@francesco-nb.int.toradex.com/
+Fixes: c974bdbc3e77 ("net: phy: Use threaded IRQ, to allow IRQ from sleeping devices")
+cc: <stable@vger.kernel.org>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220506060815.327382-1-francesco.dolcini@toradex.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/phy/phy.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -3390,8 +3390,11 @@ static struct notifier_block cpuset_trac
-  */
- void __init cpuset_init_smp(void)
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -970,8 +970,13 @@ static irqreturn_t phy_interrupt(int irq
  {
--	cpumask_copy(top_cpuset.cpus_allowed, cpu_active_mask);
--	top_cpuset.mems_allowed = node_states[N_MEMORY];
-+	/*
-+	 * cpus_allowd/mems_allowed set to v2 values in the initial
-+	 * cpuset_bind() call will be reset to v1 values in another
-+	 * cpuset_bind() call when v1 cpuset is mounted.
-+	 */
- 	top_cpuset.old_mems_allowed = top_cpuset.mems_allowed;
+ 	struct phy_device *phydev = phy_dat;
+ 	struct phy_driver *drv = phydev->drv;
++	irqreturn_t ret;
  
- 	cpumask_copy(top_cpuset.effective_cpus, cpu_active_mask);
+-	return drv->handle_interrupt(phydev);
++	mutex_lock(&phydev->lock);
++	ret = drv->handle_interrupt(phydev);
++	mutex_unlock(&phydev->lock);
++
++	return ret;
+ }
+ 
+ /**
 
 
