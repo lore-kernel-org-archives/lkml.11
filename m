@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93721C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346470AbiEPTu3 (ORCPT
+        id S1346353AbiEPTuf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33132 "EHLO
+        Mon, 16 May 2022 15:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346053AbiEPTpZ (ORCPT
+        with ESMTP id S1346149AbiEPTpw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:45:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA2540A08;
-        Mon, 16 May 2022 12:43:12 -0700 (PDT)
+        Mon, 16 May 2022 15:45:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFDF40A2E;
+        Mon, 16 May 2022 12:43:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EF18B81609;
-        Mon, 16 May 2022 19:43:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB3CBC34100;
-        Mon, 16 May 2022 19:43:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78F1D6154D;
+        Mon, 16 May 2022 19:43:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D77C36AE2;
+        Mon, 16 May 2022 19:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730189;
-        bh=7LhJPbtrK1JcYBaF2YMm3YmAYKwu5CobL987tI8X8iI=;
+        s=korg; t=1652730197;
+        bh=F6PypLbVgvyHOdNaNCM5IHjYj9jD48TPiIylmzQwbWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M/j/92YGQKjC5Mu/pVVidqAUqg61LR0GZxsr0BMBGO+EAoVxNGlCC/02jrWv+s+Wi
-         0MDgSXihNquNQ04c6uP9bnb8SjX8yXtOmFAiBRjszUGB/dYjpcnSQKFUFAQGM9zU3o
-         fZLcm0Qe/BKDVHYJZn0hKbAu4MvBfszUCtqj2oX8=
+        b=PoWEZkifhiRN044kEfPQBO0BT9J9HmrK9LsF11W1vdao97DDe9PO81vcWy4HUiNPq
+         VCw362huBRZWQ1uWqz6mmKAmc05wYEAXtmUniRAPxYcpqK/n+p8YMl8UrefrEkk34X
+         n3+PMrynw674NauTkiHAryhxptf2DEGR6lwfP3v0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 06/43] drm/nouveau: Fix a potential theorical leak in nouveau_get_backlight_name()
-Date:   Mon, 16 May 2022 21:36:17 +0200
-Message-Id: <20220516193614.906147386@linuxfoundation.org>
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 09/43] dim: initialize all struct fields
+Date:   Mon, 16 May 2022 21:36:20 +0200
+Message-Id: <20220516193614.993227902@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -50,69 +51,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-[ Upstream commit ab244be47a8f111bc82496a8a20c907236e37f95 ]
+[ Upstream commit ee1444b5e1df4155b591d0d9b1e72853a99ea861 ]
 
-If successful ida_simple_get() calls are not undone when needed, some
-additional memory may be allocated and wasted.
+The W=2 build pointed out that the code wasn't initializing all the
+variables in the dim_cq_moder declarations with the struct initializers.
+The net change here is zero since these structs were already static
+const globals and were initialized with zeros by the compiler, but
+removing compiler warnings has value in and of itself.
 
-Here, an ID between 0 and MAX_INT is required. If this ID is >=100, it is
-not taken into account and is wasted. It should be released.
+lib/dim/net_dim.c: At top level:
+lib/dim/net_dim.c:54:9: warning: missing initializer for field ‘comps’ of ‘const struct dim_cq_moder’ [-Wmissing-field-initializers]
+   54 |         NET_DIM_RX_EQE_PROFILES,
+      |         ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from lib/dim/net_dim.c:6:
+./include/linux/dim.h:45:13: note: ‘comps’ declared here
+   45 |         u16 comps;
+      |             ^~~~~
 
-Instead of calling ida_simple_remove(), take advantage of the 'max'
-parameter to require the ID not to be too big. Should it be too big, it
-is not allocated and don't need to be freed.
+and repeats for the tx struct, and once you fix the comps entry then
+the cq_period_mode field needs the same treatment.
 
-While at it, use ida_alloc_xxx()/ida_free() instead to
-ida_simple_get()/ida_simple_remove().
-The latter is deprecated and more verbose.
+Use the commonly accepted style to indicate to the compiler that we
+know what we're doing, and add a comma at the end of each struct
+initializer to clean up the issue, and use explicit initializers
+for the fields we are initializing which makes the compiler happy.
 
-Fixes: db1a0ae21461 ("drm/nouveau/bl: Assign different names to interfaces")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-[Fixed formatting warning from checkpatch]
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr
+While here and fixing these lines, clean up the code slightly with
+a fix for the super long lines by removing the word "_MODERATION" from a
+couple defines only used in this file.
+
+Fixes: f8be17b81d44 ("lib/dim: Fix -Wunused-const-variable warnings")
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Link: https://lore.kernel.org/r/20220507011038.14568-1-jesse.brandeburg@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_backlight.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ lib/dim/net_dim.c | 44 ++++++++++++++++++++++----------------------
+ 1 file changed, 22 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-index c7a94c94dbf3..f2f3280c3a50 100644
---- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-@@ -51,8 +51,9 @@ static bool
- nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
- 			   struct nouveau_backlight *bl)
- {
--	const int nb = ida_simple_get(&bl_ida, 0, 0, GFP_KERNEL);
--	if (nb < 0 || nb >= 100)
-+	const int nb = ida_alloc_max(&bl_ida, 99, GFP_KERNEL);
-+
-+	if (nb < 0)
- 		return false;
- 	if (nb > 0)
- 		snprintf(backlight_name, BL_NAME_SIZE, "nv_backlight%d", nb);
-@@ -280,7 +281,7 @@ nouveau_backlight_init(struct drm_connector *connector)
- 					    nv_encoder, ops, &props);
- 	if (IS_ERR(bl->dev)) {
- 		if (bl->id >= 0)
--			ida_simple_remove(&bl_ida, bl->id);
-+			ida_free(&bl_ida, bl->id);
- 		ret = PTR_ERR(bl->dev);
- 		goto fail_alloc;
- 	}
-@@ -306,7 +307,7 @@ nouveau_backlight_fini(struct drm_connector *connector)
- 		return;
+diff --git a/lib/dim/net_dim.c b/lib/dim/net_dim.c
+index a4db51c21266..dae3b51ac3d9 100644
+--- a/lib/dim/net_dim.c
++++ b/lib/dim/net_dim.c
+@@ -12,41 +12,41 @@
+  *        Each profile size must be of NET_DIM_PARAMS_NUM_PROFILES
+  */
+ #define NET_DIM_PARAMS_NUM_PROFILES 5
+-#define NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE 256
+-#define NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE 128
++#define NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE 256
++#define NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE 128
+ #define NET_DIM_DEF_PROFILE_CQE 1
+ #define NET_DIM_DEF_PROFILE_EQE 1
  
- 	if (bl->id >= 0)
--		ida_simple_remove(&bl_ida, bl->id);
-+		ida_free(&bl_ida, bl->id);
+ #define NET_DIM_RX_EQE_PROFILES { \
+-	{1,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+-	{8,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+-	{64,  NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+-	{128, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+-	{256, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
++	{.usec = 1,   .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
++	{.usec = 8,   .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
++	{.usec = 64,  .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
++	{.usec = 128, .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
++	{.usec = 256, .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}  \
+ }
  
- 	backlight_device_unregister(bl->dev);
- 	nv_conn->backlight = NULL;
+ #define NET_DIM_RX_CQE_PROFILES { \
+-	{2,  256},             \
+-	{8,  128},             \
+-	{16, 64},              \
+-	{32, 64},              \
+-	{64, 64}               \
++	{.usec = 2,  .pkts = 256,},             \
++	{.usec = 8,  .pkts = 128,},             \
++	{.usec = 16, .pkts = 64,},              \
++	{.usec = 32, .pkts = 64,},              \
++	{.usec = 64, .pkts = 64,}               \
+ }
+ 
+ #define NET_DIM_TX_EQE_PROFILES { \
+-	{1,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
+-	{8,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
+-	{32,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
+-	{64,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
+-	{128, NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE}   \
++	{.usec = 1,   .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
++	{.usec = 8,   .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
++	{.usec = 32,  .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
++	{.usec = 64,  .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
++	{.usec = 128, .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,}   \
+ }
+ 
+ #define NET_DIM_TX_CQE_PROFILES { \
+-	{5,  128},  \
+-	{8,  64},  \
+-	{16, 32},  \
+-	{32, 32},  \
+-	{64, 32}   \
++	{.usec = 5,  .pkts = 128,},  \
++	{.usec = 8,  .pkts = 64,},  \
++	{.usec = 16, .pkts = 32,},  \
++	{.usec = 32, .pkts = 32,},  \
++	{.usec = 64, .pkts = 32,}   \
+ }
+ 
+ static const struct dim_cq_moder
 -- 
 2.35.1
 
