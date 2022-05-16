@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8694CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 172B0C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348313AbiEPUbR (ORCPT
+        id S1348741AbiEPUbv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
+        Mon, 16 May 2022 16:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350866AbiEPUBo (ORCPT
+        with ESMTP id S1351029AbiEPUB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5590E44753;
-        Mon, 16 May 2022 12:55:59 -0700 (PDT)
+        Mon, 16 May 2022 16:01:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EFA4738B;
+        Mon, 16 May 2022 12:56:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA36F60FD4;
-        Mon, 16 May 2022 19:55:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FE6C385AA;
-        Mon, 16 May 2022 19:55:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF947B81614;
+        Mon, 16 May 2022 19:56:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35BDFC385AA;
+        Mon, 16 May 2022 19:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730959;
-        bh=zAIK8Scdfpm+47u/CP5vmP3dy1T/MXT6kt+ys0EhElw=;
+        s=korg; t=1652730997;
+        bh=q9gU/Mr7BlvIaiZEGB9eEEKAmSd+1AXD+9YImC1STPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pjaE8dFzGSUETlCgms0hoooQ5qNulQ7vvqn46zghIICLrfDm26z9wCWUG+9v3a+A2
-         Mm6liXQviq0OYbQyX7KNPic0emOFbZpPBFSxxwbltt75oYLBn9WaAZAvVM07sYeiJf
-         QCG2474KdrLnEald5mtHbHUX5hIdyaFN1KbCb5ms=
+        b=bd052qXz7mpQfPQecEKzPeklpMak9AEPycIw+31+xnTwKs1qEOnYrixEHtN+nReEx
+         J6xeyxY0Y4eT72KCewv5vkD/yz1nmJcOaG3ii7DAUra26If82/0ZXsknGXmFzhmMpQ
+         OcE7gA+4qqG2RV64rTEvLZvvy3wp8yPLSSNfftdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Hagan <mnhagan88@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 060/114] net: sfp: Add tx-fault workaround for Huawei MA5671A SFP ONT
-Date:   Mon, 16 May 2022 21:36:34 +0200
-Message-Id: <20220516193627.217051769@linuxfoundation.org>
+Subject: [PATCH 5.17 044/114] net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
+Date:   Mon, 16 May 2022 21:36:18 +0200
+Message-Id: <20220516193626.758823377@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,66 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Hagan <mnhagan88@gmail.com>
+From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 
-[ Upstream commit 2069624dac19d62c558bb6468fe03678553ab01d ]
+[ Upstream commit f3c46e41b32b6266cf60b0985c61748f53bf1c61 ]
 
-As noted elsewhere, various GPON SFP modules exhibit non-standard
-TX-fault behaviour. In the tested case, the Huawei MA5671A, when used
-in combination with a Marvell mv88e6085 switch, was found to
-persistently assert TX-fault, resulting in the module being disabled.
+Non blocking sendmsg will return -EAGAIN when any signal pending
+and no send space left, while non blocking recvmsg return -EINTR
+when signal pending and no data received. This may makes confused.
+As TCP returns -EAGAIN in the conditions described above. Align the
+behavior of smc with TCP.
 
-This patch adds a quirk to ignore the SFP_F_TX_FAULT state, allowing the
-module to function.
-
-Change from v1: removal of erroneous return statment (Andrew Lunn)
-
-Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220502223315.1973376-1-mnhagan88@gmail.com
+Fixes: 846e344eb722 ("net/smc: add receive timeout check")
+Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220512030820.73848-1-guangguan.wang@linux.alibaba.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ net/smc/smc_rx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 4720b24ca51b..90dfefc1f5f8 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -250,6 +250,7 @@ struct sfp {
- 	struct sfp_eeprom_id id;
- 	unsigned int module_power_mW;
- 	unsigned int module_t_start_up;
-+	bool tx_fault_ignore;
+diff --git a/net/smc/smc_rx.c b/net/smc/smc_rx.c
+index 51e8eb2933ff..338b9ef806e8 100644
+--- a/net/smc/smc_rx.c
++++ b/net/smc/smc_rx.c
+@@ -355,12 +355,12 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
+ 				}
+ 				break;
+ 			}
++			if (!timeo)
++				return -EAGAIN;
+ 			if (signal_pending(current)) {
+ 				read_done = sock_intr_errno(timeo);
+ 				break;
+ 			}
+-			if (!timeo)
+-				return -EAGAIN;
+ 		}
  
- #if IS_ENABLED(CONFIG_HWMON)
- 	struct sfp_diag diag;
-@@ -1945,6 +1946,12 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	else
- 		sfp->module_t_start_up = T_START_UP;
- 
-+	if (!memcmp(id.base.vendor_name, "HUAWEI          ", 16) &&
-+	    !memcmp(id.base.vendor_pn, "MA5671A         ", 16))
-+		sfp->tx_fault_ignore = true;
-+	else
-+		sfp->tx_fault_ignore = false;
-+
- 	return 0;
- }
- 
-@@ -2397,7 +2404,10 @@ static void sfp_check_state(struct sfp *sfp)
- 	mutex_lock(&sfp->st_mutex);
- 	state = sfp_get_state(sfp);
- 	changed = state ^ sfp->state;
--	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
-+	if (sfp->tx_fault_ignore)
-+		changed &= SFP_F_PRESENT | SFP_F_LOS;
-+	else
-+		changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
- 
- 	for (i = 0; i < GPIO_MAX; i++)
- 		if (changed & BIT(i))
+ 		if (!smc_rx_data_available(conn)) {
 -- 
 2.35.1
 
