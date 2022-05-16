@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD4AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0409CC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348353AbiEPTws (ORCPT
+        id S1346882AbiEPTv3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36466 "EHLO
+        Mon, 16 May 2022 15:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345913AbiEPTrM (ORCPT
+        with ESMTP id S1346597AbiEPTqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:47:12 -0400
+        Mon, 16 May 2022 15:46:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C514542A33;
-        Mon, 16 May 2022 12:44:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0145241637;
+        Mon, 16 May 2022 12:43:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A20461512;
-        Mon, 16 May 2022 19:44:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233B8C34100;
-        Mon, 16 May 2022 19:44:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 385306155B;
+        Mon, 16 May 2022 19:43:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33468C385AA;
+        Mon, 16 May 2022 19:43:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730264;
-        bh=Cg/MuKJoap0hTEysGvsdxLpB4ecmEPAhHBdrvdsOYEQ=;
+        s=korg; t=1652730230;
+        bh=NoWb0d6df3aDrsEXlBA7Y/GGKisEkrCDDOuGQ50H7yE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AMrDjXaQpDOxU2SA2f6q8htd45Xzh+NUYUUr+rX4JuE2CyCooryxIsuRIeNl4Xu5l
-         6/joJRNj5cRL5KgLNmq3FW3S69Qju62VTjJFPxX4Ln64kP2oN2muuZt3hHmVshnlLR
-         RgKBD/rgkcOKcSWwcCrWod3DGTcyvxp6zQG6bM+w=
+        b=oLPZCvSaQ34FmsRKATR0eIQR02nl2Xr44rMyyqtFXx8BnNCfo5CAHhx2spU2xbxY8
+         0LmnxZKulfwB+ayFB0ZzrLeMI6/5FYnfcAruvUj0pKYPWiF/DxGYhSslwVRF8PrPmH
+         ITGBIQZ9RLgR/PjNUvbqcqst9R1RjdEqrqaEPNHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kaechele <felix@kaechele.ca>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 01/66] batman-adv: Dont skb_split skbuffs with frag_list
-Date:   Mon, 16 May 2022 21:36:01 +0200
-Message-Id: <20220516193619.445066192@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 42/43] ping: fix address binding wrt vrf
+Date:   Mon, 16 May 2022 21:36:53 +0200
+Message-Id: <20220516193615.960978190@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
-References: <20220516193619.400083785@linuxfoundation.org>
+In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
+References: <20220516193614.714657361@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,60 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-[ Upstream commit a063f2fba3fa633a599253b62561051ac185fa99 ]
+commit e1a7ac6f3ba6e157adcd0ca94d92a401f1943f56 upstream.
 
-The receiving interface might have used GRO to receive more fragments than
-MAX_SKB_FRAGS fragments. In this case, these will not be stored in
-skb_shinfo(skb)->frags but merged into the frag list.
+When ping_group_range is updated, 'ping' uses the DGRAM ICMP socket,
+instead of an IP raw socket. In this case, 'ping' is unable to bind its
+socket to a local address owned by a vrflite.
 
-batman-adv relies on the function skb_split to split packets up into
-multiple smaller packets which are not larger than the MTU on the outgoing
-interface. But this function cannot handle frag_list entries and is only
-operating on skb_shinfo(skb)->frags. If it is still trying to split such an
-skb and xmit'ing it on an interface without support for NETIF_F_FRAGLIST,
-then validate_xmit_skb() will try to linearize it. But this fails due to
-inconsistent information. And __pskb_pull_tail will trigger a BUG_ON after
-skb_copy_bits() returns an error.
+Before the patch:
+$ sysctl -w net.ipv4.ping_group_range='0  2147483647'
+$ ip link add blue type vrf table 10
+$ ip link add foo type dummy
+$ ip link set foo master blue
+$ ip link set foo up
+$ ip addr add 192.168.1.1/24 dev foo
+$ ip addr add 2001::1/64 dev foo
+$ ip vrf exec blue ping -c1 -I 192.168.1.1 192.168.1.2
+ping: bind: Cannot assign requested address
+$ ip vrf exec blue ping6 -c1 -I 2001::1 2001::2
+ping6: bind icmp socket: Cannot assign requested address
 
-In case of entries in frag_list, just linearize the skb before operating on
-it with skb_split().
-
-Reported-by: Felix Kaechele <felix@kaechele.ca>
-Fixes: c6c8fea29769 ("net: Add batman-adv meshing protocol")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Tested-by: Felix Kaechele <felix@kaechele.ca>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org
+Fixes: 1b69c6d0ae90 ("net: Introduce L3 Master device abstraction")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/batman-adv/fragmentation.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ net/ipv4/ping.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/net/batman-adv/fragmentation.c b/net/batman-adv/fragmentation.c
-index 1f1f5b0873b2..895d834d479d 100644
---- a/net/batman-adv/fragmentation.c
-+++ b/net/batman-adv/fragmentation.c
-@@ -478,6 +478,17 @@ int batadv_frag_send_packet(struct sk_buff *skb,
- 		goto free_skb;
- 	}
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -304,6 +304,7 @@ static int ping_check_bind_addr(struct s
+ 	struct net *net = sock_net(sk);
+ 	if (sk->sk_family == AF_INET) {
+ 		struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
++		u32 tb_id = RT_TABLE_LOCAL;
+ 		int chk_addr_ret;
  
-+	/* GRO might have added fragments to the fragment list instead of
-+	 * frags[]. But this is not handled by skb_split and must be
-+	 * linearized to avoid incorrect length information after all
-+	 * batman-adv fragments were created and submitted to the
-+	 * hard-interface
-+	 */
-+	if (skb_has_frag_list(skb) && __skb_linearize(skb)) {
-+		ret = -ENOMEM;
-+		goto free_skb;
-+	}
+ 		if (addr_len < sizeof(*addr))
+@@ -317,7 +318,8 @@ static int ping_check_bind_addr(struct s
+ 		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
+ 			 sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
+ 
+-		chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
++		tb_id = l3mdev_fib_table_by_index(net, sk->sk_bound_dev_if) ? : tb_id;
++		chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
+ 
+ 		if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
+ 			chk_addr_ret = RTN_LOCAL;
+@@ -356,6 +358,14 @@ static int ping_check_bind_addr(struct s
+ 			if (!dev) {
+ 				rcu_read_unlock();
+ 				return -ENODEV;
++			}
++		}
 +
- 	/* Create one header to be copied to all fragments */
- 	frag_header.packet_type = BATADV_UNICAST_FRAG;
- 	frag_header.version = BATADV_COMPAT_VERSION;
--- 
-2.35.1
-
++		if (!dev && sk->sk_bound_dev_if) {
++			dev = dev_get_by_index_rcu(net, sk->sk_bound_dev_if);
++			if (!dev) {
++				rcu_read_unlock();
++				return -ENODEV;
+ 			}
+ 		}
+ 		has_addr = pingv6_ops.ipv6_chk_addr(net, &addr->sin6_addr, dev,
 
 
