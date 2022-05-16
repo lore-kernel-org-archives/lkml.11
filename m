@@ -2,163 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238698AbiEPKjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
+        id S242689AbiEPKjd convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231665AbiEPKix (ORCPT
+        with ESMTP id S236823AbiEPKj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:38:53 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB7D237DC;
-        Mon, 16 May 2022 03:38:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652697532; x=1684233532;
-  h=from:to:cc:subject:date:message-id;
-  bh=uv3hpvVLaKZAIJnN9FauPkILRYjjAJhkGFBGer0v5m4=;
-  b=IbOqfwIXGkmuJkqPk6bynuT0XWe8Vo9FsoeX39BsWji+2FOLT7cshGEZ
-   rhYvCPSKtAJjniOrVoyfGqAXQZV177f/ys02BmfNuQUQNuv8xqnejiRL2
-   keRXQ9YdvuREfJ1qa5hCr8hxonDAM5kUO2fw0/R1Lsjl4+BM3cplu1D4N
-   s=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 16 May 2022 03:38:52 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 16 May 2022 03:38:50 -0700
-X-QCInternal: smtphost
-Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 16 May 2022 16:08:34 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id D1B523E6D; Mon, 16 May 2022 16:08:32 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org, quic_c_skakit@quicinc.com,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [V2] tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate.
-Date:   Mon, 16 May 2022 16:08:30 +0530
-Message-Id: <1652697510-30543-1-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 16 May 2022 06:39:29 -0400
+X-Greylist: delayed 954 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 03:39:29 PDT
+Received: from sender4-of-o58.zoho.com (sender4-of-o58.zoho.com [136.143.188.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B313237DD
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:39:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1652696606; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=Kx1bU6cM2rTQ45627TLaIrUmyuK8JKxe+6dp969h79UtC72vzaptU0KAgj+yR01SB944vwrFBEOUrv5e3GeHDr5wpbNgqKKhX+Ec69AwAwBKYdQyIPWyBF003aykHC/weZGvfvuwbuwCpe45CS/kCgfMkHkZBc6wewNUhlUJ77k=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1652696606; h=Content-Type:Content-Transfer-Encoding:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=aKy/2D1I+Ijo3H2U2qrIhNvqL3xXRiti3x//u1F3D3k=; 
+        b=eMhvNN6dhsImM1RDhgTfGczy4vtJCZgj5bQU8XN4ByPWOLVnroLJcfCcBXmFtQArvlItw5JXc15lPafwdUDB4dg4nztF4oEnpl+gC+VXWIK87IsXiAr+IXCCxQ/Y3StZhnoDckF2WHZfB3vR8LW+LuBgYe5rZ+R5p3itFGvitJ0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        spf=pass  smtp.mailfrom=linux@mniewoehner.de;
+        dmarc=pass header.from=<linux@mniewoehner.de>
+Received: from z3r0.lan (185.31.62.161 [185.31.62.161]) by mx.zohomail.com
+        with SMTPS id 1652696605359658.627437004699; Mon, 16 May 2022 03:23:25 -0700 (PDT)
+Message-ID: <50eb664046b0d036a434c4a602087b791b6e796f.camel@mniewoehner.de>
+Subject: [PATCH] platform/x86: intel-hid: fix _DSM function index handling
+From:   Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
+To:     Alex Hung <alex.hung@canonical.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 16 May 2022 12:23:22 +0200
+MIME-Version: 1.0
+User-Agent: Evolution 3.42.2 
+Content-Transfer-Encoding: 8BIT
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the UART frequency table 'root_freq[]' with logic around
-clk_round_rate() so that SoC details like the available clk frequencies
-can change and this driver still works. This reduces tight coupling
-between this UART driver and the SoC clk driver because we no longer
-have to update the 'root_freq[]' array for new SoCs. Instead the driver
-determines the available frequencies at runtime.
+intel_hid_dsm_fn_mask is a bit mask containing one bit for each function
+index. Fix the function index check in intel_hid_evaluate_method
+accordingly, which was missed in commit 97ab4516205e ("platform/x86:
+intel-hid: fix _DSM function index handling").
 
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
 ---
-v2: loops through clk dividers to zero-in quickly
-v1: intial patch looped through available clk frequencies
----
- drivers/tty/serial/qcom_geni_serial.c | 56 ++++++++++++++++++++++-------------
- 1 file changed, 36 insertions(+), 20 deletions(-)
+ drivers/platform/x86/intel/hid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index f496102..4733a23 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -149,12 +149,6 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *port);
- static void qcom_geni_serial_stop_rx(struct uart_port *uport);
- static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop);
- 
--static const unsigned long root_freq[] = {7372800, 14745600, 19200000, 29491200,
--					32000000, 48000000, 51200000, 64000000,
--					80000000, 96000000, 100000000,
--					102400000, 112000000, 120000000,
--					128000000};
--
- #define to_dev_port(ptr, member) \
- 		container_of(ptr, struct qcom_geni_serial_port, member)
- 
-@@ -946,25 +940,43 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
- 	return 0;
- }
- 
--static unsigned long get_clk_cfg(unsigned long clk_freq)
--{
--	int i;
--
--	for (i = 0; i < ARRAY_SIZE(root_freq); i++) {
--		if (!(root_freq[i] % clk_freq))
--			return root_freq[i];
--	}
--	return 0;
--}
--
--static unsigned long get_clk_div_rate(unsigned int baud,
-+static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
- 			unsigned int sampling_rate, unsigned int *clk_div)
- {
- 	unsigned long ser_clk;
- 	unsigned long desired_clk;
-+	unsigned long freq, prev;
-+	unsigned long div, maxdiv;
-+	int64_t mult;
- 
- 	desired_clk = baud * sampling_rate;
--	ser_clk = get_clk_cfg(desired_clk);
-+	if (!desired_clk) {
-+		pr_err("%s: Invalid frequency\n", __func__);
-+		return 0;
-+	}
-+
-+	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
-+	prev = 0;
-+
-+	for (div = 1; div <= maxdiv; div++) {
-+		mult = div * desired_clk;
-+		if (mult > ULONG_MAX)
-+			break;
-+
-+		freq = clk_round_rate(clk, (unsigned long)mult);
-+		if (!(freq % desired_clk)) {
-+			ser_clk = freq;
-+			break;
-+		}
-+
-+		if (!prev)
-+			ser_clk = freq;
-+		else if (prev == freq)
-+			break;
-+
-+		prev = freq;
-+	}
-+
- 	if (!ser_clk) {
- 		pr_err("%s: Can't find matching DFS entry for baud %d\n",
- 								__func__, baud);
-@@ -972,6 +984,9 @@ static unsigned long get_clk_div_rate(unsigned int baud,
- 	}
- 
- 	*clk_div = ser_clk / desired_clk;
-+	if (!(*clk_div))
-+		*clk_div = 1;
-+
- 	return ser_clk;
- }
- 
-@@ -1003,7 +1018,8 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	if (ver >= QUP_SE_VERSION_2_5)
- 		sampling_rate /= 2;
- 
--	clk_rate = get_clk_div_rate(baud, sampling_rate, &clk_div);
-+	clk_rate = get_clk_div_rate(port->se.clk, baud,
-+		sampling_rate, &clk_div);
- 	if (!clk_rate)
- 		goto out_restart_rx;
- 
+diff --git a/drivers/platform/x86/intel/hid.c b/drivers/platform/x86/intel/hid.c
+index 13f8cf70b9ae..5c39d40a701b 100644
+--- a/drivers/platform/x86/intel/hid.c
++++ b/drivers/platform/x86/intel/hid.c
+@@ -238,7 +238,7 @@ static bool intel_hid_evaluate_method(acpi_handle handle,
+ 
+        method_name = (char *)intel_hid_dsm_fn_to_method[fn_index];
+ 
+-       if (!(intel_hid_dsm_fn_mask & fn_index))
++       if (!(intel_hid_dsm_fn_mask & BIT(fn_index)))
+                goto skip_dsm_eval;
+ 
+        obj = acpi_evaluate_dsm_typed(handle, &intel_dsm_guid,
 -- 
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+2.34.1
+
 
