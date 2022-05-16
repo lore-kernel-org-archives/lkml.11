@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 494C0C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbiEPUID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
+        id S237972AbiEPUIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346593AbiEPTvM (ORCPT
+        with ESMTP id S1346605AbiEPTvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:51:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A761443E2;
-        Mon, 16 May 2022 12:45:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EF5443EB;
+        Mon, 16 May 2022 12:45:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18FC3B815F8;
-        Mon, 16 May 2022 19:45:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 877E4C385AA;
-        Mon, 16 May 2022 19:45:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EF116159F;
+        Mon, 16 May 2022 19:45:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81515C385AA;
+        Mon, 16 May 2022 19:45:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730332;
-        bh=0uuMXo/e7pmB41l1sJOxtzndVfMWwLc9Wvh+2X05t+I=;
+        s=korg; t=1652730335;
+        bh=yEQSkgSeLKjZaOSPal/wnGic/U29ml5aeptDxL4XYes=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EF2p8ZJPCwiGXMciAebUd9FsMTPCHfkxjURuoT0b9+0AHtakFVtyjdwQeWDyoqYyc
-         sIUaj423bX4T6LGue0Kj1vX/3Jny2RL5IiB04+HpIHrfwgsMlQJlTGwOW0sc25S89l
-         EraBwMoDPDRNsdcUX6oYP+FfTXAz3CJSB+v7QagI=
+        b=Lu+4pMAX/ROWcw4JXzpUDAoDTgQfET3Au+9eHks/f9F7zrbuJmGPSSSIJabs3fL/z
+         0tjX/eiXkwNLwRN1uVXiGZAeZ2uauuzxaL2eslxuca02Z72lohZh4JPN6lnW2fLW5R
+         BRHnEUCqHjTTSgO4sgvv5DCvSD27tjgEpNfCbGPY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
-        Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 04/66] mac80211: Reset MBSSID parameters upon connection
-Date:   Mon, 16 May 2022 21:36:04 +0200
-Message-Id: <20220516193619.534212182@linuxfoundation.org>
+Subject: [PATCH 5.10 05/66] net: Fix features skip in for_each_netdev_feature()
+Date:   Mon, 16 May 2022 21:36:05 +0200
+Message-Id: <20220516193619.564108237@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -50,58 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-[ Upstream commit 86af062f40a73bf63321694e6bf637144f0383fe ]
+[ Upstream commit 85db6352fc8a158a893151baa1716463d34a20d0 ]
 
-Currently MBSSID parameters in struct ieee80211_bss_conf
-are not reset upon connection. This could be problematic
-with some drivers in a scenario where the device first
-connects to a non-transmit BSS and then connects to a
-transmit BSS of a Multi BSS AP. The MBSSID parameters
-which are set after connecting to a non-transmit BSS will
-not be reset and the same parameters will be passed on to
-the driver during the subsequent connection to a transmit
-BSS of a Multi BSS AP.
+The find_next_netdev_feature() macro gets the "remaining length",
+not bit index.
+Passing "bit - 1" for the following iteration is wrong as it skips
+the adjacent bit. Pass "bit" instead.
 
-For example, firmware running on the ath11k device uses the
-Multi BSS data for tracking the beacon of a non-transmit BSS
-and reports the driver when there is a beacon miss. If we do
-not reset the MBSSID parameters during the subsequent
-connection to a transmit BSS, then the driver would have
-wrong MBSSID data and FW would be looking for an incorrect
-BSSID in the MBSSID beacon of a Multi BSS AP and reports
-beacon loss leading to an unstable connection.
-
-Reset the MBSSID parameters upon every connection to solve this
-problem.
-
-Fixes: 78ac51f81532 ("mac80211: support multi-bssid")
-Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
-Link: https://lore.kernel.org/r/20220428052744.27040-1-quic_mpubbise@quicinc.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 3b89ea9c5902 ("net: Fix for_each_netdev_feature on Big endian")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
+Link: https://lore.kernel.org/r/20220504080914.1918-1-tariqt@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mlme.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ include/linux/netdev_features.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 0dba353d3f8f..3988403064ab 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -3528,6 +3528,12 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
- 				cbss->transmitted_bss->bssid);
- 		bss_conf->bssid_indicator = cbss->max_bssid_indicator;
- 		bss_conf->bssid_index = cbss->bssid_index;
-+	} else {
-+		bss_conf->nontransmitted = false;
-+		memset(bss_conf->transmitter_bssid, 0,
-+		       sizeof(bss_conf->transmitter_bssid));
-+		bss_conf->bssid_indicator = 0;
-+		bss_conf->bssid_index = 0;
- 	}
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index f96b7f8d82e5..e2a92697a663 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -158,7 +158,7 @@ enum {
+ #define NETIF_F_GSO_FRAGLIST	__NETIF_F(GSO_FRAGLIST)
+ #define NETIF_F_HW_MACSEC	__NETIF_F(HW_MACSEC)
  
- 	/*
+-/* Finds the next feature with the highest number of the range of start till 0.
++/* Finds the next feature with the highest number of the range of start-1 till 0.
+  */
+ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ {
+@@ -177,7 +177,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ 	for ((bit) = find_next_netdev_feature((mask_addr),		\
+ 					      NETDEV_FEATURE_COUNT);	\
+ 	     (bit) >= 0;						\
+-	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
++	     (bit) = find_next_netdev_feature((mask_addr), (bit)))
+ 
+ /* Features valid for ethtool to change */
+ /* = all defined minus driver/device-class-related */
 -- 
 2.35.1
 
