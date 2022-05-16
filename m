@@ -2,158 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22DFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343676AbiEPQ3c (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 12:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51874 "EHLO
+        id S230294AbiEPQcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 12:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343633AbiEPQ3N (ORCPT
+        with ESMTP id S1343615AbiEPQcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 12:29:13 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DCA3B02A;
-        Mon, 16 May 2022 09:29:10 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id gh6so29837292ejb.0;
-        Mon, 16 May 2022 09:29:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hJB5QWTkjOe+A3TmBJQWslNfP6ImokdCskIDq0K0JSM=;
-        b=DnhHqyh6nEcagUBSwSL40ZweMeOpDzDwVizgwFmVcHjJ/CbyNvQe/YL0Q/Sm4VGTef
-         snsNOJJGUmDBwBZmNxTZi/yeO28knuXU3t/9CaHyTMjnNfnA+TzcqyFqKjxsB9Y/ucmF
-         K10r77Qx0BDVHbx/Qbc2sjxngOV2307zrtQNiPA3dNgys+L3hEaytD7diKMlFZoqZ+gH
-         mxnrwG53b5Owa7VQ1Inessh3sUouGHbZEOLGjWEZ+vUC/vH9cRhFpaz4XhdzC+B9FsMz
-         4u2kjGEkmvPsnNVLbrePD09DJ2kODMtCttp9GHbTS2BuFJ4fysxycGxi/1+iRChtNXib
-         6Hag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hJB5QWTkjOe+A3TmBJQWslNfP6ImokdCskIDq0K0JSM=;
-        b=g73rm4OkFmigJcBMg+CQBshDx9L3baQs0xRR9/uMvtZRunVkA30E4db6+REqDaKFBD
-         0ZuHIVrIAYcM7Vaq6T5Q0fRxprm1JNom/fnkM/jARuwcOLsS72fzuz+hhARNwx5078tt
-         WqXPB2UlT0EetFr/pl7vOJc767xc6vhHIXEigtkIbhRziic0hUhj3Jr/NdNHKEU5tVrP
-         rbL1Vj5Wp2TqkLZCEZzRfSMhHts38OvEA6Y01SwWC6/5DNfevxq+1qe2LCz3+HS6essn
-         mPn7+PNm+c51o6BjNmpkY3gQVR4/oJDcDrhbNgpSgNZTrUztEbRQRQlPlkJs/Wm7zj4W
-         pbww==
-X-Gm-Message-State: AOAM532Ipbkj1N17Xyxtl2IpVOzRI61//l1+JwdDxmSuHETu4SnoK6m5
-        r/cgxTT8Qp1KoAmo8iT4SLM=
-X-Google-Smtp-Source: ABdhPJyZcntD5axDOHiDmfr5EqB4Uv2Nmp/U52P8mLja7/bBTGWg/cytwgQKXKtLEFZNZBC9ymNpMw==
-X-Received: by 2002:a17:907:3e8f:b0:6f4:4f42:a75f with SMTP id hs15-20020a1709073e8f00b006f44f42a75fmr16158090ejc.695.1652718549038;
-        Mon, 16 May 2022 09:29:09 -0700 (PDT)
-Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
-        by smtp.gmail.com with ESMTPSA id 9-20020a170906004900b006f3ef214e3bsm58819ejg.161.2022.05.16.09.29.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 09:29:08 -0700 (PDT)
-From:   Max Krummenacher <max.oss.09@gmail.com>
-To:     max.krummenacher@toradex.com
-Cc:     Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Marek Vasut <marex@denx.de>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Mon, 16 May 2022 12:32:07 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A4F3917B
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 09:32:05 -0700 (PDT)
+Received: from pps.filterd (m0134421.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GDjWtQ014154;
+        Mon, 16 May 2022 16:31:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id; s=pps0720;
+ bh=wpSXGNAyuHWjjFPq5i7K7209W2allUtcooZdy2mljhE=;
+ b=RYo1MX2HP1cCjuiYReEJxaLXe6z432/j5cG0ok57ro8WN5lgTl5BgORLjJVS8cQJdBMF
+ XAkk2ZdFEdPuZsYL2N3Fe7rVi+xlorG9yvRyhMUf8FqP2GSXwDoYezqlHzt67oe4Gs5n
+ ChC5DBfmn8XBaaIdOwDue3G7I+vNPVHoW59zzOAGthnA2BOZDzo0eKwcgE/1rq33Zv5s
+ T3Z7XcYb9lM9Mxe8JjdsGr8QJbf6QnjUqw0HCszU72soUVfhckSuTnxfa/ZQ0kV8ZQLE
+ 5EH7i/+OxbKuZmsTBz44ATXupyTmo5D4r4SRxC9hD9rPFMy/VWjPXvkAI0qveg5e7Anp 2Q== 
+Received: from g4t3425.houston.hpe.com (g4t3425.houston.hpe.com [15.241.140.78])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3g3qs2t4jc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 16:31:57 +0000
+Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
+        by g4t3425.houston.hpe.com (Postfix) with ESMTP id 303F98D;
+        Mon, 16 May 2022 16:31:56 +0000 (UTC)
+Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
+        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id ACCD84C;
+        Mon, 16 May 2022 16:31:55 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     verdun@hpe.com, nick.hawkins@hpe.com, joel@jms.id.au,
+        arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/2] dt-bindings: display: add new bus-format property for panel-dpi
-Date:   Mon, 16 May 2022 18:28:25 +0200
-Message-Id: <20220516162826.23025-2-max.oss.09@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220516162826.23025-1-max.oss.09@gmail.com>
-References: <20220516162826.23025-1-max.oss.09@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Cc:     Russell King <linux@armlinux.org.uk>
+Subject: [PATCH v8 1/8] ARM: hpe: Introduce the HPE GXP architecture
+Date:   Mon, 16 May 2022 11:33:39 -0500
+Message-Id: <20220516163347.44890-1-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+X-Proofpoint-ORIG-GUID: J0tNU-A42C1B7yvcsFEiVqFp3wC3QQr4
+X-Proofpoint-GUID: J0tNU-A42C1B7yvcsFEiVqFp3wC3QQr4
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-16_15,2022-05-16_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
+ priorityscore=1501 suspectscore=0 lowpriorityscore=0 impostorscore=0
+ spamscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 clxscore=1015
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205160092
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Krummenacher <max.krummenacher@toradex.com>
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-The property is used to set the enum bus_format and infer the bpc
-for a panel defined by 'panel-dpi'.
-This specifies how the panel is connected to the display interface.
+The GXP is the HPE BMC SoC that is used in the majority
+of current generation HPE servers. Traditionally the asic will
+last multiple generations of server before being replaced.
 
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Info about SoC:
+
+HPE GXP is the name of the HPE Soc. This SoC is used to implement many BMC
+features at HPE. It supports ARMv7 architecture based on the Cortex A9
+core. It is capable of using an AXI bus to whicha memory controller is
+attached. It has multiple SPI interfaces to connect boot flash and BIOS
+flash. It uses a 10/100/1000 MAC for network connectivity. It has multiple
+i2c engines to drive connectivity with a host infrastructure. There
+currently are no public specifications but this process is being worked.
+
+Previously there was a requirement to reset the EHCI controller for the
+asic to boot. This functionality has been moved to the u-boot
+bootloader.
+
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+
 ---
+v8:
+* No change
+v7:
+* No change
+v6:
+* Adjusted title to match log entries
+* Reconfigured commit message to be closer to 75 char.
+* Add space before comment delimiter.
+* Added a more elaborate Kconfig help section and fixed punctuation.
+* Fixed l2c_aux_map initialization.
+v5:
+* Fixed version log
+* Removed incorrect statement about reset.
+v4:
+* Removed unnecessary code: restart, iomap, init_machine
+* Reordered Kconfig depends
+* Removed SPARSE_IRQ, MULTI_IRQ_HANDLER, IRQ_DOMAIN, PINCTL from
+  Kconfig
+v3:
+* Put into proper patchset format
+v2:
+* No change
+---
+ arch/arm/Kconfig           |  2 ++
+ arch/arm/Makefile          |  1 +
+ arch/arm/mach-hpe/Kconfig  | 23 +++++++++++++++++++++++
+ arch/arm/mach-hpe/Makefile |  1 +
+ arch/arm/mach-hpe/gxp.c    | 16 ++++++++++++++++
+ 5 files changed, 43 insertions(+)
+ create mode 100644 arch/arm/mach-hpe/Kconfig
+ create mode 100644 arch/arm/mach-hpe/Makefile
+ create mode 100644 arch/arm/mach-hpe/gxp.c
 
- .../bindings/display/panel/panel-dpi.yaml     | 11 +++++++++
- .../dt-bindings/display/dt-media-bus-format.h | 23 +++++++++++++++++++
- 2 files changed, 34 insertions(+)
- create mode 100644 include/dt-bindings/display/dt-media-bus-format.h
-
-diff --git a/Documentation/devicetree/bindings/display/panel/panel-dpi.yaml b/Documentation/devicetree/bindings/display/panel/panel-dpi.yaml
-index dae0676b5c6e..ca44e96c3001 100644
---- a/Documentation/devicetree/bindings/display/panel/panel-dpi.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/panel-dpi.yaml
-@@ -21,6 +21,14 @@ properties:
-       - {}
-       - const: panel-dpi
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 2e8091e2d8a8..13f77eec7c40 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -620,6 +620,8 @@ source "arch/arm/mach-highbank/Kconfig"
  
-+  bus-format:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      Describes how the display panel is connected to the display interface.
-+      Valid values are defined in <dt-bindings/display/dt-media-bus-format.h>.
-+      The mapping between the color/significance of the panel lines to the
-+      parallel data lines are defined in [1].
-+      [1] https://www.kernel.org/doc/html/v5.17/userspace-api/media/v4l/subdev-formats.html#packed-rgb-formats
-   backlight: true
-   enable-gpios: true
-   height-mm: true
-@@ -39,11 +47,14 @@ additionalProperties: false
+ source "arch/arm/mach-hisi/Kconfig"
  
- examples:
-   - |
-+    #include <dt-bindings/display/dt-media-bus-format.h>
-+    ...
-     panel {
-         compatible = "startek,startek-kd050c", "panel-dpi";
-         label = "osddisplay";
-         power-supply = <&vcc_supply>;
-         backlight = <&backlight>;
-+        bus-format = "DT_MEDIA_BUS_FMT_RGB888_1X24";
++source "arch/arm/mach-hpe/Kconfig"
++
+ source "arch/arm/mach-imx/Kconfig"
  
-         port {
-             lcd_in: endpoint {
-diff --git a/include/dt-bindings/display/dt-media-bus-format.h b/include/dt-bindings/display/dt-media-bus-format.h
+ source "arch/arm/mach-integrator/Kconfig"
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index a2391b8de5a5..97a89023c10f 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -179,6 +179,7 @@ machine-$(CONFIG_ARCH_FOOTBRIDGE)	+= footbridge
+ machine-$(CONFIG_ARCH_GEMINI)		+= gemini
+ machine-$(CONFIG_ARCH_HIGHBANK)		+= highbank
+ machine-$(CONFIG_ARCH_HISI)		+= hisi
++machine-$(CONFIG_ARCH_HPE)		+= hpe
+ machine-$(CONFIG_ARCH_INTEGRATOR)	+= integrator
+ machine-$(CONFIG_ARCH_IOP32X)		+= iop32x
+ machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
+diff --git a/arch/arm/mach-hpe/Kconfig b/arch/arm/mach-hpe/Kconfig
 new file mode 100644
-index 000000000000..c0f2a7b59aa1
+index 000000000000..3372bbf38d38
 --- /dev/null
-+++ b/include/dt-bindings/display/dt-media-bus-format.h
++++ b/arch/arm/mach-hpe/Kconfig
 @@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
-+/*
-+ * Copyright 2022 Max Krummenacher <max.krummenacher@toradex.com>
-+ */
++menuconfig ARCH_HPE
++	bool "HPE SoC support"
++	depends on ARCH_MULTI_V7
++	help
++	  This enables support for HPE ARM based BMC chips.
++if ARCH_HPE
 +
-+#ifndef __DT_BINDINGS_DT_MEDIA_BUS_FORMAT_H
-+#define __DT_BINDINGS_DT_MEDIA_BUS_FORMAT_H
++config ARCH_HPE_GXP
++	bool "HPE GXP SoC"
++	depends on ARCH_MULTI_V7
++	select ARM_VIC
++	select GENERIC_IRQ_CHIP
++	select CLKSRC_MMIO
++	help
++	  HPE GXP is the name of the HPE Soc. This SoC is used to implement many
++	  BMC features at HPE. It supports ARMv7 architecture based on the Cortex
++	  A9 core. It is capable of using an AXI bus to which a memory controller
++	  is attached. It has multiple SPI interfaces to connect boot flash and
++	  BIOS flash. It uses a 10/100/1000 MAC for network connectivity. It
++	  has multiple i2c engines to drive connectivity with a host
++	  infrastructure.
 +
-+/*
-+ * Attention: Keep these macro names in sync with
-+ * include/uapi/linux/media-bus-format.h
-+ */
++endif
+diff --git a/arch/arm/mach-hpe/Makefile b/arch/arm/mach-hpe/Makefile
+new file mode 100644
+index 000000000000..8b0a91234df4
+--- /dev/null
++++ b/arch/arm/mach-hpe/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_ARCH_HPE_GXP) += gxp.o
+diff --git a/arch/arm/mach-hpe/gxp.c b/arch/arm/mach-hpe/gxp.c
+new file mode 100644
+index 000000000000..ef3341373006
+--- /dev/null
++++ b/arch/arm/mach-hpe/gxp.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P. */
 +
-+#define DT_MEDIA_BUS_FMT_RGB565_1X16		1
-+#define DT_MEDIA_BUS_FMT_RGB666_1X18		2
-+#define DT_MEDIA_BUS_FMT_RBG888_1X24		3
-+#define DT_MEDIA_BUS_FMT_RGB666_1X24_CPADHI	4
-+#define DT_MEDIA_BUS_FMT_BGR888_1X24		5
-+#define DT_MEDIA_BUS_FMT_GBR888_1X24		6
-+#define DT_MEDIA_BUS_FMT_RGB888_1X24		7
-+#define DT_MEDIA_BUS_FMT_RGB888_1X32_PADHI	8
++#include <linux/of_platform.h>
++#include <asm/mach/arch.h>
 +
-+#endif /* __DT_BINDINGS_DT_MEDIA_BUS_FORMAT_H */
++static const char * const gxp_board_dt_compat[] = {
++	"hpe,gxp",
++	NULL,
++};
++
++DT_MACHINE_START(GXP_DT, "HPE GXP")
++	.dt_compat	= gxp_board_dt_compat,
++	.l2c_aux_val = 0,
++	.l2c_aux_mask = ~0,
++MACHINE_END
 -- 
-2.20.1
+2.17.1
 
