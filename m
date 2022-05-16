@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB9FC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49615C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346877AbiEPUQY (ORCPT
+        id S1347080AbiEPUQq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:16:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
+        Mon, 16 May 2022 16:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346572AbiEPTy3 (ORCPT
+        with ESMTP id S1348344AbiEPT6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:54:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8929473A0;
-        Mon, 16 May 2022 12:49:07 -0700 (PDT)
+        Mon, 16 May 2022 15:58:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED8843ACF;
+        Mon, 16 May 2022 12:50:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F06D60AC3;
-        Mon, 16 May 2022 19:49:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE52C34116;
-        Mon, 16 May 2022 19:49:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E3CA60C6F;
+        Mon, 16 May 2022 19:50:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B9B2C36AE9;
+        Mon, 16 May 2022 19:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730546;
-        bh=E9F+Jz03oi36UVkpC75eyzGai8lyuc95aHZVdhHpZOo=;
+        s=korg; t=1652730632;
+        bh=2OX837V48LPWy+fohNmbgAQwoavPUJVKqMpgPMB4Acg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PQTZ72v3vung7d1sQOfUB00n2++yYaWg+WA961bc4288rXbHlJTy3bLmM9XyOHR8n
-         uNzZgD5B4lSbcgunJrKpqds4+6u326qrPf4C80/mkKtdr8BoZBsNis2wWwu1YBVSyo
-         1l9LkpxYf3KyBi9u3lSYDxMaTRbBeIDKbaImlBM8=
+        b=LSZLhBAton9UfQV6N9mHqMRJZgc1e4W+Z4o/gvd0LZalcLlBekcCAjAh+3qVEIMu5
+         IopFJqpR7On5f+bpmdt4IwwjCaEijAR0wkSj/bf6U3P7QRhLpbQaFcck2DdFFTjhuM
+         VU3q0l0fm4iQPBlckhXIRE04UyU2LnyEYjRj/bnQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexandra Winter <wintera@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 033/102] s390/ctcm: fix potential memory leak
-Date:   Mon, 16 May 2022 21:36:07 +0200
-Message-Id: <20220516193624.951332130@linuxfoundation.org>
+Subject: [PATCH 5.15 061/102] tcp: drop the hash_32() part from the index calculation
+Date:   Mon, 16 May 2022 21:36:35 +0200
+Message-Id: <20220516193625.747686026@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -50,65 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit 0c0b20587b9f25a2ad14db7f80ebe49bdf29920a ]
+[ Upstream commit e8161345ddbb66e449abde10d2fdce93f867eba9 ]
 
-smatch complains about
-drivers/s390/net/ctcm_mpc.c:1210 ctcmpc_unpack_skb() warn: possible memory leak of 'mpcginfo'
+In commit 190cc82489f4 ("tcp: change source port randomizarion at
+connect() time"), the table_perturb[] array was introduced and an
+index was taken from the port_offset via hash_32(). But it turns
+out that hash_32() performs a multiplication while the input here
+comes from the output of SipHash in secure_seq, that is well
+distributed enough to avoid the need for yet another hash.
 
-mpc_action_discontact() did not free mpcginfo. Consolidate the freeing in
-ctcmpc_unpack_skb().
-
-Fixes: 293d984f0e36 ("ctcm: infrastructure for replaced ctc driver")
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Suggested-by: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/net/ctcm_mpc.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ net/ipv4/inet_hashtables.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/s390/net/ctcm_mpc.c b/drivers/s390/net/ctcm_mpc.c
-index f0436f555c62..be03cb123ef4 100644
---- a/drivers/s390/net/ctcm_mpc.c
-+++ b/drivers/s390/net/ctcm_mpc.c
-@@ -626,8 +626,6 @@ static void mpc_rcvd_sweep_resp(struct mpcg_info *mpcginfo)
- 		ctcm_clear_busy_do(dev);
- 	}
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index f76e4ac1ba3a..ee9c587031b4 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  
--	kfree(mpcginfo);
--
- 	return;
+ 	net_get_random_once(table_perturb,
+ 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+-	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
++	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
  
- }
-@@ -1192,10 +1190,10 @@ static void ctcmpc_unpack_skb(struct channel *ch, struct sk_buff *pskb)
- 						CTCM_FUNTAIL, dev->name);
- 			priv->stats.rx_dropped++;
- 			/* mpcginfo only used for non-data transfers */
--			kfree(mpcginfo);
- 			if (do_debug_data)
- 				ctcmpc_dump_skb(pskb, -8);
- 		}
-+		kfree(mpcginfo);
- 	}
- done:
- 
-@@ -1977,7 +1975,6 @@ static void mpc_action_rcvd_xid0(fsm_instance *fsm, int event, void *arg)
- 		}
- 		break;
- 	}
--	kfree(mpcginfo);
- 
- 	CTCM_PR_DEBUG("ctcmpc:%s() %s xid2:%i xid7:%i xidt_p2:%i \n",
- 		__func__, ch->id, grp->outstanding_xid2,
-@@ -2038,7 +2035,6 @@ static void mpc_action_rcvd_xid7(fsm_instance *fsm, int event, void *arg)
- 		mpc_validate_xid(mpcginfo);
- 		break;
- 	}
--	kfree(mpcginfo);
- 	return;
- }
- 
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
 -- 
 2.35.1
 
