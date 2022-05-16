@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B83E5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96EBFC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349472AbiEPUc0 (ORCPT
+        id S1349371AbiEPUcW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
+        Mon, 16 May 2022 16:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351027AbiEPUB4 (ORCPT
+        with ESMTP id S1351030AbiEPUB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A633F4755A;
-        Mon, 16 May 2022 12:56:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9386947570;
+        Mon, 16 May 2022 12:56:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 407B960A50;
-        Mon, 16 May 2022 19:56:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39BA9C385AA;
-        Mon, 16 May 2022 19:56:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FEE160EC4;
+        Mon, 16 May 2022 19:56:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B01AC34100;
+        Mon, 16 May 2022 19:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731003;
-        bh=piennx7MVGXwLZLl+LxhpdRLDGUtTDyOZL9IGWdufG4=;
+        s=korg; t=1652731012;
+        bh=4bf/UsuSgVW7vJNOHxwczts9LNMMkWBw0O6Z5qy8XRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cBMY1TC9eUWm6iopozjzioAzXaRMd1miNFdmS5FClZ1X4xWWgWr6s/PhK1taLNS15
-         OnCEyDn5P+sd5rrW195aL5PG8AjU9SA7Y60wNIyDUWokEJQFu2xgdm6ScTSFPfbydI
-         e/y8xLUi5xlJ6zY4BFzzJTGmzFmT3gSkuJaK6hS4=
+        b=QBjez5k5PODob1praoe9Rrh4p3JY8n/1BzYvdFKuF+kbGo7PQoc9VdYFGNxB71HhA
+         8bgIEQuLYpuFgjs+2LZxeEz+BQkIgRaWtFcJlQT3L+735WHVFBzEo+UNDbIMPVARFK
+         2CTv8NHO+CcfjpiI1vtcExg3umsic6TURduOEU/4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Evans <matt@ozlabs.org>,
-        Alexander Graf <graf@amazon.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.17 072/114] KVM: PPC: Book3S PR: Enable MSR_DR for switch_mmu_context()
-Date:   Mon, 16 May 2022 21:36:46 +0200
-Message-Id: <20220516193627.558495278@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH 5.17 075/114] tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
+Date:   Mon, 16 May 2022 21:36:49 +0200
+Message-Id: <20220516193627.641975283@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,66 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Graf <graf@amazon.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit ee8348496c77e3737d0a6cda307a521f2cff954f upstream.
+commit 447ee1516f19f534a228dda237eddb202f23e163 upstream.
 
-Commit 863771a28e27 ("powerpc/32s: Convert switch_mmu_context() to C")
-moved the switch_mmu_context() to C. While in principle a good idea, it
-meant that the function now uses the stack. The stack is not accessible
-from real mode though.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-So to keep calling the function, let's turn on MSR_DR while we call it.
-That way, all pointer references to the stack are handled virtually.
-
-In addition, make sure to save/restore r12 on the stack, as it may get
-clobbered by the C function.
-
-Fixes: 863771a28e27 ("powerpc/32s: Convert switch_mmu_context() to C")
-Cc: stable@vger.kernel.org # v5.14+
-Reported-by: Matt Evans <matt@ozlabs.org>
-Signed-off-by: Alexander Graf <graf@amazon.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220510123717.24508-1-graf@amazon.com
+Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Baruch Siach <baruch@tkos.co.il>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220505124621.1592697-1-yangyingliang@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kvm/book3s_32_sr.S |   26 +++++++++++++++++++++-----
- 1 file changed, 21 insertions(+), 5 deletions(-)
+ drivers/tty/serial/digicolor-usart.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/arch/powerpc/kvm/book3s_32_sr.S
-+++ b/arch/powerpc/kvm/book3s_32_sr.S
-@@ -122,11 +122,27 @@
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -471,11 +471,10 @@ static int digicolor_uart_probe(struct p
+ 	if (IS_ERR(uart_clk))
+ 		return PTR_ERR(uart_clk);
  
- 	/* 0x0 - 0xb */
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	dp->port.mapbase = res->start;
+-	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
++	dp->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(dp->port.membase))
+ 		return PTR_ERR(dp->port.membase);
++	dp->port.mapbase = res->start;
  
--	/* 'current->mm' needs to be in r4 */
--	tophys(r4, r2)
--	lwz	r4, MM(r4)
--	tophys(r4, r4)
--	/* This only clobbers r0, r3, r4 and r5 */
-+	/* switch_mmu_context() needs paging, let's enable it */
-+	mfmsr   r9
-+	ori     r11, r9, MSR_DR
-+	mtmsr   r11
-+	sync
-+
-+	/* switch_mmu_context() clobbers r12, rescue it */
-+	SAVE_GPR(12, r1)
-+
-+	/* Calling switch_mmu_context(<inv>, current->mm, <inv>); */
-+	lwz	r4, MM(r2)
- 	bl	switch_mmu_context
- 
-+	/* restore r12 */
-+	REST_GPR(12, r1)
-+
-+	/* Disable paging again */
-+	mfmsr   r9
-+	li      r6, MSR_DR
-+	andc    r9, r9, r6
-+	mtmsr	r9
-+	sync
-+
- .endm
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0)
 
 
