@@ -2,97 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 075D3C38A04
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E585BC4707A
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347634AbiEPT6E (ORCPT
+        id S1347596AbiEPT55 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
+        Mon, 16 May 2022 15:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347900AbiEPTwY (ORCPT
+        with ESMTP id S1347759AbiEPTwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:52:24 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734A444A39
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:48:04 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id q203so1312681iod.0
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:48:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jv0Y4sH5q/+cOZfXrfwTFO+h4KwTbyJ3ZtbRwi7S/Lw=;
-        b=ew4Tb8MqwPRgVuYAPzp9N7lmT/ezFUb7lubqLPv59RNbYaQaoA5L8MiagwGWoqJS+m
-         mJSCtEETbHjNrCvgJ3WxZXwSyGLzGP0KKuvPZ5QT89vJo9753DV3+XFIuNU2CrNgdlkq
-         AGGAZK+plrK3X/ebH1vd4e3nGfSjYYXbUQz5w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jv0Y4sH5q/+cOZfXrfwTFO+h4KwTbyJ3ZtbRwi7S/Lw=;
-        b=oLSPA3ZddYWzBMlE0+CktBKDiwsQvQFnwARRh6l2rsauwIO5MYhGousD1t4QvdILas
-         S3Rao7ulN0qAVLXXiehOi5xCTAyfEge8PkYkwjaw9HNrzD78oGtgW8w8E6rVzU5AxW0Q
-         zIELlnllsw99LTFbssTj9UPAtamV/q0/6u4p6diu+FfAYR6LKiuU4mw2GyqQCShQxdCC
-         jhbyNHqagxnWKvlz3xVd4y5DK9wU8APhN3dLusKQJgFuJ3R54SsCHybpPqY+trYBzTpr
-         KXTSMgwtmiL4Fg80CY47GEYQZGue6DWZhZALZsBArLGeywsPj8mvHlwLisFTGvbyZ/Hz
-         9dCA==
-X-Gm-Message-State: AOAM533uVd7JcIuGMXwixBrlq/mAIMyMYsutITymd/JZw6VGBL3ENmzn
-        /Ye6tm1vC2aq8+ikDeWO2Xp88A==
-X-Google-Smtp-Source: ABdhPJyAdniB3khueIn2Dh+Ov6csoMG5jsxnWQuJefh/OMfBiYSo9cbu73uQvNWHPrzQHmVDZjn2ww==
-X-Received: by 2002:a05:6638:2191:b0:32b:b7af:1228 with SMTP id s17-20020a056638219100b0032bb7af1228mr10056071jaj.13.1652730482764;
-        Mon, 16 May 2022 12:48:02 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id p12-20020a056e02104c00b002cd7dc16ae4sm88740ilj.1.2022.05.16.12.48.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 12:48:02 -0700 (PDT)
-Subject: Re: [PATCH] kselftests/ir : Improve readability of modprobe error
- message
-To:     Gautam Menghani <gautammenghani201@gmail.com>, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220513190721.16482-1-gautammenghani201@gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <a763b159-0072-b883-5e47-65f86bec66dd@linuxfoundation.org>
-Date:   Mon, 16 May 2022 13:48:01 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Mon, 16 May 2022 15:52:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20C0427E6;
+        Mon, 16 May 2022 12:47:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8687BB81614;
+        Mon, 16 May 2022 19:47:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC3EC385AA;
+        Mon, 16 May 2022 19:47:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652730464;
+        bh=dK7FvkxY95j5rtkl9TPq6ygVFfXCqeIs4v8TNpuGobQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Kj3D1F+D7tjESIzq2TF+HgYdtNZrKZFXhRxCuEF7PVoKEA+lqa15T949Cv3zKYNL3
+         M5UEJrukBSRHbfHeF0r0cV8roQEjcoCoDcEAIHK1gMaGUzM4fgXnSsFw2MJ9S+F4+0
+         RAgr2vOS9KUrJzC5WRgAWLpkWS4bplsyVja4Awsw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 30/66] gfs2: Fix filesystem block deallocation for short writes
+Date:   Mon, 16 May 2022 21:36:30 +0200
+Message-Id: <20220516193620.286938380@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
+References: <20220516193619.400083785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20220513190721.16482-1-gautammenghani201@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/13/22 1:07 PM, Gautam Menghani wrote:
-> Improve the readability of error message which says module not found.
-> The new behaviour is consistent with the modprobe command.
-> 
-> Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
-> ---
->   tools/testing/selftests/ir/ir_loopback.sh | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/ir/ir_loopback.sh b/tools/testing/selftests/ir/ir_loopback.sh
-> index b90dc9939f45..aff9299c9416 100755
-> --- a/tools/testing/selftests/ir/ir_loopback.sh
-> +++ b/tools/testing/selftests/ir/ir_loopback.sh
-> @@ -10,7 +10,7 @@ if [ $UID != 0 ]; then
->   fi
->   
->   if ! /sbin/modprobe -q -n rc-loopback; then
-> -        echo "ir_loopback: module rc-loopback is not found [SKIP]"
-> +        echo "ir_loopback: module rc-loopback is not found in /lib/modules/`uname -r` [SKIP]"
->           exit $ksft_skip
->   fi
->   
-> 
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-Applied to linux-kselftest next for 5.19-rc1
+[ Upstream commit d031a8866e709c9d1ee5537a321b6192b4d2dc5b ]
 
-thanks,
--- Shuah
+When a write cannot be carried out in full, gfs2_iomap_end() releases
+blocks that have been allocated for this write but haven't been used.
+
+To compute the end of the allocation, gfs2_iomap_end() incorrectly
+rounded the end of the attempted write down to the next block boundary
+to arrive at the end of the allocation.  It would have to round up, but
+the end of the allocation is also available as iomap->offset +
+iomap->length, so just use that instead.
+
+In addition, use round_up() for computing the start of the unused range.
+
+Fixes: 64bc06bb32ee ("gfs2: iomap buffered write support")
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/gfs2/bmap.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/fs/gfs2/bmap.c b/fs/gfs2/bmap.c
+index 6c047570d6a9..b4fde3a8eeb4 100644
+--- a/fs/gfs2/bmap.c
++++ b/fs/gfs2/bmap.c
+@@ -1235,13 +1235,12 @@ static int gfs2_iomap_end(struct inode *inode, loff_t pos, loff_t length,
+ 
+ 	if (length != written && (iomap->flags & IOMAP_F_NEW)) {
+ 		/* Deallocate blocks that were just allocated. */
+-		loff_t blockmask = i_blocksize(inode) - 1;
+-		loff_t end = (pos + length) & ~blockmask;
++		loff_t hstart = round_up(pos + written, i_blocksize(inode));
++		loff_t hend = iomap->offset + iomap->length;
+ 
+-		pos = (pos + written + blockmask) & ~blockmask;
+-		if (pos < end) {
+-			truncate_pagecache_range(inode, pos, end - 1);
+-			punch_hole(ip, pos, end - pos);
++		if (hstart < hend) {
++			truncate_pagecache_range(inode, hstart, hend - 1);
++			punch_hole(ip, hstart, hend - hstart);
+ 		}
+ 	}
+ 
+-- 
+2.35.1
+
+
+
