@@ -2,137 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F723C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 870ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244414AbiEPOPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
+        id S243947AbiEPORf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233895AbiEPOPr (ORCPT
+        with ESMTP id S233243AbiEPORa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:15:47 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955EDF589
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:15:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1652710544; x=1684246544;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=zOv+Wev7E5lt7EeSM9kcmJh0rO5V+6OnlZIVl0tMHMU=;
-  b=Jtw68JZ804SXa/8zmg9rJaKxZbmzm2kH9/YW8cLkeeHDUwGdiSDdfKXX
-   bUZmLNt8nKZvBs/T+8oRWNJsylYb9f69xs91AOb+TnbR3h0vziGj2Kyrp
-   o2ng6uLujOEDCaISIAqNcs3E/738vC3dDGdUWBkMPOT6N8XzpooUrbuyX
-   RrXW91y3uQLxGiudM63UaUdKJ9oOX6MDrvtmpSi84Mwmn5YyGrtIHhVFp
-   aYHFlSRnq4ngVa+L4JekJtzr1DeH6wHALttsGXWdRdBbEuBNYTrS9A73c
-   N2SZVGm4e4FXDVzWn+mDk0azdfdaVqQxM+eivsCXmux/4LbQJgMvI/wdr
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,230,1647273600"; 
-   d="scan'208";a="205308057"
-Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 16 May 2022 22:15:43 +0800
-IronPort-SDR: dC5DP9u+ZVdvIoJ0epG1Hw4P5yQ7O5CCLC7X31mD6HdEFvV40vJuZAwfmKtaT7bJY+h/kbQnBx
- u9o2b3S1xF5V0caiQudwL1lTAP+frwSRyP8j7wRBHAeMXtEAVUwEF0ozsP+GA0Po4yIUH86ppn
- eRjcaYo/jm6opPizWyJmXnu8vJnSxqnSrnQNIBvp4HGyvf6S2A5vxRJ3xQMCJEdEpIbYL5Ve/r
- 0wMcg1nGsZCre5V46t/SwenUzFOSyLnXEMA2xhqlCg8NhSK/OdCjLqXv8TKnafspf14arv1B1B
- mWQ8DYmdtsyEiHLZc3f8vh8c
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 06:41:26 -0700
-IronPort-SDR: mJFS+bmiKpbFUqqzT5ahmkPk+hYLJnUeBMeMD4HUPm7/PY61RrXPuz/CSTO9OZkJdXNmuvesiq
- H+QZuoHH33QloEBLXHqVJNNEcWXA6+cGgeSNHpGA1OEJNqSmeIM+NU0fC+dOYg34CSScLdw3B5
- Qofk6G0n0iXgsR4QbZXS4otIyf8jxMW0ditAoakZiGMbZtf/UnPCVACZ1BeT0JxM1N+gvfYH50
- jwWTOohIxmcbOeHQjVwYUvC5srJIu7nCaEW9IlR1QvJPRAb+zTspvncuXJoJ2P3Q2iAtO+7PZf
- EX0=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 07:15:45 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4L21W31rd2z1SVpC
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:15:43 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1652710542; x=1655302543; bh=zOv+Wev7E5lt7EeSM9kcmJh0rO5V+6OnlZI
-        Vl0tMHMU=; b=i4y52IglqHa1njsCmAT+LslWANsFjmGWNuC+BQusYwJboYbqlpx
-        1K5trb7R/DS0LQM7zIGMW36j5tKV1MkXjwyqWyIuVDc9mYbpFnl/PFabswil526a
-        8PiySSAYXnoSsIriKA/fIQIfIzGNus805nNa9Qt91pNUX3WFWNouE47CHlBB9rel
-        maqyn8618u1OIr5FZQpjtBkmCq16SVwivVnZFernknGS9rgAJn+4/1wc9xKfDMsc
-        KdcjDRBgvTZk1H8sIVIYRnv8T+1SqXKjglgem7sY9T2qTTW/b7gkVCrv7G4sfF23
-        zShZbGhGxHLSBwjGLH9SpFHHDxkqgHQgncw==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 0DU_CklKXEkm for <linux-kernel@vger.kernel.org>;
-        Mon, 16 May 2022 07:15:42 -0700 (PDT)
-Received: from [10.225.1.43] (unknown [10.225.1.43])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4L21Vw31VPz1Rvlc;
-        Mon, 16 May 2022 07:15:36 -0700 (PDT)
-Message-ID: <31e03f27-6610-c4e4-58b9-6b9db000a753@opensource.wdc.com>
-Date:   Mon, 16 May 2022 16:15:34 +0200
+        Mon, 16 May 2022 10:17:30 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667AF13CCC;
+        Mon, 16 May 2022 07:17:28 -0700 (PDT)
+Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L21Sn1vZGz67Mx2;
+        Mon, 16 May 2022 22:13:45 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 16:17:25 +0200
+Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
+ 2022 15:17:24 +0100
+Date:   Mon, 16 May 2022 15:17:22 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+CC:     <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
+        <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <acme@kernel.org>, <john.garry@huawei.com>,
+        <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mark.rutland@arm.com>, <joro@8bytes.org>,
+        <shameerali.kolothum.thodi@huawei.com>, <peterz@infradead.org>,
+        <mingo@redhat.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <linuxarm@huawei.com>
+Subject: Re: [PATCH v8 4/8] perf arm: Refactor event list iteration in
+ auxtrace_record__init()
+Message-ID: <20220516151722.0000693a@Huawei.com>
+In-Reply-To: <20220516125223.32012-5-yangyicong@hisilicon.com>
+References: <20220516125223.32012-1-yangyicong@hisilicon.com>
+        <20220516125223.32012-5-yangyicong@hisilicon.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [dm-devel] [PATCH v4 00/13] support non power of 2 zoned devices
-Content-Language: en-US
-To:     Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
-        naohiro.aota@wdc.com, Johannes.Thumshirn@wdc.com,
-        snitzer@kernel.org, dsterba@suse.com, jaegeuk@kernel.org,
-        hch@lst.de
-Cc:     jiangbo.365@bytedance.com, Jens Axboe <axboe@fb.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>, bvanassche@acm.org,
-        Chris Mason <clm@fb.com>, matias.bjorling@wdc.com,
-        gost.dev@samsung.com, linux-kernel@vger.kernel.org,
-        linux-nvme@lists.infradead.org, Josef Bacik <josef@toxicpanda.com>,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        dm-devel@redhat.com, Alasdair Kergon <agk@redhat.com>,
-        jonathan.derrick@linux.dev, Keith Busch <kbusch@kernel.org>,
-        Johannes Thumshirn <jth@kernel.org>,
-        linux-btrfs@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>
-References: <CGME20220516133922eucas1p1c891cd1d82539b4e792acb5d1aa74444@eucas1p1.samsung.com>
- <20220516133921.126925-1-p.raghav@samsung.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220516133921.126925-1-p.raghav@samsung.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/05/16 15:39, Pankaj Raghav wrote:
-[...]
-> - Patchset description:
-> This patchset aims at adding support to non power of 2 zoned devices in
-> the block layer, nvme layer, null blk and adds support to btrfs and
-> zonefs.
-> 
-> This round of patches **will not** support DM layer for non
-> power of 2 zoned devices. More about this in the future work section.
-> 
-> Patches 1-2 deals with removing the po2 constraint from the
-> block layer.
-> 
-> Patches 3-4 deals with removing the constraint from nvme zns.
-> 
-> Patches 5-9 adds support to btrfs for non po2 zoned devices.
-> 
-> Patch 10 removes the po2 constraint in ZoneFS
-> 
-> Patch 11-12 removes the po2 contraint in null blk
-> 
-> Patches 13 adds conditions to not allow non power of 2 devices in
-> DM.
+On Mon, 16 May 2022 20:52:19 +0800
+Yicong Yang <yangyicong@hisilicon.com> wrote:
 
+> From: Qi Liu <liuqi115@huawei.com>
+> 
+> Use find_pmu_for_event() to simplify logic in auxtrace_record__init().
+Possibly reword as 
 
-Not sure what is going on but I only got the first 4 patches and I do not see
-the remaining patches on the lists anywhere.
+"Add find_pmu_for_event() and use to simplify logic in
+auxtrace_record_init(). find_pmu_for_event() will be
+reused in subsequent patches."
 
+> 
+> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+FWIW as this isn't an area I know much about. It seems
+like a good cleanup and functionally equivalent.
 
--- 
-Damien Le Moal
-Western Digital Research
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+>  tools/perf/arch/arm/util/auxtrace.c | 53 ++++++++++++++++++-----------
+>  1 file changed, 34 insertions(+), 19 deletions(-)
+> 
+> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
+> index 5fc6a2a3dbc5..384c7cfda0fd 100644
+> --- a/tools/perf/arch/arm/util/auxtrace.c
+> +++ b/tools/perf/arch/arm/util/auxtrace.c
+> @@ -50,16 +50,32 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
+>  	return arm_spe_pmus;
+>  }
+>  
+> +static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
+> +					   int pmu_nr, struct evsel *evsel)
+> +{
+> +	int i;
+> +
+> +	if (!pmus)
+> +		return NULL;
+> +
+> +	for (i = 0; i < pmu_nr; i++) {
+> +		if (evsel->core.attr.type == pmus[i]->type)
+> +			return pmus[i];
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+>  struct auxtrace_record
+>  *auxtrace_record__init(struct evlist *evlist, int *err)
+>  {
+> -	struct perf_pmu	*cs_etm_pmu;
+> +	struct perf_pmu	*cs_etm_pmu = NULL;
+> +	struct perf_pmu **arm_spe_pmus = NULL;
+>  	struct evsel *evsel;
+> -	bool found_etm = false;
+> +	struct perf_pmu *found_etm = NULL;
+>  	struct perf_pmu *found_spe = NULL;
+> -	struct perf_pmu **arm_spe_pmus = NULL;
+> +	int auxtrace_event_cnt = 0;
+>  	int nr_spes = 0;
+> -	int i = 0;
+>  
+>  	if (!evlist)
+>  		return NULL;
+> @@ -68,24 +84,23 @@ struct auxtrace_record
+>  	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+>  
+>  	evlist__for_each_entry(evlist, evsel) {
+> -		if (cs_etm_pmu &&
+> -		    evsel->core.attr.type == cs_etm_pmu->type)
+> -			found_etm = true;
+> -
+> -		if (!nr_spes || found_spe)
+> -			continue;
+> -
+> -		for (i = 0; i < nr_spes; i++) {
+> -			if (evsel->core.attr.type == arm_spe_pmus[i]->type) {
+> -				found_spe = arm_spe_pmus[i];
+> -				break;
+> -			}
+> -		}
+> +		if (cs_etm_pmu && !found_etm)
+> +			found_etm = find_pmu_for_event(&cs_etm_pmu, 1, evsel);
+> +
+> +		if (arm_spe_pmus && !found_spe)
+> +			found_spe = find_pmu_for_event(arm_spe_pmus, nr_spes, evsel);
+>  	}
+> +
+>  	free(arm_spe_pmus);
+>  
+> -	if (found_etm && found_spe) {
+> -		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
+> +	if (found_etm)
+> +		auxtrace_event_cnt++;
+> +
+> +	if (found_spe)
+> +		auxtrace_event_cnt++;
+> +
+> +	if (auxtrace_event_cnt > 1) {
+> +		pr_err("Concurrent AUX trace operation not currently supported\n");
+>  		*err = -EOPNOTSUPP;
+>  		return NULL;
+>  	}
+
