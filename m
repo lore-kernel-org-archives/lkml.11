@@ -2,66 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47110C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 22:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F669C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 22:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347009AbiEPWx1 (ORCPT
+        id S1349123AbiEPWyk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 18:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43114 "EHLO
+        Mon, 16 May 2022 18:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiEPWxY (ORCPT
+        with ESMTP id S233809AbiEPWyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 18:53:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7792B41982
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 15:53:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A810B816A1
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 22:53:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68104C385B8;
-        Mon, 16 May 2022 22:53:18 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>, will@kernel.org
-Cc:     christophe.leroy@csgroup.eu, anshuman.khandual@arm.com,
-        akpm@linux-foundation.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        mike.kravetz@oracle.com, willy@infradead.org,
-        songmuchun@bytedance.com
-Subject: Re: [PATCH v3 0/2] Implement arm64 specific huge_ptep_get()
-Date:   Mon, 16 May 2022 23:53:15 +0100
-Message-Id: <165274157825.4033361.18236433604256004496.b4-ty@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1652496622.git.baolin.wang@linux.alibaba.com>
-References: <cover.1652496622.git.baolin.wang@linux.alibaba.com>
+        Mon, 16 May 2022 18:54:36 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14023419AA
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 15:54:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652741675; x=1684277675;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mA98VrZe/rix7Ydo+Yw58bcGuuP+5pWFws31EDCu4pc=;
+  b=Bg3ziZ0P58ra6PUrfWUvcKqaFaqVEuR2T2ipwShJMRFQOvatfUc0SJkO
+   ogQg8vhyggZjMhtv7v4M3UcaYDPBfEuFke32u4HlL7G3jvdt7rCBz/VJ3
+   MuWnCtyv5tIUT/3GIAD5qW+wHWlcEuBO5h/SUDm5ShBZCun/QHOJ6orgH
+   DMn1DQTbGP7u/jB3qpXf8xF4CB8NdyO3wE4Ixe0q17cD1GumvC4ypRvhy
+   IquD8K2rEQChbj4ySw64xIuaoUuAu4+wbGRixJv7EM+LFCw4sAYVT8A5w
+   A24CMZoWbvawQ9FS73akyIINLvagvcomyxDx2f8iGiKLn3pZreX0Mnyuq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="331602921"
+X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
+   d="scan'208";a="331602921"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 15:54:33 -0700
+X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
+   d="scan'208";a="544585021"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 15:54:33 -0700
+Date:   Mon, 16 May 2022 15:58:22 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Ning Sun <ning.sun@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 6/7] x86/boot/tboot: Move tboot_force_iommu() to Intel
+ IOMMU
+Message-ID: <20220516155822.6130dd03@jacob-builder>
+In-Reply-To: <20220516180628.GL1343366@nvidia.com>
+References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
+        <20220514014322.2927339-7-baolu.lu@linux.intel.com>
+        <20220516180628.GL1343366@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 08:55:56 +0800, Baolin Wang wrote:
-> As Mike pointed out [1], the huge_ptep_get() will only return one specific
-> pte value for the CONT-PTE or CONT-PMD size hugetlb on ARM64 system, which
-> will not take into account the subpages' dirty or young bits of a CONT-PTE/PMD
-> size hugetlb page. That will make us miss dirty or young flags of a CONT-PTE/PMD
-> size hugetlb page for those functions that want to check the dirty or
-> young flags of a hugetlb page. For example, the gather_hugetlb_stats() will
-> get inaccurate dirty hugetlb page statistics, and the DAMON for hugetlb monitoring
-> will also get inaccurate access statistics.
-> 
-> [...]
+Hi Jason,
 
-Applied to arm64 (for-next/misc), thanks!
+On Mon, 16 May 2022 15:06:28 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-[1/2] arm64/hugetlb: Use ptep_get() to get the pte value of a huge page
-      https://git.kernel.org/arm64/c/f0d9d79ec793
-[2/2] arm64/hugetlb: Implement arm64 specific huge_ptep_get()
-      https://git.kernel.org/arm64/c/bc5dfb4fd7bd
+> Unrelated, but when we are in the special secure IOMMU modes, do we
+> force ATS off? Specifically does the IOMMU reject TLPs that are marked
+> as translated?
+Yes, VT-d context entry has a Device TLB Enable bit, if 0, it means
+"Translation Requests (with or without PASID) and Translated Requests
+received and processed through this scalable-mode context-entry are
+blocked."
 
--- 
-Catalin
+Thanks,
 
+Jacob
