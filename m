@@ -2,114 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FEB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B5C6C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:38:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242252AbiEPKhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
+        id S242608AbiEPKiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbiEPKhk (ORCPT
+        with ESMTP id S229569AbiEPKiv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:37:40 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E1322BD9;
-        Mon, 16 May 2022 03:37:40 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GA1ZUm024127;
-        Mon, 16 May 2022 10:37:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=rFTakGOzsoG3Zd7IuRk7SId/Z4//vNBTvFgJnoCDjIk=;
- b=KSMzNf0fjobFZjzTlN3iIvlClqeyEaud/Pw3HJu0TTj8ttrO+uMR+Id6kMBMR3N0+/iK
- HKTzdKVdqI5hhYpD6g8D17O+lGAyE9rqVSEPhHAoNKzShi3z37b0xLCvqW8vxSBzUqWi
- 7A07QMUUUwR1QXbV2CelBNVMl/IRPeaOMRr3GweaBfwUrAQXoQ+ty1z1DzxHlo5DlL/m
- hiNZa7H1Vr1w8C2ZzF0U4Kzfnqx4dUdboVf/BS/LWnnIDqpYa5b9FS+G2fuWHSwWlIlE
- tzDyw2fALq1ynTYx1uZuEDtIuDEOXKUJMSgOinn66LYxVPxu4EjEyPdK0XNOMzWhNX3e TQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3mgdrmrd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:37:39 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24GAMNld001989;
-        Mon, 16 May 2022 10:37:39 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3mgdrmqu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:37:39 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24GAKeKR013724;
-        Mon, 16 May 2022 10:37:37 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma02fra.de.ibm.com with ESMTP id 3g2428hx5e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:37:36 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24GAbXgc29622754
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 16 May 2022 10:37:33 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AC527A4057;
-        Mon, 16 May 2022 10:37:33 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0811FA4055;
-        Mon, 16 May 2022 10:37:33 +0000 (GMT)
-Received: from [9.171.15.172] (unknown [9.171.15.172])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 16 May 2022 10:37:32 +0000 (GMT)
-Message-ID: <9aa8db91-a9f5-2b9a-7333-b87b826fdb81@linux.ibm.com>
-Date:   Mon, 16 May 2022 12:41:21 +0200
+        Mon, 16 May 2022 06:38:51 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635FF237D3;
+        Mon, 16 May 2022 03:38:50 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1EF2E21F6A;
+        Mon, 16 May 2022 10:38:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652697529; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mk2xKWahTV4e228Q8zDevZzG4IKrGzg2PozG1y8nurY=;
+        b=zSYEe+Se+AkB0F7e+Wtoo81oE96AKXPz5YbZE1Xmp79CG+nldY0OemHFVYsx/vLlExbhQx
+        PydBAyZ4W4diuTjDuZZniALdfRRdv9kl8IuL498b4+/A+UlLpnWZegtAiU5gTDnE8hNybI
+        Fh/fDdugYPDRE1lN6lmSbX1rIreyaZw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652697529;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mk2xKWahTV4e228Q8zDevZzG4IKrGzg2PozG1y8nurY=;
+        b=qaFD9ITYXdPoDEOuP5Z77ambsqWbSJUfcG0qR3OCTLvAq4l+bA/j+t3va0jiCV79u71PDS
+        VgZAEs5O6bIGnEAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 579E213ADC;
+        Mon, 16 May 2022 10:38:48 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id z/PBErgpgmI2LwAAMHmgww
+        (envelope-from <osalvador@suse.de>); Mon, 16 May 2022 10:38:48 +0000
+Date:   Mon, 16 May 2022 12:38:46 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v12 4/7] mm: hotplug: introduce
+ SECTION_CANNOT_OPTIMIZE_VMEMMAP
+Message-ID: <YoIptjs65NgT1/ed@localhost.localdomain>
+References: <20220516102211.41557-1-songmuchun@bytedance.com>
+ <20220516102211.41557-5-songmuchun@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 2/3] s390x: KVM: guest support for topology function
-Content-Language: en-US
-To:     Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, cohuck@redhat.com, david@redhat.com,
-        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
-        nrb@linux.ibm.com
-References: <20220506092403.47406-1-pmorel@linux.ibm.com>
- <20220506092403.47406-3-pmorel@linux.ibm.com>
- <ecf827ee-4b07-c999-064d-96d77607cf1c@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <ecf827ee-4b07-c999-064d-96d77607cf1c@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: nXkv0dJfz28-U7HtPUFyJzkgGKEpw7lW
-X-Proofpoint-ORIG-GUID: Z5aJkiufopv32RNqFF4fL4dLhkqHKpjL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-16_06,2022-05-16_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
- adultscore=0 spamscore=0 phishscore=0 priorityscore=1501 mlxscore=0
- lowpriorityscore=0 bulkscore=0 suspectscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205160062
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516102211.41557-5-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, May 16, 2022 at 06:22:08PM +0800, Muchun Song wrote:
+> --- a/mm/sparse.c
+> +++ b/mm/sparse.c
+> @@ -913,6 +913,13 @@ int __meminit sparse_add_section(int nid, unsigned long start_pfn,
+>  	ms = __nr_to_section(section_nr);
+>  	set_section_nid(section_nr, nid);
+>  	__section_mark_present(ms, section_nr);
+> +	/*
+> +	 * Mark whole section as non-optimizable once there is a subsection
+> +	 * whose vmemmap pages are allocated from alternative allocator. The
+> +	 * early section is always optimizable.
+> +	 */
+> +	if (!early_section(ms) && altmap)
+> +		section_mark_cannot_optimize_vmemmap(ms);
 
+Because no one expects those sections to be removed?
+IIRC, early_section + altmap only happened in case of sub-section pmem
+scenario? I guess my question is: can we really have early_sections coming
+from alternative allocator?
 
-On 5/12/22 13:41, Janosch Frank wrote:
-> On 5/6/22 11:24, Pierre Morel wrote:
->> We let the userland hypervisor know if the machine support the CPU
->> topology facility using a new KVM capability: KVM_CAP_S390_CPU_TOPOLOGY.
-> 
-> Nope, we indicate KVM's support which is based on the machine's support.
+I think this should be spelled out more.
 
-OK I reword.
-
-> 
-> On the same note: Shouldn't the CAP indication be part of the last 
-> patch? The resets are needed for a full support of this feature, no?
-
-Looks right, I will move it last.
 
 -- 
-Pierre Morel
-IBM Lab Boeblingen
+Oscar Salvador
+SUSE Labs
