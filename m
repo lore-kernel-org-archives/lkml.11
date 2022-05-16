@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0517BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D476C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241695AbiEPUO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
+        id S245592AbiEPUPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351060AbiEPUB5 (ORCPT
+        with ESMTP id S1351065AbiEPUB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCDE4757C;
-        Mon, 16 May 2022 12:57:47 -0700 (PDT)
+        Mon, 16 May 2022 16:01:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6765047545;
+        Mon, 16 May 2022 12:58:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0977C60EC4;
-        Mon, 16 May 2022 19:57:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19BD4C34100;
-        Mon, 16 May 2022 19:57:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25C9AB81611;
+        Mon, 16 May 2022 19:58:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62A0AC385AA;
+        Mon, 16 May 2022 19:57:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731066;
-        bh=I2eZm7HX5itsONxv7rc4LaVSnE80gzkI7KWWDSxNPnk=;
+        s=korg; t=1652731078;
+        bh=YzW8u20XqcllyETUghHYrsk3AT8VdfEGOpmwGCOwdKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2sSwCjlL3tPxpkD2TgRJ+CaFaDa4VMhHrEjzxx88tsErU57be9XUXL7lL/sPL2I4Q
-         uYNfo/glhopr9V+diM0orBrNCYAOXA9QEV4ZrI+apsOMI0phPLUAJD6CJfVPxROz1h
-         +bIjOnf64cvxICNc32r3OuiK0u8kXA3U/NWBiHko=
+        b=So1n9EsPsa8SVDjaRfPwaiGFmgfA0RivJcja1JIQkIgTRwnFavPDxesklhg5GXOU/
+         y6krUhlo4tqdfyZhGnQtuEXxed6F4EODwlvCpC1kPiRZaAQN6+DAiFId0Bt81C+WBr
+         +QwODRLiXIGGdw+AY9/ExAT4YnVoik9WtR8OaERs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hui Tang <tanghui20@huawei.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 041/114] drm/vc4: hdmi: Fix build error for implicit function declaration
-Date:   Mon, 16 May 2022 21:36:15 +0200
-Message-Id: <20220516193626.674038302@linuxfoundation.org>
+        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        Martin Krastev <krastevm@vmware.com>
+Subject: [PATCH 5.17 096/114] drm/vmwgfx: Disable command buffers on svga3 without gbobjects
+Date:   Mon, 16 May 2022 21:37:10 +0200
+Message-Id: <20220516193628.230842118@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -49,54 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hui Tang <tanghui20@huawei.com>
+From: Zack Rusin <zackr@vmware.com>
 
-[ Upstream commit 6fed53de560768bde6d701a7c79c253b45b259e3 ]
+commit 21d1d192890ced87f2f04f8f4dea92406e0b162a upstream.
 
-drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_connector_detect’:
-drivers/gpu/drm/vc4/vc4_hdmi.c:228:7: error: implicit declaration of function ‘gpiod_get_value_cansleep’; did you mean ‘gpio_get_value_cansleep’? [-Werror=implicit-function-declaration]
-   if (gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio))
-       ^~~~~~~~~~~~~~~~~~~~~~~~
-       gpio_get_value_cansleep
-  CC [M]  drivers/gpu/drm/vc4/vc4_validate.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_v3d.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_validate_shaders.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_debugfs.o
-drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_bind’:
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:23: error: implicit declaration of function ‘devm_gpiod_get_optional’; did you mean ‘devm_clk_get_optional’? [-Werror=implicit-function-declaration]
-  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
-                       ^~~~~~~~~~~~~~~~~~~~~~~
-                       devm_clk_get_optional
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: error: ‘GPIOD_IN’ undeclared (first use in this function); did you mean ‘GPIOF_IN’?
-  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
-                                                           ^~~~~~~~
-                                                           GPIOF_IN
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: note: each undeclared identifier is reported only once for each function it appears in
-cc1: all warnings being treated as errors
+With very limited vram on svga3 it's difficult to handle all the surface
+migrations. Without gbobjects, i.e. the ability to store surfaces in
+guest mobs, there's no reason to support intermediate svga2 features,
+especially because we can fall back to fb traces and svga3 will never
+support those in-between features.
 
-Fixes: 6800234ceee0 ("drm/vc4: hdmi: Convert to gpiod")
-Signed-off-by: Hui Tang <tanghui20@huawei.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220510135148.247719-1-tanghui20@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+On svga3 we wither want to use fb traces or screen targets
+(i.e. gbobjects), nothing in between. This fixes presentation on a lot
+of fusion/esxi tech previews where the exposed svga3 caps haven't been
+finalized yet.
+
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Fixes: 2cd80dbd3551 ("drm/vmwgfx: Add basic support for SVGA3")
+Cc: <stable@vger.kernel.org> # v5.14+
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-5-zack@kde.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 3a1626f261e5..3f651364ed7a 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -38,6 +38,7 @@
- #include <drm/drm_scdc_helper.h>
- #include <linux/clk.h>
- #include <linux/component.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/of_address.h>
- #include <linux/of_gpio.h>
--- 
-2.35.1
-
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
+@@ -675,11 +675,14 @@ int vmw_cmd_emit_dummy_query(struct vmw_
+  */
+ bool vmw_cmd_supported(struct vmw_private *vmw)
+ {
+-	if ((vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
+-				  SVGA_CAP_CMD_BUFFERS_2)) != 0)
+-		return true;
++	bool has_cmdbufs =
++		(vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
++				      SVGA_CAP_CMD_BUFFERS_2)) != 0;
++	if (vmw_is_svga_v3(vmw))
++		return (has_cmdbufs &&
++			(vmw->capabilities & SVGA_CAP_GBOBJECTS) != 0);
+ 	/*
+ 	 * We have FIFO cmd's
+ 	 */
+-	return vmw->fifo_mem != NULL;
++	return has_cmdbufs || vmw->fifo_mem != NULL;
+ }
 
 
