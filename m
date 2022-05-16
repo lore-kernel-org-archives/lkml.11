@@ -2,101 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA93CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233237AbiEPPDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 11:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
+        id S244893AbiEPPFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 11:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244889AbiEPPDe (ORCPT
+        with ESMTP id S230343AbiEPPEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 11:03:34 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43183B3F7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:03:32 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id a5so17139670wrp.7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:03:32 -0700 (PDT)
+        Mon, 16 May 2022 11:04:55 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F543B552
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:04:54 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id z2so29272220ejj.3
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:04:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lPcoNO1j7RBUVdLDmW4cgoYiT4HTUVa7PDPtyl15FqY=;
-        b=eMwIf/WdD+xUFg7sdlHf5jtEkLN7vjUXCx+87mSlVcar7bIXsEfUCJTzQ1ATm+vFz5
-         FBJx/CPJZ6AGZDILpK9Kpa4OolZ34mcGsC8Spt+I7wPjclsLSOHPZ//fwCOSCSIuTIW7
-         jzWjVyI9fIJduPh1z5it/q7kHd8fQhyhhqT4AlkhpKbz49Va9/+3IV/hwZdQCQ2qB3BU
-         OhD3x0jIh2oSc9Cuhae9VdBXNyHhmliDZxWn5PqPdZKF/Zva/QRkJk0mAZTSz25hNsoq
-         O6P1GEXdmM7AzqdKEl5odHUbvv4CJPIu4J3c1uRqJjSl1QVwIEFu3uiRK6O9+MEJSnAy
-         79pQ==
+        d=monstr-eu.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LyXKrgjMktSgVUjFq464Do4yMi75SR7RvjCwjaKmy0g=;
+        b=Gg1mqyvPBsnrpB+EzHkpLRKDl6qoJVoQD2k0cENdM+HhfUcTCEzq5mZP91Xe7AaDRC
+         fcP3gPIAR6PGocI+0OgIOpLjQKGZc+0FCw6g/Nq4+rqDVa7wmV6UatqbsWvVJztwnQmH
+         oxKbR0KWV1pD9xExVc+jGYe5JMDhCJoOYN7fjc6z7CdRsINGm/zV9GBErbIy05eBACza
+         9nOK7HjzY+MH9U+NwdtsSNFCgFR1LLEUklCkjbvmzU9BwKjRBJxjXIj8WugGTPgc57RC
+         PGH4z3PjC2JP7d4zmUHdxqb9qH49KSooGLbvRe7iViOAlayHJmwP5Zh1Sr3qPTtZhHsl
+         97Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lPcoNO1j7RBUVdLDmW4cgoYiT4HTUVa7PDPtyl15FqY=;
-        b=k1jk7aV/UEocNrO642YS1UGTDm8rtdgHfJUb6LggwEbT3nYE21F/oY4+/VOuOCFd94
-         LluvRXFfWOvt1/5wwB0V5FJ3DXP+Y8qbBIJuw2Gytt51kveMIrC11zInHlkReMuc5x5Q
-         xp94jQdmPLOwdnuj5at52s3L6NEHDKEHQj/YOWLr4g/QAjLZljDcZpkTba0T+D25BXUE
-         9TKsXJFzy/3zB8FuiJKv53DNHp90Fdzi7TWGSToCMWQSkIypt3sEJQ5IsRyO77FO0Z5S
-         NLnOfgH1iP048MSeQE7epqx4+yT+PcSPfQFVwL3anKmRCQJmlMdZuQ2MAHJNP7Q2WELI
-         Xkng==
-X-Gm-Message-State: AOAM532tkRYiegp/2kknfkKSA5nU9lgTXIBnpRJIkQ2pTOlJlBEhRfjP
-        O2twF3wRPJqRw/9U0qTuXr5a80+aIO/Jj3o+BbooDQ==
-X-Google-Smtp-Source: ABdhPJwAiBWCzE3Q39L93qd73JMV1CCwtR75UcbTglNeEMc+h2FSFnSzvZd6HaawUGDnSDimqucIp1PajNZ8h/8l+TM=
-X-Received: by 2002:a5d:6d0b:0:b0:20c:4ecb:1113 with SMTP id
- e11-20020a5d6d0b000000b0020c4ecb1113mr14301059wrq.203.1652713411223; Mon, 16
- May 2022 08:03:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LyXKrgjMktSgVUjFq464Do4yMi75SR7RvjCwjaKmy0g=;
+        b=PR1gCTgufdi0tbGc3dc0fIVLA20m1jW2lujnZUJCXF+wf7wr7CucxP6juKQSIfS8IY
+         nhgGDWy7Haj970a8bM/CMPQlC1VhjlqGwISJvd6ZgtAzHowr85W9YHa71771cws/Rns2
+         Ik/kr8gWxDTcbg5LKjBs0xtwOMwKkqq2Ml7RGm0ZErXz2Og8pZN+vXa9D84yvGdKJeDP
+         OPa8YxBaHG0wtmB3HosA17T9hiHZhoG4fC6utsdei7NjHECdNen7olioEpw58a/apCSB
+         5Pibz8c2oMTumkKAAmvYb45wFBBV6Zp9Ggv+Z25OM4qGLBxRsEQhVAaeQmYCaas1OH6M
+         4JFQ==
+X-Gm-Message-State: AOAM533b8ZIq4VQHT8hPOtfUtvTlX0Pa7WFSMCmUrdsx+A2rem7PI4CM
+        IBa14xeA+UvUcY81n8c7JTRa6dhS3ptBLw==
+X-Google-Smtp-Source: ABdhPJyTxgHerr7fV6V3IK7Hb1dVuydAjODaB1KQ3psAilAgT3bg48nHYOsy9+6WCACpp2Uevh/2Rw==
+X-Received: by 2002:a17:907:d22:b0:6f4:8766:2042 with SMTP id gn34-20020a1709070d2200b006f487662042mr15762170ejc.259.1652713493202;
+        Mon, 16 May 2022 08:04:53 -0700 (PDT)
+Received: from localhost ([2a02:768:2307:40d6::f9e])
+        by smtp.gmail.com with ESMTPSA id p23-20020a056402045700b0042aad9edc9bsm2337958edw.71.2022.05.16.08.04.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 16 May 2022 08:04:52 -0700 (PDT)
+From:   Michal Simek <monstr@monstr.eu>
+X-Google-Original-From: Michal Simek <michal.simek@amd.com>
+To:     linux-kernel@vger.kernel.org, monstr@monstr.eu,
+        michal.simek@xilinx.com, git@xilinx.com
+Cc:     David Heidelberg <david@ixit.cz>,
+        Durga Challa <vnsl.durga.challa@xilinx.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Michael Tretter <m.tretter@pengutronix.de>,
+        Mounika Grace Akula <mounika.grace.akula@xilinx.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Hancock <robert.hancock@calian.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] arm64: xilinx: Fix opp-table-cpu
+Date:   Mon, 16 May 2022 17:04:51 +0200
+Message-Id: <3297772b58953e4afd91f7a4bd845713e36e1e27.1652713489.git.michal.simek@amd.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-References: <20220405183953.2094007-1-pceballos@google.com>
- <nycvar.YFH.7.76.2204210947590.30217@cbobk.fhfr.pm> <CAKdAkRQ7yxFFGJg41UxptxapKiP4bmHsfw7dRNE+LPzs1PRk=A@mail.gmail.com>
- <nycvar.YFH.7.76.2205121252090.28985@cbobk.fhfr.pm> <CAO9JgFwA5ZhwOOY0cU3HpMOV69CTumQ50zEgU6SPNAF0zDbCGg@mail.gmail.com>
- <Yn2OlQAa9I++N80B@penguin>
-In-Reply-To: <Yn2OlQAa9I++N80B@penguin>
-From:   Pablo Ceballos <pceballos@google.com>
-Date:   Mon, 16 May 2022 08:03:17 -0700
-Message-ID: <CAO9JgFwR1kjaPawL9YcSCuy5PFKKtFx+4o0t1B7SBkq9xTEGHA@mail.gmail.com>
-Subject: Re: [PATCH] HID: Driver for Google Hangouts Meet Speakermic
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 3:48 PM Dmitry Torokhov
-<dmitry.torokhov@gmail.com> wrote:
->
-> On Thu, May 12, 2022 at 03:35:00PM -0700, Pablo Ceballos wrote:
-> > On Thu, May 12, 2022 at 3:53 AM Jiri Kosina <jikos@kernel.org> wrote:
-> > > On Thu, 12 May 2022, Dmitry Torokhov wrote:
-> > > > I am curious, could not this be achieved without a kernel driver by
-> > > > simply using udev to map this usage code to KEY_RESERVED?
-> > >
-> > > Hmm, good point, using KEY_RESERVED mapping to achieve the key being
-> > > actually ignored didn't immediately occur to me.
-> > >
-> > > Pablo, could you please verify that it behaves in the expected way, and
-> > > confirm that we could drop the 'driver' in favor of udev rule?
-Jiri, this driver can be dropped from 5.19. The udev rule works just as well.
+OPP table name now should start with "opp-table" and OPP entries
+shouldn't contain commas and @ signs in accordance to the new schema
+requirement.
 
-> >
-> > I think I've achieved the same result by adding the following to udev
-> > hwdb. Dmitry, is this what you had in mind, or is there a better way
-> > of doing this?
-> >
-> > evdev:input:b0003v18D1p8001*
-> >  KEYBOARD_KEY_b002f=reserved
->
-> No, that is exactly what I had in mind, thank you. Please submit this
-> entry to upstream systemd/udev project (and we can cherry-pick it into
-> our udev as well).
-The pull request is here: https://github.com/systemd/systemd/pull/23372
+The same change was done by commit c6d4a8977598 ("ARM: tegra: Rename CPU
+and EMC OPP table device-tree nodes"), commit ffbe853a3f5a ("ARM: dts:
+sunxi: Fix OPPs node name") or commit b7072cc5704d ("arm64: dts: qcom:
+qcs404: Rename CPU and CPR OPP tables").
 
->
-> In general I think we should try to avoid trivial "fixup" HID drivers if
-> it is possible. I also wondered if we could be supplying fixed-up HID
-> descriptors via request_firmware() for HID devices.
+Signed-off-by: Michal Simek <michal.simek@amd.com>
+---
 
-Pablo
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
+index f86b92071367..7a332a53815a 100644
+--- a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
++++ b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
+@@ -76,7 +76,7 @@ CPU_SLEEP_0: cpu-sleep-0 {
+ 		};
+ 	};
+ 
+-	cpu_opp_table: cpu-opp-table {
++	cpu_opp_table: opp-table-cpu {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 		opp00 {
+-- 
+2.36.0
+
