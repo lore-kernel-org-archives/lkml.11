@@ -2,82 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3827BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347812AbiEPVCH (ORCPT
+        id S1348654AbiEPVEt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 17:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        Mon, 16 May 2022 17:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349433AbiEPVBV (ORCPT
+        with ESMTP id S1349085AbiEPVEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 17:01:21 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A590457BC;
-        Mon, 16 May 2022 13:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=EbBaokCH/n+lu1lhLbT43j8JHvfW0Dz6fbZSBx6scuQ=; b=cck+N1iLqqxU1fpBU5JRS0N1B6
-        eW8XgJDTLybclIC8HWUHWK+x40eUEu8VMVwSSmlyw+onOPHMk6103otDgCjr7r/gj6AxMt2JG6zUS
-        FW4hJRDCt9gi/Y74jHnj0bbThZ+7LKrvpptAvCL55WgUl7ZD6jSPLOk/J4LOT4mrFcg6jtgO57sZt
-        hoQHbJApaKSta71c1RKZSudOrac98MGT5V/n0coOYJFLWdl32rXWvgxWcG33eetfT5yIc3RruifoO
-        ZrNvjqUXgCWB5KIdVFsLiQqcqKbl6b+c2YyIDFV+k68y0msMUu03cxyi6w0nAy8xLqVwa1jdYBQwI
-        0Zpgu9bA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nqhT5-00ADs8-0T; Mon, 16 May 2022 20:37:27 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 45A20980DCC; Mon, 16 May 2022 22:37:23 +0200 (CEST)
-Date:   Mon, 16 May 2022 22:37:23 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH v2 20/21] x86: Add support for CONFIG_CFI_CLANG
-Message-ID: <20220516203723.GN76023@worktop.programming.kicks-ass.net>
-References: <20220513202159.1550547-1-samitolvanen@google.com>
- <20220513202159.1550547-21-samitolvanen@google.com>
- <YoIfWENLV1AR2ijj@hirez.programming.kicks-ass.net>
- <CABCJKucXA2jbTc9TF1mLUsEDKu52t71tzxpnsGOXY3_ks+W4Bg@mail.gmail.com>
- <20220516183047.GM76023@worktop.programming.kicks-ass.net>
- <CABCJKudmrBOkoDvDPOA-aEyrs9evHPWpzMpDZ10n8vXDBRdCxQ@mail.gmail.com>
+        Mon, 16 May 2022 17:04:33 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A405C766;
+        Mon, 16 May 2022 13:40:09 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id u3so2741715qta.8;
+        Mon, 16 May 2022 13:40:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hKBcyX3Ppfu6XQjIjRejfr2DzYtK4WWEcAa5qty3cHg=;
+        b=oukrXqAAZdBan6tdF/K2D/kCxUwWgPeZLEnHGfR+Ln2zBB1SI+qLLEfyNCPPXVMh22
+         qjUN8mwA7XKNfDNOaSMbYwhl8TJQOibuS9mVrzonAfGAO/iqdUCpyVD7K6RYYt6Ck+09
+         5I0enB+WW4r5ELpXeKMMneOKTFZK9+adctc1HrJ/lqyJ0JqYaBrrnZfsP4R8kybDxWNY
+         cY+mKVgXNFoEggevYW+sqUyma+gTEVo8vb7W7f/KFatUHvASyI950xDNhsrgxw5WnpKh
+         2pNj5+4jAfv5YMPMByRTCn6tNxzFhWmWAonNqG+6rB5jM/Qr5rcj4nZzcbgnRhsSq9x6
+         tnxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hKBcyX3Ppfu6XQjIjRejfr2DzYtK4WWEcAa5qty3cHg=;
+        b=xrEV1G3My8xR/PpbNq6g1RiYbflL9NHySwQmRtUCVTXEq0C44pl6xDFzvQ9Btrjas/
+         vTBOmfwSK1Ejr28HZgdl+5C1qoJX+Kk+t2bqECX7M3vYvsjLWHlXZIX5wjvkYXqlmRH2
+         R1jxDkfzlydGDEqB+iI3STsO+jVFRUgw3rVOqWzu8PX1gyMEV9nk6zgc6YJ5px5WxXyi
+         sSgxGp4RxzY2LCUHbVpuzh6nwOToXBk5xLJKYzwYeuKMvBu8ew5CZknT6aYUlQpnawjU
+         c24jslWxFmU9yCeQGrgmeJHMkWul2SS5aE1W4D6lXRgF93VtZOLIg/eyuiAHUp2XiKUF
+         jVuw==
+X-Gm-Message-State: AOAM531De2ZZ1mSdncqY4isVzBiKmAE+apIFkJBnmhegIuoFHXke7Rt+
+        3PGdmCX8EjJwk2CMHmI8/I7FLfxtvTfcWQ==
+X-Google-Smtp-Source: ABdhPJyYvbcv8J+a4WY5fmCWaSGt/mt3uew74uDkCuyrQ24GIBr26QFwVCeQkFKfAyRihFdydtDalw==
+X-Received: by 2002:ac8:5f06:0:b0:2f3:cbe5:1e1d with SMTP id x6-20020ac85f06000000b002f3cbe51e1dmr16773074qta.389.1652733607848;
+        Mon, 16 May 2022 13:40:07 -0700 (PDT)
+Received: from grrm.lan (bras-base-mtrlpq4809w-grc-17-70-53-205-21.dsl.bell.ca. [70.53.205.21])
+        by smtp.gmail.com with ESMTPSA id k67-20020a378846000000b006a00fabde68sm6364016qkd.10.2022.05.16.13.40.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 13:40:07 -0700 (PDT)
+From:   Yannick Brosseau <yannick.brosseau@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
+        olivier.moysan@foss.st.com
+Cc:     paul@crapouillou.net, linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Yannick Brosseau <yannick.brosseau@gmail.com>
+Subject: [PATCH v2 2/2] iio: adc: stm32: Fix IRQs on STM32F4 by removing custom spurious IRQs message
+Date:   Mon, 16 May 2022 16:39:39 -0400
+Message-Id: <20220516203939.3498673-3-yannick.brosseau@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516203939.3498673-1-yannick.brosseau@gmail.com>
+References: <20220516203939.3498673-1-yannick.brosseau@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABCJKudmrBOkoDvDPOA-aEyrs9evHPWpzMpDZ10n8vXDBRdCxQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 12:39:19PM -0700, Sami Tolvanen wrote:
+The check for spurious IRQs introduced in 695e2f5c289bb assumed that the bits
+in the control and status registers are aligned. This is true for the H7 and MP1
+version, but not the F4. The interrupt was then never handled on the F4.
 
-> > > With the current compiler patch, LLVM sets up function arguments after
-> > > the CFI check. if it's a problem, we can look into changing that.
-> >
-> > Yes, please fix that. Again see that same patch for why this is a
-> > problem. Objtool can trivially find retpoline calls, but finding this
-> > kCFI gadget is going to be hard work. If you ensure they're
-> > unconditionally stuck together, then the problem goes away find one,
-> > finds the other.
-> 
-> You can use .kcfi_traps to locate the check right now, but I agree,
-> it's not quite ideal.
+Instead of increasing the complexity of the comparison and check each bit specifically,
+we remove this check completely and rely on the generic handler for spurious IRQs.
 
-Oohh, indeed. Looking at that, I think .kcfi_traps would be better as
-relative offsets; eg. 'addr = (void*)s + *s' like. Halfs the amount of
-storage needed for it.
+Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
+Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
+---
+ drivers/iio/adc/stm32-adc.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-Also, that code can use a few {} extra.
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index a68ecbda6480..8c5f05f593ab 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -1407,7 +1407,6 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
+ 	struct stm32_adc *adc = iio_priv(indio_dev);
+ 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
+ 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
+-	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
+ 
+ 	/* Check ovr status right now, as ovr mask should be already disabled */
+ 	if (status & regs->isr_ovr.mask) {
+@@ -1422,11 +1421,6 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
+ 		return IRQ_HANDLED;
+ 	}
+ 
+-	if (!(status & mask))
+-		dev_err_ratelimited(&indio_dev->dev,
+-				    "Unexpected IRQ: IER=0x%08x, ISR=0x%08x\n",
+-				    mask, status);
+-
+ 	return IRQ_NONE;
+ }
+ 
+@@ -1436,10 +1430,6 @@ static irqreturn_t stm32_adc_isr(int irq, void *data)
+ 	struct stm32_adc *adc = iio_priv(indio_dev);
+ 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
+ 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
+-	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
+-
+-	if (!(status & mask))
+-		return IRQ_WAKE_THREAD;
+ 
+ 	if (status & regs->isr_ovr.mask) {
+ 		/*
+-- 
+2.36.1
+
