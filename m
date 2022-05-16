@@ -2,114 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC970C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 07:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 536BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 07:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241292AbiEPHlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 03:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41068 "EHLO
+        id S241222AbiEPHoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 03:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241235AbiEPHlK (ORCPT
+        with ESMTP id S232877AbiEPHn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 03:41:10 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04C82600
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 00:41:09 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id f10so1766274pjs.3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 00:41:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zv3IxfM9rqsBN5giYrSVliQlXB5yWJw2YJUUlPgHgY0=;
-        b=KIkAtTgwPJvQoPRr9kQ1tZV/jSmVC6GHNojs95fbMqX43hgUvjQWWZOS9+8+ZGBfWO
-         OhVjk5d6YCV+uouSxT1R+5DnYjyBpfgExMMczeeDVuMuQhsuEQZb7e4gTzztpnf6fjDL
-         34cC8mthpS7+5hLRZGFcSPXogWc9ceMjqDHSPuRII6IkFArZRMGIGbZQertEZYAUEnU6
-         G/kQShRY/7XBpLH57e6ZCkbN2VQpW8EnpTg2gEcjXk4qxFPAK1hF6w9ISXDpC7jDSYcJ
-         Nh79hC9zAUp0pK604fL34fe84p18BzkAlkbv2QvseTctH8DF7Ebq0aUXDPRtVzYkN95B
-         JCkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zv3IxfM9rqsBN5giYrSVliQlXB5yWJw2YJUUlPgHgY0=;
-        b=oWBor3PYvy8GohhOkoVLPMgxeJv7MPobi0PkONNgDRK/HMYYIXkWAQmb+Kvy0LB3LB
-         mQK9Cz0iUMGiJa2Fm+sSj94t6Jj769xNEp69dPVy/F/SqzzhZnJVylmlNDLCbHJvPol+
-         5bpOe4+A75EfgYmnNyedS+g0RaAKGMJ5ihGYfwKeMC4exRCX9QZt92zHatM55uONNGWm
-         HudHwVgkArsB0Kxpff1b59DCXAMwuyext8bVfwokv0yCUEfTEY53Xl7OtL3hrf4smI4T
-         LrWUXEeVdp5GjY7SEKSLfea5mpXvK1xYSFPtZ4l2ATcd66gFTE/Jwn6BovbrzcE+Vx1u
-         KT+g==
-X-Gm-Message-State: AOAM532T26SMfLVpaTkx8d0MZnzmj0vZeoLTz+Qs1Vo+Xu3mtJgAHrTf
-        Gw+G7u0FpY1eAVEdHXFALvk=
-X-Google-Smtp-Source: ABdhPJxRzUTJ5CbOjcZmRtE5V/PlMxtaQrKw43ndH8TAqTmZnio7gI8cDrdKjb+E+wlB30I3g0/9lg==
-X-Received: by 2002:a17:902:e747:b0:161:822b:5fa9 with SMTP id p7-20020a170902e74700b00161822b5fa9mr2961831plf.8.1652686868992;
-        Mon, 16 May 2022 00:41:08 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id q11-20020a056a00150b00b0050dc76281d9sm5698833pfu.179.2022.05.16.00.41.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 00:41:08 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Nishanth Menon <nm@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Keerthy <j-keerthy@ti.com>, Tony Lindgren <tony@atomide.com>,
-        Dave Gerlach <d-gerlach@ti.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] soc: ti: pm33xx: Fix refcount leak in am33xx_pm_rtc_setup
-Date:   Mon, 16 May 2022 11:41:00 +0400
-Message-Id: <20220516074100.30599-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 16 May 2022 03:43:58 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFBF248E6
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 00:43:57 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id C2D5B21B49;
+        Mon, 16 May 2022 07:43:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652687035; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KaNoTPvq+cdMQ64tgkHR/Rr59SqJYGviHcgzR10l/JA=;
+        b=BrjXr+sztJBBXyjjEMP3ZxsHZudB2NoXOkEHQ7fR/ZoS/K9ygDdMWJA1W8DLw5in/9dCC5
+        cNr/M5GnmcQ7SSN2A1Om0z051BgBb+jrAKIlewgYpfBpzHMvA/EsYuXH777cUryT/3LECI
+        fAfrwvTwrwP7ocNCDkMirdI5LnOPSho=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652687035;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KaNoTPvq+cdMQ64tgkHR/Rr59SqJYGviHcgzR10l/JA=;
+        b=QwbSGwuyPY8E5s+IU04u7bzlrmrKeku8RXHKXGiksskrZ749wJxyrtmmTipaXsCpwXDwSa
+        dOmQ0hq1WHEZt7Bg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 349FB2C141;
+        Mon, 16 May 2022 07:43:55 +0000 (UTC)
+Date:   Mon, 16 May 2022 09:43:55 +0200
+Message-ID: <s5h4k1pc478.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Andy Chi <andy.chi@canonical.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Jeremy Szu <jeremy.szu@canonical.com>,
+        Werner Sembach <wse@tuxedocomputers.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Kailang Yang <kailang@realtek.com>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Elia Devito <eliadevito@gmail.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: hda/realtek: fix right sounds and mute/micmute LEDs for HP machine
+In-Reply-To: <20220513121648.28584-1-andy.chi@canonical.com>
+References: <20220513121648.28584-1-andy.chi@canonical.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_node_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+On Fri, 13 May 2022 14:16:45 +0200,
+Andy Chi wrote:
+> 
+> * The HP EliteBook 630 is using ALC236 codec which used 0x02 to control mute LED
+>   and 0x01 to control micmute LED. Therefore, add a quirk to make it works.
+> 
+> Signed-off-by: Andy Chi <andy.chi@canonical.com>
 
-Fixes: 5a99ae0092fe ("soc: ti: pm33xx: AM437X: Add rtc_only with ddr in self-refresh support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/soc/ti/pm33xx.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Thanks, applied now.
 
-diff --git a/drivers/soc/ti/pm33xx.c b/drivers/soc/ti/pm33xx.c
-index 7bab4bbaf02d..b4d6e6ad85f4 100644
---- a/drivers/soc/ti/pm33xx.c
-+++ b/drivers/soc/ti/pm33xx.c
-@@ -445,8 +445,10 @@ static int am33xx_pm_rtc_setup(void)
- 	if (of_device_is_available(np)) {
- 		/* RTC interconnect target module clock */
- 		rtc_fck = of_clk_get_by_name(np->parent, "fck");
--		if (IS_ERR(rtc_fck))
--			return PTR_ERR(rtc_fck);
-+		if (IS_ERR(rtc_fck)) {
-+			error = PTR_ERR(rtc_fck);
-+			goto err_node_put;
-+		}
- 
- 		rtc_base_virt = of_iomap(np, 0);
- 		if (!rtc_base_virt) {
-@@ -479,6 +481,7 @@ static int am33xx_pm_rtc_setup(void)
- 	} else {
- 		pr_warn("PM: no-rtc available, rtc-only mode disabled.\n");
- 	}
-+	of_node_put(np);
- 
- 	return 0;
- 
-@@ -486,7 +489,8 @@ static int am33xx_pm_rtc_setup(void)
- 	iounmap(rtc_base_virt);
- err_clk_put:
- 	clk_put(rtc_fck);
--
-+err_node_put:
-+	of_node_put(np);
- 	return error;
- }
- 
--- 
-2.25.1
 
+Takashi
