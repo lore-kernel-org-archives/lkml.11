@@ -2,107 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 323E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 003F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344377AbiEPRjy (ORCPT
+        id S1344369AbiEPRj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 13:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
+        Mon, 16 May 2022 13:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344248AbiEPRjm (ORCPT
+        with ESMTP id S1344346AbiEPRjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 13:39:42 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B94036B42;
-        Mon, 16 May 2022 10:39:41 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id l16so19492027oil.6;
-        Mon, 16 May 2022 10:39:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4QlC2UOYMPKKudwLjLWBF40eX+oeG8Yvuxzp6LWYy94=;
-        b=lN5q6KoGnMVKq8KOjsovYc0Ea9Rz2wCpQaF48i5eMxFhf3pMQhJODDGAvdMNRqWL2n
-         1kuhXkOG7R5wJOM/NAWz7J4UIEiIRaBQzILAI5v2Su+zwhL0GL/t0lZWPP9pPWi9X5w1
-         TRmLsarTXjfHK8MzG/jFj58z06sJ6O70HdWHKxHpNJMABQaWzn4ySx0XB977Cqy6L+Ms
-         68LQaNkjgqCJaydfqryJPKMsb++N4qxHLOKJWhJR9AvA7TVZ0iSC6ytp/1cGqiViasIS
-         jDUUNTS1nVh0xyNxGTDlH8awrM/IWxq4zVYrTKv/Qp1yO7yesfSIN0YJWuUzfIiCwqMP
-         08PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4QlC2UOYMPKKudwLjLWBF40eX+oeG8Yvuxzp6LWYy94=;
-        b=PrrEPO3UnuNlR/bEApMOP3sHY/XbqzTnnXMP3jqLlb1LD31D7cdZHHhseJIMjLs6pj
-         iideI1NSAyEWkx2dyf4v0zuh5lCwl7R3/ZMTcR1I01DYKDWfISJT7BNWM1ng3llrcYrH
-         93R3ITf79Wdi525htb2D9RYrhx5BsB1ypPg0bC8v2kly1NmpZOiYiR7pdlpqYhTi+3y9
-         bD2T/1b1iMWn0VgHlX6Y6mYcBCI2JPz4kcYLDYvUU9fIpYrcMSFxb2GsXMDSbCRFq3JF
-         W6N/2+eA6Wy+iUyvP7GX7MgeMcJaUGUAmmk4JwqAbKUIl7+UaJWgLCbB+uvyHAUp1h7B
-         mJzQ==
-X-Gm-Message-State: AOAM533EBZ0Lq1VQhPu17HpWUaecnvIyrIqqwrtptbnMEf6HydQJ7UTR
-        jHt2RQOJrzCEAKjTjIQxB8Y=
-X-Google-Smtp-Source: ABdhPJygSNZJhhtbXnU4GGWyPg8tyF+H+RqlJkjIxzimnUGLIq1vRXiWXdwn9GweAfMMT4GBb11GiQ==
-X-Received: by 2002:a05:6808:2117:b0:326:4798:88cc with SMTP id r23-20020a056808211700b00326479888ccmr14071383oiw.78.1652722780974;
-        Mon, 16 May 2022 10:39:40 -0700 (PDT)
-Received: from localhost ([199.180.249.178])
-        by smtp.gmail.com with ESMTPSA id o129-20020acabe87000000b003264e122a9asm4002748oif.54.2022.05.16.10.39.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 10:39:40 -0700 (PDT)
-From:   bh1scw@gmail.com
-To:     tj@kernel.org, axboe@kernel.dk
-Cc:     cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        Fanjun Kong <bh1scw@gmail.com>
-Subject: [PATCH] blk-cgroup: Remove unnecessary rcu_read_lock/unlock()
-Date:   Tue, 17 May 2022 01:39:30 +0800
-Message-Id: <20220516173930.159535-1-bh1scw@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 16 May 2022 13:39:48 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41EC36B42
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 10:39:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652722787; x=1684258787;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=E351kjdHM4yyOzHxYpzD4Ez9vYrSwygxY8UcWv9n7c0=;
+  b=gUWutekvo1885i1fUHgriFU72BtbZCfw95Dp9UvjDZR7W0px2rLitHsV
+   nRzJcsMToWr+wzp+L12YDoNBa+D5S12mlAW2BeyRv92LsrfAsKLUU11Df
+   +HCIwnMgD3Eniz+DLZhw9vJ5+ihLcfhIGsu+0eerh9Yoe2OODYCvlbzuH
+   z3I2sOZmwlQ6P9Wox/sUV/gcjsV2fI1/xPFi+RXXmnlhDH5Qlhi0BHPgQ
+   RNgNRUd3ZuyRCSAZ3AJ6B4KtZX6hQVSSxIX77BKUtAUPyn+eF+irUZARe
+   SIvDPlULbSOYZNoqKb8u6jo7JV5RUrA4WYe5GwDMjSzP64yPAq283rb6+
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="251426850"
+X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
+   d="scan'208";a="251426850"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 10:39:47 -0700
+X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
+   d="scan'208";a="596631886"
+Received: from skechkar-mobl.ger.corp.intel.com (HELO [10.255.228.165]) ([10.255.228.165])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 10:39:46 -0700
+Message-ID: <f2ab7c58-2d69-9042-4880-9b86bcdd4053@linux.intel.com>
+Date:   Mon, 16 May 2022 10:39:45 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [PATCH v5 3/3] x86/tdx: Add Quote generation support
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220503012721.ok7fbvxmnvsr6qny@box.shutemov.name>
+ <58d07b2d-cef5-17ed-9c57-e12fe5665e04@intel.com>
+ <40ccd0f0-35a1-5aa7-9e51-25ab196d79e5@linux.intel.com>
+ <2ed5c9cc316950a5a47ee714715b7980f358a140.camel@intel.com>
+ <ab17102c-0cb7-87d3-3494-969866d64573@linux.intel.com>
+ <d53696f85ada39a91a3685c61d177c582810772e.camel@intel.com>
+ <d63d2774-c44d-27da-74b6-550935a196fd@intel.com>
+ <dca06ffa36abe9989f0a7abaeafc83c1a7250651.camel@intel.com>
+ <20220507004236.5p5dyksftge7wwr3@black.fi.intel.com>
+ <45d184273f1950320843f6696eb3071f7d354fd3.camel@intel.com>
+ <20220509120927.7rg6v5pyc3f4pxsh@box.shutemov.name>
+ <75d4755c9a376df2e98a267e10e60da3bd178b17.camel@intel.com>
+ <690ae2cb2099ac3e13c3da530a1b4a4eb5bafc5a.camel@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <690ae2cb2099ac3e13c3da530a1b4a4eb5bafc5a.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fanjun Kong <bh1scw@gmail.com>
+Hi Dave,
 
-spin_lock_irq/spin_unlock_irq contains preempt_disable/enable().
-Which can serve as RCU read-side critical region, so remove
-rcu_read_lock/unlock().
+On 5/10/22 3:42 AM, Kai Huang wrote:
+> On Tue, 2022-05-10 at 11:54 +1200, Kai Huang wrote:
+>> On Mon, 2022-05-09 at 15:09 +0300, Kirill A. Shutemov wrote:
+>>> On Mon, May 09, 2022 at 03:37:22PM +1200, Kai Huang wrote:
+>>>> On Sat, 2022-05-07 at 03:42 +0300, Kirill A. Shutemov wrote:
+>>>>> On Fri, May 06, 2022 at 12:11:03PM +1200, Kai Huang wrote:
+>>>>>> Kirill, what's your opinion?
+>>>>>
+>>>>> I said before that I think DMA API is the right tool here.
+>>>>>
+>>>>> Speculation about future of DMA in TDX is irrelevant here. If semantics
+>>>>> change we will need to re-evaluate all users. VirtIO uses DMA API and it
+>>>>> is conceptually the same use-case: communicate with the host.
+>>>>
+>>>> Virtio is designed for device driver to use, so it's fine to use DMA API. And
+>>>> real DMA can happen to the virtio DMA buffers.  Attestation doesn't have such
+>>>> assumption.
+>>>
+>>> Whether attestation driver uses struct device is implementation detail.
+>>> I don't see what is you point.
+>>
+>> No real DMA is involved in attestation.
+>>
+>>>
+>>>> So I don't see why TD guest kernel cannot have a simple protocol to vmap() a
+>>>> page (or couple of pages) as shared on-demand, like below:
+>>>>
+>>>> 	page = alloc_page();
+>>>>
+>>>> 	addr = vmap(page,  pgprot_decrypted(PAGE_KERNEL));
+>>>>
+>>>> 	clflush_cache_range(page_address(page), PAGE_SIZE);
+>>>>
+>>>> 	MapGPA(page_to_phys(page) | cc_mkdec(0), PAGE_SIZE);
+>>>>
+>>>> And we can even avoid above clflush_cache_range() if I understand correctly.
+>>>>
+>>>> Or  I missed something?
+>>>
+>>> For completeness, cover free path too. Are you going to opencode page
+>>> accept too?
+>>
+>> Call __tdx_module_call(TDX_ACCEPT_PAGE, ...) right after MapGPA() to convert
+>> back to private.  I don't think there is any problem?
+>>
+>>>
+>>> Private->Shared conversion is destructive. You have to split SEPT, flush
+>>> TLB. Backward conversion even more costly.
+>>
+>> I think I won't call it destructive.
+>>
+>> And I suggested before, we can allocate a default size buffer (i.e. 4 pages),
+>> which is large enough to cover all requests for now, during driver
+>> initialization.  This avoids IOCTL time conversion.  We should still have code
+>> in the IOCTL to check the request buffer size and when it is larger than the
+>> default, the old should be freed a larger one should be allocated.  But for now
+>> this code path will never happen.
+>>
+>> Btw above is based on assumption that we don't support concurrent IOCTLs.  This
+>> version Sathya somehow changed to support concurrent IOCTLs but this was a
+>> surprise as I thought we somehow agreed we don't need to support this.
+> 
+> Hi Dave,
+> 
+> Sorry I forgot to mention that GHCI 1.5 defines a generic TDVMCALL<Service> for
+> a TD to communicate with VMM or another TD or some service in the host.  This
+> TDVMCALL can support many sub-commands.  For now only sub-commands for TD
+> migration is defined, but we can have more.
+> 
+> For this, we cannot assume the size of the command buffer, and I don't see why
+> we don't want to support concurrent TDVMCALLs.  So looks from long term, we will
+> very likely need IOCTL time buffer private-shared conversion.
+> 
+> 
 
-Signed-off-by: Fanjun Kong <bh1scw@gmail.com>
----
- block/blk-cgroup.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/block/blk-cgroup.c b/block/blk-cgroup.c
-index a91f8ae18b49..7bdc16a36560 100644
---- a/block/blk-cgroup.c
-+++ b/block/blk-cgroup.c
-@@ -1283,14 +1283,13 @@ int blkcg_init_queue(struct request_queue *q)
- 	preloaded = !radix_tree_preload(GFP_KERNEL);
- 
- 	/* Make sure the root blkg exists. */
--	rcu_read_lock();
-+	/* spin_lock_irq can serve as RCU read-side critical section. */
- 	spin_lock_irq(&q->queue_lock);
- 	blkg = blkg_create(&blkcg_root, q, new_blkg);
- 	if (IS_ERR(blkg))
- 		goto err_unlock;
- 	q->root_blkg = blkg;
- 	spin_unlock_irq(&q->queue_lock);
--	rcu_read_unlock();
- 
- 	if (preloaded)
- 		radix_tree_preload_end();
-@@ -1316,7 +1315,6 @@ int blkcg_init_queue(struct request_queue *q)
- 	return ret;
- err_unlock:
- 	spin_unlock_irq(&q->queue_lock);
--	rcu_read_unlock();
- 	if (preloaded)
- 		radix_tree_preload_end();
- 	return PTR_ERR(blkg);
+Let me summarize the discussion so far.
+
+Problem: Allocate shared buffer without breaking the direct map.
+
+Solution 1: Use alloc_pages*()/vmap()/set_memory_*crypted() APIs
+
+Pros/Cons:
+
+1. Uses virtual mapped address for shared/private conversion and
+    hence does not touch the direct mapping.
+
+2. Current version of set_memory_*crypted() APIs  modifies the
+    aliased mappings, which also includes the direct mapping. So if we
+    want to use set_memory_*() APIs, we need a new variant that does not
+    touch the direct mapping. An alternative solution is to open code the
+    page attribute conversion, cache flushing and MapGpa/Page acceptance
+    logic in the attestation driver itself. But, IMO, this is not
+    preferred because it is not favorable to sprinkle the mapping
+    conversion code in multiple places in the kernel. It is better to use
+    a single API if possible.
+
+3. This solution can possibly break the SEPT entries on private-shared
+    conversion. The backward conversion is also costly. IMO, since the
+    attestation requests are not very frequent, we don't need to be
+    overly concerned about the cost involved in the conversion.
+
+Solution 2: Use DMA alloc APIs.
+
+Pros/Cons:
+
+1. Simpler to use. It taps into the SWIOTLB buffers and does not
+    affect the direct map. Since we will be using already converted
+    memory, allocation/freeing will be cheaper compared to solution 1.
+
+2. There is a concern that it is not a long term solution. Since
+    with advent of TDX IO, not all DMA allocations need to use
+    SWIOTLB model. But as per Kirill's comments, this is not a concern
+    and force_dma_unencrypted() hook can be used to differentiate which
+    devices need to use TDX IO vs SWIOTLB model.
+
+3. Using DMA APIs requires a valid bus device as argument and hence
+    requires this driver converted into a platform device driver. But,
+    since this driver does not do real DMA, making above changes just
+    to use the DMA API is not recommended.
+
+Since both solutions fix the problem (and there are pros/cons), and both
+Kai/Kirill's comments conclusion is, there is no hard preference and
+to let you decide on it.
+
+Since you have already made a comment about "irrespective of which
+model is chosen, you need the commit log talk about the solution and
+how it not touches the direct map", I have posted the v6 version
+adapting Solution 1.
+
+Please let me know if you agree with this direction or have comments
+about the solution.
+
 -- 
-2.36.0
-
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
