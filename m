@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A72CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30260C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348842AbiEPUhN (ORCPT
+        id S1348898AbiEPUhR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
+        Mon, 16 May 2022 16:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351079AbiEPUB6 (ORCPT
+        with ESMTP id S1351076AbiEPUB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C686403C3;
-        Mon, 16 May 2022 12:58:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3769E403E4;
+        Mon, 16 May 2022 12:58:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC430B81613;
-        Mon, 16 May 2022 19:58:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52AF0C385AA;
-        Mon, 16 May 2022 19:58:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA01860A50;
+        Mon, 16 May 2022 19:58:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA9BDC34100;
+        Mon, 16 May 2022 19:58:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731095;
-        bh=53WI7OpkL2i7EK66z0m46kGr/WBAR9Uvgphfip65p9E=;
+        s=korg; t=1652731104;
+        bh=QAcOIk4Fvam+dBlc/Az4mJSYq265WNe8nSHCtWmlbNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f2+YG/WSmPQN7NPITbJ/lqoHG9aYRbJUyflwocxnEpnQZcLpzAcxAdC0p5kg6H8Gi
-         FGTPmfVzKj3k50VD9LE5hzQvH2GyUsWRDP8O6YOFL9yPBzd/v3X9xKjzso9pa1CzWJ
-         zcqmwfNJjYQyR9sjaIKIwtQJPXU2Quh3K0khywI8=
+        b=HhesQE4rHHl0fjtY/GyBKYMo8Bj3q2xm21JHLTyfNyFglPlYy3KqMh4h8HTNT7xq/
+         IhJdFDhl5+GixRr02yrKjHMDDVbglNeE2M1MvyaVxHpEYOmrM0dx9trZx67AabKQ3i
+         HhRCixEkASfGkl9dnOcZqPnqQi1zfL7ueRZQUspU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Christoph Hellwig <hch@lst.de>, Jing Xia <jing.xia@unisoc.com>
-Subject: [PATCH 5.17 101/114] writeback: Avoid skipping inode writeback
-Date:   Mon, 16 May 2022 21:37:15 +0200
-Message-Id: <20220516193628.376212768@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 103/114] ping: fix address binding wrt vrf
+Date:   Mon, 16 May 2022 21:37:17 +0200
+Message-Id: <20220516193628.432204488@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -49,68 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Xia <jing.xia@unisoc.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-commit 846a3351ddfe4a86eede4bb26a205c3f38ef84d3 upstream.
+commit e1a7ac6f3ba6e157adcd0ca94d92a401f1943f56 upstream.
 
-We have run into an issue that a task gets stuck in
-balance_dirty_pages_ratelimited() when perform I/O stress testing.
-The reason we observed is that an I_DIRTY_PAGES inode with lots
-of dirty pages is in b_dirty_time list and standard background
-writeback cannot writeback the inode.
-After studing the relevant code, the following scenario may lead
-to the issue:
+When ping_group_range is updated, 'ping' uses the DGRAM ICMP socket,
+instead of an IP raw socket. In this case, 'ping' is unable to bind its
+socket to a local address owned by a vrflite.
 
-task1                                   task2
------                                   -----
-fuse_flush
- write_inode_now //in b_dirty_time
-  writeback_single_inode
-   __writeback_single_inode
-                                 fuse_write_end
-                                  filemap_dirty_folio
-                                   __xa_set_mark:PAGECACHE_TAG_DIRTY
-    lock inode->i_lock
-    if mapping tagged PAGECACHE_TAG_DIRTY
-    inode->i_state |= I_DIRTY_PAGES
-    unlock inode->i_lock
-                                   __mark_inode_dirty:I_DIRTY_PAGES
-                                      lock inode->i_lock
-                                      -was dirty,inode stays in
-                                      -b_dirty_time
-                                      unlock inode->i_lock
+Before the patch:
+$ sysctl -w net.ipv4.ping_group_range='0  2147483647'
+$ ip link add blue type vrf table 10
+$ ip link add foo type dummy
+$ ip link set foo master blue
+$ ip link set foo up
+$ ip addr add 192.168.1.1/24 dev foo
+$ ip addr add 2001::1/64 dev foo
+$ ip vrf exec blue ping -c1 -I 192.168.1.1 192.168.1.2
+ping: bind: Cannot assign requested address
+$ ip vrf exec blue ping6 -c1 -I 2001::1 2001::2
+ping6: bind icmp socket: Cannot assign requested address
 
-   if(!(inode->i_state & I_DIRTY_All))
-      -not true,so nothing done
-
-This patch moves the dirty inode to b_dirty list when the inode
-currently is not queued in b_io or b_more_io list at the end of
-writeback_single_inode.
-
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
 CC: stable@vger.kernel.org
-Fixes: 0ae45f63d4ef ("vfs: add support for a lazytime mount option")
-Signed-off-by: Jing Xia <jing.xia@unisoc.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220510023514.27399-1-jing.xia@unisoc.com
+Fixes: 1b69c6d0ae90 ("net: Introduce L3 Master device abstraction")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fs-writeback.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ net/ipv4/ping.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/fs/fs-writeback.c
-+++ b/fs/fs-writeback.c
-@@ -1749,6 +1749,10 @@ static int writeback_single_inode(struct
- 	 */
- 	if (!(inode->i_state & I_DIRTY_ALL))
- 		inode_cgwb_move_to_attached(inode, wb);
-+	else if (!(inode->i_state & I_SYNC_QUEUED) &&
-+		 (inode->i_state & I_DIRTY))
-+		redirty_tail_locked(inode, wb);
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -305,6 +305,7 @@ static int ping_check_bind_addr(struct s
+ 	struct net *net = sock_net(sk);
+ 	if (sk->sk_family == AF_INET) {
+ 		struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
++		u32 tb_id = RT_TABLE_LOCAL;
+ 		int chk_addr_ret;
+ 
+ 		if (addr_len < sizeof(*addr))
+@@ -318,7 +319,8 @@ static int ping_check_bind_addr(struct s
+ 		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
+ 			 sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
+ 
+-		chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
++		tb_id = l3mdev_fib_table_by_index(net, sk->sk_bound_dev_if) ? : tb_id;
++		chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
+ 
+ 		if (!inet_addr_valid_or_nonlocal(net, inet_sk(sk),
+ 					         addr->sin_addr.s_addr,
+@@ -353,6 +355,14 @@ static int ping_check_bind_addr(struct s
+ 			if (!dev) {
+ 				rcu_read_unlock();
+ 				return -ENODEV;
++			}
++		}
 +
- 	spin_unlock(&wb->list_lock);
- 	inode_sync_complete(inode);
- out:
++		if (!dev && sk->sk_bound_dev_if) {
++			dev = dev_get_by_index_rcu(net, sk->sk_bound_dev_if);
++			if (!dev) {
++				rcu_read_unlock();
++				return -ENODEV;
+ 			}
+ 		}
+ 		has_addr = pingv6_ops.ipv6_chk_addr(net, &addr->sin6_addr, dev,
 
 
