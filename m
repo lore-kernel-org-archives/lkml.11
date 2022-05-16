@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 316AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA5D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238177AbiEPUXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
+        id S240762AbiEPUYF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:24:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349273AbiEPT7b (ORCPT
+        with ESMTP id S1348576AbiEPT6o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9256241637;
-        Mon, 16 May 2022 12:53:40 -0700 (PDT)
+        Mon, 16 May 2022 15:58:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA2B63DA4D;
+        Mon, 16 May 2022 12:50:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 091D560ABE;
-        Mon, 16 May 2022 19:53:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A49C385AA;
-        Mon, 16 May 2022 19:53:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E7E960ABE;
+        Mon, 16 May 2022 19:50:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72EADC34100;
+        Mon, 16 May 2022 19:50:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730810;
-        bh=Z3rLPS+jBk9yzNvGeXe6K5znMwWULIfK34dAsS47NhQ=;
+        s=korg; t=1652730647;
+        bh=jpiRU41G7rib5KT8rX+ATDSBSQFLApOjYbiJIWyGoGA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uAhfGzXLxHp9QlqAn24aTQKTN0xitUrO44BcS3kiZQLTZ9iRhXN4UBg1xoQgN1pfd
-         yedE+sImHu/gw2IutW430Ly2cYU/TgSLhh1h91fy99kMiZIhXA4Q9YgkHsp2hI2VCk
-         fsRt6m9nTKrrLNj9J9npD7S+mzOKQ1Hucr0gXdo4=
+        b=FzBojgvKSlq6PdEqdqObIml/cSWWgbmMBhV47oM8/Jt+3Am2HBvVw+WWRcrSP214W
+         2dcdNlD5qXF5rfnjUlcL/k/lsEA7jQoKKIJICck1BtH8LeBm2CxNLepEnB875fC7NE
+         cpcBqSEV81gXxr9dryOHhy/7COj+bjsXA0jlm0zc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 013/114] fbdev: vesafb: Cleanup fb_info in .fb_destroy rather than .remove
-Date:   Mon, 16 May 2022 21:35:47 +0200
-Message-Id: <20220516193625.877058010@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian-Ken Rueegsegger <ken@codelabs.ch>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Oscar Salvador <osalvador@suse.de>,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH 5.15 066/102] x86/mm: Fix marking of unused sub-pmd ranges
+Date:   Mon, 16 May 2022 21:36:40 +0200
+Message-Id: <20220516193625.892146402@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,75 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Adrian-Ken Rueegsegger <ken@codelabs.ch>
 
-[ Upstream commit b3c9a924aab61adbc29df110006aa03afe1a78ba ]
+commit 280abe14b6e0a38de9cc86fe6a019523aadd8f70 upstream.
 
-The driver is calling framebuffer_release() in its .remove callback, but
-this will cause the struct fb_info to be freed too early. Since it could
-be that a reference is still hold to it if user-space opened the fbdev.
+The unused part precedes the new range spanned by the start, end parameters
+of vmemmap_use_new_sub_pmd(). This means it actually goes from
+ALIGN_DOWN(start, PMD_SIZE) up to start.
 
-This would lead to a use-after-free error if the framebuffer device was
-unregistered but later a user-space process tries to close the fbdev fd.
+Use the correct address when applying the mark using memset.
 
-To prevent this, move the framebuffer_release() call to fb_ops.fb_destroy
-instead of doing it in the driver's .remove callback.
-
-Strictly speaking, the code flow in the driver is still wrong because all
-the hardware cleanupd (i.e: iounmap) should be done in .remove while the
-software cleanup (i.e: releasing the framebuffer) should be done in the
-.fb_destroy handler. But this at least makes to match the behavior before
-commit 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal").
-
-Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220505220631.366371-1-javierm@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8d400913c231 ("x86/vmemmap: handle unpopulated sub-pmd ranges")
+Signed-off-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220509090637.24152-2-ken@codelabs.ch
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/vesafb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ arch/x86/mm/init_64.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
-index df6de5a9dd4c..e25e8de5ff67 100644
---- a/drivers/video/fbdev/vesafb.c
-+++ b/drivers/video/fbdev/vesafb.c
-@@ -179,6 +179,10 @@ static int vesafb_setcolreg(unsigned regno, unsigned red, unsigned green,
- 	return err;
- }
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -902,6 +902,8 @@ static void __meminit vmemmap_use_sub_pm
  
-+/*
-+ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
-+ * of unregister_framebuffer() or fb_release(). Do any cleanup here.
-+ */
- static void vesafb_destroy(struct fb_info *info)
+ static void __meminit vmemmap_use_new_sub_pmd(unsigned long start, unsigned long end)
  {
- 	struct vesafb_par *par = info->par;
-@@ -188,6 +192,8 @@ static void vesafb_destroy(struct fb_info *info)
- 	if (info->screen_base)
- 		iounmap(info->screen_base);
- 	release_mem_region(info->apertures->ranges[0].base, info->apertures->ranges[0].size);
++	const unsigned long page = ALIGN_DOWN(start, PMD_SIZE);
 +
-+	framebuffer_release(info);
- }
+ 	vmemmap_flush_unused_pmd();
  
- static struct fb_ops vesafb_ops = {
-@@ -484,10 +490,10 @@ static int vesafb_remove(struct platform_device *pdev)
- {
- 	struct fb_info *info = platform_get_drvdata(pdev);
+ 	/*
+@@ -914,8 +916,7 @@ static void __meminit vmemmap_use_new_su
+ 	 * Mark with PAGE_UNUSED the unused parts of the new memmap range
+ 	 */
+ 	if (!IS_ALIGNED(start, PMD_SIZE))
+-		memset((void *)start, PAGE_UNUSED,
+-			start - ALIGN_DOWN(start, PMD_SIZE));
++		memset((void *)page, PAGE_UNUSED, start - page);
  
-+	/* vesafb_destroy takes care of info cleanup */
- 	unregister_framebuffer(info);
- 	if (((struct vesafb_par *)(info->par))->region)
- 		release_region(0x3c0, 32);
--	framebuffer_release(info);
- 
- 	return 0;
- }
--- 
-2.35.1
-
+ 	/*
+ 	 * We want to avoid memset(PAGE_UNUSED) when populating the vmemmap of
 
 
