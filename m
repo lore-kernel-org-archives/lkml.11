@@ -2,302 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87349C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2A1C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345933AbiEPULR (ORCPT
+        id S1346421AbiEPULZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
+        Mon, 16 May 2022 16:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347659AbiEPT6E (ORCPT
+        with ESMTP id S1347808AbiEPT6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2838D433AB;
-        Mon, 16 May 2022 12:49:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68B24B81617;
-        Mon, 16 May 2022 19:49:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C9EC385AA;
-        Mon, 16 May 2022 19:49:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730582;
-        bh=Ml8YyaLYGD1raSPv7NG7H3fcpkf/4ek+KU+fmvmyHYY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jPRNIcSrPmmQ3hp2LLWLbOxheWCOr+PCPHA2oFhPunkWx/A43I48JvOqn9ASQx8WG
-         2sIt33LWCZPA3TxX4rPhY2HVYHRW4TvfHeWBGwoRDpHN7fQ59uD3iRwR5OvvCOtX3P
-         4uj9WfVg+aLiNWz7rOGIio/7UARnzncSR9X4r8O0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>,
-        Maaz Mombasawala <mombasawalam@vmware.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 043/102] drm/vmwgfx: Fix fencing on SVGAv3
-Date:   Mon, 16 May 2022 21:36:17 +0200
-Message-Id: <20220516193625.237070686@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 16 May 2022 15:58:10 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9F2488A8
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:49:53 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id q130so19405585ljb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=oEm9ampsAj6VYW+tU85zYMzzZx02BGFqtMSM4mOG0tA=;
+        b=U7buNOqjUYJdNpQY9YuQfPTXQU2kJGI1JMCwJZzffMIpfmu3+CAsXURRP0Wq/dLHqL
+         WxwHP1Y5UswHg8kl376kfFpvpJmM0vqWNIgVooqhmpJG3MLFaIYiLABLpUSHY4ynbB6b
+         jDUogzUaKfR288AQWZtLAqP0p87zqNpPeWszfciItxfQ69oyuVrO7zz+oybO7smE+BKG
+         0xKf/qAwJDAs5YFYYjsM/DEeYn6uwBcz7bMNZPGWd3dQqcIFngSplVgHVoEdzyOyeL4C
+         OB/60doqNZWpioNGkrwf+rBeckB5hzqMp2x4AOyrviPhUFQyH6fdNtPw5jiitY3KOWDA
+         Kh3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oEm9ampsAj6VYW+tU85zYMzzZx02BGFqtMSM4mOG0tA=;
+        b=BJacVYAvD1OKGQGCPDW3EbzR6SHfzoBvxYSY8pDBC2i2hd5iCXD7pjRTEjoeWTzQrW
+         tFPIp2NP1dTI6Y0sa5/KFwQSpoPQjGA0d6vfpGFR0lRCNj1vK/iMEYe4dKJ9Iiv2jVRD
+         wHDb/Hf+hKWzEqgogv6GjTOXrhi7yKSFuHpzzJSInWSHxDqgLWKuweXXxwq1+H+apzaW
+         tS8l6/0twjZcNel903ah8tWSlVEbWQ3zNh8tMnrFuQkQ+zPkO8KybtyFWe6Z5V/CQqfM
+         gQb3G1tRDypcrIlaor3UdEePKQ5Eo2qnu20HpYBr18Ji7wh7V/+jqnAI0V7AX2yXFvL6
+         zBrg==
+X-Gm-Message-State: AOAM533qFfQaPdSfObAa+3bymNCr9W3/f2KTc7eYcpuBihKJX++VI8LS
+        fP5g96DEppAht78tF1R8Y2Sa1cK7g/cUdg==
+X-Google-Smtp-Source: ABdhPJzj4kqsOgk+3Pmh9rw0qnfBHTmwH2zkabyF2JtWUfp4tC2MsFuwkJI+p0hvrqs5l+xyK9fwYw==
+X-Received: by 2002:a2e:b5d1:0:b0:24f:331d:f9b6 with SMTP id g17-20020a2eb5d1000000b0024f331df9b6mr12066365ljn.302.1652730591843;
+        Mon, 16 May 2022 12:49:51 -0700 (PDT)
+Received: from [192.168.1.11] ([217.117.245.216])
+        by smtp.gmail.com with ESMTPSA id r13-20020a2eb60d000000b0024f3d1daea8sm1659956ljn.48.2022.05.16.12.49.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 12:49:51 -0700 (PDT)
+Message-ID: <8142ad15-1fdc-10f8-86f2-fb275cb6cd39@gmail.com>
+Date:   Mon, 16 May 2022 22:49:50 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 0/3] staging: r8188eu: fix checkpatch.pl warnings
+Content-Language: en-US
+To:     Vihas Makwana <makvihas@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220516170306.6008-1-makvihas@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220516170306.6008-1-makvihas@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+Hi Vihas,
 
-[ Upstream commit 1d6595b4cd47acfd824550f48f10b54a6f0e93ee ]
+On 5/16/22 20:03, Vihas Makwana wrote:
+> This patchset fixes following checkpatch warning:
+>      WARNING: Comparisons should place the constant on the right side of the test
+> 
+> Compiled tested only.
+> 
+> Vihas Makwana (3):
+>    staging: r8188eu: fix checkpatch warnings in rtw_p2p
+>    staging: r8188eu: fix checkpatch warnings in rtw_pwrctrl
+>    staging: r8188eu: fix checkpatch warnings in rtw_wlan_util
+> 
+>   drivers/staging/r8188eu/core/rtw_p2p.c       |  8 ++++----
+>   drivers/staging/r8188eu/core/rtw_pwrctrl.c   | 12 ++++++------
+>   drivers/staging/r8188eu/core/rtw_wlan_util.c |  2 +-
+>   3 files changed, 11 insertions(+), 11 deletions(-)
+> 
+checkpatch warns about the subjects. See an example for 1/3, but it's 
+related to all 3.
 
-Port of the vmwgfx to SVGAv3 lacked support for fencing. SVGAv3 removed
-FIFO's and replaced them with command buffers and extra registers.
-The initial version of SVGAv3 lacked support for most advanced features
-(e.g. 3D) which made fences unnecessary. That is no longer the case,
-especially as 3D support is being turned on.
-
-Switch from FIFO commands and capabilities to command buffers and extra
-registers to enable fences on SVGAv3.
-
-Fixes: 2cd80dbd3551 ("drm/vmwgfx: Add basic support for SVGA3")
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Reviewed-by: Maaz Mombasawala <mombasawalam@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220302152426.885214-5-zack@kde.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c   |  2 +-
- drivers/gpu/drm/vmwgfx/vmwgfx_drv.h   |  8 ++++++++
- drivers/gpu/drm/vmwgfx/vmwgfx_fence.c | 28 ++++++++++++++++++++-------
- drivers/gpu/drm/vmwgfx/vmwgfx_irq.c   | 26 +++++++++++++++++--------
- drivers/gpu/drm/vmwgfx/vmwgfx_kms.c   |  8 +++++---
- 5 files changed, 53 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c b/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
-index a3bfbb6c3e14..bf1b394753da 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
-@@ -528,7 +528,7 @@ int vmw_cmd_send_fence(struct vmw_private *dev_priv, uint32_t *seqno)
- 		*seqno = atomic_add_return(1, &dev_priv->marker_seq);
- 	} while (*seqno == 0);
- 
--	if (!(vmw_fifo_caps(dev_priv) & SVGA_FIFO_CAP_FENCE)) {
-+	if (!vmw_has_fences(dev_priv)) {
- 
- 		/*
- 		 * Don't request hardware to send a fence. The
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-index f9f28516ffb4..288e883177be 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-@@ -1677,4 +1677,12 @@ static inline void vmw_irq_status_write(struct vmw_private *vmw,
- 		outl(status, vmw->io_start + SVGA_IRQSTATUS_PORT);
- }
- 
-+static inline bool vmw_has_fences(struct vmw_private *vmw)
-+{
-+	if ((vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
-+				  SVGA_CAP_CMD_BUFFERS_2)) != 0)
-+		return true;
-+	return (vmw_fifo_caps(vmw) & SVGA_FIFO_CAP_FENCE) != 0;
-+}
-+
- #endif
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
-index b4d9d7258a54..b32ddbb992de 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
-@@ -85,6 +85,22 @@ fman_from_fence(struct vmw_fence_obj *fence)
- 	return container_of(fence->base.lock, struct vmw_fence_manager, lock);
- }
- 
-+static u32 vmw_fence_goal_read(struct vmw_private *vmw)
-+{
-+	if ((vmw->capabilities2 & SVGA_CAP2_EXTRA_REGS) != 0)
-+		return vmw_read(vmw, SVGA_REG_FENCE_GOAL);
-+	else
-+		return vmw_fifo_mem_read(vmw, SVGA_FIFO_FENCE_GOAL);
-+}
-+
-+static void vmw_fence_goal_write(struct vmw_private *vmw, u32 value)
-+{
-+	if ((vmw->capabilities2 & SVGA_CAP2_EXTRA_REGS) != 0)
-+		vmw_write(vmw, SVGA_REG_FENCE_GOAL, value);
-+	else
-+		vmw_fifo_mem_write(vmw, SVGA_FIFO_FENCE_GOAL, value);
-+}
-+
- /*
-  * Note on fencing subsystem usage of irqs:
-  * Typically the vmw_fences_update function is called
-@@ -400,7 +416,7 @@ static bool vmw_fence_goal_new_locked(struct vmw_fence_manager *fman,
- 	if (likely(!fman->seqno_valid))
- 		return false;
- 
--	goal_seqno = vmw_fifo_mem_read(fman->dev_priv, SVGA_FIFO_FENCE_GOAL);
-+	goal_seqno = vmw_fence_goal_read(fman->dev_priv);
- 	if (likely(passed_seqno - goal_seqno >= VMW_FENCE_WRAP))
- 		return false;
- 
-@@ -408,9 +424,8 @@ static bool vmw_fence_goal_new_locked(struct vmw_fence_manager *fman,
- 	list_for_each_entry(fence, &fman->fence_list, head) {
- 		if (!list_empty(&fence->seq_passed_actions)) {
- 			fman->seqno_valid = true;
--			vmw_fifo_mem_write(fman->dev_priv,
--					   SVGA_FIFO_FENCE_GOAL,
--					   fence->base.seqno);
-+			vmw_fence_goal_write(fman->dev_priv,
-+					     fence->base.seqno);
- 			break;
- 		}
- 	}
-@@ -442,13 +457,12 @@ static bool vmw_fence_goal_check_locked(struct vmw_fence_obj *fence)
- 	if (dma_fence_is_signaled_locked(&fence->base))
- 		return false;
- 
--	goal_seqno = vmw_fifo_mem_read(fman->dev_priv, SVGA_FIFO_FENCE_GOAL);
-+	goal_seqno = vmw_fence_goal_read(fman->dev_priv);
- 	if (likely(fman->seqno_valid &&
- 		   goal_seqno - fence->base.seqno < VMW_FENCE_WRAP))
- 		return false;
- 
--	vmw_fifo_mem_write(fman->dev_priv, SVGA_FIFO_FENCE_GOAL,
--			   fence->base.seqno);
-+	vmw_fence_goal_write(fman->dev_priv, fence->base.seqno);
- 	fman->seqno_valid = true;
- 
- 	return true;
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_irq.c b/drivers/gpu/drm/vmwgfx/vmwgfx_irq.c
-index c5191de365ca..fe4732bf2c9d 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_irq.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_irq.c
-@@ -32,6 +32,14 @@
- 
- #define VMW_FENCE_WRAP (1 << 24)
- 
-+static u32 vmw_irqflag_fence_goal(struct vmw_private *vmw)
-+{
-+	if ((vmw->capabilities2 & SVGA_CAP2_EXTRA_REGS) != 0)
-+		return SVGA_IRQFLAG_REG_FENCE_GOAL;
-+	else
-+		return SVGA_IRQFLAG_FENCE_GOAL;
-+}
-+
- /**
-  * vmw_thread_fn - Deferred (process context) irq handler
-  *
-@@ -96,7 +104,7 @@ static irqreturn_t vmw_irq_handler(int irq, void *arg)
- 		wake_up_all(&dev_priv->fifo_queue);
- 
- 	if ((masked_status & (SVGA_IRQFLAG_ANY_FENCE |
--			      SVGA_IRQFLAG_FENCE_GOAL)) &&
-+			      vmw_irqflag_fence_goal(dev_priv))) &&
- 	    !test_and_set_bit(VMW_IRQTHREAD_FENCE, dev_priv->irqthread_pending))
- 		ret = IRQ_WAKE_THREAD;
- 
-@@ -137,8 +145,7 @@ bool vmw_seqno_passed(struct vmw_private *dev_priv,
- 	if (likely(dev_priv->last_read_seqno - seqno < VMW_FENCE_WRAP))
- 		return true;
- 
--	if (!(vmw_fifo_caps(dev_priv) & SVGA_FIFO_CAP_FENCE) &&
--	    vmw_fifo_idle(dev_priv, seqno))
-+	if (!vmw_has_fences(dev_priv) && vmw_fifo_idle(dev_priv, seqno))
- 		return true;
- 
- 	/**
-@@ -160,6 +167,7 @@ int vmw_fallback_wait(struct vmw_private *dev_priv,
- 		      unsigned long timeout)
- {
- 	struct vmw_fifo_state *fifo_state = dev_priv->fifo;
-+	bool fifo_down = false;
- 
- 	uint32_t count = 0;
- 	uint32_t signal_seq;
-@@ -176,12 +184,14 @@ int vmw_fallback_wait(struct vmw_private *dev_priv,
- 	 */
- 
- 	if (fifo_idle) {
--		down_read(&fifo_state->rwsem);
- 		if (dev_priv->cman) {
- 			ret = vmw_cmdbuf_idle(dev_priv->cman, interruptible,
- 					      10*HZ);
- 			if (ret)
- 				goto out_err;
-+		} else if (fifo_state) {
-+			down_read(&fifo_state->rwsem);
-+			fifo_down = true;
- 		}
- 	}
- 
-@@ -218,12 +228,12 @@ int vmw_fallback_wait(struct vmw_private *dev_priv,
- 		}
- 	}
- 	finish_wait(&dev_priv->fence_queue, &__wait);
--	if (ret == 0 && fifo_idle)
-+	if (ret == 0 && fifo_idle && fifo_state)
- 		vmw_fence_write(dev_priv, signal_seq);
- 
- 	wake_up_all(&dev_priv->fence_queue);
- out_err:
--	if (fifo_idle)
-+	if (fifo_down)
- 		up_read(&fifo_state->rwsem);
- 
- 	return ret;
-@@ -266,13 +276,13 @@ void vmw_seqno_waiter_remove(struct vmw_private *dev_priv)
- 
- void vmw_goal_waiter_add(struct vmw_private *dev_priv)
- {
--	vmw_generic_waiter_add(dev_priv, SVGA_IRQFLAG_FENCE_GOAL,
-+	vmw_generic_waiter_add(dev_priv, vmw_irqflag_fence_goal(dev_priv),
- 			       &dev_priv->goal_queue_waiters);
- }
- 
- void vmw_goal_waiter_remove(struct vmw_private *dev_priv)
- {
--	vmw_generic_waiter_remove(dev_priv, SVGA_IRQFLAG_FENCE_GOAL,
-+	vmw_generic_waiter_remove(dev_priv, vmw_irqflag_fence_goal(dev_priv),
- 				  &dev_priv->goal_queue_waiters);
- }
- 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-index 14e8f665b13b..50c64e7813be 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-@@ -1336,7 +1336,6 @@ vmw_kms_new_framebuffer(struct vmw_private *dev_priv,
- 		ret = vmw_kms_new_framebuffer_surface(dev_priv, surface, &vfb,
- 						      mode_cmd,
- 						      is_bo_proxy);
--
- 		/*
- 		 * vmw_create_bo_proxy() adds a reference that is no longer
- 		 * needed
-@@ -1398,13 +1397,16 @@ static struct drm_framebuffer *vmw_kms_fb_create(struct drm_device *dev,
- 	ret = vmw_user_lookup_handle(dev_priv, tfile,
- 				     mode_cmd->handles[0],
- 				     &surface, &bo);
--	if (ret)
-+	if (ret) {
-+		DRM_ERROR("Invalid buffer object handle %u (0x%x).\n",
-+			  mode_cmd->handles[0], mode_cmd->handles[0]);
- 		goto err_out;
-+	}
- 
- 
- 	if (!bo &&
- 	    !vmw_kms_srf_ok(dev_priv, mode_cmd->width, mode_cmd->height)) {
--		DRM_ERROR("Surface size cannot exceed %dx%d",
-+		DRM_ERROR("Surface size cannot exceed %dx%d\n",
- 			dev_priv->texture_max_width,
- 			dev_priv->texture_max_height);
- 		goto err_out;
--- 
-2.35.1
+> WARNING: A patch subject line should describe the change not the tool that found it
+> #4: 
+> Subject: [PATCH 1/3] staging: r8188eu: fix checkpatch.pl warnings in rtw_p2p
+> 
+> total: 0 errors, 1 warnings, 0 checks, 32 lines checked
 
 
 
+
+With regards,
+Pavel Skripkin
