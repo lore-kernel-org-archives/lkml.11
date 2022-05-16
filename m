@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61370C38162
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD51C3527D
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347365AbiEPT5b (ORCPT
+        id S1347217AbiEPT5L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54730 "EHLO
+        Mon, 16 May 2022 15:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347090AbiEPTvh (ORCPT
+        with ESMTP id S1347016AbiEPTve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:51:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8423FD96;
-        Mon, 16 May 2022 12:47:09 -0700 (PDT)
+        Mon, 16 May 2022 15:51:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD223FBC9;
+        Mon, 16 May 2022 12:46:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93807B8160E;
-        Mon, 16 May 2022 19:47:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0814CC385AA;
-        Mon, 16 May 2022 19:47:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57E3F604F5;
+        Mon, 16 May 2022 19:46:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF8DC34100;
+        Mon, 16 May 2022 19:46:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730427;
-        bh=83GQTNq/tBaD7g1NIWDbJ9kE3GD7vyzp8ZZH6TRSWDs=;
+        s=korg; t=1652730393;
+        bh=hxQr3HJrF4KGHrYdn2UKe4Ty6jxRkxNLvEZh7rMK530=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xDK3Jf9GD6VCxhlD09KMyG7eC0sWRbjSgECpTfw0B3DzhHDy+w+t1dCTxSQSeMraj
-         T3MEHL7qkonOcQlYYa3vadCDqbLtT/Nb2ux4YxGY8RJcwjOiye/2COEOubAscTLXmu
-         dU8t10SmUPVFA1joRl89UVss3Zb7KhjRyuO2UJW4=
+        b=Avgs0aRamOY6VpxiiOyouFkqb/R8/O+nxQFt6kHbMLTqYYn8ETxlHBgLPfw8gZDML
+         /XFAJ1Ltoc7KS6OCE47PjtREtyizxlGb32Yi2V0yKQAJH8N0DGieRCwC4FU7G5xtJk
+         ypDe9/xzRkV1H/c3+5HgrvoA0MOn11uGffdfCK/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fu <foyjog@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Meena Shanmugam <meenashanmugam@google.com>
-Subject: [PATCH 5.10 61/66] SUNRPC: Ensure we flush any closed sockets before xs_xprt_free()
-Date:   Mon, 16 May 2022 21:37:01 +0200
-Message-Id: <20220516193621.174798907@linuxfoundation.org>
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 5.10 51/66] serial: 8250_mtk: Fix register address for XON/XOFF character
+Date:   Mon, 16 May 2022 21:36:51 +0200
+Message-Id: <20220516193620.883724374@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -51,115 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-commit f00432063db1a0db484e85193eccc6845435b80e upstream.
+commit e1bfdbc7daca171c74a577b3dd0b36d76bb0ffcc upstream.
 
-We must ensure that all sockets are closed before we call xprt_free()
-and release the reference to the net namespace. The problem is that
-calling fput() will defer closing the socket until delayed_fput() gets
-called.
-Let's fix the situation by allowing rpciod and the transport teardown
-code (which runs on the system wq) to call __fput_sync(), and directly
-close the socket.
+The XON1/XOFF1 character registers are at offset 0xa0 and 0xa8
+respectively, so we cannot use the definition in serial_port.h.
 
-Reported-by: Felix Fu <foyjog@gmail.com>
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
-Fixes: a73881c96d73 ("SUNRPC: Fix an Oops in udp_poll()")
-Cc: stable@vger.kernel.org # 5.1.x: 3be232f11a3c: SUNRPC: Prevent immediate close+reconnect
-Cc: stable@vger.kernel.org # 5.1.x: 89f42494f92f: SUNRPC: Don't call connect() more than once on a TCP socket
-Cc: stable@vger.kernel.org # 5.1.x
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Meena Shanmugam <meenashanmugam@google.com>
+Fixes: bdbd0a7f8f03 ("serial: 8250-mtk: modify baudrate setting")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220427132328.228297-4-angelogioacchino.delregno@collabora.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/file_table.c               |    1 +
- include/trace/events/sunrpc.h |    1 -
- net/sunrpc/xprt.c             |    7 +------
- net/sunrpc/xprtsock.c         |   16 +++++++++++++---
- 4 files changed, 15 insertions(+), 10 deletions(-)
+ drivers/tty/serial/8250/8250_mtk.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/fs/file_table.c
-+++ b/fs/file_table.c
-@@ -376,6 +376,7 @@ void __fput_sync(struct file *file)
- }
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -54,6 +54,9 @@
+ #define MTK_UART_TX_TRIGGER	1
+ #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
  
- EXPORT_SYMBOL(fput);
-+EXPORT_SYMBOL(__fput_sync);
++#define MTK_UART_XON1		40	/* I/O: Xon character 1 */
++#define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
++
+ #ifdef CONFIG_SERIAL_8250_DMA
+ enum dma_rx_status {
+ 	DMA_RX_START = 0,
+@@ -275,8 +278,8 @@ static void mtk8250_set_flow_ctrl(struct
+ 			(serial_in(up, MTK_UART_EFR) &
+ 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK))));
  
- void __init files_init(void)
- {
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -1006,7 +1006,6 @@ DEFINE_RPC_XPRT_LIFETIME_EVENT(connect);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_auto);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_done);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_force);
--DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_cleanup);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(destroy);
- 
- DECLARE_EVENT_CLASS(rpc_xprt_event,
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -886,12 +886,7 @@ void xprt_connect(struct rpc_task *task)
- 	if (!xprt_lock_write(xprt, task))
- 		return;
- 
--	if (test_and_clear_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
--		trace_xprt_disconnect_cleanup(xprt);
--		xprt->ops->close(xprt);
--	}
--
--	if (!xprt_connected(xprt)) {
-+	if (!xprt_connected(xprt) && !test_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
- 		task->tk_rqstp->rq_connect_cookie = xprt->connect_cookie;
- 		rpc_sleep_on_timeout(&xprt->pending, task, NULL,
- 				xprt_request_timeout(task->tk_rqstp));
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -871,7 +871,7 @@ static int xs_local_send_request(struct
- 
- 	/* Close the stream if the previous transmission was incomplete */
- 	if (xs_send_request_was_aborted(transport, req)) {
--		xs_close(xprt);
-+		xprt_force_disconnect(xprt);
- 		return -ENOTCONN;
- 	}
- 
-@@ -909,7 +909,7 @@ static int xs_local_send_request(struct
- 			-status);
- 		fallthrough;
- 	case -EPIPE:
--		xs_close(xprt);
-+		xprt_force_disconnect(xprt);
- 		status = -ENOTCONN;
- 	}
- 
-@@ -1191,6 +1191,16 @@ static void xs_reset_transport(struct so
- 
- 	if (sk == NULL)
- 		return;
-+	/*
-+	 * Make sure we're calling this in a context from which it is safe
-+	 * to call __fput_sync(). In practice that means rpciod and the
-+	 * system workqueue.
-+	 */
-+	if (!(current->flags & PF_WQ_WORKER)) {
-+		WARN_ON_ONCE(1);
-+		set_bit(XPRT_CLOSE_WAIT, &xprt->state);
-+		return;
-+	}
- 
- 	if (atomic_read(&transport->xprt.swapper))
- 		sk_clear_memalloc(sk);
-@@ -1214,7 +1224,7 @@ static void xs_reset_transport(struct so
- 	mutex_unlock(&transport->recv_mutex);
- 
- 	trace_rpc_socket_close(xprt, sock);
--	fput(filp);
-+	__fput_sync(filp);
- 
- 	xprt_disconnect_done(xprt);
- }
+-		serial_out(up, UART_XON1, START_CHAR(port->state->port.tty));
+-		serial_out(up, UART_XOFF1, STOP_CHAR(port->state->port.tty));
++		serial_out(up, MTK_UART_XON1, START_CHAR(port->state->port.tty));
++		serial_out(up, MTK_UART_XOFF1, STOP_CHAR(port->state->port.tty));
+ 		serial_out(up, UART_LCR, lcr);
+ 		mtk8250_disable_intrs(up, MTK_UART_IER_CTSI|MTK_UART_IER_RTSI);
+ 		mtk8250_enable_intrs(up, MTK_UART_IER_XOFFI);
 
 
