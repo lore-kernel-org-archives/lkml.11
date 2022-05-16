@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D33FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26BBAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238845AbiEPUKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
+        id S241242AbiEPUKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347259AbiEPT5N (ORCPT
+        with ESMTP id S1347544AbiEPT5z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:57:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB74248322;
-        Mon, 16 May 2022 12:49:29 -0700 (PDT)
+        Mon, 16 May 2022 15:57:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D3642EF2;
+        Mon, 16 May 2022 12:49:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA6DBB8160E;
-        Mon, 16 May 2022 19:49:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F5FCC385AA;
-        Mon, 16 May 2022 19:49:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71A2B60ABE;
+        Mon, 16 May 2022 19:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E154C385AA;
+        Mon, 16 May 2022 19:49:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730566;
-        bh=oKUq3ahdpov0ZIOK2pIDkvBQ76LZxb00R113HUGe/Sc=;
+        s=korg; t=1652730575;
+        bh=k/5VGV2x40AoixLUsfvacPeVCkHLS+UHpXnvrAZCHTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Das1GHH4SslbI7btY/+jWv+FTJZG3zFUZm7Kszh30rCFk2p3dB0kxAgpKzle5SbYa
-         rwcTIK6AjjRWJUsalQ+IazX4+34rTdFgwB2lRAogmUWshhtYPjEvsFW7zR+JST8SBh
-         TjeBzSW2vLpRBKxGmkQaRM3DVGJ1A0IRxxri405U=
+        b=nhXd5sUXeuPw+T/a8gQxFLlPyM7iA4pGZ5Ryhtv2aAPaygdbSxFWGHE7wruU88LZO
+         pOhVr5moHuW5DPai+dd3yZJnqfu1Z/bN6FCnwM2sEhtlQoPGG8P1MXxrJ/dg+Dzl1P
+         gONlNJKWpKipGrTUoz+j1QiHoks2TjiaJwQ1PhDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hui Tang <tanghui20@huawei.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Martin Habets <habetsm.xilinx@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 038/102] drm/vc4: hdmi: Fix build error for implicit function declaration
-Date:   Mon, 16 May 2022 21:36:12 +0200
-Message-Id: <20220516193625.094526815@linuxfoundation.org>
+Subject: [PATCH 5.15 041/102] net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
+Date:   Mon, 16 May 2022 21:36:15 +0200
+Message-Id: <20220516193625.180192763@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -49,52 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hui Tang <tanghui20@huawei.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 6fed53de560768bde6d701a7c79c253b45b259e3 ]
+[ Upstream commit 1fa89ffbc04545b7582518e57f4b63e2a062870f ]
 
-drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_connector_detect’:
-drivers/gpu/drm/vc4/vc4_hdmi.c:228:7: error: implicit declaration of function ‘gpiod_get_value_cansleep’; did you mean ‘gpio_get_value_cansleep’? [-Werror=implicit-function-declaration]
-   if (gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio))
-       ^~~~~~~~~~~~~~~~~~~~~~~~
-       gpio_get_value_cansleep
-  CC [M]  drivers/gpu/drm/vc4/vc4_validate.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_v3d.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_validate_shaders.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_debugfs.o
-drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_bind’:
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:23: error: implicit declaration of function ‘devm_gpiod_get_optional’; did you mean ‘devm_clk_get_optional’? [-Werror=implicit-function-declaration]
-  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
-                       ^~~~~~~~~~~~~~~~~~~~~~~
-                       devm_clk_get_optional
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: error: ‘GPIOD_IN’ undeclared (first use in this function); did you mean ‘GPIOF_IN’?
-  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
-                                                           ^~~~~~~~
-                                                           GPIOF_IN
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: note: each undeclared identifier is reported only once for each function it appears in
-cc1: all warnings being treated as errors
+In the NIC ->probe() callback, ->mtd_probe() callback is called.
+If NIC has 2 ports, ->probe() is called twice and ->mtd_probe() too.
+In the ->mtd_probe(), which is efx_ef10_mtd_probe() it allocates and
+initializes mtd partiion.
+But mtd partition for sfc is shared data.
+So that allocated mtd partition data from last called
+efx_ef10_mtd_probe() will not be used.
+Therefore it must be freed.
+But it doesn't free a not used mtd partition data in efx_ef10_mtd_probe().
 
-Fixes: 6800234ceee0 ("drm/vc4: hdmi: Convert to gpiod")
-Signed-off-by: Hui Tang <tanghui20@huawei.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220510135148.247719-1-tanghui20@huawei.com
+kmemleak reports:
+unreferenced object 0xffff88811ddb0000 (size 63168):
+  comm "systemd-udevd", pid 265, jiffies 4294681048 (age 348.586s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffffa3767749>] kmalloc_order_trace+0x19/0x120
+    [<ffffffffa3873f0e>] __kmalloc+0x20e/0x250
+    [<ffffffffc041389f>] efx_ef10_mtd_probe+0x11f/0x270 [sfc]
+    [<ffffffffc0484c8a>] efx_pci_probe.cold.17+0x3df/0x53d [sfc]
+    [<ffffffffa414192c>] local_pci_probe+0xdc/0x170
+    [<ffffffffa4145df5>] pci_device_probe+0x235/0x680
+    [<ffffffffa443dd52>] really_probe+0x1c2/0x8f0
+    [<ffffffffa443e72b>] __driver_probe_device+0x2ab/0x460
+    [<ffffffffa443e92a>] driver_probe_device+0x4a/0x120
+    [<ffffffffa443f2ae>] __driver_attach+0x16e/0x320
+    [<ffffffffa4437a90>] bus_for_each_dev+0x110/0x190
+    [<ffffffffa443b75e>] bus_add_driver+0x39e/0x560
+    [<ffffffffa4440b1e>] driver_register+0x18e/0x310
+    [<ffffffffc02e2055>] 0xffffffffc02e2055
+    [<ffffffffa3001af3>] do_one_initcall+0xc3/0x450
+    [<ffffffffa33ca574>] do_init_module+0x1b4/0x700
+
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Fixes: 8127d661e77f ("sfc: Add support for Solarflare SFC9100 family")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Link: https://lore.kernel.org/r/20220512054709.12513-1-ap420073@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/sfc/ef10.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 07887cbfd9cb..ef7bea7c43a0 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -38,6 +38,7 @@
- #include <drm/drm_scdc_helper.h>
- #include <linux/clk.h>
- #include <linux/component.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/of_address.h>
- #include <linux/of_gpio.h>
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index e7e2223aebbf..f5a4d8f4fd11 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -3579,6 +3579,11 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
+ 		n_parts++;
+ 	}
+ 
++	if (!n_parts) {
++		kfree(parts);
++		return 0;
++	}
++
+ 	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
+ fail:
+ 	if (rc)
 -- 
 2.35.1
 
