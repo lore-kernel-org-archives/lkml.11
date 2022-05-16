@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A950BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 995E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234500AbiEPITX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 04:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
+        id S241604AbiEPITz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 04:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241587AbiEPISu (ORCPT
+        with ESMTP id S241616AbiEPITN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 04:18:50 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAE736E36
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 01:18:47 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6B8A4200513;
-        Mon, 16 May 2022 10:18:46 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 33F5820050C;
-        Mon, 16 May 2022 10:18:46 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id B6ECD180031D;
-        Mon, 16 May 2022 16:18:44 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] ASoC: fsl_sai: Add support for i.MX8ULP
-Date:   Mon, 16 May 2022 16:06:12 +0800
-Message-Id: <1652688372-10274-4-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 16 May 2022 04:19:13 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507873700C;
+        Mon, 16 May 2022 01:18:57 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id y12so6748138ior.7;
+        Mon, 16 May 2022 01:18:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DCT9SZxbUAetmWuf3pk6YIhFQG9M9FNclZ/4QgcwxV8=;
+        b=a/bdnw1IqPtXiw1fih/+BYezIE0/Jq7/r4EyNIMu86NVl+0ySxnPYJmHwoK3CHksO/
+         lvDpHIVpVz7+E7BwFAMrykx6XxZ6VTmAEQHphiZ70xgxfRWUSFvNgtqZ3/boQCfnTdk0
+         +2X/njuIomYruELvtR5eMnBGuHUm/OgoiaBmMVhGnJBRkuyg7mK/pMlBU1jwvWQ5yQzy
+         CRgTpQDhtoGLa6stGMYlpdHOmp7ZrZMie/QSx8/QVpnBQGg/8P+QaFXERoZoOcU0Tkxh
+         c45/jFRtLq5RmQFRrCGmH34Yunq4hqrNLB+Ik9S9CFboyMqalXXmG7pfnNSXR9fjtbFV
+         Vzgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DCT9SZxbUAetmWuf3pk6YIhFQG9M9FNclZ/4QgcwxV8=;
+        b=236RKnudaTu6I2m+D9+3FsF4K5YLNPzKgOPR2QNjPhw1wzwvdmhVPYcAU2Aii89CNO
+         mQ+BVdmgWV08dxsBd6sYtgOBJZIqJ6AI4au92+up5DcZhI9v2JopS7fgqgdDGWbba1MM
+         BLjmSfUqL2yJzfw+DTGcPILdRe0LPFglaPaM+3rsTcHzyiV4+LPqmuYsTkAZ+BybJfIf
+         j4CRr6FjirApHWCywCQ0cfRSEFurUa1gJDXQ0eHTT0X906X2kJFE2nBo1D04I+OqL8px
+         2Vq6H6ZX47f9vyMy9RI7oA7wKjaxOh294x6IeIh8FHsHGHtUMemrtRweyOp8GOnq4//C
+         DXkg==
+X-Gm-Message-State: AOAM532+mp1bvm3MbJ4IS8GTgQa1wFnVDbYZ4x97rTTpBkVVASKG14DO
+        yuPTZ8OAcCAHDo4FOlOlc81IEeNf7gCZqm7vGeo=
+X-Google-Smtp-Source: ABdhPJyAKWR3S9ULvFDIYESPh0CRsptKrv/IhdA3tpGnUbi7OWK8GTciJxnudA2woMHWRkWykGb00FalObPcHO3v0dg=
+X-Received: by 2002:a5e:c643:0:b0:657:b1b0:8e2d with SMTP id
+ s3-20020a5ec643000000b00657b1b08e2dmr7285283ioo.64.1652689136547; Mon, 16 May
+ 2022 01:18:56 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220516171329.6b10e4e5@canb.auug.org.au> <YoIB8WCdgHr6Cp+z@kroah.com>
+In-Reply-To: <YoIB8WCdgHr6Cp+z@kroah.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Mon, 16 May 2022 10:18:45 +0200
+Message-ID: <CANiq72mtirFqVr9eHnh9Y=nAbBZcNxspdLoWKzvwmvjHfvBQ4w@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the rust tree with the char-misc tree
+To:     Greg KH <greg@kroah.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Alex Gaynor <alex.gaynor@gmail.com>,
+        Carlos Llamas <cmllamas@google.com>,
+        Finn Behrens <me@kloenk.de>, Gary Guo <gary@garyguo.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Wayne Campbell <wcampbell1995@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add i.MX8ULP specific soc data, the max register is FSL_SAI_RTCAP
-the IP version is also 0x0301, So version can't be used for the
-condition of register FSL_SAI_MCTL setting.
+Hi Greg,
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/fsl_sai.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+On Mon, May 16, 2022 at 9:49 AM Greg KH <greg@kroah.com> wrote:
+>
+> Odd, why does the Rust binder implementation require the IOCTL
+> definitions to be in an enum instead of a #define?
 
-diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
-index b528722acd65..fa950dde5310 100644
---- a/sound/soc/fsl/fsl_sai.c
-+++ b/sound/soc/fsl/fsl_sai.c
-@@ -1147,7 +1147,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
- 
- 	/* Select MCLK direction */
- 	if (of_find_property(np, "fsl,sai-mclk-direction-output", NULL) &&
--	    sai->verid.version >= 0x0301) {
-+	    sai->soc_data->max_register >= FSL_SAI_MCTL) {
- 		regmap_update_bits(sai->regmap, FSL_SAI_MCTL,
- 				   FSL_SAI_MCTL_MCLK_EN, FSL_SAI_MCTL_MCLK_EN);
- 	}
-@@ -1272,6 +1272,17 @@ static const struct fsl_sai_soc_data fsl_sai_imx8mp_data = {
- 	.max_register = FSL_SAI_MDIV,
- };
- 
-+static const struct fsl_sai_soc_data fsl_sai_imx8ulp_data = {
-+	.use_imx_pcm = true,
-+	.use_edma = true,
-+	.fifo_depth = 16,
-+	.reg_offset = 8,
-+	.mclk0_is_mclk1 = false,
-+	.pins = 4,
-+	.flags = PMQOS_CPU_LATENCY,
-+	.max_register = FSL_SAI_RTCAP,
-+};
-+
- static const struct of_device_id fsl_sai_ids[] = {
- 	{ .compatible = "fsl,vf610-sai", .data = &fsl_sai_vf610_data },
- 	{ .compatible = "fsl,imx6sx-sai", .data = &fsl_sai_imx6sx_data },
-@@ -1281,6 +1292,7 @@ static const struct of_device_id fsl_sai_ids[] = {
- 	{ .compatible = "fsl,imx8qm-sai", .data = &fsl_sai_imx8qm_data },
- 	{ .compatible = "fsl,imx8mm-sai", .data = &fsl_sai_imx8mm_data },
- 	{ .compatible = "fsl,imx8mp-sai", .data = &fsl_sai_imx8mp_data },
-+	{ .compatible = "fsl,imx8ulp-sai", .data = &fsl_sai_imx8ulp_data },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, fsl_sai_ids);
--- 
-2.17.1
+It is because bindgen (the tool which generates the "raw" C bindings)
+only works with simple C `#define`s. Thus there are two options when
+one hits something like this: either copy-paste them manually into the
+Rust side (which adds maintenance), or change them into real
+objects/identifiers in the C side.
 
+There may be support in the future for expanding macros that end up in
+a numeric one: https://github.com/rust-lang/rust-bindgen/issues/753.
+
+Stephen: the resolution looks fine, thanks!
+
+> If that's required, I can take that type of change now to prevent merge
+> issues in the future.
+
+We have two so far: this one (for the RFC Android patch) and another
+small one in include/linux/spinlock.h (for the `sync` module).
+
+So far I have put those changes in their respective patches, but if
+you prefer I can send them independently too (like the prerequisite
+patches).
+
+Cheers,
+Miguel
