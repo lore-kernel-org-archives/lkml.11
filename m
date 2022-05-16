@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC1EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 05:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 131E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 05:41:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239246AbiEPFlZ convert rfc822-to-8bit (ORCPT
+        id S239690AbiEPFld convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 01:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        Mon, 16 May 2022 01:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239507AbiEPFlH (ORCPT
+        with ESMTP id S239727AbiEPFlM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 01:41:07 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B311EDF6F
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 22:41:06 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24F8tbOk008840
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 22:41:06 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3g27rnqmat-3
+        Mon, 16 May 2022 01:41:12 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75D7DF70
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 22:41:11 -0700 (PDT)
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24FLaUZG008181
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 22:41:11 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3g29xxf5eb-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 22:41:06 -0700
-Received: from twshared19572.14.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 22:41:11 -0700
+Received: from twshared11660.23.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 15 May 2022 22:41:05 -0700
+ 15.1.2375.24; Sun, 15 May 2022 22:41:09 -0700
 Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id E7C627AEBC12; Sun, 15 May 2022 22:40:57 -0700 (PDT)
+        id 595B17AEBC8C; Sun, 15 May 2022 22:41:01 -0700 (PDT)
 From:   Song Liu <song@kernel.org>
 To:     <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
 CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <peterz@infradead.org>,
         <mcgrof@kernel.org>, <torvalds@linux-foundation.org>,
         <rick.p.edgecombe@intel.com>, <kernel-team@fb.com>,
         Song Liu <song@kernel.org>
-Subject: [PATCH bpf-next 1/5] bpf: fill new bpf_prog_pack with illegal instructions
-Date:   Sun, 15 May 2022 22:40:47 -0700
-Message-ID: <20220516054051.114490-2-song@kernel.org>
+Subject: [PATCH bpf-next 3/5] bpf: introduce bpf_arch_text_invalidate for bpf_prog_pack
+Date:   Sun, 15 May 2022 22:40:49 -0700
+Message-ID: <20220516054051.114490-4-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220516054051.114490-1-song@kernel.org>
 References: <20220516054051.114490-1-song@kernel.org>
@@ -45,8 +45,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: L7peFkeXj_AniXSh3i3mJ_54k8K-YbXN
-X-Proofpoint-GUID: L7peFkeXj_AniXSh3i3mJ_54k8K-YbXN
+X-Proofpoint-GUID: KOGiTDju-EhY1QDQkPvTXKpZrdvBC1Br
+X-Proofpoint-ORIG-GUID: KOGiTDju-EhY1QDQkPvTXKpZrdvBC1Br
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-05-15_11,2022-05-13_01,2022-02-23_01
@@ -54,74 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bpf_prog_pack enables sharing huge pages among multiple BPF programs.
-These pages are marked as executable before the JIT engine fill it with
-BPF programs. To make these pages safe, fill the hole bpf_prog_pack with
-illegal instructions before making it executable.
+Introduce bpf_arch_text_invalidate and use it to fill unused part of the
+bpf_prog_pack with illegal instructions when a BPF program is freed.
 
-Fixes: 57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
-Fixes: 33c9805860e5 ("bpf: Introduce bpf_jit_binary_pack_[alloc|finalize|free]")
 Signed-off-by: Song Liu <song@kernel.org>
 ---
- kernel/bpf/core.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/x86/net/bpf_jit_comp.c | 5 +++++
+ include/linux/bpf.h         | 1 +
+ kernel/bpf/core.c           | 8 ++++++++
+ 3 files changed, 14 insertions(+)
 
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index a2b6d197c226..f298b18a9a3d 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -228,6 +228,11 @@ static void jit_fill_hole(void *area, unsigned int size)
+ 	memset(area, 0xcc, size);
+ }
+ 
++int bpf_arch_text_invalidate(void *dst, size_t len)
++{
++	return IS_ERR_OR_NULL(text_poke_set(dst, 0xcc, len));
++}
++
+ struct jit_context {
+ 	int cleanup_addr; /* Epilogue code offset */
+ 
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 5061ccd8b2dc..0288a6464236 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2362,6 +2362,7 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+ 		       void *addr1, void *addr2);
+ 
+ void *bpf_arch_text_copy(void *dst, void *src, size_t len);
++int bpf_arch_text_invalidate(void *dst, size_t len);
+ 
+ struct btf_id_set;
+ bool btf_id_set_contains(const struct btf_id_set *set, u32 id);
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 9cc91f0f3115..2d0c9d4696ad 100644
+index 2d0c9d4696ad..cacd8684c3c4 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -873,7 +873,7 @@ static size_t select_bpf_prog_pack_size(void)
- 	return size;
+@@ -968,6 +968,9 @@ static void bpf_prog_pack_free(struct bpf_binary_header *hdr)
+ 	nbits = BPF_PROG_SIZE_TO_NBITS(hdr->size);
+ 	pos = ((unsigned long)hdr - (unsigned long)pack_ptr) >> BPF_PROG_CHUNK_SHIFT;
+ 
++	WARN_ONCE(bpf_arch_text_invalidate(hdr, hdr->size),
++		  "bpf_prog_pack bug: missing bpf_arch_text_invalidate?\n");
++
+ 	bitmap_clear(pack->bitmap, pos, nbits);
+ 	if (bitmap_find_next_zero_area(pack->bitmap, bpf_prog_chunk_count(), 0,
+ 				       bpf_prog_chunk_count(), 0) == 0) {
+@@ -2740,6 +2743,11 @@ void * __weak bpf_arch_text_copy(void *dst, void *src, size_t len)
+ 	return ERR_PTR(-ENOTSUPP);
  }
  
--static struct bpf_prog_pack *alloc_new_pack(void)
-+static struct bpf_prog_pack *alloc_new_pack(bpf_jit_fill_hole_t bpf_fill_ill_insns)
- {
- 	struct bpf_prog_pack *pack;
++int __weak bpf_arch_text_invalidate(void *dst, size_t len)
++{
++	return -ENOTSUPP;
++}
++
+ DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+ EXPORT_SYMBOL(bpf_stats_enabled_key);
  
-@@ -886,6 +886,7 @@ static struct bpf_prog_pack *alloc_new_pack(void)
- 		kfree(pack);
- 		return NULL;
- 	}
-+	bpf_fill_ill_insns(pack->ptr, bpf_prog_pack_size);
- 	bitmap_zero(pack->bitmap, bpf_prog_pack_size / BPF_PROG_CHUNK_SIZE);
- 	list_add_tail(&pack->list, &pack_list);
- 
-@@ -895,7 +896,7 @@ static struct bpf_prog_pack *alloc_new_pack(void)
- 	return pack;
- }
- 
--static void *bpf_prog_pack_alloc(u32 size)
-+static void *bpf_prog_pack_alloc(u32 size, bpf_jit_fill_hole_t bpf_fill_ill_insns)
- {
- 	unsigned int nbits = BPF_PROG_SIZE_TO_NBITS(size);
- 	struct bpf_prog_pack *pack;
-@@ -910,6 +911,7 @@ static void *bpf_prog_pack_alloc(u32 size)
- 		size = round_up(size, PAGE_SIZE);
- 		ptr = module_alloc(size);
- 		if (ptr) {
-+			bpf_fill_ill_insns(ptr, size);
- 			set_vm_flush_reset_perms(ptr);
- 			set_memory_ro((unsigned long)ptr, size / PAGE_SIZE);
- 			set_memory_x((unsigned long)ptr, size / PAGE_SIZE);
-@@ -923,7 +925,7 @@ static void *bpf_prog_pack_alloc(u32 size)
- 			goto found_free_area;
- 	}
- 
--	pack = alloc_new_pack();
-+	pack = alloc_new_pack(bpf_fill_ill_insns);
- 	if (!pack)
- 		goto out;
- 
-@@ -1102,7 +1104,7 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
- 
- 	if (bpf_jit_charge_modmem(size))
- 		return NULL;
--	ro_header = bpf_prog_pack_alloc(size);
-+	ro_header = bpf_prog_pack_alloc(size, bpf_fill_ill_insns);
- 	if (!ro_header) {
- 		bpf_jit_uncharge_modmem(size);
- 		return NULL;
 -- 
 2.30.2
 
