@@ -2,122 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70980C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF1CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242630AbiEPNbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        id S241264AbiEPNe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238519AbiEPNbN (ORCPT
+        with ESMTP id S234746AbiEPNeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:31:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 04CA52CCA4
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:31:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652707870;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=w+eIR1jdJFJp4FEreIhpWwIkPEB98By7uRBAllkcS2c=;
-        b=HzLj3X9EByW6Z2m5IAE3OA30sToaJNBXKg8NdIcZdqIS2gfy7EZlRH0xQF27gMB+I/uonz
-        bJ41M6ScDltTV1WMhCvfDlYO1qFO0jWgRwANUnVAgJDKIPwBpbdn/L+WYVu+Z+wpJUFKc0
-        chsadU0TYCuUcFA1TYuoRZsKb88zKb0=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-130-Z1oiGpVEP8Gn5Jf8j33r8A-1; Mon, 16 May 2022 09:31:09 -0400
-X-MC-Unique: Z1oiGpVEP8Gn5Jf8j33r8A-1
-Received: by mail-ed1-f71.google.com with SMTP id f20-20020a50d554000000b0042abba35e60so679618edj.15
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:31:08 -0700 (PDT)
+        Mon, 16 May 2022 09:34:25 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5D62E08D
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:34:24 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id l14so3565221pjk.2
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:34:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=8Wiw0YaKHgp2/CNUgU6ftGJizsrvl4U6a/ESGbrf7k8=;
+        b=MDur2QTO4g7JVhtUilqfWkMIg54Mhh/LX86V0xy1WvIYVQRHVki/VNB6W7pV4Usg28
+         x7C7+NxQ8DFHwA7Gd/i0a+YfkkLGwPPMUbXCh4UtFK3cwajNXUrNTSaWxWoqJeGaRAI0
+         g4Ay6XCqhjamVZBN1hhQq1WPReYf+p7xMd4YyqOVJ4nIC/5Z58PIWFkpDoTGN1LOfIoc
+         RodDest2UNvbfQw4oPyq1ZoLF1Ig/xuujB+ZOpBZJohE9PBUdDhuPTR8lpjC6xpfcjWY
+         hKdFyOz+eHm4+j5ppa/c/3y9vXf89lRlDnOHpyQkTEYjFqcamCQBgbd/ulELMV7/VJph
+         hWyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w+eIR1jdJFJp4FEreIhpWwIkPEB98By7uRBAllkcS2c=;
-        b=kTsqrb5VKYn4bHDX0zvTmT8kaqgVXIUlNodOv/9LVqdn03qRqXuxFIXZl5fKkh+C2A
-         D5b4OxACKKe1Y3neSVMNZkL5e20/QivYBoBCcvNLA/VbPmyClWZQzVGpooP737oU/CZg
-         jaQQFekHoBgIv3SKKa7kr7LCOtRXdvyDAN/bXAkI7ydfOniapHYswkJbsh94OTBCxUkY
-         ynTVRBUNCcu0F6YotfOKFlbHW2BD/HdatR46aWePNF2vtaAhU8hIJInP5nuu/gN1hXdD
-         OOg1Iqe3s4Z2bwpa+0ccnRvzollFBsJ1BZowEA2eoHMMSGhea8qHfMvLfhtRamMUnB+9
-         EoMg==
-X-Gm-Message-State: AOAM531BqOR9gwcETIe49JtYxNoLrYrlbPTKRccOcyiRmmIPmf9g/EHJ
-        9FrfLKBWPf6ZzyUaVWIIceQDQznC42iwYzQrfUxGfzleCiBgilJ8YHjOSM44K8TYjyPuM4x3SBh
-        SopwV4SiazksVcJBMvU6w/8CjscmrMG1XKFCjItEvsGK4afNS4qr1KsXoG6tsZ5jYpRoFs3KDmM
-        iy
-X-Received: by 2002:a17:907:1687:b0:6f4:ebc2:da77 with SMTP id hc7-20020a170907168700b006f4ebc2da77mr14924505ejc.508.1652707867511;
-        Mon, 16 May 2022 06:31:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy0fOyJSx7iSNVdMn7CYLSlWrFP1mGJaYESmuOYZfdVRlB9QZmxDbNE8F2fpbTaT5BDFciIPw==
-X-Received: by 2002:a17:907:1687:b0:6f4:ebc2:da77 with SMTP id hc7-20020a170907168700b006f4ebc2da77mr14924475ejc.508.1652707867235;
-        Mon, 16 May 2022 06:31:07 -0700 (PDT)
-Received: from fedora.. (78-80-114-84.customers.tmcz.cz. [78.80.114.84])
-        by smtp.gmail.com with ESMTPSA id w3-20020a50fa83000000b0042ab8c5e99fsm868438edr.14.2022.05.16.06.31.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 06:31:06 -0700 (PDT)
-From:   Mark Menzynski <mmenzyns@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Mark Menzynski <mmenzyns@redhat.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
-Subject: [PATCH v2] drm/nouveau: reorder nouveau_drm_device_fini
-Date:   Mon, 16 May 2022 15:31:03 +0200
-Message-Id: <20220516133103.324365-1-mmenzyns@redhat.com>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=8Wiw0YaKHgp2/CNUgU6ftGJizsrvl4U6a/ESGbrf7k8=;
+        b=xdJgZyXWQ/A9iVl+gFy5cEiFEou6HVXyW8028tulqtYv8rwJSx9jxM9NzSjNQd/NWX
+         mAvf+MjqdRwhb4DOkNiPQQg8XcLYMq9tHd9Z260QzqSS6HTxx2lE0ro+UxytyTyN0RHe
+         1Qi6Jf2C7MtFQ4dqtLSCg3koSKYxh46mC4z8oQ+uAyrzcelPdWSEzK26caT7yNCEl7Xp
+         Cg5ey+kRNSnIZCmqsh82cSZfuAJ1qs+JU6q2Di08P35Kwpt/U1P5D+Pxy2QqXWbL/ZTE
+         yzftAvnc+/+JrDKUG6RBfvEmvR0uQG05i0HMkmPAUnyGwJ27SaDLshh96BeiTIWdlS9i
+         RoAA==
+X-Gm-Message-State: AOAM533IbNValPExhbGkpD2bPoubw3Kc691Z2yly46j/lUW1HDGPBnb/
+        feNBDFnwks2tt+mhEOKM1GVHuQ2KrA4wvaEsff11KA==
+X-Google-Smtp-Source: ABdhPJwAKmaGENO0E5Q6WGiICunx/2bCv23XGNqs3kAg4mQcKbWysHi8jhp7hufATZDbT34VFHZtxAOBuF6obNx8QqI=
+X-Received: by 2002:a17:902:b581:b0:161:5f37:6688 with SMTP id
+ a1-20020a170902b58100b001615f376688mr9056984pls.145.1652708063872; Mon, 16
+ May 2022 06:34:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220428122651.208575-1-jsd@semihalf.com> <YnLaOkzTA1dUrMkc@kunai>
+In-Reply-To: <YnLaOkzTA1dUrMkc@kunai>
+From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
+Date:   Mon, 16 May 2022 15:34:13 +0200
+Message-ID: <CAOtMz3PWNOwTzmLB4d5tmRP5L6zg2ELcth8fd6_8vEEP7+=WoA@mail.gmail.com>
+Subject: Re: [PATCH] i2c: designware: Modify timing parameters for amdpsp mailbox
+To:     Wolfram Sang <wsa@kernel.org>, Jan Dabros <jsd@semihalf.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Raul E Rangel <rrangel@chromium.org>,
+        "Easow, Nimesh" <Nimesh.Easow@amd.com>, upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Resources needed for output poll workers are destroyed in
-nouveau_fbcon_fini() before output poll workers are cleared in
-nouveau_display_fini(). This means there is a time between fbcon_fini()
-and display_fini(), where if output poll happens, it crashes.
+=C5=9Br., 4 maj 2022 o 21:55 Wolfram Sang <wsa@kernel.org> napisa=C5=82(a):
+>
+> On Thu, Apr 28, 2022 at 02:26:51PM +0200, Jan Dabros wrote:
+> > Adjust retry period and timeout values for x86-PSP mailbox based on the
+> > typical I2C traffic generated by PSP. In order to limit the possibility
+> > of timeouts, x86 should reduce the interval between retries as well as
+> > increase overall time after which it gives up.
+> >
+> > Signed-off-by: Jan Dabros <jsd@semihalf.com>
+>
+> Applied to for-next, thanks! Let me know if you think this is a bugfix
+> and should be in for-current.
 
-This makes output poll workers cleared right before fbcon resources are
-destroyed.
+Sorry for the late response! I believe this is not necessary to
+include this patch in for-current. Thanks.
 
-BUG: KASAN: use-after-free in
-__drm_fb_helper_initial_config_and_unlock.cold+0x1f3/0x291
-[drm_kms_helper]
-
-Cc: Ben Skeggs <bskeggs@redhat.com>
-Cc: Karol Herbst <kherbst@redhat.com>
-Cc: Lyude Paul <lyude@redhat.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: dri-devel@lists.freedesktop.org
-Cc: nouveau@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Mark Menzynski <mmenzyns@redhat.com>
----
- drivers/gpu/drm/nouveau/nouveau_fbcon.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/gpu/drm/nouveau/nouveau_fbcon.c b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-index 4f9b3aa5deda..5226323e55d3 100644
---- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-@@ -39,6 +39,7 @@
- 
- #include <drm/drm_crtc.h>
- #include <drm/drm_crtc_helper.h>
-+#include <drm/drm_probe_helper.h>
- #include <drm/drm_fb_helper.h>
- #include <drm/drm_fourcc.h>
- #include <drm/drm_atomic.h>
-@@ -605,6 +606,7 @@ nouveau_fbcon_fini(struct drm_device *dev)
- 	if (!drm->fbcon)
- 		return;
- 
-+	drm_kms_helper_poll_fini(dev);
- 	nouveau_fbcon_accel_fini(dev);
- 	nouveau_fbcon_destroy(dev, drm->fbcon);
- 	kfree(drm->fbcon);
--- 
-2.32.0
-
+Best Regards,
+Jan
