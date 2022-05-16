@@ -2,93 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F669C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 22:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35AFEC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 22:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349123AbiEPWyk (ORCPT
+        id S1348925AbiEPW4h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 18:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        Mon, 16 May 2022 18:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233809AbiEPWyg (ORCPT
+        with ESMTP id S1349826AbiEPW4C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 18:54:36 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14023419AA
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 15:54:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652741675; x=1684277675;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mA98VrZe/rix7Ydo+Yw58bcGuuP+5pWFws31EDCu4pc=;
-  b=Bg3ziZ0P58ra6PUrfWUvcKqaFaqVEuR2T2ipwShJMRFQOvatfUc0SJkO
-   ogQg8vhyggZjMhtv7v4M3UcaYDPBfEuFke32u4HlL7G3jvdt7rCBz/VJ3
-   MuWnCtyv5tIUT/3GIAD5qW+wHWlcEuBO5h/SUDm5ShBZCun/QHOJ6orgH
-   DMn1DQTbGP7u/jB3qpXf8xF4CB8NdyO3wE4Ixe0q17cD1GumvC4ypRvhy
-   IquD8K2rEQChbj4ySw64xIuaoUuAu4+wbGRixJv7EM+LFCw4sAYVT8A5w
-   A24CMZoWbvawQ9FS73akyIINLvagvcomyxDx2f8iGiKLn3pZreX0Mnyuq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="331602921"
-X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
-   d="scan'208";a="331602921"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 15:54:33 -0700
-X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
-   d="scan'208";a="544585021"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 15:54:33 -0700
-Date:   Mon, 16 May 2022 15:58:22 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Ning Sun <ning.sun@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Steve Wahl <steve.wahl@hpe.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 6/7] x86/boot/tboot: Move tboot_force_iommu() to Intel
- IOMMU
-Message-ID: <20220516155822.6130dd03@jacob-builder>
-In-Reply-To: <20220516180628.GL1343366@nvidia.com>
-References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
-        <20220514014322.2927339-7-baolu.lu@linux.intel.com>
-        <20220516180628.GL1343366@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 16 May 2022 18:56:02 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7680865BB;
+        Mon, 16 May 2022 15:55:59 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-f16a3e0529so11831678fac.2;
+        Mon, 16 May 2022 15:55:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WWIkYq2gmKsjJ10G1579jbzJ51SdBFfwyh8O5uRzmK0=;
+        b=c3iKe5OXPkqJWM4NbtdXUvjqgyzcNdcIkB5SPCp/irJ1Tqt8PdHHLiAoBaOCoP9cSE
+         BaORZ0q97TgdOBkNYpqkzYoIetRUGThauilZFowhDPiFg1+0ovIefL1rKWEhw68D2JgP
+         ikmUKFpdWQXNm8ZSUVXGmX1yzFW754tzFB6BUsvDF2NYy4tx++bUyyIlAN0yaHgBqTSC
+         zrXHrmz5Ftj1rnp+SLR4gpd7owVXeSqZXUk68a423jj0Na1MA/Vko/KijLZt1LJQBtpa
+         JtKHoH1Ny37O18DB8IJaeIDvm21ksi+dRZlcHEikJgihAbj6DiGEmX9sTtQYANX5szLt
+         17MA==
+X-Gm-Message-State: AOAM533ZHKVUjVp4DC+5hcj9Pa1dQokdCnr6lyeQ9fFzRr+L6MpWYbdb
+        tPLIExIpe0MyNUawP9gZwg==
+X-Google-Smtp-Source: ABdhPJwk3pQZyl//Mn32sjbmvYJ11kR4v8NtTekdMFosCVDqdVv8PAXebaB3Di53dAeOJFllXSwflA==
+X-Received: by 2002:a05:6870:2189:b0:ed:995f:8f1 with SMTP id l9-20020a056870218900b000ed995f08f1mr10428874oae.33.1652741758724;
+        Mon, 16 May 2022 15:55:58 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t14-20020a056870f20e00b000f15a771206sm5406648oao.36.2022.05.16.15.55.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 15:55:57 -0700 (PDT)
+Received: (nullmailer pid 3473100 invoked by uid 1000);
+        Mon, 16 May 2022 22:55:57 -0000
+Date:   Mon, 16 May 2022 17:55:57 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Cristian Marussi <cristian.marussi@arm.com>
+Cc:     f.fainelli@gmail.com, daniel.lezcano@linaro.org,
+        Rob Herring <robh+dt@kernel.org>, sudeep.holla@arm.com,
+        vincent.guittot@linaro.org, james.quinlan@broadcom.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        souvik.chakravarty@arm.com, adrian.slatineanu@arm.com,
+        devicetree@vger.kernel.org, tarek.el-sherbiny@arm.com,
+        Jonathan.Cameron@huawei.com
+Subject: Re: [PATCH 1/7] dt-bindings: firmware: arm,scmi: Add powercap
+ protocol
+Message-ID: <20220516225557.GA3473042-robh@kernel.org>
+References: <20220504093609.3077646-1-cristian.marussi@arm.com>
+ <20220504093609.3077646-2-cristian.marussi@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220504093609.3077646-2-cristian.marussi@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+On Wed, 04 May 2022 10:36:03 +0100, Cristian Marussi wrote:
+> Add new SCMIv3.1 Powercap protocol bindings definitions and example.
+> 
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> ---
+>  .../devicetree/bindings/firmware/arm,scmi.yaml         | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
 
-On Mon, 16 May 2022 15:06:28 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> Unrelated, but when we are in the special secure IOMMU modes, do we
-> force ATS off? Specifically does the IOMMU reject TLPs that are marked
-> as translated?
-Yes, VT-d context entry has a Device TLB Enable bit, if 0, it means
-"Translation Requests (with or without PASID) and Translated Requests
-received and processed through this scalable-mode context-entry are
-blocked."
-
-Thanks,
-
-Jacob
+Acked-by: Rob Herring <robh@kernel.org>
