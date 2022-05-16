@@ -2,43 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CD5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54461C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348479AbiEPUgk (ORCPT
+        id S1348805AbiEPUhI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55976 "EHLO
+        Mon, 16 May 2022 16:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351103AbiEPUCC (ORCPT
+        with ESMTP id S1351088AbiEPUB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:02:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBEE05F84;
-        Mon, 16 May 2022 12:58:54 -0700 (PDT)
+        Mon, 16 May 2022 16:01:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE97403FF;
+        Mon, 16 May 2022 12:58:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DEB5B81611;
-        Mon, 16 May 2022 19:58:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF13AC34100;
-        Mon, 16 May 2022 19:58:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AADDB81616;
+        Mon, 16 May 2022 19:58:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585DCC385AA;
+        Mon, 16 May 2022 19:58:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731132;
-        bh=HmGUBe0x93Fyp4SHu7EWZrecH5EDBrIut2MMvpPE8Q4=;
+        s=korg; t=1652731115;
+        bh=f9Wbh+hvcaWpVjkimkh0jirMW7eLTqyJ+NPaSQlTdIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DzmbyuTLll1A1lsz6/6fc0csW1G4LRlXvdDztrfEQEs1BkV6Fy8K6JiOhVQCBxk3K
-         /ELhqH0toc4HExBJpf0pZ+4hSRRksucliDM0gF+MLXoBuGAFQ/bcMKO3pH+1ZeCyHj
-         QghEWDRe+C+WxLR0V36SR+WzKlSfZBYAimQRNAQ4=
+        b=BjpRIMfyjFf35ralhFiEmGHdon8i1QQt7DwOkcHcDoft2VD9CZ/1JQyUT4hzANFZl
+         jSow6+YsmfsYWJ48hF8hz3cfzi7h1/fuVRitydnvWAzvQ5SycoDzbPcYTZO72CgXZj
+         PsPWCZHlltNRt4ugh5PEnf+dhS0gcIOFXiwTMtH8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lijo Lazar <lijo.lazar@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 110/114] Revert "drm/amd/pm: keep the BACO feature enabled for suspend"
-Date:   Mon, 16 May 2022 21:37:24 +0200
-Message-Id: <20220516193628.632120218@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>,
+        "kernelci.org bot" <bot@kernelci.org>,
+        Mark Brown <broonie@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tony Lindgren <tony@atomide.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.17 105/114] arm[64]/memremap: dont abuse pfn_valid() to ensure presence of linear map
+Date:   Mon, 16 May 2022 21:37:19 +0200
+Message-Id: <20220516193628.489167960@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,46 +57,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-commit a56f445f807b0276fc0660c330bf93a9ea78e8ea upstream.
+commit 260364d112bc822005224667c0c9b1b17a53eafd upstream.
 
-This reverts commit eaa090538e8d21801c6d5f94590c3799e6a528b5.
+The semantics of pfn_valid() is to check presence of the memory map for a
+PFN and not whether a PFN is covered by the linear map.  The memory map
+may be present for NOMAP memory regions, but they won't be mapped in the
+linear mapping.  Accessing such regions via __va() when they are
+memremap()'ed will cause a crash.
 
-Commit ebc002e3ee78 ("drm/amdgpu: don't use BACO for reset in S3")
-stops using BACO for reset during suspend, so it's no longer
-necessary to leave BACO enabled during suspend.  This fixes
-resume from suspend on the navy flounder dGPU in the ASUS ROG
-Strix G513QY.
+On v5.4.y the crash happens on qemu-arm with UEFI [1]:
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2008
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1982
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+<1>[    0.084476] 8<--- cut here ---
+<1>[    0.084595] Unable to handle kernel paging request at virtual address dfb76000
+<1>[    0.084938] pgd = (ptrval)
+<1>[    0.085038] [dfb76000] *pgd=5f7fe801, *pte=00000000, *ppte=00000000
+
+...
+
+<4>[    0.093923] [<c0ed6ce8>] (memcpy) from [<c16a06f8>] (dmi_setup+0x60/0x418)
+<4>[    0.094204] [<c16a06f8>] (dmi_setup) from [<c16a38d4>] (arm_dmi_init+0x8/0x10)
+<4>[    0.094408] [<c16a38d4>] (arm_dmi_init) from [<c0302e9c>] (do_one_initcall+0x50/0x228)
+<4>[    0.094619] [<c0302e9c>] (do_one_initcall) from [<c16011e4>] (kernel_init_freeable+0x15c/0x1f8)
+<4>[    0.094841] [<c16011e4>] (kernel_init_freeable) from [<c0f028cc>] (kernel_init+0x8/0x10c)
+<4>[    0.095057] [<c0f028cc>] (kernel_init) from [<c03010e8>] (ret_from_fork+0x14/0x2c)
+
+On kernels v5.10.y and newer the same crash won't reproduce on ARM because
+commit b10d6bca8720 ("arch, drivers: replace for_each_membock() with
+for_each_mem_range()") changed the way memory regions are registered in
+the resource tree, but that merely covers up the problem.
+
+On ARM64 memory resources registered in yet another way and there the
+issue of wrong usage of pfn_valid() to ensure availability of the linear
+map is also covered.
+
+Implement arch_memremap_can_ram_remap() on ARM and ARM64 to prevent access
+to NOMAP regions via the linear mapping in memremap().
+
+Link: https://lore.kernel.org/all/Yl65zxGgFzF1Okac@sirena.org.uk
+Link: https://lkml.kernel.org/r/20220426060107.7618-1-rppt@kernel.org
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Tested-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Tony Lindgren <tony@atomide.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: <stable@vger.kernel.org>	[5.4+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c |    8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ arch/arm/include/asm/io.h   |    3 +++
+ arch/arm/mm/ioremap.c       |    8 ++++++++
+ arch/arm64/include/asm/io.h |    4 ++++
+ arch/arm64/mm/ioremap.c     |    8 ++++++++
+ 4 files changed, 23 insertions(+)
 
---- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-@@ -1405,14 +1405,8 @@ static int smu_disable_dpms(struct smu_c
- {
- 	struct amdgpu_device *adev = smu->adev;
- 	int ret = 0;
--	/*
--	 * TODO: (adev->in_suspend && !adev->in_s0ix) is added to pair
--	 * the workaround which always reset the asic in suspend.
--	 * It's likely that workaround will be dropped in the future.
--	 * Then the change here should be dropped together.
--	 */
- 	bool use_baco = !smu->is_apu &&
--		(((amdgpu_in_reset(adev) || (adev->in_suspend && !adev->in_s0ix)) &&
-+		((amdgpu_in_reset(adev) &&
- 		  (amdgpu_asic_reset_method(adev) == AMD_RESET_METHOD_BACO)) ||
- 		 ((adev->in_runpm || adev->in_s4) && amdgpu_asic_supports_baco(adev)));
+--- a/arch/arm/include/asm/io.h
++++ b/arch/arm/include/asm/io.h
+@@ -440,6 +440,9 @@ extern void pci_iounmap(struct pci_dev *
+ #define ARCH_HAS_VALID_PHYS_ADDR_RANGE
+ extern int valid_phys_addr_range(phys_addr_t addr, size_t size);
+ extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
++extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
++					unsigned long flags);
++#define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
+ #endif
  
+ /*
+--- a/arch/arm/mm/ioremap.c
++++ b/arch/arm/mm/ioremap.c
+@@ -489,3 +489,11 @@ void __init early_ioremap_init(void)
+ {
+ 	early_ioremap_setup();
+ }
++
++bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
++				 unsigned long flags)
++{
++	unsigned long pfn = PHYS_PFN(offset);
++
++	return memblock_is_map_memory(pfn);
++}
+--- a/arch/arm64/include/asm/io.h
++++ b/arch/arm64/include/asm/io.h
+@@ -192,4 +192,8 @@ extern void __iomem *ioremap_cache(phys_
+ extern int valid_phys_addr_range(phys_addr_t addr, size_t size);
+ extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
+ 
++extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
++					unsigned long flags);
++#define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
++
+ #endif	/* __ASM_IO_H */
+--- a/arch/arm64/mm/ioremap.c
++++ b/arch/arm64/mm/ioremap.c
+@@ -99,3 +99,11 @@ void __init early_ioremap_init(void)
+ {
+ 	early_ioremap_setup();
+ }
++
++bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
++				 unsigned long flags)
++{
++	unsigned long pfn = PHYS_PFN(offset);
++
++	return pfn_is_map_memory(pfn);
++}
 
 
