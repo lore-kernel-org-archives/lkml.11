@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A16C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A50C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347055AbiEPUUv (ORCPT
+        id S1347240AbiEPUVH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
+        Mon, 16 May 2022 16:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348929AbiEPT7E (ORCPT
+        with ESMTP id S1348956AbiEPT7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:59:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 240E23ED3C;
-        Mon, 16 May 2022 12:53:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DC93F334;
+        Mon, 16 May 2022 12:53:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3F6660ABE;
-        Mon, 16 May 2022 19:52:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBD18C34100;
-        Mon, 16 May 2022 19:52:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9055B80EB1;
+        Mon, 16 May 2022 19:53:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37008C385AA;
+        Mon, 16 May 2022 19:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730779;
-        bh=YbsiaqMe5yBZdvF9hnBlQ3vhxcQzkb8TxDMCiVQAXOg=;
+        s=korg; t=1652730785;
+        bh=SbqfvGskKdYBGAxRWuOOZ55+4H8hLcqJIARXk06L9i4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WDvEPLuekxmK/feHs64LIcsLPPcPGM3Q/mdJXYWYpzsEhCaVQlBxEeWlBIxyk9Bay
-         SA/aAnE0oeTwlO5IbegXBmoVfVoTcyiFkVwz5lJMKXCXLamg+eRJxtboepVv5m26w+
-         CJqLUb/a0bCSRJ85lYYl0zjipsoj+yt1zYCjOKVs=
+        b=nypzc+cH6BrL7qHIPE184cxsYDgVEu+qGeA4jOMHkNM3+B7A+AfkQqYxu/lcopngU
+         o9RedA/vSL45+FLAPLs/kCMr/4Eeo8lJCs1see8B+xe77VDUa7edeEhSdQ3/1Q0luk
+         mKsQszaSBZlQlx2/fnu2hDAmhboF+S1HOmGV1w8A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 098/102] mm/hwpoison: use pr_err() instead of dump_page() in get_any_page()
-Date:   Mon, 16 May 2022 21:37:12 +0200
-Message-Id: <20220516193626.814874017@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 100/102] ping: fix address binding wrt vrf
+Date:   Mon, 16 May 2022 21:37:14 +0200
+Message-Id: <20220516193626.872883621@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -55,93 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-commit 1825b93b626e99eb9a0f9f50342c7b2fa201b387 upstream.
+commit e1a7ac6f3ba6e157adcd0ca94d92a401f1943f56 upstream.
 
-The following VM_BUG_ON_FOLIO() is triggered when memory error event
-happens on the (thp/folio) pages which are about to be freed:
+When ping_group_range is updated, 'ping' uses the DGRAM ICMP socket,
+instead of an IP raw socket. In this case, 'ping' is unable to bind its
+socket to a local address owned by a vrflite.
 
-  [ 1160.232771] page:00000000b36a8a0f refcount:1 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
-  [ 1160.236916] page:00000000b36a8a0f refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
-  [ 1160.240684] flags: 0x57ffffc0800000(hwpoison|node=1|zone=2|lastcpupid=0x1fffff)
-  [ 1160.243458] raw: 0057ffffc0800000 dead000000000100 dead000000000122 0000000000000000
-  [ 1160.246268] raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-  [ 1160.249197] page dumped because: VM_BUG_ON_FOLIO(!folio_test_large(folio))
-  [ 1160.251815] ------------[ cut here ]------------
-  [ 1160.253438] kernel BUG at include/linux/mm.h:788!
-  [ 1160.256162] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-  [ 1160.258172] CPU: 2 PID: 115368 Comm: mceinj.sh Tainted: G            E     5.18.0-rc1-v5.18-rc1-220404-2353-005-g83111+ #3
-  [ 1160.262049] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
-  [ 1160.265103] RIP: 0010:dump_page.cold+0x27e/0x2bd
-  [ 1160.266757] Code: fe ff ff 48 c7 c6 81 f1 5a 98 e9 4c fe ff ff 48 c7 c6 a1 95 59 98 e9 40 fe ff ff 48 c7 c6 50 bf 5a 98 48 89 ef e8 9d 04 6d ff <0f> 0b 41 f7 c4 ff 0f 00 00 0f 85 9f fd ff ff 49 8b 04 24 a9 00 00
-  [ 1160.273180] RSP: 0018:ffffaa2c4d59fd18 EFLAGS: 00010292
-  [ 1160.274969] RAX: 000000000000003e RBX: 0000000000000001 RCX: 0000000000000000
-  [ 1160.277263] RDX: 0000000000000001 RSI: ffffffff985995a1 RDI: 00000000ffffffff
-  [ 1160.279571] RBP: ffffdc9c45a80000 R08: 0000000000000000 R09: 00000000ffffdfff
-  [ 1160.281794] R10: ffffaa2c4d59fb08 R11: ffffffff98940d08 R12: ffffdc9c45a80000
-  [ 1160.283920] R13: ffffffff985b6f94 R14: 0000000000000000 R15: ffffdc9c45a80000
-  [ 1160.286641] FS:  00007eff54ce1740(0000) GS:ffff99c67bd00000(0000) knlGS:0000000000000000
-  [ 1160.289498] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [ 1160.291106] CR2: 00005628381a5f68 CR3: 0000000104712003 CR4: 0000000000170ee0
-  [ 1160.293031] Call Trace:
-  [ 1160.293724]  <TASK>
-  [ 1160.294334]  get_hwpoison_page+0x47d/0x570
-  [ 1160.295474]  memory_failure+0x106/0xaa0
-  [ 1160.296474]  ? security_capable+0x36/0x50
-  [ 1160.297524]  hard_offline_page_store+0x43/0x80
-  [ 1160.298684]  kernfs_fop_write_iter+0x11c/0x1b0
-  [ 1160.299829]  new_sync_write+0xf9/0x160
-  [ 1160.300810]  vfs_write+0x209/0x290
-  [ 1160.301835]  ksys_write+0x4f/0xc0
-  [ 1160.302718]  do_syscall_64+0x3b/0x90
-  [ 1160.303664]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-  [ 1160.304981] RIP: 0033:0x7eff54b018b7
+Before the patch:
+$ sysctl -w net.ipv4.ping_group_range='0  2147483647'
+$ ip link add blue type vrf table 10
+$ ip link add foo type dummy
+$ ip link set foo master blue
+$ ip link set foo up
+$ ip addr add 192.168.1.1/24 dev foo
+$ ip addr add 2001::1/64 dev foo
+$ ip vrf exec blue ping -c1 -I 192.168.1.1 192.168.1.2
+ping: bind: Cannot assign requested address
+$ ip vrf exec blue ping6 -c1 -I 2001::1 2001::2
+ping6: bind icmp socket: Cannot assign requested address
 
-As shown in the RIP address, this VM_BUG_ON in folio_entire_mapcount() is
-called from dump_page("hwpoison: unhandlable page") in get_any_page().
-The below explains the mechanism of the race:
-
-  CPU 0                                       CPU 1
-
-    memory_failure
-      get_hwpoison_page
-        get_any_page
-          dump_page
-            compound = PageCompound
-                                                free_pages_prepare
-                                                  page->flags &= ~PAGE_FLAGS_CHECK_AT_PREP
-            folio_entire_mapcount
-              VM_BUG_ON_FOLIO(!folio_test_large(folio))
-
-So replace dump_page() with safer one, pr_err().
-
-Link: https://lkml.kernel.org/r/20220427053220.719866-1-naoya.horiguchi@linux.dev
-Fixes: 74e8ee4708a8 ("mm: Turn head_compound_mapcount() into folio_entire_mapcount()")
-Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Christoph Hellwig <hch@infradead.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>
-Cc: William Kucharski <william.kucharski@oracle.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+CC: stable@vger.kernel.org
+Fixes: 1b69c6d0ae90 ("net: Introduce L3 Master device abstraction")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory-failure.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/ping.c |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1217,7 +1217,7 @@ try_again:
- 	}
- out:
- 	if (ret == -EIO)
--		dump_page(p, "hwpoison: unhandlable page");
-+		pr_err("Memory failure: %#lx: unhandlable page.\n", page_to_pfn(p));
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -305,6 +305,7 @@ static int ping_check_bind_addr(struct s
+ 	struct net *net = sock_net(sk);
+ 	if (sk->sk_family == AF_INET) {
+ 		struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
++		u32 tb_id = RT_TABLE_LOCAL;
+ 		int chk_addr_ret;
  
- 	return ret;
- }
+ 		if (addr_len < sizeof(*addr))
+@@ -320,8 +321,10 @@ static int ping_check_bind_addr(struct s
+ 
+ 		if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
+ 			chk_addr_ret = RTN_LOCAL;
+-		else
+-			chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
++		else {
++			tb_id = l3mdev_fib_table_by_index(net, sk->sk_bound_dev_if) ? : tb_id;
++			chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
++		}
+ 
+ 		if ((!inet_can_nonlocal_bind(net, isk) &&
+ 		     chk_addr_ret != RTN_LOCAL) ||
+@@ -357,6 +360,14 @@ static int ping_check_bind_addr(struct s
+ 			if (!dev) {
+ 				rcu_read_unlock();
+ 				return -ENODEV;
++			}
++		}
++
++		if (!dev && sk->sk_bound_dev_if) {
++			dev = dev_get_by_index_rcu(net, sk->sk_bound_dev_if);
++			if (!dev) {
++				rcu_read_unlock();
++				return -ENODEV;
+ 			}
+ 		}
+ 		has_addr = pingv6_ops.ipv6_chk_addr(net, &addr->sin6_addr, dev,
 
 
