@@ -2,87 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD61C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:04:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344050AbiEPREe (ORCPT
+        id S1344056AbiEPREi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 13:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
+        Mon, 16 May 2022 13:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344071AbiEPREa (ORCPT
+        with ESMTP id S1344066AbiEPREa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 13:04:30 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F535245A6
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 10:04:28 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id q18so15006203pln.12
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 10:04:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SmD1Y3FuSgJFnbljMkxDOtUVVLs24UFlNCPaPsg6xOY=;
-        b=Mh07LbtqoTeCVzsFhz/vKKMlTjLn+MMrEPpLv1VuUjVqt9ON/ZoDq8BYXo3v5jo1tL
-         oYA1O2VagGZBN1lbL2YkJaprYSqCCRuz5ZbgJPNGipo3WRNXOHhM8eJy7AZoBtGIarG3
-         bGQzjnFQGbGYnbZSdd029qdmApixmfnf+RM/x5eUDavFmJ9jgMi/MtJJsNqGCLtHVbW2
-         Ro/Z5fknq8ACOysBGTQTYZbXiVn8R7uAV8Sv4OENewlkgnL97Bn7qj7sGELUipW5kDX+
-         ERVkix+JnxgcJE/aYHzyu3c8x95TuyG3OmWebaxj8xS9cseMOa1ENN81qBrHRCDYqsvh
-         mhOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SmD1Y3FuSgJFnbljMkxDOtUVVLs24UFlNCPaPsg6xOY=;
-        b=FnfFsL1oqKGo9UFsw0chLJWReeqBoqfxODo8xMkoYU4MpExHh+viAPWF9Y4e6TALwn
-         mgECnhBD+ra50a9049ByWks1VTsFa+QN11zzmWAIUiZaVIHNjP9kffCSqySyOW8UC10U
-         ARdg36sEMU/k+AiwgVVUYKVEEDsTjaaFuTpsBlxbLkg95pOBIv3TdpCJS5uhbKtkHLvS
-         3uLSPP2lg2XXDf0WPqYp6KpMcNn+Z7tpJtL94dcUOVcgzRmfYhD9qgh4jPQ1KAUbHsCS
-         V3V9ii0j3elnyaG4C6YrcM6j6IKMORU23M2YSXNNzZkgci8gQyIivNDaQT7Etga33REU
-         1lLA==
-X-Gm-Message-State: AOAM533p5gP1GXYw3UoSXQT3RRveJvs/nahftZXWvxPfACTHDSDEuStc
-        fhP5ILraf3NREd8seDElnoQ=
-X-Google-Smtp-Source: ABdhPJzXz7U3mrkdPNE1Q6j+ppNQpbTwg9CnxGJza60znNlJ2sutBjB/gEyoPenHlCLbbPgLCv0k7w==
-X-Received: by 2002:a17:90a:4fe1:b0:1de:fc11:331e with SMTP id q88-20020a17090a4fe100b001defc11331emr16790099pjh.145.1652720667833;
-        Mon, 16 May 2022 10:04:27 -0700 (PDT)
-Received: from makvihas.localhost.com ([2405:201:202b:1:6465:4732:de67:bb26])
-        by smtp.gmail.com with ESMTPSA id b190-20020a621bc7000000b0050dc762819csm7141292pfb.118.2022.05.16.10.04.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 10:04:27 -0700 (PDT)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH 0/3] staging: r8188eu: fix checkpatch.pl warnings
-Date:   Mon, 16 May 2022 22:33:03 +0530
-Message-Id: <20220516170306.6008-1-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CCB27B37;
+        Mon, 16 May 2022 10:04:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 141D36124A;
+        Mon, 16 May 2022 17:04:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11760C34113;
+        Mon, 16 May 2022 17:04:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652720667;
+        bh=hFTULSm9gjKLJhiZF+rVg4Hgs0VcXXmYTYwDxYJvn5I=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=qP8F06M90hEBDfKMozhcKPHBnPKAf5XO30YiZx48MNi2WmlTEioN0D7nxx1GifHzJ
+         OQRUMy4TcBn2tJWMPejOLGjYhr+X615s+XOYnepAsBlxRhg0eBUsU7vCpDj6Ar53AT
+         YDGHHleZmIJVdHyFe0rgzStzs92Za90WDVYs8tTBpsMAeulTIxmckyn4r4M/Vvclwl
+         5bqL0Tlw36mHX/T5ptkPccHs/ekPGtATGovTJJUOR8DR3w+bdgjmP0KUcFcotkmiE9
+         4grV7hgLxsQtspbG/bRMqmw0rH/Vw7bUkMWZ0izszdjE2LLZAPAbqW2ymvUF0MDO+K
+         YKMw6KpFU7dGA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        linux-wireless@vger.kernel.org (open list:ATHEROS ATH5K WIRELESS DRIVER),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list),
+        zhengkui_guo@outlook.com
+Subject: Re: [PATCH linux-next] net: ath: fix minmax.cocci warnings
+References: <20220516134057.72365-1-guozhengkui@vivo.com>
+Date:   Mon, 16 May 2022 20:04:21 +0300
+In-Reply-To: <20220516134057.72365-1-guozhengkui@vivo.com> (Guo Zhengkui's
+        message of "Mon, 16 May 2022 21:40:57 +0800")
+Message-ID: <874k1pxvca.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset fixes following checkpatch warning:
-    WARNING: Comparisons should place the constant on the right side of the test
+Guo Zhengkui <guozhengkui@vivo.com> writes:
 
-Compiled tested only.
+> Fix the following coccicheck warnings:
+>
+> drivers/net/wireless/ath/ath5k/phy.c:3139:62-63: WARNING
+> opportunity for min()
+> drivers/net/wireless/ath/ath9k/dfs.c:249:28-30: WARNING
+> opportunity for max()
+>
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+> ---
+>  drivers/net/wireless/ath/ath5k/phy.c | 2 +-
+>  drivers/net/wireless/ath/ath9k/dfs.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 
-Vihas Makwana (3):
-  staging: r8188eu: fix checkpatch warnings in rtw_p2p
-  staging: r8188eu: fix checkpatch warnings in rtw_pwrctrl
-  staging: r8188eu: fix checkpatch warnings in rtw_wlan_util
-
- drivers/staging/r8188eu/core/rtw_p2p.c       |  8 ++++----
- drivers/staging/r8188eu/core/rtw_pwrctrl.c   | 12 ++++++------
- drivers/staging/r8188eu/core/rtw_wlan_util.c |  2 +-
- 3 files changed, 11 insertions(+), 11 deletions(-)
+Please split this into two patches, one for ath5k and one for ath9k.
 
 -- 
-2.30.2
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
