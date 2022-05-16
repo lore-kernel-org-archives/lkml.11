@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D2BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3369DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346020AbiEPTsP (ORCPT
+        id S1345962AbiEPTsX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
+        Mon, 16 May 2022 15:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346227AbiEPTlu (ORCPT
+        with ESMTP id S1346262AbiEPTlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:41:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BE33FDBE;
-        Mon, 16 May 2022 12:40:23 -0700 (PDT)
+        Mon, 16 May 2022 15:41:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C399D3EF1C;
+        Mon, 16 May 2022 12:40:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1112CB81609;
-        Mon, 16 May 2022 19:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 505E2C385AA;
-        Mon, 16 May 2022 19:40:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 623E1B81609;
+        Mon, 16 May 2022 19:40:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A94AC34100;
+        Mon, 16 May 2022 19:40:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730020;
-        bh=EUKmFJo7bK41wq6UsNj86tOlUmXEXrc/8iptNfF0V6U=;
+        s=korg; t=1652730024;
+        bh=LzOdzcmpRSZsTFDChGqZYk1btoMeVCsuhOZcpQbkBNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C6OsQHcFst2BFShohwfjnKXRet5zbI8/Nbcmmj2tkZJUVwUJx4a+8ysRvD1nvVT57
-         XwY6o1ITkphnYkJJWyMAHmFW77CZz+OC96dGuJ9U3xlwoc+CY26LJASV9rLFPGNTNS
-         KblOnVJgTpmmJpLO1VCpFcjTMkXUVqlq6y/yIHps=
+        b=ZK9RP4WPpQoPd1tlaU82JTS8hCNFIAhdJrKsLAxSxJcQkhVHS1Dw7LKZoMG8MxSYV
+         nnAQYNjVixL3vWJt0PXgpwza1GB3dROhICKZ+N4/y2duYgCvLwNGN+jBktM5+VEKrM
+         hmUGjnt4PQxEpTRWX1AeDx9V4u/NkxxyLQ3m3oY8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Alexandra Winter <wintera@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 08/25] s390/ctcm: fix potential memory leak
-Date:   Mon, 16 May 2022 21:36:22 +0200
-Message-Id: <20220516193614.936922155@linuxfoundation.org>
+Subject: [PATCH 4.14 09/25] s390/lcs: fix variable dereferenced before check
+Date:   Mon, 16 May 2022 21:36:23 +0200
+Message-Id: <20220516193614.966872729@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
 References: <20220516193614.678319286@linuxfoundation.org>
@@ -52,63 +52,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexandra Winter <wintera@linux.ibm.com>
 
-[ Upstream commit 0c0b20587b9f25a2ad14db7f80ebe49bdf29920a ]
+[ Upstream commit 671bb35c8e746439f0ed70815968f9a4f20a8deb ]
 
 smatch complains about
-drivers/s390/net/ctcm_mpc.c:1210 ctcmpc_unpack_skb() warn: possible memory leak of 'mpcginfo'
+drivers/s390/net/lcs.c:1741 lcs_get_control() warn: variable dereferenced before check 'card->dev' (see line 1739)
 
-mpc_action_discontact() did not free mpcginfo. Consolidate the freeing in
-ctcmpc_unpack_skb().
-
-Fixes: 293d984f0e36 ("ctcm: infrastructure for replaced ctc driver")
+Fixes: 27eb5ac8f015 ("[PATCH] s390: lcs driver bug fixes and improvements [1/2]")
 Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/net/ctcm_mpc.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/s390/net/lcs.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/s390/net/ctcm_mpc.c b/drivers/s390/net/ctcm_mpc.c
-index e02f295d38a9..07d9668137df 100644
---- a/drivers/s390/net/ctcm_mpc.c
-+++ b/drivers/s390/net/ctcm_mpc.c
-@@ -625,8 +625,6 @@ static void mpc_rcvd_sweep_resp(struct mpcg_info *mpcginfo)
- 		ctcm_clear_busy_do(dev);
- 	}
- 
--	kfree(mpcginfo);
--
- 	return;
- 
- }
-@@ -1205,10 +1203,10 @@ static void ctcmpc_unpack_skb(struct channel *ch, struct sk_buff *pskb)
- 						CTCM_FUNTAIL, dev->name);
- 			priv->stats.rx_dropped++;
- 			/* mpcginfo only used for non-data transfers */
--			kfree(mpcginfo);
- 			if (do_debug_data)
- 				ctcmpc_dump_skb(pskb, -8);
- 		}
-+		kfree(mpcginfo);
- 	}
- done:
- 
-@@ -1991,7 +1989,6 @@ static void mpc_action_rcvd_xid0(fsm_instance *fsm, int event, void *arg)
- 		}
- 		break;
- 	}
--	kfree(mpcginfo);
- 
- 	CTCM_PR_DEBUG("ctcmpc:%s() %s xid2:%i xid7:%i xidt_p2:%i \n",
- 		__func__, ch->id, grp->outstanding_xid2,
-@@ -2052,7 +2049,6 @@ static void mpc_action_rcvd_xid7(fsm_instance *fsm, int event, void *arg)
- 		mpc_validate_xid(mpcginfo);
- 		break;
- 	}
--	kfree(mpcginfo);
- 	return;
- }
- 
+diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
+index d01b5c2a7760..da4d7284db67 100644
+--- a/drivers/s390/net/lcs.c
++++ b/drivers/s390/net/lcs.c
+@@ -1757,10 +1757,11 @@ lcs_get_control(struct lcs_card *card, struct lcs_cmd *cmd)
+ 			lcs_schedule_recovery(card);
+ 			break;
+ 		case LCS_CMD_STOPLAN:
+-			pr_warn("Stoplan for %s initiated by LGW\n",
+-				card->dev->name);
+-			if (card->dev)
++			if (card->dev) {
++				pr_warn("Stoplan for %s initiated by LGW\n",
++					card->dev->name);
+ 				netif_carrier_off(card->dev);
++			}
+ 			break;
+ 		default:
+ 			LCS_DBF_TEXT(5, trace, "noLGWcmd");
 -- 
 2.35.1
 
