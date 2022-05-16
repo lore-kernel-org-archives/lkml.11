@@ -2,458 +2,347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE7AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41CE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235645AbiEPLLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
+        id S239007AbiEPLMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239007AbiEPLLm (ORCPT
+        with ESMTP id S242994AbiEPLLX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:11:42 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4535AB4E;
-        Mon, 16 May 2022 04:11:36 -0700 (PDT)
-X-UUID: 320265e3c520413c8fd81ca39fa0cb6f-20220516
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:54658e7a-5966-439f-9a87-76030a7ca113,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:38872f94-563e-4fc2-8a0d-fda4821947ab,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 320265e3c520413c8fd81ca39fa0cb6f-20220516
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 798951414; Mon, 16 May 2022 19:11:32 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 16 May 2022 19:11:32 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 16 May 2022 19:11:31 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
-        <hsinyi@google.com>, <khilman@baylibre.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
+        Mon, 16 May 2022 07:11:23 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42A4B31
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 04:11:20 -0700 (PDT)
+Received: from kwepemi100002.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L1xJd28G7zCslB;
+        Mon, 16 May 2022 19:06:25 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100002.china.huawei.com (7.221.188.188) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 19:11:17 +0800
+Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
+ 2022 19:11:17 +0800
+Subject: Re: [PATCH V6 2/2] drivers/perf: hisi: add driver for HNS3 PMU
+To:     Will Deacon <will@kernel.org>
+CC:     <john.garry@huawei.com>, <mark.rutland@arm.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
-Subject: [PATCH v7 1/3] arm64: dts: mediatek: Add opp table and clock property for MT8183 cpufreq
-Date:   Mon, 16 May 2022 19:11:28 +0800
-Message-ID: <20220516111130.13325-2-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220516111130.13325-1-rex-bc.chen@mediatek.com>
-References: <20220516111130.13325-1-rex-bc.chen@mediatek.com>
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <f.fangjian@huawei.com>, <lipeng321@huawei.com>,
+        <shenjian15@huawei.com>
+References: <20220427121000.56026-1-huangguangbin2@huawei.com>
+ <20220427121000.56026-3-huangguangbin2@huawei.com>
+ <20220513121137.GA31733@willie-the-truck>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <b0dc9de6-baf3-9c06-1f8c-c16a5d745ee3@huawei.com>
+Date:   Mon, 16 May 2022 19:11:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+In-Reply-To: <20220513121137.GA31733@willie-the-truck>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Add cpufreq opp table.
-- Add MediaTek cci opp table.
-- Add property of opp table and clock fro cpufreq.
 
-Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  32 +++
- arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 270 ++++++++++++++++++++
- 2 files changed, 302 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-index f3fd3cca23e9..8953dbf84f3e 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-@@ -412,6 +412,38 @@
- 
- };
- 
-+&cpu0 {
-+	proc-supply = <&mt6358_vproc12_reg>;
-+};
-+
-+&cpu1 {
-+	proc-supply = <&mt6358_vproc12_reg>;
-+};
-+
-+&cpu2 {
-+	proc-supply = <&mt6358_vproc12_reg>;
-+};
-+
-+&cpu3 {
-+	proc-supply = <&mt6358_vproc12_reg>;
-+};
-+
-+&cpu4 {
-+	proc-supply = <&mt6358_vproc11_reg>;
-+};
-+
-+&cpu5 {
-+	proc-supply = <&mt6358_vproc11_reg>;
-+};
-+
-+&cpu6 {
-+	proc-supply = <&mt6358_vproc11_reg>;
-+};
-+
-+&cpu7 {
-+	proc-supply = <&mt6358_vproc11_reg>;
-+};
-+
- &uart0 {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 01e650251928..cecf96b628b7 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -42,6 +42,244 @@
- 		rdma1 = &rdma1;
- 	};
- 
-+	cluster0_opp: opp-table-cluster0 {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+		opp0-793000000 {
-+			opp-hz = /bits/ 64 <793000000>;
-+			opp-microvolt = <650000>;
-+			required-opps = <&opp2_00>;
-+		};
-+		opp0-910000000 {
-+			opp-hz = /bits/ 64 <910000000>;
-+			opp-microvolt = <687500>;
-+			required-opps = <&opp2_01>;
-+		};
-+		opp0-1014000000 {
-+			opp-hz = /bits/ 64 <1014000000>;
-+			opp-microvolt = <718750>;
-+			required-opps = <&opp2_02>;
-+		};
-+		opp0-1131000000 {
-+			opp-hz = /bits/ 64 <1131000000>;
-+			opp-microvolt = <756250>;
-+			required-opps = <&opp2_03>;
-+		};
-+		opp0-1248000000 {
-+			opp-hz = /bits/ 64 <1248000000>;
-+			opp-microvolt = <800000>;
-+			required-opps = <&opp2_04>;
-+		};
-+		opp0-1326000000 {
-+			opp-hz = /bits/ 64 <1326000000>;
-+			opp-microvolt = <818750>;
-+			required-opps = <&opp2_05>;
-+		};
-+		opp0-1417000000 {
-+			opp-hz = /bits/ 64 <1417000000>;
-+			opp-microvolt = <850000>;
-+			required-opps = <&opp2_06>;
-+		};
-+		opp0-1508000000 {
-+			opp-hz = /bits/ 64 <1508000000>;
-+			opp-microvolt = <868750>;
-+			required-opps = <&opp2_07>;
-+		};
-+		opp0-1586000000 {
-+			opp-hz = /bits/ 64 <1586000000>;
-+			opp-microvolt = <893750>;
-+			required-opps = <&opp2_08>;
-+		};
-+		opp0-1625000000 {
-+			opp-hz = /bits/ 64 <1625000000>;
-+			opp-microvolt = <906250>;
-+			required-opps = <&opp2_09>;
-+		};
-+		opp0-1677000000 {
-+			opp-hz = /bits/ 64 <1677000000>;
-+			opp-microvolt = <931250>;
-+			required-opps = <&opp2_10>;
-+		};
-+		opp0-1716000000 {
-+			opp-hz = /bits/ 64 <1716000000>;
-+			opp-microvolt = <943750>;
-+			required-opps = <&opp2_11>;
-+		};
-+		opp0-1781000000 {
-+			opp-hz = /bits/ 64 <1781000000>;
-+			opp-microvolt = <975000>;
-+			required-opps = <&opp2_12>;
-+		};
-+		opp0-1846000000 {
-+			opp-hz = /bits/ 64 <1846000000>;
-+			opp-microvolt = <1000000>;
-+			required-opps = <&opp2_13>;
-+		};
-+		opp0-1924000000 {
-+			opp-hz = /bits/ 64 <1924000000>;
-+			opp-microvolt = <1025000>;
-+			required-opps = <&opp2_14>;
-+		};
-+		opp0-1989000000 {
-+			opp-hz = /bits/ 64 <1989000000>;
-+			opp-microvolt = <1050000>;
-+			required-opps = <&opp2_15>;
-+		};	};
-+
-+	cluster1_opp: opp-table-cluster1 {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+		opp1-793000000 {
-+			opp-hz = /bits/ 64 <793000000>;
-+			opp-microvolt = <700000>;
-+			required-opps = <&opp2_00>;
-+		};
-+		opp1-910000000 {
-+			opp-hz = /bits/ 64 <910000000>;
-+			opp-microvolt = <725000>;
-+			required-opps = <&opp2_01>;
-+		};
-+		opp1-1014000000 {
-+			opp-hz = /bits/ 64 <1014000000>;
-+			opp-microvolt = <750000>;
-+			required-opps = <&opp2_02>;
-+		};
-+		opp1-1131000000 {
-+			opp-hz = /bits/ 64 <1131000000>;
-+			opp-microvolt = <775000>;
-+			required-opps = <&opp2_03>;
-+		};
-+		opp1-1248000000 {
-+			opp-hz = /bits/ 64 <1248000000>;
-+			opp-microvolt = <800000>;
-+			required-opps = <&opp2_04>;
-+		};
-+		opp1-1326000000 {
-+			opp-hz = /bits/ 64 <1326000000>;
-+			opp-microvolt = <825000>;
-+			required-opps = <&opp2_05>;
-+		};
-+		opp1-1417000000 {
-+			opp-hz = /bits/ 64 <1417000000>;
-+			opp-microvolt = <850000>;
-+			required-opps = <&opp2_06>;
-+		};
-+		opp1-1508000000 {
-+			opp-hz = /bits/ 64 <1508000000>;
-+			opp-microvolt = <875000>;
-+			required-opps = <&opp2_07>;
-+		};
-+		opp1-1586000000 {
-+			opp-hz = /bits/ 64 <1586000000>;
-+			opp-microvolt = <900000>;
-+			required-opps = <&opp2_08>;
-+		};
-+		opp1-1625000000 {
-+			opp-hz = /bits/ 64 <1625000000>;
-+			opp-microvolt = <912500>;
-+			required-opps = <&opp2_09>;
-+		};
-+		opp1-1677000000 {
-+			opp-hz = /bits/ 64 <1677000000>;
-+			opp-microvolt = <931250>;
-+			required-opps = <&opp2_10>;
-+		};
-+		opp1-1716000000 {
-+			opp-hz = /bits/ 64 <1716000000>;
-+			opp-microvolt = <950000>;
-+			required-opps = <&opp2_11>;
-+		};
-+		opp1-1781000000 {
-+			opp-hz = /bits/ 64 <1781000000>;
-+			opp-microvolt = <975000>;
-+			required-opps = <&opp2_12>;
-+		};
-+		opp1-1846000000 {
-+			opp-hz = /bits/ 64 <1846000000>;
-+			opp-microvolt = <1000000>;
-+			required-opps = <&opp2_13>;
-+		};
-+		opp1-1924000000 {
-+			opp-hz = /bits/ 64 <1924000000>;
-+			opp-microvolt = <1025000>;
-+			required-opps = <&opp2_14>;
-+		};
-+		opp1-1989000000 {
-+			opp-hz = /bits/ 64 <1989000000>;
-+			opp-microvolt = <1050000>;
-+			required-opps = <&opp2_15>;
-+		};
-+	};
-+
-+	cci_opp: opp-table-cci {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+		opp2_00: opp-273000000 {
-+			opp-hz = /bits/ 64 <273000000>;
-+			opp-microvolt = <650000>;
-+		};
-+		opp2_01: opp-338000000 {
-+			opp-hz = /bits/ 64 <338000000>;
-+			opp-microvolt = <687500>;
-+		};
-+		opp2_02: opp-403000000 {
-+			opp-hz = /bits/ 64 <403000000>;
-+			opp-microvolt = <718750>;
-+		};
-+		opp2_03: opp-463000000 {
-+			opp-hz = /bits/ 64 <463000000>;
-+			opp-microvolt = <756250>;
-+		};
-+		opp2_04: opp-546000000 {
-+			opp-hz = /bits/ 64 <546000000>;
-+			opp-microvolt = <800000>;
-+		};
-+		opp2_05: opp-624000000 {
-+			opp-hz = /bits/ 64 <624000000>;
-+			opp-microvolt = <818750>;
-+		};
-+		opp2_06: opp-689000000 {
-+			opp-hz = /bits/ 64 <689000000>;
-+			opp-microvolt = <850000>;
-+		};
-+		opp2_07: opp-767000000 {
-+			opp-hz = /bits/ 64 <767000000>;
-+			opp-microvolt = <868750>;
-+		};
-+		opp2_08: opp-845000000 {
-+			opp-hz = /bits/ 64 <845000000>;
-+			opp-microvolt = <893750>;
-+		};
-+		opp2_09: opp-871000000 {
-+			opp-hz = /bits/ 64 <871000000>;
-+			opp-microvolt = <906250>;
-+		};
-+		opp2_10: opp-923000000 {
-+			opp-hz = /bits/ 64 <923000000>;
-+			opp-microvolt = <931250>;
-+		};
-+		opp2_11: opp-962000000 {
-+			opp-hz = /bits/ 64 <962000000>;
-+			opp-microvolt = <943750>;
-+		};
-+		opp2_12: opp-1027000000 {
-+			opp-hz = /bits/ 64 <1027000000>;
-+			opp-microvolt = <975000>;
-+		};
-+		opp2_13: opp-1092000000 {
-+			opp-hz = /bits/ 64 <1092000000>;
-+			opp-microvolt = <1000000>;
-+		};
-+		opp2_14: opp-1144000000 {
-+			opp-hz = /bits/ 64 <1144000000>;
-+			opp-microvolt = <1025000>;
-+		};
-+		opp2_15: opp-1196000000 {
-+			opp-hz = /bits/ 64 <1196000000>;
-+			opp-microvolt = <1050000>;
-+		};
-+	};
-+
- 	cpus {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
-@@ -85,6 +323,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <741>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
-+			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
- 			dynamic-power-coefficient = <84>;
- 			#cooling-cells = <2>;
- 		};
-@@ -96,6 +338,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <741>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
-+			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
- 			dynamic-power-coefficient = <84>;
- 			#cooling-cells = <2>;
- 		};
-@@ -107,6 +353,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <741>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
-+			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
- 			dynamic-power-coefficient = <84>;
- 			#cooling-cells = <2>;
- 		};
-@@ -118,6 +368,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <741>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
-+			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
- 			dynamic-power-coefficient = <84>;
- 			#cooling-cells = <2>;
- 		};
-@@ -129,6 +383,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
-+			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
- 			dynamic-power-coefficient = <211>;
- 			#cooling-cells = <2>;
- 		};
-@@ -140,6 +398,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
-+			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
- 			dynamic-power-coefficient = <211>;
- 			#cooling-cells = <2>;
- 		};
-@@ -151,6 +413,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
-+			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
- 			dynamic-power-coefficient = <211>;
- 			#cooling-cells = <2>;
- 		};
-@@ -162,6 +428,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
-+			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
- 			dynamic-power-coefficient = <211>;
- 			#cooling-cells = <2>;
- 		};
--- 
-2.18.0
+On 2022/5/13 20:11, Will Deacon wrote:
+> On Wed, Apr 27, 2022 at 08:10:00PM +0800, Guangbin Huang wrote:
+>> HNS3(HiSilicon Network System 3) PMU is RCiEP device in HiSilicon SoC NIC,
+>> supports collection of performance statistics such as bandwidth, latency,
+>> packet rate and interrupt rate.
+>>
+>> NIC of each SICL has one PMU device for it. Driver registers each PMU
+>> device to perf, and exports information of supported events, filter mode of
+>> each event, bdf range, hardware clock frequency, identifier and so on via
+>> sysfs.
+> 
+> Curioous, but how similar is this device to the one which we already support
+> in hisi_pcie_pmu.c? Can we reuse/share any of that existing code?
+> 
+Hi Will,
+Thanks very much for your comments!
 
+HNS3 PMU is also a RCiEP device and also has two registers for each hardware event,
+and I referred to code of hisi_pcie_pmu.c when writing this driver code, so this
+driver is similar to hisi_pcie_pmu.c.
+
+There is only a small amount of code in hisi_pcie_pmu.c can be reuse/share for HNS3
+PMU driver, so I didn't reuse them because I think it is not very profitable. HNS3
+PMU is different type of hardware and has it own iterative version in the future, so
+I tend not to be coupled with code of hisi_pcie_pmu.c. And they have different prefix
+too.
+
+Do you think it is really necessary to reuse some code of hisi_pcie_pmu.c?
+
+
+>> Each PMU device has its own registers of control, counters and interrupt,
+>> and it supports 8 hardware events, each hardward event has its own
+>> registers for configuration, counters and interrupt.
+>>
+>> Filter options contains:
+>> event        - select event
+>> port         - select physical port of nic
+>> tc           - select tc(must be used with port)
+>> func         - select PF/VF
+>> queue        - select queue of PF/VF(must be used with func)
+>> intr         - select interrupt number(must be used with func)
+>> global       - select all functions of IO DIE
+>>
+>> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+>> Reviewed-by: John Garry <john.garry@huawei.com>
+>> ---
+>>   MAINTAINERS                       |    6 +
+>>   drivers/perf/hisilicon/Kconfig    |   10 +
+>>   drivers/perf/hisilicon/Makefile   |    1 +
+>>   drivers/perf/hisilicon/hns3_pmu.c | 1654 +++++++++++++++++++++++++++++
+>>   include/linux/cpuhotplug.h        |    1 +
+>>   5 files changed, 1672 insertions(+)
+>>   create mode 100644 drivers/perf/hisilicon/hns3_pmu.c
+> 
+> Anyway, this mostly looks good to me, but I have a few small comments on the
+> user ABI:
+> 
+>> +#define HNS3_PMU_FILTER_ATTR(_name, _config, _start, _end)               \
+>> +	static inline u64 hns3_pmu_get_##_name(struct perf_event *event) \
+>> +	{                                                                \
+>> +		return FIELD_GET(GENMASK_ULL(_end, _start),              \
+>> +				 event->attr._config);                   \
+>> +	}
+>> +
+>> +HNS3_PMU_FILTER_ATTR(event, config, 0, 16);
+>> +HNS3_PMU_FILTER_ATTR(subevent, config, 0, 7);
+>> +HNS3_PMU_FILTER_ATTR(event_type, config, 8, 15);
+>> +HNS3_PMU_FILTER_ATTR(ext_counter_used, config, 16, 16);
+>> +HNS3_PMU_FILTER_ATTR(real_event, config, 0, 15);
+>> +HNS3_PMU_FILTER_ATTR(port, config1, 0, 3);
+>> +HNS3_PMU_FILTER_ATTR(tc, config1, 4, 7);
+>> +HNS3_PMU_FILTER_ATTR(bdf, config1, 8, 23);
+>> +HNS3_PMU_FILTER_ATTR(queue, config1, 24, 39);
+>> +HNS3_PMU_FILTER_ATTR(intr, config1, 40, 51);
+>> +HNS3_PMU_FILTER_ATTR(global, config1, 52, 52);
+>> +
+>> +#define HNS3_BW_EVT_BYTE_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
+>> +	HNS3_PMU_EVT_BW_##_name##_BYTE_NUM,				\
+>> +	HNS3_PMU_FILTER_BW_##_name})
+>> +#define HNS3_BW_EVT_TIME(_name)		(&(struct hns3_pmu_event_attr) {\
+>> +	HNS3_PMU_EVT_BW_##_name##_TIME,					\
+>> +	HNS3_PMU_FILTER_BW_##_name})
+>> +#define HNS3_PPS_EVT_PACKET_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
+>> +	HNS3_PMU_EVT_PPS_##_name##_PACKET_NUM,				\
+>> +	HNS3_PMU_FILTER_PPS_##_name})
+>> +#define HNS3_PPS_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
+>> +	HNS3_PMU_EVT_PPS_##_name##_TIME,				\
+>> +	HNS3_PMU_FILTER_PPS_##_name})
+>> +#define HNS3_DLY_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
+>> +	HNS3_PMU_EVT_DLY_##_name##_TIME,				\
+>> +	HNS3_PMU_FILTER_DLY_##_name})
+>> +#define HNS3_DLY_EVT_PACKET_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
+>> +	HNS3_PMU_EVT_DLY_##_name##_PACKET_NUM,				\
+>> +	HNS3_PMU_FILTER_DLY_##_name})
+>> +#define HNS3_INTR_EVT_INTR_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
+>> +	HNS3_PMU_EVT_PPS_##_name##_INTR_NUM,				\
+>> +	HNS3_PMU_FILTER_INTR_##_name})
+>> +#define HNS3_INTR_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
+>> +	HNS3_PMU_EVT_PPS_##_name##_TIME,				\
+>> +	HNS3_PMU_FILTER_INTR_##_name})
+>> +
+>> +static ssize_t hns3_pmu_format_show(struct device *dev,
+>> +				    struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct dev_ext_attribute *eattr;
+>> +
+>> +	eattr = container_of(attr, struct dev_ext_attribute, attr);
+>> +
+>> +	return sysfs_emit(buf, "%s\n", (char *)eattr->var);
+>> +}
+>> +
+>> +static ssize_t hns3_pmu_event_show(struct device *dev,
+>> +				   struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct hns3_pmu_event_attr *event;
+>> +	struct dev_ext_attribute *eattr;
+>> +
+>> +	eattr = container_of(attr, struct dev_ext_attribute, attr);
+>> +	event = eattr->var;
+>> +
+>> +	return sysfs_emit(buf, "config=0x%05x\n", event->event);
+> 
+> Are you sure you want the %05 here? The format of the number is
+> user-visible, so you won't be able to change this in future. The other hisi
+> PMU drivers use %lx or %llx.
+> 
+Ok, I think you are right, I will modify it.
+
+>> +}
+>> +
+>> +static ssize_t hns3_pmu_filter_mode_show(struct device *dev,
+>> +					 struct device_attribute *attr,
+>> +					 char *buf)
+>> +{
+>> +	struct hns3_pmu_event_attr *event;
+>> +	struct dev_ext_attribute *eattr;
+>> +	int len;
+>> +
+>> +	eattr = container_of(attr, struct dev_ext_attribute, attr);
+>> +	event = eattr->var;
+>> +
+>> +	len = sysfs_emit_at(buf, 0, "filter mode supported: ");
+>> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_GLOBAL)
+>> +		len += sysfs_emit_at(buf, len, "global ");
+>> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_PORT)
+>> +		len += sysfs_emit_at(buf, len, "port ");
+>> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_PORT_TC)
+>> +		len += sysfs_emit_at(buf, len, "port-tc ");
+>> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC)
+>> +		len += sysfs_emit_at(buf, len, "func ");
+>> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC_QUEUE)
+>> +		len += sysfs_emit_at(buf, len, "func-queue ");
+>> +	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC_INTR)
+>> +		len += sysfs_emit_at(buf, len, "func-intr");
+> 
+> It's a bit odd to have a trailing space for everything other than
+> "func-intr" as it's not guaranteed to be the last entry (it might not be
+> present).
+> 
+Ok, I will modify it.
+
+>> +
+>> +	len += sysfs_emit_at(buf, len, "\n");
+>> +
+>> +	return len;
+>> +}
+>> +
+>> +#define HNS3_PMU_ATTR(_name, _func, _config)				\
+>> +	(&((struct dev_ext_attribute[]) {				\
+>> +		{ __ATTR(_name, 0444, _func, NULL), (void *)_config }	\
+>> +	})[0].attr.attr)
+>> +
+>> +#define HNS3_PMU_FORMAT_ATTR(_name, _format) \
+>> +	HNS3_PMU_ATTR(_name, hns3_pmu_format_show, (void *)_format)
+>> +#define HNS3_PMU_EVENT_ATTR(_name, _event) \
+>> +	HNS3_PMU_ATTR(_name, hns3_pmu_event_show, (void *)_event)
+>> +#define HNS3_PMU_FLT_MODE_ATTR(_name, _event) \
+>> +	HNS3_PMU_ATTR(_name, hns3_pmu_filter_mode_show, (void *)_event)
+>> +
+>> +#define HNS3_PMU_BW_EVT_PAIR(_name, _macro) \
+>> +	HNS3_PMU_EVENT_ATTR(_name##_byte_num, HNS3_BW_EVT_BYTE_NUM(_macro)), \
+>> +	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_BW_EVT_TIME(_macro))
+>> +#define HNS3_PMU_PPS_EVT_PAIR(_name, _macro) \
+>> +	HNS3_PMU_EVENT_ATTR(_name##_packet_num, HNS3_PPS_EVT_PACKET_NUM(_macro)), \
+>> +	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_PPS_EVT_TIME(_macro))
+>> +#define HNS3_PMU_DLY_EVT_PAIR(_name, _macro) \
+>> +	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_DLY_EVT_TIME(_macro)), \
+>> +	HNS3_PMU_EVENT_ATTR(_name##_packet_num, HNS3_DLY_EVT_PACKET_NUM(_macro))
+>> +#define HNS3_PMU_INTR_EVT_PAIR(_name, _macro) \
+>> +	HNS3_PMU_EVENT_ATTR(_name##_intr_num, HNS3_INTR_EVT_INTR_NUM(_macro)), \
+>> +	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_INTR_EVT_TIME(_macro))
+>> +
+>> +#define HNS3_PMU_BW_FLT_MODE_PAIR(_name, _macro) \
+>> +	HNS3_PMU_FLT_MODE_ATTR(_name##_byte_num, HNS3_BW_EVT_BYTE_NUM(_macro)), \
+>> +	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_BW_EVT_TIME(_macro))
+>> +#define HNS3_PMU_PPS_FLT_MODE_PAIR(_name, _macro) \
+>> +	HNS3_PMU_FLT_MODE_ATTR(_name##_packet_num, HNS3_PPS_EVT_PACKET_NUM(_macro)), \
+>> +	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_PPS_EVT_TIME(_macro))
+>> +#define HNS3_PMU_DLY_FLT_MODE_PAIR(_name, _macro) \
+>> +	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_DLY_EVT_TIME(_macro)), \
+>> +	HNS3_PMU_FLT_MODE_ATTR(_name##_packet_num, HNS3_DLY_EVT_PACKET_NUM(_macro))
+>> +#define HNS3_PMU_INTR_FLT_MODE_PAIR(_name, _macro) \
+>> +	HNS3_PMU_FLT_MODE_ATTR(_name##_intr_num, HNS3_INTR_EVT_INTR_NUM(_macro)), \
+>> +	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_INTR_EVT_TIME(_macro))
+>> +
+>> +static u8 hns3_pmu_hw_filter_modes[] = {
+>> +	HNS3_PMU_HW_FILTER_GLOBAL,
+>> +	HNS3_PMU_HW_FILTER_PORT,
+>> +	HNS3_PMU_HW_FILTER_PORT_TC,
+>> +	HNS3_PMU_HW_FILTER_FUNC,
+>> +	HNS3_PMU_HW_FILTER_FUNC_QUEUE,
+>> +	HNS3_PMU_HW_FILTER_FUNC_INTR,
+>> +};
+>> +
+>> +#define HNS3_PMU_SET_HW_FILTER(_hwc, _mode) \
+>> +	((_hwc)->addr_filters = (void *)&hns3_pmu_hw_filter_modes[(_mode)])
+>> +
+>> +static ssize_t identifier_show(struct device *dev,
+>> +			       struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
+>> +
+>> +	return sysfs_emit(buf, "0x%x\n", hns3_pmu->identifier);
+>> +}
+>> +static DEVICE_ATTR_RO(identifier);
+>> +
+>> +static ssize_t cpumask_show(struct device *dev, struct device_attribute *attr,
+>> +			    char *buf)
+>> +{
+>> +	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
+>> +
+>> +	return sysfs_emit(buf, "%d\n", hns3_pmu->on_cpu);
+>> +}
+>> +static DEVICE_ATTR_RO(cpumask);
+>> +
+>> +static ssize_t bdf_min_show(struct device *dev, struct device_attribute *attr,
+>> +			    char *buf)
+>> +{
+>> +	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
+>> +
+>> +	return sysfs_emit(buf, "0x%4x\n", hns3_pmu->bdf_min);
+> 
+> Is it worth formatting the bdf in the usual way ("b:d.f") rather than a
+> plain 16-bit number.
+> 
+Ok, I will modify it.
+
+>> +}
+>> +static DEVICE_ATTR_RO(bdf_min);
+>> +
+>> +static ssize_t bdf_max_show(struct device *dev, struct device_attribute *attr,
+>> +			    char *buf)
+>> +{
+>> +	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
+>> +
+>> +	return sysfs_emit(buf, "0x%4x\n", hns3_pmu->bdf_max);
+> 
+> Likewise.
+> 
+Ok.
+
+>> +static struct attribute *hns3_pmu_format_attr[] = {
+>> +	HNS3_PMU_FORMAT_ATTR(event, "config:0-16"),
+> 
+> Earlier you split this into event, subevent, event_type and
+> ext_counter_used. Why isn't that same structure used here? Ideally, you'd
+> derive the strings and the accessors from the same set of definitions so
+> you don't run the risk of them falling out of sync. I did that in
+> arm_spe_pmu.c but it's not the prettiest code in the world.
+> 
+Ok. I will modify it.
+
+>> +	HNS3_PMU_FORMAT_ATTR(port, "config1:0-3"),
+>> +	HNS3_PMU_FORMAT_ATTR(tc, "config1:4-7"),
+>> +	HNS3_PMU_FORMAT_ATTR(bdf, "config1:8-23"),
+>> +	HNS3_PMU_FORMAT_ATTR(queue, "config1:24-39"),
+>> +	HNS3_PMU_FORMAT_ATTR(intr, "config1:40-51"),
+>> +	HNS3_PMU_FORMAT_ATTR(global, "config1:52-52"),
+> 
+> "52-52" is a bit weird; PMU drivers would usually just do "config1:52"
+> for a single-bit field. Is perf tool happy with this?
+> 
+Ok, I will modify it.
+
+> Will
+> .
+> 
+Thanks very much!
+Guangbin
+.
