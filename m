@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DCA0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E335C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347486AbiEPUVu (ORCPT
+        id S1347437AbiEPUVk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        Mon, 16 May 2022 16:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348972AbiEPT7F (ORCPT
+        with ESMTP id S1349023AbiEPT7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72FB3F884;
-        Mon, 16 May 2022 12:53:09 -0700 (PDT)
+        Mon, 16 May 2022 15:59:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4C33FDB1;
+        Mon, 16 May 2022 12:53:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3877C60A50;
-        Mon, 16 May 2022 19:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F2EFC385AA;
-        Mon, 16 May 2022 19:53:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD015B81613;
+        Mon, 16 May 2022 19:53:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C25FC385AA;
+        Mon, 16 May 2022 19:53:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730788;
-        bh=XClndHM4mSOpn/rg2RQmerQfwqK3Wvfp5PXXIXjpmio=;
+        s=korg; t=1652730797;
+        bh=zw7+nG7mRK6zS8SGRZtV5iHlnpITV6OHXD5smvY6bZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gGpx2SlTRm5ZsNBAqyGi9f80gAvL7WUbpJJR9G/dpdqFbBMoKI9vvxsYxmdwdnzzw
-         aahKT/3/JhxYDHsDiq20KTdYZqa2IKUuXIPIKFouQMkeU15r/pht+muwiv2Y00yvI6
-         jzktW6eFU0TnB5PscIAn1+cIf3UoidYtNvLud+Nw=
+        b=bqWCIAOiHwDueEeftBX/ypajONYVo/cmPwD8d1hQSTDAQIexuVsJF3NGaFgyYrNTl
+         GGes+UnGPau3gLmaBU4a9BXcJSY8QU2HXKmhPig/UgzlUuIvooG5K75rJTa3cpokFR
+         p/f7Cnc6vYtiqcT14cfA49p5srE4VymfgVmP2BgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Paul Elder <paul.elder@ideasonboard.com>,
-        Michael Tretter <m.tretter@pengutronix.de>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [PATCH 5.15 101/102] usb: gadget: uvc: rename function to be more consistent
-Date:   Mon, 16 May 2022 21:37:15 +0200
-Message-Id: <20220516193626.901310288@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Kaechele <felix@kaechele.ca>,
+        Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 001/114] batman-adv: Dont skb_split skbuffs with frag_list
+Date:   Mon, 16 May 2022 21:35:35 +0200
+Message-Id: <20220516193625.533471759@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
+In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
+References: <20220516193625.489108457@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,50 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Tretter <m.tretter@pengutronix.de>
+From: Sven Eckelmann <sven@narfation.org>
 
-commit e6bab2b66329b40462fb1bed6f98bc3fcf543a1c upstream.
+[ Upstream commit a063f2fba3fa633a599253b62561051ac185fa99 ]
 
-When enabling info debugging for the uvc gadget, the bind and unbind
-infos use different formats. Change the unbind to visually match the
-bind.
+The receiving interface might have used GRO to receive more fragments than
+MAX_SKB_FRAGS fragments. In this case, these will not be stored in
+skb_shinfo(skb)->frags but merged into the frag list.
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Reviewed-by: Paul Elder <paul.elder@ideasonboard.com>
-Signed-off-by: Michael Tretter <m.tretter@pengutronix.de>
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-Link: https://lore.kernel.org/r/20211017215017.18392-3-m.grzeschik@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+batman-adv relies on the function skb_split to split packets up into
+multiple smaller packets which are not larger than the MTU on the outgoing
+interface. But this function cannot handle frag_list entries and is only
+operating on skb_shinfo(skb)->frags. If it is still trying to split such an
+skb and xmit'ing it on an interface without support for NETIF_F_FRAGLIST,
+then validate_xmit_skb() will try to linearize it. But this fails due to
+inconsistent information. And __pskb_pull_tail will trigger a BUG_ON after
+skb_copy_bits() returns an error.
+
+In case of entries in frag_list, just linearize the skb before operating on
+it with skb_split().
+
+Reported-by: Felix Kaechele <felix@kaechele.ca>
+Fixes: c6c8fea29769 ("net: Add batman-adv meshing protocol")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Tested-by: Felix Kaechele <felix@kaechele.ca>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_uvc.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/batman-adv/fragmentation.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/usb/gadget/function/f_uvc.c
-+++ b/drivers/usb/gadget/function/f_uvc.c
-@@ -884,12 +884,13 @@ static void uvc_free(struct usb_function
- 	kfree(uvc);
- }
+diff --git a/net/batman-adv/fragmentation.c b/net/batman-adv/fragmentation.c
+index 0899a729a23f..c120c7c6d25f 100644
+--- a/net/batman-adv/fragmentation.c
++++ b/net/batman-adv/fragmentation.c
+@@ -475,6 +475,17 @@ int batadv_frag_send_packet(struct sk_buff *skb,
+ 		goto free_skb;
+ 	}
  
--static void uvc_unbind(struct usb_configuration *c, struct usb_function *f)
-+static void uvc_function_unbind(struct usb_configuration *c,
-+				struct usb_function *f)
- {
- 	struct usb_composite_dev *cdev = c->cdev;
- 	struct uvc_device *uvc = to_uvc(f);
- 
--	uvcg_info(f, "%s\n", __func__);
-+	uvcg_info(f, "%s()\n", __func__);
- 
- 	device_remove_file(&uvc->vdev.dev, &dev_attr_function_name);
- 	video_unregister_device(&uvc->vdev);
-@@ -943,7 +944,7 @@ static struct usb_function *uvc_alloc(st
- 	/* Register the function. */
- 	uvc->func.name = "uvc";
- 	uvc->func.bind = uvc_function_bind;
--	uvc->func.unbind = uvc_unbind;
-+	uvc->func.unbind = uvc_function_unbind;
- 	uvc->func.get_alt = uvc_function_get_alt;
- 	uvc->func.set_alt = uvc_function_set_alt;
- 	uvc->func.disable = uvc_function_disable;
++	/* GRO might have added fragments to the fragment list instead of
++	 * frags[]. But this is not handled by skb_split and must be
++	 * linearized to avoid incorrect length information after all
++	 * batman-adv fragments were created and submitted to the
++	 * hard-interface
++	 */
++	if (skb_has_frag_list(skb) && __skb_linearize(skb)) {
++		ret = -ENOMEM;
++		goto free_skb;
++	}
++
+ 	/* Create one header to be copied to all fragments */
+ 	frag_header.packet_type = BATADV_UNICAST_FRAG;
+ 	frag_header.version = BATADV_COMPAT_VERSION;
+-- 
+2.35.1
+
 
 
