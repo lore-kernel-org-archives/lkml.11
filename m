@@ -2,194 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F53C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242512AbiEPPPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 11:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
+        id S245039AbiEPPPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 11:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245039AbiEPPPC (ORCPT
+        with ESMTP id S245033AbiEPPPZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 11:15:02 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF67C3BBC1
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:14:58 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id ch13so29257702ejb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:14:58 -0700 (PDT)
+        Mon, 16 May 2022 11:15:25 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DA73BA66
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:15:23 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id y14-20020a9d460e000000b00605ee347da1so10258230ote.8
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:15:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mT7/Ms8+mt3fxt9Iti7ZV4qUURzTdQF9NTtcKJjj9p0=;
-        b=eTtQA3FGnuABes6xiwZEqM1pVCSn6mP/1J0Zs8PnYUbrf6wa6sWtZV1CMHBCZtTm4P
-         jSKHjKMdc6cj+Qp2wMPTw39Fd+cznhXrru+fGRovVTqjLKhNt3i0Jcx6HekN37E9U0kd
-         0RbT6UHXqoyaa8cBAGwVJO2eQlpWNLNX/MNYBczXUMe4Ino92smkbHWRDU/Ybwyu50qS
-         VGI7DHqkTLHxbPpM2HBhoZILupb4I0WHNRyqCyykv/QPmqpahJFQvs9FQSJymcIdtT8R
-         H3dANwMPkow+FrXWsWmZpYThFo6OWev9hWfWFHOVF9h38h5cwOo0D3Hx/0Mvul4iXPo6
-         0hoA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aqUacUDD/fnqySsoi3HdJFEi/V1mTy/VfQQMnGzRza8=;
+        b=dmfC0zUnM3Da4eBmHuwkOrpuYP643Dic9NsM1QhvrqzZggtptHBQDGNxfy6PdTxadp
+         0WuH6KV4+gkux/NZgj8EAnr7WeIeOjpQpaTch577VWirBI7CKJsjc/eySNgOlfbTA6+O
+         vfF7AJ0JYNL8acPMBsHIbylCVcn8VAYVcqKGBCjy2bbjQSmniPC7FVH0oWqXWBc1CVE0
+         2E58YZqxk95IMCcPfWaPL/21THyhS7lvMivfJsDimueM5vMX0Tu4E0bb5R7nXiAnqGMG
+         +SxQubBfyUDFkhNrgmoHlz90Pp0twEahIdAUh4C3BiFtparP46Mxgj1X0+UU/1PsunOs
+         nE1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mT7/Ms8+mt3fxt9Iti7ZV4qUURzTdQF9NTtcKJjj9p0=;
-        b=apAEHmCaa0jiug7kWZsN+Q593mYX6s/xzSWPVUh0APrzGaPWf0rNB5JYZ7ZKDE2tdt
-         Avug0CmcLASue7EVL4DnN/tqnOEeJDO3XnRdM52XcYWvE4sYJtUytf4Cua01hL4jqNpI
-         80iscBcF3R4K/FzAwFdNktLAlaDILlUzbpEn/YlERaVXg3Calc/s0TCyDkGtO2rodEMA
-         V3RnytIABGF03fmWpXw6nmRl7eHmfdJFQ9hoXleJduVAwWXIzNdiXlA19K/BgnjsrobA
-         kdS9fnaFGBNhb9dM1kQO9rvY0xqXM1MVScq2Gx8353KXHCDzhLRKfZANyuhsOfKKa5k/
-         Gtmw==
-X-Gm-Message-State: AOAM530/VTHL0hY8Km4hoWjF2ddQ9KJMti2dH6YvV8IubHSTAe3KMR1+
-        PVK2UlqlMoh1FjDor+6wBPqVIA==
-X-Google-Smtp-Source: ABdhPJzZJYJRYHriof0O9i6fwoHE6QsUFvkL/p4fdhMBl53WDdCzW2eGFoljqkVBReNlwPP91IzS9g==
-X-Received: by 2002:a17:906:aed8:b0:6f3:7e6b:14d with SMTP id me24-20020a170906aed800b006f37e6b014dmr16118561ejb.451.1652714097404;
-        Mon, 16 May 2022 08:14:57 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id y9-20020a170906518900b006f3ef214e0csm8153ejk.114.2022.05.16.08.14.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 08:14:56 -0700 (PDT)
-Message-ID: <e7730596-8fb9-7fbd-3074-de561086a121@linaro.org>
-Date:   Mon, 16 May 2022 17:14:55 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aqUacUDD/fnqySsoi3HdJFEi/V1mTy/VfQQMnGzRza8=;
+        b=lCf5I1NBsacJV6URE2ydz1FGUwu4P5Z4P9pAYbkFefK7SjzzBI/ZO8IeyO4VYL3Evh
+         qHtmiU1PB//n7j5wjn1b9BbPpj3E6EUO2ZjcOrVr3YKftfJGoixyXenpNhE/a7oGp9SM
+         dCUCdvfBA0I1I4pXixcYmd/H6h4bd2oBcvg0wDmAxwtPxhGUTfknD8nwji0F4HNmp5Rc
+         gl8u/AsRv1kRLsa6I4sLytU5m2FKXD70HOjizBM8nkN76dN7E5HxexeRFo8zcPyuUE0Y
+         5ooHc6OriuungGKwaXmS2ZqDuDxBgqZ1eh+frCvch4w/j1bVi1/HA2Wm2SF05US6cHav
+         JYWw==
+X-Gm-Message-State: AOAM530lh3C7rtxBRV9OHpOekQsUqZ/QWle3eGxLLODiHAWItQZaIdrm
+        PUbsn6Kn6l2Mb1op9b8+CsJEkQ==
+X-Google-Smtp-Source: ABdhPJyxCbBtqQzZ9IoSbuL6c4zNV6p71BzBhppEUqHbNuekH9OptVw3cYCBHP8hn3HJmDptoqnELA==
+X-Received: by 2002:a9d:2f65:0:b0:609:a162:388d with SMTP id h92-20020a9d2f65000000b00609a162388dmr325956otb.331.1652714121253;
+        Mon, 16 May 2022 08:15:21 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id 23-20020a9d0317000000b006060322125asm4070722otv.42.2022.05.16.08.15.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 08:15:20 -0700 (PDT)
+Date:   Mon, 16 May 2022 08:17:44 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
+        robh+dt@kernel.org, quic_plai@quicinc.com, bgoswami@quicinc.com,
+        perex@perex.cz, tiwai@suse.com, srinivas.kandagatla@linaro.org,
+        quic_rohkumar@quicinc.com, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org, Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH 2/2] pinctrl: qcom: sc7280: Add lpi pinctrl variant data
+ structure for adsp based targets
+Message-ID: <YoJrGGg0RviVn2Xj@ripper>
+References: <1651672580-18952-1-git-send-email-quic_srivasam@quicinc.com>
+ <1651672580-18952-3-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/3] dt-bindings: arm: qcom: Add sc7180 Chromebook board
- bindings
-Content-Language: en-US
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Rajendra Nayak <quic_rjendra@quicinc.com>,
-        "Joseph S . Barrera III" <joebar@chromium.org>,
-        Julius Werner <jwerner@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
- <828bc65f-e585-0fe7-c038-c750861c9446@linaro.org>
- <48d96a4e-ce1b-03a1-1831-36555efd7080@linaro.org>
- <CAD=FV=WNSv+kgTZwjHVq+YNQAG0uB42QUPaU-BPTV_W+j=5aYg@mail.gmail.com>
- <96686d6d-83a9-05a2-9fdc-f9fc4b4e7eed@linaro.org>
- <CAD=FV=W8F5xbv2tKhCvjLLHitts+eQFbFE3fb3wogwY91Q7gAA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAD=FV=W8F5xbv2tKhCvjLLHitts+eQFbFE3fb3wogwY91Q7gAA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1651672580-18952-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/05/2022 17:11, Doug Anderson wrote:
-> Hi,
+On Wed 04 May 06:56 PDT 2022, Srinivasa Rao Mandadapu wrote:
+
+> Add compatible string and lpi pinctrl variant data structure for adsp enabled
+> sc7280 platforms.
+
+This says what the change does, but gives no clue to what this
+compatible represents and why the clock is not optional.
+
+Could you please describe here what scenario this compatible is to be
+used for etc, so that when someone else adds support for the next
+platform they can use the git history to understand which case to
+follow.
+
+Thanks,
+Bjorn
+
 > 
-> On Sun, May 15, 2022 at 11:40 PM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 13/05/2022 19:00, Doug Anderson wrote:
->>> Hi,
->>>
->>> On Fri, May 13, 2022 at 2:01 AM Krzysztof Kozlowski
->>> <krzysztof.kozlowski@linaro.org> wrote:
->>>>
->>>> On 13/05/2022 09:57, Krzysztof Kozlowski wrote:
->>>>> On 12/05/2022 18:04, Douglas Anderson wrote:
->>>>>> This copy-pastes compatibles from sc7180-based boards from the device
->>>>>> trees to the yaml file so that `make dtbs_check` will be happy.
->>>>>>
->>>>>> NOTES:
->>>>>> - I make no attempt to try to share an "item" for all sc7180 based
->>>>>>   Chromebooks. Because of the revision matching scheme used by the
->>>>>>   Chromebook bootloader, at times we need a different number of
->>>>>>   revisions listed.
->>>>>> - Some of the odd entries in here (like google,homestar-rev23 or the
->>>>>>   fact that "Google Lazor Limozeen without Touchscreen" changed from
->>>>>>   sku5 to sku6) are not typos but simply reflect reality.
->>>>>> - Many revisions of boards here never actually went to consumers, but
->>>>>>   they are still in use within various companies that were involved in
->>>>>>   Chromebook development. Since Chromebooks are developed with an
->>>>>>   "upstream first" methodology, having these revisions supported with
->>>>>>   upstream Linux is important. Making it easy for Chromebooks to be
->>>>>>   developed with an "upstream first" methodology is valuable to the
->>>>>>   upstream community because it improves the quality of upstream and
->>>>>>   gets Chromebooks supported with vanilla upstream faster.
->>>>>>
->>>>>> Signed-off-by: Douglas Anderson <dianders@chromium.org>
->>>>>> ---
->>>>>>
->>>>>>  .../devicetree/bindings/arm/qcom.yaml         | 180 ++++++++++++++++++
->>>>>>  1 file changed, 180 insertions(+)
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
->>>>>> index 5c06d1bfc046..399be67eb5d2 100644
->>>>>> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
->>>>>> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
->>>>>> @@ -214,11 +214,191 @@ properties:
->>>>>>                - qcom,ipq8074-hk10-c2
->>>>>>            - const: qcom,ipq8074
->>>>>>
->>>>>> +      # Qualcomm Technologies, Inc. SC7180 IDP
->>>>>>        - items:
->>>>>>            - enum:
->>>>>>                - qcom,sc7180-idp
->>>>>>            - const: qcom,sc7180
->>>>>>
->>>>>> +      # Google CoachZ (rev1 - 2)
->>>>>> +      - items:
->>>>>> +          - const: google,coachz-rev1
->>>>>> +          - const: google,coachz-rev2
->>>>>
->>>>> The inverted pattern of old revision being compatible with the new one,
->>>>> is done on purpose? You claim here every rev1 is always compatible with
->>>>> rev2 ...
->>>>>
->>>>> I don't think we discussed such patterns in previous talk. I quickly
->>>>> went through it and there were only skuX moving around, not rev1 being
->>>>> newer then rev2.
->>>
->>> Isn't this what we just had a whole discussion about?
->>>
->>> Oh, I see. You're objecting to the fact that the order here lists
->>> "rev1" first and "rev2" second.
->>>
->>> I think the issue here is that for the purposes of booting Chromebooks
->>> the order here doesn't matter. Certainly we can pick a fixed order and
->>> we can validate that the order in the yaml matches the order in the
->>> device tree, but for all intents and purposes it doesn't matter to
->>> anything. The same device tree is compatible with _both_ rev1 and rev2
->>> coachz devices. Neither of those two devices is inherently better
->>> supported by this device tree than the other.
->>
->> OK, thanks for explanation. Since these were not documented maybe fixing
->> existing DTS to more expected order (rev2 being the newest, rev1
->> following) would make sense. But certainly please use such new order
->> compatibles for new DTSes.
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 > 
-> I'm still not sure I understand: if the list of revisions is
-> effectively unordered, why does it matter which order they are listed
-> in? Certainly we can change the order, but I'm not sure how I justify
-> the extra churn in my patch description.
-
-The list for the bindings (YAML), the toolset and for the Devicetree
-spec is ordered. Even if it is not ordered for your bootloader
-implementation. Your current order is a bit confusing:
-
-compatible = "google,coachz-rev1", "google,coachz-rev2", "qcom,sc7180";
-
-Changing the order in existing DTS, might not be worth. I propose then
-to introduce the logical order in the future, so for new DTS:
-
-compatible = "google,XXX-rev2", "google,XXX-rev1", "qcom,sc7180";
-
-I understood that for your bootloader it does not matter.
-
-Best regards,
-Krzysztof
+> diff --git a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> index 2add9a4..c9e85d9 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> +++ b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> @@ -134,6 +134,16 @@ static const struct lpi_function sc7280_functions[] = {
+>  	LPI_FUNCTION(wsa_swr_data),
+>  };
+>  
+> +static const struct lpi_pinctrl_variant_data sc7280_adsp_lpi_data = {
+> +	.pins = sc7280_lpi_pins,
+> +	.npins = ARRAY_SIZE(sc7280_lpi_pins),
+> +	.groups = sc7280_groups,
+> +	.ngroups = ARRAY_SIZE(sc7280_groups),
+> +	.functions = sc7280_functions,
+> +	.nfunctions = ARRAY_SIZE(sc7280_functions),
+> +	.is_clk_optional = false,
+> +};
+> +
+>  static const struct lpi_pinctrl_variant_data sc7280_lpi_data = {
+>  	.pins = sc7280_lpi_pins,
+>  	.npins = ARRAY_SIZE(sc7280_lpi_pins),
+> @@ -149,6 +159,10 @@ static const struct of_device_id lpi_pinctrl_of_match[] = {
+>  	       .compatible = "qcom,sc7280-lpass-lpi-pinctrl",
+>  	       .data = &sc7280_lpi_data,
+>  	},
+> +	{
+> +		.compatible = "qcom,sc7280-lpass-adsp-lpi-pinctrl",
+> +		.data = &sc7280_adsp_lpi_data,
+> +	},
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, lpi_pinctrl_of_match);
+> -- 
+> 2.7.4
+> 
