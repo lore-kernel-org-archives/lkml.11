@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27718C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347564AbiEPU37 (ORCPT
+        id S1347579AbiEPUaL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        Mon, 16 May 2022 16:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350120AbiEPUAt (ORCPT
+        with ESMTP id S1350586AbiEPUBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECC94615C;
-        Mon, 16 May 2022 12:54:57 -0700 (PDT)
+        Mon, 16 May 2022 16:01:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC9149FAB;
+        Mon, 16 May 2022 12:55:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B47B60EBF;
-        Mon, 16 May 2022 19:54:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3206CC34115;
-        Mon, 16 May 2022 19:54:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19C4160FE1;
+        Mon, 16 May 2022 19:55:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 244CDC34100;
+        Mon, 16 May 2022 19:55:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730894;
-        bh=5w5TdAbzLgyln7T2l3CudF7APwH2w9G1JXnAxlDsrVA=;
+        s=korg; t=1652730934;
+        bh=EdXBI+t7Z+CJBmYfgvbfu0giiu3XH2CkqB+Azf5RDVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zSIOxChVBGncFGcUlBc0HF3NsVmpgY5ldIqquOkw4DZYwxRrRYX7qpV+ZbR9ZFcil
-         KmWoYFC8Up1aeqnkfKc1rvsia5+sz2sFq8N6s/lHp+a4+2qdmS+/r/TqFVjP/Yim4p
-         /NY+fUiHW4CBUIO0oGqP6KfQdAdzIS5NqEHdV4bc=
+        b=r/VEIrEqUznK1kLupwjdiq8pOIBsOQJ7v3ERT/Rfd26O3xPaxQig6h8yS8NSJiQB+
+         aKFEsBSfknV/uS4nSwCRHIgrOay1l6hsF6p7orUIYepjQTWkDvaBns8RzMNR+n6ndg
+         7CCSPCHVjLegH2HEyqoOqVu931HEmI7AY0c/qBQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexandra Winter <wintera@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 037/114] s390/lcs: fix variable dereferenced before check
-Date:   Mon, 16 May 2022 21:36:11 +0200
-Message-Id: <20220516193626.554494541@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Pritesh Raithatha <praithatha@nvidia.com>,
+        Ashish Mhetre <amhetre@nvidia.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 052/114] iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu
+Date:   Mon, 16 May 2022 21:36:26 +0200
+Message-Id: <20220516193626.988968670@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,40 +52,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
+From: Ashish Mhetre <amhetre@nvidia.com>
 
-[ Upstream commit 671bb35c8e746439f0ed70815968f9a4f20a8deb ]
+[ Upstream commit 4a25f2ea0e030b2fc852c4059a50181bfc5b2f57 ]
 
-smatch complains about
-drivers/s390/net/lcs.c:1741 lcs_get_control() warn: variable dereferenced before check 'card->dev' (see line 1739)
+Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
+entries to not be invalidated correctly. The problem is that the walk
+cache index generated for IOVA is not same across translation and
+invalidation requests. This is leading to page faults when PMD entry is
+released during unmap and populated with new PTE table during subsequent
+map request. Disabling large page mappings avoids the release of PMD
+entry and avoid translations seeing stale PMD entry in walk cache.
+Fix this by limiting the page mappings to PAGE_SIZE for Tegra194 and
+Tegra234 devices. This is recommended fix from Tegra hardware design
+team.
 
-Fixes: 27eb5ac8f015 ("[PATCH] s390: lcs driver bug fixes and improvements [1/2]")
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Krishna Reddy <vdumpa@nvidia.com>
+Co-developed-by: Pritesh Raithatha <praithatha@nvidia.com>
+Signed-off-by: Pritesh Raithatha <praithatha@nvidia.com>
+Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+Link: https://lore.kernel.org/r/20220421081504.24678-1-amhetre@nvidia.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/net/lcs.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 30 ++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
-index a61d38a1b4ed..66c2893badad 100644
---- a/drivers/s390/net/lcs.c
-+++ b/drivers/s390/net/lcs.c
-@@ -1736,10 +1736,11 @@ lcs_get_control(struct lcs_card *card, struct lcs_cmd *cmd)
- 			lcs_schedule_recovery(card);
- 			break;
- 		case LCS_CMD_STOPLAN:
--			pr_warn("Stoplan for %s initiated by LGW\n",
--				card->dev->name);
--			if (card->dev)
-+			if (card->dev) {
-+				pr_warn("Stoplan for %s initiated by LGW\n",
-+					card->dev->name);
- 				netif_carrier_off(card->dev);
-+			}
- 			break;
- 		default:
- 			LCS_DBF_TEXT(5, trace, "noLGWcmd");
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+index 01e9b50b10a1..87bf522b9d2e 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+@@ -258,6 +258,34 @@ static void nvidia_smmu_probe_finalize(struct arm_smmu_device *smmu, struct devi
+ 			dev_name(dev), err);
+ }
+ 
++static int nvidia_smmu_init_context(struct arm_smmu_domain *smmu_domain,
++				    struct io_pgtable_cfg *pgtbl_cfg,
++				    struct device *dev)
++{
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	const struct device_node *np = smmu->dev->of_node;
++
++	/*
++	 * Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
++	 * entries to not be invalidated correctly. The problem is that the walk
++	 * cache index generated for IOVA is not same across translation and
++	 * invalidation requests. This is leading to page faults when PMD entry
++	 * is released during unmap and populated with new PTE table during
++	 * subsequent map request. Disabling large page mappings avoids the
++	 * release of PMD entry and avoid translations seeing stale PMD entry in
++	 * walk cache.
++	 * Fix this by limiting the page mappings to PAGE_SIZE on Tegra194 and
++	 * Tegra234.
++	 */
++	if (of_device_is_compatible(np, "nvidia,tegra234-smmu") ||
++	    of_device_is_compatible(np, "nvidia,tegra194-smmu")) {
++		smmu->pgsize_bitmap = PAGE_SIZE;
++		pgtbl_cfg->pgsize_bitmap = smmu->pgsize_bitmap;
++	}
++
++	return 0;
++}
++
+ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.read_reg = nvidia_smmu_read_reg,
+ 	.write_reg = nvidia_smmu_write_reg,
+@@ -268,10 +296,12 @@ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.global_fault = nvidia_smmu_global_fault,
+ 	.context_fault = nvidia_smmu_context_fault,
+ 	.probe_finalize = nvidia_smmu_probe_finalize,
++	.init_context = nvidia_smmu_init_context,
+ };
+ 
+ static const struct arm_smmu_impl nvidia_smmu_single_impl = {
+ 	.probe_finalize = nvidia_smmu_probe_finalize,
++	.init_context = nvidia_smmu_init_context,
+ };
+ 
+ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
 -- 
 2.35.1
 
