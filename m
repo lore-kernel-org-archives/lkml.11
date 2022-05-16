@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3D7C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0C5C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346603AbiEPTqh (ORCPT
+        id S1346795AbiEPTqr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
+        Mon, 16 May 2022 15:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345962AbiEPTnI (ORCPT
+        with ESMTP id S1346153AbiEPTmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:43:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786B53EF38;
-        Mon, 16 May 2022 12:42:16 -0700 (PDT)
+        Mon, 16 May 2022 15:42:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD803F33D;
+        Mon, 16 May 2022 12:42:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3531FB81609;
-        Mon, 16 May 2022 19:42:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D7EAC385AA;
-        Mon, 16 May 2022 19:42:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8B4EB81612;
+        Mon, 16 May 2022 19:42:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B66BC385AA;
+        Mon, 16 May 2022 19:41:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730134;
-        bh=hBFqL54OXt8iEhpIjULegfkhpzWOpPv4Vtg36WzXZVk=;
+        s=korg; t=1652730119;
+        bh=uywXK8IgI3W4VW5qGNcB5riWfB06WwGsZXThmN6x67I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C9IZLnf558kkIP7JNFEnANqVa11Qfi2lJpOXj/0hxuqUiQZk3DGcIFaAIqUGKLnyY
-         B2HVcDvJNyyTcUTgZkbXnJVBPxfLhIo1O9Qegq7GIECnbBivHaRciufEpk3FbJHEDe
-         tVLbP01VgZudfZjZjTBDjwe0yfxgZSzkglfLXrH4=
+        b=zEGH/FpskyyobEyS3MYzbHpyl226rqIAUjIcNZjfnSapBPRXplB1GvYSbFhj2cQfz
+         LFxkF8yH9kpRStZMG79KxE9bTu77w8pGFwVDkbjazv3fD9z1en4uHMo04GLgay4K4X
+         htimhXo75uKyGkO9uQJd4MKeSh8WKzjjgr9sWm4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Florian Eckert <fe@dev.tdt.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 10/43] hwmon: (ltq-cputemp) restrict it to SOC_XWAY
-Date:   Mon, 16 May 2022 21:36:21 +0200
-Message-Id: <20220516193615.022181134@linuxfoundation.org>
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 4.19 28/32] cgroup/cpuset: Remove cpus_allowed/mems_allowed setup in cpuset_init_smp()
+Date:   Mon, 16 May 2022 21:36:42 +0200
+Message-Id: <20220516193615.608208621@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
-References: <20220516193614.714657361@linuxfoundation.org>
+In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
+References: <20220516193614.773450018@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,56 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Waiman Long <longman@redhat.com>
 
-[ Upstream commit 151d6dcbed836270c6c240932da66f147950cbdb ]
+commit 2685027fca387b602ae565bff17895188b803988 upstream.
 
-Building with SENSORS_LTQ_CPUTEMP=y with SOC_FALCON=y causes build
-errors since FALCON does not support the same features as XWAY.
+There are 3 places where the cpu and node masks of the top cpuset can
+be initialized in the order they are executed:
+ 1) start_kernel -> cpuset_init()
+ 2) start_kernel -> cgroup_init() -> cpuset_bind()
+ 3) kernel_init_freeable() -> do_basic_setup() -> cpuset_init_smp()
 
-Change this symbol to depend on SOC_XWAY since that provides the
-necessary interfaces.
+The first cpuset_init() call just sets all the bits in the masks.
+The second cpuset_bind() call sets cpus_allowed and mems_allowed to the
+default v2 values. The third cpuset_init_smp() call sets them back to
+v1 values.
 
-Repairs these build errors:
+For systems with cgroup v2 setup, cpuset_bind() is called once.  As a
+result, cpu and memory node hot add may fail to update the cpu and node
+masks of the top cpuset to include the newly added cpu or node in a
+cgroup v2 environment.
 
-../drivers/hwmon/ltq-cputemp.c: In function 'ltq_cputemp_enable':
-../drivers/hwmon/ltq-cputemp.c:23:9: error: implicit declaration of function 'ltq_cgu_w32'; did you mean 'ltq_ebu_w32'? [-Werror=implicit-function-declaration]
-   23 |         ltq_cgu_w32(ltq_cgu_r32(CGU_GPHY1_CR) | CGU_TEMP_PD, CGU_GPHY1_CR);
-../drivers/hwmon/ltq-cputemp.c:23:21: error: implicit declaration of function 'ltq_cgu_r32'; did you mean 'ltq_ebu_r32'? [-Werror=implicit-function-declaration]
-   23 |         ltq_cgu_w32(ltq_cgu_r32(CGU_GPHY1_CR) | CGU_TEMP_PD, CGU_GPHY1_CR);
-../drivers/hwmon/ltq-cputemp.c: In function 'ltq_cputemp_probe':
-../drivers/hwmon/ltq-cputemp.c:92:31: error: 'SOC_TYPE_VR9_2' undeclared (first use in this function)
-   92 |         if (ltq_soc_type() != SOC_TYPE_VR9_2)
+For systems with cgroup v1 setup, cpuset_bind() is called again by
+rebind_subsystem() when the v1 cpuset filesystem is mounted as shown
+in the dmesg log below with an instrumented kernel.
 
-Fixes: 7074d0a92758 ("hwmon: (ltq-cputemp) add cpu temp sensor driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Florian Eckert <fe@dev.tdt.de>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: linux-hwmon@vger.kernel.org
-Link: https://lore.kernel.org/r/20220509234740.26841-1-rdunlap@infradead.org
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  [    2.609781] cpuset_bind() called - v2 = 1
+  [    3.079473] cpuset_init_smp() called
+  [    7.103710] cpuset_bind() called - v2 = 0
+
+smp_init() is called after the first two init functions.  So we don't
+have a complete list of active cpus and memory nodes until later in
+cpuset_init_smp() which is the right time to set up effective_cpus
+and effective_mems.
+
+To fix this cgroup v2 mask setup problem, the potentially incorrect
+cpus_allowed & mems_allowed setting in cpuset_init_smp() are removed.
+For cgroup v2 systems, the initial cpuset_bind() call will set the masks
+correctly.  For cgroup v1 systems, the second call to cpuset_bind()
+will do the right setup.
+
+cc: stable@vger.kernel.org
+Signed-off-by: Waiman Long <longman@redhat.com>
+Tested-by: Feng Tang <feng.tang@intel.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/cgroup/cpuset.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 049563d503b6..4ea742ada36d 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -802,7 +802,7 @@ config SENSORS_LTC4261
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -2403,8 +2403,11 @@ static struct notifier_block cpuset_trac
+  */
+ void __init cpuset_init_smp(void)
+ {
+-	cpumask_copy(top_cpuset.cpus_allowed, cpu_active_mask);
+-	top_cpuset.mems_allowed = node_states[N_MEMORY];
++	/*
++	 * cpus_allowd/mems_allowed set to v2 values in the initial
++	 * cpuset_bind() call will be reset to v1 values in another
++	 * cpuset_bind() call when v1 cpuset is mounted.
++	 */
+ 	top_cpuset.old_mems_allowed = top_cpuset.mems_allowed;
  
- config SENSORS_LTQ_CPUTEMP
- 	bool "Lantiq cpu temperature sensor driver"
--	depends on LANTIQ
-+	depends on SOC_XWAY
- 	help
- 	  If you say yes here you get support for the temperature
- 	  sensor inside your CPU.
--- 
-2.35.1
-
+ 	cpumask_copy(top_cpuset.effective_cpus, cpu_active_mask);
 
 
