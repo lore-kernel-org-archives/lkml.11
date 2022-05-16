@@ -2,106 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243578AbiEPND2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
+        id S243613AbiEPNEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbiEPND0 (ORCPT
+        with ESMTP id S233172AbiEPNEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:03:26 -0400
-Received: from outbound-smtp07.blacknight.com (outbound-smtp07.blacknight.com [46.22.139.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDEC39B8B
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:03:24 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
-        by outbound-smtp07.blacknight.com (Postfix) with ESMTPS id 79B231C3737
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 14:03:23 +0100 (IST)
-Received: (qmail 2770 invoked from network); 16 May 2022 13:03:23 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 16 May 2022 13:03:23 -0000
-Date:   Mon, 16 May 2022 14:03:20 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, vbabka@suse.cz,
-        akpm@linux-foundation.org, willy@infradead.org
-Subject: Re: Is _PAGE_PROTNONE set only for user mappings?
-Message-ID: <20220516130319.GM3441@techsingularity.net>
-References: <20220506051940.156952-1-42.hyeyoo@gmail.com>
- <56f89895-601e-44c9-bda4-5fae6782e27e@amd.com>
- <YnpTHMvOO/pLJQ+l@hyeyoo>
- <5fe161cb-6c55-6c4d-c208-16c77e115d3f@amd.com>
- <8c2735ac-0335-6e2a-8341-8266d5d13c30@intel.com>
- <YntHrTX12TGp35aF@hyeyoo>
- <20220512103748.GH3441@techsingularity.net>
- <Yn3tssUR8w8mC1DJ@hyeyoo>
+        Mon, 16 May 2022 09:04:09 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825CA39B8B;
+        Mon, 16 May 2022 06:04:07 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L1zs45YMrzGq0p;
+        Mon, 16 May 2022 21:01:12 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 21:04:05 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
+ 2022 21:04:05 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>
+CC:     <heikki.krogerus@linux.intel.com>, <gregkh@linuxfoundation.org>
+Subject: [PATCH -next] usb: typec: ucsi: fix return value check in ucsi_acpi_probe()
+Date:   Mon, 16 May 2022 21:15:27 +0800
+Message-ID: <20220516131527.999909-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <Yn3tssUR8w8mC1DJ@hyeyoo>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 02:33:38PM +0900, Hyeonggon Yoo wrote:
-> On Thu, May 12, 2022 at 11:37:48AM +0100, Mel Gorman wrote:
-> > On Wed, May 11, 2022 at 02:20:45PM +0900, Hyeonggon Yoo wrote:
-> > > > pgprot_t vm_get_page_prot(unsigned long vm_flags)
-> > > > {
-> > > >        pgprot_t ret = __pgprot(pgprot_val(protection_map[vm_flags &
-> > > >                                (VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]) |
-> > > >                        pgprot_val(arch_vm_get_page_prot(vm_flags)));
-> > > >
-> > > >        return arch_filter_pgprot(ret);
-> > > > }
-> > > > EXPORT_SYMBOL(vm_get_page_prot);
-> > > 
-> > > I guess it's only set for processes' VMA if no caller is abusing
-> > > vm_get_page_prot() for kernel mappings.
-> > > 
-> > > But yeah, just quick guessing does not make us convinced.
-> > > Let's Cc people working on mm.
-> > > 
-> > > If kernel never uses _PAGE_PROTNONE for kernel mappings, it's just okay
-> > > not to clear _PAGE_GLOBAL at first in __change_page_attr() if it's not user address,
-> > > because no user will confuse _PAGE_GLOBAL as _PAGE_PROTNONE if it's kernel
-> > > address. right?
-> > > 
-> > 
-> > I'm not aware of a case where _PAGE_BIT_PROTNONE is used for a kernel
-> > address expecting PROT_NONE semantics instead of the global bit. NUMA
-> > Balancing is not going to accidentally treat a kernel address as if it's
-> > a NUMA hinting fault. By the time a fault is determining if a PTE access
-> > is a numa hinting fault or accesssing a PROT_NONE region, it has been
-> > established that it is a userspace address backed by a valid VMA.
-> > 
-> 
-> Thanks Mel, and IIUC nor does do_kern_addr_fault() in arch/x86/mm/fault.c
-> expect _PAGE_PROTNONE instead of _PAGE_GLOBAL. I want to make it clear
-> in the code that _PAGE_PROTNONE is only used for user mappings.
-> 
-> How does below look?
-> 
+If memremap() fails, it never returns NULL. Replace NULL check
+with IS_ERR().
 
-I've no strong objections. I worry that this somehow could be used to
-set PAGE_USER on a kernel mapping page and maybe a comment would be more
-appropriate. However, I'm failing to imagine how NUMA balancing could be
-fooled into doing that.
+Fixes: cdc3d2abf438 ("usb: typec: ucsi: acpi: Map the mailbox with memremap()")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/usb/typec/ucsi/ucsi_acpi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/usb/typec/ucsi/ucsi_acpi.c b/drivers/usb/typec/ucsi/ucsi_acpi.c
+index 7455e3aff2be..8873c1644a29 100644
+--- a/drivers/usb/typec/ucsi/ucsi_acpi.c
++++ b/drivers/usb/typec/ucsi/ucsi_acpi.c
+@@ -133,8 +133,8 @@ static int ucsi_acpi_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ua->base = devm_memremap(&pdev->dev, res->start, resource_size(res), MEMREMAP_WB);
+-	if (!ua->base)
+-		return -ENOMEM;
++	if (IS_ERR(ua->base))
++		return PTR_ERR(ua->base);
+ 
+ 	ret = guid_parse(UCSI_DSM_UUID, &ua->guid);
+ 	if (ret)
 -- 
-Mel Gorman
-SUSE Labs
+2.25.1
+
