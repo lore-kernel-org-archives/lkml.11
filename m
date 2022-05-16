@@ -2,257 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D283EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9AB2C41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244513AbiEPObM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
+        id S244575AbiEPOdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244456AbiEPOa4 (ORCPT
+        with ESMTP id S231847AbiEPOdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:30:56 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6440110AE
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:30:52 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L21rR0f8wz6H6vH;
-        Mon, 16 May 2022 22:30:47 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 16 May 2022 16:30:50 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
- 2022 15:30:49 +0100
-Date:   Mon, 16 May 2022 15:30:48 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Chen Jun <chenjun102@huawei.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <zhangshaokun@hisilicon.com>, <will@kernel.org>,
-        <mark.rutland@arm.com>, <xuqiang36@huawei.com>,
-        <linuxarm@huawei.com>
-Subject: Re: [PATCH 1/1] perf: hisi: Extract hisi_pmu_init
-Message-ID: <20220516153048.00007f62@Huawei.com>
-In-Reply-To: <20220516131601.48383-1-chenjun102@huawei.com>
-References: <20220516131601.48383-1-chenjun102@huawei.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Mon, 16 May 2022 10:33:44 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2482AF8;
+        Mon, 16 May 2022 07:33:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C33171F9F3;
+        Mon, 16 May 2022 14:33:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652711621; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fVjlG4/dfH2RJ8QOIc+qrGCmgCcjOpZB+KPjtLQbhUo=;
+        b=g7zXCdiW66+ZORh6/+b42qlwXs71YIm78eBo2DkB+6yci0VblhfjN32vYqq5tvyFP+a35V
+        4IQbZk+eZ8m4N7dIzfRZvRcjGflhdk2pzgpwxTPHHTNBIE+W9GZV3Zj3ggNIRkQibkb0ZX
+        yDFspItfCnZ03JfIlqNkkDR8LZU/GbA=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 5E6F32C141;
+        Mon, 16 May 2022 14:33:41 +0000 (UTC)
+Date:   Mon, 16 May 2022 16:33:41 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Alex Elder <elder@kernel.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Chris Zankel <chris@zankel.net>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Corey Minyard <minyard@acm.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        James Morse <james.morse@arm.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matt Turner <mattst88@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Richard Weinberger <richard@nod.at>,
+        Robert Richter <rric@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, Wei Liu <wei.liu@kernel.org>
+Subject: Re: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
+Message-ID: <YoJgcC8c6LaKADZV@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-22-gpiccoli@igalia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427224924.592546-22-gpiccoli@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 13:16:01 +0000
-Chen Jun <chenjun102@huawei.com> wrote:
-
-> Extract the initialization code of hisi_pmu->pmu into a function
+On Wed 2022-04-27 19:49:15, Guilherme G. Piccoli wrote:
+> This patch renames the panic_notifier_list to panic_pre_reboot_list;
+> the idea is that a subsequent patch will refactor the panic path
+> in order to better split the notifiers, running some of them very
+> early, some of them not so early [but still before kmsg_dump()] and
+> finally, the rest should execute late, after kdump. The latter ones
+> are now in the panic pre-reboot list - the name comes from the idea
+> that these notifiers execute before panic() attempts rebooting the
+> machine (if that option is set).
 > 
-> Signed-off-by: Chen Jun <chenjun102@huawei.com>
-
-Hi Chen Jun,
-
-If you are going to do this (and I think the stats speak for it being
-a good idea), then also look at whether the various exports and
-header definitions for the callbacks are all needed any more.
-
-I checked just hisi_uncore_pmu_del and that one at least is
-private to hisi_uncore_pmu.c after this patch.
-With those cleaned up as well the argument for removing this duplication
-will be even stronger!
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c | 16 +---------------
->  drivers/perf/hisilicon/hisi_uncore_hha_pmu.c  | 16 +---------------
->  drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c  | 16 +---------------
->  drivers/perf/hisilicon/hisi_uncore_pa_pmu.c   | 16 +---------------
->  drivers/perf/hisilicon/hisi_uncore_pmu.c      | 18 ++++++++++++++++++
->  drivers/perf/hisilicon/hisi_uncore_pmu.h      |  2 ++
->  drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c | 15 +--------------
->  7 files changed, 25 insertions(+), 74 deletions(-)
+> We also took the opportunity to clean-up useless header inclusions,
+> improve some notifier block declarations (e.g. in ibmasm/heartbeat.c)
+> and more important, change some priorities - we hereby set 2 notifiers
+> to run late in the list [iss_panic_event() and the IPMI panic_event()]
+> due to the risks they offer (may not return, for example).
+> Proper documentation is going to be provided in a subsequent patch,
+> that effectively refactors the panic path.
 > 
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c b/drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c
-> index 62299ab5a9be..50d0c0a2f1fe 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c
-> @@ -516,21 +516,7 @@ static int hisi_ddrc_pmu_probe(struct platform_device *pdev)
->  				      "hisi_sccl%u_ddrc%u", ddrc_pmu->sccl_id,
->  				      ddrc_pmu->index_id);
+> --- a/drivers/edac/altera_edac.c
+> +++ b/drivers/edac/altera_edac.c
+> @@ -2163,7 +2162,7 @@ static int altr_edac_a10_probe(struct platform_device *pdev)
+>  		int dberror, err_addr;
 >  
-> -	ddrc_pmu->pmu = (struct pmu) {
-> -		.name		= name,
-> -		.module		= THIS_MODULE,
-> -		.task_ctx_nr	= perf_invalid_context,
-> -		.event_init	= hisi_uncore_pmu_event_init,
-> -		.pmu_enable	= hisi_uncore_pmu_enable,
-> -		.pmu_disable	= hisi_uncore_pmu_disable,
-> -		.add		= hisi_uncore_pmu_add,
-> -		.del		= hisi_uncore_pmu_del,
-> -		.start		= hisi_uncore_pmu_start,
-> -		.stop		= hisi_uncore_pmu_stop,
-> -		.read		= hisi_uncore_pmu_read,
-> -		.attr_groups	= ddrc_pmu->pmu_events.attr_groups,
-> -		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
-> -	};
-> +	hisi_pmu_init(&ddrc_pmu->pmu, name, ddrc_pmu->pmu_events.attr_groups, THIS_MODULE);
+>  		edac->panic_notifier.notifier_call = s10_edac_dberr_handler;
+> -		atomic_notifier_chain_register(&panic_notifier_list,
+> +		atomic_notifier_chain_register(&panic_pre_reboot_list,
+
+My understanding is that this notifier first prints info about ECC
+errors and then triggers reboot. It might make sense to split it
+into two notifiers.
+
+
+>  					       &edac->panic_notifier);
 >  
->  	ret = perf_pmu_register(&ddrc_pmu->pmu, name, -1);
->  	if (ret) {
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_hha_pmu.c b/drivers/perf/hisilicon/hisi_uncore_hha_pmu.c
-> index 393513150106..13017b3412a5 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_hha_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_hha_pmu.c
-> @@ -519,21 +519,7 @@ static int hisi_hha_pmu_probe(struct platform_device *pdev)
+>  		/* Printout a message if uncorrectable error previously. */
+> --- a/drivers/leds/trigger/ledtrig-panic.c
+> +++ b/drivers/leds/trigger/ledtrig-panic.c
+> @@ -64,7 +63,7 @@ static long led_panic_blink(int state)
 >  
->  	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sccl%u_hha%u",
->  			      hha_pmu->sccl_id, hha_pmu->index_id);
-> -	hha_pmu->pmu = (struct pmu) {
-> -		.name		= name,
-> -		.module		= THIS_MODULE,
-> -		.task_ctx_nr	= perf_invalid_context,
-> -		.event_init	= hisi_uncore_pmu_event_init,
-> -		.pmu_enable	= hisi_uncore_pmu_enable,
-> -		.pmu_disable	= hisi_uncore_pmu_disable,
-> -		.add		= hisi_uncore_pmu_add,
-> -		.del		= hisi_uncore_pmu_del,
-> -		.start		= hisi_uncore_pmu_start,
-> -		.stop		= hisi_uncore_pmu_stop,
-> -		.read		= hisi_uncore_pmu_read,
-> -		.attr_groups	= hha_pmu->pmu_events.attr_groups,
-> -		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
-> -	};
-> +	hisi_pmu_init(&hha_pmu->pmu, name, hha_pmu->pmu_events.attr_groups, THIS_MODULE);
+>  static int __init ledtrig_panic_init(void)
+>  {
+> -	atomic_notifier_chain_register(&panic_notifier_list,
+> +	atomic_notifier_chain_register(&panic_pre_reboot_list,
+>  				       &led_trigger_panic_nb);
+
+Blinking => should go to the last "post_reboot/loop" list.
+
+
 >  
->  	ret = perf_pmu_register(&hha_pmu->pmu, name, -1);
->  	if (ret) {
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c b/drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c
-> index 560ab964c8b5..2995f3630d49 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c
-> @@ -557,21 +557,7 @@ static int hisi_l3c_pmu_probe(struct platform_device *pdev)
->  	 */
->  	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sccl%u_l3c%u",
->  			      l3c_pmu->sccl_id, l3c_pmu->ccl_id);
-> -	l3c_pmu->pmu = (struct pmu) {
-> -		.name		= name,
-> -		.module		= THIS_MODULE,
-> -		.task_ctx_nr	= perf_invalid_context,
-> -		.event_init	= hisi_uncore_pmu_event_init,
-> -		.pmu_enable	= hisi_uncore_pmu_enable,
-> -		.pmu_disable	= hisi_uncore_pmu_disable,
-> -		.add		= hisi_uncore_pmu_add,
-> -		.del		= hisi_uncore_pmu_del,
-> -		.start		= hisi_uncore_pmu_start,
-> -		.stop		= hisi_uncore_pmu_stop,
-> -		.read		= hisi_uncore_pmu_read,
-> -		.attr_groups	= l3c_pmu->pmu_events.attr_groups,
-> -		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
-> -	};
-> +	hisi_pmu_init(&l3c_pmu->pmu, name, l3c_pmu->pmu_events.attr_groups, THIS_MODULE);
->  
->  	ret = perf_pmu_register(&l3c_pmu->pmu, name, -1);
->  	if (ret) {
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
-> index bad99d149172..2103fb5ee7bb 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
-> @@ -416,21 +416,7 @@ static int hisi_pa_pmu_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> -	pa_pmu->pmu = (struct pmu) {
-> -		.module		= THIS_MODULE,
-> -		.task_ctx_nr	= perf_invalid_context,
-> -		.event_init	= hisi_uncore_pmu_event_init,
-> -		.pmu_enable	= hisi_uncore_pmu_enable,
-> -		.pmu_disable	= hisi_uncore_pmu_disable,
-> -		.add		= hisi_uncore_pmu_add,
-> -		.del		= hisi_uncore_pmu_del,
-> -		.start		= hisi_uncore_pmu_start,
-> -		.stop		= hisi_uncore_pmu_stop,
-> -		.read		= hisi_uncore_pmu_read,
-> -		.attr_groups    = pa_pmu->pmu_events.attr_groups,
-> -		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
-> -	};
-> -
-> +	hisi_pmu_init(&pa_pmu->pmu, name, pa_pmu->pmu_events.attr_groups, THIS_MODULE);
->  	ret = perf_pmu_register(&pa_pmu->pmu, name, -1);
->  	if (ret) {
->  		dev_err(pa_pmu->dev, "PMU register failed, ret = %d\n", ret);
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> index 358e4e284a62..5dd2694dbdf8 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> @@ -527,4 +527,22 @@ int hisi_uncore_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
+>  	led_trigger_register_simple("panic", &trigger);
+> --- a/drivers/misc/ibmasm/heartbeat.c
+> +++ b/drivers/misc/ibmasm/heartbeat.c
+> @@ -32,20 +31,23 @@ static int suspend_heartbeats = 0;
+>  static int panic_happened(struct notifier_block *n, unsigned long val, void *v)
+>  {
+>  	suspend_heartbeats = 1;
+> -	return 0;
+> +	return NOTIFY_DONE;
 >  }
->  EXPORT_SYMBOL_GPL(hisi_uncore_pmu_offline_cpu);
 >  
-> +void hisi_pmu_init(struct pmu *pmu, const char *name,
-> +		const struct attribute_group **attr_groups, struct module *module)
-> +{
-> +	pmu->name               = name;
-> +	pmu->module             = module;
-> +	pmu->task_ctx_nr        = perf_invalid_context;
-> +	pmu->event_init         = hisi_uncore_pmu_event_init;
-> +	pmu->pmu_enable         = hisi_uncore_pmu_enable;
-> +	pmu->pmu_disable        = hisi_uncore_pmu_disable;
-> +	pmu->add                = hisi_uncore_pmu_add;
-> +	pmu->del                = hisi_uncore_pmu_del;
-> +	pmu->start              = hisi_uncore_pmu_start;
-> +	pmu->stop               = hisi_uncore_pmu_stop;
-> +	pmu->read               = hisi_uncore_pmu_read;
-> +	pmu->attr_groups        = attr_groups;
-> +}
-> +EXPORT_SYMBOL_GPL(hisi_pmu_init);
-> +
->  MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.h b/drivers/perf/hisilicon/hisi_uncore_pmu.h
-> index 7f5841d6f592..6e2523e4aa36 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.h
-> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.h
-> @@ -120,4 +120,6 @@ ssize_t hisi_uncore_pmu_identifier_attr_show(struct device *dev,
->  int hisi_uncore_pmu_init_irq(struct hisi_pmu *hisi_pmu,
->  			     struct platform_device *pdev);
+> -static struct notifier_block panic_notifier = { panic_happened, NULL, 1 };
+> +static struct notifier_block panic_notifier = {
+> +	.notifier_call = panic_happened,
+> +};
 >  
-> +void hisi_pmu_init(struct pmu *pmu, const char *name,
-> +		const struct attribute_group **attr_groups, struct module *module);
->  #endif /* __HISI_UNCORE_PMU_H__ */
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c b/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c
-> index 6aedc303ff56..b9c79f17230c 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.c
-> @@ -445,20 +445,7 @@ static int hisi_sllc_pmu_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> -	sllc_pmu->pmu = (struct pmu) {
-> -		.module		= THIS_MODULE,
-> -		.task_ctx_nr	= perf_invalid_context,
-> -		.event_init	= hisi_uncore_pmu_event_init,
-> -		.pmu_enable	= hisi_uncore_pmu_enable,
-> -		.pmu_disable	= hisi_uncore_pmu_disable,
-> -		.add		= hisi_uncore_pmu_add,
-> -		.del		= hisi_uncore_pmu_del,
-> -		.start		= hisi_uncore_pmu_start,
-> -		.stop		= hisi_uncore_pmu_stop,
-> -		.read		= hisi_uncore_pmu_read,
-> -		.attr_groups    = sllc_pmu->pmu_events.attr_groups,
-> -		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
-> -	};
-> +	hisi_pmu_init(&sllc_pmu->pmu, name, sllc_pmu->pmu_events.attr_groups, THIS_MODULE);
->  
->  	ret = perf_pmu_register(&sllc_pmu->pmu, name, -1);
->  	if (ret) {
+>  void ibmasm_register_panic_notifier(void)
+>  {
+> -	atomic_notifier_chain_register(&panic_notifier_list, &panic_notifier);
+> +	atomic_notifier_chain_register(&panic_pre_reboot_list,
+> +					&panic_notifier);
 
+Same here. Blinking => should go to the last "post_reboot/loop" list.
+
+
+>  }
+>  
+>  void ibmasm_unregister_panic_notifier(void)
+>  {
+> -	atomic_notifier_chain_unregister(&panic_notifier_list,
+> -			&panic_notifier);
+> +	atomic_notifier_chain_unregister(&panic_pre_reboot_list,
+> +					&panic_notifier);
+>  }
+
+
+The rest of the moved notifiers seem to fit well this "pre_reboot"
+list.
+
+Best Regards,
+Petr
