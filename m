@@ -2,107 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF02C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:25:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243132AbiEPLYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
+        id S243147AbiEPLZQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243156AbiEPLYq (ORCPT
+        with ESMTP id S236967AbiEPLZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:24:46 -0400
-Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FDD387B7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 04:24:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1652700282; x=1684236282;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=FTlt+tA65l8s4jEvN+gXqV8wgn/CcuPmRQfp68j+TAA=;
-  b=W3kZwHRO0MIMoQwiBNxZrIw3VJ59m+21lcPlxECbPKFQ2EZxyurtTUF1
-   YRykysci+bPVyaSR5Qawyz/PwZOwXD8kN0dv1J+67En80ZDNy841NIkG8
-   oScT2sbwSRYRSTrOVkWHfZMbBW9GBsaoT/2awerPPKVD47s2lqwNmeVj9
-   vFAgxa+QtlJ5loNETPF2Gu+dSMWF9H+HkKxZJQ0ODF0mxTUeoucXzlcS4
-   R3FlzH9pIbQ3OpciNahpWxLChtPnc1I3n40WGSr4H0w48qUk0Fhft3t4T
-   6RrOkzNTPTLZ/f2zbDRpaltNaG4GCl0+oHq9xDpTz43bt4nLtGZKHj8GA
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,229,1647273600"; 
-   d="scan'208";a="201289135"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 16 May 2022 19:24:41 +0800
-IronPort-SDR: iUwg9Scwuj9aOwesUDGQgKzYrMG4UW1I3mCMMz8rZj/jQKFBosMP4zoWxMZY5Sb9PF1r3sxYpB
- N9cplnBVCtgPfYiRKHT+MeweWtZBYW/GEVN46j94m8T70UjJa3kHHaMsdL38eLn6i2vjH4u/En
- uSC6RITgm802DAnKoZALjrQ9Mna4jS8q5BuMk4fUU8NpW7D+IOfIOvmITafCGpJwZKMotNUJ8U
- 28dmEeWuPy9Oytm616BawS2xu6n84cjTsHuexgNswxgY7OFOdiwjnviGV6L2fbha1f+q5lx8+a
- tvJRoBySFkaOZO+0QjI6fQZ0
-Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 03:48:33 -0700
-IronPort-SDR: DZkogCfLPnc+HRcXTJsx4SrjJf886+xbGCD+jds2lcvT1xOUOV58OcSV5chvYUvrpzkesMWAvy
- OITNB7JYltls/9w0iiL8b3BamtxMgQoXXjUwMPFE2jaz54HK/8TFSQlD4kpAyIygl7d/f6uFxp
- gkg8cHd/QwU3jlpCyZQ3P3MNjvwFYVE/w7TLWKpo8wYDYYUaQ9WMidvxEbB4PsKhoJ20TFGGK9
- OKQf55ysPIrlNnpoHRhI7V2OmIPa2trDP2WL+gsHt2piETzEyfZGem0ZUgiWZBFZkDAF+M7h/k
- lWU=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 04:24:41 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4L1xjh38Y4z1SVny
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 04:24:40 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1652700280; x=1655292281; bh=FTlt+tA65l8s4jEvN+gXqV8wgn/CcuPmRQf
-        p68j+TAA=; b=U8nw9XY81JpPfiV9fv6jhbGGpyLsmUwttQ5vKrr7m+Gj8ybeoOL
-        QqLygegM/+Z7ISJzmtUD5s2sH7HWP5cBab10SqSTXZtpTvr4IoJ+zfz2QBdj6MEC
-        GgNQHw0KHrLqkXwunqFkKI4ogCeffbm8Piek5Dq5OACGQio71QwMd1mSO7MqVng5
-        W9SnqaW9g7yGVP8iYUcFU6ukC+83bqGDzKYgi0bv14ErWnslrRuNwbj107LQxQMP
-        HQMZPUub9Wo6Zh1H6a1oIxxEl4pSmoPDB5ZOURs5Tw4t9vf2LcmSAE3nfqzFfzOm
-        1Mq0D3TLSP8YXVjBBWGzMHNMzSY5GwrjaRQ==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id slR2nbd6ts8l for <linux-kernel@vger.kernel.org>;
-        Mon, 16 May 2022 04:24:40 -0700 (PDT)
-Received: from [10.225.1.43] (unknown [10.225.1.43])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4L1xjf6cjzz1Rvlc;
-        Mon, 16 May 2022 04:24:38 -0700 (PDT)
-Message-ID: <e2401700-c91e-6ad1-af56-c293662947e5@opensource.wdc.com>
-Date:   Mon, 16 May 2022 13:24:37 +0200
+        Mon, 16 May 2022 07:25:08 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77D738BC6;
+        Mon, 16 May 2022 04:25:06 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id j6so27953570ejc.13;
+        Mon, 16 May 2022 04:25:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FAyKn2oVoJTgO/RP68nqhP+j2lXd/q2JVNgbNaZ+dpc=;
+        b=JYn69KIG4UBolrDrCsRYtWe1ZXP4+cTogUmMtyLOMHzjVZXkAYQsZLNnGCG718PyIu
+         SM03ntAF7aSP5+b2dqJlkJRWY5Vr4U9J2ArrCjFo77l45+pJBUuGNWTvZJejgCY+5b4r
+         f/vqFWpnWSCR0FKYVRe9mXmjv9oscxNT24yknFrAAoE7lXjHvnywhF+iBbDajCMsk4ac
+         2onuT4A5Q+agCgbs1FA4RrdPUIODHG1FQQVETZJFYhELQCe5igr56PpXZXT80dZs7Sul
+         f8jDuGhauApX+jYCoxXkNQqF+dozRB5j2RojAxH0d+bpiMnDuZsGB5+6LC9d6ivttY+N
+         rzgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FAyKn2oVoJTgO/RP68nqhP+j2lXd/q2JVNgbNaZ+dpc=;
+        b=LhhnH/dj1+tlJx6JvLXuP21EQ9zzBOBcK5OtDAfnVKr79TRWsWfGFaLZVGH02tFwmY
+         LMBuRLtk2ImB2zCQFx1xFe8aZnGt14k7yuTJCRyQR8e1rJwZO0jnVzSHIzjcjlQRUb5N
+         z9dldFk+EMayy3ZsWexLuBBVkB7mLW7wPGLojLceIdxXze8PX/YhYFEC032kaFbSXrxn
+         Gm0HJN1xVEfTfjK0fL+/YDpQJDn/Q2nS71FqTEr2DPgv7LETVoRdRtw4YMWsA3u5qa4+
+         jbdcCSiEijHgNrtuEcTgD+JAxoD7zhKFshaoPc2gVg1tf3XyTLXgXyyMO3pXmTk1ovVE
+         p8WQ==
+X-Gm-Message-State: AOAM533H1PD10Dy+e/TJT35x4RL7R+GyxLCKUgGii06VHHe72ejEtrqn
+        6+tu+8pOGWHCzikYcc/j8PA=
+X-Google-Smtp-Source: ABdhPJzlqcQD9tVQXFcak4oBjynwnouaMxLBhkGJLa87ayVKXzRNu8yC3sGNb0lHRBr+WziUNpuwLg==
+X-Received: by 2002:a17:906:4884:b0:6f3:a042:c1c6 with SMTP id v4-20020a170906488400b006f3a042c1c6mr14631567ejq.363.1652700305430;
+        Mon, 16 May 2022 04:25:05 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id i24-20020aa7c9d8000000b0042aa40e76cbsm2863634edt.80.2022.05.16.04.25.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 04:25:04 -0700 (PDT)
+Date:   Mon, 16 May 2022 14:25:02 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Marek Vasut <marex@denx.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [RFC Patch net-next v2 7/9] net: dsa: move mib->cnt_ptr reset
+ code to ksz_common.c
+Message-ID: <20220516112502.xsv6uyg6vtc7hfbo@skbuf>
+References: <20220513102219.30399-1-arun.ramadoss@microchip.com>
+ <20220513102219.30399-8-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH] ata: Remove unneeded ERROR check before
- clk_disable_unprepare
-Content-Language: en-US
-To:     Wan Jiabing <wanjiabing@vivo.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220513075554.127677-1-wanjiabing@vivo.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220513075554.127677-1-wanjiabing@vivo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513102219.30399-8-arun.ramadoss@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/05/13 9:55, Wan Jiabing wrote:
-> ERROR check is already in clk_disable() and clk_unprepare() by using
-> IS_ERR_OR_NULL. Remove unneeded ERROR check for ftide->pclk here.
+On Fri, May 13, 2022 at 03:52:17PM +0530, Arun Ramadoss wrote:
+> From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 > 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> mib->cnt_ptr resetting is handled in multiple places as part of
+> port_init_cnt(). Hence moved mib->cnt_ptr code to ksz common layer
+> and removed from individual product files.
+> 
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
 
-Applied to for-5.19. Thanks !
-
-
--- 
-Damien Le Moal
-Western Digital Research
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
