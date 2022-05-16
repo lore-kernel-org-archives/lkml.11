@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB235C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9881C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347194AbiEPU17 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
+        id S238650AbiEPU3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244096AbiEPUAg (ORCPT
+        with ESMTP id S1350201AbiEPUAz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F45345043;
-        Mon, 16 May 2022 12:54:44 -0700 (PDT)
+        Mon, 16 May 2022 16:00:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD33246664;
+        Mon, 16 May 2022 12:55:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4CDFB8161C;
-        Mon, 16 May 2022 19:54:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEE79C385AA;
-        Mon, 16 May 2022 19:54:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DEA5B81614;
+        Mon, 16 May 2022 19:54:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B74AC385AA;
+        Mon, 16 May 2022 19:54:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730881;
-        bh=fpxOQ0rPho95+qYGMbd1myF+tFU1OPuQFXf6fsc2o4U=;
+        s=korg; t=1652730849;
+        bh=jyDIdAd6VRulWWPBhtTgE5U6lZXpOkTszQqFD/Gx1q0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cTl5vTZV9uwJeH1sOcBYm2LMqYOkAPbkRECKR8uDUURhhwxz9Yhy6BTdqFKX3FsFZ
-         B2kmWHOWrfC4WoFciAsZoteJNZsKvNiH8gIaBaKR1EERTCspNRIVGz5qFBPpCpCR+V
-         +U9K0bOF7UTe7bjfYh6jjgcL2H7kZm7tI5WzXVUM=
+        b=gDKRnIbW1EMNF2zymjDAxYvKiYCpsOsRtZxI8CSKz1amqG37G4zuUTGKpueiBibEE
+         9WdjZ/Db4v9AJKgTCH1kENic00HFibkn4J6boC+KmRdD9OCZfVIJNGhZafurJGxmbK
+         UUCMdPpZfwf7IpKmUn8cWCfbznXzDHnu1dNCisL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 033/114] arm64: vdso: fix makefile dependency on vdso.so
-Date:   Mon, 16 May 2022 21:36:07 +0200
-Message-Id: <20220516193626.441761277@linuxfoundation.org>
+        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 024/114] fanotify: do not allow setting dirent events in mask of non-dir
+Date:   Mon, 16 May 2022 21:35:58 +0200
+Message-Id: <20220516193626.187066736@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -52,75 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-[ Upstream commit 205f3991a273cac6008ef4db3d1c0dc54d14fb56 ]
+[ Upstream commit ceaf69f8eadcafb323392be88e7a5248c415d423 ]
 
-There is currently no dependency for vdso*-wrap.S on vdso*.so, which means that
-you can get a build that uses a stale vdso*-wrap.o.
+Dirent events (create/delete/move) are only reported on watched
+directory inodes, but in fanotify as well as in legacy inotify, it was
+always allowed to set them on non-dir inode, which does not result in
+any meaningful outcome.
 
-In commit a5b8ca97fbf8, the file that includes the vdso.so was moved and renamed
-from arch/arm64/kernel/vdso/vdso.S to arch/arm64/kernel/vdso-wrap.S, when this
-happened the Makefile was not updated to force the dependcy on vdso.so.
+Until kernel v5.17, dirent events in fanotify also differed from events
+"on child" (e.g. FAN_OPEN) in the information provided in the event.
+For example, FAN_OPEN could be set in the mask of a non-dir or the mask
+of its parent and event would report the fid of the child regardless of
+the marked object.
+By contrast, FAN_DELETE is not reported if the child is marked and the
+child fid was not reported in the events.
 
-Fixes: a5b8ca97fbf8 ("arm64: do not descend to vdso directories twice")
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Masahiro Yamada <masahiroy@kernel.org>
-Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220510102721.50811-1-joey.gouly@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Since kernel v5.17, with fanotify group flag FAN_REPORT_TARGET_FID, the
+fid of the child is reported with dirent events, like events "on child",
+which may create confusion for users expecting the same behavior as
+events "on child" when setting events in the mask on a child.
+
+The desired semantics of setting dirent events in the mask of a child
+are not clear, so for now, deny this action for a group initialized
+with flag FAN_REPORT_TARGET_FID and for the new event FAN_RENAME.
+We may relax this restriction in the future if we decide on the
+semantics and implement them.
+
+Fixes: d61fd650e9d2 ("fanotify: introduce group flag FAN_REPORT_TARGET_FID")
+Fixes: 8cc3b1ccd930 ("fanotify: wire up FAN_RENAME event")
+Link: https://lore.kernel.org/linux-fsdevel/20220505133057.zm5t6vumc4xdcnsg@quack3.lan/
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220507080028.219826-1-amir73il@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/Makefile        | 4 ++++
- arch/arm64/kernel/vdso/Makefile   | 3 ---
- arch/arm64/kernel/vdso32/Makefile | 3 ---
- 3 files changed, 4 insertions(+), 6 deletions(-)
+ fs/notify/fanotify/fanotify_user.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-index 88b3e2a21408..db557856854e 100644
---- a/arch/arm64/kernel/Makefile
-+++ b/arch/arm64/kernel/Makefile
-@@ -74,6 +74,10 @@ obj-$(CONFIG_ARM64_MTE)			+= mte.o
- obj-y					+= vdso-wrap.o
- obj-$(CONFIG_COMPAT_VDSO)		+= vdso32-wrap.o
+diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
+index 2ff6bd85ba8f..f2a1947ec5ee 100644
+--- a/fs/notify/fanotify/fanotify_user.c
++++ b/fs/notify/fanotify/fanotify_user.c
+@@ -1638,6 +1638,19 @@ static int do_fanotify_mark(int fanotify_fd, unsigned int flags, __u64 mask,
+ 	else
+ 		mnt = path.mnt;
  
-+# Force dependency (vdso*-wrap.S includes vdso.so through incbin)
-+$(obj)/vdso-wrap.o: $(obj)/vdso/vdso.so
-+$(obj)/vdso32-wrap.o: $(obj)/vdso32/vdso.so
++	/*
++	 * FAN_RENAME is not allowed on non-dir (for now).
++	 * We shouldn't have allowed setting any dirent events in mask of
++	 * non-dir, but because we always allowed it, error only if group
++	 * was initialized with the new flag FAN_REPORT_TARGET_FID.
++	 */
++	ret = -ENOTDIR;
++	if (inode && !S_ISDIR(inode->i_mode) &&
++	    ((mask & FAN_RENAME) ||
++	     ((mask & FANOTIFY_DIRENT_EVENTS) &&
++	      FAN_GROUP_FLAG(group, FAN_REPORT_TARGET_FID))))
++		goto path_put_and_out;
 +
- obj-y					+= probes/
- head-y					:= head.o
- extra-y					+= $(head-y) vmlinux.lds
-diff --git a/arch/arm64/kernel/vdso/Makefile b/arch/arm64/kernel/vdso/Makefile
-index 172452f79e46..ac1964ebed1e 100644
---- a/arch/arm64/kernel/vdso/Makefile
-+++ b/arch/arm64/kernel/vdso/Makefile
-@@ -52,9 +52,6 @@ GCOV_PROFILE := n
- targets += vdso.lds
- CPPFLAGS_vdso.lds += -P -C -U$(ARCH)
- 
--# Force dependency (incbin is bad)
--$(obj)/vdso.o : $(obj)/vdso.so
--
- # Link rule for the .so file, .lds has to be first
- $(obj)/vdso.so.dbg: $(obj)/vdso.lds $(obj-vdso) FORCE
- 	$(call if_changed,vdsold_and_vdso_check)
-diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
-index 6c01b63ff56d..2c2036eb0df7 100644
---- a/arch/arm64/kernel/vdso32/Makefile
-+++ b/arch/arm64/kernel/vdso32/Makefile
-@@ -130,9 +130,6 @@ obj-vdso := $(c-obj-vdso) $(c-obj-vdso-gettimeofday) $(asm-obj-vdso)
- targets += vdso.lds
- CPPFLAGS_vdso.lds += -P -C -U$(ARCH)
- 
--# Force dependency (vdso.s includes vdso.so through incbin)
--$(obj)/vdso.o: $(obj)/vdso.so
--
- include/generated/vdso32-offsets.h: $(obj)/vdso.so.dbg FORCE
- 	$(call if_changed,vdsosym)
- 
+ 	/* Mask out FAN_EVENT_ON_CHILD flag for sb/mount/non-dir marks */
+ 	if (mnt || !S_ISDIR(inode->i_mode)) {
+ 		mask &= ~FAN_EVENT_ON_CHILD;
 -- 
 2.35.1
 
