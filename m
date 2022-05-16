@@ -2,50 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A39FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9565DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:05:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343704AbiEPUFF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
+        id S243736AbiEPUFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347226AbiEPTvw (ORCPT
+        with ESMTP id S1347164AbiEPTvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:51:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F5240E62;
-        Mon, 16 May 2022 12:47:16 -0700 (PDT)
+        Mon, 16 May 2022 15:51:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AA440A32;
+        Mon, 16 May 2022 12:47:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE572B81615;
-        Mon, 16 May 2022 19:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D583AC385AA;
-        Mon, 16 May 2022 19:47:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ABB1B81611;
+        Mon, 16 May 2022 19:47:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA9B4C36AE7;
+        Mon, 16 May 2022 19:47:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730433;
-        bh=4GoVVQCG7X19t4XWYx4lCRbMF93g1P7ZVyf+85BOAxA=;
+        s=korg; t=1652730430;
+        bh=vUL0Aa1xEyJ5w91JIkpV0ws4cYYwzEznOgcrqrQatNE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Opmy+Sg0Pv/xuiMQuq4EoXOiTVN+t5FpVin/YkZBp0QvF754cdqBlnjJ/WTujxZ2l
-         48NwbeDWKjo4ywue7qvHSU2snjvCvxaHasztQDGaS5yWObDp1OHnxZY80p1VuRDLHe
-         hYcZi7AeQFd8xe6Fg5ceSbnnbwY5Gr25UmZeAG0E=
+        b=yMdZ2f405eWeWVIbmJsxkqygoqXCEbdJg/9r5juZRad66V0dPrjm4H9yoT88oiILT
+         Ma2uq5yKboL3Ji2HoUrfg3izsCgZsx9VsR4ak1y44I+FktXGY3WU3IN+A6FQTdQG2q
+         ghSONojciNLn0iFZZiiLjoWvbQSDBWovwIW6Bumo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>,
-        "kernelci.org bot" <bot@kernelci.org>,
-        Mark Brown <broonie@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tony Lindgren <tony@atomide.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.10 63/66] arm[64]/memremap: dont abuse pfn_valid() to ensure presence of linear map
-Date:   Mon, 16 May 2022 21:37:03 +0200
-Message-Id: <20220516193621.233672825@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 62/66] net: phy: Fix race condition on link status change
+Date:   Mon, 16 May 2022 21:37:02 +0200
+Message-Id: <20220516193621.204866621@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -57,126 +49,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Rapoport <rppt@linux.ibm.com>
+From: Francesco Dolcini <francesco.dolcini@toradex.com>
 
-commit 260364d112bc822005224667c0c9b1b17a53eafd upstream.
+commit 91a7cda1f4b8bdf770000a3b60640576dafe0cec upstream.
 
-The semantics of pfn_valid() is to check presence of the memory map for a
-PFN and not whether a PFN is covered by the linear map.  The memory map
-may be present for NOMAP memory regions, but they won't be mapped in the
-linear mapping.  Accessing such regions via __va() when they are
-memremap()'ed will cause a crash.
+This fixes the following error caused by a race condition between
+phydev->adjust_link() and a MDIO transaction in the phy interrupt
+handler. The issue was reproduced with the ethernet FEC driver and a
+micrel KSZ9031 phy.
 
-On v5.4.y the crash happens on qemu-arm with UEFI [1]:
+[  146.195696] fec 2188000.ethernet eth0: MDIO read timeout
+[  146.201779] ------------[ cut here ]------------
+[  146.206671] WARNING: CPU: 0 PID: 571 at drivers/net/phy/phy.c:942 phy_error+0x24/0x6c
+[  146.214744] Modules linked in: bnep imx_vdoa imx_sdma evbug
+[  146.220640] CPU: 0 PID: 571 Comm: irq/128-2188000 Not tainted 5.18.0-rc3-00080-gd569e86915b7 #9
+[  146.229563] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[  146.236257]  unwind_backtrace from show_stack+0x10/0x14
+[  146.241640]  show_stack from dump_stack_lvl+0x58/0x70
+[  146.246841]  dump_stack_lvl from __warn+0xb4/0x24c
+[  146.251772]  __warn from warn_slowpath_fmt+0x5c/0xd4
+[  146.256873]  warn_slowpath_fmt from phy_error+0x24/0x6c
+[  146.262249]  phy_error from kszphy_handle_interrupt+0x40/0x48
+[  146.268159]  kszphy_handle_interrupt from irq_thread_fn+0x1c/0x78
+[  146.274417]  irq_thread_fn from irq_thread+0xf0/0x1dc
+[  146.279605]  irq_thread from kthread+0xe4/0x104
+[  146.284267]  kthread from ret_from_fork+0x14/0x28
+[  146.289164] Exception stack(0xe6fa1fb0 to 0xe6fa1ff8)
+[  146.294448] 1fa0:                                     00000000 00000000 00000000 00000000
+[  146.302842] 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[  146.311281] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[  146.318262] irq event stamp: 12325
+[  146.321780] hardirqs last  enabled at (12333): [<c01984c4>] __up_console_sem+0x50/0x60
+[  146.330013] hardirqs last disabled at (12342): [<c01984b0>] __up_console_sem+0x3c/0x60
+[  146.338259] softirqs last  enabled at (12324): [<c01017f0>] __do_softirq+0x2c0/0x624
+[  146.346311] softirqs last disabled at (12319): [<c01300ac>] __irq_exit_rcu+0x138/0x178
+[  146.354447] ---[ end trace 0000000000000000 ]---
 
-<1>[    0.084476] 8<--- cut here ---
-<1>[    0.084595] Unable to handle kernel paging request at virtual address dfb76000
-<1>[    0.084938] pgd = (ptrval)
-<1>[    0.085038] [dfb76000] *pgd=5f7fe801, *pte=00000000, *ppte=00000000
+With the FEC driver phydev->adjust_link() calls fec_enet_adjust_link()
+calls fec_stop()/fec_restart() and both these function reset and
+temporary disable the FEC disrupting any MII transaction that
+could be happening at the same time.
 
-...
+fec_enet_adjust_link() and phy_read() can be running at the same time
+when we have one additional interrupt before the phy_state_machine() is
+able to terminate.
 
-<4>[    0.093923] [<c0ed6ce8>] (memcpy) from [<c16a06f8>] (dmi_setup+0x60/0x418)
-<4>[    0.094204] [<c16a06f8>] (dmi_setup) from [<c16a38d4>] (arm_dmi_init+0x8/0x10)
-<4>[    0.094408] [<c16a38d4>] (arm_dmi_init) from [<c0302e9c>] (do_one_initcall+0x50/0x228)
-<4>[    0.094619] [<c0302e9c>] (do_one_initcall) from [<c16011e4>] (kernel_init_freeable+0x15c/0x1f8)
-<4>[    0.094841] [<c16011e4>] (kernel_init_freeable) from [<c0f028cc>] (kernel_init+0x8/0x10c)
-<4>[    0.095057] [<c0f028cc>] (kernel_init) from [<c03010e8>] (ret_from_fork+0x14/0x2c)
+Thread 1 (phylib WQ)       | Thread 2 (phy interrupt)
+                           |
+                           | phy_interrupt()            <-- PHY IRQ
+                           |  handle_interrupt()
+                           |   phy_read()
+                           |   phy_trigger_machine()
+                           |    --> schedule phylib WQ
+                           |
+                           |
+phy_state_machine()        |
+ phy_check_link_status()   |
+  phy_link_change()        |
+   phydev->adjust_link()   |
+    fec_enet_adjust_link() |
+     --> FEC reset         | phy_interrupt()            <-- PHY IRQ
+                           |  phy_read()
+                           |
 
-On kernels v5.10.y and newer the same crash won't reproduce on ARM because
-commit b10d6bca8720 ("arch, drivers: replace for_each_membock() with
-for_each_mem_range()") changed the way memory regions are registered in
-the resource tree, but that merely covers up the problem.
+Fix this by acquiring the phydev lock in phy_interrupt().
 
-On ARM64 memory resources registered in yet another way and there the
-issue of wrong usage of pfn_valid() to ensure availability of the linear
-map is also covered.
-
-Implement arch_memremap_can_ram_remap() on ARM and ARM64 to prevent access
-to NOMAP regions via the linear mapping in memremap().
-
-Link: https://lore.kernel.org/all/Yl65zxGgFzF1Okac@sirena.org.uk
-Link: https://lkml.kernel.org/r/20220426060107.7618-1-rppt@kernel.org
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Tested-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Tony Lindgren <tony@atomide.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: <stable@vger.kernel.org>	[5.4+]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+Link: https://lore.kernel.org/all/20220422152612.GA510015@francesco-nb.int.toradex.com/
+Fixes: c974bdbc3e77 ("net: phy: Use threaded IRQ, to allow IRQ from sleeping devices")
+cc: <stable@vger.kernel.org>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220506060815.327382-1-francesco.dolcini@toradex.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[fd: backport: adapt locking before did_interrupt()/ack_interrupt()
+ callbacks removal ]
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/io.h   |    3 +++
- arch/arm/mm/ioremap.c       |    8 ++++++++
- arch/arm64/include/asm/io.h |    4 ++++
- arch/arm64/mm/ioremap.c     |    9 +++++++++
- 4 files changed, 24 insertions(+)
+ drivers/net/phy/phy.c |   45 ++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 40 insertions(+), 5 deletions(-)
 
---- a/arch/arm/include/asm/io.h
-+++ b/arch/arm/include/asm/io.h
-@@ -442,6 +442,9 @@ extern void pci_iounmap(struct pci_dev *
- extern int valid_phys_addr_range(phys_addr_t addr, size_t size);
- extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
- extern int devmem_is_allowed(unsigned long pfn);
-+extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
-+					unsigned long flags);
-+#define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
- #endif
- 
- /*
---- a/arch/arm/mm/ioremap.c
-+++ b/arch/arm/mm/ioremap.c
-@@ -479,3 +479,11 @@ void __init early_ioremap_init(void)
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -124,10 +124,15 @@ EXPORT_SYMBOL(phy_print_status);
+  */
+ static int phy_clear_interrupt(struct phy_device *phydev)
  {
- 	early_ioremap_setup();
+-	if (phydev->drv->ack_interrupt)
+-		return phydev->drv->ack_interrupt(phydev);
++	int ret = 0;
+ 
+-	return 0;
++	if (phydev->drv->ack_interrupt) {
++		mutex_lock(&phydev->lock);
++		ret = phydev->drv->ack_interrupt(phydev);
++		mutex_unlock(&phydev->lock);
++	}
++
++	return ret;
  }
-+
-+bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
-+				 unsigned long flags)
-+{
-+	unsigned long pfn = PHYS_PFN(offset);
-+
-+	return memblock_is_map_memory(pfn);
-+}
---- a/arch/arm64/include/asm/io.h
-+++ b/arch/arm64/include/asm/io.h
-@@ -203,4 +203,8 @@ extern int valid_mmap_phys_addr_range(un
  
- extern int devmem_is_allowed(unsigned long pfn);
- 
-+extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
-+					unsigned long flags);
-+#define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
-+
- #endif	/* __ASM_IO_H */
---- a/arch/arm64/mm/ioremap.c
-+++ b/arch/arm64/mm/ioremap.c
-@@ -13,6 +13,7 @@
- #include <linux/mm.h>
- #include <linux/vmalloc.h>
- #include <linux/io.h>
-+#include <linux/memblock.h>
- 
- #include <asm/fixmap.h>
- #include <asm/tlbflush.h>
-@@ -99,3 +100,11 @@ void __init early_ioremap_init(void)
- {
- 	early_ioremap_setup();
+ /**
+@@ -982,6 +987,36 @@ int phy_disable_interrupts(struct phy_de
  }
-+
-+bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
-+				 unsigned long flags)
+ 
+ /**
++ * phy_did_interrupt - Checks if the PHY generated an interrupt
++ * @phydev: target phy_device struct
++ */
++static int phy_did_interrupt(struct phy_device *phydev)
 +{
-+	unsigned long pfn = PHYS_PFN(offset);
++	int ret;
 +
-+	return memblock_is_map_memory(pfn);
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->did_interrupt(phydev);
++	mutex_unlock(&phydev->lock);
++
++	return ret;
 +}
++
++/**
++ * phy_handle_interrupt - Handle PHY interrupt
++ * @phydev: target phy_device struct
++ */
++static irqreturn_t phy_handle_interrupt(struct phy_device *phydev)
++{
++	irqreturn_t ret;
++
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->handle_interrupt(phydev);
++	mutex_unlock(&phydev->lock);
++
++	return ret;
++}
++
++/**
+  * phy_interrupt - PHY interrupt handler
+  * @irq: interrupt line
+  * @phy_dat: phy_device pointer
+@@ -994,9 +1029,9 @@ static irqreturn_t phy_interrupt(int irq
+ 	struct phy_driver *drv = phydev->drv;
+ 
+ 	if (drv->handle_interrupt)
+-		return drv->handle_interrupt(phydev);
++		return phy_handle_interrupt(phydev);
+ 
+-	if (drv->did_interrupt && !drv->did_interrupt(phydev))
++	if (drv->did_interrupt && !phy_did_interrupt(phydev))
+ 		return IRQ_NONE;
+ 
+ 	/* reschedule state queue work to run as soon as possible */
 
 
