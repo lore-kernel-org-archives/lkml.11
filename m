@@ -2,65 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1142C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3237EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244112AbiEPN5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51204 "EHLO
+        id S244089AbiEPN5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243592AbiEPNyz (ORCPT
+        with ESMTP id S244439AbiEPN4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:54:55 -0400
-Received: from mail.bitwise.fi (mail.bitwise.fi [109.204.228.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A166939164;
-        Mon, 16 May 2022 06:54:40 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.bitwise.fi (Postfix) with ESMTP id 4FC8E460034;
-        Mon, 16 May 2022 16:48:59 +0300 (EEST)
-X-Virus-Scanned: Debian amavisd-new at 
-Received: from mail.bitwise.fi ([127.0.0.1])
-        by localhost (mustetatti.dmz.bitwise.fi [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id snCWiBDrwSnN; Mon, 16 May 2022 16:48:56 +0300 (EEST)
-Received: from localhost.net (fw1.dmz.bitwise.fi [192.168.69.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: anssiha)
-        by mail.bitwise.fi (Postfix) with ESMTPSA id DD208460008;
-        Mon, 16 May 2022 16:48:56 +0300 (EEST)
-From:   Anssi Hannula <anssi.hannula@bitwise.fi>
-To:     Jimmy Assarsson <extja@kvaser.com>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 00/12] can: kvaser_usb: Various fixes
-Date:   Mon, 16 May 2022 16:47:36 +0300
-Message-Id: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
-X-Mailer: git-send-email 2.34.1
+        Mon, 16 May 2022 09:56:25 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB693B284
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:55:57 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id a23so10123824ljd.9
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:55:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MeiTmWKbfFkyUDAu36ZyhnVOygglTiIR0GOA0B1eY0c=;
+        b=YSvJoVFPtG6bnfTeQxzBBXy77ERTEhTsg7XgRIV7EvSdREsTC+AE70ohYj7+FaK3bh
+         OZ7sjzRe0LmR1tB7sIiFJ86bssbYh2hpR0Y+aNF/BknPMKa7voNiy1bXK6AW9VSd65yv
+         v93gBe0NGiYn3Ng3ITfp5tpi4Zm9UD8CupDajz7yaQAyoxRnLxRhMZUdN71V296ixtDP
+         dkyIm2FRzpKSi0w/RUH3Cd2tWDxZ+pd/bqglKQcNSg/Jn5paNs/SwNzOb+tRvGMX/LUe
+         855GCPqwIABjYfRzwwNyEXTYySq0ebhv/pRlBayaA8U/7pAbULFuWXgIj151YCTknIOb
+         X47g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MeiTmWKbfFkyUDAu36ZyhnVOygglTiIR0GOA0B1eY0c=;
+        b=IM0oCrXHKk5aH7TlAw4biWtoW2Bev6XcMXZJk30M9XuS5sXTg4nOqkLIzmiabdGjY/
+         D76HMLVeBvDZVss5jzW6z3C9Z49WG22Q36U+HA/DqahxjhCv3inI1M0Nt9ktbZOko/8P
+         1Xl9akM/lsc7x8ZHwTid+4HQR2jqValPVFR0kMVCE6FhrayfQk+W0GAJkJS3kRNr6vI0
+         HztgYPsqcqOPJatjwQEGDcsCuRTj0EEkE6nRVzX5NDpTGRd57o6kGmvTtqhYR0Z+GhXC
+         IyAVRZ4PYaKRRYuIWZus+xPGnVFB4ttLV1tY1gNFUZCc726flovLq2+Oj9gjcGumc+hm
+         tEew==
+X-Gm-Message-State: AOAM530Xr8tvXp6nyokQ4ydUThLzRnDAYMKLn7+KZ7QJm5v/j8tMedEm
+        6uhXlqzZJTkE/SrvKPsafAuMfNRIJgSZc4+QT5op2w==
+X-Google-Smtp-Source: ABdhPJwZ6Em0eLu7RM1SxBb2WiY0uU1ovRh7DwLWOyrbGByueTpyFAw3U7b/oAPWL/x87mDro49Q7VbiwqbPhOi6nCM=
+X-Received: by 2002:a2e:9e54:0:b0:250:d6c8:c2a6 with SMTP id
+ g20-20020a2e9e54000000b00250d6c8c2a6mr11865448ljk.16.1652709355591; Mon, 16
+ May 2022 06:55:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1652339993-27280-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+In-Reply-To: <1652339993-27280-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 16 May 2022 15:55:18 +0200
+Message-ID: <CAPDyKFoWdq+908f18Uz3TPj50M2eDiECC7iLU8UGGEuawCpo1w@mail.gmail.com>
+Subject: Re: [PATCH] mmc: sdhci-of-arasan: Add NULL check for data field
+To:     Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+Cc:     Michal Simek <michal.simek@xilinx.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, git@xilinx.com,
+        saikrishna12468@gmail.com, sgoud@xilinx.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 12 May 2022 at 09:20, Sai Krishna Potthuri
+<lakshmi.sai.krishna.potthuri@xilinx.com> wrote:
+>
+> Add NULL check for data field retrieved from of_device_get_match_data()
+> before dereferencing the data.
+> Addresses-coverity: CID 305057:Dereference null return value (NULL_RETURNS)
+>
+> Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
 
-Hi all,
+Applied for next, thanks!
 
-Here's a set of fixes for issues I found while testing kvaser_usb as we
-are preparing to start using it in production (with 0bfd:0124).
-
-The biggest caveat is that I only have two devices to test with [1] and I
-don't have HW documentation, so there is a possibility that some of the
-fixes might not work properly on all HW variants.
-Hopefully Jimmy can confirm they look OK, or suggest alternatives.
-
-[1] Tested devices:
-- 0bfd:0017 Kvaser Memorator Professional HS/HS FW 2.0.50
-- 0bfd:0124 Kvaser Mini PCI Express 2xHS FW 4.18.778
-
--- 
-Anssi Hannula / Bitwise Oy
-+358503803997
+Kind regards
+Uffe
 
 
-
+> ---
+>  drivers/mmc/host/sdhci-of-arasan.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/mmc/host/sdhci-of-arasan.c b/drivers/mmc/host/sdhci-of-arasan.c
+> index 6a2e5a468424..757801dfc308 100644
+> --- a/drivers/mmc/host/sdhci-of-arasan.c
+> +++ b/drivers/mmc/host/sdhci-of-arasan.c
+> @@ -1577,6 +1577,9 @@ static int sdhci_arasan_probe(struct platform_device *pdev)
+>         const struct sdhci_arasan_of_data *data;
+>
+>         data = of_device_get_match_data(dev);
+> +       if (!data)
+> +               return -EINVAL;
+> +
+>         host = sdhci_pltfm_init(pdev, data->pdata, sizeof(*sdhci_arasan));
+>
+>         if (IS_ERR(host))
+> --
+> 2.17.1
+>
