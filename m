@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 356FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA814C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245555AbiEPTk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45724 "EHLO
+        id S1345668AbiEPTkh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345763AbiEPTjc (ORCPT
+        with ESMTP id S1345752AbiEPTjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224C63F32B;
-        Mon, 16 May 2022 12:39:05 -0700 (PDT)
+        Mon, 16 May 2022 15:39:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468E83FBEE;
+        Mon, 16 May 2022 12:39:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 263F061518;
-        Mon, 16 May 2022 19:39:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00918C385AA;
-        Mon, 16 May 2022 19:39:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61A2AB81610;
+        Mon, 16 May 2022 19:39:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B16A9C385AA;
+        Mon, 16 May 2022 19:39:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729944;
-        bh=QBVFwe9/B0/gTWZPeQv0UHVuzXXJbmaX+xE2j7nt2Ys=;
+        s=korg; t=1652729941;
+        bh=onsbugrd8bb1fICUsu8CnS0ItXDgQ7J5sQXIVpNEADo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BNYpfewBLDYezjuIRVQ14Ue0hQ3nN5VwC8mXt53Fs+nkWfiOftvqc+hRjWEZldWg4
-         2Cjbemi2RI+tSsuZ1dwx/VfJ9vNW3pEu48E85RsDhc8QYuNoNPAjCs58mzTn6auo5L
-         XwxsnF7/ynAjzy0dNhf+s9M6btd4fMNt966HuYPs=
+        b=VeM/aL4kFEcnyPhnL+nQx3xc5WNkOik24yYV0wsWBJ4lt22dAZrOnhjIV8qxyLjUn
+         iMYZA0nclFOQ9QZoxyY17VhaWbw7HOwT26i3kI6x9mL7ny7bxmrop1ubbvU3iGfMS0
+         TWsS2+J+6VRidSApjbrl5KXE1ocQ2hO0PrtAwm3U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Felix Kaechele <felix@kaechele.ca>,
+        Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 10/25] net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
-Date:   Mon, 16 May 2022 21:36:24 +0200
-Message-Id: <20220516193614.995948401@linuxfoundation.org>
+Subject: [PATCH 4.14 01/25] batman-adv: Dont skb_split skbuffs with frag_list
+Date:   Mon, 16 May 2022 21:36:15 +0200
+Message-Id: <20220516193614.726321509@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
 References: <20220516193614.678319286@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,46 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit f3c46e41b32b6266cf60b0985c61748f53bf1c61 ]
+[ Upstream commit a063f2fba3fa633a599253b62561051ac185fa99 ]
 
-Non blocking sendmsg will return -EAGAIN when any signal pending
-and no send space left, while non blocking recvmsg return -EINTR
-when signal pending and no data received. This may makes confused.
-As TCP returns -EAGAIN in the conditions described above. Align the
-behavior of smc with TCP.
+The receiving interface might have used GRO to receive more fragments than
+MAX_SKB_FRAGS fragments. In this case, these will not be stored in
+skb_shinfo(skb)->frags but merged into the frag list.
 
-Fixes: 846e344eb722 ("net/smc: add receive timeout check")
-Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220512030820.73848-1-guangguan.wang@linux.alibaba.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+batman-adv relies on the function skb_split to split packets up into
+multiple smaller packets which are not larger than the MTU on the outgoing
+interface. But this function cannot handle frag_list entries and is only
+operating on skb_shinfo(skb)->frags. If it is still trying to split such an
+skb and xmit'ing it on an interface without support for NETIF_F_FRAGLIST,
+then validate_xmit_skb() will try to linearize it. But this fails due to
+inconsistent information. And __pskb_pull_tail will trigger a BUG_ON after
+skb_copy_bits() returns an error.
+
+In case of entries in frag_list, just linearize the skb before operating on
+it with skb_split().
+
+Reported-by: Felix Kaechele <felix@kaechele.ca>
+Fixes: c6c8fea29769 ("net: Add batman-adv meshing protocol")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Tested-by: Felix Kaechele <felix@kaechele.ca>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_rx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/batman-adv/fragmentation.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/net/smc/smc_rx.c b/net/smc/smc_rx.c
-index cbf58637ee14..0d5146d6d105 100644
---- a/net/smc/smc_rx.c
-+++ b/net/smc/smc_rx.c
-@@ -145,12 +145,12 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg, size_t len,
- 				}
- 				break;
- 			}
-+			if (!timeo)
-+				return -EAGAIN;
- 			if (signal_pending(current)) {
- 				read_done = sock_intr_errno(timeo);
- 				break;
- 			}
--			if (!timeo)
--				return -EAGAIN;
- 		}
+diff --git a/net/batman-adv/fragmentation.c b/net/batman-adv/fragmentation.c
+index 4842436c55f3..a50c87329bc5 100644
+--- a/net/batman-adv/fragmentation.c
++++ b/net/batman-adv/fragmentation.c
+@@ -489,6 +489,17 @@ int batadv_frag_send_packet(struct sk_buff *skb,
+ 		goto free_skb;
+ 	}
  
- 		if (!atomic_read(&conn->bytes_to_rcv)) {
++	/* GRO might have added fragments to the fragment list instead of
++	 * frags[]. But this is not handled by skb_split and must be
++	 * linearized to avoid incorrect length information after all
++	 * batman-adv fragments were created and submitted to the
++	 * hard-interface
++	 */
++	if (skb_has_frag_list(skb) && __skb_linearize(skb)) {
++		ret = -ENOMEM;
++		goto free_skb;
++	}
++
+ 	/* Create one header to be copied to all fragments */
+ 	frag_header.packet_type = BATADV_UNICAST_FRAG;
+ 	frag_header.version = BATADV_COMPAT_VERSION;
 -- 
 2.35.1
 
