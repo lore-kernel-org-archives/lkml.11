@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B10EC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08683C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346480AbiEPUHS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
+        id S236231AbiEPUHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346986AbiEPTvd (ORCPT
+        with ESMTP id S1346650AbiEPTvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:51:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8EE3EF32;
-        Mon, 16 May 2022 12:46:14 -0700 (PDT)
+        Mon, 16 May 2022 15:51:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C547659;
+        Mon, 16 May 2022 12:45:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ED976155B;
-        Mon, 16 May 2022 19:46:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510A2C385AA;
-        Mon, 16 May 2022 19:46:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 901D2615A1;
+        Mon, 16 May 2022 19:45:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F857C385AA;
+        Mon, 16 May 2022 19:45:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730373;
-        bh=gAF9QkJ8n4r0KvHDf7oKdqFvbg1AdydfWIN71I3LAy8=;
+        s=korg; t=1652730342;
+        bh=Tp1muYDA7IlroLr8liDi5xukB+xomNcE/N2QqfnVKkU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vJnciBySxDF3UT7aBk4X3/5+MHdpZ6pfl6BmCRCpZ5TbSAK4bxSOPimhiNp61/JfO
-         O3FPP/s1UxRzuaoLLqIKpoRA8jKwj6MXr+FBP7XdW7BQS6RB/ncofzD9QiMkH4qtZ7
-         BDD5tNiMweSsNNJcDUfppC6qy53b9LIWxisRi2Ow=
+        b=0SlpWXUnGLLte64QYtqEQK6KFyJiZltXR5DTc1ch9lEUVVrTTUxQzQhWxt+vvgkPI
+         LA2rmGrcah0bZg0VHKyrjEyStWTPvgDtxXfv38lQY6vL2bbNwaaUm1w7D3/AXvvIB4
+         go8VP5kqvL68ZhltjS0TYUSrYlQ207sjMDHozMEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ethan Yang <etyang@sierrawireless.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.10 46/66] USB: serial: qcserial: add support for Sierra Wireless EM7590
-Date:   Mon, 16 May 2022 21:36:46 +0200
-Message-Id: <20220516193620.743622874@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 07/66] net: mscc: ocelot: fix VCAP IS2 filters matching on both lookups
+Date:   Mon, 16 May 2022 21:36:07 +0200
+Message-Id: <20220516193619.620938271@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -49,31 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ethan Yang <etyang@sierrawireless.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 870b1eee2d844727b06e238c121d260bc5645580 upstream.
+[ Upstream commit 6741e11880003e35802d78cc58035057934f4dab ]
 
-Add support for Sierra Wireless EM7590 0xc080/0xc081 compositions.
+The VCAP IS2 TCAM is looked up twice per packet, and each filter can be
+configured to only match during the first, second lookup, or both, or
+none.
 
-Signed-off-by: Ethan Yang <etyang@sierrawireless.com>
-Link: https://lore.kernel.org/r/20220425055840.5693-1-etyang@sierrawireless.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The blamed commit wrote the code for making VCAP IS2 filters match only
+on the given lookup. But right below that code, there was another line
+that explicitly made the lookup a "don't care", and this is overwriting
+the lookup we've selected. So the code had no effect.
+
+Some of the more noticeable effects of having filters match on both
+lookups:
+
+- in "tc -s filter show dev swp0 ingress", we see each packet matching a
+  VCAP IS2 filter counted twice. This throws off scripts such as
+  tools/testing/selftests/net/forwarding/tc_actions.sh and makes them
+  fail.
+
+- a "tc-drop" action offloaded to VCAP IS2 needs a policer as well,
+  because once the CPU port becomes a member of the destination port
+  mask of a packet, nothing removes it, not even a PERMIT/DENY mask mode
+  with a port mask of 0. But VCAP IS2 rules with the POLICE_ENA bit in
+  the action vector can only appear in the first lookup. What happens
+  when a filter matches both lookups is that the action vector is
+  combined, and this makes the POLICE_ENA bit ineffective, since the
+  last lookup in which it has appeared is the second one. In other
+  words, "tc-drop" actions do not drop packets for the CPU port, dropped
+  packets are still seen by software unless there was an FDB entry that
+  directed those packets to some other place different from the CPU.
+
+The last bit used to work, because in the initial commit b596229448dd
+("net: mscc: ocelot: Add support for tcam"), we were writing the FIRST
+field of the VCAP IS2 half key with a 1, not with a "don't care".
+The change to "don't care" was made inadvertently by me in commit
+c1c3993edb7c ("net: mscc: ocelot: generalize existing code for VCAP"),
+which I just realized, and which needs a separate fix from this one,
+for "stable" kernels that lack the commit blamed below.
+
+Fixes: 226e9cd82a96 ("net: mscc: ocelot: only install TCAM entries into a specific lookup and PAG")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/qcserial.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/mscc/ocelot_vcap.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/usb/serial/qcserial.c
-+++ b/drivers/usb/serial/qcserial.c
-@@ -166,6 +166,8 @@ static const struct usb_device_id id_tab
- 	{DEVICE_SWI(0x1199, 0x9090)},	/* Sierra Wireless EM7565 QDL */
- 	{DEVICE_SWI(0x1199, 0x9091)},	/* Sierra Wireless EM7565 */
- 	{DEVICE_SWI(0x1199, 0x90d2)},	/* Sierra Wireless EM9191 QDL */
-+	{DEVICE_SWI(0x1199, 0xc080)},	/* Sierra Wireless EM7590 QDL */
-+	{DEVICE_SWI(0x1199, 0xc081)},	/* Sierra Wireless EM7590 */
- 	{DEVICE_SWI(0x413c, 0x81a2)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
- 	{DEVICE_SWI(0x413c, 0x81a3)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
- 	{DEVICE_SWI(0x413c, 0x81a4)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index e47098900a69..709b304fde67 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -373,7 +373,6 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
+ 			 OCELOT_VCAP_BIT_0);
+ 	vcap_key_set(vcap, &data, VCAP_IS2_HK_IGR_PORT_MASK, 0,
+ 		     ~filter->ingress_port_mask);
+-	vcap_key_bit_set(vcap, &data, VCAP_IS2_HK_FIRST, OCELOT_VCAP_BIT_ANY);
+ 	vcap_key_bit_set(vcap, &data, VCAP_IS2_HK_HOST_MATCH,
+ 			 OCELOT_VCAP_BIT_ANY);
+ 	vcap_key_bit_set(vcap, &data, VCAP_IS2_HK_L2_MC, filter->dmac_mc);
+-- 
+2.35.1
+
 
 
