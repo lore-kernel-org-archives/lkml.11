@@ -2,82 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 844AAC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238152AbiEPKA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
+        id S241645AbiEPKCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233968AbiEPKAR (ORCPT
+        with ESMTP id S229759AbiEPKCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:00:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33FF26E3;
-        Mon, 16 May 2022 03:00:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B21A4B81059;
-        Mon, 16 May 2022 10:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 56D1AC34100;
-        Mon, 16 May 2022 10:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652695214;
-        bh=DQq+yYclPxQWYoZcaQk2LLw++GQE1Lvq5DRigtRpmh8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ec0OIf9qtI2feSbFgpmGQAgtSZQHmkSuKJQFeYRVwj3R13XzWJgrtdndP1tnN1O9g
-         kdJubzdtrZAd3xFcdGC4oSFVBxSZi0qM4AK0SsIV7iZoRiLdtKxc3GGUtfg967Ki77
-         9CKrC+kmhB+kjubmWKAFYI8NO1AOMsiRbfHU6AOuyN9E+wY5gJR2OI/689kNMdoJFa
-         pqEtDAXEKv8QH3vhIYtscLcmTZ8KcVkIzpR6u+4a6E/jfAl+vg2YpN05jpfUyx6q3V
-         VpNBoo7VpUMB8rm2PFmFOxdjOcVq2EiFWNfcgcyLGA5/FD8e982Txf/i0eLNzee4bi
-         3shaooRIxEJNA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3548CF0392C;
-        Mon, 16 May 2022 10:00:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 16 May 2022 06:02:42 -0400
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67335594;
+        Mon, 16 May 2022 03:02:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+         s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=mTP9JKWbQi5X9Aiy3D3CFclT8K0qf8xcDbui6f15aq4=; b=tYWuzJTPm570yErOrshkxq+qSU
+        qhC4yrbZSy+ywVt2mL+GJ/d5HBSjMmWIovQmSzwey85qWTqCLe1VPWox+yoS0y6MtWlGfc4o90X9P
+        KoXzkwzsi0qWUnsgdc22S9w0D6i5CFiVytZukOzAswGzt3MSo2PVClTUvnO4KtJVg96D59mwt9b4o
+        2XIAzlNkhh8zMdxLNtmHTlUM1Vz0YGp/ffr3IX/6H1j7ZjaTrc/+o/2DcUulUiYUF1aSZjxsS7meV
+        lPyYh3NVuQlpfW/XqQeJdcSxjiEtOdNpoRd8wLqx05r9DvhTBUUvxBc26//2EBTfHkA4Bh3sKJHmY
+        j6WM/h9w==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
+        by mail.kapsi.fi with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1nqXYf-0005yU-NX; Mon, 16 May 2022 13:02:33 +0300
+From:   cyndis@kapsi.fi
+To:     thierry.reding@gmail.com, jonathanh@nvidia.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, digetx@gmail.com
+Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mikko Perttunen <mperttunen@nvidia.com>
+Subject: [PATCH v1 07/13] gpu: host1x: Allow reset to be missing
+Date:   Mon, 16 May 2022 13:02:07 +0300
+Message-Id: <20220516100213.1536571-8-cyndis@kapsi.fi>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516100213.1536571-1-cyndis@kapsi.fi>
+References: <20220516100213.1536571-1-cyndis@kapsi.fi>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 -next] net: hinic: add missing destroy_workqueue in
- hinic_pf_to_mgmt_init
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165269521420.20448.15470965932259656253.git-patchwork-notify@kernel.org>
-Date:   Mon, 16 May 2022 10:00:14 +0000
-References: <20220513070922.3278070-1-zhengbin13@huawei.com>
-In-Reply-To: <20220513070922.3278070-1-zhengbin13@huawei.com>
-To:     Zheng Bin <zhengbin13@huawei.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gaochao49@huawei.com
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Mikko Perttunen <mperttunen@nvidia.com>
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Host1x on Tegra234 does not have a software-controllable reset line.
+As such, don't bail out if we don't find one in the device tree.
 
-On Fri, 13 May 2022 15:09:22 +0800 you wrote:
-> hinic_pf_to_mgmt_init misses destroy_workqueue in error path,
-> this patch fixes that.
-> 
-> Fixes: 6dbb89014dc3 ("hinic: fix sending mailbox timeout in aeq event work")
-> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-> ---
-> v1->v2: add Fixes tag
->  drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> [...]
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+---
+ drivers/gpu/host1x/dev.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Here is the summary with links:
-  - [v2,-next] net: hinic: add missing destroy_workqueue in hinic_pf_to_mgmt_init
-    https://git.kernel.org/netdev/net-next/c/382d917bfc1e
-
-You are awesome, thank you!
+diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
+index 5a57165ab0f6..c28939850bf6 100644
+--- a/drivers/gpu/host1x/dev.c
++++ b/drivers/gpu/host1x/dev.c
+@@ -423,9 +423,6 @@ static int host1x_get_resets(struct host1x *host)
+ 		return err;
+ 	}
+ 
+-	if (WARN_ON(!host->resets[1].rstc))
+-		return -ENOENT;
+-
+ 	return 0;
+ }
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.1
 
