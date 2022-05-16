@@ -2,85 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DADC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA43CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344197AbiEPRPn (ORCPT
+        id S1344214AbiEPRPv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 13:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
+        Mon, 16 May 2022 13:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240478AbiEPRPd (ORCPT
+        with ESMTP id S1344165AbiEPRPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 13:15:33 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042A933348;
-        Mon, 16 May 2022 10:15:29 -0700 (PDT)
-X-UUID: cfff3851760f4022b5f87fc9c3f4fe6a-20220517
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:d1319a33-20bf-4b95-af38-2e1f77d8f82a,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:2a19b09,CLOUDID:31c8c7b9-9f46-4d76-a271-164488ed79f1,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: cfff3851760f4022b5f87fc9c3f4fe6a-20220517
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <lecopzer.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1381082281; Tue, 17 May 2022 01:15:24 +0800
-Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 17 May 2022 01:15:23 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 17 May 2022 01:15:23 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Tue, 17 May 2022 01:15:23 +0800
-From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
-To:     <mchehab@kernel.org>, <linux-media@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <hverkuil@xs4all.nl>, <yj.chiang@mediatek.com>,
-        Lecopzer Chen <lecopzer.chen@mediatek.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Subject: [PATCH v3 2/2] media: Kconfig: Make DVB_CORE=m possible when MEDIA_SUPPORT=y
-Date:   Tue, 17 May 2022 01:15:15 +0800
-Message-ID: <20220516171515.16404-3-lecopzer.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220516171515.16404-1-lecopzer.chen@mediatek.com>
-References: <20220516171515.16404-1-lecopzer.chen@mediatek.com>
+        Mon, 16 May 2022 13:15:39 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB36B3389B
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 10:15:37 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2ef5380669cso160903767b3.9
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 10:15:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SGf6wjrvSBA9+5luKWtA8S1TB1Ho/iykZkRoevKUR/M=;
+        b=sG0LBzcw6X5gtPxGyrwzWMTlfNPOaO9928SvntnUZYb9/aTe8ETQvXR+oTGM+2Q01E
+         FT27+UEachU8nZ1/6NE6iFT0H7w2Z3yA+Xt2mScQcVbGHTAWTIC7oC4Ow2OaFjZ9yRPC
+         zsYacU5leVMUJP7q08JQQ5kO8v4LF8Y18NuJOV1FQrJzkb1Q6HVJDb2aR5qUZZ4fxb8L
+         j83sHlqEvTkYQHwcihaYzN7Qej80njRn7ld+NLQm+PvbJhpZV4rhRz6XHZUrjQV7dE19
+         0b1Wx+2l3Noy/e5cucVImILRyz95RaT9Ba/0fxbWcc15VZWfUSGKEh7MDJ5UgWmgO8Wm
+         Fp5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SGf6wjrvSBA9+5luKWtA8S1TB1Ho/iykZkRoevKUR/M=;
+        b=qRuhatHe2GhWxhc+B0j/k960NPZuZch8QXIshVC2oSe6kyhBrU0jdOjGjDxCqcJSP2
+         TzaD6Vf+z2zOV7/D9g1JPB2/hJSJjXxPk3ZTXZJLeM0T56LQ2GmoqUUGySa0y3TasHjk
+         OuheycpJXZV/pPedsBCxPWbQFlFcrdOPwcxuyeWTtfDRmDG2yEa3PummLwTQczimf2Vy
+         s2CCHTp814K/qCaiU/wf5bSCBHi8mFwRIVc1ruQueCHRqpHNsgsU0IslI7D5/PNBhiZX
+         lfDXubXazwahlyB6LIsSeceFJXXpqbfuTwoBSMSRQ3v7UkG4YdrnZ0Yx/XIxMp71mH/y
+         F5Zw==
+X-Gm-Message-State: AOAM530XF+w4qHt5wLCukl4ssgRqzuwd5DXCVPeEMdElKYT40yy2DW9B
+        cNTErN1LbqOUtCjBWvgixpMMix5id4jTdr+Ffe6n4A==
+X-Google-Smtp-Source: ABdhPJwVJxOR6miZJ4+xQc2WHDZMKppmkvrGNnjVqxWGG/tKcoV/VdOV2r77ffndCOhGZP+04/DkGyU0orcJhTS4elU=
+X-Received: by 2002:a0d:d747:0:b0:2ff:22b9:9281 with SMTP id
+ z68-20020a0dd747000000b002ff22b99281mr186733ywd.305.1652721336717; Mon, 16
+ May 2022 10:15:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220513202159.1550547-1-samitolvanen@google.com>
+ <20220513202159.1550547-21-samitolvanen@google.com> <YoIfWENLV1AR2ijj@hirez.programming.kicks-ass.net>
+In-Reply-To: <YoIfWENLV1AR2ijj@hirez.programming.kicks-ass.net>
+From:   Sami Tolvanen <samitolvanen@google.com>
+Date:   Mon, 16 May 2022 10:15:00 -0700
+Message-ID: <CABCJKucXA2jbTc9TF1mLUsEDKu52t71tzxpnsGOXY3_ks+W4Bg@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 20/21] x86: Add support for CONFIG_CFI_CLANG
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A case that CONFIG_MEDIA_SUPPORT is y but we need DVB_CORE=m, and
-this doesn't work since DVB_CORE is default MEDIA_DIGITAL_TV_SUPPORT
-and then follows MEDIA_SUPPORT.
+On Mon, May 16, 2022 at 2:54 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Fri, May 13, 2022 at 01:21:58PM -0700, Sami Tolvanen wrote:
+> > With CONFIG_CFI_CLANG, the compiler injects a type preamble
+> > immediately before each function and a check to validate the target
+> > function type before indirect calls:
+> >
+> >   ; type preamble
+> >   __cfi_function:
+> >     int3
+> >     int3
+> >     mov <id>, %eax
+> >     int3
+> >     int3
+> >   function:
+> >     ...
+>
+> When I enable CFI_CLANG and X86_KERNEL_IBT I get:
+>
+> 0000000000000c80 <__cfi_io_schedule_timeout>:
+> c80:   cc                      int3
+> c81:   cc                      int3
+> c82:   b8 b5 b1 39 b3          mov    $0xb339b1b5,%eax
+> c87:   cc                      int3
+> c88:   cc                      int3
+>
+> 0000000000000c89 <io_schedule_timeout>:
+> c89:   f3 0f 1e fa             endbr64
+>
+>
+> That seems unfortunate. Would it be possible to get an additional
+> compiler option to suppress the endbr for all symbols that get a __cfi_
+> preaamble?
 
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
----
- drivers/media/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+What's the concern with the endbr? Dropping it would currently break
+the CFI+IBT combination on newer hardware, no?
 
-diff --git a/drivers/media/Kconfig b/drivers/media/Kconfig
-index ba6592b3dab2..c64bba94f950 100644
---- a/drivers/media/Kconfig
-+++ b/drivers/media/Kconfig
-@@ -182,7 +182,7 @@ config MEDIA_CONTROLLER
- #
- 
- config DVB_CORE
--	tristate
-+	tristate "DVB Core"
- 	depends on MEDIA_DIGITAL_TV_SUPPORT
- 	depends on (I2C || I2C=n)
- 	default MEDIA_DIGITAL_TV_SUPPORT
--- 
-2.18.0
+> Also, perhaps s/CFI_CLANG/KERNEL_CFI/ or somesuch, so that GCC might
+> also implement this same scheme (in time)?
 
+I'm fine with renaming the config.
+
+> >   ; indirect call check
+> >     cmpl    <id>, -6(%r11)
+> >     je      .Ltmp1
+> >     ud2
+> >   .Ltmp1:
+> >     call    __x86_indirect_thunk_r11
+>
+> The first one I try and find looks like:
+>
+> 26:       41 81 7b fa a6 96 9e 38         cmpl   $0x389e96a6,-0x6(%r11)
+> 2e:       74 02                   je     32 <__traceiter_sched_kthread_stop+0x29>
+> 30:       0f 0b                   ud2
+> 32:       4c 89 f6                mov    %r14,%rsi
+> 35:       e8 00 00 00 00          call   3a <__traceiter_sched_kthread_stop+0x31> 36: R_X86_64_PLT32      __x86_indirect_thunk_r11-0x4
+>
+> This must not be. If I'm to rewrite that lot to:
+>
+>   movl  $\hash, %r10d
+>   sub   $9, %r11
+>   call  *%r11
+>   .nop  4
+>
+> Then there must not be spurious instruction in between the ud2 and the
+> indirect call/retpoline thing.
+
+With the current compiler patch, LLVM sets up function arguments after
+the CFI check. if it's a problem, we can look into changing that.
+
+Sami
