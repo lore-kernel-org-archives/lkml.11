@@ -2,166 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5978C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345490AbiEPTiG (ORCPT
+        id S1345499AbiEPTiM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
+        Mon, 16 May 2022 15:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232405AbiEPTh5 (ORCPT
+        with ESMTP id S1344524AbiEPTh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:37:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ABC3E0DC;
-        Mon, 16 May 2022 12:37:56 -0700 (PDT)
+        Mon, 16 May 2022 15:37:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164BD3ED09;
+        Mon, 16 May 2022 12:37:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B084AB8160E;
-        Mon, 16 May 2022 19:37:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF2DC385AA;
-        Mon, 16 May 2022 19:37:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0A1C61518;
+        Mon, 16 May 2022 19:37:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC68DC385AA;
+        Mon, 16 May 2022 19:37:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729873;
-        bh=vSFsfOGIJlRY/kZML/lb9EWGHYK6r12i+65aoQr0mk0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=b/EMh+hMEDLfLbORJfUZyasYDxX7dLPczfbYOeM1L1WUAWgzQjHzx6W8lAEtmrmj/
-         u5jiHqdAWOvowMLlE7kbij9yQUMYoSlFkjmbokd5BwCGsl89kDw96GoKxWg1tJ+M7e
-         eEUsQ7Dbe/tsdPfXVQGVlqnefbxZw3g0Bsadz6+k=
+        s=korg; t=1652729877;
+        bh=CJkyGX4Y+zg7DBO1HXve9wC3uu5EtXMgyl2ABC3lC2I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jBI9r1dlVJ2wrcFWIYJIfeKhLuGR4peZlmTl5xtVovepSlX1qeG7KnVHoxJ0By5dU
+         hH3Bks5L6Lere1y+WHGA6PB3G5k4H6xSS4eBHhjGXEQ5840UVPs5ksqUtRa1l58xKR
+         bk/6yF8B+qafP7xFjBWvuh0fkQSFvWXoVOFsQ5WE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.9 00/19] 4.9.315-rc1 review
-Date:   Mon, 16 May 2022 21:36:13 +0200
-Message-Id: <20220516193613.497233635@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 02/19] ipv4: drop dst in multicast routing path
+Date:   Mon, 16 May 2022 21:36:15 +0200
+Message-Id: <20220516193613.571906739@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
+References: <20220516193613.497233635@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.315-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.315-rc1
-X-KernelTest-Deadline: 2022-05-18T19:36+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.315 release.
-There are 19 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
 
-Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
-Anything received after that time might be too late.
+[ Upstream commit 9e6c6d17d1d6a3f1515ce399f9a011629ec79aa0 ]
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.315-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
+kmemleak reports the following when routing multicast traffic over an
+ipsec tunnel.
 
-thanks,
+Kmemleak output:
+unreferenced object 0x8000000044bebb00 (size 256):
+  comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
+    80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000f83947e0>] __kmalloc+0x1e8/0x300
+    [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
+    [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
+    [<00000000824f6cf1>] gre_rcv+0x178/0x540
+    [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
+    [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
+    [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
+    [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
+    [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
+    [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
+    [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
+    [<00000000013d7914>] irq_exit+0xc4/0xe0
+    [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
+    [<000000000751eb8e>] handle_int+0x16c/0x178
+    [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
 
-greg k-h
+The metadata dst is leaked when ip_route_input_mc() updates the dst for
+the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
+handled dropping the dst in ip_route_input_slow() but missed the
+multicast case which is handled by ip_route_input_mc(). Drop the dst in
+ip_route_input_mc() avoiding the leak.
 
--------------
-Pseudo-Shortlog of commits:
+Fixes: f38a9eb1f77b ("dst: Metadata destinations")
+Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/route.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.315-rc1
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index f05b8d63dba3..624bdd74583b 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1606,6 +1606,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ #endif
+ 	RT_CACHE_STAT_INC(in_slow_mc);
+ 
++	skb_dst_drop(skb);
+ 	skb_dst_set(skb, &rth->dst);
+ 	return 0;
+ 
+-- 
+2.35.1
 
-Yang Yingliang <yangyingliang@huawei.com>
-    tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
-
-Nicolas Dichtel <nicolas.dichtel@6wind.com>
-    ping: fix address binding wrt vrf
-
-Sven Schwermer <sven.schwermer@disruptive-technologies.com>
-    USB: serial: option: add Fibocom MA510 modem
-
-Sven Schwermer <sven.schwermer@disruptive-technologies.com>
-    USB: serial: option: add Fibocom L610 modem
-
-Ethan Yang <etyang@sierrawireless.com>
-    USB: serial: qcserial: add support for Sierra Wireless EM7590
-
-Scott Chen <scott@labau.com.tw>
-    USB: serial: pl2303: add device id for HP LM930 Display
-
-Sergey Ryazanov <ryazanov.s.a@gmail.com>
-    usb: cdc-wdm: fix reading stuck on device close
-
-Mark Brown <broonie@kernel.org>
-    ASoC: ops: Validate input values in snd_soc_put_volsw_range()
-
-Mark Brown <broonie@kernel.org>
-    ASoC: max98090: Generate notifications on changes for custom control
-
-Mark Brown <broonie@kernel.org>
-    ASoC: max98090: Reject invalid values in custom control put()
-
-Ji-Ze Hong (Peter Hong) <hpeter@gmail.com>
-    hwmon: (f71882fg) Fix negative temperature
-
-Taehee Yoo <ap420073@gmail.com>
-    net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
-
-Alexandra Winter <wintera@linux.ibm.com>
-    s390/lcs: fix variable dereferenced before check
-
-Alexandra Winter <wintera@linux.ibm.com>
-    s390/ctcm: fix potential memory leak
-
-Alexandra Winter <wintera@linux.ibm.com>
-    s390/ctcm: fix variable dereferenced before check
-
-Johannes Berg <johannes.berg@intel.com>
-    mac80211_hwsim: call ieee80211_tx_prepare_skb under RCU protection
-
-Eric Dumazet <edumazet@google.com>
-    netlink: do not reset transport header in netlink_recvmsg()
-
-Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
-    ipv4: drop dst in multicast routing path
-
-Tariq Toukan <tariqt@nvidia.com>
-    net: Fix features skip in for_each_netdev_feature()
-
-
--------------
-
-Diffstat:
-
- Makefile                              |  4 ++--
- drivers/hwmon/f71882fg.c              |  5 +++--
- drivers/net/ethernet/sfc/ef10.c       |  5 +++++
- drivers/net/wireless/mac80211_hwsim.c |  3 +++
- drivers/s390/net/ctcm_mpc.c           |  6 +-----
- drivers/s390/net/ctcm_sysfs.c         |  5 +++--
- drivers/s390/net/lcs.c                |  7 ++++---
- drivers/tty/serial/digicolor-usart.c  |  2 +-
- drivers/usb/class/cdc-wdm.c           |  1 +
- drivers/usb/serial/option.c           |  4 ++++
- drivers/usb/serial/pl2303.c           |  1 +
- drivers/usb/serial/pl2303.h           |  1 +
- drivers/usb/serial/qcserial.c         |  2 ++
- include/linux/netdev_features.h       |  4 ++--
- net/ipv4/ping.c                       | 12 +++++++++++-
- net/ipv4/route.c                      |  1 +
- net/netlink/af_netlink.c              |  1 -
- sound/soc/codecs/max98090.c           |  5 ++++-
- sound/soc/soc-ops.c                   | 18 +++++++++++++++++-
- 19 files changed, 66 insertions(+), 21 deletions(-)
 
 
