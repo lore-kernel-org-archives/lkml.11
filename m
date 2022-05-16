@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7300C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345777AbiEPTmk (ORCPT
+        id S1346140AbiEPTmw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
+        Mon, 16 May 2022 15:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345965AbiEPTlD (ORCPT
+        with ESMTP id S1346138AbiEPTln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:41:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D0B3FBFE;
-        Mon, 16 May 2022 12:39:57 -0700 (PDT)
+        Mon, 16 May 2022 15:41:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD2B40A05;
+        Mon, 16 May 2022 12:40:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79600B81609;
-        Mon, 16 May 2022 19:39:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5EF2C385AA;
-        Mon, 16 May 2022 19:39:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAD1D614FD;
+        Mon, 16 May 2022 19:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CACD8C385AA;
+        Mon, 16 May 2022 19:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729995;
-        bh=VR2NdeGIoN7GonqQz+a24puCz48aAXmEH6UzNVfIOGg=;
+        s=korg; t=1652730011;
+        bh=EMqK7ikMsIAeyJmgK4S5/1KG04s/i/NHOARpAxT3gGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N6Lnyc+i7OYVKz705C7BAXqulXXQwvtVDnRAbPTUx5bsIaONEo3meY75PZBnvS6dD
-         cBdTlcV4UhaJIW67GNlwy95mI9ZuxjAAufakdCsf6lHyK/G7Rz6wGnoiAjRsS4deK2
-         GWv8a6oZgrrP/2Vek4s3uj07VHciuWKN0ISdy01w=
+        b=FEW4ekm/YX0tQorPxcU8zr+nLcKl/lbkoAXqseHcrWcVV7VPfNnEI1Aj73tzgqCgE
+         vV8ybvPTO1O+gtwREyuFq84FB6QdI44RGxykllXDK7BVOlR/d1K+1I1yHaD7foiqMl
+         Ts5/ndGascVfyfFtPSJmF0QlB2UDfyNgHsKMAulo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Martin Krastev <krastevm@vmware.com>,
-        Maaz Mombasawala <mombasawalam@vmware.com>
-Subject: [PATCH 4.14 23/25] drm/vmwgfx: Initialize drm_mode_fb_cmd2
-Date:   Mon, 16 May 2022 21:36:37 +0200
-Message-Id: <20220516193615.384517538@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 05/25] mac80211_hwsim: call ieee80211_tx_prepare_skb under RCU protection
+Date:   Mon, 16 May 2022 21:36:19 +0200
+Message-Id: <20220516193614.847766855@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
 References: <20220516193614.678319286@linuxfoundation.org>
@@ -51,40 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 3059d9b9f6aa433a55b9d0d21b566396d5497c33 upstream.
+[ Upstream commit 9e2db50f1ef2238fc2f71c5de1c0418b7a5b0ea2 ]
 
-Transition to drm_mode_fb_cmd2 from drm_mode_fb_cmd left the structure
-unitialized. drm_mode_fb_cmd2 adds a few additional members, e.g. flags
-and modifiers which were never initialized. Garbage in those members
-can cause random failures during the bringup of the fbcon.
+This is needed since it might use (and pass out) pointers to
+e.g. keys protected by RCU. Can't really happen here as the
+frames aren't encrypted, but we need to still adhere to the
+rules.
 
-Initializing the structure fixes random blank screens after bootup due
-to flags/modifiers mismatches during the fbcon bring up.
-
-Fixes: dabdcdc9822a ("drm/vmwgfx: Switch to mode_cmd2")
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Cc: Daniel Vetter <daniel.vetter@intel.com>
-Cc: <stable@vger.kernel.org> # v4.10+
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Reviewed-by: Maaz Mombasawala <mombasawalam@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220302152426.885214-7-zack@kde.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cacfddf82baf ("mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20220505230421.5f139f9de173.I77ae111a28f7c0e9fd1ebcee7f39dbec5c606770@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_fb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mac80211_hwsim.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_fb.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fb.c
-@@ -522,7 +522,7 @@ static int vmw_fb_kms_detach(struct vmw_
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index ee1eb14ae8fc..885c4352bdef 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -2025,11 +2025,13 @@ static void hw_scan_work(struct work_struct *work)
+ 			if (req->ie_len)
+ 				skb_put_data(probe, req->ie, req->ie_len);
  
- static int vmw_fb_kms_framebuffer(struct fb_info *info)
- {
--	struct drm_mode_fb_cmd2 mode_cmd;
-+	struct drm_mode_fb_cmd2 mode_cmd = {0};
- 	struct vmw_fb_par *par = info->par;
- 	struct fb_var_screeninfo *var = &info->var;
- 	struct drm_framebuffer *cur_fb;
++			rcu_read_lock();
+ 			if (!ieee80211_tx_prepare_skb(hwsim->hw,
+ 						      hwsim->hw_scan_vif,
+ 						      probe,
+ 						      hwsim->tmp_chan->band,
+ 						      NULL)) {
++				rcu_read_unlock();
+ 				kfree_skb(probe);
+ 				continue;
+ 			}
+@@ -2037,6 +2039,7 @@ static void hw_scan_work(struct work_struct *work)
+ 			local_bh_disable();
+ 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
+ 						hwsim->tmp_chan);
++			rcu_read_unlock();
+ 			local_bh_enable();
+ 		}
+ 	}
+-- 
+2.35.1
+
 
 
