@@ -2,90 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDCEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2246C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:29:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343598AbiEPQ3C (ORCPT
+        id S1343644AbiEPQ3M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 12:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51592 "EHLO
+        Mon, 16 May 2022 12:29:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343554AbiEPQ3B (ORCPT
+        with ESMTP id S1343628AbiEPQ3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 12:29:01 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554F53B012
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 09:29:00 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id j2so28041226ybu.0
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 09:29:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0bOl+fIEQwkyHpsAzPSpEA4t7EJjG4W9SophqswqviQ=;
-        b=bdD+55o79GwcDBvWafpfYRSlZ2cIsVtsEzWN8lNQZowpdfgforgqMt8qYsM397aVOm
-         YiVGsBjyCQ4/nzJb8pjgE6jjFdcKLpF5wOOcJodQ1RZ4iNIvX0CENTxmrtn9+/UciHyW
-         EKnHHqZErG9LECr8b32WdjMLnN2pXB4+B7zMmAvfkaPu7l6jzIfy0MhMILwvn73/9VQ/
-         MkHv6wCf5C5mFtWTtxiMgZBPV2qCW1bp6lyYTE56bmlfFrfQylzrQZmpH8+PR5FUV1/R
-         OxVBsmGQ396NviKrlt0o6WZ5PsTDAzdbxxcSej5Osw7CXNEecq4EKHR7E8NkFpIkBOAc
-         v+/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0bOl+fIEQwkyHpsAzPSpEA4t7EJjG4W9SophqswqviQ=;
-        b=Hw0ri4gzmk5OzZCqoNM3ZsRc2+KEHPdxMZ8XZf0y9aqXqZJhNWGGmUWkNtXzetv7yV
-         UZT4UpOXcmX99uE0R97d3M2Pq3DC+gOSJrdOjhDT8RTcZdv9wU9cdIp7+Ewfjq20vKgB
-         Xa+iTNWHV8avzQiT3I/MCJo7UjexucvV6ivsTBtRsIJ8+Txr7rF5F6v9XXvxkhlBVHdK
-         4EHg0hq0c+XaKY/10DnW3nGAfDthF2qTs4qE3aSS1fvNc9ofPk/IexKEaiSkDLfT0nhE
-         kh6XZSaYLLRg1BW/n/Va5eeDrpLYWLbdgeuAJxKTafp2ALz+6HihSC8mIG0aPYy3kOSJ
-         iiLg==
-X-Gm-Message-State: AOAM531/AUfl6IwjDZzPu6OSyOLApwNaPDS4LNqJ1NAlfyyCtiv15q5k
-        cNiI6LNzZgzhYKXpRTmEKRQtoZJR8DAvdqRsi0H7pg==
-X-Google-Smtp-Source: ABdhPJwCEGLuNBoujfx+BIv6GEik4LbJeGm6Fda7U5MlIv3LPv1HXUgO10cPIMseX62+HYUEsnBRjf+KqqvWact8dkE=
-X-Received: by 2002:a05:6902:90b:b0:64b:233d:8e03 with SMTP id
- bu11-20020a056902090b00b0064b233d8e03mr18071522ybb.428.1652718539243; Mon, 16
- May 2022 09:28:59 -0700 (PDT)
+        Mon, 16 May 2022 12:29:09 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951403B012;
+        Mon, 16 May 2022 09:29:08 -0700 (PDT)
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L24PV63Xzz67h1V;
+        Tue, 17 May 2022 00:26:06 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 18:29:06 +0200
+Received: from [10.47.25.151] (10.47.25.151) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
+ 2022 17:29:05 +0100
+Message-ID: <d874dd82-30fd-f8e0-b7ab-0c9d14e47324@huawei.com>
+Date:   Mon, 16 May 2022 17:29:04 +0100
 MIME-Version: 1.0
-References: <20220513202159.1550547-1-samitolvanen@google.com>
- <20220513202159.1550547-12-samitolvanen@google.com> <202205141453.44171359E3@keescook>
-In-Reply-To: <202205141453.44171359E3@keescook>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Mon, 16 May 2022 09:28:23 -0700
-Message-ID: <CABCJKudJZUsRjwAEzWszOGY6G5igwWVpEy1OsAWrhyKr3csUSA@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 11/21] arm64: Drop unneeded __nocfi attributes
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v8 4/8] perf arm: Refactor event list iteration in
+ auxtrace_record__init()
+To:     Yicong Yang <yangyicong@hisilicon.com>,
+        <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
+        <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <acme@kernel.org>,
+        <jonathan.cameron@huawei.com>
+CC:     <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mark.rutland@arm.com>, <joro@8bytes.org>,
+        <shameerali.kolothum.thodi@huawei.com>, <peterz@infradead.org>,
+        <mingo@redhat.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <linuxarm@huawei.com>
+References: <20220516125223.32012-1-yangyicong@hisilicon.com>
+ <20220516125223.32012-5-yangyicong@hisilicon.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220516125223.32012-5-yangyicong@hisilicon.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.25.151]
+X-ClientProxiedBy: lhreml714-chm.china.huawei.com (10.201.108.65) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 2:54 PM Kees Cook <keescook@chromium.org> wrote:
->
-> On Fri, May 13, 2022 at 01:21:49PM -0700, Sami Tolvanen wrote:
-> > With -fsanitize=kcfi, CONFIG_CFI_CLANG no longer has issues
-> > with address space confusion in functions that switch to linear
-> > mapping. Now that the indirectly called assembly functions have
-> > type annotations, drop the __nocfi attributes.
-> >
-> > Suggested-by: Mark Rutland <mark.rutland@arm.com>
-> > Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
->
-> It looks like there are still other cases that continue to require
-> __nocfi, yes? It looks like after this series, it's still BPF?
+On 16/05/2022 13:52, Yicong Yang wrote:
 
-Yes, BPF is the only remaining user of __nocfi after this series.
+As requested before, please mention "perf tool" in the commit subject
 
-Sami
+> From: Qi Liu <liuqi115@huawei.com>
+> 
+> Use find_pmu_for_event() to simplify logic in auxtrace_record__init().
+> 
+> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+>   tools/perf/arch/arm/util/auxtrace.c | 53 ++++++++++++++++++-----------
+>   1 file changed, 34 insertions(+), 19 deletions(-)
+> 
+> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
+> index 5fc6a2a3dbc5..384c7cfda0fd 100644
+> --- a/tools/perf/arch/arm/util/auxtrace.c
+> +++ b/tools/perf/arch/arm/util/auxtrace.c
+> @@ -50,16 +50,32 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
+>   	return arm_spe_pmus;
+>   }
+>   
+> +static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
+> +					   int pmu_nr, struct evsel *evsel)
+> +{
+> +	int i;
+> +
+> +	if (!pmus)
+> +		return NULL;
+> +
+> +	for (i = 0; i < pmu_nr; i++) {
+> +		if (evsel->core.attr.type == pmus[i]->type)
+> +			return pmus[i];
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+>   struct auxtrace_record
+>   *auxtrace_record__init(struct evlist *evlist, int *err)
+>   {
+> -	struct perf_pmu	*cs_etm_pmu;
+> +	struct perf_pmu	*cs_etm_pmu = NULL;
+> +	struct perf_pmu **arm_spe_pmus = NULL;
+>   	struct evsel *evsel;
+> -	bool found_etm = false;
+> +	struct perf_pmu *found_etm = NULL;
+>   	struct perf_pmu *found_spe = NULL;
+> -	struct perf_pmu **arm_spe_pmus = NULL;
+> +	int auxtrace_event_cnt = 0;
+>   	int nr_spes = 0;
+> -	int i = 0;
+>   
+>   	if (!evlist)
+>   		return NULL;
+> @@ -68,24 +84,23 @@ struct auxtrace_record
+>   	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+>   
+>   	evlist__for_each_entry(evlist, evsel) {
+> -		if (cs_etm_pmu &&
+> -		    evsel->core.attr.type == cs_etm_pmu->type)
+> -			found_etm = true;
+> -
+> -		if (!nr_spes || found_spe)
+> -			continue;
+> -
+> -		for (i = 0; i < nr_spes; i++) {
+> -			if (evsel->core.attr.type == arm_spe_pmus[i]->type) {
+> -				found_spe = arm_spe_pmus[i];
+> -				break;
+> -			}
+> -		}
+> +		if (cs_etm_pmu && !found_etm)
+> +			found_etm = find_pmu_for_event(&cs_etm_pmu, 1, evsel);
+> +
+> +		if (arm_spe_pmus && !found_spe)
+> +			found_spe = find_pmu_for_event(arm_spe_pmus, nr_spes, evsel);
+>   	}
+> +
+>   	free(arm_spe_pmus);
+>   
+> -	if (found_etm && found_spe) {
+> -		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
+> +	if (found_etm)
+> +		auxtrace_event_cnt++;
+> +
+> +	if (found_spe)
+> +		auxtrace_event_cnt++;
+> +
+> +	if (auxtrace_event_cnt > 1) {
+> +		pr_err("Concurrent AUX trace operation not currently supported\n");
+>   		*err = -EOPNOTSUPP;
+>   		return NULL;
+>   	}
+
