@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F169C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5C9C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347531AbiEPU0L (ORCPT
+        id S1347460AbiEPU0H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        Mon, 16 May 2022 16:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347738AbiEPT6I (ORCPT
+        with ESMTP id S1347800AbiEPT6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E9B4888A;
-        Mon, 16 May 2022 12:49:49 -0700 (PDT)
+        Mon, 16 May 2022 15:58:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC3E488A9;
+        Mon, 16 May 2022 12:49:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD60760AC3;
-        Mon, 16 May 2022 19:49:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C21ABC385AA;
-        Mon, 16 May 2022 19:49:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48CF8B8160E;
+        Mon, 16 May 2022 19:49:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1927C385AA;
+        Mon, 16 May 2022 19:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730588;
-        bh=dqGJrAtPidqdAuURN3Fc4hrf77CRMjagVDGDWlQjCsM=;
+        s=korg; t=1652730591;
+        bh=EwrlZFOvzJnjMTJ2FyUy85Q/vhUk54CTxzJFzMEnSow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xm+E5ol63XJXFLWQEUK+3WjTsiZxLBWywUvUwCigwWMgsIMa5+aSAR9CtfnaIehcB
-         +ormdsEHHAkjtGuoPRWc5aZdeK1DPJvxmPpDxA5RXMW6GtLXjzOwMNbTtB6wZ2LbKi
-         h7SYHQRCUbSS/+oqWQ/Cf0dragvZxDgWjMbDYiQY=
+        b=cgK2+f//YT/rnWNffZn+zHU+B1IQ0gJ5fW2GrKWYAgp/PrcQstiT3iaFP/oKVbggj
+         1IZlTFYU9m+VtagHrfxgc/uBW+P11ZFbnPLmBLmkRG3ZQclAwge/uhiCrUz4y/eOZp
+         D+INvJwG/PGGuN5HvUFczWFbSKsmjMx7XApGPDxs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 045/102] hwmon: (f71882fg) Fix negative temperature
-Date:   Mon, 16 May 2022 21:36:19 +0200
-Message-Id: <20220516193625.292739428@linuxfoundation.org>
+Subject: [PATCH 5.15 046/102] RDMA/irdma: Fix deadlock in irdma_cleanup_cm_core()
+Date:   Mon, 16 May 2022 21:36:20 +0200
+Message-Id: <20220516193625.321476853@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -51,44 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ji-Ze Hong (Peter Hong) <hpeter@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 4aaaaf0f279836f06d3b9d0ffeec7a1e1a04ceef ]
+[ Upstream commit 679ab61bf5f5f519377d812afb4fb93634782c74 ]
 
-All temperature of Fintek superio hwmonitor that using 1-byte reg will use
-2's complement.
+There is a deadlock in irdma_cleanup_cm_core(), which is shown below:
 
-In show_temp()
-	temp = data->temp[nr] * 1000;
+   (Thread 1)              |      (Thread 2)
+                           | irdma_schedule_cm_timer()
+irdma_cleanup_cm_core()    |  add_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | irdma_cm_timer_tick()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-When data->temp[nr] read as 255, it indicate -1C, but this code will report
-255C to userspace. It'll be ok when change to:
-	temp = ((s8)data->temp[nr]) * 1000;
+We hold cm_core->ht_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler also need
+cm_core->ht_lock in position (2) of thread 2.  As a result,
+irdma_cleanup_cm_core() will block forever.
 
-Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
-Link: https://lore.kernel.org/r/20220418090706.6339-1-hpeter+linux_kernel@gmail.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+This patch removes the check of timer_pending() in
+irdma_cleanup_cm_core(), because the del_timer_sync() function will just
+return directly if there isn't a pending timer. As a result, the lock is
+redundant, because there is no resource it could protect.
+
+Link: https://lore.kernel.org/r/20220418153322.42524-1-duoming@zju.edu.cn
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/f71882fg.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/infiniband/hw/irdma/cm.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
-index 4dec793fd07d..94b35723ee7a 100644
---- a/drivers/hwmon/f71882fg.c
-+++ b/drivers/hwmon/f71882fg.c
-@@ -1577,8 +1577,9 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
- 		temp *= 125;
- 		if (sign)
- 			temp -= 128000;
--	} else
--		temp = data->temp[nr] * 1000;
-+	} else {
-+		temp = ((s8)data->temp[nr]) * 1000;
-+	}
+diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
+index 082a3ddb0fa3..632f65e53b63 100644
+--- a/drivers/infiniband/hw/irdma/cm.c
++++ b/drivers/infiniband/hw/irdma/cm.c
+@@ -3242,15 +3242,10 @@ enum irdma_status_code irdma_setup_cm_core(struct irdma_device *iwdev,
+  */
+ void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
+ {
+-	unsigned long flags;
+-
+ 	if (!cm_core)
+ 		return;
  
- 	return sprintf(buf, "%d\n", temp);
- }
+-	spin_lock_irqsave(&cm_core->ht_lock, flags);
+-	if (timer_pending(&cm_core->tcp_timer))
+-		del_timer_sync(&cm_core->tcp_timer);
+-	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
++	del_timer_sync(&cm_core->tcp_timer);
+ 
+ 	destroy_workqueue(cm_core->event_wq);
+ 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
 -- 
 2.35.1
 
