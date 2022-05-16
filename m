@@ -2,118 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718CBC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:26:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344261AbiEPRZw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 13:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47668 "EHLO
+        id S237958AbiEPR0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 13:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344241AbiEPRZo (ORCPT
+        with ESMTP id S1344306AbiEPRZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 13:25:44 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C60D13DF7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 10:25:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652721943; x=1684257943;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4wTfdXeGKL2uZh8t3c24YC/m4aBIrVRT4kSq3cD/L4s=;
-  b=ITW8q+UiEBFae7AlAD/nhiYk9uJwfdJrpLQ8OpQlV8QSD5ipJEbGeH8e
-   LQdNA0JMBpmlZWMarSlpIgevgkqBhGXehTR4F6QQV/JLpWM9DJVMWBok5
-   5SOC/5ofSJeSjFg71QWfhX9Hn/peiVw4YNPCe2WvyT5HwHqAEQ5HUCmLv
-   zb32pInLL7d79e6/ABhZAP9GBjTnO54HWNGz1TvDiOGa7QZ0ZiclAmLw5
-   RSmoklFBx+OlxFSQKPs/FkqibH+pjEC6C8BCE1MNznQQCutv4gq08Vrwj
-   Euz3sFzVmxPaqgN88cNVz5fxIzKQT/tKHXkYtTbrN0P9mf7Lcb7T729Ri
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="270850326"
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="270850326"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 10:25:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="522547827"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 16 May 2022 10:25:40 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqeTT-0000Dh-OL;
-        Mon, 16 May 2022 17:25:39 +0000
-Date:   Tue, 17 May 2022 01:24:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kevin Kim <ckkim@hardkernel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dongjin Kim <tobetter@gmail.com>,
-        Olliver Schinagl <oliver@schinagl.nl>
-Subject: [tobetter:odroid-5.18.y 97/131] drivers/pwm/pwm-gpio.c:60:22:
- warning: no previous prototype for 'gpio_pwm_timer'
-Message-ID: <202205170132.c95JkC0F-lkp@intel.com>
+        Mon, 16 May 2022 13:25:59 -0400
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7459611A2D;
+        Mon, 16 May 2022 10:25:54 -0700 (PDT)
+Received: by mail-ot1-f45.google.com with SMTP id s18-20020a056830149200b006063fef3e17so10515835otq.12;
+        Mon, 16 May 2022 10:25:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qfjQzYp/WrL/NK/r+Txlv4AaF13T+UXlFuPShMgiU48=;
+        b=1dIN1LKMjJjqenxBJms+nhD6ri5AtOIr56TTwKti87UKvw7VbKxZZCFcq1dy4PqFnb
+         KP4CwSJz6r70vzYTHEJv5MqExKmuQvZYSEa+LLvn0uAhjPiFJK4njn5qkJzm1og2c1WX
+         cLSkUYOQjWTZXeKaxcTeDsxbOxxTWvQxlcWdGqLFY1A8FyAkUZ1RfSKNMv0YlcLlWg6C
+         i4JREoHTXmlUxAC8v1L906kx84/I1c1aqvN27J3OLSspAyZTUJNtD+RMTI1dHRu5jf8Z
+         XfatYCx8zMme3ygvTtutR+sCEPi3Uko+b8p08AzWn19UD0+hrlnvXWC+EuZqIThbArfd
+         CuiA==
+X-Gm-Message-State: AOAM533nTw7AgKuO6gYIW4Ai8Z3tue2Dbh0JErJSrciULeCca6yqCaI1
+        7nozOQeRBGsRLbefozFdNv3gO6+diQ==
+X-Google-Smtp-Source: ABdhPJzhTJqGyBvs2pZ1JSDSIbt59GyBbmh6Qup3TBKLc+utfDgb1H3bsDczKq5/WUzpidio12EJlg==
+X-Received: by 2002:a9d:5ccb:0:b0:606:944c:f9dd with SMTP id r11-20020a9d5ccb000000b00606944cf9ddmr6578409oti.195.1652721953665;
+        Mon, 16 May 2022 10:25:53 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id h26-20020a9d799a000000b0060603221236sm4042865otm.6.2022.05.16.10.25.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 10:25:53 -0700 (PDT)
+Received: (nullmailer pid 2937863 invoked by uid 1000);
+        Mon, 16 May 2022 17:25:52 -0000
+Date:   Mon, 16 May 2022 12:25:52 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Cc:     broonie@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
+        linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
+        ashishsingha@nvidia.com, skomatineni@nvidia.com,
+        ldewangan@nvidia.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [Patch V2 2/3] spi: dt-bindings: split peripheral prods
+Message-ID: <20220516172552.GA2928615-robh@kernel.org>
+References: <20220513080828.22079-1-kyarlagadda@nvidia.com>
+ <20220513080828.22079-3-kyarlagadda@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220513080828.22079-3-kyarlagadda@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/tobetter/linux odroid-5.18.y
-head:   a4a3b755d6825af3be1a233d3d927f40356ff545
-commit: 523b4a5fc40c035f7fb9cc079b1f0a9ba38f16d8 [97/131] ODROID-COMMON: pwm: gpio: Add a generic gpio based PWM driver
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220517/202205170132.c95JkC0F-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/tobetter/linux/commit/523b4a5fc40c035f7fb9cc079b1f0a9ba38f16d8
-        git remote add tobetter https://github.com/tobetter/linux
-        git fetch --no-tags tobetter odroid-5.18.y
-        git checkout 523b4a5fc40c035f7fb9cc079b1f0a9ba38f16d8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/pwm/
+On Fri, May 13, 2022 at 01:38:27PM +0530, Krishna Yarlagadda wrote:
+> Move peripheral properties for Tegra QSPI controller to
+> nvidia,tegra210-quad-peripheral-props.yaml and add reference
+> to spi-peripheral-props.yaml file.
+> 
+> Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
+> ---
+>  ...nvidia,tegra210-quad-peripheral-props.yaml | 45 +++++++++++++++++++
+>  .../bindings/spi/nvidia,tegra210-quad.yaml    | 32 -------------
+>  .../bindings/spi/spi-peripheral-props.yaml    |  1 +
+>  3 files changed, 46 insertions(+), 32 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml
+> new file mode 100644
+> index 000000000000..f91347759c65
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml
+> @@ -0,0 +1,45 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/spi/nvidia,tegra210-quad-peripheral-props.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Peripheral properties for Tegra Quad SPI Controller
+> +
+> +maintainers:
+> +  - Thierry Reding <thierry.reding@gmail.com>
+> +  - Jonathan Hunter <jonathanh@nvidia.com>
+> +
+> +properties:
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-rx-bus-width:
+> +    enum: [1, 2, 4]
+> +
+> +  spi-tx-bus-width:
+> +    enum: [1, 2, 4]
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+You've just set the constraints for everyone. This needs to stay in your 
+controller schema as it's an additional constraint on your controller.
 
-All warnings (new ones prefixed by >>):
+> +
+> +  nvidia,tx-clk-tap-delay:
+> +    description:
+> +      Delays the clock going out to device with this tap value.
+> +      Tap value varies based on platform design trace lengths from Tegra
+> +      QSPI to corresponding slave device.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    minimum: 0
+> +    maximum: 31
+> +
+> +  nvidia,rx-clk-tap-delay:
+> +    description:
+> +      Delays the clock coming in from the device with this tap value.
+> +      Tap value varies based on platform design trace lengths from Tegra
+> +      QSPI to corresponding slave device.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    minimum: 0
+> +    maximum: 255
+> +
+> +required:
+> +      - reg
 
->> drivers/pwm/pwm-gpio.c:60:22: warning: no previous prototype for 'gpio_pwm_timer' [-Wmissing-prototypes]
-      60 | enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
-         |                      ^~~~~~~~~~~~~~
+Pretty sure we captured that elsewhere.
+
+> +
+> +unevaluatedProperties: false
+
+This is why this patch makes everything fail. This means the only 
+properties allowed for any SPI child are the above ones. You need 
+'additionalProperties: true' here.
 
 
-vim +/gpio_pwm_timer +60 drivers/pwm/pwm-gpio.c
+> +
+> diff --git a/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml
+> index 0296edd1de22..7d60bb1af047 100644
+> --- a/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml
+> +++ b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml
+> @@ -21,9 +21,6 @@ properties:
+>        - nvidia,tegra194-qspi
+>        - nvidia,tegra234-qspi
+>  
+> -  reg:
+> -    maxItems: 1
 
-    59	
-  > 60	enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
-    61	{
-    62		struct gpio_pwm_data *gpio_data = container_of(timer,
-    63							      struct gpio_pwm_data,
-    64							      timer);
-    65		if (!gpio_data->run) {
-    66			gpio_pwm_off(gpio_data);
-    67			gpio_data->pin_on = false;
-    68			return HRTIMER_NORESTART;
-    69		}
-    70	
-    71		if (!gpio_data->pin_on) {
-    72			hrtimer_forward_now(&gpio_data->timer,
-    73					    ns_to_ktime(gpio_data->on_time));
-    74			gpio_pwm_on(gpio_data);
-    75			gpio_data->pin_on = true;
-    76		} else {
-    77			hrtimer_forward_now(&gpio_data->timer,
-    78					    ns_to_ktime(gpio_data->off_time));
-    79			gpio_pwm_off(gpio_data);
-    80			gpio_data->pin_on = false;
-    81		}
-    82	
-    83		return HRTIMER_RESTART;
-    84	}
-    85	
+Umm, this is for your controller registers. I think you need them.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> -
+>    interrupts:
+>      maxItems: 1
+>  
+> @@ -50,37 +47,8 @@ patternProperties:
+>    "@[0-9a-f]+":
+>      type: object
+>  
+> -    properties:
+> -      spi-rx-bus-width:
+> -        enum: [1, 2, 4]
+> -
+> -      spi-tx-bus-width:
+> -        enum: [1, 2, 4]
+> -
+> -      nvidia,tx-clk-tap-delay:
+> -        description:
+> -          Delays the clock going out to device with this tap value.
+> -          Tap value varies based on platform design trace lengths from Tegra
+> -          QSPI to corresponding slave device.
+> -        $ref: /schemas/types.yaml#/definitions/uint32
+> -        minimum: 0
+> -        maximum: 31
+> -
+> -      nvidia,rx-clk-tap-delay:
+> -        description:
+> -          Delays the clock coming in from the device with this tap value.
+> -          Tap value varies based on platform design trace lengths from Tegra
+> -          QSPI to corresponding slave device.
+> -        $ref: /schemas/types.yaml#/definitions/uint32
+> -        minimum: 0
+> -        maximum: 255
+> -
+> -    required:
+> -      - reg
+> -
+>  required:
+>    - compatible
+> -  - reg
+>    - interrupts
+>    - clock-names
+>    - clocks
+> diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> index 5e32928c4fc3..cf589d17b0f5 100644
+> --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> @@ -112,5 +112,6 @@ properties:
+>  allOf:
+>    - $ref: cdns,qspi-nor-peripheral-props.yaml#
+>    - $ref: samsung,spi-peripheral-props.yaml#
+> +  - $ref: nvidia,tegra210-quad-peripheral-props.yaml#
+>  
+>  additionalProperties: true
+> -- 
+> 2.17.1
+> 
+> 
