@@ -2,115 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F12C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237026AbiEPJUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 05:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
+        id S241979AbiEPJUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 05:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiEPJUP (ORCPT
+        with ESMTP id S234385AbiEPJUf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 05:20:15 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1824D25EA0;
-        Mon, 16 May 2022 02:20:11 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24G88H8D019063;
-        Mon, 16 May 2022 11:20:00 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=jsjDMVAKri3Xuqbm+T4vNwGLBnLq9IeueRAW8u9QgKw=;
- b=ZH/1gV2gGwBn8gVx6rSUfuQIZaEtfcQoVHpxwBBFyc8JiEmdQgdJCZJHlveBgV3ZUBgk
- SYk/ML9DKIMC2eVB2o9O3br5+LjYwcWudl/cvjWACDlj0iZjFzNHf5JmHRgins/LRQ3G
- 3e4FXvUavE8VKKsGbcoCYcKb7AQrJYNF859/9MqQitU+YA1LV3uDkngLRddnfYPhVZgP
- thKTvC8ipEO9S+GjbevAzAiyq8thgPf17ZOD6GIhLEoIi/UEDU599FtNCdCDSeu0M3lu
- 0x88BSHpkgVSK7qmm/bfLPqc+ccwPj/1A1Detu6wdfjAeNYrOz3HeNhllCJ5Qwr2XTun dA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g21ukggch-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 11:20:00 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6EAB810002A;
-        Mon, 16 May 2022 11:20:00 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6947E2171DB;
-        Mon, 16 May 2022 11:20:00 +0200 (CEST)
-Received: from localhost (10.75.127.45) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 16 May 2022 11:19:59
- +0200
-From:   Hugues Fruchet <hugues.fruchet@foss.st.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Benjamin Mugnier <benjamin.mugnier@foss.st.com>,
-        Sylvain Petinot <sylvain.petinot@foss.st.com>
-CC:     <linux-media@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Alain Volmat <alain.volmat@foss.st.com>,
-        Hugues Fruchet <hugues.fruchet@foss.st.com>
-Subject: [PATCH 2/3] media: st-mipid02: add support for YVYU and VYUY formats
-Date:   Mon, 16 May 2022 11:19:33 +0200
-Message-ID: <20220516091934.263141-3-hugues.fruchet@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220516091934.263141-1-hugues.fruchet@foss.st.com>
-References: <20220516091934.263141-1-hugues.fruchet@foss.st.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-16_06,2022-05-13_01,2022-02-23_01
+        Mon, 16 May 2022 05:20:35 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF5526102;
+        Mon, 16 May 2022 02:20:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652692829; x=1684228829;
+  h=from:to:cc:subject:date:message-id;
+  bh=f+gPMpnzEuE1lo/LHuKc1FpoHI7Zthw1RbS6wbpsxzw=;
+  b=gRHMRINTY3zZdy0ADzNnvge4WuH8+VIi9pSuC46WtISUdK51uOG9QvY+
+   yaSAMS9Cj8p/cB6id8pHmv7dhkIJYV8SCNFxLVtnugIWYZn3HfU5gAwtN
+   sJV6ZvQPPyjrp6p9JObM8hlcC1mWV5zaKCeCXhICGyTJa7ASqTekKzitB
+   c=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 16 May 2022 02:20:28 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 16 May 2022 02:20:27 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 16 May 2022 14:50:14 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id D4B3E3E54; Mon, 16 May 2022 14:50:13 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V4] serial: core: Do stop_rx in suspend path for console if console_suspend is disabled
+Date:   Mon, 16 May 2022 14:50:10 +0530
+Message-Id: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alain Volmat <alain.volmat@foss.st.com>
+For the case of console_suspend disabled, if back to back suspend/resume
+test is executed, at the end of test, sometimes console would appear to
+be frozen not responding to input. This would happen because, during
+resume, rx transactions can come in before system is ready, malfunction
+of rx happens in turn resulting in console appearing to be stuck.
 
-Those two formats were missing in the list of supported MBUS
-formats.
+Do a stop_rx in suspend sequence to prevent this.
 
-Signed-off-by: Alain Volmat <alain.volmat@foss.st.com>
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 ---
- drivers/media/i2c/st-mipid02.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+v4: moved the change to serial core to apply for all drivers
+v3: swapped the order of conditions to be more human readable
+v2: restricted patch to contain only stop_rx in suspend sequence
+v1: intial patch contained 2 additional unrelated changes in vicinity
+---
+ drivers/tty/serial/serial_core.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/i2c/st-mipid02.c b/drivers/media/i2c/st-mipid02.c
-index 59b48026c752..fe884d81b08b 100644
---- a/drivers/media/i2c/st-mipid02.c
-+++ b/drivers/media/i2c/st-mipid02.c
-@@ -64,7 +64,8 @@ static const u32 mipid02_supported_fmt_codes[] = {
- 	MEDIA_BUS_FMT_SGRBG12_1X12, MEDIA_BUS_FMT_SRGGB12_1X12,
- 	MEDIA_BUS_FMT_UYVY8_1X16, MEDIA_BUS_FMT_BGR888_1X24,
- 	MEDIA_BUS_FMT_RGB565_2X8_LE, MEDIA_BUS_FMT_RGB565_2X8_BE,
--	MEDIA_BUS_FMT_YUYV8_2X8, MEDIA_BUS_FMT_UYVY8_2X8,
-+	MEDIA_BUS_FMT_YUYV8_2X8, MEDIA_BUS_FMT_YVYU8_2X8,
-+	MEDIA_BUS_FMT_UYVY8_2X8, MEDIA_BUS_FMT_VYUY8_2X8,
- 	MEDIA_BUS_FMT_JPEG_1X8
- };
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 82a1770..9a85b41 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 	}
+ 	put_device(tty_dev);
  
-@@ -133,7 +134,9 @@ static int bpp_from_code(__u32 code)
- 		return 12;
- 	case MEDIA_BUS_FMT_UYVY8_1X16:
- 	case MEDIA_BUS_FMT_YUYV8_2X8:
-+	case MEDIA_BUS_FMT_YVYU8_2X8:
- 	case MEDIA_BUS_FMT_UYVY8_2X8:
-+	case MEDIA_BUS_FMT_VYUY8_2X8:
- 	case MEDIA_BUS_FMT_RGB565_2X8_LE:
- 	case MEDIA_BUS_FMT_RGB565_2X8_BE:
- 		return 16;
-@@ -164,7 +167,9 @@ static u8 data_type_from_code(__u32 code)
- 		return 0x2c;
- 	case MEDIA_BUS_FMT_UYVY8_1X16:
- 	case MEDIA_BUS_FMT_YUYV8_2X8:
-+	case MEDIA_BUS_FMT_YVYU8_2X8:
- 	case MEDIA_BUS_FMT_UYVY8_2X8:
-+	case MEDIA_BUS_FMT_VYUY8_2X8:
- 		return 0x1e;
- 	case MEDIA_BUS_FMT_BGR888_1X24:
- 		return 0x24;
+-	/* Nothing to do if the console is not suspending */
+-	if (!console_suspend_enabled && uart_console(uport))
++	/*
++	 * Nothing to do if the console is not suspending
++	 * except stop_rx to prevent any asynchronous data
++	 * over RX line. Re-start_rx, when required, is
++	 * done by set_termios in resume sequence
++	 */
++	if (!console_suspend_enabled && uart_console(uport)) {
++		uport->ops->stop_rx(uport);
+ 		goto unlock;
++	}
+ 
+ 	uport->suspended = 1;
+ 
 -- 
-2.25.1
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
