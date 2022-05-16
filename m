@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D476C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D587BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245592AbiEPUPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
+        id S1343545AbiEPUPo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351065AbiEPUB6 (ORCPT
+        with ESMTP id S1351045AbiEPUB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6765047545;
-        Mon, 16 May 2022 12:58:01 -0700 (PDT)
+        Mon, 16 May 2022 16:01:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D006A473AE;
+        Mon, 16 May 2022 12:57:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25C9AB81611;
-        Mon, 16 May 2022 19:58:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62A0AC385AA;
-        Mon, 16 May 2022 19:57:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 777ABB81613;
+        Mon, 16 May 2022 19:57:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0243C385AA;
+        Mon, 16 May 2022 19:57:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731078;
-        bh=YzW8u20XqcllyETUghHYrsk3AT8VdfEGOpmwGCOwdKU=;
+        s=korg; t=1652731035;
+        bh=18TsozEqMlpQhPgYryuK9UP4KaIWqrgwWG2uxJOE024=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=So1n9EsPsa8SVDjaRfPwaiGFmgfA0RivJcja1JIQkIgTRwnFavPDxesklhg5GXOU/
-         y6krUhlo4tqdfyZhGnQtuEXxed6F4EODwlvCpC1kPiRZaAQN6+DAiFId0Bt81C+WBr
-         +QwODRLiXIGGdw+AY9/ExAT4YnVoik9WtR8OaERs=
+        b=cXbRQaNQZqSw8/0tJF5crQ+Lt00WCPxLtPwTmROZ1VozFA/z/GxElg1vhlzY+K+/H
+         6ag+i68y/Hd4Kjp1R3w7Z74EdM0oIuccLtVh8NcevH4oLqLjHUOmNsCE3xcAvym9Wn
+         QY5EniPgkHqWGlPxYfgv7rNxY6j1dWf85taonFkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>
-Subject: [PATCH 5.17 096/114] drm/vmwgfx: Disable command buffers on svga3 without gbobjects
-Date:   Mon, 16 May 2022 21:37:10 +0200
-Message-Id: <20220516193628.230842118@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.17 081/114] usb: typec: tcpci: Dont skip cleanup in .remove() on error
+Date:   Mon, 16 May 2022 21:36:55 +0200
+Message-Id: <20220516193627.811077315@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -48,51 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit 21d1d192890ced87f2f04f8f4dea92406e0b162a upstream.
+commit bbc126ae381cf0a27822c1f822d0aeed74cc40d9 upstream.
 
-With very limited vram on svga3 it's difficult to handle all the surface
-migrations. Without gbobjects, i.e. the ability to store surfaces in
-guest mobs, there's no reason to support intermediate svga2 features,
-especially because we can fall back to fb traces and svga3 will never
-support those in-between features.
+Returning an error value in an i2c remove callback results in an error
+message being emitted by the i2c core, but otherwise it doesn't make a
+difference. The device goes away anyhow and the devm cleanups are
+called.
 
-On svga3 we wither want to use fb traces or screen targets
-(i.e. gbobjects), nothing in between. This fixes presentation on a lot
-of fusion/esxi tech previews where the exposed svga3 caps haven't been
-finalized yet.
+In this case the remove callback even returns early without stopping the
+tcpm worker thread and various timers. A work scheduled on the work
+queue, or a firing timer after tcpci_remove() returned probably results
+in a use-after-free situation because the regmap and driver data were
+freed. So better make sure that tcpci_unregister_port() is called even
+if disabling the irq failed.
 
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Fixes: 2cd80dbd3551 ("drm/vmwgfx: Add basic support for SVGA3")
-Cc: <stable@vger.kernel.org> # v5.14+
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-5-zack@kde.org
+Also emit a more specific error message instead of the i2c core's
+"remove failed (EIO), will be ignored" and return 0 to suppress the
+core's warning.
+
+This patch is (also) a preparation for making i2c remove callbacks
+return void.
+
+Fixes: 3ba76256fc4e ("usb: typec: tcpci: mask event interrupts when remove driver")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Cc: stable <stable@vger.kernel.org>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220502080456.21568-1-u.kleine-koenig@pengutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/usb/typec/tcpm/tcpci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
-@@ -675,11 +675,14 @@ int vmw_cmd_emit_dummy_query(struct vmw_
-  */
- bool vmw_cmd_supported(struct vmw_private *vmw)
- {
--	if ((vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
--				  SVGA_CAP_CMD_BUFFERS_2)) != 0)
--		return true;
-+	bool has_cmdbufs =
-+		(vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
-+				      SVGA_CAP_CMD_BUFFERS_2)) != 0;
-+	if (vmw_is_svga_v3(vmw))
-+		return (has_cmdbufs &&
-+			(vmw->capabilities & SVGA_CAP_GBOBJECTS) != 0);
- 	/*
- 	 * We have FIFO cmd's
- 	 */
--	return vmw->fifo_mem != NULL;
-+	return has_cmdbufs || vmw->fifo_mem != NULL;
- }
+--- a/drivers/usb/typec/tcpm/tcpci.c
++++ b/drivers/usb/typec/tcpm/tcpci.c
+@@ -877,7 +877,7 @@ static int tcpci_remove(struct i2c_clien
+ 	/* Disable chip interrupts before unregistering port */
+ 	err = tcpci_write16(chip->tcpci, TCPC_ALERT_MASK, 0);
+ 	if (err < 0)
+-		return err;
++		dev_warn(&client->dev, "Failed to disable irqs (%pe)\n", ERR_PTR(err));
+ 
+ 	tcpci_unregister_port(chip->tcpci);
+ 
 
 
