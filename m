@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DC8C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD4AC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348559AbiEPTwz (ORCPT
+        id S1348353AbiEPTws (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:52:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        Mon, 16 May 2022 15:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346197AbiEPTrv (ORCPT
+        with ESMTP id S1345913AbiEPTrM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:47:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDC53EF10;
-        Mon, 16 May 2022 12:44:37 -0700 (PDT)
+        Mon, 16 May 2022 15:47:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C514542A33;
+        Mon, 16 May 2022 12:44:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E6BB7CE1798;
-        Mon, 16 May 2022 19:44:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B22C385AA;
-        Mon, 16 May 2022 19:44:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A20461512;
+        Mon, 16 May 2022 19:44:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233B8C34100;
+        Mon, 16 May 2022 19:44:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730270;
-        bh=7LhJPbtrK1JcYBaF2YMm3YmAYKwu5CobL987tI8X8iI=;
+        s=korg; t=1652730264;
+        bh=Cg/MuKJoap0hTEysGvsdxLpB4ecmEPAhHBdrvdsOYEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5aqdu7L5JmduNaAB3Ro5eXgTCDEtjcWBr6C6UXKZvwDSAyKyk0SU3zQK1y+fBIqG
-         NvTkfNjk6fS2/tDrSmdz70JPr2q8f39exJ+dl9G9XsiRQRvZvVMzgnw/fjMQyYrixN
-         R+5uROAAAO51P/0j/4TG8RqkOCf07jhqKJUtoa1U=
+        b=AMrDjXaQpDOxU2SA2f6q8htd45Xzh+NUYUUr+rX4JuE2CyCooryxIsuRIeNl4Xu5l
+         6/joJRNj5cRL5KgLNmq3FW3S69Qju62VTjJFPxX4Ln64kP2oN2muuZt3hHmVshnlLR
+         RgKBD/rgkcOKcSWwcCrWod3DGTcyvxp6zQG6bM+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 11/66] drm/nouveau: Fix a potential theorical leak in nouveau_get_backlight_name()
-Date:   Mon, 16 May 2022 21:36:11 +0200
-Message-Id: <20220516193619.743484888@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Kaechele <felix@kaechele.ca>,
+        Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 01/66] batman-adv: Dont skb_split skbuffs with frag_list
+Date:   Mon, 16 May 2022 21:36:01 +0200
+Message-Id: <20220516193619.445066192@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,69 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit ab244be47a8f111bc82496a8a20c907236e37f95 ]
+[ Upstream commit a063f2fba3fa633a599253b62561051ac185fa99 ]
 
-If successful ida_simple_get() calls are not undone when needed, some
-additional memory may be allocated and wasted.
+The receiving interface might have used GRO to receive more fragments than
+MAX_SKB_FRAGS fragments. In this case, these will not be stored in
+skb_shinfo(skb)->frags but merged into the frag list.
 
-Here, an ID between 0 and MAX_INT is required. If this ID is >=100, it is
-not taken into account and is wasted. It should be released.
+batman-adv relies on the function skb_split to split packets up into
+multiple smaller packets which are not larger than the MTU on the outgoing
+interface. But this function cannot handle frag_list entries and is only
+operating on skb_shinfo(skb)->frags. If it is still trying to split such an
+skb and xmit'ing it on an interface without support for NETIF_F_FRAGLIST,
+then validate_xmit_skb() will try to linearize it. But this fails due to
+inconsistent information. And __pskb_pull_tail will trigger a BUG_ON after
+skb_copy_bits() returns an error.
 
-Instead of calling ida_simple_remove(), take advantage of the 'max'
-parameter to require the ID not to be too big. Should it be too big, it
-is not allocated and don't need to be freed.
+In case of entries in frag_list, just linearize the skb before operating on
+it with skb_split().
 
-While at it, use ida_alloc_xxx()/ida_free() instead to
-ida_simple_get()/ida_simple_remove().
-The latter is deprecated and more verbose.
-
-Fixes: db1a0ae21461 ("drm/nouveau/bl: Assign different names to interfaces")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-[Fixed formatting warning from checkpatch]
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr
+Reported-by: Felix Kaechele <felix@kaechele.ca>
+Fixes: c6c8fea29769 ("net: Add batman-adv meshing protocol")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Tested-by: Felix Kaechele <felix@kaechele.ca>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_backlight.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/batman-adv/fragmentation.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-index c7a94c94dbf3..f2f3280c3a50 100644
---- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-@@ -51,8 +51,9 @@ static bool
- nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
- 			   struct nouveau_backlight *bl)
- {
--	const int nb = ida_simple_get(&bl_ida, 0, 0, GFP_KERNEL);
--	if (nb < 0 || nb >= 100)
-+	const int nb = ida_alloc_max(&bl_ida, 99, GFP_KERNEL);
-+
-+	if (nb < 0)
- 		return false;
- 	if (nb > 0)
- 		snprintf(backlight_name, BL_NAME_SIZE, "nv_backlight%d", nb);
-@@ -280,7 +281,7 @@ nouveau_backlight_init(struct drm_connector *connector)
- 					    nv_encoder, ops, &props);
- 	if (IS_ERR(bl->dev)) {
- 		if (bl->id >= 0)
--			ida_simple_remove(&bl_ida, bl->id);
-+			ida_free(&bl_ida, bl->id);
- 		ret = PTR_ERR(bl->dev);
- 		goto fail_alloc;
+diff --git a/net/batman-adv/fragmentation.c b/net/batman-adv/fragmentation.c
+index 1f1f5b0873b2..895d834d479d 100644
+--- a/net/batman-adv/fragmentation.c
++++ b/net/batman-adv/fragmentation.c
+@@ -478,6 +478,17 @@ int batadv_frag_send_packet(struct sk_buff *skb,
+ 		goto free_skb;
  	}
-@@ -306,7 +307,7 @@ nouveau_backlight_fini(struct drm_connector *connector)
- 		return;
  
- 	if (bl->id >= 0)
--		ida_simple_remove(&bl_ida, bl->id);
-+		ida_free(&bl_ida, bl->id);
- 
- 	backlight_device_unregister(bl->dev);
- 	nv_conn->backlight = NULL;
++	/* GRO might have added fragments to the fragment list instead of
++	 * frags[]. But this is not handled by skb_split and must be
++	 * linearized to avoid incorrect length information after all
++	 * batman-adv fragments were created and submitted to the
++	 * hard-interface
++	 */
++	if (skb_has_frag_list(skb) && __skb_linearize(skb)) {
++		ret = -ENOMEM;
++		goto free_skb;
++	}
++
+ 	/* Create one header to be copied to all fragments */
+ 	frag_header.packet_type = BATADV_UNICAST_FRAG;
+ 	frag_header.version = BATADV_COMPAT_VERSION;
 -- 
 2.35.1
 
