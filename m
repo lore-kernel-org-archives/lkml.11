@@ -2,125 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C60EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:50:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346191AbiEPTuk (ORCPT
+        id S1346331AbiEPTut (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35610 "EHLO
+        Mon, 16 May 2022 15:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346055AbiEPTp0 (ORCPT
+        with ESMTP id S1346212AbiEPTp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:45:26 -0400
+        Mon, 16 May 2022 15:45:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E54240917;
-        Mon, 16 May 2022 12:43:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BE640A13;
+        Mon, 16 May 2022 12:43:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57501B8160D;
-        Mon, 16 May 2022 19:43:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3AB4C385AA;
-        Mon, 16 May 2022 19:43:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B59AB81615;
+        Mon, 16 May 2022 19:43:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57DB7C34119;
+        Mon, 16 May 2022 19:43:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730192;
-        bh=XlfjnybdjFndXuvR+yMBeEXm24BAMbStzzv7InnYGFE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hVZxz96UgiUH3Y+SuDfFWd3+z/r4WR/F8css+xF6Ed7AQueoinOejyiaAFjIXI4t4
-         d0yqd5eduzDxWAKA3hBnjz4OK/M99aFANaEcff5av/d1yb49oal6PPyBAH2RhwaccD
-         575ZX9Dp0xzSDDUpKLmjfDsZWwnYkbOs8GuC6gFY=
+        s=korg; t=1652730201;
+        bh=vlUMwgSVN6d8hwNdUOFcqguNFvRLaiyt5AbBh+zlnRE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ia0bLPqHK2T/6Kke0jX6aA4Dt64byZQ2R4GI8lIJ6SQ16m+utFDABcfeQ3/qpkP5k
+         MrfnfLKNM0UxangQuQy/roKtDKYUHoYWMtCwx1Si1WX2NLgVddl2iHKqTysymfxKbG
+         G2frMFnq7Y4I9G527mQ5LtSXHofdGS8cG/hlVVaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 07/43] netlink: do not reset transport header in netlink_recvmsg()
-Date:   Mon, 16 May 2022 21:36:18 +0200
-Message-Id: <20220516193614.935420646@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.4 00/43] 5.4.195-rc1 review
+Date:   Mon, 16 May 2022 21:36:11 +0200
+Message-Id: <20220516193614.714657361@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
-References: <20220516193614.714657361@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.195-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.4.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.4.195-rc1
+X-KernelTest-Deadline: 2022-05-18T19:36+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+This is the start of the stable review cycle for the 5.4.195 release.
+There are 43 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit d5076fe4049cadef1f040eda4aaa001bb5424225 ]
+Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
+Anything received after that time might be too late.
 
-netlink_recvmsg() does not need to change transport header.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.195-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+and the diffstat can be found below.
 
-If transport header was needed, it should have been reset
-by the producer (netlink_dump()), not the consumer(s).
+thanks,
 
-The following trace probably happened when multiple threads
-were using MSG_PEEK.
+greg k-h
 
-BUG: KCSAN: data-race in netlink_recvmsg / netlink_recvmsg
+-------------
+Pseudo-Shortlog of commits:
 
-write to 0xffff88811e9f15b2 of 2 bytes by task 32012 on cpu 1:
- skb_reset_transport_header include/linux/skbuff.h:2760 [inline]
- netlink_recvmsg+0x1de/0x790 net/netlink/af_netlink.c:1978
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- __sys_recvfrom+0x204/0x2c0 net/socket.c:2097
- __do_sys_recvfrom net/socket.c:2115 [inline]
- __se_sys_recvfrom net/socket.c:2111 [inline]
- __x64_sys_recvfrom+0x74/0x90 net/socket.c:2111
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.4.195-rc1
 
-write to 0xffff88811e9f15b2 of 2 bytes by task 32005 on cpu 0:
- skb_reset_transport_header include/linux/skbuff.h:2760 [inline]
- netlink_recvmsg+0x1de/0x790 net/netlink/af_netlink.c:1978
- ____sys_recvmsg+0x162/0x2f0
- ___sys_recvmsg net/socket.c:2674 [inline]
- __sys_recvmsg+0x209/0x3f0 net/socket.c:2704
- __do_sys_recvmsg net/socket.c:2714 [inline]
- __se_sys_recvmsg net/socket.c:2711 [inline]
- __x64_sys_recvmsg+0x42/0x50 net/socket.c:2711
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Yang Yingliang <yangyingliang@huawei.com>
+    tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
 
-value changed: 0xffff -> 0x0000
+Nicolas Dichtel <nicolas.dichtel@6wind.com>
+    ping: fix address binding wrt vrf
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 32005 Comm: syz-executor.4 Not tainted 5.18.0-rc1-syzkaller-00328-ge1f700ebd6be-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Mike Rapoport <rppt@linux.ibm.com>
+    arm[64]/memremap: don't abuse pfn_valid() to ensure presence of linear map
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220505161946.2867638-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/netlink/af_netlink.c | 1 -
- 1 file changed, 1 deletion(-)
+Francesco Dolcini <francesco.dolcini@toradex.com>
+    net: phy: Fix race condition on link status change
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 8aefc52542a0..86b70385dce3 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -1987,7 +1987,6 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 		copied = len;
- 	}
- 
--	skb_reset_transport_header(data_skb);
- 	err = skb_copy_datagram_msg(data_skb, 0, msg, copied);
- 
- 	if (msg->msg_name) {
--- 
-2.35.1
+Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+    MIPS: fix build with gcc-12
 
+Zack Rusin <zackr@vmware.com>
+    drm/vmwgfx: Initialize drm_mode_fb_cmd2
+
+Waiman Long <longman@redhat.com>
+    cgroup/cpuset: Remove cpus_allowed/mems_allowed setup in cpuset_init_smp()
+
+Xiaomeng Tong <xiam0nd.tong@gmail.com>
+    i40e: i40e_main: fix a missing check on list iterator
+
+Robin Murphy <robin.murphy@arm.com>
+    drm/nouveau/tegra: Stop using iommu_present()
+
+AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+    serial: 8250_mtk: Fix register address for XON/XOFF character
+
+AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+    serial: 8250_mtk: Fix UART_EFR register address
+
+Miaoqian Lin <linmq006@gmail.com>
+    slimbus: qcom: Fix IRQ check in qcom_slim_probe
+
+Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+    USB: serial: option: add Fibocom MA510 modem
+
+Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+    USB: serial: option: add Fibocom L610 modem
+
+Ethan Yang <etyang@sierrawireless.com>
+    USB: serial: qcserial: add support for Sierra Wireless EM7590
+
+Scott Chen <scott@labau.com.tw>
+    USB: serial: pl2303: add device id for HP LM930 Display
+
+Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+    usb: typec: tcpci: Don't skip cleanup in .remove() on error
+
+Sergey Ryazanov <ryazanov.s.a@gmail.com>
+    usb: cdc-wdm: fix reading stuck on device close
+
+Daniel Starke <daniel.starke@siemens.com>
+    tty: n_gsm: fix mux activation issues in gsm_config()
+
+Eric Dumazet <edumazet@google.com>
+    tcp: resalt the secret every 10 seconds
+
+Shravya Kumbham <shravya.kumbham@xilinx.com>
+    net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
+
+Sven Schnelle <svens@linux.ibm.com>
+    s390: disable -Warray-bounds
+
+Mark Brown <broonie@kernel.org>
+    ASoC: ops: Validate input values in snd_soc_put_volsw_range()
+
+Mark Brown <broonie@kernel.org>
+    ASoC: max98090: Generate notifications on changes for custom control
+
+Mark Brown <broonie@kernel.org>
+    ASoC: max98090: Reject invalid values in custom control put()
+
+Ji-Ze Hong (Peter Hong) <hpeter@gmail.com>
+    hwmon: (f71882fg) Fix negative temperature
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gfs2: Fix filesystem block deallocation for short writes
+
+Taehee Yoo <ap420073@gmail.com>
+    net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
+
+Guangguan Wang <guangguan.wang@linux.alibaba.com>
+    net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
+
+Paolo Abeni <pabeni@redhat.com>
+    net/sched: act_pedit: really ensure the skb is writable
+
+Alexandra Winter <wintera@linux.ibm.com>
+    s390/lcs: fix variable dereferenced before check
+
+Alexandra Winter <wintera@linux.ibm.com>
+    s390/ctcm: fix potential memory leak
+
+Alexandra Winter <wintera@linux.ibm.com>
+    s390/ctcm: fix variable dereferenced before check
+
+Randy Dunlap <rdunlap@infradead.org>
+    hwmon: (ltq-cputemp) restrict it to SOC_XWAY
+
+Jesse Brandeburg <jesse.brandeburg@intel.com>
+    dim: initialize all struct fields
+
+Johannes Berg <johannes.berg@intel.com>
+    mac80211_hwsim: call ieee80211_tx_prepare_skb under RCU protection
+
+Eric Dumazet <edumazet@google.com>
+    netlink: do not reset transport header in netlink_recvmsg()
+
+Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+    drm/nouveau: Fix a potential theorical leak in nouveau_get_backlight_name()
+
+Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+    ipv4: drop dst in multicast routing path
+
+Tariq Toukan <tariqt@nvidia.com>
+    net: Fix features skip in for_each_netdev_feature()
+
+Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+    mac80211: Reset MBSSID parameters upon connection
+
+Camel Guo <camel.guo@axis.com>
+    hwmon: (tmp401) Add OF device ID table
+
+Sven Eckelmann <sven@narfation.org>
+    batman-adv: Don't skb_split skbuffs with frag_list
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |  4 +-
+ arch/arm/include/asm/io.h                          |  3 ++
+ arch/arm/mm/ioremap.c                              |  8 ++++
+ arch/arm64/include/asm/io.h                        |  4 ++
+ arch/arm64/mm/ioremap.c                            |  9 +++++
+ arch/mips/jz4740/setup.c                           |  2 +-
+ arch/s390/Makefile                                 | 10 +++++
+ drivers/gpu/drm/nouveau/nouveau_backlight.c        |  9 +++--
+ drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c |  2 +-
+ drivers/gpu/drm/vmwgfx/vmwgfx_fb.c                 |  2 +-
+ drivers/hwmon/Kconfig                              |  2 +-
+ drivers/hwmon/f71882fg.c                           |  5 ++-
+ drivers/hwmon/tmp401.c                             | 11 ++++++
+ drivers/net/ethernet/intel/i40e/i40e_main.c        | 27 ++++++-------
+ drivers/net/ethernet/sfc/ef10.c                    |  5 +++
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c      | 15 --------
+ drivers/net/phy/phy.c                              | 45 +++++++++++++++++++---
+ drivers/net/wireless/mac80211_hwsim.c              |  3 ++
+ drivers/s390/net/ctcm_mpc.c                        |  6 +--
+ drivers/s390/net/ctcm_sysfs.c                      |  5 ++-
+ drivers/s390/net/lcs.c                             |  7 ++--
+ drivers/slimbus/qcom-ctrl.c                        |  4 +-
+ drivers/tty/n_gsm.c                                | 12 ++++--
+ drivers/tty/serial/8250/8250_mtk.c                 | 22 ++++++-----
+ drivers/tty/serial/digicolor-usart.c               |  2 +-
+ drivers/usb/class/cdc-wdm.c                        |  1 +
+ drivers/usb/serial/option.c                        |  4 ++
+ drivers/usb/serial/pl2303.c                        |  1 +
+ drivers/usb/serial/pl2303.h                        |  1 +
+ drivers/usb/serial/qcserial.c                      |  2 +
+ drivers/usb/typec/tcpm/tcpci.c                     |  2 +-
+ fs/gfs2/bmap.c                                     | 11 +++---
+ include/linux/netdev_features.h                    |  4 +-
+ include/net/tc_act/tc_pedit.h                      |  1 +
+ kernel/cgroup/cpuset.c                             |  7 +++-
+ lib/dim/net_dim.c                                  | 44 ++++++++++-----------
+ net/batman-adv/fragmentation.c                     | 11 ++++++
+ net/core/secure_seq.c                              | 12 ++++--
+ net/ipv4/ping.c                                    | 12 +++++-
+ net/ipv4/route.c                                   |  1 +
+ net/mac80211/mlme.c                                |  6 +++
+ net/netlink/af_netlink.c                           |  1 -
+ net/sched/act_pedit.c                              | 26 +++++++++++--
+ net/smc/smc_rx.c                                   |  4 +-
+ sound/soc/codecs/max98090.c                        |  5 ++-
+ sound/soc/soc-ops.c                                | 18 ++++++++-
+ 46 files changed, 281 insertions(+), 117 deletions(-)
 
 
