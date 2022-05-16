@@ -2,132 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB625C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60709C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348888AbiEPVBq (ORCPT
+        id S1348960AbiEPVBt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 17:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
+        Mon, 16 May 2022 17:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349475AbiEPVBW (ORCPT
+        with ESMTP id S1349185AbiEPVBI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 17:01:22 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FA74507B;
-        Mon, 16 May 2022 13:38:59 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ch13so30807930ejb.12;
-        Mon, 16 May 2022 13:38:59 -0700 (PDT)
+        Mon, 16 May 2022 17:01:08 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD85B1CC;
+        Mon, 16 May 2022 13:36:15 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id q2so16785760vsr.5;
+        Mon, 16 May 2022 13:36:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=PMDosnlJ+gbQJYPokwfPZqLFLUpNmlvipt6Owk5quI0=;
-        b=IkakkWk3Q4TG07BcLysVVBAyu3U94fvCZ/O3a70ncHxWkfdAP6tmqUtRpUbw+Oegdl
-         LhFm2BB6hYEjOLl/hH8ybdoCdiOCFPYC4H2tE9zQL8qObGxorZaEkJA2XFBbuvO1sQoa
-         xTqHUFKiIsNs2Z8c5imcA/Hmdp44fgDIysSWCjDSj+iJD8dRKdvyRl17lHQ+HZxlkY9D
-         XB6b7LXSlm1Tw6GHT202BLrL8KC/HINZO5nBGwdh8QhpOq5/QyME0GBoqAC9RMRpU993
-         mb6nAKIOQY8DAPSoG2EP6wUxyNTv0j6Tv6yJttEYftrCWhjKsz28hZVf3YTLIRyfNTtO
-         q8kQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SPVTTEXb7GH/kRukNpd+3rAnRGbjeFyeEDAAtlIB25Q=;
+        b=NSekxAUXRVu2pYaw0hTGwWaFqn/QHyOuuGWIa14VTyd85gOV8xGT6+YTJfzp2WkBp3
+         UeimhWNjhZ5KL0QlzfydQy+0WXY7c7AIZYYeKKvOuaDOOktdY3EpLLbIAFQP6Fj4u9QR
+         v5zVi6prxpCEuv+KArfXza5lhW8bM/Mc6U+n8FXiUizhYlMeZiGNP5vOQyw23rQpLsVh
+         O4wrjiZnAcOrcDWVUQnU5oBcmUMIMlJAdqVLjMP7ROLXrp9Ni95AVYRVrJYTecuNqPYz
+         saKTifld2dgNmTzpXxcxgLhpNG+9HzYb9G2/V6FVymeX/1yGcDVhC42bns9u+jLm/LbT
+         wBXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=PMDosnlJ+gbQJYPokwfPZqLFLUpNmlvipt6Owk5quI0=;
-        b=7nk84d9LXuoROjsZVctQATie6hCJdvOeqm98jUo1GupuZqb/yB9U5H1D+tZ2/jdBfe
-         VOghVrTqL9ndupxlftu1qeXbxphD5M6KOtBGEO1JSDXkQh0K90xm1UFFwNcjSbooyG3S
-         AOiRMTvF8kAegnDJmeGB9mCA4FiLeengN4tOQvAUtCD6BWac5LOt1O2tti1xcQOI0fG9
-         s0f6+1m+PzOO0PyoRW7iEDNFBFole93ZS2Dy/oNWwxGvTpNN/mHPDJrgXFhB/C6ZOgpu
-         d/LwwHhFwHSYeEOoZD62a43u4GdFxLxbGtIEgz6CLkE3kc5qixveBde3svDWukIXrrqR
-         KDeQ==
-X-Gm-Message-State: AOAM532pKdVQWvMQLdfh0teSDUYhOLRz7/psPv7K1h7PYpVDBXkXkV7/
-        GSDiO8cKgCs7DGYGk9kY/y8=
-X-Google-Smtp-Source: ABdhPJyvjaqge3EUfdfKUmm9GYsq/s4wXVCTbrQsJ5QL72XCE8kZsSqE4VubYHvaw+TrXnvOSgf2eg==
-X-Received: by 2002:a17:906:14da:b0:6f4:e22a:3905 with SMTP id y26-20020a17090614da00b006f4e22a3905mr16660925ejc.737.1652733537825;
-        Mon, 16 May 2022 13:38:57 -0700 (PDT)
-Received: from krava ([83.240.63.110])
-        by smtp.gmail.com with ESMTPSA id ek27-20020a056402371b00b0042617ba63c0sm5483932edb.74.2022.05.16.13.38.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 13:38:57 -0700 (PDT)
-Date:   Mon, 16 May 2022 22:38:54 +0200
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Eugene Syromiatnikov <esyr@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf] bpf_trace: bail out from
- bpf_kprobe_multi_link_attach when in compat
-Message-ID: <YoK2XtfCYmYomW3i@krava>
-References: <20220506142148.GA24802@asgard.redhat.com>
- <CAADnVQKNkEX-caBjozegRaOb67g1HNOHn1e-enRk_s-7Gtt=gg@mail.gmail.com>
- <20220510184155.GA8295@asgard.redhat.com>
- <CAADnVQ+2gwhcMht4PuDnDOFKY68Wsq8QFz4Y69NBX_TLaSexQQ@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SPVTTEXb7GH/kRukNpd+3rAnRGbjeFyeEDAAtlIB25Q=;
+        b=UFCc2PPk0eQBbM9dhSDQPw4Ld+0aaE+jO7GLX8Ky0RLus4RV7l6eoTiNsm1MZL/ZrA
+         isa0U4jKwN/vrI+P9ZMenUvfefWAGMV2x3Fhbcb8qLkwYyy6C0Pd+qTLk6ZB1JIEkHHO
+         SDVhaNgozwyfMwOPsKUzLmrQxxgWZsek2QpXPmvc0UVJs2uD3uM+2FQN6ySxV093EyAJ
+         26ZjTwMfMKGdkXyFuyBI8/KJylCMn6xJhJosezK/MFAqWhNem9zJ+zLbKt1zcGO/Ny9I
+         CytsshxzmztuQnF7L2Lzjm5sR/782Ts3dpcqkzV3QVIW+2B7g/IFN2SzBWapTI2apE9R
+         eLNg==
+X-Gm-Message-State: AOAM5323rpzhRTWTBQ2N/g+e2cfMkl2gwtl4alCEnkk3dMdKLi+ZDxCM
+        G6JZVbkKNgvo4BUV3qetMthQYogjcSOuE03GGkc=
+X-Google-Smtp-Source: ABdhPJylvA9O4m7fxtbFb+lkV8pNOJlx1/RRasLF3i25sl6FooKaRcWZritDMSN+ehL0yvKawivRUzI0CFpOVj/+vwo=
+X-Received: by 2002:a67:2ec4:0:b0:32c:c442:a309 with SMTP id
+ u187-20020a672ec4000000b0032cc442a309mr6741450vsu.32.1652733375162; Mon, 16
+ May 2022 13:36:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAADnVQ+2gwhcMht4PuDnDOFKY68Wsq8QFz4Y69NBX_TLaSexQQ@mail.gmail.com>
+References: <20220514091443.4150162-1-william.xuanziyang@huawei.com>
+In-Reply-To: <20220514091443.4150162-1-william.xuanziyang@huawei.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Mon, 16 May 2022 23:36:04 +0300
+Message-ID: <CAHNKnsS0D8bRA5GY0xss2ZUCwY2HoLNMgeR0K4ecH-HfmdTefg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: wwan: t7xx: fix GFP_KERNEL usage in
+ spin_lock context
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     "Devegowda, Chandrashekar" <chandrashekar.devegowda@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>,
+        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
+        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 03:30:10PM -0700, Alexei Starovoitov wrote:
-> On Tue, May 10, 2022 at 11:42 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
-> >
-> > On Tue, May 10, 2022 at 11:10:35AM -0700, Alexei Starovoitov wrote:
-> > > On Fri, May 6, 2022 at 7:22 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
-> > > >
-> > > > Since bpf_kprobe_multi_link_attach doesn't support 32-bit kernels
-> > > > for whatever reason,
-> > >
-> > > Jiri,
-> > > why did you add this restriction?
+Hello Ziyang,
 
-sorry, I overlooked this email
+On Sat, May 14, 2022 at 11:57 AM Ziyang Xuan
+<william.xuanziyang@huawei.com> wrote:
+> t7xx_cldma_clear_rxq() call t7xx_cldma_alloc_and_map_skb() in spin_lock
+> context, But __dev_alloc_skb() in t7xx_cldma_alloc_and_map_skb() uses
+> GFP_KERNEL, that will introduce scheduling factor in spin_lock context.
+>
+> Replace GFP_KERNEL with GFP_ATOMIC to fix it.
 
-the reason for that check is that we link addrs array with cookies
-which are u64 and we need to swap cookies together with addrs when
-we sort them
+Would not it will be more reliable to just rework
+t7xx_cldma_clear_rxq() to avoid calling t7xx_cldma_alloc_and_map_skb()
+under the spin lock instead of doing each allocation with GFP_ATOMIC?
+E.g. t7xx_cldma_gpd_rx_from_q() calls t7xx_cldma_alloc_and_map_skb()
+avoiding any lock holding.
 
-but now when I look at that, that could perhaps work event if
-unsigned long is 32 bits, will check
-
-> > >
-> > > > having it enabled for compat processes on 64-bit
-> > > > kernels makes even less sense due to discrepances in the type sizes
-> > > > that it does not handle.
-> > >
-> > > I don't follow this logic.
-> > > bpf progs are always 64-bit. Even when user space is 32-bit.
-> > > Jiri's check is for the kernel.
-> >
-> > The interface as defined (and implemented in libbpf) expects arrays of userspace
-> > pointers to be passed (for example, syms points to an array of userspace
-> > pointers—character strings; same goes for addrs, but with generic userspace
-> > pointers) without regard to possible difference in the pointer size in case
-> > of compat userspace.
-> 
-> I see. So kprobe_multi.syms and kprobe_multi.addrs will be 'long'
-> and 32-bit user space will have an issue with the 64-bit kernel.
-> Let's fix it properly.
-> We can remove sizeof(u64) != sizeof(void *) and keep libbpf as-is
-> by keeping syms and addrs 'long' in uapi.
-> As far as I can see 32-bit user space on a 32-bit kernel
-> should work with existing code.
-> in_compat_syscall() can be used to extend addrs/syms.
-
-I'll check Eugene's new patchset
-
-jirka
+-- 
+Sergey
