@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F353C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0AD3C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346694AbiEPTvR (ORCPT
+        id S1347056AbiEPTvg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38170 "EHLO
+        Mon, 16 May 2022 15:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346568AbiEPTqd (ORCPT
+        with ESMTP id S1346868AbiEPTqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:46:33 -0400
+        Mon, 16 May 2022 15:46:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A19441313;
-        Mon, 16 May 2022 12:43:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A1B42498;
+        Mon, 16 May 2022 12:44:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E05D2B8160D;
-        Mon, 16 May 2022 19:43:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33B19C385AA;
-        Mon, 16 May 2022 19:43:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F06BDB815F8;
+        Mon, 16 May 2022 19:44:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A853C385AA;
+        Mon, 16 May 2022 19:44:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730224;
-        bh=KcNUFEbOkcYHTYrIXIVbmBwvCeUave/8b9Afl22B5fA=;
+        s=korg; t=1652730248;
+        bh=bdCazeY4uVIvyz0sN8mWq9A6pyMrOblkEcIMofn3tcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qeRyDFkPCgC9oq5nIsT6zhb2GVO0lC3LqwnaSk5IBeNpVwnZd5OFB5DZN0tq0Dc4t
-         ILI4jPHxNYwGrvyk8fE/suZ/e7rCB6wEmT+1SK7wIoDwX8AgB7TRhTLehAxyY+kNwR
-         X1vH1ie1Qw/oBiqJBRj0j8JZqwKKWbhTr3AmNol8=
+        b=nrg6OcDoDnv5WsCJBWDILHJ0UyroOfVwTF4zvdOAOk4TsnbmQRAOf6R2VC+Oz+Uqe
+         N+Rm/Br8MIgkE1O3QoOjV6MWFDFZGhr/ryNXH3c51BJyevAMEOtVRLX0wCLsV72PbS
+         Jme3G29ISxi4MwuQwdJbnZl7NmJABqDXHpCznjXc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 40/43] net: phy: Fix race condition on link status change
-Date:   Mon, 16 May 2022 21:36:51 +0200
-Message-Id: <20220516193615.903600331@linuxfoundation.org>
+        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 30/43] USB: serial: option: add Fibocom L610 modem
+Date:   Mon, 16 May 2022 21:36:41 +0200
+Message-Id: <20220516193615.608520559@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -50,157 +50,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francesco Dolcini <francesco.dolcini@toradex.com>
+From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
 
-commit 91a7cda1f4b8bdf770000a3b60640576dafe0cec upstream.
+commit 714adff9a6271b5f1664b04c944b598141ebfe73 upstream.
 
-This fixes the following error caused by a race condition between
-phydev->adjust_link() and a MDIO transaction in the phy interrupt
-handler. The issue was reproduced with the ethernet FEC driver and a
-micrel KSZ9031 phy.
+The L610 modem has 3 USB configurations that are configurable via the AT
+command AT+GTUSBMODE={31,32,33} which make the modem enumerate with the
+following interfaces, respectively:
 
-[  146.195696] fec 2188000.ethernet eth0: MDIO read timeout
-[  146.201779] ------------[ cut here ]------------
-[  146.206671] WARNING: CPU: 0 PID: 571 at drivers/net/phy/phy.c:942 phy_error+0x24/0x6c
-[  146.214744] Modules linked in: bnep imx_vdoa imx_sdma evbug
-[  146.220640] CPU: 0 PID: 571 Comm: irq/128-2188000 Not tainted 5.18.0-rc3-00080-gd569e86915b7 #9
-[  146.229563] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-[  146.236257]  unwind_backtrace from show_stack+0x10/0x14
-[  146.241640]  show_stack from dump_stack_lvl+0x58/0x70
-[  146.246841]  dump_stack_lvl from __warn+0xb4/0x24c
-[  146.251772]  __warn from warn_slowpath_fmt+0x5c/0xd4
-[  146.256873]  warn_slowpath_fmt from phy_error+0x24/0x6c
-[  146.262249]  phy_error from kszphy_handle_interrupt+0x40/0x48
-[  146.268159]  kszphy_handle_interrupt from irq_thread_fn+0x1c/0x78
-[  146.274417]  irq_thread_fn from irq_thread+0xf0/0x1dc
-[  146.279605]  irq_thread from kthread+0xe4/0x104
-[  146.284267]  kthread from ret_from_fork+0x14/0x28
-[  146.289164] Exception stack(0xe6fa1fb0 to 0xe6fa1ff8)
-[  146.294448] 1fa0:                                     00000000 00000000 00000000 00000000
-[  146.302842] 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[  146.311281] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[  146.318262] irq event stamp: 12325
-[  146.321780] hardirqs last  enabled at (12333): [<c01984c4>] __up_console_sem+0x50/0x60
-[  146.330013] hardirqs last disabled at (12342): [<c01984b0>] __up_console_sem+0x3c/0x60
-[  146.338259] softirqs last  enabled at (12324): [<c01017f0>] __do_softirq+0x2c0/0x624
-[  146.346311] softirqs last disabled at (12319): [<c01300ac>] __irq_exit_rcu+0x138/0x178
-[  146.354447] ---[ end trace 0000000000000000 ]---
+31: Modem + NV + MOS + Diag + LOG + AT + AT
+32: ECM + Modem + NV + MOS + Diag + LOG + AT + AT
+33: RNDIS + Modem + NV + MOS + Diag + LOG + AT + AT
 
-With the FEC driver phydev->adjust_link() calls fec_enet_adjust_link()
-calls fec_stop()/fec_restart() and both these function reset and
-temporary disable the FEC disrupting any MII transaction that
-could be happening at the same time.
+A detailed description of the USB configuration for each mode follows:
 
-fec_enet_adjust_link() and phy_read() can be running at the same time
-when we have one additional interrupt before the phy_state_machine() is
-able to terminate.
++GTUSBMODE: 31
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=124 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=1782 ProdID=4d10 Rev= 0.00
+S:  Manufacturer=FIBOCOM
+S:  Product=L610
+C:* #Ifs= 7 Cfg#= 1 Atr=e0 MxPwr=400mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-Thread 1 (phylib WQ)       | Thread 2 (phy interrupt)
-                           |
-                           | phy_interrupt()            <-- PHY IRQ
-                           |  handle_interrupt()
-                           |   phy_read()
-                           |   phy_trigger_machine()
-                           |    --> schedule phylib WQ
-                           |
-                           |
-phy_state_machine()        |
- phy_check_link_status()   |
-  phy_link_change()        |
-   phydev->adjust_link()   |
-    fec_enet_adjust_link() |
-     --> FEC reset         | phy_interrupt()            <-- PHY IRQ
-                           |  phy_read()
-                           |
++GTUSBMODE: 32
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=122 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=1782 ProdID=4d11 Rev= 0.00
+S:  Manufacturer=FIBOCOM
+S:  Product=L610
+C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
+A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=32ms
+I:  If#= 1 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+I:* If#= 1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-Fix this by acquiring the phydev lock in phy_interrupt().
++GTUSBMODE: 33
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=126 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=1782 ProdID=4d11 Rev= 0.00
+S:  Manufacturer=FIBOCOM
+S:  Product=L610
+C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
+A:  FirstIf#= 0 IfCount= 2 Cls=e0(wlcon) Sub=01 Prot=03
+I:* If#= 0 Alt= 0 #EPs= 1 Cls=e0(wlcon) Sub=01 Prot=03 Driver=rndis_host
+E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=4096ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-Link: https://lore.kernel.org/all/20220422152612.GA510015@francesco-nb.int.toradex.com/
-Fixes: c974bdbc3e77 ("net: phy: Use threaded IRQ, to allow IRQ from sleeping devices")
-cc: <stable@vger.kernel.org>
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220506060815.327382-1-francesco.dolcini@toradex.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-[fd: backport: adapt locking before did_interrupt()/ack_interrupt()
- callbacks removal ]
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/phy.c |   45 ++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 40 insertions(+), 5 deletions(-)
+ drivers/usb/serial/option.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -116,10 +116,15 @@ EXPORT_SYMBOL(phy_print_status);
-  */
- static int phy_clear_interrupt(struct phy_device *phydev)
- {
--	if (phydev->drv->ack_interrupt)
--		return phydev->drv->ack_interrupt(phydev);
-+	int ret = 0;
- 
--	return 0;
-+	if (phydev->drv->ack_interrupt) {
-+		mutex_lock(&phydev->lock);
-+		ret = phydev->drv->ack_interrupt(phydev);
-+		mutex_unlock(&phydev->lock);
-+	}
-+
-+	return ret;
- }
- 
- /**
-@@ -761,6 +766,36 @@ static int phy_disable_interrupts(struct
- }
- 
- /**
-+ * phy_did_interrupt - Checks if the PHY generated an interrupt
-+ * @phydev: target phy_device struct
-+ */
-+static int phy_did_interrupt(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	mutex_lock(&phydev->lock);
-+	ret = phydev->drv->did_interrupt(phydev);
-+	mutex_unlock(&phydev->lock);
-+
-+	return ret;
-+}
-+
-+/**
-+ * phy_handle_interrupt - PHY specific interrupt handler
-+ * @phydev: target phy_device struct
-+ */
-+static int phy_handle_interrupt(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	mutex_lock(&phydev->lock);
-+	ret = phydev->drv->handle_interrupt(phydev);
-+	mutex_unlock(&phydev->lock);
-+
-+	return ret;
-+}
-+
-+/**
-  * phy_interrupt - PHY interrupt handler
-  * @irq: interrupt line
-  * @phy_dat: phy_device pointer
-@@ -771,11 +806,11 @@ static irqreturn_t phy_interrupt(int irq
- {
- 	struct phy_device *phydev = phy_dat;
- 
--	if (phydev->drv->did_interrupt && !phydev->drv->did_interrupt(phydev))
-+	if (phydev->drv->did_interrupt && !phy_did_interrupt(phydev))
- 		return IRQ_NONE;
- 
- 	if (phydev->drv->handle_interrupt) {
--		if (phydev->drv->handle_interrupt(phydev))
-+		if (phy_handle_interrupt(phydev))
- 			goto phy_err;
- 	} else {
- 		/* reschedule state queue work to run as soon as possible */
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -2123,6 +2123,8 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(3) },
+ 	{ USB_DEVICE(0x1508, 0x1001),						/* Fibocom NL668 (IOT version) */
+ 	  .driver_info = RSVD(4) | RSVD(5) | RSVD(6) },
++	{ USB_DEVICE(0x1782, 0x4d10) },						/* Fibocom L610 (AT mode) */
++	{ USB_DEVICE_INTERFACE_CLASS(0x1782, 0x4d11, 0xff) },			/* Fibocom L610 (ECM/RNDIS mode) */
+ 	{ USB_DEVICE(0x2cb7, 0x0104),						/* Fibocom NL678 series */
+ 	  .driver_info = RSVD(4) | RSVD(5) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
 
 
