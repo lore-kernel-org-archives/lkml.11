@@ -2,240 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7905FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 06:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8921DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 07:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240613AbiEPG5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 02:57:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        id S240600AbiEPHAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 03:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240622AbiEPGz5 (ORCPT
+        with ESMTP id S236707AbiEPG75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 02:55:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26FFB1D
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:55:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4002960FFA
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:55:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8235C36AE5
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:55:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652684154;
-        bh=ZEiIsQW/xdZCNGKyMipIK7sSihuM30iDk3H5O2JkGuU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XtIpzHwy0SYPsR0fjERJ3J/lurpTrMK1/+PNNjyOs9cFQnCZfj+6KPhpWEvkpmHIF
-         1BmBafXCszkbCAfUHwCFKDqW/xBFBifvo2AGnsX+WpJBJ6zL7NTrmCwtan1Y3cgk+O
-         bmYDLnrYh8bAahHTYZ+nh4D+NJSZAXbA7npl0lU6Ey2YCNx7I7rlfs371hqQVrOvfq
-         qFUoF8Q+WgUJrRnkqAUcT0DUGnG7/9pyVdVEdPFsqswxSr8mmBnfv4Rj/s+2sGT1FV
-         S4MCtJFkr4PaBmRgg9tE2rTOMwcpwY1jRw1CR1xpzPvDpcp46GsFuJ9RBBMrNF+ve1
-         yvHLZzxE9f+Jg==
-Received: by mail-vs1-f48.google.com with SMTP id w124so14522455vsb.8
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:55:54 -0700 (PDT)
-X-Gm-Message-State: AOAM531XVUmWt+h8V+/ggwj6Iv6WwL6hN3DZLPeJMkQeWODDarnii84/
-        hHxIx2s4elviHUoa6P4OR/16uBL+Qkv4vaU1OMU=
-X-Google-Smtp-Source: ABdhPJyOridjdzqphYxtNwTtgU/gRgnYd2n9vN74u262RNhlcwhDQ2fTlx7tpjdq6VVHh7FjpB4fxNFrdP8EsMyO5fY=
-X-Received: by 2002:a67:af01:0:b0:32d:3d57:cff with SMTP id
- v1-20020a67af01000000b0032d3d570cffmr5964993vsl.8.1652684153658; Sun, 15 May
- 2022 23:55:53 -0700 (PDT)
+        Mon, 16 May 2022 02:59:57 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3146ADFA5
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:59:56 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id g6so26773292ejw.1
+        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 23:59:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SH+DM8gWRShDh4xAKJ9hq9ZGV6WzwS40V7Ikj9JGnTU=;
+        b=aKJMP7FFPV4UsmM8hjbALJW38MNT+IhNk/fyIk0k+DzD6WAfnAvr5bgKwW5D1tTQWt
+         OhKgJhsvN9hDqnwoSO8fE/M5y3CxnnfBMfWuuOkU5N9dypEbs9+s9aElvnwnFn46Z6EN
+         1K+gRZq1tUfcB2BiIANmYaWh5IIk08T+yTMaJwn9QI5RX/K8IQplq2XSzrnoZ8K3dpXx
+         VnqUowRVTSH9v0IbVo6nSaooCYxuXagd4qtjAQlhdQTrVi4MfmWmPXduazz4hSf6jFm0
+         KH0P1TGu44ipz1q1VHAIP1ciG/k9ijhoWxlMacA7KvWp+P5qBc0lskRwzNjcaQa+LBA4
+         3sZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SH+DM8gWRShDh4xAKJ9hq9ZGV6WzwS40V7Ikj9JGnTU=;
+        b=CsA0sKPqT2gpmZtob7zCc+OiU2BB0TJGRps62RQWGqpBD1U6QW02f2IDMRCxJDV/GI
+         /iEPYi+KUshPhoKGC3ES6DDL+lD3hWRQPrwSklCT5eiU0vU3Hw5AjwnXXyOETQCs1Mgl
+         NWVA/UOYRw9itgfKZ+Ll4QL/H1i4W93w8MgAFZpH17HhlelYPPCdiKV/MK1m9ZjQfNWT
+         RnXqrDpB+HPqtdHnVYyqwGiuuPLfNOUaIw9w1WxJMCsXX2vMFefrxWxK8MG9rlQBq9sZ
+         +14VT/NAfvzMwsCUZdTMekIdrN88jUvPNKRVFOzc1hHyHSXrCyCH+RBL5LiN6CrEp60Y
+         oF8g==
+X-Gm-Message-State: AOAM532K7PC0OpCuPvh8hJutSn5eLT5aJ5o6/zenDopuB/X47YZanJ/u
+        E2b/LWsHGeQUIhJpHhECRfvq6EP5eAR61I0J6iIKYpppnCQ=
+X-Google-Smtp-Source: ABdhPJyRWL9sG7b4N57dKKmf+qijk6tKu6Uz08nhG0MhS/lMZv0z0BBWDuJPgIMS+41XqW/xAzsSvJ4z05GcAZJuP9w=
+X-Received: by 2002:a17:906:7309:b0:6f5:ea1:afa with SMTP id
+ di9-20020a170906730900b006f50ea10afamr13666909ejc.170.1652684394688; Sun, 15
+ May 2022 23:59:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220511192921.2223629-1-heiko@sntech.de> <20220511192921.2223629-9-heiko@sntech.de>
-In-Reply-To: <20220511192921.2223629-9-heiko@sntech.de>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Mon, 16 May 2022 14:55:42 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTQuO1o0PfqYAq5XwMsSEjO_Oda-otsNRdB36K9dhiYnwQ@mail.gmail.com>
-Message-ID: <CAJF2gTQuO1o0PfqYAq5XwMsSEjO_Oda-otsNRdB36K9dhiYnwQ@mail.gmail.com>
-Subject: Re: [PATCH 08/12] riscv: Fix accessing pfn bits in PTEs for non-32bit variants
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wei Fu <wefu@redhat.com>, liush <liush@allwinnertech.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>,
-        Drew Fustini <drew@beagleboard.org>,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Greg Favor <gfavor@ventanamicro.com>,
-        Andrea Mondelli <andrea.mondelli@huawei.com>,
-        Jonathan Behrens <behrensj@mit.edu>,
-        "Xinhaoqu (Freddie)" <xinhaoqu@huawei.com>,
-        Nick Kossifidis <mick@ics.forth.gr>,
-        Allen Baum <allen.baum@esperantotech.com>,
-        Josh Scheid <jscheid@ventanamicro.com>,
-        Richard Trauben <rtrauben@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Christoph Muellner <cmuellner@linux.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>
+References: <20220513093433.425163-1-dietmar.eggemann@arm.com> <39be28ea-1645-30c3-316e-87a43b8738a8@arm.com>
+In-Reply-To: <39be28ea-1645-30c3-316e-87a43b8738a8@arm.com>
+From:   Barry Song <21cnbao@gmail.com>
+Date:   Mon, 16 May 2022 18:59:43 +1200
+Message-ID: <CAGsJ_4z=U=4mtkbjJKq3=_npLnqDtXnCwqr-9kbXkaRn4Jiydw@mail.gmail.com>
+Subject: Re: [PATCH] topology: Remove unused cpu_cluster_mask()
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Guo Ren <guoren@kernel.org>
+On Fri, May 13, 2022 at 9:48 PM Dietmar Eggemann
+<dietmar.eggemann@arm.com> wrote:
+>
+> - Barry Song <song.bao.hua@hisilicon.com> bounced
+> + Barry Song <21cnbao@gmail.com>
+>
+> On 13/05/2022 11:34, Dietmar Eggemann wrote:
+> > default_topology[] uses cpu_clustergroup_mask() for the CLS level
+> > (guarded by CONFIG_SCHED_CLUSTER) which is currently provided by x86
+> > (arch/x86/kernel/smpboot.c) and arm64 (drivers/base/arch_topology.c).
+> >
+> > Fixes: 778c558f49a2c ("sched: Add cluster scheduler level in core and
+> > related Kconfig for ARM64")
+> >
+> > Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> > ---
+> >  include/linux/topology.h | 7 -------
+> >  1 file changed, 7 deletions(-)
+> >
+> > diff --git a/include/linux/topology.h b/include/linux/topology.h
+> > index f19bc3626297..4564faafd0e1 100644
+> > --- a/include/linux/topology.h
+> > +++ b/include/linux/topology.h
+> > @@ -240,13 +240,6 @@ static inline const struct cpumask *cpu_smt_mask(int cpu)
+> >  }
+> >  #endif
+> >
+> > -#if defined(CONFIG_SCHED_CLUSTER) && !defined(cpu_cluster_mask)
+> > -static inline const struct cpumask *cpu_cluster_mask(int cpu)
+> > -{
+> > -     return topology_cluster_cpumask(cpu);
+> > -}
+> > -#endif
+> > -
 
-On Thu, May 12, 2022 at 3:29 AM Heiko Stuebner <heiko@sntech.de> wrote:
->
-> On rv32 the PFN part of PTEs is defined to use bits [xlen-1:10]
-> while on rv64 it is defined to use bits [53:10], leaving [63:54]
-> as reserved.
->
-> With upcoming optional extensions like svpbmt these previously
-> reserved bits will get used so simply right-shifting the PTE
-> to get the PFN won't be enough.
->
-> So introduce a _PAGE_PFN_MASK constant to mask the correct bits
-> for both rv32 and rv64 before shifting.
->
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> Reviewed-by: Philipp Tomsich <philipp.tomsich@vrull.eu>
-> ---
->  arch/riscv/include/asm/pgtable-32.h   |  8 ++++++++
->  arch/riscv/include/asm/pgtable-64.h   | 14 +++++++++++---
->  arch/riscv/include/asm/pgtable-bits.h |  6 ------
->  arch/riscv/include/asm/pgtable.h      |  8 +++++---
->  4 files changed, 24 insertions(+), 12 deletions(-)
->
-> diff --git a/arch/riscv/include/asm/pgtable-32.h b/arch/riscv/include/asm/pgtable-32.h
-> index 5b2e79e5bfa5..e266a4fe7f43 100644
-> --- a/arch/riscv/include/asm/pgtable-32.h
-> +++ b/arch/riscv/include/asm/pgtable-32.h
-> @@ -7,6 +7,7 @@
->  #define _ASM_RISCV_PGTABLE_32_H
->
->  #include <asm-generic/pgtable-nopmd.h>
-> +#include <linux/bits.h>
->  #include <linux/const.h>
->
->  /* Size of region mapped by a page global directory */
-> @@ -16,4 +17,11 @@
->
->  #define MAX_POSSIBLE_PHYSMEM_BITS 34
->
-> +/*
-> + * rv32 PTE format:
-> + * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-> + *       PFN      reserved for SW   D   A   G   U   X   W   R   V
-> + */
-> +#define _PAGE_PFN_MASK  GENMASK(31, 10)
-> +
->  #endif /* _ASM_RISCV_PGTABLE_32_H */
-> diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
-> index 7e246e9f8d70..15f3ad5aee4f 100644
-> --- a/arch/riscv/include/asm/pgtable-64.h
-> +++ b/arch/riscv/include/asm/pgtable-64.h
-> @@ -6,6 +6,7 @@
->  #ifndef _ASM_RISCV_PGTABLE_64_H
->  #define _ASM_RISCV_PGTABLE_64_H
->
-> +#include <linux/bits.h>
->  #include <linux/const.h>
->
->  extern bool pgtable_l4_enabled;
-> @@ -65,6 +66,13 @@ typedef struct {
->
->  #define PTRS_PER_PMD    (PAGE_SIZE / sizeof(pmd_t))
->
-> +/*
-> + * rv64 PTE format:
-> + * | 63 | 62 61 | 60 54 | 53  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-> + *   N      MT     RSV    PFN      reserved for SW   D   A   G   U   X   W   R   V
-> + */
-> +#define _PAGE_PFN_MASK  GENMASK(53, 10)
-> +
->  static inline int pud_present(pud_t pud)
->  {
->         return (pud_val(pud) & _PAGE_PRESENT);
-> @@ -108,12 +116,12 @@ static inline unsigned long _pud_pfn(pud_t pud)
->
->  static inline pmd_t *pud_pgtable(pud_t pud)
->  {
-> -       return (pmd_t *)pfn_to_virt(pud_val(pud) >> _PAGE_PFN_SHIFT);
-> +       return (pmd_t *)pfn_to_virt(__page_val_to_pfn(pud_val(pud)));
->  }
->
->  static inline struct page *pud_page(pud_t pud)
->  {
-> -       return pfn_to_page(pud_val(pud) >> _PAGE_PFN_SHIFT);
-> +       return pfn_to_page(__page_val_to_pfn(pud_val(pud)));
->  }
->
->  #define mm_p4d_folded  mm_p4d_folded
-> @@ -143,7 +151,7 @@ static inline pmd_t pfn_pmd(unsigned long pfn, pgprot_t prot)
->
->  static inline unsigned long _pmd_pfn(pmd_t pmd)
->  {
-> -       return pmd_val(pmd) >> _PAGE_PFN_SHIFT;
-> +       return __page_val_to_pfn(pmd_val(pmd));
->  }
->
->  #define mk_pmd(page, prot)    pfn_pmd(page_to_pfn(page), prot)
-> diff --git a/arch/riscv/include/asm/pgtable-bits.h b/arch/riscv/include/asm/pgtable-bits.h
-> index a6b0c89824c2..e571fa954afc 100644
-> --- a/arch/riscv/include/asm/pgtable-bits.h
-> +++ b/arch/riscv/include/asm/pgtable-bits.h
-> @@ -6,12 +6,6 @@
->  #ifndef _ASM_RISCV_PGTABLE_BITS_H
->  #define _ASM_RISCV_PGTABLE_BITS_H
->
-> -/*
-> - * PTE format:
-> - * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-> - *       PFN      reserved for SW   D   A   G   U   X   W   R   V
-> - */
-> -
->  #define _PAGE_ACCESSED_OFFSET 6
->
->  #define _PAGE_PRESENT   (1 << 0)
-> diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-> index 046b44225623..faba543e2b08 100644
-> --- a/arch/riscv/include/asm/pgtable.h
-> +++ b/arch/riscv/include/asm/pgtable.h
-> @@ -108,6 +108,8 @@
->  #include <asm/tlbflush.h>
->  #include <linux/mm_types.h>
->
-> +#define __page_val_to_pfn(_val)  (((_val) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT)
-> +
->  #ifdef CONFIG_64BIT
->  #include <asm/pgtable-64.h>
->  #else
-> @@ -261,12 +263,12 @@ static inline unsigned long _pgd_pfn(pgd_t pgd)
->
->  static inline struct page *pmd_page(pmd_t pmd)
->  {
-> -       return pfn_to_page(pmd_val(pmd) >> _PAGE_PFN_SHIFT);
-> +       return pfn_to_page(__page_val_to_pfn(pmd_val(pmd)));
->  }
->
->  static inline unsigned long pmd_page_vaddr(pmd_t pmd)
->  {
-> -       return (unsigned long)pfn_to_virt(pmd_val(pmd) >> _PAGE_PFN_SHIFT);
-> +       return (unsigned long)pfn_to_virt(__page_val_to_pfn(pmd_val(pmd)));
->  }
->
->  static inline pte_t pmd_pte(pmd_t pmd)
-> @@ -282,7 +284,7 @@ static inline pte_t pud_pte(pud_t pud)
->  /* Yields the page frame number (PFN) of a page table entry */
->  static inline unsigned long pte_pfn(pte_t pte)
->  {
-> -       return (pte_val(pte) >> _PAGE_PFN_SHIFT);
-> +       return __page_val_to_pfn(pte_val(pte));
->  }
->
->  #define pte_page(x)     pfn_to_page(pte_pfn(x))
-> --
-> 2.35.1
->
+Acked-by: Barry Song <baohua@kernel.org>
+
+I agree there are no users right now. I probably wrote it like cpu_smt_mask()
+and used it in kernel/sched for the wake_affine patch but forgot to remove it
+while sending patches without wake_affine.
 
 
--- 
-Best Regards
- Guo Ren
+> >  static inline const struct cpumask *cpu_cpu_mask(int cpu)
+> >  {
+> >       return cpumask_of_node(cpu_to_node(cpu));
+>
 
-ML: https://lore.kernel.org/linux-csky/
+Thanks
+Barry
