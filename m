@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8067AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:14:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3023C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344129AbiEPUOE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
+        id S234785AbiEPUO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348512AbiEPT6m (ORCPT
+        with ESMTP id S1348641AbiEPT6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48844496AF;
-        Mon, 16 May 2022 12:50:44 -0700 (PDT)
+        Mon, 16 May 2022 15:58:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C95E43AD9;
+        Mon, 16 May 2022 12:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70EB660A14;
-        Mon, 16 May 2022 19:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7346DC385AA;
-        Mon, 16 May 2022 19:50:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E610EB81615;
+        Mon, 16 May 2022 19:50:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E503C34100;
+        Mon, 16 May 2022 19:50:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730643;
-        bh=AfvNImvSajbT2lRm2lCrt5R+aKpmDHKgaIumFgk1JSE=;
+        s=korg; t=1652730650;
+        bh=4bf/UsuSgVW7vJNOHxwczts9LNMMkWBw0O6Z5qy8XRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NxFe8m/GYKlMGkLzwkix6WgYa2/QXvgEXo3eMBl5gbLjBz9zoDSqhe8Yi9E8NV1iy
-         hWY0ZqkNOQncoCJWfE+OOi2k49S8S4OAKS8/NTaV6Cmm+H3KODdIvnsFAjSpa8ZOxN
-         W1WfdfWWhm8OHsVGpkXcYNElIIFq/X6Agr4rDeWc=
+        b=rgdYBfa6pDoNV8sTyJ2dHy4k5r2QQj53qqOaUQdiRJnnVeibjlJEYyVLSq/mWbQJh
+         U47HiG7kftI0QI5VAo7lpqBaBlwGoBFh/MlC8uC96Ibyy0c3QqXM1auu0NYTPaHKv8
+         vMLfMa3+6oCaNWDnsEc+Rf8PWLWv7Sbj0ZUe7Icc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>
-Subject: [PATCH 5.15 065/102] usb: xhci-mtk: fix fs isocs transfer error
-Date:   Mon, 16 May 2022 21:36:39 +0200
-Message-Id: <20220516193625.863220429@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH 5.15 067/102] tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
+Date:   Mon, 16 May 2022 21:36:41 +0200
+Message-Id: <20220516193625.920760727@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -48,60 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunfeng Yun <chunfeng.yun@mediatek.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit c237566b78ad8c72bc0431c5d6171db8d12e6f94 upstream.
+commit 447ee1516f19f534a228dda237eddb202f23e163 upstream.
 
-Due to the scheduler allocates the optimal bandwidth for FS ISOC endpoints,
-this may be not enough actually and causes data transfer error, so come up
-with an estimate that is no less than the worst case bandwidth used for
-any one mframe, but may be an over-estimate.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Fixes: 451d3912586a ("usb: xhci-mtk: update fs bus bandwidth by bw_budget_table")
-Cc: stable@vger.kernel.org
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Link: https://lore.kernel.org/r/20220512064931.31670-1-chunfeng.yun@mediatek.com
+Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Baruch Siach <baruch@tkos.co.il>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220505124621.1592697-1-yangyingliang@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-mtk-sch.c |   16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/tty/serial/digicolor-usart.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/host/xhci-mtk-sch.c
-+++ b/drivers/usb/host/xhci-mtk-sch.c
-@@ -465,7 +465,7 @@ static int check_fs_bus_bw(struct mu3h_s
- 		 */
- 		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
- 			k = XHCI_MTK_BW_INDEX(base + j);
--			tmp = tt->fs_bus_bw[k] + sch_ep->bw_budget_table[j];
-+			tmp = tt->fs_bus_bw[k] + sch_ep->bw_cost_per_microframe;
- 			if (tmp > FS_PAYLOAD_MAX)
- 				return -ESCH_BW_OVERFLOW;
- 		}
-@@ -539,19 +539,17 @@ static int check_sch_tt(struct mu3h_sch_
- static void update_sch_tt(struct mu3h_sch_ep_info *sch_ep, bool used)
- {
- 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
-+	int bw_updated;
- 	u32 base;
--	int i, j, k;
-+	int i, j;
-+
-+	bw_updated = sch_ep->bw_cost_per_microframe * (used ? 1 : -1);
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -471,11 +471,10 @@ static int digicolor_uart_probe(struct p
+ 	if (IS_ERR(uart_clk))
+ 		return PTR_ERR(uart_clk);
  
- 	for (i = 0; i < sch_ep->num_esit; i++) {
- 		base = sch_ep->offset + i * sch_ep->esit;
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	dp->port.mapbase = res->start;
+-	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
++	dp->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(dp->port.membase))
+ 		return PTR_ERR(dp->port.membase);
++	dp->port.mapbase = res->start;
  
--		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
--			k = XHCI_MTK_BW_INDEX(base + j);
--			if (used)
--				tt->fs_bus_bw[k] += sch_ep->bw_budget_table[j];
--			else
--				tt->fs_bus_bw[k] -= sch_ep->bw_budget_table[j];
--		}
-+		for (j = 0; j < sch_ep->num_budget_microframes; j++)
-+			tt->fs_bus_bw[XHCI_MTK_BW_INDEX(base + j)] += bw_updated;
- 	}
- 
- 	if (used)
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0)
 
 
