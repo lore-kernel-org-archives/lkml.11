@@ -2,221 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B977C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E8E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345007AbiEPSib (ORCPT
+        id S1345002AbiEPSjM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 14:38:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
+        Mon, 16 May 2022 14:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345002AbiEPSi2 (ORCPT
+        with ESMTP id S240700AbiEPSjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 14:38:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511723E5E9;
-        Mon, 16 May 2022 11:38:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DF63B815B4;
-        Mon, 16 May 2022 18:38:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14C94C385AA;
-        Mon, 16 May 2022 18:38:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652726303;
-        bh=0QvHgpJb4KFdSPQhvpkbywnyC2wGLiX11TmowfYp2s0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iF8HVDkBiP42BWNMLdac03I5u5aAhpR+vhIMwoa1mpYAaeYITtvbtHdkiVBaFM65S
-         kNFEIyXvMAgnIU/eU4Uq1bQ34AV2coojUp23sJhrEQcmDO7s8O+cDWA9rgtdm+v45d
-         MeQpFXSpV6GLLbFtK4a9TDdVHeJCbXjNz5xEHMv0sj4VuaCGZoapoXf7TFScaVAAcf
-         UBAgyQC1Iga4ix6xqfX1RsHzYCqIN2AXwApLthNoENTq030XBy4B6qmqfhhbz5aCHA
-         AGCf6Z8xnfs0RE3ctYQViFD3MbP2MHvEMCQDZMFjGCipUhJboRCZKJPzRsNBRmDaPO
-         h0Ql4Y/5m2G/g==
-Date:   Mon, 16 May 2022 21:36:48 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        James Bottomley <jejb@linux.ibm.com>, kernel@pengutronix.de,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        David Gstir <david@sigma-star.at>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Franck LENORMAND <franck.lenormand@nxp.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Andreas Rammhold <andreas@rammhold.de>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Michael Walle <michael@walle.cc>,
-        John Ernberg <john.ernberg@actia.se>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v10 0/7] KEYS: trusted: Introduce support for NXP
- CAAM-based trusted keys
-Message-ID: <YoKZwFkfcl7ixTF4@kernel.org>
-References: <20220513145705.2080323-1-a.fatoum@pengutronix.de>
+        Mon, 16 May 2022 14:39:09 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B913E5DF
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 11:39:07 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id f9so1380730ils.7
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 11:39:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3eQ02kjrBJm3pP3IQQPhqRaXYnuZt0FpJtLq26rhSTc=;
+        b=7pgtE5BgxtvCdKobQLIn3F+JGlA8bClHad3mwvaZSfu3A95TaeUK2nuDuDm4fCe2I+
+         1bvlOodVc5JPWljWdjllrBgm71ZoPtHFWKSxR+zl4JhUVCA2i205D7MtTFjqFlVoVM+D
+         SydXNGNKZWYSLV9B5bfJqNb10RNwsPLBIFtL6OhIouLHEbRLSIQ5Ioc0WB6xNLvYjWrK
+         SRwoRT5rYjldnhlkh3Sintqm4fDWPEaisrYqnpdmFALdt0XSf8zEWGDPHkkHUuEy/+zy
+         7BQDZ899YHLA+1xPfzqEBWuXFLYLqAV4Guuue2JKtnkIM8tNcyA4UQQSD4oIHFnrxpCN
+         rRxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3eQ02kjrBJm3pP3IQQPhqRaXYnuZt0FpJtLq26rhSTc=;
+        b=RoYt9FO5/gLNCdpaHvypVZXy1qnCV3WFjcrDmtU7PLg8plGNWf1M8bUHGWK16SKs1i
+         yxEh6hHWeagIqIABn7at9DKncRIT0divm/0p6ndisy6N0gOa4AYISr6eobl2P7odCwtb
+         BYKoKsNTFa3QomWUuZTWiV7Ajxp6h4I69mtqhKd99Jsj8TnTLfZ/cJiX0gCgB5jY+KRk
+         lcTZcHCnuzCueBwq7dP0tuMLmV6Feqv1g07RuSmzQr+jwQGmgMjXK03PTD/leeXW/lfN
+         o7pd5j25Ic/wY7LC/x1C1GXp5STJuCzDiUbh1RtdShU/3CE7pLu+drMwP6CcmdqoiDDT
+         lt9Q==
+X-Gm-Message-State: AOAM530cPk0jrTJczd10V7JHhn3CqqDhuClk6VFMVE9vUsVPIBIL/+z9
+        PmAEvxg7npQamevYlWCHtxB0nw==
+X-Google-Smtp-Source: ABdhPJxFCwYm1E5HggIdr+qL/ARzvjLrEEVlf1lnk5WG9zQMSO5Gx+DNggoaR5on1KJaFqtdzDKg5Q==
+X-Received: by 2002:a92:c26a:0:b0:2d1:3622:1fd4 with SMTP id h10-20020a92c26a000000b002d136221fd4mr329556ild.79.1652726346890;
+        Mon, 16 May 2022 11:39:06 -0700 (PDT)
+Received: from [192.168.1.172] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id t14-20020a02ab8e000000b0032e2fc23508sm1088424jan.77.2022.05.16.11.39.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 11:39:06 -0700 (PDT)
+Message-ID: <55ddaa3c-57a5-f17e-13a7-7427c5f1bb88@kernel.dk>
+Date:   Mon, 16 May 2022 12:39:04 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220513145705.2080323-1-a.fatoum@pengutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [REGRESSION] lxc-stop hang on 5.17.x kernels
+Content-Language: en-US
+To:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Daniel Harding <dharding@living180.net>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     regressions@lists.linux.dev, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>
+References: <7925e262-e0d4-6791-e43b-d37e9d693414@living180.net>
+ <ccf6cea1-1139-cd73-c4e5-dc9799708bdd@living180.net>
+ <bb283ff5-6820-d096-2fca-ae7679698a50@kernel.dk>
+ <371c01dd-258c-e428-7428-ff390b664752@kernel.dk>
+ <2436d42c-85ca-d060-6508-350c769804f1@gmail.com>
+ <ad9c31e5-ee75-4df2-c16d-b1461be1901a@living180.net>
+ <fb0dbd71-9733-0208-48f2-c5d22ed17510@gmail.com>
+ <a204ba93-7261-5c6e-1baf-e5427e26b124@living180.net>
+ <bd932b5a-9508-e58f-05f8-001503e4bd2b@gmail.com>
+ <12a57dd9-4423-a13d-559b-2b1dd2fb0ef3@living180.net>
+ <897dc597-fc0a-34ec-84b8-7e1c4901e0fc@leemhuis.info>
+ <c2f956e2-b235-9937-d554-424ae44c68e4@living180.net>
+ <41c86189-0d1f-60f0-ca8e-f80b3ccf5130@gmail.com>
+ <da56fa5f-0624-413e-74a1-545993940d27@gmail.com>
+ <3fc08243-f9e0-9cec-4207-883c55ccff78@living180.net>
+ <13028ff4-3565-f09e-818c-19e5f95fa60f@living180.net>
+ <469e5a9b-c7e0-6365-c353-d831ff1c5071@leemhuis.info>
+ <eaee4ea1-8e5a-dde8-472d-44241d992037@kernel.dk>
+ <1ce76b24-9185-6b2e-844e-d6a0ce42bb0f@leemhuis.info>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <1ce76b24-9185-6b2e-844e-d6a0ce42bb0f@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 04:56:58PM +0200, Ahmad Fatoum wrote:
-> Series applies on top of v5.18-rc6. Would be great if this could make it
-> into v5.19.
+On 5/16/22 12:34 PM, Thorsten Leemhuis wrote:
+> On 16.05.22 20:22, Jens Axboe wrote:
+>> On 5/16/22 12:17 PM, Thorsten Leemhuis wrote:
+>>>>> Pavel, I had actually just started a draft email with the same theory
+>>>>> (although you stated it much more clearly than I could have).  I'm
+>>>>> working on debugging the LXC side, but I'm pretty sure the issue is
+>>>>> due to LXC using blocking reads and getting stuck exactly as you
+>>>>> describe.  If I can confirm this, I'll go ahead and mark this
+>>>>> regression as invalid and file an issue with LXC. Thanks for your help
+>>>>> and patience.
+>>>>
+>>>> Yes, it does appear that was the problem.  The attach POC patch against
+>>>> LXC fixes the hang.  The kernel is working as intended.
+>>>>
+>>>> #regzbot invalid:  userspace programming error
+>>>
+>>> Hmmm, not sure if I like this. So yes, this might be a bug in LXC, but
+>>> afaics it's a bug that was exposed by kernel change in 5.17 (correct me
+>>> if I'm wrong!). The problem thus still qualifies as a kernel regression
+>>> that normally needs to be fixed, as can be seen my some of the quotes
+>>> from Linus in this file:
+>>> https://www.kernel.org/doc/html/latest/process/handling-regressions.html
+>>
+>> Sorry, but that's really BS in this particularly case. This could always
+>> have triggered, it's the way multishot works. Will we count eg timing
+>> changes as potential regressions, because an application relied on
+>> something there? That does not make it ABI.
+>>
+>> In general I agree with Linus on this, a change in behavior breaking
+>> something should be investigated and figured out (and reverted, if need
+>> be). This is not that.
 > 
-> v9 was here:
-> https://lore.kernel.org/linux-integrity/20220506062553.1068296-1-a.fatoum@pengutronix.de
-> 
-> Changelog is beneath each individual patch. Compared to v9, only code
-> change is checking whether CAAM can support blobbing at init-time for
-> CAAM revisions < 10 (such as LS1046A) to avoid a cryptic error message
-> at first use.
-> 
-> 
-> The Cryptographic Acceleration and Assurance Module (CAAM) is an IP core
-> built into many newer i.MX and QorIQ SoCs by NXP.
-> 
-> Its blob mechanism can AES encrypt/decrypt user data using a unique
-> never-disclosed device-specific key.
-> 
-> There has been multiple discussions on how to represent this within the kernel:
-> 
-> The Cryptographic Acceleration and Assurance Module (CAAM) is an IP core
-> built into many newer i.MX and QorIQ SoCs by NXP.
-> 
-> Its blob mechanism can AES encrypt/decrypt user data using a unique
-> never-disclosed device-specific key. There has been multiple
-> discussions on how to represent this within the kernel:
-> 
->  - [RFC] crypto: caam - add red blobifier
->    Steffen implemented[1] a PoC sysfs driver to start a discussion on how to
->    best integrate the blob mechanism.
->    Mimi suggested that it could be used to implement trusted keys.
->    Trusted keys back then were a TPM-only feature.
-> 
->  - security/keys/secure_key: Adds the secure key support based on CAAM.
->    Udit Agarwal added[2] a new "secure" key type with the CAAM as backend.
->    The key material stays within the kernel only.
->    Mimi and James agreed that this needs a generic interface, not specific
->    to CAAM. Mimi suggested trusted keys. Jan noted that this could serve as
->    basis for TEE-backed keys.
-> 
->  - [RFC] drivers: crypto: caam: key: Add caam_tk key type
->    Franck added[3] a new "caam_tk" key type based on Udit's work. This time
->    it uses CAAM "black blobs" instead of "red blobs", so key material stays
->    within the CAAM and isn't exposed to kernel in plaintext.
->    James voiced the opinion that there should be just one user-facing generic
->    wrap/unwrap key type with multiple possible handlers.
->    David suggested trusted keys.
-> 
->  - Introduce TEE based Trusted Keys support
->    Sumit reworked[4] trusted keys to support multiple possible backends with
->    one chosen at boot time and added a new TEE backend along with TPM.
->    This now sits in Jarkko's master branch to be sent out for v5.13
-> 
-> This patch series builds on top of Sumit's rework to have the CAAM as yet another
-> trusted key backend.
-> 
-> The CAAM bits are based on Steffen's initial patch from 2015. His work had been
-> used in the field for some years now, so I preferred not to deviate too much from it.
-> 
-> This series has been tested with dmcrypt[5] on an i.MX6Q/DL, i.MX8M[6]
-> and LS1028[7].
-> 
-> Looking forward to your feedback.
-> 
-> Cheers,
-> Ahmad
-> 
->  [1]: https://lore.kernel.org/linux-crypto/1447082306-19946-2-git-send-email-s.trumtrar@pengutronix.de/
->  [2]: https://lore.kernel.org/linux-integrity/20180723111432.26830-1-udit.agarwal@nxp.com/
->  [3]: https://lore.kernel.org/lkml/1551456599-10603-2-git-send-email-franck.lenormand@nxp.com/
->  [4]: https://lore.kernel.org/lkml/1604419306-26105-1-git-send-email-sumit.garg@linaro.org/
->  [5]: https://lore.kernel.org/linux-integrity/20210122084321.24012-2-a.fatoum@pengutronix.de/
->  [6]: https://lore.kernel.org/linux-integrity/DU2PR04MB8630D83FE9BBC0D782C4FAF595089@DU2PR04MB8630.eurprd04.prod.outlook.com/
->  [7]: https://lore.kernel.org/linux-integrity/49e1738c55c73819ee0e2cac0be74d81@walle.cc/
-> 
-> ---
-> To: Jarkko Sakkinen <jarkko@kernel.org>
-> To: "Horia Geantă" <horia.geanta@nxp.com>
-> To: Mimi Zohar <zohar@linux.ibm.com>
-> To: Pankaj Gupta <pankaj.gupta@nxp.com>
-> To: Herbert Xu <herbert@gondor.apana.org.au>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: James Bottomley <jejb@linux.ibm.com>
-> Cc: David Howells <dhowells@redhat.com>
-> Cc: James Morris <jmorris@namei.org>
-> Cc: "Serge E. Hallyn" <serge@hallyn.com>
-> Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-> Cc: Jan Luebbe <j.luebbe@pengutronix.de>
-> Cc: David Gstir <david@sigma-star.at>
-> Cc: Eric Biggers <ebiggers@kernel.org>
-> Cc: Richard Weinberger <richard@nod.at>
-> Cc: Franck LENORMAND <franck.lenormand@nxp.com>
-> Cc: Sumit Garg <sumit.garg@linaro.org>
-> Cc: Andreas Rammhold <andreas@rammhold.de>
-> Cc: Tim Harvey <tharvey@gateworks.com>
-> Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> Cc: Michael Walle <michael@walle.cc>
-> Cc: John Ernberg <john.ernberg@actia.se>
-> Cc: linux-integrity@vger.kernel.org
-> Cc: keyrings@vger.kernel.org
-> Cc: linux-crypto@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-security-module@vger.kernel.org
-> 
-> 
-> 
-> Ahmad Fatoum (7):
->   KEYS: trusted: allow use of TEE as backend without TCG_TPM support
->   KEYS: trusted: allow use of kernel RNG for key material
->   crypto: caam - determine whether CAAM supports blob encap/decap
->   crypto: caam - add in-kernel interface for blob generator
->   KEYS: trusted: Introduce support for NXP CAAM-based trusted keys
->   doc: trusted-encrypted: describe new CAAM trust source
->   MAINTAINERS: add KEYS-TRUSTED-CAAM
-> 
->  .../admin-guide/kernel-parameters.txt         |  11 ++
->  .../security/keys/trusted-encrypted.rst       |  60 +++++-
->  MAINTAINERS                                   |   9 +
->  drivers/crypto/caam/Kconfig                   |   3 +
->  drivers/crypto/caam/Makefile                  |   1 +
->  drivers/crypto/caam/blob_gen.c                | 182 ++++++++++++++++++
->  drivers/crypto/caam/ctrl.c                    |  17 +-
->  drivers/crypto/caam/intern.h                  |   1 +
->  drivers/crypto/caam/regs.h                    |   4 +-
->  include/keys/trusted-type.h                   |   2 +-
->  include/keys/trusted_caam.h                   |  11 ++
->  include/soc/fsl/caam-blob.h                   | 103 ++++++++++
->  security/keys/Kconfig                         |  18 +-
->  security/keys/trusted-keys/Kconfig            |  38 ++++
->  security/keys/trusted-keys/Makefile           |  10 +-
->  security/keys/trusted-keys/trusted_caam.c     |  80 ++++++++
->  security/keys/trusted-keys/trusted_core.c     |  45 ++++-
->  17 files changed, 563 insertions(+), 32 deletions(-)
->  create mode 100644 drivers/crypto/caam/blob_gen.c
->  create mode 100644 include/keys/trusted_caam.h
->  create mode 100644 include/soc/fsl/caam-blob.h
->  create mode 100644 security/keys/trusted-keys/Kconfig
->  create mode 100644 security/keys/trusted-keys/trusted_caam.c
-> 
-> -- 
-> 2.30.2
-> 
+> Sorry, I have to deal with various subsystems and a lot of regressions
+> reports. I can't know the details of each of issue and there are
+> developers around that are not that familiar with all the practical
+> implications of the "no regressions". That's why I was just trying to
+> ensure that this is something safe to ignore. If you say it is, than I'm
+> totally happy and now rest my case. :-D
 
-I can probably pick these unless objections?
+It's just a slippery slope that quickly leads to the fact that _any_
+kernel change is a potential regressions, as it may change something
+that an app unknowingly depends on. For this case, the multishot ended
+up being downgraded to single shot on older kernels, so you'd never see
+multiple triggers of it. And multiple triggers is a natural effect of
+the level triggered poll that io_uring does. The app didn't handle
+multiple events in between reading them, which was an oversight in how
+that was done.
 
-BR, Jarkko
+Hence I do think this one can be safely closed.
+
+-- 
+Jens Axboe
+
