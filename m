@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 769A8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D70C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348211AbiEPUbM (ORCPT
+        id S1348983AbiEPUcF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
+        Mon, 16 May 2022 16:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350803AbiEPUBl (ORCPT
+        with ESMTP id S1351019AbiEPUB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0450F45067;
-        Mon, 16 May 2022 12:55:52 -0700 (PDT)
+        Mon, 16 May 2022 16:01:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B62A47549;
+        Mon, 16 May 2022 12:56:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8003EB81611;
-        Mon, 16 May 2022 19:55:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA9BEC34100;
-        Mon, 16 May 2022 19:55:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 183AF60FEB;
+        Mon, 16 May 2022 19:56:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DA39C385AA;
+        Mon, 16 May 2022 19:56:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730949;
-        bh=ZO5qsyXdW8wuKjQ+Ebr8/toVqnfcSnecFh2EH4y2c9E=;
+        s=korg; t=1652730988;
+        bh=35U1+jwEv92WmgOxTVCnczY3ljAOaMeAQs9IhU0Y48A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JN1FAyCLLj89aWoPBGRLrKFQJFirPc4FpszOnSMIwUGzgxfGyeiJPf8AlJ6H3u7VX
-         ZHj3RQY72FnAkTOS73B1zPHdRIVNxpTF6bhF5t0zlBz5e5znhueNm2qOcevfFC4VDR
-         ImetkBYos+UhW0MaKhcdr5Q4tZ7Jp/UwcqgUpbiA=
+        b=HMbIZmRVs4449I2rde98fT/bAtlS8j5psx9aGD3mQflN/PRaI22bh8itJtFk5M12z
+         gwGRpi8YRJ6xrO9oHAnPZw2tPxNwooxvfboXeboHpe8vHP9OXz1FymwRnSUQ11JBMs
+         BF6hd4FnnRu2Oh0m/TmEh3dMBw40qn2ahEPzAPtE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Brian Foster <bfoster@redhat.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 057/114] ASoC: SOF: Fix NULL pointer exception in sof_pci_probe callback
-Date:   Mon, 16 May 2022 21:36:31 +0200
-Message-Id: <20220516193627.132024996@linuxfoundation.org>
+Subject: [PATCH 5.17 068/114] block: Do not call folio_next() on an unreferenced folio
+Date:   Mon, 16 May 2022 21:36:42 +0200
+Message-Id: <20220516193627.444142895@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -53,49 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-[ Upstream commit c61711c1c95791850be48dd65a1d72eb34ba719f ]
+[ Upstream commit 170f37d6aa6ad4582eefd7459015de79e244536e ]
 
-We are accessing "desc->ops" in sof_pci_probe without checking "desc"
-pointer. This results in NULL pointer exception if pci_id->driver_data
-i.e desc pointer isn't defined in sof device probe:
+It is unsafe to call folio_next() on a folio unless you hold a reference
+on it that prevents it from being split or freed.  After returning
+from the iterator, iomap calls folio_end_writeback() which may drop
+the last reference to the page, or allow the page to be split.  If that
+happens, the iterator will not advance far enough through the bio_vec,
+leading to assertion failures like the BUG() in folio_end_writeback()
+that checks we're not trying to end writeback on a page not currently
+under writeback.  Other assertion failures were also seen, but they're
+all explained by this one bug.
 
-BUG: kernel NULL pointer dereference, address: 0000000000000060
-PGD 0 P4D 0
-Oops: 0000 [#1] PREEMPT SMP NOPTI
-RIP: 0010:sof_pci_probe+0x1e/0x17f [snd_sof_pci]
-Code: Unable to access opcode bytes at RIP 0xffffffffc043dff4.
-RSP: 0018:ffffac4b03b9b8d8 EFLAGS: 00010246
+Fix the bug by remembering where the next folio starts before returning
+from the iterator.  There are other ways of fixing this bug, but this
+seems the simplest.
 
-Add NULL pointer check for sof_dev_desc pointer to avoid such exception.
-
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220426183357.102155-1-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Darrick J. Wong <djwong@kernel.org>
+Tested-by: Darrick J. Wong <djwong@kernel.org>
+Reported-by: Brian Foster <bfoster@redhat.com>
+Tested-by: Brian Foster <bfoster@redhat.com>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/sof-pci-dev.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ include/linux/bio.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/sof/sof-pci-dev.c b/sound/soc/sof/sof-pci-dev.c
-index 20c6ca37dbc4..53e97abbe6e3 100644
---- a/sound/soc/sof/sof-pci-dev.c
-+++ b/sound/soc/sof/sof-pci-dev.c
-@@ -130,6 +130,11 @@ int sof_pci_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+diff --git a/include/linux/bio.h b/include/linux/bio.h
+index 117d7f248ac9..2ca54c084d5a 100644
+--- a/include/linux/bio.h
++++ b/include/linux/bio.h
+@@ -272,6 +272,7 @@ struct folio_iter {
+ 	size_t offset;
+ 	size_t length;
+ 	/* private: for use by the iterator */
++	struct folio *_next;
+ 	size_t _seg_count;
+ 	int _i;
+ };
+@@ -286,6 +287,7 @@ static inline void bio_first_folio(struct folio_iter *fi, struct bio *bio,
+ 			PAGE_SIZE * (bvec->bv_page - &fi->folio->page);
+ 	fi->_seg_count = bvec->bv_len;
+ 	fi->length = min(folio_size(fi->folio) - fi->offset, fi->_seg_count);
++	fi->_next = folio_next(fi->folio);
+ 	fi->_i = i;
+ }
  
- 	dev_dbg(&pci->dev, "PCI DSP detected");
- 
-+	if (!desc) {
-+		dev_err(dev, "error: no matching PCI descriptor\n");
-+		return -ENODEV;
-+	}
-+
- 	if (!desc->ops) {
- 		dev_err(dev, "error: no matching PCI descriptor ops\n");
- 		return -ENODEV;
+@@ -293,9 +295,10 @@ static inline void bio_next_folio(struct folio_iter *fi, struct bio *bio)
+ {
+ 	fi->_seg_count -= fi->length;
+ 	if (fi->_seg_count) {
+-		fi->folio = folio_next(fi->folio);
++		fi->folio = fi->_next;
+ 		fi->offset = 0;
+ 		fi->length = min(folio_size(fi->folio), fi->_seg_count);
++		fi->_next = folio_next(fi->folio);
+ 	} else if (fi->_i + 1 < bio->bi_vcnt) {
+ 		bio_first_folio(fi, bio, fi->_i + 1);
+ 	} else {
 -- 
 2.35.1
 
