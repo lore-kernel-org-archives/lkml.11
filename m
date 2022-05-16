@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D7EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAADEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232452AbiEPL7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        id S243362AbiEPL74 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:59:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243300AbiEPL7b (ORCPT
+        with ESMTP id S243311AbiEPL7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:59:31 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF7A15FC2;
-        Mon, 16 May 2022 04:59:25 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id z2so28179109ejj.3;
-        Mon, 16 May 2022 04:59:25 -0700 (PDT)
+        Mon, 16 May 2022 07:59:39 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77A315FE2;
+        Mon, 16 May 2022 04:59:28 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id g12so2639286edq.4;
+        Mon, 16 May 2022 04:59:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gThDHWbqFCP9qbssdWR/8tkQmg9lvSi8P3DDStpWpd0=;
-        b=TEt+cednHQf4XGucaHpUbUP6tpT44YDZvznSBa2Or8dRdQ+cKl4YLuIlXmnmCSJiNK
-         ypcnB40JSfXoioah4RU3H2Mzdi0z2Fr50pshMwmSdFL/OgXiyM4BN1GXfQb82eJg5VRN
-         6Tpe/AmWatHltSCB4iaQjLSqGvuwTnfYnPysTYQS0oTIEx6fv/xhU9siTFInUXSBMbSn
-         aNXROk9MAESZvRzgaMcwZfuLFBUEym/gU5DZX/EVRhLgKDbX4V+Piisrx14VaRzhZYFM
-         5saA2ujhsb8GHsfl8HarkZHO8aLR0Q02FHE9r/opPzJ9J4ShlFN7eiNmS+pqR2aIsNAO
-         oZgg==
+        bh=mmdHqA0oaYOkSe9dGsepZveX0B9uSDC/sB1WxfLB/rc=;
+        b=nWOMwweBoLWmosmAjjSCbL4rr16qLV3iGprVRhu3Q5guf2p2PcT+XZzH1uyNjzEX9F
+         whwFjVnBWCmVDjJm6MJT5TLtcpYhrxaG4sT3PDZZhJp3/r9PbsP4znIoFzWelUbrWetc
+         Bp9Ki/Ch0Hj2LGYZJHDu+c0YpTHDO9kcE1Jq0VbCwzezfsOxoxmrcClE2SQzBCHs+Gur
+         8wiuoJ5XqvH32J1SdyBIdM2MaP5MJ+Cu9meSUjRUetNXHt9ISn9t9dF8weDkc+YWrmyP
+         aG2uPWCgVe1pJKuwMK0ZURSwRV9pa6qMa6ExYCa5V9f8Y+QBBP76DmLmhOnZ7NyXNXk5
+         fIug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gThDHWbqFCP9qbssdWR/8tkQmg9lvSi8P3DDStpWpd0=;
-        b=4Ho7N4+jvCM/II7wvJOHtJzoj9wkAOugJ1XU+urrUse9/SfapO08EsRh3Ke5NKXhBD
-         gcy2yfRE6QtIY5EWhDA69iWL3BlFuin5VkoLj0Mjq3pkaGjblum8BGl8Psz7kznAEzMP
-         cKjOB3p9bkKl+IGBcaWdgatA9ZbjM+3CY6HgTTDQdBhBpc/DXBe+5tV5BTHycuif2ABA
-         41jtFdjtC0U+CY3UexnPLZadoXIJd2QOwaiM4H3mrefoGJ9IwpD5pj+VMMxXaacQMHWK
-         YfHsU6EwehcFeQYtXfp5B8t9SfvlPYwleTNAVAJzHab5s91jdCPqKHj3i2zFJkRnmB28
-         /IQw==
-X-Gm-Message-State: AOAM530iwnJqnLWx4uPkk9VGaUgNQezmQs6JlffrlvZsav4QPAqYvDOz
-        8r3gbQa0T3YeSa7Pd2XV7CM=
-X-Google-Smtp-Source: ABdhPJzBfuv2XyXGJugCPvYCLipwLx8XOgyffkIKDcO9mO6hrNSqRypVFjxhgkTh1s6TdZgYxEJlxg==
-X-Received: by 2002:a17:907:a429:b0:6fd:da12:eec4 with SMTP id sg41-20020a170907a42900b006fdda12eec4mr14255039ejc.707.1652702364111;
-        Mon, 16 May 2022 04:59:24 -0700 (PDT)
+        bh=mmdHqA0oaYOkSe9dGsepZveX0B9uSDC/sB1WxfLB/rc=;
+        b=6wr49Z/m8GtpFlfxOEvPPxbsTOffrB/mGy3EST6flpXF4UMQTWN/z3WYMVYcRG/i9h
+         SyLX1k8GC3MUz5M3jToaN/DqWRThyBb531lqAjLOOjHxReMy3gZGVKZ4505VL49X65X9
+         PTMHIIapfLyUIUvtOFN2iYRDZRzS6W/UWI4qJpgSbtbGgJkz0AaPPg10DNB+yctGfouf
+         v4VRkXNOHpTDxGoldxdhRVg8QHtfoyH/hlAY0JG5K5lNKdpsDZt0pGXL5JQZr4OSh1zL
+         mAYFg4dP33UIRA4LZWO0zbUPOGHh7cqkjdx8x/FmBGU8v0x/sLTCK42oczAAXsbw3YDX
+         POhA==
+X-Gm-Message-State: AOAM532WBFeK+DgxGl1XOLFRXXkvWe0befaUXZmDy4vPpmRkcgpataLK
+        y9BzmocUss4hwKwW0Srev1o=
+X-Google-Smtp-Source: ABdhPJw60VJVPlZ1+ug5yXxRRBD2eI28gxK/k1AZCRb2cueQONF2HtDPxz4ZNaaRz4uXP6VgxncvTg==
+X-Received: by 2002:a05:6402:d0e:b0:413:3d99:f2d6 with SMTP id eb14-20020a0564020d0e00b004133d99f2d6mr12990573edb.189.1652702367114;
+        Mon, 16 May 2022 04:59:27 -0700 (PDT)
 Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
-        by smtp.gmail.com with ESMTPSA id s18-20020a170906779200b006f3ef214dacsm3711008ejm.18.2022.05.16.04.59.23
+        by smtp.gmail.com with ESMTPSA id s18-20020a170906779200b006f3ef214dacsm3711008ejm.18.2022.05.16.04.59.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 04:59:23 -0700 (PDT)
+        Mon, 16 May 2022 04:59:26 -0700 (PDT)
 From:   Max Krummenacher <max.oss.09@gmail.com>
 To:     max.krummenacher@toradex.com
-Cc:     Fabio Estevam <festevam@gmail.com>,
+Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
@@ -58,9 +59,9 @@ Cc:     Fabio Estevam <festevam@gmail.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 04/17] ARM: dts: imx6q-apalis: Command pmic to standby for poweroff
-Date:   Mon, 16 May 2022 13:58:32 +0200
-Message-Id: <20220516115846.58328-5-max.oss.09@gmail.com>
+Subject: [PATCH v1 06/17] ARM: dts: imx6q-apalis: Move pinmux groups to SoM dtsi
+Date:   Mon, 16 May 2022 13:58:34 +0200
+Message-Id: <20220516115846.58328-7-max.oss.09@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220516115846.58328-1-max.oss.09@gmail.com>
 References: <20220516115846.58328-1-max.oss.09@gmail.com>
@@ -70,41 +71,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Krummenacher <max.krummenacher@toradex.com>
+From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 
-The Apalis iMX6 HW doesn't allow to use the PWR_ON_REQ signal for
-poweroff. Use the fsl,pmic-stby-poweroff property to command the PMIC
-into a low power mode in poweroff.
+GPIO pinmux groups are declared on the module level. Move muxing
+them to the same level. It also reduces code duplication.
 
+Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 ---
 
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/boot/dts/imx6q-apalis-eval.dts       | 12 ------------
+ arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts | 10 ----------
+ arch/arm/boot/dts/imx6q-apalis-ixora.dts      |  8 --------
+ arch/arm/boot/dts/imx6qdl-apalis.dtsi         |  8 ++++++++
+ 4 files changed, 8 insertions(+), 30 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index e56451651a6d..668793356b46 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -125,6 +125,10 @@
- 	status = "disabled";
+diff --git a/arch/arm/boot/dts/imx6q-apalis-eval.dts b/arch/arm/boot/dts/imx6q-apalis-eval.dts
+index 1e6b5482a777..fe5d491e1399 100644
+--- a/arch/arm/boot/dts/imx6q-apalis-eval.dts
++++ b/arch/arm/boot/dts/imx6q-apalis-eval.dts
+@@ -206,15 +206,3 @@
+ 	cd-gpios = <&gpio6 14 GPIO_ACTIVE_LOW>;
+ 	status = "okay";
+ };
+-
+-&iomuxc {
+-	/*
+-	 * Mux the Apalis GPIOs
+-	 */
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_apalis_gpio1 &pinctrl_apalis_gpio2
+-		     &pinctrl_apalis_gpio3 &pinctrl_apalis_gpio4
+-		     &pinctrl_apalis_gpio5 &pinctrl_apalis_gpio6
+-		     &pinctrl_apalis_gpio7 &pinctrl_apalis_gpio8
+-		    >;
+-};
+diff --git a/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts b/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
+index 527585d26e51..8febfc0aea93 100644
+--- a/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
++++ b/arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dts
+@@ -202,16 +202,6 @@
  };
  
-+&clks {
-+	fsl,pmic-stby-poweroff;
-+};
+ &iomuxc {
+-	/*
+-	 * Mux the Apalis GPIOs
+-	 */
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_apalis_gpio1 &pinctrl_apalis_gpio2
+-		     &pinctrl_apalis_gpio3 &pinctrl_apalis_gpio4
+-		     &pinctrl_apalis_gpio5 &pinctrl_apalis_gpio6
+-		     &pinctrl_apalis_gpio7 &pinctrl_apalis_gpio8
+-		    >;
+-
+ 	pinctrl_leds_ixora: ledsixoragrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_SD2_DAT1__GPIO1_IO14 0x1b0b0
+diff --git a/arch/arm/boot/dts/imx6q-apalis-ixora.dts b/arch/arm/boot/dts/imx6q-apalis-ixora.dts
+index 9900ab04fb28..78cf1d9583c1 100644
+--- a/arch/arm/boot/dts/imx6q-apalis-ixora.dts
++++ b/arch/arm/boot/dts/imx6q-apalis-ixora.dts
+@@ -205,14 +205,6 @@
+ };
+ 
+ &iomuxc {
+-	/* Mux the Apalis GPIOs */
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_apalis_gpio1 &pinctrl_apalis_gpio2
+-		     &pinctrl_apalis_gpio3 &pinctrl_apalis_gpio4
+-		     &pinctrl_apalis_gpio5 &pinctrl_apalis_gpio6
+-		     &pinctrl_apalis_gpio7 &pinctrl_apalis_gpio8
+-		    >;
+-
+ 	pinctrl_leds_ixora: ledsixoragrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_SD1_DAT1__GPIO1_IO17 0x1b0b0
+diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+index c0ae08780d86..9413c14ce5f6 100644
+--- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+@@ -709,6 +709,14 @@
+ };
+ 
+ &iomuxc {
++	/* Mux the Apalis GPIOs */
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_apalis_gpio1 &pinctrl_apalis_gpio2
++		     &pinctrl_apalis_gpio3 &pinctrl_apalis_gpio4
++		     &pinctrl_apalis_gpio5 &pinctrl_apalis_gpio6
++		     &pinctrl_apalis_gpio7 &pinctrl_apalis_gpio8
++		    >;
 +
- /* Apalis SPI1 */
- &ecspi1 {
- 	cs-gpios = <&gpio5 25 GPIO_ACTIVE_LOW>;
-@@ -387,6 +391,7 @@
- 
- 	pmic: pfuze100@8 {
- 		compatible = "fsl,pfuze100";
-+		fsl,pmic-stby-poweroff;
- 		reg = <0x08>;
- 
- 		regulators {
+ 	pinctrl_apalis_gpio1: gpio2io04grp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_NANDF_D4__GPIO2_IO04 0x130b0
 -- 
 2.20.1
 
