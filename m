@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE45C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4368C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349088AbiEPUht (ORCPT
+        id S1349018AbiEPUhk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55940 "EHLO
+        Mon, 16 May 2022 16:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347415AbiEPUB5 (ORCPT
+        with ESMTP id S1351055AbiEPUB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACF547576;
-        Mon, 16 May 2022 12:57:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D9D4757A;
+        Mon, 16 May 2022 12:57:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7498360F83;
-        Mon, 16 May 2022 19:57:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1ACAC34100;
-        Mon, 16 May 2022 19:57:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E3E560FA6;
+        Mon, 16 May 2022 19:57:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0727DC385AA;
+        Mon, 16 May 2022 19:57:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731053;
-        bh=cT2tFWx4y6h1jKST9Xbxf3XHUjKuhrR4MsISZKADkV0=;
+        s=korg; t=1652731063;
+        bh=nQmJl6KIuWA8NxoAIZbd1YvwbN2X3XD3DhhVKkDufWw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JLorxxBqCMJj5NkHjrZn3fJ+HccMKkVv4+d9+bcMioF1e5NgJRWEsKLdGcOlNGSNS
-         tFOp7B4P2Fx4QY26SbLN39y1KLbq1uo8QCuO/gC1caWMunOJckEt+bj7285AXyxnCj
-         Z2GsSdAy/drNWbcyWsEqVC3FWF3y7taJ0hN17we4=
+        b=Ge9RjQ8NHp+aEay9bZdqSLA1d+NL8O8nAiZTi0KVb2vf6iet0b9o0XChVNEmPoAxs
+         0CYscC9bNW/CoKEx5jT+ilYv0TK0GmVbXz2vfYzhfA/yrlrZOuDfdnZbYrxZO4fmTK
+         Pm/zcuGqYXAqaRMnRk2q7t6ALA5rNlmg8RkUEVW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org,
+        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 048/114] gfs2: Fix filesystem block deallocation for short writes
-Date:   Mon, 16 May 2022 21:36:22 +0200
-Message-Id: <20220516193626.873661114@linuxfoundation.org>
+Subject: [PATCH 5.17 050/114] hwmon: (f71882fg) Fix negative temperature
+Date:   Mon, 16 May 2022 21:36:24 +0200
+Message-Id: <20220516193626.930806406@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -49,51 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Ji-Ze Hong (Peter Hong) <hpeter@gmail.com>
 
-[ Upstream commit d031a8866e709c9d1ee5537a321b6192b4d2dc5b ]
+[ Upstream commit 4aaaaf0f279836f06d3b9d0ffeec7a1e1a04ceef ]
 
-When a write cannot be carried out in full, gfs2_iomap_end() releases
-blocks that have been allocated for this write but haven't been used.
+All temperature of Fintek superio hwmonitor that using 1-byte reg will use
+2's complement.
 
-To compute the end of the allocation, gfs2_iomap_end() incorrectly
-rounded the end of the attempted write down to the next block boundary
-to arrive at the end of the allocation.  It would have to round up, but
-the end of the allocation is also available as iomap->offset +
-iomap->length, so just use that instead.
+In show_temp()
+	temp = data->temp[nr] * 1000;
 
-In addition, use round_up() for computing the start of the unused range.
+When data->temp[nr] read as 255, it indicate -1C, but this code will report
+255C to userspace. It'll be ok when change to:
+	temp = ((s8)data->temp[nr]) * 1000;
 
-Fixes: 64bc06bb32ee ("gfs2: iomap buffered write support")
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+Link: https://lore.kernel.org/r/20220418090706.6339-1-hpeter+linux_kernel@gmail.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/bmap.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/hwmon/f71882fg.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/gfs2/bmap.c b/fs/gfs2/bmap.c
-index fbdb7a30470a..f785af2aa23c 100644
---- a/fs/gfs2/bmap.c
-+++ b/fs/gfs2/bmap.c
-@@ -1154,13 +1154,12 @@ static int gfs2_iomap_end(struct inode *inode, loff_t pos, loff_t length,
+diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
+index 938a8b9ec70d..6830e029995d 100644
+--- a/drivers/hwmon/f71882fg.c
++++ b/drivers/hwmon/f71882fg.c
+@@ -1578,8 +1578,9 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
+ 		temp *= 125;
+ 		if (sign)
+ 			temp -= 128000;
+-	} else
+-		temp = data->temp[nr] * 1000;
++	} else {
++		temp = ((s8)data->temp[nr]) * 1000;
++	}
  
- 	if (length != written && (iomap->flags & IOMAP_F_NEW)) {
- 		/* Deallocate blocks that were just allocated. */
--		loff_t blockmask = i_blocksize(inode) - 1;
--		loff_t end = (pos + length) & ~blockmask;
-+		loff_t hstart = round_up(pos + written, i_blocksize(inode));
-+		loff_t hend = iomap->offset + iomap->length;
- 
--		pos = (pos + written + blockmask) & ~blockmask;
--		if (pos < end) {
--			truncate_pagecache_range(inode, pos, end - 1);
--			punch_hole(ip, pos, end - pos);
-+		if (hstart < hend) {
-+			truncate_pagecache_range(inode, hstart, hend - 1);
-+			punch_hole(ip, hstart, hend - hstart);
- 		}
- 	}
- 
+ 	return sprintf(buf, "%d\n", temp);
+ }
 -- 
 2.35.1
 
