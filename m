@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37927C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A41B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345945AbiEPTm4 (ORCPT
+        id S1345807AbiEPTnC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43046 "EHLO
+        Mon, 16 May 2022 15:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346132AbiEPTln (ORCPT
+        with ESMTP id S1345610AbiEPTkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:41:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DBB4093E;
-        Mon, 16 May 2022 12:40:10 -0700 (PDT)
+        Mon, 16 May 2022 15:40:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798823ED32;
+        Mon, 16 May 2022 12:39:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93D62B81609;
-        Mon, 16 May 2022 19:40:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3C54C385AA;
-        Mon, 16 May 2022 19:40:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3A69614E2;
+        Mon, 16 May 2022 19:39:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2423C385AA;
+        Mon, 16 May 2022 19:39:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730008;
-        bh=RJYYRn4OqCC2hJWR29kF7T3o3PFDPdgwdkrn1z+mLxU=;
+        s=korg; t=1652729971;
+        bh=+FAQbdGywGv1W7IEFqKFXTkIpVgAa5LatXhgDD2GBp8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RBD5mXRRHutB83iDLhCtz1s0ouQeFpL+zZFOlUMOurK8mQaKplVD7VE88ZHPVukjo
-         nPzAg89kzYeWPLj0zCp7JjdcivB7Y7nXClgOujxYN4r8RrLJ0dp2gG9bGcljBASDT7
-         Ry2h/mPUi1mIL2sVkrG8ZQWwL13sN1vDBKre3Hgg=
+        b=sN6aXVepJOHKIVUAIU5M3YR3CeCJmRWy5RqlYyKPRReMaW1KntUEbb4Ulo0BuAP8i
+         BDhNI/Q/3+w70xY91AN8V98fihFLGp9KDV6PxEv108500azxgyOtFBy8QtqJCU1NRc
+         OCIsIvUQFWFXcvck9jWKK47EWMjPZ/13cq6bBkfc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 04/25] netlink: do not reset transport header in netlink_recvmsg()
-Date:   Mon, 16 May 2022 21:36:18 +0200
-Message-Id: <20220516193614.817183626@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 4.14 17/25] usb: cdc-wdm: fix reading stuck on device close
+Date:   Mon, 16 May 2022 21:36:31 +0200
+Message-Id: <20220516193615.204377503@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
 References: <20220516193614.678319286@linuxfoundation.org>
@@ -51,76 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 
-[ Upstream commit d5076fe4049cadef1f040eda4aaa001bb5424225 ]
+commit 01e01f5c89773c600a9f0b32c888de0146066c3a upstream.
 
-netlink_recvmsg() does not need to change transport header.
+cdc-wdm tracks whether a response reading request is in-progress and
+blocks the next request from being sent until the previous request is
+completed. As soon as last user closes the cdc-wdm device file, the
+driver cancels any ongoing requests, resets the pending response
+counter, but leaves the response reading in-progress flag
+(WDM_RESPONDING) untouched.
 
-If transport header was needed, it should have been reset
-by the producer (netlink_dump()), not the consumer(s).
+So if the user closes the device file during the response receive
+request is being performed, no more data will be obtained from the
+modem. The request will be cancelled, effectively preventing the
+WDM_RESPONDING flag from being reseted. Keeping the flag set will
+prevent a new response receive request from being sent, permanently
+blocking the read path. The read path will staying blocked until the
+module will be reloaded or till the modem will be re-attached.
 
-The following trace probably happened when multiple threads
-were using MSG_PEEK.
+This stuck has been observed with a Huawei E3372 modem attached to an
+OpenWrt router and using the comgt utility to set up a network
+connection.
 
-BUG: KCSAN: data-race in netlink_recvmsg / netlink_recvmsg
+Fix this issue by clearing the WDM_RESPONDING flag on the device file
+close.
 
-write to 0xffff88811e9f15b2 of 2 bytes by task 32012 on cpu 1:
- skb_reset_transport_header include/linux/skbuff.h:2760 [inline]
- netlink_recvmsg+0x1de/0x790 net/netlink/af_netlink.c:1978
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- __sys_recvfrom+0x204/0x2c0 net/socket.c:2097
- __do_sys_recvfrom net/socket.c:2115 [inline]
- __se_sys_recvfrom net/socket.c:2111 [inline]
- __x64_sys_recvfrom+0x74/0x90 net/socket.c:2111
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Without this fix, the device reading stuck can be easily reproduced in a
+few connection establishing attempts. With this fix, a load test for
+modem connection re-establishing worked for several hours without any
+issues.
 
-write to 0xffff88811e9f15b2 of 2 bytes by task 32005 on cpu 0:
- skb_reset_transport_header include/linux/skbuff.h:2760 [inline]
- netlink_recvmsg+0x1de/0x790 net/netlink/af_netlink.c:1978
- ____sys_recvmsg+0x162/0x2f0
- ___sys_recvmsg net/socket.c:2674 [inline]
- __sys_recvmsg+0x209/0x3f0 net/socket.c:2704
- __do_sys_recvmsg net/socket.c:2714 [inline]
- __se_sys_recvmsg net/socket.c:2711 [inline]
- __x64_sys_recvmsg+0x42/0x50 net/socket.c:2711
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0xffff -> 0x0000
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 32005 Comm: syz-executor.4 Not tainted 5.18.0-rc1-syzkaller-00328-ge1f700ebd6be-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220505161946.2867638-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 922a5eadd5a3 ("usb: cdc-wdm: Fix race between autosuspend and reading from the device")
+Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc: stable <stable@vger.kernel.org>
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220501175828.8185-1-ryazanov.s.a@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netlink/af_netlink.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/usb/class/cdc-wdm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 979cd7dff40a..1b2e99ce54e5 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -1947,7 +1947,6 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 		copied = len;
- 	}
- 
--	skb_reset_transport_header(data_skb);
- 	err = skb_copy_datagram_msg(data_skb, 0, msg, copied);
- 
- 	if (msg->msg_name) {
--- 
-2.35.1
-
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -731,6 +731,7 @@ static int wdm_release(struct inode *ino
+ 			kill_urbs(desc);
+ 			spin_lock_irq(&desc->iuspin);
+ 			desc->resp_count = 0;
++			clear_bit(WDM_RESPONDING, &desc->flags);
+ 			spin_unlock_irq(&desc->iuspin);
+ 			desc->manage_power(desc->intf, 0);
+ 		} else {
 
 
