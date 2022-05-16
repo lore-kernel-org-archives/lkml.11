@@ -2,143 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 319E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C04FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232831AbiEPKms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
+        id S242750AbiEPKm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242838AbiEPKk6 (ORCPT
+        with ESMTP id S236543AbiEPKmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:40:58 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678A3261C
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:40:48 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id bx33so17538744ljb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:40:48 -0700 (PDT)
+        Mon, 16 May 2022 06:42:05 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A653B28
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:42:03 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id c12so3947004eds.10
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:42:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PIStbMHPtan1KLlc0XW15FaN5Q5q5/G9moSTVEJOKR8=;
-        b=Okry26+6WYZDBL/wyrImejHnErmgQv2VjJ3jxlPsOdX4tWoDQ0KeVWRt3ereejd+P+
-         l+zojoW4rovfwGTHTaxCqbsItDrqLt4TsrXgsqA4EvvM5/JkYxncPvSfhKyEhjmbASZQ
-         TibF4DIkzbDmuy0xtgyjkkgUOdyUb27/kr9dXc3rzbncMVJyYudJD0o5udiVuAEQxY/I
-         5rzowjS35jGcEV/2e/UK+/sj7+IRhOMQANzlqR59j9MGraRJ6MnQvrJJBTDfrf82S9Pp
-         UH/Rnn2AJGZRxLprskHloIEFc1kh4AIDEMX+wordKF8SmSST+s4U96TB9CeldPcYSWND
-         Q8ug==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=erbXfCmeHocQjfL+rgDZPz13+JsufODTkqH4MW8FPkU=;
+        b=P77DC0Il8yTtkstHIFJR8Nqlq8byFBHMvwFcvt4Nt22CzyvC/Fv+KdNgonw4S3OD3K
+         2LvZ1t/0q7xkgaqJ5UbQef9PLfEU7ibZjarM7y30f4syi3XrIkk66bNTygONFoWTGBsW
+         T0zLbcuIOAC9Pea0Sj+b22Ih6ju5PVW+bGFZBfbQIQwsZ2smRedVpMeslKaL1/f8c8ws
+         cpfStIYgXZGpFXthRtvUGpT3DV00iZ9sg3V6xgZDESod1iRqB5UonePNMTjP7uGf8dB4
+         IBqMuAHh6o186Vqyr9HRq/GyB3509vT7hUFGMlFByEIaa6lwVHd0K6KyZqrr3pKGyAHv
+         dkfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PIStbMHPtan1KLlc0XW15FaN5Q5q5/G9moSTVEJOKR8=;
-        b=usJeDRFepUvPSHV7HjVSaIROz7nm3en6aIedk70ygpUp0aAELWwWjMoNAQwuwlb6xv
-         m7Oi56gdZN6h6acIkUzEaRMfEOshJW8KUoSIKfSQx4HI9pN4D074twGyOg05vVWWE0i2
-         BcfShbVuZf8mJx5wYbzmhUiLtLciyAzx3PmCMVxYX04YmnoPoagBuf5lLSMgAfNx5S8W
-         YKeWho8b2LSlB0QY+SgwVXstTbTUNId/C3+wOE1Wn0cKjhG5ea74sTkKtdt94cLJ8q6X
-         0UjaxiF3w/f/DTcwHlDoYGRG/xwskDMYXUY2hQk6WzK8WQWNzv/XQlciBtm1PG9Dwrcj
-         ruNQ==
-X-Gm-Message-State: AOAM532o+eSeQnrsXW85zpJOBFQK0zLBTtLZxYARCTnz41iN1lB4grm0
-        Pp56QEjHux3uC5ylRwxolopi3g==
-X-Google-Smtp-Source: ABdhPJy1QZ8BxVhQaPE0U/RAWQGsWQF8ytlTewjrJGbgoAmLSxr4qWAyDEMSN3A6btYEAhDImT/3Rw==
-X-Received: by 2002:a05:651c:105a:b0:250:c5ec:bc2d with SMTP id x26-20020a05651c105a00b00250c5ecbc2dmr10737190ljm.321.1652697646673;
-        Mon, 16 May 2022 03:40:46 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id t28-20020ac243bc000000b0047255d21195sm1265267lfl.196.2022.05.16.03.40.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 03:40:46 -0700 (PDT)
-Message-ID: <9a94cf23-430e-56e2-1260-92a162d608e7@linaro.org>
-Date:   Mon, 16 May 2022 12:40:45 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=erbXfCmeHocQjfL+rgDZPz13+JsufODTkqH4MW8FPkU=;
+        b=VsZTZpEMYq7vnAwPfc99al06uv2EMD5QBrt86F+bOB58eM2Duc0cfPS6dA5kVs+roG
+         iLRo6tsvDbOZd9sKdDbrJxc9Mq6OJMuWXX2kdr0Emo7BJNzXBZccUTnyBXz6Dx3OX6Fy
+         cUJ9JDe8Fj7V40ItImVUGJFvmfxGQ/jPKGHbHHK+XAtwi3Xs9O4Vi2d7zHkslBDempL7
+         vx5Fjc2QYJIb+ld06i7NDowiv+Gu6HrgXBEXGxgmJGmpMBOgTeYqPHqRR1hL6eBppxnv
+         enYadsXR7l2xdGQBVjgxuGKRQiIxO99V7jIga04jhTMwHrPLuypYBhqD1HuAsUYrGSsy
+         Oy8w==
+X-Gm-Message-State: AOAM531RIkU8lXScZhbE3SVCFVyLdUMwsvkxpxV3KL25xtNxE1z5XKVX
+        DIvefRN61Qmaq5+7yUXtHjIQ+A==
+X-Google-Smtp-Source: ABdhPJwCmZ7TsADf4yBSO70bp+4Cv2yZYtgdUiE6w+q/M7boOVpmbsE2ZQrGrh1nN3VKR0CPmxFF2w==
+X-Received: by 2002:a05:6402:2710:b0:427:d087:b with SMTP id y16-20020a056402271000b00427d087000bmr12509532edd.11.1652697721952;
+        Mon, 16 May 2022 03:42:01 -0700 (PDT)
+Received: from google.com (30.171.91.34.bc.googleusercontent.com. [34.91.171.30])
+        by smtp.gmail.com with ESMTPSA id ec33-20020a0564020d6100b0042ab48ea729sm1151662edb.88.2022.05.16.03.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 03:42:01 -0700 (PDT)
+Date:   Mon, 16 May 2022 10:41:58 +0000
+From:   Quentin Perret <qperret@google.com>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kernel-team@android.com
+Subject: Re: [PATCH] KVM: arm64: Don't hypercall before EL2 init
+Message-ID: <YoIqdiOoCf0A1hcV@google.com>
+References: <20220513092607.35233-1-qperret@google.com>
+ <87sfpb59wj.wl-maz@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v7 1/2] dt-bindings: thermal: k3-j72xx: Add VTM bindings
- documentation
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Keerthy <j-keerthy@ti.com>, robh+dt@kernel.org,
-        rui.zhang@intel.com, amitk@kernel.org, kristo@kernel.org
-Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220511110657.16305-1-j-keerthy@ti.com>
- <20220511110657.16305-2-j-keerthy@ti.com>
- <4568653d-706e-8621-3fee-d4a853517256@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <4568653d-706e-8621-3fee-d4a853517256@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87sfpb59wj.wl-maz@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/05/2022 12:32, Daniel Lezcano wrote:
+On Sunday 15 May 2022 at 12:10:20 (+0100), Marc Zyngier wrote:
+> Can we simplify the condition? ARM64_SPECTRE_V3A is only set when
+> !VHE, and we already bail in kvm_patch_vector_branch() if we see
+> VHE+V3A, because the combination makes no sense at all. I think this
+> can be rewritten as:
 > 
-> Cc'ing krzysztof.kozlowski@linaro.org
-
-Eh, I wished people used automatically scripts/get_maintainers.pl, so
-there will be no need to Cc someone. It's actually a bit weird because I
-was reviewing v6...
-
+> 	if (kvm_system_needs_idmapped_vectors() &&
+> 	    !is_protected_lvm_enabled())
 > 
-> On 11/05/2022 13:06, Keerthy wrote:
->> Add VTM bindings documentation. In the Voltage Thermal
->> Management Module(VTM), K3 J72XX supplies a voltage
->> reference and a temperature sensor feature that are gathered in the band
->> gap voltage and temperature sensor (VBGAPTS) module. The band
->> gap provides current and voltage reference for its internal
->> circuits and other analog IP blocks. The analog-to-digital
->> converter (ADC) produces an output value that is proportional
->> to the silicon temperature.
->>
->> Signed-off-by: Keerthy <j-keerthy@ti.com>
+> Thoughts?
 
+Yup I think this works as both CPUs that are vulnerable to V3A aren't
+VHE-capable. But if we ever get a VHE-capable CPU that's vulnerable I
+think the next call to create_hyp_exec_mappings() will BUG(). Perhaps
+the alternative would be to have has_spectre_v3a() say no in VHE to be
+on the safe side? That is, prevent the cap from being set to begin with.
 
-In any case this misses all the review-tags, so I don't know what we are
-supposed to do here.
-
-
-Keerthy,
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
-
-https://elixir.bootlin.com/linux/v5.13/source/Documentation/process/submitting-patches.rst#L543
-
-If a tag was not added on purpose, please state why and what changed.
-
->> ---
->>   .../bindings/thermal/ti,j72xx-thermal.yaml    | 64 +++++++++++++++++++
->>   1 file changed, 64 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml b/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
->> new file mode 100644
->> index 000000000000..83f8f444a133
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
->> @@ -0,0 +1,64 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/thermal/ti,j72xx-thermal.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Texas Instruments J72XX VTM (DTS) binding
->> +
->> +maintainers:
->> +  - Keerthy <j-keerthy@ti.com>
->> +
->> +properties:
->> +  compatible:
->> +    items:
->> +      - enum:
->> +          - ti,j721e-vtm
->> +          - ti,j7200-vtm
-
-No items, you have only one item.
-
-
-Best regards,
-Krzysztof
+Cheers,
+Quentin
