@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8870DC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F093C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346894AbiEPT4J (ORCPT
+        id S1346782AbiEPTz6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
+        Mon, 16 May 2022 15:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346854AbiEPTv2 (ORCPT
+        with ESMTP id S1346914AbiEPTv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:51:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252EF40930;
-        Mon, 16 May 2022 12:45:56 -0700 (PDT)
+        Mon, 16 May 2022 15:51:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05CC3EF11;
+        Mon, 16 May 2022 12:46:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C195DB815F6;
-        Mon, 16 May 2022 19:45:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30AD7C34100;
-        Mon, 16 May 2022 19:45:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC56F61594;
+        Mon, 16 May 2022 19:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACB3DC34100;
+        Mon, 16 May 2022 19:46:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730353;
-        bh=dqGJrAtPidqdAuURN3Fc4hrf77CRMjagVDGDWlQjCsM=;
+        s=korg; t=1652730362;
+        bh=uJon7n2KG4EVfB6CqDE0IyqMCdZhKt43s78eokQXmD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BvlbMmheiw3W2l4DqzBNbdC3tGFrqTyY7On4BYdYJR93/vzMFEChY+AnTX7t43jOi
-         efCZwgE7RH3yjEDh5chrKA1Ag4ulh6sHBSLP0Xa9zryubPOxqlxToR4xYTkOiqcLxR
-         MEBowVcndNwqVbIAqIItjxeN9a3Ik/W7suwo3tkc=
+        b=tYn51NmOsgy/F9/UYzr+z0drAq5ywvEHEdcfKLzUx6yUIwTrfJW1vGdzwYTDwa91z
+         iMI1PqxX2I7dUWn8CQRcRv/gaObsqCtTDLPh65PwWlq4iXaCu0mmr7eh3dNA4AtgBB
+         DETQ0IRwhV6fGtf1HC8uQ0Rqe1JWGFmE4GzDUinQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 31/66] hwmon: (f71882fg) Fix negative temperature
-Date:   Mon, 16 May 2022 21:36:31 +0200
-Message-Id: <20220516193620.315967122@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 5.10 42/66] usb: cdc-wdm: fix reading stuck on device close
+Date:   Mon, 16 May 2022 21:36:42 +0200
+Message-Id: <20220516193620.630913919@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -51,46 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ji-Ze Hong (Peter Hong) <hpeter@gmail.com>
+From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 
-[ Upstream commit 4aaaaf0f279836f06d3b9d0ffeec7a1e1a04ceef ]
+commit 01e01f5c89773c600a9f0b32c888de0146066c3a upstream.
 
-All temperature of Fintek superio hwmonitor that using 1-byte reg will use
-2's complement.
+cdc-wdm tracks whether a response reading request is in-progress and
+blocks the next request from being sent until the previous request is
+completed. As soon as last user closes the cdc-wdm device file, the
+driver cancels any ongoing requests, resets the pending response
+counter, but leaves the response reading in-progress flag
+(WDM_RESPONDING) untouched.
 
-In show_temp()
-	temp = data->temp[nr] * 1000;
+So if the user closes the device file during the response receive
+request is being performed, no more data will be obtained from the
+modem. The request will be cancelled, effectively preventing the
+WDM_RESPONDING flag from being reseted. Keeping the flag set will
+prevent a new response receive request from being sent, permanently
+blocking the read path. The read path will staying blocked until the
+module will be reloaded or till the modem will be re-attached.
 
-When data->temp[nr] read as 255, it indicate -1C, but this code will report
-255C to userspace. It'll be ok when change to:
-	temp = ((s8)data->temp[nr]) * 1000;
+This stuck has been observed with a Huawei E3372 modem attached to an
+OpenWrt router and using the comgt utility to set up a network
+connection.
 
-Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
-Link: https://lore.kernel.org/r/20220418090706.6339-1-hpeter+linux_kernel@gmail.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this issue by clearing the WDM_RESPONDING flag on the device file
+close.
+
+Without this fix, the device reading stuck can be easily reproduced in a
+few connection establishing attempts. With this fix, a load test for
+modem connection re-establishing worked for several hours without any
+issues.
+
+Fixes: 922a5eadd5a3 ("usb: cdc-wdm: Fix race between autosuspend and reading from the device")
+Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc: stable <stable@vger.kernel.org>
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220501175828.8185-1-ryazanov.s.a@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/f71882fg.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/usb/class/cdc-wdm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
-index 4dec793fd07d..94b35723ee7a 100644
---- a/drivers/hwmon/f71882fg.c
-+++ b/drivers/hwmon/f71882fg.c
-@@ -1577,8 +1577,9 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
- 		temp *= 125;
- 		if (sign)
- 			temp -= 128000;
--	} else
--		temp = data->temp[nr] * 1000;
-+	} else {
-+		temp = ((s8)data->temp[nr]) * 1000;
-+	}
- 
- 	return sprintf(buf, "%d\n", temp);
- }
--- 
-2.35.1
-
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -755,6 +755,7 @@ static int wdm_release(struct inode *ino
+ 			poison_urbs(desc);
+ 			spin_lock_irq(&desc->iuspin);
+ 			desc->resp_count = 0;
++			clear_bit(WDM_RESPONDING, &desc->flags);
+ 			spin_unlock_irq(&desc->iuspin);
+ 			desc->manage_power(desc->intf, 0);
+ 			unpoison_urbs(desc);
 
 
