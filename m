@@ -2,99 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 03:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83584C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 03:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239561AbiEPDJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 23:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51244 "EHLO
+        id S239580AbiEPDMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 23:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231238AbiEPDJG (ORCPT
+        with ESMTP id S231238AbiEPDMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 23:09:06 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F01811A35
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 20:09:04 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id w17-20020a17090a529100b001db302efed6so13051858pjh.4
-        for <linux-kernel@vger.kernel.org>; Sun, 15 May 2022 20:09:04 -0700 (PDT)
+        Sun, 15 May 2022 23:12:14 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD4611C01;
+        Sun, 15 May 2022 20:12:13 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id k8so11414572qki.8;
+        Sun, 15 May 2022 20:12:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LeS293Xoyn/IdDJSLF6A/QhWhktSea8yiSvRbWcIXpo=;
-        b=RYy4hmQC7F0YhLYyxhwtQGpFqj6NiybxZ5pHdp3xv5VfOxxeeDSRxpzf4sI5ZYk9/m
-         jZ25mHuBePqFjQmP4iv2+uWQ1PJ+jnFVZp5xU2cZ1v6xPeSzDpNnwNPGmmAfC1Oy3k5v
-         f5Inm+r8lRECqbOXN43fV9ytzbhLmBlRD5bqZtRcvNTm8EJthYXmQzay9KqiVxkJ1OFd
-         vp/NW5SN2aY9OFQ5Y1KcT0Tk5f1It+ucfcfKjZg+Uo2Dkz0s4mS/36ysqFw8b6fNFlRh
-         ZJlUAbGYyH6I2Y2/EeLZbH+TI9AMR45YxZAg1ziZ6wq2tV52zqAHnLqhZkuXqc1IWdON
-         4pcg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Iknl9FGNjcSKriVQ8ROc164iV8qluWzwBBYuxxLunGQ=;
+        b=Bsbk8Y0yg5VxbQEpNpD579fQ1Jdbh8Tc00NPMDYN65Kd6bwr6CayognJQIG7jL7Z/o
+         MHH5OkbN57AW6FSdXW9EOCyJbg/uQ+hT8uT7ZkSRM3xwsOKsJnjSJQ9MkUKgsU15criK
+         NUgjyzxFUT+23G+ri+8Yotz8JKrE9073pl2GUL28wBvelugkksLGfCMPwU5tWLL2le8G
+         9fHFnVZOgBInIPTAXJ/fl4YjYGNOHgUStQM5ImS+mOEKCH4PDnaiaZDmDcoo0zYJjTs4
+         DaVia075alP46+fk/Cs+S6cmqPxyu2+l+GDl47nPqZagp1tKlMIKGGTBkn26ggmiYh+3
+         qC2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LeS293Xoyn/IdDJSLF6A/QhWhktSea8yiSvRbWcIXpo=;
-        b=J3rM9+o46aTO2EvQd/1PyWZwBys+F63+j3A3awpz1gYIPKLH5Jyuxnmz6svN/GGrMR
-         Xjmvq0iTLRf+enm6vwyFnRi7g13iZTMr7zcPjPtxq/yM2IBY5Qf5LQm6KFttDX/Qd9el
-         ZkV1NPiHHQ9nFaMIntdgzbQVAwgsbb3UGFWgr7auqE8kPkvkrV28Dz4amNdu84wRF14f
-         MExeaNO5re+vaAV/EwKMbcGhfIPnC8oj2rSRAJH6/FyUt8mUE4uCHUZG7VskS//7VFEx
-         /HaY5Nlyj8+N+s/BTgoh8dbiguMuz4wyUdk18ZVZxrkmYMMkg/8oQO1Rdg1byrv+WFnI
-         AvMw==
-X-Gm-Message-State: AOAM530uoYfiARz/abqsUv1b38c4L7zurJ/FQMltnXVPeFs2BiZK7Uen
-        QH8malLZIKGL77sQwO3J8/A=
-X-Google-Smtp-Source: ABdhPJw0i44O3ltUZTj8glVC8asPuQYo/hnz7aP/vNjjGYNJJG/q1ZpDxwNRT2xDUR91PX/rB0osRA==
-X-Received: by 2002:a17:90b:795:b0:1df:10a3:84e3 with SMTP id l21-20020a17090b079500b001df10a384e3mr10482308pjz.197.1652670543929;
-        Sun, 15 May 2022 20:09:03 -0700 (PDT)
-Received: from localhost (014136220210.static.ctinets.com. [14.136.220.210])
-        by smtp.gmail.com with ESMTPSA id h125-20020a62de83000000b0050dc7628173sm5650872pfg.77.2022.05.15.20.09.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 May 2022 20:09:03 -0700 (PDT)
-From:   bh1scw@gmail.com
-To:     akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Fanjun Kong <bh1scw@gmail.com>,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH] mm/page_owner.c: Add missing __initdata attribute
-Date:   Mon, 16 May 2022 11:00:42 +0800
-Message-Id: <20220516030039.1487005-1-bh1scw@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Iknl9FGNjcSKriVQ8ROc164iV8qluWzwBBYuxxLunGQ=;
+        b=WadKUsooTwzoqZZTKFaRQD+oTH9U53W4s4dndlqGf0bZBNCu6aWapPcgCT/5NwtGuB
+         4pea9cNopzZAB8BzW1rLCzEVVwJdSAlQfPezrtNn/scXcQGeRb/ccwjAZa6oJ6pQ8nDp
+         xVTq4w1Gf5FR9xS31APwMD5ML+r3oaZiS0kW9QpbcS8xIoX1CGi7KeIubdb4qbZdt8U+
+         Vt7Lac0oSkEv8zFpDIgQOADylooUdDcnv6fwKfZmxB2jHJfTq6dxb//a3OHIhkbRdhJD
+         CedVyCqYXES/dKYWWYlFn583ct0gB2S8UetMyDB7iEcWAOh3zg146Qk3f+tlJYtgWSrN
+         eC9A==
+X-Gm-Message-State: AOAM530CPyqe8AVi/PgM4B1gipf+5+aZ8L5xIsqUj/Goe17qdJNrrDeB
+        i5j51SB5b9EVuFHP1aT45/QB3IDeE1/0GYAZ
+X-Google-Smtp-Source: ABdhPJxzeagnTfennb3tUjiwr3t6TASF6USpu1oN2N0cKvtXfHTLhLn4KYzsX3gNxz2eFkw9IEiaKQ==
+X-Received: by 2002:ae9:df46:0:b0:69f:b616:762b with SMTP id t67-20020ae9df46000000b0069fb616762bmr11030804qkf.600.1652670732521;
+        Sun, 15 May 2022 20:12:12 -0700 (PDT)
+Received: from MBP.hobot.cc (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id 186-20020a370bc3000000b0069fcabfdaebsm4993072qkl.70.2022.05.15.20.12.10
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 15 May 2022 20:12:12 -0700 (PDT)
+From:   Schspa Shi <schspa@gmail.com>
+To:     rafael@kernel.org, viresh.kumar@linaro.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        schspa@gmail.com
+Subject: [PATCH v6 2/2] cpufreq: make interface functions and lock holding state clear
+Date:   Mon, 16 May 2022 11:02:51 +0800
+Message-Id: <20220516030251.42323-2-schspa@gmail.com>
+X-Mailer: git-send-email 2.29.0
+In-Reply-To: <20220516030251.42323-1-schspa@gmail.com>
+References: <20220516030251.42323-1-schspa@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fanjun Kong <bh1scw@gmail.com>
+cpufreq_offline() calls offline() and exit() under the policy rwsem
+But they are called outside the rwsem in cpufreq_online().
 
-This patch fix two issues:
-1. Add __initdata attribute according to include/linux/init.h:
-> For initialized data:
-> You should insert __initdata between the variable name and equal
-> sign followed by value
+This patch move the offline(), exit(), online(), init() to be inside
+of policy rwsem to achieve a clear lock relationship.
 
-2. Fix below error reported by checkpatch.pl:
-ERROR: do not initialise statics to false
+All the init() online() implement only initialize policy object without
+holding this lock and won't call cpufreq APIs need to hold this lock.
 
-Special thanks to Muchun Song :)
-
-Suggested-by: Muchun Song <songmuchun@bytedance.com>
-Signed-off-by: Fanjun Kong <bh1scw@gmail.com>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
 ---
- mm/page_owner.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/cpufreq/cpufreq.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/mm/page_owner.c b/mm/page_owner.c
-index 9185ff4eacb6..e4c6f3f1695b 100644
---- a/mm/page_owner.c
-+++ b/mm/page_owner.c
-@@ -34,7 +34,7 @@ struct page_owner {
- 	pid_t tgid;
- };
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index ba73be6f0490..ccb774e02934 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1339,12 +1339,12 @@ static int cpufreq_online(unsigned int cpu)
+ 		down_write(&policy->rwsem);
+ 		policy->cpu = cpu;
+ 		policy->governor = NULL;
+-		up_write(&policy->rwsem);
+ 	} else {
+ 		new_policy = true;
+ 		policy = cpufreq_policy_alloc(cpu);
+ 		if (!policy)
+ 			return -ENOMEM;
++		down_write(&policy->rwsem);
+ 	}
  
--static bool page_owner_enabled = false;
-+static bool page_owner_enabled __initdata;
- DEFINE_STATIC_KEY_FALSE(page_owner_inited);
+ 	if (!new_policy && cpufreq_driver->online) {
+@@ -1384,7 +1384,6 @@ static int cpufreq_online(unsigned int cpu)
+ 		cpumask_copy(policy->related_cpus, policy->cpus);
+ 	}
  
- static depot_stack_handle_t dummy_handle;
+-	down_write(&policy->rwsem);
+ 	/*
+ 	 * affected cpus must always be the one, which are online. We aren't
+ 	 * managing offline cpus here.
+@@ -1536,7 +1535,6 @@ static int cpufreq_online(unsigned int cpu)
+ 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+ 
+ 	cpumask_clear(policy->cpus);
+-	up_write(&policy->rwsem);
+ 
+ out_offline_policy:
+ 	if (cpufreq_driver->offline)
+@@ -1547,6 +1545,8 @@ static int cpufreq_online(unsigned int cpu)
+ 		cpufreq_driver->exit(policy);
+ 
+ out_free_policy:
++	up_write(&policy->rwsem);
++
+ 	cpufreq_policy_free(policy);
+ 	return ret;
+ }
 -- 
-2.36.0
+2.29.0
 
