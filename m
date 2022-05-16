@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5978C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE59C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345499AbiEPTiM (ORCPT
+        id S1345518AbiEPTiP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
+        Mon, 16 May 2022 15:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344524AbiEPTh6 (ORCPT
+        with ESMTP id S1345456AbiEPTiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:37:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164BD3ED09;
-        Mon, 16 May 2022 12:37:58 -0700 (PDT)
+        Mon, 16 May 2022 15:38:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDD73ED2D;
+        Mon, 16 May 2022 12:38:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0A1C61518;
-        Mon, 16 May 2022 19:37:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC68DC385AA;
-        Mon, 16 May 2022 19:37:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F207561518;
+        Mon, 16 May 2022 19:38:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 061DEC385AA;
+        Mon, 16 May 2022 19:37:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729877;
-        bh=CJkyGX4Y+zg7DBO1HXve9wC3uu5EtXMgyl2ABC3lC2I=;
+        s=korg; t=1652729880;
+        bh=RwMynqfZ8kOC3Wy8PKgPjxFl1WOjYkcreb4psjsrtlE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jBI9r1dlVJ2wrcFWIYJIfeKhLuGR4peZlmTl5xtVovepSlX1qeG7KnVHoxJ0By5dU
-         hH3Bks5L6Lere1y+WHGA6PB3G5k4H6xSS4eBHhjGXEQ5840UVPs5ksqUtRa1l58xKR
-         bk/6yF8B+qafP7xFjBWvuh0fkQSFvWXoVOFsQ5WE=
+        b=f+rcktuVTDyTxW+Ex4AeFtTY/ZnYlj/mMz3L8YnYyvnAVyew7O6yASSrutnimgygU
+         uPL2rp5JeEgoQpb/76ZmL5SoeYjFu8ZDsphd/z8G0yFBWwNbEF8UTMgcOisv4wFjZ6
+         iU+mXIPjOzkZFdAbyrAp8W/AACPlKikukSFq8Mjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 02/19] ipv4: drop dst in multicast routing path
-Date:   Mon, 16 May 2022 21:36:15 +0200
-Message-Id: <20220516193613.571906739@linuxfoundation.org>
+Subject: [PATCH 4.9 11/19] ASoC: max98090: Generate notifications on changes for custom control
+Date:   Mon, 16 May 2022 21:36:24 +0200
+Message-Id: <20220516193613.834947692@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
 References: <20220516193613.497233635@linuxfoundation.org>
@@ -53,65 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 9e6c6d17d1d6a3f1515ce399f9a011629ec79aa0 ]
+[ Upstream commit 13fcf676d9e102594effc686d98521ff5c90b925 ]
 
-kmemleak reports the following when routing multicast traffic over an
-ipsec tunnel.
+The max98090 driver has some custom controls which share a put() function
+which returns 0 unconditionally, meaning that events are not generated
+when the value changes. Fix that.
 
-Kmemleak output:
-unreferenced object 0x8000000044bebb00 (size 256):
-  comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
-    80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000f83947e0>] __kmalloc+0x1e8/0x300
-    [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
-    [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
-    [<00000000824f6cf1>] gre_rcv+0x178/0x540
-    [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
-    [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
-    [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
-    [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
-    [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
-    [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
-    [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
-    [<00000000013d7914>] irq_exit+0xc4/0xe0
-    [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
-    [<000000000751eb8e>] handle_int+0x16c/0x178
-    [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
-
-The metadata dst is leaked when ip_route_input_mc() updates the dst for
-the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
-handled dropping the dst in ip_route_input_slow() but missed the
-multicast case which is handled by ip_route_input_mc(). Drop the dst in
-ip_route_input_mc() avoiding the leak.
-
-Fixes: f38a9eb1f77b ("dst: Metadata destinations")
-Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220420193454.2647908-2-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/route.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/max98090.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index f05b8d63dba3..624bdd74583b 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1606,6 +1606,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- #endif
- 	RT_CACHE_STAT_INC(in_slow_mc);
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index 4aefb13900c2..1a55f6aecdfe 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -436,7 +436,7 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 		mask << mc->shift,
+ 		sel << mc->shift);
  
-+	skb_dst_drop(skb);
- 	skb_dst_set(skb, &rth->dst);
- 	return 0;
+-	return 0;
++	return *select != val;
+ }
  
+ static const char *max98090_perf_pwr_text[] =
 -- 
 2.35.1
 
