@@ -2,96 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DFFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 01:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 01:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239167AbiEPBrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 21:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
+        id S239151AbiEPBuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 21:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239117AbiEPBq4 (ORCPT
+        with ESMTP id S233300AbiEPBuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 21:46:56 -0400
-Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97604389D;
-        Sun, 15 May 2022 18:46:53 -0700 (PDT)
-IronPort-Data: =?us-ascii?q?A9a23=3AuBVEa6tABzRGI97eN2E8s4slTOfnVMJcMUV32f8?=
- =?us-ascii?q?akzHdYEJGY0x3zDcZXGuPOfuKYGr1L9t1Poix/ExVvZ7UydZnTgc9/n1gHilAw?=
- =?us-ascii?q?SbnLY7Hdx+vZUt+DSFioHpPtpxYMp+ZRCwNZie0SiyFb/6x/RGQ6YnSHuCmULS?=
- =?us-ascii?q?cY3goLeNZYHxJZSxLyrdRbrFA0YDR7zOl4bsekuWHULOX82cc3lE8t8pvnChSU?=
- =?us-ascii?q?MHa41v0iLCRicdj5zcyn1FNZH4WyDrYw3HQGuG4FcbiLwrPIS3Qw4/Xw/stIov?=
- =?us-ascii?q?NfrfTeUtMTKPQPBSVlzxdXK3Kbhpq/3R0i/hkcqFHLxo/ZzahxridzP1JtI6wS?=
- =?us-ascii?q?AUoN6vklvkfUgVDDmd1OqguFLrveCLj65HLkxOcG5fr67A0ZK0sBqUT+utxDnB?=
- =?us-ascii?q?J6NQcKTYQflaKg+O8ybiyDOJrg6wLPcDtPp4Z/GNg0BndDPA7UdbPTruizd9R1?=
- =?us-ascii?q?TQ3gIZEAPnRauIeczNkaBmGaBpKUn8TCZQjjKKri2P5fjlwtl2Yv+w07nLVwQg?=
- =?us-ascii?q?316LiWPLRe9qXVYBPkkORjnzJ8n6/ARwAMtGbjz2f/RqEhODAtTH6VZofUraxn?=
- =?us-ascii?q?sOGKnX7Knc7UUVQDAXk56LizBPWZj6WEGRMkgJGkET43BbDogHBYiCF?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ASq0e66APbnz//iHlHemQ55DYdb4zR+YMi2TD?=
- =?us-ascii?q?tnoBLSC9F/b0qynAppomPGDP4gr5NEtApTniAtjkfZq/z+8X3WB5B97LMzUO01?=
- =?us-ascii?q?HYTr2Kg7GD/xTQXwX69sN4kZxrarVCDrTLZmRSvILX5xaZHr8brOW6zA=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
-   d="scan'208";a="124250462"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 16 May 2022 09:46:50 +0800
-Received: from G08CNEXMBPEKD06.g08.fujitsu.local (unknown [10.167.33.206])
-        by cn.fujitsu.com (Postfix) with ESMTP id 5AF6B4D68A23;
-        Mon, 16 May 2022 09:46:45 +0800 (CST)
-Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
- G08CNEXMBPEKD06.g08.fujitsu.local (10.167.33.206) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Mon, 16 May 2022 09:46:43 +0800
-Received: from localhost.localdomain (10.167.225.141) by
- G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Mon, 16 May 2022 09:46:46 +0800
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     Yanjun Zhu <yanjun.zhu@linux.dev>, Jason Gunthorpe <jgg@ziepe.ca>,
-        "Haakon Bugge" <haakon.bugge@oracle.com>,
-        Cheng Xu <chengyou@linux.alibaba.com>,
-        <linux-rdma@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
-Subject: [PATCH v3 1/2] RDMA/rxe: Update wqe_index for each wqe error completion
-Date:   Mon, 16 May 2022 09:53:28 +0800
-Message-ID: <20220516015329.445474-2-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220516015329.445474-1-lizhijian@fujitsu.com>
-References: <20220516015329.445474-1-lizhijian@fujitsu.com>
+        Sun, 15 May 2022 21:50:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AD5389B;
+        Sun, 15 May 2022 18:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9E04B80E81;
+        Mon, 16 May 2022 01:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2D6E7C34100;
+        Mon, 16 May 2022 01:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652665812;
+        bh=jKN9jck8Cg4KOGCMfWWvP4ssROBon9ITJfnmgvrhoso=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AWyTTFpfS8wz7J0MElpBgEKOdKrp6Yjd/crGpWxKcnne/5o7cMqYk5+LmiRJqKP+g
+         P7JIgzdRl7e6hhPO0cmx9SMKp1UyLz6ZOhTgs0M2xX2YJvL5TP0wKSbq80UkJG4U8+
+         XgimDq6ydh7d2Ha1yH7aQrzoX+7vRv2s+e1FJDOREevY+D62ZIHwyK0y+8grNAy+Qc
+         gCb2PYXT+FeI1E4oFw3k9T4B3JUSDgNEjmWc0VXAQRV9/NEaC6hCTuS262258m8qO2
+         Y5V0kD9lj9R06lsEhfM9IkinqKn2XRqqjKR4CWefkg53I2YdDnBXPT5Fi+jtM2J/WU
+         BfT3ZA8vEKSJw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13A7DF0383D;
+        Mon, 16 May 2022 01:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: 5AF6B4D68A23.AE324
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v13] platform/chrome: Add ChromeOS ACPI device driver
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165266581207.6997.10229505003935532310.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 May 2022 01:50:12 +0000
+References: <Yn4OKYrtV35Dv+nd@debian-BULLSEYE-live-builder-AMD64>
+In-Reply-To: <Yn4OKYrtV35Dv+nd@debian-BULLSEYE-live-builder-AMD64>
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc:     rafael@kernel.org, lenb@kernel.org, hdegoede@redhat.com,
+        markgross@kernel.org, bleung@chromium.org, eballetbo@gmail.com,
+        gregkh@linuxfoundation.org, kernel@collabora.com,
+        groeck@chromium.org, dtor@chromium.org, gwendal@chromium.org,
+        vbendeb@chromium.org, andy@infradead.org, ayman.bagabas@gmail.com,
+        benjamin.tissoires@redhat.com, blaz@mxxn.io, dvhart@infradead.org,
+        dmitry.torokhov@gmail.com, jeremy@system76.com, 2pi@mok.nu,
+        mchehab+samsung@kernel.org, rajatja@google.com,
+        srinivas.pandruvada@linux.intel.com,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, rafael.j.wysocki@intel.com,
+        chrome-platform@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previously, if user space keeps sending abnormal wqe, queue.prod will
-keep increasing while queue.index doesn't. Once
-queue.index==queue.prod in next round, req_next_wqe() will treat queue
-as empty. In such case, no new completion would be generated.
+Hello:
 
-Update wqe_index for each wqe completion so that req_next_wqe() can get
-next wqe properly.
+This patch was applied to chrome-platform/linux.git (for-next)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
 
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
----
- drivers/infiniband/sw/rxe/rxe_req.c | 2 ++
- 1 file changed, 2 insertions(+)
+On Fri, 13 May 2022 12:52:09 +0500 you wrote:
+> From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> 
+> The x86 Chromebooks have the ChromeOS ACPI device. This driver attaches
+> to the ChromeOS ACPI device and exports the values reported by ACPI in a
+> sysfs directory. This data isn't present in ACPI tables when read
+> through ACPI tools, hence a driver is needed to do it. The driver gets
+> data from firmware using the ACPI component of the kernel. The ACPI values
+> are presented in string form (numbers as decimal values) or binary
+> blobs, and can be accessed as the contents of the appropriate read only
+> files in the standard ACPI device's sysfs directory tree. This data is
+> consumed by the ChromeOS user space.
+> 
+> [...]
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
-index a0d5e57f73c1..8bdd0b6b578f 100644
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -773,6 +773,8 @@ int rxe_requester(void *arg)
- 	if (ah)
- 		rxe_put(ah);
- err:
-+	/* update wqe_index for each wqe completion */
-+	qp->req.wqe_index = queue_next_index(qp->sq.queue, qp->req.wqe_index);
- 	wqe->state = wqe_state_error;
- 	__rxe_do_task(&qp->comp.task);
- 
+Here is the summary with links:
+  - [v13] platform/chrome: Add ChromeOS ACPI device driver
+    https://git.kernel.org/chrome-platform/c/0a4cad9c11ad
+
+You are awesome, thank you!
 -- 
-2.31.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
