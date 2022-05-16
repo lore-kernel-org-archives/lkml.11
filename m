@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41DEEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8184AC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348875AbiEPUb5 (ORCPT
+        id S1349183AbiEPUcO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58638 "EHLO
+        Mon, 16 May 2022 16:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351023AbiEPUB4 (ORCPT
+        with ESMTP id S236369AbiEPUB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:01:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95EFB473BF;
-        Mon, 16 May 2022 12:56:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A284C47564;
+        Mon, 16 May 2022 12:56:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A7260A50;
-        Mon, 16 May 2022 19:56:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FDD4C385AA;
-        Mon, 16 May 2022 19:56:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E20D60A50;
+        Mon, 16 May 2022 19:56:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F78FC34100;
+        Mon, 16 May 2022 19:56:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731000;
-        bh=jTf7Eh2bb4hOd52Orvy2/2LK5efSVJFs0rT6fhpo+Wc=;
+        s=korg; t=1652731006;
+        bh=AfvNImvSajbT2lRm2lCrt5R+aKpmDHKgaIumFgk1JSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vc2f2UBQak/vAY6A2PijVGb1h9NulVx9nM+FzINEKdk7sWPIvbavqdgjfdHy1psJW
-         gaTjbBWp97CUvKWTZe6h79QbQL+biQOdGlTZEXGXxYvqeNbiW7LD6RpuYlxH7Em3cs
-         YFc8yvRY62TMSNbjwQO3R1Aj+leTOv1qGvGapvmI=
+        b=stgbeMvYNaGxLAmkaPWNKaoLUH41aAaDVCQE1LnRT9kWbfbofbAQKAAXfwUqOCLAm
+         cwuzDrABGqbAN1a6etVTwVuZJ17WeWISjrA2wo3UgkbcavaVcMd/TDcdy0c7ahF/Rx
+         HLOLL9clkVxsMtSE+iTguKBQCc+BLAwmJ7CQ0LIc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thi=C3=A9baud=20Weksteen?= <tweek@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH 5.17 071/114] firmware_loader: use kernel credentials when reading firmware
-Date:   Mon, 16 May 2022 21:36:45 +0200
-Message-Id: <20220516193627.529238328@linuxfoundation.org>
+        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>
+Subject: [PATCH 5.17 073/114] usb: xhci-mtk: fix fs isocs transfer error
+Date:   Mon, 16 May 2022 21:36:47 +0200
+Message-Id: <20220516193627.587019284@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -51,84 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thiébaud Weksteen <tweek@google.com>
+From: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
-commit 581dd69830341d299b0c097fc366097ab497d679 upstream.
+commit c237566b78ad8c72bc0431c5d6171db8d12e6f94 upstream.
 
-Device drivers may decide to not load firmware when probed to avoid
-slowing down the boot process should the firmware filesystem not be
-available yet. In this case, the firmware loading request may be done
-when a device file associated with the driver is first accessed. The
-credentials of the userspace process accessing the device file may be
-used to validate access to the firmware files requested by the driver.
-Ensure that the kernel assumes the responsibility of reading the
-firmware.
+Due to the scheduler allocates the optimal bandwidth for FS ISOC endpoints,
+this may be not enough actually and causes data transfer error, so come up
+with an estimate that is no less than the worst case bandwidth used for
+any one mframe, but may be an over-estimate.
 
-This was observed on Android for a graphic driver loading their firmware
-when the device file (e.g. /dev/mali0) was first opened by userspace
-(i.e. surfaceflinger). The security context of surfaceflinger was used
-to validate the access to the firmware file (e.g.
-/vendor/firmware/mali.bin).
-
-Previously, Android configurations were not setting up the
-firmware_class.path command line argument and were relying on the
-userspace fallback mechanism. In this case, the security context of the
-userspace daemon (i.e. ueventd) was consistently used to read firmware
-files. More Android devices are now found to set firmware_class.path
-which gives the kernel the opportunity to read the firmware directly
-(via kernel_read_file_from_path_initns). In this scenario, the current
-process credentials were used, even if unrelated to the loading of the
-firmware file.
-
-Signed-off-by: Thiébaud Weksteen <tweek@google.com>
-Cc: <stable@vger.kernel.org> # 5.10
-Reviewed-by: Paul Moore <paul@paul-moore.com>
-Acked-by: Luis Chamberlain <mcgrof@kernel.org>
-Link: https://lore.kernel.org/r/20220502004952.3970800-1-tweek@google.com
+Fixes: 451d3912586a ("usb: xhci-mtk: update fs bus bandwidth by bw_budget_table")
+Cc: stable@vger.kernel.org
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Link: https://lore.kernel.org/r/20220512064931.31670-1-chunfeng.yun@mediatek.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/firmware_loader/main.c |   17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/usb/host/xhci-mtk-sch.c |   16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
---- a/drivers/base/firmware_loader/main.c
-+++ b/drivers/base/firmware_loader/main.c
-@@ -735,6 +735,8 @@ _request_firmware(const struct firmware
- 		  size_t offset, u32 opt_flags)
+--- a/drivers/usb/host/xhci-mtk-sch.c
++++ b/drivers/usb/host/xhci-mtk-sch.c
+@@ -465,7 +465,7 @@ static int check_fs_bus_bw(struct mu3h_s
+ 		 */
+ 		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
+ 			k = XHCI_MTK_BW_INDEX(base + j);
+-			tmp = tt->fs_bus_bw[k] + sch_ep->bw_budget_table[j];
++			tmp = tt->fs_bus_bw[k] + sch_ep->bw_cost_per_microframe;
+ 			if (tmp > FS_PAYLOAD_MAX)
+ 				return -ESCH_BW_OVERFLOW;
+ 		}
+@@ -539,19 +539,17 @@ static int check_sch_tt(struct mu3h_sch_
+ static void update_sch_tt(struct mu3h_sch_ep_info *sch_ep, bool used)
  {
- 	struct firmware *fw = NULL;
-+	struct cred *kern_cred = NULL;
-+	const struct cred *old_cred;
- 	bool nondirect = false;
- 	int ret;
- 
-@@ -751,6 +753,18 @@ _request_firmware(const struct firmware
- 	if (ret <= 0) /* error or already assigned */
- 		goto out;
- 
-+	/*
-+	 * We are about to try to access the firmware file. Because we may have been
-+	 * called by a driver when serving an unrelated request from userland, we use
-+	 * the kernel credentials to read the file.
-+	 */
-+	kern_cred = prepare_kernel_cred(NULL);
-+	if (!kern_cred) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+	old_cred = override_creds(kern_cred);
+ 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
++	int bw_updated;
+ 	u32 base;
+-	int i, j, k;
++	int i, j;
 +
- 	ret = fw_get_filesystem_firmware(device, fw->priv, "", NULL);
++	bw_updated = sch_ep->bw_cost_per_microframe * (used ? 1 : -1);
  
- 	/* Only full reads can support decompression, platform, and sysfs. */
-@@ -776,6 +790,9 @@ _request_firmware(const struct firmware
- 	} else
- 		ret = assign_fw(fw, device);
+ 	for (i = 0; i < sch_ep->num_esit; i++) {
+ 		base = sch_ep->offset + i * sch_ep->esit;
  
-+	revert_creds(old_cred);
-+	put_cred(kern_cred);
-+
-  out:
- 	if (ret < 0) {
- 		fw_abort_batch_reqs(fw);
+-		for (j = 0; j < sch_ep->num_budget_microframes; j++) {
+-			k = XHCI_MTK_BW_INDEX(base + j);
+-			if (used)
+-				tt->fs_bus_bw[k] += sch_ep->bw_budget_table[j];
+-			else
+-				tt->fs_bus_bw[k] -= sch_ep->bw_budget_table[j];
+-		}
++		for (j = 0; j < sch_ep->num_budget_microframes; j++)
++			tt->fs_bus_bw[XHCI_MTK_BW_INDEX(base + j)] += bw_updated;
+ 	}
+ 
+ 	if (used)
 
 
