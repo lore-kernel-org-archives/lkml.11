@@ -2,139 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A16D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232744AbiEPPBM convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 11:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
+        id S244847AbiEPPBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 11:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244861AbiEPPBI (ORCPT
+        with ESMTP id S239119AbiEPPBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 11:01:08 -0400
-X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 08:01:05 PDT
-Received: from de-smtp-delivery-63.mimecast.com (de-smtp-delivery-63.mimecast.com [194.104.111.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDFE51166
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:01:04 -0700 (PDT)
-Received: from CHE01-GV0-obe.outbound.protection.outlook.com
- (mail-gv0che01lp2045.outbound.protection.outlook.com [104.47.22.45]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-3-EYxuyDyvN3qmfhEtW6pdIg-2; Mon, 16 May 2022 16:53:57 +0200
-X-MC-Unique: EYxuyDyvN3qmfhEtW6pdIg-2
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
- GVAP278MB0391.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:3b::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5250.13; Mon, 16 May 2022 14:53:55 +0000
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::f465:3051:c795:3c2]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::f465:3051:c795:3c2%9]) with mapi id 15.20.5250.018; Mon, 16 May 2022
- 14:53:55 +0000
-Date:   Mon, 16 May 2022 16:53:54 +0200
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     Max Krummenacher <max.oss.09@gmail.com>,
-        max.krummenacher@toradex.com, devicetree@vger.kernel.org,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v1 02/17] Revert "ARM: dts: imx6qdl-apalis: Avoid
- underscore in node name"
-Message-ID: <20220516145354.GA121079@francesco-nb.int.toradex.com>
-References: <20220516115846.58328-1-max.oss.09@gmail.com>
- <20220516115846.58328-3-max.oss.09@gmail.com>
- <86815346-209e-304e-3565-b4160afa48e8@pengutronix.de>
-In-Reply-To: <86815346-209e-304e-3565-b4160afa48e8@pengutronix.de>
-X-ClientProxiedBy: MR2P264CA0136.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:30::28) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:2e::8)
+        Mon, 16 May 2022 11:01:44 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B800614D
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:01:43 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id dk23so29226915ejb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:01:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HEqS5ZEhQmVUdoC6xbuUtm7a+R7vLA0emT1o0rRL2Y8=;
+        b=hVAXAfbNeapxizRmUQEDfgkCglJKN1YxB+0CNOJNUgDR/4Ap6MWrzfo3hPzZxfh6uC
+         FZdoJJaxoAqia+BvHGcB+k+fsvDmLt96Y11l9HrEFKST43bFAa1qIlPs2ZL96M4RM7wa
+         tmiWX4Pb60695Wk1xZrmbiQkVEJhCqEGaXN6k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HEqS5ZEhQmVUdoC6xbuUtm7a+R7vLA0emT1o0rRL2Y8=;
+        b=RdEYYBIRSWx9aHk6sbQIVsCuc4WTdguUV8eeCIReth3jCgD6pv0kl8PvFyc+cUjyfd
+         vMcMhXyak4wuEC1527O+I0uyHKcL4s13vXiG9a7cCAsitvJpVxQUdFUA0ndXEknQpEun
+         egGRgHItEhkbluz+5i3w5ym4EeU0sd9+LgrICfyvKryOewIoD0CzQ8UBuEKUvdVyBXas
+         NKU/RBMFNmLzCj+jxaMPCw9VfAY0zLNX0t3rvdRuAs9tSwg0V2oOC1BL+guLAYOonzl/
+         P3XRB03vGq5Zuot3M/fMlZS+PL6tHG8me4wY33P7oxndCawAjdqsbED8tamgNN0Zz4nT
+         Ixkg==
+X-Gm-Message-State: AOAM530Xy+/cS4b9o7wXx0cKktT2uw4VwX0ubOodOnyOCJWVsETk2er8
+        7JJwVC9r6Di0/a4ac6hw1BkouGnZWOJyjFU0
+X-Google-Smtp-Source: ABdhPJz3sOZ5oAeBN5HIfpgDYdBXPNbANDF673NRhFR2IEOSrDVxT9n/rjk30jnTl1nS8C7QZ3z9LQ==
+X-Received: by 2002:a17:907:1b1b:b0:6e4:7fac:6ce0 with SMTP id mp27-20020a1709071b1b00b006e47fac6ce0mr15469761ejc.617.1652713301521;
+        Mon, 16 May 2022 08:01:41 -0700 (PDT)
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
+        by smtp.gmail.com with ESMTPSA id el9-20020a170907284900b006f3ef214e22sm3731235ejc.136.2022.05.16.08.01.39
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 08:01:40 -0700 (PDT)
+Received: by mail-wr1-f50.google.com with SMTP id j25so19915372wrc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:01:39 -0700 (PDT)
+X-Received: by 2002:a5d:5009:0:b0:20d:846:f4da with SMTP id
+ e9-20020a5d5009000000b0020d0846f4damr4917393wrt.301.1652713299036; Mon, 16
+ May 2022 08:01:39 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e57c95e3-9e79-4a62-5115-08da374be65a
-X-MS-TrafficTypeDiagnostic: GVAP278MB0391:EE_
-X-Microsoft-Antispam-PRVS: <GVAP278MB039112D4F4140B6FBD538626E2CF9@GVAP278MB0391.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: 02PhJ+YQdJRG7X6UyFktCIvGB0JXcGmUcY4jvbOhXGXMDp2X1hX1dlQHS5kyl89qUbfgCtkLKnSnyD6LBQasBcskbYsmtk14nMq0brLsmyHGeUgky/mB8UMfBqj4VDxqsWVf3hbS7HBwiK7zsW2SGKJf8wMYinIJK13DDDdij8Tsjwz8ja4agBg1ZMiCoo9LgTkm286lBu2+kaQR/31bjG/ioi3pUMSMkop3s4x5P+99HRY58nEQiiekQsyBReMShS3wkeicENclJ6c4Xt9WJov/EbS+oAc2x6peWhS9LcU2CvIavya3uZu/1dXJaz14uKRTmOsUBM3CXKleCYwemgSIvtxouDZ5AARvY8yYU1Y532+32ogW8AZv/V2kst67tD9368dXgF9YBcloB4uqjKSIEaZSHiXQJ92UPmlo8hrrpvuDkjewJUb8ruIu5Ldsj7i4lnUWburiac5d2y3KgrGyh+K3GRIJkq3r3MxbQUbcDUYyer+gSfsu2GOVmEwbuJCPFWUZyx5snneO5T1Upees+VqGhwT2GlG2Z/M6c5rCpbwojQjDm3KPZk0ULNueebli+HxB+rWE6RzGggpZztgJm+jxv1NRHKYHlLkwAH58oUt8+kGNtoH5C0ARAnZDuWaIM0GtlBUAXWnwbfAk8kF8r5WojnPxOvUsfQYKeh1HBnMkpvFoZExKyTttHbagQp0vO0bOL5n9hxhLSGJT2fohOUs8/GM46i4BTbsVx1I=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(366004)(136003)(39850400004)(396003)(376002)(316002)(5660300002)(52116002)(2906002)(41300700001)(8676002)(66476007)(1076003)(4326008)(186003)(83380400001)(66946007)(66556008)(8936002)(44832011)(6512007)(26005)(7416002)(6506007)(4744005)(86362001)(53546011)(508600001)(33656002)(38100700002)(38350700002)(6486002)(6916009)(54906003)(32563001);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8Ea2AWrHy3pPp3pJY3icE9k2hVc4bY3+kPIe0RMkhjKszNeqigRIQE1qj58h?=
- =?us-ascii?Q?IyHFChnwicWdZrHkk7tEpuJZxc0D9WJzGgTAKel39CbMv0sZjk4FHCKe2vvW?=
- =?us-ascii?Q?rw49qjl4tWB9Wh1YwgDzSqlSTORrtwinxzu9bjsfmo5egCw965lua4QRayzx?=
- =?us-ascii?Q?YYImuE8V7D1hfCnOcu9bN6BGTmQZm54243JPstCjR08eRl01ELysKqULZW/K?=
- =?us-ascii?Q?uMb1A63RL52rMM3INYEKZC1MkuGwNltFHLHF8fVYBEhlbYjmaU6GCZX7WsM+?=
- =?us-ascii?Q?W4LEW87CPHT424/T/K75Xy/ZGbRlQaqSizUiXN8vZaDwp1SPJf5T18/yUChB?=
- =?us-ascii?Q?BaY1xjNoqHOAETp5b9a5t2Q8S4Q/RcQJgk7dbtRt6ommx85wCnFOEx1djADW?=
- =?us-ascii?Q?EIUEfWLuVwCR6plnjimLQJSprC6mwTmi7zkUMymNmTBzZvgWUxIu3dP4Arck?=
- =?us-ascii?Q?yMRh4DE7IikLDrzD7gLb6vTQva3xHdBo8L87v1JdNjuyEquKmiYAqdhYLCA2?=
- =?us-ascii?Q?hJZ7xf6jI+yj1vmy7rviz1OqwQI4emMn8G50FLQRplxPmW+b3U0fufsARhz2?=
- =?us-ascii?Q?RBw14jqv5KREGjfHEbSD/C4zW4xDf13gWvwUJinEgQbKrIH4Kxfa/J/gNa5W?=
- =?us-ascii?Q?PnjF+jWrurlrBXhheJc69/DMTetlQCmt3RPa3AXtMklQQSCGVXBaGVq8Sfs8?=
- =?us-ascii?Q?mC+Cgfw9yIbxNRo1WmnzOgjjM43IEhcJiWyRaUPebPmmbc3l8aNyGc3kqe8R?=
- =?us-ascii?Q?Q/uVkTSVH2DZtEx+32sInmmQtmmY7YEHKUKkmSweE0bhc2Cs9ZoY2qWg+TfE?=
- =?us-ascii?Q?QgGdB6SvjsOrb6hwsRcUN/xwIWoHgf1GJ9sgTiTrXs0bXWg2HfsnOIWb6MpH?=
- =?us-ascii?Q?lWqyFrLuAvxrsNan5dwZws0OslBMzz9cHosAFD8jEzecrPHhJjgjXeMt/6Sc?=
- =?us-ascii?Q?DZcgLAyKZRIcsdnQuGDp4pgusJv+q0VFKXJYsutWZAB/KPd5WM/SdVyQrEB2?=
- =?us-ascii?Q?xuGx8B4e1U+GCTK5zHT8ajg7nokfL30CuNIK4TZjznQCGETPTxJndH+gqoKp?=
- =?us-ascii?Q?WcAkdFIVFmXM0nKUHsZ/mB0FtWDPDuJ2cTX7PfZfyZm3AFqfCGvEToUR3gE2?=
- =?us-ascii?Q?s82OID7R5suvrRvoIcwiGdCVGucIAmzBOVzR/uRXdv8XmYVGTLMzYE+WxngF?=
- =?us-ascii?Q?qftUgnuvdy1lfCDZYTjggO3qdp3YeAWyRfR33ELH18FOZUOP6rPq5uakA/6D?=
- =?us-ascii?Q?8y9cCXq73OVNCIYkVuk8QIMqlTLaka6581pPkSuotBcN2CCR78SS6WFhQj4f?=
- =?us-ascii?Q?GNhPkP+bS7j7UTCVrmlsIAMtWUWFcEVhUhw2PvhO1KSroVCYlDC0HbQFxHWf?=
- =?us-ascii?Q?u0btLaDWgCxpGZci/YyngfTPOdgGV0VzEnWGdh9NX1/4BAkBnQEGyN3UhWEp?=
- =?us-ascii?Q?4HMdJPj63Odl1y0J1kNWXsPIZT8gQFEJEKLLkTd0vxj5b4d+5NxNwB5DtAKV?=
- =?us-ascii?Q?MxCNK2KasCUE+hceX5tjA2pmjkGGuY8+wsUoHzexykmRNfoN0Q3/Ox5K7Zo5?=
- =?us-ascii?Q?DmBERUbAr+pKiRuQgTsTppCOV0IpLHvBjsugntgClNV1IDisUhBo9oNariqH?=
- =?us-ascii?Q?/rxbApQ+ydtmw/V2isrLtqOw+O5r5wLJeh8jUZ4scJ6NEys9q583FWome6di?=
- =?us-ascii?Q?yUjDsjYD8JV+ZH8NV2o2rg/zidiuO1xa7cE720roa/Pl4rgZ7/yDW9WnBNUF?=
- =?us-ascii?Q?ZP/aIIzZXk5jrtW65h16LqmyJAYfyZY=3D?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e57c95e3-9e79-4a62-5115-08da374be65a
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 14:53:55.3880
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rk1MhVC9Era1Cj64MOSea4VCmyVcCcSK+ayJ/qa3yfcXECTjqeDfASevp9vbtsaMAPgFMePjGDhh5j8oG4saCSzQN611Ab3wuZNigxo11so=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVAP278MB0391
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: toradex.com
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
+References: <20220513095722.v2.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+ <20220513095722.v2.2.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid> <d4e031d0-8a43-e458-6535-1044d43a2b63@linaro.org>
+In-Reply-To: <d4e031d0-8a43-e458-6535-1044d43a2b63@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 16 May 2022 08:01:26 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UfNKqca5XHX7aWZmxvPmKNikA-=X0Hv5v0MbumnB-W8Q@mail.gmail.com>
+Message-ID: <CAD=FV=UfNKqca5XHX7aWZmxvPmKNikA-=X0Hv5v0MbumnB-W8Q@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] dt-bindings: arm: qcom: Add sc7180 Chromebook
+ board bindings
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 02:49:12PM +0200, Ahmad Fatoum wrote:
-> On 16.05.22 13:58, Max Krummenacher wrote:
-> > From: Max Krummenacher <max.krummenacher@toradex.com>
-> > 
-> > The STMPE MFD device binding requires the child node to have a fixed
-> > name, i.e. with '_', not '-'. Otherwise the stmpe_adc, stmpe_touchscreen
-> > drivers will not be probed.
-> 
-> IMO, the Linux driver should be fixed and the requirement to use a fixed
-> node name be dropped from the binding. The driver itself already probes
-> by compatible, the node name seems only to be used by the MFD driver to
-> detect which functions to enable. It could do the same by checking for
-> compatibles. Otherwise you invite a game of cat and mouse, where in
-> future, this is changed back again reintroducing the regression..
+Hi,
 
-How would you handle in general such kind of change? Would you keep the
-driver probing for both the old name with the `_` and the compatible or
-you just break the compatibility?
+On Mon, May 16, 2022 at 12:01 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 13/05/2022 18:59, Douglas Anderson wrote:
+> > This copy-pastes compatibles from sc7180-based boards from the device
+> > trees to the yaml file so that `make dtbs_check` will be happy.
+> >
+> > NOTES:
+> > - I make no attempt to try to share an "item" for all sc7180 based
+> >   Chromebooks. Because of the revision matching scheme used by the
+> >   Chromebook bootloader, at times we need a different number of
+> >   revisions listed.
+> > - Some of the odd entries in here (like google,homestar-rev23 or the
+> >   fact that "Google Lazor Limozeen without Touchscreen" changed from
+> >   sku5 to sku6) are not typos but simply reflect reality.
+> > - Many revisions of boards here never actually went to consumers, but
+> >   they are still in use within various companies that were involved in
+> >   Chromebook development. Since Chromebooks are developed with an
+> >   "upstream first" methodology, having these revisions supported with
+> >   upstream Linux is important. Making it easy for Chromebooks to be
+> >   developed with an "upstream first" methodology is valuable to the
+> >   upstream community because it improves the quality of upstream and
+> >   gets Chromebooks supported with vanilla upstream faster.
+> >
+> > This patch also adds a link to the Chromebook boot flow documentation
+> > to explain that Chromebooks don't use the scheme described for the
+> > Qualcomm bootloader.
+> >
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> > The link added here will (obviously) not function until the
+> > documentation patch makes it to mainline. Presumably folks who want to
+> > read it in the meantime can find it pretty easily. If there's a better
+> > way to link this then please let me know.
+> >
+> > Changes in v2:
+> > - Add link to doc about how Chromebook devicetrees work.
+> > - Use a "description" instead of a comment for each item.
+> > - Use the marketing name instead of the code name where possible.
+> >
+> >  .../devicetree/bindings/arm/qcom.yaml         | 187 +++++++++++++++++-
+> >  1 file changed, 186 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+> > index 5c06d1bfc046..8ec0805f4996 100644
+> > --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+> > +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+> > @@ -90,6 +90,11 @@ description: |
+> >    A dragonboard board v0.1 of subtype 1 with an apq8074 SoC version 2, made in
+> >    foundry 2.
+> >
+> > +  There are many devices in the list below that run the standard ChromeOS
+> > +  bootloader setup and use the open source depthcharge bootloader to boot the
+> > +  OS. These devices do not use the scheme described above. For details, see:
+> > +  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/chromebook-boot-flow.rst
+>
+> Absolute path within Linux repo, please, so
+> "Documentation/devicetree/chromebook-boot-flow.rst" (assuming that will
+> be the final location). There are tools which check them for validity.
 
-Francesco
+Got it, thanks!
 
+
+> Actually this change should be rather part of that other commit...
+
+I'm not sure I understand. Which of these are you suggesting?
+
+1. You want me to squash the two commits into one, so we add the
+generic doc in the same patch as the one adding sc7180 Chromebooks.
+
+2. You want the generic doc to come first in the series and it just
+adds the little blurb into
+"Documentation/devicetree/bindings/arm/qcom.yaml" even though
+Chromebooks aren't actually added until a later commit in the series.
+
+3. You want to add the sc7180 Chromebooks first in the series with no
+documentation and then later add in the generic documentation and the
+blurb into "Documentation/devicetree/bindings/arm/qcom.yaml".
+
+
+I'm also interested to know if you think the generic documentation
+patch should land through the Qualcomm tree. I think it would
+absolutely have to if I take your suggestion, right?
+
+
+Thanks!
+
+-Doug
