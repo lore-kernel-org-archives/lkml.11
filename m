@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06576C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C20C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231736AbiEPTyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        id S235742AbiEPTyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346252AbiEPTs7 (ORCPT
+        with ESMTP id S1346283AbiEPTtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:48:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97374338D;
-        Mon, 16 May 2022 12:44:57 -0700 (PDT)
+        Mon, 16 May 2022 15:49:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B422433BA;
+        Mon, 16 May 2022 12:44:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE8A7B815F6;
-        Mon, 16 May 2022 19:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CA4AC34100;
-        Mon, 16 May 2022 19:44:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45B2861512;
+        Mon, 16 May 2022 19:44:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A61EC34115;
+        Mon, 16 May 2022 19:44:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730294;
-        bh=1fNWbJzb8Fe9bzhkf103dP9flRlVH/VsXpTudEKpUIA=;
+        s=korg; t=1652730297;
+        bh=L5m26iIlOdgBK58M1rRzRjKkQm9Am+GRNIiFSrxU1KM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UeDYfYDEhGF2TmjTcnPTF3gJ3WS5zyLA1gQ9wfO+ca5CnAoTFy/0JveNKWXWvQ4Mt
-         xroxqBuwcsaSNF5JX/YYsUnVx42XCqZJg1Z9Js0pqh84z+VyRRftVcriJxyOnhqZsS
-         fkis/B6Yc4RzumASIwE6RLR667McJ+BWfKUY2e8c=
+        b=HPzcTFlr0Ax5CqpYUwwLrTATOK3Hy7b+JWdQqX7pYKFpiYaCV+BRvqiQW4JjBnApF
+         dA42LRzYKmIEqExU4vDOz3h4XOk8er5rdNEXpKi0ziyJUKrHgjrVMixlw0x0WDG9Gs
+         G/Xm/DIiO19XtS9w/ouvbYn4hF1AZ5bLZ7q0Dxrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Florian Eckert <fe@dev.tdt.de>,
+        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
         Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 19/66] hwmon: (ltq-cputemp) restrict it to SOC_XWAY
-Date:   Mon, 16 May 2022 21:36:19 +0200
-Message-Id: <20220516193619.972669059@linuxfoundation.org>
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 5.10 02/66] iwlwifi: iwl-dbg: Use del_timer_sync() before freeing
+Date:   Mon, 16 May 2022 21:36:02 +0200
+Message-Id: <20220516193619.473226461@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -52,54 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 151d6dcbed836270c6c240932da66f147950cbdb ]
+[ Upstream commit 7635a1ad8d92dcc8247b53f949e37795154b5b6f ]
 
-Building with SENSORS_LTQ_CPUTEMP=y with SOC_FALCON=y causes build
-errors since FALCON does not support the same features as XWAY.
+In Chrome OS, a large number of crashes is observed due to corrupted timer
+lists. Steven Rostedt pointed out that this usually happens when a timer
+is freed while still active, and that the problem is often triggered
+by code calling del_timer() instead of del_timer_sync() just before
+freeing.
 
-Change this symbol to depend on SOC_XWAY since that provides the
-necessary interfaces.
+Steven also identified the iwlwifi driver as one of the possible culprits
+since it does exactly that.
 
-Repairs these build errors:
-
-../drivers/hwmon/ltq-cputemp.c: In function 'ltq_cputemp_enable':
-../drivers/hwmon/ltq-cputemp.c:23:9: error: implicit declaration of function 'ltq_cgu_w32'; did you mean 'ltq_ebu_w32'? [-Werror=implicit-function-declaration]
-   23 |         ltq_cgu_w32(ltq_cgu_r32(CGU_GPHY1_CR) | CGU_TEMP_PD, CGU_GPHY1_CR);
-../drivers/hwmon/ltq-cputemp.c:23:21: error: implicit declaration of function 'ltq_cgu_r32'; did you mean 'ltq_ebu_r32'? [-Werror=implicit-function-declaration]
-   23 |         ltq_cgu_w32(ltq_cgu_r32(CGU_GPHY1_CR) | CGU_TEMP_PD, CGU_GPHY1_CR);
-../drivers/hwmon/ltq-cputemp.c: In function 'ltq_cputemp_probe':
-../drivers/hwmon/ltq-cputemp.c:92:31: error: 'SOC_TYPE_VR9_2' undeclared (first use in this function)
-   92 |         if (ltq_soc_type() != SOC_TYPE_VR9_2)
-
-Fixes: 7074d0a92758 ("hwmon: (ltq-cputemp) add cpu temp sensor driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Florian Eckert <fe@dev.tdt.de>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: linux-hwmon@vger.kernel.org
-Link: https://lore.kernel.org/r/20220509234740.26841-1-rdunlap@infradead.org
+Reported-by: Steven Rostedt <rostedt@goodmis.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Gregory Greenman <gregory.greenman@intel.com>
+Fixes: 60e8abd9d3e91 ("iwlwifi: dbg_ini: add periodic trigger new API support")
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Acked-by: Gregory Greenman <gregory.greenman@intel.com>
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Linux v5.17.3-rc1 and Debian LLVM-14
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220411154210.1870008-1-linux@roeck-us.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/Kconfig | 2 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 0c2b032ee617..f741c7492ee4 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -922,7 +922,7 @@ config SENSORS_LTC4261
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+index fcad5cdcabfa..3c931b1b2a0b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+@@ -367,7 +367,7 @@ void iwl_dbg_tlv_del_timers(struct iwl_trans *trans)
+ 	struct iwl_dbg_tlv_timer_node *node, *tmp;
  
- config SENSORS_LTQ_CPUTEMP
- 	bool "Lantiq cpu temperature sensor driver"
--	depends on LANTIQ
-+	depends on SOC_XWAY
- 	help
- 	  If you say yes here you get support for the temperature
- 	  sensor inside your CPU.
+ 	list_for_each_entry_safe(node, tmp, timer_list, list) {
+-		del_timer(&node->timer);
++		del_timer_sync(&node->timer);
+ 		list_del(&node->list);
+ 		kfree(node);
+ 	}
 -- 
 2.35.1
 
