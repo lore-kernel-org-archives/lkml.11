@@ -2,106 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82077C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C91AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243406AbiEPMVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
+        id S242064AbiEPMVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243356AbiEPMVQ (ORCPT
+        with ESMTP id S243435AbiEPMVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 08:21:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 552272BC5
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:21:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652703674;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DIRyBjAdTpqgw14kErtwE29u9jq0/z5o4ktEpXWwZGE=;
-        b=SLp6pXLx/zIqyEo4cWP4D/dyA93YL44V+rNutcXN02TRFgA2qkmY56LRvXgsLqqRrRWlCw
-        NQI0IYVbHoKAo2bMKZ3FAm4GX79k+lFIyY8iNauQCyZw8JWPzVtVxWmGoeRCBcQEGMf8Xm
-        fiuoPnc9T2XiCArBf1OyTPGIcVLlNQU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-427-bnVbQ3h8OfS8enSatJ__rw-1; Mon, 16 May 2022 08:21:09 -0400
-X-MC-Unique: bnVbQ3h8OfS8enSatJ__rw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 76A0291C7EB;
-        Mon, 16 May 2022 12:20:58 +0000 (UTC)
-Received: from localhost (unknown [10.72.47.117])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C0215400DE5E;
-        Mon, 16 May 2022 12:20:57 +0000 (UTC)
-From:   Xiubo Li <xiubli@redhat.com>
-To:     jlayton@kernel.org, viro@zeniv.linux.org.uk
-Cc:     idryomov@gmail.com, vshankar@redhat.com,
-        ceph-devel@vger.kernel.org, mcgrof@kernel.org,
-        akpm@linux-foundation.org, arnd@arndb.de,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiubo Li <xiubli@redhat.com>
-Subject: [PATCH 1/2] fs/dcache: add d_compare() helper support
-Date:   Mon, 16 May 2022 20:20:45 +0800
-Message-Id: <20220516122046.40655-2-xiubli@redhat.com>
-In-Reply-To: <20220516122046.40655-1-xiubli@redhat.com>
-References: <20220516122046.40655-1-xiubli@redhat.com>
+        Mon, 16 May 2022 08:21:36 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4CBD131;
+        Mon, 16 May 2022 05:21:28 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id n24so18319801oie.12;
+        Mon, 16 May 2022 05:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=CcyMGAd9/1/nrpJriv7ncUhfzEf1ScHvMZQfYObpwvE=;
+        b=g2DUXy6qsD2CdHMeAsv1xhrChe7ErMle96kke/aIaRKpxIOquj2yfUB32FiKgTjM83
+         t5tOhazH/nx8St5nSD/7JRztPm5oW8ykK9M6mxznlilW68CbwNMSF0pcaCGfoRS55jGu
+         FsqQcbamE+ix9RsBHYWHS+gAzYe/fS1wBUGj/5JWxD+n7AMQDGqvtiea3XTZHwpe8qeT
+         MNd1hGqFIpog6mQ1qReY+ToG+1QdObEmdjsmaMjr1TZ88vZRvRbwgxlytcW+FGfxr6BO
+         9gOXxI+Vh4QcFLVlPge/BIeppXAw1j7qx2yVfR7oYoFU9XUCutTSnWiDbQBa+/BSRcxl
+         a1LA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=CcyMGAd9/1/nrpJriv7ncUhfzEf1ScHvMZQfYObpwvE=;
+        b=YI2g0+m+8avtgOrAbvgUl1Ncqsace4B+/2EJFo4RuXYm2xBEoGZafutDZrw1TSliBp
+         SA2ra1dwas4I/mP6ELiWKrLv03UYIwmospKufraDk8eWvMOnw9NeSb5XRSi9GikIpf1B
+         YzJkS41rhL9KfgnxfPJSsFVppTBPUkOO5DYxs9jhYnDLJGyXMG0opmDzJButun3coDzm
+         V/LMaEl5WJ1eICzugnXVPGtSQnzCcVEv+j+BfU7yZnhdJ2bIuoWkdBijQKge0ew6Q3mm
+         /MyN0CI2y31ZcLR9ZO5quX97pATuZ3laW0q7Yz+1sEZ7tVHFoWW+TOp2+QYUOl+UNPrq
+         i2TA==
+X-Gm-Message-State: AOAM531rJS2G66ixQtFWByvQ1UncQBeNx/3lZAAxN/5CLG+G4t/FdWzk
+        MJIkHIIBEcZ9UDeN20q0CQE=
+X-Google-Smtp-Source: ABdhPJzQqa16ntoHnCKJlJaUs1Rg68hKbVxoyrBt+QCmSGoiEOx4hAcxAMzCMrbCeI//MqWfVxmLGw==
+X-Received: by 2002:a05:6808:308c:b0:326:77f8:8cb4 with SMTP id bl12-20020a056808308c00b0032677f88cb4mr13187236oib.292.1652703688114;
+        Mon, 16 May 2022 05:21:28 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id ep36-20020a056870a9a400b000e686d1387bsm5560247oab.21.2022.05.16.05.21.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 05:21:26 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <1747d709-6640-193d-8290-893b1541fae8@roeck-us.net>
+Date:   Mon, 16 May 2022 05:21:25 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     LABBE Corentin <clabbe@baylibre.com>
+Cc:     jdelvare@suse.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>
+References: <20220509063010.3878134-1-clabbe@baylibre.com>
+ <20220509063010.3878134-3-clabbe@baylibre.com>
+ <e5f6c712-efed-2126-de2b-9a0d09150e7b@roeck-us.net> <YoFWNAhiDrzpeBU8@Red>
+ <9f7d7281-0434-df59-40fa-1f5d8f53356d@roeck-us.net> <YoHtg30ZrhxjVedA@Red>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v3 2/2] hwmon: acpi_power_meter: convert to
+ hwmon_device_register_with_info
+In-Reply-To: <YoHtg30ZrhxjVedA@Red>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
----
- fs/dcache.c            | 15 +++++++++++++++
- include/linux/dcache.h |  2 ++
- 2 files changed, 17 insertions(+)
+On 5/15/22 23:21, LABBE Corentin wrote:
+> Le Sun, May 15, 2022 at 05:29:54PM -0700, Guenter Roeck a écrit :
+>> On 5/15/22 12:36, LABBE Corentin wrote:
+>>> Le Wed, May 11, 2022 at 07:10:29PM -0700, Guenter Roeck a écrit :
+>>>> Corentin,
+>>>>
+>>>> On 5/8/22 23:30, Corentin Labbe wrote:
+>>>>> Booting lead to a hwmon_device_register() is deprecated. Please convert the driver to use hwmon_device_register_with_info().
+>>>>> So let's convert the driver to use hwmon_device_register_with_info().
+>>>>>
+>>>>> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+>>>>> ---
+>>>> [ ... ]
+>>>>
+>>>>> @@ -836,20 +740,20 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
+>>>>>     		if (res)
+>>>>>     			break;
+>>>>>     
+>>>>> -		remove_attrs(resource);
+>>>>> +		remove_domain_devices(resource);
+>>>>>     		setup_attrs(resource);
+>>>>
+>>>> Zhang Rui found an interesting problem with this code:
+>>>> It needs a call to sysfs_update_groups(hwmon_dev->groups)
+>>>> to update sysfs attribute visibility, probably between
+>>>> remove_domain_devices() and setup_attrs().
+>>>>
+>>>>>     		break;
+>>>>>     	case METER_NOTIFY_TRIP:
+>>>>> -		sysfs_notify(&device->dev.kobj, NULL, POWER_AVERAGE_NAME);
+>>>>> +		hwmon_notify_event(&device->dev, hwmon_power, hwmon_power_average, 0);
+>>>>
+>>>> ... which makes realize: The notification device should be the hwmon device.
+>>>> That would be resource->hwmon_dev, not the acpi device.
+>>>>
+>>>
+>>> Hello
+>>>
+>>> Since my hardware lacks capabilities testing this, I have emulated it on qemu:
+>>> https://github.com/montjoie/qemu/commit/320f2ddacb954ab308ef699f66fca6313f75bc2b
+>>>
+>>> I have added a custom ACPI _DBX method for triggering some ACPI state change. (like config change, like enabling CAP).
+>>>
+>>> For testing config change I have tried lot of way:
+>>>                   res = read_capabilities(resource);
+>>> @@ -742,18 +758,22 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
+>>>    
+>>>                   remove_domain_devices(resource);
+>>>                   setup_attrs(resource);
+>>> +               res = sysfs_update_groups(&resource->hwmon_dev->kobj, acpi_power_groups);
+>>> +               res = sysfs_update_groups(&resource->acpi_dev->dev.kobj, acpi_power_groups);
+>>> +               res = hwmon_notify_event(resource->hwmon_dev, hwmon_power, hwmon_power_cap, 0);
+>>> +               res = hwmon_notify_event(resource->hwmon_dev, hwmon_power, hwmon_power_average, 0);
+>>
+>> Did you add a debug log here ?
+> 
+> Yes I added debug log to check what is called.
+> 
+>>
+>> acpi_power_groups would be the wrong parameter for sysfs_update_groups().
+>> It would have to be resource->hwmon_dev->groups.
+>>
+> 
+> Even with that, no call to is_visible:
+> @@ -742,18 +758,22 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
+>   
+>                  remove_domain_devices(resource);
+>                  setup_attrs(resource);
+> +               res = sysfs_update_groups(&resource->hwmon_dev->kobj, resource->hwmon_dev->groups);
+> +               res = sysfs_update_groups(&resource->acpi_dev->dev.kobj, resource->hwmon_dev->groups);
+> +               res = hwmon_notify_event(resource->hwmon_dev, hwmon_power, hwmon_power_cap, 0);
+> +               res = hwmon_notify_event(resource->hwmon_dev, hwmon_power, hwmon_power_average, 0);
+>                  break;
+> 
+> I checked drivers/hwmon/hwmon.c is seems that is_visible is only called by gen_attr/gen_attrs which is only called by __hwmon_create_attrs and then by registers functions.
+> So perhaps it explain why it is never called.
 
-diff --git a/fs/dcache.c b/fs/dcache.c
-index 93f4f5ee07bf..95a72f92a94b 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -2262,6 +2262,21 @@ static inline bool d_same_name(const struct dentry *dentry,
- 				       name) == 0;
- }
- 
-+/**
-+ * d_compare - compare dentry name with case-exact name
-+ * @parent: parent dentry
-+ * @dentry: the negative dentry that was passed to the parent's lookup func
-+ * @name:   the case-exact name to be associated with the returned dentry
-+ *
-+ * Return: 0 if names are same, or 1
-+ */
-+bool d_compare(const struct dentry *parent, const struct dentry *dentry,
-+	       const struct qstr *name)
-+{
-+	return !d_same_name(dentry, parent, name);
-+}
-+EXPORT_SYMBOL(d_compare);
-+
- /**
-  * __d_lookup_rcu - search for a dentry (racy, store-free)
-  * @parent: parent dentry
-diff --git a/include/linux/dcache.h b/include/linux/dcache.h
-index f5bba51480b2..444b2230e5c3 100644
---- a/include/linux/dcache.h
-+++ b/include/linux/dcache.h
-@@ -233,6 +233,8 @@ extern struct dentry * d_alloc_parallel(struct dentry *, const struct qstr *,
- 					wait_queue_head_t *);
- extern struct dentry * d_splice_alias(struct inode *, struct dentry *);
- extern struct dentry * d_add_ci(struct dentry *, struct inode *, struct qstr *);
-+extern bool d_compare(const struct dentry *parent, const struct dentry *dentry,
-+		      const struct qstr *name);
- extern struct dentry * d_exact_alias(struct dentry *, struct inode *);
- extern struct dentry *d_find_any_alias(struct inode *inode);
- extern struct dentry * d_obtain_alias(struct inode *);
--- 
-2.36.0.rc1
+Ah yes, you are correct. Sorry, it has been too long ago that I wrote that code.
+Effectively that means we'll have to rework the hwmon core to generate attributes
+anyway and leave it up to the driver core to call the is_visible function.
 
+Guenter
