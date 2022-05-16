@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC05C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3267C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345221AbiEPS4k (ORCPT
+        id S1345213AbiEPS55 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 14:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54688 "EHLO
+        Mon, 16 May 2022 14:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345184AbiEPS42 (ORCPT
+        with ESMTP id S232270AbiEPS5z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 14:56:28 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F3165F1;
-        Mon, 16 May 2022 11:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652727387; x=1684263387;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BfbVbL6Hld/E/O04WsrHSldx5ETHMb9X0kAR36zcyzA=;
-  b=iQmqRle8JSL02JSXoiIJB1iUDZHBEfGi0giTSmkwC8YSJn8rdIcmwlFP
-   V82aeirR7HkA4zgdLdjda2Zs1Lw/+AjgHjGRXWJK479Krzn3RcMppnH57
-   frqR2Kw0gWHHSca3crsWmlsaEWPinV6zYI+bfnjP7BQnmjJkJS6Lmne6t
-   UmDp3NhlPCYABOHchlUDv00gcz0fA4tnah/worynr+ifVkhEdWiHjdFtY
-   zuMbeFu0DvEWGrBviQNuVyFtVUN5OlMUIaNIixcVMqHMcb95BffTBw2pS
-   Ra59kvec0yXgbxwY0nx+/GC3gKgWPXqX7+4tXXhM7dPsHpRa28D1vvp7/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="258494611"
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="258494611"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 11:56:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="660250203"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 May 2022 11:56:21 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 0B3F1CE; Mon, 16 May 2022 21:56:20 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 2/2] pinctrl: intel: Drop unsued irqchip member in struct intel_pinctrl
-Date:   Mon, 16 May 2022 21:56:18 +0300
-Message-Id: <20220516185618.32448-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220516185618.32448-1-andriy.shevchenko@linux.intel.com>
-References: <20220516185618.32448-1-andriy.shevchenko@linux.intel.com>
+        Mon, 16 May 2022 14:57:55 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A0F3EB82
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 11:57:53 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2f863469afbso164639077b3.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 11:57:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X0lDvgtygkUQt/MUd8knhUulQHn3vRN7wQxbpMX/7kc=;
+        b=OtkZKug+pHgQ2UZ/72x5bHwTEdoqxCQfEkm1QUCKIEgRffjKW3KbMb3c/K0hbgw8Hh
+         4snt1OZnOFAGl+LpQ4hpHFIJxYGrgyUHb3MpltCQAyohc4EBc2K3cVdSQIPXWZTMCpAo
+         xvkF6YXXSdLtGnt7ynxNOqwGwVVTZspuksDC6xnRRp98ABNh0U+IV0ZaF0Dke8RLQ2hY
+         0zwsUzPrYM4NS77Te/aQXLi3uZ8/Pe1REWifevXQA7rgTj6p6tmReRBxgn3R2O7hm2fZ
+         OJ6CVb4R6Yse/fCzJP36XXgjWUGVUJLUzzJC39/+B4Yu2HI44XK9AEZhZ/l6VNqETlCG
+         d/dA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X0lDvgtygkUQt/MUd8knhUulQHn3vRN7wQxbpMX/7kc=;
+        b=qhdMAOCK1yUot0sXtpmp5u81vjEAFI7NiTJ2yd0BzpHT6MY6K9fTxza5r53CxYqEX4
+         0w7NjBshdbrc4lJiMlYDO2axQHKQKlPwaCw2PzcK7VHaEq5Xr+P4roSSJm11Le1f42r3
+         JJMEXZfnqcyWZ02QkF7QhDl8qazGFgJsUa/UXnD/V20yLTd0xH2sv3PUJbqrjlDIWZw0
+         a9EBh9vGIReGDcnOcbWGZ/W+pSA+UlXv6zv3kfla+LoTlXUGGZ4t43VCr9eR7+t9Sku7
+         Jd7FeuYD+YEIsLuGUeCwAXIMNRf1lBFuAVoBd1i2i+F+z1bVFa2Y7VcVgrLhj9KcAk0M
+         PbKg==
+X-Gm-Message-State: AOAM530rLP+JQ6A4VezfqGoWDPYkrJXU3XbWHhuv3Vm90917GsHj7pG0
+        bMh9qQSs9kvV5Okzz3JFteMcgum9V4VVlMIfZnyt3g==
+X-Google-Smtp-Source: ABdhPJyxnegSHSL4esR4Y8T2LGVa+WGgTYoK2/N/07nmR8fbjF1kDUJlLs7zXniWb3x4daFZGwyj8JCag7XedUMNBVU=
+X-Received: by 2002:a81:7953:0:b0:2fe:f8a9:7e45 with SMTP id
+ u80-20020a817953000000b002fef8a97e45mr7139331ywc.23.1652727472248; Mon, 16
+ May 2022 11:57:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220513202159.1550547-1-samitolvanen@google.com>
+ <20220513202159.1550547-21-samitolvanen@google.com> <202205141501.92A22264B4@keescook>
+In-Reply-To: <202205141501.92A22264B4@keescook>
+From:   Sami Tolvanen <samitolvanen@google.com>
+Date:   Mon, 16 May 2022 11:57:16 -0700
+Message-ID: <CABCJKudiLBjsNHUTH6zqhYik0WQZwsM4OceYJadYKoDQYOFRXw@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 20/21] x86: Add support for CONFIG_CFI_CLANG
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no users of irqchip member in struct intel_pinctrl. Drop it.
+On Sat, May 14, 2022 at 3:03 PM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Fri, May 13, 2022 at 01:21:58PM -0700, Sami Tolvanen wrote:
+> > +#ifdef CONFIG_CFI_CLANG
+> > +static void decode_cfi_insn(struct pt_regs *regs, unsigned long *target,
+> > +                         unsigned long *type)
+> > +{
+> > +     char buffer[MAX_INSN_SIZE];
+> > +     struct insn insn;
+> > +     int offset;
+> > +
+> > +     *target = *type = 0;
+>
+> Should report_cfi_failure() have some additional hinting for the case
+> where target/type are zero? Like, "hey, got an inexplicable CFI failure
+> here, but preamble decode failed. Yikes!"
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pinctrl/intel/pinctrl-intel.h | 2 --
- 1 file changed, 2 deletions(-)
+Good point, I'll add an error message here.
 
-diff --git a/drivers/pinctrl/intel/pinctrl-intel.h b/drivers/pinctrl/intel/pinctrl-intel.h
-index c4fef03b663f..710341bb67cc 100644
---- a/drivers/pinctrl/intel/pinctrl-intel.h
-+++ b/drivers/pinctrl/intel/pinctrl-intel.h
-@@ -223,7 +223,6 @@ struct intel_pinctrl_context {
-  * @pctldesc: Pin controller description
-  * @pctldev: Pointer to the pin controller device
-  * @chip: GPIO chip in this pin controller
-- * @irqchip: IRQ chip in this pin controller
-  * @soc: SoC/PCH specific pin configuration data
-  * @communities: All communities in this pin controller
-  * @ncommunities: Number of communities in this pin controller
-@@ -236,7 +235,6 @@ struct intel_pinctrl {
- 	struct pinctrl_desc pctldesc;
- 	struct pinctrl_dev *pctldev;
- 	struct gpio_chip chip;
--	struct irq_chip irqchip;
- 	const struct intel_pinctrl_soc_data *soc;
- 	struct intel_community *communities;
- 	size_t ncommunities;
--- 
-2.35.1
-
+Sami
