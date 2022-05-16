@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBAB7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 920C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234250AbiEPUJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41096 "EHLO
+        id S243003AbiEPUKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346832AbiEPT4C (ORCPT
+        with ESMTP id S1346941AbiEPT4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:56:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7B447568;
-        Mon, 16 May 2022 12:49:16 -0700 (PDT)
+        Mon, 16 May 2022 15:56:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E22947ACE;
+        Mon, 16 May 2022 12:49:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45265B81611;
-        Mon, 16 May 2022 19:49:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72767C385AA;
-        Mon, 16 May 2022 19:49:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8993560ABE;
+        Mon, 16 May 2022 19:49:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C44CC385AA;
+        Mon, 16 May 2022 19:49:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730553;
-        bh=cqLfwRyUYFur1S7Q1GFZ4P6pcd1QS7jbOKJu4tqaOig=;
+        s=korg; t=1652730559;
+        bh=GZmT6UyDgzYGY7TSs0kpvPrztQ8Bwwl5DZCnoBnMDac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KgVM1UpvtfPw1+XUj70LT02AVOPA3JhFRbfEn9zTda9zNRoNMyLiPjbLKFjKAdkCQ
-         XLdKuBVBy5WfwS7gVoerZw53P6dhauoHycV97+TyOaUu4O6TOisknceYm40WUBYlFA
-         cxfKP/ClMRdzRNJI7hqvJc8S7THWz6QK3oGUtTjU=
+        b=dwk3n0bOcPT1ibDGtrMYlHyWevz3Pxj4OTFN7NoAnvFwjefN0LByX6AZ3JGWQJNB5
+         8fSUQqzQlpf9Sv/wTR3JFl5CjOeqKD+zGevT+FLMM2jFBgszuzAn9FpL3nOeF0GdTW
+         iFMaSDYBOWYsVHmBymc4qaAXC4uv5R8Pedv9FI3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Geliang Tang <geliang.tang@suse.com>,
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 035/102] net/sched: act_pedit: really ensure the skb is writable
-Date:   Mon, 16 May 2022 21:36:09 +0200
-Message-Id: <20220516193625.008379502@linuxfoundation.org>
+Subject: [PATCH 5.15 037/102] net: bcmgenet: Check for Wake-on-LAN interrupt probe deferral
+Date:   Mon, 16 May 2022 21:36:11 +0200
+Message-Id: <20220516193625.065740411@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -53,121 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 8b796475fd7882663a870456466a4fb315cc1bd6 ]
+[ Upstream commit 6b77c06655b8a749c1a3d9ebc51e9717003f7e5a ]
 
-Currently pedit tries to ensure that the accessed skb offset
-is writable via skb_unclone(). The action potentially allows
-touching any skb bytes, so it may end-up modifying shared data.
+The interrupt controller supplying the Wake-on-LAN interrupt line maybe
+modular on some platforms (irq-bcm7038-l1.c) and might be probed at a
+later time than the GENET driver. We need to specifically check for
+-EPROBE_DEFER and propagate that error to ensure that we eventually
+fetch the interrupt descriptor.
 
-The above causes some sporadic MPTCP self-test failures, due to
-this code:
-
-	tc -n $ns2 filter add dev ns2eth$i egress \
-		protocol ip prio 1000 \
-		handle 42 fw \
-		action pedit munge offset 148 u8 invert \
-		pipe csum tcp \
-		index 100
-
-The above modifies a data byte outside the skb head and the skb is
-a cloned one, carrying a TCP output packet.
-
-This change addresses the issue by keeping track of a rough
-over-estimate highest skb offset accessed by the action and ensuring
-such offset is really writable.
-
-Note that this may cause performance regressions in some scenarios,
-but hopefully pedit is not in the critical path.
-
-Fixes: db2c24175d14 ("act_pedit: access skb->data safely")
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Tested-by: Geliang Tang <geliang.tang@suse.com>
+Fixes: 9deb48b53e7f ("bcmgenet: add WOL IRQ check")
+Fixes: 5b1f0e62941b ("net: bcmgenet: Avoid touching non-existent interrupt")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Stefan Wahren <stefan.wahren@i2se.com>
+Link: https://lore.kernel.org/r/20220511031752.2245566-1-f.fainelli@gmail.com
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Link: https://lore.kernel.org/r/1fcf78e6679d0a287dd61bb0f04730ce33b3255d.1652194627.git.pabeni@redhat.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tc_act/tc_pedit.h |  1 +
- net/sched/act_pedit.c         | 26 ++++++++++++++++++++++----
- 2 files changed, 23 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/net/tc_act/tc_pedit.h b/include/net/tc_act/tc_pedit.h
-index 748cf87a4d7e..3e02709a1df6 100644
---- a/include/net/tc_act/tc_pedit.h
-+++ b/include/net/tc_act/tc_pedit.h
-@@ -14,6 +14,7 @@ struct tcf_pedit {
- 	struct tc_action	common;
- 	unsigned char		tcfp_nkeys;
- 	unsigned char		tcfp_flags;
-+	u32			tcfp_off_max_hint;
- 	struct tc_pedit_key	*tcfp_keys;
- 	struct tcf_pedit_key_ex	*tcfp_keys_ex;
- };
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index c6c862c459cc..cfadd613644a 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -149,7 +149,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 	struct nlattr *pattr;
- 	struct tcf_pedit *p;
- 	int ret = 0, err;
--	int ksize;
-+	int i, ksize;
- 	u32 index;
- 
- 	if (!nla) {
-@@ -228,6 +228,18 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 		p->tcfp_nkeys = parm->nkeys;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 8bcc39b1575c..ea1391753752 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -3950,6 +3950,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
+ 		goto err;
  	}
- 	memcpy(p->tcfp_keys, parm->keys, ksize);
-+	p->tcfp_off_max_hint = 0;
-+	for (i = 0; i < p->tcfp_nkeys; ++i) {
-+		u32 cur = p->tcfp_keys[i].off;
-+
-+		/* The AT option can read a single byte, we can bound the actual
-+		 * value with uchar max.
-+		 */
-+		cur += (0xff & p->tcfp_keys[i].offmask) >> p->tcfp_keys[i].shift;
-+
-+		/* Each key touches 4 bytes starting from the computed offset */
-+		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
+ 	priv->wol_irq = platform_get_irq_optional(pdev, 2);
++	if (priv->wol_irq == -EPROBE_DEFER) {
++		err = priv->wol_irq;
++		goto err;
 +	}
  
- 	p->tcfp_flags = parm->flags;
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-@@ -308,13 +320,18 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			 struct tcf_result *res)
- {
- 	struct tcf_pedit *p = to_pedit(a);
-+	u32 max_offset;
- 	int i;
- 
--	if (skb_unclone(skb, GFP_ATOMIC))
--		return p->tcf_action;
--
- 	spin_lock(&p->tcf_lock);
- 
-+	max_offset = (skb_transport_header_was_set(skb) ?
-+		      skb_transport_offset(skb) :
-+		      skb_network_offset(skb)) +
-+		     p->tcfp_off_max_hint;
-+	if (skb_ensure_writable(skb, min(skb->len, max_offset)))
-+		goto unlock;
-+
- 	tcf_lastuse_update(&p->tcf_tm);
- 
- 	if (p->tcfp_nkeys > 0) {
-@@ -403,6 +420,7 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 	p->tcf_qstats.overlimits++;
- done:
- 	bstats_update(&p->tcf_bstats, skb);
-+unlock:
- 	spin_unlock(&p->tcf_lock);
- 	return p->tcf_action;
- }
+ 	priv->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->base)) {
 -- 
 2.35.1
 
