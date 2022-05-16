@@ -2,468 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DCA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 227C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344655AbiEPSOG (ORCPT
+        id S1344664AbiEPSOO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 14:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41400 "EHLO
+        Mon, 16 May 2022 14:14:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344617AbiEPSN6 (ORCPT
+        with ESMTP id S1344636AbiEPSN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 14:13:58 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32063DA58;
-        Mon, 16 May 2022 11:13:53 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id r30so3901629wra.13;
-        Mon, 16 May 2022 11:13:53 -0700 (PDT)
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897B23DA69;
+        Mon, 16 May 2022 11:13:55 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id j6so30195290ejc.13;
+        Mon, 16 May 2022 11:13:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qAh1w4oixfWwU61+5aeHb750MyVtmsWPesskKRuRyus=;
-        b=XenR5GM9zz9ILZpsFoyQsqtGth5oABymZLDmzCHtc1N4RdZj542y36ABQkeiQl31HG
-         Md7XzJitLsDB8d8MZ/AbD/TDhcddupfnPrTlmZRu0B1g1Kl6sfh99gwUMB+VVagz0w+m
-         aHtRkib2cektC3V7r+ESfN6njIXaagc/Fg888+/eZ4/h7gOxkVccOsgI065pcQKu+Qa/
-         VtWBxpvw0BSKfzDpwYbjl/UeOhj+fxbFLKU4AQ8hZ29lumNgY3IpPoSiuDdaYkQdCuze
-         N68m7U5gyCxhwEyS21T+bP1GKzObWm8ZKc5TDv9BujxH94rhHfjpSycFEp0Wz0wBbthZ
-         iZfQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jCwtnCEtWoS4wCjhgbr7CWNZGicJaxfw2KD2HwoiN7Y=;
+        b=ZpDsG84gAHO20eeA/45nqEQP+jYfssQPEG6EJ+xcAQ+4lGfKv+LNKKXd+SkJumRz3i
+         C4SpaCavvJ+qFkHMCgVoeI1Fc8LH5oWO1Sgf1GbvHplcd9Kv3n4kkZzjsUVi8yDowmJt
+         AhaLEznUoGZs3CcLNEG3xs9CLFZOf2wcYLN7paaQ7c9j2ocCVkr9yPU63JSSIx8YxX5R
+         RM/JEVoWf4eB/GRv1WZUTx+dnYFSiDk0+KMu8vsRX0G6lKclc4JcLsHB2b5EJ2Eq59jH
+         jGHefHaOaPGH+CE0R6OHn5tkz+nxVXWQRUA1/phMyFe0q83wjcqBgAhedZjssz10W7F3
+         NxqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qAh1w4oixfWwU61+5aeHb750MyVtmsWPesskKRuRyus=;
-        b=H7Gzmj111HrzcKXBIl3vMdXQKgGsD6umXYgsPK0H+t7Wd3XOWyUdivYXoN+E2iccCM
-         O9JP7qSnwjqomVJB1/coB3NR/HNjVQONnIt5nNX9E9qMnnSSQIVMfOURKUd4HXCnY6Xd
-         YOiaE056EWmAO/nsxcPy3HvlhYIo6jw9rwRJ9O3kNjhmYzWfb4vRYGuZnY/RSt/jXXNP
-         yaGFckoorahfqVDzjFYFULH9Z8Zhz2BYJ7KRhUeHw+IiMyFNCqgMTjF8k79+i06+Yil/
-         QMZwX89oBFF7UdSfJoK7zO8piVYT/o7Eb/qvu58fZqAWJBWPFZJAaPOs6DiIqJv+x8mr
-         EOhA==
-X-Gm-Message-State: AOAM531rlzFwOyf62tF+q3UO0CR0ShMEQ3kfXb+G1kHU+yuDmSg1kPJy
-        V/S6Fo/l9VZIHlSHCykZrTxO5GGbQQ/6zQ==
-X-Google-Smtp-Source: ABdhPJxkV8qkUufNWHnrMCLtV+2sBjdh4/rXaGuItqtHS8y6oN4/uZ/W/7/WlQndjn5rgMjPf3lV6Q==
-X-Received: by 2002:adf:e187:0:b0:20d:48e:5448 with SMTP id az7-20020adfe187000000b0020d048e5448mr7129224wrb.606.1652724832171;
-        Mon, 16 May 2022 11:13:52 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.36.128])
-        by smtp.gmail.com with ESMTPSA id o15-20020a05600002cf00b0020d0c9c95d3sm3276382wry.77.2022.05.16.11.13.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 11:13:51 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     jikos@kernel.org
-Cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stefanberzl@gmail.com,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH for-5.19/uclogic 4/4] HID: uclogic: Add support for XP-PEN Deco L
-Date:   Mon, 16 May 2022 20:13:23 +0200
-Message-Id: <20220516181323.59554-5-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220516181323.59554-1-jose.exposito89@gmail.com>
-References: <20220516181323.59554-1-jose.exposito89@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jCwtnCEtWoS4wCjhgbr7CWNZGicJaxfw2KD2HwoiN7Y=;
+        b=dgFT7gQb4U5ST2kS89TU1NwWYARSkGvgBp4VI+zeL9GO66bXGsWDAwdn4QdJwP/Ym8
+         VvphKCEtQo8sdnWO/xelasj+RZPI9aN1rtmi9el3ZOL6lnNO0xQrcNq4JTGrsyVwgxTg
+         kcR/gldnpUjzVPhUKOxKhRz/JO469yPQ1BkcEDZhT/a0sUKT9EKzK9/oJKmzNnFtFAnd
+         vBFHNl17mIXiqyiGPCu4qhaK77ASCauD/xR6QScIxSKvEbuFTYb8JvGGyIAzRxUF/Dau
+         Dz5LAJEHZrNgL6hQU3Omoq2+stz8ZLYEJip209MbUU+a8mLdeSXxd1ylu6HtqNeCOLca
+         dmQg==
+X-Gm-Message-State: AOAM532dbL7gxMf+cYTD1C1mPlW2LS9nt+dFD9qzh9zqhs9NswzMB+xE
+        gfybpZB1p0pALyZnHmW7my0isguSuWo=
+X-Google-Smtp-Source: ABdhPJzQaHtbrzv5AT/9yYAuuoygzwcm04GUa6WVFkn9kftMNYAKDPXLWGTDMMY3HX/Y4UyEy342yQ==
+X-Received: by 2002:a17:906:dc8f:b0:6f4:e6df:a48d with SMTP id cs15-20020a170906dc8f00b006f4e6dfa48dmr16746939ejc.206.1652724833996;
+        Mon, 16 May 2022 11:13:53 -0700 (PDT)
+Received: from [192.168.8.198] ([85.255.232.74])
+        by smtp.gmail.com with ESMTPSA id my35-20020a1709065a6300b006f3ef214dd2sm33950ejc.56.2022.05.16.11.13.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 11:13:53 -0700 (PDT)
+Message-ID: <152e8d96-28e9-0dda-8782-10690195643b@gmail.com>
+Date:   Mon, 16 May 2022 19:13:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [REGRESSION] lxc-stop hang on 5.17.x kernels
+Content-Language: en-US
+To:     Daniel Harding <dharding@living180.net>
+Cc:     regressions@lists.linux.dev, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        Jens Axboe <axboe@kernel.dk>,
+        Christian Brauner <christian.brauner@ubuntu.com>
+References: <7925e262-e0d4-6791-e43b-d37e9d693414@living180.net>
+ <6ad38ecc-b2a9-f0e9-f7c7-f312a2763f97@kernel.dk>
+ <ccf6cea1-1139-cd73-c4e5-dc9799708bdd@living180.net>
+ <bb283ff5-6820-d096-2fca-ae7679698a50@kernel.dk>
+ <371c01dd-258c-e428-7428-ff390b664752@kernel.dk>
+ <2436d42c-85ca-d060-6508-350c769804f1@gmail.com>
+ <ad9c31e5-ee75-4df2-c16d-b1461be1901a@living180.net>
+ <fb0dbd71-9733-0208-48f2-c5d22ed17510@gmail.com>
+ <a204ba93-7261-5c6e-1baf-e5427e26b124@living180.net>
+ <bd932b5a-9508-e58f-05f8-001503e4bd2b@gmail.com>
+ <12a57dd9-4423-a13d-559b-2b1dd2fb0ef3@living180.net>
+ <897dc597-fc0a-34ec-84b8-7e1c4901e0fc@leemhuis.info>
+ <c2f956e2-b235-9937-d554-424ae44c68e4@living180.net>
+ <41c86189-0d1f-60f0-ca8e-f80b3ccf5130@gmail.com>
+ <da56fa5f-0624-413e-74a1-545993940d27@gmail.com>
+ <3fc08243-f9e0-9cec-4207-883c55ccff78@living180.net>
+ <13028ff4-3565-f09e-818c-19e5f95fa60f@living180.net>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <13028ff4-3565-f09e-818c-19e5f95fa60f@living180.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The XP-PEN Deco L (UGEE) needs to be initialized by sending a buffer of
-magic data, discovered by sniffing the Windows driver traffic.
+On 5/16/22 16:13, Daniel Harding wrote:
+> On 5/16/22 16:57, Daniel Harding wrote:
+>> On 5/16/22 16:25, Pavel Begunkov wrote:
+>>> On 5/16/22 13:12, Pavel Begunkov wrote:
+>>>> On 5/15/22 19:34, Daniel Harding wrote:
+>>>>> On 5/15/22 11:20, Thorsten Leemhuis wrote:
+>>>>>> On 04.05.22 08:54, Daniel Harding wrote:
+>>>>>>> On 5/3/22 17:14, Pavel Begunkov wrote:
+>>>>>>>> On 5/3/22 08:37, Daniel Harding wrote:
+>>>>>>>>> [Resend with a smaller trace]
+>>>>>>>>> On 5/3/22 02:14, Pavel Begunkov wrote:
+>>>>>>>>>> On 5/2/22 19:49, Daniel Harding wrote:
+>>>>>>>>>>> On 5/2/22 20:40, Pavel Begunkov wrote:
+>>>>>>>>>>>> On 5/2/22 18:00, Jens Axboe wrote:
+>>>>>>>>>>>>> On 5/2/22 7:59 AM, Jens Axboe wrote:
+>>>>>>>>>>>>>> On 5/2/22 7:36 AM, Daniel Harding wrote:
+>>>>>>>>>>>>>>> On 5/2/22 16:26, Jens Axboe wrote:
+>>>>>>>>>>>>>>>> On 5/2/22 7:17 AM, Daniel Harding wrote:
+>>>>>>>>>>>>>>>>> I use lxc-4.0.12 on Gentoo, built with io-uring support
+>>>>>>>>>>>>>>>>> (--enable-liburing), targeting liburing-2.1.  My kernel
+>>>>>>>>>>>>>>>>> config is a
+>>>>>>>>>>>>>>>>> very lightly modified version of Fedora's generic kernel
+>>>>>>>>>>>>>>>>> config. After
+>>>>>>>>>>>>>>>>> moving from the 5.16.x series to the 5.17.x kernel series, I
+>>>>>>>>>>>>>>>>> started
+>>>>>>>>>>>>>>>>> noticed frequent hangs in lxc-stop. It doesn't happen 100%
+>>>>>>>>>>>>>>>>> of the
+>>>>>>>>>>>>>>>>> time, but definitely more than 50% of the time. Bisecting
+>>>>>>>>>>>>>>>>> narrowed
+>>>>>>>>>>>>>>>>> down the issue to commit
+>>>>>>>>>>>>>>>>> aa43477b040251f451db0d844073ac00a8ab66ee:
+>>>>>>>>>>>>>>>>> io_uring: poll rework. Testing indicates the problem is still
+>>>>>>>>>>>>>>>>> present
+>>>>>>>>>>>>>>>>> in 5.18-rc5. Unfortunately I do not have the expertise with the
+>>>>>>>>>>>>>>>>> codebases of either lxc or io-uring to try to debug the problem
+>>>>>>>>>>>>>>>>> further on my own, but I can easily apply patches to any of the
+>>>>>>>>>>>>>>>>> involved components (lxc, liburing, kernel) and rebuild for
+>>>>>>>>>>>>>>>>> testing or
+>>>>>>>>>>>>>>>>> validation.  I am also happy to provide any further
+>>>>>>>>>>>>>>>>> information that
+>>>>>>>>>>>>>>>>> would be helpful with reproducing or debugging the problem.
+>>>>>>>>>>>>>>>> Do you have a recipe to reproduce the hang? That would make it
+>>>>>>>>>>>>>>>> significantly easier to figure out.
+>>>>>>>>>>>>>>> I can reproduce it with just the following:
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>       sudo lxc-create --n lxc-test --template download --bdev
+>>>>>>>>>>>>>>> dir --dir /var/lib/lxc/lxc-test/rootfs -- -d ubuntu -r bionic
+>>>>>>>>>>>>>>> -a amd64
+>>>>>>>>>>>>>>>       sudo lxc-start -n lxc-test
+>>>>>>>>>>>>>>>       sudo lxc-stop -n lxc-test
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> The lxc-stop command never exits and the container continues
+>>>>>>>>>>>>>>> running.
+>>>>>>>>>>>>>>> If that isn't sufficient to reproduce, please let me know.
+>>>>>>>>>>>>>> Thanks, that's useful! I'm at a conference this week and hence have
+>>>>>>>>>>>>>> limited amount of time to debug, hopefully Pavel has time to
+>>>>>>>>>>>>>> take a look
+>>>>>>>>>>>>>> at this.
+>>>>>>>>>>>>> Didn't manage to reproduce. Can you try, on both the good and bad
+>>>>>>>>>>>>> kernel, to do:
+>>>>>>>>>>>> Same here, it doesn't reproduce for me
+>>>>>>>>>>> OK, sorry it wasn't something simple.
+>>>>>>>>>>>> # echo 1 > /sys/kernel/debug/tracing/events/io_uring/enable
+>>>>>>>>>>>>> run lxc-stop
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> # cp /sys/kernel/debug/tracing/trace ~/iou-trace
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> so we can see what's going on? Looking at the source, lxc is just
+>>>>>>>>>>>>> using
+>>>>>>>>>>>>> plain POLL_ADD, so I'm guessing it's not getting a notification
+>>>>>>>>>>>>> when it
+>>>>>>>>>>>>> expects to, or it's POLL_REMOVE not doing its job. If we have a
+>>>>>>>>>>>>> trace
+>>>>>>>>>>>>> from both a working and broken kernel, that might shed some light
+>>>>>>>>>>>>> on it.
+>>>>>>>>>>> It's late in my timezone, but I'll try to work on getting those
+>>>>>>>>>>> traces tomorrow.
+>>>>>>>>>> I think I got it, I've attached a trace.
+>>>>>>>>>>
+>>>>>>>>>> What's interesting is that it issues a multi shot poll but I don't
+>>>>>>>>>> see any kind of cancellation, neither cancel requests nor task/ring
+>>>>>>>>>> exit. Perhaps have to go look at lxc to see how it's supposed
+>>>>>>>>>> to work
+>>>>>>>>> Yes, that looks exactly like my bad trace.  I've attached good trace
+>>>>>>>>> (captured with linux-5.16.19) and a bad trace (captured with
+>>>>>>>>> linux-5.17.5).  These are the differences I noticed with just a
+>>>>>>>>> visual scan:
+>>>>>>>>>
+>>>>>>>>> * Both traces have three io_uring_submit_sqe calls at the very
+>>>>>>>>> beginning, but in the good trace, there are further
+>>>>>>>>> io_uring_submit_sqe calls throughout the trace, while in the bad
+>>>>>>>>> trace, there are none.
+>>>>>>>>> * The good trace uses a mask of c3 for io_uring_task_add much more
+>>>>>>>>> often than the bad trace:  the bad trace uses a mask of c3 only for
+>>>>>>>>> the very last call to io_uring_task_add, but a mask of 41 for the
+>>>>>>>>> other calls.
+>>>>>>>>> * In the good trace, many of the io_uring_complete calls have a
+>>>>>>>>> result of 195, while in the bad trace, they all have a result of 1.
+>>>>>>>>>
+>>>>>>>>> I don't know whether any of those things are significant or not, but
+>>>>>>>>> that's what jumped out at me.
+>>>>>>>>>
+>>>>>>>>> I have also attached a copy of the script I used to generate the
+>>>>>>>>> traces.  If there is anything further I can to do help debug, please
+>>>>>>>>> let me know.
+>>>>>>>> Good observations! thanks for traces.
+>>>>>>>>
+>>>>>>>> It sounds like multi-shot poll requests were getting downgraded
+>>>>>>>> to one-shot, which is a valid behaviour and was so because we
+>>>>>>>> didn't fully support some cases. If that's the reason, than
+>>>>>>>> the userspace/lxc is misusing the ABI. At least, that's the
+>>>>>>>> working hypothesis for now, need to check lxc.
+>>>>>>> So, I looked at the lxc source code, and it appears to at least try to
+>>>>>>> handle the case of multi-shot being downgraded to one-shot.  I don't
+>>>>>>> know enough to know if the code is actually correct however:
+>>>>>>>
+>>>>>>> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L165-L189
+>>>>>>> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L254
+>>>>>>> https://github.com/lxc/lxc/blob/7e37cc96bb94175a8e351025d26cc35dc2d10543/src/lxc/mainloop.c#L288-L290
+>>>>>> Hi, this is your Linux kernel regression tracker. Nothing happened here
+>>>>>> for round about ten days now afaics; or did the discussion continue
+>>>>>> somewhere else.
+>>>>>>
+>>>>>>  From what I gathered from this discussion is seems the root cause might
+>>>>>> be in LXC, but it was exposed by kernel change. That makes it sill a
+>>>>>> kernel regression that should be fixed; or is there a strong reason why
+>>>>>> we should let this one slip?
+>>>>>
+>>>>> No, there hasn't been any discussion since the email you replied to. I've done a bit more testing on my end, but without anything conclusive.  The one thing I can say is that my testing shows that LXC does correctly handle multi-shot poll requests which were being downgraded to one-shot in 5.16.x kernels, which I think invalidates Pavel's theory.  In 5.17.x kernels, those same poll requests are no longer being downgraded to one-shot requests, and thus under 5.17.x LXC is no longer re-arming those poll requests (but also shouldn't need to, according to what is being returned by the kernel). I don't know if this change in kernel behavior is related to the hang, or if it is just a side effect of other io-uring changes that made it into 5.17.  Nothing in the LXC's usage of io-uring seems obviously incorrect to me, but I am far from an expert.  I also did some work toward creating a simpler reproducer, without success (I was able to get a simple program using io-uring 
+>>>>> running, but never could get it to hang).  ISTM that this is still a kernel regression, unless someone can point out a definite fault in the way LXC is using io-uring.
+>>>>
+>>>> Haven't had time to debug it. Apparently LXC is stuck on
+>>>> read(2) terminal fd. Not yet clear what is the reason.
+>>>
+>>> How it was with oneshots:
+>>>
+>>> 1: kernel: poll fires, add a CQE
+>>> 2: kernel: remove poll
+>>> 3: userspace: get CQE
+>>> 4: userspace: read(terminal_fd);
+>>> 5: userspace: add new poll
+>>> 6: goto 1)
+>>>
+>>> What might happen and actually happens with multishot:
+>>>
+>>> 1: kernel: poll fires, add CQE1
+>>> 2: kernel: poll fires again, add CQE2
+>>> 3: userspace: get CQE1
+>>> 4: userspace: read(terminal_fd); // reads all data, for both CQE1 and CQE2
+>>> 5: userspace: get CQE2
+>>> 6: userspace: read(terminal_fd); // nothing to read, hangs here
+>>>
+>>> It should be the read in lxc_terminal_ptx_io().
+>>>
+>>> IMHO, it's not a regression but a not perfect feature API and/or
+>>> an API misuse.
+>>>
+>>> Cc: Christian Brauner
+>>>
+>>> Christian, in case you may have some input on the LXC side of things.
+>>> Daniel reported an LXC problem when it uses io_uring multishot poll requests.
+>>> Before aa43477b04025 ("io_uring: poll rework"), multishot poll requests for
+>>> tty/pty and some other files were always downgraded to oneshots, which had
+>>> been fixed by the commit and exposed the problem. I hope the example above
+>>> explains it, but please let me know if it needs more details
+>>
+>> Pavel, I had actually just started a draft email with the same theory (although you stated it much more clearly than I could have).  I'm working on debugging the LXC side, but I'm pretty sure the issue is due to LXC using blocking reads and getting stuck exactly as you describe.  If I can confirm this, I'll go ahead and mark this regression as invalid and file an issue with LXC. Thanks for your help and patience.
+> 
+> Yes, it does appear that was the problem.  The attach POC patch against LXC fixes the hang.  The kernel is working as intended.
 
-In order to differentiate UGEE tablets that need this kind of
-initialization from the previous ones, name them v2 internally and
-create an entry point for them.
+Daniel, that's great, thanks for confirming!
 
-After initialization, the template report descriptors can be discovered
-by parsing a string descriptor, similar to the one exposed by HUION v1
-devices.
-
-Add all the required elements to support the device.
-
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/hid/hid-ids.h            |   1 +
- drivers/hid/hid-uclogic-core.c   |   2 +
- drivers/hid/hid-uclogic-params.c | 199 +++++++++++++++++++++++++++++++
- drivers/hid/hid-uclogic-rdesc.c  | 102 ++++++++++++++++
- drivers/hid/hid-uclogic-rdesc.h  |   8 ++
- 5 files changed, 312 insertions(+)
-
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index f8b3774a3a10..ea4e60de46db 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -1272,6 +1272,7 @@
- #define USB_DEVICE_ID_UGEE_XPPEN_TABLET_G540	0x0075
- #define USB_DEVICE_ID_UGEE_XPPEN_TABLET_G640	0x0094
- #define USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO01	0x0042
-+#define USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO_L	0x0935
- #define USB_DEVICE_ID_UGEE_XPPEN_TABLET_STAR06	0x0078
- #define USB_DEVICE_ID_UGEE_TABLET_G5		0x0074
- #define USB_DEVICE_ID_UGEE_TABLET_EX07S		0x0071
-diff --git a/drivers/hid/hid-uclogic-core.c b/drivers/hid/hid-uclogic-core.c
-index c0fe66e50c58..47a17375c7fc 100644
---- a/drivers/hid/hid-uclogic-core.c
-+++ b/drivers/hid/hid-uclogic-core.c
-@@ -521,6 +521,8 @@ static const struct hid_device_id uclogic_devices[] = {
- 				USB_DEVICE_ID_UGEE_XPPEN_TABLET_G640) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE,
- 				USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO01) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE,
-+				USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO_L) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE,
- 				USB_DEVICE_ID_UGEE_XPPEN_TABLET_STAR06) },
- 	{ }
-diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index b43142f98a8b..00090d11b413 100644
---- a/drivers/hid/hid-uclogic-params.c
-+++ b/drivers/hid/hid-uclogic-params.c
-@@ -1002,6 +1002,199 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
- 	return rc;
- }
- 
-+/**
-+ * uclogic_probe_interface() - some tablets, like the Parblo A610 PLUS V2 or
-+ * the XP-PEN Deco Mini 7, need to be initialized by sending them magic data.
-+ *
-+ * @hdev:	The HID device of the tablet interface to initialize and get
-+ *		parameters from. Cannot be NULL.
-+ * @magic_arr:	The magic data that should be sent to probe the interface.
-+ *		Cannot be NULL.
-+ * @magic_size:	Size of the magic data.
-+ * @endpoint:	Endpoint where the magic data should be sent.
-+ *
-+ * Returns:
-+ *	Zero, if successful. A negative errno code on error.
-+ */
-+static int uclogic_probe_interface(struct hid_device *hdev, u8 *magic_arr,
-+				   int magic_size, int endpoint)
-+{
-+	struct usb_device *udev;
-+	unsigned int pipe = 0;
-+	int sent;
-+	u8 *buf = NULL;
-+	int rc = 0;
-+
-+	if (!hdev || !magic_arr) {
-+		rc = -EINVAL;
-+		goto cleanup;
-+	}
-+
-+	buf = kmemdup(magic_arr, magic_size, GFP_KERNEL);
-+	if (!buf) {
-+		rc = -ENOMEM;
-+		goto cleanup;
-+	}
-+
-+	udev = hid_to_usb_dev(hdev);
-+	pipe = usb_sndintpipe(udev, endpoint);
-+
-+	rc = usb_interrupt_msg(udev, pipe, buf, magic_size, &sent, 1000);
-+	if (rc || sent != magic_size) {
-+		hid_err(hdev, "Interface probing failed: %d\n", rc);
-+		rc = -1;
-+		goto cleanup;
-+	}
-+
-+	rc = 0;
-+cleanup:
-+	kfree(buf);
-+	return rc;
-+}
-+
-+/**
-+ * uclogic_params_ugee_v2_init() - initialize a UGEE graphics tablets by
-+ * discovering their parameters.
-+ *
-+ * These tables, internally designed as v2 to differentiate them from older
-+ * models, expect a payload of magic data in orther to be switched to the fully
-+ * functional mode and expose their parameters in a similar way to the
-+ * information present in uclogic_params_pen_init_v1() but with some
-+ * differences.
-+ *
-+ * @params:	Parameters to fill in (to be cleaned with
-+ *		uclogic_params_cleanup()). Not modified in case of error.
-+ *		Cannot be NULL.
-+ * @hdev:	The HID device of the tablet interface to initialize and get
-+ *		parameters from. Cannot be NULL.
-+ *
-+ * Returns:
-+ *	Zero, if successful. A negative errno code on error.
-+ */
-+static int uclogic_params_ugee_v2_init(struct uclogic_params *params,
-+				       struct hid_device *hdev)
-+{
-+	int rc = 0;
-+	struct usb_device *udev;
-+	struct usb_interface *iface;
-+	__u8 bInterfaceNumber;
-+	const int str_desc_len = 12;
-+	__u8 *str_desc = NULL;
-+	__u8 *rdesc_pen = NULL;
-+	__u8 *rdesc_frame = NULL;
-+	s32 desc_params[UCLOGIC_RDESC_PH_ID_NUM];
-+	s32 resolution;
-+	__u8 magic_arr[] = {
-+		0x02, 0xb0, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-+	};
-+	/* The resulting parameters (noop) */
-+	struct uclogic_params p = {0, };
-+
-+	if (!params || !hdev) {
-+		rc = -EINVAL;
-+		goto cleanup;
-+	}
-+
-+	udev = hid_to_usb_dev(hdev);
-+	iface = to_usb_interface(hdev->dev.parent);
-+	bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
-+	if (bInterfaceNumber != 2) {
-+		uclogic_params_init_invalid(&p);
-+		goto output;
-+	}
-+
-+	/*
-+	 * Initialize the interface by sending magic data.
-+	 * The specific data was discovered by sniffing the Windows driver
-+	 * traffic.
-+	 */
-+	rc = uclogic_probe_interface(hdev, magic_arr, sizeof(magic_arr), 0x03);
-+	if (rc) {
-+		uclogic_params_init_invalid(&p);
-+		goto output;
-+	}
-+
-+	/*
-+	 * Read the string descriptor containing pen and frame parameters.
-+	 * The specific string descriptor and data were discovered by sniffing
-+	 * the Windows driver traffic.
-+	 */
-+	rc = uclogic_params_get_str_desc(&str_desc, hdev, 100, str_desc_len);
-+	if (rc != str_desc_len) {
-+		hid_err(hdev, "failed retrieving pen and frame parameters: %d\n", rc);
-+		uclogic_params_init_invalid(&p);
-+		goto output;
-+	}
-+
-+	desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] =
-+		get_unaligned_le16(str_desc + 2);
-+	desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] =
-+		get_unaligned_le16(str_desc + 4);
-+	desc_params[UCLOGIC_RDESC_FRAME_PH_ID_UM] = str_desc[6];
-+	desc_params[UCLOGIC_RDESC_PEN_PH_ID_PRESSURE_LM] =
-+		get_unaligned_le16(str_desc + 8);
-+	resolution = get_unaligned_le16(str_desc + 10);
-+	if (resolution == 0) {
-+		desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] = 0;
-+		desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] = 0;
-+	} else {
-+		desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] =
-+			desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] * 1000 /
-+			resolution;
-+		desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] =
-+			desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] * 1000 /
-+			resolution;
-+	}
-+	kfree(str_desc);
-+	str_desc = NULL;
-+
-+	/* Initialize the pen interface */
-+	rdesc_pen = uclogic_rdesc_template_apply(
-+				uclogic_rdesc_ugee_v2_pen_template_arr,
-+				uclogic_rdesc_ugee_v2_pen_template_size,
-+				desc_params, ARRAY_SIZE(desc_params));
-+	if (!rdesc_pen) {
-+		rc = -ENOMEM;
-+		goto cleanup;
-+	}
-+
-+	p.pen.desc_ptr = rdesc_pen;
-+	p.pen.desc_size = uclogic_rdesc_ugee_v2_pen_template_size;
-+	p.pen.id = 0x02;
-+	p.pen.subreport_list[0].value = 0xf0;
-+	p.pen.subreport_list[0].id = UCLOGIC_RDESC_V1_FRAME_ID;
-+
-+	/* Initialize the frame interface */
-+	rdesc_frame = uclogic_rdesc_template_apply(
-+				uclogic_rdesc_ugee_v2_frame_btn_template_arr,
-+				uclogic_rdesc_ugee_v2_frame_btn_template_size,
-+				desc_params, ARRAY_SIZE(desc_params));
-+	if (!rdesc_frame) {
-+		rc = -ENOMEM;
-+		goto cleanup;
-+	}
-+
-+	rc = uclogic_params_frame_init_with_desc(&p.frame_list[0],
-+						 rdesc_frame,
-+						 uclogic_rdesc_ugee_v2_frame_btn_template_size,
-+						 UCLOGIC_RDESC_V1_FRAME_ID);
-+	kfree(rdesc_frame);
-+	if (rc) {
-+		uclogic_params_init_invalid(&p);
-+		goto output;
-+	}
-+
-+output:
-+	/* Output parameters */
-+	memcpy(params, &p, sizeof(*params));
-+	memset(&p, 0, sizeof(p));
-+	rc = 0;
-+cleanup:
-+	kfree(str_desc);
-+	uclogic_params_cleanup(&p);
-+	return rc;
-+}
-+
- /**
-  * uclogic_params_init() - initialize a tablet interface and discover its
-  * parameters.
-@@ -1237,6 +1430,12 @@ int uclogic_params_init(struct uclogic_params *params,
- 			uclogic_params_init_invalid(&p);
- 		}
- 		break;
-+	case VID_PID(USB_VENDOR_ID_UGEE,
-+		     USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO_L):
-+		rc = uclogic_params_ugee_v2_init(&p, hdev);
-+		if (rc != 0)
-+			goto cleanup;
-+		break;
- 	case VID_PID(USB_VENDOR_ID_TRUST,
- 		     USB_DEVICE_ID_TRUST_PANORA_TABLET):
- 	case VID_PID(USB_VENDOR_ID_UGEE,
-diff --git a/drivers/hid/hid-uclogic-rdesc.c b/drivers/hid/hid-uclogic-rdesc.c
-index cf04e71b7bb5..c552c989976a 100644
---- a/drivers/hid/hid-uclogic-rdesc.c
-+++ b/drivers/hid/hid-uclogic-rdesc.c
-@@ -859,6 +859,108 @@ const __u8 uclogic_rdesc_v2_frame_dial_arr[] = {
- const size_t uclogic_rdesc_v2_frame_dial_size =
- 			sizeof(uclogic_rdesc_v2_frame_dial_arr);
- 
-+/* Fixed report descriptor template for UGEE v2 pen reports */
-+const __u8 uclogic_rdesc_ugee_v2_pen_template_arr[] = {
-+	0x05, 0x0d,         /*  Usage Page (Digitizers),                */
-+	0x09, 0x01,         /*  Usage (Digitizer),                      */
-+	0xa1, 0x01,         /*  Collection (Application),               */
-+	0x85, 0x02,         /*      Report ID (2),                      */
-+	0x09, 0x20,         /*      Usage (Stylus),                     */
-+	0xa1, 0x00,         /*      Collection (Physical),              */
-+	0x09, 0x42,         /*          Usage (Tip Switch),             */
-+	0x09, 0x44,         /*          Usage (Barrel Switch),          */
-+	0x09, 0x46,         /*          Usage (Tablet Pick),            */
-+	0x75, 0x01,         /*          Report Size (1),                */
-+	0x95, 0x03,         /*          Report Count (3),               */
-+	0x14,               /*          Logical Minimum (0),            */
-+	0x25, 0x01,         /*          Logical Maximum (1),            */
-+	0x81, 0x02,         /*          Input (Variable),               */
-+	0x95, 0x02,         /*          Report Count (2),               */
-+	0x81, 0x03,         /*          Input (Constant, Variable),     */
-+	0x09, 0x32,         /*          Usage (In Range),               */
-+	0x95, 0x01,         /*          Report Count (1),               */
-+	0x81, 0x02,         /*          Input (Variable),               */
-+	0x95, 0x02,         /*          Report Count (2),               */
-+	0x81, 0x03,         /*          Input (Constant, Variable),     */
-+	0x75, 0x10,         /*          Report Size (16),               */
-+	0x95, 0x01,         /*          Report Count (1),               */
-+	0x35, 0x00,         /*          Physical Minimum (0),           */
-+	0xa4,               /*          Push,                           */
-+	0x05, 0x01,         /*          Usage Page (Desktop),           */
-+	0x09, 0x30,         /*          Usage (X),                      */
-+	0x65, 0x13,         /*          Unit (Inch),                    */
-+	0x55, 0x0d,         /*          Unit Exponent (-3),             */
-+	0x27, UCLOGIC_RDESC_PEN_PH(X_LM),
-+			    /*          Logical Maximum (PLACEHOLDER),  */
-+	0x47, UCLOGIC_RDESC_PEN_PH(X_PM),
-+			    /*          Physical Maximum (PLACEHOLDER), */
-+	0x81, 0x02,         /*          Input (Variable),               */
-+	0x09, 0x31,         /*          Usage (Y),                      */
-+	0x27, UCLOGIC_RDESC_PEN_PH(Y_LM),
-+			    /*          Logical Maximum (PLACEHOLDER),  */
-+	0x47, UCLOGIC_RDESC_PEN_PH(Y_PM),
-+			    /*          Physical Maximum (PLACEHOLDER), */
-+	0x81, 0x02,         /*          Input (Variable),               */
-+	0xb4,               /*          Pop,                            */
-+	0x09, 0x30,         /*          Usage (Tip Pressure),           */
-+	0x45, 0x00,         /*          Physical Maximum (0),           */
-+	0x27, UCLOGIC_RDESC_PEN_PH(PRESSURE_LM),
-+			    /*          Logical Maximum (PLACEHOLDER),  */
-+	0x75, 0x0D,         /*          Report Size (13),               */
-+	0x95, 0x01,         /*          Report Count (1),               */
-+	0x81, 0x02,         /*          Input (Variable),               */
-+	0x75, 0x01,         /*          Report Size (1),                */
-+	0x95, 0x03,         /*          Report Count (3),               */
-+	0x81, 0x01,         /*          Input (Constant),               */
-+	0x09, 0x3d,         /*          Usage (X Tilt),                 */
-+	0x35, 0xC3,         /*          Physical Minimum (-61),         */
-+	0x45, 0x3C,         /*          Physical Maximum (60),          */
-+	0x15, 0xC3,         /*          Logical Minimum (-61),          */
-+	0x25, 0x3C,         /*          Logical Maximum (60),           */
-+	0x75, 0x08,         /*          Report Size (8),                */
-+	0x95, 0x01,         /*          Report Count (1),               */
-+	0x81, 0x02,         /*          Input (Variable),               */
-+	0x09, 0x3e,         /*          Usage (Y Tilt),                 */
-+	0x35, 0xC3,         /*          Physical Minimum (-61),         */
-+	0x45, 0x3C,         /*          Physical Maximum (60),          */
-+	0x15, 0xC3,         /*          Logical Minimum (-61),          */
-+	0x25, 0x3C,         /*          Logical Maximum (60),           */
-+	0x81, 0x02,         /*          Input (Variable),               */
-+	0xc0,               /*      End Collection,                     */
-+	0xc0,               /*  End Collection                          */
-+};
-+const size_t uclogic_rdesc_ugee_v2_pen_template_size =
-+			sizeof(uclogic_rdesc_ugee_v2_pen_template_arr);
-+
-+/* Fixed report descriptor template for UGEE v2 frame reports (buttons only) */
-+const __u8 uclogic_rdesc_ugee_v2_frame_btn_template_arr[] = {
-+	0x05, 0x01,         /*  Usage Page (Desktop),                   */
-+	0x09, 0x07,         /*  Usage (Keypad),                         */
-+	0xA1, 0x01,         /*  Collection (Application),               */
-+	0x85, UCLOGIC_RDESC_V1_FRAME_ID,
-+			    /*      Report ID,                          */
-+	0x05, 0x0D,         /*      Usage Page (Digitizer),             */
-+	0x09, 0x39,         /*      Usage (Tablet Function Keys),       */
-+	0xA0,               /*      Collection (Physical),              */
-+	0x75, 0x01,         /*          Report Size (1),                */
-+	0x95, 0x08,         /*          Report Count (8),               */
-+	0x81, 0x01,         /*          Input (Constant),               */
-+	0x05, 0x09,         /*          Usage Page (Button),            */
-+	0x19, 0x01,         /*          Usage Minimum (01h),            */
-+	UCLOGIC_RDESC_FRAME_PH_BTN,
-+			    /*          Usage Maximum (PLACEHOLDER),    */
-+	0x95, 0x0A,         /*          Report Count (10),              */
-+	0x14,               /*          Logical Minimum (0),            */
-+	0x25, 0x01,         /*          Logical Maximum (1),            */
-+	0x81, 0x02,         /*          Input (Variable),               */
-+	0x95, 0x46,         /*          Report Count (70),              */
-+	0x81, 0x01,         /*          Input (Constant),               */
-+	0xC0,               /*      End Collection,                     */
-+	0xC0                /*  End Collection                          */
-+};
-+const size_t uclogic_rdesc_ugee_v2_frame_btn_template_size =
-+			sizeof(uclogic_rdesc_ugee_v2_frame_btn_template_arr);
-+
- /* Fixed report descriptor for Ugee EX07 frame */
- const __u8 uclogic_rdesc_ugee_ex07_frame_arr[] = {
- 	0x05, 0x01,             /*  Usage Page (Desktop),                   */
-diff --git a/drivers/hid/hid-uclogic-rdesc.h b/drivers/hid/hid-uclogic-rdesc.h
-index 3d78299f082d..86e64a9ee6bd 100644
---- a/drivers/hid/hid-uclogic-rdesc.h
-+++ b/drivers/hid/hid-uclogic-rdesc.h
-@@ -161,6 +161,14 @@ extern const size_t uclogic_rdesc_v2_frame_dial_size;
- /* Device ID byte offset in v2 frame dial reports */
- #define UCLOGIC_RDESC_V2_FRAME_DIAL_DEV_ID_BYTE	0x4
- 
-+/* Fixed report descriptor template for UGEE v2 pen reports */
-+extern const __u8 uclogic_rdesc_ugee_v2_pen_template_arr[];
-+extern const size_t uclogic_rdesc_ugee_v2_pen_template_size;
-+
-+/* Fixed report descriptor template for UGEE v2 frame reports (buttons only) */
-+extern const __u8 uclogic_rdesc_ugee_v2_frame_btn_template_arr[];
-+extern const size_t uclogic_rdesc_ugee_v2_frame_btn_template_size;
-+
- /* Fixed report descriptor for Ugee EX07 frame */
- extern const __u8 uclogic_rdesc_ugee_ex07_frame_arr[];
- extern const size_t uclogic_rdesc_ugee_ex07_frame_size;
 -- 
-2.25.1
-
+Pavel Begunkov
