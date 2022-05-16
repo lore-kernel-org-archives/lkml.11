@@ -2,267 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B44C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF08AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345326AbiEPTJU (ORCPT
+        id S1345328AbiEPTKB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
+        Mon, 16 May 2022 15:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345311AbiEPTJS (ORCPT
+        with ESMTP id S237001AbiEPTJ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:09:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867723969C;
-        Mon, 16 May 2022 12:09:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13073614C6;
-        Mon, 16 May 2022 19:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C7ACC385AA;
-        Mon, 16 May 2022 19:09:15 +0000 (UTC)
-From:   Clark Williams <williams@redhat.com>
-Subject: [ANNOUNCE] 5.15.40-rt43
-Date:   Mon, 16 May 2022 19:08:25 -0000
-Message-ID: <165272810508.507274.552990901918954361@puck.lan>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        John Kacur <jkacur@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Wagner <daniel.wagner@suse.com>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>,
-        Clark Williams <williams@redhat.com>,
-        Pavel Machek <pavel@denx.de>
+        Mon, 16 May 2022 15:09:59 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3749A39164
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:09:58 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id b94-20020a25a267000000b0064ba19b0dedso7590741ybi.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:09:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=OsfXXuRBMtyyl4vBjBv793drneZEBuNK1ZgrRoVyJEE=;
+        b=H6qVcawecXcVuKBkgGDdR5WWZXwaZzeFs3wdTjIvH7IVnzSO+AlfDGdcDQ8APaJ/GV
+         i/FgdgFOVfUDu/6fFEm0GgtFffPLah+qnuPrZbT3KbG2wzEQJlT43xo7gUFBzDCO5J32
+         nTaAmp66RykdnzhkspOQujBiYffSrjxNX05ECj3A5oCiePv7KcjwN1syyjq2rquatFXE
+         jjKUGQg03o8a6Avd1R05Fxz45o9VfrgCKL3tQxKyfxxJuKrxRjiG9D+17Ep0HgebdmRI
+         P7G/yFqHInKR/BaJ3p2TO/FjMxIz1Oj1bWk2IQgACctuhE8TGXG/zaRwzgliwDql5HgW
+         EOqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=OsfXXuRBMtyyl4vBjBv793drneZEBuNK1ZgrRoVyJEE=;
+        b=HpfNBxBCoZhO2wZZXMEU+J1zZZrMHD5KA9oryyUf/RP2O6BXb07pFcR0/LejS6OVc2
+         8ex0+SPSAncfpHzpia+O9ZcIVmZFF40MZjHFT4IsK8mhmo9D0+MbdFikGCTRMJuTZSWT
+         5ksbALROY0cjzONFOBTtsVYvrIuHnoA9YVkiY+KIw/A+ref/JBnbFbc6Kad81bQYF6cb
+         1nOiU9pMDxbQk65owo/vAObio9eh/oNPT32ar1ptMK/dbI/vrFxMxAP6SN/E1k/VyHgg
+         sW63TYxwg93nBRGbShjk6/nuSsLH+4n0fX1qggGSWqr3ZLrybeLCn5unegvDnSE9Kmdu
+         LHhA==
+X-Gm-Message-State: AOAM533h6wbkZG3q+JAo3ZZ/goIKqC1FApZtJLBBZu8sbTjMnXmL8HHN
+        Jnj0WfPGJ6Wb6cfoXweZmLGFo8kHA+s=
+X-Google-Smtp-Source: ABdhPJzHn9obxwzCw/t1KsdsQpcnOlbeyWKX3+K+W78Qasij2Bb0eKBEK44BUWcQ/af+ijFcNjipQ6Q8cek=
+X-Received: from haoluo.svl.corp.google.com ([2620:15c:2cd:202:e952:d4d4:b0de:c336])
+ (user=haoluo job=sendgmr) by 2002:a05:6902:507:b0:64d:e8c6:942c with SMTP id
+ x7-20020a056902050700b0064de8c6942cmr1893070ybs.267.1652728197301; Mon, 16
+ May 2022 12:09:57 -0700 (PDT)
+Date:   Mon, 16 May 2022 12:09:51 -0700
+Message-Id: <20220516190951.3144144-1-haoluo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+Subject: [PATCH] kernfs: Separate kernfs_pr_cont_buf and rename_lock.
+From:   Hao Luo <haoluo@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tejun Heo <tj@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Hao Luo <haoluo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello RT-list!
+Previously the protection of kernfs_pr_cont_buf was piggy backed by
+rename_lock, which means that pr_cont() needs to be protected under
+rename_lock. This can cause potential circular lock dependencies.
 
-I'm pleased to announce the 5.15.40-rt43 stable release.
+If there is an OOM, we have the following call hierarchy:
 
-You can get this release via the git tree at:
+ -> cpuset_print_current_mems_allowed()
+   -> pr_cont_cgroup_name()
+     -> pr_cont_kernfs_name()
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
+pr_cont_kernfs_name() will grab rename_lock and call printk. So we have
+the following lock dependencies:
 
-  branch: v5.15-rt
-  Head SHA1: 3122b8942f4d214f432a601d1646ed08b1a0d381
+ kernfs_rename_lock -> console_sem
 
-Or to build 5.15.40-rt43 directly, the following patches should be applied:
+Sometimes, printk does a wakeup before releasing console_sem, which has
+the dependence chain:
 
-  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.15.tar.xz
+ console_sem -> p->pi_lock -> rq->lock
 
-  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.15.40.xz
+Now, imagine one wants to read cgroup_name under rq->lock, for example,
+printing cgroup_name in a tracepoint in the scheduler code. They will
+be holding rq->lock and take rename_lock:
 
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.15/patch-5.15.40-rt43.patch.xz
+ rq->lock -> kernfs_rename_lock
 
+Now they will deadlock.
 
-Enjoy!
-Clark
+A prevention to this circular lock dependency is to separate the
+protection of pr_cont_buf from rename_lock. In principle, rename_lock
+is to protect the integrity of cgroup name when copying to buf. Once
+pr_cont_buf has got its content, rename_lock can be dropped. So it's
+safe to drop rename_lock after kernfs_name_locked (and
+kernfs_path_from_node_locked) and rely on a dedicated pr_cont_lock
+to protect pr_cont_buf.
 
-Changes from v5.15.39-rt42:
+Acked-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Hao Luo <haoluo@google.com>
 ---
+ fs/kernfs/dir.c | 31 +++++++++++++++++++------------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
-Arnaldo Carvalho de Melo (1):
-      tools arch: Update arch/x86/lib/mem{cpy,set}_64.S copies used in 'perf bench mem memcpy'
+diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
+index e205fde7163a..6eca72cfa1f2 100644
+--- a/fs/kernfs/dir.c
++++ b/fs/kernfs/dir.c
+@@ -18,7 +18,15 @@
+ #include "kernfs-internal.h"
+ 
+ static DEFINE_SPINLOCK(kernfs_rename_lock);	/* kn->parent and ->name */
+-static char kernfs_pr_cont_buf[PATH_MAX];	/* protected by rename_lock */
++/*
++ * Don't use rename_lock to piggy back on pr_cont_buf. We don't want to
++ * call pr_cont() while holding rename_lock. Because sometimes pr_cont()
++ * will perform wakeups when releasing console_sem. Holding rename_lock
++ * will introduce deadlock if the scheduler reads the kernfs_name in the
++ * wakeup path.
++ */
++static DEFINE_SPINLOCK(kernfs_pr_cont_lock);
++static char kernfs_pr_cont_buf[PATH_MAX];	/* protected by pr_cont_lock */
+ static DEFINE_SPINLOCK(kernfs_idr_lock);	/* root->ino_idr */
+ 
+ #define rb_to_kn(X) rb_entry((X), struct kernfs_node, rb)
+@@ -229,12 +237,12 @@ void pr_cont_kernfs_name(struct kernfs_node *kn)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&kernfs_rename_lock, flags);
++	spin_lock_irqsave(&kernfs_pr_cont_lock, flags);
+ 
+-	kernfs_name_locked(kn, kernfs_pr_cont_buf, sizeof(kernfs_pr_cont_buf));
++	kernfs_name(kn, kernfs_pr_cont_buf, sizeof(kernfs_pr_cont_buf));
+ 	pr_cont("%s", kernfs_pr_cont_buf);
+ 
+-	spin_unlock_irqrestore(&kernfs_rename_lock, flags);
++	spin_unlock_irqrestore(&kernfs_pr_cont_lock, flags);
+ }
+ 
+ /**
+@@ -248,10 +256,10 @@ void pr_cont_kernfs_path(struct kernfs_node *kn)
+ 	unsigned long flags;
+ 	int sz;
+ 
+-	spin_lock_irqsave(&kernfs_rename_lock, flags);
++	spin_lock_irqsave(&kernfs_pr_cont_lock, flags);
+ 
+-	sz = kernfs_path_from_node_locked(kn, NULL, kernfs_pr_cont_buf,
+-					  sizeof(kernfs_pr_cont_buf));
++	sz = kernfs_path_from_node(kn, NULL, kernfs_pr_cont_buf,
++				   sizeof(kernfs_pr_cont_buf));
+ 	if (sz < 0) {
+ 		pr_cont("(error)");
+ 		goto out;
+@@ -265,7 +273,7 @@ void pr_cont_kernfs_path(struct kernfs_node *kn)
+ 	pr_cont("%s", kernfs_pr_cont_buf);
+ 
+ out:
+-	spin_unlock_irqrestore(&kernfs_rename_lock, flags);
++	spin_unlock_irqrestore(&kernfs_pr_cont_lock, flags);
+ }
+ 
+ /**
+@@ -823,13 +831,12 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
+ 
+ 	lockdep_assert_held_read(&kernfs_root(parent)->kernfs_rwsem);
+ 
+-	/* grab kernfs_rename_lock to piggy back on kernfs_pr_cont_buf */
+-	spin_lock_irq(&kernfs_rename_lock);
++	spin_lock_irq(&kernfs_pr_cont_lock);
+ 
+ 	len = strlcpy(kernfs_pr_cont_buf, path, sizeof(kernfs_pr_cont_buf));
+ 
+ 	if (len >= sizeof(kernfs_pr_cont_buf)) {
+-		spin_unlock_irq(&kernfs_rename_lock);
++		spin_unlock_irq(&kernfs_pr_cont_lock);
+ 		return NULL;
+ 	}
+ 
+@@ -841,7 +848,7 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
+ 		parent = kernfs_find_ns(parent, name, ns);
+ 	}
+ 
+-	spin_unlock_irq(&kernfs_rename_lock);
++	spin_unlock_irq(&kernfs_pr_cont_lock);
+ 
+ 	return parent;
+ }
+-- 
+2.36.1.124.g0e6072fb45-goog
 
-Borislav Petkov (1):
-      kvm/emulate: Fix SETcc emulation function offsets with SLS
-
-Clark Williams (2):
-      Merge tag 'v5.15.40' into v5.15-rt
-      'Linux 5.15.40-rt43'
-
-Gleb Fotengauer-Malinovskiy (1):
-      rfkill: uapi: fix RFKILL_IOCTL_MAX_SIZE ioctl request definition
-
-Greg Kroah-Hartman (1):
-      Linux 5.15.40
-
-Itay Iellin (1):
-      Bluetooth: Fix the creation of hdev->name
-
-Jan Kara (1):
-      udf: Avoid using stale lengthOfImpUse
-
-Masahiro Yamada (1):
-      kbuild: move objtool_args back to scripts/Makefile.build
-
-Miaohe Lin (1):
-      mm/mlock: fix potential imbalanced rlimit ucounts adjustment
-
-Muchun Song (4):
-      mm: fix missing cache flush for all tail pages of compound page
-      mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
-      mm: shmem: fix missing cache flush in shmem_mfill_atomic_pte()
-      mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-
-Naoya Horiguchi (1):
-      mm/hwpoison: fix error page recovered but reported "not recovered"
-
-Peter Xu (1):
-      mm: fix invalid page pointer returned with FOLL_PIN gups
-
-Peter Zijlstra (8):
-      x86/lib/atomic64_386_32: Rename things
-      x86: Prepare asm files for straight-line-speculation
-      x86: Prepare inline-asm for straight-line-speculation
-      objtool: Add straight-line-speculation validation
-      x86/alternative: Relax text_poke_bp() constraint
-      x86: Add straight-line-speculation mitigation
-      crypto: x86/poly1305 - Fixup SLS
-      objtool: Fix SLS validation for kcov tail-call replacement
----
-Makefile                                      |  2 +-
- arch/x86/Kconfig                              | 12 ++++
- arch/x86/Makefile                             |  4 ++
- arch/x86/boot/compressed/efi_thunk_64.S       |  2 +-
- arch/x86/boot/compressed/head_64.S            |  8 +--
- arch/x86/boot/compressed/mem_encrypt.S        |  6 +-
- arch/x86/crypto/aegis128-aesni-asm.S          | 48 +++++++--------
- arch/x86/crypto/aes_ctrby8_avx-x86_64.S       |  2 +-
- arch/x86/crypto/aesni-intel_asm.S             | 56 ++++++++---------
- arch/x86/crypto/aesni-intel_avx-x86_64.S      | 40 ++++++-------
- arch/x86/crypto/blake2s-core.S                |  4 +-
- arch/x86/crypto/blowfish-x86_64-asm_64.S      | 12 ++--
- arch/x86/crypto/camellia-aesni-avx-asm_64.S   | 14 ++---
- arch/x86/crypto/camellia-aesni-avx2-asm_64.S  | 14 ++---
- arch/x86/crypto/camellia-x86_64-asm_64.S      | 12 ++--
- arch/x86/crypto/cast5-avx-x86_64-asm_64.S     | 12 ++--
- arch/x86/crypto/cast6-avx-x86_64-asm_64.S     | 10 ++--
- arch/x86/crypto/chacha-avx2-x86_64.S          |  6 +-
- arch/x86/crypto/chacha-avx512vl-x86_64.S      |  6 +-
- arch/x86/crypto/chacha-ssse3-x86_64.S         |  8 +--
- arch/x86/crypto/crc32-pclmul_asm.S            |  2 +-
- arch/x86/crypto/crc32c-pcl-intel-asm_64.S     |  2 +-
- arch/x86/crypto/crct10dif-pcl-asm_64.S        |  2 +-
- arch/x86/crypto/des3_ede-asm_64.S             |  4 +-
- arch/x86/crypto/ghash-clmulni-intel_asm.S     |  6 +-
- arch/x86/crypto/nh-avx2-x86_64.S              |  2 +-
- arch/x86/crypto/nh-sse2-x86_64.S              |  2 +-
- arch/x86/crypto/poly1305-x86_64-cryptogams.pl | 38 ++++++------
- arch/x86/crypto/serpent-avx-x86_64-asm_64.S   | 10 ++--
- arch/x86/crypto/serpent-avx2-asm_64.S         | 10 ++--
- arch/x86/crypto/serpent-sse2-i586-asm_32.S    |  6 +-
- arch/x86/crypto/serpent-sse2-x86_64-asm_64.S  |  6 +-
- arch/x86/crypto/sha1_avx2_x86_64_asm.S        |  2 +-
- arch/x86/crypto/sha1_ni_asm.S                 |  2 +-
- arch/x86/crypto/sha1_ssse3_asm.S              |  2 +-
- arch/x86/crypto/sha256-avx-asm.S              |  2 +-
- arch/x86/crypto/sha256-avx2-asm.S             |  2 +-
- arch/x86/crypto/sha256-ssse3-asm.S            |  2 +-
- arch/x86/crypto/sha256_ni_asm.S               |  2 +-
- arch/x86/crypto/sha512-avx-asm.S              |  2 +-
- arch/x86/crypto/sha512-avx2-asm.S             |  2 +-
- arch/x86/crypto/sha512-ssse3-asm.S            |  2 +-
- arch/x86/crypto/sm4-aesni-avx-asm_64.S        | 12 ++--
- arch/x86/crypto/sm4-aesni-avx2-asm_64.S       |  8 +--
- arch/x86/crypto/twofish-avx-x86_64-asm_64.S   | 10 ++--
- arch/x86/crypto/twofish-i586-asm_32.S         |  4 +-
- arch/x86/crypto/twofish-x86_64-asm_64-3way.S  |  6 +-
- arch/x86/crypto/twofish-x86_64-asm_64.S       |  4 +-
- arch/x86/entry/entry_32.S                     |  2 +-
- arch/x86/entry/entry_64.S                     | 10 ++--
- arch/x86/entry/thunk_32.S                     |  2 +-
- arch/x86/entry/thunk_64.S                     |  2 +-
- arch/x86/entry/vdso/vdso32/system_call.S      |  2 +-
- arch/x86/entry/vdso/vsgx.S                    |  2 +-
- arch/x86/entry/vsyscall/vsyscall_emu_64.S     |  6 +-
- arch/x86/include/asm/linkage.h                | 14 +++++
- arch/x86/include/asm/paravirt.h               |  2 +-
- arch/x86/include/asm/qspinlock_paravirt.h     |  4 +-
- arch/x86/include/asm/static_call.h            |  2 +-
- arch/x86/kernel/acpi/wakeup_32.S              |  6 +-
- arch/x86/kernel/alternative.c                 | 51 +++++++++++-----
- arch/x86/kernel/ftrace.c                      |  2 +-
- arch/x86/kernel/ftrace_32.S                   |  6 +-
- arch/x86/kernel/ftrace_64.S                   | 10 ++--
- arch/x86/kernel/head_32.S                     |  2 +-
- arch/x86/kernel/irqflags.S                    |  2 +-
- arch/x86/kernel/kprobes/core.c                |  2 +-
- arch/x86/kernel/paravirt.c                    |  2 +-
- arch/x86/kernel/relocate_kernel_32.S          | 10 ++--
- arch/x86/kernel/relocate_kernel_64.S          | 10 ++--
- arch/x86/kernel/sev_verify_cbit.S             |  2 +-
- arch/x86/kernel/static_call.c                 |  5 +-
- arch/x86/kernel/verify_cpu.S                  |  4 +-
- arch/x86/kvm/emulate.c                        | 23 +++++--
- arch/x86/kvm/svm/vmenter.S                    |  4 +-
- arch/x86/kvm/vmx/vmenter.S                    | 14 ++---
- arch/x86/lib/atomic64_386_32.S                | 86 +++++++++++++++------------
- arch/x86/lib/atomic64_cx8_32.S                | 16 ++---
- arch/x86/lib/checksum_32.S                    |  8 +--
- arch/x86/lib/clear_page_64.S                  |  6 +-
- arch/x86/lib/cmpxchg16b_emu.S                 |  4 +-
- arch/x86/lib/cmpxchg8b_emu.S                  |  4 +-
- arch/x86/lib/copy_mc_64.S                     |  6 +-
- arch/x86/lib/copy_page_64.S                   |  4 +-
- arch/x86/lib/copy_user_64.S                   | 12 ++--
- arch/x86/lib/csum-copy_64.S                   |  2 +-
- arch/x86/lib/error-inject.c                   |  3 +-
- arch/x86/lib/getuser.S                        | 22 +++----
- arch/x86/lib/hweight.S                        |  6 +-
- arch/x86/lib/iomap_copy_64.S                  |  2 +-
- arch/x86/lib/memcpy_64.S                      | 12 ++--
- arch/x86/lib/memmove_64.S                     |  4 +-
- arch/x86/lib/memset_64.S                      |  6 +-
- arch/x86/lib/msr-reg.S                        |  4 +-
- arch/x86/lib/putuser.S                        |  6 +-
- arch/x86/lib/retpoline.S                      |  4 +-
- arch/x86/math-emu/div_Xsig.S                  |  2 +-
- arch/x86/math-emu/div_small.S                 |  2 +-
- arch/x86/math-emu/mul_Xsig.S                  |  6 +-
- arch/x86/math-emu/polynom_Xsig.S              |  2 +-
- arch/x86/math-emu/reg_norm.S                  |  6 +-
- arch/x86/math-emu/reg_round.S                 |  2 +-
- arch/x86/math-emu/reg_u_add.S                 |  2 +-
- arch/x86/math-emu/reg_u_div.S                 |  2 +-
- arch/x86/math-emu/reg_u_mul.S                 |  2 +-
- arch/x86/math-emu/reg_u_sub.S                 |  2 +-
- arch/x86/math-emu/round_Xsig.S                |  4 +-
- arch/x86/math-emu/shr_Xsig.S                  |  8 +--
- arch/x86/math-emu/wm_shrx.S                   | 16 ++---
- arch/x86/mm/mem_encrypt_boot.S                |  4 +-
- arch/x86/platform/efi/efi_stub_32.S           |  2 +-
- arch/x86/platform/efi/efi_stub_64.S           |  2 +-
- arch/x86/platform/efi/efi_thunk_64.S          |  2 +-
- arch/x86/platform/olpc/xo1-wakeup.S           |  6 +-
- arch/x86/power/hibernate_asm_32.S             |  4 +-
- arch/x86/power/hibernate_asm_64.S             |  4 +-
- arch/x86/um/checksum_32.S                     |  4 +-
- arch/x86/um/setjmp_32.S                       |  2 +-
- arch/x86/um/setjmp_64.S                       |  2 +-
- arch/x86/xen/xen-asm.S                        | 12 ++--
- arch/x86/xen/xen-head.S                       |  2 +-
- fs/udf/namei.c                                |  8 +--
- include/net/bluetooth/hci_core.h              |  3 +
- include/uapi/linux/rfkill.h                   |  2 +-
- localversion-rt                               |  2 +-
- mm/gup.c                                      |  2 +-
- mm/memory-failure.c                           |  4 +-
- mm/memory.c                                   |  2 +
- mm/migrate.c                                  |  7 ++-
- mm/mlock.c                                    |  1 +
- mm/shmem.c                                    |  4 +-
- mm/userfaultfd.c                              |  3 +
- net/bluetooth/hci_core.c                      |  6 +-
- samples/ftrace/ftrace-direct-modify.c         |  4 +-
- samples/ftrace/ftrace-direct-too.c            |  2 +-
- samples/ftrace/ftrace-direct.c                |  2 +-
- scripts/Makefile.build                        | 11 ++++
- scripts/Makefile.lib                          | 11 ----
- scripts/link-vmlinux.sh                       |  3 +
- tools/arch/x86/lib/memcpy_64.S                | 12 ++--
- tools/arch/x86/lib/memset_64.S                |  6 +-
- tools/objtool/arch/x86/decode.c               | 13 ++--
- tools/objtool/builtin-check.c                 |  3 +-
- tools/objtool/check.c                         | 24 ++++++++
- tools/objtool/include/objtool/arch.h          |  1 +
- tools/objtool/include/objtool/builtin.h       |  2 +-
- 146 files changed, 608 insertions(+), 484 deletions(-)
----
