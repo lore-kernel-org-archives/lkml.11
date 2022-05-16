@@ -2,72 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA629C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 03:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 468B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 03:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239541AbiEPDQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 15 May 2022 23:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
+        id S239622AbiEPDRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 15 May 2022 23:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231238AbiEPDQt (ORCPT
+        with ESMTP id S238156AbiEPDRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 15 May 2022 23:16:49 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072E711C0F;
-        Sun, 15 May 2022 20:16:48 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so13089965pjq.2;
-        Sun, 15 May 2022 20:16:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=Hmv8s3pg0s+t1LiaHpZrqkhy3HWwUgg1fDUaxrSwS08=;
-        b=Irzlzcr3mwoYbc31kXoQqhC+sCDPEZ5cCZP2+CiteYTXqFoaRIrSKSI2fWPdQKyiro
-         08Y50UgI0J1MSuQiLJZ4jjsJwWdCjytqtSnavtjh0nJ1UYCoeljxuGrkwFU6WMlRK/r7
-         SVCVtAi6qzv0cmVLOzesfknOTzqd32Ea8IZXU9vnUfBJ0Yonie69sZZIqfCCNFsWIAM4
-         JOrR1PGZBa8ISfMh6gtW/tjBBcJrqWxzexsX04GiJ7AAyquaGJZP86prGmW8jXIuZjoU
-         20Fer/3q5mvphJXhw2fwXudQUaDNst7dnHmIpZ2LvkZbA4yVnrbYUYpk5KsoR0xDjPDC
-         SOaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=Hmv8s3pg0s+t1LiaHpZrqkhy3HWwUgg1fDUaxrSwS08=;
-        b=25cW2iz3flfcWygW0OLUNxye/x9v8CKRBOngoRpyQBw6F+7U376/eY6wN+ns+9guTT
-         Y7YunK9eIhmqyE39vfXyd8ZrStvFgXOq0yAo0QpIovTbohfLDXniA/3UgmGyCQA/10Tm
-         YaP29otNZOvY30GOm6SMmonmV4BqjAlJyyrp8krB0kNFtXWUFhpJIQmBfoyWczrnwYpc
-         KrKM2AuzhAjiMHHsCe0X/G6j8IY9OnC85EvN7ChRBva+wtjGwv5WEm31XWePFW77F7zv
-         Owt6FKKxrq87rFpVooQYuZFBbfqXu710KLnHs6u5VNgqDOP0mwVrNA2Oz+A6snuEp3vT
-         ThNQ==
-X-Gm-Message-State: AOAM531bPrwt/MMCCWdpD8FJ00gnItO5BITjQY13PyEwM7ZjWujgnNRN
-        q51mgA3I1kyU1e7+Q7ZqUEw=
-X-Google-Smtp-Source: ABdhPJz24m0NujvIKiNUDrKXYHAwM1HNDnsRD1t+Jvl6lD/uJuPtxoSlzDxd0quuZJRRar6vTN71lQ==
-X-Received: by 2002:a17:90a:2f84:b0:1dd:940:50e7 with SMTP id t4-20020a17090a2f8400b001dd094050e7mr28050921pjd.210.1652671007531;
-        Sun, 15 May 2022 20:16:47 -0700 (PDT)
-Received: from MBP ([39.170.101.209])
-        by smtp.gmail.com with ESMTPSA id w22-20020a1709027b9600b0015e8d4eb25fsm5782228pll.169.2022.05.15.20.16.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 May 2022 20:16:47 -0700 (PDT)
-References: <20220516024448.14637-1-schspa@gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Schspa Shi <schspa@gmail.com>
-To:     rafael@kernel.org, viresh.kumar@linaro.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        schspa@gmail.com
-Subject: Re: [PATCH v6 1/2] cpufreq: Abort show/store for half initialized
- policy
-Date:   Mon, 16 May 2022 11:15:11 +0800
-In-reply-to: <20220516024448.14637-1-schspa@gmail.com>
-Message-ID: <m2o7zytbeb.fsf@gmail.com>
+        Sun, 15 May 2022 23:17:08 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DDF111C18;
+        Sun, 15 May 2022 20:17:07 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L1ksZ6DQlzgYHC;
+        Mon, 16 May 2022 11:15:46 +0800 (CST)
+Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 11:17:05 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 11:17:05 +0800
+From:   Chen Wandun <chenwandun@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <hannes@cmpxchg.org>,
+        <surenb@google.com>, <alexs@kernel.org>, <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>
+Subject: [PATCH 1/2] psi: add support for multi level pressure stall trigger
+Date:   Mon, 16 May 2022 11:35:23 +0800
+Message-ID: <20220516033524.3130816-1-chenwandun@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500002.china.huawei.com (7.185.36.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Nowadays, psi events are triggered when stall time exceed
+stall threshold, but no any different between these events.
 
-Please ignore this patch, it forgets to add the Change logs.
+Actually, events can be divide into multi level, each level
+represent a different stall pressure, that is help to identify
+pressure information more accurately.
 
---
-BRs
-Schspa Shi
+echo "some 150000 350000 1000000" > /proc/pressure/memory would
+add [150ms, 350ms) threshold for partial memory stall measured
+within 1sec time window.
+
+Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+---
+ include/linux/psi_types.h |  3 ++-
+ kernel/sched/psi.c        | 19 +++++++++++++------
+ 2 files changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
+index c7fe7c089718..2b1393c8bf90 100644
+--- a/include/linux/psi_types.h
++++ b/include/linux/psi_types.h
+@@ -119,7 +119,8 @@ struct psi_trigger {
+ 	enum psi_states state;
+ 
+ 	/* User-spacified threshold in ns */
+-	u64 threshold;
++	u64 min_threshold;
++	u64 max_threshold;
+ 
+ 	/* List node inside triggers list */
+ 	struct list_head node;
+diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
+index 6f9533c95b0a..17dd233b533a 100644
+--- a/kernel/sched/psi.c
++++ b/kernel/sched/psi.c
+@@ -541,7 +541,7 @@ static u64 update_triggers(struct psi_group *group, u64 now)
+ 
+ 			/* Calculate growth since last update */
+ 			growth = window_update(&t->win, now, total[t->state]);
+-			if (growth < t->threshold)
++			if (growth < t->min_threshold || growth >= t->max_threshold)
+ 				continue;
+ 
+ 			t->pending_event = true;
+@@ -1087,15 +1087,18 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
+ {
+ 	struct psi_trigger *t;
+ 	enum psi_states state;
+-	u32 threshold_us;
++	u32 min_threshold_us;
++	u32 max_threshold_us;
+ 	u32 window_us;
+ 
+ 	if (static_branch_likely(&psi_disabled))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+-	if (sscanf(buf, "some %u %u", &threshold_us, &window_us) == 2)
++	if (sscanf(buf, "some %u %u %u", &min_threshold_us,
++				&max_threshold_us, &window_us) == 3)
+ 		state = PSI_IO_SOME + res * 2;
+-	else if (sscanf(buf, "full %u %u", &threshold_us, &window_us) == 2)
++	else if (sscanf(buf, "full %u %u %u", &min_threshold_us,
++				&max_threshold_us, &window_us) == 3)
+ 		state = PSI_IO_FULL + res * 2;
+ 	else
+ 		return ERR_PTR(-EINVAL);
+@@ -1107,8 +1110,11 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
+ 		window_us > WINDOW_MAX_US)
+ 		return ERR_PTR(-EINVAL);
+ 
++	if (min_threshold_us >= max_threshold_us)
++		return ERR_PTR(-EINVAL);
++
+ 	/* Check threshold */
+-	if (threshold_us == 0 || threshold_us > window_us)
++	if (max_threshold_us > window_us)
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	t = kmalloc(sizeof(*t), GFP_KERNEL);
+@@ -1117,7 +1123,8 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
+ 
+ 	t->group = group;
+ 	t->state = state;
+-	t->threshold = threshold_us * NSEC_PER_USEC;
++	t->min_threshold = min_threshold_us * NSEC_PER_USEC;
++	t->max_threshold = max_threshold_us * NSEC_PER_USEC;
+ 	t->win.size = window_us * NSEC_PER_USEC;
+ 	window_reset(&t->win, 0, 0, 0);
+ 
+-- 
+2.25.1
+
