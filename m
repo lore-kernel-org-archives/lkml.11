@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB50C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D4DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348298AbiEPUgD (ORCPT
+        id S1348436AbiEPUgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55474 "EHLO
+        Mon, 16 May 2022 16:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351115AbiEPUCC (ORCPT
+        with ESMTP id S1351109AbiEPUCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 16:02:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B66ECE0;
-        Mon, 16 May 2022 12:59:11 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBE12BB13;
+        Mon, 16 May 2022 12:59:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7122B81613;
-        Mon, 16 May 2022 19:59:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C80C385AA;
-        Mon, 16 May 2022 19:59:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D900260A50;
+        Mon, 16 May 2022 19:58:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 176F4C34100;
+        Mon, 16 May 2022 19:58:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731148;
-        bh=wOIDV8q4QcRZSsv7ZtGikMXYBHgsMA3h+B5yP9HDWMk=;
+        s=korg; t=1652731139;
+        bh=5bHYyMg0u2G126dGM145icqPb4Svx7lJgmg+c/EJrJg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OZwehqRumQwM1rAwTJ3uBu20HlAFG3AAWw3KM60adhSLGvohZdbhJyHcMAnzvxsFQ
-         WAIh0Gxm3ew9DOJVzG1CAK2TzPAD889QGavwSCsjZV6V6wF8/cYZqtOcZLy/axw+Xi
-         hL/jRszV1i5m8KFa2JlNUVFKM0XqOk9tAddIJklI=
+        b=eD+pRxoN0LT+tM70azR5ukYrxS0RgLOyda+TSS1xmGeYhNfweA1RrnZpCo5ATMXk2
+         iknpiRtGKas/+tTvwvqvsS688vvdpAKX9gUhcyeHa7Tq8ZsVQHTS/P5hTNUF+4D9yE
+         nTSlRxaNfWKE2gM2eAx7LvLLl9ydQh1fG4Y8Zhww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
+        stable@vger.kernel.org, Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>,
         Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.17 114/114] mm/kfence: reset PG_slab and memcg_data before freeing __kfence_pool
-Date:   Mon, 16 May 2022 21:37:28 +0200
-Message-Id: <20220516193628.745366269@linuxfoundation.org>
+Subject: [PATCH 5.17 112/114] mm/hwpoison: use pr_err() instead of dump_page() in get_any_page()
+Date:   Mon, 16 May 2022 21:37:26 +0200
+Message-Id: <20220516193628.688800703@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -53,83 +55,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-commit 2839b0999c20c9f6bf353849c69370e121e2fa1a upstream.
+commit 1825b93b626e99eb9a0f9f50342c7b2fa201b387 upstream.
 
-When kfence fails to initialize kfence pool, it frees the pool.  But it
-does not reset memcg_data and PG_slab flag.
+The following VM_BUG_ON_FOLIO() is triggered when memory error event
+happens on the (thp/folio) pages which are about to be freed:
 
-Below is a BUG because of this. Let's fix it by resetting memcg_data
-and PG_slab flag before free.
+  [ 1160.232771] page:00000000b36a8a0f refcount:1 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
+  [ 1160.236916] page:00000000b36a8a0f refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
+  [ 1160.240684] flags: 0x57ffffc0800000(hwpoison|node=1|zone=2|lastcpupid=0x1fffff)
+  [ 1160.243458] raw: 0057ffffc0800000 dead000000000100 dead000000000122 0000000000000000
+  [ 1160.246268] raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+  [ 1160.249197] page dumped because: VM_BUG_ON_FOLIO(!folio_test_large(folio))
+  [ 1160.251815] ------------[ cut here ]------------
+  [ 1160.253438] kernel BUG at include/linux/mm.h:788!
+  [ 1160.256162] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+  [ 1160.258172] CPU: 2 PID: 115368 Comm: mceinj.sh Tainted: G            E     5.18.0-rc1-v5.18-rc1-220404-2353-005-g83111+ #3
+  [ 1160.262049] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
+  [ 1160.265103] RIP: 0010:dump_page.cold+0x27e/0x2bd
+  [ 1160.266757] Code: fe ff ff 48 c7 c6 81 f1 5a 98 e9 4c fe ff ff 48 c7 c6 a1 95 59 98 e9 40 fe ff ff 48 c7 c6 50 bf 5a 98 48 89 ef e8 9d 04 6d ff <0f> 0b 41 f7 c4 ff 0f 00 00 0f 85 9f fd ff ff 49 8b 04 24 a9 00 00
+  [ 1160.273180] RSP: 0018:ffffaa2c4d59fd18 EFLAGS: 00010292
+  [ 1160.274969] RAX: 000000000000003e RBX: 0000000000000001 RCX: 0000000000000000
+  [ 1160.277263] RDX: 0000000000000001 RSI: ffffffff985995a1 RDI: 00000000ffffffff
+  [ 1160.279571] RBP: ffffdc9c45a80000 R08: 0000000000000000 R09: 00000000ffffdfff
+  [ 1160.281794] R10: ffffaa2c4d59fb08 R11: ffffffff98940d08 R12: ffffdc9c45a80000
+  [ 1160.283920] R13: ffffffff985b6f94 R14: 0000000000000000 R15: ffffdc9c45a80000
+  [ 1160.286641] FS:  00007eff54ce1740(0000) GS:ffff99c67bd00000(0000) knlGS:0000000000000000
+  [ 1160.289498] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  [ 1160.291106] CR2: 00005628381a5f68 CR3: 0000000104712003 CR4: 0000000000170ee0
+  [ 1160.293031] Call Trace:
+  [ 1160.293724]  <TASK>
+  [ 1160.294334]  get_hwpoison_page+0x47d/0x570
+  [ 1160.295474]  memory_failure+0x106/0xaa0
+  [ 1160.296474]  ? security_capable+0x36/0x50
+  [ 1160.297524]  hard_offline_page_store+0x43/0x80
+  [ 1160.298684]  kernfs_fop_write_iter+0x11c/0x1b0
+  [ 1160.299829]  new_sync_write+0xf9/0x160
+  [ 1160.300810]  vfs_write+0x209/0x290
+  [ 1160.301835]  ksys_write+0x4f/0xc0
+  [ 1160.302718]  do_syscall_64+0x3b/0x90
+  [ 1160.303664]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+  [ 1160.304981] RIP: 0033:0x7eff54b018b7
 
-[    0.089149] BUG: Bad page state in process swapper/0  pfn:3d8e06
-[    0.089149] page:ffffea46cf638180 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3d8e06
-[    0.089150] memcg:ffffffff94a475d1
-[    0.089150] flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
-[    0.089151] raw: 0017ffffc0000200 ffffea46cf638188 ffffea46cf638188 0000000000000000
-[    0.089152] raw: 0000000000000000 0000000000000000 00000000ffffffff ffffffff94a475d1
-[    0.089152] page dumped because: page still charged to cgroup
-[    0.089153] Modules linked in:
-[    0.089153] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G    B   W         5.18.0-rc1+ #965
-[    0.089154] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-[    0.089154] Call Trace:
-[    0.089155]  <TASK>
-[    0.089155]  dump_stack_lvl+0x49/0x5f
-[    0.089157]  dump_stack+0x10/0x12
-[    0.089158]  bad_page.cold+0x63/0x94
-[    0.089159]  check_free_page_bad+0x66/0x70
-[    0.089160]  __free_pages_ok+0x423/0x530
-[    0.089161]  __free_pages_core+0x8e/0xa0
-[    0.089162]  memblock_free_pages+0x10/0x12
-[    0.089164]  memblock_free_late+0x8f/0xb9
-[    0.089165]  kfence_init+0x68/0x92
-[    0.089166]  start_kernel+0x789/0x992
-[    0.089167]  x86_64_start_reservations+0x24/0x26
-[    0.089168]  x86_64_start_kernel+0xa9/0xaf
-[    0.089170]  secondary_startup_64_no_verify+0xd5/0xdb
-[    0.089171]  </TASK>
+As shown in the RIP address, this VM_BUG_ON in folio_entire_mapcount() is
+called from dump_page("hwpoison: unhandlable page") in get_any_page().
+The below explains the mechanism of the race:
 
-Link: https://lkml.kernel.org/r/YnPG3pQrqfcgOlVa@hyeyoo
-Fixes: 0ce20dd84089 ("mm: add Kernel Electric-Fence infrastructure")
-Fixes: 8f0b36497303 ("mm: kfence: fix objcgs vector allocation")
-Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Reviewed-by: Marco Elver <elver@google.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
+  CPU 0                                       CPU 1
+
+    memory_failure
+      get_hwpoison_page
+        get_any_page
+          dump_page
+            compound = PageCompound
+                                                free_pages_prepare
+                                                  page->flags &= ~PAGE_FLAGS_CHECK_AT_PREP
+            folio_entire_mapcount
+              VM_BUG_ON_FOLIO(!folio_test_large(folio))
+
+So replace dump_page() with safer one, pr_err().
+
+Link: https://lkml.kernel.org/r/20220427053220.719866-1-naoya.horiguchi@linux.dev
+Fixes: 74e8ee4708a8 ("mm: Turn head_compound_mapcount() into folio_entire_mapcount()")
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>
+Cc: William Kucharski <william.kucharski@oracle.com>
+Cc: <stable@vger.kernel.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/kfence/core.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ mm/memory-failure.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/kfence/core.c
-+++ b/mm/kfence/core.c
-@@ -515,6 +515,7 @@ static bool __init kfence_init_pool(void
- {
- 	unsigned long addr = (unsigned long)__kfence_pool;
- 	struct page *pages;
-+	char *p;
- 	int i;
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1275,7 +1275,7 @@ try_again:
+ 	}
+ out:
+ 	if (ret == -EIO)
+-		dump_page(p, "hwpoison: unhandlable page");
++		pr_err("Memory failure: %#lx: unhandlable page.\n", page_to_pfn(p));
  
- 	if (!__kfence_pool)
-@@ -598,6 +599,16 @@ err:
- 	 * fails for the first page, and therefore expect addr==__kfence_pool in
- 	 * most failure cases.
- 	 */
-+	for (p = (char *)addr; p < __kfence_pool + KFENCE_POOL_SIZE; p += PAGE_SIZE) {
-+		struct slab *slab = virt_to_slab(p);
-+
-+		if (!slab)
-+			continue;
-+#ifdef CONFIG_MEMCG
-+		slab->memcg_data = 0;
-+#endif
-+		__folio_clear_slab(slab_folio(slab));
-+	}
- 	memblock_free_late(__pa(addr), KFENCE_POOL_SIZE - (addr - (unsigned long)__kfence_pool));
- 	__kfence_pool = NULL;
- 	return false;
+ 	return ret;
+ }
 
 
