@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4A8C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FDDC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347474AbiEPUCv (ORCPT
+        id S1348648AbiEPUDB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
+        Mon, 16 May 2022 16:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348150AbiEPTwm (ORCPT
+        with ESMTP id S1348099AbiEPTwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:52:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D78245522;
-        Mon, 16 May 2022 12:48:19 -0700 (PDT)
+        Mon, 16 May 2022 15:52:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332284507C;
+        Mon, 16 May 2022 12:48:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B21C60ABE;
-        Mon, 16 May 2022 19:48:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C3A8C36AE9;
-        Mon, 16 May 2022 19:48:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E500AB81609;
+        Mon, 16 May 2022 19:47:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 257D2C34100;
+        Mon, 16 May 2022 19:47:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730496;
-        bh=rVTxDUp0zD5Y2PVaO85xOsLUVbOGZCNM+BZKHPNu8RQ=;
+        s=korg; t=1652730477;
+        bh=P5TrBoS4hPa8/D+8TgsNIFF9dMzkYsH5q9zZ/f0x6N4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yb/6CZvqfu5jufgBjkSZEes62C+vMURxb1ZfuitL7On4BNKXOrGIuHdKv00K+pm4j
-         N2ZRAzZMGycZMH2ZhGUgxuRXf1wrZcmFufifYhgieN1AEFZcxekWyjhfkaPqp7hdn7
-         ndWu9y6Z/o+c+8WgSsECS/4jE1Tjr5QucbMdJB78=
+        b=VHTYVba7E6jHR4IgML7SMoYfQT2mFmvp2Ri5VV+vamF9pXRbyO5lLRzPZPhRFcIis
+         bAAhDhvmzdVPtSxwXMaymfsau2VIiu3BYzsWWigyqChscTBmH9UW9/PgoEphOqbqKd
+         BVvswasGFb3o25lhX62GPkLN1CHzwq6kLOc56C1I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 018/102] netlink: do not reset transport header in netlink_recvmsg()
-Date:   Mon, 16 May 2022 21:35:52 +0200
-Message-Id: <20220516193624.521951232@linuxfoundation.org>
+Subject: [PATCH 5.15 004/102] mac80211: Reset MBSSID parameters upon connection
+Date:   Mon, 16 May 2022 21:35:38 +0200
+Message-Id: <20220516193624.120108327@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -51,74 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
 
-[ Upstream commit d5076fe4049cadef1f040eda4aaa001bb5424225 ]
+[ Upstream commit 86af062f40a73bf63321694e6bf637144f0383fe ]
 
-netlink_recvmsg() does not need to change transport header.
+Currently MBSSID parameters in struct ieee80211_bss_conf
+are not reset upon connection. This could be problematic
+with some drivers in a scenario where the device first
+connects to a non-transmit BSS and then connects to a
+transmit BSS of a Multi BSS AP. The MBSSID parameters
+which are set after connecting to a non-transmit BSS will
+not be reset and the same parameters will be passed on to
+the driver during the subsequent connection to a transmit
+BSS of a Multi BSS AP.
 
-If transport header was needed, it should have been reset
-by the producer (netlink_dump()), not the consumer(s).
+For example, firmware running on the ath11k device uses the
+Multi BSS data for tracking the beacon of a non-transmit BSS
+and reports the driver when there is a beacon miss. If we do
+not reset the MBSSID parameters during the subsequent
+connection to a transmit BSS, then the driver would have
+wrong MBSSID data and FW would be looking for an incorrect
+BSSID in the MBSSID beacon of a Multi BSS AP and reports
+beacon loss leading to an unstable connection.
 
-The following trace probably happened when multiple threads
-were using MSG_PEEK.
+Reset the MBSSID parameters upon every connection to solve this
+problem.
 
-BUG: KCSAN: data-race in netlink_recvmsg / netlink_recvmsg
-
-write to 0xffff88811e9f15b2 of 2 bytes by task 32012 on cpu 1:
- skb_reset_transport_header include/linux/skbuff.h:2760 [inline]
- netlink_recvmsg+0x1de/0x790 net/netlink/af_netlink.c:1978
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- __sys_recvfrom+0x204/0x2c0 net/socket.c:2097
- __do_sys_recvfrom net/socket.c:2115 [inline]
- __se_sys_recvfrom net/socket.c:2111 [inline]
- __x64_sys_recvfrom+0x74/0x90 net/socket.c:2111
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-write to 0xffff88811e9f15b2 of 2 bytes by task 32005 on cpu 0:
- skb_reset_transport_header include/linux/skbuff.h:2760 [inline]
- netlink_recvmsg+0x1de/0x790 net/netlink/af_netlink.c:1978
- ____sys_recvmsg+0x162/0x2f0
- ___sys_recvmsg net/socket.c:2674 [inline]
- __sys_recvmsg+0x209/0x3f0 net/socket.c:2704
- __do_sys_recvmsg net/socket.c:2714 [inline]
- __se_sys_recvmsg net/socket.c:2711 [inline]
- __x64_sys_recvmsg+0x42/0x50 net/socket.c:2711
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0xffff -> 0x0000
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 32005 Comm: syz-executor.4 Not tainted 5.18.0-rc1-syzkaller-00328-ge1f700ebd6be-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220505161946.2867638-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 78ac51f81532 ("mac80211: support multi-bssid")
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Link: https://lore.kernel.org/r/20220428052744.27040-1-quic_mpubbise@quicinc.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlink/af_netlink.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/mac80211/mlme.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index fb7f7b17c78c..974d32632ef4 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -1996,7 +1996,6 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 		copied = len;
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index c8332452c118..1548f532dc1a 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -3541,6 +3541,12 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
+ 				cbss->transmitted_bss->bssid);
+ 		bss_conf->bssid_indicator = cbss->max_bssid_indicator;
+ 		bss_conf->bssid_index = cbss->bssid_index;
++	} else {
++		bss_conf->nontransmitted = false;
++		memset(bss_conf->transmitter_bssid, 0,
++		       sizeof(bss_conf->transmitter_bssid));
++		bss_conf->bssid_indicator = 0;
++		bss_conf->bssid_index = 0;
  	}
  
--	skb_reset_transport_header(data_skb);
- 	err = skb_copy_datagram_msg(data_skb, 0, msg, copied);
- 
- 	if (msg->msg_name) {
+ 	/*
 -- 
 2.35.1
 
