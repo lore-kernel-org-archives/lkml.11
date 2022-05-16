@@ -2,394 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F01C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE056C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241399AbiEPUzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
+        id S1346802AbiEPU5F (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348466AbiEPUzD (ORCPT
+        with ESMTP id S1349016AbiEPU4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:55:03 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F80C579A3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:29:32 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id e4so2070594ils.12
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:29:32 -0700 (PDT)
+        Mon, 16 May 2022 16:56:19 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB69BB0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:30:43 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 202so15115259pgc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:30:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PuGRloH+u//5P3OkmnMmlEby0yqxvVnIUa5L9jcPsdk=;
-        b=RY1D1CY+8krhSzbUeWDMzOa9FavmzBLKPQtUl5pg2+7b6qNZMTn70+YB5utQBDcWp4
-         nuhw7s+55rfZg8oIoS4sWRVudrNrtRd0fUUuxHQ3HQAFvfDN7AgA+TtH4qnb688OWfHl
-         6gIJidMUTrSCGHsy0ey/3BkGw/O/SwCdeeVFk=
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3ACVB3Y0E0YBB7tPTLWC9kOdJEJz9VBk49uvnZGm168=;
+        b=qGydRqSWRmHEQXYWmP7xMI27DcIFY/huv3iAZeyWMrXsevjA/vluKjedm9wtt9X32P
+         iUvChArCrzR4ORotZg6i6NqXMMeXQ5c0xG80tUiASZRn6cwEMkpCy+spDWjB/0AmYeSe
+         9y33tA/Zw1YcrbeOz3ij6n39xxkrUCu7fQYZvNDNJ/+7QTq/o47w94oCDPsvP/jLiIWq
+         3GgfFkC9tcKnoewv3pgIJX1LVvsI/MOFs1pIJziXrfIqYY38MkQGstWWozTQtPWcJbea
+         TpOIcniKYiC3q8XlKKDX/TlRQRn6fsBB/qWp+q79LMsO+hn9bBhXZPy994JoFyC2Vfll
+         gXTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PuGRloH+u//5P3OkmnMmlEby0yqxvVnIUa5L9jcPsdk=;
-        b=pAemFvX1SQwUWvihCCrO/u51xTroVOEs1VQOrKIdLc1I0HoHXgzRW61XOliJ2Y2ZGC
-         u/OAz+lgxw6fkK+2DOAOvs3i5CiHJeT+8wp3+AVCdpbQHwm5byI5Tr1QOxjWxRM0noUi
-         pqSUjY85ltj6wCC0JM5KPloJXbfR40ZwVg/+PJAL7c0EQ8o5Hi1GjWpdJzyWaIL53uY8
-         b5O829etBsdN7DrmA+cJDhKFoHs9SBdzZC/u80GGm3ujpdwo5xSZe20MfSGYYxlbZ3fU
-         TCODx7rRRHfGNhZ2/QgxigntNmmEgl0JmjKEwTMJpqu3eutNLqOKm5h+TAmx5KBJrfiR
-         SULQ==
-X-Gm-Message-State: AOAM532wu1Bl9c7bpYI4MxvT8lYNVJMXGzRedY4sm5NjACuijdKiIKNg
-        eTP1h8a3iTQZpXljpyQt6A0FZg==
-X-Google-Smtp-Source: ABdhPJyldnuTvbYecoeyyA+wf0fkMZWqof2al8Hkgx7lnjrTOa2jkrma+O46KdTf+mLt+UsgDuUnNg==
-X-Received: by 2002:a05:6e02:12c7:b0:2cf:7989:2d09 with SMTP id i7-20020a056e0212c700b002cf79892d09mr10023926ilm.48.1652732970525;
-        Mon, 16 May 2022 13:29:30 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id c7-20020a6bfd07000000b0065a989b183asm94531ioi.41.2022.05.16.13.29.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 13:29:30 -0700 (PDT)
-Subject: Re: [PATCH v2 1/1] selftests: vm: add process_mrelease tests
-To:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc:     mhocko@suse.com, rientjes@google.com, willy@infradead.org,
-        hannes@cmpxchg.org, guro@fb.com, minchan@kernel.org,
-        kirill@shutemov.name, aarcange@redhat.com, brauner@kernel.org,
-        hch@infradead.org, oleg@redhat.com, david@redhat.com,
-        jannh@google.com, shakeelb@google.com, peterx@redhat.com,
-        jhubbard@nvidia.com, shuah@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, kernel-team@android.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220516075538.1276644-1-surenb@google.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <78c3a163-551b-ef53-4018-7b6ba0640757@linuxfoundation.org>
-Date:   Mon, 16 May 2022 14:29:29 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3ACVB3Y0E0YBB7tPTLWC9kOdJEJz9VBk49uvnZGm168=;
+        b=gw5SGJh19Ilzon6UGpx68XPQLnOyp+labpz6cr8c7J2lLVxP/1CNhw+XLd7svDg2bf
+         ZqU7AJf7d939XW/oBHz1DQNVF++GQ8Acus69tyMckFZGbnWlSBcWLV6QV6rr9T7CwvGA
+         NBB+TCuww/2qJorzfR59GL4Dnw46pcawrYeoNeAvc2ehwvVX9vWHiIaTUbFUGyST6oK5
+         sJVdBc1OxzEnoX51YkTpgmRmZDz65cyOk5Act55lJOxttfPe9K2toICJ6vnH9ctq0KnW
+         mrkpylNGGqua6tMF4ww6DT7bnILgpYIsS7yDZtON0vvXsNfF++CdS407KlOLnjpTZd4V
+         cv0g==
+X-Gm-Message-State: AOAM533a99/3BKC9eqCmBlBkM+6eKXmLnaInyjB1N0mPyQKTpqQ9+Wf+
+        3WhaWyEOEQbs/jJT+qvo4xTXWWLeosn2tfzVGh1ayw==
+X-Google-Smtp-Source: ABdhPJxNfgFTQfSkBwC0NJUOFm4ZykQQ/RD3rs42AoQjvgd05emu3aDGtrxluv0uzUNgQwYGRoYx/NUiZsqjsEDg+7c=
+X-Received: by 2002:a62:a105:0:b0:50d:c97b:3084 with SMTP id
+ b5-20020a62a105000000b0050dc97b3084mr18768863pff.61.1652733042575; Mon, 16
+ May 2022 13:30:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220516075538.1276644-1-surenb@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220422224508.440670-1-jane.chu@oracle.com> <20220422224508.440670-3-jane.chu@oracle.com>
+In-Reply-To: <20220422224508.440670-3-jane.chu@oracle.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Mon, 16 May 2022 13:30:31 -0700
+Message-ID: <CAPcyv4g02C5LnDxqDG0_U51+v05fQa966LnrvvdadN2Eqf7eKA@mail.gmail.com>
+Subject: Re: [PATCH v9 2/7] x86/mce: relocate set{clear}_mce_nospec() functions
+To:     Jane Chu <jane.chu@oracle.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>, david <david@fromorbit.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        X86 ML <x86@kernel.org>,
+        Vishal L Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        device-mapper development <dm-devel@redhat.com>,
+        "Weiny, Ira" <ira.weiny@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vivek Goyal <vgoyal@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/16/22 1:55 AM, Suren Baghdasaryan wrote:
-> Introduce process_mrelease syscall sanity tests which include tests
-> which expect to fail:
-> - process_mrelease with invalid pidfd and flags inputs
-> - process_mrelease on a live process with no pending signals
-> and valid process_mrelease usage which is expected to succeed.
-> Because process_mrelease has to be used against a process with a pending
-> SIGKILL, it's possible that the process exits before process_mrelease
-> gets called. In such cases we retry the test with a victim that allocates
-> twice more memory up to 1GB. This would require the victim process to
-> spend more time during exit and process_mrelease has a better chance of
-> catching the process before it exits and succeeding.
-> 
-> On success the test reports the amount of memory the child had to
-> allocate for reaping to succeed. Sample output:
->      Success reaping a child with 1MB of memory allocations
-> 
-> On failure the test reports the failure. Sample outputs:
->      All process_mrelease attempts failed!
->      process_mrelease: Invalid argument
-> 
-
-Nit: Please format this better - include actual example output from the
-command and how to run the test examples.
-
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+On Fri, Apr 22, 2022 at 3:46 PM Jane Chu <jane.chu@oracle.com> wrote:
+>
+> Relocate the twin mce functions to arch/x86/mm/pat/set_memory.c
+> file where they belong.
+>
+> While at it, fixup a function name in a comment.
+>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> Signed-off-by: Jane Chu <jane.chu@oracle.com>
 > ---
->   tools/testing/selftests/vm/.gitignore      |   1 +
->   tools/testing/selftests/vm/Makefile        |   1 +
->   tools/testing/selftests/vm/mrelease_test.c | 214 +++++++++++++++++++++
->   tools/testing/selftests/vm/run_vmtests.sh  |  16 ++
->   4 files changed, 232 insertions(+)
->   create mode 100644 tools/testing/selftests/vm/mrelease_test.c
-> 
-> diff --git a/tools/testing/selftests/vm/.gitignore b/tools/testing/selftests/vm/.gitignore
-> index d7507f3c7c76..c019e53f24f9 100644
-> --- a/tools/testing/selftests/vm/.gitignore
-> +++ b/tools/testing/selftests/vm/.gitignore
-> @@ -10,6 +10,7 @@ map_populate
->   thuge-gen
->   compaction_test
->   mlock2-tests
-> +mrelease_test
->   mremap_dontunmap
->   mremap_test
->   on-fault-limit
-> diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-> index 04a49e876a46..733fccbff0ef 100644
-> --- a/tools/testing/selftests/vm/Makefile
-> +++ b/tools/testing/selftests/vm/Makefile
-> @@ -43,6 +43,7 @@ TEST_GEN_FILES += map_populate
->   TEST_GEN_FILES += memfd_secret
->   TEST_GEN_FILES += mlock-random-test
->   TEST_GEN_FILES += mlock2-tests
-> +TEST_GEN_FILES += mrelease_test
->   TEST_GEN_FILES += mremap_dontunmap
->   TEST_GEN_FILES += mremap_test
->   TEST_GEN_FILES += on-fault-limit
-> diff --git a/tools/testing/selftests/vm/mrelease_test.c b/tools/testing/selftests/vm/mrelease_test.c
-> new file mode 100644
-> index 000000000000..99680676069b
-> --- /dev/null
-> +++ b/tools/testing/selftests/vm/mrelease_test.c
-> @@ -0,0 +1,214 @@
-> +// SPDX-License-Identifier: GPL-2.0
+>  arch/x86/include/asm/set_memory.h | 52 -------------------------------
+>  arch/x86/mm/pat/set_memory.c      | 49 ++++++++++++++++++++++++++++-
+>  include/linux/set_memory.h        |  8 ++---
+>  3 files changed, 52 insertions(+), 57 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
+> index 78ca53512486..b45c4d27fd46 100644
+> --- a/arch/x86/include/asm/set_memory.h
+> +++ b/arch/x86/include/asm/set_memory.h
+> @@ -86,56 +86,4 @@ bool kernel_page_present(struct page *page);
+>
+>  extern int kernel_set_to_readonly;
+>
+> -#ifdef CONFIG_X86_64
+> -/*
+> - * Prevent speculative access to the page by either unmapping
+> - * it (if we do not require access to any part of the page) or
+> - * marking it uncacheable (if we want to try to retrieve data
+> - * from non-poisoned lines in the page).
+> - */
+> -static inline int set_mce_nospec(unsigned long pfn, bool unmap)
+> -{
+> -       unsigned long decoy_addr;
+> -       int rc;
+> -
+> -       /* SGX pages are not in the 1:1 map */
+> -       if (arch_is_platform_page(pfn << PAGE_SHIFT))
+> -               return 0;
+> -       /*
+> -        * We would like to just call:
+> -        *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
+> -        * but doing that would radically increase the odds of a
+> -        * speculative access to the poison page because we'd have
+> -        * the virtual address of the kernel 1:1 mapping sitting
+> -        * around in registers.
+> -        * Instead we get tricky.  We create a non-canonical address
+> -        * that looks just like the one we want, but has bit 63 flipped.
+> -        * This relies on set_memory_XX() properly sanitizing any __pa()
+> -        * results with __PHYSICAL_MASK or PTE_PFN_MASK.
+> -        */
+> -       decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
+> -
+> -       if (unmap)
+> -               rc = set_memory_np(decoy_addr, 1);
+> -       else
+> -               rc = set_memory_uc(decoy_addr, 1);
+> -       if (rc)
+> -               pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
+> -       return rc;
+> -}
+> -#define set_mce_nospec set_mce_nospec
+> -
+> -/* Restore full speculative operation to the pfn. */
+> -static inline int clear_mce_nospec(unsigned long pfn)
+> -{
+> -       return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
+> -}
+> -#define clear_mce_nospec clear_mce_nospec
+> -#else
+> -/*
+> - * Few people would run a 32-bit kernel on a machine that supports
+> - * recoverable errors because they have too much memory to boot 32-bit.
+> - */
+> -#endif
+> -
+>  #endif /* _ASM_X86_SET_MEMORY_H */
+> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+> index abf5ed76e4b7..978cf5bd2ab6 100644
+> --- a/arch/x86/mm/pat/set_memory.c
+> +++ b/arch/x86/mm/pat/set_memory.c
+> @@ -1816,7 +1816,7 @@ static inline int cpa_clear_pages_array(struct page **pages, int numpages,
+>  }
+>
+>  /*
+> - * _set_memory_prot is an internal helper for callers that have been passed
+> + * __set_memory_prot is an internal helper for callers that have been passed
+>   * a pgprot_t value from upper layers and a reservation has already been taken.
+>   * If you want to set the pgprot to a specific page protocol, use the
+>   * set_memory_xx() functions.
+> @@ -1925,6 +1925,53 @@ int set_memory_wb(unsigned long addr, int numpages)
+>  }
+>  EXPORT_SYMBOL(set_memory_wb);
+>
 > +/*
-> + * Copyright 2022 Google LLC
+> + * Prevent speculative access to the page by either unmapping
+> + * it (if we do not require access to any part of the page) or
+> + * marking it uncacheable (if we want to try to retrieve data
+> + * from non-poisoned lines in the page).
 > + */
-> +#define _GNU_SOURCE
-> +#include <errno.h>
-> +#include <stdbool.h>
-> +#include <stdio.h>
-> +#include <stdlib.h>
-> +#include <sys/wait.h>
-> +#include <unistd.h>
-> +
-> +#include "util.h"
-> +
-> +#include "../kselftest.h"
-> +
-> +#if defined(__NR_pidfd_open) && defined(__NR_process_mrelease)
-> +
-> +static inline int pidfd_open(pid_t pid, unsigned int flags)
+> +int set_mce_nospec(unsigned long pfn, bool unmap)
 > +{
-> +	return syscall(__NR_pidfd_open, pid, flags);
+> +       unsigned long decoy_addr;
+> +       int rc;
+> +
+> +       if (!IS_ENABLED(CONFIG_64BIT))
+> +               return 0;
+> +
+> +       /* SGX pages are not in the 1:1 map */
+> +       if (arch_is_platform_page(pfn << PAGE_SHIFT))
+> +               return 0;
+> +       /*
+> +        * We would like to just call:
+> +        *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
+> +        * but doing that would radically increase the odds of a
+> +        * speculative access to the poison page because we'd have
+> +        * the virtual address of the kernel 1:1 mapping sitting
+> +        * around in registers.
+> +        * Instead we get tricky.  We create a non-canonical address
+> +        * that looks just like the one we want, but has bit 63 flipped.
+> +        * This relies on set_memory_XX() properly sanitizing any __pa()
+> +        * results with __PHYSICAL_MASK or PTE_PFN_MASK.
+> +        */
+> +       decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
+> +
+> +       if (unmap)
+> +               rc = set_memory_np(decoy_addr, 1);
+> +       else
+> +               rc = set_memory_uc(decoy_addr, 1);
+> +       if (rc)
+> +               pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
+> +       return rc;
 > +}
 > +
-> +static inline int process_mrelease(int pidfd, unsigned int flags)
+> +/* Restore full speculative operation to the pfn. */
+> +int clear_mce_nospec(unsigned long pfn)
 > +{
-> +	return syscall(__NR_process_mrelease, pidfd, flags);
+> +       return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
 > +}
+> +EXPORT_SYMBOL_GPL(clear_mce_nospec);
 > +
-> +static void write_fault_pages(char *addr, unsigned long nr_pages)
-> +{
-> +	unsigned long i;
-> +
-> +	for (i = 0; i < nr_pages; i++)
-> +		*((unsigned long *)(addr + (i * PAGE_SIZE))) = i;
-> +}
-> +
+>  int set_memory_x(unsigned long addr, int numpages)
+>  {
+>         if (!(__supported_pte_mask & _PAGE_NX))
+> diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
+> index f36be5166c19..683a6c3f7179 100644
+> --- a/include/linux/set_memory.h
+> +++ b/include/linux/set_memory.h
+> @@ -42,14 +42,14 @@ static inline bool can_set_direct_map(void)
+>  #endif
+>  #endif /* CONFIG_ARCH_HAS_SET_DIRECT_MAP */
+>
+> -#ifndef set_mce_nospec
+> +#ifdef CONFIG_X86_64
 
-Okay these above 3 routines are called once. I am not seeing any point
-in making these separate routines. I made the same comment on v1.
+Jane,
 
-> +static int alloc_noexit(unsigned long nr_pages, int pipefd)
-> +{
-> +	int timeout = 10; /* 10sec timeout to get killed */
-> +	int ppid = getppid();
-> +	void *buf;
-> +
-> +	buf = mmap(NULL, nr_pages * PAGE_SIZE, PROT_READ | PROT_WRITE,
-> +		   MAP_PRIVATE | MAP_ANON, 0, 0);
-> +	if (buf == MAP_FAILED) {
-> +		perror("mmap failed, halting the test");
-> +		return KSFT_FAIL;
-> +	}
-> +
-> +	write_fault_pages((char *)buf, nr_pages);
-> +
-> +	/* Signal the parent that the child is ready */
-> +	if (write(pipefd, "", 1) < 0) {
-> +		perror("write");
-> +		return KSFT_FAIL;
-> +	}
-> +
-> +	/* Wait to be killed (when reparenting happens) */
-> +	while (getppid() == ppid && timeout > 0) {
-> +		sleep(1);
-> +		timeout--;
-> +	}
-> +
-> +	munmap(buf, nr_pages * PAGE_SIZE);
-> +
-> +	return (timeout > 0) ? KSFT_PASS : KSFT_FAIL;
-> +}
-> +
-> +/* The process_mrelease calls in this test are expected to fail */
-> +void run_negative_tests(int pidfd)
-> +{
-> +	/* Test invalid flags. Expect to fail with EINVAL error code. */
-> +	if (!process_mrelease(pidfd, (unsigned int)-1) || errno != EINVAL) {
-> +		perror("process_mrelease with wrong flags");
-> +		exit(KSFT_FAIL);
-> +	}
-> +	/*
-> +	 * Test reaping while process is alive with no pending SIGKILL.
-> +	 * Expect to fail with EINVAL error code.
-> +	 */
-> +	if (!process_mrelease(pidfd, 0) || errno != EINVAL) {
-> +		perror("process_mrelease on a live process");
-> +		exit(KSFT_FAIL);
-> +	}
-> +}
-> +
-> +#define MB(x) (x << 20)
-> +#define MAX_SIZE_MB 1024
-> +
-> +int main(void)
-> +{
-> +	int pipefd[2], pidfd;
-> +	bool success, retry;
-> +	size_t size;
-> +	pid_t pid;
-> +	char byte;
-> +	int res;
-> +
-> +	/* Test a wrong pidfd */
-> +	if (!process_mrelease(-1, 0) || errno != EBADF) {
-> +		perror("process_mrelease with wrong pidfd");
-> +		exit(KSFT_FAIL);
-> +	}
-> +
-> +	/* Start the test with 1MB child memory allocation */
-> +	size = 1;
-> +retry:
-> +	/*
-> +	 * Pipe for the child to signal when it's done allocating
-> +	 * memory
-> +	 */
-> +	if (pipe(pipefd)) {
-> +		perror("pipe");
-> +		exit(KSFT_FAIL);
-> +	}
-> +	pid = fork();
-> +	if (pid < 0) {
-> +		perror("fork");
-> +		close(pipefd[0]);
-> +		close(pipefd[1]);
-> +		exit(KSFT_FAIL);
-> +	}
-> +
-> +	if (pid == 0) {
-> +		/*
-> +		 * Child main routine:
-> +		 * Allocate and fault-in memory and wait to be killed
-> +		 */
-> +		close(pipefd[0]);
-> +		res = alloc_noexit(MB(size) / PAGE_SIZE, pipefd[1]);
-> +		close(pipefd[1]);
-> +		exit(res);
-> +	}
-> +
-
-Now the above code can be a separate function which will make it readable.
-
-> +	/*
-> +	 * Parent main routine:
-> +	 * Wait for the child to finish allocations, then kill and reap
-> +	 */
-> +	close(pipefd[1]);
-> +	/* Block until the child is ready */
-> +	res = read(pipefd[0], &byte, 1);
-> +	close(pipefd[0]);
-> +	if (res < 0) {
-> +		perror("read");
-> +		if (!kill(pid, SIGKILL))
-> +			waitpid(pid, NULL, 0);
-> +		exit(KSFT_FAIL);
-> +	}
-> +
-> +	pidfd = pidfd_open(pid, 0);
-> +	if (pidfd < 0) {
-> +		perror("pidfd_open");
-> +		if (!kill(pid, SIGKILL))
-> +			waitpid(pid, NULL, 0);
-> +		exit(KSFT_FAIL);
-> +	}
-> +
-> +	/* Run negative tests which require a live child */
-> +	run_negative_tests(pidfd);
-> +
-> +	if (kill(pid, SIGKILL)) {
-> +		perror("kill");
-> +		exit(KSFT_FAIL);
-> +	}
-> +
-> +	success = (process_mrelease(pidfd, 0) == 0);
-> +	if (!success) {
-> +		/*
-> +		 * If we failed to reap because the child exited too soon,
-> +		 * before we could call process_mrelease. Double child's memory
-> +		 * which causes it to spend more time on cleanup and increases
-> +		 * our chances of reaping its memory before it exits.
-> +		 * Retry until we succeed or reach MAX_SIZE_MB.
-> +		 */
-> +		if (errno == ESRCH) {
-> +			retry = (size <= MAX_SIZE_MB);
-> +		} else {
-> +			perror("process_mrelease");
-> +			waitpid(pid, NULL, 0);
-> +			exit(KSFT_FAIL);
-> +		}
-> +	}
-> +
-> +	/* Cleanup to prevent zombies */
-> +	if (waitpid(pid, NULL, 0) < 0) {
-> +		perror("waitpid");
-> +		exit(KSFT_FAIL);
-> +	}
-> +	close(pidfd);
-> +
-> +	if (!success) {
-> +		if (retry) {
-> +			size *= 2;
-> +			goto retry;
-> +		}
-> +		printf("All process_mrelease attempts failed!\n");
-> +		exit(KSFT_FAIL);
-> +	}
-> +
-> +	printf("Success reaping a child with %zuMB of memory allocations\n",
-> +	       size);
-> +	return KSFT_PASS;
-> +}
-> +
-> +#else /* defined(__NR_pidfd_open) && defined(__NR_process_mrelease) */
-> +
-> +int main(int argc, char *argv[])
-> +{
-> +	printf("skip: skipping process_mrelease test " \
-> +	       "(missing __NR_pidfd_open and/or __NR_process_mrelease)\n");
-> +	return KSFT_SKIP;
-> +}
-> +
-
-Why do you need these ifdefs - syscall will return ENOSYS and you can
-key off that. Please take a look at other usages of syscall in the
-repo.
-  
-> +#endif /* defined(__NR_pidfd_open) && defined(__NR_process_mrelease) */
-> diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
-> index 352ba00cf26b..1986162fea39 100755
-> --- a/tools/testing/selftests/vm/run_vmtests.sh
-> +++ b/tools/testing/selftests/vm/run_vmtests.sh
-> @@ -287,6 +287,22 @@ else
->   	echo "[PASS]"
->   fi
->   
-> +echo "---------------------"
-> +echo "running mrelease_test"
-> +echo "---------------------"
-> +./mrelease_test
-> +ret_val=$?
-> +
-> +if [ $ret_val -eq 0 ]; then
-> +	echo "[PASS]"
-> +elif [ $ret_val -eq $ksft_skip ]; then
-> +	 echo "[SKIP]"
-> +	 exitcode=$ksft_skip
-> +else
-> +	echo "[FAIL]"
-> +	exitcode=1
-> +fi
-> +
->   echo "-------------------"
->   echo "running mremap_test"
->   echo "-------------------"
-> 
-
-thanks,
--- Shuah
+I just noticed that this makes set_mce_nospec() and clear_mce_nospec()
+x86_64-only. If / when more architectures add support for these
+helpers they will need to go back to the "#ifndef $symbol" scheme to
+allow asm/set_memory.h to indicate the availability of the arch-local
+helper.
