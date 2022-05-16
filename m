@@ -2,73 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243613AbiEPNEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
+        id S243637AbiEPNF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233172AbiEPNEJ (ORCPT
+        with ESMTP id S229895AbiEPNFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:04:09 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825CA39B8B;
-        Mon, 16 May 2022 06:04:07 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L1zs45YMrzGq0p;
-        Mon, 16 May 2022 21:01:12 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 16 May 2022 21:04:05 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
- 2022 21:04:05 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>
-CC:     <heikki.krogerus@linux.intel.com>, <gregkh@linuxfoundation.org>
-Subject: [PATCH -next] usb: typec: ucsi: fix return value check in ucsi_acpi_probe()
-Date:   Mon, 16 May 2022 21:15:27 +0800
-Message-ID: <20220516131527.999909-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 16 May 2022 09:05:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0EE39B8B;
+        Mon, 16 May 2022 06:05:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2950612CF;
+        Mon, 16 May 2022 13:05:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92BFFC385B8;
+        Mon, 16 May 2022 13:05:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652706323;
+        bh=eq1rcuLPkdu0+ErdkB7P6X9b1HszMe8ou3QsV1dHQYY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DTafzldvGKdyljfANYw13cE2sQ874aht66TSnNi3zI1IHuVNCf93AChAvR1Dl2nUj
+         gWhVODf/m2KPPWfSpS9YE3XUXr8Bc8CGcLJIyV8E34fe92IhLDo1y6VRdHcyDXWGKi
+         Z1pt62ABpXZcuVVPwIKjmntko61Imx4YTmSRAmoLv2ggR/rEd4yLlAiTMYnRwMP7LV
+         mpIB0AI9dmv3y0+coRonGrsebuSSqaPz+IEim6VJzbmx4IJsxpSyc5vuRe4kat4ycy
+         GgsnolHu/lXohA/fbHu69WV44JrIxGqr2h3f1rlhvSNvvb8oO7qZftl7i6tBt+f4p5
+         QKtZMoW2bAO5Q==
+Date:   Mon, 16 May 2022 18:35:19 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] dmaengine/ARM: sprd: use proper
+ 'dma-channels/requests' properties
+Message-ID: <YoJMD5+jcSHEA3tR@matsya>
+References: <20220503065147.51728-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503065147.51728-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If memremap() fails, it never returns NULL. Replace NULL check
-with IS_ERR().
+On 03-05-22, 08:51, Krzysztof Kozlowski wrote:
+> Hi,
+> 
+> The core DT schema defines generic 'dma-channels' and 'dma-requests'
+> properties, so in preparation to moving bindings to DT schema, convert
+> existing users of '#dma-channels' and '#dma-requests' to the generic
+> variant.
 
-Fixes: cdc3d2abf438 ("usb: typec: ucsi: acpi: Map the mailbox with memremap()")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/usb/typec/ucsi/ucsi_acpi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Applied 1-2 to dmaengine tree, thanks
 
-diff --git a/drivers/usb/typec/ucsi/ucsi_acpi.c b/drivers/usb/typec/ucsi/ucsi_acpi.c
-index 7455e3aff2be..8873c1644a29 100644
---- a/drivers/usb/typec/ucsi/ucsi_acpi.c
-+++ b/drivers/usb/typec/ucsi/ucsi_acpi.c
-@@ -133,8 +133,8 @@ static int ucsi_acpi_probe(struct platform_device *pdev)
- 	}
- 
- 	ua->base = devm_memremap(&pdev->dev, res->start, resource_size(res), MEMREMAP_WB);
--	if (!ua->base)
--		return -ENOMEM;
-+	if (IS_ERR(ua->base))
-+		return PTR_ERR(ua->base);
- 
- 	ret = guid_parse(UCSI_DSM_UUID, &ua->guid);
- 	if (ret)
+> 
+> Not tested on hardware.
+> 
+> The patchset is bisectable - please pick up through independent trees.
+> 
+> Changes since v2
+> ================
+> 1. Keep old properties, so the patchset is bisectable.
+> 2. Add review tags.
+> 
+> See also:
+> [1] https://lore.kernel.org/linux-devicetree/fedb56be-f275-aabb-cdf5-dbd394b8a7bd@linaro.org/T/#m6235f451045c337d70a62dc65eab9a716618550b
+> 
+> Best regards,
+> Krzysztof
+> 
+> Krzysztof Kozlowski (3):
+>   dt-bindings: dmaengine: sprd: deprecate '#dma-channels'
+>   dmaengine: sprd: deprecate '#dma-channels'
+>   arm64: dts: sprd: use new 'dma-channels' property
+> 
+>  Documentation/devicetree/bindings/dma/sprd-dma.txt | 7 +++++--
+>  arch/arm64/boot/dts/sprd/whale2.dtsi               | 4 ++++
+>  drivers/dma/sprd-dma.c                             | 6 +++++-
+>  3 files changed, 14 insertions(+), 3 deletions(-)
+> 
+> -- 
+> 2.32.0
+
 -- 
-2.25.1
-
+~Vinod
