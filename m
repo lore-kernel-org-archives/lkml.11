@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E78CC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D6FDC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348030AbiEPU1O (ORCPT
+        id S1348067AbiEPU1T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        Mon, 16 May 2022 16:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235245AbiEPUAS (ORCPT
+        with ESMTP id S1349708AbiEPUAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C8943ED0;
-        Mon, 16 May 2022 12:54:18 -0700 (PDT)
+        Mon, 16 May 2022 16:00:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4532243EEC;
+        Mon, 16 May 2022 12:54:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91E76B8161D;
-        Mon, 16 May 2022 19:54:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9F9BC36AF4;
-        Mon, 16 May 2022 19:54:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F3FD60ECF;
+        Mon, 16 May 2022 19:53:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE65C385AA;
+        Mon, 16 May 2022 19:53:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730855;
-        bh=6WDSjlMAUBvZ+ky6YOKDxvM01GjR3QTvuYTU2MvypsA=;
+        s=korg; t=1652730822;
+        bh=/5fSGM6N6EV85s8ReI6IjjWCeqnsuk4NSeXR+ofA39o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TRbamtOa6KmesW6vg3v7Rzj7IYmCTh5mQzw+JQSMN1Jp3M3z3UiOqGx5QmfQgtFs8
-         hFfgfQggmYXUcIxblNvmh/0MMB97DEjB10GlNY+z8yfGLGo3fCB/hPfi6TfDberY3v
-         MxiM/JJSr1HMXcUNBwBPZBwqQ0P5VLr20Glzy7sM=
+        b=TUP2ucCJaNPJVEOQmlXDr26IUMYbCL0XgJjJi1wXUk29/P3ygYxgiomrpu2VF1Okl
+         ZOJ4DbtjyYeMI3fkeqPtUro0hjfckg3NBNww8NGm9cDke3ZHPiO8QMe6DiGJ9SQbp2
+         E+R/7i5bOnYDXBeE9kXGYELu0geIWOmyy7fWdM34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 026/114] nfs: fix broken handling of the softreval mount option
-Date:   Mon, 16 May 2022 21:36:00 +0200
-Message-Id: <20220516193626.243330725@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michal Michalik <michal.michalik@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.17 017/114] ice: fix PTP stale Tx timestamps cleanup
+Date:   Mon, 16 May 2022 21:35:51 +0200
+Message-Id: <20220516193625.990885627@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,35 +54,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Aloni <dan.aloni@vastdata.com>
+From: Michal Michalik <michal.michalik@intel.com>
 
-[ Upstream commit 085d16d5f949b64713d5e960d6c9bbf51bc1d511 ]
+[ Upstream commit a11b6c1a383ff092f432e040c20e032503785d47 ]
 
-Turns out that ever since this mount option was added, passing
-`softreval` in NFS mount options cancelled all other flags while not
-affecting the underlying flag `NFS_MOUNT_SOFTREVAL`.
+Read stale PTP Tx timestamps from PHY on cleanup.
 
-Fixes: c74dfe97c104 ("NFS: Add mount option 'softreval'")
-Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+After running out of Tx timestamps request handlers, hardware (HW) stops
+reporting finished requests. Function ice_ptp_tx_tstamp_cleanup() used
+to only clean up stale handlers in driver and was leaving the hardware
+registers not read. Not reading stale PTP Tx timestamps prevents next
+interrupts from arriving and makes timestamping unusable.
+
+Fixes: ea9b847cda64 ("ice: enable transmit timestamps for E810 devices")
+Signed-off-by: Michal Michalik <michal.michalik@intel.com>
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/fs_context.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
-index ea17fa1f31ec..d20891162145 100644
---- a/fs/nfs/fs_context.c
-+++ b/fs/nfs/fs_context.c
-@@ -515,7 +515,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
- 		if (result.negated)
- 			ctx->flags &= ~NFS_MOUNT_SOFTREVAL;
- 		else
--			ctx->flags &= NFS_MOUNT_SOFTREVAL;
-+			ctx->flags |= NFS_MOUNT_SOFTREVAL;
- 		break;
- 	case Opt_posix:
- 		if (result.negated)
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 000c39d163a2..45ae97b8b97d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -2279,6 +2279,7 @@ ice_ptp_init_tx_e810(struct ice_pf *pf, struct ice_ptp_tx *tx)
+ 
+ /**
+  * ice_ptp_tx_tstamp_cleanup - Cleanup old timestamp requests that got dropped
++ * @hw: pointer to the hw struct
+  * @tx: PTP Tx tracker to clean up
+  *
+  * Loop through the Tx timestamp requests and see if any of them have been
+@@ -2287,7 +2288,7 @@ ice_ptp_init_tx_e810(struct ice_pf *pf, struct ice_ptp_tx *tx)
+  * timestamp will never be captured. This might happen if the packet gets
+  * discarded before it reaches the PHY timestamping block.
+  */
+-static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
++static void ice_ptp_tx_tstamp_cleanup(struct ice_hw *hw, struct ice_ptp_tx *tx)
+ {
+ 	u8 idx;
+ 
+@@ -2296,11 +2297,16 @@ static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
+ 
+ 	for_each_set_bit(idx, tx->in_use, tx->len) {
+ 		struct sk_buff *skb;
++		u64 raw_tstamp;
+ 
+ 		/* Check if this SKB has been waiting for too long */
+ 		if (time_is_after_jiffies(tx->tstamps[idx].start + 2 * HZ))
+ 			continue;
+ 
++		/* Read tstamp to be able to use this register again */
++		ice_read_phy_tstamp(hw, tx->quad, idx + tx->quad_offset,
++				    &raw_tstamp);
++
+ 		spin_lock(&tx->lock);
+ 		skb = tx->tstamps[idx].skb;
+ 		tx->tstamps[idx].skb = NULL;
+@@ -2322,7 +2328,7 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
+ 
+ 	ice_ptp_update_cached_phctime(pf);
+ 
+-	ice_ptp_tx_tstamp_cleanup(&pf->ptp.port.tx);
++	ice_ptp_tx_tstamp_cleanup(&pf->hw, &pf->ptp.port.tx);
+ 
+ 	/* Run twice a second */
+ 	kthread_queue_delayed_work(ptp->kworker, &ptp->work,
 -- 
 2.35.1
 
