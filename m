@@ -2,268 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE47C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236987AbiEPNkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
+        id S243786AbiEPNlq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243712AbiEPNjh (ORCPT
+        with ESMTP id S244306AbiEPNl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:39:37 -0400
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538F62ED65
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:39:36 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220516133926euoutp02b34e8fddbbe830beb6654f82ee664ae7~vmYDVauim1618816188euoutp02u
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:39:26 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220516133926euoutp02b34e8fddbbe830beb6654f82ee664ae7~vmYDVauim1618816188euoutp02u
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1652708366;
-        bh=qm0Anrgo2LRVYYSLS0+cudW9OU5s2MlxyVDAMmEqCV0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=faAznkGxmAVswsHkNcHQux+GXkC7+mxlmLi/Mr+GnqbUj/YM2288T+YIpJBRKsypH
-         WCOKJW4ZsfsN53t3NNeRWzppXrFQtZcIw9HlJLCiPEw3l8b+mridW4xxyVlqZdXBdW
-         KrADJ+InAAEnoOGE7TH05/Znqv2p9mNptKRKVxfQ=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220516133925eucas1p1420eaae564513c721731fd2576c15897~vmYCc9e2d1351113511eucas1p1O;
-        Mon, 16 May 2022 13:39:25 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 7B.8D.09887.D0452826; Mon, 16
-        May 2022 14:39:25 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220516133925eucas1p1414fab2cfa7da1d6258315cbd33e1685~vmYB8l_5Y1348813488eucas1p1Z;
-        Mon, 16 May 2022 13:39:25 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220516133925eusmtrp13fdd91aa67297264273541394fda3a28~vmYB7c2a10312203122eusmtrp1b;
-        Mon, 16 May 2022 13:39:25 +0000 (GMT)
-X-AuditID: cbfec7f4-471ff7000000269f-5e-6282540d840f
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 2E.02.09522.D0452826; Mon, 16
-        May 2022 14:39:25 +0100 (BST)
-Received: from CAMSVWEXC01.scsc.local (unknown [106.1.227.71]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220516133925eusmtip1fea492112f4c915b97ebeaa172d419bc~vmYBs5nFp0855508555eusmtip1Z;
-        Mon, 16 May 2022 13:39:25 +0000 (GMT)
-Received: from localhost (106.110.32.130) by CAMSVWEXC01.scsc.local
-        (2002:6a01:e347::6a01:e347) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-        Mon, 16 May 2022 14:39:24 +0100
-From:   Pankaj Raghav <p.raghav@samsung.com>
-To:     <axboe@kernel.dk>, <naohiro.aota@wdc.com>,
-        <damien.lemoal@opensource.wdc.com>, <Johannes.Thumshirn@wdc.com>,
-        <snitzer@kernel.org>, <dsterba@suse.com>, <jaegeuk@kernel.org>,
-        <hch@lst.de>
-CC:     <linux-btrfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jonathan.derrick@linux.dev>, <bvanassche@acm.org>,
-        Keith Busch <kbusch@kernel.org>, <gost.dev@samsung.com>,
-        <linux-nvme@lists.infradead.org>,
-        Johannes Thumshirn <jth@kernel.org>,
-        "Josef Bacik" <josef@toxicpanda.com>,
-        <linux-block@vger.kernel.org>, Alasdair Kergon <agk@redhat.com>,
-        <matias.bjorling@wdc.com>, Jens Axboe <axboe@fb.com>,
-        "Sagi Grimberg" <sagi@grimberg.me>, <dm-devel@redhat.com>,
-        <jiangbo.365@bytedance.com>, Chaitanya Kulkarni <kch@nvidia.com>,
-        <linux-fsdevel@vger.kernel.org>, Chris Mason <clm@fb.com>,
-        Pankaj Raghav <p.raghav@samsung.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH v4 02/13] block: allow blk-zoned devices to have
- non-power-of-2 zone size
-Date:   Mon, 16 May 2022 15:39:10 +0200
-Message-ID: <20220516133921.126925-3-p.raghav@samsung.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220516133921.126925-1-p.raghav@samsung.com>
-MIME-Version: 1.0
+        Mon, 16 May 2022 09:41:26 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2123.outbound.protection.outlook.com [40.107.215.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0901E08;
+        Mon, 16 May 2022 06:41:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AnRqGWWbH2Fmgge4gKSr+Wi2remwpT/YQtuYHVdMz4oDqwpLkuPITcdGfB3CyfnxYon+2Q2885TGVBxJEM9Bidi+lAE3AW8A+QdE+QdvsLEBHWGy4jUSLBaUy0hYwV1AuYVKyzYn5QOkQ4O9giuBO9+DkYb5ioNl+3Ch3m6L02mFRcVdfhvm3UgsTxGXG5l/L2qE/ug+vLIdk4QQGdKxUPG70AitRsFBIfndeETAszMQDPjilXOa0DnrwB8YfItvvJ/H27aCMKe49+epp1dgny2/eBuUothprCDjmBdpL3cR9j/jUa3wDa7m6H6dH+dvOefxFNX3JmX4BpdazYlW/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=T9wclu+zmrPpOXIE0qU/WX8Lxywkg3ZJOX3NOn6R/as=;
+ b=NjkEW3F1vt3VwVU8V0w92hKntWzsOmSK6CGOuPvTsTwqyQzSXZPQk9QtaS7jzeN8X7J4HrKKh6qz15oYuwo9VEgvas8yYxqjnN4PM08sd9MUWbdTXkXOD7BV5lcNajyJyJxNklSJ9To7Zhme3T3/9h9v4sL6OCxeWfGh/P0PLySCaRWWCF9e7x25a1eVenBxy+CI2xhVMwxXBoei71ReJHb1evFcQH/3YCcZiNmC9Fp9fFpUe+WjC4HM9xU6CGJOY1ewwLdlEgHAlLW0cHK/O2y+qW1AIqvWW2mSY4WD3jMxIuLkJeuGJD0Ql391p+udWMRHrbOr4+6nMwe7TAESfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T9wclu+zmrPpOXIE0qU/WX8Lxywkg3ZJOX3NOn6R/as=;
+ b=HrxVeZuLu6WYAGlTIXTDA/xxKgkyQQOd8Cb6b04X5UwIe0TH0wQA0z/UyCn26yUegSXyCm4sj2ozcmbdxA7ucnEHT31YTX/DkZb1HTFb1rga+8KxwRFWruyAe0EE0I+Wrpxjtom5hh7mUcbuh+97Jlp440TiABlt3pDThj2HAIg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
+ by SG2PR06MB3419.apcprd06.prod.outlook.com (2603:1096:4:a1::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Mon, 16 May
+ 2022 13:41:22 +0000
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::88e1:dc04:6851:ad08]) by HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::88e1:dc04:6851:ad08%7]) with mapi id 15.20.5250.018; Mon, 16 May 2022
+ 13:41:22 +0000
+From:   Guo Zhengkui <guozhengkui@vivo.com>
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        linux-wireless@vger.kernel.org (open list:ATHEROS ATH5K WIRELESS DRIVER),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     zhengkui_guo@outlook.com, Guo Zhengkui <guozhengkui@vivo.com>
+Subject: [PATCH linux-next] net: ath: fix minmax.cocci warnings
+Date:   Mon, 16 May 2022 21:40:57 +0800
+Message-Id: <20220516134057.72365-1-guozhengkui@vivo.com>
+X-Mailer: git-send-email 2.20.1
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [106.110.32.130]
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-        CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347)
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SfUxTZxTG9957e1tI6i6FwTu6ydLIH3NYwczlHZpNs0VvYlxmMicDt1Hl
-        Doh8pQXp5nTlGwoKIuhsYepcBIS1o7SG8jFoE8q3ZXyFdSLrAFEYINAyGmcd9eLCf895z++c
-        8zzJy8MFVWQgLz4plZEmSRJEpDdxx+K6u4P/SeaJ0PK6XUjbY8HRsxYLiWrHi0l0+bELR6XF
-        33PRk34rjloX1Bw0sJaBoZraDgxNaVU4Kmp/TKCnyvvrb9l2HP1rD0N2h41ApeZRgKZHVBhq
-        tb2FBieruailtZtAQ00VJLp2a5qLSnKdOBormQboYmcDB2nmFgnUZRPuE9JDw4dod1cdSV/M
-        WuDS1vv1BD3Un0brbheQ9A1FOU43/PQd3fy7gqTPZy2QtDFngkMv/jpC0lr9CEGXNNRz6BXd
-        VjqvvRD7mIr03hvDJMSfZqQ734v2jhupmeKmOIPlk1dGgAIMblUCLx6k3oYVPT8CJfDmCahq
-        AHWF9zYKB4A/mPJJtlgB8IbZyX0x0qF+tNGoAnDm7nnif2pc7QIeSkDpASwyBysBj0dS22FG
-        AdfD+FEmAF0D1ZinwKlqDmxyrxGeAV8qCuaNduMeTVDBsDGzCfNoPhUOZ4qdBHs6CF4d/Ifr
-        WepF7YHLF95nER/YfXXqOYKvI1kGNc5qCE0PH+IeHFIiqB4Ss1vOwp8tfc/9QKrDGzq7awDb
-        +BBOFK2SrPaFs536jcSvwd5LRRsWzsDpsSc4O5wNYLFRS7IH9sALfQkssx/mtfVg7PMWODbv
-        w9rZAkvvXNmww4f5uYISsE21KYBqUwDVpgDXAX4bBDBpssRYRrYriUkXyySJsrSkWPHJ5EQd
-        WP/Lve5ORyOoml0SmwHGA2YAebjIjx8qV5wQ8GMkX3/DSJO/lKYlMDIzEPIIUQD/ZPwvEgEV
-        K0llTjFMCiN90cV4XoEKrLLVVPHnb+/OPSqLK9htqHBEhNwTC6POyemvhueFiy1W9RpmDcoM
-        OWUkyAPHTK9G2CbLonNtGn+DX/S8IUiT2tQsbUt2bxMqjxZaGs4OV3dFTM7w33l91cY1RXMq
-        NDuXsqIUkW3pz8Z8NMdGz+zTO+zWwP0fZLuP+/YFiv2+rdE+PbijQ/rXS8vte0uWT6OP+t9o
-        Tg3oHpip7J0IPcD17xg8mj+rXPLZHT5er6du2vuP5/heltf6Z7zy5jw6l/p5+CFD/KdzxuIj
-        8r7FuqVbX5Sn/F31cqPAMn5TW3TQP/IPL1PZ1OrC/Bh+OOPIA/+wnHw1KPwstzLd9eBwVEyI
-        cUUnImRxkrDtuFQm+Q+YXt6WOgQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrPKsWRmVeSWpSXmKPExsVy+t/xu7q8IU1JBjNu81msP3WM2eL/nmNs
-        Fqvv9rNZTPvwk9liUv8MdovfZ88zW+x9N5vV4sKPRiaLlauPMlk8WT+L2aLnwAcWi79d94Bi
-        LQ+ZLf48NLR4+OUWi8WkQ9cYLZ5encVksfeWtsWlxyvYLfbsPclicXnXHDaL+cuesltMaPvK
-        bHFjwlNGi4nHN7NarHv9nsXixC1pB2mPy1e8Pf6dWMPmMbH5HbvH+XsbWTwuny312LSqk81j
-        YcNUZo/NS+o9dt9sYPPobX7H5rGz9T6rx/t9V9k81m+5yuIxYfNGVo/Pm+Q82g90MwUIROnZ
-        FOWXlqQqZOQXl9gqRRtaGOkZWlroGZlY6hkam8daGZkq6dvZpKTmZJalFunbJehlXF35hL3g
-        q2rF4+lXGRsYL8l1MXJySAiYSByd/ZKti5GLQ0hgKaPE7nvX2SASMhKfrnxkh7CFJf5c64Iq
-        +sgo8WDVe0YIZwujxP+pJ5i7GDk42AS0JBo72UHiIgIHGSV+XljBBNLNLLCCVeLPnloQW1gg
-        UqK9+wnYBhYBVYkdTbvAangFrCSe939lgdgmLzHz0nd2kJmcAtYSn/rsQUwhoJL1b4ogqgUl
-        Ts58wgIxXV6ieetsZghbQuLgixdg10gIKEnMvqwHMbBW4tX93YwTGEVmIemehaR7FpLuBYzM
-        qxhFUkuLc9Nziw31ihNzi0vz0vWS83M3MQJT1rZjPzfvYJz36qPeIUYmDsZDjBIczEoivAYV
-        DUlCvCmJlVWpRfnxRaU5qcWHGE2BnpzILCWanA9Mmnkl8YZmBqaGJmaWBqaWZsZK4ryeBR2J
-        QgLpiSWp2ampBalFMH1MHJxSDUxN+iGxUjvt+Vf/sP2k2T/lwS32rKTtJSw1+28oWN9/XvV6
-        9qzq7csEZwWFTyruVtjNYdS5PqhS9lJEPv/mhDW2PtkmsuZyZ1Tast9YyKd3nprxZ1nVNLMv
-        LHJHf7+SP6o36Xdz7o/m/aWBFVv7Cw7cjthb/pVr83mjr/zNTt92T763p/jdlKqPN7q5Fb4c
-        1uS+IZB+JLuzf566r5nLq79pF+R3iR9KOrBwX9IL9Rb3+54X2MT4zR0tHJoSjiy9ttxbKIP5
-        np+k9Lfth7wvRKf2NYsUHmG6ax4c/6or9sYZ03O8T38+0JuZdnyxwuyjlkyzlBzXd+uUeK7b
-        yjP7YZigdTz/5f3ezf2xLZx5f5VYijMSDbWYi4oTAc0L/zniAwAA
-X-CMS-MailID: 20220516133925eucas1p1414fab2cfa7da1d6258315cbd33e1685
-X-Msg-Generator: CA
-X-RootMTR: 20220516133925eucas1p1414fab2cfa7da1d6258315cbd33e1685
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220516133925eucas1p1414fab2cfa7da1d6258315cbd33e1685
-References: <20220516133921.126925-1-p.raghav@samsung.com>
-        <CGME20220516133925eucas1p1414fab2cfa7da1d6258315cbd33e1685@eucas1p1.samsung.com>
+X-ClientProxiedBy: TYCPR01CA0071.jpnprd01.prod.outlook.com
+ (2603:1096:405:2::35) To HK2PR06MB3492.apcprd06.prod.outlook.com
+ (2603:1096:202:2f::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 193e4d9b-9dda-4b36-cd45-08da3741c360
+X-MS-TrafficTypeDiagnostic: SG2PR06MB3419:EE_
+X-Microsoft-Antispam-PRVS: <SG2PR06MB3419F782F9015FE7EB61D6B3C7CF9@SG2PR06MB3419.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VGGp/PFN/aH/1pC7Z6URjt0nZdDhCHEZB5oWp9bbl+dE7Hp+M5YL18iQIsHBzX3HREpta5ERNk8T8hhbEBEM+qq7XMIeP0jgk5Z+kpNkyH69KgM+KW4t8fj41Xu/V7/cF8zs2eWO3/so1jeydq+7KFBue62Yt71VhlRAMHloa9IRXUEazY9rdqnDTTms0cfxWoGffXHPhRDUS+gtf74M1wPK7LR9SgzL4jELda4djGxdkgCuKAVlsmAM08eleNL3EloN4I8PL78gmRqyORDhs3Ngj2IY/MNrTzM//QlFl2l6V+W81SK56XbOe+rhxpBgyM0wgGfdwUIXp9SF+U4MgejxC9jAAPM7nmqqJqRT3B4UJfHy5xZ4OXQJ/VYWoQpwQKZz5RXWsnAjxg8FAt9il7D5IgONP2vBEAjvCGF9uAbJK18esu46RO4NmiGmJ1U1wxmfgE3/OAaLZG83SKZK3IIgFCEMPALvVPv4ciob+PwhZ10ZUVvJ4cYBzFNA19z5jcgWbasTsP763aUuqzx7ZkS54e31h7LgJ23zZ9R+sAYpeOcqsdudfdqwpThiMnEiz8Sy8PTavl1B6uenjDRm3rXBp4TJuqCcFyTgGFWWaBpQkj6AGs5DZgfFmlQiqU8fYDRNqWt0zEmO5UFbgStFyNcW3+ve+C/USuZoVeNFsUUTqUjxRgwjnsVnmDfb+avezkjWZuTSt+CWpDWNnJgkO3TDaY70ql4kUCYj9S9spzY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66476007)(66556008)(7416002)(66946007)(8936002)(4326008)(8676002)(86362001)(186003)(1076003)(5660300002)(508600001)(6486002)(26005)(6506007)(36756003)(2616005)(107886003)(921005)(6666004)(38350700002)(2906002)(38100700002)(83380400001)(6512007)(52116002)(110136005)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/yLEsw6E1sl6KIf7F5qi65Q1z0CjCu9L30xQqBV+E8MOkBQtOXbkWdKhJM1T?=
+ =?us-ascii?Q?KMELZ1jWDJV4MjCgKlninOAC9oqsLnj4m7LAQlMP1spfxQ3w7NenV6ZyFEi7?=
+ =?us-ascii?Q?UfPyfLC5Kuf5f9LChzB2qjlfXiij0+e7z62GE+TPZhS0rdTq2Th1Oj9cJZez?=
+ =?us-ascii?Q?7gM2LoMmoQ2i/5gZ7u64ChbxVj8sPU7gK+sDyYVHj9Qs97VEqwkIyJ4MEmB6?=
+ =?us-ascii?Q?D/vQHLCo2aknBrwzC7T49M5k4pqJ588+WULdodJd3LEx8Fv6EavVt0BsWF7h?=
+ =?us-ascii?Q?w0awpCjLCnjAhYCoLgaoEkz6kebLUfX86w5TuLMuPjeZFlcehIlP/DfLBl7j?=
+ =?us-ascii?Q?g+X1wptHz7j93LknxnSMJTnvCOE7KsnpKr1OSCJOhS5oR7X4ZYE+CjfQXuLP?=
+ =?us-ascii?Q?uW0C4cL4S4rj9RiXakqd5v40yG7LgcBBq9rLr9lM5pp+Zem3shRmG8HUK8xk?=
+ =?us-ascii?Q?FeEi27U27dLg3oibY+Rlb/CIni0F12JL/aLc13QViu4qUMDjDgnMJN6cdNln?=
+ =?us-ascii?Q?d1rKBtlh4vd+eL58zdK3yFpJA8H1Nq4KdTN0+cejrcGPLACBW/2rqMSWgI28?=
+ =?us-ascii?Q?GisZ0xo5+SipBVm9LLM5N5V/VyE0JiUyzUbDj7QHFHEdOo9YKRATls3JvCUw?=
+ =?us-ascii?Q?YQ95NdDwUaiNlHb87fnz7g5y4pFO7MEgK/YacN55WuIDJK5eUnAaO5nRUHIz?=
+ =?us-ascii?Q?meJkvcABU4pyUFMfx1GhVOA99AMbgTaMPdE8x4YhC3ywjIK2DUVNPLKpWXp5?=
+ =?us-ascii?Q?EHE0G4J495MLq/X+2T4H5BmUIzx0V73mbtbhIGf6i4jznKAo+mPySeubH223?=
+ =?us-ascii?Q?1IKVFz7JWPx6pFe8VuR/XGg/6dsvk9s78fFFu4jHDvMJyEWNM1+i0VPM6ZTV?=
+ =?us-ascii?Q?/DF0AkXX6qtoiunb8l2WzjPcgfKZflPnwuMKyptgEs0A5wz18FV1Qgaan73E?=
+ =?us-ascii?Q?KsoyIXX0UhamNktX5luUVxN2JPLliVX7ViKi7OjwV0Cxx7mRG4GcNGb9kU6a?=
+ =?us-ascii?Q?IzSK0OHBcsEM7TIMTadQqavPrw8D9iICgNz1JTLjBqN3h0br8xUj737MN+cd?=
+ =?us-ascii?Q?fQ0IbKSwwOaBQ08cl8zvv8od8PTSL5pgbIqXbIYTP7ok7Y2v8UsUe1mA41Kb?=
+ =?us-ascii?Q?Qqhvxfur5A13vEkvwX4ZQsWCtdKkMGdGJU1sFVLllR9sN6SuiB1pThpC7p/k?=
+ =?us-ascii?Q?GqRVnyOgkACWulg0sbPiqabxzPC1QwMb4MiWfTYYV6oNdjYHbAXIQ8zLbjWV?=
+ =?us-ascii?Q?R0138O464BTxuYSdxCPEyaLXVnsDtAxRKleauw37qqHJvHnLI8x3YUjm3Ezy?=
+ =?us-ascii?Q?tc4mAoYlHM+o2g10SLZV2MbM6oZ89QKefb9fAg8HP88LURLoPfU3ccROuOF/?=
+ =?us-ascii?Q?FPqpXSp1uxTFDDM0nTEsAQpeHWsA2i4+KbZYDZAfyVjXJrkUws2ro+mKz7AV?=
+ =?us-ascii?Q?xiTr9xSk3XFVKUaBKWDHp3mStK5iqADeqW5OTZBj0+pOf4Njt1pZXrX35xi0?=
+ =?us-ascii?Q?3Yw2PbGs88nXKGSb4i8QnJT8ZPvStSmuUeByN8udrKcmleFpJNPmERxL4TOq?=
+ =?us-ascii?Q?djSI8JYfHYMJ7mf9xDzansG4WfGI7q5I3iF+9DOuwgfpCYr23PYvcgIcJk1Z?=
+ =?us-ascii?Q?VEvxT6Vrme3fig5pZC9A5CYOI504P5r3ZS+vntRxDPq3GUg9N1ix500YCB3l?=
+ =?us-ascii?Q?c9Fb9hlk6hrOuLV2U6ala/WWC/wpgWcWBWX8h5BnrH1DRjr8Xvhvhf+mi7Ec?=
+ =?us-ascii?Q?DYbxqNjpKA=3D=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 193e4d9b-9dda-4b36-cd45-08da3741c360
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 13:41:21.9461
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UnW5c7u8oc7BjwoRIUyQ7PTfg3EAjHaauld/U1UQyFlD9V7WjdPm9qn26F+/WKs7rw484D/ue/fMp/YGzO5IBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3419
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Checking if a given sector is aligned to a zone is a common
-operation that is performed for zoned devices. Add
-blk_queue_is_zone_start helper to check for this instead of opencoding it
-everywhere.
+Fix the following coccicheck warnings:
 
-Convert the calculations on zone size to be generic instead of relying on
-power_of_2 based logic in the block layer using the helpers wherever
-possible.
+drivers/net/wireless/ath/ath5k/phy.c:3139:62-63: WARNING
+opportunity for min()
+drivers/net/wireless/ath/ath9k/dfs.c:249:28-30: WARNING
+opportunity for max()
 
-The only hot path affected by this change for power_of_2 zoned devices
-is in blk_check_zone_append() but blk_queue_is_zone_start() helper is
-used to optimize the calculation for po2 zone sizes. Note that the append
-path cannot be accessed by direct raw access to the block device but only
-through a filesystem abstraction.
-
-Finally, allow non power of 2 zoned devices provided that their zone
-capacity and zone size are equal. The main motivation to allow non
-power_of_2 zoned device is to remove the unmapped LBA between zcap and
-zsze for devices that cannot have a power_of_2 zcap.
-
-Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
-Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
 ---
- block/blk-core.c       |  3 +--
- block/blk-zoned.c      | 27 +++++++++++++++++++++------
- include/linux/blkdev.h | 22 ++++++++++++++++++++++
- 3 files changed, 44 insertions(+), 8 deletions(-)
+ drivers/net/wireless/ath/ath5k/phy.c | 2 +-
+ drivers/net/wireless/ath/ath9k/dfs.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/block/blk-core.c b/block/blk-core.c
-index f305cb66c..b7051b7ea 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -634,8 +634,7 @@ static inline blk_status_t blk_check_zone_append(struct request_queue *q,
- 		return BLK_STS_NOTSUPP;
+diff --git a/drivers/net/wireless/ath/ath5k/phy.c b/drivers/net/wireless/ath/ath5k/phy.c
+index 00f9e347d414..5797ef9c73d7 100644
+--- a/drivers/net/wireless/ath/ath5k/phy.c
++++ b/drivers/net/wireless/ath/ath5k/phy.c
+@@ -3136,7 +3136,7 @@ ath5k_combine_pwr_to_pdadc_curves(struct ath5k_hw *ah,
+ 		pdadc_n = gain_boundaries[pdg] + pd_gain_overlap - pwr_min[pdg];
+ 		/* Limit it to be inside pwr range */
+ 		table_size = pwr_max[pdg] - pwr_min[pdg];
+-		max_idx = (pdadc_n < table_size) ? pdadc_n : table_size;
++		max_idx = min(pdadc_n, table_size);
  
- 	/* The bio sector must point to the start of a sequential zone */
--	if (pos & (blk_queue_zone_sectors(q) - 1) ||
--	    !blk_queue_zone_is_seq(q, pos))
-+	if (!blk_queue_is_zone_start(q, pos) || !blk_queue_zone_is_seq(q, pos))
- 		return BLK_STS_IOERR;
+ 		/* Fill pdadc_out table */
+ 		while (pdadc_0 < max_idx && pdadc_i < 128)
+diff --git a/drivers/net/wireless/ath/ath9k/dfs.c b/drivers/net/wireless/ath/ath9k/dfs.c
+index acb9602aa464..11349218bc21 100644
+--- a/drivers/net/wireless/ath/ath9k/dfs.c
++++ b/drivers/net/wireless/ath/ath9k/dfs.c
+@@ -246,7 +246,7 @@ ath9k_postprocess_radar_event(struct ath_softc *sc,
+ 		DFS_STAT_INC(sc, dc_phy_errors);
  
- 	/*
-diff --git a/block/blk-zoned.c b/block/blk-zoned.c
-index 140230134..cfc2fb804 100644
---- a/block/blk-zoned.c
-+++ b/block/blk-zoned.c
-@@ -289,10 +289,10 @@ int blkdev_zone_mgmt(struct block_device *bdev, enum req_opf op,
- 		return -EINVAL;
- 
- 	/* Check alignment (handle eventual smaller last zone) */
--	if (sector & (zone_sectors - 1))
-+	if (!blk_queue_is_zone_start(q, sector))
- 		return -EINVAL;
- 
--	if ((nr_sectors & (zone_sectors - 1)) && end_sector != capacity)
-+	if (!blk_queue_is_zone_start(q, nr_sectors) && end_sector != capacity)
- 		return -EINVAL;
- 
- 	/*
-@@ -490,14 +490,29 @@ static int blk_revalidate_zone_cb(struct blk_zone *zone, unsigned int idx,
- 	 * smaller last zone.
- 	 */
- 	if (zone->start == 0) {
--		if (zone->len == 0 || !is_power_of_2(zone->len)) {
--			pr_warn("%s: Invalid zoned device with non power of two zone size (%llu)\n",
--				disk->disk_name, zone->len);
-+		if (zone->len == 0) {
-+			pr_warn("%s: Invalid zone size",
-+				disk->disk_name);
-+			return -ENODEV;
-+		}
-+
-+		/*
-+		 * Don't allow zoned device with non power_of_2 zone size with
-+		 * zone capacity less than zone size.
-+		 */
-+		if (!is_power_of_2(zone->len) &&
-+		    zone->capacity < zone->len) {
-+			pr_warn("%s: Invalid zoned size with non power of 2 zone size and zone capacity < zone size",
-+				disk->disk_name);
- 			return -ENODEV;
- 		}
- 
- 		args->zone_sectors = zone->len;
--		args->nr_zones = (capacity + zone->len - 1) >> ilog2(zone->len);
-+		/*
-+		 * Division is used to calculate nr_zones for both power_of_2
-+		 * and non power_of_2 zone sizes as it is not in the hot path.
-+		 */
-+		args->nr_zones = div64_u64(capacity + zone->len - 1, zone->len);
- 	} else if (zone->start + args->zone_sectors < capacity) {
- 		if (zone->len != args->zone_sectors) {
- 			pr_warn("%s: Invalid zoned device with non constant zone size\n",
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 22fe512ee..32d7bd7b1 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -686,6 +686,22 @@ static inline unsigned int blk_queue_zone_no(struct request_queue *q,
- 	return div64_u64(sector, zone_sectors);
- }
- 
-+static inline bool blk_queue_is_zone_start(struct request_queue *q, sector_t sec)
-+{
-+	sector_t zone_sectors = blk_queue_zone_sectors(q);
-+	u64 remainder = 0;
-+
-+	if (!blk_queue_is_zoned(q))
-+		return false;
-+
-+	if (is_power_of_2(zone_sectors))
-+		return IS_ALIGNED(sec, zone_sectors);
-+
-+	div64_u64_rem(sec, zone_sectors, &remainder);
-+	/* if there is a remainder, then the sector is not aligned */
-+	return remainder == 0;
-+}
-+
- static inline bool blk_queue_zone_is_seq(struct request_queue *q,
- 					 sector_t sector)
- {
-@@ -732,6 +748,12 @@ static inline unsigned int blk_queue_zone_no(struct request_queue *q,
- {
- 	return 0;
- }
-+
-+static inline bool blk_queue_is_zone_start(struct request_queue *q, sector_t sec)
-+{
-+	return false;
-+}
-+
- static inline unsigned int queue_max_open_zones(const struct request_queue *q)
- {
- 	return 0;
+ 		/* when both are present use stronger one */
+-		rssi = (ard->rssi < ard->ext_rssi) ? ard->ext_rssi : ard->rssi;
++		rssi = max(ard->rssi, ard->ext_rssi);
+ 		break;
+ 	default:
+ 		/*
 -- 
-2.25.1
+2.20.1
 
