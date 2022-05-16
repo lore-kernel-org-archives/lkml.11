@@ -2,224 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 836BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344835AbiEPS2U (ORCPT
+        id S1344846AbiEPS2s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 14:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47438 "EHLO
+        Mon, 16 May 2022 14:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344803AbiEPS2H (ORCPT
+        with ESMTP id S1344897AbiEPS2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 14:28:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C7AA3E0DC
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 11:28:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652725685;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=KGdQi8TuzBmFRXod035kvuaDB/iI4QyLpnvfOS0c72g=;
-        b=Z+qiwYbgHq84h4f/RqTEy37YNGe195/M/xkfnrt/dVFfJrZSyPAMBh+Wn5XO1C6qaD0Ogu
-        akjPS6MUvkfgU6pnvCITfSdH9QFlbPWG/c+YRC4020hGulQx3UamR0hkUhM/Q4BCAkPtuW
-        0FDAAYuTuI0P6zyvqEVLyGOL3Oh6mvI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-97-G2KT6AgpPKGayOWKZwieZg-1; Mon, 16 May 2022 14:28:01 -0400
-X-MC-Unique: G2KT6AgpPKGayOWKZwieZg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B1D83395AFE4;
-        Mon, 16 May 2022 18:28:00 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 022005521E2;
-        Mon, 16 May 2022 18:27:56 +0000 (UTC)
-Date:   Mon, 16 May 2022 20:27:54 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf 4/4] bpf_trace: pass array of u64 values in
- kprobe_multi.addrs
-Message-ID: <20220516182754.GA30211@asgard.redhat.com>
+        Mon, 16 May 2022 14:28:40 -0400
+Received: from mx0a-002c1b01.pphosted.com (mx0a-002c1b01.pphosted.com [148.163.151.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A51A3E5DD;
+        Mon, 16 May 2022 11:28:28 -0700 (PDT)
+Received: from pps.filterd (m0127837.ppops.net [127.0.0.1])
+        by mx0a-002c1b01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GIHIck017337;
+        Mon, 16 May 2022 11:27:26 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nutanix.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version;
+ s=proofpoint20171006; bh=DdET28op3sXbkq3r0lhDDOv9CAxvSsaicEYzbEsT8Uk=;
+ b=QWfNLSKiKocRHhbD+IHT5hmV00VcKVhzuqBVwpgF7UrMLYIIsV/hUf5cZEX01gHqFBgi
+ LlVsNX22GR37cuMmrl2XDm1LomaBTA4JPYVokDmxarVsZWl7kO8prxGziNC++RakMMdr
+ 4uyYxk0zNEssbERN6JilseUU1Ze6KvyGd50QLodJdpNVDdPvd826WV8uI0u/L2YnxdL+
+ R41GkhxUAd/mS2f6nRX0qfnOcInVxeRvh1IqsPwVvhe1k5oULaen+KSrPQzhrDQWQen1
+ Qyye+0TtZ3q+PlEb+OZ30zQ5BWI8tDMA8Ut7WmIOo8zRJ8qMd3ge4dxVvwILzOvbZ4CJ /Q== 
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2107.outbound.protection.outlook.com [104.47.55.107])
+        by mx0a-002c1b01.pphosted.com (PPS) with ESMTPS id 3g28b945te-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 11:27:26 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c8TsLI9MMKjhdimHBj5t7y6ErxBf8vHZtadcMPglpvOVURRJidvvnsbRIrd/+q34+B2T/Va2JlEhI1j56Igy6Me6/DTM6FUDDqgEHQ3vJSxIY8iUdnLdg+AHayNcN/Fes2DXpcij1Zg8Q4l0AQSoYzYXjclZP+3Bh0ssJrXrS9uuH+NqpxWwZ9+mh6GJBbxn8cd5FBv3W22IHLx1ESfpbgnKYXkMPEiiYCQHLiPa0wTmBG9iu8Xv5HrikA/hMxKm7KK56Eln2TXLSirS1r8hm2of4e1smdru/esMI0EBMvvhcljlXYIDquf0n88MDnjwUjZqOwcXWfJvcoHcGoLMZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DdET28op3sXbkq3r0lhDDOv9CAxvSsaicEYzbEsT8Uk=;
+ b=MlopU7Jg2uTrc8ZWRyzUBj7FkHltPWrGiSLGVqjLXrNLPhl3/Oo3w/Ec6/N6MU5/9H6OhHCM6+jGap5MCaG9RK94Jj/WSeOa6sNU6eIgLeBjFb4qSEU9H8L35xaG/cxHlYUhEHXQp36JJ/yinZ15vUqatreGnqUJSPgjhpBXQ/chRUU9k3gYsZL2o4oaobBB+OBBimTViF/QcGDFS8c0wfO+xkhRcXeVIFMpXEtIS0W7zQnS3g7W7dnjWihMdlgmGakuAyFA2/ZvG6THy7Nj1NIQXrPAqfO5b11savIenvRKXKH/WvfCBgxNkSTKhDaGaRlQS90nRzoKQRUqALR/nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nutanix.com; dmarc=pass action=none header.from=nutanix.com;
+ dkim=pass header.d=nutanix.com; arc=none
+Received: from BL0PR02MB4579.namprd02.prod.outlook.com (2603:10b6:208:4b::10)
+ by BYAPR02MB5958.namprd02.prod.outlook.com (2603:10b6:a03:125::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Mon, 16 May
+ 2022 18:27:22 +0000
+Received: from BL0PR02MB4579.namprd02.prod.outlook.com
+ ([fe80::fd14:ff80:d4d9:c81f]) by BL0PR02MB4579.namprd02.prod.outlook.com
+ ([fe80::fd14:ff80:d4d9:c81f%5]) with mapi id 15.20.5250.018; Mon, 16 May 2022
+ 18:27:22 +0000
+From:   Jon Kohler <jon@nutanix.com>
+To:     Jon Kohler <jon@nutanix.com>
+CC:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Waiman Long <longman@redhat.com>,
+        "kvm @ vger . kernel . org" <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] KVM: VMX: do not disable interception for
+ MSR_IA32_SPEC_CTRL on eIBRS
+Thread-Topic: [PATCH] KVM: VMX: do not disable interception for
+ MSR_IA32_SPEC_CTRL on eIBRS
+Thread-Index: AQHYZigD50jTp0T7q026slKeRH2Mca0h2NmA
+Date:   Mon, 16 May 2022 18:27:22 +0000
+Message-ID: <6794E98B-2B96-4AF6-AF4E-BE15574CA081@nutanix.com>
+References: <20220512174427.3608-1-jon@nutanix.com>
+In-Reply-To: <20220512174427.3608-1-jon@nutanix.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3693.40.0.1.81)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a497185f-cc10-4d7f-b969-08da3769b826
+x-ms-traffictypediagnostic: BYAPR02MB5958:EE_
+x-microsoft-antispam-prvs: <BYAPR02MB595827C87A71E306900D5678AFCF9@BYAPR02MB5958.namprd02.prod.outlook.com>
+x-proofpoint-crosstenant: true
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: MHv8CIE7tjbrIzZEWgFEZTrp0uW0ywP1ifhfz9pxad0u+Y0B4RkqI772N6mMheiG0w7r9/lqIrtCAAm9zCoqrpqRbpJzHVnt84TiykPDHLrBRbHCvshUrovl72PLfXSxoVysL1Cr6/zPWqI40t2ebn0apF/TKjTbIDARIMI55bxnr04NE1JyhxfDQBoCVZAzGrk+bwMkIcyXGaF9pZWtbNIYKciWzmtVT3+X68tDVi89YgBq09k5ubViOjv3FUrP5LypvoBC4CQwkb8q+tkAftMNz/GBX3lWf7l7Dr0BXwIZkdgfgQycnPXkBdtBaSHy4LIrzeCaF5VLpslUZcecFOHgrtrh2XQQFHsrWc+2SlnNfSuFsWdF/irey6XpZxoM3WuXg5mY9zgvdmoFK9lvWKLNDNjxA6DpDb3nKkoavnwplrYRvRc5WsDByX+FBxQ7MIAWT8r4kmJ+dGCouCIoLBTnFhaOuqqoYdN8IaEnG2/hqNKi2vsBt3mxdFlLye77CaERjD6cegKhuh+oks2htp2d9u54o7SXuAmTYzx1uUTnyypGlMSiyczdU7jRjrzmBUfhKEFw7xZSob57UJxIFQtX5Pgd9etgvoIDlZms44n8Ac3fvFaU+zPdQB3+XypWnoDZQQBHukNDQ8hCMulcuzmgnx6VMSHir70yePESyjUBGsoKOWncnggEYxF1MEmsWDqiXWDKcAJjh0tsgEC45tce0YJqRoGBVXVg6Ty75kCdKXkTPluqfWKGGp4XftBg
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR02MB4579.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(6512007)(6486002)(71200400001)(6200100001)(53546011)(6506007)(122000001)(54906003)(8936002)(86362001)(7416002)(316002)(83380400001)(36756003)(38100700002)(38070700005)(66446008)(8676002)(64756008)(4326008)(6862004)(2616005)(66946007)(91956017)(66556008)(76116006)(66476007)(2906002)(37006003)(5660300002)(33656002)(186003)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 2
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MWHEFKmPTE1Ee9xyqra9LHdGGpd/Y66Uy7O/xMtU96fnGU4C+bHxizcznWHo?=
+ =?us-ascii?Q?VI15vZwxkrfYE5MnSeInAZlO1hKRgISr1DKeDhibcJqDDcmRaAUAxG5sBm/y?=
+ =?us-ascii?Q?o+ZnfRb/m8Lr6i9qajtc3tAG+r0Dr/mje1QstL7V/0GjbRPimc5pLyccmovj?=
+ =?us-ascii?Q?pltiCTH7yhzgJTCH5lN051N/fUvYDbk2Qx5H1GDY7GNoX0drEUlS1vFJorKC?=
+ =?us-ascii?Q?rUdS+ka/+lx2gv2gxzj0deMJIGlVFkm+OjvoJfehz9c1RQc68LKteohc7g4Z?=
+ =?us-ascii?Q?DBdLUx7NJZ9TPL7zp1QnV2qFhzBR/68qFA0BAFoL046OtQNmq0JMMf6W7z3y?=
+ =?us-ascii?Q?09BXRozfm+H2zXqZEB424l6X4PXnkiO09BwktmEClLnbwb7ooiSxBXxtV9QP?=
+ =?us-ascii?Q?OajkbsGOEK+18ZuAhTNLCun0nur5sEIRsN8s4xLJcaMTtIrOnkDJTLuvmrWF?=
+ =?us-ascii?Q?XqoUevhc+m86sflXzIKuo+543onoAYyfF2tk2uX6bUHcbiqHO5VFK8p3dQa7?=
+ =?us-ascii?Q?S9jF3YM3QPxADRN0P2wvTg/dCCwIJUWtPkb7U07S4E/y0/oqZWglJoJ0IFjr?=
+ =?us-ascii?Q?H5P+cWXAEsqcSMmh0Fp1BcAPwA7C++tgkw3b3HNayc3a1bnpMzVvbIrXBecG?=
+ =?us-ascii?Q?9eWhzSd34tkR1E7QRLcdu7PsF+JNdh52W474mZonU0KdQBWmmPaRMsKO83mm?=
+ =?us-ascii?Q?dSVG0gybjbpSy9qsLCCtXJPniJCtr4V9JsN7kdyuHOERjMxttKJ+0hL59Gzx?=
+ =?us-ascii?Q?nBaiWuJqtnkfyTRbsFhi9y8HncRU8ftj+kL+jVSJfZOGwaUVHmfHx9Kybba8?=
+ =?us-ascii?Q?fxVIe/M5X9pRNJ+2HFAz+3J0lrnAm3tVQ1/4QKZNw2FJG8TkjnN+OLexAT8L?=
+ =?us-ascii?Q?9WXJn1is5c1xmy0onOUEh8uh6veaR3J1iVrPC44RS8iT3KCGYEaoPK8kes72?=
+ =?us-ascii?Q?qKbR7TyliHgjedqa56hbbIqNv1Eqe1H5FbP82E5ZKRVr4b+NLBxDyzci21ld?=
+ =?us-ascii?Q?QuBveq6DrAgCWgBFiOZrsd5WrJ/d/pwJ//sbQqdG0o/OvLZwQwleDFICEa8t?=
+ =?us-ascii?Q?uweM0S8FC9b5yMiziKTURI4dctCqPCzoRTebYH3X5A8HtAY3FsVc6OV5Vd+K?=
+ =?us-ascii?Q?KEhw3Wi44HbdWnJISFJPgjOe1uGuQxZul6p3I9gryHvA1qej2LwI+MAjqdCB?=
+ =?us-ascii?Q?TAXp0fmaDJDmvvYCJVoW5uKX3MxPhxs6D/1x6zT1ogjDZsVoyON93xlmOnXb?=
+ =?us-ascii?Q?ZeatOGFn8dlLJiNxD5RllWtTXRQ41f89/2Y6+d3lVTzSoiifrj2IDCBap6s7?=
+ =?us-ascii?Q?esuFy8YlV6Vh6VX6CfQwDALlplpipnyvXTkBt3cCwEgxHJlcTCJ0USG7MLUq?=
+ =?us-ascii?Q?u+s2K2qV9FQITa8pkbTZOyWKuL3+wAdUQO3VLJwt2XjZ0r72j0Y+YymWxOn1?=
+ =?us-ascii?Q?Ft9XVhdtUuQpAbZz6pT37ZPvK5PBXQHWC1IRdcKMdRgzjiEochPt2MJoYF19?=
+ =?us-ascii?Q?FHzH2mo3VopoFerIX8krVtUxLGPwSzcG7UVPWYpHxdYzVJrJKod1YsZa1mWS?=
+ =?us-ascii?Q?abtERj3VWkcUD8eqLqB2v3SwAzftciTMmXOBb1Cdz9wEe83LRSUzjtZgGXmy?=
+ =?us-ascii?Q?nirLQzWwxGNPzgVyy0rJzWU0tO5dc41TNENgkYMZfjLckV2P+WqE+Ydo1nMh?=
+ =?us-ascii?Q?ZWz6GMVspDj5729ddop0cFm86COsOeYVRfM906N1DaB9AIKJ5B8ySdrsZa+Z?=
+ =?us-ascii?Q?lZ09ze/wh7azh2uiDSgRQOAwjHW+2ORK4wl8SyyrBbnDcQgA4k92PqWtTOlb?=
+x-ms-exchange-antispam-messagedata-1: SSB5brWlHPP1EMryay209ME7q6U2tWWXPPVWbnqCV86l913qurE1vCa/
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <AF7E5EC50E7B3D46A63C321F197D0D1C@namprd02.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-OriginatorOrg: nutanix.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR02MB4579.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a497185f-cc10-4d7f-b969-08da3769b826
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2022 18:27:22.6673
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: bb047546-786f-4de1-bd75-24e5b6f79043
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8BwErKsCzLYr7aaTpSwehMlLhVVqiyxajdco73jXHYc9yjT9gFTx1/+sCdqVFICzTJovKKLvR4wq3n0z3CPoESa3iSJEwBNm/CenTqAlZ5c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB5958
+X-Proofpoint-GUID: VkjuEnapeUscx5NpAWmJF63EqwXFTM01
+X-Proofpoint-ORIG-GUID: VkjuEnapeUscx5NpAWmJF63EqwXFTM01
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-16_15,2022-05-16_02,2022-02-23_01
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the interface as defined, it is impossible to pass 64-bit kernel
-addresses from a 32-bit userspace process in BPF_LINK_TYPE_KPROBE_MULTI,
-which severly limits the useability of the interface, change the ABI
-to accept an array of u64 values instead of (kernel? user?) longs.
-Interestingly, the rest of the libbpf infrastructure uses 64-bit values
-for kallsyms addresses already, so this patch also eliminates
-the sym_addr cast in tools/lib/bpf/libbpf.c:resolve_kprobe_multi_cb().
 
-Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-Fixes: 5117c26e877352bc ("libbpf: Add bpf_link_create support for multi kprobes")
-Fixes: ddc6b04989eb0993 ("libbpf: Add bpf_program__attach_kprobe_multi_opts function")
-Fixes: f7a11eeccb111854 ("selftests/bpf: Add kprobe_multi attach test")
-Fixes: 9271a0c7ae7a9147 ("selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts")
-Fixes: 2c6401c966ae1fbe ("selftests/bpf: Add kprobe_multi bpf_cookie test")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- kernel/trace/bpf_trace.c                           | 25 ++++++++++++++++++----
- tools/lib/bpf/bpf.h                                |  2 +-
- tools/lib/bpf/libbpf.c                             |  8 +++----
- tools/lib/bpf/libbpf.h                             |  2 +-
- .../testing/selftests/bpf/prog_tests/bpf_cookie.c  |  2 +-
- .../selftests/bpf/prog_tests/kprobe_multi_test.c   |  2 +-
- 6 files changed, 29 insertions(+), 12 deletions(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 5b0cf54..86a5544 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2414,7 +2414,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 	void __user *ucookies;
- 	unsigned long *addrs;
- 	u32 flags, cnt, size, cookies_size;
--	void __user *uaddrs;
-+	u64 __user *uaddrs;
- 	u64 *cookies = NULL;
- 	void __user *usyms;
- 	int err;
-@@ -2447,9 +2447,26 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 		return -ENOMEM;
- 
- 	if (uaddrs) {
--		if (copy_from_user(addrs, uaddrs, size)) {
--			err = -EFAULT;
--			goto error;
-+		if (sizeof(*addrs) == sizeof(*uaddrs)) {
-+			if (copy_from_user(addrs, uaddrs, size)) {
-+				err = -EFAULT;
-+				goto error;
-+			}
-+		} else {
-+			u32 i;
-+			u64 addr;
-+
-+			for (i = 0; i < cnt; i++) {
-+				if (get_user(addr, uaddrs + i)) {
-+					err = -EFAULT;
-+					goto error;
-+				}
-+				if (addr > ULONG_MAX) {
-+					err = -EINVAL;
-+					goto error;
-+				}
-+				addrs[i] = addr;
-+			}
- 		}
- 	} else {
- 		err = kprobe_multi_resolve_syms(usyms, cnt, addrs);
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index f4b4afb..f677602 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -417,7 +417,7 @@ struct bpf_link_create_opts {
- 			__u32 flags;
- 			__u32 cnt;
- 			const char **syms;
--			const unsigned long *addrs;
-+			const __u64 *addrs;
- 			const __u64 *cookies;
- 		} kprobe_multi;
- 	};
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 809fe20..03a14a6 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10279,7 +10279,7 @@ static bool glob_match(const char *str, const char *pat)
- 
- struct kprobe_multi_resolve {
- 	const char *pattern;
--	unsigned long *addrs;
-+	__u64 *addrs;
- 	size_t cap;
- 	size_t cnt;
- };
-@@ -10294,12 +10294,12 @@ resolve_kprobe_multi_cb(unsigned long long sym_addr, char sym_type,
- 	if (!glob_match(sym_name, res->pattern))
- 		return 0;
- 
--	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(unsigned long),
-+	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(__u64),
- 				res->cnt + 1);
- 	if (err)
- 		return err;
- 
--	res->addrs[res->cnt++] = (unsigned long) sym_addr;
-+	res->addrs[res->cnt++] = sym_addr;
- 	return 0;
- }
- 
-@@ -10314,7 +10314,7 @@ bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
- 	};
- 	struct bpf_link *link = NULL;
- 	char errmsg[STRERR_BUFSIZE];
--	const unsigned long *addrs;
-+	const __u64 *addrs;
- 	int err, link_fd, prog_fd;
- 	const __u64 *cookies;
- 	const char **syms;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 05dde85..ec1cb61 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -431,7 +431,7 @@ struct bpf_kprobe_multi_opts {
- 	/* array of function symbols to attach */
- 	const char **syms;
- 	/* array of function addresses to attach */
--	const unsigned long *addrs;
-+	const __u64 *addrs;
- 	/* array of user-provided values fetchable through bpf_get_attach_cookie */
- 	const __u64 *cookies;
- 	/* number of elements in syms/addrs/cookies arrays */
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-index 923a613..5aa482a 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-@@ -137,7 +137,7 @@ static void kprobe_multi_link_api_subtest(void)
- 	cookies[6] = 7;
- 	cookies[7] = 8;
- 
--	opts.kprobe_multi.addrs = (const unsigned long *) &addrs;
-+	opts.kprobe_multi.addrs = (const __u64 *) &addrs;
- 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
- 	opts.kprobe_multi.cookies = (const __u64 *) &cookies;
- 	prog_fd = bpf_program__fd(skel->progs.test_kprobe);
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index b9876b5..b58e2b0 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -105,7 +105,7 @@ static void test_link_api_addrs(void)
- 	GET_ADDR("bpf_fentry_test7", addrs[6]);
- 	GET_ADDR("bpf_fentry_test8", addrs[7]);
- 
--	opts.kprobe_multi.addrs = (const unsigned long*) addrs;
-+	opts.kprobe_multi.addrs = (const __u64 *) addrs;
- 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
- 	test_link_api(&opts);
- }
--- 
-2.1.4
+> On May 12, 2022, at 1:44 PM, Jon Kohler <jon@nutanix.com> wrote:
+>=20
+> Avoid expensive rdmsr on every VM Exit for MSR_IA32_SPEC_CTRL on
+> eIBRS enabled systems iff the guest only sets IA32_SPEC_CTRL[0] (IBRS)
+> and not [1] (STIBP) or [2] (SSBD) by not disabling interception in
+> the MSR bitmap.
+>=20
+> eIBRS enabled guests using just IBRS will only write SPEC_CTRL MSR
+> once or twice per vCPU on boot, so it is far better to take those
+> VM exits on boot than having to read and save this msr on every
+> single VM exit forever. This outcome was suggested on Andrea's commit
+> 2f46993d83ff ("x86: change default to spec_store_bypass_disable=3Dprctl s=
+pectre_v2_user=3Dprctl")
+> however, since interception is still unilaterally disabled, the rdmsr
+> tax is still there even after that commit.
+>=20
+> This is a significant win for eIBRS enabled systems as this rdmsr
+> accounts for roughly ~50% of time for vmx_vcpu_run() as observed
+> by perf top disassembly, and is in the critical path for all
+> VM-Exits, including fastpath exits.
+>=20
+> Update relevant comments in vmx_vcpu_run() with appropriate SDM
+> references for future onlookers.
+>=20
+
+Gentle ping on this one
+
+> Fixes: 2f46993d83ff ("x86: change default to spec_store_bypass_disable=3D=
+prctl spectre_v2_user=3Dprctl")
+> Signed-off-by: Jon Kohler <jon@nutanix.com>
+> Cc: Andrea Arcangeli <aarcange@redhat.com>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+> Cc: Waiman Long <longman@redhat.com>
+> ---
+> arch/x86/kvm/vmx/vmx.c | 46 +++++++++++++++++++++++++++++++-----------
+> 1 file changed, 34 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index d58b763df855..d9da6fcecd8c 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -2056,6 +2056,25 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, stru=
+ct msr_data *msr_info)
+> 		if (kvm_spec_ctrl_test_value(data))
+> 			return 1;
+>=20
+> +		/*
+> +		 * For Intel eIBRS, IBRS (SPEC_CTRL_IBRS aka 0x00000048 BIT(0))
+> +		 * only needs to be set once and can be left on forever without
+> +		 * needing to be constantly toggled. If the guest attempts to
+> +		 * write that value, let's not disable interception. Guests
+> +		 * with eIBRS awareness should only be writing SPEC_CTRL_IBRS
+> +		 * once per vCPU per boot.
+> +		 *
+> +		 * The guest can still use other SPEC_CTRL features on top of
+> +		 * eIBRS such as SSBD, and we should disable interception for
+> +		 * those situations to avoid a multitude of VM-Exits's;
+> +		 * however, we will need to check SPEC_CTRL on each exit to
+> +		 * make sure we restore the host value properly.
+> +		 */
+> +		if (boot_cpu_has(X86_FEATURE_IBRS_ENHANCED) && data =3D=3D BIT(0)) {
+> +			vmx->spec_ctrl =3D data;
+> +			break;
+> +		}
+> +
+> 		vmx->spec_ctrl =3D data;
+> 		if (!data)
+> 			break;
+> @@ -6887,19 +6906,22 @@ static fastpath_t vmx_vcpu_run(struct kvm_vcpu *v=
+cpu)
+> 	vmx_vcpu_enter_exit(vcpu, vmx);
+>=20
+> 	/*
+> -	 * We do not use IBRS in the kernel. If this vCPU has used the
+> -	 * SPEC_CTRL MSR it may have left it on; save the value and
+> -	 * turn it off. This is much more efficient than blindly adding
+> -	 * it to the atomic save/restore list. Especially as the former
+> -	 * (Saving guest MSRs on vmexit) doesn't even exist in KVM.
+> -	 *
+> -	 * For non-nested case:
+> -	 * If the L01 MSR bitmap does not intercept the MSR, then we need to
+> -	 * save it.
+> +	 * SDM 25.1.3 - handle conditional exit for MSR_IA32_SPEC_CTRL.
+> +	 * To prevent constant VM exits for SPEC_CTRL, kernel may
+> +	 * disable interception in the MSR bitmap for SPEC_CTRL MSR,
+> +	 * such that the guest can read and write to that MSR without
+> +	 * trapping to KVM; however, the guest may set a different
+> +	 * value than the host. For exit handling, do rdmsr below if
+> +	 * interception is disabled, such that we can save the guest
+> +	 * value for restore on VM entry, as it does not get saved
+> +	 * automatically per SDM 27.3.1.
+> 	 *
+> -	 * For nested case:
+> -	 * If the L02 MSR bitmap does not intercept the MSR, then we need to
+> -	 * save it.
+> +	 * This behavior is optimized on eIBRS enabled systems, such
+> +	 * that the kernel only disables interception for MSR_IA32_SPEC_CTRL
+> +	 * when guests choose to use additional SPEC_CTRL features
+> +	 * above and beyond IBRS, such as STIBP or SSBD. This
+> +	 * optimization allows the kernel to avoid doing the expensive
+> +	 * rdmsr below.
+> 	 */
+> 	if (unlikely(!msr_write_intercepted(vmx, MSR_IA32_SPEC_CTRL)))
+> 		vmx->spec_ctrl =3D native_read_msr(MSR_IA32_SPEC_CTRL);
+> --
+> 2.30.1 (Apple Git-130)
+>=20
 
