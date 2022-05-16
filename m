@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB73C47086
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB14C3A59E
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351596AbiEPUGo (ORCPT
+        id S1351640AbiEPUGv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33116 "EHLO
+        Mon, 16 May 2022 16:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347001AbiEPTve (ORCPT
+        with ESMTP id S1346402AbiEPTxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:51:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFE93F8AB;
-        Mon, 16 May 2022 12:46:28 -0700 (PDT)
+        Mon, 16 May 2022 15:53:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C016346B06;
+        Mon, 16 May 2022 12:49:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CE1A6027A;
-        Mon, 16 May 2022 19:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60937C385AA;
-        Mon, 16 May 2022 19:46:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9E22B81616;
+        Mon, 16 May 2022 19:48:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30305C385AA;
+        Mon, 16 May 2022 19:48:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730387;
-        bh=+m4xr2VstQvfmpmlbh/Hzx8ERJ0r2on0tJLdU5O4+6U=;
+        s=korg; t=1652730528;
+        bh=UE+UaX07cuhVOKJs+zw6BCy4MVc8XhQSHHVFf1r1FHE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JN3rDg5wexfXN8a5b1N9wxtBU7kX1TeoTBW0kNFN8ixan+/qFkkqbJwzOe8DLSzY1
-         htDZis7w9kQJFcN02W8kTLTLN60UwoUEZC5jCxAMe7IPK/N8gM2SFT8TzeXizTovhI
-         uJ97Tk5iujGot9bjdolBGABDNEynGGtWggaHiv5k=
+        b=mw2hmIta+/2rLJZGDj75WeMcBZvBG3Qx+CRfKV80t39HHsZGJzI0jHYiTDBz491WM
+         YjG6eVQhOvWxehZ2Vxm9c+lmiC3ctFFQGKXz7ID7SAqCuG8pvOIIAjcKUEodpQJZBo
+         TMvYIGP4ilCQT9nEIB1xWLvj5e+WmPksdo1O5KEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 32/66] ASoC: max98090: Reject invalid values in custom control put()
-Date:   Mon, 16 May 2022 21:36:32 +0200
-Message-Id: <20220516193620.343485236@linuxfoundation.org>
+Subject: [PATCH 5.15 010/102] fbdev: simplefb: Cleanup fb_info in .fb_destroy rather than .remove
+Date:   Mon, 16 May 2022 21:35:44 +0200
+Message-Id: <20220516193624.290501139@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
-References: <20220516193619.400083785@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-[ Upstream commit 2fbe467bcbfc760a08f08475eea6bbd4c2874319 ]
+[ Upstream commit 666b90b3ce9e4aac1e1deba266c3a230fb3913b0 ]
 
-The max98090 driver has a custom put function for some controls which can
-only be updated in certain circumstances which makes no effort to validate
-that input is suitable for the control, allowing out of spec values to be
-written to the hardware and presented to userspace. Fix this by returning
-an error when invalid values are written.
+The driver is calling framebuffer_release() in its .remove callback, but
+this will cause the struct fb_info to be freed too early. Since it could
+be that a reference is still hold to it if user-space opened the fbdev.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220420193454.2647908-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This would lead to a use-after-free error if the framebuffer device was
+unregistered but later a user-space process tries to close the fbdev fd.
+
+To prevent this, move the framebuffer_release() call to fb_ops.fb_destroy
+instead of doing it in the driver's .remove callback.
+
+Strictly speaking, the code flow in the driver is still wrong because all
+the hardware cleanupd (i.e: iounmap) should be done in .remove while the
+software cleanup (i.e: releasing the framebuffer) should be done in the
+.fb_destroy handler. But this at least makes to match the behavior before
+commit 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal").
+
+Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220505220456.366090-1-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98090.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/video/fbdev/simplefb.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index 945a79e4f3eb..779845e3a9e3 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -413,6 +413,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
+index b63074fd892e..a2e3a4690025 100644
+--- a/drivers/video/fbdev/simplefb.c
++++ b/drivers/video/fbdev/simplefb.c
+@@ -70,12 +70,18 @@ struct simplefb_par;
+ static void simplefb_clocks_destroy(struct simplefb_par *par);
+ static void simplefb_regulators_destroy(struct simplefb_par *par);
  
- 	val = (val >> mc->shift) & mask;
- 
-+	if (sel < 0 || sel > mc->max)
-+		return -EINVAL;
++/*
++ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
++ * of unregister_framebuffer() or fb_release(). Do any cleanup here.
++ */
+ static void simplefb_destroy(struct fb_info *info)
+ {
+ 	simplefb_regulators_destroy(info->par);
+ 	simplefb_clocks_destroy(info->par);
+ 	if (info->screen_base)
+ 		iounmap(info->screen_base);
 +
- 	*select = sel;
++	framebuffer_release(info);
+ }
  
- 	/* Setting a volume is only valid if it is already On */
+ static const struct fb_ops simplefb_ops = {
+@@ -520,8 +526,8 @@ static int simplefb_remove(struct platform_device *pdev)
+ {
+ 	struct fb_info *info = platform_get_drvdata(pdev);
+ 
++	/* simplefb_destroy takes care of info cleanup */
+ 	unregister_framebuffer(info);
+-	framebuffer_release(info);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
