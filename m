@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49615C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347080AbiEPUQq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
+        id S236041AbiEPUQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348344AbiEPT6f (ORCPT
+        with ESMTP id S1348383AbiEPT6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED8843ACF;
-        Mon, 16 May 2022 12:50:32 -0700 (PDT)
+        Mon, 16 May 2022 15:58:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EC343AE0;
+        Mon, 16 May 2022 12:50:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E3CA60C6F;
-        Mon, 16 May 2022 19:50:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B9B2C36AE9;
-        Mon, 16 May 2022 19:50:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C037B81616;
+        Mon, 16 May 2022 19:50:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70EE0C34100;
+        Mon, 16 May 2022 19:50:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730632;
-        bh=2OX837V48LPWy+fohNmbgAQwoavPUJVKqMpgPMB4Acg=;
+        s=korg; t=1652730634;
+        bh=ow4X7BELWr3tuZ00ceGXC+8opjw2E6B2OH2F918kbsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LSZLhBAton9UfQV6N9mHqMRJZgc1e4W+Z4o/gvd0LZalcLlBekcCAjAh+3qVEIMu5
-         IopFJqpR7On5f+bpmdt4IwwjCaEijAR0wkSj/bf6U3P7QRhLpbQaFcck2DdFFTjhuM
-         VU3q0l0fm4iQPBlckhXIRE04UyU2LnyEYjRj/bnQ=
+        b=HfmosbmBYq928PKudTEnpUxgcTd1qA7Z5Wbwq/RubGON57sg+2hCDGMmoq0j+vVBN
+         e3t5BPkMYgl9JfJLxVTm8haDiBRe3LWiNWETSbtd7B+MI0cjQWZMkO8Lz3MewtxZMb
+         nMj6wsVdfc5zyqi58gNkme5z28SVJTI5ZMIwQtAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Alex Elder <elder@linaro.org>,
+        Taniya Das <quic_tdas@quicinc.com>,
+        Mike Tipton <quic_mdtipton@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Georgi Djakov <djakov@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 061/102] tcp: drop the hash_32() part from the index calculation
-Date:   Mon, 16 May 2022 21:36:35 +0200
-Message-Id: <20220516193625.747686026@linuxfoundation.org>
+Subject: [PATCH 5.15 062/102] interconnect: Restore sync state by ignoring ipa-virt in provider count
+Date:   Mon, 16 May 2022 21:36:36 +0200
+Message-Id: <20220516193625.776136833@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -51,39 +55,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Stephen Boyd <swboyd@chromium.org>
 
-[ Upstream commit e8161345ddbb66e449abde10d2fdce93f867eba9 ]
+[ Upstream commit 20ce30fb4750f2ffc130cdcb26232b1dd87cd0a5 ]
 
-In commit 190cc82489f4 ("tcp: change source port randomizarion at
-connect() time"), the table_perturb[] array was introduced and an
-index was taken from the port_offset via hash_32(). But it turns
-out that hash_32() performs a multiplication while the input here
-comes from the output of SipHash in secure_seq, that is well
-distributed enough to avoid the need for yet another hash.
+Ignore compatible strings for the IPA virt drivers that were removed in
+commits 2fb251c26560 ("interconnect: qcom: sdx55: Drop IP0
+interconnects") and 2f3724930eb4 ("interconnect: qcom: sc7180: Drop IP0
+interconnects") so that the sync state logic can kick in again.
+Otherwise all the interconnects in the system will stay pegged at max
+speeds because 'providers_count' is always going to be one larger than
+the number of drivers that will ever probe on sc7180 or sdx55. This
+fixes suspend on sc7180 and sdx55 devices when you don't have a
+devicetree patch to remove the ipa-virt compatible node.
 
-Suggested-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Doug Anderson <dianders@chromium.org>
+Cc: Alex Elder <elder@linaro.org>
+Cc: Taniya Das <quic_tdas@quicinc.com>
+Cc: Mike Tipton <quic_mdtipton@quicinc.com>
+Fixes: 2fb251c26560 ("interconnect: qcom: sdx55: Drop IP0 interconnects")
+Fixes: 2f3724930eb4 ("interconnect: qcom: sc7180: Drop IP0 interconnects")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20220427013226.341209-1-swboyd@chromium.org
+Signed-off-by: Georgi Djakov <djakov@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/inet_hashtables.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/interconnect/core.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index f76e4ac1ba3a..ee9c587031b4 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+diff --git a/drivers/interconnect/core.c b/drivers/interconnect/core.c
+index 9050ca1f4285..808f6e7a8048 100644
+--- a/drivers/interconnect/core.c
++++ b/drivers/interconnect/core.c
+@@ -1087,9 +1087,15 @@ static int of_count_icc_providers(struct device_node *np)
+ {
+ 	struct device_node *child;
+ 	int count = 0;
++	const struct of_device_id __maybe_unused ignore_list[] = {
++		{ .compatible = "qcom,sc7180-ipa-virt" },
++		{ .compatible = "qcom,sdx55-ipa-virt" },
++		{}
++	};
  
- 	net_get_random_once(table_perturb,
- 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
--	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
-+	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
- 
- 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
- 	offset %= remaining;
+ 	for_each_available_child_of_node(np, child) {
+-		if (of_property_read_bool(child, "#interconnect-cells"))
++		if (of_property_read_bool(child, "#interconnect-cells") &&
++		    likely(!of_match_node(ignore_list, child)))
+ 			count++;
+ 		count += of_count_icc_providers(child);
+ 	}
 -- 
 2.35.1
 
