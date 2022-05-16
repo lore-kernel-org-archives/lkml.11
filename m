@@ -2,70 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E767CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237765AbiEPLrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
+        id S240174AbiEPLtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236114AbiEPLrP (ORCPT
+        with ESMTP id S229890AbiEPLt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:47:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1961831B;
-        Mon, 16 May 2022 04:47:15 -0700 (PDT)
+        Mon, 16 May 2022 07:49:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B2FDF8D;
+        Mon, 16 May 2022 04:49:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5ECD61015;
-        Mon, 16 May 2022 11:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0825AC385B8;
-        Mon, 16 May 2022 11:47:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72A1660FFC;
+        Mon, 16 May 2022 11:49:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5281AC385B8;
+        Mon, 16 May 2022 11:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652701634;
-        bh=A23pfhdPVoKFYVSK02SQZTwQCJVPjr8lpcsjffIrKuQ=;
+        s=k20201202; t=1652701765;
+        bh=1UjUf9qgR8mCHZ9pO5ibdXOTkA+2CnwKyYDerjjSjGA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kDBPpVAWItdh/Fj5ceigYM4amRcZ3gblDQYFBDYY1oqEVbonkr5cef+Ihvaw4nmxh
-         +o7KhGEeVCOO4ONJ3294fkrj7DB6d8deLz+noH4q81taDe1GZRbp9ReW0dYflP5dr1
-         mI6fFepkysVs7GLnA0v3pfAncPsPDxHByjRsbCrrLmpIQ4NWn1haii4XM2/TjgsAZk
-         kiKxVan3RRaf0onDz3n0W2VFXdJBk+/iYQIlk7zMhp5LIxlvJ2M225Ac+jLVfkuRf9
-         SbxLhyvyDoE0ciBAjSApkqrObDFJMHNNC+X7mG2AgebMVg6uG//GI1hkZ4zqnEe4Eu
-         qViZojmOqGjgg==
-Date:   Mon, 16 May 2022 13:47:08 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Jan Kara <jack@suse.cz>, Alexander Viro <viro@zeniv.linux.org.uk>,
-        kernel@openvz.org, linux-kernel@vger.kernel.org,
-        Amir Goldstein <amir73il@gmail.com>,
-        Matthew Bobrowski <repnop@google.com>,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH] sparse: use force attribute for fmode_t casts
-Message-ID: <20220516114708.liw6sltketcahpkl@wittgenstein>
-References: <1eb3b298-4f7e-32ad-74ae-12044ed637ed@openvz.org>
+        b=gMkYxYwaD2K0qgkQWrvFjMbEes4kia98EUUVJ/06WXfRTmnyYFI3+clNVoLAQu0/F
+         x+63icf6hFCM/xsO/+YqetIoB4x1gBd+Q0z+jkU58s/KBV5u+gOj1DguI8HjQPFHZJ
+         vvpflzD8mQqRkZEtvS5uJxpZqREmSgXWpzXkSehLhvHWGXMoA0snQrvlWtBU+MRVd8
+         Io7mXMB4rZKJVMePun91CFyq/qLWre8LzQ/Tr8EnQ5HwsN8K0vwCBskWRAyJi2LT75
+         IWBDOZ/t+kz0pTa6dUeW24jK/LLmqV9hPJLuMxUa4YMiCFSYw1elIzxapFohDrxy+r
+         75pBVqDXWPFjg==
+Date:   Mon, 16 May 2022 13:49:22 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH bpf-next 1/2] cpuidle/rcu: Making arch_cpu_idle and
+ rcu_idle_exit noinstr
+Message-ID: <20220516114922.GA349949@lothringen>
+References: <20220515203653.4039075-1-jolsa@kernel.org>
+ <20220516042535.GV1790663@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1eb3b298-4f7e-32ad-74ae-12044ed637ed@openvz.org>
+In-Reply-To: <20220516042535.GV1790663@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 01:22:28PM +0300, Vasily Averin wrote:
-> Fixes sparce warnings:
-> fs/notify/fanotify/fanotify_user.c:267:63: sparse:
->  warning: restricted fmode_t degrades to integer
-> fs/notify/fanotify/fanotify_user.c:1351:28: sparse:
->  warning: restricted fmode_t degrades to integer
-> fs/proc/base.c:2240:25: sparse: warning: cast to restricted fmode_t
-> fs/proc/base.c:2297:42: sparse: warning: cast from restricted fmode_t
-> fs/proc/base.c:2394:48: sparse: warning: cast from restricted fmode_t
-> fs/open.c:1024:21: sparse: warning: restricted fmode_t degrades to integer
+On Sun, May 15, 2022 at 09:25:35PM -0700, Paul E. McKenney wrote:
+> On Sun, May 15, 2022 at 10:36:52PM +0200, Jiri Olsa wrote:
+> > Making arch_cpu_idle and rcu_idle_exit noinstr. Both functions run
+> > in rcu 'not watching' context and if there's tracer attached to
+> > them, which uses rcu (e.g. kprobe multi interface) it will hit RCU
+> > warning like:
+> > 
+> >   [    3.017540] WARNING: suspicious RCU usage
+> >   ...
+> >   [    3.018363]  kprobe_multi_link_handler+0x68/0x1c0
+> >   [    3.018364]  ? kprobe_multi_link_handler+0x3e/0x1c0
+> >   [    3.018366]  ? arch_cpu_idle_dead+0x10/0x10
+> >   [    3.018367]  ? arch_cpu_idle_dead+0x10/0x10
+> >   [    3.018371]  fprobe_handler.part.0+0xab/0x150
+> >   [    3.018374]  0xffffffffa00080c8
+> >   [    3.018393]  ? arch_cpu_idle+0x5/0x10
+> >   [    3.018398]  arch_cpu_idle+0x5/0x10
+> >   [    3.018399]  default_idle_call+0x59/0x90
+> >   [    3.018401]  do_idle+0x1c3/0x1d0
+> > 
+> > The call path is following:
+> > 
+> > default_idle_call
+> >   rcu_idle_enter
+> >   arch_cpu_idle
+> >   rcu_idle_exit
+> > 
+> > The arch_cpu_idle and rcu_idle_exit are the only ones from above
+> > path that are traceble and cause this problem on my setup.
+> > 
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > 
-> Signed-off-by: Vasily Averin <vvs@openvz.org>
-> ---
->  fs/notify/fanotify/fanotify_user.c | 4 ++--
->  fs/open.c                          | 2 +-
+> From an RCU viewpoint:
+> 
+> Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
+> 
+> [ I considered asking for an instrumentation_on() in rcu_idle_exit(),
+> but there is no point given that local_irq_restore() isn't something
+> you instrument anyway. ]
 
-Looks good to me,
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+So local_irq_save() in the beginning of rcu_idle_exit() is unsafe because
+it is instrumentable by the function (graph)  tracers and the irqsoff tracer.
+
+Also it calls into lockdep that might make use of RCU.
+
+That's why rcu_idle_exit() is not noinstr yet. See this patch:
+
+https://lore.kernel.org/lkml/20220503100051.2799723-4-frederic@kernel.org/
+
+Thanks.
+
+> 
+> > ---
+> >  arch/x86/kernel/process.c | 2 +-
+> >  kernel/rcu/tree.c         | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+> > index b370767f5b19..1345cb0124a6 100644
+> > --- a/arch/x86/kernel/process.c
+> > +++ b/arch/x86/kernel/process.c
+> > @@ -720,7 +720,7 @@ void arch_cpu_idle_dead(void)
+> >  /*
+> >   * Called from the generic idle code.
+> >   */
+> > -void arch_cpu_idle(void)
+> > +void noinstr arch_cpu_idle(void)
+> >  {
+> >  	x86_idle();
+> >  }
+> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> > index a4b8189455d5..20d529722f51 100644
+> > --- a/kernel/rcu/tree.c
+> > +++ b/kernel/rcu/tree.c
+> > @@ -896,7 +896,7 @@ static void noinstr rcu_eqs_exit(bool user)
+> >   * If you add or remove a call to rcu_idle_exit(), be sure to test with
+> >   * CONFIG_RCU_EQS_DEBUG=y.
+> >   */
+> > -void rcu_idle_exit(void)
+> > +void noinstr rcu_idle_exit(void)
+> >  {
+> >  	unsigned long flags;
+> >  
+> > -- 
+> > 2.35.3
+> > 
