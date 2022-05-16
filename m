@@ -2,256 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8837FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 806FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:25:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344236AbiEPRZn (ORCPT
+        id S1344261AbiEPRZw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 13:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        Mon, 16 May 2022 13:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236897AbiEPRZl (ORCPT
+        with ESMTP id S1344241AbiEPRZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 13:25:41 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B29657D;
-        Mon, 16 May 2022 10:25:39 -0700 (PDT)
+        Mon, 16 May 2022 13:25:44 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C60D13DF7
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 10:25:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652721939; x=1684257939;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SVGBrfvOhfyhUyrT6VhTTGEb7uUF3RhVTjcTNWbzSt4=;
-  b=bELsbu06NckSjrTt/v1l6v30getKS5BZ4nyR9dcOeBf62hBqaaAeVEof
-   +oBem//DYSiun6Cdvxx55ONtXejtrfAnlKfoigbXSQPTt1TTu5rP/Pxee
-   1mGruwILgHWgeNW88CQV+aByTTx3rmGE3nnSM83Zm3R3jn2iEszc78ac2
-   SxX4jjbgH43v0B30b7o/5uj/cgbmnw7Wd6srAYtqDSbJMVR4FFcszrQeE
-   wT6iMg8kziUQFYgxHLBOeIOiUACk7BAB/Ix6hosA/qp60St7dt8XGWJRy
-   h6qKXWMivbHW0W/A56c5e8udkVUjAtJ/AO0YXKu+ohDXlifDqyNFyzIKo
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="251422080"
+  t=1652721943; x=1684257943;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4wTfdXeGKL2uZh8t3c24YC/m4aBIrVRT4kSq3cD/L4s=;
+  b=ITW8q+UiEBFae7AlAD/nhiYk9uJwfdJrpLQ8OpQlV8QSD5ipJEbGeH8e
+   LQdNA0JMBpmlZWMarSlpIgevgkqBhGXehTR4F6QQV/JLpWM9DJVMWBok5
+   5SOC/5ofSJeSjFg71QWfhX9Hn/peiVw4YNPCe2WvyT5HwHqAEQ5HUCmLv
+   zb32pInLL7d79e6/ABhZAP9GBjTnO54HWNGz1TvDiOGa7QZ0ZiclAmLw5
+   RSmoklFBx+OlxFSQKPs/FkqibH+pjEC6C8BCE1MNznQQCutv4gq08Vrwj
+   Euz3sFzVmxPaqgN88cNVz5fxIzKQT/tKHXkYtTbrN0P9mf7Lcb7T729Ri
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="270850326"
 X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="251422080"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 10:25:38 -0700
+   d="scan'208";a="270850326"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 10:25:41 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="568434221"
-Received: from kcaccard-mobl.amr.corp.intel.com (HELO kcaccard-mobl1.jf.intel.com) ([10.209.164.128])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 10:25:37 -0700
-From:   Kristen Carlson Accardi <kristen@linux.intel.com>
-To:     linux-sgx@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Kristen Carlson Accardi <kristen@linux.intel.com>
-Subject: [RFC PATCH] x86/sgx: Set active memcg prior to shmem allocation
-Date:   Mon, 16 May 2022 10:25:22 -0700
-Message-Id: <20220516172523.5113-1-kristen@linux.intel.com>
-X-Mailer: git-send-email 2.20.1
+   d="scan'208";a="522547827"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 16 May 2022 10:25:40 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nqeTT-0000Dh-OL;
+        Mon, 16 May 2022 17:25:39 +0000
+Date:   Tue, 17 May 2022 01:24:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kevin Kim <ckkim@hardkernel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dongjin Kim <tobetter@gmail.com>,
+        Olliver Schinagl <oliver@schinagl.nl>
+Subject: [tobetter:odroid-5.18.y 97/131] drivers/pwm/pwm-gpio.c:60:22:
+ warning: no previous prototype for 'gpio_pwm_timer'
+Message-ID: <202205170132.c95JkC0F-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the system runs out of enclave memory, SGX can reclaim EPC pages
-by swapping to normal RAM. These backing pages are allocated via a
-per-enclave shared memory area. Since SGX allows unlimited over
-commit on EPC memory, the reclaimer thread can allocate a large
-number of backing RAM pages in response to EPC memory pressure.
+tree:   https://github.com/tobetter/linux odroid-5.18.y
+head:   a4a3b755d6825af3be1a233d3d927f40356ff545
+commit: 523b4a5fc40c035f7fb9cc079b1f0a9ba38f16d8 [97/131] ODROID-COMMON: pwm: gpio: Add a generic gpio based PWM driver
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220517/202205170132.c95JkC0F-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/tobetter/linux/commit/523b4a5fc40c035f7fb9cc079b1f0a9ba38f16d8
+        git remote add tobetter https://github.com/tobetter/linux
+        git fetch --no-tags tobetter odroid-5.18.y
+        git checkout 523b4a5fc40c035f7fb9cc079b1f0a9ba38f16d8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/pwm/
 
-When the shared memory backing RAM allocation occurs during
-the reclaimer thread context, the shared memory is charged to
-the root memory control group, and the shmem usage of the enclave
-is not properly accounted for, making cgroups ineffective at
-limiting the amount of RAM an enclave can consume.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-For example, when using a cgroup to launch a set of test
-enclaves, the kernel does not properly account for 50% - 75% of
-shmem page allocations on average. In the worst case, when
-nearly all allocations occur during the reclaimer thread, the
-kernel accounts less than a percent of the amount of shmem used
-by the enclave's cgroup to the correct cgroup.
+All warnings (new ones prefixed by >>):
 
-SGX currently stores a list of mm_structs that are associated with
-an enclave. In order to allow the enclave's cgroup to more accurately
-reflect the shmem usage, the memory control group (struct mem_cgroup)
-of one of these mm_structs can be set as the active memory cgroup
-prior to allocating any EPC backing pages. This will make any shmem
-allocations be charged to a memory control group associated with the
-enclave's cgroup. This will allow memory cgroup limits to restrict
-RAM usage more effectively.
+>> drivers/pwm/pwm-gpio.c:60:22: warning: no previous prototype for 'gpio_pwm_timer' [-Wmissing-prototypes]
+      60 | enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
+         |                      ^~~~~~~~~~~~~~
 
-This patch will create a new function - sgx_encl_alloc_backing().
-This function will be used whenever a new backing storage page
-needs to be allocated. Previously the same function was used for
-page allocation as well as retrieving a previously allocated page.
-Prior to backing page allocation, if there is a mm_struct associated
-with the enclave that is requesting the allocation, it will be set
-as the active memory control group.
 
-Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
----
- arch/x86/kernel/cpu/sgx/encl.c | 89 +++++++++++++++++++++++++++++++++-
- arch/x86/kernel/cpu/sgx/encl.h |  6 ++-
- arch/x86/kernel/cpu/sgx/main.c |  4 +-
- 3 files changed, 93 insertions(+), 6 deletions(-)
+vim +/gpio_pwm_timer +60 drivers/pwm/pwm-gpio.c
 
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index 001808e3901c..fa017bc4f99e 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -32,7 +32,7 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
- 	else
- 		page_index = PFN_DOWN(encl->size);
- 
--	ret = sgx_encl_get_backing(encl, page_index, &b);
-+	ret = sgx_encl_lookup_backing(encl, page_index, &b);
- 	if (ret)
- 		return ret;
- 
-@@ -574,7 +574,7 @@ static struct page *sgx_encl_get_backing_page(struct sgx_encl *encl,
-  *   0 on success,
-  *   -errno otherwise.
-  */
--int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
-+static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
- 			 struct sgx_backing *backing)
- {
- 	pgoff_t pcmd_index = PFN_DOWN(encl->size) + 1 + (page_index >> 5);
-@@ -601,6 +601,91 @@ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
- 	return 0;
- }
- 
-+static struct mem_cgroup * sgx_encl_set_active_memcg(struct sgx_encl *encl)
-+{
-+	struct mm_struct *mm = current->mm;
-+	struct sgx_encl_mm *encl_mm;
-+	struct mem_cgroup *memcg;
-+	int idx;
-+
-+	memcg = get_mem_cgroup_from_mm(mm);
-+
-+	if (mm)
-+		return memcg;
-+
-+	idx = srcu_read_lock(&encl->srcu);
-+
-+	list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
-+		if (encl_mm->mm == NULL)
-+			continue;
-+
-+		mm = encl_mm->mm;
-+		break;
-+
-+	}
-+
-+	srcu_read_unlock(&encl->srcu, idx);
-+
-+	if (!mm)
-+		return memcg;
-+
-+	memcg = get_mem_cgroup_from_mm(mm);
-+
-+	return set_active_memcg(memcg);
-+}
-+
-+/**
-+ * sgx_encl_alloc_backing() - allocate a new backing storage page
-+ * @encl:	an enclave pointer
-+ * @page_index:	enclave page index
-+ * @backing:	data for accessing backing storage for the page
-+ *
-+ * If this function is called from the kernel thread, it will set
-+ * the active memcg to one of the enclaves mm's in order to ensure
-+ * that shmem page allocations are charged to the enclave when they
-+ * are retrieved. Upon exit, the old memcg (if it existed at all)
-+ * will be restored.
-+ *
-+ * Return:
-+ *   0 on success,
-+ *   -errno otherwise.
-+ */
-+int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long page_index,
-+			   struct sgx_backing *backing)
-+{
-+	struct mem_cgroup *old_memcg;
-+	int ret;
-+
-+	old_memcg = sgx_encl_set_active_memcg(encl);
-+
-+	ret = sgx_encl_get_backing(encl, page_index, backing);
-+
-+	set_active_memcg(old_memcg);
-+
-+	return ret;
-+}
-+
-+/**
-+ * sgx_encl_lookup_backing() - retrieve an existing backing storage page
-+ * @encl:	an enclave pointer
-+ * @page_index:	enclave page index
-+ * @backing:	data for accessing backing storage for the page
-+ *
-+ * Retrieve a backing page for loading data back into an EPC page with ELDU.
-+ * It is the caller's responsibility to ensure that it is appropriate to use
-+ * sgx_encl_lookup_backing() rather than sgx_encl_alloc_backing(). If lookup is
-+ * not used correctly, this will cause an allocation which is not accounted for.
-+ *
-+ * Return:
-+ *   0 on success,
-+ *   -errno otherwise.
-+ */
-+int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long page_index,
-+			   struct sgx_backing *backing)
-+{
-+	return sgx_encl_get_backing(encl, page_index, backing);
-+}
-+
- /**
-  * sgx_encl_put_backing() - Unpin the backing storage
-  * @backing:	data for accessing backing storage for the page
-diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
-index fec43ca65065..7816cfe8f832 100644
---- a/arch/x86/kernel/cpu/sgx/encl.h
-+++ b/arch/x86/kernel/cpu/sgx/encl.h
-@@ -105,8 +105,10 @@ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
- 
- void sgx_encl_release(struct kref *ref);
- int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
--int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
--			 struct sgx_backing *backing);
-+int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long page_index,
-+			    struct sgx_backing *backing);
-+int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long page_index,
-+			   struct sgx_backing *backing);
- void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
- int sgx_encl_test_and_clear_young(struct mm_struct *mm,
- 				  struct sgx_encl_page *page);
-diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
-index 4b41efc9e367..7d41c8538795 100644
---- a/arch/x86/kernel/cpu/sgx/main.c
-+++ b/arch/x86/kernel/cpu/sgx/main.c
-@@ -310,7 +310,7 @@ static void sgx_reclaimer_write(struct sgx_epc_page *epc_page,
- 	encl->secs_child_cnt--;
- 
- 	if (!encl->secs_child_cnt && test_bit(SGX_ENCL_INITIALIZED, &encl->flags)) {
--		ret = sgx_encl_get_backing(encl, PFN_DOWN(encl->size),
-+		ret = sgx_encl_alloc_backing(encl, PFN_DOWN(encl->size),
- 					   &secs_backing);
- 		if (ret)
- 			goto out;
-@@ -381,7 +381,7 @@ static void sgx_reclaim_pages(void)
- 			goto skip;
- 
- 		page_index = PFN_DOWN(encl_page->desc - encl_page->encl->base);
--		ret = sgx_encl_get_backing(encl_page->encl, page_index, &backing[i]);
-+		ret = sgx_encl_alloc_backing(encl_page->encl, page_index, &backing[i]);
- 		if (ret)
- 			goto skip;
- 
+    59	
+  > 60	enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
+    61	{
+    62		struct gpio_pwm_data *gpio_data = container_of(timer,
+    63							      struct gpio_pwm_data,
+    64							      timer);
+    65		if (!gpio_data->run) {
+    66			gpio_pwm_off(gpio_data);
+    67			gpio_data->pin_on = false;
+    68			return HRTIMER_NORESTART;
+    69		}
+    70	
+    71		if (!gpio_data->pin_on) {
+    72			hrtimer_forward_now(&gpio_data->timer,
+    73					    ns_to_ktime(gpio_data->on_time));
+    74			gpio_pwm_on(gpio_data);
+    75			gpio_data->pin_on = true;
+    76		} else {
+    77			hrtimer_forward_now(&gpio_data->timer,
+    78					    ns_to_ktime(gpio_data->off_time));
+    79			gpio_pwm_off(gpio_data);
+    80			gpio_data->pin_on = false;
+    81		}
+    82	
+    83		return HRTIMER_RESTART;
+    84	}
+    85	
+
 -- 
-2.20.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
