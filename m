@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36035C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE24C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343853AbiEPTxZ (ORCPT
+        id S1346095AbiEPTxf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        Mon, 16 May 2022 15:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346182AbiEPTsh (ORCPT
+        with ESMTP id S1346336AbiEPTsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:48:37 -0400
+        Mon, 16 May 2022 15:48:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CC342EF8;
-        Mon, 16 May 2022 12:44:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B894338F;
+        Mon, 16 May 2022 12:44:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06389B81618;
-        Mon, 16 May 2022 19:44:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 597F4C385AA;
-        Mon, 16 May 2022 19:44:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19FB3B8160D;
+        Mon, 16 May 2022 19:44:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD87C385AA;
+        Mon, 16 May 2022 19:44:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730285;
-        bh=Br3lB6GtFz/MXTAndSiBppGFrOKcpvhd6MgDFSkSPQM=;
+        s=korg; t=1652730288;
+        bh=g8ECtb8mX5kvHNcnRq6EhYmCLsHNLI4ewBkgO6oyvR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IGXqZvTUDU0ixYf1mtFy6We7g7RN0Njk/jSuqotCUTOVhsbRGzKnIuXcJaaIVgrJ4
-         F7Dw4Vv7xpRuCxe01EMtykiqKymYSlx0Rh++6sXOU+Dr156MsFPRvSYW8uAfP+EkPJ
-         ZumQg4tYG++4Lp5oW86QcpbicNYyiCJu7McZt16Q=
+        b=zs9x1rvAGPEifx9BdXYfPTpZ/ARjnO9sDUy1X8XI6RFe+9pLQpzVMvmHemS1zwe8w
+         dbNmomAnN6Cyexw6qg4fujmM7QkpIUJ1lKdkLDXjOlTSGnJzI4moI8OWHnIArfflvA
+         YaVYi4KuiPa9kaLr62S9rUxJcTjXXni4XBmlGu5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 16/66] nfs: fix broken handling of the softreval mount option
-Date:   Mon, 16 May 2022 21:36:16 +0200
-Message-Id: <20220516193619.887269240@linuxfoundation.org>
+Subject: [PATCH 5.10 17/66] ionic: fix missing pci_release_regions() on error in ionic_probe()
+Date:   Mon, 16 May 2022 21:36:17 +0200
+Message-Id: <20220516193619.915321519@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -50,35 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Aloni <dan.aloni@vastdata.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 085d16d5f949b64713d5e960d6c9bbf51bc1d511 ]
+[ Upstream commit e4b1045bf9cfec6f70ac6d3783be06c3a88dcb25 ]
 
-Turns out that ever since this mount option was added, passing
-`softreval` in NFS mount options cancelled all other flags while not
-affecting the underlying flag `NFS_MOUNT_SOFTREVAL`.
+If ionic_map_bars() fails, pci_release_regions() need be called.
 
-Fixes: c74dfe97c104 ("NFS: Add mount option 'softreval'")
-Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220506034040.2614129-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/fs_context.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
-index 05b39e8f97b9..d60c086c6e9c 100644
---- a/fs/nfs/fs_context.c
-+++ b/fs/nfs/fs_context.c
-@@ -476,7 +476,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
- 		if (result.negated)
- 			ctx->flags &= ~NFS_MOUNT_SOFTREVAL;
- 		else
--			ctx->flags &= NFS_MOUNT_SOFTREVAL;
-+			ctx->flags |= NFS_MOUNT_SOFTREVAL;
- 		break;
- 	case Opt_posix:
- 		if (result.negated)
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index b0d8499d373b..31fbe8904222 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -251,7 +251,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	err = ionic_map_bars(ionic);
+ 	if (err)
+-		goto err_out_pci_disable_device;
++		goto err_out_pci_release_regions;
+ 
+ 	/* Configure the device */
+ 	err = ionic_setup(ionic);
+@@ -353,6 +353,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ err_out_unmap_bars:
+ 	ionic_unmap_bars(ionic);
++err_out_pci_release_regions:
+ 	pci_release_regions(pdev);
+ err_out_pci_disable_device:
+ 	pci_disable_device(pdev);
 -- 
 2.35.1
 
