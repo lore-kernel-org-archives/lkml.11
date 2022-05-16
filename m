@@ -2,115 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F07CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F01C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234606AbiEPNvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
+        id S238419AbiEPNyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240567AbiEPNuS (ORCPT
+        with ESMTP id S230071AbiEPNyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:50:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9F13A5DA;
-        Mon, 16 May 2022 06:49:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A62F9B81216;
-        Mon, 16 May 2022 13:49:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 618BAC3411A;
-        Mon, 16 May 2022 13:49:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652708957;
-        bh=Z1XATC9uFabr/cJUUJjAm1EmvJAVsCV0ZzQGqjrP+zA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Z+GBZ3HlMnS5S30k9vIXcOgsZZ9s2NTFIiE1HhvkWvPHy1bjZ00LgZTijr0M8KGmr
-         STXCnHM85F+TIeIvpPTpG9lJp1vA2Dm/Llye5llcupfFc3DrhRP+8bTa1WAu66TGeA
-         j/DsK4XK2TUXXSmd4/EUmmfxHNWV6eBhb+iN8YrybsUGbavpI8spHpzmskqUGIvWti
-         bNesjElLh27daCKCjj83GRo5P9odygoLEUSbXWLeoVpn5VGXa0/BMtY5u5Z+8Zq3Yz
-         Dxa7iXnhmdyqASNVfz96SqOorM96PaPLHL4R1RBqW+eHT3/L6di0va0g0SOjYdn1qn
-         w4pbcCKlq/PAQ==
-Received: by mail-ed1-f51.google.com with SMTP id y21so18436156edo.2;
-        Mon, 16 May 2022 06:49:17 -0700 (PDT)
-X-Gm-Message-State: AOAM533ImvKH7a3KRENUQ2DkkfvR+4Qv5+fQI6y0XwDSBU7tzQraS5D/
-        fUWvmZXYcs/aGL6LLJerI/dYOGPh3kc0naJ5Jw==
-X-Google-Smtp-Source: ABdhPJzHJM/87Poo6lwZbFjNTMwh5WnjP4kK2zZNYqsvkYOJYJ8e9tfRTKjYaXJU+LODgXXZ2NtySTJTP3q9QRcur+c=
-X-Received: by 2002:a05:6402:35c7:b0:427:d231:3740 with SMTP id
- z7-20020a05640235c700b00427d2313740mr13373747edc.40.1652708955614; Mon, 16
- May 2022 06:49:15 -0700 (PDT)
+        Mon, 16 May 2022 09:54:25 -0400
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DCE273C
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:54:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1652709264; x=1684245264;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=xnJmZYtrUHPz/1pW+2iKsxdcyh17EmGmxKC7iEmOkHc=;
+  b=MLvu0V+aiQYQhGfJLAUAsP5ZDcw/08zFA8FvIMuO/BIbxxZWoA75HxKa
+   oBOMo4EIelTwlCyqjANq8zNMbTg4WOj1jvMToP4M34i9c3g9y/OUNcwOw
+   Is8OJvmCTNnpt1xoF8S9CGCfFTKCqjJCyKapIvILn+VaEhQrCGhUT1zmT
+   IZZBAWqYUZPd7DEX878cmYi76UvZOaCORMI4C5ock8adfqqhgzzBOSZSF
+   gF3HXpWUWQlg5vMybKicIAwd2A5T0MaGF/t+USGHd3n/UNjDskm9VZ2MN
+   K6QcUECXi0WXusRotG0EAcQZ6YAMyAEg+eP+PFJ3ikH0oggnh9hMpOgL/
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,229,1647273600"; 
+   d="scan'208";a="199259474"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 16 May 2022 21:54:21 +0800
+IronPort-SDR: itUlKCePvEL4JeST7338JCL/adcfCQLI6RI9D/Ddx0axPQOa8pTW0njP3s7DNqpceQkFlhs3Xn
+ hhLBtQMVc/prYw5+lrgOX16y/fma1Fvm6chtFy4M2LtOB5uTeet1VkJiGS/NvIeHgk/zuoQalf
+ u85TK1nGUte9N0UJ2MPLnvGZJ6rn1ZZxk3YEZFzQ4+aJ47qYLZ/Tj6W4ePmF5jsAuHt6ry91KH
+ Q/catEwtHVSwj004HOdbiM3gRG99emo+7YjOToOGINMuJt2vcSSJBSogAGgA3PhqJG6uxJyujA
+ SB0PyNf38th2aUXNLKWQ6Nnk
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 06:18:14 -0700
+IronPort-SDR: xpjs9yZzswu7tHZmKJ0EkpIiV8BnJvbqJGJx0ahtZlZFVYTnWju8VJvXWifJOW1UraP0nIGaK0
+ RBUmxgLMFtc8XLD4mL2s8/vFZUlPDSZ4pfrkr5Rm8Z8ebDr49r53/nKq4ZgGcya5chfjtdiUsB
+ R0ofOEE/9Chl6z35XjLxghfBUARcpAE6cd+tHzSjIazNL3FiOiibWLoAiliKq/PpqZhjEPO/GB
+ iOaio+9bOhZyVsHCbcTMhSh7aRnQSWg8Dd//ffPzg5M6b6MICJ07MmScnq8ffO4Z+lDeqMBCz0
+ kwc=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 May 2022 06:54:22 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4L212N2pNwz1SVny
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:54:20 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1652709259; x=1655301260; bh=xnJmZYtrUHPz/1pW+2iKsxdcyh17EmGmxKC
+        7iEmOkHc=; b=UUHn+1Vyu14CMfOaCMgXraCj/MTu6WqTYOUVrT+4PUwPlX5ziiU
+        pSIvphH10gCc67fVq3XGywhvUeUqkqYl3C+JIeYNZL256XrllrM58UhqzOZaujF3
+        cbmBklJPJrOqfUwuSurt8JpO1UwMmikJGH4hvh5Qwx4pN/E2XnvxaPmNybMpFT83
+        xSpG9RchPPentNTApEt/m2/xRnaVgRJJKjnepi11fq5V05sUwhnpCcvU0f61+fwA
+        S+fDCn+IEtVKy285CWS8em7niz60i9Y+TCt+uHgrHXnSyVIC4Q8Mw6/XAy+RhYGq
+        bnKvHkQ9zRQTWYTH/DZejGfNQWFm7h+DJZQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id WKurJUZRHF1A for <linux-kernel@vger.kernel.org>;
+        Mon, 16 May 2022 06:54:19 -0700 (PDT)
+Received: from [10.225.1.43] (unknown [10.225.1.43])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4L212D5R0Cz1Rvlc;
+        Mon, 16 May 2022 06:54:12 -0700 (PDT)
+Message-ID: <487c9368-36fe-25ec-7a76-f6aa50c4d3d5@opensource.wdc.com>
+Date:   Mon, 16 May 2022 15:54:10 +0200
 MIME-Version: 1.0
-References: <20220429220933.1350374-1-saravanak@google.com>
- <CAL_Jsq+2A7mRVV24XW0YcP8GkFCK_Ri4KDcqvW4e0p3TkQMWVg@mail.gmail.com> <CAGETcx8=ZX+Pb4ioMVb7LfuF9c3HNP8g1+WMqZR=Pq7-9=DUCA@mail.gmail.com>
-In-Reply-To: <CAGETcx8=ZX+Pb4ioMVb7LfuF9c3HNP8g1+WMqZR=Pq7-9=DUCA@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 16 May 2022 08:49:03 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+Y9p2UEgQ=ctFjcsHG9M6iXuGFY-N6uMAqhPM5KLwDjA@mail.gmail.com>
-Message-ID: <CAL_Jsq+Y9p2UEgQ=ctFjcsHG9M6iXuGFY-N6uMAqhPM5KLwDjA@mail.gmail.com>
-Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver registration
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Will Deacon <will@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Thierry Reding <treding@nvidia.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v4 01/13] block: make blkdev_nr_zones and
+ blk_queue_zone_no generic for npo2 zsze
+Content-Language: en-US
+To:     Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
+        naohiro.aota@wdc.com, Johannes.Thumshirn@wdc.com,
+        snitzer@kernel.org, dsterba@suse.com, jaegeuk@kernel.org,
+        hch@lst.de
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jonathan.derrick@linux.dev, bvanassche@acm.org,
+        Keith Busch <kbusch@kernel.org>, gost.dev@samsung.com,
+        linux-nvme@lists.infradead.org,
+        Johannes Thumshirn <jth@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        linux-block@vger.kernel.org, Alasdair Kergon <agk@redhat.com>,
+        matias.bjorling@wdc.com, Jens Axboe <axboe@fb.com>,
+        Sagi Grimberg <sagi@grimberg.me>, dm-devel@redhat.com,
+        jiangbo.365@bytedance.com, Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-fsdevel@vger.kernel.org, Chris Mason <clm@fb.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Hannes Reinecke <hare@suse.de>
+References: <20220516133921.126925-1-p.raghav@samsung.com>
+ <CGME20220516133924eucas1p1817f306e3f2442088bf49ab513657cbe@eucas1p1.samsung.com>
+ <20220516133921.126925-2-p.raghav@samsung.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220516133921.126925-2-p.raghav@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 12:26 PM Saravana Kannan <saravanak@google.com> wrote:
->
-> On Fri, May 13, 2022 at 6:58 AM Rob Herring <robh@kernel.org> wrote:
-> >
-> > On Fri, Apr 29, 2022 at 5:09 PM Saravana Kannan <saravanak@google.com> wrote:
-> > >
-> > > The deferred probe timer that's used for this currently starts at
-> > > late_initcall and runs for driver_deferred_probe_timeout seconds. The
-> > > assumption being that all available drivers would be loaded and
-> > > registered before the timer expires. This means, the
-> > > driver_deferred_probe_timeout has to be pretty large for it to cover the
-> > > worst case. But if we set the default value for it to cover the worst
-> > > case, it would significantly slow down the average case. For this
-> > > reason, the default value is set to 0.
-> > >
-> > > Also, with CONFIG_MODULES=y and the current default values of
-> > > driver_deferred_probe_timeout=0 and fw_devlink=on, devices with missing
-> > > drivers will cause their consumer devices to always defer their probes.
-> > > This is because device links created by fw_devlink defer the probe even
-> > > before the consumer driver's probe() is called.
-> > >
-> > > Instead of a fixed timeout, if we extend an unexpired deferred probe
-> > > timer on every successful driver registration, with the expectation more
-> > > modules would be loaded in the near future, then the default value of
-> > > driver_deferred_probe_timeout only needs to be as long as the worst case
-> > > time difference between two consecutive module loads.
-> > >
-> > > So let's implement that and set the default value to 10 seconds when
-> > > CONFIG_MODULES=y.
-> >
-> > We had to revert a non-zero timeout before (issue with NFS root IIRC).
-> > Does fw_devlink=on somehow fix that?
->
-> If it's the one where ip autoconfig was timing out, then John Stultz
-> fixed it by fixing wait_for_device_probe().
-> https://lore.kernel.org/all/20200422203245.83244-4-john.stultz@linaro.org/
+On 2022/05/16 15:39, Pankaj Raghav wrote:
+> Adapt blkdev_nr_zones and blk_queue_zone_no function so that it can
+> also work for non-power-of-2 zone sizes.
+> 
+> As the existing deployments of zoned devices had power-of-2
+> assumption, power-of-2 optimized calculation is kept for those devices.
+> 
+> There are no direct hot paths modified and the changes just
+> introduce one new branch per call.
+> 
+> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+> Reviewed by: Adam Manzanares <a.manzanares@samsung.com>
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+> ---
+>  block/blk-zoned.c      | 13 ++++++++++---
+>  include/linux/blkdev.h |  8 +++++++-
+>  2 files changed, 17 insertions(+), 4 deletions(-)
+> 
+> diff --git a/block/blk-zoned.c b/block/blk-zoned.c
+> index 38cd840d8..140230134 100644
+> --- a/block/blk-zoned.c
+> +++ b/block/blk-zoned.c
+> @@ -111,16 +111,23 @@ EXPORT_SYMBOL_GPL(__blk_req_zone_write_unlock);
+>   * blkdev_nr_zones - Get number of zones
+>   * @disk:	Target gendisk
+>   *
+> - * Return the total number of zones of a zoned block device.  For a block
+> - * device without zone capabilities, the number of zones is always 0.
+> + * Return the total number of zones of a zoned block device, including the
+> + * eventual small last zone if present. For a block device without zone
+> + * capabilities, the number of zones is always 0.
+>   */
+>  unsigned int blkdev_nr_zones(struct gendisk *disk)
+>  {
+>  	sector_t zone_sectors = blk_queue_zone_sectors(disk->queue);
+> +	sector_t capacity = get_capacity(disk);
+>  
+>  	if (!blk_queue_is_zoned(disk->queue))
+>  		return 0;
+> -	return (get_capacity(disk) + zone_sectors - 1) >> ilog2(zone_sectors);
+> +
+> +	if (is_power_of_2(zone_sectors))
+> +		return (capacity + zone_sectors - 1) >>
+> +		       ilog2(zone_sectors);
 
-Yeah, that was it.
+Why the line break here ? This fits on one line, no ?
 
-Acked-by: Rob Herring <robh@kernel.org>
+> +
+> +	return div64_u64(capacity + zone_sectors - 1, zone_sectors);
+>  }
+>  EXPORT_SYMBOL_GPL(blkdev_nr_zones);
+>  
+> diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+> index 1b24c1fb3..22fe512ee 100644
+> --- a/include/linux/blkdev.h
+> +++ b/include/linux/blkdev.h
+> @@ -675,9 +675,15 @@ static inline unsigned int blk_queue_nr_zones(struct request_queue *q)
+>  static inline unsigned int blk_queue_zone_no(struct request_queue *q,
+>  					     sector_t sector)
+>  {
+> +	sector_t zone_sectors = blk_queue_zone_sectors(q);
+> +
+>  	if (!blk_queue_is_zoned(q))
+>  		return 0;
+> -	return sector >> ilog2(q->limits.chunk_sectors);
+> +
+> +	if (is_power_of_2(zone_sectors))
+> +		return sector >> ilog2(zone_sectors);
+> +
+> +	return div64_u64(sector, zone_sectors);
+>  }
+>  
+>  static inline bool blk_queue_zone_is_seq(struct request_queue *q,
+
+
+-- 
+Damien Le Moal
+Western Digital Research
