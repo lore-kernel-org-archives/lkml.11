@@ -2,130 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FEB7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240501AbiEPKf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
+        id S242252AbiEPKhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240064AbiEPKfo (ORCPT
+        with ESMTP id S229569AbiEPKhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:35:44 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C98DEFA
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:35:41 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id b18so24947444lfv.9
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TybrrNwubeiCmJTT/Pt5SvO7o0SXKQNwkYoFAX++S+M=;
-        b=ywixI+hrkyjZVveqrBs5WbTfJrk3HXSjXdkw/yG+ZcMSgfRLYwk/qZXOUnJIP1WgXO
-         lBVVRcBv8NUHq+A+ubYszRGIn7INTCE/F31x001Db5x3fLnrVpEmL7vSHY882isd5YBX
-         IgKxgv7LNqsEwCDn8jKJej8c3eymfGOqJUVqfJZ14cGhIZkaUcMaHExYzZotzDgRMr/G
-         /la28vRUa6mnJSrxsNnFK6J9NtRC0I/hUwnzzwLYXrJt8vgGZLdal1yBrwJI1gb2tUfC
-         fB4fiIZIahFse2SAC7pVz9X9ne4v2ymyvwkDBWr3JDUMtsIoPd4r5HeyJNHNgB5Gnf6G
-         BvIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TybrrNwubeiCmJTT/Pt5SvO7o0SXKQNwkYoFAX++S+M=;
-        b=nBeV3GFa2Uzx3xUcwiz7A6bfBMDXkHW65unS63mt3BRX+8eKN/Vlab4PcRXur7yfOb
-         w7jCfRSH56r8f9X21YpBeTI5F4nMwq1W4wH30yONo2jIWydMKJjChgeX9zTCeCRWZZyt
-         mTD24les81Q3DKKL+3Hg0mkcVYJDjJj0N2e1rmucbw3/lt7bfo6V8J45BVaAoj3FD5wX
-         FiMuJWErqV9yV9Db4lPKHtYjCzEO2ozodnModXyZLT7NGMzs8yQgzh9LE3tZQSPLT5or
-         7eHWAeSU1iK4y3CSz76/4+4/79ebHr7sHTj1OcqTexW8drYSCt0NVBYZpnOhB1mogduS
-         O0OA==
-X-Gm-Message-State: AOAM531VKTcQYJgPehU4iysoEKnEfHCqLxosTNgeArnuPeNCEBqtKXxC
-        0aHYFIbB5Vkq7v/LdmfTln0zuQ==
-X-Google-Smtp-Source: ABdhPJzsVUrwn0tS3KToBIsJDTgtNs7vd3KqCRuQCih/v/B3esQjDRGT86G4+aNwUBJFRoPzISn/og==
-X-Received: by 2002:a05:6512:3ee:b0:471:f84f:7d5b with SMTP id n14-20020a05651203ee00b00471f84f7d5bmr12436445lfq.18.1652697340056;
-        Mon, 16 May 2022 03:35:40 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id h12-20020a05651211cc00b0047255d21174sm1265168lfr.163.2022.05.16.03.35.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 03:35:39 -0700 (PDT)
-Message-ID: <13d65ae2-f378-5353-16b9-5bf68883a701@linaro.org>
-Date:   Mon, 16 May 2022 12:35:38 +0200
+        Mon, 16 May 2022 06:37:40 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E1322BD9;
+        Mon, 16 May 2022 03:37:40 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GA1ZUm024127;
+        Mon, 16 May 2022 10:37:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=rFTakGOzsoG3Zd7IuRk7SId/Z4//vNBTvFgJnoCDjIk=;
+ b=KSMzNf0fjobFZjzTlN3iIvlClqeyEaud/Pw3HJu0TTj8ttrO+uMR+Id6kMBMR3N0+/iK
+ HKTzdKVdqI5hhYpD6g8D17O+lGAyE9rqVSEPhHAoNKzShi3z37b0xLCvqW8vxSBzUqWi
+ 7A07QMUUUwR1QXbV2CelBNVMl/IRPeaOMRr3GweaBfwUrAQXoQ+ty1z1DzxHlo5DlL/m
+ hiNZa7H1Vr1w8C2ZzF0U4Kzfnqx4dUdboVf/BS/LWnnIDqpYa5b9FS+G2fuWHSwWlIlE
+ tzDyw2fALq1ynTYx1uZuEDtIuDEOXKUJMSgOinn66LYxVPxu4EjEyPdK0XNOMzWhNX3e TQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3mgdrmrd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 10:37:39 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24GAMNld001989;
+        Mon, 16 May 2022 10:37:39 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3mgdrmqu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 10:37:39 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24GAKeKR013724;
+        Mon, 16 May 2022 10:37:37 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma02fra.de.ibm.com with ESMTP id 3g2428hx5e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 10:37:36 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24GAbXgc29622754
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 May 2022 10:37:33 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AC527A4057;
+        Mon, 16 May 2022 10:37:33 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0811FA4055;
+        Mon, 16 May 2022 10:37:33 +0000 (GMT)
+Received: from [9.171.15.172] (unknown [9.171.15.172])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 16 May 2022 10:37:32 +0000 (GMT)
+Message-ID: <9aa8db91-a9f5-2b9a-7333-b87b826fdb81@linux.ibm.com>
+Date:   Mon, 16 May 2022 12:41:21 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] dt-bindings: qcom,pdc: convert to YAML
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v9 2/3] s390x: KVM: guest support for topology function
 Content-Language: en-US
-To:     Luca Weiss <luca.weiss@fairphone.com>,
-        linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>, Andy Gross <agross@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220103074348.6039-1-luca.weiss@fairphone.com>
- <bef4922d-4a32-f184-44a1-8f5430190938@linaro.org>
- <fef5f229-f247-d032-fc76-46ed7083dbf4@linaro.org>
- <CK10OTVFAP75.WCSVY40A7PXO@otso>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CK10OTVFAP75.WCSVY40A7PXO@otso>
-Content-Type: text/plain; charset=UTF-8
+To:     Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, cohuck@redhat.com, david@redhat.com,
+        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
+        nrb@linux.ibm.com
+References: <20220506092403.47406-1-pmorel@linux.ibm.com>
+ <20220506092403.47406-3-pmorel@linux.ibm.com>
+ <ecf827ee-4b07-c999-064d-96d77607cf1c@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <ecf827ee-4b07-c999-064d-96d77607cf1c@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nXkv0dJfz28-U7HtPUFyJzkgGKEpw7lW
+X-Proofpoint-ORIG-GUID: Z5aJkiufopv32RNqFF4fL4dLhkqHKpjL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-16_06,2022-05-16_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
+ adultscore=0 spamscore=0 phishscore=0 priorityscore=1501 mlxscore=0
+ lowpriorityscore=0 bulkscore=0 suspectscore=0 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205160062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/05/2022 09:45, Luca Weiss wrote:
-> Hi Krzysztof,
+
+
+On 5/12/22 13:41, Janosch Frank wrote:
+> On 5/6/22 11:24, Pierre Morel wrote:
+>> We let the userland hypervisor know if the machine support the CPU
+>> topology facility using a new KVM capability: KVM_CAP_S390_CPU_TOPOLOGY.
 > 
-> On Mon May 9, 2022 at 10:40 AM CEST, Krzysztof Kozlowski wrote:
->> On 09/05/2022 10:38, Krzysztof Kozlowski wrote:
->>> On 03/01/2022 08:43, Luca Weiss wrote:
->>>> Convert the PDC interrupt controller bindings to YAML.
->>>>
->>>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
->>>> Reviewed-by: Rob Herring <robh@kernel.org>
->>>> ---
->>>> Changes since v1:
->>>> * Adjust description of second reg-name as suggested by Maulik Shah
->>>>
->>>> @Rob Herring: Hope it's ok to keep your R-b given the above changes
->>>>
->>>> This patch depends on the following patch, which fixed sm8250 & sm8350
->>>> compatibles and adds sm6350.
->>>> https://lore.kernel.org/linux-arm-msm/20211213082614.22651-4-luca.weiss@fairphone.com/
->>>
->>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>>
->>> Luca,
->>> I think this needs resending as dependency was merged. Alternatively,
->>> maybe Bjorn could pick it up through QCom SoC?
->>
->> Correction - it seems that Rob took the dependency in April, so this
->> should go via Rob's tree as well.
->>
->> Luca, can you resend without Rob's Review tag and ask him to pick it up?
->>
-> 
-> So... since torvalds/master my sm6350 patch is merged through Rob's
+> Nope, we indicate KVM's support which is based on the machine's support.
 
-If it was merged to torvalds/master, it's not a dependency anymore...
-
-> tree, but there was also a sm8150 patch applied through Linus Walleij's
-> tree. This means (as far as I understand) that neither can really
-> properly apply this (rebased) patch as one tree will have missed the
-> other commit.
-
-sm8150 patch is also a dependency?
+OK I reword.
 
 > 
-> Does it make sense to send a v3 rebased on linux-next now, or wait until
-> this has settled down in torvalds's tree?
+> On the same note: Shouldn't the CAP indication be part of the last 
+> patch? The resets are needed for a full support of this feature, no?
 
-Conflicts can be resolved, you just need to choose one tree to based on.
+Looks right, I will move it last.
 
-
-Best regards,
-Krzysztof
+-- 
+Pierre Morel
+IBM Lab Boeblingen
