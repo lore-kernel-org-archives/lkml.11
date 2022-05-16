@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD51C3527D
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C3AC41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347217AbiEPT5L (ORCPT
+        id S1347182AbiEPT5B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
+        Mon, 16 May 2022 15:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347016AbiEPTve (ORCPT
+        with ESMTP id S1347013AbiEPTve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:51:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD223FBC9;
-        Mon, 16 May 2022 12:46:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41D43FBC2;
+        Mon, 16 May 2022 12:46:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57E3F604F5;
-        Mon, 16 May 2022 19:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF8DC34100;
-        Mon, 16 May 2022 19:46:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62F426027A;
+        Mon, 16 May 2022 19:46:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FBB5C385AA;
+        Mon, 16 May 2022 19:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730393;
-        bh=hxQr3HJrF4KGHrYdn2UKe4Ty6jxRkxNLvEZh7rMK530=;
+        s=korg; t=1652730390;
+        bh=k3/81g5qlPZbnqT8EYIg1TFY+nbeoYo8soZiwtxXbI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Avgs0aRamOY6VpxiiOyouFkqb/R8/O+nxQFt6kHbMLTqYYn8ETxlHBgLPfw8gZDML
-         /XFAJ1Ltoc7KS6OCE47PjtREtyizxlGb32Yi2V0yKQAJH8N0DGieRCwC4FU7G5xtJk
-         ypDe9/xzRkV1H/c3+5HgrvoA0MOn11uGffdfCK/Q=
+        b=lRrDieg9NrMONQx66+NKW+JhmnT/z72NqQ0rHOjiZPnPovyIODATMecv822fQDtNg
+         dwc9/zwS8l3XZ0DNrwG6f2eYhlsXkBbiRdJM42VJcKA8b3qYt9bkTpMfT7xiauO87H
+         f8cmiBMpxqQZAMIIxpWddnI7oJSC5U7ABCkKEHrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 5.10 51/66] serial: 8250_mtk: Fix register address for XON/XOFF character
-Date:   Mon, 16 May 2022 21:36:51 +0200
-Message-Id: <20220516193620.883724374@linuxfoundation.org>
+Subject: [PATCH 5.10 50/66] serial: 8250_mtk: Fix UART_EFR register address
+Date:   Mon, 16 May 2022 21:36:50 +0200
+Message-Id: <20220516193620.856357558@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -52,42 +52,90 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-commit e1bfdbc7daca171c74a577b3dd0b36d76bb0ffcc upstream.
+commit bb0b197aadd928f52ce6f01f0ee977f0a08cf1be upstream.
 
-The XON1/XOFF1 character registers are at offset 0xa0 and 0xa8
-respectively, so we cannot use the definition in serial_port.h.
+On MediaTek SoCs, the UART IP is 16550A compatible, but there are some
+specific quirks: we are declaring a register shift of 2, but this is
+only valid for the majority of the registers, as there are some that
+are out of the standard layout.
+
+Specifically, this driver is using definitions from serial_reg.h, where
+we have a UART_EFR register defined as 2: this results in a 0x8 offset,
+but there we have the FCR register instead.
+
+The right offset for the EFR register on MediaTek UART is at 0x98,
+so, following the decimal definition convention in serial_reg.h and
+accounting for the register left shift of two, add and use the correct
+register address for this IP, defined as decimal 38, so that the final
+calculation results in (0x26 << 2) = 0x98.
 
 Fixes: bdbd0a7f8f03 ("serial: 8250-mtk: modify baudrate setting")
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220427132328.228297-4-angelogioacchino.delregno@collabora.com
+Link: https://lore.kernel.org/r/20220427132328.228297-2-angelogioacchino.delregno@collabora.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_mtk.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_mtk.c |   15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
 --- a/drivers/tty/serial/8250/8250_mtk.c
 +++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -54,6 +54,9 @@
- #define MTK_UART_TX_TRIGGER	1
- #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
+@@ -37,6 +37,7 @@
+ #define MTK_UART_IER_RTSI	0x40	/* Enable RTS Modem status interrupt */
+ #define MTK_UART_IER_CTSI	0x80	/* Enable CTS Modem status interrupt */
  
-+#define MTK_UART_XON1		40	/* I/O: Xon character 1 */
-+#define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
-+
- #ifdef CONFIG_SERIAL_8250_DMA
- enum dma_rx_status {
- 	DMA_RX_START = 0,
-@@ -275,8 +278,8 @@ static void mtk8250_set_flow_ctrl(struct
- 			(serial_in(up, MTK_UART_EFR) &
++#define MTK_UART_EFR		38	/* I/O: Extended Features Register */
+ #define MTK_UART_EFR_EN		0x10	/* Enable enhancement feature */
+ #define MTK_UART_EFR_RTS	0x40	/* Enable hardware rx flow control */
+ #define MTK_UART_EFR_CTS	0x80	/* Enable hardware tx flow control */
+@@ -169,7 +170,7 @@ static void mtk8250_dma_enable(struct ua
+ 		   MTK_UART_DMA_EN_RX | MTK_UART_DMA_EN_TX);
+ 
+ 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+-	serial_out(up, UART_EFR, UART_EFR_ECB);
++	serial_out(up, MTK_UART_EFR, UART_EFR_ECB);
+ 	serial_out(up, UART_LCR, lcr);
+ 
+ 	if (dmaengine_slave_config(dma->rxchan, &dma->rxconf) != 0)
+@@ -232,7 +233,7 @@ static void mtk8250_set_flow_ctrl(struct
+ 	int lcr = serial_in(up, UART_LCR);
+ 
+ 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+-	serial_out(up, UART_EFR, UART_EFR_ECB);
++	serial_out(up, MTK_UART_EFR, UART_EFR_ECB);
+ 	serial_out(up, UART_LCR, lcr);
+ 	lcr = serial_in(up, UART_LCR);
+ 
+@@ -241,7 +242,7 @@ static void mtk8250_set_flow_ctrl(struct
+ 		serial_out(up, MTK_UART_ESCAPE_DAT, MTK_UART_ESCAPE_CHAR);
+ 		serial_out(up, MTK_UART_ESCAPE_EN, 0x00);
+ 		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+-		serial_out(up, UART_EFR, serial_in(up, UART_EFR) &
++		serial_out(up, MTK_UART_EFR, serial_in(up, MTK_UART_EFR) &
+ 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK)));
+ 		serial_out(up, UART_LCR, lcr);
+ 		mtk8250_disable_intrs(up, MTK_UART_IER_XOFFI |
+@@ -255,8 +256,8 @@ static void mtk8250_set_flow_ctrl(struct
+ 		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+ 
+ 		/*enable hw flow control*/
+-		serial_out(up, UART_EFR, MTK_UART_EFR_HW_FC |
+-			(serial_in(up, UART_EFR) &
++		serial_out(up, MTK_UART_EFR, MTK_UART_EFR_HW_FC |
++			(serial_in(up, MTK_UART_EFR) &
  			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK))));
  
--		serial_out(up, UART_XON1, START_CHAR(port->state->port.tty));
--		serial_out(up, UART_XOFF1, STOP_CHAR(port->state->port.tty));
-+		serial_out(up, MTK_UART_XON1, START_CHAR(port->state->port.tty));
-+		serial_out(up, MTK_UART_XOFF1, STOP_CHAR(port->state->port.tty));
  		serial_out(up, UART_LCR, lcr);
- 		mtk8250_disable_intrs(up, MTK_UART_IER_CTSI|MTK_UART_IER_RTSI);
- 		mtk8250_enable_intrs(up, MTK_UART_IER_XOFFI);
+@@ -270,8 +271,8 @@ static void mtk8250_set_flow_ctrl(struct
+ 		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+ 
+ 		/*enable sw flow control */
+-		serial_out(up, UART_EFR, MTK_UART_EFR_XON1_XOFF1 |
+-			(serial_in(up, UART_EFR) &
++		serial_out(up, MTK_UART_EFR, MTK_UART_EFR_XON1_XOFF1 |
++			(serial_in(up, MTK_UART_EFR) &
+ 			(~(MTK_UART_EFR_HW_FC | MTK_UART_EFR_SW_FC_MASK))));
+ 
+ 		serial_out(up, UART_XON1, START_CHAR(port->state->port.tty));
 
 
