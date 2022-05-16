@@ -2,142 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0697C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B901C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242827AbiEPKwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
+        id S242842AbiEPKwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242997AbiEPKv2 (ORCPT
+        with ESMTP id S243005AbiEPKvb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:51:28 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C1F5FA3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:51:27 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id v10so13703736pgl.11
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:51:27 -0700 (PDT)
+        Mon, 16 May 2022 06:51:31 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A215FA3;
+        Mon, 16 May 2022 03:51:29 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id y21so17763442edo.2;
+        Mon, 16 May 2022 03:51:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5RbQ3j9RMbZ/D6MAR7ISAUvOQDvpOlhf1s/Zk6REvQs=;
-        b=TZqROHTy4bHF74S5KUPgYAYiymslKKVBA7bRL3/HGi4JHQB8muBNwXApRa0cU+VWhS
-         iDhqHMiS97n7lTt4aPXGafW1hSdMlSn0/MjzhUr5uDezSoKTsE2/fU3tuMWFAIQsDW57
-         VoEjrIWGFnek4FgPEBYZGiUVXkUJq4gERo+VQ=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eiB8mF0XJDqU0woKp11msaKYyY3CXweFfzvmA5fnUk4=;
+        b=f2s3GQqn4S9PGH3nB9DZ1rq4h0LJXkbhxdXM1/U7wD3heov1oWhN472Sx3Hjpr6NJj
+         +OCg7DPOuLR4hGqQYgWKjHr6Da5gYpHKkauPMmG8U+9Yw0f7rpmjWYJtGpsozF8GivQx
+         t3HWLgaMyKY6FWfp25x249Z5GaIfnVSSoFaUjpzbJQ7VXYpxGf+7O4mRu5irCNg0OX2u
+         PZK93jVt3Y/W+s77rCO/0ie+4oYB8WYZIaBOXDgBwvrS1llrSXX4dAey8cyj6eliwj0p
+         X9mspNM4FvI3COVaAoPVHkWb/oXpgOvzNNyuyiJftWbPb4F9YDKex3ghIIeJUKe0TPVX
+         QkIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5RbQ3j9RMbZ/D6MAR7ISAUvOQDvpOlhf1s/Zk6REvQs=;
-        b=NY4D0S4P52g443q+yPJsifZfA7M3e/SORbkfxDTRpSZiDctDag4nmvlBf65KZKb2v5
-         wfCjw5CMYeH59CRpXamgEa4ybn+OvRstoQPkODG1PMNx77/E8fZUWtWOzSQnqhldOFb5
-         K4Agh1QeFTU13JQz1mlcCTDCaZMqgbpfMXVVgc8YkRr84ICWIZGkvGqyPbsOCFBYQaJb
-         csEGBw2ay/XIFRPijO2b+NV+BY4IO4nHEA6XkpUKImLhcphi2Ywxp3hRiq6ntG0RQ+xV
-         5Su7USuQAloUpfUs75bdjpsIqmet+cDYuXaLeVzhPIohFaXM1h07AM3yrL4qFajH2WG6
-         p+0w==
-X-Gm-Message-State: AOAM530J2B7g9KPDA1sxztjcgzvDy0I+G85w6W/D5SsUjFy0V/UqXm4q
-        5w/PYgNcZsDNYSJbTEZuef7oetO7b5KfGw==
-X-Google-Smtp-Source: ABdhPJyQ5XmFT7yQ/quMHs3G1SNLRmrs0Q+kvbBJA9PMECYOuXFf5iA+2PsREWr5Wz+K7aTd/M7V3Q==
-X-Received: by 2002:a63:5522:0:b0:3c5:e4be:5a49 with SMTP id j34-20020a635522000000b003c5e4be5a49mr14595263pgb.26.1652698286995;
-        Mon, 16 May 2022 03:51:26 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:cdcb:c865:6f65:d875])
-        by smtp.gmail.com with ESMTPSA id o14-20020a655bce000000b003db8dd388afsm6332778pgr.10.2022.05.16.03.51.24
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eiB8mF0XJDqU0woKp11msaKYyY3CXweFfzvmA5fnUk4=;
+        b=cxgedUHsaf3ayK8iI9hBnULaGqjGMavCcqe/0laO5ZsnAqEKoKhVKvGQINNiUxYVYQ
+         i3onW+7XVHGQAH7YCdYrWlMnmuQCn9QjQfw5Cfrp2dKZnZPKmqjOUn+6Pcu+mO5/Am5L
+         /SbYNUbffWeks9OFq7LLlfa+JEWHlP+Lw/pItdqWW+2oS15AYKmZ/XFb0YjKJrlOCSSz
+         aCVlFHAE7rO8jFscOR9K6+xVdyKuqIZYKYmIsADz1XoOxpFkAGvq5vO/JaHVwUHuV7Cq
+         jvM+CBXnXBcYiz+gQGTJav7g41upJpBZTqgb4JtsCGZtYP9nUryxoqBt0chIh6rEYTcV
+         dmiw==
+X-Gm-Message-State: AOAM530HDpab6KLO5rlwHPBU5NweupM2MzurjtxG+hrzcyjHCyNVwQdF
+        XY54x5F30s1uUpmJ7jsAdE8=
+X-Google-Smtp-Source: ABdhPJwOGLvumB5LTauGi5+AAvQjocjyBJVYONPHP+vtp9P9rvLzPF5ZLJ8lkrdX7RbbD4/UdGiW7A==
+X-Received: by 2002:a05:6402:176b:b0:42a:a828:5d79 with SMTP id da11-20020a056402176b00b0042aa8285d79mr7888664edb.272.1652698288181;
+        Mon, 16 May 2022 03:51:28 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id hx9-20020a170906846900b006fa9384a0b5sm3553841ejc.61.2022.05.16.03.51.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 03:51:26 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Phillip Lougher <phillip@squashfs.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>
-Cc:     Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] Revert "squashfs: provide backing_dev_info in order to disable read-ahead"
-Date:   Mon, 16 May 2022 18:51:01 +0800
-Message-Id: <20220516105100.1412740-2-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-In-Reply-To: <20220516105100.1412740-1-hsinyi@chromium.org>
-References: <20220516105100.1412740-1-hsinyi@chromium.org>
+        Mon, 16 May 2022 03:51:27 -0700 (PDT)
+Date:   Mon, 16 May 2022 13:51:26 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Marek Vasut <marex@denx.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [RFC Patch net-next v2 2/9] net: dsa: microchip: move
+ ksz_chip_data to ksz_common
+Message-ID: <20220516105126.iwrytpsynzlt6xsz@skbuf>
+References: <20220513102219.30399-1-arun.ramadoss@microchip.com>
+ <20220513102219.30399-3-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513102219.30399-3-arun.ramadoss@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 9eec1d897139e5de287af5d559a02b811b844d82.
+On Fri, May 13, 2022 at 03:52:12PM +0530, Arun Ramadoss wrote:
+> This patch moves the ksz_chip_data in ksz8795 and ksz9477 to ksz_common.
+> At present, the dev->chip_id is iterated with the ksz_chip_data and then
+> copy its value to the ksz_dev structure. These values are declared as
+> constant.
+> Instead of copying the values and referencing it, this patch update the
+> dev->info to the ksz_chip_data based on the chip_id in the init
+> function. And also update the ksz_chip_data values for the LAN937x based
+> switches.
+> 
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
 
-Revert closing the readahead to squashfs since the readahead callback
-for squashfs is implemented.
+Thanks, this looks good. I see that dev->info is assigned in
+ksz_switch_register and I had to look to see whether there is any
+dev->info dereference from before the call to ksz_switch_register(),
+and it looks like we're ok.
 
-Suggested-by: Xiongwei Song <sxwjean@gmail.com>
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
----
- fs/squashfs/super.c | 33 ---------------------------------
- 1 file changed, 33 deletions(-)
-
-diff --git a/fs/squashfs/super.c b/fs/squashfs/super.c
-index 6d594ba2ed28..32565dafa7f3 100644
---- a/fs/squashfs/super.c
-+++ b/fs/squashfs/super.c
-@@ -29,7 +29,6 @@
- #include <linux/module.h>
- #include <linux/magic.h>
- #include <linux/xattr.h>
--#include <linux/backing-dev.h>
- 
- #include "squashfs_fs.h"
- #include "squashfs_fs_sb.h"
-@@ -113,24 +112,6 @@ static const struct squashfs_decompressor *supported_squashfs_filesystem(
- 	return decompressor;
- }
- 
--static int squashfs_bdi_init(struct super_block *sb)
--{
--	int err;
--	unsigned int major = MAJOR(sb->s_dev);
--	unsigned int minor = MINOR(sb->s_dev);
--
--	bdi_put(sb->s_bdi);
--	sb->s_bdi = &noop_backing_dev_info;
--
--	err = super_setup_bdi_name(sb, "squashfs_%u_%u", major, minor);
--	if (err)
--		return err;
--
--	sb->s_bdi->ra_pages = 0;
--	sb->s_bdi->io_pages = 0;
--
--	return 0;
--}
- 
- static int squashfs_fill_super(struct super_block *sb, struct fs_context *fc)
- {
-@@ -146,20 +127,6 @@ static int squashfs_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- 	TRACE("Entered squashfs_fill_superblock\n");
- 
--	/*
--	 * squashfs provides 'backing_dev_info' in order to disable read-ahead. For
--	 * squashfs, I/O is not deferred, it is done immediately in read_folio,
--	 * which means the user would always have to wait their own I/O. So the effect
--	 * of readahead is very weak for squashfs. squashfs_bdi_init will set
--	 * sb->s_bdi->ra_pages and sb->s_bdi->io_pages to 0 and close readahead for
--	 * squashfs.
--	 */
--	err = squashfs_bdi_init(sb);
--	if (err) {
--		errorf(fc, "squashfs init bdi failed");
--		return err;
--	}
--
- 	sb->s_fs_info = kzalloc(sizeof(*msblk), GFP_KERNEL);
- 	if (sb->s_fs_info == NULL) {
- 		ERROR("Failed to allocate squashfs_sb_info\n");
--- 
-2.36.0.550.gb090851708-goog
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
