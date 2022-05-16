@@ -2,81 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6818C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244507AbiEPOXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
+        id S239068AbiEPOXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244468AbiEPOXM (ORCPT
+        with ESMTP id S244501AbiEPOXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 10:23:12 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830463B017;
-        Mon, 16 May 2022 07:23:10 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id z18so16080498iob.5;
-        Mon, 16 May 2022 07:23:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WfuLbMFnE6T2gqljbFDnxPAiIollkJqGTTqUZar1THg=;
-        b=mFTpIx7QJd9OPa2rfI+BdVzP84MpmVIgyY0ts0fmvC5ELBnjn8KhgXvspalPHgDl65
-         GAlhZDDcNlPTjVz9f0cysymZt577t9/Ltz+wYdsk6YiWL/ImRshShRPwYid59CfKfK3m
-         Gl8WoVDDixM/uYu0wDa8ACGVAbL9t+WWpAWDM8NWSX471CE4cVE8a7wQGgxhyRz9hCBH
-         ULKT4O8zR2VmqUkTgkbm6fZnn9M5Z0y3U1o5amDwNRtA9ndnEDrC27b+4EBgLoFqe32/
-         PY6NtQQx973ICwstG8vUooMm69SIHAYklrWJJPLJ4D+5OEcKjId8fRp2Q2LsmwmWtXth
-         9KIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WfuLbMFnE6T2gqljbFDnxPAiIollkJqGTTqUZar1THg=;
-        b=hTHgnIvUTzi2p5czXo2Bt++0uBikv25EHMTtmjRwsTbbIf7KzDfj7ZiDtEwhHwqXqr
-         +dkfJKF0pc6Y75Nu8+a9yneyac70wy+uFOIbS4ktwQO6IaKVRbxgQOoo37SbYOR87I0L
-         yRlUaqL3UVGy4BfRW96rzajw5QPkTxNzxtVqKjcDO8yQ+nX4Cv4LE9gNDJWwWtGGz5u3
-         0PWzK2MWvNug9hHX10Nx16SE4BrP5m6/MJUzVu9GwYxEMcx/mtmLp78iJmhFouSE1lCS
-         auIzvnqFK1lbmjbNHVvX8wxjN6p7FqHRv7Ic6k1u1evL5+zR/cATee/ElK9gdhdL2rff
-         IjEg==
-X-Gm-Message-State: AOAM533aByTjVs9EmfjDE60wMXXpNx1K5xb4/7VPDbY8geeTPEXJtbtf
-        tQ4Y3WEU3uNCxHiV/UVRby9qqBZL9wDuCO3HsdU=
-X-Google-Smtp-Source: ABdhPJwES2wc7TdMhiod+Gfl69w6wPnCgbe1YGCtJzOYOWtZ/sszBlzxfySY/AjwJEJtLVYes/CfhrG1dOOG8apzh38=
-X-Received: by 2002:a05:6638:110e:b0:32e:4068:fd99 with SMTP id
- n14-20020a056638110e00b0032e4068fd99mr1425584jal.264.1652710988705; Mon, 16
- May 2022 07:23:08 -0700 (PDT)
+Received: from mail-4323.proton.ch (mail-4323.proton.ch [185.70.43.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D593B013;
+        Mon, 16 May 2022 07:23:09 -0700 (PDT)
+Date:   Mon, 16 May 2022 14:23:02 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
+        s=protonmail; t=1652710988;
+        bh=VpuPzUmy8azXATgjTkDZFB1+G13PBtCz2A4M2fXlOrg=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=cmkmMr/yrS78LEZeSC33FJb4p5RmsjUu8Z7PxX+HUKNTyVl85FDFswevBA/vERRBK
+         1MsyAF7jd2eDZRIT5uz+wyWj+pdYIpYpWbGvc8Mi8WaVjgeL/qSILMK8YzB0SPEirf
+         cXC+l+vWT+XejYOelC/v1uiqTiTLvcn7szs6UZNM=
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        phone-devel@vger.kernel.org
+From:   Caleb Connolly <caleb@connolly.tech>
+Cc:     Caleb Connolly <caleb@connolly.tech>
+Reply-To: Caleb Connolly <caleb@connolly.tech>
+Subject: [PATCH 2/3] arm64: dts: qcom: sdm845-oneplus: add tri-state-key
+Message-ID: <20220516142158.1612109-2-caleb@connolly.tech>
+In-Reply-To: <20220516142158.1612109-1-caleb@connolly.tech>
+References: <20220516142158.1612109-1-caleb@connolly.tech>
+Feedback-ID: 10753939:user:proton
 MIME-Version: 1.0
-References: <20220516101901.475557433@linutronix.de> <20220516102615.884180377@linutronix.de>
-In-Reply-To: <20220516102615.884180377@linutronix.de>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Mon, 16 May 2022 16:22:57 +0200
-Message-ID: <CANiq72kSqKqoUsiFhg0+a65vc3KPTW4zpt-Dh8geVWUMPkWFwg@mail.gmail.com>
-Subject: Re: [patch 8/9] scripts/spdxcheck: Exclude dot files
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-spdx@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 3:55 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> None of these files
->
->      .clang-format, .cocciconfig, .get_maintainer.ignore, .gitattributes,
->      .gitignore, .mailmap
->
-> have copyrightable content. They are configuration files which use a
-> publicly documented format.
+The tri-state-key is a 3-state mute slider found on the OnePlus 6.
+The default software maps the states to "mute", "vibrate" and "ring",
+expose them as generic switch events so that they can be configured
+by userspace.
 
-Should this files remove their SPDX-License-Identifier? If yes, we
-should do that for `.clang-format`.
+Signed-off-by: Caleb Connolly <caleb@connolly.tech>
+---
+ .../boot/dts/qcom/sdm845-oneplus-common.dtsi  | 44 +++++++++++++++++--
+ 1 file changed, 40 insertions(+), 4 deletions(-)
 
-As another suggestion, we should check that the ignored files actually
-do _not_ have the `SPDX-License-Identifier` (i.e. so the above case
-would trigger a diagnostic).
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi b/arch/arm=
+64/boot/dts/qcom/sdm845-oneplus-common.dtsi
+index 07b729f9fec5..f134c51e17ec 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
+@@ -7,7 +7,7 @@
 
-Cheers,
-Miguel
+ /dts-v1/;
+
+-#include <dt-bindings/input/linux-event-codes.h>
++#include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+
+ #include "sdm845.dtsi"
+@@ -26,7 +26,7 @@ chosen {
+ =09=09stdout-path =3D "serial0:115200n8";
+ =09};
+
+-=09gpio-keys {
++=09volume-keys {
+ =09=09compatible =3D "gpio-keys";
+ =09=09label =3D "Volume keys";
+ =09=09autorepeat;
+@@ -49,6 +49,41 @@ vol-up {
+ =09=09};
+ =09};
+
++=09tri-state-key {
++=09=09compatible =3D "gpio-keys";
++=09=09label =3D "Tri-state key";
++
++=09=09pinctrl-names =3D "default";
++=09=09pinctrl-0 =3D <&tri_state_key_default>;
++
++=09=09state-top {
++=09=09=09label =3D "Tri-state key top";
++=09=09=09linux,input-type =3D <EV_SW>;
++=09=09=09linux,code =3D <SW_PROG1>;
++=09=09=09gpios =3D <&tlmm 126 GPIO_ACTIVE_LOW>;
++=09=09=09debounce-interval =3D <50>;
++=09=09=09linux,can-disable;
++=09=09};
++
++=09=09state-middle {
++=09=09=09label =3D "Tri-state key middle";
++=09=09=09linux,input-type =3D <EV_SW>;
++=09=09=09linux,code =3D <SW_PROG2>;
++=09=09=09gpios =3D <&tlmm 52 GPIO_ACTIVE_LOW>;
++=09=09=09debounce-interval =3D <50>;
++=09=09=09linux,can-disable;
++=09=09};
++
++=09=09state-bottom {
++=09=09=09label =3D "Tri-state key bottom";
++=09=09=09linux,input-type =3D <EV_SW>;
++=09=09=09linux,code =3D <SW_PROG3>;
++=09=09=09gpios =3D <&tlmm 24 GPIO_ACTIVE_LOW>;
++=09=09=09debounce-interval =3D <50>;
++=09=09=09linux,can-disable;
++=09=09};
++=09};
++
+ =09reserved-memory {
+ =09=09/* The rmtfs_mem needs to be guarded due to "XPU limitations"
+ =09=09 * it is otherwise possible for an allocation adjacent to the
+@@ -607,9 +642,10 @@ &usb_1_hsphy {
+ &tlmm {
+ =09gpio-reserved-ranges =3D <0 4>, <81 4>;
+
+-=09tri_state_key_default: tri_state_key_default {
++=09/* The GPIOs have a hardware pullup */
++=09tri_state_key_default: tri-state-pins {
+ =09=09mux {
+-=09=09=09pins =3D "gpio40", "gpio42", "gpio26";
++=09=09=09pins =3D "gpio126", "gpio52", "gpio24";
+ =09=09=09function =3D "gpio";
+ =09=09=09drive-strength =3D <2>;
+ =09=09=09bias-disable;
+--
+2.36.1
+
+
