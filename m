@@ -2,68 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB16C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2848DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236459AbiEPJZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 05:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
+        id S238242AbiEPJ0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 05:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiEPJZO (ORCPT
+        with ESMTP id S229606AbiEPJZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 05:25:14 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026B228733;
-        Mon, 16 May 2022 02:25:11 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L1ty93B0DzCsk9;
-        Mon, 16 May 2022 17:20:17 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 16 May 2022 17:25:10 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <sgoutham@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <xiujianfeng@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] octeontx2-pf: Use memset_startat() helper in otx2_stop()
-Date:   Mon, 16 May 2022 17:23:37 +0800
-Message-ID: <20220516092337.131653-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 16 May 2022 05:25:55 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D78F7212;
+        Mon, 16 May 2022 02:25:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 966641063;
+        Mon, 16 May 2022 02:25:54 -0700 (PDT)
+Received: from [10.57.4.89] (unknown [10.57.4.89])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4734D3F66F;
+        Mon, 16 May 2022 02:25:52 -0700 (PDT)
+Message-ID: <3b0e1226-91bd-a470-3d18-9fdd465eca4e@arm.com>
+Date:   Mon, 16 May 2022 10:25:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH 00/20] perf vendors events arm64: Multiple Arm CPUs
+To:     John Garry <john.garry@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        Andrew Kilroy <andrew.kilroy@arm.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+References: <20220510104758.64677-1-nick.forrington@arm.com>
+ <YnqJwMfi/bcDmN4H@kernel.org>
+ <b1081013-2cd9-f223-8125-d7e51d784f90@huawei.com>
+ <eec03f0d-d491-511c-d9b0-694c6d527b38@arm.com>
+ <1062b28d-9c7b-89fb-d3bf-519f84029b96@huawei.com>
+From:   Nick Forrington <nick.forrington@arm.com>
+In-Reply-To: <1062b28d-9c7b-89fb-d3bf-519f84029b96@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use memset_startat() helper to simplify the code, there is no functional
-change in this patch.
+On 12/05/2022 16:52, John Garry wrote:
+> Generally this looks ok:
+>
+> Reviewed-by: John Garry <john.garry@huawei.com>
+>
+> If you are feeling particularly helpful then you can add support for 
+> any events missing to pre-existing core support, like a57-a72.
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Thanks John.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 2b204c1c23de..208c98664ade 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1796,8 +1796,7 @@ int otx2_stop(struct net_device *netdev)
- 	kfree(qset->rq);
- 	kfree(qset->napi);
- 	/* Do not clear RQ/SQ ringsize settings */
--	memset((void *)qset + offsetof(struct otx2_qset, sqe_cnt), 0,
--	       sizeof(*qset) - offsetof(struct otx2_qset, sqe_cnt));
-+	memset_startat(qset, 0, sqe_cnt);
- 	return 0;
- }
- EXPORT_SYMBOL(otx2_stop);
--- 
-2.17.1
+I'll submit a separate patch for A57/A72.
+
+Nick
 
