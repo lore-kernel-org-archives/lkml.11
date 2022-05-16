@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD8A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B83CC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348582AbiEPUXB (ORCPT
+        id S1348780AbiEPUXI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
+        Mon, 16 May 2022 16:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348879AbiEPT7C (ORCPT
+        with ESMTP id S1348871AbiEPT7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63ABAB3;
-        Mon, 16 May 2022 12:51:55 -0700 (PDT)
+        Mon, 16 May 2022 15:59:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854D27659;
+        Mon, 16 May 2022 12:51:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DA7AB81611;
-        Mon, 16 May 2022 19:51:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33425C385AA;
-        Mon, 16 May 2022 19:51:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2261260A50;
+        Mon, 16 May 2022 19:51:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 124CEC385AA;
+        Mon, 16 May 2022 19:51:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730712;
-        bh=YzW8u20XqcllyETUghHYrsk3AT8VdfEGOpmwGCOwdKU=;
+        s=korg; t=1652730702;
+        bh=K0e//h/6PydWP4sS4t8OnODJz9/3dzWamQ2oJbLLZmc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dqAMblpB0aQZjL284RLaDNX97/mLfgJXE3oxUVosbvZDX+TSdC2L1jf4kxdkaKCOk
-         XPimweoj+UWq5zDz+lqK65x1tKB597alnRcwl7yENDUZz42hwSE1xKJTiLvPQEPT8i
-         7kEaa0gyjmFvuAFvd7AuGi4G4HrhZfTVsxiTKR6g=
+        b=HYAYjQPV4E0c70EE31WguZE9SEYOrA9grzQJ8eoTiL8s0NHFf0MgqDJ4n/Znpetjp
+         6UtaWGC/ee49ZeciYWCXumohWE+8rQ0OdzfJiPZFtgycNgkxWzab1t7MG76NhBd6Nt
+         DawYpiCRPN3GTvFK6t3QU6GRFSil7F3ktcecphH0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>
-Subject: [PATCH 5.15 084/102] drm/vmwgfx: Disable command buffers on svga3 without gbobjects
-Date:   Mon, 16 May 2022 21:36:58 +0200
-Message-Id: <20220516193626.404883946@linuxfoundation.org>
+        stable@vger.kernel.org, John Fortin <fortinj66@gmail.com>,
+        Sri Ramanujam <sri@ramanujam.io>,
+        Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.15 081/102] ceph: fix setting of xattrs on async created inodes
+Date:   Mon, 16 May 2022 21:36:55 +0200
+Message-Id: <20220516193626.318984890@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -49,51 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-commit 21d1d192890ced87f2f04f8f4dea92406e0b162a upstream.
+commit 620239d9a32e9fe27c9204ec11e40058671aeeb6 upstream.
 
-With very limited vram on svga3 it's difficult to handle all the surface
-migrations. Without gbobjects, i.e. the ability to store surfaces in
-guest mobs, there's no reason to support intermediate svga2 features,
-especially because we can fall back to fb traces and svga3 will never
-support those in-between features.
+Currently when we create a file, we spin up an xattr buffer to send
+along with the create request. If we end up doing an async create
+however, then we currently pass down a zero-length xattr buffer.
 
-On svga3 we wither want to use fb traces or screen targets
-(i.e. gbobjects), nothing in between. This fixes presentation on a lot
-of fusion/esxi tech previews where the exposed svga3 caps haven't been
-finalized yet.
+Fix the code to send down the xattr buffer in req->r_pagelist. If the
+xattrs span more than a page, however give up and don't try to do an
+async create.
 
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Fixes: 2cd80dbd3551 ("drm/vmwgfx: Add basic support for SVGA3")
-Cc: <stable@vger.kernel.org> # v5.14+
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-5-zack@kde.org
+Cc: stable@vger.kernel.org
+URL: https://bugzilla.redhat.com/show_bug.cgi?id=2063929
+Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
+Reported-by: John Fortin <fortinj66@gmail.com>
+Reported-by: Sri Ramanujam <sri@ramanujam.io>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ fs/ceph/file.c |   16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_cmd.c
-@@ -675,11 +675,14 @@ int vmw_cmd_emit_dummy_query(struct vmw_
-  */
- bool vmw_cmd_supported(struct vmw_private *vmw)
- {
--	if ((vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
--				  SVGA_CAP_CMD_BUFFERS_2)) != 0)
--		return true;
-+	bool has_cmdbufs =
-+		(vmw->capabilities & (SVGA_CAP_COMMAND_BUFFERS |
-+				      SVGA_CAP_CMD_BUFFERS_2)) != 0;
-+	if (vmw_is_svga_v3(vmw))
-+		return (has_cmdbufs &&
-+			(vmw->capabilities & SVGA_CAP_GBOBJECTS) != 0);
- 	/*
- 	 * We have FIFO cmd's
- 	 */
--	return vmw->fifo_mem != NULL;
-+	return has_cmdbufs || vmw->fifo_mem != NULL;
- }
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -592,9 +592,15 @@ static int ceph_finish_async_create(stru
+ 	iinfo.change_attr = 1;
+ 	ceph_encode_timespec64(&iinfo.btime, &now);
+ 
+-	iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
+-	iinfo.xattr_data = xattr_buf;
+-	memset(iinfo.xattr_data, 0, iinfo.xattr_len);
++	if (req->r_pagelist) {
++		iinfo.xattr_len = req->r_pagelist->length;
++		iinfo.xattr_data = req->r_pagelist->mapped_tail;
++	} else {
++		/* fake it */
++		iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
++		iinfo.xattr_data = xattr_buf;
++		memset(iinfo.xattr_data, 0, iinfo.xattr_len);
++	}
+ 
+ 	in.ino = cpu_to_le64(vino.ino);
+ 	in.snapid = cpu_to_le64(CEPH_NOSNAP);
+@@ -706,6 +712,10 @@ int ceph_atomic_open(struct inode *dir,
+ 		err = ceph_security_init_secctx(dentry, mode, &as_ctx);
+ 		if (err < 0)
+ 			goto out_ctx;
++		/* Async create can't handle more than a page of xattrs */
++		if (as_ctx.pagelist &&
++		    !list_is_singular(&as_ctx.pagelist->head))
++			try_async = false;
+ 	} else if (!d_in_lookup(dentry)) {
+ 		/* If it's not being looked up, it's negative */
+ 		return -ENOENT;
 
 
