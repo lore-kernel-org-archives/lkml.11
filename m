@@ -2,124 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53473C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244302AbiEPOGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
+        id S244312AbiEPOHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244384AbiEPOGF (ORCPT
+        with ESMTP id S243887AbiEPOHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:06:05 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12FE61005;
-        Mon, 16 May 2022 07:06:04 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GE1DMa026110;
-        Mon, 16 May 2022 14:05:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=W803J69EJm++pLOaEqlDhxYyTXafFWrijwjpdrcMKo8=;
- b=iKaLOhN1dTu6t59/hv8zv1ruxO4uf4ukHP/NDSO5TfyO5hmLz4IKwH8J1Zuako7YWwnb
- elySCI1bGLKuMxsquP/jwwmZzFuHdCVdE/nqJ1+dju+IDoB0RMxq7sxvcBREgnrUjDDu
- KGG2LoWYryn82T5GhD9GHR1H9PjrEFHMF/3U3HYJ0T6ck+Cac4CHQZkDXMH4DIcv289R
- PCBpXhws16uXoHDt+5mddrmgS79rQ32/hdM5R8HdD5SpxFViydAGTb7gmrKQRR3SbcOh
- HFI/FunlKXd9B1eF20fwD7grHTVsJ7IpETpP1VsMEIYnQpjAjriy7Nr8GqBCbtMNZqVL hA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3r0rr49n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 14:05:54 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24GE2BLe029905;
-        Mon, 16 May 2022 14:05:54 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3r0rr495-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 14:05:54 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24GE5WM2006927;
-        Mon, 16 May 2022 14:05:52 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 3g2429asxs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 14:05:52 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24GE5l8H53739802
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 16 May 2022 14:05:47 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7CEA84203F;
-        Mon, 16 May 2022 14:05:47 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0B6E142041;
-        Mon, 16 May 2022 14:05:47 +0000 (GMT)
-Received: from osiris (unknown [9.145.19.162])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Mon, 16 May 2022 14:05:46 +0000 (GMT)
-Date:   Mon, 16 May 2022 16:05:45 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Alexander Gordeev <agordeev@linux.ibm.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Jonas Paulsson <paulsson@linux.vnet.ibm.com>,
-        Ulrich Weigand <ulrich.weigand@de.ibm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andreas Krebbel <krebbel@linux.ibm.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH 4/8] s390/entry: workaround llvm's IAS limitations
-Message-ID: <YoJaOYv5gTl/oByX@osiris>
-References: <20220511120532.2228616-1-hca@linux.ibm.com>
- <20220511120532.2228616-5-hca@linux.ibm.com>
- <YnvynSZfF/8I8vmT@dev-arch.thelio-3990X>
- <Yn1CyTcrZk1Kgvoq@osiris>
- <YoIUX864ULCwu4pz@tuxmaker.boeblingen.de.ibm.com>
- <YoIlQaWNy1wu39ak@osiris>
- <YoIxdMNJjt9rxoeZ@tuxmaker.boeblingen.de.ibm.com>
+        Mon, 16 May 2022 10:07:19 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30CD43A728;
+        Mon, 16 May 2022 07:07:18 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id f2so13686306wrc.0;
+        Mon, 16 May 2022 07:07:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=sM2sRGLVCJ3Fk4PRrn+4dC0xyoX9H+fcNcN8bioAh10=;
+        b=XEldJpEHMASSsGBrI5Mmn0Pi9N670GLUxxVJp9B5HOBl43K97MwoAJgO8rLsByNaeb
+         lGFHZLdSMp5plsxPECl1hu/RCE92lA3mQMUkELx5ggDkbKbIrRbWl2CF5epTn2VVa9Bk
+         EKleAupnQa510VCDAbAdsbYftuIScC1x7XiBfKKGJN4+Q4XS1jPWRU5vVJ/+q3ubfCcV
+         CqQx3Zr2V7XIS4AOAoBetY/mlyaYWA5HTpaVMVfXp3aqrxwJLDkgz7shVZ2/UZ8uhN3P
+         XQJSOuKhPUftPUtyRVyYYoaZl0WFTnNY6kIltroHODF1It8/lBZoYSRFsyKFcmYNaD1w
+         gFVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=sM2sRGLVCJ3Fk4PRrn+4dC0xyoX9H+fcNcN8bioAh10=;
+        b=e78sUnF+Z4iNBVcZOHuCis/BExhcDs2feMj/wXXIlPv0D9Yl1uOj/u1JKNh4wwo6pC
+         4IShw9vpuGnPU/2I/LAA+be08DiOEAjpoygT2Cb7joxOkP8WIRtxWLhuZgVo6zQRAQhv
+         3VTATRlxSGmOS/5VaXqK6FPHT9O7+oNtMjyc/2yKuEetmCZMhGHd1o1IXILks9YWMRFV
+         UdHIvbvlB/jIBDIMAdL5MN25oC72mDeoA+JjrRalQytxOGagFxQTeAloOnb97j+51PvP
+         jSr7whyaO8MgJy+Y04oNGRYu9HGpwkw9beeaxvUSfzGppfkdB0vxVB+eNGXnn2TBTXhX
+         jV1g==
+X-Gm-Message-State: AOAM530xGvzCSlfkviTjzerQX0qGfAOwpdHPBNe8HjfbaFGEnq3g632n
+        BfAXCb/8+nI2YST+M8RhPQLBsDHvRXY=
+X-Google-Smtp-Source: ABdhPJy6o0QTxOZPvxVZf6UA03LSbXaPI3cJ5caJlhMXQFfhV3BWO5alGfIPKD4PGJbIVes3G4Q8Uw==
+X-Received: by 2002:a5d:4988:0:b0:20d:9b8:e560 with SMTP id r8-20020a5d4988000000b0020d09b8e560mr3799784wrq.33.1652710036571;
+        Mon, 16 May 2022 07:07:16 -0700 (PDT)
+Received: from orome (pd9e518f7.dip0.t-ipconnect.de. [217.229.24.247])
+        by smtp.gmail.com with ESMTPSA id v8-20020adfa1c8000000b0020d050461c9sm5287367wrv.54.2022.05.16.07.07.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 07:07:15 -0700 (PDT)
+Date:   Mon, 16 May 2022 16:07:13 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Mikko Perttunen <cyndis@kapsi.fi>
+Cc:     Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+        jonathanh@nvidia.com, joro@8bytes.org, robh+dt@kernel.org,
+        krzysztof.kozlowski@canonical.com, linux-tegra@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Mikko Perttunen <mperttunen@nvidia.com>
+Subject: Re: [PATCH v5 5/9] iommu/arm-smmu: Attach to host1x context device
+ bus
+Message-ID: <YoJakX0ms7rBF3ia@orome>
+References: <20220516085258.1227691-1-cyndis@kapsi.fi>
+ <20220516085258.1227691-6-cyndis@kapsi.fi>
+ <20220516100721.GA1927@willie-the-truck>
+ <4a170997-c893-1788-dcaa-8ed2193146ae@kapsi.fi>
+ <099cf0f9-5c27-0247-7c5e-6704a9527b11@arm.com>
+ <020a8244-760e-fe7c-594a-1d85e5645dbe@kapsi.fi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="pzcJQLU+ls3tyqds"
 Content-Disposition: inline
-In-Reply-To: <YoIxdMNJjt9rxoeZ@tuxmaker.boeblingen.de.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: zpQWR8E7h5U77uCLMRiqi3KxRiwx8tfv
-X-Proofpoint-GUID: H96rlpMFX1dp-jNvtaIBkRT8NdEChY8m
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-16_13,2022-05-16_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=685
- impostorscore=0 bulkscore=0 clxscore=1015 malwarescore=0 suspectscore=0
- adultscore=0 spamscore=0 phishscore=0 lowpriorityscore=0
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205160079
+In-Reply-To: <020a8244-760e-fe7c-594a-1d85e5645dbe@kapsi.fi>
+User-Agent: Mutt/2.2.4 (c3baa83e) (2022-04-30)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 01:11:48PM +0200, Alexander Gordeev wrote:
-> > So I'd suggest: leave this code as is, and at some later point move
-> > "rework" the early machine check handler code.
-> > 
-> > What do you think?
-> 
-> Sounds very reasonable. Please, find my:
-> 
-> Acked-by: Alexander Gordeev <agordeev@linux.ibm.com>
 
-Thanks!
+--pzcJQLU+ls3tyqds
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Also, how such a follow-up looks to you?
-...
-> 	slgfi	%r14,\start
-> 	clgfi	%r14,\end - \start
+On Mon, May 16, 2022 at 02:20:18PM +0300, Mikko Perttunen wrote:
+> On 5/16/22 13:44, Robin Murphy wrote:
+> > On 2022-05-16 11:13, Mikko Perttunen wrote:
+> > > On 5/16/22 13:07, Will Deacon wrote:
+> > > > On Mon, May 16, 2022 at 11:52:54AM +0300, cyndis@kapsi.fi wrote:
+> > > > > From: Mikko Perttunen <mperttunen@nvidia.com>
+> > > > >=20
+> > > > > Set itself as the IOMMU for the host1x context device bus, contai=
+ning
+> > > > > "dummy" devices used for Host1x context isolation.
+> > > > >=20
+> > > > > Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+> > > > > ---
+> > > > > =C2=A0 drivers/iommu/arm/arm-smmu/arm-smmu.c | 13 +++++++++++++
+> > > > > =C2=A0 1 file changed, 13 insertions(+)
+> > > > >=20
+> > > > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > > > > b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > > > > index 568cce590ccc..9ff54eaecf81 100644
+> > > > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > > > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > > > > @@ -39,6 +39,7 @@
+> > > > > =C2=A0 #include <linux/amba/bus.h>
+> > > > > =C2=A0 #include <linux/fsl/mc.h>
+> > > > > +#include <linux/host1x_context_bus.h>
+> > > > > =C2=A0 #include "arm-smmu.h"
+> > > > > @@ -2053,8 +2054,20 @@ static int arm_smmu_bus_init(struct
+> > > > > iommu_ops *ops)
+> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 goto err_reset_pci_ops;
+> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > > > > =C2=A0 #endif
+> > > > > +#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
+> > > > > +=C2=A0=C2=A0=C2=A0 if (!iommu_present(&host1x_context_device_bus=
+_type)) {
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 err =3D bus_set_iommu=
+(&host1x_context_device_bus_type, ops);
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (err)
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 goto err_reset_fsl_mc_ops;
+> > > > > +=C2=A0=C2=A0=C2=A0 }
+> > > > > +#endif
+> > > > > +
+> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
+> > > > > +err_reset_fsl_mc_ops: __maybe_unused;
+> > > > > +#ifdef CONFIG_FSL_MC_BUS
+> > > > > +=C2=A0=C2=A0=C2=A0 bus_set_iommu(&fsl_mc_bus_type, NULL);
+> > > > > +#endif
+> > > >=20
+> > > > bus_set_iommu() is going away:
+> > > >=20
+> > > > https://lore.kernel.org/r/cover.1650890638.git.robin.murphy@arm.com
+> > > >=20
+> > > > Will
+> > >=20
+> > > Thanks for the heads-up. Robin had pointed out that this work was
+> > > ongoing but I hadn't seen the patches yet. I'll look into it.
+> >=20
+> > Although that *is* currently blocked on the mystery intel-iommu problem
+> > that I can't reproduce... If this series is ready to land right now for
+> > 5.19 then in principle that might be the easiest option overall.
+> > Hopefully at least patch #2 could sneak in so that the compile-time
+> > dependencies are ready for me to roll up host1x into the next rebase of
+> > "iommu: Always register bus notifiers".
+> >=20
+> > Cheers,
+> > Robin.
+>=20
+> My guess is that the series as a whole is not ready to land in the 5.19
+> timeframe, but #2 could be possible.
+>=20
+> Thierry, any opinion?
 
-I think using an address as an immediate value is a step in the wrong
-direction, since I'd like to have all code pc-relative. And as far as
-I can tell this new construct would only work as long as \start has an
-absolute address that is low enough so that it would work / fit with
-slgfi.
-Of course this will likely always be the case, but I still think this
-is not the way we should go.
+Dave and Daniel typically want new material to be in by -rc6 and I've
+already sent the PR for this cycle. I can ask them if they'd take
+another one, though, if it make things simpler for the next cycle.
+
+Thierry
+
+--pzcJQLU+ls3tyqds
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmKCWpEACgkQ3SOs138+
+s6HS5g/+NDlKp3MuR8qOz2HUhNTb5hZJliQREJuGJiH3Lb+xlTr9HRTYFTog5h2o
+/8FYXEz/xNe0Ksteb58UEMgTzATGtPWYulLdKMfCLgHRSw9jwEG6IOtCweZv5fNf
+9oAzyL/ZTpTOF330ce1BRfk/PvlNVLnetImK4b8OGmaj9ZMgvfNhgJpzq0jSkf7S
+hTZozfgJ++nan7UBRnZofuYzhpbDGrTAbxhTgksppbF0nM6AykU1je/eQBZL6I05
+ASNkCmDqun5PBmXYyMZChBXBhJl6Di2qKGy1kuFwrT2/K8a1WghA+J4ZiW6nGCH+
+9jcbkiXYNiq6T8mwywq3zxONLKKB2gDr07doUPHr2ERBfmXtG+X6lxXq97Zq+eyV
+N8RGawUV8cCELULq/U9t7k9WjNtCLNiLIhXKGj7c1QNK8PervlLaJqY2+t1HQzwt
+JFWZcP2I1S3246kEhCbh+mPTKS+J5HkOgfgbVRkjcDY/lZrcK1QLmvsL95UFIt1f
+pPRcBG9O2CNtjsN2rH8mOHs7dMpR6G1562YhRiRjGJubFFCg5Tmt/Mt7KyER4HGS
+kosQh4xTIxzi6Cs0RIXDO/2krGcibkv3vlWJBsxNczzpoq63d7TIjXM5WaV0UKqL
+UreHGegFDP9Q2xzfuJhqmaYOYg/E/VuRbZOO19Zn28tLtD/wiGY=
+=fv4K
+-----END PGP SIGNATURE-----
+
+--pzcJQLU+ls3tyqds--
