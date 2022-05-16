@@ -2,163 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46772C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:53:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD76C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 14:54:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242439AbiEPOxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 10:53:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50116 "EHLO
+        id S244529AbiEPOyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 10:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236123AbiEPOxH (ORCPT
+        with ESMTP id S231660AbiEPOyv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 10:53:07 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402AC3207A
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:53:06 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id j24so5637155wrb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:53:06 -0700 (PDT)
+        Mon, 16 May 2022 10:54:51 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA63930F75
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 07:54:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=F/0hxZ3FdeGCwd9gwk7c1gJBeXuAJpYrwcp/nOSul0s=;
-        b=LAKUAusdr95I4Vg37q15yh+zxPz/mCMHcqIG3FGhYvOJJr80PI/jPAJTLRDLOVAwEV
-         PV4XzPXvu+Is+eVchVPMYv1upVAXGgJQ2AA9Sei3S+FZaAJMQ2ek/2DrmVa6sZhDm3CI
-         BkPoc2DhJ8JoISCODmyFcF7q/Z0BtJb9thUvTSNmJGYKvpiymOjoVrdVMY9TMSNnIrIB
-         fcU62gKkBcwmEo5SxIuhZCdt/H4IXjjf/DPHv/hT7qxCi1bSA2Qn+XjqgRqhW2EjAWQw
-         NSBN3Q5ettLX7uUS8YVChOJrEUbA/9XOwOOTGDhBOap9wNxl8qv2tsghZfwGs+AEC3di
-         SrYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=F/0hxZ3FdeGCwd9gwk7c1gJBeXuAJpYrwcp/nOSul0s=;
-        b=1yqWO/qCGmk3CsHToLtCHtEagCLcOyTUZ595kXLSMSaqyE7cRFbPmYW4Nb6fKjqW89
-         m2QNPMwqxj4kYsbTgHcjDGQtuX+YkrSRr5/+GnGrRjrYpp36zoioarD9ZK8EnMcm3SMq
-         ZD3QNBj4iL/7WQTAplEDgvo9+7j7ukGAxlF0SRlC+kAQjmmadXTwH4pKvO1CD45omkTR
-         lPxR/k7AlGwIgVP8S3rPN+dtQeQM7Vf5otHnU1xFx+el5gDlu0/dPindP3IHraxDp3/l
-         IWB6sajD23nLhNc6X5pLHIGNDc5k7xR09gYGQC3R8GB2uvk62jypN1fVo9Ebp/FwKDni
-         1QWw==
-X-Gm-Message-State: AOAM530WzWVDZA8ZGloJkrIuxp7736ILDhkspFLvgm2rX313LW3B9Od6
-        NOa5L+ghhHLM8IEUF2RzPNBjpabEvEDTXkajcpWjbZKefeU=
-X-Google-Smtp-Source: ABdhPJzElNcloeF64fOP/Kb2aO6HlOLZaVTJaip5RDigdZ9nvc7rW9rIU7lDL2m19Kia0+gDSzkJpANVRfrB4n3EisQ=
-X-Received: by 2002:adf:d1cf:0:b0:20c:6030:d6f0 with SMTP id
- b15-20020adfd1cf000000b0020c6030d6f0mr14866687wrd.298.1652712784587; Mon, 16
- May 2022 07:53:04 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652712890; x=1684248890;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3Hg/ul1FdgTPqfk9OyHeNHYKtyp3A2SoIdhZuuU6CsY=;
+  b=yIyxg1lrEAHw0FSVmVXKAo0bjbP537oUYqs2Y6yTCa2zq3VAQFZKyVWg
+   c7uxenRClVCBymnJjAnkR+BhLi6lOXCp/v2c06iWaigpHkhw89wYldmop
+   sS2DGVxxpX8x3EWegdnJYe5AAId2muzwnqN+q8AUh2QimrnIwXc9jyTZt
+   8=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 May 2022 07:54:49 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 07:54:50 -0700
+Received: from [10.216.32.202] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 16 May
+ 2022 07:54:47 -0700
+Message-ID: <8d21e655-4ce9-c7b3-2010-e484161bdbe9@quicinc.com>
+Date:   Mon, 16 May 2022 20:24:44 +0530
 MIME-Version: 1.0
-References: <4b9db94cdd8ca106feee53f76fab2a23721f7d2a.1634290039.git.michal.simek@xilinx.com>
-In-Reply-To: <4b9db94cdd8ca106feee53f76fab2a23721f7d2a.1634290039.git.michal.simek@xilinx.com>
-From:   Michal Simek <monstr@monstr.eu>
-Date:   Mon, 16 May 2022 16:52:53 +0200
-Message-ID: <CAHTX3dLAwT7BFZPg1zinhDnvsZmadpsdSHQZHpsTg5=06MMgnw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: gpio: zynq: Describe gpio-line-names
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Michal Simek <monstr@monstr.eu>, git <git@xilinx.com>
-Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        Srinivas Neeli <srinivas.neeli@xilinx.com>,
-        DTML <devicetree@vger.kernel.org>,
-        linux-arm <linux-arm-kernel@lists.infradead.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: Use after free in cgroup_migrate_execute
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>, <paulmck@kernel.org>
+CC:     lkml <linux-kernel@vger.kernel.org>, <brauner@kernel.org>,
+        <hannes@cmpxchg.org>
+References: <549de740-1356-7ad2-3ee5-c52bc355fd99@quicinc.com>
+ <Yh+RGIJ0f3nrqIiN@slm.duckdns.org>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+In-Reply-To: <Yh+RGIJ0f3nrqIiN@slm.duckdns.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-p=C3=A1 15. 10. 2021 v 11:27 odes=C3=ADlatel Michal Simek
-<michal.simek@xilinx.com> napsal:
->
-> Number of lines depends on compatible string from 58 to 174.
-> That's why it is checked based on it.
->
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> ---
->
->  .../devicetree/bindings/gpio/gpio-zynq.yaml   | 50 +++++++++++++++++++
->  1 file changed, 50 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml b/Docu=
-mentation/devicetree/bindings/gpio/gpio-zynq.yaml
-> index da95b951c23e..29c27eadbac8 100644
-> --- a/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml
-> @@ -28,6 +28,11 @@ properties:
->
->    gpio-controller: true
->
-> +  gpio-line-names:
-> +    description: strings describing the names of each gpio line
-> +    minItems: 58
-> +    maxItems: 174
-> +
->    interrupt-controller: true
->
->    "#interrupt-cells":
-> @@ -39,6 +44,51 @@ properties:
->    power-domains:
->      maxItems: 1
->
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          enum:
-> +            - xlnx,zynqmp-gpio-1.0
-> +    then:
-> +      properties:
-> +        gpio-line-names:
-> +          minItems: 174
-> +          maxItems: 174
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          enum:
-> +            - xlnx,zynq-gpio-1.0
-> +    then:
-> +      properties:
-> +        gpio-line-names:
-> +          minItems: 118
-> +          maxItems: 118
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          enum:
-> +            - xlnx,versal-gpio-1.0
-> +    then:
-> +      properties:
-> +        gpio-line-names:
-> +          minItems: 58
-> +          maxItems: 58
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          enum:
-> +            - xlnx,pmc-gpio-1.0
-> +    then:
-> +      properties:
-> +        gpio-line-names:
-> +          minItems: 116
-> +          maxItems: 116
-> +
->  required:
->    - compatible
->    - reg
-> --
-> 2.33.1
->
++@paulmc
 
-Applied.
-M
+It would be difficult to reproduce this with clean kernel.
 
---=20
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Xilinx Microblaze
-Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
-U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
+However, i have put trace_printk on the cset object and found that task 
+reference is dropped from rcu_do_batch() as below and later trying to 
+get same cset reference resulted in the warning and later BUG_ON().
+
+rcuop/0-16    [002]   255.430731: bprint: 
+put_css_set_locked:cset:refzero:put_css_set_locked:cset:0xffffff80274eb800:
+
+Callers 
+(cgroup_free<-delayed_put_task_struct<-rcu_do_batch<-nocb_cb_wait<-rcu_nocb_cb_kthread<-kthread<-ret_from_fork)
+
+PERFD-SERVER-1387  [002]   255.432631: bprint: 
+get_css_set: get_css_set: 0xffffff80274eb800: 
+Callers:(cgroup_migrate_execute<-cgroup_attach_task<-__cgroup1_procs_write<-cgroup1_procs_write<-cgroup_file_write<-kernfs_fop_write_iter<-vfs_write)
+
+PERFD-SERVER-1387  [002]   255.456360: bprint: 
+get_css_set: get_css_set: 0xffffff80274eb800: 
+Callers:(cgroup_migrate_execute<-cgroup_attach_task<-__cgroup1_procs_write<-cgroup1_procs_write<-cgroup_file_write<-kernfs_fop_write_iter<-vfs_write)
+
+
+Thanks,
+-Mukesh
+
+On 3/2/2022 9:15 PM, Tejun Heo wrote:
+> On Wed, Mar 02, 2022 at 08:42:32PM +0530, Mukesh Ojha wrote:
+>> Hi ,
+>>
+>> We are facing one issue like below in cgroup .
+>> Not able to find which race could lead to this.
+>> Any idea, would be helpful.
+>>
+>> [136233.086904][ T1457] ------------[ cut here ]------------
+>> *[136233.086912][ T1457] refcount_t: addition on 0; use-after-free.*
+>> [136233.086943][ T1457] WARNING: CPU: 4 PID: 1457 at lib/refcount.c:25
+>> cgroup_migrate_execute+0x188/0x528
+>> [136233.087527][ T1457] CPU: 4 PID: 1457 Comm: PERFD-SERVER Tainted: G
+>> S      WC O      5.10.66 #1
+>> [136233.087532][ T1457] pstate: 62400085 (nZCv daIf +PAN -UAO +TCO BTYPE=--)
+>> [136233.087536][ T1457] pc : cgroup_migrate_execute+0x188/0x528
+>> [136233.087539][ T1457] lr : cgroup_migrate_execute+0x188/0x528
+>> [136233.087541][ T1457] sp : ffffffc01ff23a60
+>> [136233.087543][ T1457] x29: ffffffc01ff23a60 x28: 00000000c0000000
+>> [136233.087547][ T1457] x27: ffffffffffffeaa8 x26: ffffff88cbc55668
+>> [136233.087551][ T1457] x25: ffffff878424d458 x24: ffffff891fdd5e00
+>> [136233.087557][ T1457] x23: ffffff88cbc55600 x22: ffffff8784d673d8
+>> [136233.087565][ T1457] x21: ffffff88cbc55758 x20: ffffffc01ff23b20
+>> [136233.087572][ T1457] x19: ffffffc01ff23b00 x18: ffffffc019475068
+>> [136233.087580][ T1457] x17: 0000000000000000 x16: 0000000000162ba8
+>> [136233.087587][ T1457] x15: 0000000000000004 x14: 000000000000407f
+>> [136233.087594][ T1457] x13: ffffff8ae5d48be8 x12: 00000000ffffffff
+>> [136233.087602][ T1457] x11: ffffff8785a79f98 x10: 0000000000000002
+>> [136233.087609][ T1457] x9 : 759287265d79e000 x8 : 759287265d79e000
+>> [136233.087616][ T1457] x7 : 206e6f206e6f6974 x6 : ffffffd7616121b4
+>> [136233.087623][ T1457] x5 : ffffffffffffffff x4 : 0000000000000000
+>> [136233.087629][ T1457] x3 : ffffffd7635ce996 x2 : 0000000000000000
+>> [136233.087633][ T1457] x1 : ffffffd7635ce996 x0 : 000000000000002a
+>> [136233.087636][ T1457] Call trace:
+>> [136233.087640][ T1457]  cgroup_migrate_execute+0x188/0x528
+>> [136233.087643][ T1457]  cgroup_migrate+0xb4/0xe4
+>> [136233.087646][ T1457]  cgroup_attach_task+0x128/0x20c
+>> [136233.087650][ T1457]  __cgroup1_procs_write+0x1d8/0x290
+>> [136233.087653][ T1457]  cgroup1_procs_write+0x18/0x28
+>> [136233.087656][ T1457]  cgroup_file_write+0xa4/0x544
+>> [136233.087661][ T1457]  kernfs_fop_write_iter+0x1b0/0x2f8
+>> [136233.087665][ T1457]  vfs_write+0x300/0x37c
+>> [136233.087668][ T1457]  ksys_write+0x84/0x12c
+>> [136233.087672][ T1457]  __arm64_sys_write+0x20/0x30
+>> [136233.087676][ T1457]  el0_svc_common+0xdc/0x294
+>> [136233.087681][ T1457]  el0_svc+0x38/0x9c
+>> [136233.087684][ T1457]  el0_sync_handler+0x8c/0xf0
+>> [136233.087688][ T1457]  el0_sync+0x1b4/0x1c0
+>> [136233.087690][ T1457] ---[ end trace 9e592742965258ba ]---
+>> [136233.087693][ T1457] ------------[ cut here ]------------
+>> *[136233.087695][ T1457] refcount_t: saturated; leaking memory.*
+> 
+> Looks like the target css_set ref underglowed but you have five taint flags
+> set and this isn't even the first warning message. Any chance you can
+> reproduce this in a cleaner environment?
+> 
+> Thanks.
+> 
