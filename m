@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05121C38A2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB73C47086
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348387AbiEPUGd (ORCPT
+        id S1351596AbiEPUGo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        Mon, 16 May 2022 16:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347037AbiEPTvf (ORCPT
+        with ESMTP id S1347001AbiEPTve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:51:35 -0400
+        Mon, 16 May 2022 15:51:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEF028A;
-        Mon, 16 May 2022 12:46:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFE93F8AB;
+        Mon, 16 May 2022 12:46:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D414609D0;
-        Mon, 16 May 2022 19:46:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A154C385AA;
-        Mon, 16 May 2022 19:46:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CE1A6027A;
+        Mon, 16 May 2022 19:46:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60937C385AA;
+        Mon, 16 May 2022 19:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730406;
-        bh=pBZPEgcwSWzTvVDiYZyVpK3hnXuf2CTVNp7A4sC+rao=;
+        s=korg; t=1652730387;
+        bh=+m4xr2VstQvfmpmlbh/Hzx8ERJ0r2on0tJLdU5O4+6U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LayEnuD8R2isTzh0OoNoARX4xHZPRg+BuTu5qcNdQ4P8C8vfdaCBYomtOWfsWy02y
-         MjgxmcxTScJVT+ucUZXwMlQS9naLlYdKHuNtx+siU3hB8efJ89dQhFbn4izM9rwtkO
-         0qA/JYCo604w5vmB06tfd62koznTGvZMSuzGatCo=
+        b=JN3rDg5wexfXN8a5b1N9wxtBU7kX1TeoTBW0kNFN8ixan+/qFkkqbJwzOe8DLSzY1
+         htDZis7w9kQJFcN02W8kTLTLN60UwoUEZC5jCxAMe7IPK/N8gM2SFT8TzeXizTovhI
+         uJ97Tk5iujGot9bjdolBGABDNEynGGtWggaHiv5k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jordan Leppert <jordanleppert@protonmail.com>,
-        Holger Hoffstaette <holger@applied-asynchrony.com>,
-        Manuel Ullmann <labre@posteo.de>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.10 55/66] net: atlantic: always deep reset on pm op, fixing up my null deref regression
-Date:   Mon, 16 May 2022 21:36:55 +0200
-Message-Id: <20220516193621.001311470@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 32/66] ASoC: max98090: Reject invalid values in custom control put()
+Date:   Mon, 16 May 2022 21:36:32 +0200
+Message-Id: <20220516193620.343485236@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -52,62 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manuel Ullmann <labre@posteo.de>
+From: Mark Brown <broonie@kernel.org>
 
-commit 1809c30b6e5a83a1de1435fe01aaa4de4d626a7c upstream.
+[ Upstream commit 2fbe467bcbfc760a08f08475eea6bbd4c2874319 ]
 
-The impact of this regression is the same for resume that I saw on
-thaw: the kernel hangs and nothing except SysRq rebooting can be done.
+The max98090 driver has a custom put function for some controls which can
+only be updated in certain circumstances which makes no effort to validate
+that input is suitable for the control, allowing out of spec values to be
+written to the hardware and presented to userspace. Fix this by returning
+an error when invalid values are written.
 
-Fixes regression in commit cbe6c3a8f8f4 ("net: atlantic: invert deep
-par in pm functions, preventing null derefs"), where I disabled deep
-pm resets in suspend and resume, trying to make sense of the
-atl_resume_common() deep parameter in the first place.
-
-It turns out, that atlantic always has to deep reset on pm
-operations. Even though I expected that and tested resume, I screwed
-up by kexec-rebooting into an unpatched kernel, thus missing the
-breakage.
-
-This fixup obsoletes the deep parameter of atl_resume_common, but I
-leave the cleanup for the maintainers to post to mainline.
-
-Suspend and hibernation were successfully tested by the reporters.
-
-Fixes: cbe6c3a8f8f4 ("net: atlantic: invert deep par in pm functions, preventing null derefs")
-Link: https://lore.kernel.org/regressions/9-Ehc_xXSwdXcvZqKD5aSqsqeNj5Izco4MYEwnx5cySXVEc9-x_WC4C3kAoCqNTi-H38frroUK17iobNVnkLtW36V6VWGSQEOHXhmVMm5iQ=@protonmail.com/
-Reported-by: Jordan Leppert <jordanleppert@protonmail.com>
-Reported-by: Holger Hoffstaette <holger@applied-asynchrony.com>
-Tested-by: Jordan Leppert <jordanleppert@protonmail.com>
-Tested-by: Holger Hoffstaette <holger@applied-asynchrony.com>
-CC: <stable@vger.kernel.org> # 5.10+
-Signed-off-by: Manuel Ullmann <labre@posteo.de>
-Link: https://lore.kernel.org/r/87bkw8dfmp.fsf@posteo.de
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220420193454.2647908-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/max98090.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -455,7 +455,7 @@ static int aq_pm_freeze(struct device *d
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index 945a79e4f3eb..779845e3a9e3 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -413,6 +413,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
  
- static int aq_pm_suspend_poweroff(struct device *dev)
- {
--	return aq_suspend_common(dev, false);
-+	return aq_suspend_common(dev, true);
- }
+ 	val = (val >> mc->shift) & mask;
  
- static int aq_pm_thaw(struct device *dev)
-@@ -465,7 +465,7 @@ static int aq_pm_thaw(struct device *dev
++	if (sel < 0 || sel > mc->max)
++		return -EINVAL;
++
+ 	*select = sel;
  
- static int aq_pm_resume_restore(struct device *dev)
- {
--	return atl_resume_common(dev, false);
-+	return atl_resume_common(dev, true);
- }
- 
- static const struct dev_pm_ops aq_pm_ops = {
+ 	/* Setting a volume is only valid if it is already On */
+-- 
+2.35.1
+
 
 
