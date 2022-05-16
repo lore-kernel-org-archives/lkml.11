@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E41BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A01D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:39:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345560AbiEPTjF (ORCPT
+        id S1345670AbiEPTjH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43892 "EHLO
+        Mon, 16 May 2022 15:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345592AbiEPTih (ORCPT
+        with ESMTP id S1345594AbiEPTih (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 15:38:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB143F31F;
-        Mon, 16 May 2022 12:38:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443C33EF12;
+        Mon, 16 May 2022 12:38:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A14B61517;
-        Mon, 16 May 2022 19:38:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EE37C34100;
-        Mon, 16 May 2022 19:38:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D582E614B6;
+        Mon, 16 May 2022 19:38:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB528C34100;
+        Mon, 16 May 2022 19:38:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729907;
-        bh=GBJycO0GzsXOGdGm5vf9yrqqz6WbzwA5lCfxBqcbT64=;
+        s=korg; t=1652729910;
+        bh=9qxzXmWzDaSC6JFM5nKZ6C0UEuZ0OTnCGnCsKyfPyGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QxUN0l+AL9xJuVSXzGJo2YfjsBVXPF13TvM8XqZlTxqcA4W95qdevuGAVXmx5VbsO
-         4nU4rS618+FrKuUT1phoXLxSfB5VR3XOkWIwWAAnFXiDC8V2/r3fYZkpZAHKrickbD
-         M3aOuLcK/KmtEtFAfJBLT5yIixEft5FGznD4TIEM=
+        b=wpkM1sWpTT1k6qkNtpPFpHf5z5krw7/qoBKebs17lkX59YHbWm3rAx6FjhmyIIB0t
+         mNfe3GU/6t+GkyOWhP2x+oDWN7c60nrDTy671gj2AcZ+t/0s96FLyWtoNL2osu3Y1x
+         g0dCuYAgPiP2UQl1TSCe/I+Mzkg6Gflmgj9GnBXQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH 4.9 19/19] tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
-Date:   Mon, 16 May 2022 21:36:32 +0200
-Message-Id: <20220516193614.070397081@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 03/19] netlink: do not reset transport header in netlink_recvmsg()
+Date:   Mon, 16 May 2022 21:36:16 +0200
+Message-Id: <20220516193613.601433126@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
 References: <20220516193613.497233635@linuxfoundation.org>
@@ -49,38 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 447ee1516f19f534a228dda237eddb202f23e163 upstream.
+[ Upstream commit d5076fe4049cadef1f040eda4aaa001bb5424225 ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+netlink_recvmsg() does not need to change transport header.
 
-Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Baruch Siach <baruch@tkos.co.il>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220505124621.1592697-1-yangyingliang@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If transport header was needed, it should have been reset
+by the producer (netlink_dump()), not the consumer(s).
+
+The following trace probably happened when multiple threads
+were using MSG_PEEK.
+
+BUG: KCSAN: data-race in netlink_recvmsg / netlink_recvmsg
+
+write to 0xffff88811e9f15b2 of 2 bytes by task 32012 on cpu 1:
+ skb_reset_transport_header include/linux/skbuff.h:2760 [inline]
+ netlink_recvmsg+0x1de/0x790 net/netlink/af_netlink.c:1978
+ sock_recvmsg_nosec net/socket.c:948 [inline]
+ sock_recvmsg net/socket.c:966 [inline]
+ __sys_recvfrom+0x204/0x2c0 net/socket.c:2097
+ __do_sys_recvfrom net/socket.c:2115 [inline]
+ __se_sys_recvfrom net/socket.c:2111 [inline]
+ __x64_sys_recvfrom+0x74/0x90 net/socket.c:2111
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+write to 0xffff88811e9f15b2 of 2 bytes by task 32005 on cpu 0:
+ skb_reset_transport_header include/linux/skbuff.h:2760 [inline]
+ netlink_recvmsg+0x1de/0x790 net/netlink/af_netlink.c:1978
+ ____sys_recvmsg+0x162/0x2f0
+ ___sys_recvmsg net/socket.c:2674 [inline]
+ __sys_recvmsg+0x209/0x3f0 net/socket.c:2704
+ __do_sys_recvmsg net/socket.c:2714 [inline]
+ __se_sys_recvmsg net/socket.c:2711 [inline]
+ __x64_sys_recvmsg+0x42/0x50 net/socket.c:2711
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0xffff -> 0x0000
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 32005 Comm: syz-executor.4 Not tainted 5.18.0-rc1-syzkaller-00328-ge1f700ebd6be-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220505161946.2867638-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/digicolor-usart.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netlink/af_netlink.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -476,10 +476,10 @@ static int digicolor_uart_probe(struct p
- 		return PTR_ERR(uart_clk);
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index a8674e9ff37b..47b1631bf14c 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1929,7 +1929,6 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		copied = len;
+ 	}
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	dp->port.mapbase = res->start;
- 	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(dp->port.membase))
- 		return PTR_ERR(dp->port.membase);
-+	dp->port.mapbase = res->start;
+-	skb_reset_transport_header(data_skb);
+ 	err = skb_copy_datagram_msg(data_skb, 0, msg, copied);
  
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0)
+ 	if (msg->msg_name) {
+-- 
+2.35.1
+
 
 
