@@ -2,66 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:56:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245526AbiEPP4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 11:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        id S241042AbiEPP50 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 11:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245496AbiEPP4f (ORCPT
+        with ESMTP id S241235AbiEPP5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 11:56:35 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 260B0A190;
-        Mon, 16 May 2022 08:56:30 -0700 (PDT)
-Received: from localhost.localdomain (unknown [112.20.109.92])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxoNoqdIJicm4YAA--.22361S2;
-        Mon, 16 May 2022 23:56:27 +0800 (CST)
-From:   Yanteng Si <siyanteng@loongson.cn>
-To:     corbet@lwn.net, alexs@kernel.org, seakeel@gmail.com,
-        bobwxc@email.cn, tangyeechou@gmail.com
-Cc:     Yanteng Si <siyanteng@loongson.cn>, chenhuacai@kernel.org,
-        jiaxun.yang@flygoat.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, siyanteng01@gmail.com
-Subject: [PATCH v2 0/1] docs/zh_CN: add Yanteng to zh_CN maintainer
-Date:   Mon, 16 May 2022 23:57:47 +0800
-Message-Id: <cover.1652712771.git.siyanteng@loongson.cn>
-X-Mailer: git-send-email 2.27.0
+        Mon, 16 May 2022 11:57:24 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053232DA8C
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:57:23 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id i66so19078630oia.11
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:57:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vH4NPiCLU7evHB+E7xCfaeXJAYfa3KeY6XJRC/M1pQQ=;
+        b=I0Fe0t6KYm7QeHL4cN/jCuSC51Un3vdX70r9iEitsqA1K63t/YgFccUQtt/UroORI8
+         gbaZVesEkVpySAvrLr+ZxLjUVe3dukyjul41x8r7yLKFveJhVJxgzFg17L1JH7HETKVb
+         cDLQDMsag6+BuTw6eobY8ShmaNGmOTYpnFtwNrxPKF2lvvVWZ5INfF8/MY6caqOEZSL2
+         Ye6zQvzqBWRb17tEJnPLeak7Obi9afHqFu79AV4igYmSV8K323dQsA0UpeoAsYHg5tzt
+         Kryqsrc9lqQlzy1F63Lns/djLraiPwLQs50Cx9vI4MtbmKGnYkO2IDrwa/0t7UdbendC
+         PYJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vH4NPiCLU7evHB+E7xCfaeXJAYfa3KeY6XJRC/M1pQQ=;
+        b=U6Ddebz4dSTXd962qrR7AC2gpKb3mp4YqvtsyXjswev58XjfoXb0Ukt53fNqDssw1N
+         qt3sH2LdLD9ZlfyQpYarOCFY0BAV+EqBSF1SkK8IDDcJL+scQ78MKD/AA4XEwTBI/sSm
+         Zv1pjiNdyhCd7TEri2tXx4hD//Ks6VwpECVPwvYtIs71nd449nGqMRBtlaO3JRN6dBmR
+         /Ak3h4f/w3dPkbHZjkJ1cihDhk5OThkCDWVvSIDvxuDPgdKN7VAdbFJ0Gm7HekzYgKLC
+         diWgCeAohqZaZsEjQM0HEcqWBsDxOs8cbtP4YUbEoBgERnWwqPXxm4Pl/DOCLTQX9lv4
+         uhWA==
+X-Gm-Message-State: AOAM5313USmn8rvYRTmN8w/sBF4DRsb/rOcL4bo8HQy/rk+LN751S+i5
+        NeuGLvN/l/nCUuZkMFwy7AdppA==
+X-Google-Smtp-Source: ABdhPJy9xU3r4l65PfMiVkn2LKSmg6ikqMXRhfqQGFiUU7W25GCBD0SlgcmefZoFQVTXGUHG7oRFmQ==
+X-Received: by 2002:a05:6808:d52:b0:328:acfc:d274 with SMTP id w18-20020a0568080d5200b00328acfcd274mr8189424oik.174.1652716642349;
+        Mon, 16 May 2022 08:57:22 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id u23-20020a544397000000b00328b3d8a80fsm3826691oiv.50.2022.05.16.08.57.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 08:57:21 -0700 (PDT)
+Date:   Mon, 16 May 2022 08:59:45 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: phy: qcom,qmp: Add compatible for
+ SC8280XP USB3 UNI phy
+Message-ID: <YoJ08Zd/a4g+Ia0r@ripper>
+References: <20220513225348.1671639-1-bjorn.andersson@linaro.org>
+ <20220513225348.1671639-2-bjorn.andersson@linaro.org>
+ <8b47e106-a567-8d8f-ddd9-34b71211002e@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9BxoNoqdIJicm4YAA--.22361S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYf7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aV
-        CY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAq
-        x4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6x
-        CaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwAC
-        I402YVCY1x02628vn2kIc2xKxwCY02Avz4vE14v_XrWl42xK82IYc2Ij64vIr41l4I8I3I
-        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
-        GVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
-        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
-        rVW3JVWrJr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JV
-        W8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbOB_UUUUUU==
-X-CM-SenderInfo: pvl1t0pwhqwqxorr0wxvrqhubq/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8b47e106-a567-8d8f-ddd9-34b71211002e@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-V2:
-* Pick Alex's Reviewed-by tag.
+On Mon 16 May 00:11 PDT 2022, Krzysztof Kozlowski wrote:
 
-V1:
-* Add Yanteng Si into MAINTAINERS.
+> On 14/05/2022 00:53, Bjorn Andersson wrote:
+> > The SC8280XP platform has a pair of 5nm USB3 UNI phys, add a compatible
+> > for these.
+> > 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+> > index 8b850c5ab116..0a9ee5b7600d 100644
+> > --- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+> > +++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+> > @@ -33,6 +33,7 @@ properties:
+> >        - qcom,sc8180x-qmp-ufs-phy
+> >        - qcom,sc8180x-qmp-usb3-phy
+> >        - qcom,sc8280xp-qmp-ufs-phy
+> > +      - qcom,sc8280xp-qmp-usb3-uni-phy
+> 
+> What about the clocks/resets/supplies in allOf:if:then?
+> 
 
-Yanteng Si (1):
-  MAINTAINERS: Become the docs/zh_CN maintainer
+Of course, seems like I missed that part.
 
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
--- 
-2.27.0
-
+Thanks,
+Bjorn
