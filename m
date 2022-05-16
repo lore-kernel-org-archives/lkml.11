@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBF4C352AA
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5ACCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348490AbiEPU1d (ORCPT
+        id S1348777AbiEPU1p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
+        Mon, 16 May 2022 16:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349815AbiEPUAa (ORCPT
+        with ESMTP id S1349864AbiEPUAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4406044A08;
-        Mon, 16 May 2022 12:54:35 -0700 (PDT)
+        Mon, 16 May 2022 16:00:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887AE45042;
+        Mon, 16 May 2022 12:54:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7091760EC4;
-        Mon, 16 May 2022 19:53:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B439C385AA;
-        Mon, 16 May 2022 19:53:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4457B81611;
+        Mon, 16 May 2022 19:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A974C385AA;
+        Mon, 16 May 2022 19:54:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730828;
-        bh=WWp5/fwmERuhj14JqsIQ06X/O1ig7VgEOoMipSi2itU=;
+        s=korg; t=1652730874;
+        bh=vQDzAR231MULCvS7YopUOddxQ2LvNDxKv47FVYkL5Xg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ggAZORhuCw4rgiIfa7het5bPZFIYbxnFyXK0pR/dSSndHplRAl1V9z6ZBcaX6RqnF
-         HjcDMGK44e167KJ9cykRPiGHp3LMALaUWF+hdYxhJsAxHmOo9DeGHaSN+4AqlF5YMa
-         jc0FRoCzHtF4wmUNUe62hLtuyvh5D5oy52ByO4h8=
+        b=Sk6biLpIxLOijLqURfxZVgeZMj2yZ/rKrxlSuQEfKE9OETVQK55dX4PPdMSzgCPvF
+         vj3oMUFkLXmvfKunZd3Y9FkKv/4LyFm65idhzt8ajg0WZJpn48Y45N8750zx52NayK
+         Oi4TG/o+42FfSIEcrQZocNrlHm1BdS2AF/+VEPao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 019/114] drm/nouveau: Fix a potential theorical leak in nouveau_get_backlight_name()
-Date:   Mon, 16 May 2022 21:35:53 +0200
-Message-Id: <20220516193626.047502062@linuxfoundation.org>
+        stable@vger.kernel.org, Joel Savitz <jsavitz@redhat.com>,
+        Nico Pache <npache@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Sandipan Das <sandipan@linux.ibm.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 031/114] selftests: vm: Makefile: rename TARGETS to VMTARGETS
+Date:   Mon, 16 May 2022 21:36:05 +0200
+Message-Id: <20220516193626.384278798@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,69 +53,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Joel Savitz <jsavitz@redhat.com>
 
-[ Upstream commit ab244be47a8f111bc82496a8a20c907236e37f95 ]
+[ Upstream commit 41c240099fe09377b6b9f8272e45d2267c843d3e ]
 
-If successful ida_simple_get() calls are not undone when needed, some
-additional memory may be allocated and wasted.
+The tools/testing/selftests/vm/Makefile uses the variable TARGETS
+internally to generate a list of platform-specific binary build targets
+suffixed with _{32,64}.  When building the selftests using its own
+Makefile directly, such as via the following command run in a kernel tree:
 
-Here, an ID between 0 and MAX_INT is required. If this ID is >=100, it is
-not taken into account and is wasted. It should be released.
+One receives an error such as the following:
 
-Instead of calling ida_simple_remove(), take advantage of the 'max'
-parameter to require the ID not to be too big. Should it be too big, it
-is not allocated and don't need to be freed.
+make: Entering directory '/root/linux/tools/testing/selftests'
+make --no-builtin-rules ARCH=x86 -C ../../.. headers_install
+make[1]: Entering directory '/root/linux'
+  INSTALL ./usr/include
+make[1]: Leaving directory '/root/linux'
+make[1]: Entering directory '/root/linux/tools/testing/selftests/vm'
+make[1]: *** No rule to make target 'vm.c', needed by '/root/linux/tools/testing/selftests/vm/vm_64'.  Stop.
+make[1]: Leaving directory '/root/linux/tools/testing/selftests/vm'
+make: *** [Makefile:175: all] Error 2
+make: Leaving directory '/root/linux/tools/testing/selftests'
 
-While at it, use ida_alloc_xxx()/ida_free() instead to
-ida_simple_get()/ida_simple_remove().
-The latter is deprecated and more verbose.
+The TARGETS variable passed to tools/testing/selftests/Makefile collides
+with the TARGETS used in tools/testing/selftests/vm/Makefile, so rename
+the latter to VMTARGETS, eliminating the collision with no functional
+change.
 
-Fixes: db1a0ae21461 ("drm/nouveau/bl: Assign different names to interfaces")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-[Fixed formatting warning from checkpatch]
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr
+Link: https://lkml.kernel.org/r/20220504213454.1282532-1-jsavitz@redhat.com
+Fixes: f21fda8f6453 ("selftests: vm: pkeys: fix multilib builds for x86")
+Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+Acked-by: Nico Pache <npache@redhat.com>
+Cc: Joel Savitz <jsavitz@redhat.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Sandipan Das <sandipan@linux.ibm.com>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_backlight.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ tools/testing/selftests/vm/Makefile | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-index daf9f87477ba..a2141d3d9b1d 100644
---- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-@@ -46,8 +46,9 @@ static bool
- nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
- 			   struct nouveau_backlight *bl)
- {
--	const int nb = ida_simple_get(&bl_ida, 0, 0, GFP_KERNEL);
--	if (nb < 0 || nb >= 100)
-+	const int nb = ida_alloc_max(&bl_ida, 99, GFP_KERNEL);
-+
-+	if (nb < 0)
- 		return false;
- 	if (nb > 0)
- 		snprintf(backlight_name, BL_NAME_SIZE, "nv_backlight%d", nb);
-@@ -414,7 +415,7 @@ nouveau_backlight_init(struct drm_connector *connector)
- 					    nv_encoder, ops, &props);
- 	if (IS_ERR(bl->dev)) {
- 		if (bl->id >= 0)
--			ida_simple_remove(&bl_ida, bl->id);
-+			ida_free(&bl_ida, bl->id);
- 		ret = PTR_ERR(bl->dev);
- 		goto fail_alloc;
- 	}
-@@ -442,7 +443,7 @@ nouveau_backlight_fini(struct drm_connector *connector)
- 		return;
+diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
+index 1530c3e0242e..259df83ecd2e 100644
+--- a/tools/testing/selftests/vm/Makefile
++++ b/tools/testing/selftests/vm/Makefile
+@@ -55,9 +55,9 @@ CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_32bit_prog
+ CAN_BUILD_X86_64 := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_64bit_program.c)
+ CAN_BUILD_WITH_NOPIE := $(shell ./../x86/check_cc.sh "$(CC)" ../x86/trivial_program.c -no-pie)
  
- 	if (bl->id >= 0)
--		ida_simple_remove(&bl_ida, bl->id);
-+		ida_free(&bl_ida, bl->id);
+-TARGETS := protection_keys
+-BINARIES_32 := $(TARGETS:%=%_32)
+-BINARIES_64 := $(TARGETS:%=%_64)
++VMTARGETS := protection_keys
++BINARIES_32 := $(VMTARGETS:%=%_32)
++BINARIES_64 := $(VMTARGETS:%=%_64)
  
- 	backlight_device_unregister(bl->dev);
- 	nv_conn->backlight = NULL;
+ ifeq ($(CAN_BUILD_WITH_NOPIE),1)
+ CFLAGS += -no-pie
+@@ -110,7 +110,7 @@ $(BINARIES_32): CFLAGS += -m32 -mxsave
+ $(BINARIES_32): LDLIBS += -lrt -ldl -lm
+ $(BINARIES_32): $(OUTPUT)/%_32: %.c
+ 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(notdir $^) $(LDLIBS) -o $@
+-$(foreach t,$(TARGETS),$(eval $(call gen-target-rule-32,$(t))))
++$(foreach t,$(VMTARGETS),$(eval $(call gen-target-rule-32,$(t))))
+ endif
+ 
+ ifeq ($(CAN_BUILD_X86_64),1)
+@@ -118,7 +118,7 @@ $(BINARIES_64): CFLAGS += -m64 -mxsave
+ $(BINARIES_64): LDLIBS += -lrt -ldl
+ $(BINARIES_64): $(OUTPUT)/%_64: %.c
+ 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(notdir $^) $(LDLIBS) -o $@
+-$(foreach t,$(TARGETS),$(eval $(call gen-target-rule-64,$(t))))
++$(foreach t,$(VMTARGETS),$(eval $(call gen-target-rule-64,$(t))))
+ endif
+ 
+ # x86_64 users should be encouraged to install 32-bit libraries
 -- 
 2.35.1
 
