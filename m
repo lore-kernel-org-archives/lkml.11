@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0C5C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4A9C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346795AbiEPTqr (ORCPT
+        id S1346706AbiEPTqn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
+        Mon, 16 May 2022 15:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346153AbiEPTmw (ORCPT
+        with ESMTP id S1345780AbiEPTnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:42:52 -0400
+        Mon, 16 May 2022 15:43:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD803F33D;
-        Mon, 16 May 2022 12:42:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B173FBE5;
+        Mon, 16 May 2022 12:42:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8B4EB81612;
-        Mon, 16 May 2022 19:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B66BC385AA;
-        Mon, 16 May 2022 19:41:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6393FB81609;
+        Mon, 16 May 2022 19:42:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3B6C385AA;
+        Mon, 16 May 2022 19:42:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730119;
-        bh=uywXK8IgI3W4VW5qGNcB5riWfB06WwGsZXThmN6x67I=;
+        s=korg; t=1652730128;
+        bh=uJon7n2KG4EVfB6CqDE0IyqMCdZhKt43s78eokQXmD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zEGH/FpskyyobEyS3MYzbHpyl226rqIAUjIcNZjfnSapBPRXplB1GvYSbFhj2cQfz
-         LFxkF8yH9kpRStZMG79KxE9bTu77w8pGFwVDkbjazv3fD9z1en4uHMo04GLgay4K4X
-         htimhXo75uKyGkO9uQJd4MKeSh8WKzjjgr9sWm4E=
+        b=0rtDNpTnrA/IYcc881he27LsoFiAbkvSfTeIYK43xVivdMzYPk/PBT5FEcqRdIw0a
+         z9JkBAn+LT5xlIXnO4VNYihDUJW9XHcUpOJFU43ev3oY/whHwnpOtGMdXnSguwnCL3
+         wnCMus72Tk2yhhewrbU+1ugtQ+QDmgzz9Xh2czEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Feng Tang <feng.tang@intel.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 4.19 28/32] cgroup/cpuset: Remove cpus_allowed/mems_allowed setup in cpuset_init_smp()
-Date:   Mon, 16 May 2022 21:36:42 +0200
-Message-Id: <20220516193615.608208621@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 4.19 21/32] usb: cdc-wdm: fix reading stuck on device close
+Date:   Mon, 16 May 2022 21:36:35 +0200
+Message-Id: <20220516193615.402305369@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
 References: <20220516193614.773450018@linuxfoundation.org>
@@ -51,70 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 
-commit 2685027fca387b602ae565bff17895188b803988 upstream.
+commit 01e01f5c89773c600a9f0b32c888de0146066c3a upstream.
 
-There are 3 places where the cpu and node masks of the top cpuset can
-be initialized in the order they are executed:
- 1) start_kernel -> cpuset_init()
- 2) start_kernel -> cgroup_init() -> cpuset_bind()
- 3) kernel_init_freeable() -> do_basic_setup() -> cpuset_init_smp()
+cdc-wdm tracks whether a response reading request is in-progress and
+blocks the next request from being sent until the previous request is
+completed. As soon as last user closes the cdc-wdm device file, the
+driver cancels any ongoing requests, resets the pending response
+counter, but leaves the response reading in-progress flag
+(WDM_RESPONDING) untouched.
 
-The first cpuset_init() call just sets all the bits in the masks.
-The second cpuset_bind() call sets cpus_allowed and mems_allowed to the
-default v2 values. The third cpuset_init_smp() call sets them back to
-v1 values.
+So if the user closes the device file during the response receive
+request is being performed, no more data will be obtained from the
+modem. The request will be cancelled, effectively preventing the
+WDM_RESPONDING flag from being reseted. Keeping the flag set will
+prevent a new response receive request from being sent, permanently
+blocking the read path. The read path will staying blocked until the
+module will be reloaded or till the modem will be re-attached.
 
-For systems with cgroup v2 setup, cpuset_bind() is called once.  As a
-result, cpu and memory node hot add may fail to update the cpu and node
-masks of the top cpuset to include the newly added cpu or node in a
-cgroup v2 environment.
+This stuck has been observed with a Huawei E3372 modem attached to an
+OpenWrt router and using the comgt utility to set up a network
+connection.
 
-For systems with cgroup v1 setup, cpuset_bind() is called again by
-rebind_subsystem() when the v1 cpuset filesystem is mounted as shown
-in the dmesg log below with an instrumented kernel.
+Fix this issue by clearing the WDM_RESPONDING flag on the device file
+close.
 
-  [    2.609781] cpuset_bind() called - v2 = 1
-  [    3.079473] cpuset_init_smp() called
-  [    7.103710] cpuset_bind() called - v2 = 0
+Without this fix, the device reading stuck can be easily reproduced in a
+few connection establishing attempts. With this fix, a load test for
+modem connection re-establishing worked for several hours without any
+issues.
 
-smp_init() is called after the first two init functions.  So we don't
-have a complete list of active cpus and memory nodes until later in
-cpuset_init_smp() which is the right time to set up effective_cpus
-and effective_mems.
-
-To fix this cgroup v2 mask setup problem, the potentially incorrect
-cpus_allowed & mems_allowed setting in cpuset_init_smp() are removed.
-For cgroup v2 systems, the initial cpuset_bind() call will set the masks
-correctly.  For cgroup v1 systems, the second call to cpuset_bind()
-will do the right setup.
-
-cc: stable@vger.kernel.org
-Signed-off-by: Waiman Long <longman@redhat.com>
-Tested-by: Feng Tang <feng.tang@intel.com>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Fixes: 922a5eadd5a3 ("usb: cdc-wdm: Fix race between autosuspend and reading from the device")
+Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc: stable <stable@vger.kernel.org>
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220501175828.8185-1-ryazanov.s.a@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/class/cdc-wdm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -2403,8 +2403,11 @@ static struct notifier_block cpuset_trac
-  */
- void __init cpuset_init_smp(void)
- {
--	cpumask_copy(top_cpuset.cpus_allowed, cpu_active_mask);
--	top_cpuset.mems_allowed = node_states[N_MEMORY];
-+	/*
-+	 * cpus_allowd/mems_allowed set to v2 values in the initial
-+	 * cpuset_bind() call will be reset to v1 values in another
-+	 * cpuset_bind() call when v1 cpuset is mounted.
-+	 */
- 	top_cpuset.old_mems_allowed = top_cpuset.mems_allowed;
- 
- 	cpumask_copy(top_cpuset.effective_cpus, cpu_active_mask);
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -755,6 +755,7 @@ static int wdm_release(struct inode *ino
+ 			poison_urbs(desc);
+ 			spin_lock_irq(&desc->iuspin);
+ 			desc->resp_count = 0;
++			clear_bit(WDM_RESPONDING, &desc->flags);
+ 			spin_unlock_irq(&desc->iuspin);
+ 			desc->manage_power(desc->intf, 0);
+ 			unpoison_urbs(desc);
 
 
