@@ -2,146 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA94C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236839AbiEPKoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
+        id S238209AbiEPKpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242854AbiEPKnc (ORCPT
+        with ESMTP id S239787AbiEPKow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:43:32 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C99E248EC;
-        Mon, 16 May 2022 03:43:02 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GAV3F7011810;
-        Mon, 16 May 2022 10:42:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=ncD54g7wkJHCvpdHQtNwcfU/ssypel9ss6Wqx7eG4kA=;
- b=rDqgfOIb6ptjKyB9fwPyp+U8anFbeSilSlfmfcnzqDeOiHNCF8MXO+fjZQvxUEzfFQ/T
- J2S0Agj3xj1LlU8tn5XqjQLranNVCU9kDVGzDJIzUh8dOuNc5AhttlkAVYPz7TA8jni4
- 3K+NJqzEh1gfk8eVz2h+KxXeSs0T6LwAhGyAfHuE88eQouPI85JsaW5WSnmDp3kTn9zj
- MAdUC89LG26MrlZlbMNhjWqc5UIHK6/pxMmFPT1SIMQ0eumdnTPvDEElLfPQqgJlqNxc
- 3mKtyXRanqBSnY061mdnxMnHPTXohu8Xj9LgiSIBDt9FxR/myClqwbd1Z0RxnRmKU280 nA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3mx98576-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:42:59 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24GAWIQY015146;
-        Mon, 16 May 2022 10:42:58 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3mx9856n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:42:58 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24GAcNvP011722;
-        Mon, 16 May 2022 10:42:56 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3g2428sx3t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 May 2022 10:42:56 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24GAgLMi30802186
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 16 May 2022 10:42:21 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F02154C040;
-        Mon, 16 May 2022 10:42:51 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 17E2F4C04A;
-        Mon, 16 May 2022 10:42:51 +0000 (GMT)
-Received: from [9.145.43.21] (unknown [9.145.43.21])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 16 May 2022 10:42:51 +0000 (GMT)
-Message-ID: <5bdad86b-3ab5-a1c2-7dcd-8c45c7aa4555@linux.vnet.ibm.com>
-Date:   Mon, 16 May 2022 12:42:50 +0200
+        Mon, 16 May 2022 06:44:52 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3849C24947;
+        Mon, 16 May 2022 03:44:49 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC6CC1063;
+        Mon, 16 May 2022 03:44:48 -0700 (PDT)
+Received: from [10.57.82.175] (unknown [10.57.82.175])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 849D83F66F;
+        Mon, 16 May 2022 03:44:46 -0700 (PDT)
+Message-ID: <099cf0f9-5c27-0247-7c5e-6704a9527b11@arm.com>
+Date:   Mon, 16 May 2022 11:44:41 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 4/8] s390/entry: workaround llvm's IAS limitations
-Content-Language: en-US
-To:     Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Ulrich Weigand <ulrich.weigand@de.ibm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andreas Krebbel <krebbel@linux.ibm.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-References: <20220511120532.2228616-1-hca@linux.ibm.com>
- <20220511120532.2228616-5-hca@linux.ibm.com>
- <YnvynSZfF/8I8vmT@dev-arch.thelio-3990X> <Yn1CyTcrZk1Kgvoq@osiris>
- <YoIUX864ULCwu4pz@tuxmaker.boeblingen.de.ibm.com> <YoIlQaWNy1wu39ak@osiris>
-From:   Jonas Paulsson <paulsson@linux.vnet.ibm.com>
-In-Reply-To: <YoIlQaWNy1wu39ak@osiris>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v5 5/9] iommu/arm-smmu: Attach to host1x context device
+ bus
+Content-Language: en-GB
+To:     Mikko Perttunen <cyndis@kapsi.fi>, Will Deacon <will@kernel.org>
+Cc:     thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Mikko Perttunen <mperttunen@nvidia.com>
+References: <20220516085258.1227691-1-cyndis@kapsi.fi>
+ <20220516085258.1227691-6-cyndis@kapsi.fi>
+ <20220516100721.GA1927@willie-the-truck>
+ <4a170997-c893-1788-dcaa-8ed2193146ae@kapsi.fi>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <4a170997-c893-1788-dcaa-8ed2193146ae@kapsi.fi>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kZqrCQfQy1VPDZ6Jutw2xP3BAwUz6_mQ
-X-Proofpoint-ORIG-GUID: fk-BFvK2Jv0N16rbrVKGs8mJnqN5C1YU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-16_06,2022-05-16_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- bulkscore=0 impostorscore=0 suspectscore=0 malwarescore=0 spamscore=0
- lowpriorityscore=0 clxscore=1011 phishscore=0 mlxlogscore=999
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205160062
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I will try to get a patch for clang ready soon... /Jonas
-
-On 2022-05-16 12:19 em, Heiko Carstens wrote:
-> On Mon, May 16, 2022 at 11:07:43AM +0200, Alexander Gordeev wrote:
->>> diff --git a/arch/s390/kernel/entry.S b/arch/s390/kernel/entry.S
->>> index a6b45eaa3450..f2f30bfba1e9 100644
->>> --- a/arch/s390/kernel/entry.S
->>> +++ b/arch/s390/kernel/entry.S
->>> @@ -172,9 +172,19 @@ _LPP_OFFSET	= __LC_LPP
->>>   	lgr	%r14,\reg
->>>   	larl	%r13,\start
->>>   	slgr	%r14,%r13
->>> -	lghi	%r13,\end - \start
->>> -	clgr	%r14,%r13
->>> +#ifdef CONFIG_AS_IS_LLVM
->>> +	clgfrl	%r14,.Lrange_size\@
->>> +#else
->>> +	clgfi	%r14,\end - \start
+On 2022-05-16 11:13, Mikko Perttunen wrote:
+> On 5/16/22 13:07, Will Deacon wrote:
+>> On Mon, May 16, 2022 at 11:52:54AM +0300, cyndis@kapsi.fi wrote:
+>>> From: Mikko Perttunen <mperttunen@nvidia.com>
+>>>
+>>> Set itself as the IOMMU for the host1x context device bus, containing
+>>> "dummy" devices used for Host1x context isolation.
+>>>
+>>> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 13 +++++++++++++
+>>>   1 file changed, 13 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> index 568cce590ccc..9ff54eaecf81 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> @@ -39,6 +39,7 @@
+>>>   #include <linux/amba/bus.h>
+>>>   #include <linux/fsl/mc.h>
+>>> +#include <linux/host1x_context_bus.h>
+>>>   #include "arm-smmu.h"
+>>> @@ -2053,8 +2054,20 @@ static int arm_smmu_bus_init(struct iommu_ops 
+>>> *ops)
+>>>               goto err_reset_pci_ops;
+>>>       }
+>>>   #endif
+>>> +#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
+>>> +    if (!iommu_present(&host1x_context_device_bus_type)) {
+>>> +        err = bus_set_iommu(&host1x_context_device_bus_type, ops);
+>>> +        if (err)
+>>> +            goto err_reset_fsl_mc_ops;
+>>> +    }
 >>> +#endif
->>>   	jhe	\outside_label
->>> +#ifdef CONFIG_CC_IS_CLANG
->>> +	.section .rodata, "a"
->>> +	.align 4
->>> +.Lrange_size\@:
->>> +	.long	\end - \start
->> Isn't the machine check handler refers to this memory before checking
->> unrecoverable storage errors (with CHKSTG macro) as result of this change?
-> Yes, indeed. However implementing this without another register will
-> be quite of a challenge. So what I would prefer in any case: just
-> assume that this minimal set of memory accesses work. Actually I'd
-> seriously like to go a bit further, and even move the checks for
-> storage errors back to C for two reasons:
->
-> - this would make the machine check handler entry code easier again
-> - it would also allow to enter the machine check handler with DAT on
->
-> After all we rely anyway on the fact that at least the local lowcore +
-> the page(s) which contain text are still accessible. Assuming that a
-> couple of page tables also work won't make this much worse, but the
-> code much easier.
->
-> So I'd suggest: leave this code as is, and at some later point move
-> "rework" the early machine check handler code.
->
-> What do you think?
+>>> +
+>>>       return 0;
+>>> +err_reset_fsl_mc_ops: __maybe_unused;
+>>> +#ifdef CONFIG_FSL_MC_BUS
+>>> +    bus_set_iommu(&fsl_mc_bus_type, NULL);
+>>> +#endif
+>>
+>> bus_set_iommu() is going away:
+>>
+>> https://lore.kernel.org/r/cover.1650890638.git.robin.murphy@arm.com
+>>
+>> Will
+> 
+> Thanks for the heads-up. Robin had pointed out that this work was 
+> ongoing but I hadn't seen the patches yet. I'll look into it.
+
+Although that *is* currently blocked on the mystery intel-iommu problem 
+that I can't reproduce... If this series is ready to land right now for 
+5.19 then in principle that might be the easiest option overall. 
+Hopefully at least patch #2 could sneak in so that the compile-time 
+dependencies are ready for me to roll up host1x into the next rebase of 
+"iommu: Always register bus notifiers".
+
+Cheers,
+Robin.
