@@ -2,105 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B397C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 21:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349337AbiEPVTE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 17:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49122 "EHLO
+        id S241799AbiEPVUe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 17:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349310AbiEPVS2 (ORCPT
+        with ESMTP id S234278AbiEPVU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 17:18:28 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962592C10D;
-        Mon, 16 May 2022 14:17:48 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ch13so30965855ejb.12;
-        Mon, 16 May 2022 14:17:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=35KXda5OBFCKkvBxWwkGiybmXmDjKw5ss0Rm54TgqYY=;
-        b=i+OOwp8a+Ns6JmA3zecraa7xhvF4SrBt9OxonU3zgxIMLqIuQq+1wJn0rPRt8mJN4o
-         LMO0yQRcFwtjM0saYriQhamE4Fw0YEtk5t3TQ/RM1Vi0r1O3pCyeXRunEEq8TcH6OFso
-         vkGt7LDjqxEHo/VZUby/scvLGyC2tDiX63Gsst9+OA1R4gAs1CbduRu5CCe5/wXuhVGm
-         9f94pIi+pVT9OaQLr0JmyoLwRKd/D0pc7O0eRi18BOa40zDJjqM1lVzkEBD6yAyeSphI
-         Zm9caVX9cBt5sds1QEuRnfXbFigfQZpxfErvR9dhBy7JUfAf1n9hARzxRl0oXFES8wz7
-         2nGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=35KXda5OBFCKkvBxWwkGiybmXmDjKw5ss0Rm54TgqYY=;
-        b=vEgKjUs/P+vw3OGYzdM97g4xX9ENfL6j4SHwHvfi1ZQvYrrA8mGXj8LQdcmiyhyOLm
-         Ej2ePVEJPXAfMt90riX6zpT9uFp/zM4rMuv2ZQzacEK5A+0SRKzyTQqjV0j4kuCva5VH
-         62tp8O0msEiLIn5BCrvW/8nxl7+FV+6KcbBk6n6CexNERIVt1BjsoCC7UaDAYj3s4dSa
-         RiE/yEH6COpJhWVw3aPgLiTTY0s9jgadAClCPdRbO8FS+sZr1IPQbYjHMBRnvInsVx8L
-         ANa7bIToOisGrDOupfjQ5hqY6KfO01HcyQbQplp6I4QfKmkUUYMuc91g+G3sIOjurs47
-         aOWw==
-X-Gm-Message-State: AOAM531v3rp1RguKtqi4AYYJD5uKyJwdPvCjh5A9hZbRWVkI+Fmpvzsd
-        7wKS6EJiR3TXz51SAyreoKKJOcrClwsWsXfC
-X-Google-Smtp-Source: ABdhPJz+c4SIyaDIRS17VWMsh5DYkuYDVpureeE7lY55lFd4fmJuYT5KuXvj3NnifMvVo2q76fvdHw==
-X-Received: by 2002:a17:907:e91:b0:6f4:d1e7:417d with SMTP id ho17-20020a1709070e9100b006f4d1e7417dmr17216724ejc.123.1652735867100;
-        Mon, 16 May 2022 14:17:47 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id a23-20020a1709063e9700b006f3ef214dc5sm198147ejj.43.2022.05.16.14.17.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 14:17:46 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     David Howells <dhowells@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] crypto: asymmetric_keys: remove redundant pointer secs
-Date:   Mon, 16 May 2022 22:17:45 +0100
-Message-Id: <20220516211745.55382-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 16 May 2022 17:20:29 -0400
+X-Greylist: delayed 435 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 14:20:26 PDT
+Received: from mr6.vodafonemail.de (mr6.vodafonemail.de [145.253.228.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCB4BC5;
+        Mon, 16 May 2022 14:20:26 -0700 (PDT)
+Received: from smtp.vodafone.de (unknown [10.0.0.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by mr6.vodafonemail.de (Postfix) with ESMTPS id 4L2Bmh2NDXz1y4G;
+        Mon, 16 May 2022 21:13:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arcor.de;
+        s=vfde-mb-mr2-21dec; t=1652735588;
+        bh=c2yAvcHcSj4dUkmFeZGNgbY/Zr4/FRmi0kowp9kl5As=;
+        h=Date:From:To:Subject:Message-ID:References:Content-Type:
+         In-Reply-To:From;
+        b=XjS+kcBheCKHYm9fVkAS18q706TH9fEVqzg/BwdXJizn9c9+vNy51Ig6H5LggrEV4
+         SHjDrdddt568nFg122oi6+gcXpHLNquJ+OpL3EY5+iGETlR/aKFh76hFGLe4t4i37H
+         e9uw93udBg9Icqu1GFIoHbDjC51JX9KVJAHVNRJ8=
+Received: from arcor.de (p3ee2cafe.dip0.t-ipconnect.de [62.226.202.254])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp.vodafone.de (Postfix) with ESMTPSA id 4L2BmR1dLvzHnJ7;
+        Mon, 16 May 2022 21:12:51 +0000 (UTC)
+Date:   Mon, 16 May 2022 23:12:44 +0200
+From:   Reinhard Speyerer <rspmn@arcor.de>
+To:     Carl =?utf-8?B?WWluKOaut+W8oOaIkCk=?= <carl.yin@quectel.com>
+Cc:     "johan@kernel.org" <johan@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] USB: serial: option: add Quectel BG95 modem
+Message-ID: <YoK+TH6MzR89SEdo@arcor.de>
+References: <TYZPR06MB4270136AEC3FB06E20F6503486CF9@TYZPR06MB4270.apcprd06.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <TYZPR06MB4270136AEC3FB06E20F6503486CF9@TYZPR06MB4270.apcprd06.prod.outlook.com>
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-size: 5677
+X-purgate-ID: 155817::1652735587-000004C0-15F19267/0/0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pointer secs is being assigned a value that is never read. The pointer
-is redundant and can be removed.
+On Mon, May 16, 2022 at 06:10:17AM +0000, Carl Yin(殷张成) wrote:
+> The BG95 modem has 2 USB configurations that are configurable via the AT
+> command AT+QCFGEXT="usbnet",["ecm"|"modem"] which make the modem enumerate
+> with the following interfaces, respectively:
+> 
+> "modem": Diag + GNSS + Modem + Modem
+> "ecm"  : DIAG + GNSS + Modem + ECM
 
-Cleans up clang-scan build warning:
-warning: Although the value stored to 'secs' is used in the enclosing
-expression, the value is never actually read from 'secs'
-[deadcode.DeadStores]
+Hi Carl,
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- crypto/asymmetric_keys/verify_pefile.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+what about the AT+QCFGEXT="usbnet","rmnet" configuration available on
+several firmware versions which makes the BG95 enumerate as
+Diag + GNSS + Modem + QMI:
 
-diff --git a/crypto/asymmetric_keys/verify_pefile.c b/crypto/asymmetric_keys/verify_pefile.c
-index 7553ab18db89..a660e4d68d50 100644
---- a/crypto/asymmetric_keys/verify_pefile.c
-+++ b/crypto/asymmetric_keys/verify_pefile.c
-@@ -28,7 +28,7 @@ static int pefile_parse_binary(const void *pebuf, unsigned int pelen,
- 	const struct pe32plus_opt_hdr *pe64;
- 	const struct data_directory *ddir;
- 	const struct data_dirent *dde;
--	const struct section_header *secs, *sec;
-+	const struct section_header *sec;
- 	size_t cursor, datalen = pelen;
- 
- 	kenter("");
-@@ -110,7 +110,7 @@ static int pefile_parse_binary(const void *pebuf, unsigned int pelen,
- 	ctx->n_sections = pe->sections;
- 	if (ctx->n_sections > (ctx->header_size - cursor) / sizeof(*sec))
- 		return -ELIBBAD;
--	ctx->secs = secs = pebuf + cursor;
-+	ctx->secs = pebuf + cursor;
- 
- 	return 0;
- }
--- 
-2.35.1
+T:  Bus=02 Lev=02 Prnt=06 Port=01 Cnt=02 Dev#=  8 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+S:  Manufacturer=Quectel, Incorporated
+S:  Product=Quectel LPWA Module
+S:  SerialNumber=xxxxxxxx
+C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
+> 
+> A detailed description of the USB configuration for each mode follows:
+> 
+> +QCFGEXT: "usbnet","modem"
+> -------------------------
+> T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  3 Spd=480  MxCh= 0
+> D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+> P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+> S:  Manufacturer=Quectel, Incorporated
+> S:  Product=Quectel LPWA Module
+> S:  SerialNumber=884328a2
+> C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+> I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+> E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> 
+> +QCFGEXT: "usbnet","ecm"
+> -----------------------
+> T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  4 Spd=480  MxCh= 0
+> D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+> P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+> S:  Manufacturer=Quectel, Incorporated
+> S:  Product=Quectel LPWA Module
+> S:  SerialNumber=884328a2
+> C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
+> A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+> I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+> E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+> I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+> E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> 
+> Signed-off-by: Carl Yin <carl.yin@quectel.com>
+> ---
+>  drivers/usb/serial/option.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+> index 152ad8826..f91b2a67d 100644
+> --- a/drivers/usb/serial/option.c
+> +++ b/drivers/usb/serial/option.c
+> @@ -256,6 +256,7 @@ static void option_instat_callback(struct urb *urb);
+>  #define QUECTEL_PRODUCT_RM500Q			0x0800
+>  #define QUECTEL_PRODUCT_EC200S_CN		0x6002
+>  #define QUECTEL_PRODUCT_EC200T			0x6026
+> +#define QUECTEL_PRODUCT_BG95			0x0700
+>  
+>  #define CMOTECH_VENDOR_ID			0x16d8
+>  #define CMOTECH_PRODUCT_6001			0x6001
+> @@ -1143,6 +1144,10 @@ static const struct usb_device_id option_ids[] = {
+>  	  .driver_info = ZLP },
+>  	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200S_CN, 0xff, 0, 0) },
+>  	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200T, 0xff, 0, 0) },
+> +	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_BG95, 0xff, 0xff, 0xff),
+> +	  .driver_info = ZLP },
+
+Could you please add a RSVD(3) flag to the driver_info here to avoid
+that the option driver incorrectly binds to the QMI interface?
+
+Regards,
+Reinhard
+
+> +	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_BG95, 0xff, 0xfe, 0xff),
+> +	  .driver_info = ZLP },
+>  
+>  	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_6001) },
+>  	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_CMU_300) },
+> -- 
+> 2.17.1
+> 
