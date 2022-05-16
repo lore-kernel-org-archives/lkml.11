@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB14C3A59E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B195BC47087
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351640AbiEPUGv (ORCPT
+        id S1351695AbiEPUG6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33094 "EHLO
+        Mon, 16 May 2022 16:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346402AbiEPTxn (ORCPT
+        with ESMTP id S1346991AbiEPTvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:53:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C016346B06;
-        Mon, 16 May 2022 12:49:02 -0700 (PDT)
+        Mon, 16 May 2022 15:51:33 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCF63F899;
+        Mon, 16 May 2022 12:46:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9E22B81616;
-        Mon, 16 May 2022 19:48:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30305C385AA;
-        Mon, 16 May 2022 19:48:47 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3EFFACE177C;
+        Mon, 16 May 2022 19:46:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ACFEC385AA;
+        Mon, 16 May 2022 19:46:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730528;
-        bh=UE+UaX07cuhVOKJs+zw6BCy4MVc8XhQSHHVFf1r1FHE=;
+        s=korg; t=1652730379;
+        bh=kI7g2k/ZpEEHH+P5vwdUbqqd34NZXiGOnhhUMJbGMrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mw2hmIta+/2rLJZGDj75WeMcBZvBG3Qx+CRfKV80t39HHsZGJzI0jHYiTDBz491WM
-         YjG6eVQhOvWxehZ2Vxm9c+lmiC3ctFFQGKXz7ID7SAqCuG8pvOIIAjcKUEodpQJZBo
-         TMvYIGP4ilCQT9nEIB1xWLvj5e+WmPksdo1O5KEk=
+        b=HoYkGPGgK4TKw6OYo7zcthasAWjGAUtZbISFmlYbbV75P/lQ/hsdy+H3XLaENkDjH
+         gTOZA/mYiopYnYVaOWTw1eSyLwGyCjphq3V7JnC7WY1x8p1OatVjH9bkgB8vc4Zrm1
+         dPOsj1lJjoDs8W7xxXYqJcXsOanOF37jfOXyTIa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 010/102] fbdev: simplefb: Cleanup fb_info in .fb_destroy rather than .remove
-Date:   Mon, 16 May 2022 21:35:44 +0200
-Message-Id: <20220516193624.290501139@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.10 48/66] USB: serial: option: add Fibocom MA510 modem
+Date:   Mon, 16 May 2022 21:36:48 +0200
+Message-Id: <20220516193620.799723093@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
+In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
+References: <20220516193619.400083785@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,72 +50,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
 
-[ Upstream commit 666b90b3ce9e4aac1e1deba266c3a230fb3913b0 ]
+commit 07989eb981d862f7f2be68d233d753f2e7ccc119 upstream.
 
-The driver is calling framebuffer_release() in its .remove callback, but
-this will cause the struct fb_info to be freed too early. Since it could
-be that a reference is still hold to it if user-space opened the fbdev.
+The MA510 modem has 3 USB configurations that are configurable via the AT
+command AT+GTUSBMODE={30,31,32} which make the modem enumerate with the
+following interfaces, respectively:
 
-This would lead to a use-after-free error if the framebuffer device was
-unregistered but later a user-space process tries to close the fbdev fd.
+30: Diag + QDSS + Modem + RMNET
+31: Diag + Modem + AT + ECM
+32: Modem + AT + ECM
 
-To prevent this, move the framebuffer_release() call to fb_ops.fb_destroy
-instead of doing it in the driver's .remove callback.
+The first configuration (30) reuses u-blox R410M's VID/PID with
+identical interface configuration.
 
-Strictly speaking, the code flow in the driver is still wrong because all
-the hardware cleanupd (i.e: iounmap) should be done in .remove while the
-software cleanup (i.e: releasing the framebuffer) should be done in the
-.fb_destroy handler. But this at least makes to match the behavior before
-commit 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal").
+A detailed description of the USB configuration for each mode follows:
 
-Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220505220456.366090-1-javierm@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
++GTUSBMODE: 30
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#= 19 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=05c6 ProdID=90b2 Rev= 0.00
+S:  Manufacturer=Fibocom MA510 Modem
+S:  Product=Fibocom MA510 Modem
+S:  SerialNumber=55e2695b
+C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++GTUSBMODE: 31
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#= 99 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2cb7 ProdID=0106 Rev= 0.00
+S:  Manufacturer=Fibocom MA510 Modem
+S:  Product=Fibocom MA510 Modem
+S:  SerialNumber=55e2695b
+C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
+A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+E:  Ad=84(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+E:  Ad=86(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++GTUSBMODE: 32
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=100 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2cb7 ProdID=010a Rev= 0.00
+S:  Manufacturer=Fibocom MA510 Modem
+S:  Product=Fibocom MA510 Modem
+S:  SerialNumber=55e2695b
+C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+A:  FirstIf#= 2 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+I:  If#= 3 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+I:* If#= 3 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
+Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/simplefb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/usb/serial/option.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-index b63074fd892e..a2e3a4690025 100644
---- a/drivers/video/fbdev/simplefb.c
-+++ b/drivers/video/fbdev/simplefb.c
-@@ -70,12 +70,18 @@ struct simplefb_par;
- static void simplefb_clocks_destroy(struct simplefb_par *par);
- static void simplefb_regulators_destroy(struct simplefb_par *par);
- 
-+/*
-+ * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
-+ * of unregister_framebuffer() or fb_release(). Do any cleanup here.
-+ */
- static void simplefb_destroy(struct fb_info *info)
- {
- 	simplefb_regulators_destroy(info->par);
- 	simplefb_clocks_destroy(info->par);
- 	if (info->screen_base)
- 		iounmap(info->screen_base);
-+
-+	framebuffer_release(info);
- }
- 
- static const struct fb_ops simplefb_ops = {
-@@ -520,8 +526,8 @@ static int simplefb_remove(struct platform_device *pdev)
- {
- 	struct fb_info *info = platform_get_drvdata(pdev);
- 
-+	/* simplefb_destroy takes care of info cleanup */
- 	unregister_framebuffer(info);
--	framebuffer_release(info);
- 
- 	return 0;
- }
--- 
-2.35.1
-
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -2129,6 +2129,8 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(4) | RSVD(5) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
+ 	  .driver_info = RSVD(6) },
++	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0106, 0xff) },			/* Fibocom MA510 (ECM mode w/ diag intf.) */
++	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x010a, 0xff) },			/* Fibocom MA510 (ECM mode) */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x010b, 0xff, 0xff, 0x30) },	/* Fibocom FG150 Diag */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x010b, 0xff, 0, 0) },		/* Fibocom FG150 AT */
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x01a0, 0xff) },			/* Fibocom NL668-AM/NL652-EU (laptop MBIM) */
 
 
