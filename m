@@ -2,79 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242598AbiEPKZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42048 "EHLO
+        id S240886AbiEPKZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242624AbiEPKZi (ORCPT
+        with ESMTP id S233509AbiEPKZi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 06:25:38 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26C711A1A
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:25:27 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id r27so15386129iot.1
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:25:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Wi7FZ4sQpiYFKSAT45PbkZoAgmyf6uUSxphI+SAE7xg=;
-        b=gExCtsIsHo4jDqSh1oIaaQMB/SVgN1TgdoLWTbuBqlwADdC4X8/BXUu0W5pAsIbnuB
-         Gd/lIj0KUexSKmCA6VgMA5qw0Kp80B8oD++5zkRiD1X5kn70tlwr8pOM8HKCaPgJpZod
-         hVCcl6MZZajGoz5v/sH7W7trFYcCi0WK4tPqbHNTRsxxQyivr4dYEzu+tgvXPYXOzrk8
-         hZcIPvbUEEEl7+dIEQMujSm2xzHvye0fTzRpcGSJBYt4JbZVMeEOT5yMn6Rm3sr9rwVD
-         GSPgTZ9358/8ti/Vq3+MyAbtWI6VESWFHyxGEE3yK5dHhlPRlQ9D6yGDrvYSAVI7XABI
-         R7KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wi7FZ4sQpiYFKSAT45PbkZoAgmyf6uUSxphI+SAE7xg=;
-        b=2jJp/sMKBzAR9Hj2ArI94kjwecUVtklSGc1BvlZ3WcLKhmSR3M4Sii8hGGKc7dmHPa
-         n/iZbNtCCRCTZTr/ZXcGz2geCy6jYRrzDzp9rBMogpeUXFj9PPd0BrqvYFUr7ujYDpZQ
-         WXSbcUnCJI9O7vOqxx0Dh0pcSrYxPYIPMdSebkRouLGP2AhvdDsdtpLUYZP/ZU9xXZ2j
-         yDbHbYhw/zG9EO7YrT4lOnOqNAPDUgHDmd71oXjLA+Q+NpSXHtWLjMH0NhfYo1ukA2Nr
-         m0vVb4uY6i7E86meyyfkhPjZ/R5whSem63cixfL6DFNyKzK2RwSSFbzKYu/rOiztp8qy
-         vmTg==
-X-Gm-Message-State: AOAM5314PlZVv0Os489JtHFmmIk6XNwsjtwzrTypD7Es8NA2x5vl1FG+
-        DSHN7wT4s74ILomfMPTRb4cPgLK2LHYIE17L7AKFkA==
-X-Google-Smtp-Source: ABdhPJxw5zlT4NJpzsyi5yIx3XxcoNdxQbi+F3voNa3E3vqfR8SegU6lhQZA3QYcoF2h5lNr7l0dDXMuGhUcC7d/92g=
-X-Received: by 2002:a05:6638:450a:b0:32e:1bd1:735f with SMTP id
- bs10-20020a056638450a00b0032e1bd1735fmr4119326jab.145.1652696726666; Mon, 16
- May 2022 03:25:26 -0700 (PDT)
+X-Greylist: delayed 387 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 03:25:29 PDT
+Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 4D82C11A29;
+        Mon, 16 May 2022 03:25:28 -0700 (PDT)
+Received: by ajax-webmail-mail-app2 (Coremail) ; Mon, 16 May 2022 18:18:45
+ +0800 (GMT+08:00)
+X-Originating-IP: [220.246.124.53]
+Date:   Mon, 16 May 2022 18:18:45 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
+        broonie@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net] NFC: hci: fix sleep in atomic context bugs in
+ nfc_hci_hcp_message_tx
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <d5fdfe27-a6de-3030-ce51-9f4f45d552f3@linaro.org>
+References: <20220516021028.54063-1-duoming@zju.edu.cn>
+ <d5fdfe27-a6de-3030-ce51-9f4f45d552f3@linaro.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-References: <20220516030251.42323-1-schspa@gmail.com> <20220516030251.42323-2-schspa@gmail.com>
-In-Reply-To: <20220516030251.42323-2-schspa@gmail.com>
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-Date:   Mon, 16 May 2022 11:25:15 +0100
-Message-ID: <CAKohpokHFd=EAOXvpecde=QRGEq8Ek+P6UsLjfVDrW0nOspuFg@mail.gmail.com>
-Subject: Re: [PATCH v6 2/2] cpufreq: make interface functions and lock holding
- state clear
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <6aba1413.196eb.180cc609bf1.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: by_KCgDH3EAFJYJiSn9MAA--.7122W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIMAVZdtZs8KwAAs-
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 at 04:12, Schspa Shi <schspa@gmail.com> wrote:
->
-> cpufreq_offline() calls offline() and exit() under the policy rwsem
-> But they are called outside the rwsem in cpufreq_online().
->
-> This patch move the offline(), exit(), online(), init() to be inside
-> of policy rwsem to achieve a clear lock relationship.
->
-> All the init() online() implement only initialize policy object without
-> holding this lock and won't call cpufreq APIs need to hold this lock.
->
-> Signed-off-by: Schspa Shi <schspa@gmail.com>
-> ---
->  drivers/cpufreq/cpufreq.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+SGVsbG8sCgpPbiBNb24sIDE2IE1heSAyMDIyIDA4OjQ0OjM5ICswMjAwIEtyenlzenRvZiB3cm90
+ZToKCj4gPiBUaGVyZSBhcmUgc2xlZXAgaW4gYXRvbWljIGNvbnRleHQgYnVncyB3aGVuIHRoZSBy
+ZXF1ZXN0IHRvIHNlY3VyZQo+ID4gZWxlbWVudCBvZiBzdDIxbmZjYSBpcyB0aW1lb3V0LiBUaGUg
+cm9vdCBjYXVzZSBpcyB0aGF0IGt6YWxsb2MgYW5kCj4gPiBhbGxvY19za2Igd2l0aCBHRlBfS0VS
+TkVMIHBhcmFtZXRlciBpcyBjYWxsZWQgaW4gc3QyMW5mY2Ffc2Vfd3RfdGltZW91dAo+ID4gd2hp
+Y2ggaXMgYSB0aW1lciBoYW5kbGVyLiBUaGUgY2FsbCB0cmVlIHNob3dzIHRoZSBleGVjdXRpb24g
+cGF0aHMgdGhhdAo+ID4gY291bGQgbGVhZCB0byBidWdzOgo+ID4gCj4gPiAgICAoSW50ZXJydXB0
+IGNvbnRleHQpCj4gPiBzdDIxbmZjYV9zZV93dF90aW1lb3V0Cj4gPiAgIG5mY19oY2lfc2VuZF9l
+dmVudAo+ID4gICAgIG5mY19oY2lfaGNwX21lc3NhZ2VfdHgKPiA+ICAgICAgIGt6YWxsb2MoLi4u
+LCBHRlBfS0VSTkVMKSAvL21heSBzbGVlcAo+ID4gICAgICAgYWxsb2Nfc2tiKC4uLiwgR0ZQX0tF
+Uk5FTCkgLy9tYXkgc2xlZXAKPiA+IAo+ID4gVGhpcyBwYXRjaCBjaGFuZ2VzIGFsbG9jYXRpb24g
+bW9kZSBvZiBremFsbG9jIGFuZCBhbGxvY19za2IgZnJvbQo+ID4gR0ZQX0tFUk5FTCB0byBHRlBf
+QVRPTUlDIGluIG9yZGVyIHRvIHByZXZlbnQgYXRvbWljIGNvbnRleHQgZnJvbQo+ID4gc2xlZXBp
+bmcuIFRoZSBHRlBfQVRPTUlDIGZsYWcgbWFrZXMgbWVtb3J5IGFsbG9jYXRpb24gb3BlcmF0aW9u
+Cj4gPiBjb3VsZCBiZSB1c2VkIGluIGF0b21pYyBjb250ZXh0Lgo+ID4gCj4gPiBGaXhlczogOGI4
+ZDJlMDhiZjBkICgiTkZDOiBIQ0kgc3VwcG9ydCIpCj4gPiBTaWduZWQtb2ZmLWJ5OiBEdW9taW5n
+IFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4KPiA+IC0tLQo+ID4gIG5ldC9uZmMvaGNpL2hjcC5j
+IHwgNCArKy0tCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlv
+bnMoLSkKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL25ldC9uZmMvaGNpL2hjcC5jIGIvbmV0L25mYy9o
+Y2kvaGNwLmMKPiA+IGluZGV4IDA1YzYwOTg4ZjU5Li4xY2FmOWMyMDg2ZiAxMDA2NDQKPiA+IC0t
+LSBhL25ldC9uZmMvaGNpL2hjcC5jCj4gPiArKysgYi9uZXQvbmZjL2hjaS9oY3AuYwo+ID4gQEAg
+LTMwLDcgKzMwLDcgQEAgaW50IG5mY19oY2lfaGNwX21lc3NhZ2VfdHgoc3RydWN0IG5mY19oY2lf
+ZGV2ICpoZGV2LCB1OCBwaXBlLAo+ID4gIAlpbnQgaGNpX2xlbiwgZXJyOwo+ID4gIAlib29sIGZp
+cnN0ZnJhZyA9IHRydWU7Cj4gPiAgCj4gPiAtCWNtZCA9IGt6YWxsb2Moc2l6ZW9mKHN0cnVjdCBo
+Y2lfbXNnKSwgR0ZQX0tFUk5FTCk7Cj4gPiArCWNtZCA9IGt6YWxsb2Moc2l6ZW9mKCpjbWQpLCBH
+RlBfQVRPTUlDKTsKPiAKPiBObywgdGhpcyBkb2VzIG5vdCBsb29rIGNvcnJlY3QuIFRoaXMgZnVu
+Y3Rpb24gY2FuIHNsZWVwLCBzbyBpdCBjYW4gdXNlCj4gR0ZQX0tFUk5FTC4gUGxlYXNlIGp1c3Qg
+bG9vayBhdCB0aGUgZnVuY3Rpb24gYmVmb3JlIHJlcGxhY2luZyBhbnkgZmxhZ3MuLi4KCkkgYW0g
+c29ycnksIEkgZG9uYHQgdW5kZXJzdGFuZCB3aHkgbmZjX2hjaV9oY3BfbWVzc2FnZV90eCgpIGNh
+biBzbGVlcC4KCkkgdGhpbmsgc3QyMW5mY2Ffc2Vfd3RfdGltZW91dCgpIGlzIGEgdGltZXIgaGFu
+ZGxlciwgd2hpY2ggaXMgaW4gaW50ZXJydXB0IGNvbnRleHQuClRoZSBjYWxsIHRyZWUgc2hvd3Mg
+dGhlIGV4ZWN1dGlvbiBwYXRocyB0aGF0IGNvdWxkIGxlYWQgdG8gYnVnczoKCnN0MjFuZmNhX2hj
+aV9zZV9pbygpCiAgbW9kX3RpbWVyKCZpbmZvLT5zZV9pbmZvLmJ3aV90aW1lciwuLi4pCiAgICBz
+dDIxbmZjYV9zZV93dF90aW1lb3V0KCkgIC8vdGltZXIgaGFuZGxlciwgaW50ZXJydXB0IGNvbnRl
+eHQKICAgICAgbmZjX2hjaV9zZW5kX2V2ZW50KCkKICAgICAgICBuZmNfaGNpX2hjcF9tZXNzYWdl
+X3R4KCkKICAgICAgICAgIGt6YWxsb2MoLi4uLCBHRlBfS0VSTkVMKSAvL21heSBzbGVlcAogICAg
+ICAgICAgYWxsb2Nfc2tiKC4uLiwgR0ZQX0tFUk5FTCkgLy9tYXkgc2xlZXAKCldoYXRgcyBtb3Jl
+LCBJIHRoaW5rIHRoZSAibXV0ZXhfbG9jaygmaGRldi0+bXNnX3R4X211dGV4KSIgY2FsbGVkIGJ5
+IG5mY19oY2lfaGNwX21lc3NhZ2VfdHgoKQppcyBhbHNvIGltcHJvcGVyLgoKUGxlYXNlIGNvcnJl
+Y3QgbWUsIElmIHlvdSB0aGluayBJIGFtIHdyb25nLiBUaGFua3MgZm9yIHlvdXIgdGltZS4KCkJl
+c3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cgo=
