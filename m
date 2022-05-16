@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0ABC38A06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 051F5C47081
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351435AbiEPUDd (ORCPT
+        id S1351497AbiEPUDr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52930 "EHLO
+        Mon, 16 May 2022 16:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346679AbiEPTxE (ORCPT
+        with ESMTP id S1347803AbiEPTwT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:53:04 -0400
+        Mon, 16 May 2022 15:52:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860404704C;
-        Mon, 16 May 2022 12:48:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9E8427F2;
+        Mon, 16 May 2022 12:47:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4278160BB1;
-        Mon, 16 May 2022 19:48:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26087C34115;
-        Mon, 16 May 2022 19:48:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D96AA6009B;
+        Mon, 16 May 2022 19:47:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E67A4C385AA;
+        Mon, 16 May 2022 19:47:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730522;
-        bh=MN5DrjPhuKaz6X+gSJol3l5D47LkryzVT7lFWe8dDqA=;
+        s=korg; t=1652730467;
+        bh=zw7+nG7mRK6zS8SGRZtV5iHlnpITV6OHXD5smvY6bZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SyZvjmOdKLka2muqTFjbLFBRPlyI0UBZIo+CHjWjpXQZPSTpwWUHF02H4gLRi99d5
-         701jFoaszogQGtLgfQuu8f4JYwvpw2KRc9meASZk/vlXP/ljrGV9EzPZpW28O+qzb4
-         6FK+FQnYFSImDjKOUnPtjh06ek4SDDjTc6zsib0U=
+        b=BjQLwOWW1pcDcCpFiwQafgVnFSgwXpz1kDGIZgt9sxhmUcQgb1/vmu1Z88QnEh4KK
+         YaZ1kclEuva9c2XrGFrABFFKTgjfMGA6u/MKtWh16ryRFacTFhcO63bzony/dr5TIR
+         cHFdfPi6tjqoU+E0OCedIOPTpwnskof54YQqgjrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Felix Kaechele <felix@kaechele.ca>,
+        Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 026/102] dim: initialize all struct fields
-Date:   Mon, 16 May 2022 21:36:00 +0200
-Message-Id: <20220516193624.750824454@linuxfoundation.org>
+Subject: [PATCH 5.15 001/102] batman-adv: Dont skb_split skbuffs with frag_list
+Date:   Mon, 16 May 2022 21:35:35 +0200
+Message-Id: <20220516193624.033718995@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,114 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit ee1444b5e1df4155b591d0d9b1e72853a99ea861 ]
+[ Upstream commit a063f2fba3fa633a599253b62561051ac185fa99 ]
 
-The W=2 build pointed out that the code wasn't initializing all the
-variables in the dim_cq_moder declarations with the struct initializers.
-The net change here is zero since these structs were already static
-const globals and were initialized with zeros by the compiler, but
-removing compiler warnings has value in and of itself.
+The receiving interface might have used GRO to receive more fragments than
+MAX_SKB_FRAGS fragments. In this case, these will not be stored in
+skb_shinfo(skb)->frags but merged into the frag list.
 
-lib/dim/net_dim.c: At top level:
-lib/dim/net_dim.c:54:9: warning: missing initializer for field ‘comps’ of ‘const struct dim_cq_moder’ [-Wmissing-field-initializers]
-   54 |         NET_DIM_RX_EQE_PROFILES,
-      |         ^~~~~~~~~~~~~~~~~~~~~~~
-In file included from lib/dim/net_dim.c:6:
-./include/linux/dim.h:45:13: note: ‘comps’ declared here
-   45 |         u16 comps;
-      |             ^~~~~
+batman-adv relies on the function skb_split to split packets up into
+multiple smaller packets which are not larger than the MTU on the outgoing
+interface. But this function cannot handle frag_list entries and is only
+operating on skb_shinfo(skb)->frags. If it is still trying to split such an
+skb and xmit'ing it on an interface without support for NETIF_F_FRAGLIST,
+then validate_xmit_skb() will try to linearize it. But this fails due to
+inconsistent information. And __pskb_pull_tail will trigger a BUG_ON after
+skb_copy_bits() returns an error.
 
-and repeats for the tx struct, and once you fix the comps entry then
-the cq_period_mode field needs the same treatment.
+In case of entries in frag_list, just linearize the skb before operating on
+it with skb_split().
 
-Use the commonly accepted style to indicate to the compiler that we
-know what we're doing, and add a comma at the end of each struct
-initializer to clean up the issue, and use explicit initializers
-for the fields we are initializing which makes the compiler happy.
-
-While here and fixing these lines, clean up the code slightly with
-a fix for the super long lines by removing the word "_MODERATION" from a
-couple defines only used in this file.
-
-Fixes: f8be17b81d44 ("lib/dim: Fix -Wunused-const-variable warnings")
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Link: https://lore.kernel.org/r/20220507011038.14568-1-jesse.brandeburg@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Felix Kaechele <felix@kaechele.ca>
+Fixes: c6c8fea29769 ("net: Add batman-adv meshing protocol")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Tested-by: Felix Kaechele <felix@kaechele.ca>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/dim/net_dim.c | 44 ++++++++++++++++++++++----------------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
+ net/batman-adv/fragmentation.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/lib/dim/net_dim.c b/lib/dim/net_dim.c
-index 06811d866775..53f6b9c6e936 100644
---- a/lib/dim/net_dim.c
-+++ b/lib/dim/net_dim.c
-@@ -12,41 +12,41 @@
-  *        Each profile size must be of NET_DIM_PARAMS_NUM_PROFILES
-  */
- #define NET_DIM_PARAMS_NUM_PROFILES 5
--#define NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE 256
--#define NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE 128
-+#define NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE 256
-+#define NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE 128
- #define NET_DIM_DEF_PROFILE_CQE 1
- #define NET_DIM_DEF_PROFILE_EQE 1
+diff --git a/net/batman-adv/fragmentation.c b/net/batman-adv/fragmentation.c
+index 0899a729a23f..c120c7c6d25f 100644
+--- a/net/batman-adv/fragmentation.c
++++ b/net/batman-adv/fragmentation.c
+@@ -475,6 +475,17 @@ int batadv_frag_send_packet(struct sk_buff *skb,
+ 		goto free_skb;
+ 	}
  
- #define NET_DIM_RX_EQE_PROFILES { \
--	{1,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
--	{8,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
--	{64,  NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
--	{128, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
--	{256, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
-+	{.usec = 1,   .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
-+	{.usec = 8,   .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
-+	{.usec = 64,  .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
-+	{.usec = 128, .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
-+	{.usec = 256, .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}  \
- }
- 
- #define NET_DIM_RX_CQE_PROFILES { \
--	{2,  256},             \
--	{8,  128},             \
--	{16, 64},              \
--	{32, 64},              \
--	{64, 64}               \
-+	{.usec = 2,  .pkts = 256,},             \
-+	{.usec = 8,  .pkts = 128,},             \
-+	{.usec = 16, .pkts = 64,},              \
-+	{.usec = 32, .pkts = 64,},              \
-+	{.usec = 64, .pkts = 64,}               \
- }
- 
- #define NET_DIM_TX_EQE_PROFILES { \
--	{1,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
--	{8,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
--	{32,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
--	{64,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
--	{128, NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE}   \
-+	{.usec = 1,   .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
-+	{.usec = 8,   .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
-+	{.usec = 32,  .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
-+	{.usec = 64,  .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
-+	{.usec = 128, .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,}   \
- }
- 
- #define NET_DIM_TX_CQE_PROFILES { \
--	{5,  128},  \
--	{8,  64},  \
--	{16, 32},  \
--	{32, 32},  \
--	{64, 32}   \
-+	{.usec = 5,  .pkts = 128,},  \
-+	{.usec = 8,  .pkts = 64,},  \
-+	{.usec = 16, .pkts = 32,},  \
-+	{.usec = 32, .pkts = 32,},  \
-+	{.usec = 64, .pkts = 32,}   \
- }
- 
- static const struct dim_cq_moder
++	/* GRO might have added fragments to the fragment list instead of
++	 * frags[]. But this is not handled by skb_split and must be
++	 * linearized to avoid incorrect length information after all
++	 * batman-adv fragments were created and submitted to the
++	 * hard-interface
++	 */
++	if (skb_has_frag_list(skb) && __skb_linearize(skb)) {
++		ret = -ENOMEM;
++		goto free_skb;
++	}
++
+ 	/* Create one header to be copied to all fragments */
+ 	frag_header.packet_type = BATADV_UNICAST_FRAG;
+ 	frag_header.version = BATADV_COMPAT_VERSION;
 -- 
 2.35.1
 
