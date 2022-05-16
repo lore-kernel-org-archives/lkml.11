@@ -2,107 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8984C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71622C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:14:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346576AbiEPULg (ORCPT
+        id S1347544AbiEPUNy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44150 "EHLO
+        Mon, 16 May 2022 16:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348069AbiEPT6X (ORCPT
+        with ESMTP id S1348166AbiEPT62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31ED48E6C;
-        Mon, 16 May 2022 12:50:08 -0700 (PDT)
+        Mon, 16 May 2022 15:58:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96FCB49264;
+        Mon, 16 May 2022 12:50:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA60660A14;
-        Mon, 16 May 2022 19:50:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4D2AC385AA;
-        Mon, 16 May 2022 19:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730607;
-        bh=/84bqmGQIqpf1NHhIxHJn+3uZEVZpLH90DHVm07Ec9w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d8FIRr5Mq3+Z206hi++sNau8LZ7KN3BCnIX8BaIye5DvUDoTtFXXspuyqOJmtcfoW
-         t2A+nL6kD37sij9tpFIewNYSopo6gaSTyaYBEzdCx5kJUEPWHLuHIy9fozG5JnG8d4
-         /BXsMxjQkChDD9+UQQ4humAc2OFFyxI+919Ie908=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 050/102] ASoC: ops: Validate input values in snd_soc_put_volsw_range()
-Date:   Mon, 16 May 2022 21:36:24 +0200
-Message-Id: <20220516193625.434027239@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84DA2B81616;
+        Mon, 16 May 2022 19:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 935D8C385AA;
+        Mon, 16 May 2022 19:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652730612;
+        bh=c9r69ta/pgxS3FOpdoClSBJRVIanwTUSIou4mXA0xUE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WgaBWsOAOi6+eSvu+qcU0oRd7ohRjg2NXoreiK/6vli6xzxmefDn1Rl/E2OqUAuX5
+         qOwQozDSYm/Jj7EmXsZNnxk8gQLzxpAt5XVjOf4cYEbfWoPxS1PGx5O6L3SLqoRh0q
+         SgAjbp2rAemKlBR3RLVhWv8nUMMZbVpSw5Pg7uD4=
+Date:   Mon, 16 May 2022 12:50:10 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     mhocko@suse.com, rientjes@google.com, willy@infradead.org,
+        hannes@cmpxchg.org, guro@fb.com, minchan@kernel.org,
+        kirill@shutemov.name, aarcange@redhat.com, brauner@kernel.org,
+        hch@infradead.org, oleg@redhat.com, david@redhat.com,
+        jannh@google.com, shakeelb@google.com, peterx@redhat.com,
+        jhubbard@nvidia.com, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, kernel-team@android.com
+Subject: Re: [PATCH v2 1/1] selftests: vm: add process_mrelease tests
+Message-Id: <20220516125010.53ab9a27733f361e5965ed7f@linux-foundation.org>
+In-Reply-To: <20220516075538.1276644-1-surenb@google.com>
+References: <20220516075538.1276644-1-surenb@google.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+On Mon, 16 May 2022 00:55:38 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
 
-[ Upstream commit aa22125c57f9e577f0a667e4fa07fc3fa8ca1e60 ]
+> Introduce process_mrelease syscall sanity tests which include tests
+> which expect to fail:
+> - process_mrelease with invalid pidfd and flags inputs
+> - process_mrelease on a live process with no pending signals
+> and valid process_mrelease usage which is expected to succeed.
+> Because process_mrelease has to be used against a process with a pending
+> SIGKILL, it's possible that the process exits before process_mrelease
+> gets called. In such cases we retry the test with a victim that allocates
+> twice more memory up to 1GB. This would require the victim process to
+> spend more time during exit and process_mrelease has a better chance of
+> catching the process before it exits and succeeding.
+> 
+> On success the test reports the amount of memory the child had to
+> allocate for reaping to succeed. Sample output:
+>     Success reaping a child with 1MB of memory allocations
+> 
+> On failure the test reports the failure. Sample outputs:
+>     All process_mrelease attempts failed!
+>     process_mrelease: Invalid argument
+> 
+> ...
+>
+> --- a/tools/testing/selftests/vm/run_vmtests.sh
+> +++ b/tools/testing/selftests/vm/run_vmtests.sh
+> @@ -287,6 +287,22 @@ else
+>  	echo "[PASS]"
+>  fi
+>  
+> +echo "---------------------"
+> +echo "running mrelease_test"
+> +echo "---------------------"
+> +./mrelease_test
+> +ret_val=$?
+> +
+> +if [ $ret_val -eq 0 ]; then
+> +	echo "[PASS]"
+> +elif [ $ret_val -eq $ksft_skip ]; then
+> +	 echo "[SKIP]"
+> +	 exitcode=$ksft_skip
+> +else
+> +	echo "[FAIL]"
+> +	exitcode=1
+> +fi
+> +
+>  echo "-------------------"
+>  echo "running mremap_test"
+>  echo "-------------------"
 
-Check that values written via snd_soc_put_volsw_range() are
-within the range advertised by the control, ensuring that we
-don't write out of spec values to the hardware.
+Can you please redo this against
+git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm branch mm-stable
+or mm-unstable.  Or against linux-next?
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220423131239.3375261-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/soc-ops.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
-index 63ee35ebeaab..f32ba64c5dda 100644
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -519,7 +519,15 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
- 	unsigned int val, val_mask;
--	int err, ret;
-+	int err, ret, tmp;
-+
-+	tmp = ucontrol->value.integer.value[0];
-+	if (tmp < 0)
-+		return -EINVAL;
-+	if (mc->platform_max && tmp > mc->platform_max)
-+		return -EINVAL;
-+	if (tmp > mc->max - mc->min + 1)
-+		return -EINVAL;
- 
- 	if (invert)
- 		val = (max - ucontrol->value.integer.value[0]) & mask;
-@@ -534,6 +542,14 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	ret = err;
- 
- 	if (snd_soc_volsw_is_stereo(mc)) {
-+		tmp = ucontrol->value.integer.value[1];
-+		if (tmp < 0)
-+			return -EINVAL;
-+		if (mc->platform_max && tmp > mc->platform_max)
-+			return -EINVAL;
-+		if (tmp > mc->max - mc->min + 1)
-+			return -EINVAL;
-+
- 		if (invert)
- 			val = (max - ucontrol->value.integer.value[1]) & mask;
- 		else
--- 
-2.35.1
-
-
-
+This script now has a helper function run_test which I think can be
+used here.
