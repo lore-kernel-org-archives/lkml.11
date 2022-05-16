@@ -2,93 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA2FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBA0C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347705AbiEPUWN (ORCPT
+        id S1347587AbiEPUV6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
+        Mon, 16 May 2022 16:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348923AbiEPT7D (ORCPT
+        with ESMTP id S1349105AbiEPT7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:03 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A6A3ED35
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:52:57 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so344618pjb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:52:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MiA2IbbGB4PrztiBYAGqSxVhR5Rwcu/jU2Fpvn36Dl0=;
-        b=deJtJBiCfl3UmX5GrP4pGKU4l3G56jfiOmXHqodW6G/JMHuzegFzyHLrLeu+ZaHJkg
-         NmN40D91Pl+R2RlRC4Jo5htGdRwHzZhP5A/FL+L0HT4z5xXc5nOo22Qqc1DTZZ7VTcAO
-         W4mh6HvlyBjzkOcNSOcolsmPzM80BE14dVS/8ewQQuSd0OGpSfOVLvkpA+KWxYzObt+O
-         cPHv7+4KH2Dn3pa0srAGD45Z+roR2Z33UakwPw6V99hO6dKk1/cmC3CVpBlrDNZMJ//o
-         c8igbCLZxPOHU2OONg1QdnFk5l5IEkUTgpV6xdqR8UOxb+0bp6XrWxEuBMIFkarojoai
-         2qig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MiA2IbbGB4PrztiBYAGqSxVhR5Rwcu/jU2Fpvn36Dl0=;
-        b=MjIEJHpyOvbV/38HQktmIqKJ31U+pQB07O5uEnlYDsBI2+gpXTF2TtCPrzDKLCyhhL
-         Nroa49pSDtCyt0puEPRSkp+4+p27D+4y5W4uDdaumfNl1eraTsb0d9eKNH11j5mUIqBj
-         4Tln2AgPg8iwnlQ4T9yr7Z0uRwTKsJ6TP1eiSoFq5kLk4LOeXg3fz1Gx/8EbvjAKbpkH
-         iFA5Vye09T3wn8Edwcl+PEcuujnVRPWAB4WZl6D1KfyF044HWMA4SeXCZTuqBQENBaf7
-         WB63WOT+p3B1Cs7vi+EVhFU6E5/w3QiTHaQEbQR/Ya1VMkKGyGu2QyPsr05I6qlY/EVU
-         C9ow==
-X-Gm-Message-State: AOAM530SjkbXPsF/F25IOTEChqVO7EQty0aGNuYZ9Iq9TJ9U/wWQUIpp
-        ESfyM7IdoDnku+ul6ZVx7T+kdQ==
-X-Google-Smtp-Source: ABdhPJzNV/v9eBVXXMXhCt2k3rEPI8Qh5FZO4UU5+6FwTfuFJm8S0FMztukLIgePJ6T+WiIHqsbotQ==
-X-Received: by 2002:a17:90b:1482:b0:1df:5b39:8a4 with SMTP id js2-20020a17090b148200b001df5b3908a4mr6265490pjb.233.1652730776434;
-        Mon, 16 May 2022 12:52:56 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id q23-20020a170902bd9700b0015e8d4eb2e2sm7337538pls.300.2022.05.16.12.52.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 12:52:55 -0700 (PDT)
-Date:   Mon, 16 May 2022 19:52:52 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 09/34] KVM: x86: hyper-v: Don't use
- sparse_set_to_vcpu_mask() in kvm_hv_send_ipi()
-Message-ID: <YoKrlMKq6o0dMfLt@google.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
- <20220414132013.1588929-10-vkuznets@redhat.com>
- <94cec439f345313c1a909f6a012665dd10686d47.camel@redhat.com>
+        Mon, 16 May 2022 15:59:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C3840937;
+        Mon, 16 May 2022 12:53:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D723FB81627;
+        Mon, 16 May 2022 19:53:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D2A5C36AE7;
+        Mon, 16 May 2022 19:53:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652730800;
+        bh=YHCcsAPo3HXhqClBwVSBvvvHd29gyEvqoT/UiYF/VYU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EQzwGL7w/VWLKM3hGG/HqJbho8iFrgDYXiy4VRUMXm2bWiKosf+AY7nrB0ETGtef+
+         MAhaYRLETGmvX/nDmDHkCbm2baquaCPFtsHr+CM00+a0pKiunJIlIRjd+gETijXacK
+         mT6E6rOvtVVHqrP3AALR2ziOMZqtn7fZ2cCNeQ1k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 010/114] net: mscc: ocelot: avoid corrupting hardware counters when moving VCAP filters
+Date:   Mon, 16 May 2022 21:35:44 +0200
+Message-Id: <20220516193625.793332837@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
+References: <20220516193625.489108457@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <94cec439f345313c1a909f6a012665dd10686d47.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022, Maxim Levitsky wrote:
-> On Thu, 2022-04-14 at 15:19 +0200, Vitaly Kuznetsov wrote:
-> > @@ -2089,8 +2108,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
-> >  		((u64)hc->rep_cnt << HV_HYPERCALL_REP_COMP_OFFSET);
-> >  }
-> >  
-> > -static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
-> > -				 unsigned long *vcpu_bitmap)
-> > +static void kvm_hv_send_ipi_to_many(struct kvm *kvm, u32 vector,
-> > +				    u64 *sparse_banks, u64 valid_bank_mask)
-> I think the indentation is wrong here (was wrong before as well)
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-It's correct, the "+" from the diff/patch misaligns the first line because there's
-no tab to eat the extra character.  Amusingly, the misaligment just gets worse the
-more ">" / quotes that get added to the front.
+[ Upstream commit 93a8417088ea570b5721d2b526337a2d3aed9fa3 ]
 
-I usually end up applying a patch to double check if I suspect indentation is
-wrong, it's too hard for me to tell based on the raw patch alone unless it's super
-bad/obvious.
+Given the following order of operations:
+
+(1) we add filter A using tc-flower
+(2) we send a packet that matches it
+(3) we read the filter's statistics to find a hit count of 1
+(4) we add a second filter B with a higher preference than A, and A
+    moves one position to the right to make room in the TCAM for it
+(5) we send another packet, and this matches the second filter B
+(6) we read the filter statistics again.
+
+When this happens, the hit count of filter A is 2 and of filter B is 1,
+despite a single packet having matched each filter.
+
+Furthermore, in an alternate history, reading the filter stats a second
+time between steps (3) and (4) makes the hit count of filter A remain at
+1 after step (6), as expected.
+
+The reason why this happens has to do with the filter->stats.pkts field,
+which is written to hardware through the call path below:
+
+               vcap_entry_set
+               /      |      \
+              /       |       \
+             /        |        \
+            /         |         \
+es0_entry_set   is1_entry_set   is2_entry_set
+            \         |         /
+             \        |        /
+              \       |       /
+        vcap_data_set(data.counter, ...)
+
+The primary role of filter->stats.pkts is to transport the filter hit
+counters from the last readout all the way from vcap_entry_get() ->
+ocelot_vcap_filter_stats_update() -> ocelot_cls_flower_stats().
+The reason why vcap_entry_set() writes it to hardware is so that the
+counters (saturating and having a limited bit width) are cleared
+after each user space readout.
+
+The writing of filter->stats.pkts to hardware during the TCAM entry
+movement procedure is an unintentional consequence of the code design,
+because the hit count isn't up to date at this point.
+
+So at step (4), when filter A is moved by ocelot_vcap_filter_add() to
+make room for filter B, the hardware hit count is 0 (no packet matched
+on it in the meantime), but filter->stats.pkts is 1, because the last
+readout saw the earlier packet. The movement procedure programs the old
+hit count back to hardware, so this creates the impression to user space
+that more packets have been matched than they really were.
+
+The bug can be seen when running the gact_drop_and_ok_test() from the
+tc_actions.sh selftest.
+
+Fix the issue by reading back the hit count to tmp->stats.pkts before
+migrating the VCAP filter. Sure, this is a best-effort technique, since
+the packets that hit the rule between vcap_entry_get() and
+vcap_entry_set() won't be counted, but at least it allows the counters
+to be reliably used for selftests where the traffic is under control.
+
+The vcap_entry_get() name is a bit unintuitive, but it only reads back
+the counter portion of the TCAM entry, not the entire entry.
+
+The index from which we retrieve the counter is also a bit unintuitive
+(i - 1 during add, i + 1 during del), but this is the way in which TCAM
+entry movement works. The "entry index" isn't a stored integer for a
+TCAM filter, instead it is dynamically computed by
+ocelot_vcap_block_get_filter_index() based on the entry's position in
+the &block->rules list. That position (as well as block->count) is
+automatically updated by ocelot_vcap_filter_add_to_block() on add, and
+by ocelot_vcap_block_remove_filter() on del. So "i" is the new filter
+index, and "i - 1" or "i + 1" respectively are the old addresses of that
+TCAM entry (we only support installing/deleting one filter at a time).
+
+Fixes: b596229448dd ("net: mscc: ocelot: Add support for tcam")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/mscc/ocelot_vcap.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index 6c643936c675..f159726788ba 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -1181,6 +1181,8 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
+ 		struct ocelot_vcap_filter *tmp;
+ 
+ 		tmp = ocelot_vcap_block_find_filter_by_index(block, i);
++		/* Read back the filter's counters before moving it */
++		vcap_entry_get(ocelot, i - 1, tmp);
+ 		vcap_entry_set(ocelot, i, tmp);
+ 	}
+ 
+@@ -1239,6 +1241,8 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
+ 		struct ocelot_vcap_filter *tmp;
+ 
+ 		tmp = ocelot_vcap_block_find_filter_by_index(block, i);
++		/* Read back the filter's counters before moving it */
++		vcap_entry_get(ocelot, i + 1, tmp);
+ 		vcap_entry_set(ocelot, i, tmp);
+ 	}
+ 
+-- 
+2.35.1
+
+
+
