@@ -2,393 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D39C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B44C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345313AbiEPTJH (ORCPT
+        id S1345326AbiEPTJU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53210 "EHLO
+        Mon, 16 May 2022 15:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231225AbiEPTJD (ORCPT
+        with ESMTP id S1345311AbiEPTJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:09:03 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EE3393D3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:09:01 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id m1so12984830qkn.10
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:09:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=MBgGsqXRsf0ss9YPrcM3j4TAcafmynw6Sjbjw2Xm7MU=;
-        b=eNm4jTu8IBICugoj/+C4OWwwRGbJps37e1bc0wdQgflhYUzhfabjBW0bOf24GAS/Uh
-         rrErujKmAkqu27iyqPB03kmClSrniTBk1A+fIBvqXfnnY5WavmI1lN1A3Jd3RE19wkIO
-         jA/12chDl3M5zNYLi0+GxnYNdAHn1rsNYzZt5VhtsliEOXDLozaNlYCfUTtG8Dc8UQpU
-         CEiJhoM6515tknJp5V6UXSE0UsrccrCzb46sphHInvQ4ePBYv0MHaG3cNDRU7F6/uax4
-         VBtEf9EyNN7Yw5UNM9vB6qMD/LSAKfXMSrUYdto1ncJlEv78g+OEmxyAEXuiS13Ot+//
-         viSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=MBgGsqXRsf0ss9YPrcM3j4TAcafmynw6Sjbjw2Xm7MU=;
-        b=1/3QE2PgS1XBdE3m98r322KcaWyhS21Be1VMYx0mkRsJ+2mfqFIedGB/toYXxJDbTa
-         zBGWkxaPUl1GTPVNKIxle4uzhojMQLugHkYgTQOW1ponqeQQRfHV5GaQOzazUSqXc1yN
-         KeS/8eUVwwbJaqUSOiUQDURjo3oYuwtMD14czPRSx0r66kK5ANRAErPkHbdSPt1nQUTZ
-         CYOa40JCTcdfjlv6g4f4sWRAf6qxDZgxFJd9AksFFR86clFV3VdE/5auRcEgOQAGk/Sk
-         gSwFQLndhX60N5gpbwVWzBQHPHSW8J6LnLv4L8xiZ1tXz1tjZh/XnVTWKKg7l//jTowV
-         JnYA==
-X-Gm-Message-State: AOAM5330tTvKARN73PkStiwJITfJfpEp9pq8Pop9xUec5cG1Y856DiUG
-        8ipcmExSbOc3VwlViPpx4onwgg==
-X-Google-Smtp-Source: ABdhPJzDJxYD13FIG1o/1C66Twk8iCZ4vuFZ4rZ2QOG5V3S8GIchre6N/bVFW4y+ZeD1yXmnFl7hNg==
-X-Received: by 2002:a37:63cc:0:b0:6a0:c68b:b06d with SMTP id x195-20020a3763cc000000b006a0c68bb06dmr13179031qkb.90.1652728141046;
-        Mon, 16 May 2022 12:09:01 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (173-246-12-168.qc.cable.ebox.net. [173.246.12.168])
-        by smtp.gmail.com with ESMTPSA id x2-20020a376302000000b0069fc13ce1e8sm6174549qkb.25.2022.05.16.12.08.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 12:09:00 -0700 (PDT)
-Message-ID: <bff48ad7ec42344d81b930babda7777615171148.camel@ndufresne.ca>
-Subject: Re: [PATCH] media: hantro: Be more accurate on pixel formats
- step_width constraints
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        mchehab@kernel.org, gregkh@linuxfoundation.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, heiko@sntech.de, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org
-Cc:     kernel@pengutronix.de, linux-media@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, kernel@collabora.com
-Date:   Mon, 16 May 2022 15:08:58 -0400
-In-Reply-To: <20220516141142.591549-1-benjamin.gaignard@collabora.com>
-References: <20220516141142.591549-1-benjamin.gaignard@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
-MIME-Version: 1.0
+        Mon, 16 May 2022 15:09:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867723969C;
+        Mon, 16 May 2022 12:09:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13073614C6;
+        Mon, 16 May 2022 19:09:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C7ACC385AA;
+        Mon, 16 May 2022 19:09:15 +0000 (UTC)
+From:   Clark Williams <williams@redhat.com>
+Subject: [ANNOUNCE] 5.15.40-rt43
+Date:   Mon, 16 May 2022 19:08:25 -0000
+Message-ID: <165272810508.507274.552990901918954361@puck.lan>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        John Kacur <jkacur@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Wagner <daniel.wagner@suse.com>,
+        Tom Zanussi <tom.zanussi@linux.intel.com>,
+        Clark Williams <williams@redhat.com>,
+        Pavel Machek <pavel@denx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Benjamin,
+Hello RT-list!
 
-thanks for your patch, but see below, perhaps something you could improve..=
-.
+I'm pleased to announce the 5.15.40-rt43 stable release.
 
-Le lundi 16 mai 2022 =C3=A0 16:11 +0200, Benjamin Gaignard a =C3=A9crit=C2=
-=A0:
-> On Hantro G2 decoder on IMX8MQ strides requirements aren't the same
-> for NV12_4L4 and NV12 pixel formats. The first one use a 4 bytes padding
-> while the last one needs 8 bytes.
-> To be sure to provide the correct stride in all cases we need:
-> - to relax the constraints on codec formats so set step_width to 4
-> - use capture queue format and not the output queue format when applying
->   the pixel format constraints.
-> - put the correct step_width constraints on each pixel format.
+You can get this release via the git tree at:
 
-From v4l2_apply_frmsize_constraints() point of view, 8 bytes is a sub-set o=
-f 4
-bytes. The application can request larger then coded size width/height afte=
-r
-this change and you'd still get a broken render. The reason is that it look=
-s
-like the tile mode has more constraints then what
-v4l2_apply_frmsize_constraints(). It seems like from your description that =
-the
-width/height must match the coded size (+plus the alignment). For this reas=
-on, I
-think you need when using tile mode validate the that the width/height pass=
-ed to
-v4l2_apply_frmsize_constraints() matched the coded size from the header
-structure rather then user provided size passed in S_FMT.
+  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 
-regards,
-Nicolas
+  branch: v5.15-rt
+  Head SHA1: 3122b8942f4d214f432a601d1646ed08b1a0d381
 
->=20
-> With this SAODBLK_A_MainConcept_4 and SAODBLK_B_MainConcept_4 conformance
-> tests files are correctly decoded with both NV12 and NV12_4L4 pixel forma=
-ts.
-> These two files have a resolution of 1016x760.
-> If step_width =3D 16 for the both pixel formats the selected capture
-> resolution is 1024x768 which is wrong for NV12_4L4 (which expect 1016x760=
-)
-> on Hantro G2 on IMX8MQ (but correct for NV12).
->=20
-> For other variants than Hantro G2 on IMX8M keep the same step_width to av=
-oid
-> regressions.
->=20
-> Fluster HEVC test score is now 128/147 vs 126/147 with the both pixel
-> formats as decoder output.
-> Fluster VP9 test score stay at 147/303.
->=20
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> ---
->  drivers/staging/media/hantro/hantro_v4l2.c    |  2 +-
->  drivers/staging/media/hantro/imx8m_vpu_hw.c   | 40 +++++++++++++++++--
->  .../staging/media/hantro/rockchip_vpu_hw.c    | 32 +++++++++++++++
->  .../staging/media/hantro/sama5d4_vdec_hw.c    | 16 ++++++++
->  drivers/staging/media/hantro/sunxi_vpu_hw.c   | 16 ++++++++
->  5 files changed, 101 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging=
-/media/hantro/hantro_v4l2.c
-> index 71a6279750bf..93d0dcf69f4a 100644
-> --- a/drivers/staging/media/hantro/hantro_v4l2.c
-> +++ b/drivers/staging/media/hantro/hantro_v4l2.c
-> @@ -260,7 +260,7 @@ static int hantro_try_fmt(const struct hantro_ctx *ct=
-x,
->  	} else if (ctx->is_encoder) {
->  		vpu_fmt =3D ctx->vpu_dst_fmt;
->  	} else {
-> -		vpu_fmt =3D ctx->vpu_src_fmt;
-> +		vpu_fmt =3D fmt;
->  		/*
->  		 * Width/height on the CAPTURE end of a decoder are ignored and
->  		 * replaced by the OUTPUT ones.
-> diff --git a/drivers/staging/media/hantro/imx8m_vpu_hw.c b/drivers/stagin=
-g/media/hantro/imx8m_vpu_hw.c
-> index 9802508bade2..b6b2bf65e56d 100644
-> --- a/drivers/staging/media/hantro/imx8m_vpu_hw.c
-> +++ b/drivers/staging/media/hantro/imx8m_vpu_hw.c
-> @@ -83,6 +83,14 @@ static const struct hantro_fmt imx8m_vpu_postproc_fmts=
-[] =3D {
->  		.fourcc =3D V4L2_PIX_FMT_YUYV,
->  		.codec_mode =3D HANTRO_MODE_NONE,
->  		.postprocessed =3D true,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 3840,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 2160,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  };
-> =20
-> @@ -90,6 +98,14 @@ static const struct hantro_fmt imx8m_vpu_dec_fmts[] =
-=3D {
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_NV12,
->  		.codec_mode =3D HANTRO_MODE_NONE,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 3840,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 2160,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_MPEG2_SLICE,
-> @@ -137,6 +153,14 @@ static const struct hantro_fmt imx8m_vpu_g2_postproc=
-_fmts[] =3D {
->  		.fourcc =3D V4L2_PIX_FMT_NV12,
->  		.codec_mode =3D HANTRO_MODE_NONE,
->  		.postprocessed =3D true,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 3840,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 2160,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  };
-> =20
-> @@ -144,6 +168,14 @@ static const struct hantro_fmt imx8m_vpu_g2_dec_fmts=
-[] =3D {
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_NV12_4L4,
->  		.codec_mode =3D HANTRO_MODE_NONE,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 3840,
-> +			.step_width =3D 4,
-> +			.min_height =3D 48,
-> +			.max_height =3D 2160,
-> +			.step_height =3D 4,
-> +		},
->  	},
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_HEVC_SLICE,
-> @@ -152,10 +184,10 @@ static const struct hantro_fmt imx8m_vpu_g2_dec_fmt=
-s[] =3D {
->  		.frmsize =3D {
->  			.min_width =3D 48,
->  			.max_width =3D 3840,
-> -			.step_width =3D MB_DIM,
-> +			.step_width =3D 4,
->  			.min_height =3D 48,
->  			.max_height =3D 2160,
-> -			.step_height =3D MB_DIM,
-> +			.step_height =3D 4,
->  		},
->  	},
->  	{
-> @@ -165,10 +197,10 @@ static const struct hantro_fmt imx8m_vpu_g2_dec_fmt=
-s[] =3D {
->  		.frmsize =3D {
->  			.min_width =3D 48,
->  			.max_width =3D 3840,
-> -			.step_width =3D MB_DIM,
-> +			.step_width =3D 4,
->  			.min_height =3D 48,
->  			.max_height =3D 2160,
-> -			.step_height =3D MB_DIM,
-> +			.step_height =3D 4,
->  		},
->  	},
->  };
-> diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/sta=
-ging/media/hantro/rockchip_vpu_hw.c
-> index fc96501f3bc8..efba7fcdf207 100644
-> --- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
-> +++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
-> @@ -63,6 +63,14 @@ static const struct hantro_fmt rockchip_vpu1_postproc_=
-fmts[] =3D {
->  		.fourcc =3D V4L2_PIX_FMT_YUYV,
->  		.codec_mode =3D HANTRO_MODE_NONE,
->  		.postprocessed =3D true,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 1920,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 1088,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  };
-> =20
-> @@ -70,6 +78,14 @@ static const struct hantro_fmt rk3066_vpu_dec_fmts[] =
-=3D {
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_NV12,
->  		.codec_mode =3D HANTRO_MODE_NONE,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 1920,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 1088,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_H264_SLICE,
-> @@ -116,6 +132,14 @@ static const struct hantro_fmt rk3288_vpu_dec_fmts[]=
- =3D {
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_NV12,
->  		.codec_mode =3D HANTRO_MODE_NONE,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 4096,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 2304,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_H264_SLICE,
-> @@ -162,6 +186,14 @@ static const struct hantro_fmt rk3399_vpu_dec_fmts[]=
- =3D {
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_NV12,
->  		.codec_mode =3D HANTRO_MODE_NONE,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 1920,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 1088,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_H264_SLICE,
-> diff --git a/drivers/staging/media/hantro/sama5d4_vdec_hw.c b/drivers/sta=
-ging/media/hantro/sama5d4_vdec_hw.c
-> index b2fc1c5613e1..07ee804e706b 100644
-> --- a/drivers/staging/media/hantro/sama5d4_vdec_hw.c
-> +++ b/drivers/staging/media/hantro/sama5d4_vdec_hw.c
-> @@ -16,6 +16,14 @@ static const struct hantro_fmt sama5d4_vdec_postproc_f=
-mts[] =3D {
->  		.fourcc =3D V4L2_PIX_FMT_YUYV,
->  		.codec_mode =3D HANTRO_MODE_NONE,
->  		.postprocessed =3D true,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 1280,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 720,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  };
-> =20
-> @@ -23,6 +31,14 @@ static const struct hantro_fmt sama5d4_vdec_fmts[] =3D=
- {
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_NV12,
->  		.codec_mode =3D HANTRO_MODE_NONE,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 1280,
-> +			.step_width =3D MB_DIM,
-> +			.min_height =3D 48,
-> +			.max_height =3D 720,
-> +			.step_height =3D MB_DIM,
-> +		},
->  	},
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_MPEG2_SLICE,
-> diff --git a/drivers/staging/media/hantro/sunxi_vpu_hw.c b/drivers/stagin=
-g/media/hantro/sunxi_vpu_hw.c
-> index c0edd5856a0c..c2392c08febb 100644
-> --- a/drivers/staging/media/hantro/sunxi_vpu_hw.c
-> +++ b/drivers/staging/media/hantro/sunxi_vpu_hw.c
-> @@ -14,6 +14,14 @@ static const struct hantro_fmt sunxi_vpu_postproc_fmts=
-[] =3D {
->  		.fourcc =3D V4L2_PIX_FMT_NV12,
->  		.codec_mode =3D HANTRO_MODE_NONE,
->  		.postprocessed =3D true,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 3840,
-> +			.step_width =3D 32,
-> +			.min_height =3D 48,
-> +			.max_height =3D 2160,
-> +			.step_height =3D 32,
-> +		},
->  	},
->  };
-> =20
-> @@ -21,6 +29,14 @@ static const struct hantro_fmt sunxi_vpu_dec_fmts[] =
-=3D {
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_NV12_4L4,
->  		.codec_mode =3D HANTRO_MODE_NONE,
-> +		.frmsize =3D {
-> +			.min_width =3D 48,
-> +			.max_width =3D 3840,
-> +			.step_width =3D 32,
-> +			.min_height =3D 48,
-> +			.max_height =3D 2160,
-> +			.step_height =3D 32,
-> +		},
->  	},
->  	{
->  		.fourcc =3D V4L2_PIX_FMT_VP9_FRAME,
+Or to build 5.15.40-rt43 directly, the following patches should be applied:
 
+  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.15.tar.xz
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.15.40.xz
+
+  https://www.kernel.org/pub/linux/kernel/projects/rt/5.15/patch-5.15.40-rt43.patch.xz
+
+
+Enjoy!
+Clark
+
+Changes from v5.15.39-rt42:
+---
+
+Arnaldo Carvalho de Melo (1):
+      tools arch: Update arch/x86/lib/mem{cpy,set}_64.S copies used in 'perf bench mem memcpy'
+
+Borislav Petkov (1):
+      kvm/emulate: Fix SETcc emulation function offsets with SLS
+
+Clark Williams (2):
+      Merge tag 'v5.15.40' into v5.15-rt
+      'Linux 5.15.40-rt43'
+
+Gleb Fotengauer-Malinovskiy (1):
+      rfkill: uapi: fix RFKILL_IOCTL_MAX_SIZE ioctl request definition
+
+Greg Kroah-Hartman (1):
+      Linux 5.15.40
+
+Itay Iellin (1):
+      Bluetooth: Fix the creation of hdev->name
+
+Jan Kara (1):
+      udf: Avoid using stale lengthOfImpUse
+
+Masahiro Yamada (1):
+      kbuild: move objtool_args back to scripts/Makefile.build
+
+Miaohe Lin (1):
+      mm/mlock: fix potential imbalanced rlimit ucounts adjustment
+
+Muchun Song (4):
+      mm: fix missing cache flush for all tail pages of compound page
+      mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
+      mm: shmem: fix missing cache flush in shmem_mfill_atomic_pte()
+      mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
+
+Naoya Horiguchi (1):
+      mm/hwpoison: fix error page recovered but reported "not recovered"
+
+Peter Xu (1):
+      mm: fix invalid page pointer returned with FOLL_PIN gups
+
+Peter Zijlstra (8):
+      x86/lib/atomic64_386_32: Rename things
+      x86: Prepare asm files for straight-line-speculation
+      x86: Prepare inline-asm for straight-line-speculation
+      objtool: Add straight-line-speculation validation
+      x86/alternative: Relax text_poke_bp() constraint
+      x86: Add straight-line-speculation mitigation
+      crypto: x86/poly1305 - Fixup SLS
+      objtool: Fix SLS validation for kcov tail-call replacement
+---
+Makefile                                      |  2 +-
+ arch/x86/Kconfig                              | 12 ++++
+ arch/x86/Makefile                             |  4 ++
+ arch/x86/boot/compressed/efi_thunk_64.S       |  2 +-
+ arch/x86/boot/compressed/head_64.S            |  8 +--
+ arch/x86/boot/compressed/mem_encrypt.S        |  6 +-
+ arch/x86/crypto/aegis128-aesni-asm.S          | 48 +++++++--------
+ arch/x86/crypto/aes_ctrby8_avx-x86_64.S       |  2 +-
+ arch/x86/crypto/aesni-intel_asm.S             | 56 ++++++++---------
+ arch/x86/crypto/aesni-intel_avx-x86_64.S      | 40 ++++++-------
+ arch/x86/crypto/blake2s-core.S                |  4 +-
+ arch/x86/crypto/blowfish-x86_64-asm_64.S      | 12 ++--
+ arch/x86/crypto/camellia-aesni-avx-asm_64.S   | 14 ++---
+ arch/x86/crypto/camellia-aesni-avx2-asm_64.S  | 14 ++---
+ arch/x86/crypto/camellia-x86_64-asm_64.S      | 12 ++--
+ arch/x86/crypto/cast5-avx-x86_64-asm_64.S     | 12 ++--
+ arch/x86/crypto/cast6-avx-x86_64-asm_64.S     | 10 ++--
+ arch/x86/crypto/chacha-avx2-x86_64.S          |  6 +-
+ arch/x86/crypto/chacha-avx512vl-x86_64.S      |  6 +-
+ arch/x86/crypto/chacha-ssse3-x86_64.S         |  8 +--
+ arch/x86/crypto/crc32-pclmul_asm.S            |  2 +-
+ arch/x86/crypto/crc32c-pcl-intel-asm_64.S     |  2 +-
+ arch/x86/crypto/crct10dif-pcl-asm_64.S        |  2 +-
+ arch/x86/crypto/des3_ede-asm_64.S             |  4 +-
+ arch/x86/crypto/ghash-clmulni-intel_asm.S     |  6 +-
+ arch/x86/crypto/nh-avx2-x86_64.S              |  2 +-
+ arch/x86/crypto/nh-sse2-x86_64.S              |  2 +-
+ arch/x86/crypto/poly1305-x86_64-cryptogams.pl | 38 ++++++------
+ arch/x86/crypto/serpent-avx-x86_64-asm_64.S   | 10 ++--
+ arch/x86/crypto/serpent-avx2-asm_64.S         | 10 ++--
+ arch/x86/crypto/serpent-sse2-i586-asm_32.S    |  6 +-
+ arch/x86/crypto/serpent-sse2-x86_64-asm_64.S  |  6 +-
+ arch/x86/crypto/sha1_avx2_x86_64_asm.S        |  2 +-
+ arch/x86/crypto/sha1_ni_asm.S                 |  2 +-
+ arch/x86/crypto/sha1_ssse3_asm.S              |  2 +-
+ arch/x86/crypto/sha256-avx-asm.S              |  2 +-
+ arch/x86/crypto/sha256-avx2-asm.S             |  2 +-
+ arch/x86/crypto/sha256-ssse3-asm.S            |  2 +-
+ arch/x86/crypto/sha256_ni_asm.S               |  2 +-
+ arch/x86/crypto/sha512-avx-asm.S              |  2 +-
+ arch/x86/crypto/sha512-avx2-asm.S             |  2 +-
+ arch/x86/crypto/sha512-ssse3-asm.S            |  2 +-
+ arch/x86/crypto/sm4-aesni-avx-asm_64.S        | 12 ++--
+ arch/x86/crypto/sm4-aesni-avx2-asm_64.S       |  8 +--
+ arch/x86/crypto/twofish-avx-x86_64-asm_64.S   | 10 ++--
+ arch/x86/crypto/twofish-i586-asm_32.S         |  4 +-
+ arch/x86/crypto/twofish-x86_64-asm_64-3way.S  |  6 +-
+ arch/x86/crypto/twofish-x86_64-asm_64.S       |  4 +-
+ arch/x86/entry/entry_32.S                     |  2 +-
+ arch/x86/entry/entry_64.S                     | 10 ++--
+ arch/x86/entry/thunk_32.S                     |  2 +-
+ arch/x86/entry/thunk_64.S                     |  2 +-
+ arch/x86/entry/vdso/vdso32/system_call.S      |  2 +-
+ arch/x86/entry/vdso/vsgx.S                    |  2 +-
+ arch/x86/entry/vsyscall/vsyscall_emu_64.S     |  6 +-
+ arch/x86/include/asm/linkage.h                | 14 +++++
+ arch/x86/include/asm/paravirt.h               |  2 +-
+ arch/x86/include/asm/qspinlock_paravirt.h     |  4 +-
+ arch/x86/include/asm/static_call.h            |  2 +-
+ arch/x86/kernel/acpi/wakeup_32.S              |  6 +-
+ arch/x86/kernel/alternative.c                 | 51 +++++++++++-----
+ arch/x86/kernel/ftrace.c                      |  2 +-
+ arch/x86/kernel/ftrace_32.S                   |  6 +-
+ arch/x86/kernel/ftrace_64.S                   | 10 ++--
+ arch/x86/kernel/head_32.S                     |  2 +-
+ arch/x86/kernel/irqflags.S                    |  2 +-
+ arch/x86/kernel/kprobes/core.c                |  2 +-
+ arch/x86/kernel/paravirt.c                    |  2 +-
+ arch/x86/kernel/relocate_kernel_32.S          | 10 ++--
+ arch/x86/kernel/relocate_kernel_64.S          | 10 ++--
+ arch/x86/kernel/sev_verify_cbit.S             |  2 +-
+ arch/x86/kernel/static_call.c                 |  5 +-
+ arch/x86/kernel/verify_cpu.S                  |  4 +-
+ arch/x86/kvm/emulate.c                        | 23 +++++--
+ arch/x86/kvm/svm/vmenter.S                    |  4 +-
+ arch/x86/kvm/vmx/vmenter.S                    | 14 ++---
+ arch/x86/lib/atomic64_386_32.S                | 86 +++++++++++++++------------
+ arch/x86/lib/atomic64_cx8_32.S                | 16 ++---
+ arch/x86/lib/checksum_32.S                    |  8 +--
+ arch/x86/lib/clear_page_64.S                  |  6 +-
+ arch/x86/lib/cmpxchg16b_emu.S                 |  4 +-
+ arch/x86/lib/cmpxchg8b_emu.S                  |  4 +-
+ arch/x86/lib/copy_mc_64.S                     |  6 +-
+ arch/x86/lib/copy_page_64.S                   |  4 +-
+ arch/x86/lib/copy_user_64.S                   | 12 ++--
+ arch/x86/lib/csum-copy_64.S                   |  2 +-
+ arch/x86/lib/error-inject.c                   |  3 +-
+ arch/x86/lib/getuser.S                        | 22 +++----
+ arch/x86/lib/hweight.S                        |  6 +-
+ arch/x86/lib/iomap_copy_64.S                  |  2 +-
+ arch/x86/lib/memcpy_64.S                      | 12 ++--
+ arch/x86/lib/memmove_64.S                     |  4 +-
+ arch/x86/lib/memset_64.S                      |  6 +-
+ arch/x86/lib/msr-reg.S                        |  4 +-
+ arch/x86/lib/putuser.S                        |  6 +-
+ arch/x86/lib/retpoline.S                      |  4 +-
+ arch/x86/math-emu/div_Xsig.S                  |  2 +-
+ arch/x86/math-emu/div_small.S                 |  2 +-
+ arch/x86/math-emu/mul_Xsig.S                  |  6 +-
+ arch/x86/math-emu/polynom_Xsig.S              |  2 +-
+ arch/x86/math-emu/reg_norm.S                  |  6 +-
+ arch/x86/math-emu/reg_round.S                 |  2 +-
+ arch/x86/math-emu/reg_u_add.S                 |  2 +-
+ arch/x86/math-emu/reg_u_div.S                 |  2 +-
+ arch/x86/math-emu/reg_u_mul.S                 |  2 +-
+ arch/x86/math-emu/reg_u_sub.S                 |  2 +-
+ arch/x86/math-emu/round_Xsig.S                |  4 +-
+ arch/x86/math-emu/shr_Xsig.S                  |  8 +--
+ arch/x86/math-emu/wm_shrx.S                   | 16 ++---
+ arch/x86/mm/mem_encrypt_boot.S                |  4 +-
+ arch/x86/platform/efi/efi_stub_32.S           |  2 +-
+ arch/x86/platform/efi/efi_stub_64.S           |  2 +-
+ arch/x86/platform/efi/efi_thunk_64.S          |  2 +-
+ arch/x86/platform/olpc/xo1-wakeup.S           |  6 +-
+ arch/x86/power/hibernate_asm_32.S             |  4 +-
+ arch/x86/power/hibernate_asm_64.S             |  4 +-
+ arch/x86/um/checksum_32.S                     |  4 +-
+ arch/x86/um/setjmp_32.S                       |  2 +-
+ arch/x86/um/setjmp_64.S                       |  2 +-
+ arch/x86/xen/xen-asm.S                        | 12 ++--
+ arch/x86/xen/xen-head.S                       |  2 +-
+ fs/udf/namei.c                                |  8 +--
+ include/net/bluetooth/hci_core.h              |  3 +
+ include/uapi/linux/rfkill.h                   |  2 +-
+ localversion-rt                               |  2 +-
+ mm/gup.c                                      |  2 +-
+ mm/memory-failure.c                           |  4 +-
+ mm/memory.c                                   |  2 +
+ mm/migrate.c                                  |  7 ++-
+ mm/mlock.c                                    |  1 +
+ mm/shmem.c                                    |  4 +-
+ mm/userfaultfd.c                              |  3 +
+ net/bluetooth/hci_core.c                      |  6 +-
+ samples/ftrace/ftrace-direct-modify.c         |  4 +-
+ samples/ftrace/ftrace-direct-too.c            |  2 +-
+ samples/ftrace/ftrace-direct.c                |  2 +-
+ scripts/Makefile.build                        | 11 ++++
+ scripts/Makefile.lib                          | 11 ----
+ scripts/link-vmlinux.sh                       |  3 +
+ tools/arch/x86/lib/memcpy_64.S                | 12 ++--
+ tools/arch/x86/lib/memset_64.S                |  6 +-
+ tools/objtool/arch/x86/decode.c               | 13 ++--
+ tools/objtool/builtin-check.c                 |  3 +-
+ tools/objtool/check.c                         | 24 ++++++++
+ tools/objtool/include/objtool/arch.h          |  1 +
+ tools/objtool/include/objtool/builtin.h       |  2 +-
+ 146 files changed, 608 insertions(+), 484 deletions(-)
+---
