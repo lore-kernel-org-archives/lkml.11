@@ -2,145 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82643C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25DECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242866AbiEPKn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
+        id S242908AbiEPKoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242788AbiEPKng (ORCPT
+        with ESMTP id S242812AbiEPKnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:43:36 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDFD924951
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:43:10 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id m23so17614738ljc.0
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:43:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HMrxutDweeUYQ3ATxwWpcqN8/976PlWz92Z8YtqbWzw=;
-        b=RgimAa0q2u5zJ5ZY0mkEsPOVENHf5WfOmpAWknPRBcfPpvBBLO6fUtB83DFiEptqPI
-         hS+THU5KI73w//qfz++JIoya54tm65L34Endgdg9ROFNZFZV8wg8Tkx/pj6L7OfcckRN
-         2ooJEHGAUw8tyw092xdvEYnL3uE3o+aHyb+Zm2NjBMUHp4lrmyitnEKO2xr/4prLRMsl
-         Dz4RMqtNZNrHxTiRgog9rtg/dX+dj/clXXMMXkp6OgMQMJXlhuQpdoMPkwko0UZjd16T
-         GZF6f4HlcET6rZfRwWlifKuNFCD4pGAe/sgQfvplFTt0ovrn9mTLR+FNo46Ri82VZ4HL
-         FVSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HMrxutDweeUYQ3ATxwWpcqN8/976PlWz92Z8YtqbWzw=;
-        b=35iWLeOU8Yzm50d4+j4AEOxS0LOXREUqeZSNOSqb3eurW6nHBvLuo28xwTJSoeSt/f
-         jgrjIcKcy2y17+ac2j+loIyYHAbQz7rKgD1Id5/hVVIVPND1kdlmnEl8Ky0BgqZTSvqQ
-         JKpSJ6dd7LWu91GX5OEC/JTut3cDa6Es4RM6H3AlvRrshEllqpMmEgRkj19jXqTeSlvD
-         3ePNz4fPeZtXWElBfC1p9Td9AK4DoFyxJMFhPy9+8TQgd/Z9eYxnD0iHbK5Jy2zQcWPb
-         o/ADTLiIoQWY8E/xg+xy6gjQMIKS2oljh6VDc4CAip9gKLa/lBL83BIxvfDX6D6vUYGK
-         3BzQ==
-X-Gm-Message-State: AOAM530XQe01AF7kD1q4efPKJU6lmYQa2UwTvNorZ4d8SdOydvYgdoFJ
-        aDgEKpnU1k51UfT5j4Lvvfcihw==
-X-Google-Smtp-Source: ABdhPJw91cQ2XfbmgzGL8D01LEHR3rpwl6a3yuvXOYVaArq35Nl0sdSUqVPITn5NbhfalGLcCIiavA==
-X-Received: by 2002:a05:651c:1542:b0:249:a87f:8a34 with SMTP id y2-20020a05651c154200b00249a87f8a34mr10770319ljp.442.1652697789158;
-        Mon, 16 May 2022 03:43:09 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id z15-20020ac25def000000b0047255d21180sm1264983lfq.175.2022.05.16.03.43.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 03:43:08 -0700 (PDT)
-Message-ID: <ea2af2f9-002a-5681-4293-a05718ce9dcd@linaro.org>
-Date:   Mon, 16 May 2022 12:43:07 +0200
+        Mon, 16 May 2022 06:43:41 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8EFB1DC;
+        Mon, 16 May 2022 03:43:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652697810; x=1684233810;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bq57x6TVD4fbOFuNt0pXx4+SkjFnfxJO4hgo5uenDQs=;
+  b=R8aOpmx+J7CyN+Mi4wDWdb5vaHG0iLFSvjIBDhwj73GauQN3X6APDYuK
+   8QVnZFB5QbhoqB8U75kiKZ9WmNMRU9OraCwCSmai/J/r9umMJbLiztNAU
+   rOkZ99vZKfic9oWNLJrZJl6l1KSksP1Zafuq69kIvGx1m/U1SWcvM+Chy
+   cIS/gbSKM9FwLwVsUzX/btZCNCIVgHdTUaVpmvn1o0dhKUmOk9uk7KhZi
+   sCPHT7ocXiK2saXsFE7VyYVtE7M50mjn3aIwd6g+1vFrOZ0/Xftcje2hz
+   pLAGI4HAlT9TJ7prjx9kmClO/ODH04ekqig3kb8Y08Y0uLx0RFZH/pY7u
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="251306720"
+X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
+   d="scan'208";a="251306720"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 03:43:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
+   d="scan'208";a="672290564"
+Received: from lkp-server02.sh.intel.com (HELO 0628dcddc537) ([10.239.97.151])
+  by fmsmga002.fm.intel.com with ESMTP; 16 May 2022 03:43:27 -0700
+Received: from kbuild by 0628dcddc537 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nqYCE-000018-Gj;
+        Mon, 16 May 2022 10:43:26 +0000
+Date:   Mon, 16 May 2022 18:42:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Anand Moon <linux.amoon@gmail.com>,
+        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Anand Moon <linux.amoon@gmail.com>
+Subject: Re: [PATCHv2 4/6] thermal: exynos: fixed the efuse min/max value for
+ exynos5422
+Message-ID: <202205161820.8rHIcsvI-lkp@intel.com>
+References: <20220515064126.1424-5-linux.amoon@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net] NFC: hci: fix sleep in atomic context bugs in
- nfc_hci_hcp_message_tx
-Content-Language: en-US
-To:     duoming@zju.edu.cn
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
-        broonie@kernel.org, netdev@vger.kernel.org
-References: <20220516021028.54063-1-duoming@zju.edu.cn>
- <d5fdfe27-a6de-3030-ce51-9f4f45d552f3@linaro.org>
- <6aba1413.196eb.180cc609bf1.Coremail.duoming@zju.edu.cn>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <6aba1413.196eb.180cc609bf1.Coremail.duoming@zju.edu.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220515064126.1424-5-linux.amoon@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/05/2022 12:18, duoming@zju.edu.cn wrote:
-> Hello,
-> 
-> On Mon, 16 May 2022 08:44:39 +0200 Krzysztof wrote:
-> 
->>> There are sleep in atomic context bugs when the request to secure
->>> element of st21nfca is timeout. The root cause is that kzalloc and
->>> alloc_skb with GFP_KERNEL parameter is called in st21nfca_se_wt_timeout
->>> which is a timer handler. The call tree shows the execution paths that
->>> could lead to bugs:
->>>
->>>    (Interrupt context)
->>> st21nfca_se_wt_timeout
->>>   nfc_hci_send_event
->>>     nfc_hci_hcp_message_tx
->>>       kzalloc(..., GFP_KERNEL) //may sleep
->>>       alloc_skb(..., GFP_KERNEL) //may sleep
->>>
->>> This patch changes allocation mode of kzalloc and alloc_skb from
->>> GFP_KERNEL to GFP_ATOMIC in order to prevent atomic context from
->>> sleeping. The GFP_ATOMIC flag makes memory allocation operation
->>> could be used in atomic context.
->>>
->>> Fixes: 8b8d2e08bf0d ("NFC: HCI support")
->>> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
->>> ---
->>>  net/nfc/hci/hcp.c | 4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/net/nfc/hci/hcp.c b/net/nfc/hci/hcp.c
->>> index 05c60988f59..1caf9c2086f 100644
->>> --- a/net/nfc/hci/hcp.c
->>> +++ b/net/nfc/hci/hcp.c
->>> @@ -30,7 +30,7 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
->>>  	int hci_len, err;
->>>  	bool firstfrag = true;
->>>  
->>> -	cmd = kzalloc(sizeof(struct hci_msg), GFP_KERNEL);
->>> +	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
->>
->> No, this does not look correct. This function can sleep, so it can use
->> GFP_KERNEL. Please just look at the function before replacing any flags...
-> 
-> I am sorry, I don`t understand why nfc_hci_hcp_message_tx() can sleep.
+Hi Anand,
 
-Why? because in line 93 it uses a mutex (which is a sleeping primitve).
+Thank you for the patch! Perhaps something to improve:
 
-> 
-> I think st21nfca_se_wt_timeout() is a timer handler, which is in interrupt context.
-> The call tree shows the execution paths that could lead to bugs:
-> 
-> st21nfca_hci_se_io()
->   mod_timer(&info->se_info.bwi_timer,...)
->     st21nfca_se_wt_timeout()  //timer handler, interrupt context
->       nfc_hci_send_event()
->         nfc_hci_hcp_message_tx()
->           kzalloc(..., GFP_KERNEL) //may sleep
->           alloc_skb(..., GFP_KERNEL) //may sleep
-> 
-> What`s more, I think the "mutex_lock(&hdev->msg_tx_mutex)" called by nfc_hci_hcp_message_tx()
-> is also improper.
-> 
-> Please correct me, If you think I am wrong. Thanks for your time.
+[auto build test WARNING on ec7f49619d8ee13e108740c82f942cd401b989e9]
 
-Your patch is not correct in current semantics of this function. This
-function can sleep (because it uses a mutex), so the mistake is rather
-calling it from interrupt context.
+url:    https://github.com/intel-lab-lkp/linux/commits/Anand-Moon/Exynos-Thermal-code-inprovement/20220515-144336
+base:   ec7f49619d8ee13e108740c82f942cd401b989e9
+config: hexagon-randconfig-r033-20220516 (https://download.01.org/0day-ci/archive/20220516/202205161820.8rHIcsvI-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/eb50b0c2100fabd6d09b87abd11f52c5295512e8
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Anand-Moon/Exynos-Thermal-code-inprovement/20220515-144336
+        git checkout eb50b0c2100fabd6d09b87abd11f52c5295512e8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/thermal/samsung/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/thermal/samsung/exynos_tmu.c:929:40: warning: overlapping comparisons always evaluate to false [-Wtautological-overlap-compare]
+                   if (data->soc == SOC_ARCH_EXYNOS5420 &&
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+   1 warning generated.
 
 
-Best regards,
-Krzysztof
+vim +929 drivers/thermal/samsung/exynos_tmu.c
+
+   865	
+   866	static int exynos_map_dt_data(struct platform_device *pdev)
+   867	{
+   868		struct exynos_tmu_data *data = platform_get_drvdata(pdev);
+   869		struct resource res;
+   870	
+   871		if (!data || !pdev->dev.of_node)
+   872			return -ENODEV;
+   873	
+   874		data->id = of_alias_get_id(pdev->dev.of_node, "tmuctrl");
+   875		if (data->id < 0)
+   876			data->id = 0;
+   877	
+   878		data->irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
+   879		if (data->irq <= 0) {
+   880			dev_err(&pdev->dev, "failed to get IRQ\n");
+   881			return -ENODEV;
+   882		}
+   883	
+   884		if (of_address_to_resource(pdev->dev.of_node, 0, &res)) {
+   885			dev_err(&pdev->dev, "failed to get Resource 0\n");
+   886			return -ENODEV;
+   887		}
+   888	
+   889		data->base = devm_ioremap(&pdev->dev, res.start, resource_size(&res));
+   890		if (!data->base) {
+   891			dev_err(&pdev->dev, "Failed to ioremap memory\n");
+   892			return -EADDRNOTAVAIL;
+   893		}
+   894	
+   895		data->soc = (enum soc_type)of_device_get_match_data(&pdev->dev);
+   896	
+   897		switch (data->soc) {
+   898		case SOC_ARCH_EXYNOS4210:
+   899			data->tmu_set_trip_temp = exynos4210_tmu_set_trip_temp;
+   900			data->tmu_set_trip_hyst = exynos4210_tmu_set_trip_hyst;
+   901			data->tmu_initialize = exynos4210_tmu_initialize;
+   902			data->tmu_control = exynos4210_tmu_control;
+   903			data->tmu_read = exynos4210_tmu_read;
+   904			data->tmu_clear_irqs = exynos4210_tmu_clear_irqs;
+   905			data->ntrip = 4;
+   906			data->gain = 15;
+   907			data->reference_voltage = 7;
+   908			data->efuse_value = 55;
+   909			data->min_efuse_value = 40;
+   910			data->max_efuse_value = 100;
+   911			break;
+   912		case SOC_ARCH_EXYNOS3250:
+   913		case SOC_ARCH_EXYNOS4412:
+   914		case SOC_ARCH_EXYNOS5250:
+   915		case SOC_ARCH_EXYNOS5260:
+   916		case SOC_ARCH_EXYNOS5420:
+   917		case SOC_ARCH_EXYNOS5420_TRIMINFO:
+   918			data->tmu_set_trip_temp = exynos4412_tmu_set_trip_temp;
+   919			data->tmu_set_trip_hyst = exynos4412_tmu_set_trip_hyst;
+   920			data->tmu_initialize = exynos4412_tmu_initialize;
+   921			data->tmu_control = exynos4210_tmu_control;
+   922			data->tmu_read = exynos4412_tmu_read;
+   923			data->tmu_set_emulation = exynos4412_tmu_set_emulation;
+   924			data->tmu_clear_irqs = exynos4210_tmu_clear_irqs;
+   925			data->ntrip = 4;
+   926			data->gain = 8;
+   927			data->reference_voltage = 16;
+   928			data->efuse_value = 55;
+ > 929			if (data->soc == SOC_ARCH_EXYNOS5420 &&
+   930			    data->soc == SOC_ARCH_EXYNOS5420_TRIMINFO) {
+   931				data->min_efuse_value = 16;
+   932				data->max_efuse_value = 76;
+   933			} else {
+   934				data->min_efuse_value = 40;
+   935				data->max_efuse_value = 100;
+   936			}
+   937			break;
+   938		case SOC_ARCH_EXYNOS5433:
+   939			data->tmu_set_trip_temp = exynos5433_tmu_set_trip_temp;
+   940			data->tmu_set_trip_hyst = exynos5433_tmu_set_trip_hyst;
+   941			data->tmu_initialize = exynos5433_tmu_initialize;
+   942			data->tmu_control = exynos5433_tmu_control;
+   943			data->tmu_read = exynos4412_tmu_read;
+   944			data->tmu_set_emulation = exynos4412_tmu_set_emulation;
+   945			data->tmu_clear_irqs = exynos4210_tmu_clear_irqs;
+   946			data->ntrip = 8;
+   947			data->gain = 8;
+   948			if (res.start == EXYNOS5433_G3D_BASE)
+   949				data->reference_voltage = 23;
+   950			else
+   951				data->reference_voltage = 16;
+   952			data->efuse_value = 75;
+   953			data->min_efuse_value = 40;
+   954			data->max_efuse_value = 150;
+   955			break;
+   956		case SOC_ARCH_EXYNOS7:
+   957			data->tmu_set_trip_temp = exynos7_tmu_set_trip_temp;
+   958			data->tmu_set_trip_hyst = exynos7_tmu_set_trip_hyst;
+   959			data->tmu_initialize = exynos7_tmu_initialize;
+   960			data->tmu_control = exynos7_tmu_control;
+   961			data->tmu_read = exynos7_tmu_read;
+   962			data->tmu_set_emulation = exynos4412_tmu_set_emulation;
+   963			data->tmu_clear_irqs = exynos4210_tmu_clear_irqs;
+   964			data->ntrip = 8;
+   965			data->gain = 9;
+   966			data->reference_voltage = 17;
+   967			data->efuse_value = 75;
+   968			data->min_efuse_value = 15;
+   969			data->max_efuse_value = 100;
+   970			break;
+   971		default:
+   972			dev_err(&pdev->dev, "Platform not supported\n");
+   973			return -EINVAL;
+   974		}
+   975	
+   976		data->cal_type = TYPE_ONE_POINT_TRIMMING;
+   977	
+   978		/*
+   979		 * Check if the TMU shares some registers and then try to map the
+   980		 * memory of common registers.
+   981		 */
+   982		if (data->soc != SOC_ARCH_EXYNOS5420_TRIMINFO)
+   983			return 0;
+   984	
+   985		if (of_address_to_resource(pdev->dev.of_node, 1, &res)) {
+   986			dev_err(&pdev->dev, "failed to get Resource 1\n");
+   987			return -ENODEV;
+   988		}
+   989	
+   990		data->base_second = devm_ioremap(&pdev->dev, res.start,
+   991						resource_size(&res));
+   992		if (!data->base_second) {
+   993			dev_err(&pdev->dev, "Failed to ioremap memory\n");
+   994			return -ENOMEM;
+   995		}
+   996	
+   997		return 0;
+   998	}
+   999	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
