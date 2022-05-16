@@ -2,246 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC61C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BEA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 11:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243152AbiEPL0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 07:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47212 "EHLO
+        id S233899AbiEPL3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 07:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243175AbiEPL0F (ORCPT
+        with ESMTP id S229693AbiEPL3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 07:26:05 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FC8D138;
-        Mon, 16 May 2022 04:26:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652700364; x=1684236364;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rtKBn5k5pHF1j/ZQ6DlaX8fzQPJ8ryUBgGQCXLcd+aQ=;
-  b=QhGri0gxb9ElwskUxG1wxy4S68rKylj0eXJ9kY+DDZtXf0Uxr/TudIYs
-   ZMfAMl1RfYxISFtIuH9skqvsHOYWY0GN5RXabG1cueodCJKz9ySqeezYJ
-   0h6qpZIpm/548TNPCTFVrbqpmxZbh5Wya5Z7sqR8jsGm6bQUOfQ0vl3pQ
-   0UPA8J4eEd3x9rUuNfWOxyNuvNjZFvExca2/9kkiu0ZEH2fVE3JodFf4I
-   jzTlPIy4j016YLC9XrYRAezwGWIUYYWFV+pagxS7JLyD534GQCE1P2D3v
-   kWJ/OWOtaEreUKLRbPpK3kFJQ0f5Q77KLGAw9psfnIMpRXMe9MihDIEVK
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="258372247"
-X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
-   d="scan'208";a="258372247"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 04:26:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; 
-   d="scan'208";a="713324156"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 16 May 2022 04:25:55 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 16 May 2022 14:25:55 +0300
-Date:   Mon, 16 May 2022 14:25:55 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH v4 2/5] drm: Add HPD state to
- drm_connector_oob_hotplug_event()
-Message-ID: <YoI0wx/LPK4ZrUFf@kuha.fi.intel.com>
-References: <20220502165316.4167199-1-bjorn.andersson@linaro.org>
- <20220502165316.4167199-3-bjorn.andersson@linaro.org>
+        Mon, 16 May 2022 07:29:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9605D139;
+        Mon, 16 May 2022 04:29:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50D3EB81057;
+        Mon, 16 May 2022 11:29:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8817CC385B8;
+        Mon, 16 May 2022 11:29:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652700550;
+        bh=nJB+Oj+EMaiHtJGEgHUqqIU2EC9RoBWL+Nd8eq8yAy4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uMvfOMT98aHFxjccQ5rOtC4U6FS3lYCkZPilv2PAi7sDGVkVlP5lOfv/i99hMFTam
+         OOdCc7Vhr3wLoYxmuj/G1uJQkwB1LNkUfNWS+b1Aa5Y+pHozEkZO384IvnpiB1QBch
+         eDYqXTKamIlbLWtvuSPKOjf2opE5U2DRhtXQ/fC1EiQnZuwM6PRinF2ajbhP7EiTBp
+         f12AKwjP96M3aM1cyhRqLZmxF4xVT19O+k8GYofJEk/N5gR4yjlKdCuuLFKMPYoc0y
+         KCuoP/bzkF3xlHxw55strt/+EL+WJwnQV83Dj7p5d0FfXo9OH0ljmkDKesO4WbnM+K
+         phBZuSpZheIgg==
+Date:   Mon, 16 May 2022 16:59:05 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Akhil R <akhilrajeev@nvidia.com>
+Cc:     dmaengine@vger.kernel.org, jonathanh@nvidia.com,
+        ldewangan@nvidia.com, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org, p.zabel@pengutronix.de,
+        thierry.reding@gmail.com
+Subject: Re: [PATCH] dmaengine: tegra: Use platform_get_irq() to get IRQ
+ resource
+Message-ID: <YoI1gchpEUcqC6fY@matsya>
+References: <20220505091440.12981-1-akhilrajeev@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220502165316.4167199-3-bjorn.andersson@linaro.org>
+In-Reply-To: <20220505091440.12981-1-akhilrajeev@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Hans
+On 05-05-22, 14:44, Akhil R wrote:
+> Use platform_irq_get() instead platform_get_resource() for IRQ resource
+> to fix the probe failure. platform_get_resource() fails to fetch the IRQ
+> resource as it might not be ready at that time.
+> 
+> platform_irq_get() is also the recommended way to get interrupt as it
+> directly gives the IRQ number and no conversion from resource is
+> required.
 
-Hans, do you have any comments?
-
-On Mon, May 02, 2022 at 09:53:13AM -0700, Bjorn Andersson wrote:
-> In some implementations, such as the Qualcomm platforms, the display
-> driver has no way to query the current HPD state and as such it's
-> impossible to distinguish between disconnect and attention events.
-> 
-> Add a parameter to drm_connector_oob_hotplug_event() to pass the HPD
-> state.
-> 
-> Also push the test for unchanged state in the displayport altmode driver
-> into the i915 driver, to allow other drivers to act upon each update.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
-> 
-> Changes since v3:
-> - Transition to drm_connector_status instead of custom hpd_state 
-> 
->  drivers/gpu/drm/drm_connector.c          |  6 ++++--
->  drivers/gpu/drm/i915/display/intel_dp.c  | 17 ++++++++++++++---
->  drivers/gpu/drm/i915/i915_drv.h          |  3 +++
->  drivers/usb/typec/altmodes/displayport.c | 10 +++-------
->  include/drm/drm_connector.h              |  6 ++++--
->  5 files changed, 28 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-> index 1c48d162c77e..e86c69f0640f 100644
-> --- a/drivers/gpu/drm/drm_connector.c
-> +++ b/drivers/gpu/drm/drm_connector.c
-> @@ -2794,6 +2794,7 @@ struct drm_connector *drm_connector_find_by_fwnode(struct fwnode_handle *fwnode)
->  /**
->   * drm_connector_oob_hotplug_event - Report out-of-band hotplug event to connector
->   * @connector_fwnode: fwnode_handle to report the event on
-> + * @status: hot plug detect logical state
->   *
->   * On some hardware a hotplug event notification may come from outside the display
->   * driver / device. An example of this is some USB Type-C setups where the hardware
-> @@ -2803,7 +2804,8 @@ struct drm_connector *drm_connector_find_by_fwnode(struct fwnode_handle *fwnode)
->   * This function can be used to report these out-of-band events after obtaining
->   * a drm_connector reference through calling drm_connector_find_by_fwnode().
->   */
-> -void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode)
-> +void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode,
-> +				     enum drm_connector_status status)
->  {
->  	struct drm_connector *connector;
->  
-> @@ -2812,7 +2814,7 @@ void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode)
->  		return;
->  
->  	if (connector->funcs->oob_hotplug_event)
-> -		connector->funcs->oob_hotplug_event(connector);
-> +		connector->funcs->oob_hotplug_event(connector, status);
->  
->  	drm_connector_put(connector);
->  }
-> diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-> index e4a79c11fd25..56cc023f7bbd 100644
-> --- a/drivers/gpu/drm/i915/display/intel_dp.c
-> +++ b/drivers/gpu/drm/i915/display/intel_dp.c
-> @@ -4951,15 +4951,26 @@ static int intel_dp_connector_atomic_check(struct drm_connector *conn,
->  	return intel_modeset_synced_crtcs(state, conn);
->  }
->  
-> -static void intel_dp_oob_hotplug_event(struct drm_connector *connector)
-> +static void intel_dp_oob_hotplug_event(struct drm_connector *connector,
-> +				       enum drm_connector_status hpd_state)
->  {
->  	struct intel_encoder *encoder = intel_attached_encoder(to_intel_connector(connector));
->  	struct drm_i915_private *i915 = to_i915(connector->dev);
-> +	bool hpd_high = hpd_state == connector_status_connected;
-> +	unsigned int hpd_pin = encoder->hpd_pin;
-> +	bool need_work = false;
->  
->  	spin_lock_irq(&i915->irq_lock);
-> -	i915->hotplug.event_bits |= BIT(encoder->hpd_pin);
-> +	if (hpd_high != test_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state)) {
-> +		i915->hotplug.event_bits |= BIT(hpd_pin);
-> +
-> +		__assign_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state, hpd_high);
-> +		need_work = true;
-> +	}
->  	spin_unlock_irq(&i915->irq_lock);
-> -	queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
-> +
-> +	if (need_work)
-> +		queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
->  }
->  
->  static const struct drm_connector_funcs intel_dp_connector_funcs = {
-> diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-> index 24111bf42ce0..96c088bb5522 100644
-> --- a/drivers/gpu/drm/i915/i915_drv.h
-> +++ b/drivers/gpu/drm/i915/i915_drv.h
-> @@ -135,6 +135,9 @@ struct i915_hotplug {
->  	/* Whether or not to count short HPD IRQs in HPD storms */
->  	u8 hpd_short_storm_enabled;
->  
-> +	/* Last state reported by oob_hotplug_event for each encoder */
-> +	unsigned long oob_hotplug_last_state;
-> +
->  	/*
->  	 * if we get a HPD irq from DP and a HPD irq from non-DP
->  	 * the non-DP HPD could block the workqueue on a mode config
-> diff --git a/drivers/usb/typec/altmodes/displayport.c b/drivers/usb/typec/altmodes/displayport.c
-> index c1d8c23baa39..9360ca177c7d 100644
-> --- a/drivers/usb/typec/altmodes/displayport.c
-> +++ b/drivers/usb/typec/altmodes/displayport.c
-> @@ -59,7 +59,6 @@ struct dp_altmode {
->  	struct typec_displayport_data data;
->  
->  	enum dp_state state;
-> -	bool hpd;
->  
->  	struct mutex lock; /* device lock */
->  	struct work_struct work;
-> @@ -143,10 +142,8 @@ static int dp_altmode_status_update(struct dp_altmode *dp)
->  		if (!ret)
->  			dp->state = DP_STATE_CONFIGURE;
->  	} else {
-> -		if (dp->hpd != hpd) {
-> -			drm_connector_oob_hotplug_event(dp->connector_fwnode);
-> -			dp->hpd = hpd;
-> -		}
-> +		drm_connector_oob_hotplug_event(dp->connector_fwnode,
-> +						hpd ? connector_status_connected : connector_status_disconnected);
->  	}
->  
->  	return ret;
-> @@ -573,8 +570,7 @@ void dp_altmode_remove(struct typec_altmode *alt)
->  	cancel_work_sync(&dp->work);
->  
->  	if (dp->connector_fwnode) {
-> -		if (dp->hpd)
-> -			drm_connector_oob_hotplug_event(dp->connector_fwnode);
-> +		drm_connector_oob_hotplug_event(dp->connector_fwnode, connector_status_disconnected);
->  
->  		fwnode_handle_put(dp->connector_fwnode);
->  	}
-> diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
-> index 3ac4bf87f257..886aa1861ed9 100644
-> --- a/include/drm/drm_connector.h
-> +++ b/include/drm/drm_connector.h
-> @@ -1141,7 +1141,8 @@ struct drm_connector_funcs {
->  	 * This will get called when a hotplug-event for a drm-connector
->  	 * has been received from a source outside the display driver / device.
->  	 */
-> -	void (*oob_hotplug_event)(struct drm_connector *connector);
-> +	void (*oob_hotplug_event)(struct drm_connector *connector,
-> +				  enum drm_connector_status status);
->  
->  	/**
->  	 * @debugfs_init:
-> @@ -1749,7 +1750,8 @@ drm_connector_is_unregistered(struct drm_connector *connector)
->  		DRM_CONNECTOR_UNREGISTERED;
->  }
->  
-> -void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode);
-> +void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode,
-> +				     enum drm_connector_status status);
->  const char *drm_get_connector_type_name(unsigned int connector_type);
->  const char *drm_get_connector_status_name(enum drm_connector_status status);
->  const char *drm_get_subpixel_order_name(enum subpixel_order order);
-> -- 
-> 2.35.1
+Applied, thanks
 
 -- 
-heikki
+~Vinod
