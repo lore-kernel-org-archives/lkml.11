@@ -2,103 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C07C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8740CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346629AbiEPTy4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56672 "EHLO
+        id S237583AbiEPTzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346243AbiEPTu3 (ORCPT
+        with ESMTP id S1346212AbiEPTux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:50:29 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266FE43EF3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:45:24 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id h29so27687406lfj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:45:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uUfVm42ZQNq+014IW1sf3DQHsLIVj6aXXsUckSeTuwM=;
-        b=V+moZ65xYCfiJkcirAAUUuL5GWd5JL8+6D06wvLfUPuwIY6fNQFLXCAGe/bRJTef3D
-         dDtxNiVCSGvpF6a+vuzD4/4m62cQbzbEa8GF7YowgtPbzyuEmFkzUdXjuKBlkS0V9dZn
-         yfUZ0Vt/Q8KvCThJcOvDYklKjRzc7VRy+mapzNeeCaAw0lICrm+n0tgI9iRkNlBhdAgM
-         c/uBJL9pO7GAr52HJyVUOvhXHfJghKczv5N1p8pOCsztPc0Zz4SA/FsN20HeHrsRzHJ4
-         cn/uR0ZaUd4zFd8jIsYLDI0waodll597mK8FXXX/t2TaVZcv8Ya26f3XMJonPjDAar7F
-         FQjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=uUfVm42ZQNq+014IW1sf3DQHsLIVj6aXXsUckSeTuwM=;
-        b=Z5wYL8qXPAUjF2FbCBTfsRpDUX9iGmzgDxU5V1BFqlZw0RwZeEC+c214pEBc69nPHy
-         hx8BJcY6twLM1LGNeOx24QKulkzfr1VHVIyklwDx0y82pK1eVf88EHJlwSbAG+AYQeAJ
-         HYQuGFUTZ0/ZSKkEdZe4yrbXVyjgf/gS0w6bGGPsbWnfcSYlk5Y82wgG781hKeOgQ/gP
-         7kl+7Hyvw+XLcBDzFMzPQMLRquqN81CPLBaEyPLclkt1SvG2CeP0xZmsGg+4Yh4z7E9n
-         vnOknkuZXn5X8gpTEZOi9UvWq5IGwzjEemlUbyHR9U1PqLPwG87kLS+/lx2rTGAlvA1Y
-         YVxw==
-X-Gm-Message-State: AOAM530cTK6cq8J+6lF6h2mftrZG5R+Vasb/woDMuS4J0jQ5e/PAVoGZ
-        dgrY21F4twhwU54NKxzn2GkBAygux+Ky/A==
-X-Google-Smtp-Source: ABdhPJzhuBrUIgSvINGOPQFV34k2TU982jsDwjgoIihymBDOgC4KtnTFCODJapFZn8pyN89Sc2pNzg==
-X-Received: by 2002:a05:6512:1154:b0:472:65ab:4159 with SMTP id m20-20020a056512115400b0047265ab4159mr13927604lfg.411.1652730322328;
-        Mon, 16 May 2022 12:45:22 -0700 (PDT)
-Received: from [192.168.1.11] ([217.117.245.216])
-        by smtp.gmail.com with ESMTPSA id j10-20020a2e800a000000b002539c858cccsm1424256ljg.49.2022.05.16.12.45.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 12:45:21 -0700 (PDT)
-Message-ID: <7b926f43-8c6b-6eae-edc6-02dc16376eb0@gmail.com>
-Date:   Mon, 16 May 2022 22:45:20 +0300
+        Mon, 16 May 2022 15:50:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E31443CE;
+        Mon, 16 May 2022 12:45:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 982BCCE1798;
+        Mon, 16 May 2022 19:45:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EDEC34100;
+        Mon, 16 May 2022 19:45:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652730327;
+        bh=eWA4IP9jXbZ4Dw5owvga1ugxXXjxeiJvUw4vGvqPllA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0taIAyD32eo4azoyz70fvJscoOHyCt4IX/xoyOKlVqtiS3oI1Z/On/LZ/2PxKSkh8
+         DnTxuV+rw8kXpMaeDmAxdj3TFd74vtakoS5NjYdWtOe1TpGNgE7VZ9hmuRNqWKlfG9
+         SGtzfjltktU8baqCApIsR7P9WbphfVUx9KIIckoM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 29/66] tls: Fix context leak on tls_device_down
+Date:   Mon, 16 May 2022 21:36:29 +0200
+Message-Id: <20220516193620.257989798@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
+References: <20220516193619.400083785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/3] staging: r8188eu: fix checkpatch.pl warnings in
- rtw_pwrctrl
-Content-Language: en-US
-To:     Vihas Makwana <makvihas@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220516170306.6008-1-makvihas@gmail.com>
- <20220516170306.6008-3-makvihas@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220516170306.6008-3-makvihas@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vihas,
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-On 5/16/22 20:03, Vihas Makwana wrote:
-> Refactor the code to fix following warnings:
->      WARNING: Comparisons should place the constant on the right side of the test
-> 
-> Signed-off-by: Vihas Makwana <makvihas@gmail.com>
-> ---
+[ Upstream commit 3740651bf7e200109dd42d5b2fb22226b26f960a ]
 
-[code snip]
+The commit cited below claims to fix a use-after-free condition after
+tls_device_down. Apparently, the description wasn't fully accurate. The
+context stayed alive, but ctx->netdev became NULL, and the offload was
+torn down without a proper fallback, so a bug was present, but a
+different kind of bug.
 
->   		if ((pwrpriv->smart_ps == smart_ps) &&
-> @@ -356,7 +356,7 @@ void rtw_init_pwrctrl_priv(struct adapter *padapter)
->   
->   	pwrctrlpriv->LpsIdleCount = 0;
->   	pwrctrlpriv->power_mgnt = padapter->registrypriv.power_mgnt;/*  PS_MODE_MIN; */
-> -	pwrctrlpriv->bLeisurePs = PS_MODE_ACTIVE != pwrctrlpriv->power_mgnt;
-> +	pwrctrlpriv->bLeisurePs =  pwrctrlpriv->power_mgnt != PS_MODE_ACTIVE;
->   
+Due to misunderstanding of the issue, the original patch dropped the
+refcount_dec_and_test line for the context to avoid the alleged
+premature deallocation. That line has to be restored, because it matches
+the refcount_inc_not_zero from the same function, otherwise the contexts
+that survived tls_device_down are leaked.
 
-Please remove extra space
+This patch fixes the described issue by restoring refcount_dec_and_test.
+After this change, there is no leak anymore, and the fallback to
+software kTLS still works.
+
+Fixes: c55dcdd435aa ("net/tls: Fix use-after-free after the TLS device goes down and up")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Link: https://lore.kernel.org/r/20220512091830.678684-1-maximmi@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/tls/tls_device.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 1f56225a10e3..3c82286e5bcc 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1345,7 +1345,10 @@ static int tls_device_down(struct net_device *netdev)
+ 
+ 		/* Device contexts for RX and TX will be freed in on sk_destruct
+ 		 * by tls_device_free_ctx. rx_conf and tx_conf stay in TLS_HW.
++		 * Now release the ref taken above.
+ 		 */
++		if (refcount_dec_and_test(&ctx->refcount))
++			tls_device_free_ctx(ctx);
+ 	}
+ 
+ 	up_write(&device_offload_lock);
+-- 
+2.35.1
 
 
 
-
-With regards,
-Pavel Skripkin
