@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E977EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8807C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345515AbiEPTiV (ORCPT
+        id S1345533AbiEPTi1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41896 "EHLO
+        Mon, 16 May 2022 15:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345488AbiEPTiG (ORCPT
+        with ESMTP id S1345497AbiEPTiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:38:06 -0400
+        Mon, 16 May 2022 15:38:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4D93ED17;
-        Mon, 16 May 2022 12:38:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B14E3ED34;
+        Mon, 16 May 2022 12:38:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98354614B6;
-        Mon, 16 May 2022 19:38:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3BCFC385AA;
-        Mon, 16 May 2022 19:38:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C785E61518;
+        Mon, 16 May 2022 19:38:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC6DC385AA;
+        Mon, 16 May 2022 19:38:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729884;
-        bh=VkPH2GOgvW0jX6lgRUV/1Nazd4OVVZfSwSr6lOBKaK0=;
+        s=korg; t=1652729887;
+        bh=ScNpsefaV/IRFOSh0a6YjQXpA8urLYr9F4cqdHvF6c8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=awBF4OX3qtQDqYBs5sER4ecyV2/ul5W+kqOfiPyeA2kvZMSHYZcA/GYHPZU/rbsjd
-         HeWR/dk2JOycWRIDrm1Mm8tx1ppXzRmBHA8MyHw1fYvIpYRe02Uw4TDI5u+hdHKDtC
-         w6f3v5NjiPJO85Uk6FBfMLKohdCrwV0CnI/JgESo=
+        b=IQa55R49YUHnRvpCJ3ek0tzq54Hrh9yT6waLrqECeaSDcECUNu03VfeHslG2yB8gN
+         8qrwdrKsCH2GYIZJ/kTj33+hQ8tSAnbyWuo5PEfom6azECzb7HOoJ79acsJJ8+G70K
+         +GXNCCZ0CQGOjcrI10hLGtxhvuBtOjRVLqA5WUKU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 12/19] ASoC: ops: Validate input values in snd_soc_put_volsw_range()
-Date:   Mon, 16 May 2022 21:36:25 +0200
-Message-Id: <20220516193613.863630546@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 4.9 13/19] usb: cdc-wdm: fix reading stuck on device close
+Date:   Mon, 16 May 2022 21:36:26 +0200
+Message-Id: <20220516193613.891833115@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
 References: <20220516193613.497233635@linuxfoundation.org>
@@ -49,60 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 
-[ Upstream commit aa22125c57f9e577f0a667e4fa07fc3fa8ca1e60 ]
+commit 01e01f5c89773c600a9f0b32c888de0146066c3a upstream.
 
-Check that values written via snd_soc_put_volsw_range() are
-within the range advertised by the control, ensuring that we
-don't write out of spec values to the hardware.
+cdc-wdm tracks whether a response reading request is in-progress and
+blocks the next request from being sent until the previous request is
+completed. As soon as last user closes the cdc-wdm device file, the
+driver cancels any ongoing requests, resets the pending response
+counter, but leaves the response reading in-progress flag
+(WDM_RESPONDING) untouched.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220423131239.3375261-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So if the user closes the device file during the response receive
+request is being performed, no more data will be obtained from the
+modem. The request will be cancelled, effectively preventing the
+WDM_RESPONDING flag from being reseted. Keeping the flag set will
+prevent a new response receive request from being sent, permanently
+blocking the read path. The read path will staying blocked until the
+module will be reloaded or till the modem will be re-attached.
+
+This stuck has been observed with a Huawei E3372 modem attached to an
+OpenWrt router and using the comgt utility to set up a network
+connection.
+
+Fix this issue by clearing the WDM_RESPONDING flag on the device file
+close.
+
+Without this fix, the device reading stuck can be easily reproduced in a
+few connection establishing attempts. With this fix, a load test for
+modem connection re-establishing worked for several hours without any
+issues.
+
+Fixes: 922a5eadd5a3 ("usb: cdc-wdm: Fix race between autosuspend and reading from the device")
+Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc: stable <stable@vger.kernel.org>
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220501175828.8185-1-ryazanov.s.a@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ drivers/usb/class/cdc-wdm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
-index 74968ddee49f..90ba5521c189 100644
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -528,7 +528,15 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
- 	unsigned int val, val_mask;
--	int err, ret;
-+	int err, ret, tmp;
-+
-+	tmp = ucontrol->value.integer.value[0];
-+	if (tmp < 0)
-+		return -EINVAL;
-+	if (mc->platform_max && tmp > mc->platform_max)
-+		return -EINVAL;
-+	if (tmp > mc->max - mc->min + 1)
-+		return -EINVAL;
- 
- 	if (invert)
- 		val = (max - ucontrol->value.integer.value[0]) & mask;
-@@ -543,6 +551,14 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	ret = err;
- 
- 	if (snd_soc_volsw_is_stereo(mc)) {
-+		tmp = ucontrol->value.integer.value[1];
-+		if (tmp < 0)
-+			return -EINVAL;
-+		if (mc->platform_max && tmp > mc->platform_max)
-+			return -EINVAL;
-+		if (tmp > mc->max - mc->min + 1)
-+			return -EINVAL;
-+
- 		if (invert)
- 			val = (max - ucontrol->value.integer.value[1]) & mask;
- 		else
--- 
-2.35.1
-
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -744,6 +744,7 @@ static int wdm_release(struct inode *ino
+ 			kill_urbs(desc);
+ 			spin_lock_irq(&desc->iuspin);
+ 			desc->resp_count = 0;
++			clear_bit(WDM_RESPONDING, &desc->flags);
+ 			spin_unlock_irq(&desc->iuspin);
+ 			desc->manage_power(desc->intf, 0);
+ 		} else {
 
 
