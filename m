@@ -2,179 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76588C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BF4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 18:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345189AbiEPS43 (ORCPT
+        id S1345205AbiEPS4o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 14:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54548 "EHLO
+        Mon, 16 May 2022 14:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232386AbiEPS4Z (ORCPT
+        with ESMTP id S1345187AbiEPS4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 14:56:25 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9A365F1;
-        Mon, 16 May 2022 11:56:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652727383; x=1684263383;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=N6vZipY1C/o523cREZKcuT3/Tn8BOnL68ODAi7fpyvc=;
-  b=Yr5L4F507PWGa82OQqDUwCVgoXHZ9RujeYj6hrVdf8hiakQHMVOA93Mk
-   HyMjRwZtCpoXOm4VCZBw0rHMb9B4kGIm5nN+P/CSp8ibtdfOf/bKWIsIc
-   oj2oSE2a9cZioYG3CF+pSEFc3n9x/PsYVwg2Y+pPL5PddZx/RNfi48L1b
-   IZYlPSvjgAkME0T0uCnkRLEdoPESYQbpBJQfyCAp9yugU82YnUcUMYWIw
-   N/aUnf6IHT38ZMALRTnOKL+zFyDu6Lyety8TvCs4JzF0tbCkBOgBLo/gK
-   NXyMKXHPbXuGmN9FE5Elr2B+r+Knz609ae034vClFOTVW3sfQyh8v1ArJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="270874764"
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="270874764"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 11:56:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="596669158"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 16 May 2022 11:56:20 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3F356A8; Mon, 16 May 2022 21:56:19 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 1/2] pinctrl: intel: make irq_chip immutable
-Date:   Mon, 16 May 2022 21:56:17 +0300
-Message-Id: <20220516185618.32448-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 16 May 2022 14:56:36 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6FA10FE3
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 11:56:35 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id 31-20020a9d0822000000b00605f1807664so10682817oty.3
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 11:56:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=MJx3UmouNiWNfqqDYIOXDPwtYD13RhsMbDA6eXvF/Sw=;
+        b=gC6y+jKfV/qj1AmBnZ0KeN/8oQPBeF/cIWz93DRzjsfOf05ZsxroN7urSre4hLmM+m
+         E7iQvgJYIVhZ44wg+GSt5fEC6xzfb3wQNbpYqkC5FT4OjpardXbuqt0QagsXt2msNd9U
+         gwoWARsqNYkWrUQqPZnJ5lHKag902yPhLHy1s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=MJx3UmouNiWNfqqDYIOXDPwtYD13RhsMbDA6eXvF/Sw=;
+        b=1mXf2dixWO6pXqVnDi49FENYZdaw7Q6idJtTScQCU4I2BDivGGGZyvVLPt03KAdpNx
+         KEXlkVYbigrIKlJ15AkIvg9SPOjgUfuxkJOkK0we5J6ocbO+L+xYZG10Lka7PQ4f5WMH
+         C7E+N6iKoOThfVGsfUsRKOPEjJs3t5t3j0wDAPn3/KvPf7vpHg66FgLdg3K3p1eqJWXa
+         YuZ7zDzJAv1i9RvPANa6zm23lwZeXHZESu3TxYKORRXeklRSIpQVgsKQU5nRV3WkYKtn
+         OnKTnCc7aS2e2t1lLp7T262QIY/n4ubQ7hjfhymq7ELnO0QdS9IWLEoekBk261zDADmb
+         TxWQ==
+X-Gm-Message-State: AOAM533DLnP4FOriI6MaxuJKsyoQjkCsRkHxQj6iFWMLq946zXY2oH6k
+        r2OF836xPq5X1ciaN9oC4mkTHzTW5bM3MABYLW3P1w==
+X-Google-Smtp-Source: ABdhPJxW2uQNcDHTxeJaPy9aURBWojLRwuduj2z6Yw/04X8J1t4LFTEC6Ac0cOZHWux42qZgWJxITqgvegNN26EH6JA=
+X-Received: by 2002:a9d:63cd:0:b0:606:9e7f:79f8 with SMTP id
+ e13-20020a9d63cd000000b006069e7f79f8mr6668728otl.77.1652727395199; Mon, 16
+ May 2022 11:56:35 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 16 May 2022 11:56:34 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1652275113-10277-7-git-send-email-quic_c_skakit@quicinc.com>
+References: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com> <1652275113-10277-7-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 16 May 2022 11:56:34 -0700
+Message-ID: <CAE-0n500ceOR0Fr6=DR9D=hXuDjtyNNVnP3J_B2RMLY5TGCUbg@mail.gmail.com>
+Subject: Re: [PATCH V12 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
+        quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since recently, the kernel is nagging about mutable irq_chips:
+Quoting Satya Priya (2022-05-11 06:18:30)
+> Use i2c_new_dummy_device() to register pm8008-regulator
+> client present at a different address space, instead of
+> defining a separate DT node. This avoids calling the probe
+> twice for the same chip, once for each client pm8008-infra
+> and pm8008-regulator.
+>
+> As a part of this define pm8008_regmap_init() to do regmap
+> init for both the clients and define pm8008_get_regmap() to
+> pass the regmap to the regulator driver.
+>
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> ---
 
-   "not an immutable chip, please consider fixing it!"
-
-Drop the unneeded copy, flag it as IRQCHIP_IMMUTABLE, add the new
-helper functions and call the appropriate gpiolib functions.
-
-While at it, align IRQ chip callback names with member names for
-the sake of consistency.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pinctrl/intel/pinctrl-intel.c | 44 ++++++++++++++++-----------
- 1 file changed, 27 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-index 826d494f3cc6..0d9161a3edf3 100644
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -1039,15 +1039,14 @@ static void intel_gpio_irq_ack(struct irq_data *d)
- 	}
- }
- 
--static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
-+static void intel_gpio_irq_mask_unmask(struct gpio_chip *gc, irq_hw_number_t hwirq, bool mask)
- {
--	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
- 	const struct intel_community *community;
- 	const struct intel_padgroup *padgrp;
- 	int pin;
- 
--	pin = intel_gpio_to_pin(pctrl, irqd_to_hwirq(d), &community, &padgrp);
-+	pin = intel_gpio_to_pin(pctrl, hwirq, &community, &padgrp);
- 	if (pin >= 0) {
- 		unsigned int gpp, gpp_offset;
- 		unsigned long flags;
-@@ -1077,15 +1076,23 @@ static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
- 
- static void intel_gpio_irq_mask(struct irq_data *d)
- {
--	intel_gpio_irq_mask_unmask(d, true);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+	irq_hw_number_t hwirq = irqd_to_hwirq(d);
-+
-+	intel_gpio_irq_mask_unmask(gc, hwirq, true);
-+	gpiochip_disable_irq(gc, hwirq);
- }
- 
- static void intel_gpio_irq_unmask(struct irq_data *d)
- {
--	intel_gpio_irq_mask_unmask(d, false);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+	irq_hw_number_t hwirq = irqd_to_hwirq(d);
-+
-+	gpiochip_enable_irq(gc, hwirq);
-+	intel_gpio_irq_mask_unmask(gc, hwirq, false);
- }
- 
--static int intel_gpio_irq_type(struct irq_data *d, unsigned int type)
-+static int intel_gpio_irq_set_type(struct irq_data *d, unsigned int type)
- {
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-@@ -1142,7 +1149,7 @@ static int intel_gpio_irq_type(struct irq_data *d, unsigned int type)
- 	return 0;
- }
- 
--static int intel_gpio_irq_wake(struct irq_data *d, unsigned int on)
-+static int intel_gpio_irq_set_wake(struct irq_data *d, unsigned int on)
- {
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-@@ -1157,6 +1164,17 @@ static int intel_gpio_irq_wake(struct irq_data *d, unsigned int on)
- 	return 0;
- }
- 
-+static const struct irq_chip intel_gpio_irq_chip = {
-+	.name		= "intel-gpio",
-+	.irq_ack	= intel_gpio_irq_ack,
-+	.irq_mask	= intel_gpio_irq_mask,
-+	.irq_unmask	= intel_gpio_irq_unmask,
-+	.irq_set_type	= intel_gpio_irq_set_type,
-+	.irq_set_wake	= intel_gpio_irq_set_wake,
-+	.flags		= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_IMMUTABLE,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
-+};
-+
- static int intel_gpio_community_irq_handler(struct intel_pinctrl *pctrl,
- 					    const struct intel_community *community)
- {
-@@ -1319,15 +1337,6 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
- 	pctrl->chip.add_pin_ranges = intel_gpio_add_pin_ranges;
- 	pctrl->irq = irq;
- 
--	/* Setup IRQ chip */
--	pctrl->irqchip.name = dev_name(pctrl->dev);
--	pctrl->irqchip.irq_ack = intel_gpio_irq_ack;
--	pctrl->irqchip.irq_mask = intel_gpio_irq_mask;
--	pctrl->irqchip.irq_unmask = intel_gpio_irq_unmask;
--	pctrl->irqchip.irq_set_type = intel_gpio_irq_type;
--	pctrl->irqchip.irq_set_wake = intel_gpio_irq_wake;
--	pctrl->irqchip.flags = IRQCHIP_MASK_ON_SUSPEND;
--
- 	/*
- 	 * On some platforms several GPIO controllers share the same interrupt
- 	 * line.
-@@ -1340,8 +1349,9 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
- 		return ret;
- 	}
- 
-+	/* Setup IRQ chip */
- 	girq = &pctrl->chip.irq;
--	girq->chip = &pctrl->irqchip;
-+	gpio_irq_chip_set_chip(girq, &intel_gpio_irq_chip);
- 	/* This will let us handle the IRQ in the driver */
- 	girq->parent_handler = NULL;
- 	girq->num_parents = 0;
--- 
-2.35.1
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
