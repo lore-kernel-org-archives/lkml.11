@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0B3C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C840C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348149AbiEPU1W (ORCPT
+        id S1348323AbiEPU11 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
+        Mon, 16 May 2022 16:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349688AbiEPUAU (ORCPT
+        with ESMTP id S1349747AbiEPUAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 575C043EE4;
-        Mon, 16 May 2022 12:54:20 -0700 (PDT)
+        Mon, 16 May 2022 16:00:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B03C43EFC;
+        Mon, 16 May 2022 12:54:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6C13B81618;
-        Mon, 16 May 2022 19:54:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A02C34100;
-        Mon, 16 May 2022 19:54:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA453B81612;
+        Mon, 16 May 2022 19:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8DE4C34100;
+        Mon, 16 May 2022 19:54:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730858;
-        bh=p6ago/YST1g5eL3V30HoLhU7ZufykKWvRgnn7qiaM9g=;
+        s=korg; t=1652730861;
+        bh=MN5DrjPhuKaz6X+gSJol3l5D47LkryzVT7lFWe8dDqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IuOvTgYk1qBf4/MMEUKI/N4SlHOuxbp607INi+URHpy/MqtQGSg6u8DYyA5prTZNR
-         AUq0KGFbCAgK9jlCINJUuHDJtSjkPojhmrQ+hHiMhLivfLSit8rFW6+62kdXAC8y93
-         fSb4EuEBFkx/sUQ749PXle1hO3anpi4JwYrqPd8Q=
+        b=cujRespCD6uB95Bg3dLUofzau0P7+3FuuPxplqo5rVz2+AtPNbveqtMj8iZYiA18o
+         69lXmPdVO3VgVJDwbDYEZ2BhXP3SN/V35JHPBiN7vR3Mfw6UuARxxWWdN3Hpm1ovL+
+         OBviwR8L05XZt+1AmmWhZ/X9ZBD0R2K+ooEhY9A8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        stable@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 027/114] ionic: fix missing pci_release_regions() on error in ionic_probe()
-Date:   Mon, 16 May 2022 21:36:01 +0200
-Message-Id: <20220516193626.271583393@linuxfoundation.org>
+Subject: [PATCH 5.17 028/114] dim: initialize all struct fields
+Date:   Mon, 16 May 2022 21:36:02 +0200
+Message-Id: <20220516193626.299689152@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,42 +51,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-[ Upstream commit e4b1045bf9cfec6f70ac6d3783be06c3a88dcb25 ]
+[ Upstream commit ee1444b5e1df4155b591d0d9b1e72853a99ea861 ]
 
-If ionic_map_bars() fails, pci_release_regions() need be called.
+The W=2 build pointed out that the code wasn't initializing all the
+variables in the dim_cq_moder declarations with the struct initializers.
+The net change here is zero since these structs were already static
+const globals and were initialized with zeros by the compiler, but
+removing compiler warnings has value in and of itself.
 
-Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220506034040.2614129-1-yangyingliang@huawei.com
+lib/dim/net_dim.c: At top level:
+lib/dim/net_dim.c:54:9: warning: missing initializer for field ‘comps’ of ‘const struct dim_cq_moder’ [-Wmissing-field-initializers]
+   54 |         NET_DIM_RX_EQE_PROFILES,
+      |         ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from lib/dim/net_dim.c:6:
+./include/linux/dim.h:45:13: note: ‘comps’ declared here
+   45 |         u16 comps;
+      |             ^~~~~
+
+and repeats for the tx struct, and once you fix the comps entry then
+the cq_period_mode field needs the same treatment.
+
+Use the commonly accepted style to indicate to the compiler that we
+know what we're doing, and add a comma at the end of each struct
+initializer to clean up the issue, and use explicit initializers
+for the fields we are initializing which makes the compiler happy.
+
+While here and fixing these lines, clean up the code slightly with
+a fix for the super long lines by removing the word "_MODERATION" from a
+couple defines only used in this file.
+
+Fixes: f8be17b81d44 ("lib/dim: Fix -Wunused-const-variable warnings")
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Link: https://lore.kernel.org/r/20220507011038.14568-1-jesse.brandeburg@intel.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ lib/dim/net_dim.c | 44 ++++++++++++++++++++++----------------------
+ 1 file changed, 22 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 40fa5bce2ac2..d324c292318b 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -255,7 +255,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/lib/dim/net_dim.c b/lib/dim/net_dim.c
+index 06811d866775..53f6b9c6e936 100644
+--- a/lib/dim/net_dim.c
++++ b/lib/dim/net_dim.c
+@@ -12,41 +12,41 @@
+  *        Each profile size must be of NET_DIM_PARAMS_NUM_PROFILES
+  */
+ #define NET_DIM_PARAMS_NUM_PROFILES 5
+-#define NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE 256
+-#define NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE 128
++#define NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE 256
++#define NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE 128
+ #define NET_DIM_DEF_PROFILE_CQE 1
+ #define NET_DIM_DEF_PROFILE_EQE 1
  
- 	err = ionic_map_bars(ionic);
- 	if (err)
--		goto err_out_pci_disable_device;
-+		goto err_out_pci_release_regions;
+ #define NET_DIM_RX_EQE_PROFILES { \
+-	{1,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+-	{8,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+-	{64,  NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+-	{128, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+-	{256, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
++	{.usec = 1,   .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
++	{.usec = 8,   .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
++	{.usec = 64,  .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
++	{.usec = 128, .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}, \
++	{.usec = 256, .pkts = NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE,}  \
+ }
  
- 	/* Configure the device */
- 	err = ionic_setup(ionic);
-@@ -359,6 +359,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ #define NET_DIM_RX_CQE_PROFILES { \
+-	{2,  256},             \
+-	{8,  128},             \
+-	{16, 64},              \
+-	{32, 64},              \
+-	{64, 64}               \
++	{.usec = 2,  .pkts = 256,},             \
++	{.usec = 8,  .pkts = 128,},             \
++	{.usec = 16, .pkts = 64,},              \
++	{.usec = 32, .pkts = 64,},              \
++	{.usec = 64, .pkts = 64,}               \
+ }
  
- err_out_unmap_bars:
- 	ionic_unmap_bars(ionic);
-+err_out_pci_release_regions:
- 	pci_release_regions(pdev);
- err_out_pci_disable_device:
- 	pci_disable_device(pdev);
+ #define NET_DIM_TX_EQE_PROFILES { \
+-	{1,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
+-	{8,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
+-	{32,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
+-	{64,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
+-	{128, NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE}   \
++	{.usec = 1,   .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
++	{.usec = 8,   .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
++	{.usec = 32,  .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
++	{.usec = 64,  .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,},  \
++	{.usec = 128, .pkts = NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE,}   \
+ }
+ 
+ #define NET_DIM_TX_CQE_PROFILES { \
+-	{5,  128},  \
+-	{8,  64},  \
+-	{16, 32},  \
+-	{32, 32},  \
+-	{64, 32}   \
++	{.usec = 5,  .pkts = 128,},  \
++	{.usec = 8,  .pkts = 64,},  \
++	{.usec = 16, .pkts = 32,},  \
++	{.usec = 32, .pkts = 32,},  \
++	{.usec = 64, .pkts = 32,}   \
+ }
+ 
+ static const struct dim_cq_moder
 -- 
 2.35.1
 
