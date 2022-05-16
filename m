@@ -2,168 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07083C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5337FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235786AbiEPJbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 05:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52082 "EHLO
+        id S237355AbiEPJej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 05:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbiEPJbk (ORCPT
+        with ESMTP id S229725AbiEPJef (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 05:31:40 -0400
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11682A729;
-        Mon, 16 May 2022 02:31:38 -0700 (PDT)
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 24G9VJoq019261;
-        Mon, 16 May 2022 18:31:19 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 24G9VJoq019261
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652693479;
-        bh=gzqkQYz7rXOqzd5Offfjf+c5s3dJ0BdJHrkewXfLFNI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WH+sysyU2V647wgDL1BuggvCEsWsZQImH759xyr5JN1rOy2whSJZQ3QkLV5H1iOx6
-         86HMo/Qa2u2MEhH5xlBa15co9a9dbLNi7TBTZ278ae5TdmRs6C6k7EuFRB5tPfJqMm
-         4/HUny/Nc1/JMf6QIUScEMWmHHlxgVnuIa3WSlcQrvU8xAdboua5NVcPHRQDF1WQ8z
-         37U07cMPrpv79A4mUF+ZsUW7Cmsm50jcIxmcix1ugtsc3YkWywMbdRRWH8/6cQCPjN
-         8MCC0ytlm25NVMXDTTjfbll3Sz5BDPXf98Oqkv7Rq1mnvqN5OQCEi2ByMVCYcFGqy8
-         1vCk71/eVkj4A==
-X-Nifty-SrcIP: [209.85.214.175]
-Received: by mail-pl1-f175.google.com with SMTP id d22so13871446plr.9;
-        Mon, 16 May 2022 02:31:19 -0700 (PDT)
-X-Gm-Message-State: AOAM533nSEUmkeaV2DnzrR9s/bTRBdoW9+xjSc6JZPZbD+WhvYEezX1x
-        KR/9GNI1F1WBY3jt2XyOK3QYabzoSk5LKwbyS6c=
-X-Google-Smtp-Source: ABdhPJz1c44GCw74wJDg/tk23rkfWOwUq4fAOU9wYejXDcdeaEoye+YPF9IjidGFPdQN5FCxZmrv9OAhNTF8IGSFC0c=
-X-Received: by 2002:a17:903:2411:b0:161:39ef:57f7 with SMTP id
- e17-20020a170903241100b0016139ef57f7mr13614580plo.136.1652693478552; Mon, 16
- May 2022 02:31:18 -0700 (PDT)
+        Mon, 16 May 2022 05:34:35 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740702C66B
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 02:34:32 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id q135so6714548ybg.10
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 02:34:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IsnZHn/Yb4Gg4uzTdxR5MipH5YV//XGbgl5gxawgKOw=;
+        b=kmC6qA4DQSfbPbmqKTjTBN+WiFA0Fp/1W+HQRhmuXM+3VJxNSa/n6DET1zzSgB32zM
+         2MdZbryi1/IyT1ZUQaOX3m4fIjXz6nZrhkvXoK6vI7TgQx/7eqC5YqIfuAG5e5mwlrHw
+         qshxLVL14zm59d3UYcGrOutXSgZehfPbu1a/S9zlUl7bW8M3pY3GsN7ksSHniACf7GGy
+         sHR9INC1Pb5TFxTh1M55e0zQx6jrLoXmLKpbRrdDsC0ul5eQHwk/0Z4CPAi0ES5I6Gf6
+         Ij0NDczGoDm2JiJex3kKBcSWZMdNPALUNFF3aPIRfKFB6mRTQx6Qphp0wWMo/07ZAfk1
+         2Fug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IsnZHn/Yb4Gg4uzTdxR5MipH5YV//XGbgl5gxawgKOw=;
+        b=JuwCqm8N5hu6DaYIESwiGq9AqWNWb3SQ2Rev12cRL6WLseEvwsq5T05//wzXEDJKkz
+         zKlo7/8aVkwS/Vrj3XYM9SlT2Ftbhiqi7j9X/cyC3GQmJi3byXw7PkgKwi65XLF1xxEu
+         w4ccbu8vZU/7QMKU+BNQsH0wTdSyS8w6JfXKqCTeok3WYZ9kqhB6wKTyeteOu1HeAtNS
+         qFSH7tKWh3red3VIViqc+7FbzUCVsCUtHp5Nyl7RpURfnKHVmjlJfYuOd5D7Np/+UeIO
+         TaSYcYWqBA/T3XxL1zL9MZih1jpQ8+n2gE6KeUeNXuCleVwkEnaJGJTKDXl94WmbooSE
+         TGHg==
+X-Gm-Message-State: AOAM530wX4AD4uCK1ABmaChyTKfslj31LAbrwFe+KX0QV9QBk+clstNp
+        BRDbsN+AkNmfw4+N60o6zoIWI66/WYyT8rAWLAd2qQ==
+X-Google-Smtp-Source: ABdhPJyeoQNI9JDCmFz0km+ymnaePhVCU3SoEOUk9C3+XEExM8+dDbDOgXuSUOaR7g4ZF7g8zFfUQptgZ03LEbD8kTA=
+X-Received: by 2002:a25:9a43:0:b0:64a:bc11:3132 with SMTP id
+ r3-20020a259a43000000b0064abc113132mr16724281ybo.261.1652693671784; Mon, 16
+ May 2022 02:34:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220514040207.282910-1-masahiroy@kernel.org> <20220514040207.282910-2-masahiroy@kernel.org>
- <YoIOhZc3y11n5aMq@FVFF77S0Q05N>
-In-Reply-To: <YoIOhZc3y11n5aMq@FVFF77S0Q05N>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 16 May 2022 18:30:41 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASqZxn3e-DSO0cnYRZ7nY-ztt7rLUry9Fqez+ZT5VMeQw@mail.gmail.com>
-Message-ID: <CAK7LNASqZxn3e-DSO0cnYRZ7nY-ztt7rLUry9Fqez+ZT5VMeQw@mail.gmail.com>
-Subject: Re: [v2 2/2] kbuild: copy scripts/atomic/atomic-*.h to include/generated/atomic-*.h
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
+References: <20220516090752.2137286-1-bh1scw@gmail.com>
+In-Reply-To: <20220516090752.2137286-1-bh1scw@gmail.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Mon, 16 May 2022 17:33:55 +0800
+Message-ID: <CAMZfGtU+WrB9FsiToZJZAVQ26+vS63CeBTAa-AhbhLpi1rGCNw@mail.gmail.com>
+Subject: Re: [PATCH] kernel/sysysctl.c: Remove trailing white space
+To:     bh1scw@gmail.com
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 5:43 PM Mark Rutland <mark.rutland@arm.com> wrote:
+On Mon, May 16, 2022 at 5:08 PM <bh1scw@gmail.com> wrote:
 >
-> [adding the atomics maintainers to Cc]
+> From: Fanjun Kong <bh1scw@gmail.com>
 >
-> On Sat, May 14, 2022 at 01:02:07PM +0900, Masahiro Yamada wrote:
-> > include/linux/atomic/*.h are generated by scripts/atomic/gen-atomics.sh.
-> >
-> > To ensure they are not edited, scripts/atomic/check-atomics.sh checks
-> > sha1sum every time.
-> >
-> > This commit moves include/linux/atomic/*.h to scripts/atomic/*.h_shipped,
-> > which are copied to include/generated/ at build time:
-> >
-> >   COPY    include/generated/atomic-instrumented.h
-> >   COPY    include/generated/atomic-long.h
-> >   COPY    include/generated/atomic-arch-fallback.h
+> This patch removes the trailing white space in kernel/sysysctl.c
+> Special thanks to Muchun Song.
 >
-> FWIW, moving these and copying them at build time is fine by me, given that
-> better indicates that these are generated.
->
-> > I dropped the sha1sum checks. I hope nobody would try to directly modify
-> > *_shipped files.
->
-> I'd prefer to keep the sha1sum check, because we're worried that people *will*
-> modify them, and that won't be noticed until the next time they're regenerated.
+> Signed-off-by: Fanjun Kong <bh1scw@gmail.com>
 
-OK, but is there any reason to embed the checksum to the headers?
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 
-Generally, you can have *.sha1 file to collect the checksums,
-and use the "sha1sum --check" command.
-
-Maybe, scripts/atomic/check-atomics.sh was unneeded.
-
-
-$ sha1sum include/linux/atomic/*.h   >  scripts/atomic/atomics.sha1
-$ cat scripts/atomic/atomics.sha1
-c0f1a9e951f38ccfa146ca2431f9e1611191a402
-include/linux/atomic/atomic-arch-fallback.h
-97ce73d2c176725d199a810eb81c574022ffa899
-include/linux/atomic/atomic-instrumented.h
-b0a5ee2e9497a41795644fa115df184d6331b9c2  include/linux/atomic/atomic-long.h
-$ sha1sum --check   scripts/atomic/atomics.sha1
-include/linux/atomic/atomic-arch-fallback.h: OK
-include/linux/atomic/atomic-instrumented.h: OK
-include/linux/atomic/atomic-long.h: OK
-
-
-It is possible to do "sha1sum --check && cp".
-
-
-
-> > Kbuild runs more and more tools at build time these days because they
-> > are fast enough on modern systems.
-> >
-> > For example,
-> >
-> >  - 29c833061c1d8c2d1d23a62e7061561eadd76cdb
-> >    ("kconfig: generate lexer and parser during build instead of shipping")
-> >
-> >  - 7c0303ff7e67b637c47d8afee533ca9e2a02359b
-> >    ("crypto: arm - generate *.S by Perl at build time instead of shipping them")
-> >
-> > Yet, gen-atomics.sh is too slow.
->
-> Yes; we'd originally wanted to run them at build time, but that was too slow,
-> and as a compromise we moved to regenerating them whenever we changed the
-> scripting.
-
-I remember it.
-
-https://lore.kernel.org/lkml/20181123153321.8561-1-mark.rutland@arm.com/
-
-
->
-> > I guess it can be improved because it is just simple text processing.
-> > Then, Kbuild can execute it at build time.
->
-> It is in theory possible to make them much faster, yes. The actual slowness of
-> the scripting is largely due to using sub-shells resulting in a load of
-> fork+exec, which could be avoided if using a real scripting language.
->
-> Practically speaking though, we're rather limited in what we can rely upon
-> being available. We chose to use POSIX shell as a lowest-common-demoninator,
-> and anything that'd be *nice* to use isn't going to always be available,
-> meaning that even if we make it faster we can't necessarily build it all the
-> time anyway.
-
-
-Kernel builds already rely on Perl.
-
-The base building of the kernel does not depend on Python,
-but some targets such as "make clang-tidy", "make clang-analyzer"
-need Python3.
-
-
->
-> Thanks,
-> Mark.
-
-
-BTW, full-quoting to this thread is not a good idea.
-I cut down the code diff.
-
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Thanks.
