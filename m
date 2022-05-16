@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7F0C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBF4C352AA
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348633AbiEPU1i (ORCPT
+        id S1348490AbiEPU1d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48852 "EHLO
+        Mon, 16 May 2022 16:27:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349854AbiEPUAd (ORCPT
+        with ESMTP id S1349815AbiEPUAa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:00:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C945144A20;
-        Mon, 16 May 2022 12:54:36 -0700 (PDT)
+        Mon, 16 May 2022 16:00:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4406044A08;
+        Mon, 16 May 2022 12:54:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3111B81616;
-        Mon, 16 May 2022 19:54:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 229C1C34100;
-        Mon, 16 May 2022 19:54:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7091760EC4;
+        Mon, 16 May 2022 19:53:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B439C385AA;
+        Mon, 16 May 2022 19:53:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730871;
-        bh=cuKichH73sDTAWETAXC1JTIM2p/rWmO8HVY3pasalVI=;
+        s=korg; t=1652730828;
+        bh=WWp5/fwmERuhj14JqsIQ06X/O1ig7VgEOoMipSi2itU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gaNtxX+J1dXgFwEqhKlvrr8FbbGa1j9DEEtGoEX+b/mp0Fi63kWXQV0uWmyqpwP92
-         DtT8/pNh6XiGSLVWlgQTJxUSduy8HXgbWbOyfyoKJIKR/Wm4eel5QwGEFKhpBG7aAq
-         rZouUw/VGmq+Jjpe6CbI38ihfUM5lcO+vugviFcY=
+        b=ggAZORhuCw4rgiIfa7het5bPZFIYbxnFyXK0pR/dSSndHplRAl1V9z6ZBcaX6RqnF
+         HjcDMGK44e167KJ9cykRPiGHp3LMALaUWF+hdYxhJsAxHmOo9DeGHaSN+4AqlF5YMa
+         jc0FRoCzHtF4wmUNUe62hLtuyvh5D5oy52ByO4h8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kalesh Singh <kaleshsingh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Hridya Valsaraju <hridya@google.com>,
-        Jann Horn <jannh@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 030/114] procfs: prevent unprivileged processes accessing fdinfo dir
-Date:   Mon, 16 May 2022 21:36:04 +0200
-Message-Id: <20220516193626.355918780@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Lyude Paul <lyude@redhat.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 019/114] drm/nouveau: Fix a potential theorical leak in nouveau_get_backlight_name()
+Date:   Mon, 16 May 2022 21:35:53 +0200
+Message-Id: <20220516193626.047502062@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -56,89 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kalesh Singh <kaleshsingh@google.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 1927e498aee1757b3df755a194cbfc5cc0f2b663 ]
+[ Upstream commit ab244be47a8f111bc82496a8a20c907236e37f95 ]
 
-The file permissions on the fdinfo dir from were changed from
-S_IRUSR|S_IXUSR to S_IRUGO|S_IXUGO, and a PTRACE_MODE_READ check was added
-for opening the fdinfo files [1].  However, the ptrace permission check
-was not added to the directory, allowing anyone to get the open FD numbers
-by reading the fdinfo directory.
+If successful ida_simple_get() calls are not undone when needed, some
+additional memory may be allocated and wasted.
 
-Add the missing ptrace permission check for opening the fdinfo directory.
+Here, an ID between 0 and MAX_INT is required. If this ID is >=100, it is
+not taken into account and is wasted. It should be released.
 
-[1] https://lkml.kernel.org/r/20210308170651.919148-1-kaleshsingh@google.com
+Instead of calling ida_simple_remove(), take advantage of the 'max'
+parameter to require the ID not to be too big. Should it be too big, it
+is not allocated and don't need to be freed.
 
-Link: https://lkml.kernel.org/r/20210713162008.1056986-1-kaleshsingh@google.com
-Fixes: 7bc3fa0172a4 ("procfs: allow reading fdinfo with PTRACE_MODE_READ")
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Eric W. Biederman <ebiederm@xmission.com>
-Cc: Christian Brauner <christian.brauner@ubuntu.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Hridya Valsaraju <hridya@google.com>
-Cc: Jann Horn <jannh@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+While at it, use ida_alloc_xxx()/ida_free() instead to
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
+
+Fixes: db1a0ae21461 ("drm/nouveau/bl: Assign different names to interfaces")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+[Fixed formatting warning from checkpatch]
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/proc/fd.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nouveau_backlight.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/fs/proc/fd.c b/fs/proc/fd.c
-index 172c86270b31..913bef0d2a36 100644
---- a/fs/proc/fd.c
-+++ b/fs/proc/fd.c
-@@ -72,7 +72,7 @@ static int seq_show(struct seq_file *m, void *v)
- 	return 0;
- }
- 
--static int seq_fdinfo_open(struct inode *inode, struct file *file)
-+static int proc_fdinfo_access_allowed(struct inode *inode)
+diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+index daf9f87477ba..a2141d3d9b1d 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
++++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+@@ -46,8 +46,9 @@ static bool
+ nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
+ 			   struct nouveau_backlight *bl)
  {
- 	bool allowed = false;
- 	struct task_struct *task = get_proc_task(inode);
-@@ -86,6 +86,16 @@ static int seq_fdinfo_open(struct inode *inode, struct file *file)
- 	if (!allowed)
- 		return -EACCES;
+-	const int nb = ida_simple_get(&bl_ida, 0, 0, GFP_KERNEL);
+-	if (nb < 0 || nb >= 100)
++	const int nb = ida_alloc_max(&bl_ida, 99, GFP_KERNEL);
++
++	if (nb < 0)
+ 		return false;
+ 	if (nb > 0)
+ 		snprintf(backlight_name, BL_NAME_SIZE, "nv_backlight%d", nb);
+@@ -414,7 +415,7 @@ nouveau_backlight_init(struct drm_connector *connector)
+ 					    nv_encoder, ops, &props);
+ 	if (IS_ERR(bl->dev)) {
+ 		if (bl->id >= 0)
+-			ida_simple_remove(&bl_ida, bl->id);
++			ida_free(&bl_ida, bl->id);
+ 		ret = PTR_ERR(bl->dev);
+ 		goto fail_alloc;
+ 	}
+@@ -442,7 +443,7 @@ nouveau_backlight_fini(struct drm_connector *connector)
+ 		return;
  
-+	return 0;
-+}
-+
-+static int seq_fdinfo_open(struct inode *inode, struct file *file)
-+{
-+	int ret = proc_fdinfo_access_allowed(inode);
-+
-+	if (ret)
-+		return ret;
-+
- 	return single_open(file, seq_show, inode);
- }
+ 	if (bl->id >= 0)
+-		ida_simple_remove(&bl_ida, bl->id);
++		ida_free(&bl_ida, bl->id);
  
-@@ -348,12 +358,23 @@ static int proc_readfdinfo(struct file *file, struct dir_context *ctx)
- 				  proc_fdinfo_instantiate);
- }
- 
-+static int proc_open_fdinfo(struct inode *inode, struct file *file)
-+{
-+	int ret = proc_fdinfo_access_allowed(inode);
-+
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- const struct inode_operations proc_fdinfo_inode_operations = {
- 	.lookup		= proc_lookupfdinfo,
- 	.setattr	= proc_setattr,
- };
- 
- const struct file_operations proc_fdinfo_operations = {
-+	.open		= proc_open_fdinfo,
- 	.read		= generic_read_dir,
- 	.iterate_shared	= proc_readfdinfo,
- 	.llseek		= generic_file_llseek,
+ 	backlight_device_unregister(bl->dev);
+ 	nv_conn->backlight = NULL;
 -- 
 2.35.1
 
