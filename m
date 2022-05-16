@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B463EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E138DC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346487AbiEPTqR (ORCPT
+        id S1346532AbiEPTqa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
+        Mon, 16 May 2022 15:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231874AbiEPTmw (ORCPT
+        with ESMTP id S1345793AbiEPTnN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:42:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB353FBC2;
-        Mon, 16 May 2022 12:42:06 -0700 (PDT)
+        Mon, 16 May 2022 15:43:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DB53FBFD;
+        Mon, 16 May 2022 12:42:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF84F61510;
-        Mon, 16 May 2022 19:42:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDBA9C36AF6;
-        Mon, 16 May 2022 19:42:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1B61B81604;
+        Mon, 16 May 2022 19:42:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC95C385AA;
+        Mon, 16 May 2022 19:42:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730125;
-        bh=KhyYJBe1zq4w8/BrBLLGT3YQik0FWXZFDkLKsh4CQ9w=;
+        s=korg; t=1652730137;
+        bh=PzICwLjlQo99NgdyMEC1XtS6+gYXW+gJUuLaUJcbn10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CQGXfjVM6y0FP5HQT3daGP+BEGaTnYQgePGKboFDrTJlGFhixMkn2K7/Nv63IArRi
-         wQWFzkY8veaGKtm+CzbzSb2H1PcQLrwWaiQ4W6ClQVCpGU5BTZ5BoQPfwIzQztp8ue
-         +F9b0p1/f0u7/Ow8RKQqv9pff/yyGhh37tkvxF9A=
+        b=cAf0m4eyvcYOKXt53SOF4rPt1MsZaMLgGOy4Q6tsxG2GWBtOuEmwHVCc7AKJyVY7z
+         tXvmDV7TmduoMuMfj+h7tVeRSB+ukaq+wjOKPBLBtEj7lfbgjEryDWT7dxgU5f3H78
+         +1uR2o3gV9D1lYXuT1VhpnPPsJ6L9Ffr6r41GsZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.19 30/32] MIPS: fix allmodconfig build with latest mkimage
-Date:   Mon, 16 May 2022 21:36:44 +0200
-Message-Id: <20220516193615.666983839@linuxfoundation.org>
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 11/43] s390/ctcm: fix variable dereferenced before check
+Date:   Mon, 16 May 2022 21:36:22 +0200
+Message-Id: <20220516193615.051945691@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
-References: <20220516193614.773450018@linuxfoundation.org>
+In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
+References: <20220516193614.714657361@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,53 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+From: Alexandra Winter <wintera@linux.ibm.com>
 
-With the latest mkimage from U-Boot 2021.04+ the allmodconfig build
-fails. 822564cd3aa1 ("MIPS: generic: Update node names to avoid unit
-addresses") was applied for similar build failure, but it was not
-applied to 'arch/mips/generic/board-ocelot_pcb123.its.S' as that was
-removed from upstream when the patch was applied.
+[ Upstream commit 2c50c6867c85afee6f2b3bcbc50fc9d0083d1343 ]
 
-Fixes: 822564cd3aa1 ("MIPS: generic: Update node names to avoid unit addresses")
-Cc: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Found by cppcheck and smatch.
+smatch complains about
+drivers/s390/net/ctcm_sysfs.c:43 ctcm_buffer_write() warn: variable dereferenced before check 'priv' (see line 42)
+
+Fixes: 3c09e2647b5e ("ctcm: rename READ/WRITE defines to avoid redefinitions")
+Reported-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/generic/board-ocelot_pcb123.its.S |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/s390/net/ctcm_sysfs.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/mips/generic/board-ocelot_pcb123.its.S
-+++ b/arch/mips/generic/board-ocelot_pcb123.its.S
-@@ -1,23 +1,23 @@
- /* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
- / {
- 	images {
--		fdt@ocelot_pcb123 {
-+		fdt-ocelot_pcb123 {
- 			description = "MSCC Ocelot PCB123 Device Tree";
- 			data = /incbin/("boot/dts/mscc/ocelot_pcb123.dtb");
- 			type = "flat_dt";
- 			arch = "mips";
- 			compression = "none";
--			hash@0 {
-+			hash {
- 				algo = "sha1";
- 			};
- 		};
- 	};
+diff --git a/drivers/s390/net/ctcm_sysfs.c b/drivers/s390/net/ctcm_sysfs.c
+index ded1930a00b2..e3813a7aa5e6 100644
+--- a/drivers/s390/net/ctcm_sysfs.c
++++ b/drivers/s390/net/ctcm_sysfs.c
+@@ -39,11 +39,12 @@ static ssize_t ctcm_buffer_write(struct device *dev,
+ 	struct ctcm_priv *priv = dev_get_drvdata(dev);
+ 	int rc;
  
- 	configurations {
--		conf@ocelot_pcb123 {
-+		conf-ocelot_pcb123 {
- 			description = "Ocelot Linux kernel";
--			kernel = "kernel@0";
--			fdt = "fdt@ocelot_pcb123";
-+			kernel = "kernel";
-+			fdt = "fdt-ocelot_pcb123";
- 		};
- 	};
- };
+-	ndev = priv->channel[CTCM_READ]->netdev;
+-	if (!(priv && priv->channel[CTCM_READ] && ndev)) {
++	if (!(priv && priv->channel[CTCM_READ] &&
++	      priv->channel[CTCM_READ]->netdev)) {
+ 		CTCM_DBF_TEXT(SETUP, CTC_DBF_ERROR, "bfnondev");
+ 		return -ENODEV;
+ 	}
++	ndev = priv->channel[CTCM_READ]->netdev;
+ 
+ 	rc = kstrtouint(buf, 0, &bs1);
+ 	if (rc)
+-- 
+2.35.1
+
 
 
