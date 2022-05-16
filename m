@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FDDC46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:04:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F95DC38A05
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348648AbiEPUDB (ORCPT
+        id S1351347AbiEPUDI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
+        Mon, 16 May 2022 16:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348099AbiEPTwk (ORCPT
+        with ESMTP id S1348724AbiEPTxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:52:40 -0400
+        Mon, 16 May 2022 15:53:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332284507C;
-        Mon, 16 May 2022 12:48:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E6E46B2D;
+        Mon, 16 May 2022 12:48:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E500AB81609;
-        Mon, 16 May 2022 19:47:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 257D2C34100;
-        Mon, 16 May 2022 19:47:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A813EB81612;
+        Mon, 16 May 2022 19:48:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61FDC385AA;
+        Mon, 16 May 2022 19:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730477;
-        bh=P5TrBoS4hPa8/D+8TgsNIFF9dMzkYsH5q9zZ/f0x6N4=;
+        s=korg; t=1652730516;
+        bh=rqfekv0jGsZubz8FtTJU1FPHkwUoFSHNJwCMoZw6RAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VHTYVba7E6jHR4IgML7SMoYfQT2mFmvp2Ri5VV+vamF9pXRbyO5lLRzPZPhRFcIis
-         bAAhDhvmzdVPtSxwXMaymfsau2VIiu3BYzsWWigyqChscTBmH9UW9/PgoEphOqbqKd
-         BVvswasGFb3o25lhX62GPkLN1CHzwq6kLOc56C1I=
+        b=wHn7glZWpA5mJiH3Ru4g+HrYmEMFiIEnQEf/PLAEA5zwlTKd067Fh29+LYzKX74hi
+         /3IzJs0OnEkk5vhbUpdd4WyLKa8jhHa4Y5RGz7ei1jNjUXK6AJkdTp5I/rcAgm9Bm2
+         F1nZl99TXGApV24LvRC+WTCCTgWBT6TIzm6o3v5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
-        Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 004/102] mac80211: Reset MBSSID parameters upon connection
-Date:   Mon, 16 May 2022 21:35:38 +0200
-Message-Id: <20220516193624.120108327@linuxfoundation.org>
+Subject: [PATCH 5.15 024/102] nfs: fix broken handling of the softreval mount option
+Date:   Mon, 16 May 2022 21:35:58 +0200
+Message-Id: <20220516193624.694643295@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -51,58 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+From: Dan Aloni <dan.aloni@vastdata.com>
 
-[ Upstream commit 86af062f40a73bf63321694e6bf637144f0383fe ]
+[ Upstream commit 085d16d5f949b64713d5e960d6c9bbf51bc1d511 ]
 
-Currently MBSSID parameters in struct ieee80211_bss_conf
-are not reset upon connection. This could be problematic
-with some drivers in a scenario where the device first
-connects to a non-transmit BSS and then connects to a
-transmit BSS of a Multi BSS AP. The MBSSID parameters
-which are set after connecting to a non-transmit BSS will
-not be reset and the same parameters will be passed on to
-the driver during the subsequent connection to a transmit
-BSS of a Multi BSS AP.
+Turns out that ever since this mount option was added, passing
+`softreval` in NFS mount options cancelled all other flags while not
+affecting the underlying flag `NFS_MOUNT_SOFTREVAL`.
 
-For example, firmware running on the ath11k device uses the
-Multi BSS data for tracking the beacon of a non-transmit BSS
-and reports the driver when there is a beacon miss. If we do
-not reset the MBSSID parameters during the subsequent
-connection to a transmit BSS, then the driver would have
-wrong MBSSID data and FW would be looking for an incorrect
-BSSID in the MBSSID beacon of a Multi BSS AP and reports
-beacon loss leading to an unstable connection.
-
-Reset the MBSSID parameters upon every connection to solve this
-problem.
-
-Fixes: 78ac51f81532 ("mac80211: support multi-bssid")
-Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
-Link: https://lore.kernel.org/r/20220428052744.27040-1-quic_mpubbise@quicinc.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: c74dfe97c104 ("NFS: Add mount option 'softreval'")
+Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mlme.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/nfs/fs_context.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index c8332452c118..1548f532dc1a 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -3541,6 +3541,12 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
- 				cbss->transmitted_bss->bssid);
- 		bss_conf->bssid_indicator = cbss->max_bssid_indicator;
- 		bss_conf->bssid_index = cbss->bssid_index;
-+	} else {
-+		bss_conf->nontransmitted = false;
-+		memset(bss_conf->transmitter_bssid, 0,
-+		       sizeof(bss_conf->transmitter_bssid));
-+		bss_conf->bssid_indicator = 0;
-+		bss_conf->bssid_index = 0;
- 	}
- 
- 	/*
+diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
+index 0d444a90f513..fb3cad38b149 100644
+--- a/fs/nfs/fs_context.c
++++ b/fs/nfs/fs_context.c
+@@ -514,7 +514,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 		if (result.negated)
+ 			ctx->flags &= ~NFS_MOUNT_SOFTREVAL;
+ 		else
+-			ctx->flags &= NFS_MOUNT_SOFTREVAL;
++			ctx->flags |= NFS_MOUNT_SOFTREVAL;
+ 		break;
+ 	case Opt_posix:
+ 		if (result.negated)
 -- 
 2.35.1
 
