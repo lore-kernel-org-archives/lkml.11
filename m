@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9932C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236508AbiEPU3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
+        id S245071AbiEPU3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350365AbiEPUBJ (ORCPT
+        with ESMTP id S1350447AbiEPUBM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:09 -0400
+        Mon, 16 May 2022 16:01:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB634617C;
-        Mon, 16 May 2022 12:55:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913624A3E4;
+        Mon, 16 May 2022 12:55:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4859460ABE;
-        Mon, 16 May 2022 19:55:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58E2EC385AA;
-        Mon, 16 May 2022 19:55:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 354F460A1C;
+        Mon, 16 May 2022 19:55:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C6BC385AA;
+        Mon, 16 May 2022 19:55:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730901;
-        bh=AhnYl+ZcmT/1PsCkh76SmPzD+wrnGfBbdCPSpLDGwLs=;
+        s=korg; t=1652730907;
+        bh=oDKG4x58KZzoy0SljY8MasYmJxPIOYm5YVU/iyciWnE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TfTzsZqsZ/TlbA5c6W97lYym6Ze/hdwpjNiQKRB5y/guasi5fE02YKkvVW0ZLRpr9
-         71HdyffLj2RLiWoUDAG4MmnJb5jsHhnAKuj+JvUWDXBwy9ogV6j/fTnGIMAObHgkgN
-         S7DZCsLAkrvvPGoB++M5gHb0huYB1aw1b9hWktLc=
+        b=EIfJlERjK9Vz3hN5Hha6WoqURAAWZMVsTaYVOyILJH7BTGlFY4gHTv8+qYarEvLIq
+         NFkNoj0stlliRVBtbmlPbiwjkS8eiRtcOcC+zrILgm0t9MAggZqOTSTU91mMbj2K1J
+         AyVTnpO13bPn2JtXPM43swBQuxYGGdw5kK2A9OhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Felix Fietkau <nbd@nbd.name>, Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 039/114] net: ethernet: mediatek: ppe: fix wrong size passed to memset()
-Date:   Mon, 16 May 2022 21:36:13 +0200
-Message-Id: <20220516193626.612663535@linuxfoundation.org>
+Subject: [PATCH 5.17 040/114] net: bcmgenet: Check for Wake-on-LAN interrupt probe deferral
+Date:   Mon, 16 May 2022 21:36:14 +0200
+Message-Id: <20220516193626.645055570@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -49,36 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 00832b1d1a393dfb1b9491d085e5b27e8c25d103 ]
+[ Upstream commit 6b77c06655b8a749c1a3d9ebc51e9717003f7e5a ]
 
-'foe_table' is a pointer, the real size of struct mtk_foe_entry
-should be pass to memset().
+The interrupt controller supplying the Wake-on-LAN interrupt line maybe
+modular on some platforms (irq-bcm7038-l1.c) and might be probed at a
+later time than the GENET driver. We need to specifically check for
+-EPROBE_DEFER and propagate that error to ensure that we eventually
+fetch the interrupt descriptor.
 
-Fixes: ba37b7caf1ed ("net: ethernet: mtk_eth_soc: add support for initializing the PPE")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220511030829.3308094-1-yangyingliang@huawei.com
+Fixes: 9deb48b53e7f ("bcmgenet: add WOL IRQ check")
+Fixes: 5b1f0e62941b ("net: bcmgenet: Avoid touching non-existent interrupt")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Stefan Wahren <stefan.wahren@i2se.com>
+Link: https://lore.kernel.org/r/20220511031752.2245566-1-f.fainelli@gmail.com
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_ppe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 3ad10c793308..66298e2235c9 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -395,7 +395,7 @@ static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
- 	static const u8 skip[] = { 12, 25, 38, 51, 76, 89, 102 };
- 	int i, k;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index c2bfb25e087c..64bf31ceb6d9 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -3999,6 +3999,10 @@ static int bcmgenet_probe(struct platform_device *pdev)
+ 		goto err;
+ 	}
+ 	priv->wol_irq = platform_get_irq_optional(pdev, 2);
++	if (priv->wol_irq == -EPROBE_DEFER) {
++		err = priv->wol_irq;
++		goto err;
++	}
  
--	memset(ppe->foe_table, 0, MTK_PPE_ENTRIES * sizeof(ppe->foe_table));
-+	memset(ppe->foe_table, 0, MTK_PPE_ENTRIES * sizeof(*ppe->foe_table));
- 
- 	if (!IS_ENABLED(CONFIG_SOC_MT7621))
- 		return;
+ 	priv->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->base)) {
 -- 
 2.35.1
 
