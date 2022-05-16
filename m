@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4977C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E76EC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349059AbiEPUhp (ORCPT
+        id S1349173AbiEPUiH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55982 "EHLO
+        Mon, 16 May 2022 16:38:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240287AbiEPUB6 (ORCPT
+        with ESMTP id S1350986AbiEPUBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:58 -0400
+        Mon, 16 May 2022 16:01:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE92403E0;
-        Mon, 16 May 2022 12:58:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAFC4B872;
+        Mon, 16 May 2022 12:56:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3806760A50;
-        Mon, 16 May 2022 19:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4791AC385AA;
-        Mon, 16 May 2022 19:58:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDA1860FEB;
+        Mon, 16 May 2022 19:56:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC953C385AA;
+        Mon, 16 May 2022 19:56:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731108;
-        bh=kI7g2k/ZpEEHH+P5vwdUbqqd34NZXiGOnhhUMJbGMrY=;
+        s=korg; t=1652730978;
+        bh=MaXGPolPz4kift9fAhWFyxiXkGWK0QfVnz1NKikV7Cs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=plSgCUqgpl8w943vUswlHyRXTK2eyczYdav5rSCCFGEMWPVKRaz0EeCeLCsBumFgt
-         cdHbHRBt+NSuB8LP7JvCxWcFRh7ZaIkGcfXHsc9575igGJEeYhBC6mXUOq6Wt7amO4
-         33cIy4mwikcuow86hsd7FqFQy6+gHCBkJVIwOW6w=
+        b=UwLSSBaJ6pMV4oJckBls7GDex1Adh4ybOy7ZxtsHY8rvdeeBk9FlKTkoJ/UKgi2R/
+         a7OuPGl6fArvKPrJHhCNtGQFM6DVfQkxVg/pS7qa9TB9MzYqqk898jSntGNxScg+Op
+         J6PqPf+Lv/pSPoq9/nYUG9c8HgOiA2HQnoEoZbsw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.17 086/114] USB: serial: option: add Fibocom MA510 modem
-Date:   Mon, 16 May 2022 21:37:00 +0200
-Message-Id: <20220516193627.950015013@linuxfoundation.org>
+        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 065/114] tcp: dynamically allocate the perturb table used by source ports
+Date:   Mon, 16 May 2022 21:36:39 +0200
+Message-Id: <20220516193627.359382931@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,117 +53,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+From: Willy Tarreau <w@1wt.eu>
 
-commit 07989eb981d862f7f2be68d233d753f2e7ccc119 upstream.
+[ Upstream commit e9261476184be1abd486c9434164b2acbe0ed6c2 ]
 
-The MA510 modem has 3 USB configurations that are configurable via the AT
-command AT+GTUSBMODE={30,31,32} which make the modem enumerate with the
-following interfaces, respectively:
+We'll need to further increase the size of this table and it's likely
+that at some point its size will not be suitable anymore for a static
+table. Let's allocate it on boot from inet_hashinfo2_init(), which is
+called from tcp_init().
 
-30: Diag + QDSS + Modem + RMNET
-31: Diag + Modem + AT + ECM
-32: Modem + AT + ECM
-
-The first configuration (30) reuses u-blox R410M's VID/PID with
-identical interface configuration.
-
-A detailed description of the USB configuration for each mode follows:
-
-+GTUSBMODE: 30
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#= 19 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=05c6 ProdID=90b2 Rev= 0.00
-S:  Manufacturer=Fibocom MA510 Modem
-S:  Product=Fibocom MA510 Modem
-S:  SerialNumber=55e2695b
-C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-+GTUSBMODE: 31
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#= 99 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=2cb7 ProdID=0106 Rev= 0.00
-S:  Manufacturer=Fibocom MA510 Modem
-S:  Product=Fibocom MA510 Modem
-S:  SerialNumber=55e2695b
-C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
-A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=82(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
-E:  Ad=84(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
-E:  Ad=86(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-+GTUSBMODE: 32
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=100 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=2cb7 ProdID=010a Rev= 0.00
-S:  Manufacturer=Fibocom MA510 Modem
-S:  Product=Fibocom MA510 Modem
-S:  SerialNumber=55e2695b
-C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
-A:  FirstIf#= 2 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
-E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
-E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-I:  If#= 3 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-I:* If#= 3 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/option.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/ipv4/inet_hashtables.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -2129,6 +2129,8 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(4) | RSVD(5) },
- 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
- 	  .driver_info = RSVD(6) },
-+	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0106, 0xff) },			/* Fibocom MA510 (ECM mode w/ diag intf.) */
-+	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x010a, 0xff) },			/* Fibocom MA510 (ECM mode) */
- 	{ USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x010b, 0xff, 0xff, 0x30) },	/* Fibocom FG150 Diag */
- 	{ USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x010b, 0xff, 0, 0) },		/* Fibocom FG150 AT */
- 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x01a0, 0xff) },			/* Fibocom NL668-AM/NL652-EU (laptop MBIM) */
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 63bb4902f018..48ca07853068 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -731,7 +731,8 @@ EXPORT_SYMBOL_GPL(inet_unhash);
+  * privacy, this only consumes 1 KB of kernel memory.
+  */
+ #define INET_TABLE_PERTURB_SHIFT 8
+-static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
++#define INET_TABLE_PERTURB_SIZE (1 << INET_TABLE_PERTURB_SHIFT)
++static u32 *table_perturb;
+ 
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 		struct sock *sk, u64 port_offset,
+@@ -774,7 +775,8 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	if (likely(remaining > 1))
+ 		remaining &= ~1U;
+ 
+-	net_get_random_once(table_perturb, sizeof(table_perturb));
++	net_get_random_once(table_perturb,
++			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+ 
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+@@ -912,6 +914,12 @@ void __init inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
+ 					    low_limit,
+ 					    high_limit);
+ 	init_hashinfo_lhash2(h);
++
++	/* this one is used for source ports of outgoing connections */
++	table_perturb = kmalloc_array(INET_TABLE_PERTURB_SIZE,
++				      sizeof(*table_perturb), GFP_KERNEL);
++	if (!table_perturb)
++		panic("TCP: failed to alloc table_perturb");
+ }
+ 
+ int inet_hashinfo2_init_mod(struct inet_hashinfo *h)
+-- 
+2.35.1
+
 
 
