@@ -2,107 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E7DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:05:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:06:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245576AbiEPQFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 12:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52276 "EHLO
+        id S245581AbiEPQGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 12:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238289AbiEPQFW (ORCPT
+        with ESMTP id S245296AbiEPQGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 12:05:22 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FCB34B80
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 09:05:21 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2f16645872fso158539197b3.4
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 09:05:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pH8gn2feqHbJT1VIR+CqAKz2Vm1OI4IAH3XiEx/1r0M=;
-        b=hxtlRvOYZfHTAJg87WazheoK+1Jp+3wCYPv/qQPT0w3Xc4g1MVT1EAxaMJwHK/p+C5
-         n195YFtxr4dxqu/Ys7B5KxlCbsy5yIzGJs9tu7jy7SNu1kZ2JX9oLdZBYQUPptmKqazj
-         KBMYT+1WYxUqZpoWveDxLGR/M5mOnI6k4zzkfRDzYsS9KUKHLC0FQoQAKI53lhQb6EYD
-         VcFQ2h3buNKerCfHxbL/MfYeLCG/XK25UGojTz62VrxqXP9lPEUYxJksD81vTAtuacJC
-         OBrXFPw3moxQx+QrTme3d7VCEv4n4HJA5S3h3SDkHHYHLdwCbsqQdCPnYLdqZ9KUhBvu
-         +hjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pH8gn2feqHbJT1VIR+CqAKz2Vm1OI4IAH3XiEx/1r0M=;
-        b=T9B5VUbVOHT04FJLVPEbIuy8fJAC7SeSyHdvzOyFvIT3nwi4SAvfOi5/1cyv362nmD
-         WEoXKqko3zq7DXhGM8i/XlujqCbOOSGNks9hRdewzZ9BVe6Z6HFRMgcMvalRBFUy1JXj
-         uFGcUcloxIgP4u3nD2RJrUntj2VRdYfeh0IbsuNQ+aBHSrtiB5ow9Uk39gayI4bWoEwU
-         8bn9ghQVabo9DqTgWl1ESx150iAqt2nlqvImu6KqXphgZhc5ILHey0Qpp/eOMvtBUyCV
-         tuGsJlGxxvMV2rixMntQx7HprORj+TyS9yzqHswjOlUYF0Kef5J6yg9VJEkA4GSO95CR
-         zCYA==
-X-Gm-Message-State: AOAM533eCHq7jxOrhRs+zo6cbVkQbv02y6jZii6lyAJYDaUI4D05vSqp
-        +ynZpLPhycn0y0Jra0L4R8yTuRVNLYIzQvOhCjqa3w==
-X-Google-Smtp-Source: ABdhPJxkNuFXhIjn2K2LehjJwRBe1s4mUIoU6C5Borv7+HLjg5MoQxKsHWIgoJh9hK6EYijZjjwv/zmdLvdC5pna+W0=
-X-Received: by 2002:a81:4ecf:0:b0:2fe:d9f2:15b3 with SMTP id
- c198-20020a814ecf000000b002fed9f215b3mr10858246ywb.305.1652717120280; Mon, 16
- May 2022 09:05:20 -0700 (PDT)
+        Mon, 16 May 2022 12:06:15 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2057.outbound.protection.outlook.com [40.107.92.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FE0BC0A
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 09:06:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fIH+lSYhgI1pf1gRflmGMTMvzD5zEFwbQJjddVXZeldbNESNBSycdUl6000gFyi2XOfvziFigzE4ZYtDi9IRoDhMlQosWvrrpUxvUPU5VUwESlyXINIgax902uFTuCqJiX7yXA3xL1A0AvhNulioiefnSXyd+/bSv8OV7n5EwjVY/TNc3a/PALy9+F9J3lju+gcmxt+a1+Guf/FpmNWWiGjsUiBJ8LowsOtwhq0s/13USx9qBV1rAmuWugABNKaJ52M9BKLiMKzPLZE1MFIoOy4HFt+STeVRBIxlOP+HiaHDyPh+40o975gBoMo8rtweBokoTQqJ417YxGUXka3eIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZqAkpoJWpLRnjjfnuKnFgR4CnuxpYKWLVl7mvSaDMv0=;
+ b=lxLGmU8Ws56nTGlgGXcIilMvjCBAEo4rZkTiGXk5LxzpbqjqdheKsrT0HQee88HTf89ppyyad/WzlmJiV1bvnC4y9uYrqggQaYXZtjeXzmfmXGgtdv7Z9FAWcu+bFLttC5HwCmCGt8SUROSU02So65ZhsKOZBOBfJa0fO1tdfoG8kZV4g7JONWS33vXZsGLPeMywKF2Zy6gtbhlEEIE7TQ7nunFl8c/yGzuoj7wpjoviSLL5nObLb9bILKwu2oM1VWNxvoVKM+tz2dUASA0lGhENBMmdMJMCMvqrc1Ve6h7YyGNqd9weHqyOeH5dmNBe6MzK0P+GM4c1E1NMY3wjjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZqAkpoJWpLRnjjfnuKnFgR4CnuxpYKWLVl7mvSaDMv0=;
+ b=qSkafjHVuvB7AKmkIIaIkDup7gUDCiUSMLSVrB8MzsIdnbhBPWQIST2ypbEUbE1lJ+7e4GmRZE/gBp/9HhY91LlJlmyM2cfy02S0OOWZwTRLUSdVAGIru0h3CKzjZx0ymJ21SYburvZvWCDyCwiGdnUhWCJH72g55tC6tNllt9Y=
+Received: from MW4PR03CA0170.namprd03.prod.outlook.com (2603:10b6:303:8d::25)
+ by DM4PR12MB5119.namprd12.prod.outlook.com (2603:10b6:5:392::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Mon, 16 May
+ 2022 16:06:09 +0000
+Received: from CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8d:cafe::a) by MW4PR03CA0170.outlook.office365.com
+ (2603:10b6:303:8d::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14 via Frontend
+ Transport; Mon, 16 May 2022 16:06:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT012.mail.protection.outlook.com (10.13.175.192) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5250.13 via Frontend Transport; Mon, 16 May 2022 16:06:08 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
+ 2022 11:06:07 -0500
+Received: from sof-System-Product-Name.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.24
+ via Frontend Transport; Mon, 16 May 2022 11:05:59 -0500
+From:   V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
+        <Sunil-kumar.Dommati@amd.com>, <ajitkumar.pandey@amd.com>,
+        "V sujith kumar Reddy" <Vsujithkumar.Reddy@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        "Ajit Kumar Pandey" <AjitKumar.Pandey@amd.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 1/2] Revert "ASoC: amd: acp: Set gpio_spkr_en to None for max speaker amplifer in machine driver"
+Date:   Mon, 16 May 2022 21:36:09 +0530
+Message-ID: <20220516160619.17832-1-Vsujithkumar.Reddy@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220513202159.1550547-1-samitolvanen@google.com>
- <20220513202159.1550547-8-samitolvanen@google.com> <202205141447.E3B5A29@keescook>
-In-Reply-To: <202205141447.E3B5A29@keescook>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Mon, 16 May 2022 09:04:44 -0700
-Message-ID: <CABCJKudrY2b4ZXUaXOmKEB-LG192u2PSfsT-=Vc1bcg3QwY6aw@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 07/21] cfi: Add type helper macros
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3b8476e5-4ed9-4f02-df81-08da3755fd82
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5119:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB511946CF508008325D82A73092CF9@DM4PR12MB5119.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1fXUeTm/Pbqu/WS2/M1m0UKUv9A4xuyQ2JDeBrYJYINwaNSc4M5s9d4LCUsR8bOaoDv7x+Vtj/6b0cfpr7+l/JjawJESFw183ppEc0QCUXMr1LSlgXLyrruo2B+vgCvlE9n52lXigDofvhrJM0CuLBwCW/EIalbhLEkDqG84nLQQJlneEO9doyFZsAgp9yvXEyJr6/eZcQv2Z8k2ngfO/fnfyE1rTnEde2DZnuU3kvRQicCtHhMDdNRqy4Lz4Fn2lw0mbvOMAKRXmti5P5OUX9TLI0I7ErPJ5TjpRctfCQGMDt2VJvwS23ivLtbGMgBPyAo1HLXpCNijJgRUT3IkgBWDo4P1rsFTEgDYSDL+MOrG3bDRngRiWLoDHAT/NBsFC6vXfMPy3ntM8YYXbyML/YJHqgevphAhnzm4Ulw9498Kz2Ms9qUnTQtEk7HB+0kAS53o/LUtnBKfwLESXG163NfAXhK+QpGZ+PgP9J6a2KphsC6fRPbGuYs+O7Hu7Yis0ybCMYMgnxbMs6qtGX+p/8vbJooX6/vo2w3W1WiYbcERoTU3qoMB2EUkXKEPRsnh+XMSePOlyYmIchMfB9RNi+Wruyg/WVeh8TslBgl8xVE3xuN+3DTEEPcUyjB0LryF16GFOLObs3j46EKrQ4K3+5M+KZxd47gHiLt/KL+p6dhMJQIhuQgSSVztpgE/TciCzyq+76S/SB+1keOSU+dFuAFLhujN0zWd+lNGymZYmuPgNt+fyIeo0T3E5e4asuqe
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(4326008)(426003)(6666004)(36860700001)(86362001)(356005)(83380400001)(70586007)(70206006)(82310400005)(7696005)(2906002)(508600001)(336012)(81166007)(5660300002)(36756003)(54906003)(1076003)(8676002)(40460700003)(8936002)(110136005)(2616005)(186003)(316002)(47076005)(26005)(461764006)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 16:06:08.9275
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b8476e5-4ed9-4f02-df81-08da3755fd82
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5119
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 2:49 PM Kees Cook <keescook@chromium.org> wrote:
->
-> On Fri, May 13, 2022 at 01:21:45PM -0700, Sami Tolvanen wrote:
-> > With CONFIG_CFI_CLANG, assembly functions called indirectly
-> > from C code must be annotated with type identifiers to pass CFI
-> > checking. The compiler emits a __kcfi_typeid_<function> symbol for
-> > each address-taken function declaration in C, which contains the
-> > expected type identifier. Add typed versions of SYM_FUNC_START and
-> > SYM_FUNC_START_ALIAS, which emit the type identifier before the
-> > function.
-> >
-> > Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
->
-> And the reason to not make this change universally (i.e. directly in
-> SYM_FUNC_START) is to minimize how many of these symbol annotations get
-> emitted? (And to more directly indicate which asm is called indirectly?)
+ASoC: amd : acp : Set Speaker enable/disable pin through rt1019 codec driver.
 
-The reason not to add this to SYM_FUNC_START is that the compiler
-doesn't emit the type symbols for all functions. It currently emits
-them for all address-taken function declarations in each translation
-unit. We could potentially further limit this by emitting them only
-for function declarations with a specific attribute, for example, but
-that's something we can optimize later.
+RT1019 codec has two ways of controlling the en_spkr.
+one way is controlling through gpio pin method the another way is through codec register update through driver.
 
-> What happens if an asm function is called indirectly and it doesn't have
-> this annotation?
+Now Speaker enable/disable is controlled  through codec register updated by codec driver.
+This patch reverts gpio logic.
 
-It will fail the CFI check.
+This reverts commit 7fa5c33d043160eba3be9fb8e21588dff2a467c7.
 
-> (Is this case detectable at compile-time?)
+Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+---
+ sound/soc/amd/acp/acp-mach.h     | 1 +
+ sound/soc/amd/acp/acp-sof-mach.c | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-It's not. I'll update the commit message in the next version to
-clarify these points.
+diff --git a/sound/soc/amd/acp/acp-mach.h b/sound/soc/amd/acp/acp-mach.h
+index c855f50d6b34..fd6299844ebe 100644
+--- a/sound/soc/amd/acp/acp-mach.h
++++ b/sound/soc/amd/acp/acp-mach.h
+@@ -21,6 +21,7 @@
+ #include <linux/gpio/consumer.h>
+ 
+ #define EN_SPKR_GPIO_GB                0x11F
++#define EN_SPKR_GPIO_NK                0x146
+ #define EN_SPKR_GPIO_NONE      -EINVAL
+ 
+ enum be_id {
+diff --git a/sound/soc/amd/acp/acp-sof-mach.c b/sound/soc/amd/acp/acp-sof-mach.c
+index bf61a1726f0e..8243765d490f 100644
+--- a/sound/soc/amd/acp/acp-sof-mach.c
++++ b/sound/soc/amd/acp/acp-sof-mach.c
+@@ -37,7 +37,7 @@ static struct acp_card_drvdata sof_rt5682_max_data = {
+ 	.hs_codec_id = RT5682,
+ 	.amp_codec_id = MAX98360A,
+ 	.dmic_codec_id = DMIC,
+-	.gpio_spkr_en = EN_SPKR_GPIO_NONE,
++	.gpio_spkr_en = EN_SPKR_GPIO_NK,
+ };
+ 
+ static struct acp_card_drvdata sof_rt5682s_rt1019_data = {
+@@ -56,7 +56,7 @@ static struct acp_card_drvdata sof_rt5682s_max_data = {
+ 	.hs_codec_id = RT5682S,
+ 	.amp_codec_id = MAX98360A,
+ 	.dmic_codec_id = DMIC,
+-	.gpio_spkr_en = EN_SPKR_GPIO_NONE,
++	.gpio_spkr_en = EN_SPKR_GPIO_NK,
+ };
+ 
+ static const struct snd_kcontrol_new acp_controls[] = {
+-- 
+2.25.1
 
-Sami
