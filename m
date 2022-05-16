@@ -2,63 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B687DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0529DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242386AbiEPKSv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54656 "EHLO
+        id S242393AbiEPKTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:19:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233754AbiEPKSr (ORCPT
+        with ESMTP id S233754AbiEPKTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:18:47 -0400
-Received: from mail.meizu.com (edge01.meizu.com [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E63DE97
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:18:45 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 16 May
- 2022 18:18:47 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 16 May
- 2022 18:18:43 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] staging: ks7010: remove null check after call container_of()
-Date:   Mon, 16 May 2022 18:18:41 +0800
-Message-ID: <1652696322-17685-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 16 May 2022 06:19:23 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25576DEC3
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:19:20 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id i24so13608136pfa.7
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 03:19:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bW4la66s2/2Qkl9P/hRh2ka24n+8uceXtWH8mz/xliY=;
+        b=DlU+GBh2MfUhs6P6NuaPTzAk6CnKaIU25rlLqVbf9TmS7k560BONygkGBXfcGN1PWU
+         kiWPLIo6SQsYDD9On2cXonZktr/+RT+wBt2rKAprhyW7b7JO0f9jLHo8Y35iiL75zySQ
+         31HspQ7f9eOwvYMS1wd6418OCzJQpRKB3vJ72yz3UtDzYQBxdCBKlEQ0khnRe4FG++HD
+         HzOGGsKQlLaNL2OKEXI0D7D9rOJywmDc+GcsAtJFxyjnOSe407rX9Vl7B/qbaWWEabVZ
+         JI7sAX2aZN6LE7qPplxJztRNY87BGCg+GRukXatvKdLUfrl+II7xje4xZdHa6WFcWtK3
+         QZiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bW4la66s2/2Qkl9P/hRh2ka24n+8uceXtWH8mz/xliY=;
+        b=tedeg99gKwo/GY0b9r15IU2gS+e4nnN2c082uvw0yZbRuh1jwFLH7fzO7nwiecLEfS
+         zfKCDqdiFVv4xUXND77tADZMe7I8ZSN4faa1VVYEisnWTJKy8ABVMlUlUSANbTrWdTK6
+         YFO0N3My1KXynAd0b0igVeacc8HU9XgQvONqh+XCYRceCeq5G43QuEwi75gLSiD6u1bF
+         ooIiIZTyZoZuPOIucjYm5g6xZvfta7kYEm5+UNUy18B6gmynyMHjrZhfSge2eWZcMK/m
+         qV3nO/0QTNhudAt0/hd3rQjvsedGkXfNi0n12ssw4mI0IZ3Fhker4fhpAaJT9eLoJzJP
+         I8Cw==
+X-Gm-Message-State: AOAM5328e7ZsiziiS0eD50YDj0ySbG+Ai5G8i9vKrsbfBp/59bTAiU22
+        lclyE8ZfM6lfC/gwTLQSFgwSS2Fu9dZ5eA==
+X-Google-Smtp-Source: ABdhPJwIkvqG1MyMUXgY2WtuJDubBjCrD5lZ9usKKsCWanfaWY6veeD8QGmqb1vDcZJoENug8S59rg==
+X-Received: by 2002:a63:2b05:0:b0:3c2:3ed1:5fa9 with SMTP id r5-20020a632b05000000b003c23ed15fa9mr14676453pgr.220.1652696359590;
+        Mon, 16 May 2022 03:19:19 -0700 (PDT)
+Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.240])
+        by smtp.gmail.com with ESMTPSA id x14-20020a170902820e00b0015e8d4eb1efsm2509699pln.57.2022.05.16.03.19.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 03:19:19 -0700 (PDT)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     tj@kernel.org, axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH] blk-iocos: fix inuse clamp when iocg deactivate or free
+Date:   Mon, 16 May 2022 18:19:09 +0800
+Message-Id: <20220516101909.99768-1-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-container_of() will never return NULL, so remove useless code.
+For an active leaf node, its inuse shouldn't be zero or exceed
+its active, but it's not true when deactivate idle iocg or delete
+iocg in ioc_pd_free().
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Although inuse of 1 is very small, it could cause noticeable hwi
+decrease in the long running server. So we'd better fix it.
+
+And check iocg->child_active_sum is enough for inner iocg, remove
+the needless list_empty check by the way.
+
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 ---
- drivers/staging/ks7010/ks_hostif.c | 2 --
- 1 file changed, 2 deletions(-)
+ block/blk-iocost.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/ks7010/ks_hostif.c b/drivers/staging/ks7010/ks_hostif.c
-index d0475189607d..9429ee155910 100644
---- a/drivers/staging/ks7010/ks_hostif.c
-+++ b/drivers/staging/ks7010/ks_hostif.c
-@@ -2201,8 +2201,6 @@ static void hostif_sme_work(struct work_struct *work)
- 	struct ks_wlan_private *priv;
+diff --git a/block/blk-iocost.c b/block/blk-iocost.c
+index 2570732b92d1..84374ebcc402 100644
+--- a/block/blk-iocost.c
++++ b/block/blk-iocost.c
+@@ -1073,11 +1073,11 @@ static void __propagate_weights(struct ioc_gq *iocg, u32 active, u32 inuse,
+ 	 * @active. An active internal node's inuse is solely determined by the
+ 	 * inuse to active ratio of its children regardless of @inuse.
+ 	 */
+-	if (list_empty(&iocg->active_list) && iocg->child_active_sum) {
++	if (iocg->child_active_sum) {
+ 		inuse = DIV64_U64_ROUND_UP(active * iocg->child_inuse_sum,
+ 					   iocg->child_active_sum);
+ 	} else {
+-		inuse = clamp_t(u32, inuse, 1, active);
++		inuse = clamp_t(u32, inuse, 0, active);
+ 	}
  
- 	priv = container_of(work, struct ks_wlan_private, sme_work);
--	if (!priv)
--		return;
- 
- 	if (priv->dev_state < DEVICE_STATE_BOOT)
- 		return;
+ 	iocg->last_inuse = iocg->inuse;
 -- 
-2.7.4
+2.36.1
 
