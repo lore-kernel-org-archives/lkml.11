@@ -2,159 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2246C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5368AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 16:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343644AbiEPQ3M (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 12:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
+        id S234616AbiEPQ3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 12:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343628AbiEPQ3J (ORCPT
+        with ESMTP id S1343634AbiEPQ3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 12:29:09 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951403B012;
-        Mon, 16 May 2022 09:29:08 -0700 (PDT)
-Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L24PV63Xzz67h1V;
-        Tue, 17 May 2022 00:26:06 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 16 May 2022 18:29:06 +0200
-Received: from [10.47.25.151] (10.47.25.151) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
- 2022 17:29:05 +0100
-Message-ID: <d874dd82-30fd-f8e0-b7ab-0c9d14e47324@huawei.com>
-Date:   Mon, 16 May 2022 17:29:04 +0100
+        Mon, 16 May 2022 12:29:10 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E3F3B02C;
+        Mon, 16 May 2022 09:29:09 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id ch13so29664163ejb.12;
+        Mon, 16 May 2022 09:29:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z664EsRbmKvMTMJMIIbFibyESl4V8wTy2xC+qQ6EHX8=;
+        b=S/mO7960uNYEyhFA9Xj5FaZrLw0jj70ilWt3AWMKNI7ilvT8/W/389Tcb3DDQZpfuU
+         Y/7/i73+FLJPOpwFgSfWBvdJ6gwnWiakkcMWOb0keOrc5a6q2CcwdCwf38r41ZfG9uFE
+         QTDPHqMZiCvyGXWjts9lxESFX0q+IWXYbwUMV3N/lM0PJFeqkYYiG6f05BIkBoBNIyxP
+         bNdTMqRgOvRn9PpFfhEB5cYJ7ue9GvMnWme3G5V7LDC52rYegJsw7F+xThHg6PX65ktJ
+         SaLrlCzfZviz1WuRzPNL/H/+WlnioG3WqNJRxeWpAcKHkWD0NUVNVtY79yL0vbGbFkj7
+         kYpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z664EsRbmKvMTMJMIIbFibyESl4V8wTy2xC+qQ6EHX8=;
+        b=wUWQYVfdAcXXCuNCmZvu82U8fDuyAVjFi2fCqcP8qjrTIBM5ayFQUL4SU4TBZ8Pk+V
+         cdbaSWi91mEwiBERkKtZ/PbDp/M4RE4mEjgrSt3TrMIBglu67nAM7Yw5krsevI3vi2ME
+         JlrnYkFVNp/gTh+SKmMeq0GAEtFlOGUEUbzNVAFThaLflrkj+Du6t3LZoGB7QxyWKVFE
+         hflT8LtsQgTkfFX6ifkv2ri5Gp29FcfpV6zffX+dMWxJ1LccWDaYpb8ZUBEDgPWoszKd
+         4m3xjpNqgyCx9cDLLBElXaUWVwVBIregIolNFMfDxN989bOcj3sqOo2E8vgup38kQb1+
+         B2tw==
+X-Gm-Message-State: AOAM533QFqZCwaibkEujvbk4j682/eziPoQirgjaqL6wrqqUx1txZWy+
+        A+FbyW1DHQG0WQWjXxGbawc=
+X-Google-Smtp-Source: ABdhPJwqdsWUekOMU8dN2Q7HZJY3pp4HFQiSwnN1K4N0Ebz3Z0wTMdmY/DKl2oOhTcjaattKUXcuEQ==
+X-Received: by 2002:a17:906:99c3:b0:6f4:a9d7:6dac with SMTP id s3-20020a17090699c300b006f4a9d76dacmr16118497ejn.85.1652718547605;
+        Mon, 16 May 2022 09:29:07 -0700 (PDT)
+Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
+        by smtp.gmail.com with ESMTPSA id 9-20020a170906004900b006f3ef214e3bsm58819ejg.161.2022.05.16.09.29.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 09:29:07 -0700 (PDT)
+From:   Max Krummenacher <max.oss.09@gmail.com>
+To:     max.krummenacher@toradex.com
+Cc:     Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Marek Vasut <marex@denx.de>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/2] drm/panel: simple: add bus-format support for panel-dpi
+Date:   Mon, 16 May 2022 18:28:24 +0200
+Message-Id: <20220516162826.23025-1-max.oss.09@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v8 4/8] perf arm: Refactor event list iteration in
- auxtrace_record__init()
-To:     Yicong Yang <yangyicong@hisilicon.com>,
-        <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
-        <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <acme@kernel.org>,
-        <jonathan.cameron@huawei.com>
-CC:     <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mark.rutland@arm.com>, <joro@8bytes.org>,
-        <shameerali.kolothum.thodi@huawei.com>, <peterz@infradead.org>,
-        <mingo@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <linuxarm@huawei.com>
-References: <20220516125223.32012-1-yangyicong@hisilicon.com>
- <20220516125223.32012-5-yangyicong@hisilicon.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220516125223.32012-5-yangyicong@hisilicon.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.25.151]
-X-ClientProxiedBy: lhreml714-chm.china.huawei.com (10.201.108.65) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/05/2022 13:52, Yicong Yang wrote:
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-As requested before, please mention "perf tool" in the commit subject
 
-> From: Qi Liu <liuqi115@huawei.com>
-> 
-> Use find_pmu_for_event() to simplify logic in auxtrace_record__init().
-> 
-> Signed-off-by: Qi Liu <liuqi115@huawei.com>
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> ---
->   tools/perf/arch/arm/util/auxtrace.c | 53 ++++++++++++++++++-----------
->   1 file changed, 34 insertions(+), 19 deletions(-)
-> 
-> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
-> index 5fc6a2a3dbc5..384c7cfda0fd 100644
-> --- a/tools/perf/arch/arm/util/auxtrace.c
-> +++ b/tools/perf/arch/arm/util/auxtrace.c
-> @@ -50,16 +50,32 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
->   	return arm_spe_pmus;
->   }
->   
-> +static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
-> +					   int pmu_nr, struct evsel *evsel)
-> +{
-> +	int i;
-> +
-> +	if (!pmus)
-> +		return NULL;
-> +
-> +	for (i = 0; i < pmu_nr; i++) {
-> +		if (evsel->core.attr.type == pmus[i]->type)
-> +			return pmus[i];
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
->   struct auxtrace_record
->   *auxtrace_record__init(struct evlist *evlist, int *err)
->   {
-> -	struct perf_pmu	*cs_etm_pmu;
-> +	struct perf_pmu	*cs_etm_pmu = NULL;
-> +	struct perf_pmu **arm_spe_pmus = NULL;
->   	struct evsel *evsel;
-> -	bool found_etm = false;
-> +	struct perf_pmu *found_etm = NULL;
->   	struct perf_pmu *found_spe = NULL;
-> -	struct perf_pmu **arm_spe_pmus = NULL;
-> +	int auxtrace_event_cnt = 0;
->   	int nr_spes = 0;
-> -	int i = 0;
->   
->   	if (!evlist)
->   		return NULL;
-> @@ -68,24 +84,23 @@ struct auxtrace_record
->   	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
->   
->   	evlist__for_each_entry(evlist, evsel) {
-> -		if (cs_etm_pmu &&
-> -		    evsel->core.attr.type == cs_etm_pmu->type)
-> -			found_etm = true;
-> -
-> -		if (!nr_spes || found_spe)
-> -			continue;
-> -
-> -		for (i = 0; i < nr_spes; i++) {
-> -			if (evsel->core.attr.type == arm_spe_pmus[i]->type) {
-> -				found_spe = arm_spe_pmus[i];
-> -				break;
-> -			}
-> -		}
-> +		if (cs_etm_pmu && !found_etm)
-> +			found_etm = find_pmu_for_event(&cs_etm_pmu, 1, evsel);
-> +
-> +		if (arm_spe_pmus && !found_spe)
-> +			found_spe = find_pmu_for_event(arm_spe_pmus, nr_spes, evsel);
->   	}
-> +
->   	free(arm_spe_pmus);
->   
-> -	if (found_etm && found_spe) {
-> -		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
-> +	if (found_etm)
-> +		auxtrace_event_cnt++;
-> +
-> +	if (found_spe)
-> +		auxtrace_event_cnt++;
-> +
-> +	if (auxtrace_event_cnt > 1) {
-> +		pr_err("Concurrent AUX trace operation not currently supported\n");
->   		*err = -EOPNOTSUPP;
->   		return NULL;
->   	}
+Commit 4a1d0dbc8332 ("drm/panel: simple: add panel-dpi support") added
+support for defining a panel from device tree provided data.
+
+However support for setting the bus format is missing, so that with
+the current implementation a 'panel-dpi' panel can only be used
+if the driver of the display interface connected can cope with a
+missing bus_format.
+
+This patch series defines the new property bus-format and adds it to
+the panel-dpi implementation.
+
+Check initial discussions [1] and [2].
+[1] https://lore.kernel.org/all/20220201110717.3585-1-cniedermaier@dh-electronics.com/
+[2] https://lore.kernel.org/all/20220222084723.14310-1-max.krummenacher@toradex.com/
+
+
+
+Max Krummenacher (2):
+  dt-bindings: display: add new bus-format property for panel-dpi
+  drm/panel: simple: add bus-format support for panel-dpi
+
+ .../bindings/display/panel/panel-dpi.yaml     | 11 +++++
+ drivers/gpu/drm/panel/panel-simple.c          | 43 +++++++++++++++++++
+ .../dt-bindings/display/dt-media-bus-format.h | 23 ++++++++++
+ 3 files changed, 77 insertions(+)
+ create mode 100644 include/dt-bindings/display/dt-media-bus-format.h
+
+-- 
+2.20.1
 
