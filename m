@@ -2,189 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2465DC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F084C352AA
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349130AbiEPUh5 (ORCPT
+        id S1349311AbiEPUiQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
+        Mon, 16 May 2022 16:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351061AbiEPUB5 (ORCPT
+        with ESMTP id S1350933AbiEPUBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AAC4757D;
-        Mon, 16 May 2022 12:57:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4167B81616;
-        Mon, 16 May 2022 19:57:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F1CC34100;
-        Mon, 16 May 2022 19:57:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731069;
-        bh=bdCazeY4uVIvyz0sN8mWq9A6pyMrOblkEcIMofn3tcE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DpFS9UbmWQj/k0rG1prMiYB77wXteE55BsaSpkAOQdmNVX1Qk3HKnUkmmZ7DdpCkI
-         LeOUlmbD/w+yFguKLKGt+Z7vd8U+ss613dWT9SnE6xzbtWM1b1n0DR4/ZqbKNLhg61
-         KG1vxw+ZY7GvRwzA8osFFXXYQgI2fD4BFC0EcB/s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.17 085/114] USB: serial: option: add Fibocom L610 modem
-Date:   Mon, 16 May 2022 21:36:59 +0200
-Message-Id: <20220516193627.922364641@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 16 May 2022 16:01:47 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8525C4B84D
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:56:07 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2ff1ed64f82so14630507b3.1
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:56:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gfdUgGfNk3YhrYyq3M5XkqZYdXGFDT0Zb8uEoLzPkM8=;
+        b=IbUzpIJLiMA1ViYgX8Jh1WuzPhrzWpCO0cyMdjY1sJ+mXkV4jPmeKJBw5W5eO9KKBS
+         uRl4UlkDdCc3g1sS5dZD019n8RtHIIk3qECd6qb/4ikg+MRFGGaFelI2t/rn3ZK3B+hI
+         oaKFOJyjKr01aMhzFnjTvwhcJElVTtVAlh3dIHkrrvGKeTmsPoNZuTqwKG4iYiDPjH6i
+         Pl6rxNfX0HBPcTlV2W5b6L9c+ihTzdpnxl7Uonsd19/fw1RBnwoXAyi4YX15wx2g+i96
+         6zkBCbMveUQud112L+2LH2jdgG9zouwGPHMibw7+vaCxAz5UJZkb0+1fayoiEaeo/nnI
+         +iEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gfdUgGfNk3YhrYyq3M5XkqZYdXGFDT0Zb8uEoLzPkM8=;
+        b=KlteCc/Jc3IJtEL9mJNzmgCavti6+/0IgGf2n4ZOyjXOWnNs4KH3ulBgZ+ejo5FGVb
+         FARg9TooOcydYYgmclIm4qAwysHr/0i0rniAZGQbkBZvfvp/On/zpvDY5CGMPCRIjUUl
+         SUsRuXdAdCN03CpZNoJffU5K5w8RRzqM/2KAK1n1a9q7SU0/FpjhDSitCZ0J2G/G65nj
+         y5c6Krsu1k/5G51RX1z1mAzjDpT9gT/ZCBbflND8yCS2z4OUID7CYQtUB2p0R5dO1mc/
+         7RnJIsVooBjNYahlAVous3YLy7d55BTfqNIfII+O1Q5DR1Zg6kdWlbD1jnX2ZV0rUCoH
+         wnXg==
+X-Gm-Message-State: AOAM532xOo9nARx3o6xUZ1M4dRST6XDmXr5h7o3ZPDAFahFTWh8bwyRx
+        NSbRukeuWBKQtrpegWp2O4vXBsDjCCAXYQtqRssH/w==
+X-Google-Smtp-Source: ABdhPJw3x6WiZ42hrjmcTLP0iMMy3DDxNMyaCjoU1W4evQaWFgcPdb6I1JcYc/LIUoqSxPyOjGqbk6G6OjkRzdfSZ28=
+X-Received: by 2002:a0d:d4d0:0:b0:2fe:b86b:472d with SMTP id
+ w199-20020a0dd4d0000000b002feb86b472dmr19354893ywd.469.1652730966045; Mon, 16
+ May 2022 12:56:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220516075538.1276644-1-surenb@google.com> <20220516125010.53ab9a27733f361e5965ed7f@linux-foundation.org>
+In-Reply-To: <20220516125010.53ab9a27733f361e5965ed7f@linux-foundation.org>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Mon, 16 May 2022 12:55:55 -0700
+Message-ID: <CAJuCfpE8p6KVqMorFKYmH7+sd+YBt37J2A10_K=CfG73KJUw_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] selftests: vm: add process_mrelease tests
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        David Rientjes <rientjes@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jann Horn <jannh@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
+        kernel-team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+On Mon, May 16, 2022 at 12:50 PM Andrew Morton
+<akpm@linux-foundation.org> wrote:
+>
+> On Mon, 16 May 2022 00:55:38 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
+>
+> > Introduce process_mrelease syscall sanity tests which include tests
+> > which expect to fail:
+> > - process_mrelease with invalid pidfd and flags inputs
+> > - process_mrelease on a live process with no pending signals
+> > and valid process_mrelease usage which is expected to succeed.
+> > Because process_mrelease has to be used against a process with a pending
+> > SIGKILL, it's possible that the process exits before process_mrelease
+> > gets called. In such cases we retry the test with a victim that allocates
+> > twice more memory up to 1GB. This would require the victim process to
+> > spend more time during exit and process_mrelease has a better chance of
+> > catching the process before it exits and succeeding.
+> >
+> > On success the test reports the amount of memory the child had to
+> > allocate for reaping to succeed. Sample output:
+> >     Success reaping a child with 1MB of memory allocations
+> >
+> > On failure the test reports the failure. Sample outputs:
+> >     All process_mrelease attempts failed!
+> >     process_mrelease: Invalid argument
+> >
+> > ...
+> >
+> > --- a/tools/testing/selftests/vm/run_vmtests.sh
+> > +++ b/tools/testing/selftests/vm/run_vmtests.sh
+> > @@ -287,6 +287,22 @@ else
+> >       echo "[PASS]"
+> >  fi
+> >
+> > +echo "---------------------"
+> > +echo "running mrelease_test"
+> > +echo "---------------------"
+> > +./mrelease_test
+> > +ret_val=$?
+> > +
+> > +if [ $ret_val -eq 0 ]; then
+> > +     echo "[PASS]"
+> > +elif [ $ret_val -eq $ksft_skip ]; then
+> > +      echo "[SKIP]"
+> > +      exitcode=$ksft_skip
+> > +else
+> > +     echo "[FAIL]"
+> > +     exitcode=1
+> > +fi
+> > +
+> >  echo "-------------------"
+> >  echo "running mremap_test"
+> >  echo "-------------------"
+>
+> Can you please redo this against
+> git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm branch mm-stable
+> or mm-unstable.  Or against linux-next?
+>
+> This script now has a helper function run_test which I think can be
+> used here.
 
-commit 714adff9a6271b5f1664b04c944b598141ebfe73 upstream.
-
-The L610 modem has 3 USB configurations that are configurable via the AT
-command AT+GTUSBMODE={31,32,33} which make the modem enumerate with the
-following interfaces, respectively:
-
-31: Modem + NV + MOS + Diag + LOG + AT + AT
-32: ECM + Modem + NV + MOS + Diag + LOG + AT + AT
-33: RNDIS + Modem + NV + MOS + Diag + LOG + AT + AT
-
-A detailed description of the USB configuration for each mode follows:
-
-+GTUSBMODE: 31
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=124 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=1782 ProdID=4d10 Rev= 0.00
-S:  Manufacturer=FIBOCOM
-S:  Product=L610
-C:* #Ifs= 7 Cfg#= 1 Atr=e0 MxPwr=400mA
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-+GTUSBMODE: 32
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=122 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=1782 ProdID=4d11 Rev= 0.00
-S:  Manufacturer=FIBOCOM
-S:  Product=L610
-C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
-A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=32ms
-I:  If#= 1 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-I:* If#= 1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-+GTUSBMODE: 33
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=126 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=1782 ProdID=4d11 Rev= 0.00
-S:  Manufacturer=FIBOCOM
-S:  Product=L610
-C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
-A:  FirstIf#= 0 IfCount= 2 Cls=e0(wlcon) Sub=01 Prot=03
-I:* If#= 0 Alt= 0 #EPs= 1 Cls=e0(wlcon) Sub=01 Prot=03 Driver=rndis_host
-E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=4096ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/serial/option.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -2123,6 +2123,8 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(3) },
- 	{ USB_DEVICE(0x1508, 0x1001),						/* Fibocom NL668 (IOT version) */
- 	  .driver_info = RSVD(4) | RSVD(5) | RSVD(6) },
-+	{ USB_DEVICE(0x1782, 0x4d10) },						/* Fibocom L610 (AT mode) */
-+	{ USB_DEVICE_INTERFACE_CLASS(0x1782, 0x4d11, 0xff) },			/* Fibocom L610 (ECM/RNDIS mode) */
- 	{ USB_DEVICE(0x2cb7, 0x0104),						/* Fibocom NL678 series */
- 	  .driver_info = RSVD(4) | RSVD(5) },
- 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
-
-
+Ah, thanks for the note! I'll give it a couple days for more reviews
+and the will post it over mmotm.
