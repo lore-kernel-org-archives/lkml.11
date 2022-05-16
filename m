@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8740CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 684FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237583AbiEPTzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56802 "EHLO
+        id S1346669AbiEPTzM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346212AbiEPTux (ORCPT
+        with ESMTP id S1346445AbiEPTuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:50:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E31443CE;
-        Mon, 16 May 2022 12:45:30 -0700 (PDT)
+        Mon, 16 May 2022 15:50:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF9F3ED3C;
+        Mon, 16 May 2022 12:45:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 982BCCE1798;
-        Mon, 16 May 2022 19:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EDEC34100;
-        Mon, 16 May 2022 19:45:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABC456155B;
+        Mon, 16 May 2022 19:45:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DAEC385AA;
+        Mon, 16 May 2022 19:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730327;
-        bh=eWA4IP9jXbZ4Dw5owvga1ugxXXjxeiJvUw4vGvqPllA=;
+        s=korg; t=1652730330;
+        bh=7wLZiyfpEIoV0FKQ5xzP1VHbHh9ZccAXu7pBOG+fq/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0taIAyD32eo4azoyz70fvJscoOHyCt4IX/xoyOKlVqtiS3oI1Z/On/LZ/2PxKSkh8
-         DnTxuV+rw8kXpMaeDmAxdj3TFd74vtakoS5NjYdWtOe1TpGNgE7VZ9hmuRNqWKlfG9
-         SGtzfjltktU8baqCApIsR7P9WbphfVUx9KIIckoM=
+        b=qdX43AuVVXXMn7hm5FFGqaDqaf4LPDXa06gxE8eNfWt3vRNUuVEkhj1p7KHti7iic
+         hBlp3LiioOqLXrPOxxsWEDCvF8KkTjCeMw3qpp6XzkxZ0fKFU9PDft/obWySiNKlRb
+         Qs8SpP1/qp7caAovBSYgiRjZesFgKqGuvKrz4TBY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Camel Guo <camel.guo@axis.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 29/66] tls: Fix context leak on tls_device_down
-Date:   Mon, 16 May 2022 21:36:29 +0200
-Message-Id: <20220516193620.257989798@linuxfoundation.org>
+Subject: [PATCH 5.10 03/66] hwmon: (tmp401) Add OF device ID table
+Date:   Mon, 16 May 2022 21:36:03 +0200
+Message-Id: <20220516193619.502471182@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
 References: <20220516193619.400083785@linuxfoundation.org>
@@ -50,51 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Camel Guo <camel.guo@axis.com>
 
-[ Upstream commit 3740651bf7e200109dd42d5b2fb22226b26f960a ]
+[ Upstream commit 3481551f035725fdc46885425eac3ef9b58ae7b7 ]
 
-The commit cited below claims to fix a use-after-free condition after
-tls_device_down. Apparently, the description wasn't fully accurate. The
-context stayed alive, but ctx->netdev became NULL, and the offload was
-torn down without a proper fallback, so a bug was present, but a
-different kind of bug.
+This driver doesn't have of_match_table. This makes the kernel module
+tmp401.ko lack alias patterns (e.g: of:N*T*Cti,tmp411) to match DT node
+of the supported devices hence this kernel module will not be
+automatically loaded.
 
-Due to misunderstanding of the issue, the original patch dropped the
-refcount_dec_and_test line for the context to avoid the alleged
-premature deallocation. That line has to be restored, because it matches
-the refcount_inc_not_zero from the same function, otherwise the contexts
-that survived tls_device_down are leaked.
+After adding of_match_table to this driver, the folllowing alias will be
+added into tmp401.ko.
+$ modinfo drivers/hwmon/tmp401.ko
+filename: drivers/hwmon/tmp401.ko
+......
+author:         Hans de Goede <hdegoede@redhat.com>
+alias:          of:N*T*Cti,tmp435C*
+alias:          of:N*T*Cti,tmp435
+alias:          of:N*T*Cti,tmp432C*
+alias:          of:N*T*Cti,tmp432
+alias:          of:N*T*Cti,tmp431C*
+alias:          of:N*T*Cti,tmp431
+alias:          of:N*T*Cti,tmp411C*
+alias:          of:N*T*Cti,tmp411
+alias:          of:N*T*Cti,tmp401C*
+alias:          of:N*T*Cti,tmp401
+......
 
-This patch fixes the described issue by restoring refcount_dec_and_test.
-After this change, there is no leak anymore, and the fallback to
-software kTLS still works.
-
-Fixes: c55dcdd435aa ("net/tls: Fix use-after-free after the TLS device goes down and up")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Link: https://lore.kernel.org/r/20220512091830.678684-1-maximmi@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: af503716ac14 ("i2c: core: report OF style module alias for devices registered via OF")
+Signed-off-by: Camel Guo <camel.guo@axis.com>
+Link: https://lore.kernel.org/r/20220503114333.456476-1-camel.guo@axis.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tls/tls_device.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/hwmon/tmp401.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 1f56225a10e3..3c82286e5bcc 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -1345,7 +1345,10 @@ static int tls_device_down(struct net_device *netdev)
+diff --git a/drivers/hwmon/tmp401.c b/drivers/hwmon/tmp401.c
+index 9dc210b55e69..48466b0a4bb0 100644
+--- a/drivers/hwmon/tmp401.c
++++ b/drivers/hwmon/tmp401.c
+@@ -730,10 +730,21 @@ static int tmp401_probe(struct i2c_client *client)
+ 	return 0;
+ }
  
- 		/* Device contexts for RX and TX will be freed in on sk_destruct
- 		 * by tls_device_free_ctx. rx_conf and tx_conf stay in TLS_HW.
-+		 * Now release the ref taken above.
- 		 */
-+		if (refcount_dec_and_test(&ctx->refcount))
-+			tls_device_free_ctx(ctx);
- 	}
- 
- 	up_write(&device_offload_lock);
++static const struct of_device_id __maybe_unused tmp4xx_of_match[] = {
++	{ .compatible = "ti,tmp401", },
++	{ .compatible = "ti,tmp411", },
++	{ .compatible = "ti,tmp431", },
++	{ .compatible = "ti,tmp432", },
++	{ .compatible = "ti,tmp435", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, tmp4xx_of_match);
++
+ static struct i2c_driver tmp401_driver = {
+ 	.class		= I2C_CLASS_HWMON,
+ 	.driver = {
+ 		.name	= "tmp401",
++		.of_match_table = of_match_ptr(tmp4xx_of_match),
+ 	},
+ 	.probe_new	= tmp401_probe,
+ 	.id_table	= tmp401_id,
 -- 
 2.35.1
 
