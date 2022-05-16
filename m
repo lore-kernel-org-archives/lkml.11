@@ -2,52 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D77DC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C57C5C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348788AbiEPT65 (ORCPT
+        id S1346843AbiEPT4D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
+        Mon, 16 May 2022 15:56:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348364AbiEPTws (ORCPT
+        with ESMTP id S1346889AbiEPTv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:52:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA0745AD7;
-        Mon, 16 May 2022 12:48:27 -0700 (PDT)
+        Mon, 16 May 2022 15:51:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F3840917;
+        Mon, 16 May 2022 12:46:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11B1D60ABE;
-        Mon, 16 May 2022 19:48:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E10FC385AA;
-        Mon, 16 May 2022 19:48:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA7256151D;
+        Mon, 16 May 2022 19:45:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E6EC385AA;
+        Mon, 16 May 2022 19:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730504;
-        bh=8TNGV8+lcfjcP2CucebFTBrC3MWqsBcqoaEeKvVh1+s=;
+        s=korg; t=1652730359;
+        bh=tp+iY+5N+WnKZV1bBz/lKDeRyBo9XckND8D3YCkF+Ps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j7l++uub0o+dvbubSFoWemRDAd8yYmYLpZV+8fs4Ayhx4UbSQsc9BPMglEYyfEuSK
-         1FY6af/AD5Y0ierG1RLfOjIlvd8kNXdCSdaZN90iRigPBWqf5VJ2/RKbRU8/qmfW5m
-         aPqTJDyUxETJhNuj5ev9Wm9R9wtW/AdCdqx1pCBg=
+        b=Z8IcxtN5sHgIkor5hwOBmAdp4iJNXsh5k3ByqDdIDRo1Faz5OJf1yWw397H+G+9Nt
+         FxwmuJ4yRjYYQSM5MwemvoXdGfkPFlP6C998T9wBotuG3kJPSQkRZgDvZV6blA367u
+         13h8ZtlvYmRuGTaokEKu5Xqd72xgEtzbWZZRxqu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Thomas Zimmermann <tzimemrmann@suse.de>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 020/102] fbdev: efifb: Fix a use-after-free due early fb_info cleanup
-Date:   Mon, 16 May 2022 21:35:54 +0200
-Message-Id: <20220516193624.580066845@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 41/66] tty: n_gsm: fix mux activation issues in gsm_config()
+Date:   Mon, 16 May 2022 21:36:41 +0200
+Message-Id: <20220516193620.602120115@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
+In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
+References: <20220516193619.400083785@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,54 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 1b5853dfab7fdde450f00f145327342238135c8a ]
+commit edd5f60c340086891fab094ad61270d6c80f9ca4 upstream.
 
-Commit d258d00fb9c7 ("fbdev: efifb: Cleanup fb_info in .fb_destroy rather
-than .remove") attempted to fix a use-after-free error due driver freeing
-the fb_info in the .remove handler instead of doing it in .fb_destroy.
+The current implementation activates the mux if it was restarted and opens
+the control channel if the mux was previously closed and we are now acting
+as initiator instead of responder, which is the default setting.
+This has two issues.
+1) No mux is activated if we keep all default values and only switch to
+initiator. The control channel is not allocated but will be opened next
+which results in a NULL pointer dereference.
+2) Switching the configuration after it was once configured while keeping
+the initiator value the same will not reopen the control channel if it was
+closed due to parameter incompatibilities. The mux remains dead.
 
-But ironically that change introduced yet another use-after-free since the
-fb_info was still used after the free.
+Fix 1) by always activating the mux if it is dead after configuration.
+Fix 2) by always opening the control channel after mux activation.
 
-This should fix for good by freeing the fb_info at the end of the handler.
-
-Fixes: d258d00fb9c7 ("fbdev: efifb: Cleanup fb_info in .fb_destroy rather than .remove")
-Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Reported-by: Andrzej Hajda <andrzej.hajda@intel.com>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
-Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
-Reviewed-by: Thomas Zimmermann <tzimemrmann@suse.de>
-Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220506132225.588379-1-javierm@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220504081733.3494-2-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/efifb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/n_gsm.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
-index cfa3dc0b4eee..b3d5f884c544 100644
---- a/drivers/video/fbdev/efifb.c
-+++ b/drivers/video/fbdev/efifb.c
-@@ -259,12 +259,12 @@ static void efifb_destroy(struct fb_info *info)
- 			memunmap(info->screen_base);
- 	}
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2276,6 +2276,7 @@ static void gsm_copy_config_values(struc
  
--	framebuffer_release(info);
--
- 	if (request_mem_succeeded)
- 		release_mem_region(info->apertures->ranges[0].base,
- 				   info->apertures->ranges[0].size);
- 	fb_dealloc_cmap(&info->cmap);
-+
-+	framebuffer_release(info);
+ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ {
++	int ret = 0;
+ 	int need_close = 0;
+ 	int need_restart = 0;
+ 
+@@ -2343,10 +2344,13 @@ static int gsm_config(struct gsm_mux *gs
+ 	 * FIXME: We need to separate activation/deactivation from adding
+ 	 * and removing from the mux array
+ 	 */
+-	if (need_restart)
+-		gsm_activate_mux(gsm);
+-	if (gsm->initiator && need_close)
+-		gsm_dlci_begin_open(gsm->dlci[0]);
++	if (gsm->dead) {
++		ret = gsm_activate_mux(gsm);
++		if (ret)
++			return ret;
++		if (gsm->initiator)
++			gsm_dlci_begin_open(gsm->dlci[0]);
++	}
+ 	return 0;
  }
  
- static const struct fb_ops efifb_ops = {
--- 
-2.35.1
-
 
 
