@@ -2,121 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 15:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245003AbiEPPGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 11:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
+        id S239518AbiEPPGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 11:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244746AbiEPPG2 (ORCPT
+        with ESMTP id S244989AbiEPPGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 11:06:28 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EDA3B3DA
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:06:27 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id dk23so29257032ejb.8
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:06:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X3adrsX+uhZAXoth7knDMjvKgEG3AVzl2RqEOStCFFU=;
-        b=WUC5Xg+4w97H+b3njqlusYipF4b7Bqzncvyv3eg4yB93mgKI/DfXQo99MRIvkX7ysm
-         UbxSikcZHAC7DZafAgPC0PmJIZzdAlQ4kZlG1mvRtBK4iw/VAKUpEYYK7q1asUPtmc1H
-         2sDcNSDhZsnI80IGowjrZiyMN0Dy8GI6NTfK4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X3adrsX+uhZAXoth7knDMjvKgEG3AVzl2RqEOStCFFU=;
-        b=eRotj/VM4Av1yTgbkyMBqgufHcPNWopFzEzRmfmI+O81RiN4PTl5QNk7fC6EN6qEYI
-         ta0PbxTFTVxBltn6YXOEOCwSr4pT8ZauVdgP2rIQY5e+xCB/ZV/VAVht1/wYds+iQpsq
-         Cz//Hde/qpD+APIGFhxFxmQCugOlh/FgXXPm49Iw2FPvspkbRCRf9BxkesEvJ9dWoMlA
-         4Ei+qg/TPVl0BgT27/aOVl09FSxoAg5fUkD2fLxDipLrwCY1UV8JXpcNjVk7srjNcrQt
-         TD2S88P2pnurPoOxfazWOLjOoXxyuQ0ngJk0x3+7oC+Kmpb/x4xKnrCOZrulnNmoum/7
-         Jjvg==
-X-Gm-Message-State: AOAM533FssmzDjU1uCdQA51ukEXEn6n8mYxmd8n0WggIN9zWz8HO5Lw/
-        WsoXHsaqpavdudeTih5cdlDI7R6dGdyKwd+M
-X-Google-Smtp-Source: ABdhPJygDULPkrW7AZfWdh+Weq+1LJwHY4UBLe1HIFn7p4DIl+yFYMh+za2akOjSdfsXcB009EfnHA==
-X-Received: by 2002:a17:907:3d92:b0:6f4:5ddd:94d with SMTP id he18-20020a1709073d9200b006f45ddd094dmr15536467ejc.268.1652713585450;
-        Mon, 16 May 2022 08:06:25 -0700 (PDT)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
-        by smtp.gmail.com with ESMTPSA id jx1-20020a170907760100b006f3ef214da1sm16551ejc.7.2022.05.16.08.06.24
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 08:06:24 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso11127938wma.0
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:06:24 -0700 (PDT)
-X-Received: by 2002:a7b:c4c8:0:b0:394:26c5:b79e with SMTP id
- g8-20020a7bc4c8000000b0039426c5b79emr17514279wmk.15.1652713583816; Mon, 16
- May 2022 08:06:23 -0700 (PDT)
+        Mon, 16 May 2022 11:06:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B448A3BA58
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 08:06:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652713598;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=MK6D+bJiFWt3b7kQJCbuCST0iXmLyf1vvMx1vsAtPqA=;
+        b=ONQSwI9jqHNXUCNyX40z/LOGMz+WwKm3Vi3n671g/GAGojbJFKyMyYV2vNEvTLyaYDi1sv
+        lc0gZWuKFoSFB2J1JZMlwAbwINZ9ov7Kzd8hkzSBIPqCRoL2sDqZVFvdJOv7cSE1Yq8DOp
+        iTAUY19xs8en9+kQiTXNIICmNtnPHKU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-594-HLt0MPhlNrenRqNaybuwYA-1; Mon, 16 May 2022 11:06:37 -0400
+X-MC-Unique: HLt0MPhlNrenRqNaybuwYA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 42013858293;
+        Mon, 16 May 2022 15:06:37 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3C11E2166B25;
+        Mon, 16 May 2022 15:06:37 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 24GF6bog021668;
+        Mon, 16 May 2022 11:06:37 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 24GF6aNO021664;
+        Mon, 16 May 2022 11:06:36 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Mon, 16 May 2022 11:06:36 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] objtool: fix objtool regression on x32 systems
+Message-ID: <alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-References: <20220513095722.v2.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
- <d5438d2e-f387-170a-cea1-d5936cc8e15a@linaro.org>
-In-Reply-To: <d5438d2e-f387-170a-cea1-d5936cc8e15a@linaro.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 16 May 2022 08:06:11 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VNGS+H8biOOigt=drUCYCWY1VBKN=ZFD74T-3RSeWBxA@mail.gmail.com>
-Message-ID: <CAD=FV=VNGS+H8biOOigt=drUCYCWY1VBKN=ZFD74T-3RSeWBxA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/4] dt-bindings: Document how Chromebooks with
- depthcharge boot
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Rajendra Nayak <quic_rjendra@quicinc.com>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Julius Werner <jwerner@chromium.org>,
-        "Joseph S . Barrera III" <joebar@chromium.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The patch 4abff6d48dbc ("objtool: Fix code relocs vs weak symbols") makes
+the kernel unbootable.  The patch c087c6e7b551 ("objtool: Fix type of
+reloc::addend") attempts to fix it by replacing 'int' with 'long'.
 
-On Sun, May 15, 2022 at 11:57 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 13/05/2022 18:59, Douglas Anderson wrote:
-> > This documents how many Chromebooks pick the device tree that will be
-> > passed to the OS and can help understand the revisions / skus listed
-> > as the top-level "compatible" in many Chromebooks.
-> >
-> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> > ---
-> >
-> > Changes in v2:
-> > - ("Document how Chromebooks with depthcharge boot") new for v2.
-> >
-> >  .../devicetree/chromebook-boot-flow.rst       | 63 +++++++++++++++++++
-> >  1 file changed, 63 insertions(+)
-> >  create mode 100644 Documentation/devicetree/chromebook-boot-flow.rst
->
-> This is not a Devicetree (generic) document, so it is not the best place
-> for it. Maybe regular vendor place, e.g . Documentation/arm/google/ ?
+However, we may be running on a system with x32 ABI and 'long' on x32 is
+32-bit, thus the patch c087c6e7b551 doesn't really change anything and we
+still end up with miscompiled kernel.  This patch replaces 'long' with
+'long long', so that the 64-bit kernel is correctly compiled on a x32
+system.
 
-I can put it there. ...but taking your two pieces of advice together,
-you're saying:
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Fixes: 4abff6d48dbc ("objtool: Fix code relocs vs weak symbols")
+Fixes: c087c6e7b551 ("objtool: Fix type of reloc::addend")
 
-1. Don't add this under the devicetree directory.
+---
+ tools/objtool/check.c               |    8 ++++----
+ tools/objtool/elf.c                 |    2 +-
+ tools/objtool/include/objtool/elf.h |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-2. Don't refer to this by URL but instead by a relative file path.
+Index: linux-2.6/tools/objtool/check.c
+===================================================================
+--- linux-2.6.orig/tools/objtool/check.c	2022-05-16 16:20:49.000000000 +0200
++++ linux-2.6/tools/objtool/check.c	2022-05-16 16:22:11.000000000 +0200
+@@ -560,12 +560,12 @@ static int add_dead_ends(struct objtool_
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find unreachable insn at %s+0x%lx",
++				WARN("can't find unreachable insn at %s+0x%llx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find unreachable insn at %s+0x%lx",
++			WARN("can't find unreachable insn at %s+0x%llx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+@@ -595,12 +595,12 @@ reachable:
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find reachable insn at %s+0x%lx",
++				WARN("can't find reachable insn at %s+0x%llx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find reachable insn at %s+0x%lx",
++			WARN("can't find reachable insn at %s+0x%llx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+Index: linux-2.6/tools/objtool/elf.c
+===================================================================
+--- linux-2.6.orig/tools/objtool/elf.c	2022-05-16 16:20:49.000000000 +0200
++++ linux-2.6/tools/objtool/elf.c	2022-05-16 16:22:21.000000000 +0200
+@@ -546,7 +546,7 @@ static struct section *elf_create_reloc_
+ 						int reltype);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, long addend)
++		  unsigned int type, struct symbol *sym, long long addend)
+ {
+ 	struct reloc *reloc;
+ 
+Index: linux-2.6/tools/objtool/include/objtool/elf.h
+===================================================================
+--- linux-2.6.orig/tools/objtool/include/objtool/elf.h	2022-05-16 16:07:54.000000000 +0200
++++ linux-2.6/tools/objtool/include/objtool/elf.h	2022-05-16 16:22:45.000000000 +0200
+@@ -73,7 +73,7 @@ struct reloc {
+ 	struct symbol *sym;
+ 	unsigned long offset;
+ 	unsigned int type;
+-	long addend;
++	long long addend;
+ 	int idx;
+ 	bool jump_table_start;
+ };
+@@ -135,7 +135,7 @@ struct elf *elf_open_read(const char *na
+ struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, long addend);
++		  unsigned int type, struct symbol *sym, long long addend);
+ int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+ 			  unsigned long offset, unsigned int type,
+ 			  struct section *insn_sec, unsigned long insn_off);
 
-I can do both of those two things, but I always had it in my mind that
-the device tree was supposed to be "Linux agnostic". In other words,
-you could refer to Linux as one OS that boots with device tree, but I
-thought that the device tree docs were supposed to stand on their own.
-With the above two suggestions, it seems like an extra piece tieing
-the two together and assuming that both Linux and device tree docs are
-living in the same place.
-
-In any case, I'm happy to do what you request but I just want to double-check.
-
--Doug
