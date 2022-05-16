@@ -2,131 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10810C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 23:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C782FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 23:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347927AbiEPXi7 (ORCPT
+        id S1350368AbiEPXjJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 19:38:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35344 "EHLO
+        Mon, 16 May 2022 19:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbiEPXi5 (ORCPT
+        with ESMTP id S1350364AbiEPXjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 19:38:57 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A535730557
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 16:38:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652744335; x=1684280335;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=KkkLfc4fAEbkp53pbjYLSGYfnjBIhuUl1eB506Pyt84=;
-  b=RKs8DhMCVEKdOXx8nw2wVt4pIq7TpnEutm/JFinsmD9AlfhYf3HvYXQT
-   thEXOSNXxit1pMhlQ/l8OvQ6bSujAbcYcFF1Qh6XrTeLfNGrWpy3RR6R9
-   l7A3Ql6jBhKpOTDfOa/y/bWv7gjExPEhb26x+2sQQTN1FAS+2n5fvTAHI
-   ufsMLhip/9ZGHZC0ezSouTCh5NtHz9FpPnMIKKExMf1VS6MjGCcgNWNIl
-   RO3jvQZnonbexNaHbwxD2IVVzxQs5OPNgl5m1rpNvGiNn9FxC0986B0LU
-   tb5wXWawQ2utXoii2x5LONaP/aJwCECtqrekfM6djOBKxYL44ymsBA3zX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="269822006"
-X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
-   d="scan'208";a="269822006"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 16:38:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
-   d="scan'208";a="555498539"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 16 May 2022 16:38:53 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqkIf-0000Pp-4l;
-        Mon, 16 May 2022 23:38:53 +0000
-Date:   Tue, 17 May 2022 07:38:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [hverkuil-media-tree:extron 2/2] ld.lld: error: undefined symbol:
- v4l2_device_register
-Message-ID: <202205170716.EOe20iPO-lkp@intel.com>
+        Mon, 16 May 2022 19:39:02 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E66A42EFE
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 16:39:01 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id p12so15474165pfn.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 16:39:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XF8HrHuc0vvXL5ulzkwN++ArfuC+zDk8XGj6ZMrmANc=;
+        b=KJxxLsXKOBiUNDDUoqoBtb/p7IY4oc5GmozcBWlwK3CxavqBBEvI+qYl4nEpc/DnO2
+         2232X2VR7ycRkCKanRTt15BjZWm8Kv8znTSOGp7bkc15a3Zv3qcU5Qcr5jAhSYPORoKa
+         ELPVVOUHcs4rdTu7GPzn63D3acWzGQqI31ZpL48zW8j7y4hukxEFgQKHfPNH2BgwqEpd
+         7KzPNueWd1q8rzOV7lH1lkgr0egMWUkkKgdjA/ubPMa9OZDygh5++6iDOS2hMIu/GqkC
+         Hs41CyjbtlLJs6d7mX1Q2plFTEgFnEuQbzGgj7mu59jYk4OquC/A9TLy/APJEM1KgX9V
+         lK4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XF8HrHuc0vvXL5ulzkwN++ArfuC+zDk8XGj6ZMrmANc=;
+        b=GQ988WCN+teJn2fuZTO5aUFNdp3dQv1GEbQ4+T3FZqnzGdoFvdg6Yyxdr+7G9mKDN7
+         0Nv5UkzDVqJiAmHtjZkbtp7GtJwwi2kJXz2H+K9jcIQXBewMhA2lpRE3zz9ZZjHnwcd5
+         w+J4Lv/WfWG7V9DZ77D3uqTPNw77ijLIWZ85zPoCK41hbXTkRUBnsIrqylEOJBAM2Fxo
+         PWyDrdq3wL6I42VtNnfl2k6TT8fI337sSfEoHz21pHD6FmX6yDSzL2u+sPUD6VSB4boe
+         zbioM6DpxGwMsG6mB9buT/zRystDVXZcp2vKlLj/Y0WATdl8hfQWXmNRq2ey8zmSIXsP
+         cdhw==
+X-Gm-Message-State: AOAM532LM+cclQ4TfJl+J4sfm9AGDOFfSRdBNG7viqkz2RXuQqJY+tez
+        L0lafqu82woO8MbkYFkFbH8H6A==
+X-Google-Smtp-Source: ABdhPJyUbvL08b6tPGpHcEYNkEOOS+p4DFKOwH/m8NNZ0N15foYjCdJvoFgACWLol/4k1m3GyTTKWw==
+X-Received: by 2002:a05:6a00:1acf:b0:50e:1872:c6b1 with SMTP id f15-20020a056a001acf00b0050e1872c6b1mr19365180pfv.76.1652744340860;
+        Mon, 16 May 2022 16:39:00 -0700 (PDT)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id w71-20020a62824a000000b0050dc7628146sm7335987pfd.32.2022.05.16.16.39.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 16:39:00 -0700 (PDT)
+Message-ID: <fe20ae9b-041d-a5eb-d32b-7c79a87e8cf0@linaro.org>
+Date:   Mon, 16 May 2022 16:38:59 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 2/2] exfat: check if cluster num is valid
+Content-Language: en-US
+To:     Namjae Jeon <linkinjeon@kernel.org>
+Cc:     Sungjong Seo <sj1557.seo@samsung.com>,
+        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
+References: <20220511185909.175110-1-tadeusz.struk@linaro.org>
+ <CGME20220511185940epcas1p1e51c30e41ff82ae642f8f949ffa4b189@epcas1p1.samsung.com>
+ <20220511185909.175110-2-tadeusz.struk@linaro.org>
+ <000101d8686b$56d88750$048995f0$@samsung.com>
+ <c9ab0896-b19b-b8b8-cf63-ad437a123270@linaro.org>
+ <CAKYAXd_kcZF0tHMX_CsR83qmX25PhdGQPJibMh1-30=5przrjQ@mail.gmail.com>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+In-Reply-To: <CAKYAXd_kcZF0tHMX_CsR83qmX25PhdGQPJibMh1-30=5przrjQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://linuxtv.org/hverkuil/media_tree.git extron
-head:   d25c7a9925ea4a748782ad0b1f951716be89d672
-commit: d25c7a9925ea4a748782ad0b1f951716be89d672 [2/2] cec/extron: add the Extron CEC driver
-config: x86_64-randconfig-r002-20220516 (https://download.01.org/0day-ci/archive/20220517/202205170716.EOe20iPO-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
-        git fetch --no-tags hverkuil-media-tree extron
-        git checkout d25c7a9925ea4a748782ad0b1f951716be89d672
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On 5/16/22 16:31, Namjae Jeon wrote:
+>>> Looks good.
+>>> And it seems that WARN_ON() is no longer needed.
+>> Right. Do you want me to send a follow up patch that drops the WARN_ONs?
+> You don't need to do it. I have applied this patch to #exfat dev
+> branch after removing it.
+> Note that I have combined 1/2 into 2/2 patch.
+> Thanks!
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   vmlinux.o: warning: objtool: bmi160_data_rdy_trigger_set_state()+0x8e: sibling call from callable instruction with modified stack frame
->> ld.lld: error: undefined symbol: v4l2_device_register
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_connect)
---
->> ld.lld: error: undefined symbol: v4l2_device_unregister
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_connect)
---
->> ld.lld: error: undefined symbol: v4l2_set_edid_phys_addr
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_s_edid)
---
->> ld.lld: error: undefined symbol: video_device_release_empty
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_videodev)
---
->> ld.lld: error: undefined symbol: v4l2_ctrl_poll
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_fops)
---
->> ld.lld: error: undefined symbol: video_ioctl2
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_fops)
---
->> ld.lld: error: undefined symbol: v4l2_fh_open
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_fops)
---
->> ld.lld: error: undefined symbol: v4l2_fh_release
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_fops)
---
->> ld.lld: error: undefined symbol: v4l2_ctrl_subscribe_event
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_ioctl_ops)
---
->> ld.lld: error: undefined symbol: v4l2_event_unsubscribe
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_ioctl_ops)
---
->> ld.lld: error: undefined symbol: video_unregister_device
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_disconnect)
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_setup_thread)
-   >>> referenced by fbdev.c
-   >>> vmlinux.o:(extron_setup_thread)
-..
+That's fine with me. Thanks for taking it.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Tadeusz
