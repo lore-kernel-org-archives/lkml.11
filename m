@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 522E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 912AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234266AbiEPUeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56562 "EHLO
+        id S1345003AbiEPUeY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351104AbiEPUCC (ORCPT
+        with ESMTP id S1351089AbiEPUB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:02:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF06110CA;
-        Mon, 16 May 2022 12:58:56 -0700 (PDT)
+        Mon, 16 May 2022 16:01:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7103840912;
+        Mon, 16 May 2022 12:58:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59DF260BAC;
-        Mon, 16 May 2022 19:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E697AC385AA;
-        Mon, 16 May 2022 19:58:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C671B81616;
+        Mon, 16 May 2022 19:58:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6CAFC385AA;
+        Mon, 16 May 2022 19:58:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731135;
-        bh=CqH4xe6KG8LRjCPJexU/WdwJvqdGzxQINgu8FGtrpgI=;
+        s=korg; t=1652731119;
+        bh=P260iAUL3ZqmnZgfQd8Cg8lNIyUPcm3RRa3bK0X6tVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0TzCL1iATw44b1O4ISt3gZtPn7rnAA8urfUYN/K0kULl5YHkl2N6AqS58QPL5kNce
-         XwgXlBXx67omHlLB1n8qJCx0TvAspW6qe0DpDTvwT3fOCUm/GALtHJa+3IQnwMkScB
-         ZoyGKPpNs3DXmw7UQWoVQDlZ/ytfULKdk5i+bWiU=
+        b=2rOToLGPvuMPwJxIaTzg2y/J/Q0Y/n2NOfCKq8uPPMjFIcNSOJUaI9NDZBydGrLxu
+         f0VB/yAdDRpU4zWDfW/3Ni7xMUORT/0N2O0giaPUOWUqVHsgbg92aEB5bBkA8OayWB
+         OYQoVb9pYHn4NVE6Kp29tuiL3kGuo+YDiUZeGwVg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charan Teja Reddy <quic_charante@quicinc.com>,
-        "T.J. Mercier" <tjmercier@google.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 5.17 111/114] dma-buf: call dma_buf_stats_setup after dmabuf is in valid list
-Date:   Mon, 16 May 2022 21:37:25 +0200
-Message-Id: <20220516193628.660304886@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 106/114] net: phy: micrel: Do not use kszphy_suspend/resume for KSZ8061
+Date:   Mon, 16 May 2022 21:37:20 +0200
+Message-Id: <20220516193628.517664127@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -50,61 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Reddy <quic_charante@quicinc.com>
+From: Fabio Estevam <festevam@denx.de>
 
-commit ef3a6b70507a2add2cd2e01f5eb9b54d561bacb9 upstream.
+commit e333eed63a091a09bd0db191b7710c594c6e995b upstream.
 
-When dma_buf_stats_setup() fails, it closes the dmabuf file which
-results into the calling of dma_buf_file_release() where it does
-list_del(&dmabuf->list_node) with out first adding it to the proper
-list. This is resulting into panic in the below path:
-__list_del_entry_valid+0x38/0xac
-dma_buf_file_release+0x74/0x158
-__fput+0xf4/0x428
-____fput+0x14/0x24
-task_work_run+0x178/0x24c
-do_notify_resume+0x194/0x264
-work_pending+0xc/0x5f0
+Since commit f1131b9c23fb ("net: phy: micrel: use
+kszphy_suspend()/kszphy_resume for irq aware devices") the following
+NULL pointer dereference is observed on a board with KSZ8061:
 
-Fix it by moving the dma_buf_stats_setup() after dmabuf is added to the
-list.
+ # udhcpc -i eth0
+udhcpc: started, v1.35.0
+8<--- cut here ---
+Unable to handle kernel NULL pointer dereference at virtual address 00000008
+pgd = f73cef4e
+[00000008] *pgd=00000000
+Internal error: Oops: 5 [#1] SMP ARM
+Modules linked in:
+CPU: 0 PID: 196 Comm: ifconfig Not tainted 5.15.37-dirty #94
+Hardware name: Freescale i.MX6 SoloX (Device Tree)
+PC is at kszphy_config_reset+0x10/0x114
+LR is at kszphy_resume+0x24/0x64
+...
 
-Fixes: bdb8d06dfefd ("dmabuf: Add the capability to expose DMA-BUF stats in sysfs")
-Signed-off-by: Charan Teja Reddy <quic_charante@quicinc.com>
-Tested-by: T.J. Mercier <tjmercier@google.com>
-Acked-by: T.J. Mercier <tjmercier@google.com>
-Cc: <stable@vger.kernel.org> # 5.15.x+
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/1652125797-2043-1-git-send-email-quic_charante@quicinc.com
+The KSZ8061 phy_driver structure does not have the .probe/..driver_data
+fields, which means that priv is not allocated.
+
+This causes the NULL pointer dereference inside kszphy_config_reset().
+
+Fix the problem by using the generic suspend/resume functions as before.
+
+Another alternative would be to provide the .probe and .driver_data
+information into the structure, but to be on the safe side, let's
+just restore Ethernet functionality by using the generic suspend/resume.
+
+Cc: stable@vger.kernel.org
+Fixes: f1131b9c23fb ("net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq aware devices")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220504143104.1286960-1-festevam@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma-buf/dma-buf.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/phy/micrel.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -543,10 +543,6 @@ struct dma_buf *dma_buf_export(const str
- 	file->f_mode |= FMODE_LSEEK;
- 	dmabuf->file = file;
- 
--	ret = dma_buf_stats_setup(dmabuf);
--	if (ret)
--		goto err_sysfs;
--
- 	mutex_init(&dmabuf->lock);
- 	INIT_LIST_HEAD(&dmabuf->attachments);
- 
-@@ -554,6 +550,10 @@ struct dma_buf *dma_buf_export(const str
- 	list_add(&dmabuf->list_node, &db_list.head);
- 	mutex_unlock(&db_list.lock);
- 
-+	ret = dma_buf_stats_setup(dmabuf);
-+	if (ret)
-+		goto err_sysfs;
-+
- 	return dmabuf;
- 
- err_sysfs:
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1850,8 +1850,8 @@ static struct phy_driver ksphy_driver[]
+ 	.config_init	= ksz8061_config_init,
+ 	.config_intr	= kszphy_config_intr,
+ 	.handle_interrupt = kszphy_handle_interrupt,
+-	.suspend	= kszphy_suspend,
+-	.resume		= kszphy_resume,
++	.suspend	= genphy_suspend,
++	.resume		= genphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ9021,
+ 	.phy_id_mask	= 0x000ffffe,
 
 
