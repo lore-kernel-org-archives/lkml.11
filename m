@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74018C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9129BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242164AbiEPUdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
+        id S242976AbiEPUdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351040AbiEPUB4 (ORCPT
+        with ESMTP id S1351136AbiEPUCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:56 -0400
+        Mon, 16 May 2022 16:02:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288F54755F;
-        Mon, 16 May 2022 12:57:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FE9B3D;
+        Mon, 16 May 2022 12:59:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B993560FA6;
-        Mon, 16 May 2022 19:57:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B72B8C385AA;
-        Mon, 16 May 2022 19:57:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55B7460BAC;
+        Mon, 16 May 2022 19:59:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B9C3C385AA;
+        Mon, 16 May 2022 19:59:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731028;
-        bh=GPeUlZ7dqcAiB0O1XvoRl8OE1TanIDmrxDmGkvO4ECk=;
+        s=korg; t=1652731164;
+        bh=kmphfhQU/g2Vah4OmHGp155rYUCsLBN72nFjKWY/2lI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kmOO5iDmnXqOfPDp9AM+IAvR/ud18gx5ywmVlTw6/byRM9/8pet0OxflG4rgfQbPK
-         U9VaAL/7iIOTwJceNxdMFDhN6BZhqM5SnOifpytIfHpr25d8nGBYFs90HsffYMiJUL
-         TqZlJvEX3oQDNG6aQG49KjMY7lxDZFp4mgJbaayk=
+        b=M96Jlncjd0HFg76qd4GQ8mFoeRKsKVmz9rru9GF53aTH8ZoSzQpaa57Z6/c1DNCux
+         lYjFov5XM5AOsmzp0DMtVIz80R10nb+9qpebfSe8pSSiS5ZI4El49Xl7kHahSxzhLv
+         fh/Yhd866IjWcR8V1QOKMErK6GLLK31lQTDAOpwc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>
-Subject: [PATCH 5.17 080/114] usb: cdc-wdm: fix reading stuck on device close
-Date:   Mon, 16 May 2022 21:36:54 +0200
-Message-Id: <20220516193627.782422750@linuxfoundation.org>
+        stable@vger.kernel.org, John Fortin <fortinj66@gmail.com>,
+        Sri Ramanujam <sri@ramanujam.io>,
+        Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.17 092/114] ceph: fix setting of xattrs on async created inodes
+Date:   Mon, 16 May 2022 21:37:06 +0200
+Message-Id: <20220516193628.117586608@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -48,56 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-commit 01e01f5c89773c600a9f0b32c888de0146066c3a upstream.
+commit 620239d9a32e9fe27c9204ec11e40058671aeeb6 upstream.
 
-cdc-wdm tracks whether a response reading request is in-progress and
-blocks the next request from being sent until the previous request is
-completed. As soon as last user closes the cdc-wdm device file, the
-driver cancels any ongoing requests, resets the pending response
-counter, but leaves the response reading in-progress flag
-(WDM_RESPONDING) untouched.
+Currently when we create a file, we spin up an xattr buffer to send
+along with the create request. If we end up doing an async create
+however, then we currently pass down a zero-length xattr buffer.
 
-So if the user closes the device file during the response receive
-request is being performed, no more data will be obtained from the
-modem. The request will be cancelled, effectively preventing the
-WDM_RESPONDING flag from being reseted. Keeping the flag set will
-prevent a new response receive request from being sent, permanently
-blocking the read path. The read path will staying blocked until the
-module will be reloaded or till the modem will be re-attached.
+Fix the code to send down the xattr buffer in req->r_pagelist. If the
+xattrs span more than a page, however give up and don't try to do an
+async create.
 
-This stuck has been observed with a Huawei E3372 modem attached to an
-OpenWrt router and using the comgt utility to set up a network
-connection.
-
-Fix this issue by clearing the WDM_RESPONDING flag on the device file
-close.
-
-Without this fix, the device reading stuck can be easily reproduced in a
-few connection establishing attempts. With this fix, a load test for
-modem connection re-establishing worked for several hours without any
-issues.
-
-Fixes: 922a5eadd5a3 ("usb: cdc-wdm: Fix race between autosuspend and reading from the device")
-Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc: stable <stable@vger.kernel.org>
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220501175828.8185-1-ryazanov.s.a@gmail.com
+Cc: stable@vger.kernel.org
+URL: https://bugzilla.redhat.com/show_bug.cgi?id=2063929
+Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
+Reported-by: John Fortin <fortinj66@gmail.com>
+Reported-by: Sri Ramanujam <sri@ramanujam.io>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/class/cdc-wdm.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ceph/file.c |   16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/class/cdc-wdm.c
-+++ b/drivers/usb/class/cdc-wdm.c
-@@ -774,6 +774,7 @@ static int wdm_release(struct inode *ino
- 			poison_urbs(desc);
- 			spin_lock_irq(&desc->iuspin);
- 			desc->resp_count = 0;
-+			clear_bit(WDM_RESPONDING, &desc->flags);
- 			spin_unlock_irq(&desc->iuspin);
- 			desc->manage_power(desc->intf, 0);
- 			unpoison_urbs(desc);
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -598,9 +598,15 @@ static int ceph_finish_async_create(stru
+ 	iinfo.change_attr = 1;
+ 	ceph_encode_timespec64(&iinfo.btime, &now);
+ 
+-	iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
+-	iinfo.xattr_data = xattr_buf;
+-	memset(iinfo.xattr_data, 0, iinfo.xattr_len);
++	if (req->r_pagelist) {
++		iinfo.xattr_len = req->r_pagelist->length;
++		iinfo.xattr_data = req->r_pagelist->mapped_tail;
++	} else {
++		/* fake it */
++		iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
++		iinfo.xattr_data = xattr_buf;
++		memset(iinfo.xattr_data, 0, iinfo.xattr_len);
++	}
+ 
+ 	in.ino = cpu_to_le64(vino.ino);
+ 	in.snapid = cpu_to_le64(CEPH_NOSNAP);
+@@ -712,6 +718,10 @@ int ceph_atomic_open(struct inode *dir,
+ 		err = ceph_security_init_secctx(dentry, mode, &as_ctx);
+ 		if (err < 0)
+ 			goto out_ctx;
++		/* Async create can't handle more than a page of xattrs */
++		if (as_ctx.pagelist &&
++		    !list_is_singular(&as_ctx.pagelist->head))
++			try_async = false;
+ 	} else if (!d_in_lookup(dentry)) {
+ 		/* If it's not being looked up, it's negative */
+ 		return -ENOENT;
 
 
