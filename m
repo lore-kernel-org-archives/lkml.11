@@ -2,140 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F084C352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9337C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349311AbiEPUiQ (ORCPT
+        id S1349405AbiEPUi3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
+        Mon, 16 May 2022 16:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350933AbiEPUBr (ORCPT
+        with ESMTP id S1350772AbiEPUBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:47 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8525C4B84D
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:56:07 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2ff1ed64f82so14630507b3.1
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 12:56:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gfdUgGfNk3YhrYyq3M5XkqZYdXGFDT0Zb8uEoLzPkM8=;
-        b=IbUzpIJLiMA1ViYgX8Jh1WuzPhrzWpCO0cyMdjY1sJ+mXkV4jPmeKJBw5W5eO9KKBS
-         uRl4UlkDdCc3g1sS5dZD019n8RtHIIk3qECd6qb/4ikg+MRFGGaFelI2t/rn3ZK3B+hI
-         oaKFOJyjKr01aMhzFnjTvwhcJElVTtVAlh3dIHkrrvGKeTmsPoNZuTqwKG4iYiDPjH6i
-         Pl6rxNfX0HBPcTlV2W5b6L9c+ihTzdpnxl7Uonsd19/fw1RBnwoXAyi4YX15wx2g+i96
-         6zkBCbMveUQud112L+2LH2jdgG9zouwGPHMibw7+vaCxAz5UJZkb0+1fayoiEaeo/nnI
-         +iEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gfdUgGfNk3YhrYyq3M5XkqZYdXGFDT0Zb8uEoLzPkM8=;
-        b=KlteCc/Jc3IJtEL9mJNzmgCavti6+/0IgGf2n4ZOyjXOWnNs4KH3ulBgZ+ejo5FGVb
-         FARg9TooOcydYYgmclIm4qAwysHr/0i0rniAZGQbkBZvfvp/On/zpvDY5CGMPCRIjUUl
-         SUsRuXdAdCN03CpZNoJffU5K5w8RRzqM/2KAK1n1a9q7SU0/FpjhDSitCZ0J2G/G65nj
-         y5c6Krsu1k/5G51RX1z1mAzjDpT9gT/ZCBbflND8yCS2z4OUID7CYQtUB2p0R5dO1mc/
-         7RnJIsVooBjNYahlAVous3YLy7d55BTfqNIfII+O1Q5DR1Zg6kdWlbD1jnX2ZV0rUCoH
-         wnXg==
-X-Gm-Message-State: AOAM532xOo9nARx3o6xUZ1M4dRST6XDmXr5h7o3ZPDAFahFTWh8bwyRx
-        NSbRukeuWBKQtrpegWp2O4vXBsDjCCAXYQtqRssH/w==
-X-Google-Smtp-Source: ABdhPJw3x6WiZ42hrjmcTLP0iMMy3DDxNMyaCjoU1W4evQaWFgcPdb6I1JcYc/LIUoqSxPyOjGqbk6G6OjkRzdfSZ28=
-X-Received: by 2002:a0d:d4d0:0:b0:2fe:b86b:472d with SMTP id
- w199-20020a0dd4d0000000b002feb86b472dmr19354893ywd.469.1652730966045; Mon, 16
- May 2022 12:56:06 -0700 (PDT)
+        Mon, 16 May 2022 16:01:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5633FDA8;
+        Mon, 16 May 2022 12:55:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD51B81614;
+        Mon, 16 May 2022 19:55:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF4F1C385AA;
+        Mon, 16 May 2022 19:55:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652730937;
+        bh=z1xGkviBQ2FOGy3TPlU9X8IBjkMBTFmQhrxx6TChBBM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e8ATGDb0uXkWuiamJpLWIf210n9uTADvejJy7wQHf6vmUDecBmPR2iTCos6DZfhDz
+         dclbr1eixvWXjo5zPCQQdLY8BzJaFha5WUG9l7CJXAwgV7qeDqkHMzodrea4dlZ2X1
+         ak2WBU/7mYcLM1t3iYZ6OJ3sGWV6rh5qsSP3XwrY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 053/114] ASoC: max98090: Reject invalid values in custom control put()
+Date:   Mon, 16 May 2022 21:36:27 +0200
+Message-Id: <20220516193627.017827203@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
+References: <20220516193625.489108457@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220516075538.1276644-1-surenb@google.com> <20220516125010.53ab9a27733f361e5965ed7f@linux-foundation.org>
-In-Reply-To: <20220516125010.53ab9a27733f361e5965ed7f@linux-foundation.org>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Mon, 16 May 2022 12:55:55 -0700
-Message-ID: <CAJuCfpE8p6KVqMorFKYmH7+sd+YBt37J2A10_K=CfG73KJUw_Q@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] selftests: vm: add process_mrelease tests
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        David Rientjes <rientjes@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
-        kernel-team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 12:50 PM Andrew Morton
-<akpm@linux-foundation.org> wrote:
->
-> On Mon, 16 May 2022 00:55:38 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
->
-> > Introduce process_mrelease syscall sanity tests which include tests
-> > which expect to fail:
-> > - process_mrelease with invalid pidfd and flags inputs
-> > - process_mrelease on a live process with no pending signals
-> > and valid process_mrelease usage which is expected to succeed.
-> > Because process_mrelease has to be used against a process with a pending
-> > SIGKILL, it's possible that the process exits before process_mrelease
-> > gets called. In such cases we retry the test with a victim that allocates
-> > twice more memory up to 1GB. This would require the victim process to
-> > spend more time during exit and process_mrelease has a better chance of
-> > catching the process before it exits and succeeding.
-> >
-> > On success the test reports the amount of memory the child had to
-> > allocate for reaping to succeed. Sample output:
-> >     Success reaping a child with 1MB of memory allocations
-> >
-> > On failure the test reports the failure. Sample outputs:
-> >     All process_mrelease attempts failed!
-> >     process_mrelease: Invalid argument
-> >
-> > ...
-> >
-> > --- a/tools/testing/selftests/vm/run_vmtests.sh
-> > +++ b/tools/testing/selftests/vm/run_vmtests.sh
-> > @@ -287,6 +287,22 @@ else
-> >       echo "[PASS]"
-> >  fi
-> >
-> > +echo "---------------------"
-> > +echo "running mrelease_test"
-> > +echo "---------------------"
-> > +./mrelease_test
-> > +ret_val=$?
-> > +
-> > +if [ $ret_val -eq 0 ]; then
-> > +     echo "[PASS]"
-> > +elif [ $ret_val -eq $ksft_skip ]; then
-> > +      echo "[SKIP]"
-> > +      exitcode=$ksft_skip
-> > +else
-> > +     echo "[FAIL]"
-> > +     exitcode=1
-> > +fi
-> > +
-> >  echo "-------------------"
-> >  echo "running mremap_test"
-> >  echo "-------------------"
->
-> Can you please redo this against
-> git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm branch mm-stable
-> or mm-unstable.  Or against linux-next?
->
-> This script now has a helper function run_test which I think can be
-> used here.
+From: Mark Brown <broonie@kernel.org>
 
-Ah, thanks for the note! I'll give it a couple days for more reviews
-and the will post it over mmotm.
+[ Upstream commit 2fbe467bcbfc760a08f08475eea6bbd4c2874319 ]
+
+The max98090 driver has a custom put function for some controls which can
+only be updated in certain circumstances which makes no effort to validate
+that input is suitable for the control, allowing out of spec values to be
+written to the hardware and presented to userspace. Fix this by returning
+an error when invalid values are written.
+
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220420193454.2647908-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/codecs/max98090.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index b45ec35cd63c..6d9261346842 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -413,6 +413,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 
+ 	val = (val >> mc->shift) & mask;
+ 
++	if (sel < 0 || sel > mc->max)
++		return -EINVAL;
++
+ 	*select = sel;
+ 
+ 	/* Setting a volume is only valid if it is already On */
+-- 
+2.35.1
+
+
+
