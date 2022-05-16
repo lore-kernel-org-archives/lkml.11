@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8365C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244900AbiEPTtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
+        id S1346308AbiEPTt2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 15:49:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346066AbiEPTnY (ORCPT
+        with ESMTP id S1346036AbiEPTnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:43:24 -0400
+        Mon, 16 May 2022 15:43:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CE62721;
-        Mon, 16 May 2022 12:42:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F168A3FDA2;
+        Mon, 16 May 2022 12:42:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 401BB614EF;
-        Mon, 16 May 2022 19:42:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39FCCC385AA;
-        Mon, 16 May 2022 19:42:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E9AA61553;
+        Mon, 16 May 2022 19:42:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 940DFC385AA;
+        Mon, 16 May 2022 19:42:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730167;
-        bh=qsEmvDv4R6fjTcIXCmhCsv9d2/D+ul3JKKqQnU4Hq18=;
+        s=korg; t=1652730162;
+        bh=atRy27yf9Vy/665sbn+jOCfM4MC2nSQBCmGmLlIUE8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z87idISCh8G7rRr2r5LQ3gYuIOQIVP8Cm22nMVmIiNGq4RmoejnRafVDsAUryNW3Q
-         m1STQwXxhRebzIkvsFPdS3CPnQdDHpSg+kaNeGhKWXWlaRVhJeMactK32RtwE1saDN
-         GiLjsKfvcjTgPwkgbBUuOprUESeDRF1w3fEPB2SI=
+        b=fdi/0IP+b4KjTr1vqVR99YHJis9IqNU3KVu2xyt7F9o9WLidWy6E/xLoddjoZH/2m
+         WhGjfl3u6c96Sa4i18VYHKdK9YAeoVeTx4/u4mskX/P4czr55pq5l79Q1UVI2n6aoh
+         jCoVNPoxhCNzIopN4WCL8LtrM526+FLqRULXK+40=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 20/43] ASoC: max98090: Generate notifications on changes for custom control
-Date:   Mon, 16 May 2022 21:36:31 +0200
-Message-Id: <20220516193615.314878746@linuxfoundation.org>
+Subject: [PATCH 5.4 19/43] ASoC: max98090: Reject invalid values in custom control put()
+Date:   Mon, 16 May 2022 21:36:30 +0200
+Message-Id: <20220516193615.286664317@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
 References: <20220516193614.714657361@linuxfoundation.org>
@@ -50,33 +51,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 13fcf676d9e102594effc686d98521ff5c90b925 ]
+[ Upstream commit 2fbe467bcbfc760a08f08475eea6bbd4c2874319 ]
 
-The max98090 driver has some custom controls which share a put() function
-which returns 0 unconditionally, meaning that events are not generated
-when the value changes. Fix that.
+The max98090 driver has a custom put function for some controls which can
+only be updated in certain circumstances which makes no effort to validate
+that input is suitable for the control, allowing out of spec values to be
+written to the hardware and presented to userspace. Fix this by returning
+an error when invalid values are written.
 
 Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220420193454.2647908-2-broonie@kernel.org
+Link: https://lore.kernel.org/r/20220420193454.2647908-1-broonie@kernel.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98090.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/max98090.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index 207cdcfb6ebb..ce9f99dd3e87 100644
+index 6b9d326e11b0..207cdcfb6ebb 100644
 --- a/sound/soc/codecs/max98090.c
 +++ b/sound/soc/codecs/max98090.c
-@@ -430,7 +430,7 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
- 		mask << mc->shift,
- 		sel << mc->shift);
+@@ -413,6 +413,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
  
--	return 0;
-+	return *select != val;
- }
+ 	val = (val >> mc->shift) & mask;
  
- static const char *max98090_perf_pwr_text[] =
++	if (sel < 0 || sel > mc->max)
++		return -EINVAL;
++
+ 	*select = sel;
+ 
+ 	/* Setting a volume is only valid if it is already On */
 -- 
 2.35.1
 
