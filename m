@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F23DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245130AbiEPUfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
+        id S244704AbiEPUf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351134AbiEPUCD (ORCPT
+        with ESMTP id S1351122AbiEPUCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:02:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D143729C;
-        Mon, 16 May 2022 12:59:28 -0700 (PDT)
+        Mon, 16 May 2022 16:02:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D36B81;
+        Mon, 16 May 2022 12:59:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B8960A50;
-        Mon, 16 May 2022 19:59:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D40FC385AA;
-        Mon, 16 May 2022 19:59:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45458B81611;
+        Mon, 16 May 2022 19:59:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4AFC385AA;
+        Mon, 16 May 2022 19:59:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652731167;
-        bh=CNi+yjjTcCMqIQK+Bgv9r5DkMYJ+h6yUDLdKBbhXnhY=;
+        s=korg; t=1652731155;
+        bh=yekZkhx9rr5WJWN+QNU/3YKvBuSdHExCR0fe0QC0v5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eQeVczusYWQxKj2pBCyQ+sJXo8FpMNkBUT1ONk8a9zs9+ZUGcm5LgRjoCaRzg+d2s
-         slStsztFKcbIwTHEdnewzNe7iqBTTjxD6wNlrPP5zN+fELgADqhDN4dDQY2qxWef/u
-         C3K+t5oKaJzjUz9pcvIHXnGoKhkKmjaj2aAb1RDA=
+        b=FBRAsV77pS6dCN4zi1J1r6HUmy//ifirHU34g8VZwVkPg4TBwSFY19d6H85soDjK1
+         r1bK0jcbUvM4Y/LzqHlp2xoOmMvJr+1y4+g2D0deaHt1cWZHeXdH05Ak0V8FYk9JRx
+         KR6SzLDk792tUFL6HuRCE5T+TMOyWaPG7bFRvyO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Yu <xuyu@linux.alibaba.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.17 093/114] Revert "mm/memory-failure.c: skip huge_zero_page in memory_failure()"
-Date:   Mon, 16 May 2022 21:37:07 +0200
-Message-Id: <20220516193628.145429320@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Octavian Purdila <octavian.purdila@nxp.com>
+Subject: [PATCH 5.17 089/114] genirq: Remove WARN_ON_ONCE() in generic_handle_domain_irq()
+Date:   Mon, 16 May 2022 21:37:03 +0200
+Message-Id: <20220516193628.034006734@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -51,83 +54,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Yu <xuyu@linux.alibaba.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit b4e61fc031b11dd807dffc46cebbf0e25966d3d1 upstream.
+commit 792ea6a074ae7ea5ab6f1b8b31f76bb0297de66c upstream.
 
-Patch series "mm/memory-failure: rework fix on huge_zero_page splitting".
+Since commit 0953fb263714 ("irq: remove handle_domain_{irq,nmi}()"),
+generic_handle_domain_irq() warns if called outside hardirq context, even
+though the function calls down to handle_irq_desc(), which warns about the
+same, but conditionally on handle_enforce_irqctx().
 
+The newly added warning is a false positive if the interrupt originates
+from any other irqchip than x86 APIC or ARM GIC/GICv3.  Those are the only
+ones for which handle_enforce_irqctx() returns true.  Per commit
+c16816acd086 ("genirq: Add protection against unsafe usage of
+generic_handle_irq()"):
 
-This patch (of 2):
+ "In general calling generic_handle_irq() with interrupts disabled from non
+  interrupt context is harmless. For some interrupt controllers like the
+  x86 trainwrecks this is outright dangerous as it might corrupt state if
+  an interrupt affinity change is pending."
 
-This reverts commit d173d5417fb67411e623d394aab986d847e47dad.
+Examples for interrupt chips where the warning is a false positive are
+USB-attached GPIO controllers such as drivers/gpio/gpio-dln2.c:
 
-The commit d173d5417fb6 ("mm/memory-failure.c: skip huge_zero_page in
-memory_failure()") explicitly skips huge_zero_page in memory_failure(), in
-order to avoid triggering VM_BUG_ON_PAGE on huge_zero_page in
-split_huge_page_to_list().
+  USB gadgets are incapable of directly signaling an interrupt because they
+  cannot initiate a bus transaction by themselves.  All communication on
+  the bus is initiated by the host controller, which polls a gadget's
+  Interrupt Endpoint in regular intervals.  If an interrupt is pending,
+  that information is passed up the stack in softirq context, from which a
+  hardirq is synthesized via generic_handle_domain_irq().
 
-This works, but Yang Shi thinks that,
+Remove the warning to eliminate such false positives.
 
-    Raising BUG is overkilling for splitting huge_zero_page. The
-    huge_zero_page can't be met from normal paths other than memory
-    failure, but memory failure is a valid caller. So I tend to replace
-    the BUG to WARN + returning -EBUSY. If we don't care about the
-    reason code in memory failure, we don't have to touch memory
-    failure.
-
-And for the issue that huge_zero_page will be set PG_has_hwpoisoned,
-Yang Shi comments that,
-
-    The anonymous page fault doesn't check if the page is poisoned or
-    not since it typically gets a fresh allocated page and assumes the
-    poisoned page (isolated successfully) can't be reallocated again.
-    But huge zero page and base zero page are reused every time. So no
-    matter what fix we pick, the issue is always there.
-
-Finally, Yang, David, Anshuman and Naoya all agree to fix the bug, i.e.,
-to split huge_zero_page, in split_huge_page_to_list().
-
-This reverts the commit d173d5417fb6 ("mm/memory-failure.c: skip
-huge_zero_page in memory_failure()"), and the original bug will be fixed
-by the next patch.
-
-Link: https://lkml.kernel.org/r/872cefb182ba1dd686b0e7db1e6b2ebe5a4fff87.1651039624.git.xuyu@linux.alibaba.com
-Fixes: d173d5417fb6 ("mm/memory-failure.c: skip huge_zero_page in memory_failure()")
-Fixes: 6a46079cf57a ("HWPOISON: The high level memory error handler in the VM v7")
-Signed-off-by: Xu Yu <xuyu@linux.alibaba.com>
-Suggested-by: Yang Shi <shy828301@gmail.com>
-Reviewed-by: Yang Shi <shy828301@gmail.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 0953fb263714 ("irq: remove handle_domain_{irq,nmi}()")
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+CC: Linus Walleij <linus.walleij@linaro.org>
+Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Octavian Purdila <octavian.purdila@nxp.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220505113207.487861b2@kernel.org
+Link: https://lore.kernel.org/r/20220506203242.GA1855@wunner.de
+Link: https://lore.kernel.org/r/c3caf60bfa78e5fdbdf483096b7174da65d1813a.1652168866.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory-failure.c |   13 -------------
- 1 file changed, 13 deletions(-)
+ kernel/irq/irqdesc.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1782,19 +1782,6 @@ try_again:
- 
- 	if (PageTransHuge(hpage)) {
- 		/*
--		 * Bail out before SetPageHasHWPoisoned() if hpage is
--		 * huge_zero_page, although PG_has_hwpoisoned is not
--		 * checked in set_huge_zero_page().
--		 *
--		 * TODO: Handle memory failure of huge_zero_page thoroughly.
--		 */
--		if (is_huge_zero_page(hpage)) {
--			action_result(pfn, MF_MSG_UNSPLIT_THP, MF_IGNORED);
--			res = -EBUSY;
--			goto unlock_mutex;
--		}
--
--		/*
- 		 * The flag must be set after the refcount is bumped
- 		 * otherwise it may race with THP split.
- 		 * And the flag can't be set in get_hwpoison_page() since
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -678,7 +678,6 @@ EXPORT_SYMBOL_GPL(generic_handle_irq);
+  */
+ int generic_handle_domain_irq(struct irq_domain *domain, unsigned int hwirq)
+ {
+-	WARN_ON_ONCE(!in_irq());
+ 	return handle_irq_desc(irq_resolve_mapping(domain, hwirq));
+ }
+ EXPORT_SYMBOL_GPL(generic_handle_domain_irq);
 
 
