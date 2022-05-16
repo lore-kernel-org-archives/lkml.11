@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EACD1C352AA
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBD6C41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349672AbiEPUce (ORCPT
+        id S1348603AbiEPUbs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59236 "EHLO
+        Mon, 16 May 2022 16:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351021AbiEPUB4 (ORCPT
+        with ESMTP id S233286AbiEPUBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB413473AC;
-        Mon, 16 May 2022 12:56:35 -0700 (PDT)
+        Mon, 16 May 2022 16:01:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D614B850;
+        Mon, 16 May 2022 12:56:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47FA760FE4;
-        Mon, 16 May 2022 19:56:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CA90C385AA;
-        Mon, 16 May 2022 19:56:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08770B81614;
+        Mon, 16 May 2022 19:56:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 439AAC385AA;
+        Mon, 16 May 2022 19:56:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730994;
-        bh=k+MToLoaUMchIx7iY04ATQlWvuE0nwEcPwpeCEw1FW8=;
+        s=korg; t=1652730968;
+        bh=U2F4MNu14K9ar6PkUlBK9hCvtcnVPeCtfUn2rI1S2SQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0xroSUupMv5NOU86NXEA8jgaqZTm74/Chz81VisBpOWGFIxYkyPSF81OgmrAP4Aqf
-         VtmN5Faf1zJXEapvHgD0lhRxrUvlx9QhYNTu3edbLEj1/OzHQQ7Ev6PaemXLUDLqmS
-         +dArWoOXjCT5/vMjm7W/hvljTbwT1hwFRYoS0EtY=
+        b=pMD5YAF+7lHtdEAUqHhxzAGeveMZrKMkJUlFUlq19wyr6IX7g2SddSEeHTlIvRr1U
+         vgu06f3kvfnnaYfkOfLroG+5wt5eAqX9OBkuYvr0uTUeowPgBsZhPl1ij8wJzjODww
+         GwcTp32PpzR6rTKfVXZrM6phhuVOSbf5A6gGwFlM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 070/114] perf tests: Fix coresight `perf test` failure.
-Date:   Mon, 16 May 2022 21:36:44 +0200
-Message-Id: <20220516193627.501172278@linuxfoundation.org>
+Subject: [PATCH 5.17 062/114] tcp: use different parts of the port_offset for index and offset
+Date:   Mon, 16 May 2022 21:36:36 +0200
+Message-Id: <20220516193627.273810612@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -58,58 +54,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeremy Linton <jeremy.linton@arm.com>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit 45fa7c38696bae632310c2876ba81fdfa25cc9c2 ]
+[ Upstream commit 9e9b70ae923baf2b5e8a0ea4fd0c8451801ac526 ]
 
-Currently the `perf test` always fails the coresight test like:
+Amit Klein suggests that we use different parts of port_offset for the
+table's index and the port offset so that there is no direct relation
+between them.
 
-  89: Check Arm CoreSight trace data recording and synthesized samples: FAILED!
-
-That is because the test_arm_coresight.sh is attempting to SIGINT the
-parent but is using $$ rather than $PPID and it sigint's itself when
-run under the perf test framework.
-
-Since this is done in a trap clause it ends up returning a non zero
-return.
-
-Since $PPID is a bash ism and not all distros are linking /bin/sh to
-bash, the alternative parent pid lookups are uglier than just dropping
-the kill, and its not strictly needed, lets pick the simple solution and
-drop the sigint.
-
-Fixes: 133fe2e617e48ca0 ("perf tests: Improve temp file cleanup in test_arm_coresight.sh")
-Reviewed-by: James Clark <james.clark@arm.com>
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Jeremy Linton <jeremy.linton@arm.com>
-Link: https://lore.kernel.org/r/20220428151947.290146-1-jeremy.linton@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/tests/shell/test_arm_coresight.sh | 1 -
- 1 file changed, 1 deletion(-)
+ net/ipv4/inet_hashtables.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/tests/shell/test_arm_coresight.sh b/tools/perf/tests/shell/test_arm_coresight.sh
-index 6de53b7ef5ff..e4cb4f1806ff 100755
---- a/tools/perf/tests/shell/test_arm_coresight.sh
-+++ b/tools/perf/tests/shell/test_arm_coresight.sh
-@@ -29,7 +29,6 @@ cleanup_files()
- 	rm -f ${file}
- 	rm -f "${perfdata}.old"
- 	trap - exit term int
--	kill -2 $$
- 	exit $glb_err
- }
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 9d24d9319f3d..29c701cd8312 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -777,7 +777,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	net_get_random_once(table_perturb, sizeof(table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
  
+-	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
+ 
+ 	/* In first pass we try ports of @low parity.
 -- 
 2.35.1
 
