@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8362C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 08:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiEPIxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 04:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
+        id S242084AbiEPIx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 04:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242059AbiEPIxk (ORCPT
+        with ESMTP id S242029AbiEPIxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 04:53:40 -0400
+        Mon, 16 May 2022 04:53:42 -0400
 Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842A713F60;
-        Mon, 16 May 2022 01:53:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABAB13F78;
+        Mon, 16 May 2022 01:53:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
          s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=GN36Sq29tndBQ4PitufvQoYicK+sGcL7xxa4gTV6Sco=; b=qbibZvciFI4PN8ZmuQN7Pa6bfO
-        ACytLQGtllE6kQ25qPv4RT5tdDWPkd5slNmO2ph6Xz81k/WKDdftbfZjlaLXixHBleBsYdjvktXsG
-        r99BVFmnJSnOM91maqJyb/k/VkGi1OVTEumvD3GZibbDuioMOEY7HgWMZz1tqNFtD0zCfA6bOaWLd
-        LD+ipJBm4q8kvEBVyhF7Vn9Tr5cKo/YsjjH9eylks9iRfE8NQG06S0yijSfCmzLLVPdqQ7HSTuqmC
-        0ctdNohExD3A84dTa3PT4N5v4MmcEFoxvCW3XlpUKRZIUBFyl0SO6fapkIls3OSxEC0nUhcDk/ege
-        3B0VA45Q==;
+        bh=On1cP0Hd5F38adMLMuCa6KfO/g5+NNNnu5Hh1rm2yUM=; b=IOUGJOnzIxL/29DIhLFxxVFObV
+        Z7bi5J5unwQxz4DRhymFRcHjITDmo3xu80gVc/ip3ahnzvW8jPvqjfAw6WZkeFUaDFvaT2/I54TX1
+        9xHiHy/CSWF4LRLxgVnIOes9vI1RXGsLM2DiXFpOjyjzQJQyqMFcpPXbOF/woGva9iYA6EgHnbnDX
+        FoEyd0MX56ZQphN0reqIlJWL61mczUDBL7KBIGwSKl+AZPNv+OU0kt7+dilgo7JPJCU5Meqwq5zQJ
+        raNc7DNGzg+Os/4JfP8mgTpFpMzn8HCr1gCWrfxvCn/X3RhHmvGw8dFZ2z53TOdZht4PZhB9rueX0
+        +93UyP8g==;
 Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
         by mail.kapsi.fi with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <cyndis@kapsi.fi>)
-        id 1nqWTe-0005fd-QS; Mon, 16 May 2022 11:53:18 +0300
+        id 1nqWTf-0005fd-Fz; Mon, 16 May 2022 11:53:19 +0300
 From:   cyndis@kapsi.fi
 To:     thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
         will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
@@ -40,9 +40,9 @@ Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH v5 4/9] gpu: host1x: Program context stream ID on submission
-Date:   Mon, 16 May 2022 11:52:53 +0300
-Message-Id: <20220516085258.1227691-5-cyndis@kapsi.fi>
+Subject: [PATCH v5 9/9] drm/tegra: Implement stream ID related callbacks on engines
+Date:   Mon, 16 May 2022 11:52:58 +0300
+Message-Id: <20220516085258.1227691-10-cyndis@kapsi.fi>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516085258.1227691-1-cyndis@kapsi.fi>
 References: <20220516085258.1227691-1-cyndis@kapsi.fi>
@@ -57,168 +57,199 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-Add code to do stream ID switching at the beginning of a job. The
-stream ID is switched to the stream ID specified by the context
-passed in the job structure.
-
-Before switching the stream ID, an OP_DONE wait is done on the
-channel's engine to ensure that there is no residual ongoing
-work that might do DMA using the new stream ID.
+Implement the get_streamid_offset and can_use_memory_ctx callbacks
+required for supporting context isolation. Since old firmware on VIC
+cannot support context isolation without hacks that we don't want to
+implement, check the firmware binary to see if context isolation
+should be enabled.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
 v5:
-* Add fallback stream ID. Not used yet, will be needed for
-  full featured opcode sequence.
-* Rename host1x_context to host1x_memory_context
+* Split into two callbacks
+* Add NVDEC support
 v4:
-* Rename job->context to job->memory_context for clarity
----
- drivers/gpu/host1x/hw/channel_hw.c        | 52 +++++++++++++++++++++--
- drivers/gpu/host1x/hw/host1x06_hardware.h | 10 +++++
- drivers/gpu/host1x/hw/host1x07_hardware.h | 10 +++++
- include/linux/host1x.h                    |  8 ++++
- 4 files changed, 76 insertions(+), 4 deletions(-)
+* Add locking in vic_load_firmware
+* Return -EOPNOTSUPP if context isolation is not available
+* Update for changed get_streamid_offset declaration
+* Add comment noting that vic_load_firmware is safe to call
+  without the hardware being powered on
 
-diff --git a/drivers/gpu/host1x/hw/channel_hw.c b/drivers/gpu/host1x/hw/channel_hw.c
-index 6b40e9af1e88..f84caf06621a 100644
---- a/drivers/gpu/host1x/hw/channel_hw.c
-+++ b/drivers/gpu/host1x/hw/channel_hw.c
-@@ -180,6 +180,45 @@ static void host1x_enable_gather_filter(struct host1x_channel *ch)
- #endif
+Implement context isolation related callbacks in VIC, NVDEC
+---
+ drivers/gpu/drm/tegra/drm.h   |  8 +++++
+ drivers/gpu/drm/tegra/nvdec.c |  9 +++++
+ drivers/gpu/drm/tegra/vic.c   | 67 ++++++++++++++++++++++++++++++-----
+ 3 files changed, 76 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/tegra/drm.h b/drivers/gpu/drm/tegra/drm.h
+index 2acc8f2948ad..845e60f144c7 100644
+--- a/drivers/gpu/drm/tegra/drm.h
++++ b/drivers/gpu/drm/tegra/drm.h
+@@ -100,6 +100,14 @@ int tegra_drm_submit(struct tegra_drm_context *context,
+ 		     struct drm_tegra_submit *args, struct drm_device *drm,
+ 		     struct drm_file *file);
+ 
++static inline int
++tegra_drm_get_streamid_offset_thi(struct tegra_drm_client *client, u32 *offset)
++{
++	*offset = 0x30;
++
++	return 0;
++}
++
+ struct tegra_drm_client {
+ 	struct host1x_client base;
+ 	struct list_head list;
+diff --git a/drivers/gpu/drm/tegra/nvdec.c b/drivers/gpu/drm/tegra/nvdec.c
+index 79e1e88203cf..f1210cfb3708 100644
+--- a/drivers/gpu/drm/tegra/nvdec.c
++++ b/drivers/gpu/drm/tegra/nvdec.c
+@@ -304,10 +304,19 @@ static void nvdec_close_channel(struct tegra_drm_context *context)
+ 	host1x_channel_put(context->channel);
  }
  
-+static void host1x_channel_program_engine_streamid(struct host1x_job *job)
++static int nvdec_can_use_memory_ctx(struct tegra_drm_client *client, bool *supported)
 +{
-+#if HOST1X_HW >= 6
-+	u32 fence;
++	*supported = true;
 +
-+	if (!job->memory_context)
-+		return;
-+
-+	fence = host1x_syncpt_incr_max(job->syncpt, 1);
-+
-+	/* First, increment a syncpoint on OP_DONE condition.. */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_nonincr(HOST1X_UCLASS_INCR_SYNCPT, 1),
-+		HOST1X_UCLASS_INCR_SYNCPT_INDX_F(job->syncpt->id) |
-+			HOST1X_UCLASS_INCR_SYNCPT_COND_F(1));
-+
-+	/* Wait for syncpoint to increment */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setclass(HOST1X_CLASS_HOST1X,
-+			host1x_uclass_wait_syncpt_r(), 1),
-+		host1x_class_host_wait_syncpt(job->syncpt->id, fence));
-+
-+	/*
-+	 * Now that we know the engine is idle, return to class and
-+	 * change stream ID.
-+	 */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setclass(job->class, 0, 0),
-+		HOST1X_OPCODE_NOP);
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setpayload(job->memory_context->stream_id),
-+		host1x_opcode_setstreamid(job->engine_streamid_offset / 4));
-+#endif
++	return 0;
 +}
 +
- static int channel_submit(struct host1x_job *job)
- {
- 	struct host1x_channel *ch = job->channel;
-@@ -236,18 +275,23 @@ static int channel_submit(struct host1x_job *job)
- 	if (sp->base)
- 		synchronize_syncpt_base(job);
- 
--	syncval = host1x_syncpt_incr_max(sp, user_syncpt_incrs);
--
- 	host1x_hw_syncpt_assign_to_channel(host, sp, ch);
- 
--	job->syncpt_end = syncval;
--
- 	/* add a setclass for modules that require it */
- 	if (job->class)
- 		host1x_cdma_push(&ch->cdma,
- 				 host1x_opcode_setclass(job->class, 0, 0),
- 				 HOST1X_OPCODE_NOP);
- 
-+	/*
-+	 * Ensure engine DMA is idle and set new stream ID. May increment
-+	 * syncpt max.
-+	 */
-+	host1x_channel_program_engine_streamid(job);
-+
-+	syncval = host1x_syncpt_incr_max(sp, user_syncpt_incrs);
-+	job->syncpt_end = syncval;
-+
- 	submit_gathers(job, syncval - user_syncpt_incrs);
- 
- 	/* end CDMA submit & stash pinned hMems into sync queue */
-diff --git a/drivers/gpu/host1x/hw/host1x06_hardware.h b/drivers/gpu/host1x/hw/host1x06_hardware.h
-index 01a142a09800..5d515745eee7 100644
---- a/drivers/gpu/host1x/hw/host1x06_hardware.h
-+++ b/drivers/gpu/host1x/hw/host1x06_hardware.h
-@@ -127,6 +127,16 @@ static inline u32 host1x_opcode_gather_incr(unsigned offset, unsigned count)
- 	return (6 << 28) | (offset << 16) | BIT(15) | BIT(14) | count;
- }
- 
-+static inline u32 host1x_opcode_setstreamid(unsigned streamid)
-+{
-+	return (7 << 28) | streamid;
-+}
-+
-+static inline u32 host1x_opcode_setpayload(unsigned payload)
-+{
-+	return (9 << 28) | payload;
-+}
-+
- static inline u32 host1x_opcode_gather_wide(unsigned count)
- {
- 	return (12 << 28) | count;
-diff --git a/drivers/gpu/host1x/hw/host1x07_hardware.h b/drivers/gpu/host1x/hw/host1x07_hardware.h
-index e6582172ebfd..82c0cc9bb0b5 100644
---- a/drivers/gpu/host1x/hw/host1x07_hardware.h
-+++ b/drivers/gpu/host1x/hw/host1x07_hardware.h
-@@ -127,6 +127,16 @@ static inline u32 host1x_opcode_gather_incr(unsigned offset, unsigned count)
- 	return (6 << 28) | (offset << 16) | BIT(15) | BIT(14) | count;
- }
- 
-+static inline u32 host1x_opcode_setstreamid(unsigned streamid)
-+{
-+	return (7 << 28) | streamid;
-+}
-+
-+static inline u32 host1x_opcode_setpayload(unsigned payload)
-+{
-+	return (9 << 28) | payload;
-+}
-+
- static inline u32 host1x_opcode_gather_wide(unsigned count)
- {
- 	return (12 << 28) | count;
-diff --git a/include/linux/host1x.h b/include/linux/host1x.h
-index 75cf996b0087..1b7dd67c7801 100644
---- a/include/linux/host1x.h
-+++ b/include/linux/host1x.h
-@@ -321,6 +321,14 @@ struct host1x_job {
- 
- 	/* Whether host1x-side firewall should be ran for this job or not */
- 	bool enable_firewall;
-+
-+	/* Options for configuring engine data stream ID */
-+	/* Context device to use for job */
-+	struct host1x_memory_context *memory_context;
-+	/* Stream ID to use if context isolation is disabled (!memory_context) */
-+	u32 engine_fallback_streamid;
-+	/* Engine offset to program stream ID to */
-+	u32 engine_streamid_offset;
+ static const struct tegra_drm_client_ops nvdec_ops = {
+ 	.open_channel = nvdec_open_channel,
+ 	.close_channel = nvdec_close_channel,
+ 	.submit = tegra_drm_submit,
++	.get_streamid_offset = tegra_drm_get_streamid_offset_thi,
++	.can_use_memory_ctx = nvdec_can_use_memory_ctx,
  };
  
- struct host1x_job *host1x_job_alloc(struct host1x_channel *ch,
+ #define NVIDIA_TEGRA_210_NVDEC_FIRMWARE "nvidia/tegra210/nvdec.bin"
+diff --git a/drivers/gpu/drm/tegra/vic.c b/drivers/gpu/drm/tegra/vic.c
+index 1e342fa3d27b..2c0d554bd13c 100644
+--- a/drivers/gpu/drm/tegra/vic.c
++++ b/drivers/gpu/drm/tegra/vic.c
+@@ -38,6 +38,8 @@ struct vic {
+ 	struct clk *clk;
+ 	struct reset_control *rst;
+ 
++	bool can_use_context;
++
+ 	/* Platform configuration */
+ 	const struct vic_config *config;
+ };
+@@ -229,28 +231,38 @@ static int vic_load_firmware(struct vic *vic)
+ {
+ 	struct host1x_client *client = &vic->client.base;
+ 	struct tegra_drm *tegra = vic->client.drm;
++	static DEFINE_MUTEX(lock);
++	u32 fce_bin_data_offset;
+ 	dma_addr_t iova;
+ 	size_t size;
+ 	void *virt;
+ 	int err;
+ 
+-	if (vic->falcon.firmware.virt)
+-		return 0;
++	mutex_lock(&lock);
++
++	if (vic->falcon.firmware.virt) {
++		err = 0;
++		goto unlock;
++	}
+ 
+ 	err = falcon_read_firmware(&vic->falcon, vic->config->firmware);
+ 	if (err < 0)
+-		return err;
++		goto unlock;
+ 
+ 	size = vic->falcon.firmware.size;
+ 
+ 	if (!client->group) {
+ 		virt = dma_alloc_coherent(vic->dev, size, &iova, GFP_KERNEL);
+-		if (!virt)
+-			return -ENOMEM;
++		if (!virt) {
++			err = -ENOMEM;
++			goto unlock;
++		}
+ 	} else {
+ 		virt = tegra_drm_alloc(tegra, size, &iova);
+-		if (IS_ERR(virt))
+-			return PTR_ERR(virt);
++		if (IS_ERR(virt)) {
++			err = PTR_ERR(virt);
++			goto unlock;
++		}
+ 	}
+ 
+ 	vic->falcon.firmware.virt = virt;
+@@ -277,7 +289,28 @@ static int vic_load_firmware(struct vic *vic)
+ 		vic->falcon.firmware.phys = phys;
+ 	}
+ 
+-	return 0;
++	/*
++	 * Check if firmware is new enough to not require mapping firmware
++	 * to data buffer domains.
++	 */
++	fce_bin_data_offset = *(u32 *)(virt + VIC_UCODE_FCE_DATA_OFFSET);
++
++	if (!vic->config->supports_sid) {
++		vic->can_use_context = false;
++	} else if (fce_bin_data_offset != 0x0 && fce_bin_data_offset != 0xa5a5a5a5) {
++		/*
++		 * Firmware will access FCE through STREAMID0, so context
++		 * isolation cannot be used.
++		 */
++		vic->can_use_context = false;
++		dev_warn_once(vic->dev, "context isolation disabled due to old firmware\n");
++	} else {
++		vic->can_use_context = true;
++	}
++
++unlock:
++	mutex_unlock(&lock);
++	return err;
+ 
+ cleanup:
+ 	if (!client->group)
+@@ -285,6 +318,7 @@ static int vic_load_firmware(struct vic *vic)
+ 	else
+ 		tegra_drm_free(tegra, size, virt, iova);
+ 
++	mutex_unlock(&lock);
+ 	return err;
+ }
+ 
+@@ -358,10 +392,27 @@ static void vic_close_channel(struct tegra_drm_context *context)
+ 	host1x_channel_put(context->channel);
+ }
+ 
++static int vic_can_use_memory_ctx(struct tegra_drm_client *client, bool *supported)
++{
++	struct vic *vic = to_vic(client);
++	int err;
++
++	/* This doesn't access HW so it's safe to call without powering up. */
++	err = vic_load_firmware(vic);
++	if (err < 0)
++		return err;
++
++	*supported = vic->can_use_context;
++
++	return 0;
++}
++
+ static const struct tegra_drm_client_ops vic_ops = {
+ 	.open_channel = vic_open_channel,
+ 	.close_channel = vic_close_channel,
+ 	.submit = tegra_drm_submit,
++	.get_streamid_offset = tegra_drm_get_streamid_offset_thi,
++	.can_use_memory_ctx = vic_can_use_memory_ctx,
+ };
+ 
+ #define NVIDIA_TEGRA_124_VIC_FIRMWARE "nvidia/tegra124/vic03_ucode.bin"
 -- 
 2.36.1
 
