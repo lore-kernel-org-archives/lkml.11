@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E335C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6124C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347437AbiEPUVk (ORCPT
+        id S1347783AbiEPUWU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
+        Mon, 16 May 2022 16:22:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349023AbiEPT7H (ORCPT
+        with ESMTP id S243872AbiEPT7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:59:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4C33FDB1;
-        Mon, 16 May 2022 12:53:20 -0700 (PDT)
+        Mon, 16 May 2022 15:59:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC0317ABF;
+        Mon, 16 May 2022 12:52:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD015B81613;
-        Mon, 16 May 2022 19:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C25FC385AA;
-        Mon, 16 May 2022 19:53:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB3D360AB8;
+        Mon, 16 May 2022 19:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAFB4C385AA;
+        Mon, 16 May 2022 19:52:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730797;
-        bh=zw7+nG7mRK6zS8SGRZtV5iHlnpITV6OHXD5smvY6bZI=;
+        s=korg; t=1652730756;
+        bh=LRaJJ6rm2rTcuj00VtV0cAzxzyTuSvN9jZkm2Xc9noo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bqWCIAOiHwDueEeftBX/ypajONYVo/cmPwD8d1hQSTDAQIexuVsJF3NGaFgyYrNTl
-         GGes+UnGPau3gLmaBU4a9BXcJSY8QU2HXKmhPig/UgzlUuIvooG5K75rJTa3cpokFR
-         p/f7Cnc6vYtiqcT14cfA49p5srE4VymfgVmP2BgE=
+        b=plPSUCBMjRjo5E7DA4rIZgH2N4ObuSsgWMNoLgAq3Z0B/StZUh6R0csq04IXhbgdN
+         Ar76nYCOogh836zGFfLhdxQ6L6PVnodNhK2nR+lbSh3ciA8nB/vWWneGmJV7njau+b
+         fgeB0xw4oCsnFey1dXwOJusyDuhjkiLEd9TXSTKw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kaechele <felix@kaechele.ca>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
+        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 001/114] batman-adv: Dont skb_split skbuffs with frag_list
-Date:   Mon, 16 May 2022 21:35:35 +0200
-Message-Id: <20220516193625.533471759@linuxfoundation.org>
+Subject: [PATCH 5.15 058/102] tcp: add small random increments to the source port
+Date:   Mon, 16 May 2022 21:36:32 +0200
+Message-Id: <20220516193625.662549345@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-References: <20220516193625.489108457@linuxfoundation.org>
+In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
+References: <20220516193623.989270214@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,58 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit a063f2fba3fa633a599253b62561051ac185fa99 ]
+[ Upstream commit ca7af0402550f9a0b3316d5f1c30904e42ed257d ]
 
-The receiving interface might have used GRO to receive more fragments than
-MAX_SKB_FRAGS fragments. In this case, these will not be stored in
-skb_shinfo(skb)->frags but merged into the frag list.
+Here we're randomly adding between 0 and 7 random increments to the
+selected source port in order to add some noise in the source port
+selection that will make the next port less predictable.
 
-batman-adv relies on the function skb_split to split packets up into
-multiple smaller packets which are not larger than the MTU on the outgoing
-interface. But this function cannot handle frag_list entries and is only
-operating on skb_shinfo(skb)->frags. If it is still trying to split such an
-skb and xmit'ing it on an interface without support for NETIF_F_FRAGLIST,
-then validate_xmit_skb() will try to linearize it. But this fails due to
-inconsistent information. And __pskb_pull_tail will trigger a BUG_ON after
-skb_copy_bits() returns an error.
+With the default port range of 32768-60999 this means a worst case
+reuse scenario of 14116/8=1764 connections between two consecutive
+uses of the same port, with an average of 14116/4.5=3137. This code
+was stressed at more than 800000 connections per second to a fixed
+target with all connections closed by the client using RSTs (worst
+condition) and only 2 connections failed among 13 billion, despite
+the hash being reseeded every 10 seconds, indicating a perfectly
+safe situation.
 
-In case of entries in frag_list, just linearize the skb before operating on
-it with skb_split().
-
-Reported-by: Felix Kaechele <felix@kaechele.ca>
-Fixes: c6c8fea29769 ("net: Add batman-adv meshing protocol")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Tested-by: Felix Kaechele <felix@kaechele.ca>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/fragmentation.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ net/ipv4/inet_hashtables.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/net/batman-adv/fragmentation.c b/net/batman-adv/fragmentation.c
-index 0899a729a23f..c120c7c6d25f 100644
---- a/net/batman-adv/fragmentation.c
-+++ b/net/batman-adv/fragmentation.c
-@@ -475,6 +475,17 @@ int batadv_frag_send_packet(struct sk_buff *skb,
- 		goto free_skb;
- 	}
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 81a33af8393d..573a7e66ebc8 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -833,11 +833,12 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	return -EADDRNOTAVAIL;
  
-+	/* GRO might have added fragments to the fragment list instead of
-+	 * frags[]. But this is not handled by skb_split and must be
-+	 * linearized to avoid incorrect length information after all
-+	 * batman-adv fragments were created and submitted to the
-+	 * hard-interface
-+	 */
-+	if (skb_has_frag_list(skb) && __skb_linearize(skb)) {
-+		ret = -ENOMEM;
-+		goto free_skb;
-+	}
-+
- 	/* Create one header to be copied to all fragments */
- 	frag_header.packet_type = BATADV_UNICAST_FRAG;
- 	frag_header.version = BATADV_COMPAT_VERSION;
+ ok:
+-	/* If our first attempt found a candidate, skip next candidate
+-	 * in 1/16 of cases to add some noise.
++	/* Here we want to add a little bit of randomness to the next source
++	 * port that will be chosen. We use a max() with a random here so that
++	 * on low contention the randomness is maximal and on high contention
++	 * it may be inexistent.
+ 	 */
+-	if (!i && !(prandom_u32() % 16))
+-		i = 2;
++	i = max_t(int, i, (prandom_u32() & 7) * 2);
+ 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
+ 
+ 	/* Head lock still held and bh's disabled */
 -- 
 2.35.1
 
