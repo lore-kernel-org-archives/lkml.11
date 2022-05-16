@@ -2,163 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E964C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E672EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 10:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238785AbiEPKmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 06:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
+        id S234124AbiEPKmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 06:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242947AbiEPKlk (ORCPT
+        with ESMTP id S242814AbiEPKk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 06:41:40 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEEF9261C;
-        Mon, 16 May 2022 03:41:37 -0700 (PDT)
-X-UUID: 6456a25257d540899786888d20ed49f0-20220516
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:14da1c38-918c-4adf-b92e-1cf13a3a5ae1,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:89bb2e94-563e-4fc2-8a0d-fda4821947ab,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 6456a25257d540899786888d20ed49f0-20220516
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1875934610; Mon, 16 May 2022 18:41:33 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 16 May 2022 18:41:31 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 16 May 2022 18:41:31 +0800
-Message-ID: <e1dffbf98c034b99b1d7fd10aa009a645812abdc.camel@mediatek.com>
-Subject: Re: [PATCH v6 09/10] arm64: dts: mediatek: Add MediaTek CCI node
- for MT8183
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Chen-Yu Tsai <wenst@chromium.org>
-CC:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <khilman@baylibre.com>, <angelogioacchino.delregno@collabora.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
-Date:   Mon, 16 May 2022 18:41:31 +0800
-In-Reply-To: <CAGXv+5FW59B1Dq8eH=5KjEdTxgT64GuvYZHZ9LnnTuaVrK3XpQ@mail.gmail.com>
-References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
-         <20220505115226.20130-10-rex-bc.chen@mediatek.com>
-         <CAGXv+5FW59B1Dq8eH=5KjEdTxgT64GuvYZHZ9LnnTuaVrK3XpQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 16 May 2022 06:40:58 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065A426D9;
+        Mon, 16 May 2022 03:40:42 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id eg11so3859166edb.11;
+        Mon, 16 May 2022 03:40:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PIifhda7PPrqAp0CxQdnH6aDfxlPJMB9AvrT60uPWvU=;
+        b=SM27mlK/X5lpvPUmxmc3slLBW+B9FQTh/Dec2eB4uKMwSAg83HSU+wccu0zgc89Fv+
+         s7sYKAVtrqD0BeaBSQ7kBYliH3j2YNoTKSqM7zfBuNmZOYRQsnMNMuDEYFWIAe3j/AXT
+         nfAqrAAMy8+H+kIo5OveVdRl5Nt1Yrr/BtKSlEpTWekXbNu9JLJsmBEJzlMIDYWdT7Kr
+         pPJTBurzAGtKrYDlzf3j1c/RnRcO8qKC13NpMt+qKS9hE6ctPvX9kXQuTw3s4E5/P4Y9
+         oluHtHL7b9ddxUwIy8GWs2Gxxe/O6p5CsrNgfUOVEk01ypn+iR8uqPtZYoRs3ONcU/cv
+         qFiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PIifhda7PPrqAp0CxQdnH6aDfxlPJMB9AvrT60uPWvU=;
+        b=EwT2XKn8Ki6dOrByl/SNf0D0znCQY/Gi91rH9wF7X7ld34Zh1iT3dQtOUb+0gIuhLo
+         htLZ/m3wG16oAm4YKH/04RWJTDqHUYw8NFchGJ62P1NcXK3e0MTMgaEqkFQ8j9bmL3hF
+         Ejh2ZggmKdMSuzKI0OY4KeHsurb2GiFV3OBiqR3RFDf2f1+OR/D4PS+P1AQ9d4CJpspS
+         57LE6uQ2hV8z8sHKzDVPMj5HAwKwueR1lpUaaW+p3YXl3mmmWU2viPA12gw0q0EWukuV
+         lKb5faYLJxoRy4IU0WVMgyNckrAlRpQuT0zNBMhwU3LbB5y7fS3P71GeSvGVC8/lbVrs
+         ThXg==
+X-Gm-Message-State: AOAM5301FVXyxOrTAk/W/Sw2z2J0MNGJDGyrgpbwTvywSRocByqO/dAf
+        ak+Uk+8h9iJaPgd/oWMPZZ8=
+X-Google-Smtp-Source: ABdhPJxhjqx1LtSED5Lcjpp0MdBYAjOemvUKPhq03VyRkupIkCcB4AOp8n5LW2v48oQ6cLZIWI76aw==
+X-Received: by 2002:a05:6402:5113:b0:427:f443:f63e with SMTP id m19-20020a056402511300b00427f443f63emr12458895edd.317.1652697641361;
+        Mon, 16 May 2022 03:40:41 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e2asm3594220ejc.144.2022.05.16.03.40.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 03:40:40 -0700 (PDT)
+Date:   Mon, 16 May 2022 13:40:39 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Marek Vasut <marex@denx.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [RFC Patch net-next v2 1/9] net: dsa: microchip: ksz8795: update
+ the port_cnt value in ksz_chip_data
+Message-ID: <20220516104039.akra6bloviak22qe@skbuf>
+References: <20220513102219.30399-1-arun.ramadoss@microchip.com>
+ <20220513102219.30399-2-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513102219.30399-2-arun.ramadoss@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-16 at 13:35 +0800, Chen-Yu Tsai wrote:
-> On Thu, May 5, 2022 at 8:04 PM Rex-BC Chen <rex-bc.chen@mediatek.com>
-> wrote:
-> > 
-> > Add MediaTek CCI devfreq node for MT8183.
-> > 
-> > Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > Reviewed-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > ---
-> >  arch/arm64/boot/dts/mediatek/mt8183-evb.dts    | 4 ++++
-> >  arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 4 ++++
-> >  arch/arm64/boot/dts/mediatek/mt8183.dtsi       | 7 +++++++
-> >  3 files changed, 15 insertions(+)
-> > 
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> > b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> > index 8953dbf84f3e..7ac9864db9de 100644
-> > --- a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> > @@ -412,6 +412,10 @@
-> > 
-> >  };
-> > 
-> > +&cci {
-> > +       proc-supply = <&mt6358_vproc12_reg>;
-> > +};
-> > +
-> >  &cpu0 {
-> >         proc-supply = <&mt6358_vproc12_reg>;
-> >  };
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> > b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> > index 8d5bf73a9099..b035e06840e6 100644
-> > --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> > @@ -230,6 +230,10 @@
-> >         status = "okay";
-> >  };
-> > 
-> > +&cci {
-> > +       proc-supply = <&mt6358_vproc12_reg>;
-> > +};
-> > +
-> >  &cpu0 {
-> >         proc-supply = <&mt6358_vproc12_reg>;
-> >  };
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> > b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> > index cecf96b628b7..11caf3dd85cd 100644
-> > --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> > @@ -280,6 +280,13 @@
-> >                 };
-> >         };
-> > 
-> > +       cci: cci {
-> > +               compatible = "mediatek,mt8183-cci";
-> > +               clocks = <&apmixedsys CLK_APMIXED_CCIPLL>;
-> > +               clock-names = "cci_clock";
+On Fri, May 13, 2022 at 03:52:11PM +0530, Arun Ramadoss wrote:
+> The port_cnt value in the structure is not used in the switch_init.
+> Instead it uses the fls(chip->cpu_port), this is due to one of port in
+> the ksz8794 unavailable. The cpu_port for the 8794 is 0x10, fls(0x10) =
+> 5, hence updating it directly in the ksz_chip_data structure in order to
+> same with all the other switches in ksz8795.c and ksz9477.c files.
 > 
-> Binding says there should be two clocks: the actual clock that drives
-> CCI, and a stable "intermediate" clock to switch to during clock rate
-> changes. So I think this should look like:
-> 
->     clocks = <&mcucfg CLK_MCU_BUS_SEL>,
->              <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
->     clock-names = "cci", "intermediate";
-> 
-> 
-> ChenYu
-> 
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
 
-Hello Chen-Yu,
+Sounds like a straightforward transformation based on a valid observation.
 
-Thanks for your reminder.
-I will update this and sned next version.
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-BRs,
-Rex
-
-> > +               operating-points-v2 = <&cci_opp>;
-> > +       };
-> > +
-> >         cpus {
-> >                 #address-cells = <1>;
-> >                 #size-cells = <0>;
-> > --
-> > 2.18.0
-> > 
-> > 
-> > _______________________________________________
-> > Linux-mediatek mailing list
-> > Linux-mediatek@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-mediatek
+>  drivers/net/dsa/microchip/ksz8795.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+> index f91deea9368e..83bcabf2dc54 100644
+> --- a/drivers/net/dsa/microchip/ksz8795.c
+> +++ b/drivers/net/dsa/microchip/ksz8795.c
+> @@ -1607,6 +1607,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
+>  		 * KSZ8794   0,1,2      4
+>  		 * KSZ8795   0,1,2,3    4
+>  		 * KSZ8765   0,1,2,3    4
+> +		 * port_cnt is configured as 5, even though it is 4
+>  		 */
+>  		.chip_id = 0x8794,
+>  		.dev_name = "KSZ8794",
+> @@ -1614,7 +1615,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
+>  		.num_alus = 0,
+>  		.num_statics = 8,
+>  		.cpu_ports = 0x10,	/* can be configured as cpu port */
+> -		.port_cnt = 4,		/* total cpu and user ports */
+> +		.port_cnt = 5,		/* total cpu and user ports */
+>  		.ksz87xx_eee_link_erratum = true,
+>  	},
+>  	{
+> @@ -1653,7 +1654,7 @@ static int ksz8_switch_init(struct ksz_device *dev)
+>  			dev->num_vlans = chip->num_vlans;
+>  			dev->num_alus = chip->num_alus;
+>  			dev->num_statics = chip->num_statics;
+> -			dev->port_cnt = fls(chip->cpu_ports);
+> +			dev->port_cnt = chip->port_cnt;
+>  			dev->cpu_port = fls(chip->cpu_ports) - 1;
+>  			dev->phy_port_cnt = dev->port_cnt - 1;
+>  			dev->cpu_ports = chip->cpu_ports;
+> -- 
+> 2.33.0
+> 
 
