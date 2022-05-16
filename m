@@ -2,110 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F341C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F334BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 09:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232549AbiEPJXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 05:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36502 "EHLO
+        id S232111AbiEPJYr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 05:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239350AbiEPJXM (ORCPT
+        with ESMTP id S229543AbiEPJYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 05:23:12 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4FADF62
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 02:23:09 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id q4so13850988plr.11
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 02:23:09 -0700 (PDT)
+        Mon, 16 May 2022 05:24:45 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAB7286E9;
+        Mon, 16 May 2022 02:24:43 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id m23so17382501ljc.0;
+        Mon, 16 May 2022 02:24:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i9PJvhEX8P9EwLto+E+6JAbwn0v8MnYujSttxKDDDe0=;
-        b=gyHPkeZ1dgLRtMeRxdorI5w1fdjB4J3YmtzSTmkYFa8IUSpX0xpHYUz6U+4twmmwTl
-         oDF+u4ROFIAMLF6MCty0pjThUiK0gdwlkvt9L5SPTiudgVu2t/wlq0yMl13jv1blq2q6
-         oOe+INfi9zlAWSr541+QEzyXk65XY5HikjzRrzPZIWu+QPlPxHIdQPAkWuKMACxu4NZY
-         GKHqQyzG9iUvZM2Mor6GFnuymkeDbA/4SWZicX8d21pEIEP/2Zi0IaWQd0F2H59XSl/F
-         OSQwkKKFUA2S3Vs7p2xfbEAw/PjGzSA4GCif8M8MVTJLhEriGYPEAqcEoRVyTdOrJPzD
-         6p9g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z7SVVP/oC8iSudRPuuLzmqr3tHRZCL2jrSL6ZB0fSOU=;
+        b=lJue4HZt/225QfsuUkRTSvHYS5Cbg3mp+Lpr9wUcZw7loJcdma/LoRNWTuYqIl1GbL
+         PCEFtvcIfGi1zIDzClS9SlFOnTPbno0eL4lPtB+WSG2FcdAIWqqJHAcVNWpTfShSC2r5
+         iKbFrRtscXD8b0XuKDb+TlCueomIWLfj9bvlummAjUJs90IJ/Hd1e+YpN1MES50jUipz
+         c/Sni45fE53n5BQtCLxEh1Sdw2M+kOhGY710ghZRkRIU1CuVDeFeTxOzNXDrSLMONVnH
+         ANcVAzhPPU032K+CZAHtg5RHB+P78ZyjVDNpIb81RtqcePbRZQltRCzrWqptCynWdRv3
+         ddog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i9PJvhEX8P9EwLto+E+6JAbwn0v8MnYujSttxKDDDe0=;
-        b=S/g6UQo7cNfioIaW5bvaG5DtZZ2kF4mLA7uR40Exwa9xSE6+HoXrh7499SOcks9NLg
-         EyWe9U+Pju6dvsCXMfz9cx85auCgTn3dVDYwoFKJU5w8pYRAAAwjiYORhu3PkARwe+ba
-         4Pv3KEgg4hii1sz7/eiDRZw9PxC1jRG5LSOhbRwZm+YSJ70dGtltBgPhIA5oqS5pIC0E
-         X3a6B7D2GGH8tpzizk2S2PvDSTzWfMJRmN7X6VFuanRoR+ejCq7EXLnDhlT45eC3HN3r
-         9wTw0GWcgMZPr6qB75Ku7P3OvrNiaINuH/1qEU1+QI97gycxL0h5sYwOJ3ypnNBz5iRv
-         AZsw==
-X-Gm-Message-State: AOAM5309WhhL7Jviy0RTMoenw8FxODuFYkUj1yAKcWMuKFW8ZW7clYCO
-        RPVdjDlz76epX/SpzSv/9/k=
-X-Google-Smtp-Source: ABdhPJwGl7YWcZ8SLmVPhPAWKxynE2PYUESObWv54VNyNT8be9AbTaEW+7OfwtSzHcoQFRJOp91jxQ==
-X-Received: by 2002:a17:902:f60e:b0:158:5c4d:d9b0 with SMTP id n14-20020a170902f60e00b001585c4dd9b0mr16947949plg.63.1652692989318;
-        Mon, 16 May 2022 02:23:09 -0700 (PDT)
-Received: from localhost ([152.70.90.187])
-        by smtp.gmail.com with ESMTPSA id l9-20020a17090aaa8900b001dd11e4b927sm8008101pjq.39.2022.05.16.02.23.08
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z7SVVP/oC8iSudRPuuLzmqr3tHRZCL2jrSL6ZB0fSOU=;
+        b=AhtcAgtJbZU/keMFCxq9J9uGlPXss+dLvdELSStCd2ti1hc08pqbzuOnTU+WjtrHag
+         o4Za4TwQFBPEgcTf8G04NjrWtL5WN4Tx5SKwidaFac3nNCo0KVh+SA8Bq3RpmZ7MAJrX
+         VWLAGy0jLjYPNGQ2JDViHwrF6jZ+e72e7bndlBJbQ4U5vouBdXslP6EDFYI6iwylBaQc
+         cWUqumUvDugQ58No2Dn5J8MXB4xkxxHA9OZHO5s7O+4IAmzERIpzdApyc2CVrwZROXEb
+         ICVzMfU5K3FE2HqyvuZxOm29ytHGFdYH2qoxwdmunrQ/W3tGkOkYYMtKfnFJJpx1O3uQ
+         3CPA==
+X-Gm-Message-State: AOAM530FysvN+gtxlzsM216m2sckva5csd5pfbCaL66RghOotr+E7GLQ
+        5bEvC2/Bbmsib59Xka6JsvIomrPSvV6YgoQH
+X-Google-Smtp-Source: ABdhPJzoYNjvZDXsDHxWNAIeb11uNTP0eP24NR050plG37dSFPwxbVnz75RZ7RT0JGIZIO0LUtD+sQ==
+X-Received: by 2002:a2e:878d:0:b0:24f:2bf2:5a79 with SMTP id n13-20020a2e878d000000b0024f2bf25a79mr10947871lji.497.1652693081939;
+        Mon, 16 May 2022 02:24:41 -0700 (PDT)
+Received: from localhost.localdomain (81-231-252-146-no39.tbcn.telia.com. [81.231.252.146])
+        by smtp.gmail.com with ESMTPSA id o23-20020ac24e97000000b0047255d2118asm1251739lfr.185.2022.05.16.02.24.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 02:23:09 -0700 (PDT)
-Date:   Mon, 16 May 2022 17:23:05 +0800
-From:   Wang Cheng <wanngchenng@gmail.com>
-To:     dan.carpenter@oracle.com, paskripkin@gmail.com
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/3] staging: rtl8712: add error handler in
- r8712_usbctrl_vendorreq()
-Message-ID: <e33ea53d36c422fbe7eabec5bd9eecb0ebce1bc5.1652618244.git.wanngchenng@gmail.com>
-References: <cover.1652618244.git.wanngchenng@gmail.com>
+        Mon, 16 May 2022 02:24:41 -0700 (PDT)
+From:   Isak Ellmer <isak01@gmail.com>
+To:     masahiroy@kernel.org
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Isak Ellmer <isak01@gmail.com>
+Subject: [PATCH] scripts: kconfig: nconf: make nconfig accept jk keybindings
+Date:   Mon, 16 May 2022 11:24:23 +0200
+Message-Id: <20220516092423.14327-1-isak01@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1652618244.git.wanngchenng@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When 'status' returned from usb_control_msg() is not equal to 'len',
-that usb_control_msg() is on partial failure, r8712_usbctrl_vendorreq()
-will treat partial reads as success.
+Make nconfig accept jk keybindings for movement in addition to arrow keys.
 
-Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
+Signed-off-by: Isak Ellmer <isak01@gmail.com>
 ---
- drivers/staging/rtl8712/usb_ops_linux.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ scripts/kconfig/nconf.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/staging/rtl8712/usb_ops_linux.c b/drivers/staging/rtl8712/usb_ops_linux.c
-index f984a5ab2c6f..b2181e1e2d38 100644
---- a/drivers/staging/rtl8712/usb_ops_linux.c
-+++ b/drivers/staging/rtl8712/usb_ops_linux.c
-@@ -495,14 +495,21 @@ int r8712_usbctrl_vendorreq(struct intf_priv *pintfpriv, u8 request, u16 value,
- 	}
- 	status = usb_control_msg(udev, pipe, request, reqtype, value, index,
- 				 pIo_buf, len, 500);
--	if (status > 0) {  /* Success this control transfer. */
--		if (requesttype == 0x01) {
--			/* For Control read transfer, we have to copy the read
--			 * data from pIo_buf to pdata.
--			 */
--			memcpy(pdata, pIo_buf,  status);
--		}
-+	if (status < 0)
-+		goto free;
-+	if (status != len) {
-+		status = -EREMOTEIO;
-+		goto free;
-+	}
-+	/* Success this control transfer. */
-+	if (requesttype == 0x01) {
-+		/* For Control read transfer, we have to copy the read
-+		 * data from pIo_buf to pdata.
-+		 */
-+		memcpy(pdata, pIo_buf, status);
- 	}
-+
-+free:
- 	kfree(palloc_buf);
- 	return status;
- }
+diff --git a/scripts/kconfig/nconf.c b/scripts/kconfig/nconf.c
+index 7b371bd7fb36..ded40e5aabf8 100644
+--- a/scripts/kconfig/nconf.c
++++ b/scripts/kconfig/nconf.c
+@@ -1105,9 +1105,11 @@ static void conf(struct menu *menu)
+ 				break;
+ 			switch (res) {
+ 			case KEY_DOWN:
++			case 'j':
+ 				menu_driver(curses_menu, REQ_DOWN_ITEM);
+ 				break;
+ 			case KEY_UP:
++			case 'k':
+ 				menu_driver(curses_menu, REQ_UP_ITEM);
+ 				break;
+ 			case KEY_NPAGE:
+@@ -1287,9 +1289,11 @@ static void conf_choice(struct menu *menu)
+ 				break;
+ 			switch (res) {
+ 			case KEY_DOWN:
++			case 'j':
+ 				menu_driver(curses_menu, REQ_DOWN_ITEM);
+ 				break;
+ 			case KEY_UP:
++			case 'k':
+ 				menu_driver(curses_menu, REQ_UP_ITEM);
+ 				break;
+ 			case KEY_NPAGE:
 -- 
-2.33.1
+2.35.1
 
