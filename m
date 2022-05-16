@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 22:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 22:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350007AbiEPW6a (ORCPT
+        id S1350177AbiEPW6d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 18:58:30 -0400
+        Mon, 16 May 2022 18:58:33 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349951AbiEPW50 (ORCPT
+        with ESMTP id S1349925AbiEPW5V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 18:57:26 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C9E42EF8;
-        Mon, 16 May 2022 15:57:14 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id o16so3061316ilq.8;
-        Mon, 16 May 2022 15:57:14 -0700 (PDT)
+        Mon, 16 May 2022 18:57:21 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C07A42EFC;
+        Mon, 16 May 2022 15:57:12 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id m6so17635985iob.4;
+        Mon, 16 May 2022 15:57:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pcTCD0gjQirPulppRUPJolVEvdGl8HWNF457l2/VCpM=;
-        b=Q9CmR/OAi4f1fJoHiSq/A4+KKe+6D/bRcwzXAN4CXFUDU9W2e/2rDFlaPtn9DFL3UZ
-         0OP+IoKCCh6jybN/4qKugRJr9T7OMuUWB4WPcOmePoEDyIWmnOH/Ox90OJPiIk7Uj2Ay
-         X08/tZRG4GW7glyZeaVHPS0481a3PaSmacbBlv0ZZESoKc5evx9H5So0ulM0I63j44yN
-         SP5T0u614Gkgwz78lPA4m5oH9zHG8D7tq0xAtxEPiBhUov/810saX6SSHCROypTyuHX/
-         Hi1iw+N+BFIEL+BpwjFUjSZL5bIvVsgrCFPtwfR3vAntRQZrHwooDLmOROaOb3jpAut/
-         oK6Q==
+        bh=MiJjjZdxaha67CSMTI1r0BLom3ol2jA6WSWjlEZ1BTo=;
+        b=j1OPvP3C9jzXimCIyP8PoqRmxw+BRCMFtN3Kc98fXUqazTR8W99pYA0kCZDMXLOLJp
+         +oKyHJsCC6GTmZKC8UHw5tKkI2nbsmIVzY7pic2mn4wdDsjnCh6KCE5yKjVzDgizKEXb
+         V3v9TU4a1CZ0xaEdkmhZV9JCIy/2uJtBGE4KztwXV0xXvP00wJo6EJgx3XrgcmCEjvDB
+         mHakjZoZWxRSjEBcGXCCfFXU5ecCp+sOoXTR/H9XJxden/M+lBntak5Xol5WL17PMKh5
+         fn6faaYJtp/pPNfh6627Fd/dGtn8PSYKoRU5O5s3eXW0TPxxlmwJGHlpmuBKvnl2hB8Q
+         tu7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pcTCD0gjQirPulppRUPJolVEvdGl8HWNF457l2/VCpM=;
-        b=nWfDHlZ3legAB7OZmOA8kC4zmsFIXnpkQ8wjiGOeQjk/S5X76NtZr1wwq1oQismvxq
-         gJ9nK/nOtAqDzr26G0HNN9PWWdigJrZ+rbeFtzd3cGzGAkoKAncYJZcvEWK03mXyi9JX
-         sxQrr2CZu1rhmwJxtp/n2Q0kbgdqdKsmx+fvLBWUdEjjwGd+V0XOtNs+iExQFBxMYZYl
-         KMCOqsPeuOB7tpR/JZnRWuTlD31s+OV1UbEyT10t/j2q6aA0/jP+wg+EPG81RAEWfGPc
-         5T9JtmwfYm+gDGAat7W404wkUbqVj8XPS4q2KP8XVaXXDiTI08azBbIPI7HGz27SABqU
-         73EQ==
-X-Gm-Message-State: AOAM532qmZCP8scZoKTImy4cPmc1WawTcRww8H64dpQtwlG4uT7IoYwc
-        Ewhk8HOVrM/M0eRib6bUqoM=
-X-Google-Smtp-Source: ABdhPJx/jSyAjp7ehDTr/MAgCBe4VOWPaEYbecT5v2lmg6AJpeafbX8FKEwrz5Q30LOOcV3+TCIIVg==
-X-Received: by 2002:a05:6e02:158c:b0:2cf:db51:f69b with SMTP id m12-20020a056e02158c00b002cfdb51f69bmr9710970ilu.263.1652741834203;
-        Mon, 16 May 2022 15:57:14 -0700 (PDT)
+        bh=MiJjjZdxaha67CSMTI1r0BLom3ol2jA6WSWjlEZ1BTo=;
+        b=6KbtO+aWWiqZCjDsBtjQyURA5UrTwrz+nnaftcgZNcN5GK2K7J+FEdSyWyvoh/on2a
+         HqvY91wsQGb9aXd81x7O5MNUe33nmuFJLS8rEQQlCwE+L/trb5xFsGGs8GP3EgHrbxez
+         sMFTiObEraQkVuePukTTo4fAm6y9Sa2Iyy0e3fUF1pyDzlL5JzPowgzsqm1fICOr0L9D
+         Xd6jS3/fFfZQyIjktDSBlw1gSEaQzXY7P6Sn6U6De3VDCgEXox/9xYChd9R57quliLh5
+         Vk5QTmMhbM8JDvR+fEVhfnG9ByM0xntIIuWQLfenZggfXwo0gKH/aCJ3IgrfaxPRxpxA
+         fiDQ==
+X-Gm-Message-State: AOAM5300I+vWnS7Rnhw6jz5hj8hpcXutLNSRJFyNXwSyAWUbCylckWPV
+        Jm/dUKIIxInHJjC6P4i9KNM=
+X-Google-Smtp-Source: ABdhPJzg3E6Dvu2xvvEgwlGLUhvaUBtxTTam4Jtwh7ic+r/MBjnynyLt4vZbjaxcZ8EUCArbYeUCRw==
+X-Received: by 2002:a05:6638:616:b0:32e:614:9c4b with SMTP id g22-20020a056638061600b0032e06149c4bmr8948820jar.203.1652741831372;
+        Mon, 16 May 2022 15:57:11 -0700 (PDT)
 Received: from frodo.hsd1.co.comcast.net ([2601:284:8204:2010::dd9f])
-        by smtp.googlemail.com with ESMTPSA id k26-20020a02661a000000b0032b74686763sm3133949jac.76.2022.05.16.15.57.12
+        by smtp.googlemail.com with ESMTPSA id k26-20020a02661a000000b0032b74686763sm3133949jac.76.2022.05.16.15.57.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 15:57:13 -0700 (PDT)
+        Mon, 16 May 2022 15:57:11 -0700 (PDT)
 From:   Jim Cromie <jim.cromie@gmail.com>
 To:     jbaron@akamai.com, linux-kernel@vger.kernel.org,
         dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
@@ -62,9 +62,9 @@ Cc:     gregkh@linuxfoundation.org, daniel.vetter@ffwll.ch,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, mingo@redhat.com,
         jim.cromie@gmail.com
-Subject: [PATCH v2 11/27] dyndbg: support symbolic class-names in bitmap
-Date:   Mon, 16 May 2022 16:56:24 -0600
-Message-Id: <20220516225640.3102269-12-jim.cromie@gmail.com>
+Subject: [PATCH v2 09/27] Doc/dyndbg: document new class class_name query support
+Date:   Mon, 16 May 2022 16:56:22 -0600
+Message-Id: <20220516225640.3102269-10-jim.cromie@gmail.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220516225640.3102269-1-jim.cromie@gmail.com>
 References: <20220516225640.3102269-1-jim.cromie@gmail.com>
@@ -74,113 +74,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the sysfs-node bitmap support to accept class-names
-registered by the module, allowing:
+The added paragraph is slightly process oriented, rather than in
+language of guarantees; I thought the implications were clear enough.
 
-   #> echo DRM_UT_CORE,-DRM_UT_ATOMIC,+DRM_UT_KMS \
-    	 > /sys/module/drm/parameters/debug
-
-Do this in param_set_dyndbg_class_strings(), which is called from
-param_set_dyndbg_classes() when the input string isn't a integer.
+It does perhaps undersell the selectivity gained with string
+class_names; only drm/* would sanely register DRM_UT_CORE etc, so
+doing multiple "module {drm*,amdgpu,i915}" queries is unnecessary.
 
 Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
-
 ---
-. continue/skip on unknown class, so following symbols are processed.
-. better loadable module handling, no more KP_MOD_NAME
-. add do_callback_changes
----
- lib/dynamic_debug.c | 63 ++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 59 insertions(+), 4 deletions(-)
+ Documentation/admin-guide/dynamic-debug-howto.rst | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
-index 42dce2e76014..8e1b9159e881 100644
---- a/lib/dynamic_debug.c
-+++ b/lib/dynamic_debug.c
-@@ -618,6 +618,61 @@ static int do_callback_changes(const struct ddebug_classes_bitmap_param *dcp,
- 	return matches;
- }
+diff --git a/Documentation/admin-guide/dynamic-debug-howto.rst b/Documentation/admin-guide/dynamic-debug-howto.rst
+index a89cfa083155..01ca6f635dcc 100644
+--- a/Documentation/admin-guide/dynamic-debug-howto.rst
++++ b/Documentation/admin-guide/dynamic-debug-howto.rst
+@@ -35,6 +35,7 @@ Dynamic debug has even more useful features:
+    - line number (including ranges of line numbers)
+    - module name
+    - format string
++   - class string (as known by each module)
  
-+/* support for [+-] symbolic-name boolean list */
-+static int param_set_dyndbg_class_strings(const char *instr, const struct kernel_param *kp)
-+{
-+	const struct ddebug_classes_bitmap_param *dcp = kp->arg;
-+	unsigned long inbits;
-+	int idx_rc, totct = 0;
-+	bool wanted;
-+	char *cls, *p;
-+
-+	if (!dcp || !dcp->map) {
-+		pr_err("set_dyndbg_classes: no bits=>queries map\n");
-+		return -EINVAL;
-+	}
-+
-+	cls = kstrdup(instr, GFP_KERNEL);
-+	p = strchr(cls, '\n');
-+	if (p)
-+		*p = '\0';
-+
-+	inbits = *dcp->bits;
-+	vpr_info("set_dyndbg_class_strings: %s on 0x%lx\n", cls, inbits);
-+
-+	for (; cls; cls = p) {
-+		p = strchr(cls, ',');
-+		if (p)
-+			*p++ = '\0';
-+
-+		if (*cls == '-') {
-+			wanted = false;
-+			cls++;
-+		} else {
-+			wanted = true;
-+			if (*cls == '+')
-+				cls++;
-+		}
-+		idx_rc = match_string(dcp->map->classes, dcp->map->length, cls);
-+		if (idx_rc < 0) {
-+			pr_err("%s not found for module: %s\n", cls, dcp->map->mod_name);
-+			continue;
-+		}
-+		if (test_bit(idx_rc, &inbits) == wanted) {
-+			v3pr_info("no change on %s\n", cls);
-+			continue;
-+		}
-+
-+		vpr_info("set_dyndbg_classes: bit %d: %s\n", idx_rc, dcp->map->classes[idx_rc]);
-+		inbits ^= BIT(idx_rc);
-+		totct += do_callback_changes(dcp, idx_rc, &inbits);
-+	}
-+	kfree(cls);
-+	*dcp->bits = inbits;
-+	vpr_info("total matches: %d\n", totct);
-+	return 0;
-+}
-+
- /**
-  * param_set_dyndbg_classes - bits => categories >control setter
-  * @instr: string echo>d to sysfs
-@@ -639,10 +694,9 @@ int param_set_dyndbg_classes(const char *instr, const struct kernel_param *kp)
- 		return -EINVAL;
- 	}
- 	rc = kstrtoul(instr, 0, &inbits);
--	if (rc) {
--		pr_err("set_dyndbg_classes: expecting bits/integer\n");
--		return -EINVAL;
--	}
-+	if (rc)
-+		return param_set_dyndbg_class_strings(instr, kp);
-+
- 	vpr_info("set_dyndbg_classes: new 0x%lx current 0x%lx\n", inbits, *dcp->bits);
+  * Provides a debugfs control file: ``<debugfs>/dynamic_debug/control``
+    which can be read to display the complete list of known debug
+@@ -142,6 +143,7 @@ against.  Possible keywords are:::
+ 		 'file' string |
+ 		 'module' string |
+ 		 'format' string |
++		 'class' string |
+ 		 'line' line-range
  
- 	for (i = 0; i < dcp->map->length; i++) {
-@@ -650,6 +704,7 @@ int param_set_dyndbg_classes(const char *instr, const struct kernel_param *kp)
- 		if (test_bit(i, &inbits) == test_bit(i, dcp->bits))
- 			continue;
+   line-range ::= lineno |
+@@ -203,6 +205,15 @@ format
+ 	format "nfsd: SETATTR"  // a neater way to match a format with whitespace
+ 	format 'nfsd: SETATTR'  // yet another way to match a format with whitespace
  
-+		vpr_info("set_dyndbg_classes: bit %d: %s\n", i, dcp->map->classes[i]);
- 		totct += do_callback_changes(dcp, i, &inbits);
- 	}
- 	*dcp->bits = inbits;
++class
++    The given class_name is validated against each module, which may
++    have registered a list of known class_names.  If the class_name is
++    found for a module, callsite matching and adjustment proceeds.
++    Examples::
++
++	class DRM_UT_KMS	# unless DRM wants different
++	class JUNK		# silent non-match
++
+ line
+     The given line number or range of line numbers is compared
+     against the line number of each ``pr_debug()`` callsite.  A single
 -- 
 2.35.3
 
