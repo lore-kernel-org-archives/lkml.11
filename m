@@ -2,48 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A03C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:40:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 618A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345635AbiEPTkJ (ORCPT
+        id S1345557AbiEPTkQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:40:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44138 "EHLO
+        Mon, 16 May 2022 15:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345686AbiEPTjS (ORCPT
+        with ESMTP id S1345600AbiEPTi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:39:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13043F318;
-        Mon, 16 May 2022 12:38:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AE00B81612;
-        Mon, 16 May 2022 19:38:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 457D5C385AA;
-        Mon, 16 May 2022 19:38:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729927;
-        bh=j7ZooHmaClS9S4qOtKsehZJ8Qvk3HAQOrkyyAM1/SXs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kftfilW+kFtkEhVSQSlrETk9o+l28U8SkgKfRfFTx/FgDowSwahs7OHGfqPfZfvJg
-         VqXFQbmX0cpeHLb696/ytjT7bsDPQ2lqtMOxHgCgBNKK2lzL8ZmE35o0wl6GSWaWEb
-         s+y40dONCynsD3BYMuLbe3JGbYke/Su4tCejE0Lo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Habets <habetsm.xilinx@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 08/19] net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
-Date:   Mon, 16 May 2022 21:36:21 +0200
-Message-Id: <20220516193613.747790647@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
-References: <20220516193613.497233635@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 16 May 2022 15:38:57 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71423F88C;
+        Mon, 16 May 2022 12:38:45 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id i40so4692715eda.7;
+        Mon, 16 May 2022 12:38:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LebDF3RuPxmX1Cw/8NAKFfKs/e37d3Ws73/ZUWsOSYY=;
+        b=bseiz9mTWBFks9ltjnA8R2a+/W7/FVLzfkmSDHkJfeKfQX1rYGRuIyUViZL8yKA9mF
+         MLEAdCbqCH+RPshFcSqj8Y/AkfxtyUTdOtL2F5UnpHv0UXW0mf1LKw3QS/uRg9BEqWq7
+         QMATuJ+nvY4vq7d4KZnFOq4VS8QyGepI2Sam7Qz6f6IallvZ+rxo7sHaARhKMtw359gl
+         9H/CUYF9h8DrFCKvAY6T1zMs8VFaRAwHSyzzb1/zafJQy5vhl5bQ42vFNfVAh7T7ClI8
+         oRRmlyG0j5tAoD3DEzyuDLbHY6upzDkmAnY6zHLJ8BGTThl1mtVURC7BBqr7hvTVZUbw
+         kcCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LebDF3RuPxmX1Cw/8NAKFfKs/e37d3Ws73/ZUWsOSYY=;
+        b=bQAU7dH3n3ni1KT0j80EoabV5Q3NzXee7YMiF/RDOkdDdI0mfh4nwvKeA60967TDMB
+         hQds208CVNIYz+Y84XbzXe5m/H2sRwnXQPScqcAaFnbDTPaBr1KpygD4tBpk4hlDRJjs
+         R1tQNWwlOtZJi3IWSW7N2/IkkbmKWB8hkN8wDV1SXOquv1TtAa3g3o5K4bASsFUEz/4G
+         +2DFL21cAa1MPMisgszKLqyHfRWBPjzfzAtT2EhKEN7PHY5TQWbCR28qiPUO1OBt4Zi5
+         7WQG4oFlIk5R1znnYzzwhbgmFpZMtLFZLu/KR9Y0a6e7t1wEd/WEzCt6TGjhJEFCeizC
+         +kkA==
+X-Gm-Message-State: AOAM533Q6CzTq50rh+UzXdJrxu437jdpEQhqll4+4ePpZkitStn73OPm
+        Hf/lxjgW7CvqJv3HXkA2ik0=
+X-Google-Smtp-Source: ABdhPJyTP9Rwj4orjplkbScv8cYbfHA3DBy1Z17s4DcQWsXitJXORWnR2TTE2sCfqqK/ke8zXrzj6Q==
+X-Received: by 2002:a05:6402:f13:b0:428:a849:d0c1 with SMTP id i19-20020a0564020f1300b00428a849d0c1mr15059561eda.346.1652729923428;
+        Mon, 16 May 2022 12:38:43 -0700 (PDT)
+Received: from adroid (102-167-184-091.ip-addr.vsenet.de. [91.184.167.102])
+        by smtp.gmail.com with ESMTPSA id s7-20020a170906220700b006f3ef214e45sm94042ejs.171.2022.05.16.12.38.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 12:38:43 -0700 (PDT)
+From:   =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
+To:     linux-samsung-soc@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
+Subject: [PATCH 1/3] dt-bindings: display: simple: add support for Samsung LTL101AL01
+Date:   Mon, 16 May 2022 21:37:07 +0200
+Message-Id: <20220516193709.10037-1-martin.juecker@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,72 +72,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+Add the Samsung LTL101AL01 WXGA LCD panel to the list.
 
-[ Upstream commit 1fa89ffbc04545b7582518e57f4b63e2a062870f ]
-
-In the NIC ->probe() callback, ->mtd_probe() callback is called.
-If NIC has 2 ports, ->probe() is called twice and ->mtd_probe() too.
-In the ->mtd_probe(), which is efx_ef10_mtd_probe() it allocates and
-initializes mtd partiion.
-But mtd partition for sfc is shared data.
-So that allocated mtd partition data from last called
-efx_ef10_mtd_probe() will not be used.
-Therefore it must be freed.
-But it doesn't free a not used mtd partition data in efx_ef10_mtd_probe().
-
-kmemleak reports:
-unreferenced object 0xffff88811ddb0000 (size 63168):
-  comm "systemd-udevd", pid 265, jiffies 4294681048 (age 348.586s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffffa3767749>] kmalloc_order_trace+0x19/0x120
-    [<ffffffffa3873f0e>] __kmalloc+0x20e/0x250
-    [<ffffffffc041389f>] efx_ef10_mtd_probe+0x11f/0x270 [sfc]
-    [<ffffffffc0484c8a>] efx_pci_probe.cold.17+0x3df/0x53d [sfc]
-    [<ffffffffa414192c>] local_pci_probe+0xdc/0x170
-    [<ffffffffa4145df5>] pci_device_probe+0x235/0x680
-    [<ffffffffa443dd52>] really_probe+0x1c2/0x8f0
-    [<ffffffffa443e72b>] __driver_probe_device+0x2ab/0x460
-    [<ffffffffa443e92a>] driver_probe_device+0x4a/0x120
-    [<ffffffffa443f2ae>] __driver_attach+0x16e/0x320
-    [<ffffffffa4437a90>] bus_for_each_dev+0x110/0x190
-    [<ffffffffa443b75e>] bus_add_driver+0x39e/0x560
-    [<ffffffffa4440b1e>] driver_register+0x18e/0x310
-    [<ffffffffc02e2055>] 0xffffffffc02e2055
-    [<ffffffffa3001af3>] do_one_initcall+0xc3/0x450
-    [<ffffffffa33ca574>] do_init_module+0x1b4/0x700
-
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
-Fixes: 8127d661e77f ("sfc: Add support for Solarflare SFC9100 family")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Link: https://lore.kernel.org/r/20220512054709.12513-1-ap420073@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
 ---
- drivers/net/ethernet/sfc/ef10.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../devicetree/bindings/display/panel/panel-simple.yaml         | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 22bc3dc44298..aa2cef8675f4 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -5197,6 +5197,11 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
- 		n_parts++;
- 	}
- 
-+	if (!n_parts) {
-+		kfree(parts);
-+		return 0;
-+	}
-+
- 	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
- fail:
- 	if (rc)
+diff --git a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
+index 1eb9dd4f8f58..9501b5a3c011 100644
+--- a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
++++ b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
+@@ -270,6 +270,8 @@ properties:
+       - samsung,atna33xc20
+         # Samsung 12.2" (2560x1600 pixels) TFT LCD panel
+       - samsung,lsn122dl01-c01
++        # Samsung Electronics 10.1" WXGA (1280x800) TFT LCD panel
++      - samsung,ltl101al01
+         # Samsung Electronics 10.1" WSVGA TFT LCD panel
+       - samsung,ltn101nt05
+         # Samsung Electronics 14" WXGA (1366x768) TFT LCD panel
 -- 
-2.35.1
-
-
+2.25.1
 
