@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A41B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 19:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345807AbiEPTnC (ORCPT
+        id S1345965AbiEPTnJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 15:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
+        Mon, 16 May 2022 15:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345610AbiEPTkX (ORCPT
+        with ESMTP id S1345793AbiEPTkZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:40:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798823ED32;
-        Mon, 16 May 2022 12:39:32 -0700 (PDT)
+        Mon, 16 May 2022 15:40:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396503F306;
+        Mon, 16 May 2022 12:39:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3A69614E2;
-        Mon, 16 May 2022 19:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2423C385AA;
-        Mon, 16 May 2022 19:39:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEFDF614B6;
+        Mon, 16 May 2022 19:39:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A62C34100;
+        Mon, 16 May 2022 19:39:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652729971;
-        bh=+FAQbdGywGv1W7IEFqKFXTkIpVgAa5LatXhgDD2GBp8=;
+        s=korg; t=1652729978;
+        bh=Xr3Sm7ztXFyfUFVN7yvyGGdyW1XTRAYX2HVnhG0Z9gg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sN6aXVepJOHKIVUAIU5M3YR3CeCJmRWy5RqlYyKPRReMaW1KntUEbb4Ulo0BuAP8i
-         BDhNI/Q/3+w70xY91AN8V98fihFLGp9KDV6PxEv108500azxgyOtFBy8QtqJCU1NRc
-         OCIsIvUQFWFXcvck9jWKK47EWMjPZ/13cq6bBkfc=
+        b=CDjcYPZevTKGDsZD8313si8r1vWY+AUoBVo81VrEICRJWlHoePMFLmvhq/Z8Z1usO
+         9v1kGT98vL4a0/UArhhwGQRbVRDpZgdJO/zUbKAEgQLhefFJNkiiQCDUYx6y7ZjkBJ
+         G+KUamIXhxGnD43RVFcWTHqpgr5J4ix/XLb6ZC+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>
-Subject: [PATCH 4.14 17/25] usb: cdc-wdm: fix reading stuck on device close
-Date:   Mon, 16 May 2022 21:36:31 +0200
-Message-Id: <20220516193615.204377503@linuxfoundation.org>
+        stable@vger.kernel.org, Ethan Yang <etyang@sierrawireless.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.14 19/25] USB: serial: qcserial: add support for Sierra Wireless EM7590
+Date:   Mon, 16 May 2022 21:36:33 +0200
+Message-Id: <20220516193615.265423114@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193614.678319286@linuxfoundation.org>
 References: <20220516193614.678319286@linuxfoundation.org>
@@ -49,56 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+From: Ethan Yang <etyang@sierrawireless.com>
 
-commit 01e01f5c89773c600a9f0b32c888de0146066c3a upstream.
+commit 870b1eee2d844727b06e238c121d260bc5645580 upstream.
 
-cdc-wdm tracks whether a response reading request is in-progress and
-blocks the next request from being sent until the previous request is
-completed. As soon as last user closes the cdc-wdm device file, the
-driver cancels any ongoing requests, resets the pending response
-counter, but leaves the response reading in-progress flag
-(WDM_RESPONDING) untouched.
+Add support for Sierra Wireless EM7590 0xc080/0xc081 compositions.
 
-So if the user closes the device file during the response receive
-request is being performed, no more data will be obtained from the
-modem. The request will be cancelled, effectively preventing the
-WDM_RESPONDING flag from being reseted. Keeping the flag set will
-prevent a new response receive request from being sent, permanently
-blocking the read path. The read path will staying blocked until the
-module will be reloaded or till the modem will be re-attached.
-
-This stuck has been observed with a Huawei E3372 modem attached to an
-OpenWrt router and using the comgt utility to set up a network
-connection.
-
-Fix this issue by clearing the WDM_RESPONDING flag on the device file
-close.
-
-Without this fix, the device reading stuck can be easily reproduced in a
-few connection establishing attempts. With this fix, a load test for
-modem connection re-establishing worked for several hours without any
-issues.
-
-Fixes: 922a5eadd5a3 ("usb: cdc-wdm: Fix race between autosuspend and reading from the device")
-Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc: stable <stable@vger.kernel.org>
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220501175828.8185-1-ryazanov.s.a@gmail.com
+Signed-off-by: Ethan Yang <etyang@sierrawireless.com>
+Link: https://lore.kernel.org/r/20220425055840.5693-1-etyang@sierrawireless.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/class/cdc-wdm.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/serial/qcserial.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/class/cdc-wdm.c
-+++ b/drivers/usb/class/cdc-wdm.c
-@@ -731,6 +731,7 @@ static int wdm_release(struct inode *ino
- 			kill_urbs(desc);
- 			spin_lock_irq(&desc->iuspin);
- 			desc->resp_count = 0;
-+			clear_bit(WDM_RESPONDING, &desc->flags);
- 			spin_unlock_irq(&desc->iuspin);
- 			desc->manage_power(desc->intf, 0);
- 		} else {
+--- a/drivers/usb/serial/qcserial.c
++++ b/drivers/usb/serial/qcserial.c
+@@ -170,6 +170,8 @@ static const struct usb_device_id id_tab
+ 	{DEVICE_SWI(0x1199, 0x9090)},	/* Sierra Wireless EM7565 QDL */
+ 	{DEVICE_SWI(0x1199, 0x9091)},	/* Sierra Wireless EM7565 */
+ 	{DEVICE_SWI(0x1199, 0x90d2)},	/* Sierra Wireless EM9191 QDL */
++	{DEVICE_SWI(0x1199, 0xc080)},	/* Sierra Wireless EM7590 QDL */
++	{DEVICE_SWI(0x1199, 0xc081)},	/* Sierra Wireless EM7590 */
+ 	{DEVICE_SWI(0x413c, 0x81a2)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
+ 	{DEVICE_SWI(0x413c, 0x81a3)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
+ 	{DEVICE_SWI(0x413c, 0x81a4)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
 
 
