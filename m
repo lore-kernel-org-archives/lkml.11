@@ -2,85 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F95DC38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CECC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351347AbiEPUDI (ORCPT
+        id S1351372AbiEPUDS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33104 "EHLO
+        Mon, 16 May 2022 16:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348724AbiEPTxD (ORCPT
+        with ESMTP id S1348082AbiEPTwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:53:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E6E46B2D;
-        Mon, 16 May 2022 12:48:51 -0700 (PDT)
+        Mon, 16 May 2022 15:52:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D1945078;
+        Mon, 16 May 2022 12:48:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A813EB81612;
-        Mon, 16 May 2022 19:48:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61FDC385AA;
-        Mon, 16 May 2022 19:48:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730516;
-        bh=rqfekv0jGsZubz8FtTJU1FPHkwUoFSHNJwCMoZw6RAA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wHn7glZWpA5mJiH3Ru4g+HrYmEMFiIEnQEf/PLAEA5zwlTKd067Fh29+LYzKX74hi
-         /3IzJs0OnEkk5vhbUpdd4WyLKa8jhHa4Y5RGz7ei1jNjUXK6AJkdTp5I/rcAgm9Bm2
-         F1nZl99TXGApV24LvRC+WTCCTgWBT6TIzm6o3v5I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 024/102] nfs: fix broken handling of the softreval mount option
-Date:   Mon, 16 May 2022 21:35:58 +0200
-Message-Id: <20220516193624.694643295@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-References: <20220516193623.989270214@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by sin.source.kernel.org (Postfix) with ESMTPS id 33CB3CE179F;
+        Mon, 16 May 2022 19:48:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E80C34100;
+        Mon, 16 May 2022 19:48:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652730488;
+        bh=8saUzmqA0TOvmnjsDMAn3OVfh2E1uA+myZYrsq0y0hc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OEevVY1UECT25EBcbHYE8J4mfBKuo+DyKQ8QD0QiEhQtGbpIuzKP5GI6z4lI1eXsB
+         81nbnWHIs/OOEJvNw6Hl6ZJ5HYOz0op63d9rpo3Ah1d2pEYVg1zdSAAkqwnRhlK2sd
+         46p32qHgAKWCrxAlIYtwD8AiB8kwIftyEySQECuMqC+bWkOOQ+K1M+M/nHkkGU4E9Q
+         UmK3i1TjPqmS9KKjWDUiaY9c1i4o2b7DW2j9IeYqZtkSDjS5CGsUADi21K8ORTXCda
+         wC/qIKs8aF8WM1iVXxLFHZSXOx7twJsthoezj9YOGgMF1H+6RME/ljFbe7cCiezfIt
+         rEMovxZjmG34Q==
+Date:   Mon, 16 May 2022 21:48:05 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Tyrone Ting <warp5tw@gmail.com>
+Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        andriy.shevchenko@linux.intel.com, jarkko.nikula@linux.intel.com,
+        semen.protsenko@linaro.org, sven@svenpeter.dev, jie.deng@intel.com,
+        jsd@semihalf.com, lukas.bulwahn@gmail.com, olof@lixom.net,
+        arnd@arndb.de, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/9] i2c: npcm: Change the way of getting GCR regmap
+Message-ID: <YoKqdfLSeJ69WFhi@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
+        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski@canonical.com,
+        andriy.shevchenko@linux.intel.com, jarkko.nikula@linux.intel.com,
+        semen.protsenko@linaro.org, sven@svenpeter.dev, jie.deng@intel.com,
+        jsd@semihalf.com, lukas.bulwahn@gmail.com, olof@lixom.net,
+        arnd@arndb.de, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220510091654.8498-1-warp5tw@gmail.com>
+ <20220510091654.8498-3-warp5tw@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Bta3H5MZ7K5kULNQ"
+Content-Disposition: inline
+In-Reply-To: <20220510091654.8498-3-warp5tw@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Aloni <dan.aloni@vastdata.com>
 
-[ Upstream commit 085d16d5f949b64713d5e960d6c9bbf51bc1d511 ]
+--Bta3H5MZ7K5kULNQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Turns out that ever since this mount option was added, passing
-`softreval` in NFS mount options cancelled all other flags while not
-affecting the underlying flag `NFS_MOUNT_SOFTREVAL`.
+On Tue, May 10, 2022 at 05:16:47PM +0800, Tyrone Ting wrote:
+> From: Tali Perry <tali.perry1@gmail.com>
+>=20
+> Change the way of getting NPCM system manager reigster (GCR)
+> and still maintain the old mechanism as a fallback if getting
+> nuvoton,sys-mgr fails while working with the legacy devicetree
+> file.
+>=20
+> Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller drive=
+r")
+> Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Fixes: c74dfe97c104 ("NFS: Add mount option 'softreval'")
-Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/nfs/fs_context.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
-index 0d444a90f513..fb3cad38b149 100644
---- a/fs/nfs/fs_context.c
-+++ b/fs/nfs/fs_context.c
-@@ -514,7 +514,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
- 		if (result.negated)
- 			ctx->flags &= ~NFS_MOUNT_SOFTREVAL;
- 		else
--			ctx->flags &= NFS_MOUNT_SOFTREVAL;
-+			ctx->flags |= NFS_MOUNT_SOFTREVAL;
- 		break;
- 	case Opt_posix:
- 		if (result.negated)
--- 
-2.35.1
+Tyrone, your SoB is missing for all patches from Tali.
 
 
+--Bta3H5MZ7K5kULNQ
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKCqnUACgkQFA3kzBSg
+KbZ34Q/+OETkCQXb502yS3rtiWo8z1tWp3hrOEDevtsQso3n1oiwKkySOcuqiLsb
+f/u+j1YLisJPS6Zdcg7bfi5bGruOmGG4O03ZqAwLfoRXzgwkMchSEB9Ti3HbdIe/
+mqlOfmDYXMek199DevOBKY5AouPHsVbuVj8ihNTlARtxx1WHT43w2nWj9w4GAfWg
+p2hJG467QwoHNZ5aoNH9JkFW5JxjIkn8ZVOQfBZ8juWTY9s7X/J/Mqq3PDUjAssE
+csolAlW117VU2Bde3yWzy9joNo2Cz1acSHXDK2dTFbCccvK/Pm+UsRxrOnNaUSAM
+wdX8RvPB8pku8scSI42QR8c3Y3Di6thLgvLJ08zOzVOHrsd7MThvn0cqJuo93VqL
+qEoSmGMbKVVUewpD9P9xGat8IfRbaEDeJn7dMXUNhckb5UXVB78eg/SUdMPuhTkr
+Nojnyz8XNgFbIWyrtyvJ9Amr1F4pLEJURpfWJkH9xys1BPCdQt8efMEVJPmVyFip
+K6SfQt6ZaXlSkAy//W6Y5PDwgNLJWbsoAQ5feStuhpJpLKwsrWfE0DUHn+V41EAv
+0V7AAekM8XRVe3lsC+oAw6VJYoTPD6cwMgp8DW/Lb3BPGltoi5W7KD5HZ5aV3E8K
+g4P97TcCmS5+YF9a2+PuTsaOBF61n6F7lOwoiJcYW9U0p3ceOws=
+=hHWq
+-----END PGP SIGNATURE-----
+
+--Bta3H5MZ7K5kULNQ--
