@@ -2,146 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA75C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E13C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 17:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344293AbiEPRaz (ORCPT
+        id S1344298AbiEPRc5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 13:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58322 "EHLO
+        Mon, 16 May 2022 13:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231476AbiEPRay (ORCPT
+        with ESMTP id S231476AbiEPRcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 13:30:54 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CDEDEF2;
-        Mon, 16 May 2022 10:30:53 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so1178335pjb.2;
-        Mon, 16 May 2022 10:30:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OTSZD7XY4xlhlXYWnr6RQDyqsnVaQBafjBNNdEbut20=;
-        b=ljoCpUurp4LDNznqFaSS3fU0aMtiMbgRZ6P7rLHQfTM7vNFaBZ//4Gs2TPrOjME2qV
-         Blyf4d/AbF3HxAU4LT2BXM3E2nxuGZ22IHb7Skw7giN2rHej05aDC8p3fvPTypB4CZ2+
-         4EpaRnUH7sirgAw3KVo9dxLIUYX/MJBQGJgALEOooZQLaJTlR4ZiJ8oFU2VXRPUk9UC+
-         XpzYTNZ8dDhFxdw/s0OJIleDgCrqppZ9Y0BpZc/1RyqvIsOGMIsNBOeUkk70RTiFYjNI
-         IcvK+jhjQaY6R5IlS6jT9/c0LoN+T4E3zSA5+CoJTjtwh23p92ZnxZZZ66VpnGzPLsQP
-         kyMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OTSZD7XY4xlhlXYWnr6RQDyqsnVaQBafjBNNdEbut20=;
-        b=C6rxF+qAhtYw3uJMnphMnRBD/oSSTS/ieYycVfu6MmJibXnMH9qyz21MsCF0kp8woH
-         d7+mevHqY3srFGXIRY1wn+8q97ReNl9OO0Sj4xladMAnKayFtNDrtm8ZZnwoI6d9RGoi
-         dSTFAUZf04vQVuH/saBPK0LI4+GgIwBiP60ig5Htcbm2P+3i+p7CP0EgsH7ImjGnZ0oS
-         jmZCbuhWE7w2rKKctRGw8+nSjY/XsY7jLqhBFgcBiI1SjUIrDxFVBoeAVH9dWo3IkCeJ
-         14x391Br/Mp+oZho6erUjbFbLIdhzslzaRDQiErWm2SfdEayxNFGDrDCzJUrjjPB/8lH
-         sEdA==
-X-Gm-Message-State: AOAM530I1U2l9R0B2Zy5kNsYgoFzlNrwq8SPykdOgfniGdR2Be3QxDC3
-        fyFqoLoCxrpCAe1WPW7/ENk=
-X-Google-Smtp-Source: ABdhPJwFG7wwyVTvgM6A+HYDSQtwe3IUgtHKXP3afpbvRGISoW3hwz8dllSjmEus96jz4ohNxcrxMw==
-X-Received: by 2002:a17:903:4044:b0:161:823e:6f93 with SMTP id n4-20020a170903404400b00161823e6f93mr5155213pla.172.1652722253376;
-        Mon, 16 May 2022 10:30:53 -0700 (PDT)
-Received: from localhost.localdomain ([103.126.24.15])
-        by smtp.gmail.com with ESMTPSA id j16-20020a17090a589000b001df7c160875sm209215pji.25.2022.05.16.10.30.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 16 May 2022 10:30:52 -0700 (PDT)
-From:   "windy.bi.enflame" <windy.bi.enflame@gmail.com>
-To:     bhelgaas@google.com
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "windy.bi.enflame" <windy.bi.enflame@gmail.com>
-Subject: [PATCH] drivers/pci: wait downstream hierarchy ready instead of slot itself ready, after secondary bus reset
-Date:   Tue, 17 May 2022 01:30:47 +0800
-Message-Id: <20220516173047.123317-1-windy.bi.enflame@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 16 May 2022 13:32:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4ABCDEF2
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 10:32:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 559CF612D2
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:32:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D093FC385AA;
+        Mon, 16 May 2022 17:32:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652722370;
+        bh=C+8DnkQiB/fbUFTud5vWH4yzxrPp6tRfvOchMkKtD1c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jMNnoHdHRLWn6JpN6R7IruGuyFziCD7z91m1OPqjI3uHsgp2LtnJt3XtBseKrSiIn
+         UQtZH3e5JVYkwYoeBqWsO5zdBA3Y1dSkPXccSe7RvOBE79vn5qGjUzlNph+AAA3ApK
+         gXQu6ck7KiwI3Hh4+5W0UQrA29MivVLSp4D2sZe41Vh4X85IirgaNZqnNQW3OgAkqY
+         0E51XLIBfy/MkUlTWCFsGlBEQa8MbKFaOVUEH22y72JjyQ/p78ZZdT/mPvmGMmy6WC
+         fcpCN2lsuskrRDWE2Ig5J4W3uq8ZDhaYvcqbxNUdVskL6b03EZyJkt+AlFP64M8QYn
+         gx8p9Mav4Agpg==
+Date:   Tue, 17 May 2022 01:24:15 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Anup Patel <anup@brainfault.org>
+Cc:     Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        kasan-dev@googlegroups.com
+Subject: Re: [PATCH v2 2/4] riscv: introduce unified static key mechanism for
+ CPU features
+Message-ID: <YoKIv2ATRdQfYbBf@xhacker>
+References: <20220508160749.984-1-jszhang@kernel.org>
+ <20220508160749.984-3-jszhang@kernel.org>
+ <CAK9=C2Xinc6Y9ue+3ZOvKOOgru7wvJNcEPLvO4aZGuQqETXi2w@mail.gmail.com>
+ <YnkoKxaPbrTnZPQv@xhacker>
+ <CAOnJCU+XR5mtqKBQLMj3JgsTPgvAQdO_jj2FWqcu7f9MezNCKA@mail.gmail.com>
+ <YoCollqhS93NJZjL@xhacker>
+ <CAAhSdy3_av5H-V_d5ynwgfeZYsCnCSd5pFSEKCzDSDBbD+pGLA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAAhSdy3_av5H-V_d5ynwgfeZYsCnCSd5pFSEKCzDSDBbD+pGLA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While I do reset test of a PCIe endpoint device on a server, I find that
-the EP device always been removed and re-inserted again by hotplug module,
- after secondary bus reset.
+On Sun, May 15, 2022 at 08:19:37PM +0530, Anup Patel wrote:
+> On Sun, May 15, 2022 at 12:54 PM Jisheng Zhang <jszhang@kernel.org> wrote:
+> >
+> > On Wed, May 11, 2022 at 11:29:32PM -0700, Atish Patra wrote:
+> > > On Mon, May 9, 2022 at 7:50 AM Jisheng Zhang <jszhang@kernel.org> wrote:
+> > > >
+> > > > On Mon, May 09, 2022 at 09:17:10AM +0530, Anup Patel wrote:
+> > > > > On Sun, May 8, 2022 at 9:47 PM Jisheng Zhang <jszhang@kernel.org> wrote:
+> > > > > >
+> > > > > > Currently, riscv has several features why may not be supported on all
+> > > > > > riscv platforms, for example, FPU, SV48 and so on. To support unified
+> > > > > > kernel Image style, we need to check whether the feature is suportted
+> > > > > > or not. If the check sits at hot code path, then performance will be
+> > > > > > impacted a lot. static key can be used to solve the issue. In the past
+> > > > > > FPU support has been converted to use static key mechanism. I believe
+> > > > > > we will have similar cases in the future.
+> > > > >
+> > > > > It's not just FPU and Sv48. There are several others such as Svinval,
+> > > > > Vector, Svnapot, Svpbmt, and many many others.
+> > > > >
+> > > > > Overall, I agree with the approach of using static key array but I
+> > > > > disagree with the semantics and the duplicate stuff being added.
+> > > > >
+> > > > > Please see more comments below ..
+> > > > >
+> > > > > >
+> > > > > > Similar as arm64 does(in fact, some code is borrowed from arm64), this
+> > > > > > patch tries to add an unified mechanism to use static keys for all
+> > > > > > the cpu features by implementing an array of default-false static keys
+> > > > > > and enabling them when detected. The cpus_have_*_cap() check uses the
+> > > > > > static keys if riscv_const_caps_ready is finalized, otherwise the
+> > > > > > compiler generates the bitmap test.
+> > > > >
+> > > > > First of all, we should stop calling this a feature (like ARM does). Rather,
+> > > > > we should call these as isa extensions ("isaext") to align with the RISC-V
+> > > > > priv spec and RISC-V profiles spec. For all the ISA optionalities which do
+> > > > > not have distinct extension name, the RISC-V profiles spec is assigning
+> > > > > names to all such optionalities.
+> > > >
+> > > > Same as the reply a few minutes ago, the key problem here is do all
+> > > > CPU features belong to *ISA* extensions? For example, SV48, SV57 etc.
+> > > > I agree with Atish's comments here:
+> > > >
+> > > > "I think the cpu feature is a superset of the ISA extension.
+> > > > cpu feature != ISA extension"
+> > > >
+> > >
+> > > It seems to be accurate at that point in time. However, the latest
+> > > profile spec seems to
+> > > define everything as an extension including sv48.
+> > >
+> > > https://github.com/riscv/riscv-profiles/blob/main/profiles.adoc#623-rva22s64-supported-optional-extensions
+> > >
+> > > It may be a redundant effort and confusing to create two sets i.e.
+> > > feature and extension in this case.
+> > > But this specification is not frozen yet and may change in the future.
+> > > We at least know that that is the current intention.
+> > >
+> > > Array of static keys is definitely useful and should be used for all
+> > > well defined ISA extensions by the ratified priv spec.
+> > > This will simplify this patch as well. For any feature/extensions
+> > > (i.e. sv48/sv57) which was never defined as an extension
+> > > in the priv spec but profile seems to define it now, I would leave it
+> > > alone for the time being. Converting the existing code
+> > > to static key probably has value but please do not include it in the
+> > > static key array setup.
+> > >
+> > > Once the profile spec is frozen, we can decide which direction the
+> > > Linux kernel should go.
+> > >
+> >
+> > Hi Atish, Anup,
+> >
+> > I see your points and thanks for the information of the profile
+> > spec. Now, I have other two points about isa VS features:
+> >
+> > 1. Not all isa extenstions need static key mechanism, so if we
+> > make a static key array with 1:1 riscv_isa <-> static key relationship
+> > there may be waste.
+> >
+> > For example, the 'a', 'c', 'i', 'm' and so on don't have static
+> > key usage.
+> 
+> Not all isa extensions but a large number of them will need a static
+> key. It's better to always have one static key per ISA extension
+> defined in cpufeatures.c
 
-After checking I find:
-1> "pciehp_reset_slot()" always disable slot's DLLSC interrupt before
-   doing reset and restore after reset, to try to filter the hotplug
-   event happened during reset.
-2> "pci_bridge_secondary_bus_reset()" sleep 1 seconad and "pci_dev_wait()"
-   until device ready with "PCIE_RESET_READY_POLL_MS" timeout.
-3> There is a PCIe switch between CPU and the EP devicem the topology as:
-   CPU <-> Switch <-> EP.
-4> While trigger sbr reset at the switch's downstream port, it needs 1.5
-   seconds for internal enumeration.
+Currently, RISCV_ISA_EXT_MAX equals to 64 while the base ID is 26.
+In those 26 base IDs, only F/D and V need static key, it means
+we waste at least 24 static keys.
 
-About why 1.5 seconds ready time is not filtered by "pci_dev_wait()" with
-"PCIE_RESET_READY_POLL_MS" timeout, I find it is because in
-"pci_bridge_secondary_bus_reset()", the function is operating slot's
-config space to trigger sbr and also wait slot itself ready by input same
-"dev" parameter. Different from other resets like FLR which is triggered
-by operating the config space of EP device itself, sbr is triggered by
-up slot but need to wait downstream devices' ready, so I think function
-"pci_dev_wait()" works for resets like FLR but not for sbr.
+> 
+> For example, F, D, V, Sstc, Svinval, Ssofpmt, Zb*, AIA, etc.
+> 
+> >
+> > 2.We may need riscv architecture static keys for non-isa, this is
+> > usually related with the linux os itself, for example
+> > a static key for "unmap kernelspace at userspace".
+> > static keys for "spectre CVE mitigations"
+> > etc.
+> 
+> These things look more like errata or workarounds so better
+> to use that framework instead of ISA extensions (or features).
 
-In this proposed patch, I'm changing the waiting function used in sbr to
-"pci_bridge_secondary_bus_wait()" which will wait all the downstream
-hierarchy ready with the same timeout setting "PCIE_RESET_READY_POLL_MS".
-In "pci_bridge_secondary_bus_wait()" the "subordinate" and
-"subordinate->devices" will be checked firstly, and then downstream
-devices' present state.
+Currently, the errata workarounds are implemented with ALTERNATIVEs
+but I believe sometime we may need static key to implement the
+workarounds. However this can be checked later. Now I worried about
+the static key waste above.
 
-Signed-off-by: windy.bi.enflame <windy.bi.enflame@gmail.com>
----
- drivers/pci/pci.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 9ecce435fb3f..d7ec3859268b 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -5002,6 +5002,29 @@ void pci_bridge_wait_for_secondary_bus(struct pci_dev *dev)
- 	}
- }
- 
-+int pci_bridge_secondary_bus_wait(struct pci_dev *bridge, int timeout)
-+{
-+	struct pci_dev *dev;
-+	int delay = 1;
-+
-+	if (!bridge->subordinate || list_empty(&bridge->subordinate->devices))
-+		return 0;
-+
-+	list_for_each_entry(dev, &bridge->subordinate->devices, bus_list) {
-+		while (!pci_device_is_present(dev)) {
-+			if (delay > timeout) {
-+				pci_warn(dev, "secondary bus not ready after %dms\n", delay);
-+				return -ENOTTY;
-+			}
-+
-+			msleep(delay);
-+			delay *= 2;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- void pci_reset_secondary_bus(struct pci_dev *dev)
- {
- 	u16 ctrl;
-@@ -5045,7 +5068,7 @@ int pci_bridge_secondary_bus_reset(struct pci_dev *dev)
- {
- 	pcibios_reset_secondary_bus(dev);
- 
--	return pci_dev_wait(dev, "bus reset", PCIE_RESET_READY_POLL_MS);
-+	return pci_bridge_secondary_bus_wait(dev, PCIE_RESET_READY_POLL_MS);
- }
- EXPORT_SYMBOL_GPL(pci_bridge_secondary_bus_reset);
- 
--- 
-2.36.1
-
+Thanks
