@@ -2,147 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5402DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 883A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237764AbiEPNM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56956 "EHLO
+        id S243102AbiEPNNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiEPNMw (ORCPT
+        with ESMTP id S237841AbiEPNM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:12:52 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E731EAD7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 06:12:50 -0700 (PDT)
-Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L20303zmSz6H7Kh;
-        Mon, 16 May 2022 21:09:48 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 16 May 2022 15:12:47 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 16 May 2022 14:12:45 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <joro@8bytes.org>, <will@kernel.org>, <hch@lst.de>,
-        <robin.murphy@arm.com>, <m.szyprowski@samsung.com>
-CC:     <chenxiang66@hisilicon.com>, <thunder.leizhen@huawei.com>,
-        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        <liyihang6@hisilicon.com>, John Garry <john.garry@huawei.com>
-Subject: [RFC PATCH] dma-iommu: Add iommu_dma_max_mapping_size()
-Date:   Mon, 16 May 2022 21:06:01 +0800
-Message-ID: <1652706361-92557-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Mon, 16 May 2022 09:12:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9811EEC8;
+        Mon, 16 May 2022 06:12:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7F3FB811B6;
+        Mon, 16 May 2022 13:12:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB10C385B8;
+        Mon, 16 May 2022 13:12:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652706775;
+        bh=8FPoe1RAON30o/pCWwFs0A713UVrLNGUKmHerCIG1qQ=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=nH3efThIppw0sM26m2Bc3LimWeB3POnLRTd7U7offMmfKpz5GMVyiXJfNT2O43Dro
+         o6f5MFYs2Hi4cCnaIYHK43gb63YOh8OvzhAvt1bxSbKnhC9DfDhOkEhLIhC5jHtqVZ
+         b/wXmwCA1cLA/3CXjBCSHFyat4voaYzevS5dtPrWtRrWgptCQzRrNSwtdsRzYEswWQ
+         mGGx7MN3qLkYeYJMzyXFJXRK+CW2AKE1wHkQ46s6vkpu+o60fm3GHAqhqASscElFOY
+         dmUZ295Z2emRo84c+TrzUPokDHemLm3Y/ozZTAOo3tJAsCCNSkvs1HKnE6TfE44pxN
+         Tw2Sud2GlExvg==
+Message-ID: <2412ef109c2af459189b9cce9a39c2ed34eb7b61.camel@kernel.org>
+Subject: Re: [PATCH 1/2] fs/dcache: add d_compare() helper support
+From:   Jeff Layton <jlayton@kernel.org>
+To:     Xiubo Li <xiubli@redhat.com>, viro@zeniv.linux.org.uk
+Cc:     idryomov@gmail.com, vshankar@redhat.com,
+        ceph-devel@vger.kernel.org, mcgrof@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 16 May 2022 09:12:53 -0400
+In-Reply-To: <20220516122046.40655-2-xiubli@redhat.com>
+References: <20220516122046.40655-1-xiubli@redhat.com>
+         <20220516122046.40655-2-xiubli@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For streaming DMA mappings involving an IOMMU and whose IOVA len regularly
-exceeds the IOVA rcache upper limit (meaning that they are not cached),
-performance can be reduced.
+On Mon, 2022-05-16 at 20:20 +0800, Xiubo Li wrote:
+> Signed-off-by: Xiubo Li <xiubli@redhat.com>
+> ---
+>  fs/dcache.c            | 15 +++++++++++++++
+>  include/linux/dcache.h |  2 ++
+>  2 files changed, 17 insertions(+)
+>=20
+> diff --git a/fs/dcache.c b/fs/dcache.c
+> index 93f4f5ee07bf..95a72f92a94b 100644
+> --- a/fs/dcache.c
+> +++ b/fs/dcache.c
+> @@ -2262,6 +2262,21 @@ static inline bool d_same_name(const struct dentry=
+ *dentry,
+>  				       name) =3D=3D 0;
+>  }
+> =20
+> +/**
+> + * d_compare - compare dentry name with case-exact name
+> + * @parent: parent dentry
+> + * @dentry: the negative dentry that was passed to the parent's lookup f=
+unc
+> + * @name:   the case-exact name to be associated with the returned dentr=
+y
+> + *
+> + * Return: 0 if names are same, or 1
+> + */
+> +bool d_compare(const struct dentry *parent, const struct dentry *dentry,
+> +	       const struct qstr *name)
+> +{
+> +	return !d_same_name(dentry, parent, name);
+> +}
+> +EXPORT_SYMBOL(d_compare);
+> +
+>  /**
+>   * __d_lookup_rcu - search for a dentry (racy, store-free)
+>   * @parent: parent dentry
+> diff --git a/include/linux/dcache.h b/include/linux/dcache.h
+> index f5bba51480b2..444b2230e5c3 100644
+> --- a/include/linux/dcache.h
+> +++ b/include/linux/dcache.h
+> @@ -233,6 +233,8 @@ extern struct dentry * d_alloc_parallel(struct dentry=
+ *, const struct qstr *,
+>  					wait_queue_head_t *);
+>  extern struct dentry * d_splice_alias(struct inode *, struct dentry *);
+>  extern struct dentry * d_add_ci(struct dentry *, struct inode *, struct =
+qstr *);
+> +extern bool d_compare(const struct dentry *parent, const struct dentry *=
+dentry,
+> +		      const struct qstr *name);
+>  extern struct dentry * d_exact_alias(struct dentry *, struct inode *);
+>  extern struct dentry *d_find_any_alias(struct inode *inode);
+>  extern struct dentry * d_obtain_alias(struct inode *);
 
-Add the IOMMU callback for DMA mapping API dma_max_mapping_size(), which
-allows the drivers to know the mapping limit and thus limit the requested 
-IOVA lengths.
+I wonder if we ought to just un-inline and export d_same_name instead?
+Still, this is less disruptive and the dcache code is hugely performance
+sensitive. It's possible that inlining that function makes a difference.
 
-This resolves the performance issue originally reported in [0] for a SCSI
-HBA driver which was regularly mapping SGLs which required IOVAs in
-excess of the IOVA caching limit. In this case the block layer limits the
-max sectors per request - as configured in __scsi_init_queue() - which
-will limit the total SGL length the driver tries to map and in turn limits
-IOVA lengths requested.
-
-[0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
-
-Signed-off-by: John Garry <john.garry@huawei.com>
----
-Sending as an RFC as iommu_dma_max_mapping_size() is a soft limit, and not
-a hard limit which I expect is the semantics of dma_map_ops.max_mapping_size
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 09f6e1c0f9c0..e2d5205cde37 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1442,6 +1442,21 @@ static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
- 	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
- }
- 
-+static size_t iommu_dma_max_mapping_size(struct device *dev)
-+{
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct iommu_dma_cookie *cookie;
-+
-+	if (!domain)
-+		return 0;
-+
-+	cookie = domain->iova_cookie;
-+	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
-+		return 0;
-+
-+	return iova_rcache_range();
-+}
-+
- static const struct dma_map_ops iommu_dma_ops = {
- 	.alloc			= iommu_dma_alloc,
- 	.free			= iommu_dma_free,
-@@ -1462,6 +1477,7 @@ static const struct dma_map_ops iommu_dma_ops = {
- 	.map_resource		= iommu_dma_map_resource,
- 	.unmap_resource		= iommu_dma_unmap_resource,
- 	.get_merge_boundary	= iommu_dma_get_merge_boundary,
-+	.max_mapping_size	= iommu_dma_max_mapping_size,
- };
- 
- /*
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index db77aa675145..9f00b58d546e 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -26,6 +26,11 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
- static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
- static void free_iova_rcaches(struct iova_domain *iovad);
- 
-+unsigned long iova_rcache_range(void)
-+{
-+	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
-+}
-+
- static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
- {
- 	struct iova_domain *iovad;
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 320a70e40233..ae3e18d77e6c 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -79,6 +79,8 @@ static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
- int iova_cache_get(void);
- void iova_cache_put(void);
- 
-+unsigned long iova_rcache_range(void);
-+
- void free_iova(struct iova_domain *iovad, unsigned long pfn);
- void __free_iova(struct iova_domain *iovad, struct iova *iova);
- struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
-@@ -105,6 +107,11 @@ static inline void iova_cache_put(void)
- {
- }
- 
-+static inline unsigned long iova_rcache_range(void)
-+{
-+	return 0;
-+}
-+
- static inline void free_iova(struct iova_domain *iovad, unsigned long pfn)
- {
- }
--- 
-2.26.2
-
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
