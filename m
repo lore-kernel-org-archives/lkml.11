@@ -2,160 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8877FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 23:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F55C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 23:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350211AbiEPXIC (ORCPT
+        id S1350229AbiEPXJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 19:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
+        Mon, 16 May 2022 19:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350289AbiEPXGF (ORCPT
+        with ESMTP id S1348622AbiEPXJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 19:06:05 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2053.outbound.protection.outlook.com [40.107.100.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F84FBF44;
-        Mon, 16 May 2022 16:05:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zvbn/dG8wc+k5JFCFuZr2ZEkvtbG7uMqaFmoTND0AS+l+0DZlrEVMEyWSCN2R18KHetTIj42HMdcl+Emy3AqlfiyVAykHunoo/x7ZU3b/lbGGyhT44VM9i1lLZN8rhqCfjZIy89Ee6UZhdonIbzLtX/fGgcWfNd9eACMsGUpFak7Yka5T1uBE9+1DTsS9gMNxC9ltG+abGRUsy912+6tTcS3F90GdpmfceJGTmPiqHnd1UOOldfh5dhK6hsWgCHYu8QKTiYKA0NfRm+4hSTX6xjijOo85wsTMctGg+T1ksorF4nBGJflB/LGa2mKQylWAew6rkoyxoaA5VSNdGlGAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/9Ucc5Gnc2GvalXuZmNfvwWD/77t0y9K9wEhd0P3YSk=;
- b=R66Bbp5k9upinb7pkU2DjVzGx8eIbPrUNKfZ86rOvYs8MRKVFEB5lPa2lzyWUdMasg/ppmUZjwF95G7vB1zjW4MfvGCG8MHDv8Ojz8oteRD6xfLPdyHOmny49/H6PEUp5nsPQVgFdFt1FqXCPuUx/TbbGIf0d9RrwzGQVT64xzBD7Wny1nZO/I4omkAK1/R8qRsr9flblGNN1K4302bhcy8p2tJlba/IITBBNJWvKFgbEw5oB/oLZ21CynNnFdR6vKQ4N8ng6Z0PgvDGG98zo4IVUu7cwnsS0O8FqVK0qTLcLO1AOW9zsbhjM5qzkwnGUcqpOGzXAY8LgRaTTkp2eg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/9Ucc5Gnc2GvalXuZmNfvwWD/77t0y9K9wEhd0P3YSk=;
- b=Ruo+aDXrgjSxmIDDEFGgrhLcosZsXjuJRz93gg/ArJVdYGLTvPJhmSJyO+u0iS/1kmYGNxpni4lBtXynVKsOJdXStYoOesVe1dNs02M2tEolnlPYjOXX02Jx0e9i6am8/O0Kj1Z6YVwCnyB1nI9mjOUacc7huSl7nbPwh9e9GqaHYUQyb+Bvo/DUd66doV6XiPrdhJ4v8emvmsN2j1XQKbZU13QueIdKPB0jz6owIJZVncSGA0lZcthB5lNROepf9eb6L3sqkzxqXO+sBVUqla39aOjAw+eV90RKDJEhfzlV62BkF+Aap7pcrgN79WJvBfFipesew58Dbsy4tfzX+A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by PH7PR12MB5782.namprd12.prod.outlook.com (2603:10b6:510:1d1::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Mon, 16 May
- 2022 23:05:53 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2%5]) with mapi id 15.20.5250.018; Mon, 16 May 2022
- 23:05:53 +0000
-Date:   Mon, 16 May 2022 20:05:52 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Matthew Rosato <mjrosato@linux.ibm.com>
-Cc:     alex.williamson@redhat.com, linux-s390@vger.kernel.org,
-        cohuck@redhat.com, schnelle@linux.ibm.com, farman@linux.ibm.com,
-        pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, frankja@linux.ibm.com,
-        david@redhat.com, imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 17/22] vfio-pci/zdev: add open/close device hooks
-Message-ID: <20220516230552.GO1343366@nvidia.com>
-References: <20220513191509.272897-1-mjrosato@linux.ibm.com>
- <20220513191509.272897-18-mjrosato@linux.ibm.com>
- <20220516172734.GE1343366@nvidia.com>
- <7a31ec36-ceaf-dcef-8bd0-2b4732050aed@linux.ibm.com>
- <20220516183558.GN1343366@nvidia.com>
- <305208c4-db8a-5751-2ffc-753751a70815@linux.ibm.com>
+        Mon, 16 May 2022 19:09:00 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E831B4476E;
+        Mon, 16 May 2022 16:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652742538; x=1684278538;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t9s//g5eW49okIknpm3TXfprezkECY9aRbZEJNV1PS0=;
+  b=R3PQx5WyT6BXa947mXAS2riDVmAPRt2eWW0A741kBt6cb5j75dEiyyFN
+   tHc+jgDg4/+sQUCawNDvxEXWI01hkx8obXWqhyB88VXudMKjt4qb4K5YH
+   f3Ele9dihh8zNCmbj+p+tt3aV3ryjRidwz0qJdt47cqLjMvJbzYw+En8r
+   82cnfvOZGFyf1/xCXRId80M8tVg9BKS4hUgCDMWLiw15bgos+sLfIleim
+   npjBzNBKa6UoMpTOQPDFVHkh/oD/8iqAdu1DvATC7wddqAFOPITaWrQ8w
+   OKS/A4G9BW2/oRRkWyYQwrGHz+3GbN88109peWA8F1p8uDNu23KDnmkdY
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="357401490"
+X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
+   d="scan'208";a="357401490"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 16:08:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
+   d="scan'208";a="816621816"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 16 May 2022 16:08:53 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nqjpc-0000PB-Ni;
+        Mon, 16 May 2022 23:08:52 +0000
+Date:   Tue, 17 May 2022 07:08:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Medad CChien <medadyoung@gmail.com>, benjaminfair@google.com,
+        yuenn@google.com, venture@google.com, tali.perry1@gmail.com,
+        tmaimon77@gmail.com, avifishman70@gmail.com, robh+dt@kernel.org,
+        alexandre.belloni@bootlin.com, a.zummo@towertech.it,
+        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
+        KFTING@nuvoton.com, ctcchien@nuvoton.com
+Cc:     kbuild-all@lists.01.org, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-rtc@vger.kernel.org
+Subject: Re: [PATCH v1 3/3] RTC: nuvoton: Add NCT3018Y real time clock driver
+Message-ID: <202205170654.jQqRSbra-lkp@intel.com>
+References: <20220516152751.27716-3-ctcchien@nuvoton.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <305208c4-db8a-5751-2ffc-753751a70815@linux.ibm.com>
-X-ClientProxiedBy: BL1PR13CA0228.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::23) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5a5f7bff-8da2-4358-c8c2-08da3790a0ab
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5782:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB5782BF14B2A70922CB73C32EC2CF9@PH7PR12MB5782.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: I5wLcwHWXfVSMYuuYQ1uUY1EgwD5CqMaibUvf1tXtRhv8OScfsk9ITjGVf+gXakXDWhSe/rIkT2V6Y9Locxds/6IKsHpBw3UA9BRVT+QEhAN+i0svo5B2jKnZwjVnDAUxmzvmvUH2t8b3YoM3Kz397fE3Mdp8J+ijGwZ9lkbxU7WAfgGhDwGlyGpqhTDDfT08W4llIL8c3ypW6Jv5/bUEDO9DSU0KNTeWTMTivErscWmsKYHJ+ZhmpTcLCcMHbr/Xq74N/mixa3oM4zFnpZaSt3eloXM1PziFiAfMzWIsKlRQLKypXQWFXH739fBZ1gZKcRhXUYO2l+MyyE+wIFn8rmYplaZNwKpWmM6/cro2J7gzpinH17k09OUSsrsbCC5rlDJYMl9h7xAKuckXswyPq9f/5rTMJ0J+ZHtRMyjhOuYCF2730BNiYF90TbrYNEhebwJ/dWvZkFiU7GLS/d2kSZJT+nMPMdLY0QaQZFB1ypY5IfwSArzeoGKaP4Wo4FvuHPD73a1BpbJYaJnc+REu1pySJSOEMn0PuAIL3NVrX8Oa5WDkQX3rHFgBElHwWdrW6WI5ItVaC11PhGGm5LiKzQgKxR8H5wl1f/w/qjFWTaBQUCtArm8nxYQawGYRdxUb4OhambJIhjKnoZ66ePv9vAXkZvQ42BlJxdmlBQaTrW+KsoeVgodsIn70xKka50tWfh32f/fqdP6VwrE75oUqMwzmV/gcB2BOZ1DTmJNXIk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(38100700002)(186003)(2616005)(1076003)(6512007)(966005)(53546011)(66476007)(26005)(5660300002)(33656002)(4326008)(36756003)(7416002)(8936002)(2906002)(6916009)(86362001)(6506007)(8676002)(66946007)(66556008)(316002)(6486002)(508600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Mjn9ITNW/AHZMfRQkogHi7By/C6NGHNzKFv5HFQVm4VzPp0TkKMUfoGYu0kR?=
- =?us-ascii?Q?xZaDKfvq3aVZ7kvdKrangap9a1v/iK9nbO3Lv6W+e3mGBbrC90wK8PlYeLIm?=
- =?us-ascii?Q?YQzret62omCu2n61N+3gk+H8ve2BEK9BJzxdJO/adh+eKHfgygnv1tFqgxOy?=
- =?us-ascii?Q?ddRM2+I5n2DM8DAPyFdfinYrEuEObglmgDaYSV908qtF5w8lNHkmU7qmyVkl?=
- =?us-ascii?Q?N9MJvUGrcRHlVcb21P5XcsnTQ7y6Ds4oYIAsNiI8jDKSvOdGUduMhPgOUd+Y?=
- =?us-ascii?Q?xfJgJTk/yrSSg321VAx80QCcpzlsTob7jKcb2hgoVqWSHPXLyztvlpL4uN/3?=
- =?us-ascii?Q?8s76a7EtvHY7hzmPqoaVDJ8n2+TdatmwXD+3pSckY0ePgmYpxw7JN4++oia/?=
- =?us-ascii?Q?VbEDqhvxJGf1VM2HLeKFVDgl/yszjIq9Iy5jVvtzAU9+B/r/TgPA5oGXOo2A?=
- =?us-ascii?Q?HdgdVeYhUhPtn3Gd5EAwLTLXsPgarTPtzWB5qpAibWXn5X/qaXXdPJV720lO?=
- =?us-ascii?Q?MhtAdcbT2e0KdU/D8bn/DfnCPgTSBypdWcXjurjfUPV31v5I4rFEe5/6P3Cd?=
- =?us-ascii?Q?+F10bYjjHX8Q+m4NySPWCe4VXji4QE2CYaLcn6mhXjp4zgOrQ8PDFZiyGtqy?=
- =?us-ascii?Q?4oNekKVBYobHbAKohh7KTuvwa9Fro7UGzP5K+G7AziBEDs1zABBORU/w9/Js?=
- =?us-ascii?Q?oh/wzJiYrhXkznd0dmrh0avyPjMIXFMLlefVzm2zIBbFHTzMcpd1s6m0KdSQ?=
- =?us-ascii?Q?3Ffo3GhD9dPTwG9//pbA8jq/+xBgXVi15vi+b6Q1qgq+HXlkOWEOqiwynlR8?=
- =?us-ascii?Q?Eld8ryHKwo6dxzHuOauAO2CP0oN+mn6O77KBDCEjWrM9s8TCcQ5vV5krq5V+?=
- =?us-ascii?Q?DYBborA/laQoXqGPAVOLso9AMraGxe80Ro3bVn/U2BSCx9h/aXQyJmtLxRwL?=
- =?us-ascii?Q?a+YW4o/gpWR8hKUyHjUxc0kt6x75eLcyj5y2CKhaotVigMp9fhwp6f3HXUE6?=
- =?us-ascii?Q?q5VwsGJ1ZtIrUN1tzgkt2RY7x8o/FP6FRWGwC+BrfDiQzqQW59gm6Nf0csx+?=
- =?us-ascii?Q?NtP/3JzEETZbauVPrt7jHK0bVm6+/7UTLKeIGfpzsQWeW+reywKwHR3ufHlW?=
- =?us-ascii?Q?X4wz8Ef6RwHa4jV7HS4rDx6cYf+a8Na0nj5z72IxaiSnFHRqEQ1LWyBsaqJk?=
- =?us-ascii?Q?crrJxe2dkeCBhKTxj/wIQcgoDYrPZCiEExVKehm0gZaoPoDP61v3eJKNkWdy?=
- =?us-ascii?Q?RkY4I7as2PR6cPYkQZsKUCc1YqpHqy+JcekswjKyoK7Rg4cd+So/+WFUilwP?=
- =?us-ascii?Q?7dsM5424625k7WsxSA9EEBJ2JWGEkqBZZ4jcJ114XNOkVygAyIOJlm7CDrEL?=
- =?us-ascii?Q?ygTjtGYhmYYpumu08r0SEob6MFsZ7nUkuXHgvEwo9mUnoDCcMvlpmddyaDq+?=
- =?us-ascii?Q?6Qy+JR7ci7PQFmczGHuElc/HO/lkgfq2ZIu48XFf6DEc6CNRbIppspJi/gd4?=
- =?us-ascii?Q?Ifg4YIlBsLe5XY/FDanD/UxhIcMhemjJKvWXKVDABb3CwJTykZIa29/kQBFw?=
- =?us-ascii?Q?eUzY+5MSymwPzTP4AmkJxPacWjI5PFe+c6TM2UHwPdiItbxK39gm6hpSOVmu?=
- =?us-ascii?Q?d5BaYzeAhvhJx7GtjjznX209KoQSYkgp/loSNCkgkBd5U0rhScgjhuD+Ud/N?=
- =?us-ascii?Q?YKvNxqOWcOujgo4bHmEg30a23MJf9LAHuJ3iJ0yHElP1LQNYgmRwGTo8oQAX?=
- =?us-ascii?Q?WobbV0FOwQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a5f7bff-8da2-4358-c8c2-08da3790a0ab
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 23:05:53.7870
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eEkH9STYkZ0yzxAVvDjL/wLzoZYa36OXmVaPeMPB4K1/ZMDSxQi0vJD8rhce12GR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5782
+In-Reply-To: <20220516152751.27716-3-ctcchien@nuvoton.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 05:59:01PM -0400, Matthew Rosato wrote:
-> On 5/16/22 2:35 PM, Jason Gunthorpe wrote:
-> > On Mon, May 16, 2022 at 02:30:46PM -0400, Matthew Rosato wrote:
-> > 
-> > > Conceptually I think this would work for QEMU anyway (it always sets the kvm
-> > > before we open the device).  I tried to test the idea quickly but couldn't
-> > > get the following to apply on vfio-next or your vfio_group_locking -- but I
-> > > understand what you're trying to do so I'll re-work and try it out.
-> > 
-> > I created it on 8c9350e9bf43de1ebab3cc8a80703671e6495ab4 which is the
-> > vfio_group_locking.. I can send you a github if it helps
-> > https://github.com/jgunthorpe/linux/commits/vfio_group_lockin
-> > 
-> Thanks -- I was able to successfully test your proposed idea (+ some changes
-> to make it compile :)) on top of vfio_group_locking along with a modified
-> version of my zdev series.  I also tried it out with vfio-ap successfully,
-> but have nothing to test GVT with.
-> 
-> That said, this has caused me to realize that 'iommu:
-> iommu_group_claim_dma_owner() must always assign a domain' breaks s390x
-> vfio-pci :( I wonder if it is due to the way s390x PCI currently switches
-> between dma ops and iommu ops.  It looks like it breaks vfio-ap mdevs too,
-> but I know less about that --  I will have to investigate both more
-> tomorrow.
+Hi Medad,
 
-At the very least it appears that s390 thinks that attach/detach_dev
-are strictly paired and that isn't how the iommu ops are defined.
+Thank you for the patch! Perhaps something to improve:
 
-attach_dev can be called multiple times without any detach_dev.
+[auto build test WARNING on abelloni/rtc-next]
+[also build test WARNING on robh/for-next v5.18-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Possibly the unbalance of zpci_register_ioat / zpci_unregister_ioat
-causes the trouble?
+url:    https://github.com/intel-lab-lkp/linux/commits/Medad-CChien/ARM-dts-nuvoton-Add-nuvoton-RTC3018Y-node/20220516-232940
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git rtc-next
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220517/202205170654.jQqRSbra-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/5c51862ee8030cfd9f2e955c10ee580f168663e3
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Medad-CChien/ARM-dts-nuvoton-Add-nuvoton-RTC3018Y-node/20220516-232940
+        git checkout 5c51862ee8030cfd9f2e955c10ee580f168663e3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/rtc/
 
-Jason
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_rtc_read_time':
+>> drivers/rtc/rtc-nct3018y.c:192:26: warning: unused variable 'nct3018y' [-Wunused-variable]
+     192 |         struct nct3018y *nct3018y = i2c_get_clientdata(client);
+         |                          ^~~~~~~~
+   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_rtc_set_time':
+   drivers/rtc/rtc-nct3018y.c:227:26: warning: unused variable 'nct3018y' [-Wunused-variable]
+     227 |         struct nct3018y *nct3018y = i2c_get_clientdata(client);
+         |                          ^~~~~~~~
+   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_rtc_set_alarm':
+   drivers/rtc/rtc-nct3018y.c:292:26: warning: unused variable 'nct3018y' [-Wunused-variable]
+     292 |         struct nct3018y *nct3018y = i2c_get_clientdata(client);
+         |                          ^~~~~~~~
+   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_irq_enable':
+   drivers/rtc/rtc-nct3018y.c:322:26: warning: unused variable 'nct3018y' [-Wunused-variable]
+     322 |         struct nct3018y *nct3018y = i2c_get_clientdata(client);
+         |                          ^~~~~~~~
+   In file included from include/linux/printk.h:555,
+                    from include/linux/kernel.h:29,
+                    from arch/x86/include/asm/percpu.h:27,
+                    from arch/x86/include/asm/current.h:6,
+                    from include/linux/mutex.h:14,
+                    from include/linux/kernfs.h:11,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:20,
+                    from include/linux/of.h:17,
+                    from include/linux/clk-provider.h:9,
+                    from drivers/rtc/rtc-nct3018y.c:5:
+   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_probe':
+   drivers/rtc/rtc-nct3018y.c:513:39: warning: format '%d' expects argument of type 'int', but argument 5 has type 'long unsigned int' [-Wformat=]
+     513 |                 dev_dbg(&client->dev, "%s: NCT3018Y_BIT_TWO is :%d\n",
+         |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynamic_func_call'
+     134 |                 func(&id, ##__VA_ARGS__);               \
+         |                             ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:166:9: note: in expansion of macro '_dynamic_func_call'
+     166 |         _dynamic_func_call(fmt,__dynamic_dev_dbg,               \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:155:9: note: in expansion of macro 'dynamic_dev_dbg'
+     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:155:30: note: in expansion of macro 'dev_fmt'
+     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                              ^~~~~~~
+   drivers/rtc/rtc-nct3018y.c:513:17: note: in expansion of macro 'dev_dbg'
+     513 |                 dev_dbg(&client->dev, "%s: NCT3018Y_BIT_TWO is :%d\n",
+         |                 ^~~~~~~
+   drivers/rtc/rtc-nct3018y.c:513:66: note: format string is defined here
+     513 |                 dev_dbg(&client->dev, "%s: NCT3018Y_BIT_TWO is :%d\n",
+         |                                                                 ~^
+         |                                                                  |
+         |                                                                  int
+         |                                                                 %ld
+   drivers/rtc/rtc-nct3018y.c:535:22: error: 'struct rtc_device' has no member named 'uie_unsupported'
+     535 |         nct3018y->rtc->uie_unsupported = 1;
+         |                      ^~
+   drivers/rtc/rtc-nct3018y.c:561:15: error: implicit declaration of function 'rtc_register_device'; did you mean 'i2c_unregister_device'? [-Werror=implicit-function-declaration]
+     561 |         err = rtc_register_device(nct3018y->rtc);
+         |               ^~~~~~~~~~~~~~~~~~~
+         |               i2c_unregister_device
+   cc1: some warnings being treated as errors
+
+
+vim +/nct3018y +192 drivers/rtc/rtc-nct3018y.c
+
+   184	
+   185	/*
+   186	 * In the routines that deal directly with the nct3018y hardware, we use
+   187	 * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
+   188	 */
+   189	static int nct3018y_rtc_read_time(struct device *dev, struct rtc_time *tm)
+   190	{
+   191		struct i2c_client *client = to_i2c_client(dev);
+ > 192		struct nct3018y *nct3018y = i2c_get_clientdata(client);
+   193		unsigned char buf[10];
+   194		int err;
+   195	
+   196		err = nct3018y_read_block_data(client, NCT3018Y_REG_ST, 1, buf);
+   197		if (err)
+   198			return err;
+   199	
+   200		if (!buf[0]) {
+   201			dev_err(&client->dev, " voltage <=1.7, date/time is not reliable.\n");
+   202			return -EINVAL;
+   203		}
+   204	
+   205		err = nct3018y_read_block_data(client, NCT3018Y_REG_SC, 10, buf);
+   206		if (err)
+   207			return err;
+   208	
+   209		tm->tm_sec = bcd2bin(buf[0] & 0x7F);
+   210		tm->tm_min = bcd2bin(buf[2] & 0x7F);
+   211		tm->tm_hour = bcd2bin(buf[4] & 0x3F); /* rtc hr 0-24 */
+   212		tm->tm_wday = buf[6] & 0x07;
+   213		tm->tm_mday = bcd2bin(buf[7] & 0x3F);
+   214		tm->tm_mon = bcd2bin(buf[8] & 0x1F) - 1 ; /* rtc mn 1-12 */
+   215		tm->tm_year = bcd2bin(buf[9]) + 100;
+   216	
+   217		dev_dbg(&client->dev, "%s:s=%d, m=%d, hr=%d, md=%d, m=%d, yr=%d, wd=%d\n",
+   218			__func__, tm->tm_sec, tm->tm_min, tm->tm_hour, tm->tm_mday, tm->tm_mon,
+   219			tm->tm_year, tm->tm_wday);
+   220	
+   221		return 0;
+   222	}
+   223	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
