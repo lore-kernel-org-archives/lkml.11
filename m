@@ -2,108 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D588C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1142C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 13:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234702AbiEPN52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 09:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51228 "EHLO
+        id S244112AbiEPN5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 09:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243931AbiEPNy7 (ORCPT
+        with ESMTP id S243592AbiEPNyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 09:54:59 -0400
+        Mon, 16 May 2022 09:54:55 -0400
 Received: from mail.bitwise.fi (mail.bitwise.fi [109.204.228.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D53D39170;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A166939164;
         Mon, 16 May 2022 06:54:40 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by mail.bitwise.fi (Postfix) with ESMTP id BB5CA46002B;
-        Mon, 16 May 2022 16:49:01 +0300 (EEST)
+        by mail.bitwise.fi (Postfix) with ESMTP id 4FC8E460034;
+        Mon, 16 May 2022 16:48:59 +0300 (EEST)
 X-Virus-Scanned: Debian amavisd-new at 
 Received: from mail.bitwise.fi ([127.0.0.1])
         by localhost (mustetatti.dmz.bitwise.fi [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RXJB4ho_p1Zw; Mon, 16 May 2022 16:48:59 +0300 (EEST)
+        with ESMTP id snCWiBDrwSnN; Mon, 16 May 2022 16:48:56 +0300 (EEST)
 Received: from localhost.net (fw1.dmz.bitwise.fi [192.168.69.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: anssiha)
-        by mail.bitwise.fi (Postfix) with ESMTPSA id 2D4A746002C;
-        Mon, 16 May 2022 16:48:57 +0300 (EEST)
+        by mail.bitwise.fi (Postfix) with ESMTPSA id DD208460008;
+        Mon, 16 May 2022 16:48:56 +0300 (EEST)
 From:   Anssi Hannula <anssi.hannula@bitwise.fi>
 To:     Jimmy Assarsson <extja@kvaser.com>
 Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 05/12] can: kvaser_usb_leaf: Set Warning state even without bus errors
-Date:   Mon, 16 May 2022 16:47:41 +0300
-Message-Id: <20220516134748.3724796-6-anssi.hannula@bitwise.fi>
+Subject: [PATCH 00/12] can: kvaser_usb: Various fixes
+Date:   Mon, 16 May 2022 16:47:36 +0300
+Message-Id: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
-References: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kvaser_usb_leaf_rx_error_update_can_state() sets error state according
-to error counters when the hardware does not indicate a specific state
-directly.
 
-However, this is currently gated behind a check for
-M16C_STATE_BUS_ERROR which does not always seem to be set when error
-counters are increasing, and may not be set when error counters are
-decreasing.
+Hi all,
 
-This causes the CAN_STATE_ERROR_WARNING state to not be set in some
-cases even when appropriate.
+Here's a set of fixes for issues I found while testing kvaser_usb as we
+are preparing to start using it in production (with 0bfd:0124).
 
-Change the code to set error state from counters even without
-M16C_STATE_BUS_ERROR.
+The biggest caveat is that I only have two devices to test with [1] and I
+don't have HW documentation, so there is a possibility that some of the
+fixes might not work properly on all HW variants.
+Hopefully Jimmy can confirm they look OK, or suggest alternatives.
 
-The Error-Passive case seems superfluous as it is already set via
-M16C_STATE_BUS_PASSIVE flag above, but it is kept for now.
+[1] Tested devices:
+- 0bfd:0017 Kvaser Memorator Professional HS/HS FW 2.0.50
+- 0bfd:0124 Kvaser Mini PCI Express 2xHS FW 4.18.778
 
-Tested with 0bfd:0124 Kvaser Mini PCI Express 2xHS FW 4.18.778.
-
-Fixes: 080f40a6fa28 ("can: kvaser_usb: Add support for Kvaser CAN/USB devices")
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
----
- .../net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 20 ++++++++-----------
- 1 file changed, 8 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-index 09ade66256b2..d7f2d64a8083 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -775,20 +775,16 @@ kvaser_usb_leaf_rx_error_update_can_state(struct kvaser_usb_net_priv *priv,
- 		new_state = CAN_STATE_BUS_OFF;
- 	} else if (es->status & M16C_STATE_BUS_PASSIVE) {
- 		new_state = CAN_STATE_ERROR_PASSIVE;
--	} else if (es->status & M16C_STATE_BUS_ERROR) {
-+	} else if ((es->status & M16C_STATE_BUS_ERROR) &&
-+		   cur_state >= CAN_STATE_BUS_OFF) {
- 		/* Guard against spurious error events after a busoff */
--		if (cur_state < CAN_STATE_BUS_OFF) {
--			if (es->txerr >= 128 || es->rxerr >= 128)
--				new_state = CAN_STATE_ERROR_PASSIVE;
--			else if (es->txerr >= 96 || es->rxerr >= 96)
--				new_state = CAN_STATE_ERROR_WARNING;
--			else if (cur_state > CAN_STATE_ERROR_ACTIVE)
--				new_state = CAN_STATE_ERROR_ACTIVE;
--		}
--	}
--
--	if (!es->status)
-+	} else if (es->txerr >= 128 || es->rxerr >= 128) {
-+		new_state = CAN_STATE_ERROR_PASSIVE;
-+	} else if (es->txerr >= 96 || es->rxerr >= 96) {
-+		new_state = CAN_STATE_ERROR_WARNING;
-+	} else {
- 		new_state = CAN_STATE_ERROR_ACTIVE;
-+	}
- 
- 	if (new_state != cur_state) {
- 		tx_state = (es->txerr >= es->rxerr) ? new_state : 0;
 -- 
-2.34.1
+Anssi Hannula / Bitwise Oy
++358503803997
+
+
 
