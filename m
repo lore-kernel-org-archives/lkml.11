@@ -2,125 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D5BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC62C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233149AbiEPUjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
+        id S237559AbiEPUjZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:39:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348697AbiEPUXE (ORCPT
+        with ESMTP id S1347238AbiEPUXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:23:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685BC4A3FC;
-        Mon, 16 May 2022 13:09:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3368B8160D;
-        Mon, 16 May 2022 20:09:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2867BC385AA;
-        Mon, 16 May 2022 20:09:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652731770;
-        bh=rwcIwbCFI9xFVXLkfNAUFzT4VPxeJBT8+qB230SdKEM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=ftezJRbo0/tVNeSMt26nRCFDfOr225FNJlvyfi62lETLGfr27HJiM4UihlothMNG9
-         J72kkE9AtK6vjv0H5wvW+tUmzM/x9GVkmz81geXmMxQaV7txEzmslbv2TSOrcBCyuM
-         AvXqTdJfXxRRubydx0AkTHYhDQmmgN0J4vPqYMXyMrJFevl1M2gtRWpXXnl94epDEd
-         uLUuEjvfHJxT//N32djBasDQy5EwADpJSzNmmrPlW7tcwJngHMyC5B0saAFxpjYXli
-         7ZDaBGdLUuiYIkqXD6mHZx5c2BUgZngemO5RCLzrZneYFCzP7m9Brg2Lvh1sqNan2Z
-         Yk9aZIAkJd/kg==
-Date:   Mon, 16 May 2022 15:09:27 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Jingar, Rajvi" <rajvi.jingar@intel.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        David Box <david.e.box@linux.intel.com>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH v5 2/2] PCI/PM: Fix pci_pm_suspend_noirq() to disable PTM
-Message-ID: <20220516200927.GA1046452@bhelgaas>
+        Mon, 16 May 2022 16:23:34 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907BA4B404
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:09:57 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id n10so15480070pjh.5
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:09:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wzx7NT/bkCjJnHFo5lwIctB7nDe602qxHRo5R1R5KC0=;
+        b=AMws03KWgp7hhyS5yH0ZZgkyrQGUxWWjom10rEHGW9HVJe/B39vQdFbOzZDngRLz85
+         11ztlJ90TsfQUyhk0y91m3LCis4j0lmBDTWy8wpzsiElk1XXuk6fnX788cAE6k8QrYwL
+         yT0zTxFfM5QPl22vfnBxoEpoR2ZT9FwAzIynCVhKMued/cmd7czQiTSWJbnLSO8jhzlw
+         6WSvtvN6wUH++ILH1ZQIUrxoVSwjrESLNF6kRwOXQ/lcD3Fp66CwtWMylB5F7do4Wmqj
+         S4qD+3iee59hXjru6GsfvY4Z89JrB+dkWA6OcH6fkzib1ntLAajlQQMdEXjuzmzzOscb
+         p/bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wzx7NT/bkCjJnHFo5lwIctB7nDe602qxHRo5R1R5KC0=;
+        b=8QRWnShN4M1dklF/u/SINslEeYHbo5EUBh6aIKcnIihgMgvWztvSIGZt52dUoBzVTa
+         0Werggna2d/xkbBu/jLown0FWGJNpj8+qhNQrJa0SSkEPffYfAh8nHtRQG2IMXzuMYUE
+         HoJBcGDFrFNTrmcRU2S0KmlCF27P5PqidoXGCYjUYStLnTVUUpJkVxTVBRzhOqrn6ecq
+         2bwWk3nEVesCq3U43Qxuw/dUoec7eJ/VxNUQvGHDpV45Y/ebgO4nSpyHgoC/2/DDUc9l
+         7trrDf7hm/p3ol90NRK5r2eI7rSsQBH2p+wqyYfQcFTsdg21/t3h/oU/uItpZ/jWepUu
+         47zA==
+X-Gm-Message-State: AOAM533R6TFIYrrjVgCGeBcZYCncYBDgM+WT8pMq0njW02QSpVo+7zMY
+        o18gKk+dsFXI+VbRKkCjV+SPpQ==
+X-Google-Smtp-Source: ABdhPJz0Ftz1ke7eSHpyZ28XpMixfb3ZztfsWTYIdzRosBnT6uhFx3Dm1ZEtu6S5LaqcUQfV0PLhHA==
+X-Received: by 2002:a17:903:1c9:b0:161:89e8:229 with SMTP id e9-20020a17090301c900b0016189e80229mr4616450plh.106.1652731796204;
+        Mon, 16 May 2022 13:09:56 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id p14-20020a170902780e00b00161a16f0050sm229094pll.222.2022.05.16.13.09.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 13:09:55 -0700 (PDT)
+Date:   Mon, 16 May 2022 20:09:52 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 15/34] KVM: x86: hyper-v: Introduce
+ kvm_hv_is_tlb_flush_hcall()
+Message-ID: <YoKvkEfvyGJWNmAj@google.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+ <20220414132013.1588929-16-vkuznets@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SJ0PR11MB5070B095B8A28634B43A231F9ECA9@SJ0PR11MB5070.namprd11.prod.outlook.com>
+In-Reply-To: <20220414132013.1588929-16-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 10:00:48PM +0000, Jingar, Rajvi wrote:
+On Thu, Apr 14, 2022, Vitaly Kuznetsov wrote:
+> The newly introduced helper checks whether vCPU is performing a
+> Hyper-V TLB flush hypercall. This is required to filter out L2 TLB
+> flush hypercalls for processing.
 > 
-> > -----Original Message-----
-> > From: Bjorn Helgaas <helgaas@kernel.org>
-> > Sent: Thursday, May 12, 2022 11:36 AM
-> > To: Rafael J. Wysocki <rafael@kernel.org>
-> > Cc: Jingar, Rajvi <rajvi.jingar@intel.com>; Wysocki, Rafael J
-> > <rafael.j.wysocki@intel.com>; Bjorn Helgaas <bhelgaas@google.com>; David Box
-> > <david.e.box@linux.intel.com>; Linux PCI <linux-pci@vger.kernel.org>; Linux
-> > Kernel Mailing List <linux-kernel@vger.kernel.org>; Linux PM <linux-
-> > pm@vger.kernel.org>
-> > Subject: Re: [PATCH v5 2/2] PCI/PM: Fix pci_pm_suspend_noirq() to disable PTM
-> > 
-> > On Thu, May 12, 2022 at 07:52:36PM +0200, Rafael J. Wysocki wrote:
-> > > On Thu, May 12, 2022 at 7:42 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > On Thu, May 12, 2022 at 03:49:18PM +0200, Rafael J. Wysocki wrote:
-> > 
-> > > > > Something like this should suffice IMV:
-> > > > >
-> > > > > if (!dev_state_saved || pci_dev->current_state != PCI_D3cold)
-> > > > >
-> > > > >         pci_disable_ptm(pci_dev);
-> > > >
-> > > > It makes sense to me that we needn't disable PTM if the device is in
-> > > > D3cold.  But the "!dev_state_saved" condition depends on what the
-> > > > driver did.  Why is that important?  Why should we not do the
-> > > > following?
-> > > >
-> > > >   if (pci_dev->current_state != PCI_D3cold)
-> > > >     pci_disable_ptm(pci_dev);
-> > >
-> > > We can do this too.  I thought we could skip the power state
-> > > check if dev_state_saved was unset, because then we would know
-> > > that the power state was not D3cold.  It probably isn't worth
-> > > the hassle though.
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  arch/x86/kvm/hyperv.h | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
 > 
-> We see issue with certain platforms where only checking if device
-> power state in D3Cold is not enough and the !dev_state_saved check
-> is needed when disabling PTM. Device like nvme is relying on ASPM,
-> it stays in D0 but state is saved. Touching the config space wakes
-> up the device which prevents the system from entering into low power
-> state.
+> diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+> index d59f96700104..ca67c18cef2c 100644
+> --- a/arch/x86/kvm/hyperv.h
+> +++ b/arch/x86/kvm/hyperv.h
+> @@ -170,6 +170,24 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
+>  	tlb_flush_ring = kvm_hv_get_tlb_flush_ring(vcpu);
+>  	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
+>  }
+> +
+> +static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
+> +{
+> +	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+> +	u16 code;
+> +
+> +	if (!hv_vcpu)
+> +		return false;
+> +
+> +	code = is_64_bit_hypercall(vcpu) ? kvm_rcx_read(vcpu) :
+> +		kvm_rax_read(vcpu);
 
-Correct me if I'm wrong: for NVMe devices, nvme_suspend() has already
-saved state and put the device in some low-power state.  Disabling PTM
-here is functionally OK but prevents a system low power state, so you
-want to leave PTM enabled.
+Nit, can you align the two expressions?
 
-But I must be missing something because pci_prepare_to_sleep()
-currently disables PTM for Root Ports.  If we leave PTM enabled on
-NVMe but disable it on the Root Port above it, any PTM Request from
-NVMe will cause an Unsupported Request error.
+	code = is_64_bit_hypercall(vcpu) ? kvm_rcx_read(vcpu) :
+					   kvm_rax_read(vcpu);
 
-Disabling PTM must be coordinated across PTM Requesters and PTM
-Responders.  That means the decision to disable cannot depend on
-driver-specific things like whether the driver has saved state.
-
-> Following would fix the issue:
+> +
+> +	return (code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE ||
+> +		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST ||
+> +		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX ||
+> +		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX);
+> +}
+> +
+>  void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu);
+>  
+>  
+> -- 
+> 2.35.1
 > 
->  if (!pci_dev->state_save) {
->                 pci_save_state(pci_dev);
-> 
->                pci_disable_ptm(pci_dev);
-> 
->                 if (!pci_dev->skip_bus_pm && pci_power_manageable(pci_dev))
->                         pci_prepare_to_sleep(pci_dev);
-> }
-> 
-> > Ah, thanks.  IMHO it's easier to analyze for correctness if we only
-> > check the power state.
-> > 
-> > Bjorn
