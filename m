@@ -2,93 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D63C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E12C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347227AbiEPUpV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
+        id S239892AbiEPUrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 16:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348190AbiEPUo0 (ORCPT
+        with ESMTP id S244565AbiEPUpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:44:26 -0400
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34854A923;
-        Mon, 16 May 2022 13:21:24 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-e656032735so21755021fac.0;
-        Mon, 16 May 2022 13:21:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7BWSrE/CAz6evwVBMIyCTX6tuP5t5HfKZ2CcvdrLUcg=;
-        b=5mb/+I2Z3EDr1DoQus+g7rKSyKQH5yXxif9eZdVusTb6YcdmPmg/EivuYRdR7VIVwM
-         wqCmTvyO90BrmdRm73TCqTg0Kwn8F3oSKVQXO2ARgQWOLJ5DPuw4YrT4qxo3Oxnq4rtH
-         MVthOVdYmZCSw012cQy9EUDgnCnzUQxdc9ySQ1OnSmEStrxaawdBsojiNhYJeIMON25B
-         HeH0zptFjM9eK0afEMb8c/LeREkZL/NC16ass5ncSCIhjyI31o0R691PUJYjkYkqohol
-         Pjxw8JoBNMFNKdGx7cx1x00j2nxAlpaZytIrhHedid5vwZOa0K9dxUiDOtBmfn5so69+
-         a1eg==
-X-Gm-Message-State: AOAM533dGIFgaWGzYynRgmzhv4G0hLbpxOHCmnXYIZuLoCY7Jb8LXlcd
-        6uQ00it8RUzhd2SVjgDn0Q==
-X-Google-Smtp-Source: ABdhPJx86+zrTLxoRzsaXuUGjynUBidMelaIYYh+bDguzwxBJY8na2tPfh4198gC066v4n4xVCDcSw==
-X-Received: by 2002:a05:6870:80ca:b0:f1:8fad:d9d1 with SMTP id r10-20020a05687080ca00b000f18fadd9d1mr5193876oab.125.1652732484033;
-        Mon, 16 May 2022 13:21:24 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z3-20020a05687041c300b000f174840b4fsm4607481oac.17.2022.05.16.13.21.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 13:21:23 -0700 (PDT)
-Received: (nullmailer pid 3210266 invoked by uid 1000);
-        Mon, 16 May 2022 20:21:22 -0000
-Date:   Mon, 16 May 2022 15:21:22 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 04/17] PCI: dwc: Detect iATU settings after getting
- "addr_space" resource
-Message-ID: <20220516202122.GA3209795-robh@kernel.org>
-References: <20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru>
- <20220503214638.1895-5-Sergey.Semin@baikalelectronics.ru>
+        Mon, 16 May 2022 16:45:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2DB7D483AA
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 13:22:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652732561;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WUrJCpET5ioJAiVvwk8zHzwkwHsTKZgoemTPe72om30=;
+        b=fUttHnh4xG63oyrA6xXMNxjccF5iuBVqym5sBWSAO2gjmClV2bVXz4DGHx/mjXeC9pEgUv
+        uLIDC7gEmV07DmzoP+4os/D/VFUlmD3zxooM+hcNf/6sPn0NL6XzFYOJXWAI4aOX5jncwX
+        zeRzHh1odEUKBpRNaQ2tyO5kBTFDkuc=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-661-SJvpVGTBOBqR-JkPz4J76Q-1; Mon, 16 May 2022 16:22:38 -0400
+X-MC-Unique: SJvpVGTBOBqR-JkPz4J76Q-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A4DA538149AA;
+        Mon, 16 May 2022 20:22:37 +0000 (UTC)
+Received: from madcap2.tricolour.com (unknown [10.22.50.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B15840CF8E2;
+        Mon, 16 May 2022 20:22:36 +0000 (UTC)
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Linux-Audit Mailing List <linux-audit@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Steve Grubb <sgrubb@redhat.com>,
+        Richard Guy Briggs <rgb@redhat.com>, Jan Kara <jack@suse.cz>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH v3 1/3] fanotify: Ensure consistent variable type for response
+Date:   Mon, 16 May 2022 16:22:22 -0400
+Message-Id: <b70eb9b7620fdda8c46acf055dfd518b81ae2931.1652730821.git.rgb@redhat.com>
+In-Reply-To: <cover.1652730821.git.rgb@redhat.com>
+References: <cover.1652730821.git.rgb@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503214638.1895-5-Sergey.Semin@baikalelectronics.ru>
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 12:46:25AM +0300, Serge Semin wrote:
-> The iATU detection procedure was introduced in the commit 281f1f99cf3a
-> ("PCI: dwc: Detect number of iATU windows"). A bit later the procedure
-> execution was moved to Host/EP-specific methods in the framework of commit
-> 8bcca2658558 ("PCI: dwc: Move iATU detection earlier"). The later
-> modification wasn't done in the most optimal way since the "addr_space"
-> CSR region resource doesn't depend on anything detected in the
-> dw_pcie_iatu_detect() method. Thus the detection can be postponed to be
-> executed after the resource request which can fail and make the detection
-> pointless. It will be also helpful for the dw_pcie_ep_init() method
-> readability since we are about to add the IP-core version and eDMA module
-> (a bit later) detection procedures.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
-> ---
-> 
-> Changelog v2:
-> - This is a new patch added on v2 iteration of the series.
-> ---
->  drivers/pci/controller/dwc/pcie-designware-ep.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+The user space API for the response variable is __u32. This patch makes
+sure that the whole path through the kernel uses u32 so that there is
+no sign extension or truncation of the user space response.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Suggested-by: Steve Grubb <sgrubb@redhat.com>
+Link: https://lore.kernel.org/r/12617626.uLZWGnKmhe@x2
+Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+---
+ fs/notify/fanotify/fanotify.h      | 2 +-
+ fs/notify/fanotify/fanotify_user.c | 6 +++---
+ include/linux/audit.h              | 6 +++---
+ kernel/auditsc.c                   | 2 +-
+ 4 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/fs/notify/fanotify/fanotify.h b/fs/notify/fanotify/fanotify.h
+index a3d5b751cac5..d66668e06bee 100644
+--- a/fs/notify/fanotify/fanotify.h
++++ b/fs/notify/fanotify/fanotify.h
+@@ -425,7 +425,7 @@ FANOTIFY_PE(struct fanotify_event *event)
+ struct fanotify_perm_event {
+ 	struct fanotify_event fae;
+ 	struct path path;
+-	unsigned short response;	/* userspace answer to the event */
++	u32 response;			/* userspace answer to the event */
+ 	unsigned short state;		/* state of the event */
+ 	int fd;		/* fd we passed to userspace for this event */
+ };
+diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
+index 9b32b76a9c30..721e777ea90b 100644
+--- a/fs/notify/fanotify/fanotify_user.c
++++ b/fs/notify/fanotify/fanotify_user.c
+@@ -289,7 +289,7 @@ static int create_fd(struct fsnotify_group *group, struct path *path,
+  */
+ static void finish_permission_event(struct fsnotify_group *group,
+ 				    struct fanotify_perm_event *event,
+-				    unsigned int response)
++				    u32 response)
+ 				    __releases(&group->notification_lock)
+ {
+ 	bool destroy = false;
+@@ -310,9 +310,9 @@ static int process_access_response(struct fsnotify_group *group,
+ {
+ 	struct fanotify_perm_event *event;
+ 	int fd = response_struct->fd;
+-	int response = response_struct->response;
++	u32 response = response_struct->response;
+ 
+-	pr_debug("%s: group=%p fd=%d response=%d\n", __func__, group,
++	pr_debug("%s: group=%p fd=%d response=%u\n", __func__, group,
+ 		 fd, response);
+ 	/*
+ 	 * make sure the response is valid, if invalid we do nothing and either
+diff --git a/include/linux/audit.h b/include/linux/audit.h
+index d06134ac6245..217784d602b3 100644
+--- a/include/linux/audit.h
++++ b/include/linux/audit.h
+@@ -419,7 +419,7 @@ extern void __audit_log_capset(const struct cred *new, const struct cred *old);
+ extern void __audit_mmap_fd(int fd, int flags);
+ extern void __audit_openat2_how(struct open_how *how);
+ extern void __audit_log_kern_module(char *name);
+-extern void __audit_fanotify(unsigned int response);
++extern void __audit_fanotify(u32 response);
+ extern void __audit_tk_injoffset(struct timespec64 offset);
+ extern void __audit_ntp_log(const struct audit_ntp_data *ad);
+ extern void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
+@@ -526,7 +526,7 @@ static inline void audit_log_kern_module(char *name)
+ 		__audit_log_kern_module(name);
+ }
+ 
+-static inline void audit_fanotify(unsigned int response)
++static inline void audit_fanotify(u32 response)
+ {
+ 	if (!audit_dummy_context())
+ 		__audit_fanotify(response);
+@@ -686,7 +686,7 @@ static inline void audit_log_kern_module(char *name)
+ {
+ }
+ 
+-static inline void audit_fanotify(unsigned int response)
++static inline void audit_fanotify(u32 response)
+ { }
+ 
+ static inline void audit_tk_injoffset(struct timespec64 offset)
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index ea2ee1181921..6973be0bf6c9 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -2893,7 +2893,7 @@ void __audit_log_kern_module(char *name)
+ 	context->type = AUDIT_KERN_MODULE;
+ }
+ 
+-void __audit_fanotify(unsigned int response)
++void __audit_fanotify(u32 response)
+ {
+ 	audit_log(audit_context(), GFP_KERNEL,
+ 		AUDIT_FANOTIFY,	"resp=%u", response);
+-- 
+2.27.0
+
