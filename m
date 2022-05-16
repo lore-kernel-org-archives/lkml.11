@@ -2,156 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C91AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA87C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 12:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242064AbiEPMVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 08:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
+        id S234255AbiEPM0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 08:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243435AbiEPMVg (ORCPT
+        with ESMTP id S243459AbiEPM0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 08:21:36 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4CBD131;
-        Mon, 16 May 2022 05:21:28 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id n24so18319801oie.12;
-        Mon, 16 May 2022 05:21:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=CcyMGAd9/1/nrpJriv7ncUhfzEf1ScHvMZQfYObpwvE=;
-        b=g2DUXy6qsD2CdHMeAsv1xhrChe7ErMle96kke/aIaRKpxIOquj2yfUB32FiKgTjM83
-         t5tOhazH/nx8St5nSD/7JRztPm5oW8ykK9M6mxznlilW68CbwNMSF0pcaCGfoRS55jGu
-         FsqQcbamE+ix9RsBHYWHS+gAzYe/fS1wBUGj/5JWxD+n7AMQDGqvtiea3XTZHwpe8qeT
-         MNd1hGqFIpog6mQ1qReY+ToG+1QdObEmdjsmaMjr1TZ88vZRvRbwgxlytcW+FGfxr6BO
-         9gOXxI+Vh4QcFLVlPge/BIeppXAw1j7qx2yVfR7oYoFU9XUCutTSnWiDbQBa+/BSRcxl
-         a1LA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=CcyMGAd9/1/nrpJriv7ncUhfzEf1ScHvMZQfYObpwvE=;
-        b=YI2g0+m+8avtgOrAbvgUl1Ncqsace4B+/2EJFo4RuXYm2xBEoGZafutDZrw1TSliBp
-         SA2ra1dwas4I/mP6ELiWKrLv03UYIwmospKufraDk8eWvMOnw9NeSb5XRSi9GikIpf1B
-         YzJkS41rhL9KfgnxfPJSsFVppTBPUkOO5DYxs9jhYnDLJGyXMG0opmDzJButun3coDzm
-         V/LMaEl5WJ1eICzugnXVPGtSQnzCcVEv+j+BfU7yZnhdJ2bIuoWkdBijQKge0ew6Q3mm
-         /MyN0CI2y31ZcLR9ZO5quX97pATuZ3laW0q7Yz+1sEZ7tVHFoWW+TOp2+QYUOl+UNPrq
-         i2TA==
-X-Gm-Message-State: AOAM531rJS2G66ixQtFWByvQ1UncQBeNx/3lZAAxN/5CLG+G4t/FdWzk
-        MJIkHIIBEcZ9UDeN20q0CQE=
-X-Google-Smtp-Source: ABdhPJzQqa16ntoHnCKJlJaUs1Rg68hKbVxoyrBt+QCmSGoiEOx4hAcxAMzCMrbCeI//MqWfVxmLGw==
-X-Received: by 2002:a05:6808:308c:b0:326:77f8:8cb4 with SMTP id bl12-20020a056808308c00b0032677f88cb4mr13187236oib.292.1652703688114;
-        Mon, 16 May 2022 05:21:28 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id ep36-20020a056870a9a400b000e686d1387bsm5560247oab.21.2022.05.16.05.21.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 05:21:26 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <1747d709-6640-193d-8290-893b1541fae8@roeck-us.net>
-Date:   Mon, 16 May 2022 05:21:25 -0700
+        Mon, 16 May 2022 08:26:13 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C2A633C
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 05:26:09 -0700 (PDT)
+X-UUID: edbd5f950e044056a58f5462c8f61155-20220516
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:26ff3d68-52a5-405b-95d9-c12c8d23b6b3,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:105
+X-CID-INFO: VERSION:1.1.5,REQID:26ff3d68-52a5-405b-95d9-c12c8d23b6b3,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:105
+X-CID-META: VersionHash:2a19b09,CLOUDID:0f453194-563e-4fc2-8a0d-fda4821947ab,C
+        OID:40fffd665588,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: edbd5f950e044056a58f5462c8f61155-20220516
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 206944733; Mon, 16 May 2022 20:26:05 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 16 May 2022 20:26:03 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Mon, 16 May 2022 20:26:02 +0800
+From:   <yf.wang@mediatek.com>
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        "Will Deacon" <will@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
+        "moderated list:MEDIATEK IOMMU DRIVER" 
+        <linux-mediatek@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list" <linux-kernel@vger.kernel.org>
+CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+        Yong Wu <Yong.Wu@mediatek.com>,
+        Yunfei Wang <yf.wang@mediatek.com>,
+        Ning Li <ning.li@mediatek.com>
+Subject: [PATCH v4 2/2] iomm/mediatek: Allow page table PA up to 35bit
+Date:   Mon, 16 May 2022 20:18:50 +0800
+Message-ID: <20220516121852.8775-3-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220516121852.8775-1-yf.wang@mediatek.com>
+References: <20220516121852.8775-1-yf.wang@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Content-Language: en-US
-To:     LABBE Corentin <clabbe@baylibre.com>
-Cc:     jdelvare@suse.com, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>
-References: <20220509063010.3878134-1-clabbe@baylibre.com>
- <20220509063010.3878134-3-clabbe@baylibre.com>
- <e5f6c712-efed-2126-de2b-9a0d09150e7b@roeck-us.net> <YoFWNAhiDrzpeBU8@Red>
- <9f7d7281-0434-df59-40fa-1f5d8f53356d@roeck-us.net> <YoHtg30ZrhxjVedA@Red>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v3 2/2] hwmon: acpi_power_meter: convert to
- hwmon_device_register_with_info
-In-Reply-To: <YoHtg30ZrhxjVedA@Red>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/15/22 23:21, LABBE Corentin wrote:
-> Le Sun, May 15, 2022 at 05:29:54PM -0700, Guenter Roeck a écrit :
->> On 5/15/22 12:36, LABBE Corentin wrote:
->>> Le Wed, May 11, 2022 at 07:10:29PM -0700, Guenter Roeck a écrit :
->>>> Corentin,
->>>>
->>>> On 5/8/22 23:30, Corentin Labbe wrote:
->>>>> Booting lead to a hwmon_device_register() is deprecated. Please convert the driver to use hwmon_device_register_with_info().
->>>>> So let's convert the driver to use hwmon_device_register_with_info().
->>>>>
->>>>> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
->>>>> ---
->>>> [ ... ]
->>>>
->>>>> @@ -836,20 +740,20 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
->>>>>     		if (res)
->>>>>     			break;
->>>>>     
->>>>> -		remove_attrs(resource);
->>>>> +		remove_domain_devices(resource);
->>>>>     		setup_attrs(resource);
->>>>
->>>> Zhang Rui found an interesting problem with this code:
->>>> It needs a call to sysfs_update_groups(hwmon_dev->groups)
->>>> to update sysfs attribute visibility, probably between
->>>> remove_domain_devices() and setup_attrs().
->>>>
->>>>>     		break;
->>>>>     	case METER_NOTIFY_TRIP:
->>>>> -		sysfs_notify(&device->dev.kobj, NULL, POWER_AVERAGE_NAME);
->>>>> +		hwmon_notify_event(&device->dev, hwmon_power, hwmon_power_average, 0);
->>>>
->>>> ... which makes realize: The notification device should be the hwmon device.
->>>> That would be resource->hwmon_dev, not the acpi device.
->>>>
->>>
->>> Hello
->>>
->>> Since my hardware lacks capabilities testing this, I have emulated it on qemu:
->>> https://github.com/montjoie/qemu/commit/320f2ddacb954ab308ef699f66fca6313f75bc2b
->>>
->>> I have added a custom ACPI _DBX method for triggering some ACPI state change. (like config change, like enabling CAP).
->>>
->>> For testing config change I have tried lot of way:
->>>                   res = read_capabilities(resource);
->>> @@ -742,18 +758,22 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
->>>    
->>>                   remove_domain_devices(resource);
->>>                   setup_attrs(resource);
->>> +               res = sysfs_update_groups(&resource->hwmon_dev->kobj, acpi_power_groups);
->>> +               res = sysfs_update_groups(&resource->acpi_dev->dev.kobj, acpi_power_groups);
->>> +               res = hwmon_notify_event(resource->hwmon_dev, hwmon_power, hwmon_power_cap, 0);
->>> +               res = hwmon_notify_event(resource->hwmon_dev, hwmon_power, hwmon_power_average, 0);
->>
->> Did you add a debug log here ?
-> 
-> Yes I added debug log to check what is called.
-> 
->>
->> acpi_power_groups would be the wrong parameter for sysfs_update_groups().
->> It would have to be resource->hwmon_dev->groups.
->>
-> 
-> Even with that, no call to is_visible:
-> @@ -742,18 +758,22 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
->   
->                  remove_domain_devices(resource);
->                  setup_attrs(resource);
-> +               res = sysfs_update_groups(&resource->hwmon_dev->kobj, resource->hwmon_dev->groups);
-> +               res = sysfs_update_groups(&resource->acpi_dev->dev.kobj, resource->hwmon_dev->groups);
-> +               res = hwmon_notify_event(resource->hwmon_dev, hwmon_power, hwmon_power_cap, 0);
-> +               res = hwmon_notify_event(resource->hwmon_dev, hwmon_power, hwmon_power_average, 0);
->                  break;
-> 
-> I checked drivers/hwmon/hwmon.c is seems that is_visible is only called by gen_attr/gen_attrs which is only called by __hwmon_create_attrs and then by registers functions.
-> So perhaps it explain why it is never called.
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Ah yes, you are correct. Sorry, it has been too long ago that I wrote that code.
-Effectively that means we'll have to rework the hwmon core to generate attributes
-anyway and leave it up to the driver core to call the is_visible function.
+Add the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT support, so that allows
+page table PA up to 35bit, not only in ZONE_DMA32.
 
-Guenter
+Signed-off-by: Ning Li <ning.li@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+---
+ drivers/iommu/mtk_iommu.c | 29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 6fd75a60abd6..1b9a876ef271 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -33,6 +33,7 @@
+ 
+ #define REG_MMU_PT_BASE_ADDR			0x000
+ #define MMU_PT_ADDR_MASK			GENMASK(31, 7)
++#define MMU_PT_ADDR_2_0_MASK			GENMASK(2, 0)
+ 
+ #define REG_MMU_INVALIDATE			0x020
+ #define F_ALL_INVLD				0x2
+@@ -118,6 +119,7 @@
+ #define WR_THROT_EN			BIT(6)
+ #define HAS_LEGACY_IVRP_PADDR		BIT(7)
+ #define IOVA_34_EN			BIT(8)
++#define PGTABLE_PA_35_EN		BIT(9)
+ 
+ #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
+ 		((((pdata)->flags) & (_x)) == (_x))
+@@ -401,6 +403,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+ 		.iommu_dev = data->dev,
+ 	};
+ 
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
++		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
++
+ 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
+ 		dom->cfg.oas = data->enable_4GB ? 33 : 32;
+ 	else
+@@ -450,6 +455,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	struct device *m4udev = data->dev;
+ 	int ret, domid;
++	u32 regval;
+ 
+ 	domid = mtk_iommu_get_domain_id(dev, data->plat_data);
+ 	if (domid < 0)
+@@ -472,8 +478,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 			return ret;
+ 		}
+ 		data->m4u_dom = dom;
+-		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+-		       data->base + REG_MMU_PT_BASE_ADDR);
++
++		/* Bits[6:3] are invalid for mediatek platform */
++		if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
++			regval = (dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK) |
++				 (dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_2_0_MASK);
++		else
++			regval = dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK;
++		writel(regval, data->base + REG_MMU_PT_BASE_ADDR);
+ 
+ 		pm_runtime_put(m4udev);
+ 	}
+@@ -987,6 +999,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+ 	struct mtk_iommu_suspend_reg *reg = &data->reg;
+ 	struct mtk_iommu_domain *m4u_dom = data->m4u_dom;
+ 	void __iomem *base = data->base;
++	u32 regval;
+ 	int ret;
+ 
+ 	ret = clk_prepare_enable(data->bclk);
+@@ -1010,7 +1023,14 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+ 	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
+ 	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
+ 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
+-	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK, base + REG_MMU_PT_BASE_ADDR);
++
++	/* Bits[6:3] are invalid for mediatek platform */
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
++		regval = (m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK) |
++			 (m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_2_0_MASK);
++	else
++		regval = m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK;
++	writel(regval, base + REG_MMU_PT_BASE_ADDR);
+ 
+ 	/*
+ 	 * Users may allocate dma buffer before they call pm_runtime_get,
+@@ -1038,7 +1058,8 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+ 
+ static const struct mtk_iommu_plat_data mt6779_data = {
+ 	.m4u_plat      = M4U_MT6779,
+-	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN,
++	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN |
++			 PGTABLE_PA_35_EN,
+ 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
+ 	.iova_region   = single_domain,
+ 	.iova_region_nr = ARRAY_SIZE(single_domain),
+-- 
+2.18.0
+
