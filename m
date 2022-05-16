@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B62E9C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 769A8C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348498AbiEPUbf (ORCPT
+        id S1348211AbiEPUbM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55976 "EHLO
+        Mon, 16 May 2022 16:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350983AbiEPUBy (ORCPT
+        with ESMTP id S1350803AbiEPUBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 16:01:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF7E4B866;
-        Mon, 16 May 2022 12:56:14 -0700 (PDT)
+        Mon, 16 May 2022 16:01:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0450F45067;
+        Mon, 16 May 2022 12:55:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8F5EB81612;
-        Mon, 16 May 2022 19:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EDC6C385AA;
-        Mon, 16 May 2022 19:56:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8003EB81611;
+        Mon, 16 May 2022 19:55:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA9BEC34100;
+        Mon, 16 May 2022 19:55:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730971;
-        bh=jiZIGqimzJx7MG/LdMHB9cLF+AbHoKZ7IVmSgy0pbp8=;
+        s=korg; t=1652730949;
+        bh=ZO5qsyXdW8wuKjQ+Ebr8/toVqnfcSnecFh2EH4y2c9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VN4dw2esQzR8UfjiKoNmmJDl75mTHv1pk63V1+la2mDlnmWIn9bP07uLkhVPNMZpM
-         s+xMgwTOVVo/J1bjpfLnuT7ZJJwQslEcfsFg9zbvMG6+CEmvdcpZCqn4SiAxWJFocw
-         j106gYfeAdt9jXeB+q7CFlZ/swWfCik6rLLyZlzE=
+        b=JN1FAyCLLj89aWoPBGRLrKFQJFirPc4FpszOnSMIwUGzgxfGyeiJPf8AlJ6H3u7VX
+         ZHj3RQY72FnAkTOS73B1zPHdRIVNxpTF6bhF5t0zlBz5e5znhueNm2qOcevfFC4VDR
+         ImetkBYos+UhW0MaKhcdr5Q4tZ7Jp/UwcqgUpbiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>, Willy Tarreau <w@1wt.eu>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 063/114] tcp: resalt the secret every 10 seconds
-Date:   Mon, 16 May 2022 21:36:37 +0200
-Message-Id: <20220516193627.302439388@linuxfoundation.org>
+Subject: [PATCH 5.17 057/114] ASoC: SOF: Fix NULL pointer exception in sof_pci_probe callback
+Date:   Mon, 16 May 2022 21:36:31 +0200
+Message-Id: <20220516193627.132024996@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
 References: <20220516193625.489108457@linuxfoundation.org>
@@ -54,68 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-[ Upstream commit 4dfa9b438ee34caca4e6a4e5e961641807367f6f ]
+[ Upstream commit c61711c1c95791850be48dd65a1d72eb34ba719f ]
 
-In order to limit the ability for an observer to recognize the source
-ports sequence used to contact a set of destinations, we should
-periodically shuffle the secret. 10 seconds looks effective enough
-without causing particular issues.
+We are accessing "desc->ops" in sof_pci_probe without checking "desc"
+pointer. This results in NULL pointer exception if pci_id->driver_data
+i.e desc pointer isn't defined in sof device probe:
 
-Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Cc: Amit Klein <aksecurity@gmail.com>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Tested-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+BUG: kernel NULL pointer dereference, address: 0000000000000060
+PGD 0 P4D 0
+Oops: 0000 [#1] PREEMPT SMP NOPTI
+RIP: 0010:sof_pci_probe+0x1e/0x17f [snd_sof_pci]
+Code: Unable to access opcode bytes at RIP 0xffffffffc043dff4.
+RSP: 0018:ffffac4b03b9b8d8 EFLAGS: 00010246
+
+Add NULL pointer check for sof_dev_desc pointer to avoid such exception.
+
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220426183357.102155-1-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/secure_seq.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ sound/soc/sof/sof-pci-dev.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-index 55aa5cc258e3..5f85e01d4093 100644
---- a/net/core/secure_seq.c
-+++ b/net/core/secure_seq.c
-@@ -22,6 +22,8 @@
- static siphash_aligned_key_t net_secret;
- static siphash_aligned_key_t ts_secret;
+diff --git a/sound/soc/sof/sof-pci-dev.c b/sound/soc/sof/sof-pci-dev.c
+index 20c6ca37dbc4..53e97abbe6e3 100644
+--- a/sound/soc/sof/sof-pci-dev.c
++++ b/sound/soc/sof/sof-pci-dev.c
+@@ -130,6 +130,11 @@ int sof_pci_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
  
-+#define EPHEMERAL_PORT_SHUFFLE_PERIOD (10 * HZ)
+ 	dev_dbg(&pci->dev, "PCI DSP detected");
+ 
++	if (!desc) {
++		dev_err(dev, "error: no matching PCI descriptor\n");
++		return -ENODEV;
++	}
 +
- static __always_inline void net_secret_init(void)
- {
- 	net_get_random_once(&net_secret, sizeof(net_secret));
-@@ -100,11 +102,13 @@ u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 	const struct {
- 		struct in6_addr saddr;
- 		struct in6_addr daddr;
-+		unsigned int timeseed;
- 		__be16 dport;
- 	} __aligned(SIPHASH_ALIGNMENT) combined = {
- 		.saddr = *(struct in6_addr *)saddr,
- 		.daddr = *(struct in6_addr *)daddr,
--		.dport = dport
-+		.timeseed = jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+		.dport = dport,
- 	};
- 	net_secret_init();
- 	return siphash(&combined, offsetofend(typeof(combined), dport),
-@@ -145,8 +149,10 @@ EXPORT_SYMBOL_GPL(secure_tcp_seq);
- u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
- {
- 	net_secret_init();
--	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
--			    (__force u16)dport, &net_secret);
-+	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
-+			    (__force u16)dport,
-+			    jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+			    &net_secret);
- }
- EXPORT_SYMBOL_GPL(secure_ipv4_port_ephemeral);
- #endif
+ 	if (!desc->ops) {
+ 		dev_err(dev, "error: no matching PCI descriptor ops\n");
+ 		return -ENODEV;
 -- 
 2.35.1
 
