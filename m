@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5C9C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D4FC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 16 May 2022 20:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347460AbiEPU0H (ORCPT
+        id S1347565AbiEPU0Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 16:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
+        Mon, 16 May 2022 16:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347800AbiEPT6K (ORCPT
+        with ESMTP id S1347731AbiEPT6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 15:58:10 -0400
+        Mon, 16 May 2022 15:58:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC3E488A9;
-        Mon, 16 May 2022 12:49:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E4E483BB;
+        Mon, 16 May 2022 12:49:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48CF8B8160E;
-        Mon, 16 May 2022 19:49:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1927C385AA;
-        Mon, 16 May 2022 19:49:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B05FB81612;
+        Mon, 16 May 2022 19:49:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF329C385AA;
+        Mon, 16 May 2022 19:49:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652730591;
-        bh=EwrlZFOvzJnjMTJ2FyUy85Q/vhUk54CTxzJFzMEnSow=;
+        s=korg; t=1652730585;
+        bh=cT2tFWx4y6h1jKST9Xbxf3XHUjKuhrR4MsISZKADkV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cgK2+f//YT/rnWNffZn+zHU+B1IQ0gJ5fW2GrKWYAgp/PrcQstiT3iaFP/oKVbggj
-         1IZlTFYU9m+VtagHrfxgc/uBW+P11ZFbnPLmBLmkRG3ZQclAwge/uhiCrUz4y/eOZp
-         D+INvJwG/PGGuN5HvUFczWFbSKsmjMx7XApGPDxs=
+        b=rgKj8meFidk7GIqPThSsOtGJaOp+kDE5BTEDNLzpVdODbMZzxbFw9fyz+ND0gt+e5
+         iDcs0T6TigRjt5niW/WIpAAqKvA6QRGcjtHP89FjyOUSopblomoqjDPRoB3avrQajM
+         aZP7/XfON4uwPclOx2+KJh6T+AJ+pldqwLCeyxvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 046/102] RDMA/irdma: Fix deadlock in irdma_cleanup_cm_core()
-Date:   Mon, 16 May 2022 21:36:20 +0200
-Message-Id: <20220516193625.321476853@linuxfoundation.org>
+Subject: [PATCH 5.15 044/102] gfs2: Fix filesystem block deallocation for short writes
+Date:   Mon, 16 May 2022 21:36:18 +0200
+Message-Id: <20220516193625.264729898@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
 References: <20220516193623.989270214@linuxfoundation.org>
@@ -51,60 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit 679ab61bf5f5f519377d812afb4fb93634782c74 ]
+[ Upstream commit d031a8866e709c9d1ee5537a321b6192b4d2dc5b ]
 
-There is a deadlock in irdma_cleanup_cm_core(), which is shown below:
+When a write cannot be carried out in full, gfs2_iomap_end() releases
+blocks that have been allocated for this write but haven't been used.
 
-   (Thread 1)              |      (Thread 2)
-                           | irdma_schedule_cm_timer()
-irdma_cleanup_cm_core()    |  add_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | irdma_cm_timer_tick()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+To compute the end of the allocation, gfs2_iomap_end() incorrectly
+rounded the end of the attempted write down to the next block boundary
+to arrive at the end of the allocation.  It would have to round up, but
+the end of the allocation is also available as iomap->offset +
+iomap->length, so just use that instead.
 
-We hold cm_core->ht_lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler also need
-cm_core->ht_lock in position (2) of thread 2.  As a result,
-irdma_cleanup_cm_core() will block forever.
+In addition, use round_up() for computing the start of the unused range.
 
-This patch removes the check of timer_pending() in
-irdma_cleanup_cm_core(), because the del_timer_sync() function will just
-return directly if there isn't a pending timer. As a result, the lock is
-redundant, because there is no resource it could protect.
-
-Link: https://lore.kernel.org/r/20220418153322.42524-1-duoming@zju.edu.cn
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 64bc06bb32ee ("gfs2: iomap buffered write support")
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/irdma/cm.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ fs/gfs2/bmap.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index 082a3ddb0fa3..632f65e53b63 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -3242,15 +3242,10 @@ enum irdma_status_code irdma_setup_cm_core(struct irdma_device *iwdev,
-  */
- void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
- {
--	unsigned long flags;
--
- 	if (!cm_core)
- 		return;
+diff --git a/fs/gfs2/bmap.c b/fs/gfs2/bmap.c
+index fbdb7a30470a..f785af2aa23c 100644
+--- a/fs/gfs2/bmap.c
++++ b/fs/gfs2/bmap.c
+@@ -1154,13 +1154,12 @@ static int gfs2_iomap_end(struct inode *inode, loff_t pos, loff_t length,
  
--	spin_lock_irqsave(&cm_core->ht_lock, flags);
--	if (timer_pending(&cm_core->tcp_timer))
--		del_timer_sync(&cm_core->tcp_timer);
--	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
-+	del_timer_sync(&cm_core->tcp_timer);
+ 	if (length != written && (iomap->flags & IOMAP_F_NEW)) {
+ 		/* Deallocate blocks that were just allocated. */
+-		loff_t blockmask = i_blocksize(inode) - 1;
+-		loff_t end = (pos + length) & ~blockmask;
++		loff_t hstart = round_up(pos + written, i_blocksize(inode));
++		loff_t hend = iomap->offset + iomap->length;
  
- 	destroy_workqueue(cm_core->event_wq);
- 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
+-		pos = (pos + written + blockmask) & ~blockmask;
+-		if (pos < end) {
+-			truncate_pagecache_range(inode, pos, end - 1);
+-			punch_hole(ip, pos, end - pos);
++		if (hstart < hend) {
++			truncate_pagecache_range(inode, hstart, hend - 1);
++			punch_hole(ip, hstart, hend - hstart);
+ 		}
+ 	}
+ 
 -- 
 2.35.1
 
