@@ -2,127 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD57EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4001DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230496AbiEQWXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
+        id S231150AbiEQW1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbiEQWXO (ORCPT
+        with ESMTP id S230011AbiEQW1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:23:14 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063934CD5D;
-        Tue, 17 May 2022 15:23:14 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id n10so176348pjh.5;
-        Tue, 17 May 2022 15:23:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=e1pWMCgBviY11E7PKryYO1nXt87Yr/reQMp8Kk+5kvg=;
-        b=GyLFU443PaMI0LYXccQ6xTFEe0FAFeKT5j+xLBdobHYlJccRr0wYD1SULa+0LJ15pj
-         CbRXEM4fkhZtwS0vQ3U3VTeaDGY+LJ+7aKRlCmQCHpTctdWeKYYtZewVfGe8xd5dGora
-         a2326aWXbHXwoeRNpiKaQiNGIkT8fjjcoMUvV0zYgsNEiTQq8kzk0XwzAGY9UhMGZkVG
-         oqOHHAMm1erKkxCFKqTrZ29hcu4REYCGyCFw+VPNGFk/6cm4tOWAyOdcEm+R9cov7T7w
-         ua1LeRrX7QsrrypjviQSZokWZn1BshVMJaVq8mnOst44zk1gXTAHU8DOJL7UuNTJQnj3
-         61sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=e1pWMCgBviY11E7PKryYO1nXt87Yr/reQMp8Kk+5kvg=;
-        b=owwOALXnVwtCZUOXBQVfMC3LUt/9oYDWvLOpwVcH2lz47tXEnArpeOCvyV2s+OrBBz
-         San0wD3UoCzS171NUjXbjBssErBlIHue5iSK9ynoN+qLQAiVF/xCSsvEAZ7qXKlh7UzM
-         qcjS2pDIiFbcp5pIqFngVSFq+Raypl45RkkUEcfw4hxxlsrYd6voirQoyTmVR2KDHExm
-         HQgtafLYQ7pVbx2gwPDftFxC762atoeAMUefcowDsONM0XJKcbm0evwBdr0cQXKgzY8U
-         SAW+0Wd9aDVgS9Ft+41qoqSehEyUROdkwNIHFFDoRf2H4q1WixFrCBfiWdsVi58QBkjU
-         Hbrg==
-X-Gm-Message-State: AOAM5310elamjpiRzRPMOPui3wybAXPvwBfJ5iy/cBQ5aX1uLuho66Oz
-        O9kyTYHwx7LhRtdX8WfvuxE=
-X-Google-Smtp-Source: ABdhPJw7+oocr4KRLhZyU1jJUHnJ1T6v3nxM4zdgPK/CSu9aTWwC6DRkyPOHiHR0RbT6tuuSq4thYw==
-X-Received: by 2002:a17:902:e850:b0:15f:3641:9cf3 with SMTP id t16-20020a170902e85000b0015f36419cf3mr24720729plg.30.1652826193434;
-        Tue, 17 May 2022 15:23:13 -0700 (PDT)
-Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id x11-20020a170902a38b00b0015e9d4a5d27sm131394pla.23.2022.05.17.15.23.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 15:23:13 -0700 (PDT)
-Date:   Tue, 17 May 2022 15:21:00 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Christophe de Dinechin <dinechin@redhat.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] bitmap: Fix return values to be unsigned
-Message-ID: <YoQfzJGaDF5BQ7E4@yury-laptop>
-References: <20220517212234.868181-1-keescook@chromium.org>
+        Tue, 17 May 2022 18:27:35 -0400
+X-Greylist: delayed 3261 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 15:27:33 PDT
+Received: from mail.wantyapps.xyz (unknown [66.135.5.160])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5434ECF7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:27:33 -0700 (PDT)
+Received: from localhost (bzq-79-183-83-88.red.bezeqint.net [79.183.83.88])
+        by mail.wantyapps.xyz (Postfix) with ESMTPSA id 758997D63E;
+        Tue, 17 May 2022 22:27:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wantyapps.xyz;
+        s=mail; t=1652826451;
+        bh=pd6Vee+X5bKnfkJoQvuv34sp7wFRIFqhfKwqf22xJJE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cuxxKNrIYB+sbARwoyzCbW2VM8FAjR+hQgkceYmIpqe4rZZDjvYuo5bxABWkx8LUc
+         VrQgIaJ5hgv58AvoAY/ouXv28gmZDHD3s4KJ8CleUZpyyhL5EtK/ma+WsuENP2P0Tj
+         PpFWhKg5zpIKnxD2ePWdACHDCwYbpLXNZT5+vcn4QqYEDKgRlCJbVB2NTkPhxXdsaE
+         znffAar84pz6SOYYjsl4Rubz/genEvSAMXsscdJSfVQRhBEybNGUWf9kZsDkIObukk
+         fYXDnY52A4FN58lX700DcwqVfRyEkT8bTQPF0rt02XU+gnhKxpAP0aSu9DJ6I6B+wh
+         WHDwhkI0ipSmA==
+From:   Uri Arev <me@wantyapps.xyz>
+Cc:     Uri Arev <me@wantyapps.xyz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] staging: axis-fifo: fix indentation according to checkpatch.pl
+Date:   Wed, 18 May 2022 01:27:09 +0300
+Message-Id: <20220517222710.678033-1-me@wantyapps.xyz>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220517212234.868181-1-keescook@chromium.org>
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 02:22:32PM -0700, Kees Cook wrote:
-> Hi,
-> 
-> As mentioned in the last patch:
-> 
-> Both nodemask and bitmap routines had mixed return values that provided
-> potentially signed results that could never happen. This was leading to
-> the compiler getting confusing about the range of possible return values
-> (it was thinking things could be negative where they could not be). Fix
-> all the nodemask and bitmap routines that should be returning unsigned
-> (or bool) values. Silences GCC 12 warnings:
-> 
->  mm/swapfile.c: In function ‘setup_swap_info’:
->  mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds of ‘struct plist_node[]’ [-Werror=array-bounds]
->   2291 |                                 p->avail_lists[i].prio = 1;
->        |                                 ~~~~~~~~~~~~~~^~~
->  In file included from mm/swapfile.c:16:
->  ./include/linux/swap.h:292:27: note: while referencing ‘avail_lists’
->    292 |         struct plist_node avail_lists[]; /*
->        |                           ^~~~~~~~~~~
-> 
-> This splits up the patch into the bitmap and nodemask halves, and drops
-> a needless change to the random node helper.
-> 
-> I note that Alexey and Rasmus touched on this area in the past, fixing
-> up node ids to be unsigned:
-> 
-> ce0725f78a56 ("numa: make "nr_online_nodes" unsigned int")
-> b9726c26dc21 ("numa: make "nr_node_ids" unsigned int")
-> 33c4fa8c6763 ("linux/nodemask.h: update bitmap wrappers to take unsigned int")
-> 
-> If anyone else would like to carry this, please let me know. I'm happy
-> to carry it in my tree.
+(My first patch!)
 
-I think it should go thru my tree, if no objections.
+scripts/checkpatch.pl warned about an indentation problem in
+the axis-fifo.c file.
+
+Checkpatch warning:
+	CHECK: Alignment should match open parenthesis
+
+Signed-off-by: Uri Arev <me@wantyapps.xyz>
+---
+ drivers/staging/axis-fifo/axis-fifo.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/staging/axis-fifo/axis-fifo.c b/drivers/staging/axis-fifo/axis-fifo.c
+index dfd2b357f484..51ce48e68e27 100644
+--- a/drivers/staging/axis-fifo/axis-fifo.c
++++ b/drivers/staging/axis-fifo/axis-fifo.c
+@@ -383,10 +383,10 @@ static ssize_t axis_fifo_read(struct file *f, char __user *buf,
+ 		 */
+ 		mutex_lock(&fifo->read_lock);
+ 		ret = wait_event_interruptible_timeout(fifo->read_queue,
+-			ioread32(fifo->base_addr + XLLF_RDFO_OFFSET),
+-				 (read_timeout >= 0) ?
+-				  msecs_to_jiffies(read_timeout) :
+-				  MAX_SCHEDULE_TIMEOUT);
++						       ioread32(fifo->base_addr + XLLF_RDFO_OFFSET),
++								(read_timeout >= 0) ?
++								 msecs_to_jiffies(read_timeout) :
++								 MAX_SCHEDULE_TIMEOUT);
  
-> -Kees
-> 
-> Kees Cook (2):
->   bitmap: Fix return values to be unsigned
->   nodemask: Fix return values to be unsigned
+ 		if (ret <= 0) {
+ 			if (ret == 0) {
+@@ -526,11 +526,11 @@ static ssize_t axis_fifo_write(struct file *f, const char __user *buf,
+ 		 */
+ 		mutex_lock(&fifo->write_lock);
+ 		ret = wait_event_interruptible_timeout(fifo->write_queue,
+-			ioread32(fifo->base_addr + XLLF_TDFV_OFFSET)
+-				 >= words_to_write,
+-				 (write_timeout >= 0) ?
+-				  msecs_to_jiffies(write_timeout) :
+-				  MAX_SCHEDULE_TIMEOUT);
++						       ioread32(fifo->base_addr + XLLF_TDFV_OFFSET)
++								>= words_to_write,
++								(write_timeout >= 0) ?
++								 msecs_to_jiffies(write_timeout) :
++								 MAX_SCHEDULE_TIMEOUT);
+ 
+ 		if (ret <= 0) {
+ 			if (ret == 0) {
+-- 
+2.36.1
 
-Can you please also add patch for tools?
-
-Thanks,
-Yury
-
->  include/linux/bitmap.h   | 14 +++++++-------
->  include/linux/nodemask.h | 38 +++++++++++++++++++-------------------
->  lib/bitmap.c             | 28 ++++++++++++++--------------
->  lib/nodemask.c           |  2 +-
->  4 files changed, 41 insertions(+), 41 deletions(-)
-> 
-> -- 
-> 2.32.0
