@@ -2,116 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4816AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 539A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345590AbiEQLzw (ORCPT
+        id S1345605AbiEQL7u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 07:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
+        Tue, 17 May 2022 07:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345574AbiEQLzq (ORCPT
+        with ESMTP id S236666AbiEQL7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 07:55:46 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A714C41B;
-        Tue, 17 May 2022 04:55:41 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 1FA761F8F7;
-        Tue, 17 May 2022 11:55:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652788540;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XWV9I8vEC/gVBQMdfp4ZLR/XCARFFY3wFzVWUZZsLyM=;
-        b=j9NlYg+lgeZw9lxeHS9hEMqYh9EWqsSTl22Ibl6SLszboSCxHZeZodscBEl49w/4vIrcOB
-        uAXkoX1nvTKjUM1EUBcvOyjjqjRbNUJbZ/kq4stZ+0/lerrP5gO4626alqaz99tsnRPc1F
-        LBtIqYYF955Cs3zK/ONXbGQa4CWL9/k=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652788540;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XWV9I8vEC/gVBQMdfp4ZLR/XCARFFY3wFzVWUZZsLyM=;
-        b=dxEL63L4qVfrlSY8/gFaeGBil7Jzz5/q5q2u14C3uE+vuxIzDaaJnUvlZVhVxGzwFZtcYq
-        HrloqJOf4p4mS8Cg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B7A1D13305;
-        Tue, 17 May 2022 11:55:39 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id nQDZKzuNg2JOAwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 17 May 2022 11:55:39 +0000
-Date:   Tue, 17 May 2022 13:51:21 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Johannes Thumshirn <Johannes.Thumshirn@wdc.com>
-Cc:     Pankaj Raghav <p.raghav@samsung.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>,
-        "pankydev8@gmail.com" <pankydev8@gmail.com>,
-        "dsterba@suse.com" <dsterba@suse.com>, "hch@lst.de" <hch@lst.de>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "gost.dev@samsung.com" <gost.dev@samsung.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH v4 06/13] btrfs: zoned: Make sb_zone_number function non
- power of 2 compatible
-Message-ID: <20220517115121.GA18596@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
-        Pankaj Raghav <p.raghav@samsung.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>,
-        "pankydev8@gmail.com" <pankydev8@gmail.com>,
-        "dsterba@suse.com" <dsterba@suse.com>, "hch@lst.de" <hch@lst.de>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "gost.dev@samsung.com" <gost.dev@samsung.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-References: <20220516165416.171196-1-p.raghav@samsung.com>
- <CGME20220516165427eucas1p1cfd87ca44ec314ea1d2ddc8ece7259f9@eucas1p1.samsung.com>
- <20220516165416.171196-7-p.raghav@samsung.com>
- <PH0PR04MB741673F9764EFCA93F1932809BCE9@PH0PR04MB7416.namprd04.prod.outlook.com>
+        Tue, 17 May 2022 07:59:38 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FD142ED1
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:59:32 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso2063094pjg.0
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:59:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6bJrUMEtSXW29jAE/Fjd7T3L0w+l4E7RzwnxxvWAHe8=;
+        b=UdBUPa4BMmyVFV5X3dWdrK5zqOmwHha1ptAMFhb8SL2rLlIo8AJ7FPnik2YMvmrMNJ
+         ssOSsgM68lwN9ni0KROmiFhQhUGA4jnWcKve9u9NTZpMUEVLpXWNcVVL9TtHdm1lsm3n
+         8uKLB1B12pw89azmhp4NoaMee8WYe+e+VwTeAtWTf8Pz03PxTue+HF3uKTRzwN3yRtZ/
+         74yg+cjsn0uG9sn7dwxBFMdcvwg59p+fgSXVCoTD9+jXrR3Be2M3d5CB3IDo5qSkoSHC
+         OOhgfXy1WNDCDYuk069fDYph/30/E8H01USHxlHNJteGyXNMele7XSZHxfA/Agdm4/pW
+         KuyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6bJrUMEtSXW29jAE/Fjd7T3L0w+l4E7RzwnxxvWAHe8=;
+        b=MiXQgPnOhigzCbnhxdTQ6eE+TO5DTmmhRLizzrepq/cQh8BWxCRQkXGefkd402UTJB
+         hZQQvk897BhWQXeDeHIf8zC2WYszsrbn4TtSKzHtbHb0SznldstuTdC4mo8Hebm7K3DX
+         rlhQPOvtocT3gy87OUOIvp41rpaqylOUDuS1diOGnF2Rc6+EiagXckb36/i1cOqEvz5B
+         N5zydgoB0RLtpOq9Bu1rj0we7a4tYDZkwxi5wJ2tY3BpB+uO835y7+39HaTpOEnGr/K2
+         LXsz+ZB6UWD6dCYPko1hPQIku10vGfOGrc86RmO82JIJTpZQ1HtXhpY38/yNUxVUcZIy
+         87tQ==
+X-Gm-Message-State: AOAM53048MVMzPDS7KiQqzZb8oHwCD4MYsSHoZQeUA0ebE9Vqk9Wamrs
+        X6IFb1pjJsXumFDsKEHh/Pjqlg==
+X-Google-Smtp-Source: ABdhPJwDn9mKzuaqQbJzdWhprI6qSVJpv42TdCp8EjfKceUOQHBlOuV1qwFmHJTb0yOW2zx4jDf/cg==
+X-Received: by 2002:a17:90a:de02:b0:1df:3f94:811c with SMTP id m2-20020a17090ade0200b001df3f94811cmr12865265pjv.112.1652788771667;
+        Tue, 17 May 2022 04:59:31 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id c17-20020a17090ab29100b001dc7623950csm1481322pjr.11.2022.05.17.04.59.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 04:59:30 -0700 (PDT)
+Message-ID: <97cba3e1-4ef7-0a17-8456-e0787d6702c6@kernel.dk>
+Date:   Tue, 17 May 2022 05:59:29 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR04MB741673F9764EFCA93F1932809BCE9@PH0PR04MB7416.namprd04.prod.outlook.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [REPORT] Use-after-free Read in __fdget_raw in v5.10.y
+Content-Language: en-US
+To:     Lee Jones <lee.jones@linaro.org>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <YoOJ/T4QRKC+fAZE@google.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <YoOJ/T4QRKC+fAZE@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 06:53:40AM +0000, Johannes Thumshirn wrote:
-> On 16/05/2022 18:54, Pankaj Raghav wrote:
-> >  	/* Cache the sb zone number */
-> >  	for (i = 0; i < BTRFS_SUPER_MIRROR_MAX; ++i) {
-> >  		zone_info->sb_zone_location[i] =
-> > -			sb_zone_number(zone_info->zone_size_shift, i);
-> > +			sb_zone_number(bdev, i);
+On 5/17/22 5:41 AM, Lee Jones wrote:
+> Good afternoon Jens, Pavel, et al.,
 > 
-> I think this easily fits on one line now, doesn't it? But given David's
-> statement, it'll probably can go away anyways.
+> Not sure if you are presently aware, but there appears to be a
+> use-after-free issue affecting the io_uring worker driver (fs/io-wq.c)
+> in Stable v5.10.y.
+> 
+> The full sysbot report can be seen below [0].
+> 
+> The C-reproducer has been placed below that [1].
+> 
+> I had great success running this reproducer in an infinite loop.
+> 
+> My colleague reverse-bisected the fixing commit to:
+> 
+>   commit fb3a1f6c745ccd896afadf6e2d6f073e871d38ba
+>   Author: Jens Axboe <axboe@kernel.dk>
+>   Date:   Fri Feb 26 09:47:20 2021 -0700
+> 
+>        io-wq: have manager wait for all workers to exit
+> 
+>        Instead of having to wait separately on workers and manager, just have
+>        the manager wait on the workers. We use an atomic_t for the reference
+>        here, as we need to start at 0 and allow increment from that. Since the
+>        number of workers is naturally capped by the allowed nr of processes,
+>        and that uses an int, there is no risk of overflow.
+> 
+>        Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> 
+>     fs/io-wq.c | 30 ++++++++++++++++++++++--------
+>     1 file changed, 22 insertions(+), 8 deletions(-)
 
-I agree that the formatting can be adjusted, but I'm never sure if I
-should point it out during the phase of functional changes so it's fixed
-in the next iteration as well, or not to point it out to avoid fixups
-that would go away anyway. I think I've seen more, a styling pass will
-be done anyway once we're close to the final version..
+Does this fix it:
+
+commit 886d0137f104a440d9dfa1d16efc1db06c9a2c02
+Author: Jens Axboe <axboe@kernel.dk>
+Date:   Fri Mar 5 12:59:30 2021 -0700
+
+    io-wq: fix race in freeing 'wq' and worker access
+
+Looks like it didn't make it into 5.10-stable, but we can certainly
+rectify that.
+
+-- 
+Jens Axboe
+
