@@ -2,85 +2,358 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB25C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE309C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242658AbiEQIN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
+        id S235720AbiEQIOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240341AbiEQIMn (ORCPT
+        with ESMTP id S242616AbiEQINM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:12:43 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDE83F30A
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:12:10 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id n23so6403537edy.0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:12:10 -0700 (PDT)
+        Tue, 17 May 2022 04:13:12 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B2D45051;
+        Tue, 17 May 2022 01:12:14 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id nr2-20020a17090b240200b001df2b1bfc40so1699415pjb.5;
+        Tue, 17 May 2022 01:12:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=P1/3wXxYbYTAOCOt5Fz9k9RjZuPl9icdRpW/+L+jIGc=;
-        b=m4Of4NgGuaJQIyikdXy62BDhj89m58NAqH9luHRJZg0bpmHq5TbhH/UR86pgRNC8AA
-         VYC2g7SJ6aXGyK3QAK8bq1X1QtMpo/o2dtbSlTwHAAVmb8WzdI5HLUF7suH2cdhbrhRp
-         kkIUU17LIjE8Kxe0yIjxjhB5B++wFesP859XtELY8Wht6GwH2XSlUvnDqFW+8vxpgRtG
-         RRD4l+IBRWmu5pAD2Sb3FfKMKe5W2UHRYQaiT95jhral9WLLlfZATgDbUvrYukyThZ6P
-         VjJ8Get9dDIf5YBDS/yirOyOWNzJWz2Ldp60Q9VuMq1AOefR+UzxSw02/dxdEBgmojZb
-         18OA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rBPzBYMrWsFKbZByuHnQrLDMtrzPNzPI3nX7MvL+UmA=;
+        b=Sli0Pc2oXjsj4zfQ0xsmoNUgH8yHp1UQzAy+bRy7MVM2k6R0HYJDheixZm4P9qoxPW
+         rJtuc3CG8PETWqpE3AREb6C/DOW64n0taJEcJnA5kAHEy00OGRTgina0NamU3ry1Et0u
+         qWOah4KacW+4QUb1c4Iu0uZFYrW+txSix/OUVClyjBKbseOG77Z8a9fswY1T8mFZ24am
+         Ef9myRLwjEUzrqoVYWsNuRNWnsYRXbxcmHRqrNvHi7FpNaJWxoY5Ntdmo8uFdSWoo0Y/
+         s63DxOeYFdbu4PHjl8ZggxvaFH5ZF6wxIjC/KAWxDBvgu9tprJoUuIVQMpFI9ejfDvMu
+         3t3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=P1/3wXxYbYTAOCOt5Fz9k9RjZuPl9icdRpW/+L+jIGc=;
-        b=ppVLfFpKkYmtnMGM7mvhnQVECBWQiGzMjwY7xpMk8ZyxOorjyqD6TWMLhQQZ3XZvCe
-         jGTQzeyV3BJ2/sMATb/4UIxyMaG7S0dEIaH6/Bf6D2i0ExWnjnzBlJyVmmHs7OU+4YmW
-         KFEQ9OBPUmJm5TshXrYrB/5zNDSQ0Ye6hDASiLA0B2bUij3lMj0SHg/wuF9g16RW1eYe
-         1B3In9GXi88GmWNbuqg9p1Cpihaematit5oD91owF0H5m672mD43l2nDAT3tiR3JlXYN
-         cn6D9zbk3cS02g9lxPLhhFfzoW93Xo1q38yoIxaDn0Qq749JCQRHlpZPrS3nH9m2Nq6C
-         7Ndg==
-X-Gm-Message-State: AOAM5323Wr0hW+QDyD6z/hN9E0vO/tf4T9GwRasgFERU6v3eJ8Y9ZHTX
-        Hl1EYdxXBX1aWfAPgKxT51/OMg==
-X-Google-Smtp-Source: ABdhPJxbcRBJq8zQ6TKtk7Zv0EnZS2IcrCkDqo0aU9SMvYY/kd+EeD6yKz9UXQcpTfTTLU+FY0oroQ==
-X-Received: by 2002:a05:6402:ea8:b0:42a:8b26:3a77 with SMTP id h40-20020a0564020ea800b0042a8b263a77mr15668621eda.154.1652775129439;
-        Tue, 17 May 2022 01:12:09 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id t10-20020a170906268a00b006f3ef214dc3sm739830ejc.41.2022.05.17.01.12.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 01:12:09 -0700 (PDT)
-Message-ID: <5a3d5a11-b002-b8f9-2827-6b0677d2b91d@linaro.org>
-Date:   Tue, 17 May 2022 10:12:07 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rBPzBYMrWsFKbZByuHnQrLDMtrzPNzPI3nX7MvL+UmA=;
+        b=lHrR5vuEdv4wzPUXsqpOp9J2uHWOfaty8ec72F+aoDbNALiH6DJoSmaL85MocYUHiA
+         WK0gm1awHajZOgZzRGRjgZh+Tc7/7ukuKYt+OM+fKpgxAxfCFSMXakm9wx2UGXzLjJF9
+         UjKpkYyq6yF+/omGbthjUiVexWsSYfOQqyh08FdMqVDEdbbLhg++sB7CBPGuMtXtHzj5
+         bvy3sJe9j2TabjPmO4tNurPXDKlMv0rGPMVsO6hf+DdCtslevt1yPl7+hPJdXJJlbe3k
+         zm1DyStLGNBWQrJxLajcTufuNhQoj0dwhhMg6+K9iKg+mKOHGHkf7K23Tom0HO2SYXwv
+         J6Tg==
+X-Gm-Message-State: AOAM533Dwe7wDeC6uwLMhQlbOqpxSuca05MV50waqSNh0wyv825GnLGg
+        tVEtUMg4KvtWFbtGeF0xCEo=
+X-Google-Smtp-Source: ABdhPJxvv8vKZPlVirSw5NowsPTUwdlt8HNK4TE370QM74w8I9Gljp29gX9NfLRht0y1fvntYsCeMw==
+X-Received: by 2002:a17:90a:778c:b0:1df:56a5:8474 with SMTP id v12-20020a17090a778c00b001df56a58474mr9546929pjk.63.1652775133589;
+        Tue, 17 May 2022 01:12:13 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.20])
+        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.12.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 01:12:13 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     edumazet@google.com
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Subject: [PATCH net-next v2 6/9] net: tcp: make tcp_rcv_state_process() return drop reason
+Date:   Tue, 17 May 2022 16:10:05 +0800
+Message-Id: <20220517081008.294325-7-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220517081008.294325-1-imagedong@tencent.com>
+References: <20220517081008.294325-1-imagedong@tencent.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 08/11] dt-bindings: clock: qcom: ipq8074: add USB GDSCs
-Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, bjorn.andersson@linaro.org,
-        agross@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        tdas@codeaurora.org, absahu@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmitry.baryshkov@linaro.org
-References: <20220515210048.483898-1-robimarko@gmail.com>
- <20220515210048.483898-8-robimarko@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220515210048.483898-8-robimarko@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/05/2022 23:00, Robert Marko wrote:
-> Add bindings for the USB GDSCs found in IPQ8074 GCC.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
+From: Menglong Dong <imagedong@tencent.com>
 
+For now, the return value of tcp_rcv_state_process() is treated as bool.
+Therefore, we can make it return the reasons of the skb drops.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Meanwhile, the return value of tcp_child_process() comes from
+tcp_rcv_state_process(), make it drop reasons by the way.
 
+Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ include/linux/skbuff.h   |  1 +
+ include/net/tcp.h        |  8 +++++---
+ net/ipv4/tcp_input.c     | 22 +++++++++++-----------
+ net/ipv4/tcp_ipv4.c      | 20 +++++++++++++-------
+ net/ipv4/tcp_minisocks.c | 11 ++++++-----
+ net/ipv6/tcp_ipv6.c      | 19 ++++++++++++-------
+ 6 files changed, 48 insertions(+), 33 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 36e0971f4cc9..736899cc6a13 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -620,6 +620,7 @@ struct sk_buff;
+ 	FN(PKT_TOO_BIG)			\
+ 	FN(SOCKET_DESTROYED)		\
+ 	FN(TCP_PAWSACTIVEREJECTED)	\
++	FN(TCP_ABORTONDATA)		\
+ 	FN(MAX)
+ 
+ /* The reason of skb drop, which is used in kfree_skb_reason().
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 1e99f5c61f84..ea0eb2d4a743 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -339,7 +339,8 @@ void tcp_wfree(struct sk_buff *skb);
+ void tcp_write_timer_handler(struct sock *sk);
+ void tcp_delack_timer_handler(struct sock *sk);
+ int tcp_ioctl(struct sock *sk, int cmd, unsigned long arg);
+-int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb);
++enum skb_drop_reason tcp_rcv_state_process(struct sock *sk,
++					   struct sk_buff *skb);
+ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb);
+ void tcp_rcv_space_adjust(struct sock *sk);
+ int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp);
+@@ -385,8 +386,9 @@ enum tcp_tw_status tcp_timewait_state_process(struct inet_timewait_sock *tw,
+ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+ 			   struct request_sock *req, bool fastopen,
+ 			   bool *lost_race);
+-int tcp_child_process(struct sock *parent, struct sock *child,
+-		      struct sk_buff *skb);
++enum skb_drop_reason tcp_child_process(struct sock *parent,
++				       struct sock *child,
++				       struct sk_buff *skb);
+ void tcp_enter_loss(struct sock *sk);
+ void tcp_cwnd_reduction(struct sock *sk, int newly_acked_sacked, int newly_lost, int flag);
+ void tcp_clear_retrans(struct tcp_sock *tp);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index e8d26a68bc45..4717af0eaea7 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6422,7 +6422,7 @@ static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
+  *	address independent.
+  */
+ 
+-int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
++enum skb_drop_reason tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -6439,7 +6439,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 
+ 	case TCP_LISTEN:
+ 		if (th->ack)
+-			return 1;
++			return SKB_DROP_REASON_TCP_FLAGS;
+ 
+ 		if (th->rst) {
+ 			SKB_DR_SET(reason, TCP_RESET);
+@@ -6460,9 +6460,9 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			rcu_read_unlock();
+ 
+ 			if (!acceptable)
+-				return 1;
++				return SKB_DROP_REASON_NOT_SPECIFIED;
+ 			consume_skb(skb);
+-			return 0;
++			return SKB_NOT_DROPPED_YET;
+ 		}
+ 		SKB_DR_SET(reason, TCP_FLAGS);
+ 		goto discard;
+@@ -6472,13 +6472,13 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 		tcp_mstamp_refresh(tp);
+ 		queued = tcp_rcv_synsent_state_process(sk, skb, th);
+ 		if (queued >= 0)
+-			return queued;
++			return (enum skb_drop_reason)queued;
+ 
+ 		/* Do step6 onward by hand. */
+ 		tcp_urg(sk, skb, th);
+ 		__kfree_skb(skb);
+ 		tcp_data_snd_check(sk);
+-		return 0;
++		return SKB_NOT_DROPPED_YET;
+ 	}
+ 
+ 	tcp_mstamp_refresh(tp);
+@@ -6582,7 +6582,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 		if (tp->linger2 < 0) {
+ 			tcp_done(sk);
+ 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
+-			return 1;
++			return SKB_DROP_REASON_TCP_ABORTONDATA;
+ 		}
+ 		if (TCP_SKB_CB(skb)->end_seq != TCP_SKB_CB(skb)->seq &&
+ 		    after(TCP_SKB_CB(skb)->end_seq - th->fin, tp->rcv_nxt)) {
+@@ -6591,7 +6591,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 				tcp_fastopen_active_disable(sk);
+ 			tcp_done(sk);
+ 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
+-			return 1;
++			return SKB_DROP_REASON_TCP_ABORTONDATA;
+ 		}
+ 
+ 		tmo = tcp_fin_time(sk);
+@@ -6656,7 +6656,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			    after(TCP_SKB_CB(skb)->end_seq - th->fin, tp->rcv_nxt)) {
+ 				NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
+ 				tcp_reset(sk, skb);
+-				return 1;
++				return SKB_DROP_REASON_TCP_ABORTONDATA;
+ 			}
+ 		}
+ 		fallthrough;
+@@ -6676,11 +6676,11 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ discard:
+ 		tcp_drop_reason(sk, skb, reason);
+ 	}
+-	return 0;
++	return SKB_NOT_DROPPED_YET;
+ 
+ consume:
+ 	__kfree_skb(skb);
+-	return 0;
++	return SKB_NOT_DROPPED_YET;
+ }
+ EXPORT_SYMBOL(tcp_rcv_state_process);
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 24eb42497a71..12a18c5035f4 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1670,7 +1670,8 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 		if (!nsk)
+ 			goto discard;
+ 		if (nsk != sk) {
+-			if (tcp_child_process(sk, nsk, skb)) {
++			reason = tcp_child_process(sk, nsk, skb);
++			if (reason) {
+ 				rsk = nsk;
+ 				goto reset;
+ 			}
+@@ -1679,7 +1680,8 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 	} else
+ 		sock_rps_save_rxhash(sk, skb);
+ 
+-	if (tcp_rcv_state_process(sk, skb)) {
++	reason = tcp_rcv_state_process(sk, skb);
++	if (reason) {
+ 		rsk = sk;
+ 		goto reset;
+ 	}
+@@ -1688,6 +1690,7 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+ reset:
+ 	tcp_v4_send_reset(rsk, skb);
+ discard:
++	SKB_DR_OR(reason, NOT_SPECIFIED);
+ 	kfree_skb_reason(skb, reason);
+ 	/* Be careful here. If this function gets more complicated and
+ 	 * gcc suffers from register pressure on the x86, sk (in %ebx)
+@@ -2019,12 +2022,15 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		if (nsk == sk) {
+ 			reqsk_put(req);
+ 			tcp_v4_restore_cb(skb);
+-		} else if (tcp_child_process(sk, nsk, skb)) {
+-			tcp_v4_send_reset(nsk, skb);
+-			goto discard_and_relse;
+ 		} else {
+-			sock_put(sk);
+-			return 0;
++			drop_reason = tcp_child_process(sk, nsk, skb);
++			if (drop_reason) {
++				tcp_v4_send_reset(nsk, skb);
++				goto discard_and_relse;
++			} else {
++				sock_put(sk);
++				return 0;
++			}
+ 		}
+ 	}
+ 
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index 6854bb1fb32b..1a21018f6f64 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -821,11 +821,12 @@ EXPORT_SYMBOL(tcp_check_req);
+  * be created.
+  */
+ 
+-int tcp_child_process(struct sock *parent, struct sock *child,
+-		      struct sk_buff *skb)
++enum skb_drop_reason tcp_child_process(struct sock *parent,
++				       struct sock *child,
++				       struct sk_buff *skb)
+ 	__releases(&((child)->sk_lock.slock))
+ {
+-	int ret = 0;
++	enum skb_drop_reason reason = SKB_NOT_DROPPED_YET;
+ 	int state = child->sk_state;
+ 
+ 	/* record sk_napi_id and sk_rx_queue_mapping of child. */
+@@ -833,7 +834,7 @@ int tcp_child_process(struct sock *parent, struct sock *child,
+ 
+ 	tcp_segs_in(tcp_sk(child), skb);
+ 	if (!sock_owned_by_user(child)) {
+-		ret = tcp_rcv_state_process(child, skb);
++		reason = tcp_rcv_state_process(child, skb);
+ 		/* Wakeup parent, send SIGIO */
+ 		if (state == TCP_SYN_RECV && child->sk_state != state)
+ 			parent->sk_data_ready(parent);
+@@ -847,6 +848,6 @@ int tcp_child_process(struct sock *parent, struct sock *child,
+ 
+ 	bh_unlock_sock(child);
+ 	sock_put(child);
+-	return ret;
++	return reason;
+ }
+ EXPORT_SYMBOL(tcp_child_process);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 636ed23d9af0..d8236d51dd47 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1489,7 +1489,8 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 			goto discard;
+ 
+ 		if (nsk != sk) {
+-			if (tcp_child_process(sk, nsk, skb))
++			reason = tcp_child_process(sk, nsk, skb);
++			if (reason)
+ 				goto reset;
+ 			if (opt_skb)
+ 				__kfree_skb(opt_skb);
+@@ -1498,7 +1499,8 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 	} else
+ 		sock_rps_save_rxhash(sk, skb);
+ 
+-	if (tcp_rcv_state_process(sk, skb))
++	reason = tcp_rcv_state_process(sk, skb);
++	if (reason)
+ 		goto reset;
+ 	if (opt_skb)
+ 		goto ipv6_pktoptions;
+@@ -1685,12 +1687,15 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 		if (nsk == sk) {
+ 			reqsk_put(req);
+ 			tcp_v6_restore_cb(skb);
+-		} else if (tcp_child_process(sk, nsk, skb)) {
+-			tcp_v6_send_reset(nsk, skb);
+-			goto discard_and_relse;
+ 		} else {
+-			sock_put(sk);
+-			return 0;
++			drop_reason = tcp_child_process(sk, nsk, skb);
++			if (drop_reason) {
++				tcp_v6_send_reset(nsk, skb);
++				goto discard_and_relse;
++			} else {
++				sock_put(sk);
++				return 0;
++			}
+ 		}
+ 	}
+ 
+-- 
+2.36.1
+
