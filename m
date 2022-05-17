@@ -2,98 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FA8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 21:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD59C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 21:44:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbiEQVjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 17:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S229570AbiEQVoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 17:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiEQVjm (ORCPT
+        with ESMTP id S229441AbiEQVnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 17:39:42 -0400
-X-Greylist: delayed 388 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 14:39:38 PDT
-Received: from mail.wantyapps.xyz (unknown [IPv6:2001:19f0:5:305f:5400:3ff:fe88:abd4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF02A42480
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 14:39:38 -0700 (PDT)
-Received: from localhost (bzq-79-183-83-88.red.bezeqint.net [79.183.83.88])
-        by mail.wantyapps.xyz (Postfix) with ESMTPSA id 416AF7D632;
-        Tue, 17 May 2022 21:33:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wantyapps.xyz;
-        s=mail; t=1652823189;
-        bh=77TXRvsh7hWaErTGymOW8BHXjkBr9MyPIBb/1lV4nz4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pMNaTGFYXkBbzqBR4ubjPKA7zfgD4zYfUvj1SE7As1PbnFh7XB3Owi4Rs34pL8+ay
-         1v5gDAaSI00IEEWLkGRjq56Z8HGATGDr4Rx1HQNh8tA9q1T+SDs6E1tPnHoqoiAqmt
-         iq5ZUPecBIv9YV+AiqnevFZHeU8WqKRZAm5s6cav5W0+z8ImBXqHt6UI4t8yARG+V6
-         qqPoICzto2NMz9j4EMTUAE3wX8f9m28VD8wElew1fIT+fl90SPmz+VtR+pdbM2lpon
-         QGLOk8q1nObTij2r6PZNYVxIteRbphoErZRwGExyw1SCw+9r0G8rtIcFnSgtsv5YFQ
-         3+lx1sMlvg0vg==
-From:   Uri Arev <me@wantyapps.xyz>
-Cc:     Uri Arev <me@wantyapps.xyz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: axis-fifo: fix indentation according to checkpatch.pl
-Date:   Wed, 18 May 2022 00:33:01 +0300
-Message-Id: <20220517213302.671148-1-me@wantyapps.xyz>
-X-Mailer: git-send-email 2.36.1
+        Tue, 17 May 2022 17:43:50 -0400
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF1F50441;
+        Tue, 17 May 2022 14:43:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3MN9R0ncE8uUAxzrbD9D9kHBacmiEBQxp8Szamm8Dr4=; b=pWFJRn3NyAvA7NK+RkLv0kJiJs
+        VBDQ6yEpt4u26gcaTk1U+5+K+FS8UZ8Voegl441DMsSZd1IY56qTPhXIaXeZ6I71rJH4jaKD93DiZ
+        9Nx1X9TxTEwJ7ZAZQsD+l8bA2AZeTjy5ywW811CBhaiTqo/9rjnlGr8aoR86lAeBKYOC8te19VqNO
+        zMtRn1TL8STcuT/cym0BXOz//P3q0x4JRwpuzhuGn/veX7GUSCr+wD3ajPINs9BcYQgWHr+wXZ8fu
+        jiCNIyE+PYhgokvcfbFabgyXuX3ws3CCMtR9PTDJP16HSHBWJVVXPGzWBkPFi/ssLdOYET7Rvz+9l
+        Zihc79yw==;
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nr4yg-00FqGx-3D; Tue, 17 May 2022 21:43:38 +0000
+Date:   Tue, 17 May 2022 21:43:38 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Yongzhi Liu <lyz_cs@pku.edu.cn>
+Cc:     serge@hallyn.com, jmorris@namei.org, dhowells@redhat.com,
+        ebiederm@xmission.com, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] commoncap: check return value to avoid null pointer
+ dereference
+Message-ID: <YoQXClv8jlNcOg1p@zeniv-ca.linux.org.uk>
+References: <1652722802-66170-1-git-send-email-lyz_cs@pku.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652722802-66170-1-git-send-email-lyz_cs@pku.edu.cn>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(My first patch!)
+On Mon, May 16, 2022 at 10:40:02AM -0700, Yongzhi Liu wrote:
+> The pointer inode is dereferenced before a null pointer
+> check on inode, hence if inode is actually null we will
+> get a null pointer dereference. Fix this by only dereferencing
+> inode after the null pointer check on inode.
+> 
+> Fixes: c6f493d631c ("VFS: security/: d_backing_inode() annotations")
+> Fixes: 8db6c34 ("Introduce v3 namespaced file capabilities")
+> 
+> Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+> ---
+>  security/commoncap.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/security/commoncap.c b/security/commoncap.c
+> index 5fc8986..978f011 100644
+> --- a/security/commoncap.c
+> +++ b/security/commoncap.c
+> @@ -298,6 +298,8 @@ int cap_inode_need_killpriv(struct dentry *dentry)
+>  	struct inode *inode = d_backing_inode(dentry);
+>  	int error;
+>  
+> +	if (!inode)
+> +		return 0;
+>  	error = __vfs_getxattr(dentry, inode, XATTR_NAME_CAPS, NULL, 0);
+>  	return error > 0;
+>  }
 
-scripts/checkpatch.pl warned about an indentation problem in
-the axix-fifo.c file.
 
-Checkpatch warning:
-	CHECK: Alignment should match open parenthesis
+	Huh?  AFAICS, that has all of two callers - notify_change() and
+dentry_needs_remove_privs().  Both of them should never be called on
+negative dentries and both would have blown up well before the call of
+security_inode_need_killpriv().
 
-Signed-off-by: Uri Arev <me@wantyapps.xyz>
----
- drivers/staging/axis-fifo/axis-fifo.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+> @@ -545,11 +547,13 @@ int cap_convert_nscap(struct user_namespace *mnt_userns, struct dentry *dentry,
+>  	const struct vfs_cap_data *cap = *ivalue;
+>  	__u32 magic, nsmagic;
+>  	struct inode *inode = d_backing_inode(dentry);
+> -	struct user_namespace *task_ns = current_user_ns(),
+> -		*fs_ns = inode->i_sb->s_user_ns;
+> +	struct user_namespace *task_ns = current_user_ns(), *fs_ns;
+>  	kuid_t rootid;
+>  	size_t newsize;
+>  
+> +	if (!inode)
+> +		return -EINVAL;
+> +	fs_ns = inode->i_sb->s_user_ns;
+>  	if (!*ivalue)
+>  		return -EINVAL;
+>  	if (!validheader(size, cap))
 
-diff --git a/drivers/staging/axis-fifo/axis-fifo.c b/drivers/staging/axis-fifo/axis-fifo.c
-index dfd2b357f484..51ce48e68e27 100644
---- a/drivers/staging/axis-fifo/axis-fifo.c
-+++ b/drivers/staging/axis-fifo/axis-fifo.c
-@@ -383,10 +383,10 @@ static ssize_t axis_fifo_read(struct file *f, char __user *buf,
- 		 */
- 		mutex_lock(&fifo->read_lock);
- 		ret = wait_event_interruptible_timeout(fifo->read_queue,
--			ioread32(fifo->base_addr + XLLF_RDFO_OFFSET),
--				 (read_timeout >= 0) ?
--				  msecs_to_jiffies(read_timeout) :
--				  MAX_SCHEDULE_TIMEOUT);
-+						       ioread32(fifo->base_addr + XLLF_RDFO_OFFSET),
-+								(read_timeout >= 0) ?
-+								 msecs_to_jiffies(read_timeout) :
-+								 MAX_SCHEDULE_TIMEOUT);
- 
- 		if (ret <= 0) {
- 			if (ret == 0) {
-@@ -526,11 +526,11 @@ static ssize_t axis_fifo_write(struct file *f, const char __user *buf,
- 		 */
- 		mutex_lock(&fifo->write_lock);
- 		ret = wait_event_interruptible_timeout(fifo->write_queue,
--			ioread32(fifo->base_addr + XLLF_TDFV_OFFSET)
--				 >= words_to_write,
--				 (write_timeout >= 0) ?
--				  msecs_to_jiffies(write_timeout) :
--				  MAX_SCHEDULE_TIMEOUT);
-+						       ioread32(fifo->base_addr + XLLF_TDFV_OFFSET)
-+								>= words_to_write,
-+								(write_timeout >= 0) ?
-+								 msecs_to_jiffies(write_timeout) :
-+								 MAX_SCHEDULE_TIMEOUT);
- 
- 		if (ret <= 0) {
- 			if (ret == 0) {
--- 
-2.36.1
-
+... and that one come from vfs_setxattr().  Again, calling that on a negative
+dentry is an oopsable bug.  If you have any reproducers, please post the stack
+traces so it would be possible to deal with the underlying problem.
