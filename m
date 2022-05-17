@@ -2,253 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FADFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AAA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiEQHix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42826 "EHLO
+        id S242237AbiEQHjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241636AbiEQHhI (ORCPT
+        with ESMTP id S242075AbiEQHjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:37:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2813448E50
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:37:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652773019;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Mqoy+gV+cPqf1cM9iO48i7hrZpV+uT4NBe8cPuE9DHk=;
-        b=F8tSdtKpUU0HwMiY+Rja7nEQglpXfWaJW7sM2YGAUZlHg//GvQGkGkHENEuIZkpwZz5dTW
-        UYAqYPVMBMwI+TKOtr31PCuntoWxllv8Tp9eBc5NJl1qH5fnggSX/xDMluZXRDrbkxyDVx
-        Xbj32zfRfLVJX2Ji202Z+Rh6FYQ7gBA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-88-cZvUbg2HOE6qVtAgQLSAdg-1; Tue, 17 May 2022 03:36:55 -0400
-X-MC-Unique: cZvUbg2HOE6qVtAgQLSAdg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0DF6F299E751;
-        Tue, 17 May 2022 07:36:54 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2B55215687CF;
-        Tue, 17 May 2022 07:36:49 +0000 (UTC)
-Date:   Tue, 17 May 2022 09:36:47 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v3 4/4] bpf_trace: pass array of u64 values in
- kprobe_multi.addrs
-Message-ID: <6ef675aeeea442fa8fc168cd1cb4e4e474f65a3f.1652772731.git.esyr@redhat.com>
-References: <cover.1652772731.git.esyr@redhat.com>
+        Tue, 17 May 2022 03:39:08 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECD249928
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:37:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652773044; x=1684309044;
+  h=message-id:date:subject:references:to:cc:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=EuQUJ4ntQWTth6RVAZZsyQWpvTdOw17Gg03O6anopkc=;
+  b=OOfcDSZhO3kAzk90ES6WMgLIUZOk2AkP93LEtfpmhLmqt9nXOqdPqgYw
+   4r9czuGqHInDBAQlSYa23faTXkrp6QLdNa9ZWU6gZ1eu4lM0Cbk4PDvtY
+   35oqEJ5lJvRkQgLp4GG5Xn2FGeBOeqXE25d9w4jCxfeWknGBLZJ4mt2Iv
+   YRzYM9Tr+mhpLULKgfF5g/cI4NvsWJ2o4VML1T9KaLNUTsvylN4S3BWtx
+   6zyjo7HYPI72L/A52pPkoY5ANfOzZQZIgtB1gDdolDHo2DUaz3xgU7oFu
+   ZbkCyIH9hKHAemDiMxvOHFfywQ9Xq+qBt/JkmohGYLTj2J1TxFnqn1bqn
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="269921955"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="269921955"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 00:37:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="713740364"
+Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
+  by fmsmga001.fm.intel.com with ESMTP; 17 May 2022 00:37:24 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 17 May 2022 00:37:23 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 17 May 2022 00:37:23 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 17 May 2022 00:37:23 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.106)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 17 May 2022 00:37:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=boe2PV0tqZxsrp1NjytWsUeJ2KNlyn8zSNqQ/xRgdVttzl4rE+OOWvOrpRFIA4nMNgmTyokVzUr0pFpy+IfrsS5vRXnZ2MNaYdHZEuiQ78Njd9phCaUcHMqlfVRViLrL1Rhtjyi7y3FJf8JunH2QZpepOxa1CZPtIxHJYEj85GSZJvftr+OAjyLDw23kKV8qDifDsHKWPSzML/Nf22VqBQD0bKiCWJ2uVjWDI/iZCh0Xu+ddZegVppUWZbvMI0M1zs6TbnIKngn6/V3x8/dS1U82QSkbo6gCANK7KHVYjBS62o2oGB98h1s4mzzWzw9xj2XzKc0+M31+6ECgnFJ+bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iC63QTat101Tl1OxNrZeQ6/30p69QG4xA5FwytbPGCY=;
+ b=I8TmrW5S27/zG+81KmoRHqwLp9z3dDwX4Cy0hf/FX/rnp1oKHE7X+NmyEb/4lgPUfPjsAFjc2s2xLRFYO1NYLVXEVieFy6/CbncEXI1Iu4/GEbNcwXLfqIJdGvU6xWS3nv4xFCTANLlNvuUXjj3CUP3ZfnPi63ct/yeFmURtpomLKm+saJEsPA+zd017zy8UtQ7WzwT0AVhHrK1rZd+zVM1xp2N+pxVPn+GDvrbhtSIq4oFf9bFbO+LQ2R+ce2a2R7GazQqTbeYXbLOrhFCU+cz/fVyBT5czFEKGeYS4/16AKISizeutwv4uynnKNCCvTuAw4j2XvrWvftzTdCHkpg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MW4PR11MB5933.namprd11.prod.outlook.com (2603:10b6:303:16a::15)
+ by CO1PR11MB4817.namprd11.prod.outlook.com (2603:10b6:303:98::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Tue, 17 May
+ 2022 07:37:21 +0000
+Received: from MW4PR11MB5933.namprd11.prod.outlook.com
+ ([fe80::1169:fc9:c1ef:248e]) by MW4PR11MB5933.namprd11.prod.outlook.com
+ ([fe80::1169:fc9:c1ef:248e%7]) with mapi id 15.20.5250.018; Tue, 17 May 2022
+ 07:37:21 +0000
+Message-ID: <1d5d45eb-d2bf-25e5-78f9-d9934d007e53@intel.com>
+Date:   Tue, 17 May 2022 15:37:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.0
+Subject: kismet: WARNING: unmet direct dependencies detected for
+ DRM_GEM_SHMEM_HELPER when selected by DRM_SSD130X
+References: <202205170208.Yt8FevjK-lkp@intel.com>
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>
+CC:     Paul Gazzillo <paul@pgazz.com>,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        <kbuild-all@lists.01.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>
+From:   kernel test robot <yujie.liu@intel.com>
+In-Reply-To: <202205170208.Yt8FevjK-lkp@intel.com>
+X-Forwarded-Message-Id: <202205170208.Yt8FevjK-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR02CA0095.apcprd02.prod.outlook.com
+ (2603:1096:4:90::35) To MW4PR11MB5933.namprd11.prod.outlook.com
+ (2603:10b6:303:16a::15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1652772731.git.esyr@redhat.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e1a507d2-ad28-4ea5-a2ec-08da37d81409
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4817:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <CO1PR11MB4817C259139AF30C5EE14BD6FBCE9@CO1PR11MB4817.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: OJTPDQlXWZueME/vNS2JvAZIA7Vknx49rAGV/c2ZZUOQrCwe4ZKIYHLN4JXIoDe3XONbBniV/TYuUR3hdnwRt6rQ9xcab2N/2DWiJAvozBknfP1RsS37XnLniePO23FbiAORaLmCD47JxKQ1LfYED8Zx8G9G/w7Ip3FB7XJw6DOcG0Fn0vUuOr+tCjrD4FV4XSHhugfnO0A8lJ2/txXr0mJyw573UN7+4f0vGeWB0LTxsAGebsZ49yyHLEB1gc2qzhEq+ELWVSMGfkDfapqF2TTIGeSCJyO+4sIQLbnuEzzuy+r+bgZQtctmiZk5O8IlHIuvH4DhVLUhztsV/kVk3kK0ixZq3IpSWFh5CglEeHTs6dswevjVk7BLWPY64cpcA3ab7Oxiebol9dkHv4KBslsZ+BscMn135+yQk6bZh2ODRSenhe/7e0Vf4fRFvP3bi2E64euGs3WLwGVMWv0z2LJJ5cClGBjwgSujDEcYLPAMoNUW9YN6UUfeKGl6A8d27QyWkyoiTloCLfIvWvDdMThBlwb6vpGCq9xuiAJVvJ2HaOM08wU9r5E84z3AsyLTvuNH4Ieov+ldUD1kkF33D9DddZ+H52p/ZU9mGplJ59yVHy2bRadnLscDMbdZcUAv0zFAqXr+D018bgnig1w/QwTQYuHDOA8lRqSSV9Gmh2DXqP57aTkXtZa/wyTdQOEmEB4oC+illR8RKgJ9uN4Sh8BP4TidwZmKQhXF7OztUMCw3NamH6fUX+68MskG0lCjfFHF5DNIRXf+fwNLBXoSdswo+8zQNtRg88If7ygZSsd3u3uggXghd558zXo3MWYqKQHinl6K23aBR7wczeAqljz0gxSuItKEk7q6oByE2Y8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5933.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(36756003)(31686004)(6916009)(38100700002)(8676002)(186003)(82960400001)(54906003)(4326008)(86362001)(26005)(2906002)(83380400001)(31696002)(6512007)(6666004)(6506007)(5660300002)(966005)(8936002)(6486002)(66556008)(66476007)(66946007)(316002)(508600001)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YTBvNjBIMzgzUk9rZ3ppZkJGMzRURCtEdFZhQUJXZmRaQnFhRVZMdlJLN0V3?=
+ =?utf-8?B?NTBaU2MveTFpZXQ1WXRnVzdPNkd4UlJvakNDY1JHVVVyYXVMc0cwUEh0b0dQ?=
+ =?utf-8?B?dWxlOGJxWmxHRkFsSHZxZWNhK2E2SGh0ZndVbU94S2h0cVZpYTUzL3ROUHhO?=
+ =?utf-8?B?aDBFTmc4VzRjNEhpVWFZVTBqMHQwL3hHYkE3dkFzV1ZUcXRqZ3dXVVhvcEow?=
+ =?utf-8?B?Z29xS2VXUlFRemFEMWZrTGpHMHBEbm5DRHNYQWUzYURnVytWRTU4QW9sYjBG?=
+ =?utf-8?B?Uk9JQ1NNclVpYWVGdjduYWxFZEppdXVhZ2JNUkx0eDZKT2x5VVNjY3dxcFJT?=
+ =?utf-8?B?WUpiajVvY3I3Nm1DL1RSRExndmxtSytVRjNiRG1tOU5seXBvQ0kxZzBRQUhD?=
+ =?utf-8?B?bmQ5dEpsOHJBWE5uS1NRd0psc0c3d3gxbFZacGoydFBqdDF1TW91ajlvT3NJ?=
+ =?utf-8?B?b3JOME9RVEpsMFB3L0Vja1NmcndtYVJMM3BHUmdnU2Y0ZkhqT1c2bG1CMVV3?=
+ =?utf-8?B?dXNHNWZ2OWJicWV2cDFsWlF2WVlFQVExcVErVXdRbUFucm5zYXllMEFJZUZp?=
+ =?utf-8?B?Rm8rWjl6Q2NOcnJGdDFiSU8zWmlQYVdOaHphQ3krMzNtY1hyZUZLR3hBZStO?=
+ =?utf-8?B?bVlWVnVNSTlBbkcwSU9LLzNVNHpNZmRzOEhoaXJXNDVQQmoxUmhscittSFc1?=
+ =?utf-8?B?bHNHaFovc3hXdUh5WDJYTzFFVkhXTEVpaXpnSGYydEZBREtDVGpmYzBHc2VL?=
+ =?utf-8?B?YUlOSWRpTXo4K2ppK2hMQjY1WmRuSlNyc0pEbUVtQitSbFZzSG1HaXo5UGRo?=
+ =?utf-8?B?Z2tMcnhwTERQUFc5SnY1SU0wTG1hc05VSHE1NWhoeFloeEgxZU9td05PSzBC?=
+ =?utf-8?B?OWFISm5SZWpGNXBDRjVjZEJBWUt2bktVY3dKQThiaTByb3AzNFk5K0pKS1Ju?=
+ =?utf-8?B?MDY0eEdiVXFWUEk4TUFEOWs4eCt4VWlsY09kYmtnOGlkblRPbnVMNXBlYlA0?=
+ =?utf-8?B?cHdPZlVWZTJDWXQzQVlnTkJ0RjZmN0ZWRk4wNytzZ1E0Y0djdzVINmNSdnVm?=
+ =?utf-8?B?Z0xtRFBYU0srZVRNcldSNjRkWi9hZ2t5MGZoU2lBdktuTzJ3THNJK3FMd2hz?=
+ =?utf-8?B?YnFwdkUzelhNU3kyQTlySUN5SnZDbnBkTVlvRk9EVXo4eXoxNTBjOWJMWkJs?=
+ =?utf-8?B?Z2U1bEE2d041b094dm5pMHVzTUNkbzZBTy9DRUFwR2VGMVhnS2dqSlRIM29Q?=
+ =?utf-8?B?YUQyVmhqd0tFUkR1NW1mSE9PYzU5VkFWMjEwR2RTb1NzNHVyYWc1c0dsMER1?=
+ =?utf-8?B?TnpaVlJ2TU5iVjBUTjdyalM2Y1lvcGpvS3VwOUJnNUhPekJCTVI4R2hlZGtL?=
+ =?utf-8?B?clU5S01oaFkvejYxWEhKRnptMVpjM09lVmRWR0ZDaVhBZXJ1NXc1eXZiWk1z?=
+ =?utf-8?B?dC9hVmVaYU1CSHZ3VGxScVNYbDdlSVNGbCtWVHlhMldqcHFpZXFtOVVka1hq?=
+ =?utf-8?B?c2lzWU5PSFJiSDFUQlZ6UHAvYi9EUDNnN3UrUXFYQWdBZkRMTVVySE8yS0RM?=
+ =?utf-8?B?L1c3OElRVzZkQUpiZkFxTDdPT1NyMFpOR2VncVhRZGE4R2J1Z0dNT0tZTGkw?=
+ =?utf-8?B?T3M3eWxKemh5Q3VnSVJTSnJ1OFdVUFFUOEdsOHhhVDZPbGFTejFTdVJiWFBH?=
+ =?utf-8?B?NkdkcTNIcW5LaVAxY21ndTFQTjNsbGZVSzhjbU9lU1dyV2k5aWp3dGRtNnBs?=
+ =?utf-8?B?cHFTMGU5bXhyb1B5N2VrR3NHTmoyUU9FWHV4RWVFRmFzd0JIbjZFaUJabi8w?=
+ =?utf-8?B?R1VnMmRBU3pQdUZkOFBuemptb1NUeG5jUnJBR250VTJWUVE4WWMrSHRGcnVZ?=
+ =?utf-8?B?STQrUi93U2dpcTNVM0hvZ2tmR3I5WWsyWUlWbmhqSEF2aVVxUmkxZmNHK2Na?=
+ =?utf-8?B?MHJvQW9USFBlWm9lb3UxUEo0d1NWdGl4TTNJRkFHSVN0N1FrR3pNeDBiMmZk?=
+ =?utf-8?B?cWs3VjROZ1ovbTVaZFhuSEEwUUlqdzRqdzV3YUcvMUZLdm85V1UvcjF2dnJt?=
+ =?utf-8?B?R21lNUtrWjQrbjRQUVhPcEd6ZG1EVlY2dytidVBYc0RacFlzeDBpTzlJcVo0?=
+ =?utf-8?B?S01hNnFLMFpiMTRtL3ZoSm11Uk5jZUZicUpwbzNTZFVRZ2tuVWgvRXJyUjU2?=
+ =?utf-8?B?b2l6ckdCcXlQQThDUjBnNlBlYm8rQ3RJSlBjKzJCUlJOaGhiYTJHR05XS0px?=
+ =?utf-8?B?RktFUnY2Y2p2cnF2b2o2OUpJZ3F6dDhRWXNrTjNBL0gzQkoyQUJGL3FsRm5U?=
+ =?utf-8?B?cVZXZ1Z1UXBpYWFaYkxsSGNseFhDZlh5eDJiK2VKWEpRbXZFNTJuRDVoYVUz?=
+ =?utf-8?Q?M2IbhQ6wTjakHmaY=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1a507d2-ad28-4ea5-a2ec-08da37d81409
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5933.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2022 07:37:21.8266
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: t5Yze04DK5wsRhE6KjnwNJX5c2OzoGcJghCTi6ssjcueSVlrlwMY/U8RWoEsNOOKx7m6wRFiFNWxfjzyxC/Bww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4817
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the interface as defined, it is impossible to pass 64-bit kernel
-addresses from a 32-bit userspace process in BPF_LINK_TYPE_KPROBE_MULTI,
-which severly limits the useability of the interface, change the ABI
-to accept an array of u64 values instead of (kernel? user?) longs.
-Interestingly, the rest of the libbpf infrastructure uses 64-bit values
-for kallsyms addresses already, so this patch also eliminates
-the sym_addr cast in tools/lib/bpf/libbpf.c:resolve_kprobe_multi_cb().
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   42226c989789d8da4af1de0c31070c96726d990c
+commit: a61732e808672cfa8c8c6028bcf9feacb953ef40 drm: Add driver for Solomon SSD130x OLED displays
+date:   3 months ago
+config: (https://download.01.org/0day-ci/archive/20220517/202205170208.Yt8FevjK-lkp@intel.com/config)
+reproduce:
+         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a61732e808672cfa8c8c6028bcf9feacb953ef40
+         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+         git fetch --no-tags linus master
+         git checkout a61732e808672cfa8c8c6028bcf9feacb953ef40
+         # 1. reproduce by kismet
+            # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
+            kismet --linux-ksrc=linux --selectees CONFIG_DRM_GEM_SHMEM_HELPER --selectors CONFIG_DRM_SSD130X -a=riscv
+         # 2. reproduce by make
+            # save the config file to linux source tree
+            cd linux
+            make ARCH=riscv olddefconfig
 
-Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-Fixes: 5117c26e877352bc ("libbpf: Add bpf_link_create support for multi kprobes")
-Fixes: ddc6b04989eb0993 ("libbpf: Add bpf_program__attach_kprobe_multi_opts function")
-Fixes: f7a11eeccb111854 ("selftests/bpf: Add kprobe_multi attach test")
-Fixes: 9271a0c7ae7a9147 ("selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts")
-Fixes: 2c6401c966ae1fbe ("selftests/bpf: Add kprobe_multi bpf_cookie test")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- kernel/trace/bpf_trace.c                           | 25 ++++++++++++++++++----
- tools/lib/bpf/bpf.h                                |  2 +-
- tools/lib/bpf/libbpf.c                             |  8 +++----
- tools/lib/bpf/libbpf.h                             |  2 +-
- .../testing/selftests/bpf/prog_tests/bpf_cookie.c  |  2 +-
- .../selftests/bpf/prog_tests/kprobe_multi_test.c   |  8 +++----
- 6 files changed, 32 insertions(+), 15 deletions(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <yujie.liu@intel.com>
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 9d3028a..30a15b3 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2454,7 +2454,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 	void __user *ucookies;
- 	unsigned long *addrs;
- 	u32 flags, cnt, size, cookies_size;
--	void __user *uaddrs;
-+	u64 __user *uaddrs;
- 	u64 *cookies = NULL;
- 	void __user *usyms;
- 	int err;
-@@ -2486,9 +2486,26 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 		return -ENOMEM;
- 
- 	if (uaddrs) {
--		if (copy_from_user(addrs, uaddrs, size)) {
--			err = -EFAULT;
--			goto error;
-+		if (sizeof(*addrs) == sizeof(*uaddrs)) {
-+			if (copy_from_user(addrs, uaddrs, size)) {
-+				err = -EFAULT;
-+				goto error;
-+			}
-+		} else {
-+			u32 i;
-+			u64 addr;
-+
-+			for (i = 0; i < cnt; i++) {
-+				if (get_user(addr, uaddrs + i)) {
-+					err = -EFAULT;
-+					goto error;
-+				}
-+				if (addr > ULONG_MAX) {
-+					err = -EINVAL;
-+					goto error;
-+				}
-+				addrs[i] = addr;
-+			}
- 		}
- 	} else {
- 		struct user_syms us;
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index 2e0d373..da9c6037 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -418,7 +418,7 @@ struct bpf_link_create_opts {
- 			__u32 flags;
- 			__u32 cnt;
- 			const char **syms;
--			const unsigned long *addrs;
-+			const __u64 *addrs;
- 			const __u64 *cookies;
- 		} kprobe_multi;
- 		struct {
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index ef7f302..35fa9c5 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10737,7 +10737,7 @@ static bool glob_match(const char *str, const char *pat)
- 
- struct kprobe_multi_resolve {
- 	const char *pattern;
--	unsigned long *addrs;
-+	__u64 *addrs;
- 	size_t cap;
- 	size_t cnt;
- };
-@@ -10752,12 +10752,12 @@ resolve_kprobe_multi_cb(unsigned long long sym_addr, char sym_type,
- 	if (!glob_match(sym_name, res->pattern))
- 		return 0;
- 
--	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(unsigned long),
-+	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(__u64),
- 				res->cnt + 1);
- 	if (err)
- 		return err;
- 
--	res->addrs[res->cnt++] = (unsigned long) sym_addr;
-+	res->addrs[res->cnt++] = sym_addr;
- 	return 0;
- }
- 
-@@ -10772,7 +10772,7 @@ bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
- 	};
- 	struct bpf_link *link = NULL;
- 	char errmsg[STRERR_BUFSIZE];
--	const unsigned long *addrs;
-+	const __u64 *addrs;
- 	int err, link_fd, prog_fd;
- 	const __u64 *cookies;
- 	const char **syms;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 9e9a3fd..76e171d 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -489,7 +489,7 @@ struct bpf_kprobe_multi_opts {
- 	/* array of function symbols to attach */
- 	const char **syms;
- 	/* array of function addresses to attach */
--	const unsigned long *addrs;
-+	const __u64 *addrs;
- 	/* array of user-provided values fetchable through bpf_get_attach_cookie */
- 	const __u64 *cookies;
- 	/* number of elements in syms/addrs/cookies arrays */
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-index 83ef55e3..e843840 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-@@ -140,7 +140,7 @@ static void kprobe_multi_link_api_subtest(void)
- 	cookies[6] = 7;
- 	cookies[7] = 8;
- 
--	opts.kprobe_multi.addrs = (const unsigned long *) &addrs;
-+	opts.kprobe_multi.addrs = (const __u64 *) &addrs;
- 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
- 	opts.kprobe_multi.cookies = (const __u64 *) &cookies;
- 	prog_fd = bpf_program__fd(skel->progs.test_kprobe);
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index 586dc52..7646112 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -108,7 +108,7 @@ static void test_link_api_addrs(void)
- 	GET_ADDR("bpf_fentry_test7", addrs[6]);
- 	GET_ADDR("bpf_fentry_test8", addrs[7]);
- 
--	opts.kprobe_multi.addrs = (const unsigned long*) addrs;
-+	opts.kprobe_multi.addrs = (const __u64 *) addrs;
- 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
- 	test_link_api(&opts);
- }
-@@ -186,7 +186,7 @@ static void test_attach_api_addrs(void)
- 	GET_ADDR("bpf_fentry_test7", addrs[6]);
- 	GET_ADDR("bpf_fentry_test8", addrs[7]);
- 
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.cnt = ARRAY_SIZE(addrs);
- 	test_attach_api(NULL, &opts);
- }
-@@ -244,7 +244,7 @@ static void test_attach_api_fails(void)
- 		goto cleanup;
- 
- 	/* fail_2 - both addrs and syms set */
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.syms = syms;
- 	opts.cnt = ARRAY_SIZE(syms);
- 	opts.cookies = NULL;
-@@ -258,7 +258,7 @@ static void test_attach_api_fails(void)
- 		goto cleanup;
- 
- 	/* fail_3 - pattern and addrs set */
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.syms = NULL;
- 	opts.cnt = ARRAY_SIZE(syms);
- 	opts.cookies = NULL;
+
+kismet warnings: (new ones prefixed by >>)
+ >> kismet: WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER when selected by DRM_SSD130X
+
+    WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
+      Depends on [n]: HAS_IOMEM [=y] && DRM [=y] && MMU [=n]
+      Selected by [y]:
+      - DRM_SSD130X [=y] && HAS_IOMEM [=y] && DRM [=y]
+
 -- 
-2.1.4
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
