@@ -2,143 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D36C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE99C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234002AbiEQAd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 20:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
+        id S236309AbiEQAde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 20:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiEQAdZ (ORCPT
+        with ESMTP id S229638AbiEQAdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 20:33:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7389924F33
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:33:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39FA6B816AA
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0A1FC385AA;
-        Tue, 17 May 2022 00:33:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1652747602;
-        bh=0pM6ajRonXAd36beDn0bSIZ5S34lHL+3SAO1ZfDWDBY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YJUHs/Tzpopnj0FkV/p0abeft/SHtGlPtnE3cUHAfI7TfoCxowJ8pQbbVtIbkUi0S
-         lNmZCxe/TRSTUEg9ZN3CaJfh/0II+hvE0DulkxwHOFsRRoqdtUtlmgQ8lruX3eZixN
-         KW2cJLcVEv4sej5IJf1xo5FAKcuwUVvSiYvyvtSk=
-Date:   Mon, 16 May 2022 17:33:21 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Jaewon Kim <jaewon31.kim@samsung.com>
-Cc:     vbabka@suse.cz, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        jaewon31.kim@gmail.com, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [RFC PATCH] page_ext: create page extension for all memblock
- memory regions
-Message-Id: <20220516173321.67402b7f09eacc43d4e476f4@linux-foundation.org>
-In-Reply-To: <20220509074330.4822-1-jaewon31.kim@samsung.com>
-References: <CGME20220509073953epcas1p127f2d36186316642068c92c5d9dee1c4@epcas1p1.samsung.com>
-        <20220509074330.4822-1-jaewon31.kim@samsung.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: from out199-15.us.a.mail.aliyun.com (out199-15.us.a.mail.aliyun.com [47.90.199.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BFE2715E;
+        Mon, 16 May 2022 17:33:23 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VDPIy.u_1652747598;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VDPIy.u_1652747598)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 17 May 2022 08:33:19 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     mchehab@kernel.org
+Cc:     eugen.hristev@microchip.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] media: atmel: atmel-isc-base: remove unneeded semicolon
+Date:   Tue, 17 May 2022 08:33:17 +0800
+Message-Id: <20220517003317.122054-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  9 May 2022 16:43:30 +0900 Jaewon Kim <jaewon31.kim@samsung.com> wrote:
+Eliminate the following coccicheck warning:
+./drivers/media/platform/atmel/atmel-isc-base.c:1469:2-3: Unneeded
+semicolon
 
-> The page extension can be prepared for each section. But if the first
-> page is not valid, the page extension for the section was not
-> initialized though there were many other valid pages within the section.
-> 
-> To support the page extension for all sections, refer to memblock memory
-> regions. If the page is valid use the nid from pfn_to_nid, otherwise use
-> the previous nid.
-> 
-> Also this pagech changed log to include total sections and a section
-> size.
-> 
-> i.e.
-> allocated 100663296 bytes of page_ext for 64 sections (1 section : 0x8000000)
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/media/platform/atmel/atmel-isc-base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Cc Joonsoo, who wrote this code.
-Cc Mike, for memblock.
+diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+index 2f07a50035c8..88308bb9c079 100644
+--- a/drivers/media/platform/atmel/atmel-isc-base.c
++++ b/drivers/media/platform/atmel/atmel-isc-base.c
+@@ -1466,7 +1466,7 @@ static void isc_awb_work(struct work_struct *w)
+ 	if (isc->stop) {
+ 		mutex_unlock(&isc->awb_mutex);
+ 		return;
+-	};
++	}
+ 
+ 	isc_update_profile(isc);
+ 
+-- 
+2.20.1.7.g153144c
 
-Thanks.
-
-> 
-> diff --git a/mm/page_ext.c b/mm/page_ext.c
-> index 2e66d934d63f..506d58b36a1d 100644
-> --- a/mm/page_ext.c
-> +++ b/mm/page_ext.c
-> @@ -381,41 +381,43 @@ static int __meminit page_ext_callback(struct notifier_block *self,
->  void __init page_ext_init(void)
->  {
->  	unsigned long pfn;
-> -	int nid;
-> +	int nid = 0;
-> +	struct memblock_region *rgn;
-> +	int nr_section = 0;
-> +	unsigned long next_section_pfn = 0;
->  
->  	if (!invoke_need_callbacks())
->  		return;
->  
-> -	for_each_node_state(nid, N_MEMORY) {
-> +	/*
-> +	 * iterate each memblock memory region and do not skip a section having
-> +	 * !pfn_valid(pfn)
-> +	 */
-> +	for_each_mem_region(rgn) {
->  		unsigned long start_pfn, end_pfn;
->  
-> -		start_pfn = node_start_pfn(nid);
-> -		end_pfn = node_end_pfn(nid);
-> -		/*
-> -		 * start_pfn and end_pfn may not be aligned to SECTION and the
-> -		 * page->flags of out of node pages are not initialized.  So we
-> -		 * scan [start_pfn, the biggest section's pfn < end_pfn) here.
-> -		 */
-> +		start_pfn = (unsigned long)(rgn->base >> PAGE_SHIFT);
-> +		end_pfn = start_pfn + (unsigned long)(rgn->size >> PAGE_SHIFT);
-> +
-> +		if (start_pfn < next_section_pfn)
-> +			start_pfn = next_section_pfn;
-> +
->  		for (pfn = start_pfn; pfn < end_pfn;
->  			pfn = ALIGN(pfn + 1, PAGES_PER_SECTION)) {
->  
-> -			if (!pfn_valid(pfn))
-> -				continue;
-> -			/*
-> -			 * Nodes's pfns can be overlapping.
-> -			 * We know some arch can have a nodes layout such as
-> -			 * -------------pfn-------------->
-> -			 * N0 | N1 | N2 | N0 | N1 | N2|....
-> -			 */
-> -			if (pfn_to_nid(pfn) != nid)
-> -				continue;
-> +			if (pfn_valid(pfn))
-> +				nid = pfn_to_nid(pfn);
-> +			nr_section++;
->  			if (init_section_page_ext(pfn, nid))
->  				goto oom;
->  			cond_resched();
->  		}
-> +		next_section_pfn = pfn;
->  	}
-> +
->  	hotplug_memory_notifier(page_ext_callback, 0);
-> -	pr_info("allocated %ld bytes of page_ext\n", total_usage);
-> +	pr_info("allocated %ld bytes of page_ext for %d sections (1 section : 0x%x)\n",
-> +		total_usage, nr_section, (1 << SECTION_SIZE_BITS));
->  	invoke_init_callbacks();
->  	return;
->  
-> -- 
-> 2.17.1
-> 
