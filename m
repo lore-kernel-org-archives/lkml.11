@@ -2,116 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 539A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 603A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345605AbiEQL7u (ORCPT
+        id S1345690AbiEQMAI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 07:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
+        Tue, 17 May 2022 08:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236666AbiEQL7i (ORCPT
+        with ESMTP id S235625AbiEQL7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 07:59:38 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FD142ED1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:59:32 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso2063094pjg.0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:59:32 -0700 (PDT)
+        Tue, 17 May 2022 07:59:39 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A95B43AC9
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:59:38 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id m20so34151739ejj.10
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:59:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6bJrUMEtSXW29jAE/Fjd7T3L0w+l4E7RzwnxxvWAHe8=;
-        b=UdBUPa4BMmyVFV5X3dWdrK5zqOmwHha1ptAMFhb8SL2rLlIo8AJ7FPnik2YMvmrMNJ
-         ssOSsgM68lwN9ni0KROmiFhQhUGA4jnWcKve9u9NTZpMUEVLpXWNcVVL9TtHdm1lsm3n
-         8uKLB1B12pw89azmhp4NoaMee8WYe+e+VwTeAtWTf8Pz03PxTue+HF3uKTRzwN3yRtZ/
-         74yg+cjsn0uG9sn7dwxBFMdcvwg59p+fgSXVCoTD9+jXrR3Be2M3d5CB3IDo5qSkoSHC
-         OOhgfXy1WNDCDYuk069fDYph/30/E8H01USHxlHNJteGyXNMele7XSZHxfA/Agdm4/pW
-         KuyA==
+        bh=We6UnTkt5DfPq+wuwoB7alfZF2Hv9K3HgKR2Inooa2M=;
+        b=mJUxow8TJYLd1QWdt4w54y14ncU32yxMoU6rAuy9WcO3jRkd7oe7jKuPrsY2rNm5sv
+         1BKYohHd6rUaSdXm5PduVz5YYYj/WNzO1gyqgmznJEr4jwUuuz3xIIfspVy5iZUe5YhQ
+         q1l32lRbVlLMCItWsIhV1mU6rnPvfK9fwRKkgflcgf0VpqLAtfHpwQNu1WE3VVurFdsA
+         iBr7rfZ/WlcszsTo/UvoSvzdkTYmse0qFb60Qb/YjL/eEzexO99zZrjtWGhYLDrKF3fj
+         La5T7bT9WybG4SiMlalfi1G9RI7UsOsibH+sFHt0JGH6m7rWrDkSKzp3bJrnWouYmXzX
+         QPgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=6bJrUMEtSXW29jAE/Fjd7T3L0w+l4E7RzwnxxvWAHe8=;
-        b=MiXQgPnOhigzCbnhxdTQ6eE+TO5DTmmhRLizzrepq/cQh8BWxCRQkXGefkd402UTJB
-         hZQQvk897BhWQXeDeHIf8zC2WYszsrbn4TtSKzHtbHb0SznldstuTdC4mo8Hebm7K3DX
-         rlhQPOvtocT3gy87OUOIvp41rpaqylOUDuS1diOGnF2Rc6+EiagXckb36/i1cOqEvz5B
-         N5zydgoB0RLtpOq9Bu1rj0we7a4tYDZkwxi5wJ2tY3BpB+uO835y7+39HaTpOEnGr/K2
-         LXsz+ZB6UWD6dCYPko1hPQIku10vGfOGrc86RmO82JIJTpZQ1HtXhpY38/yNUxVUcZIy
-         87tQ==
-X-Gm-Message-State: AOAM53048MVMzPDS7KiQqzZb8oHwCD4MYsSHoZQeUA0ebE9Vqk9Wamrs
-        X6IFb1pjJsXumFDsKEHh/Pjqlg==
-X-Google-Smtp-Source: ABdhPJwDn9mKzuaqQbJzdWhprI6qSVJpv42TdCp8EjfKceUOQHBlOuV1qwFmHJTb0yOW2zx4jDf/cg==
-X-Received: by 2002:a17:90a:de02:b0:1df:3f94:811c with SMTP id m2-20020a17090ade0200b001df3f94811cmr12865265pjv.112.1652788771667;
-        Tue, 17 May 2022 04:59:31 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id c17-20020a17090ab29100b001dc7623950csm1481322pjr.11.2022.05.17.04.59.30
+        bh=We6UnTkt5DfPq+wuwoB7alfZF2Hv9K3HgKR2Inooa2M=;
+        b=iObmiw3hV+ecMmkNZFa9SWvh9e5LX3CCE5ND09IznXK2hkZJW4okJt5f/rh3b3q/yi
+         enb4X0I7cpei6kKR06GNhvIF/vWEFKCbHjkQ2IfzrNdBwhuNHApx3rkDToY6SRN+aCFV
+         wEHYv1j1MP7X2J3rDWECPRps7//ym+tsYXNTCD9l/yDCJy8ig6B3du5lyzRWqSYpvq9W
+         POvewIPXX4kXMk0gxlQnWrFyPd+CqmebemtdvmHzfUEERbt4IwAvyx31Hw3w0o0HB4v5
+         6W1oHZsh1t0RFHXaH/petLnRoUfNLggO0WME+x5gYkdCetSRWarA88SPQNFAIH23Hd+B
+         lgPg==
+X-Gm-Message-State: AOAM5303Tf+ZrntBysLQa6aKpVRrkVpXDyxuvGmCxiUwcpmeK09LM1gS
+        EnfxaiBhHa/Idoy7a+T53zge8w==
+X-Google-Smtp-Source: ABdhPJyvwVUAbJ0QXLt9/CxdM+HPOyaIV1T5I4ZB9Qx0sEtfYLUok+mJqrxKP1RTakPh02MMo1ynRQ==
+X-Received: by 2002:a17:907:1c9c:b0:6f4:2918:5672 with SMTP id nb28-20020a1709071c9c00b006f429185672mr19312685ejc.439.1652788777021;
+        Tue, 17 May 2022 04:59:37 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id eg16-20020a056402289000b0042abb914d6asm2074448edb.69.2022.05.17.04.59.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 04:59:30 -0700 (PDT)
-Message-ID: <97cba3e1-4ef7-0a17-8456-e0787d6702c6@kernel.dk>
-Date:   Tue, 17 May 2022 05:59:29 -0600
+        Tue, 17 May 2022 04:59:36 -0700 (PDT)
+Message-ID: <96973d1d-c52c-d190-6989-3f7996dae70b@linaro.org>
+Date:   Tue, 17 May 2022 13:59:35 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [REPORT] Use-after-free Read in __fdget_raw in v5.10.y
+Subject: Re: [PATCH v2 2/3] ARM: dts: aspeed: Add USB2.0 device controller
+ node
 Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <YoOJ/T4QRKC+fAZE@google.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <YoOJ/T4QRKC+fAZE@google.com>
+To:     Neal Liu <neal_liu@aspeedtech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Felipe Balbi <balbi@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Li Yang <leoyang.li@nxp.com>
+Cc:     linux-aspeed@lists.ozlabs.org, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+References: <20220517082558.3534161-1-neal_liu@aspeedtech.com>
+ <20220517082558.3534161-3-neal_liu@aspeedtech.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220517082558.3534161-3-neal_liu@aspeedtech.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/17/22 5:41 AM, Lee Jones wrote:
-> Good afternoon Jens, Pavel, et al.,
+On 17/05/2022 10:25, Neal Liu wrote:
+> Add USB2.0 device controller(udc) node to device tree
+> for AST2600.
 > 
-> Not sure if you are presently aware, but there appears to be a
-> use-after-free issue affecting the io_uring worker driver (fs/io-wq.c)
-> in Stable v5.10.y.
+> Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+> ---
+>  arch/arm/boot/dts/aspeed-g6.dtsi | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> The full sysbot report can be seen below [0].
-> 
-> The C-reproducer has been placed below that [1].
-> 
-> I had great success running this reproducer in an infinite loop.
-> 
-> My colleague reverse-bisected the fixing commit to:
-> 
->   commit fb3a1f6c745ccd896afadf6e2d6f073e871d38ba
->   Author: Jens Axboe <axboe@kernel.dk>
->   Date:   Fri Feb 26 09:47:20 2021 -0700
-> 
->        io-wq: have manager wait for all workers to exit
-> 
->        Instead of having to wait separately on workers and manager, just have
->        the manager wait on the workers. We use an atomic_t for the reference
->        here, as we need to start at 0 and allow increment from that. Since the
->        number of workers is naturally capped by the allowed nr of processes,
->        and that uses an int, there is no risk of overflow.
-> 
->        Signed-off-by: Jens Axboe <axboe@kernel.dk>
-> 
->     fs/io-wq.c | 30 ++++++++++++++++++++++--------
->     1 file changed, 22 insertions(+), 8 deletions(-)
+> diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+> index 3d5ce9da42c3..5517313eb2b5 100644
+> --- a/arch/arm/boot/dts/aspeed-g6.dtsi
+> +++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+> @@ -298,6 +298,16 @@ vhub: usb-vhub@1e6a0000 {
+>  			status = "disabled";
+>  		};
+>  
+> +		udc: udc@1e6a2000 {
 
-Does this fix it:
+The same as DTS in bindings - generic node name, please.
 
-commit 886d0137f104a440d9dfa1d16efc1db06c9a2c02
-Author: Jens Axboe <axboe@kernel.dk>
-Date:   Fri Mar 5 12:59:30 2021 -0700
 
-    io-wq: fix race in freeing 'wq' and worker access
-
-Looks like it didn't make it into 5.10-stable, but we can certainly
-rectify that.
-
--- 
-Jens Axboe
-
+Best regards,
+Krzysztof
