@@ -2,81 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E19C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243953AbiEQKX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
+        id S1344054AbiEQKXh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344779AbiEQKV4 (ORCPT
+        with ESMTP id S1344799AbiEQKV6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:21:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA0530569;
+        Tue, 17 May 2022 06:21:58 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBE7530566;
+        Tue, 17 May 2022 03:20:16 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87FB41042;
+        Tue, 17 May 2022 03:20:16 -0700 (PDT)
+Received: from e121896.warwick.arm.com (e121896.warwick.arm.com [10.32.33.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 229383F66F;
         Tue, 17 May 2022 03:20:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E460AB81823;
-        Tue, 17 May 2022 10:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9D6ADC34119;
-        Tue, 17 May 2022 10:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652782811;
-        bh=nhjvkj3iLWixJ5u1Qchylx98GmsqtSXYDoguwIYIxyY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=O24H2hoHfqCzvFjdxlcNkLl8eMY1ZjQkuZlSS2SNeQJWT3DrA+6Rgtn7avtuUxouO
-         h8hDn35/tbmkUuWDXo21N0mdXTUreSrWhxcoC9oxjQZM1sUfGrqRiqVkh74/jwPLhO
-         dRo9y+TwrhT5kM9xZ6Jbx3eCEvkC2AgP/6qUVxPx1lAjBq6AhPps8LEY99Y8JTUQTs
-         cKPU6NYSJtv7VfZFyH+KVlc6CvCq6+YUiXl2+yIdS0GBy8prC9IpKySOXbRLTovrUy
-         IZirn+jF+xz4oB0+CcrEWZRKpXRS+oZi49/NyCvQ7bxhDRid7ApHfuvlak6kFRJhFT
-         kRakzSmiCNqsg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7C630F03935;
-        Tue, 17 May 2022 10:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+From:   James Clark <james.clark@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        broonie@kernel.org, acme@kernel.org
+Cc:     german.gomez@arm.com, leo.yan@linaro.org,
+        mathieu.poirier@linaro.org, john.garry@huawei.com,
+        James Clark <james.clark@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 0/2] perf: arm64: Tools support for Dwarf unwinding through SVE functions
+Date:   Tue, 17 May 2022 11:20:01 +0100
+Message-Id: <20220517102005.3022017-1-james.clark@arm.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net: vmxnet3: fix possible use-after-free bugs in
- vmxnet3_rq_alloc_rx_buf()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165278281150.16356.1881926262371677838.git-patchwork-notify@kernel.org>
-Date:   Tue, 17 May 2022 10:20:11 +0000
-References: <20220514050656.2636588-1-r33s3n6@gmail.com>
-In-Reply-To: <20220514050656.2636588-1-r33s3n6@gmail.com>
-To:     Zixuan Fu <r33s3n6@gmail.com>
-Cc:     doshir@vmware.com, pv-drivers@vmware.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, oslab@tsinghua.edu.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Changes since v1:
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+  * Split patchset into kernel side and Perf tool changes
 
-On Sat, 14 May 2022 13:06:56 +0800 you wrote:
-> In vmxnet3_rq_alloc_rx_buf(), when dma_map_single() fails, rbi->skb is
-> freed immediately. Similarly, in another branch, when dma_map_page() fails,
-> rbi->page is also freed. In the two cases, vmxnet3_rq_alloc_rx_buf()
-> returns an error to its callers vmxnet3_rq_init() -> vmxnet3_rq_init_all()
-> -> vmxnet3_activate_dev(). Then vmxnet3_activate_dev() calls
-> vmxnet3_rq_cleanup_all() in error handling code, and rbi->skb or rbi->page
-> are freed again in vmxnet3_rq_cleanup_all(), causing use-after-free bugs.
-> 
-> [...]
+When SVE registers are pushed onto the stack the VG register is required to
+unwind because the stack offsets would vary by the SVE register width at the
+time when the sample was taken.
 
-Here is the summary with links:
-  - [v3] net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
-    https://git.kernel.org/netdev/net/c/9e7fef9521e7
+The patches ("[PATCH v2 0/2] perf: arm64: Kernel support for Dwarf unwinding
+through SVE functions") add support for sampling the VG register to the kernel
+and the docs. This is the patchset to add support to userspace perf.
 
-You are awesome, thank you!
+A small change is also required to libunwind or libdw depending on which
+unwinder is used, and these will be published later. Without these changes Perf
+continues to work with both libraries, although the VG register is still not
+used for unwinding. 
+
+Thanks
+James
+
+James Clark (4):
+  perf tools: arm64: Copy perf_regs.h from the kernel
+  perf tools: Use dynamic register set for Dwarf unwind
+  perf tools: arm64: Decouple Libunwind register names from Perf
+  perf tools: arm64: Add support for VG register
+
+ tools/arch/arm64/include/uapi/asm/perf_regs.h |  7 +-
+ tools/perf/arch/arm64/util/perf_regs.c        | 34 +++++++++
+ tools/perf/arch/arm64/util/unwind-libunwind.c | 73 +------------------
+ tools/perf/util/evsel.c                       |  2 +-
+ tools/perf/util/perf_regs.c                   |  2 +
+ 5 files changed, 45 insertions(+), 73 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.28.0
 
