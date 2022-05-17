@@ -2,226 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF69C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:48:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E47C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:49:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231437AbiEQWsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
+        id S231467AbiEQWtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbiEQWsg (ORCPT
+        with ESMTP id S231447AbiEQWtI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:48:36 -0400
-X-Greylist: delayed 554 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 15:48:35 PDT
-Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D6B52E6E
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:48:34 -0700 (PDT)
-X-Envelope-From: thomas@x-berg.in-berlin.de
-Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
-        by einhorn.in-berlin.de  with ESMTPS id 24HMcbtL364300
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 00:38:37 +0200
-Received: from thomas by x-berg.in-berlin.de with local (Exim 4.94.2)
-        (envelope-from <thomas@x-berg.in-berlin.de>)
-        id 1nr5pt-0007Y6-GD; Wed, 18 May 2022 00:38:37 +0200
-Date:   Wed, 18 May 2022 00:38:37 +0200
-From:   Thomas Osterried <thomas@osterried.de>
-To:     Lu Wei <luwei32@huawei.com>
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ax25: merge repeat codes in
- ax25_dev_device_down()
-Message-ID: <YoQj7eND7/2KSBFs@x-berg.in-berlin.de>
-References: <20220516062804.254742-1-luwei32@huawei.com>
+        Tue, 17 May 2022 18:49:08 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2B953708
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:49:07 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id e10-20020a056602158a00b0065a9bede1c4so13317411iow.8
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:49:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=C5tbz7L6ZC70ZmPXy4SlO57rkraDyi8Sv2/GOu0X9Y8=;
+        b=bZYlujERcH5tlev35PJUesL4N3R9nXA8z9w7fEJVPq4je5hn6mE6OYolgmcJHCZSa2
+         xqCgEkD3cXgJaJGcXOXTw4XAWWcG39Nuz6ebeW+UyeA1yd2vtcbNVcruBD7CJYwbE/Qk
+         oNIsQURXNEcHF94+MQxV9gCSPXKENP5fP5hHwCDDMfL8TKrqs8sZ4KT2wAarrcSOGJND
+         A2hjjO2hjFpHH8RXVDZUi+BVMFoWJtFIhALMd/cSuH8fXPErzlbuo3awBKXQhPGmJj/d
+         4b4q5m5oaDGmeTS3/GO5LybdmwXaTSsBih7ld1ovQZ0ccOsQcXlqRIIdH+jGZi+I4KU9
+         FDWQ==
+X-Gm-Message-State: AOAM533E1NSUFk7K75t3kARrNq0JZKDG2r7caamQGaciyK6aXTOObZU/
+        F3NPxvl08RtoXmjL5OmtVpBJ3TEhOKHhQa9vFcJGhx7viWl7
+X-Google-Smtp-Source: ABdhPJxFO+q1ewwiIRLvzkMe9aIdaCrUmRb2JUBOui2twRMZ1GON+O9rfQVoP+zSaZmpMx2GTlmsDVDf3dv30O98d3pItYjgt0Rt
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516062804.254742-1-luwei32@huawei.com>
-Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
+X-Received: by 2002:a05:6638:37a8:b0:32b:5d5c:7f9d with SMTP id
+ w40-20020a05663837a800b0032b5d5c7f9dmr13422573jal.3.1652827747134; Tue, 17
+ May 2022 15:49:07 -0700 (PDT)
+Date:   Tue, 17 May 2022 15:49:07 -0700
+In-Reply-To: <20220517223806.2299-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000be329205df3cf252@google.com>
+Subject: Re: [syzbot] WARNING in mntput_no_expire (3)
+From:   syzbot <syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello,
 
-three comments.
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+WARNING in mntput_no_expire
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 4486 at fs/namespace.c:1285 mntput_no_expire+0x985/0xfe0 fs/namespace.c:1285
+Modules linked in:
+
+CPU: 1 PID: 4486 Comm: syz-executor.3 Not tainted 5.18.0-rc6-syzkaller-00009-gfeb9c5e19e91-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:mntput_no_expire+0x985/0xfe0 fs/namespace.c:1285
+Code: 00 00 00 bf 08 00 00 00 48 c7 c2 60 fe f0 8b e8 91 0b 72 ff e9 01 f9 ff ff e8 d7 bd 9d ff 0f 0b e9 b6 f8 ff ff e8 cb bd 9d ff <0f> 0b e9 aa f8 ff ff e8 bf bd 9d ff e8 aa dd 91 07 31 ff 89 c3 89
+RSP: 0018:ffffc90004857d78 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 00000000ffffffff RCX: 0000000000000000
+RDX: ffff888018b80000 RSI: ffffffff81db8365 RDI: 0000000000000003
+RBP: 0000000000000008 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff81db7c0e R11: 0000000000000000 R12: 0000000000000002
+R13: ffff88801d671e00 R14: dffffc0000000000 R15: ffffed1003ace3ca
+FS:  0000555555fbb400(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000555556f3e848 CR3: 000000001f615000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ mntput+0x67/0x90 fs/namespace.c:1347
+ __fput+0x3ba/0x9d0 fs/file_table.c:333
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
+ exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:294
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f3b7a03bd2b
+Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
+RSP: 002b:00007ffe9eb268b0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: 00007f3b7a03bd2b
+RDX: 0000001b2ff20000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 00007f3b7a19d960 R08: 0000000000000000 R09: 00007ffe9ebbf080
+R10: 00007ffe9ebbf090 R11: 0000000000000293 R12: 00000000000181f5
+R13: 00007ffe9eb269b0 R14: 00007ffe9eb269d0 R15: 0000000000000032
+ </TASK>
 
 
-1. We need time for questions and discussions
+Tested on:
 
-In the past, we had several problems with patches that went upstream which
-obviously not have been tested.
-We have several requests by our community at linux-hams, that we need
-to have a chance to read a patch proposal, and have time to test it,
-before things become worse.
+commit:         feb9c5e1 Merge tag 'for_linus' of git://git.kernel.org..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=15ee4759f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=79caa0035f59d385
+dashboard link: https://syzkaller.appspot.com/bug?extid=5b1e53987f858500ec00
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1108ae3af00000
 
-
-2. Due to some patches that went in the current torwalds-tree, ax25 became
-unusable in a production environment (!).
-
-I'll come to this in another mail, with description and proposal for a fix.
-We are currently testing it and like to send it on linux-hams with request
-to comment and test.
-
-
-3. About this patch for ax25_dev_device_down() which reached netdev-next:
-
-Looks good regarding the changes.
-
-But when looking at it, it raises a question due to an older patch, that introduced
-dev_put_track().
-It's just a question of comprehension:
-  If the position of the device that has to be removed is
-    - at the head of the device list: do dev_put_track()
-    - in the the device list or at the end: dev_put_track()
-    - not in the device list: do _not_ dev_put_track().
-      Why? - Not obviously clear. I think, because an interface could exist,
-      but is set to down and thus is not part of the list (-> then you can't see
-      it as /proc/sys/net/ax25/<name>).
-
-
--> Personally, I'd consider
-
-- this better readable:
-
-	int found = 0;
-
-	if (ax25_dev_list == ax25_dev) {
-		ax25_dev_list = s->next;
-		found = 1;
-	} else {
-		for (s = ax25_dev_list; s != NULL && s->next != NULL; s = s->next) {
-			if (s->next == ax25_dev) {
-				s->next = s->next->next;
-				found = 1;
-				break;
-			}
-		}
-	}
-
-	spin_unlock_bh(&ax25_dev_lock);
-	ax25_dev_put(ax25_dev);
-	dev->ax25_ptr = NULL;
-	if (found)
-		dev_put_track(dev, &ax25_dev->dev_tracker);
-	ax25_dev_put(ax25_dev);
-
-
-- ..or with goto:
-
-	int found = 1;
-
-	if (ax25_dev_list == ax25_dev) {
-		ax25_dev_list = s->next;
-		goto out;
-	}
-	for (s = ax25_dev_list; s != NULL && s->next != NULL; s = s->next) {
-		if (s->next == ax25_dev) {
-			s->next = s->next->next;
-			goto out;
-		}
-	}
-	found = 0;
-
-out:
-	spin_unlock_bh(&ax25_dev_lock);
-	ax25_dev_put(ax25_dev);
-	dev->ax25_ptr = NULL;
-	if (found)
-		dev_put_track(dev, &ax25_dev->dev_tracker);
-	ax25_dev_put(ax25_dev);
-
-
-
-- ..than this:
-
-	if ((s = ax25_dev_list) == ax25_dev) {
-		ax25_dev_list = s->next;
-		goto unlock_put;
-	}
-
-	while (s != NULL && s->next != NULL) {
-		if (s->next == ax25_dev) {
-			s->next = ax25_dev->next;
-			goto unlock_put;
-		}
-
-		s = s->next;
-	}
-	spin_unlock_bh(&ax25_dev_lock);
-	dev->ax25_ptr = NULL;
-	ax25_dev_put(ax25_dev);
-	return;
-
-unlock_put:
-	spin_unlock_bh(&ax25_dev_lock);
-	ax25_dev_put(ax25_dev);
-	dev->ax25_ptr = NULL;
-	dev_put_track(dev, &ax25_dev->dev_tracker);
-	ax25_dev_put(ax25_dev);
-
-
-
-vy 73,
-	- Thomas  dl9sau
-
-
-On Mon, May 16, 2022 at 02:28:04PM +0800, Lu Wei wrote:
-> Merge repeat codes to reduce the duplication.
-> 
-> Signed-off-by: Lu Wei <luwei32@huawei.com>
-> ---
->  net/ax25/ax25_dev.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
-> 
-> diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-> index d2a244e1c260..b80fccbac62a 100644
-> --- a/net/ax25/ax25_dev.c
-> +++ b/net/ax25/ax25_dev.c
-> @@ -115,23 +115,13 @@ void ax25_dev_device_down(struct net_device *dev)
->  
->  	if ((s = ax25_dev_list) == ax25_dev) {
->  		ax25_dev_list = s->next;
-> -		spin_unlock_bh(&ax25_dev_lock);
-> -		ax25_dev_put(ax25_dev);
-> -		dev->ax25_ptr = NULL;
-> -		dev_put_track(dev, &ax25_dev->dev_tracker);
-> -		ax25_dev_put(ax25_dev);
-> -		return;
-> +		goto unlock_put;
->  	}
->  
->  	while (s != NULL && s->next != NULL) {
->  		if (s->next == ax25_dev) {
->  			s->next = ax25_dev->next;
-> -			spin_unlock_bh(&ax25_dev_lock);
-> -			ax25_dev_put(ax25_dev);
-> -			dev->ax25_ptr = NULL;
-> -			dev_put_track(dev, &ax25_dev->dev_tracker);
-> -			ax25_dev_put(ax25_dev);
-> -			return;
-> +			goto unlock_put;
->  		}
->  
->  		s = s->next;
-> @@ -139,6 +129,14 @@ void ax25_dev_device_down(struct net_device *dev)
->  	spin_unlock_bh(&ax25_dev_lock);
->  	dev->ax25_ptr = NULL;
->  	ax25_dev_put(ax25_dev);
-> +	return;
-> +
-> +unlock_put:
-> +	spin_unlock_bh(&ax25_dev_lock);
-> +	ax25_dev_put(ax25_dev);
-> +	dev->ax25_ptr = NULL;
-> +	dev_put_track(dev, &ax25_dev->dev_tracker);
-> +	ax25_dev_put(ax25_dev);
->  }
->  
->  int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
-> -- 
-> 2.17.1
-> 
-> 
