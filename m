@@ -2,124 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B29BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243508AbiEQN6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
+        id S1348145AbiEQN6T (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 09:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242695AbiEQN5p (ORCPT
+        with ESMTP id S1347595AbiEQN6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:57:45 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5363C4A1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:57:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652795864; x=1684331864;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=aWy8bNPEpHjAHXLrQDnZZEbIzZhyAqm2BwDjDzXiW1U=;
-  b=giRDkdzXs2m06IkxsD4zaAPE6RFAdCnQR2V1KGhR4sfQNY1fRBeO/bXW
-   s64+74pSVRfDaBrh+ydRWEbOfQX++DpNDnvrDbqmXl8KmDildEJpNHXRI
-   k15pbZZnkTtP6J7t2fGU6YGPhocXM4J51/OE4TynFfgH4SN3Kbp94ovlx
-   Skc3l1Hc6qjDuYjZrRevcxKc8hmttnmdRFWXkxOsb/gpKczw4kiAL4RFH
-   7k9lVd7f9Wm6MYNj2kLWzivXkyPLoiCAGbOG9HJUP2EY+1zvPswLvOkHp
-   uSsi79302UeZdpjXN+O0TIKCN+2nCXSz6IujeViwDqZyLqxZA9lLhb6MH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="357600931"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="357600931"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:57:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="605368886"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 17 May 2022 06:57:42 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqxhl-00010T-Jj;
-        Tue, 17 May 2022 13:57:41 +0000
-Date:   Tue, 17 May 2022 21:56:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [arm-integrator:kernel-in-vmalloc-v5.18-rc1 8/9]
- lib/test_free_pages.c:20:36: warning: incompatible integer to pointer
- conversion passing 'unsigned long' to parameter of type 'const void *'
-Message-ID: <202205172107.C9n2wfmb-lkp@intel.com>
+        Tue, 17 May 2022 09:58:07 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75B43C4A7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:58:05 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id c24so22004966lfv.11
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=eVaeE8EmFrZMCLqtcrlHzNvDehbUwPxJkr68zMJQkE0=;
+        b=keEYssJeA35i6Sta2I6KzzG+AyLAfGU3Lx5PpJy7XNJd46Oikjsl41K2FOclcNwgsf
+         LqEnxpal51K+s3Phphr9gnko8bztzkVvQMsZQXRbcHbIr5ZnHY04mUhXClzZfjIpyvfu
+         JN9u/WWFVTrS4rRPtrtQzTDX9UHmrPHcNwDmSP1Sf1+qW7loeTyBdIzkPd9y5JfV5bsS
+         b9fc4HEg9c5FtmdbLVKOFO47fPPvdiC9fbVkmb7R8UW54e/N5wXAgSffVIgmIhziQj9q
+         +Cfuea8uomdXM/3DRACVZLltyktTJwr4fDkOFZHDT75WmQilucE/VyjIzTvR+zh/8i15
+         rLaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eVaeE8EmFrZMCLqtcrlHzNvDehbUwPxJkr68zMJQkE0=;
+        b=GMs0JIiCeKbAJl4dW5IyH0AScOtg6yWtWGcS/V1csH5slJLLP0IVsnDxlQoL6PiDDD
+         GNoGTHP2gcTQ9RHnq8MiYz6hg9S3MwxsQTTL2c0X3dFerYUGuh8utlkWzgjDramAg8vu
+         ocOOeYNUp0l8UJT7QaRhQCSkAGmwmXALvbk3hVWuu2mcV/1tmaUILPSWeQOWmTOzQfY6
+         u5fdPjLuasKOxlyIeJeCaL1/+K8rdptvXK2Yx7ewwF/bVvDQu6Nvo2IT6/ELHkPQAdfr
+         hauhigumx02wE6Gcd9aP0CrzbWnSI1uTug0CDdXMMWDGAgXNd2H3L3PJBvyisrGAlY82
+         ye1A==
+X-Gm-Message-State: AOAM531Z7SBnqZoetuYt5Wm5zjkY2tZwtDcHCyZ3lR6cE8boq1BAtXc+
+        /6soTL+VK+vRiunwtfNGfkuE0w==
+X-Google-Smtp-Source: ABdhPJxw8xo2pjvHxPlfO7zErtguu1LhEFbww2MX8pjsfBIN1zJWlGEkdKQlYDEvVNX2wu/6K/T+fw==
+X-Received: by 2002:a05:6512:1399:b0:448:9f0b:bf4f with SMTP id p25-20020a056512139900b004489f0bbf4fmr16621673lfa.67.1652795884116;
+        Tue, 17 May 2022 06:58:04 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id t8-20020ac25488000000b0047255d21117sm1602236lfk.70.2022.05.17.06.58.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 06:58:03 -0700 (PDT)
+Message-ID: <9606459e-7d9f-90af-1c5c-263e8ab1fae1@linaro.org>
+Date:   Tue, 17 May 2022 15:58:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 03/20] dt-bindings: media: s5p-mfc: Add mfcv12 variant
+Content-Language: en-US
+To:     Smitha T Murthy <smitha.t@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     m.szyprowski@samsung.com, andrzej.hajda@intel.com,
+        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, jernej.skrabec@gmail.com,
+        benjamin.gaignard@collabora.com, stanimir.varbanov@linaro.org,
+        dillon.minfei@gmail.com, david.plowman@raspberrypi.com,
+        mark.rutland@arm.com, robh+dt@kernel.org, krzk+dt@kernel.org,
+        andi@etezian.org, alim.akhtar@samsung.com,
+        aswani.reddy@samsung.com, pankaj.dubey@samsung.com,
+        linux-fsd@tesla.com
+References: <20220517125548.14746-1-smitha.t@samsung.com>
+ <CGME20220517125558epcas5p228cdf5f665468d3fd065d88a5d0ad157@epcas5p2.samsung.com>
+ <20220517125548.14746-4-smitha.t@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220517125548.14746-4-smitha.t@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.18-rc1
-head:   67a8d6eb3d015908f35d6091c02f17d7c3b55bf3
-commit: 52cbc963c5c9daba74109e9782e3487cdf48fe5c [8/9] ARM: Compile the kernel into VMALLOC
-config: arm-randconfig-r021-20220516 (https://download.01.org/0day-ci/archive/20220517/202205172107.C9n2wfmb-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=52cbc963c5c9daba74109e9782e3487cdf48fe5c
-        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
-        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.18-rc1
-        git checkout 52cbc963c5c9daba74109e9782e3487cdf48fe5c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash lib/
+On 17/05/2022 14:55, Smitha T Murthy wrote:
+> Adds DT schema for s5p-mfc with a new compatible
+> string for mfcv12 variant.
+> 
+> Cc: linux-fsd@tesla.com
+> Signed-off-by: Smitha T Murthy <smitha.t@samsung.com>
+> ---
+>  Documentation/devicetree/bindings/media/s5p-mfc.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/media/s5p-mfc.yaml b/Documentation/devicetree/bindings/media/s5p-mfc.yaml
+> index fff7c7e0d575..209da53f3582 100644
+> --- a/Documentation/devicetree/bindings/media/s5p-mfc.yaml
+> +++ b/Documentation/devicetree/bindings/media/s5p-mfc.yaml
+> @@ -21,6 +21,7 @@ properties:
+>        - samsung,mfc-v8                  # Exynos5800
+>        - samsung,exynos5433-mfc          # Exynos5433
+>        - samsung,mfc-v10                 # Exynos7880
+> +      - samsung,mfc-v12                 # Tesla FSD
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+No. We moved already to SoC specific comaptibles. You introduced back
+wrong pattern with MFCv10, but it should be rather fixed. Don't go back
+to it...
 
-All warnings (new ones prefixed by >>):
-
->> lib/test_free_pages.c:20:36: warning: incompatible integer to pointer conversion passing 'unsigned long' to parameter of type 'const void *' [-Wint-conversion]
-                   struct page *page = virt_to_page(addr);
-                                                    ^~~~
-   arch/arm/include/asm/memory.h:442:53: note: expanded from macro 'virt_to_page'
-   #define virt_to_page(kaddr)     pfn_to_page(virt_to_pfn(kaddr))
-                                                           ^~~~~
-   include/asm-generic/memory_model.h:40:27: note: expanded from macro '__pfn_to_page'
-   ({      unsigned long __pfn = (pfn);                    \
-                                  ^~~
-   arch/arm/include/asm/memory.h:323:53: note: passing argument to parameter 'p' here
-   static inline unsigned long virt_to_pfn(const void *p)
-                                                       ^
-   1 warning generated.
-
-
-vim +20 lib/test_free_pages.c
-
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  13) 
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  14) static void test_free_pages(gfp_t gfp)
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  15) {
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  16) 	unsigned int i;
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  17) 
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  18) 	for (i = 0; i < 1000 * 1000; i++) {
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  19) 		unsigned long addr = __get_free_pages(gfp, 3);
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13 @20) 		struct page *page = virt_to_page(addr);
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  21) 
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  22) 		/* Simulate page cache getting a speculative reference */
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  23) 		get_page(page);
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  24) 		free_pages(addr, 3);
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  25) 		put_page(page);
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  26) 	}
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  27) }
-e320d3012d25b1 Matthew Wilcox (Oracle  2020-10-13  28) 
-
-:::::: The code at line 20 was first introduced by commit
-:::::: e320d3012d25b1fb5f3df4edb7bd44a1c362ec10 mm/page_alloc.c: fix freeing non-compound pages
-
-:::::: TO: Matthew Wilcox (Oracle) <willy@infradead.org>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
