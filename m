@@ -2,134 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17226C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350908AbiEQQaT (ORCPT
+        id S1345823AbiEQQb4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50402 "EHLO
+        Tue, 17 May 2022 12:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232072AbiEQQaQ (ORCPT
+        with ESMTP id S232072AbiEQQby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:30:16 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D7227FCB;
-        Tue, 17 May 2022 09:30:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652805015; x=1684341015;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0NqJ5VwhtJ3tBjditXPJfSf+c2F9/tHzdRAp1qZ01bI=;
-  b=j3AfRc0u6OCgoEwPQjh4bdI+1qJ1h9afmuYsbH6RsFzvEOkr7hoc7J5o
-   LXchL9r5h3bxJIrV6QosV5BwOqn6TZZlg9nM8veaGnrzGUeGsNzA4FWzM
-   HkYg/B+aEdQ8ZkO/MUdJqUV4GiRarnhm/uDSPW/YXPny2ZYSr7NUyi+oB
-   aVify6KIhjZbva7ea+b2o37ilAq9NdOmu9Rr/smq2t/fyinqrzgTo7rzW
-   X1X9W3YRH3bty1uTDFyQzRo58JAFiep9vEiTPJYx60NY1pYBtg/Llc5xs
-   sZFY/lPSTwlwdwk5Hmoux4dlQfFZTDOHuL2dtNASITWI8qKmzhCEwglKN
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271364116"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="271364116"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:30:15 -0700
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="626561602"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:30:09 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nr05E-0008C4-Vy;
-        Tue, 17 May 2022 19:30:04 +0300
-Date:   Tue, 17 May 2022 19:30:04 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Mark Brown <broonie@kernel.org>,
-        chris.packham@alliedtelesis.co.nz,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Subject: Re: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
-Message-ID: <YoPNjPp3LMF2+qKS@smile.fi.intel.com>
-References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
- <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
- <877d6l7fmy.fsf@mpe.ellerman.id.au>
- <YoJaGGwfoSYhaT13@smile.fi.intel.com>
- <YoJbaTNJFV2A1Etw@smile.fi.intel.com>
- <874k1p6oa7.fsf@mpe.ellerman.id.au>
+        Tue, 17 May 2022 12:31:54 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF0414D1E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:31:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
+  t=1652805112; x=1684341112;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IteN9ICL3vHHQMXeE78rzjKCW/+s+R1bzkPHD4BhrHE=;
+  b=jNGHWE4exEF9jzdP5+0zeSB1dH0UvztDW3mIVGXc9Ln2IkCnWVlb7B4y
+   vDo+kZbfUPnST6P1OiRM1I/QDqOwMyxd62gX+LCeztO8mN9IS9v2j9wSs
+   oLb0rj/AYav73tqW6OC+g59BUPPMQkNldho/s5ztqOS+cpPbuW4/3wb+N
+   c=;
+X-IronPort-AV: E=Sophos;i="5.91,233,1647302400"; 
+   d="scan'208";a="89313648"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 17 May 2022 16:24:43 +0000
+Received: from EX13D08EUC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com (Postfix) with ESMTPS id 2584E3E00E4;
+        Tue, 17 May 2022 16:24:43 +0000 (UTC)
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
+ EX13D08EUC002.ant.amazon.com (10.43.164.124) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 17 May 2022 16:24:41 +0000
+Received: from dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (10.15.60.66)
+ by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP Server id
+ 15.0.1497.32 via Frontend Transport; Tue, 17 May 2022 16:24:40 +0000
+Received: by dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (Postfix, from userid 5466572)
+        id DC06A41146; Tue, 17 May 2022 16:24:40 +0000 (UTC)
+From:   Maximilian Heyne <mheyne@amazon.de>
+CC:     Maximilian Heyne <mheyne@amazon.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, <xen-devel@lists.xenproject.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] x86: xen: remove STACK_FRAME_NON_STANDARD from xen_cpuid
+Date:   Tue, 17 May 2022 16:24:25 +0000
+Message-ID: <20220517162425.100567-1-mheyne@amazon.de>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <874k1p6oa7.fsf@mpe.ellerman.id.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 09:38:56AM +1000, Michael Ellerman wrote:
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> > On Mon, May 16, 2022 at 05:05:12PM +0300, Andy Shevchenko wrote:
-> >> On Mon, May 16, 2022 at 11:48:05PM +1000, Michael Ellerman wrote:
-> >> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> >> > > We may convert the GPT driver to use fwnode API for the sake
-> >> > > of consistency of the used APIs inside the driver.
-> >> > 
-> >> > I'm not sure about this one.
-> >> > 
-> >> > It's more consistent to use fwnode in this driver, but it's very
-> >> > inconsistent with the rest of the powerpc code. We have basically no
-> >> > uses of the fwnode APIs at the moment.
-> >> 
-> >> Fair point!
-> >> 
-> >> > It seems like a pretty straight-forward conversion, but there could
-> >> > easily be a bug in there, I don't have any way to test it. Do you?
-> >> 
-> >> Nope, only compile testing. The important part of this series is to
-> >> clean up of_node from GPIO library, so since here it's a user of
-> >> it I want to do that. This patch is just ad-hoc conversion that I
-> >> noticed is possible. But there is no any requirement to do so.
-> >> 
-> >> Lemme drop this from v3.
-> >
-> > I just realize that there is no point to send a v3. You can just apply
-> > first 3 patches. Or is your comment against entire series?
-> 
-> No, my comment is just about this patch.
-> 
-> I don't mind converting to new APIs when it's blocking some other
-> cleanup. But given the age of this code I think it's probably better to
-> just leave the rest of it as-is, unless someone volunteers to test it.
-> 
-> So yeah I'll just take patches 1-3 of this v2 series, no need to resend.
+Since commit 4d65adfcd119 ("x86: xen: insn: Decode Xen and KVM
+emulate-prefix signature"), objtool is able to correctly parse the
+prefixed instruction in xen_cpuid and emit correct orc unwind
+information. Hence, marking the function as STACKFRAME_NON_STANDARD is
+no longer needed.
 
-Thanks!
+This commit is basically a revert of commit 983bb6d254c7 ("x86/xen: Mark
+xen_cpuid() stack frame as non-standard").
 
-One note though, the fwnode_for_each_parent_node() is not yet available in
-upstream, but will be after v5.19-rc1. It means the patch 3 can't be applied
-without that. That's why LKP complained on patch 4 in this series.
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+CC: Josh Poimboeuf <jpoimboe@kernel.org>
 
-That said, the easiest way is to postpone it till v5.19-rc1 is out.
+cr: https://code.amazon.com/reviews/CR-69645080
+---
+ arch/x86/xen/enlighten_pv.c | 2 --
+ 1 file changed, 2 deletions(-)
 
+diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
+index 5038edb79ad5..ca85d1409917 100644
+--- a/arch/x86/xen/enlighten_pv.c
++++ b/arch/x86/xen/enlighten_pv.c
+@@ -30,7 +30,6 @@
+ #include <linux/pci.h>
+ #include <linux/gfp.h>
+ #include <linux/edd.h>
+-#include <linux/objtool.h>
+ 
+ #include <xen/xen.h>
+ #include <xen/events.h>
+@@ -165,7 +164,6 @@ static void xen_cpuid(unsigned int *ax, unsigned int *bx,
+ 
+ 	*bx &= maskebx;
+ }
+-STACK_FRAME_NON_STANDARD(xen_cpuid); /* XEN_EMULATE_PREFIX */
+ 
+ static bool __init xen_check_mwait(void)
+ {
 -- 
-With Best Regards,
-Andy Shevchenko
+2.32.0
+
+
+
+
+Amazon Development Center Germany GmbH
+Krausenstr. 38
+10117 Berlin
+Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
+Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
+Sitz: Berlin
+Ust-ID: DE 289 237 879
+
 
 
