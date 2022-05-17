@@ -2,171 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 19:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 19:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345332AbiEQTtV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 15:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49762 "EHLO
+        id S245566AbiEQTuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 15:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233185AbiEQTtR (ORCPT
+        with ESMTP id S233185AbiEQTuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 15:49:17 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020015.outbound.protection.outlook.com [52.101.61.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7F4381A2;
-        Tue, 17 May 2022 12:49:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g0rKyCwBXNF+ozKP9xAtL1YgT9OSqmhgXRLKziFU2Am5bDh8bYcVa9wRCtFVpjVd3u4a0ioqQfL+16S3Uo9z1y6SyJzBtn6wLvk1+xMt6TEN56zObMV56eI4TayxshdbrzPJcgREexSFmHWF71tnSV/ZDQTx3f4FVOSKWCtbgE0/1qMuYMtQp9gSjO9jkyLDt5vP9JFJsV/HdPIds4TfqG1sCgEd+fNfOLs2J687vyzWfSM0XyDeg16vNWFoVMfMHhwR/YpC5b/OCAD/s9ccKLJmNJFMdPVLBkFMPWjOCW2lRUbrTJ3CSe3+uHCByhdWMq6LErc69T7rUxS+C5m82A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZBhSI2alPmNDXkgJ9AMiTTEYSntE0QE8YAt1B9BUfMk=;
- b=RsZcsfMRitzZGrFlEcFvb3tbCVq43mvC6Cpkqf5JzcFUJ0ycr+PQKJOcAxId+c7ig9Kpl714wE7ztDrsb5ZvZwYRW/wYYyq/EUCKmBGEobFLMc9CPGhqPSYfCjDWPL16H4ZVf5K5UGj4rFFTQnB43HS5A2wYCIaTDol04XYQU/yQk1jgsik5Ys4+S5hG9lrrvfCPA5dvKAC8JC8r4zjAghuReT2Kmgy4vAYoH86RHoKA6WjuYlp93NbAUTeMioY7EZTwLyAjdm1zhwNP76qaBP0z7chhXsg+GVMroZkqupqQwwRyyLeTDq9vfswcLVuCJnlCf2g1E0viaPKqp1DqrA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZBhSI2alPmNDXkgJ9AMiTTEYSntE0QE8YAt1B9BUfMk=;
- b=X/N0m+VTY0rgTXa5JmL7il/bMPeSH24aOJAKO4MK8YyDXz0j06IBtIlQq8RkjuJoUAEwziQ82b7StnCsX0AriHKZPIRzUsR+EBZ7w9PIa571WSKytUlgAdSXUnbavG0pBcj8sKX/hQFULk96oPtdkqroCq4+SDxupRHQVUTVdws=
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
- by MN2PR21MB1213.namprd21.prod.outlook.com (2603:10b6:208:3a::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.3; Tue, 17 May
- 2022 19:34:21 +0000
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::bdc5:cad:529a:4cdd]) by PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::bdc5:cad:529a:4cdd%5]) with mapi id 15.20.5293.001; Tue, 17 May 2022
- 19:34:21 +0000
-From:   Long Li <longli@microsoft.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Tue, 17 May 2022 15:50:11 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BAD381A2;
+        Tue, 17 May 2022 12:50:08 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24HJj5nj007921;
+        Tue, 17 May 2022 19:49:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=cI+oIgMmdU+emHoSmuCJfl7DDPI2DU7nUb6sIjNnUjE=;
+ b=nscihTpC5el6eAjl9Tw2n8BGB6v1zMOzGVCtmzaVZPnqNZAbi5po8qQ1qn/cFPQ9tUMd
+ JUUr+Gdln/DDgPqmOsUw9fuHg/2qY4hgDnHH/YTp9LNjMCxxJL96C82s20RBz15Cgm4+
+ 52ayLYVLllYK4DECR5twGsmWzujhuPCa2cu8E44kY3rV1wZiQg9b4B5OKLsgRC+gmpSp
+ sOwmtPcHeP8XzJpYowjxz12Wn3G2roVoNGIJj5E6uRB4HNFQKCF3h1Vm5RfIRLxi1fCy
+ 9IuCjDFXuy6PGlcbPHWuoh+hhIC/VILAI95p0+R+Pnuh5Kri7uoX1V9DQyyRL/o0f1KE Xw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4j5001wm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 May 2022 19:49:44 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24HJnWm0021912;
+        Tue, 17 May 2022 19:49:43 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4j5001w3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 May 2022 19:49:43 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24HJglUj004965;
+        Tue, 17 May 2022 19:49:41 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03ams.nl.ibm.com with ESMTP id 3g2429cpp0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 May 2022 19:49:41 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24HJncO358982762
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 17 May 2022 19:49:38 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CFB4C11C050;
+        Tue, 17 May 2022 19:49:38 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2AB7811C054;
+        Tue, 17 May 2022 19:49:35 +0000 (GMT)
+Received: from sig-9-65-95-105.ibm.com (unknown [9.65.95.105])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 17 May 2022 19:49:35 +0000 (GMT)
+Message-ID: <dd488736ab86c0e0b2809b4ce30f1827563b52b2.camel@linux.ibm.com>
+Subject: Re: [PATCH v10 2/7] KEYS: trusted: allow use of kernel RNG for key
+ material
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        David Howells <dhowells@redhat.com>, kernel@pengutronix.de,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        David Gstir <david@sigma-star.at>,
+        Michael Walle <michael@walle.cc>,
+        John Ernberg <john.ernberg@actia.se>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Horia =?UTF-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [PATCH 09/12] net: mana: Move header files to a common location
-Thread-Topic: [PATCH 09/12] net: mana: Move header files to a common location
-Thread-Index: AQHYac0tYvgSyCBQfkiV4OLM/1jNT60jKvqAgABLVCA=
-Date:   Tue, 17 May 2022 19:34:21 +0000
-Message-ID: <PH7PR21MB3263114D9D57A3F385FCA6EBCECE9@PH7PR21MB3263.namprd21.prod.outlook.com>
-References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
- <1652778276-2986-10-git-send-email-longli@linuxonhyperv.com>
- <20220517150339.GI63055@ziepe.ca>
-In-Reply-To: <20220517150339.GI63055@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=21546c42-6ca9-4871-afcf-101c6a311164;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-17T19:33:15Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1d66ed57-bb25-43df-077d-08da383c3ddc
-x-ms-traffictypediagnostic: MN2PR21MB1213:EE_
-x-microsoft-antispam-prvs: <MN2PR21MB12136628F673410FF5EC0463CECE9@MN2PR21MB1213.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +3bDf6YsucCOMrxGu3ObhjGmjIBi2o+DHCRarzbfJcpMq/a3DCnVODzw3hnbmB8JoHUIOf3/iyRtRCI6yfk/b0sWt2hN7tUPGZdjjI006SHAmB8vCiQjKVb/PE/KjAGhOVzqERGdqqkMvjckkMT41GtXc0dWykrSOHgwQKzqE2fZA//g2VwJURBVFLU2z1tlWCt8Y36ddMdQQtH/G/GyuK+1ezvmeov90Rzrf/l9mDlbOsapnrO1k5Yfvj05EVyR41rK/T81PPXk5s4PlRvTVhUCAXs/jw3jjxmf2JajR6EwwiV91bcglboBq6manQkmJDJUjqUdo6eVf/TcYFNHWyjn5cF7jm7x+kigkNCzrtByDxIrSEQwpU7cMrfrxEgqPRalBU8m01JsBSPvZPE+PzbvAM/ORfuzLPOcQkNJ5iCO7WZg8ycyw/rzOl9EjOj22j7/uEgVhil7AVRUCFWpKSQlSRRelfky1U4dXoxJaIthipHFpLUD44n1jDjSuL+E22CRrNsQq27G0pQpDKb34t6B3/CGjcjE/pugH2JcdRWmyxBEwEj3XBfLrs/Sj+HEEWZRLQ823Sa3c2M9LjfQgjgmUGosBXZDDpMQ3UeztMdjmmf1RlSe6KFiD7udcScHNPNp5eiQRO5YZYszL14UQIRW7nfLJFA8tzNaC5OuLeYa6OZpv+J2agdPgJSe3zWx+AoVVag7FrWccGqhfKLv+iXa9gVajgT+xTDHecZfiFKdNN4p4BiUmdX1x78poPtE
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(26005)(66476007)(9686003)(5660300002)(6506007)(10290500003)(8990500004)(66946007)(66556008)(64756008)(7416002)(66446008)(4326008)(8676002)(76116006)(8936002)(33656002)(186003)(7696005)(83380400001)(2906002)(86362001)(55016003)(508600001)(71200400001)(52536014)(38070700005)(38100700002)(54906003)(6916009)(82950400001)(82960400001)(122000001)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?SFQH4vs5Owmg35XreeLASvC3jrP/bPIbW0raChsA8L7aXK3+MQE1JsKMVuYn?=
- =?us-ascii?Q?x29pzYeps/JPTl5LkgNMYiHM0RX6Krl3ez6j1ewT6yqAT+zypIO2bgvMp70I?=
- =?us-ascii?Q?JONZJ5aDOpW9FErs76zVXGQ8WKj1d9cCxK8DU5Jnelkq1VLvvccCvbb+jUcd?=
- =?us-ascii?Q?XQiKsm35obv3AJTOdUPEoTWSUV1jMBu0aPbpBLA5U7F0xA0fPLZ4IyXFR1nS?=
- =?us-ascii?Q?GLfrX3V6uv+I3Bd30nnxWfIv9NVYJLisatCIH/aOVxo136RqI+I/9DGgcEER?=
- =?us-ascii?Q?AXVyGkjUpotJGUKrl7kiilkcKI1orOFnJbKEzz+P94fRcehl3hu650wDkfl4?=
- =?us-ascii?Q?n9a8dJEkwVXfSw+EackeVk1bOGkkitSAc6k+C1g7+l27Ho+OUi3EjsAIbSMQ?=
- =?us-ascii?Q?WOZyQ7Uyd4F9a7vn59c6sttKa1utSXVOU59KGjNCC1m2p/KmvRTOebhS5N/J?=
- =?us-ascii?Q?uywi8GCO8qa4mvktxBpaYNBVok8Q0WuamqYxRWRptIwAr+t4KdwqzSCgsvjo?=
- =?us-ascii?Q?JANnH53Nfz02IaBrQKlQcud7CEO3dZSDi9eIVTy+PDBn3XQRTGZFd5T6nRo1?=
- =?us-ascii?Q?JTA+N2Gy32Wp2xCFgYKQQWga7JqVPko2MCoOcEa1+GOaf6TUaWaoqqwqmOmn?=
- =?us-ascii?Q?XrcYGe2jhTe4wwpsXmgyX/yKC9BqwqWacweTNnyC3HUVvTzPc/voKWJqbp4I?=
- =?us-ascii?Q?9xcZh4UA0S2x+QL1qpFiBYlSKbJBhyinwT1/J/LURxcSmCggaG9lPFYjgwu8?=
- =?us-ascii?Q?clKcNXO2YV4ZN9PJPGTzIeTgzwfT9PLMkG6m6XcNW+eszq+pLzuRWjHIyg4F?=
- =?us-ascii?Q?Q+8o04KFsbRDRkiexuVPhZ+SlOaz200kCA3Ba/YgNFkUO+EOQ6S7I1sjXwlY?=
- =?us-ascii?Q?UTUtLnUio+RQhj2P6tU61X/zRBW99m3GjXzOgrsok9YmP6mxGtXF5aQkbsoo?=
- =?us-ascii?Q?gus0wO/uLENsekLovGS8bY9h511Zgh+aJdUlPzOy7ZiEttHQWTF/03XdYb5z?=
- =?us-ascii?Q?XMV2MZ9k6RWNR1N8TwvTPXuqH9jz4gULAkLBrDnAkgiQhF6fur2EE60kTwhg?=
- =?us-ascii?Q?RXcKLl/xSjakZStXWuWfC4Wn5gw8H3PLvibv9ua0peC9OcVSl7JMXTkcabOX?=
- =?us-ascii?Q?1Vnp00VEVApCGiu52aT+tPjVjEv+ojYI3ekuO+7P3nLhAZBnZEfQKK/viurG?=
- =?us-ascii?Q?kY4X6bFnvHe3D8BSXXI1LxY/oKsnjN0vUp+pjXB3MkW7bjgmRpV9Z0vd2uBn?=
- =?us-ascii?Q?x8E14L3y26yWtRE3LGU+9RwXzZaUzRzHLB6xxmbD+Vn5Dc3TiqJrpvOgj5Qt?=
- =?us-ascii?Q?L7vQYNFlvVig1riL4qTThwVU7nKAgKSE+J70dEKnzg7kyrmjTfOwRH7J/Qc+?=
- =?us-ascii?Q?icOL/BTT9QVRu5T5oKfR30jCrAxgQ/JKaOuzaYDMirLr/61ZWSK7nNZzmfF7?=
- =?us-ascii?Q?86h8FfcDixchQeROQRSRUs/QEDQakuBc/bAixMa5EguN5jeCANE56rmXdevY?=
- =?us-ascii?Q?EUFWohLkc/VA1qjWFq/LuXSZFUd/cNT5+6Tx0dwOZh9O5ybXtzPBbNCfrw56?=
- =?us-ascii?Q?d1ALi+1f3V9hYtEwntqSxXPyyCF9Jos8KChXOTNGQxQp7KfM3N6aD2f9A/tK?=
- =?us-ascii?Q?FLbPr9SADF85WdUAGipvzLy5s3oA47Ts9mxkWj/tZ6u5PqqiEITLo0VETed+?=
- =?us-ascii?Q?rEE4F9sqsLXSNpRvStjEks8ClBTcGqmEFmSeRsg4CvcSQkFITC0NyNhLfn6u?=
- =?us-ascii?Q?U/cuMzrs9A=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d66ed57-bb25-43df-077d-08da383c3ddc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2022 19:34:21.2620
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Jvzjh0VF3QLQAA4qvrLrk9fC3IZ8XIic9Kv+00k3xcKZgnA62WpgyK67899yppNXsFYc3yK5oxiuJmZxGjkaMA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1213
+        Jan Luebbe <j.luebbe@pengutronix.de>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Franck LENORMAND <franck.lenormand@nxp.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        Pascal Van Leeuwen <pvanleeuwen@verimatrix.com>
+Date:   Tue, 17 May 2022 15:49:34 -0400
+In-Reply-To: <YoPpyDjn61AFqcZp@zx2c4.com>
+References: <20220513145705.2080323-1-a.fatoum@pengutronix.de>
+         <20220513145705.2080323-3-a.fatoum@pengutronix.de>
+         <1c6a5ce2564c29a06eca255072a379351a5fc026.camel@linux.ibm.com>
+         <YoPdfjswwA2wKinr@zx2c4.com>
+         <4fe5564e860eb3093a88528ba1d30364d57723e0.camel@linux.ibm.com>
+         <YoPpyDjn61AFqcZp@zx2c4.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: PbWP-fmv3bYEWPSRRHfxdQcuFVuveDXv
+X-Proofpoint-GUID: wTyBvInx9LJoH0s5-vgBBc7fDZWpQaOW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-17_03,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=999 lowpriorityscore=0 adultscore=0 impostorscore=0 mlxscore=0
+ clxscore=1015 spamscore=0 phishscore=0 bulkscore=0 priorityscore=1501
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205170111
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Subject: Re: [PATCH 09/12] net: mana: Move header files to a common locat=
-ion
->=20
-> On Tue, May 17, 2022 at 02:04:33AM -0700, longli@linuxonhyperv.com wrote:
-> > From: Long Li <longli@microsoft.com>
-> >
-> > In preparation to add MANA RDMA driver, move all the required header
-> > files to a common location for use by both Ethernet and RDMA drivers.
-> >
-> > Signed-off-by: Long Li <longli@microsoft.com>
-> > ---
-> >  MAINTAINERS                                                   | 1 +
-> >  drivers/net/ethernet/microsoft/mana/gdma_main.c               | 2 +-
-> >  drivers/net/ethernet/microsoft/mana/hw_channel.c              | 4 ++--
-> >  drivers/net/ethernet/microsoft/mana/mana_bpf.c                | 2 +-
-> >  drivers/net/ethernet/microsoft/mana/mana_en.c                 | 2 +-
-> >  drivers/net/ethernet/microsoft/mana/mana_ethtool.c            | 2 +-
-> >  drivers/net/ethernet/microsoft/mana/shm_channel.c             | 2 +-
-> >  {drivers/net/ethernet/microsoft =3D> include/linux}/mana/gdma.h | 0
-> >  .../ethernet/microsoft =3D> include/linux}/mana/hw_channel.h    | 0
-> >  {drivers/net/ethernet/microsoft =3D> include/linux}/mana/mana.h | 0
-> >  .../ethernet/microsoft =3D> include/linux}/mana/shm_channel.h   | 0
-> >  11 files changed, 8 insertions(+), 7 deletions(-)  rename
-> > {drivers/net/ethernet/microsoft =3D> include/linux}/mana/gdma.h (100%)
-> > rename {drivers/net/ethernet/microsoft =3D>
-> > include/linux}/mana/hw_channel.h (100%)  rename
-> > {drivers/net/ethernet/microsoft =3D> include/linux}/mana/mana.h (100%)
-> > rename {drivers/net/ethernet/microsoft =3D>
-> > include/linux}/mana/shm_channel.h (100%)
->=20
-> I know mlx5 did it like this, but I wonder if include/net is more appropr=
-iate?
->=20
-> Or maybe include/aux/?
+On Tue, 2022-05-17 at 20:30 +0200, Jason A. Donenfeld wrote:
+> Hi Mimi,
+> 
+> On Tue, May 17, 2022 at 02:21:08PM -0400, Mimi Zohar wrote:
+> > On Tue, 2022-05-17 at 19:38 +0200, Jason A. Donenfeld wrote:
+> > > On Tue, May 17, 2022 at 11:52:55AM -0400, Mimi Zohar wrote:
+> > > > On Fri, 2022-05-13 at 16:57 +0200, Ahmad Fatoum wrote:
+> > > > >  static int __init init_trusted(void)
+> > > > >  {
+> > > > > +       int (*get_random)(unsigned char *key, size_t key_len);
+> > > > >         int i, ret = 0;
+> > > > >  
+> > > > >         for (i = 0; i < ARRAY_SIZE(trusted_key_sources); i++) {
+> > > > > @@ -322,6 +333,28 @@ static int __init init_trusted(void)
+> > > > >                             strlen(trusted_key_sources[i].name)))
+> > > > >                         continue;
+> > > > >  
+> > > > > +               /*
+> > > > > +                * We always support trusted.rng="kernel" and "default" as
+> > > > > +                * well as trusted.rng=$trusted.source if the trust source
+> > > > > +                * defines its own get_random callback.
+> > > > > +                */
+> > > >  
+> > > > While TEE trusted keys support was upstreamed, there was a lot of
+> > > > discussion about using kernel RNG.  One of the concerns was lack of or
+> > > > insuffiencent entropy during early boot on embedded devices.  This
+> > > > concern needs to be clearly documented in both Documentation/admin-
+> > > > guide/kernel-parameters.txt and Documentation/security/keys/trusted-
+> > > > encrypted.rst.
+> > > 
+> > > Sounds like FUD. Use `get_random_bytes_wait()`, and you'll be fine.
+> > 
+> > As per the original discussion, there's also certification requirements
+> > [1].
+> 
+> As per countless conversations on this mailing list -- which I really
+> really really hope you will not attempt to drown me in again -- I'm not
+> too keen on the certification requirements. Let's just leave that
+> conversation there.
+> 
+> There *is* a cryptographic design reason why you might want certain keys
+> generated on a TPM rather than in the kernel though: so that the keys
+> can be marked as unexportable and never leave the hardware. In that case
+> -- I assume -- the kernel just operates on a handle to the key, rather
+> than possessing the key material itself. And this is probably a good
+> thing. (On the other hand, people who think the TPM might be backdoored
+> may prefer the kernel's open source RNG, which in theory is in a
+> position to aggregate entropy from many sources, so that one being
+> backdoored isn't a problem. So maybe that's the purpose of having this
+> switch?)
+> 
+> So to the extent that this driver (I haven't looked deeply at it) is
+> doing the thing where a TPM generates the key and just returns a
+> handle to it, that sounds good. But if actually you're implementing some
+> wrapper around a hardware rng, it'd be convenient if there was instead a
+> hw_random driver for this, so it can be one of the many sources that the
+> kernel rng aggregates.
+> 
+> Apologies in advance if I've missed the mark here; I'm not very familiar
+> with this thread or what it's driving at. If the simple question was
+> just "is get_random_bytes_wait() good to use?" the answer is just "yes"
+> and I can disappear and stop confusing things. :)
 
-I can move the header files to include/net/mana, if that sounds okay and no=
- objection to doing that.
+My apologies for your having been brought into this discussion without
+having properly reviewed and summarized the previous thread.   As you
+saw there is a long history.
 
-Long
+Jarrko, Ahmad,  "Trusted" keys, by definition, are based on the TPM
+RNG.  If CAAM trusted key support wants to use kernel RNG by default,
+that's fine.  However defining and allowing a boot command line option
+to use kernel RNG instead of the TPM RNG, needs to be configurable.
 
->=20
-> Jason
+thanks,
+
+Mimi
+
