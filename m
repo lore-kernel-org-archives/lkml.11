@@ -2,120 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 949F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343763AbiEQKLv (ORCPT
+        id S1344525AbiEQKLn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44744 "EHLO
+        Tue, 17 May 2022 06:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343782AbiEQKKs (ORCPT
+        with ESMTP id S1343593AbiEQKJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:10:48 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30804BBA8;
-        Tue, 17 May 2022 03:09:28 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id t6so24033416wra.4;
-        Tue, 17 May 2022 03:09:28 -0700 (PDT)
+        Tue, 17 May 2022 06:09:44 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301AD47388;
+        Tue, 17 May 2022 03:08:11 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id n18so16903917plg.5;
+        Tue, 17 May 2022 03:08:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=t4zPUKpv7XaTfwCy6u8+Y9X67AplsbkFXvPulu0ea1U=;
-        b=aEs+kBHg2LKI6or1oWTOXdLQLX5BKJra6ZJ/JQVkHM6rAssedHYEsM5LLwYPaUnEW1
-         Er8hzUj6HM+y4+yiwXyGVakR9K1eW0wFG7ntWYX5PrRIhZBrwU73bj12BVqv7NW1xe73
-         rziM/EwhIps3HhQpVH3xaVdy9KwZFJThIxS8WO2QzKsRYwexHJQ5FVMx/yzgcCpRvCX3
-         /cEjZ9eofAuUBTLY2ZjgATPazGtrs7j+Kro5NGKhNPAU9Qsj1jj4Xk0gUlM5P2xco1/S
-         iWjuFJt8aUKqornzfztDZjF2cIMAHiiJJ4upNIaJSphy/O4g63nrhNzt3IXXaiTJKFZi
-         6qgg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :organization;
+        bh=UmRh5WeDJb4FxIPG+OEtpyHlfmIGfbV1ERHbKbuEXYE=;
+        b=GWgmAxIVkNS1hGtn9UXI/hhbF+NlDnsuo1E29/vgNHDT9rX780CQX384vlcp8cBNSW
+         D0pm5QJwf/IZBxQ96by1TRF87mu8+gqRrI/78FWqJUI9Yd9hK6LogzLmOu1Cw6LNG3yp
+         T7Dm7NswUYZb9cOI5A7frGvpf/WJss6DFjc7aBzeYKLX+eqZ+GhaKEvg5Nb9sDhW11go
+         CBQfnbCUlOswlkMhAiwlf+eKMpdY/l0JUkRwIyF7lSbgfsDBTjfzP+ekrsW3OBeDdU3c
+         +Ckt5AF6GSeHUCDwzUfThV7ChJNA/Cmwg9hTQylZm/oyY3f3GFstT1UJg3zadTBz0sKD
+         wpdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=t4zPUKpv7XaTfwCy6u8+Y9X67AplsbkFXvPulu0ea1U=;
-        b=shN6m1f3JJttSDu5wdr946HWluh2OFbBAFh9tBuq4FG3LbQzU5KSdwT58xFjR4+Wv9
-         zUD7UaewMcUtFMzs4nI2y8P3m2HpBn04FWBeuHyoaHsZU6nYRRzBUUT0KpB0CAID39Yv
-         kLVZXSwi/SMkYaNl5j3CMYMc1aJlY5Q4nUKORHiRW8O8O2uqzJ5s2fj3CnK0jcLZS7dB
-         EzLKFQ/+vYSwZIRZabIVu2J4vRg4qU+esPhAh+bGYAIk0QGVew549YLABwGv8Cv3hpx+
-         oVdH63EU3kwu/TyO/pdxgP+KiHUczJDWi5pncUKQI2zF/0X0vZv0eOljPi3pwH7PKsO8
-         3fFg==
-X-Gm-Message-State: AOAM532gMOeY859zNspEHeWvJXSon/DOjtgzNSwjdVjnwtXljpFv5+0w
-        ZLbGNQW4Qd4I8dEbJ5HrHKM=
-X-Google-Smtp-Source: ABdhPJzK4FAOgEnNQs53gtSOtT0Y8b5G++nzf2lJHnk/cY7kMsd4pENS/ntIKs/HT0Xr5wKaUtO4JA==
-X-Received: by 2002:a5d:6989:0:b0:20d:b25:f5 with SMTP id g9-20020a5d6989000000b0020d0b2500f5mr6372658wru.616.1652782167330;
-        Tue, 17 May 2022 03:09:27 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id s7-20020a05600c29c700b003942a244ec2sm1443015wmd.7.2022.05.17.03.09.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 03:09:26 -0700 (PDT)
-Message-ID: <3e9f0936-efee-cedf-6e2b-4dd9de79fc4e@gmail.com>
-Date:   Tue, 17 May 2022 12:09:25 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v7 0/3] cpufreq: mediatek: Cleanup and support MT8183 and
- MT8186
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
-        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
-        hsinyi@google.com, khilman@baylibre.com,
-        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220516111130.13325-1-rex-bc.chen@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220516111130.13325-1-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:organization;
+        bh=UmRh5WeDJb4FxIPG+OEtpyHlfmIGfbV1ERHbKbuEXYE=;
+        b=41P5rCnLXm/us3LKrTt3gxiRvJSrozzo8M/NAhChpoqBCqEnDSoXYDiCsYKgd5+Yp1
+         5lP/5dCvasAPaGWuZLomI3L8ojELGK5iH8gi6I76oFuxmBoDoTEGMjhVovrVmtU78p6C
+         MLqrkg4wFfXnC6Kf5nwvRWTfi+frxjk0ZPKS4T+AFUPMbYjoDCIBGNBO4PmsyMT05R1e
+         N9laQInNAt/sTCr1tjJg1hn9EHIJMD+UwdHA0aAuGAfwj35EADvpyovIvOp47iDQEZjY
+         8ZqIryy5BhaGRtgEQPfGCeOR2VAZXH+E0bDCed0bzo+GSDIy9NJ7SOaIbOlvWycADQfo
+         ntCw==
+X-Gm-Message-State: AOAM533jgd+ZlcxuTQXLzjL5IMQsxTeWjixYrRhsqEsuw1852DUMriYW
+        wjx8L0eNyqQzhalymtrPQHs=
+X-Google-Smtp-Source: ABdhPJznjwSaPYLoRL29ez7lvADpiJ2YQUbUx8jjWJHSiWCTYjYJvVYOysHYKrK0biU4ndLkTZ2IxQ==
+X-Received: by 2002:a17:902:8501:b0:15c:ea4b:1398 with SMTP id bj1-20020a170902850100b0015cea4b1398mr21712865plb.109.1652782091353;
+        Tue, 17 May 2022 03:08:11 -0700 (PDT)
+Received: from localhost.localdomain ([219.91.171.244])
+        by smtp.googlemail.com with ESMTPSA id a10-20020a631a0a000000b003c6ab6ba06csm8202595pga.79.2022.05.17.03.08.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 03:08:11 -0700 (PDT)
+From:   Dharmendra Singh <dharamhans87@gmail.com>
+To:     miklos@szeredi.hu, vgoyal@redhat.com
+Cc:     Dharmendra Singh <dharamhans87@gmail.com>,
+        linux-fsdevel@vger.kernel.org, fuse-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, bschubert@ddn.com,
+        Dharmendra Singh <dsingh@ddn.com>
+Subject: [PATCH v5 2/3] FUSE: Rename fuse_create_open() to fuse_atomic_common()
+Date:   Tue, 17 May 2022 15:37:43 +0530
+Message-Id: <20220517100744.26849-3-dharamhans87@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220517100744.26849-1-dharamhans87@gmail.com>
+References: <20220517100744.26849-1-dharamhans87@gmail.com>
+Organization: DDN STORAGE
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This patch just changes function name as it is used in next patch
+to make code better readable.
 
+Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
+---
+ fs/fuse/dir.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-On 16/05/2022 13:11, Rex-BC Chen wrote:
-> Cpufreq is a DVFS driver used for power saving to scale the clock frequency
-> and supply the voltage for CPUs. This series do some cleanup for MediaTek
-> cpufreq drivers and add support for MediaTek SVS[2] and MediaTek CCI
-> devfreq[3] which are supported in MT8183 and MT8186.
-> 
+diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
+index ed9da8d6b57b..517c9add014d 100644
+--- a/fs/fuse/dir.c
++++ b/fs/fuse/dir.c
+@@ -521,9 +521,9 @@ static int get_security_context(struct dentry *entry, umode_t mode,
+  * If the filesystem doesn't support this, then fall back to separate
+  * 'mknod' + 'open' requests.
+  */
+-static int fuse_create_open(struct inode *dir, struct dentry *entry,
+-			    struct file *file, unsigned int flags,
+-			    umode_t mode, uint32_t opcode)
++static int fuse_atomic_common(struct inode *dir, struct dentry *entry,
++			      struct file *file, unsigned int flags,
++			      umode_t mode, uint32_t opcode)
+ {
+ 	int err;
+ 	struct inode *inode;
+@@ -674,8 +674,8 @@ static int fuse_create_ext(struct inode *dir, struct dentry *entry,
+ 	if (fc->no_create_ext)
+ 		return -ENOSYS;
+ 
+-	err = fuse_create_open(dir, entry, file, flags, mode,
+-			       FUSE_CREATE_EXT);
++	err = fuse_atomic_common(dir, entry, file, flags, mode,
++				 FUSE_CREATE_EXT);
+ 	/* If ext create is not implemented then indicate in fc so that next
+ 	 * request falls back to normal create instead of going into libufse and
+ 	 * returning with -ENOSYS.
+@@ -723,8 +723,8 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+ 		if (err == -ENOSYS)
+ 			goto lookup;
+ 	} else
+-		err = fuse_create_open(dir, entry, file, flags, mode,
+-				       FUSE_CREATE);
++		err = fuse_atomic_common(dir, entry, file, flags, mode,
++					 FUSE_CREATE);
+ 	if (err == -ENOSYS) {
+ 		fc->no_create = 1;
+ 		goto mknod;
+-- 
+2.17.1
 
-Series applied to v5.19-next/dts64
-
-Thanks!
-
-> Changes for v7:
-> 1. Drop all drviers patches because they are all accepted.
-> 2. Correct clock/clock-name for cci in dts.
-> 
-> Changes for v6:
-> 1. Reorder patches in this series.
-> 2. Add a new patch to do unregister platform device.
-> 3. Modify drivers from maintainer's advice.
-> 
-> Reference series:
-> [1]: V1 of this series is present by Jia-Wei Chang.
->       https://lore.kernel.org/all/20220307122151.11666-1-jia-wei.chang@mediatek.com/
-> 
-> [2]: The MediaTek CCI devfreq driver is introduced in another series.
->       https://lore.kernel.org/all/20220425125546.4129-1-johnson.wang@mediatek.com/
-> 
-> [3]: The MediaTek SVS driver is introduced in another series.
->       https://lore.kernel.org/all/20220420102044.10832-1-roger.lu@mediatek.com/
-> 
-> Rex-BC Chen (3):
->    arm64: dts: mediatek: Add opp table and clock property for MT8183
->      cpufreq
->    arm64: dts: mediatek: Add MediaTek CCI node for MT8183
->    arm64: dts: mediatek: Add mediatek,cci property for MT8183 cpufreq
-> 
->   arch/arm64/boot/dts/mediatek/mt8183-evb.dts   |  36 +++
->   .../arm64/boot/dts/mediatek/mt8183-kukui.dtsi |   4 +
->   arch/arm64/boot/dts/mediatek/mt8183.dtsi      | 286 ++++++++++++++++++
->   3 files changed, 326 insertions(+)
-> 
