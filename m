@@ -2,250 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D00D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239762AbiEQIOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
+        id S243511AbiEQIQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242921AbiEQIN0 (ORCPT
+        with ESMTP id S243307AbiEQIQi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:13:26 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF9F496A7;
-        Tue, 17 May 2022 01:12:27 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id ev18so6059869pjb.4;
-        Tue, 17 May 2022 01:12:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tsqLBQjRtgnyo1sQei1gpb0K6REi5TaI3JgfHkJY/jQ=;
-        b=jhHbxV5PpwiIzUsl2mEJKAtp4rc/vpdVks3HnKGxskvQ81EvZZY9jc2isPtK9Ih8Kk
-         YZy+55f6/VcQ7fEyOmjQBRlhPTr14K6auWTS/pBnarwEDMTgfSv4Iii5L4UDs1JOa5bq
-         LUT6h05vSlMuupWQY/9Zi950i/pUqxREDexrUALt7KWbCGMmA8it7uJgO+Y2nfxFEmkd
-         BJxiINsvNODG072jTl9xZYUVHOseXmKrVlTW+G3Uo18yWdKqRRmBtrINAZqyMZIjZfou
-         NPrBqvIMpD3OiGzO7id/0YwU6CuWpeZhTO8wUgl7Fc8vwPaJapQJBck7L+XOM5zbZcAe
-         uwqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tsqLBQjRtgnyo1sQei1gpb0K6REi5TaI3JgfHkJY/jQ=;
-        b=NCLNLU1ssrptsJCrGyhCEw7cq41f+eciM8GMW9AdSD6mA7whWlLXuK+hpFF7e7pL08
-         VpmH+Ns/ysNhMP+fNiK1yIJnQ5WHeb8WoqhBGCMWAwZBqxpJ02hf8GomLM9seuEAUDEr
-         rh+1OXozTIADKpzTt7Pcs7mfm04dIsSULJhldG2tSLEczm++5WwcZ0liXOwlScnTcyNJ
-         aItHSBw8neCYq3x8SbAcwzvDeUT9U3a/dAV/MT3aYWWJTyLkk8LH8XD2TjJJTY+pHfQM
-         gWPe2q6qgAV45ExCLgATapTim/8WPXWI65TT7e26KmJODTUtHmDyCvvll9U4kN8fsVVq
-         JT0w==
-X-Gm-Message-State: AOAM531ml0n80RzVFsroHmbbHEsYB3ZvQfUa6KoVtX+shinHdqX09urZ
-        lnTVNnV4VnYN8uL7wircURw=
-X-Google-Smtp-Source: ABdhPJwSXMOAdvAnBLa3qRqOZ9uiNSUIzx/t6id6EaaxALCZtKiNRYwDDxXAdmU7keITpCEDDawmNQ==
-X-Received: by 2002:a17:90b:1c87:b0:1ca:f4e:4fbe with SMTP id oo7-20020a17090b1c8700b001ca0f4e4fbemr35065639pjb.159.1652775146828;
-        Tue, 17 May 2022 01:12:26 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.20])
-        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.12.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 01:12:26 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     edumazet@google.com
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH net-next v2 9/9] net: tcp: add skb drop reasons to route_req()
-Date:   Tue, 17 May 2022 16:10:08 +0800
-Message-Id: <20220517081008.294325-10-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220517081008.294325-1-imagedong@tencent.com>
-References: <20220517081008.294325-1-imagedong@tencent.com>
+        Tue, 17 May 2022 04:16:38 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081B44B1E7;
+        Tue, 17 May 2022 01:14:11 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L2TPs0qvTzbbxd;
+        Tue, 17 May 2022 16:12:49 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
+ 2022 16:14:08 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <geert@linux-m68k.org>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] serial: cpm_uart: Fix build error without CONFIG_SERIAL_CPM_CONSOLE
+Date:   Tue, 17 May 2022 16:13:55 +0800
+Message-ID: <20220517081355.35456-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+drivers/tty/serial/cpm_uart/cpm_uart_core.c: In function ‘cpm_uart_init_port’:
+drivers/tty/serial/cpm_uart/cpm_uart_core.c:1251:7: error: ‘udbg_port’ undeclared (first use in this function); did you mean ‘uart_port’?
+  if (!udbg_port)
+       ^~~~~~~~~
+       uart_port
 
-Add skb drop reasons to the route_req() in struct tcp_request_sock_ops.
-Following functions are involved:
+commit d142585bceb3 leave this corner, wrap it with #ifdef block
 
-  tcp_v4_route_req()
-  tcp_v6_route_req()
-  subflow_v4_route_req()
-  subflow_v6_route_req()
-
-And the new reason SKB_DROP_REASON_LSM is added, which is used when
-skb is dropped by LSM.
-
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
+Fixes: d142585bceb3 ("serial: cpm_uart: Protect udbg definitions by CONFIG_SERIAL_CPM_CONSOLE")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- include/linux/skbuff.h |  4 ++++
- include/net/tcp.h      |  3 ++-
- net/ipv4/tcp_input.c   |  2 +-
- net/ipv4/tcp_ipv4.c    | 14 +++++++++++---
- net/ipv6/tcp_ipv6.c    | 14 +++++++++++---
- net/mptcp/subflow.c    | 10 ++++++----
- 6 files changed, 35 insertions(+), 12 deletions(-)
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 8d18fc5a5af6..fdfe54dc5ae4 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -564,6 +564,9 @@ struct sk_buff;
-  * SKB_DROP_REASON_TIMEWAIT
-  *	socket is in time-wait state and all packet that received will
-  *	be treated as 'drop', except a good 'SYN' packet
-+ *
-+ * SKB_DROP_REASON_LSM
-+ *	dropped by LSM
-  */
- #define __DEFINE_SKB_DROP_REASON(FN)	\
- 	FN(NOT_SPECIFIED)		\
-@@ -636,6 +639,7 @@ struct sk_buff;
- 	FN(LISTENOVERFLOWS)		\
- 	FN(TCP_REQQFULLDROP)		\
- 	FN(TIMEWAIT)			\
-+	FN(LSM)				\
- 	FN(MAX)
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index d6d3db9c3b1f..ec3a8f768555 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -1248,7 +1248,9 @@ static int cpm_uart_init_port(struct device_node *np,
  
- /* The reason of skb drop, which is used in kfree_skb_reason().
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 88217b8d95ac..ed57c331fdeb 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2075,7 +2075,8 @@ struct tcp_request_sock_ops {
- 	struct dst_entry *(*route_req)(const struct sock *sk,
- 				       struct sk_buff *skb,
- 				       struct flowi *fl,
--				       struct request_sock *req);
-+				       struct request_sock *req,
-+				       enum skb_drop_reason *reason);
- 	u32 (*init_seq)(const struct sk_buff *skb);
- 	u32 (*init_ts_off)(const struct net *net, const struct sk_buff *skb);
- 	int (*send_synack)(const struct sock *sk, struct dst_entry *dst,
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index be6275c56b59..146d22b05186 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6950,7 +6950,7 @@ enum skb_drop_reason tcp_conn_request(struct request_sock_ops *rsk_ops,
- 	/* Note: tcp_v6_init_req() might override ir_iif for link locals */
- 	inet_rsk(req)->ir_iif = inet_request_bound_dev_if(sk, skb);
- 
--	dst = af_ops->route_req(sk, skb, &fl, req);
-+	dst = af_ops->route_req(sk, skb, &fl, req, &reason);
- 	if (!dst)
- 		goto drop_and_free;
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 3c163b54b0f8..026a36f1598b 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1423,14 +1423,22 @@ static void tcp_v4_init_req(struct request_sock *req,
- static struct dst_entry *tcp_v4_route_req(const struct sock *sk,
- 					  struct sk_buff *skb,
- 					  struct flowi *fl,
--					  struct request_sock *req)
-+					  struct request_sock *req,
-+					  enum skb_drop_reason *reason)
- {
-+	struct dst_entry *dst;
-+
- 	tcp_v4_init_req(req, sk, skb);
- 
--	if (security_inet_conn_request(sk, skb, req))
-+	if (security_inet_conn_request(sk, skb, req)) {
-+		SKB_DR_SET(*reason, LSM);
- 		return NULL;
-+	}
- 
--	return inet_csk_route_req(sk, &fl->u.ip4, req);
-+	dst = inet_csk_route_req(sk, &fl->u.ip4, req);
-+	if (!dst)
-+		SKB_DR_SET(*reason, IP_OUTNOROUTES);
-+	return dst;
- }
- 
- struct request_sock_ops tcp_request_sock_ops __read_mostly = {
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 132b27763229..b859adcde756 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -802,14 +802,22 @@ static void tcp_v6_init_req(struct request_sock *req,
- static struct dst_entry *tcp_v6_route_req(const struct sock *sk,
- 					  struct sk_buff *skb,
- 					  struct flowi *fl,
--					  struct request_sock *req)
-+					  struct request_sock *req,
-+					  enum skb_drop_reason *reason)
- {
-+	struct dst_entry *dst;
-+
- 	tcp_v6_init_req(req, sk, skb);
- 
--	if (security_inet_conn_request(sk, skb, req))
-+	if (security_inet_conn_request(sk, skb, req)) {
-+		SKB_DR_SET(*reason, LSM);
- 		return NULL;
-+	}
- 
--	return inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
-+	dst = inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
-+	if (!dst)
-+		SKB_DR_SET(*reason, IP_OUTNOROUTES);
-+	return dst;
- }
- 
- struct request_sock_ops tcp6_request_sock_ops __read_mostly = {
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 58c1f056213b..db7e6cd96d44 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -285,7 +285,8 @@ EXPORT_SYMBOL_GPL(mptcp_subflow_init_cookie_req);
- static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- 					      struct sk_buff *skb,
- 					      struct flowi *fl,
--					      struct request_sock *req)
-+					      struct request_sock *req,
-+					      enum skb_drop_reason *reason)
- {
- 	struct dst_entry *dst;
- 	int err;
-@@ -293,7 +294,7 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- 	tcp_rsk(req)->is_mptcp = 1;
- 	subflow_init_req(req, sk);
- 
--	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req);
-+	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req, reason);
- 	if (!dst)
- 		return NULL;
- 
-@@ -311,7 +312,8 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
- 					      struct sk_buff *skb,
- 					      struct flowi *fl,
--					      struct request_sock *req)
-+					      struct request_sock *req,
-+					      enum skb_drop_reason *reason)
- {
- 	struct dst_entry *dst;
- 	int err;
-@@ -319,7 +321,7 @@ static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
- 	tcp_rsk(req)->is_mptcp = 1;
- 	subflow_init_req(req, sk);
- 
--	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req);
-+	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req, reason);
- 	if (!dst)
- 		return NULL;
- 
+ #ifdef CONFIG_PPC_EARLY_DEBUG_CPM
+ #ifdef CONFIG_CONSOLE_POLL
++#ifdef CONFIG_SERIAL_CPM_CONSOLE
+ 	if (!udbg_port)
++#endif
+ #endif
+ 		udbg_putc = NULL;
+ #endif
 -- 
-2.36.1
+2.17.1
 
