@@ -2,117 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F04AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344525AbiEQKLn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
+        id S245734AbiEQKMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343593AbiEQKJo (ORCPT
+        with ESMTP id S1344059AbiEQKLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:09:44 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301AD47388;
-        Tue, 17 May 2022 03:08:11 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id n18so16903917plg.5;
-        Tue, 17 May 2022 03:08:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :organization;
-        bh=UmRh5WeDJb4FxIPG+OEtpyHlfmIGfbV1ERHbKbuEXYE=;
-        b=GWgmAxIVkNS1hGtn9UXI/hhbF+NlDnsuo1E29/vgNHDT9rX780CQX384vlcp8cBNSW
-         D0pm5QJwf/IZBxQ96by1TRF87mu8+gqRrI/78FWqJUI9Yd9hK6LogzLmOu1Cw6LNG3yp
-         T7Dm7NswUYZb9cOI5A7frGvpf/WJss6DFjc7aBzeYKLX+eqZ+GhaKEvg5Nb9sDhW11go
-         CBQfnbCUlOswlkMhAiwlf+eKMpdY/l0JUkRwIyF7lSbgfsDBTjfzP+ekrsW3OBeDdU3c
-         +Ckt5AF6GSeHUCDwzUfThV7ChJNA/Cmwg9hTQylZm/oyY3f3GFstT1UJg3zadTBz0sKD
-         wpdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:organization;
-        bh=UmRh5WeDJb4FxIPG+OEtpyHlfmIGfbV1ERHbKbuEXYE=;
-        b=41P5rCnLXm/us3LKrTt3gxiRvJSrozzo8M/NAhChpoqBCqEnDSoXYDiCsYKgd5+Yp1
-         5lP/5dCvasAPaGWuZLomI3L8ojELGK5iH8gi6I76oFuxmBoDoTEGMjhVovrVmtU78p6C
-         MLqrkg4wFfXnC6Kf5nwvRWTfi+frxjk0ZPKS4T+AFUPMbYjoDCIBGNBO4PmsyMT05R1e
-         N9laQInNAt/sTCr1tjJg1hn9EHIJMD+UwdHA0aAuGAfwj35EADvpyovIvOp47iDQEZjY
-         8ZqIryy5BhaGRtgEQPfGCeOR2VAZXH+E0bDCed0bzo+GSDIy9NJ7SOaIbOlvWycADQfo
-         ntCw==
-X-Gm-Message-State: AOAM533jgd+ZlcxuTQXLzjL5IMQsxTeWjixYrRhsqEsuw1852DUMriYW
-        wjx8L0eNyqQzhalymtrPQHs=
-X-Google-Smtp-Source: ABdhPJznjwSaPYLoRL29ez7lvADpiJ2YQUbUx8jjWJHSiWCTYjYJvVYOysHYKrK0biU4ndLkTZ2IxQ==
-X-Received: by 2002:a17:902:8501:b0:15c:ea4b:1398 with SMTP id bj1-20020a170902850100b0015cea4b1398mr21712865plb.109.1652782091353;
-        Tue, 17 May 2022 03:08:11 -0700 (PDT)
-Received: from localhost.localdomain ([219.91.171.244])
-        by smtp.googlemail.com with ESMTPSA id a10-20020a631a0a000000b003c6ab6ba06csm8202595pga.79.2022.05.17.03.08.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 03:08:11 -0700 (PDT)
-From:   Dharmendra Singh <dharamhans87@gmail.com>
-To:     miklos@szeredi.hu, vgoyal@redhat.com
-Cc:     Dharmendra Singh <dharamhans87@gmail.com>,
-        linux-fsdevel@vger.kernel.org, fuse-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, bschubert@ddn.com,
-        Dharmendra Singh <dsingh@ddn.com>
-Subject: [PATCH v5 2/3] FUSE: Rename fuse_create_open() to fuse_atomic_common()
-Date:   Tue, 17 May 2022 15:37:43 +0530
-Message-Id: <20220517100744.26849-3-dharamhans87@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220517100744.26849-1-dharamhans87@gmail.com>
-References: <20220517100744.26849-1-dharamhans87@gmail.com>
-Organization: DDN STORAGE
+        Tue, 17 May 2022 06:11:11 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F244C41B;
+        Tue, 17 May 2022 03:09:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652782199; x=1684318199;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=o0rfa2LgldSLeyeg6O3xFJ5xH9GUQLhGfm/buC6Zf/Q=;
+  b=ja58K5Odw1f9B6WjkZSQJ+2Sd7NgfggZ8M6PwrS6Rt5QWUHjTXN7A4EX
+   Se7UhVOh9NvaAOB/NOrVAF2VZ8ubbI6St9i95ZJJAThLN7GHaaIcDpCU+
+   SxWdsJMMLnlP7vSQKt8RjMIN6GTceQNWuODVf03tl0WoK1ju6yTTg2ctR
+   kX6tZe+l2DgClv9e2UoOmprNHlQ8USAmihnX30IlAbZasBJO3W0c4F2cI
+   3NyPzN8mvQ+F5R9kWmo38u5UYc8d+MI3xmvgwKrefwugpWZrBUzvKIQcz
+   sftnLa2iKjHmh7TuAc7pW2JnO0el0XMfpUCyZ+0tfQY1MxNudxfEsxits
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="357544196"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="357544196"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 03:09:58 -0700
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="816831982"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 03:09:55 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 17 May 2022 13:09:53 +0300
+Date:   Tue, 17 May 2022 13:09:53 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v1 1/2] pinctrl: intel: make irq_chip immutable
+Message-ID: <YoN0cdUdYQotyod9@lahna>
+References: <20220516185618.32448-1-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516185618.32448-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch just changes function name as it is used in next patch
-to make code better readable.
+On Mon, May 16, 2022 at 09:56:17PM +0300, Andy Shevchenko wrote:
+> Since recently, the kernel is nagging about mutable irq_chips:
+> 
+>    "not an immutable chip, please consider fixing it!"
+> 
+> Drop the unneeded copy, flag it as IRQCHIP_IMMUTABLE, add the new
+> helper functions and call the appropriate gpiolib functions.
+> 
+> While at it, align IRQ chip callback names with member names for
+> the sake of consistency.
 
-Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
----
- fs/fuse/dir.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
-index ed9da8d6b57b..517c9add014d 100644
---- a/fs/fuse/dir.c
-+++ b/fs/fuse/dir.c
-@@ -521,9 +521,9 @@ static int get_security_context(struct dentry *entry, umode_t mode,
-  * If the filesystem doesn't support this, then fall back to separate
-  * 'mknod' + 'open' requests.
-  */
--static int fuse_create_open(struct inode *dir, struct dentry *entry,
--			    struct file *file, unsigned int flags,
--			    umode_t mode, uint32_t opcode)
-+static int fuse_atomic_common(struct inode *dir, struct dentry *entry,
-+			      struct file *file, unsigned int flags,
-+			      umode_t mode, uint32_t opcode)
- {
- 	int err;
- 	struct inode *inode;
-@@ -674,8 +674,8 @@ static int fuse_create_ext(struct inode *dir, struct dentry *entry,
- 	if (fc->no_create_ext)
- 		return -ENOSYS;
- 
--	err = fuse_create_open(dir, entry, file, flags, mode,
--			       FUSE_CREATE_EXT);
-+	err = fuse_atomic_common(dir, entry, file, flags, mode,
-+				 FUSE_CREATE_EXT);
- 	/* If ext create is not implemented then indicate in fc so that next
- 	 * request falls back to normal create instead of going into libufse and
- 	 * returning with -ENOSYS.
-@@ -723,8 +723,8 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
- 		if (err == -ENOSYS)
- 			goto lookup;
- 	} else
--		err = fuse_create_open(dir, entry, file, flags, mode,
--				       FUSE_CREATE);
-+		err = fuse_atomic_common(dir, entry, file, flags, mode,
-+					 FUSE_CREATE);
- 	if (err == -ENOSYS) {
- 		fc->no_create = 1;
- 		goto mknod;
--- 
-2.17.1
-
+Or for the sake of inconsistency? ;-)  All the other structs are not
+using this kind of alignment and I would like to keep this one matching
+the rest too. Also I prefer the format currently used in the driver.
