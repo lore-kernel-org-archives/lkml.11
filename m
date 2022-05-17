@@ -2,131 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69596C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 05:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA51C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 05:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237741AbiEQFet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 01:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        id S237839AbiEQFfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 01:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbiEQFep (ORCPT
+        with ESMTP id S233038AbiEQFfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 01:34:45 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E787640916;
-        Mon, 16 May 2022 22:34:43 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L2PvM043Fz4xXj;
-        Tue, 17 May 2022 15:34:38 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652765679;
-        bh=+teQEkoVE0NcOfaTzwnoVR40DyApB6GlzBhfcfYjvAI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=BKn917nPlFZ7u5ZO206YY2ITn06347RaRzfU122QJ1+kJg/txlgIaVHbESFoNqwTw
-         J//seSlwAvnuUmCLlPR/z7eFYXAv9z79x+xQF6qQS5K+bIfEs9Z3/e0SZxBuW99tFr
-         FYw7puHBYmg3JBT0ij/tZEzSbOb5PKwYX8dVNhhMasrRDdPt1EduOEIyMks/zxy9he
-         hrM7LC3CpJyv6/ek+Wo176vMup1WuNdQ2VwmuUrvJEuSYWrGskWgg1arW7rbkfVsJp
-         Q5I5fcF38jTgcMZ5M1ngfl5JyOg2nu85xxCkOEYYzKmiFtB/Ql/yonnHkbWoFzVoaQ
-         9WQSOz60JpeVA==
-Date:   Tue, 17 May 2022 15:34:35 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Dave Jiang <dave.jiang@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the dmaengine tree with Linus' tree
-Message-ID: <20220517153435.645a9313@canb.auug.org.au>
+        Tue, 17 May 2022 01:35:18 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E32441330;
+        Mon, 16 May 2022 22:35:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652765717; x=1684301717;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AXHno5RHVab92K6v0hp/3a+LZPPYkq6/Jj0D8I/tXTg=;
+  b=VmaKZSUS56pthSxGSt6SFIaTipWz33fXBFVe+dkxLOYcskJUu07B8Ayq
+   kvVzCvYRJbHFMqmQu/TkYZ3BKcncWqYtxMVkx+f+8HP5GbS7P0hFaHw6Q
+   VMNiDxTWBqmpUCUoDFWaCCIJh0EbwBzqTcR0WFVKhpjVOsK8j75vPAAmQ
+   QNUVYGbEO40prLSHqRFqLYORjo+feSsdF41fHozbmIg6ENEpLuUjK0YxY
+   IstFfQKtF992YIR6RsG62ROuZzVeukBahtZc1oftvXQPE1/+8Axf3jUcf
+   g8eoAQxu6KDUwAuJp8Y5AQ+/VzMTx0m7fQBjm1to357HcdCzaRNt2lVPR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="296339251"
+X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
+   d="scan'208";a="296339251"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 22:35:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
+   d="scan'208";a="741602029"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 16 May 2022 22:35:08 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nqprP-0000e9-Ub;
+        Tue, 17 May 2022 05:35:07 +0000
+Date:   Tue, 17 May 2022 13:34:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "windy.bi.enflame" <windy.bi.enflame@gmail.com>,
+        bhelgaas@google.com
+Cc:     kbuild-all@lists.01.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "windy.bi.enflame" <windy.bi.enflame@gmail.com>
+Subject: Re: [PATCH] drivers/pci: wait downstream hierarchy ready instead of
+ slot itself ready, after secondary bus reset
+Message-ID: <202205171330.ye71SisD-lkp@intel.com>
+References: <20220516173047.123317-1-windy.bi.enflame@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/c4t0jNTZlCZXPEXCew1.RyN";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516173047.123317-1-windy.bi.enflame@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/c4t0jNTZlCZXPEXCew1.RyN
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi "windy.bi.enflame",
 
-Hi all,
+Thank you for the patch! Perhaps something to improve:
 
-Today's linux-next merge of the dmaengine tree got a conflict in:
+[auto build test WARNING on helgaas-pci/next]
+[also build test WARNING on v5.18-rc7 next-20220516]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-  drivers/dma/idxd/device.c
+url:    https://github.com/intel-lab-lkp/linux/commits/windy-bi-enflame/drivers-pci-wait-downstream-hierarchy-ready-instead-of-slot-itself-ready-after-secondary-bus-reset/20220517-013158
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git next
+config: alpha-defconfig (https://download.01.org/0day-ci/archive/20220517/202205171330.ye71SisD-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/99d829ca818d01cbd8bd4f95353f58a01723fe21
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review windy-bi-enflame/drivers-pci-wait-downstream-hierarchy-ready-instead-of-slot-itself-ready-after-secondary-bus-reset/20220517-013158
+        git checkout 99d829ca818d01cbd8bd4f95353f58a01723fe21
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/pci/
 
-between commit:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-  1cd8e751d96c ("dmaengine: idxd: skip clearing device context when device =
-is read-only")
+All warnings (new ones prefixed by >>):
 
-from Linus' tree and commit:
+>> drivers/pci/pci.c:5052:5: warning: no previous prototype for 'pci_bridge_secondary_bus_wait' [-Wmissing-prototypes]
+    5052 | int pci_bridge_secondary_bus_wait(struct pci_dev *bridge, int timeout)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  cf4ac3fef338 ("dmaengine: idxd: fix lockdep warning on device driver remo=
-val")
 
-from the dmaengine tree.
+vim +/pci_bridge_secondary_bus_wait +5052 drivers/pci/pci.c
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+  5051	
+> 5052	int pci_bridge_secondary_bus_wait(struct pci_dev *bridge, int timeout)
+  5053	{
+  5054		struct pci_dev *dev;
+  5055		int delay = 1;
+  5056	
+  5057		if (!bridge->subordinate || list_empty(&bridge->subordinate->devices))
+  5058			return 0;
+  5059	
+  5060		list_for_each_entry(dev, &bridge->subordinate->devices, bus_list) {
+  5061			while (!pci_device_is_present(dev)) {
+  5062				if (delay > timeout) {
+  5063					pci_warn(dev, "secondary bus not ready after %dms\n", delay);
+  5064					return -ENOTTY;
+  5065				}
+  5066	
+  5067				msleep(delay);
+  5068				delay *= 2;
+  5069			}
+  5070		}
+  5071	
+  5072		return 0;
+  5073	}
+  5074	
 
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/dma/idxd/device.c
-index f652da6ab47d,1143886f4a80..000000000000
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@@ -699,21 -716,23 +716,26 @@@ static void idxd_device_wqs_clear_state
-  		struct idxd_wq *wq =3D idxd->wqs[i];
- =20
-  		if (wq->state =3D=3D IDXD_WQ_ENABLED) {
-+ 			mutex_lock(&wq->wq_lock);
-  			idxd_wq_disable_cleanup(wq);
- -			idxd_wq_device_reset_cleanup(wq);
-  			wq->state =3D IDXD_WQ_DISABLED;
-+ 			mutex_unlock(&wq->wq_lock);
-  		}
- +		idxd_wq_device_reset_cleanup(wq);
-  	}
-  }
- =20
-  void idxd_device_clear_state(struct idxd_device *idxd)
-  {
- +	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
- +		return;
- +
-+ 	idxd_device_wqs_clear_state(idxd);
-+ 	spin_lock(&idxd->dev_lock);
-  	idxd_groups_clear_state(idxd);
-  	idxd_engines_clear_state(idxd);
-- 	idxd_device_wqs_clear_state(idxd);
-+ 	idxd->state =3D IDXD_DEV_DISABLED;
-+ 	spin_unlock(&idxd->dev_lock);
-  }
- =20
-  static void idxd_group_config_write(struct idxd_group *group)
-
---Sig_/c4t0jNTZlCZXPEXCew1.RyN
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKDM+sACgkQAVBC80lX
-0GyXKAf9Err06CkA4FC2G72Ulc/oN1x/Yz1ru53R2bhw2yT/J3RuERy8jeA2Jqas
-Ok5tnzwjWEo+anqC8c5w4MJsU03VMdiUGdrQ5CKM3fCo+H9xQYIjozaIr91am7vo
-H2fwPDEfa5zF7AY3SD5Pf8bd+bfa+g5MgYuq8VFTBMR/2HJGqUHUK+bh7xhA6DLb
-QPupcy/kSgQOgURW1cSpx5y+cAswMClm5GVccJF9Xj/9+py5tITM+B6xwpNeXYMA
-WrrBdt6GRvIbFzZpn7wuZ17DM4l+OdyYXYhHAkE526onNQNWzkQKLdyyQQyi8wUL
-EthiRvDxZ/1KkOHlT22bppuju7hWcA==
-=JxJP
------END PGP SIGNATURE-----
-
---Sig_/c4t0jNTZlCZXPEXCew1.RyN--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
