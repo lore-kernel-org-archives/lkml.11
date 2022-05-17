@@ -2,84 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE65C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 147C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352288AbiEQSkT convert rfc822-to-8bit (ORCPT
+        id S1352296AbiEQSmq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35246 "EHLO
+        Tue, 17 May 2022 14:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233429AbiEQSkR (ORCPT
+        with ESMTP id S233429AbiEQSmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:40:17 -0400
-Received: from sender4-of-o58.zoho.com (sender4-of-o58.zoho.com [136.143.188.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED9F3915C;
-        Tue, 17 May 2022 11:40:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1652812811; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=c/QgVX0MF2YimVNef7KMN9cFsenAkl5MIqMhNQ8bYUp6lHgNyTn3Kd8TDuLGBdfoM4Qqh+LDl8AerhHbMuu+ykQFysMtxUEeqLBokS48SEYiMW3Fqmv3A2lfH5RcBIz6d80saWL44U+cphp/KWxb5k/wmHL6DZaY17rxMbxzcTQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1652812811; h=Content-Type:Content-Transfer-Encoding:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=ifEE5KWRWUfeHk88nuZ3bY6KRsfs2POeZbigRez0zFs=; 
-        b=UUCqp9HCKfRVttc/nkdCFrXCKo5UCTnCrj3KXuVze1XfKylmsZUtnbIkRCKjo7Ce+sTGa9pgQ0w0AJ3vkSqkA/qDFD+Of4YZqwkX6g+QNFwcXMDIGRJrdldjSmjoMYUBM/fK8gWh3IUwNft0Gpzk3J5YqZe47aF0KUPzAMxilOE=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        spf=pass  smtp.mailfrom=linux@mniewoehner.de;
-        dmarc=pass header.from=<linux@mniewoehner.de>
-Received: from z3r0.lan (185.31.62.161 [185.31.62.161]) by mx.zohomail.com
-        with SMTPS id 1652812808776471.9683795053037; Tue, 17 May 2022 11:40:08 -0700 (PDT)
-Message-ID: <c766b4d9758b9fd1e15af89643093c595404a665.camel@mniewoehner.de>
-Subject: [PATCH v2] ACPI: utils: include UUID in _DSM evaluation warning
-From:   Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        "open list:ACPI" <linux-acpi@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-In-Reply-To: <CAJZ5v0hWxhn9WM3ciQgbZpa7x8JwpHK=Bz4kefB_3VnAM0gB9Q@mail.gmail.com>
-References: <f80dfd57fdca87897f070a3ea4ee0a26b03e7831.camel@mniewoehner.de>
-         <CAJZ5v0h+kKwdntGPC5PP6N0ZRbRzLxuwcwTGm-PNBH6Z3mnETg@mail.gmail.com>
-         <28686e8d994c297a78fb816805cd3652a8f8c90a.camel@mniewoehner.de>
-         <CAJZ5v0hWxhn9WM3ciQgbZpa7x8JwpHK=Bz4kefB_3VnAM0gB9Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Date:   Tue, 17 May 2022 20:40:06 +0200
+        Tue, 17 May 2022 14:42:44 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5CC28E04;
+        Tue, 17 May 2022 11:42:43 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id z139so1259224iof.8;
+        Tue, 17 May 2022 11:42:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kh4EnLD5q25bV5mnKOfEKUkGgPpU5YAK0WJ01JIxNg4=;
+        b=aUrMJiwv/pKGCIiR1FDh6ybW4X9ORE3GqTTU46RKMu/5qjgrJedBoy12P6roStHy+d
+         UDkoTN0toafzpAhVeCVBaef5V88Nc5mlJNtf+347enG/JDAAcYlQUmX0buXocznHk5Ko
+         jasUD1NLA/aFd66v+Hllo1XnExWtr7zC6s7H5i3HGDx8o8qwDH9VEMs1jfdpj4jw/5tf
+         c/N1bFsySnbbP76od6uYB40iaMD9qPoNRKPUcfxEN6TAIBj1nX09xS58DzZvQeKS+i55
+         rZ0ezrhe+BDDtQVGCvwcKG3PqWIDufzzV0gy5XihuCNMzywqD9n1CQYC5Mnv1Uq1CqHC
+         0MFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kh4EnLD5q25bV5mnKOfEKUkGgPpU5YAK0WJ01JIxNg4=;
+        b=7AOnRciPniPIzk0sA1OKNklkZzXSsh4RDVVMxswWHklbSZ8HA+hCdHDoLxzDHRLrwE
+         UxTgBuvPPS+3DHCpBmT3vjjjQpIe6voh/xFhGQIklcHenE3VENVZu2mhP9yvF/4x5C4Z
+         QD7LQtiWQOJ4OA0vA/l+36bzOdJEO0UrZlaCe6qWqCFofIK3gOCMUmXFio7y6OLDM09o
+         p0E//whQkAJlkqrC7tny3T5JpqxglwpFoHvSfOf0s3UyaTyQ40RSNGgCG/ZggHTl8heC
+         erOXhzZD5+d+iXUSFXNaV1ZO0jRZxffbMaIcgYmapL36Bi61TXwpCC8uoXFyvnZ6+YgB
+         nfCQ==
+X-Gm-Message-State: AOAM531xL/mrHz9TjrovCePUmpnUFmrhSr5uG2mn3uZpa1IGDS4KD2j+
+        L5MoQuy9XV6lysOsUfhe9NhKyGyKe83UChKhzro1hTqDJORUcQ==
+X-Google-Smtp-Source: ABdhPJx2j+WLRuHx6rpO7Dl95/n6zjxwt0lx2dBVqcmN8p1lNQkuRQtrCf4t+2gbUw7UgAe8w7av6kvka5elU3LTjus=
+X-Received: by 2002:a05:6602:490:b0:65d:cfc5:9221 with SMTP id
+ y16-20020a056602049000b0065dcfc59221mr10786278iov.0.1652812962454; Tue, 17
+ May 2022 11:42:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Evolution 3.42.2 
-Content-Transfer-Encoding: 8BIT
-X-ZohoMailClient: External
+References: <20220515064126.1424-1-linux.amoon@gmail.com> <20220515064126.1424-2-linux.amoon@gmail.com>
+ <6a6ed76a-50fa-2b05-896e-8936d3c3f597@linaro.org>
+In-Reply-To: <6a6ed76a-50fa-2b05-896e-8936d3c3f597@linaro.org>
+From:   Anand Moon <linux.amoon@gmail.com>
+Date:   Wed, 18 May 2022 00:12:27 +0530
+Message-ID: <CANAwSgTMwKhn6QDcoOXcSVgUqLGq1W6X4QvcSRHT-JSVfOe0rA@mail.gmail.com>
+Subject: Re: [PATCHv2 1/6] thermal: exynos: Enable core tmu hardware clk flag
+ on exynos platform
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The _DSM evaluation warning in its current form is not very helpful, as 
-it lacks any specific information:
-  ACPI: \: failed to evaluate _DSM (0x1001)
+Hi Krzysztof,
 
-Thus, include the UUID of the missing _DSM:
-  ACPI: \: failed to evaluate _DSM bf0212f2-... (0x1001)
+On Sun, 15 May 2022 at 15:22, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 15/05/2022 08:41, Anand Moon wrote:
+> > Use clk_prepare_enable api to enable tmu internal hardware clock
+> > flag on, use clk_disable_unprepare to disable the clock.
+> >
+> > Cc: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+> > Signed-off-by: Anand Moon <linux.amoon@gmail.com>
+>
+> Here as well you ignored my first comment:
+> https://lore.kernel.org/lkml/CANAwSgS=08fVsqn95WHzSF71WTTyD2-=K2C6-BEz0tY0t6A1-g@mail.gmail.com/T/#mbfc57b40a7ed043dd4d4890bedb6bad8240058cd
+>
+> "This is not valid reason to do a change. What is clk_summary does not
+> really matter. Your change has negative impact on power consumption as
+> the clock stays enabled all the time. This is not what we want... so
+> please explain it more - why you need the clock to be enabled all the
+> time? What is broken (clk_summary is not broken in this case)?"
+>
+Ok, I fall short to understand the clock framework.
 
-Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
----
-Changes in v2:
- - fix arguments order
- - fix indentation
- - drop line break
+> This was not addressed, you just resent same code...
+>
+Thanks for the review comment.
 
- drivers/acpi/utils.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Here is the Exynos4412 user manual I am referring to get a better
+understanding of TMU drivers
 
-diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
-index d5cedffeeff9..3a9773a09e19 100644
---- a/drivers/acpi/utils.c
-+++ b/drivers/acpi/utils.c
-@@ -681,7 +681,7 @@ acpi_evaluate_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 func,
- 
- 	if (ret != AE_NOT_FOUND)
- 		acpi_handle_warn(handle,
--				"failed to evaluate _DSM (0x%x)\n", ret);
-+				 "failed to evaluate _DSM %pUb (0x%x)\n", guid, ret);
- 
- 	return NULL;
- }
--- 
-2.34.1
+[0] https://chasinglulu.github.io/downloads/SEC_Exynos4412_Users%20Manual_Ver.1.00.00.pdf
 
+Exynos Thermal is controlled by CLK_SENSE field is toggled on/off by the TMU
+for rising and falling temperatures which control the interrupt.
+
+TMU monitors temperature variation in a chip by measuring on-chip temperature
+and generates an interrupt to CPU when the temperature exceeds or goes
+below pre-defined
+threshold. Instead of using an interrupt generation scheme, CPU can
+obtain on-chip
+temperature information by reading the related register field, that
+is, by using a polling scheme.
+
+tmu clk control the CPU freq with various power management like DVFS and MFC
+so this clk needs to be *enabled on*,
+If we use clk_prepare_enable API  we enable the clk and the clk counters,
+
+I check the call trace of the *clk_prepare_enable*
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/clk.h?h=v5.18-rc7#n945
+it first calls *clk_prepare* and then *clk_enable* functions to
+enable the clock and then the hardware flag gets enabled for the clock
+
+I also check the call trace of the *clk_prepare* below
+[2} https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/clk/clk.c?h=v5.18-rc7#n943
+it does not enable the clk explicitly but prepares the clock to be used.
+
+"clk_prepare can be used instead of clk_enable to ungate a clk if the
+operation may sleep.  One example is a clk which is accessed over I2c.  In
+the complex case a clk ungate operation may require a fast and a slow part.
+It is this reason that clk_prepare and clk_enable are not mutually
+exclusive.  In fact clk_prepare must be called before clk_enable.
+Returns 0 on success, -EERROR otherwise."
+
+What it means is we still need to call *clk_enable* to enable clk in the drivers
+and *clk_disable* to disable within the driver.
+
+In exynos tmu driver uses many clk_enable and clk_disable
+to toggle the clock which we can avoid if we used the switch to used
+*clk_prepare_enable* function in the probe function.
+
+[3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/thermal/samsung/exynos_tmu.c?h=v5.18-rc7#n259
+[4] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/thermal/samsung/exynos_tmu.c?h=v5.18-rc7#n350
+[5] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/thermal/samsung/exynos_tmu.c?h=v5.18-rc7#n653
+[6] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/thermal/samsung/exynos_tmu.c?h=v5.18-rc7#n731
+
+Locally I remove these function calls of clk_enable/ clk_disable
+function calls in the driver
+with these changes, stress-tested did not find any lockup.
+
+Please correct me if I am wrong.
+
+>
+> Best regards,
+> Krzysztof
+
+Thanks & Regards
+
+
+
+
+
+
+
+
+
+
+-Anand
