@@ -2,185 +2,443 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DA3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41AD4C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346926AbiEQM44 (ORCPT
+        id S1346870AbiEQM4v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
+        Tue, 17 May 2022 08:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345989AbiEQMz4 (ORCPT
+        with ESMTP id S1346788AbiEQM4a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:55:56 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A692C6317
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 05:55:50 -0700 (PDT)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220517125546epoutp02304a73248e120e555121ef6a86abbe51~v5bNoQ86I0964209642epoutp027
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 12:55:46 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220517125546epoutp02304a73248e120e555121ef6a86abbe51~v5bNoQ86I0964209642epoutp027
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1652792147;
-        bh=OVhES/rcDLq4Fi6eEb2iXvfOpdkKuNFGmcfznNbuyxI=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=HPRqPbLvj3f5KcyajqImXpzHpSy1v+IATj853u5mpE4yEqd2XmdhzmOqfJ2XWv6vE
-         cIoJ8Ru1065sOZZkPY6i7D+ahkfr9Ta0o0af9Y1S9KYucR7ZGwl4CHUPNrmN7GEXTg
-         AbIqUZZCo938wkZT4e8/vAMoSmMKJhx57OqmzRVA=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20220517125546epcas5p3e56563600381bb7f6a62dc06caf66bfa~v5bM6LVwO3186031860epcas5p3x;
-        Tue, 17 May 2022 12:55:46 +0000 (GMT)
-Received: from epsmges5p3new.samsung.com (unknown [182.195.38.183]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4L2bhH59LCz4x9Pw; Tue, 17 May
-        2022 12:55:43 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B3.DB.09762.F4B93826; Tue, 17 May 2022 21:55:43 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220517125511epcas5p4e9a4e3c327771dd1faf0a50057a2c17b~v5asQ9Goq1998519985epcas5p4Q;
-        Tue, 17 May 2022 12:55:11 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220517125511epsmtrp156957d73069d62bd702d29fa07223d2d~v5asP1maN3276532765epsmtrp1c;
-        Tue, 17 May 2022 12:55:11 +0000 (GMT)
-X-AuditID: b6c32a4b-213ff70000002622-a4-62839b4f7391
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        EE.8A.11276.E2B93826; Tue, 17 May 2022 21:55:11 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220517125507epsmtip16dd1109d45e05858658073883203b133~v5apUbHHC2359423594epsmtip1R;
-        Tue, 17 May 2022 12:55:07 +0000 (GMT)
-From:   Smitha T Murthy <smitha.t@samsung.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     m.szyprowski@samsung.com, andrzej.hajda@intel.com,
-        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, jernej.skrabec@gmail.com,
-        benjamin.gaignard@collabora.com, stanimir.varbanov@linaro.org,
-        dillon.minfei@gmail.com, david.plowman@raspberrypi.com,
-        mark.rutland@arm.com, robh+dt@kernel.org, krzk+dt@kernel.org,
-        andi@etezian.org, alim.akhtar@samsung.com,
-        aswani.reddy@samsung.com, pankaj.dubey@samsung.com,
-        Smitha T Murthy <smitha.t@samsung.com>
-Subject: [PATCH 00/20] Add MFC v12 support.
-Date:   Tue, 17 May 2022 18:25:28 +0530
-Message-Id: <20220517125548.14746-1-smitha.t@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA0WTf0xTVxTHue+1rwUte6EwLl107BEXdBRbaOFBQDZk5kVNbFimbtF1D/rW
-        Ekrb9IfoEiYIMmEbIMOMUQQnCArKj0IZIM4K3Vh0bkERFqQgPzbpFsFQUQNbtpbW7b/POd9z
-        7vlx7+WiQXZMwM3SGBm9hlYTWACrZ2hrpHCfuTBDVPWMIB/U9WBkw/OHCDnd4GKRg11WDtk9
-        akbJ5mEbm6y3/8wmv70xyyI7F9zqyNcOFvmwvg2QzpopjLTMjbHJu/21GPl5h5VNXrE7OOSF
-        8RGEbLL8hZDnrU845Mlrdg7pGOgBZFGxHXnzZepy3WVA9ToaATXeuIxSfTUODtUw4EQoS0sJ
-        Rk2ODWBUV+Nx6uT3qyyqrLsFUKX2cYxyWTZTN1dcHBnv/ewkFUMrGH04o8nUKrI0ymRizzvy
-        nXJpnEgsFCeQ8US4hs5hkom0vTLhriy1e3Ai/AitNrldMtpgILbvSNJrTUYmXKU1GJMJRqdQ
-        6yS6aAOdYzBplNEaxpgoFolipO7AD7NVfd/cZusuhR1tXHNh+aA+uBRwuRCXwJZTglIQwA3C
-        rwJYedHJ9hrLAE4V24DXeArgs9YlpBT4r2fcKmrjeIVrAFY038c8QhBehMALq4c9jOFR8OnS
-        rXV/MF4A4NwpoycBxX9HodP2hO0R+PgbsLbiNsfDLHwLHDIvox7m4QnweX0r21vtVdjaYUO9
-        PMmF7SU+ToNVYyWYl/nwj+FujpcF0Fle7GMlnHYVAi/r4Nn8bt8EKdA2WsvyzI/iW2F7/3av
-        exM8c7NtPQTFA+EXa/O+cB7srXvBBDz/04++4yG898jqa5OCZ+vmON49HIbn5iewCrCp5v8K
-        5wBoAWGMzpCjZAxSXayGyf3vnjK1ORaw/py37ekFsw8eRw8ChAsGAeSiRDBPdDQ/I4inoI99
-        zOi1cr1JzRgGgdS9stOoICRT6/4PGqNcLEkQSeLi4iQJsXFiIpSH/1OQEYQraSOTzTA6Rv8i
-        D+H6C/KRQNVCysoda1TP2PXOtXL+UrrRKTv92i+B9TtataMRga3yt4RFqWVXquMP3CgU+4Vk
-        Hrw+8tKvfvxR9aWMO8GfHMrDPtBZku6GCnbbuqRULG/L2A+hlGJmztjME/r3RTnaZvmfCSJm
-        VQ39soATf6dPDCcfr47ZOJF3QL73kWVmozL4cerapxNLMa+r8pAjQ9bFnjTXIVPnzim05lhK
-        Z3Ovf7e5tt0p3NypkJUfPPNlRZI0vqU5dPLiR9Md74Z8FRlpPiHR7w8sqyzYn5hJ36tbsWpz
-        TTP23KSaxKv3q/xc/D+1C01vM/R7USu7KqubjOnsWOyVDWGLq4vmiPzv5n9rT91AsAwqWrwN
-        1RvofwHBBCmRVwQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrMLMWRmVeSWpSXmKPExsWy7bCSnK7+7OYkg7cNzBYP5m1js1j84zmT
-        xf3Fn1ksDm3eym6x5cpsZovlxw+wWsw/co7VYvvBRywWG18AZS/OvMti8Xz+OkaLl7PusVls
-        enyN1eLyrjlsFj0btrJarD1yl91i6fWLTBbLNv1hsli09Qu7ReveI+wWd/dsY7RoaTvC5CDm
-        sWbeGkaPHXeXMHpcX/KJ2WPnrLvsHov3vGTy2LSqk83jzrU9bB6bl9R7tB79xeLRt2UVo0fX
-        ketsHp83yXmc+vqZPYA3issmJTUnsyy1SN8ugStj58KzrAUrJSuW/P7M1sA4X6SLkZNDQsBE
-        4nTLOvYuRi4OIYHdjBL3/l1hh0hISKz8PYkRwhaWWPnvOVRRE5PE5mUNzCAJNgEdiW/vT7OB
-        JEQEWhklrq/sZAJxmAV+MUssfHUarF1YQFtizoSzYGNZBFQlDs/+BNbNK2Ap8WP+alaIFfIS
-        qzccYJ7AyLOAkWEVo2RqQXFuem6xYYFhXmq5XnFibnFpXrpecn7uJkZwvGhp7mDcvuqD3iFG
-        Jg7GQ4wSHMxKIrwGFQ1JQrwpiZVVqUX58UWlOanFhxilOViUxHkvdJ2MFxJITyxJzU5NLUgt
-        gskycXBKNTCt++QTblr3tm+muZP70oOnky9vXbV4zbTFv+U4JjVV7Oja2elwcMrGSJepK2ab
-        bJu16sW52VUXTb79DevpTnGUPuRwsaOsQO/xLGulhbf111RvLll8eOtkPhOes+1CfSLbuSfb
-        qZxf9mJfcQ3n0WJl27rZJ9Vvnwgr/XzU7N6GtpDVr/5mdj55e/jOLRXziD1J06Ylbnn0w9/Z
-        wP4h016b3MzEfM5NJwq7dlx1Vp48KXpdpS7zilDezT7XG2w+bz1jlft/g/Wl+Qce/1wxaXmL
-        ZPx9TT3fqN05yW/1uv0a7+TvOye069qzP1+Uw/NU/VWSp/w/m5n/8fvlwO1OC1kWrvyg9335
-        2xl1a8Nn14U0KiqxFGckGmoxFxUnAgAv+VkIBgMAAA==
-X-CMS-MailID: 20220517125511epcas5p4e9a4e3c327771dd1faf0a50057a2c17b
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220517125511epcas5p4e9a4e3c327771dd1faf0a50057a2c17b
-References: <CGME20220517125511epcas5p4e9a4e3c327771dd1faf0a50057a2c17b@epcas5p4.samsung.com>
+        Tue, 17 May 2022 08:56:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17131188
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 05:56:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652792188;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2pbrC0ccXNbn0M/vwJ7mEw/NOu7CiMEM/hIUWf/LhP8=;
+        b=cSfV7kMECHI2v9yJZnnvz4plbomQieWWCZmNHx6wpTY41kGy2gZzy7z9+dK9ZmdzzykWGd
+        PgS1ouPGhdalrNsTdMYEnsU43wmp6Acz/PyoPPg16Q8Rf3O1r9ivH5f3G3SWBy4RWxd3CX
+        Y9joVTIPrM9z7w2FFr2bOs5HXNnMOMk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-508-CcRcNTb8PC2ME0a94C9bbw-1; Tue, 17 May 2022 08:56:25 -0400
+X-MC-Unique: CcRcNTb8PC2ME0a94C9bbw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6CB053C01D9C;
+        Tue, 17 May 2022 12:56:24 +0000 (UTC)
+Received: from localhost (unknown [10.72.47.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 71EBF400E114;
+        Tue, 17 May 2022 12:56:23 +0000 (UTC)
+From:   Xiubo Li <xiubli@redhat.com>
+To:     jlayton@kernel.org, viro@zeniv.linux.org.uk
+Cc:     idryomov@gmail.com, vshankar@redhat.com,
+        ceph-devel@vger.kernel.org, dchinner@redhat.com, hch@lst.de,
+        arnd@arndb.de, mcgrof@kernel.org, akpm@linux-foundation.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiubo Li <xiubli@redhat.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCH v3 2/2] ceph: wait the first reply of inflight async unlink
+Date:   Tue, 17 May 2022 20:55:49 +0800
+Message-Id: <20220517125549.148429-3-xiubli@redhat.com>
+In-Reply-To: <20220517125549.148429-1-xiubli@redhat.com>
+References: <20220517125549.148429-1-xiubli@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series adds MFC v12 support. MFC v12 is used in
-Tesla FSD SoC.
+In async unlink case the kclient won't wait for the first reply
+from MDS and just drop all the links and unhash the dentry and then
+succeeds immediately.
 
-This adds support for following:
+For any new create/link/rename,etc requests followed by using the
+same file names we must wait for the first reply of the inflight
+unlink request, or the MDS possibly will fail these following
+requests with -EEXIST if the inflight async unlink request was
+delayed for some reasons.
 
-* Add support for VP9 encoder
-* Add support for YV12 and I420 format (3-plane)
-* Add support for Rate Control, UHD and DMABUF for encoder
-* Add support for DPB buffers allocation based on MFC requirement
-* Fix to handle reference queue at MFCINST_FINISHING state.
-* Fix to handle error scenario on CLOSE_INSTANCE command.
-* Fix for register read and write for H264 codec encoding.
-* Update Documentation for control id definitions
+And the worst case is that for the none async openc request it will
+successfully open the file if the CDentry hasn't been unlinked yet,
+but later the previous delayed async unlink request will remove the
+CDenty. That means the just created file is possiblly deleted later
+by accident.
 
-Smitha T Murthy (20):
-  MAINTAINERS: Add git repo path for MFC
-  dt-bindings: media: s5p-mfc: Convert s5p-mfc.txt to new DT schema
-  dt-bindings: media: s5p-mfc: Add mfcv12 variant
-  media: s5p-mfc: Rename IS_MFCV10 macro
-  media: s5p-mfc: Add initial support for MFCv12
-  Documention: v4l: Documentation for VP9 CIDs.
-  media: v4l2: Add v4l2 control IDs for VP9 encoder.
-  media: s5p-mfc: Add support for VP9 encoder.
-  media: s5p-mfc: Add YV12 and I420 multiplanar format support
-  media: s5p-mfc: Add support for rate controls in MFCv12
-  media: s5p-mfc: Add support for UHD encoding.
-  media: s5p-mfc: Add support for DMABUF for encoder
-  media: s5p-mfc: Set context for valid case before calling try_run
-  media: s5p-mfc: Load firmware for each run in MFCv12.
-  media: s5p-mfc: DPB Count Independent of VIDIOC_REQBUF
-  media: s5p-mfc: Fix to handle reference queue during finishing
-  media: s5p-mfc: Clear workbit to handle error condition
-  media: s5p-mfc: Correction in register read and write for H264
-  arm64: dts: fsd: Add MFC related DT enteries
-  arm64 defconfig: Add MFC in defconfig
+We need to wait for the inflight async unlink requests to finish
+when creating new files/directories by using the same file names.
 
- .../devicetree/bindings/media/s5p-mfc.txt     |  77 +--
- .../devicetree/bindings/media/s5p-mfc.yaml    |  99 ++++
- .../media/v4l/ext-ctrls-codec.rst             | 167 +++++++
- MAINTAINERS                                   |   1 +
- arch/arm64/boot/dts/tesla/fsd-evb.dts         |   8 +
- arch/arm64/boot/dts/tesla/fsd.dtsi            |  22 +
- arch/arm64/configs/defconfig                  |   4 +-
- .../platform/samsung/s5p-mfc/regs-mfc-v12.h   |  60 +++
- .../platform/samsung/s5p-mfc/regs-mfc-v7.h    |   1 +
- .../platform/samsung/s5p-mfc/regs-mfc-v8.h    |   3 +
- .../media/platform/samsung/s5p-mfc/s5p_mfc.c  |  36 +-
- .../platform/samsung/s5p-mfc/s5p_mfc_cmd_v6.c |   3 +
- .../platform/samsung/s5p-mfc/s5p_mfc_common.h |  48 +-
- .../platform/samsung/s5p-mfc/s5p_mfc_ctrl.c   |  13 +-
- .../platform/samsung/s5p-mfc/s5p_mfc_dec.c    |  51 +-
- .../platform/samsung/s5p-mfc/s5p_mfc_enc.c    | 417 ++++++++++++++--
- .../platform/samsung/s5p-mfc/s5p_mfc_opr.h    |  16 +-
- .../platform/samsung/s5p-mfc/s5p_mfc_opr_v5.c |  12 +-
- .../platform/samsung/s5p-mfc/s5p_mfc_opr_v6.c | 446 ++++++++++++++++--
- .../platform/samsung/s5p-mfc/s5p_mfc_opr_v6.h |   3 +
- drivers/media/v4l2-core/v4l2-ctrls-defs.c     |  44 ++
- include/uapi/linux/v4l2-controls.h            |  33 ++
- 22 files changed, 1362 insertions(+), 202 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/media/s5p-mfc.yaml
- create mode 100644 drivers/media/platform/samsung/s5p-mfc/regs-mfc-v12.h
+URL: https://tracker.ceph.com/issues/55332
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+---
+ fs/ceph/dir.c        | 70 +++++++++++++++++++++++++++++++++++++++---
+ fs/ceph/file.c       |  4 +++
+ fs/ceph/mds_client.c | 73 ++++++++++++++++++++++++++++++++++++++++++++
+ fs/ceph/mds_client.h |  1 +
+ fs/ceph/super.c      |  3 ++
+ fs/ceph/super.h      | 19 +++++++++---
+ 6 files changed, 160 insertions(+), 10 deletions(-)
 
-
-base-commit: 3ae87d2f25c0e998da2721ce332e2b80d3d53c39
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index eae417d71136..01e7facef9b2 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -856,6 +856,10 @@ static int ceph_mknod(struct user_namespace *mnt_userns, struct inode *dir,
+ 	if (ceph_snap(dir) != CEPH_NOSNAP)
+ 		return -EROFS;
+ 
++	err = ceph_wait_on_conflict_unlink(dentry);
++	if (err)
++		return err;
++
+ 	if (ceph_quota_is_max_files_exceeded(dir)) {
+ 		err = -EDQUOT;
+ 		goto out;
+@@ -918,6 +922,10 @@ static int ceph_symlink(struct user_namespace *mnt_userns, struct inode *dir,
+ 	if (ceph_snap(dir) != CEPH_NOSNAP)
+ 		return -EROFS;
+ 
++	err = ceph_wait_on_conflict_unlink(dentry);
++	if (err)
++		return err;
++
+ 	if (ceph_quota_is_max_files_exceeded(dir)) {
+ 		err = -EDQUOT;
+ 		goto out;
+@@ -968,9 +976,13 @@ static int ceph_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 	struct ceph_mds_client *mdsc = ceph_sb_to_mdsc(dir->i_sb);
+ 	struct ceph_mds_request *req;
+ 	struct ceph_acl_sec_ctx as_ctx = {};
+-	int err = -EROFS;
++	int err;
+ 	int op;
+ 
++	err = ceph_wait_on_conflict_unlink(dentry);
++	if (err)
++		return err;
++
+ 	if (ceph_snap(dir) == CEPH_SNAPDIR) {
+ 		/* mkdir .snap/foo is a MKSNAP */
+ 		op = CEPH_MDS_OP_MKSNAP;
+@@ -980,6 +992,7 @@ static int ceph_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 		dout("mkdir dir %p dn %p mode 0%ho\n", dir, dentry, mode);
+ 		op = CEPH_MDS_OP_MKDIR;
+ 	} else {
++		err = -EROFS;
+ 		goto out;
+ 	}
+ 
+@@ -1037,6 +1050,10 @@ static int ceph_link(struct dentry *old_dentry, struct inode *dir,
+ 	struct ceph_mds_request *req;
+ 	int err;
+ 
++	err = ceph_wait_on_conflict_unlink(dentry);
++	if (err)
++		return err;
++
+ 	if (ceph_snap(dir) != CEPH_NOSNAP)
+ 		return -EROFS;
+ 
+@@ -1071,9 +1088,27 @@ static int ceph_link(struct dentry *old_dentry, struct inode *dir,
+ static void ceph_async_unlink_cb(struct ceph_mds_client *mdsc,
+ 				 struct ceph_mds_request *req)
+ {
++	struct dentry *dentry = req->r_dentry;
++	struct ceph_fs_client *fsc = ceph_sb_to_client(dentry->d_sb);
++	struct ceph_dentry_info *di = ceph_dentry(dentry);
+ 	int result = req->r_err ? req->r_err :
+ 			le32_to_cpu(req->r_reply_info.head->result);
+ 
++	if (!test_bit(CEPH_DENTRY_ASYNC_UNLINK_BIT, &di->flags))
++		pr_warn("%s dentry %p:%pd async unlink bit is not set\n",
++			__func__, dentry, dentry);
++
++	spin_lock(&fsc->async_unlink_conflict_lock);
++	hash_del_rcu(&di->hnode);
++	spin_unlock(&fsc->async_unlink_conflict_lock);
++
++	spin_lock(&dentry->d_lock);
++	di->flags &= ~CEPH_DENTRY_ASYNC_UNLINK;
++	wake_up_bit(&di->flags, CEPH_DENTRY_ASYNC_UNLINK_BIT);
++	spin_unlock(&dentry->d_lock);
++
++	synchronize_rcu();
++
+ 	if (result == -EJUKEBOX)
+ 		goto out;
+ 
+@@ -1081,7 +1116,7 @@ static void ceph_async_unlink_cb(struct ceph_mds_client *mdsc,
+ 	if (result) {
+ 		int pathlen = 0;
+ 		u64 base = 0;
+-		char *path = ceph_mdsc_build_path(req->r_dentry, &pathlen,
++		char *path = ceph_mdsc_build_path(dentry, &pathlen,
+ 						  &base, 0);
+ 
+ 		/* mark error on parent + clear complete */
+@@ -1089,13 +1124,13 @@ static void ceph_async_unlink_cb(struct ceph_mds_client *mdsc,
+ 		ceph_dir_clear_complete(req->r_parent);
+ 
+ 		/* drop the dentry -- we don't know its status */
+-		if (!d_unhashed(req->r_dentry))
+-			d_drop(req->r_dentry);
++		if (!d_unhashed(dentry))
++			d_drop(dentry);
+ 
+ 		/* mark inode itself for an error (since metadata is bogus) */
+ 		mapping_set_error(req->r_old_inode->i_mapping, result);
+ 
+-		pr_warn("ceph: async unlink failure path=(%llx)%s result=%d!\n",
++		pr_warn("async unlink failure path=(%llx)%s result=%d!\n",
+ 			base, IS_ERR(path) ? "<<bad>>" : path, result);
+ 		ceph_mdsc_free_path(path, pathlen);
+ 	}
+@@ -1180,6 +1215,8 @@ static int ceph_unlink(struct inode *dir, struct dentry *dentry)
+ 
+ 	if (try_async && op == CEPH_MDS_OP_UNLINK &&
+ 	    (req->r_dir_caps = get_caps_for_async_unlink(dir, dentry))) {
++		struct ceph_dentry_info *di = ceph_dentry(dentry);
++
+ 		dout("async unlink on %llu/%.*s caps=%s", ceph_ino(dir),
+ 		     dentry->d_name.len, dentry->d_name.name,
+ 		     ceph_cap_string(req->r_dir_caps));
+@@ -1187,6 +1224,16 @@ static int ceph_unlink(struct inode *dir, struct dentry *dentry)
+ 		req->r_callback = ceph_async_unlink_cb;
+ 		req->r_old_inode = d_inode(dentry);
+ 		ihold(req->r_old_inode);
++
++		spin_lock(&dentry->d_lock);
++		di->flags |= CEPH_DENTRY_ASYNC_UNLINK;
++		spin_unlock(&dentry->d_lock);
++
++		spin_lock(&fsc->async_unlink_conflict_lock);
++		hash_add_rcu(fsc->async_unlink_conflict, &di->hnode,
++			     dentry->d_name.hash);
++		spin_unlock(&fsc->async_unlink_conflict_lock);
++
+ 		err = ceph_mdsc_submit_request(mdsc, dir, req);
+ 		if (!err) {
+ 			/*
+@@ -1198,6 +1245,15 @@ static int ceph_unlink(struct inode *dir, struct dentry *dentry)
+ 		} else if (err == -EJUKEBOX) {
+ 			try_async = false;
+ 			ceph_mdsc_put_request(req);
++
++			spin_lock(&dentry->d_lock);
++			di->flags &= ~CEPH_DENTRY_ASYNC_UNLINK;
++			spin_unlock(&dentry->d_lock);
++
++			spin_lock(&fsc->async_unlink_conflict_lock);
++			hash_del_rcu(&di->hnode);
++			spin_unlock(&fsc->async_unlink_conflict_lock);
++
+ 			goto retry;
+ 		}
+ 	} else {
+@@ -1237,6 +1293,10 @@ static int ceph_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 	    (!ceph_quota_is_same_realm(old_dir, new_dir)))
+ 		return -EXDEV;
+ 
++	err = ceph_wait_on_conflict_unlink(new_dentry);
++	if (err)
++		return err;
++
+ 	dout("rename dir %p dentry %p to dir %p dentry %p\n",
+ 	     old_dir, old_dentry, new_dir, new_dentry);
+ 	req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
+diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+index 8c8226c0feac..f039e799f5f4 100644
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -740,6 +740,10 @@ int ceph_atomic_open(struct inode *dir, struct dentry *dentry,
+ 	if (dentry->d_name.len > NAME_MAX)
+ 		return -ENAMETOOLONG;
+ 
++	err = ceph_wait_on_conflict_unlink(dentry);
++	if (err)
++		return err;
++
+ 	if (flags & O_CREAT) {
+ 		if (ceph_quota_is_max_files_exceeded(dir))
+ 			return -EDQUOT;
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index e8c87dea0551..480c69bc51b1 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -655,6 +655,79 @@ static void destroy_reply_info(struct ceph_mds_reply_info_parsed *info)
+ 	free_pages((unsigned long)info->dir_entries, get_order(info->dir_buf_size));
+ }
+ 
++/*
++ * In async unlink case the kclient won't wait for the first reply
++ * from MDS and just drop all the links and unhash the dentry and then
++ * succeeds immediately.
++ *
++ * For any new create/link/rename,etc requests followed by using the
++ * same file names we must wait for the first reply of the inflight
++ * unlink request, or the MDS possibly will fail these following
++ * requests with -EEXIST if the inflight async unlink request was
++ * delayed for some reasons.
++ *
++ * And the worst case is that for the none async openc request it will
++ * successfully open the file if the CDentry hasn't been unlinked yet,
++ * but later the previous delayed async unlink request will remove the
++ * CDenty. That means the just created file is possiblly deleted later
++ * by accident.
++ *
++ * We need to wait for the inflight async unlink requests to finish
++ * when creating new files/directories by using the same file names.
++ */
++int ceph_wait_on_conflict_unlink(struct dentry *dentry)
++{
++	struct ceph_fs_client *fsc = ceph_sb_to_client(dentry->d_sb);
++	struct dentry *pdentry = dentry->d_parent;
++	struct dentry *udentry, *found = NULL;
++	struct ceph_dentry_info *di;
++	struct qstr dname;
++	u32 hash = dentry->d_name.hash;
++	int err;
++
++	dname.name = dentry->d_name.name;
++	dname.len = dentry->d_name.len;
++
++	rcu_read_lock();
++	hash_for_each_possible_rcu(fsc->async_unlink_conflict, di,
++				   hnode, hash) {
++		udentry = di->dentry;
++
++		spin_lock(&udentry->d_lock);
++		if (udentry->d_name.hash != hash)
++			goto next;
++		if (unlikely(udentry->d_parent != pdentry))
++			goto next;
++		if (!hash_hashed(&di->hnode))
++			goto next;
++
++		if (!test_bit(CEPH_DENTRY_ASYNC_UNLINK_BIT, &di->flags))
++			pr_warn("%s dentry %p:%pd async unlink bit is not set\n",
++				__func__, dentry, dentry);
++
++		if (d_compare(pdentry, udentry, &dname))
++			goto next;
++
++		spin_unlock(&udentry->d_lock);
++		found = dget(udentry);
++		break;
++next:
++		spin_unlock(&udentry->d_lock);
++	}
++	rcu_read_unlock();
++
++	if (likely(!found))
++		return 0;
++
++	dout("%s dentry %p:%pd conflict with old %p:%pd\n", __func__,
++	     dentry, dentry, found, found);
++
++	err = wait_on_bit(&di->flags, CEPH_DENTRY_ASYNC_UNLINK_BIT,
++			  TASK_INTERRUPTIBLE);
++	dput(found);
++	return err;
++}
++
+ 
+ /*
+  * sessions
+diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
+index 33497846e47e..d1ae679c52c3 100644
+--- a/fs/ceph/mds_client.h
++++ b/fs/ceph/mds_client.h
+@@ -582,6 +582,7 @@ static inline int ceph_wait_on_async_create(struct inode *inode)
+ 			   TASK_INTERRUPTIBLE);
+ }
+ 
++extern int ceph_wait_on_conflict_unlink(struct dentry *dentry);
+ extern u64 ceph_get_deleg_ino(struct ceph_mds_session *session);
+ extern int ceph_restore_deleg_ino(struct ceph_mds_session *session, u64 ino);
+ #endif
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index b73b4f75462c..6542b71f8627 100644
+--- a/fs/ceph/super.c
++++ b/fs/ceph/super.c
+@@ -816,6 +816,9 @@ static struct ceph_fs_client *create_fs_client(struct ceph_mount_options *fsopt,
+ 	if (!fsc->cap_wq)
+ 		goto fail_inode_wq;
+ 
++	hash_init(fsc->async_unlink_conflict);
++	spin_lock_init(&fsc->async_unlink_conflict_lock);
++
+ 	spin_lock(&ceph_fsc_lock);
+ 	list_add_tail(&fsc->metric_wakeup, &ceph_fsc_list);
+ 	spin_unlock(&ceph_fsc_lock);
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index 506d52633627..251e726ec628 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -19,6 +19,7 @@
+ #include <linux/security.h>
+ #include <linux/netfs.h>
+ #include <linux/fscache.h>
++#include <linux/hashtable.h>
+ 
+ #include <linux/ceph/libceph.h>
+ 
+@@ -99,6 +100,8 @@ struct ceph_mount_options {
+ 	char *mon_addr;
+ };
+ 
++#define CEPH_ASYNC_CREATE_CONFLICT_BITS 8
++
+ struct ceph_fs_client {
+ 	struct super_block *sb;
+ 
+@@ -124,6 +127,9 @@ struct ceph_fs_client {
+ 	struct workqueue_struct *inode_wq;
+ 	struct workqueue_struct *cap_wq;
+ 
++	DECLARE_HASHTABLE(async_unlink_conflict, CEPH_ASYNC_CREATE_CONFLICT_BITS);
++	spinlock_t async_unlink_conflict_lock;
++
+ #ifdef CONFIG_DEBUG_FS
+ 	struct dentry *debugfs_dentry_lru, *debugfs_caps;
+ 	struct dentry *debugfs_congestion_kb;
+@@ -281,7 +287,8 @@ struct ceph_dentry_info {
+ 	struct dentry *dentry;
+ 	struct ceph_mds_session *lease_session;
+ 	struct list_head lease_list;
+-	unsigned flags;
++	struct hlist_node hnode;
++	unsigned long flags;
+ 	int lease_shared_gen;
+ 	u32 lease_gen;
+ 	u32 lease_seq;
+@@ -290,10 +297,12 @@ struct ceph_dentry_info {
+ 	u64 offset;
+ };
+ 
+-#define CEPH_DENTRY_REFERENCED		1
+-#define CEPH_DENTRY_LEASE_LIST		2
+-#define CEPH_DENTRY_SHRINK_LIST		4
+-#define CEPH_DENTRY_PRIMARY_LINK	8
++#define CEPH_DENTRY_REFERENCED		(1 << 0)
++#define CEPH_DENTRY_LEASE_LIST		(1 << 1)
++#define CEPH_DENTRY_SHRINK_LIST		(1 << 2)
++#define CEPH_DENTRY_PRIMARY_LINK	(1 << 3)
++#define CEPH_DENTRY_ASYNC_UNLINK_BIT	(4)
++#define CEPH_DENTRY_ASYNC_UNLINK	(1 << CEPH_DENTRY_ASYNC_UNLINK_BIT)
+ 
+ struct ceph_inode_xattrs_info {
+ 	/*
 -- 
-2.17.1
+2.36.0.rc1
 
