@@ -2,165 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4898CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244250AbiEQSEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39886 "EHLO
+        id S1345143AbiEQSFn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 14:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351854AbiEQSEV (ORCPT
+        with ESMTP id S1351895AbiEQSF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:04:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA25B50B38
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:04:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652810639;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HxGCj1cP/e8qYt5WRT45mylpr4ifFluD3fScdJvLc6A=;
-        b=IXKLVYZ0narU67O9b1KGbqC3W9HMESN5LYT796WSvdDJWO/kdXiwBTQoq6KpO4YEk+Sktj
-        VaCMaIasubwXym4tNZs5dscsyUhgOXja8Cc7EgRw4IY1t8lkaSpR9rsbxm60Ozp4eLOkDS
-        icmFYwviVfnsijfCvgq65ZBBlbIQCzc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-N-obt9wAOvK86jGT5yTC4g-1; Tue, 17 May 2022 14:03:55 -0400
-X-MC-Unique: N-obt9wAOvK86jGT5yTC4g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A5FA1101A52C;
-        Tue, 17 May 2022 18:03:54 +0000 (UTC)
-Received: from dqiao.bos.com (unknown [10.22.10.187])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B785400DFB5;
-        Tue, 17 May 2022 18:03:54 +0000 (UTC)
-From:   Donghai Qiao <dqiao@redhat.com>
-To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
-        peterz@infradead.org, heying24@huawei.com,
-        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
-        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
-Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
-        Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH v3 11/11] smp: up.c to adopt the same format of cross CPU call.
-Date:   Tue, 17 May 2022 14:03:26 -0400
-Message-Id: <20220517180326.997129-12-dqiao@redhat.com>
-In-Reply-To: <20220517180326.997129-1-dqiao@redhat.com>
-References: <20220517180326.997129-1-dqiao@redhat.com>
-Reply-To: dqiao@redhat.com
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+        Tue, 17 May 2022 14:05:26 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F67251582
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:04:31 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id p189so10866511wmp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=EKSmnvJVRKuNiorxmh6RKpW9+C+oBWZuirhwngUpiFA=;
+        b=d8XJLJsZpEXABv6ZORuvVlkZV/eZ0n5QWvVfV1Il8MFmUInxoYkMl3Kmq2wMRGnu/Y
+         tGbJqIujPWUGCNgZ/tqGy1+5cJlA7oXSk+0oDV1jG1oZ7o9gkyVG9ATGIB0RjMTRhhL3
+         OB76y7+GsffV/CyOU75jAwBwYjMFeWYOacizhtdmid6sisM4pzfceqYcyTq1aNYQkZ42
+         XcUOTZerZ4FvdaSvcQx0+uErEOW1VaA0Js5mUP10jFw0gcH5pu2DuTZ4HlBZo/OWP7lq
+         bUhyWznZSNRpzW/t/T6xXZf95iBXy/9wwFuCzKZcv/KtEhRZzwvHKypq/MhU7fck63m3
+         Gdxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EKSmnvJVRKuNiorxmh6RKpW9+C+oBWZuirhwngUpiFA=;
+        b=2blnNmERAldlNgAf/dEtDb7YHJQOPDWqzmIMRhdK82Ld0IA1h3W0FfEco7ZdwMzbzc
+         LfzzQM4dfm3+zeRUn75nP49DutBqkziMBG8+qyH8SQQD9xKjkifcJmrzX79qrNSLXtZ3
+         nX3XhWP75qtWKxSmp17ZOhuhHHkgaejyCMfBHvwYHXxJhwWuYuCXx41eFizTxoBLiST6
+         oan6lKFw8zjwKmFFbS8kQqJiWJpd/T8oFVbOnDiVDsLLS+Fr5oT1oe5kGnCGYxFTPdq6
+         N0hyu6hEF12JNCv1Pn1sK2tf/XPTYQ586f8+L7v03mi3jzLE+ZDBvaOcsa77XPdkfZXD
+         nprg==
+X-Gm-Message-State: AOAM533B4OGkm0QIJOCqrPkvtyu0TsvkoSCUh30VmSgG9lmeKN6TBYqG
+        wknBrswu16vM67BdEDk16Ym6JWGleJk=
+X-Google-Smtp-Source: ABdhPJxvO8aJltdNydOcbp7B8L4owevPlqnxSW+KqTPFcqROlQBAyvV0Gb48z5sSt/DmKwKj8j4PqQ==
+X-Received: by 2002:a05:600c:3caa:b0:394:8fb8:716 with SMTP id bg42-20020a05600c3caa00b003948fb80716mr32758904wmb.105.1652810670151;
+        Tue, 17 May 2022 11:04:30 -0700 (PDT)
+Received: from otyshchenko.router ([212.22.223.21])
+        by smtp.gmail.com with ESMTPSA id c3-20020adfc6c3000000b0020c5253d8dasm12978625wrh.38.2022.05.17.11.04.29
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 May 2022 11:04:29 -0700 (PDT)
+From:   Oleksandr Tyshchenko <olekstysh@gmail.com>
+To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+Cc:     Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>, Julien Grall <julien@xen.org>
+Subject: [RFC PATCH 0/2] Ability to allocate DMAable pages using unpopulated-alloc 
+Date:   Tue, 17 May 2022 21:04:16 +0300
+Message-Id: <1652810658-27810-1-git-send-email-olekstysh@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since smp.c has been changed to use the new interface, up.c should
-be changed to use the uniprocessor version of cross call as well.
+From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-Signed-off-by: Donghai Qiao <dqiao@redhat.com>
----
-v1 -> v2: Removed 'x' from the function names and change XCALL to
-	  SMP_CALL from the new macros
-v2 -> v3: Fixed the UP build errors (W=1 build) 
- kernel/up.c | 58 +++++++++++++++++++++++++++++++++++++----------------
- 1 file changed, 41 insertions(+), 17 deletions(-)
+Hello all.
 
-diff --git a/kernel/up.c b/kernel/up.c
-index a38b8b095251..ebecd8602884 100644
---- a/kernel/up.c
-+++ b/kernel/up.c
-@@ -9,8 +9,7 @@
- #include <linux/smp.h>
- #include <linux/hypervisor.h>
- 
--int smp_call_function_single(int cpu, void (*func) (void *info), void *info,
--				int wait)
-+int smp_call(int cpu, void (*func) (void *info), void *info, unsigned int type)
- {
- 	unsigned long flags;
- 
-@@ -23,37 +22,62 @@ int smp_call_function_single(int cpu, void (*func) (void *info), void *info,
- 
- 	return 0;
- }
--EXPORT_SYMBOL(smp_call_function_single);
-+EXPORT_SYMBOL(smp_call);
- 
--int smp_call_function_single_async(int cpu, struct __call_single_data *csd)
-+int smp_call_cond(int cpu, smp_call_func_t func, void *info,
-+		   smp_cond_func_t cond_func, unsigned int type)
- {
--	unsigned long flags;
-+	int ret = 0;
-+
-+	preempt_disable();
-+	if (!cond_func || cond_func(cpu, info))
-+		ret = smp_call(cpu, func, info, type);
-+
-+	preempt_enable();
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(smp_call_cond);
-+
-+void smp_call_mask(const struct cpumask *mask, smp_call_func_t func, void *info, unsigned int type)
-+{
-+	if (!cpumask_test_cpu(0, mask))
-+		return;
-+
-+	preempt_disable();
-+	smp_call(0, func, info, type);
-+	preempt_enable();
-+}
-+EXPORT_SYMBOL(smp_call_mask);
-+
-+int smp_call_csd(int cpu, struct __call_single_data *csd, unsigned int type)
-+{
-+	preempt_disable();
-+
-+	if (csd->func != NULL)
-+		smp_call(cpu, csd->func, csd->info, type);
-+
-+	preempt_enable();
- 
--	local_irq_save(flags);
--	csd->func(csd->info);
--	local_irq_restore(flags);
- 	return 0;
- }
--EXPORT_SYMBOL(smp_call_function_single_async);
-+EXPORT_SYMBOL(smp_call_csd);
- 
- /*
-  * Preemption is disabled here to make sure the cond_func is called under the
-  * same conditions in UP and SMP.
-  */
--void on_each_cpu_cond_mask(smp_cond_func_t cond_func, smp_call_func_t func,
--			   void *info, bool wait, const struct cpumask *mask)
-+void smp_call_mask_cond(const struct cpumask *mask, smp_call_func_t func,
-+			 void *info, smp_cond_func_t cond_func,
-+			 unsigned int type)
- {
--	unsigned long flags;
--
- 	preempt_disable();
- 	if ((!cond_func || cond_func(0, info)) && cpumask_test_cpu(0, mask)) {
--		local_irq_save(flags);
--		func(info);
--		local_irq_restore(flags);
-+		smp_call(0, func, info, type);
- 	}
- 	preempt_enable();
- }
--EXPORT_SYMBOL(on_each_cpu_cond_mask);
-+EXPORT_SYMBOL(smp_call_mask_cond);
- 
- int smp_call_on_cpu(unsigned int cpu, int (*func)(void *), void *par, bool phys)
- {
+The purpose of this RFC patch series is to get feedback about supporting the allocation
+of DMAable pages by Linux's unpopulated-alloc.
+
+The unpopulated-alloc feature has been enabled on Arm since the extended-regions support
+reached upstream. With that (if, of course, we run new Xen version and Xen was able to
+allocate extended regions), we don't allocate the real RAM pages from host memory and balloon
+them out (in order to obtain physical memory space to map the guest pages into) anymore, we use
+the unpopulated pages instead. And it seems that all users I have played with on Arm (I mean,
+Xen PV and virtio backends) are happy with the pages provided by xen_alloc_unpopulated_pages().
+It is worth mentioning that these pages are not contiguous, but this wasn't an issue so far.
+
+There is one place, where we still steal RAM pages if user-space Xen PV backend tries
+to establish grant mapping with a need to be backed by a DMA buffer for the sake of zero-copy
+(see dma_alloc*() usage in gnttab_dma_alloc_pages()).
+
+And, if I am not mistaken (there might be pitfalls which I am not aware of), we could avoid
+wasting real RAM pages in that particular case also by adding an ability to allocate
+unpopulated DMAable pages (which are guaranteed to be contiguous in IPA).
+The benefit is quite clear here:
+1. Avoid wasting real RAM pages (reducing the amount of CMA memory usable) for allocating
+   physical memory space to map the granted buffer into (which can be big enough if
+   we deal with Xen PV Display driver using multiple Full HD buffers) 
+2. Avoid superpage shattering in Xen P2M when establishing stage-2 mapping for that
+   granted buffer
+3. Avoid extra operations needed for the granted buffer to be properly mapped and
+   unmapped such as ballooning in/out real RAM pages
+
+Please note, there are several TODOs (described in corresponding commit subjects),
+which I will try to eliminate in next versions if we find a common ground regarding
+the approach.
+
+Any feedback/help would be highly appreciated.
+
+Oleksandr Tyshchenko (2):
+  xen/unpopulated-alloc: Introduce helpers for DMA allocations
+  xen/grant-table: Use unpopulated DMAable pages instead of real RAM
+    ones
+
+ drivers/xen/grant-table.c       |  27 +++++++
+ drivers/xen/unpopulated-alloc.c | 167 ++++++++++++++++++++++++++++++++++++++++
+ include/xen/xen.h               |  15 ++++
+ 3 files changed, 209 insertions(+)
+
 -- 
-2.27.0
+2.7.4
 
