@@ -2,80 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D496C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49743C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344091AbiEQKUk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
+        id S237419AbiEQKWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344102AbiEQKUP (ORCPT
+        with ESMTP id S1344825AbiEQKV7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:20:15 -0400
+        Tue, 17 May 2022 06:21:59 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B24B4C7B1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:19:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 269AA4BFDA;
+        Tue, 17 May 2022 03:20:23 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 07EF31042;
-        Tue, 17 May 2022 03:19:01 -0700 (PDT)
-Received: from [10.57.82.55] (unknown [10.57.82.55])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9DADC3F66F;
-        Tue, 17 May 2022 03:18:59 -0700 (PDT)
-Message-ID: <0e9356ee-9ae0-fd6d-b4ba-b1f05d8ba144@arm.com>
-Date:   Tue, 17 May 2022 11:18:54 +0100
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E270213D5;
+        Tue, 17 May 2022 03:20:22 -0700 (PDT)
+Received: from e121896.warwick.arm.com (e121896.warwick.arm.com [10.32.33.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6B5003F66F;
+        Tue, 17 May 2022 03:20:20 -0700 (PDT)
+From:   James Clark <james.clark@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        broonie@kernel.org, acme@kernel.org
+Cc:     german.gomez@arm.com, leo.yan@linaro.org,
+        mathieu.poirier@linaro.org, john.garry@huawei.com,
+        James Clark <james.clark@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 2/4] perf tools: Use dynamic register set for Dwarf unwind
+Date:   Tue, 17 May 2022 11:20:03 +0100
+Message-Id: <20220517102005.3022017-3-james.clark@arm.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20220517102005.3022017-1-james.clark@arm.com>
+References: <20220517102005.3022017-1-james.clark@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] iommu/dma: Fix check for error return from
- iommu_map_sg_atomic()
-Content-Language: en-GB
-To:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-References: <20220513153948.310119-1-schnelle@linux.ibm.com>
- <20220517083657.GA16377@lst.de>
- <27ae8b9f8e61dce4b31a37622e98b1c57b21b104.camel@linux.ibm.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <27ae8b9f8e61dce4b31a37622e98b1c57b21b104.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-17 11:17, Niklas Schnelle wrote:
-> On Tue, 2022-05-17 at 10:36 +0200, Christoph Hellwig wrote:
->> On Fri, May 13, 2022 at 05:39:48PM +0200, Niklas Schnelle wrote:
->>> In __iommu_dma_alloc_noncontiguous() the value returned by
->>> iommu_map_sg_atomic() is checked for being smaller than size. Before
->>> commit ad8f36e4b6b1 ("iommu: return full error code from
->>> iommu_map_sg[_atomic]()") this simply checked if the requested size was
->>> successfully mapped.
->>>
->>> After that commit iommu_map_sg_atomic() may also return a negative
->>> error value. In principle this too would be covered by the existing
->>> check. There is one problem however, as size is of type size_t while the
->>> return type of iommu_map_sg_atomic() is now of type ssize_t the latter gets
->>> converted to size_t and negative error values end up as very large
->>> positive values making the check succeed. Fix this by making the return
->>> type visible with a local variable and add an explicit cast to ssize_t.
->>>
->>> Fixes: ad8f36e4b6b1 ("iommu: return full error code from iommu_map_sg[_atomic]()")
->>> Cc: stable@vger.kernel.org
->>> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
->>
->> I don't see what the point of the newly added local variable is here.
->> Just casting size should be all that is needed as far as I can tell.
-> 
-> No technical reason just found it easier to read and more descriptive.
-> I'll sent a v2 with just the cast, it does simplify the commit message.
+Architectures can detect availability of extra registers at
+runtime so use this more complete set for unwinding. This
+will include the VG register on arm64 in a later commit.
 
-Note that this is already fixed upstream, though:
+If the function isn't implemented then PERF_REGS_MASK is
+returned and there is no change.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/commit/?h=core&id=a3884774d731f03d3a3dd4fb70ec2d9341ceb39d
+Signed-off-by: James Clark <james.clark@arm.com>
+---
+ tools/perf/util/evsel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Robin.
+diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+index 5fd7924f8eb3..787bbcbcd2ae 100644
+--- a/tools/perf/util/evsel.c
++++ b/tools/perf/util/evsel.c
+@@ -896,7 +896,7 @@ static void __evsel__config_callchain(struct evsel *evsel, struct record_opts *o
+ 					   "specifying a subset with --user-regs may render DWARF unwinding unreliable, "
+ 					   "so the minimal registers set (IP, SP) is explicitly forced.\n");
+ 			} else {
+-				attr->sample_regs_user |= PERF_REGS_MASK;
++				attr->sample_regs_user |= arch__user_reg_mask();
+ 			}
+ 			attr->sample_stack_user = param->dump_size;
+ 			attr->exclude_callchain_user = 1;
+-- 
+2.28.0
+
