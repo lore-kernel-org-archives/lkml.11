@@ -2,160 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC99EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A08EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349982AbiEQP26 (ORCPT
+        id S1350006AbiEQPaj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
+        Tue, 17 May 2022 11:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231574AbiEQP24 (ORCPT
+        with ESMTP id S239158AbiEQPag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:28:56 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB7C4F9C7
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:28:55 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id m23so22222111ljc.0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:28:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=hPZfDtq+SkRuHXe2OoUht+X8414HDvU1qCCePA6TW0o=;
-        b=BWtJYBSQrALz0kehGa0zLzvRkDep6BCb4gJVEse1w0U8n7cS73FAvOIhDDLLf/OZnf
-         AtgGo0S5cOLhM52J5ZW9DBMEo0sm4pJTJvaW67DJDo7d+9XNtrm5hXSZ5rF1un863G28
-         WNSlRe8cAOjnCsNhAUJL5LMVsgnwV8Uq+A4pLYfL3aO/2R1P53H7vmCP+RIN2ccSD++J
-         bIpx83TLiVlizoo4kF9YZdE5ZUlS7VNExCBmBI5t5qnoee0HJ8lSYOuKVg5tczQtRMBh
-         vfnXsSkHHIOBQxuXAsBWHk9tupfeAW81vxXMZi2owrT/+uv4iFUrzM838PNCu8Q3u7+l
-         olmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=hPZfDtq+SkRuHXe2OoUht+X8414HDvU1qCCePA6TW0o=;
-        b=JbqrrzA0yrapXJv7Fbg87AM4aJY7DiOokRefpjd1Rvo3vE8solbM0oieTOiMl7Fm11
-         Lp8um6S8aAI/h6Jrr/UB+DIrXlCuge64ja5FNvVdF/FwNshzRTHo9TjOJITdX1Yv48VD
-         fOwSeB1UMB8GRBKFVepiTqQghe6KP95/MPqS5hWSo1nDeZx2bEClaM+UP81D20qvexwE
-         MkgV4gA3bh2u857h9WOaL2xhkhJOy+RSUlQi2BvT6ta16hKaMIY6C15KWBKWfTQiqFWX
-         siBFd0KlcqrsI3JKOuiJuNttmfFoNm5Y3YxiMddyzNOUmCbiuaBGdesPoSB7I7phH4MH
-         CQJg==
-X-Gm-Message-State: AOAM531p+b/iz4PuqbQyrLyNQWRSDgBlVjDYltw8Ef8CPlfrt540KrcI
-        1ppn/Zym9lMZQPaab5Ez4HDBGg==
-X-Google-Smtp-Source: ABdhPJw9ZiS3f8ZiEe+SesZUS83Wf5AYmLXGowoTItvvXmkliGb0bg4HoPgkbP2vxl87SdzeD09m0A==
-X-Received: by 2002:a2e:9957:0:b0:253:b63e:fcce with SMTP id r23-20020a2e9957000000b00253b63efccemr2338615ljj.71.1652801333129;
-        Tue, 17 May 2022 08:28:53 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id z15-20020ac24f8f000000b0047255d211e2sm1615380lfs.273.2022.05.17.08.28.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 08:28:52 -0700 (PDT)
-Message-ID: <68ccef70-ef30-8f53-6ec5-17ce5815089c@linaro.org>
-Date:   Tue, 17 May 2022 17:28:51 +0200
+        Tue, 17 May 2022 11:30:36 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A334E4F9C7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:30:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652801435; x=1684337435;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=aXZnyU0djTha+7ry1uEu2zsq27L4rt5KsD7gfEWC7Gs=;
+  b=KT6Rj9WOzXIfqeCU+9r6E7MlR9PT0FDN9lJLYr0iJsm4ErRCslYeKGKw
+   pLit+HAzJiWY6S/HgM2HoabUBfZWOFSba71xpuf1Kn+iOP2i8elc30Rs6
+   3rbxiL7PCc9RrdkoZkAKLAe9/v6wtZYYuZiqtorZFid/cHLZddmdzoOzm
+   ZN2HT1aT6yS2qh7NohvjaII7fsf68j/ltPd2Ho00vCkQmru0t2icrBjuJ
+   GmoBg1A1yFmvnzYzCahdUcGby2Q5RzZ2Coqud20OZ2qKBxbksvN5Urq+8
+   Qh8qM3v1Ir3o0TQEJDhTxQbUjf5K814zCnfxqVQpTKBp1xryfhXm6qsGp
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="270040137"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="270040137"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:30:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="700103995"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 17 May 2022 08:30:30 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 05014159; Tue, 17 May 2022 18:30:30 +0300 (EEST)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
+        seanjc@google.com, thomas.lendacky@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCH] x86/tdx: Handle load_unaligned_zeropad() page-cross to a shared page
+Date:   Tue, 17 May 2022 18:30:21 +0300
+Message-Id: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net v2] NFC: hci: fix sleep in atomic context bugs in
- nfc_hci_hcp_message_tx
-Content-Language: en-US
-To:     duoming@zju.edu.cn
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        netdev@vger.kernel.org
-References: <20220517105526.114421-1-duoming@zju.edu.cn>
- <2ce7a871-3e55-ae50-955c-bf04a443aba3@linaro.org>
- <71c24f38.1a1f4.180d29ff1fd.Coremail.duoming@zju.edu.cn>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <71c24f38.1a1f4.180d29ff1fd.Coremail.duoming@zju.edu.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 17:25, duoming@zju.edu.cn wrote:
-> Hello,
-> 
-> On Tue, 17 May 2022 13:42:41 +0200 Krzysztof wrote:
-> 
->> On 17/05/2022 12:55, Duoming Zhou wrote:
->>> There are sleep in atomic context bugs when the request to secure
->>> element of st21nfca is timeout. The root cause is that kzalloc and
->>> alloc_skb with GFP_KERNEL parameter and mutex_lock are called in
->>> st21nfca_se_wt_timeout which is a timer handler. The call tree shows
->>> the execution paths that could lead to bugs:
->>>
->>>    (Interrupt context)
->>> st21nfca_se_wt_timeout
->>>   nfc_hci_send_event
->>>     nfc_hci_hcp_message_tx
->>>       kzalloc(..., GFP_KERNEL) //may sleep
->>>       alloc_skb(..., GFP_KERNEL) //may sleep
->>>       mutex_lock() //may sleep
->>>
->>> This patch changes allocation mode of kzalloc and alloc_skb from
->>> GFP_KERNEL to GFP_ATOMIC and changes mutex_lock to spin_lock in
->>> order to prevent atomic context from sleeping.
->>>
->>> Fixes: 2130fb97fecf ("NFC: st21nfca: Adding support for secure element")
->>> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
->>> ---
->>> Changes in v2:
->>>   - Change mutex_lock to spin_lock.
->>>
->>>  include/net/nfc/hci.h |  3 ++-
->>>  net/nfc/hci/core.c    | 18 +++++++++---------
->>>  net/nfc/hci/hcp.c     | 10 +++++-----
->>>  3 files changed, 16 insertions(+), 15 deletions(-)
->>>
->>> diff --git a/include/net/nfc/hci.h b/include/net/nfc/hci.h
->>> index 756c11084f6..8f66e6e6b91 100644
->>> --- a/include/net/nfc/hci.h
->>> +++ b/include/net/nfc/hci.h
->>> @@ -103,7 +103,8 @@ struct nfc_hci_dev {
->>>  
->>>  	bool shutting_down;
->>>  
->>> -	struct mutex msg_tx_mutex;
->>> +	/* The spinlock is used to protect resources related with hci message TX */
->>> +	spinlock_t msg_tx_spin;
->>>  
->>>  	struct list_head msg_tx_queue;
->>>  
->>> diff --git a/net/nfc/hci/core.c b/net/nfc/hci/core.c
->>> index ceb87db57cd..fa22f9fe5fc 100644
->>> --- a/net/nfc/hci/core.c
->>> +++ b/net/nfc/hci/core.c
->>> @@ -68,7 +68,7 @@ static void nfc_hci_msg_tx_work(struct work_struct *work)
->>>  	struct sk_buff *skb;
->>>  	int r = 0;
->>>  
->>> -	mutex_lock(&hdev->msg_tx_mutex);
->>> +	spin_lock(&hdev->msg_tx_spin);
->>>  	if (hdev->shutting_down)
->>>  		goto exit;
->>
->> How did you test your patch?
->>
->> Did you check, really check, that this can be an atomic (non-sleeping)
->> section?
->>
->> I have doubts because I found at least one path leading to device_lock
->> (which is a mutex) called within your new code.
-> 
-> The nfc_hci_hcp_message_tx() is called by both process context(hci_dev_up and so on)
-> and interrupt context(st21nfca_se_wt_timeout()). The process context(hci_dev_up and so on)
-> calls device_lock, but I think calling spin_lock() within device_lock() is ok. There is
-> no device_lock() called within spin_lock(). 
+load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
+The unwanted loads are typically harmless. But, they might be made to
+totally unrelated or even unmapped memory. load_unaligned_zeropad()
+relies on exception fixup (#PF, #GP and now #VE) to recover from these
+unwanted loads.
 
-There is.
+In TDX guest the second page can be shared page and VMM may configure it
+to trigger #VE.
 
-nfc_hci_failure -> spin lock -> nfc_driver_failure -> nfc_targets_found
--> device_lock
+Kernel assumes that #VE on a shared page is MMIO access and tries to
+decode instruction to handle it. In case of load_unaligned_zeropad() it
+may result in confusion as it is not MMIO access.
 
-I found it just by a very quick look, so I suspect there are several
-other places, not really checked.
+Check fixup table before trying to handle MMIO.
 
-Best regards,
-Krzysztof
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ arch/x86/coco/tdx/tdx.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index 03deb4d6920d..5fbdda2f2b86 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -11,6 +11,8 @@
+ #include <asm/insn.h>
+ #include <asm/insn-eval.h>
+ #include <asm/pgtable.h>
++#include <asm/trapnr.h>
++#include <asm/extable.h>
+ 
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+@@ -296,6 +298,26 @@ static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
+ 	if (WARN_ON_ONCE(user_mode(regs)))
+ 		return false;
+ 
++	/*
++	 * load_unaligned_zeropad() relies on exception fixups in case of the
++	 * word being a page-crosser and the second page is not accessible.
++	 *
++	 * In TDX guest the second page can be shared page and VMM may
++	 * configure it to trigger #VE.
++	 *
++	 * Kernel assumes that #VE on a shared page is MMIO access and tries to
++	 * decode instruction to handle it. In case of load_unaligned_zeropad()
++	 * it may result in confusion as it is not MMIO access.
++	 *
++	 * Check fixup table before trying to handle MMIO.
++	 */
++	if (fixup_exception(regs, X86_TRAP_VE, 0, ve->gla)) {
++		/* regs->ip is adjusted by fixup_exception() */
++		ve->instr_len = 0;
++
++		return true;
++	}
++
+ 	if (copy_from_kernel_nofault(buffer, (void *)regs->ip, MAX_INSN_SIZE))
+ 		return false;
+ 
+-- 
+2.35.1
+
