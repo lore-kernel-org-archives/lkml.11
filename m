@@ -2,86 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C38C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC27BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243993AbiEQJDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
+        id S244169AbiEQJFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235185AbiEQJDp (ORCPT
+        with ESMTP id S240554AbiEQJEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:03:45 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF2F1D0FC
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:03:44 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id E6B331F4439C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652778223;
-        bh=UYubMcn9ZLqkxXynnDr3S5Ixi/XQwp/zcG8Jzl6yAGY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=nsd51A3QHf00rG6Hi57mYXcMCohcrFDwfxP2vm41heblBqYqP8pdbTedoIPenjYQg
-         mbQs94iUCp2qwefb47xG401nrdU2yt+Rl+winnnME+eFXM/JThc01Nnazdb30flLt5
-         XBQJtCZRigSTDLWb0i8lZAU8dxwVCkcGHPpnnJWxpRXXH/CvT0e65pnL1AOhyyxbaV
-         UGu92yeY7/xGcFT9j0CZtSm1lM9cXCpZebKiLCHAs+utdb0q4mWslt+1OPZaqRzDli
-         qOPYmdS5+29ArJIlZ9xwgkIkD0IJdXpkSA2njVHjVL41vHJRs1tE2FhBs46O8X/XRL
-         LHWsl9p/kuutA==
-Message-ID: <ef88ec2c-77b5-fa0d-49d1-fdd2451713b7@collabora.com>
-Date:   Tue, 17 May 2022 12:03:39 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v1] drm/scheduler: Don't kill jobs in interrupt context
-Content-Language: en-US
-To:     Erico Nunes <nunes.erico@gmail.com>,
-        Steven Price <steven.price@arm.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Rob Herring <robh@kernel.org>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
-References: <20220411221536.283312-1-dmitry.osipenko@collabora.com>
- <a78343c8-2a6d-b223-4219-6b6b0a4fcb1f@arm.com>
- <CAK4VdL2hCEoshWZbCh5mkHuS6wYMiPFR3v4MWTnrEKM9zyv6Mw@mail.gmail.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <CAK4VdL2hCEoshWZbCh5mkHuS6wYMiPFR3v4MWTnrEKM9zyv6Mw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Tue, 17 May 2022 05:04:52 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 545103F316;
+        Tue, 17 May 2022 02:04:44 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1004)
+        id 012E920F32C6; Tue, 17 May 2022 02:04:43 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 012E920F32C6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
+        s=default; t=1652778284;
+        bh=ojA9Vp3b1/V9h3FkXwTJNt9d/ThwRugOJ3+/bcYv0TQ=;
+        h=From:To:Cc:Subject:Date:Reply-To:From;
+        b=DJqd5IdhkvSx7eWgpVps6BFS03s780foB6vAch5Lq68bOR5JaH2Bc2UxOUSTaW9lZ
+         sNJLXccvW4G8sHUnTM5EnhNPHPLFswBrr1TytSzIP1FKytqekMKpnpBIH7EVRSFo9W
+         n9vqSfe7qjo1y9HrCt3VdPZGIzgx6rvsCAxbu4nI=
+From:   longli@linuxonhyperv.com
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Long Li <longli@microsoft.com>
+Subject: [PATCH 00/12] Introduce Microsoft Azure Network Adapter (MANA) RDMA driver
+Date:   Tue, 17 May 2022 02:04:24 -0700
+Message-Id: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
+X-Mailer: git-send-email 1.8.3.1
+Reply-To: longli@microsoft.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/17/22 10:40, Erico Nunes wrote:
-> On Wed, Apr 13, 2022 at 12:05 PM Steven Price <steven.price@arm.com> wrote:
->>
->> On 11/04/2022 23:15, Dmitry Osipenko wrote:
->>> Interrupt context can't sleep. Drivers like Panfrost and MSM are taking
->>> mutex when job is released, and thus, that code can sleep. This results
->>> into "BUG: scheduling while atomic" if locks are contented while job is
->>> freed. There is no good reason for releasing scheduler's jobs in IRQ
->>> context, hence use normal context to fix the trouble.
->>>
->>> Cc: stable@vger.kernel.org
->>> Fixes: 542cff7893a3 ("drm/sched: Avoid lockdep spalt on killing a processes")
->>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
->>
->> Reviewed-by: Steven Price <steven.price@arm.com>
-> 
-> Is there something blocking this patch?
-> Mesa CI is still hitting the issue and I have been waiting for it to
-> be applied/backported to update CI with it.
-> Thanks
+From: Long Li <longli@microsoft.com>
 
-If this patch won't be picked up anytime soon, then I'll include it into
-my "memory shrinker" patchset together with the rest of the fixes, so it
-won't get lost.
+This patchset implements a RDMA driver for Microsoft Azure Network
+Adapter (MANA). In MANA, the RDMA device is modeled as an auxiliary device
+to the Ethernet device.
+
+The first 11 patches modify the MANA Ethernet driver to support RDMA driver.
+The last patch implementes the RDMA driver.
+
+Long Li (12):
+  net: mana: Add support for auxiliary device
+  net: mana: Record the physical address for doorbell page region
+  net: mana: Handle vport sharing between devices
+  net: mana: Add functions for allocating doorbell page from GDMA
+  net: mana: Set the DMA device max page size
+  net: mana: Define data structures for protection domain and memory
+    registration
+  net: mana: Export Work Queue functions for use by RDMA driver
+  net: mana: Record port number in netdev
+  net: mana: Move header files to a common location
+  net: mana: Define max values for SGL entries
+  net: mana: Define and process GDMA response code
+    GDMA_STATUS_MORE_ENTRIES
+  RDMA/mana_ib: Add a driver for Microsoft Azure Network Adapter
+
+ MAINTAINERS                                   |   4 +
+ drivers/infiniband/Kconfig                    |   1 +
+ drivers/infiniband/hw/Makefile                |   1 +
+ drivers/infiniband/hw/mana/Kconfig            |   7 +
+ drivers/infiniband/hw/mana/Makefile           |   4 +
+ drivers/infiniband/hw/mana/cq.c               |  74 ++
+ drivers/infiniband/hw/mana/main.c             | 679 ++++++++++++++++++
+ drivers/infiniband/hw/mana/mana_ib.h          | 145 ++++
+ drivers/infiniband/hw/mana/mr.c               | 133 ++++
+ drivers/infiniband/hw/mana/qp.c               | 466 ++++++++++++
+ drivers/infiniband/hw/mana/wq.c               | 111 +++
+ .../net/ethernet/microsoft/mana/gdma_main.c   |  94 ++-
+ .../net/ethernet/microsoft/mana/hw_channel.c  |   6 +-
+ .../net/ethernet/microsoft/mana/mana_bpf.c    |   2 +-
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 139 +++-
+ .../ethernet/microsoft/mana/mana_ethtool.c    |   2 +-
+ .../net/ethernet/microsoft/mana/shm_channel.c |   2 +-
+ .../microsoft => include/linux}/mana/gdma.h   | 191 ++++-
+ .../linux}/mana/hw_channel.h                  |   0
+ .../microsoft => include/linux}/mana/mana.h   |  26 +-
+ .../linux}/mana/shm_channel.h                 |   0
+ include/uapi/rdma/ib_user_ioctl_verbs.h       |   1 +
+ include/uapi/rdma/mana-abi.h                  |  68 ++
+ 23 files changed, 2111 insertions(+), 45 deletions(-)
+ create mode 100644 drivers/infiniband/hw/mana/Kconfig
+ create mode 100644 drivers/infiniband/hw/mana/Makefile
+ create mode 100644 drivers/infiniband/hw/mana/cq.c
+ create mode 100644 drivers/infiniband/hw/mana/main.c
+ create mode 100644 drivers/infiniband/hw/mana/mana_ib.h
+ create mode 100644 drivers/infiniband/hw/mana/mr.c
+ create mode 100644 drivers/infiniband/hw/mana/qp.c
+ create mode 100644 drivers/infiniband/hw/mana/wq.c
+ rename {drivers/net/ethernet/microsoft => include/linux}/mana/gdma.h (77%)
+ rename {drivers/net/ethernet/microsoft => include/linux}/mana/hw_channel.h (100%)
+ rename {drivers/net/ethernet/microsoft => include/linux}/mana/mana.h (94%)
+ rename {drivers/net/ethernet/microsoft => include/linux}/mana/shm_channel.h (100%)
+ create mode 100644 include/uapi/rdma/mana-abi.h
 
 -- 
-Best regards,
-Dmitry
+2.17.1
+
