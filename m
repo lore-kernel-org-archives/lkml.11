@@ -2,244 +2,560 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C54C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C732FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352931AbiEQU3R (ORCPT
+        id S1352942AbiEQUbf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 16:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54800 "EHLO
+        Tue, 17 May 2022 16:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232740AbiEQU3P (ORCPT
+        with ESMTP id S1346785AbiEQUbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 16:29:15 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B8152B08;
-        Tue, 17 May 2022 13:29:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652819354; x=1684355354;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0BZvYzXs/VFL7HDs3p14QlWRcnv89nNTDrsMX7Xxdvk=;
-  b=SgCHwUVG4EH6yD9Mmwquedibkn8WIe6SDUf/oGeYRGDrN0DS81jn8NMR
-   qZD3gHwqPzkVJwnn8W441zKtaT0NicGEJ5ijWoH5vJMedEvkCPGGdz/UE
-   Tf9EbeJ5QYXATgr7MFW4jEtJzjCotcMpNjQ+o2zmd9rsWJ0RjhIjkfl3v
-   daDyJ+y9KrE8VL/uqQoLKJqB01aRLKx7OtmEmh9CDPNnDlsdAehtyk9fG
-   tu3AWAzBYPrJ5J1t3oZoooVtkPA3+x0ZtV5kOrGsriIciAKCqJ0iRcLfF
-   7wdSmVBNMpY1z0xW01/G/hBnsqpAe6Ws/s6Zb1wI2Ra7oDRF9rI6sGBpW
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="270145107"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="270145107"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 13:28:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="673033825"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 17 May 2022 13:27:57 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nr3nQ-0001Mz-JH;
-        Tue, 17 May 2022 20:27:56 +0000
-Date:   Wed, 18 May 2022 04:27:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Medad CChien <medadyoung@gmail.com>, benjaminfair@google.com,
-        yuenn@google.com, venture@google.com, tali.perry1@gmail.com,
-        tmaimon77@gmail.com, avifishman70@gmail.com, robh+dt@kernel.org,
-        alexandre.belloni@bootlin.com, a.zummo@towertech.it,
-        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
-        KFTING@nuvoton.com, ctcchien@nuvoton.com
-Cc:     kbuild-all@lists.01.org, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-rtc@vger.kernel.org
-Subject: Re: [PATCH v1 3/3] RTC: nuvoton: Add NCT3018Y real time clock driver
-Message-ID: <202205180421.cGv6R8hi-lkp@intel.com>
-References: <20220516152751.27716-3-ctcchien@nuvoton.com>
+        Tue, 17 May 2022 16:31:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D89652B08
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:31:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652819489;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1fCHWMKtSaq0LAO2nF/TgdmuRUOtifbIUs682Prxj8k=;
+        b=ILrhveDmYBLKScvZsZfoRI9jB8VIJ/PGcLbCrYGJQb2rzs/xqMq6zOax6+3W7eDK5rD1lL
+        rblOnr49WChITX5b02yFw5H0YubiCBfi3hcEfUeVp3o1RK5WAUbg2PLaA+xaignqiQuAlK
+        UVtf7o2WU+HuPGFzjY6ekrMFzUQg3Cg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-450-DIWlciprM26s8idb4aZ0Dw-1; Tue, 17 May 2022 16:31:25 -0400
+X-MC-Unique: DIWlciprM26s8idb4aZ0Dw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CB4891C068CA;
+        Tue, 17 May 2022 20:31:24 +0000 (UTC)
+Received: from jtoppins.rdu.csb (unknown [10.22.8.76])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5DE8F492C3B;
+        Tue, 17 May 2022 20:31:24 +0000 (UTC)
+From:   Jonathan Toppins <jtoppins@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [RFC net-next] bonding: netlink error message support for options
+Date:   Tue, 17 May 2022 16:31:19 -0400
+Message-Id: <5a6ba6f14b0fad6d4ba077a5230ee71cbf970934.1652819479.git.jtoppins@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516152751.27716-3-ctcchien@nuvoton.com>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Medad,
+Add support for reporting errors via extack in both bond_newlink
+and bond_changelink.
 
-Thank you for the patch! Yet something to improve:
+Instead of having to look in the kernel log for why an option was not
+correct just report the error to the user via the extack variable.
 
-[auto build test ERROR on abelloni/rtc-next]
-[also build test ERROR on robh/for-next v5.18-rc7 next-20220517]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+What is currently reported today:
+  ip link add bond0 type bond
+  ip link set bond0 up
+  ip link set bond0 type bond mode 4
+ RTNETLINK answers: Device or resource busy
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Medad-CChien/ARM-dts-nuvoton-Add-nuvoton-RTC3018Y-node/20220516-232940
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git rtc-next
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220518/202205180421.cGv6R8hi-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5c51862ee8030cfd9f2e955c10ee580f168663e3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Medad-CChien/ARM-dts-nuvoton-Add-nuvoton-RTC3018Y-node/20220516-232940
-        git checkout 5c51862ee8030cfd9f2e955c10ee580f168663e3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+After this change:
+  ip link add bond0 type bond
+  ip link set bond0 up
+  ip link set bond0 type bond mode 4
+ Error: option mode: unable to set because the bond device is up.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+---
 
-All errors (new ones prefixed by >>):
+Notes:
+    This is an RFC because the current NL_SET_ERR_MSG() macros do not support
+    printf like semantics so I rolled my own buffer setting in __bond_opt_set().
+    The issue is I could not quite figure out the life-cycle of the buffer, if
+    rtnl lock is held until after the text buffer is copied into the packet
+    then we are ok, otherwise, some other type of buffer management scheme will
+    be needed as this could result in corrupted error messages when modifying
+    multiple bonds.
 
-   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_rtc_read_time':
-   drivers/rtc/rtc-nct3018y.c:192:26: warning: unused variable 'nct3018y' [-Wunused-variable]
-     192 |         struct nct3018y *nct3018y = i2c_get_clientdata(client);
-         |                          ^~~~~~~~
-   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_rtc_set_time':
-   drivers/rtc/rtc-nct3018y.c:227:26: warning: unused variable 'nct3018y' [-Wunused-variable]
-     227 |         struct nct3018y *nct3018y = i2c_get_clientdata(client);
-         |                          ^~~~~~~~
-   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_rtc_set_alarm':
-   drivers/rtc/rtc-nct3018y.c:292:26: warning: unused variable 'nct3018y' [-Wunused-variable]
-     292 |         struct nct3018y *nct3018y = i2c_get_clientdata(client);
-         |                          ^~~~~~~~
-   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_irq_enable':
-   drivers/rtc/rtc-nct3018y.c:322:26: warning: unused variable 'nct3018y' [-Wunused-variable]
-     322 |         struct nct3018y *nct3018y = i2c_get_clientdata(client);
-         |                          ^~~~~~~~
-   In file included from include/linux/printk.h:555,
-                    from include/linux/kernel.h:29,
-                    from include/linux/cpumask.h:10,
-                    from include/linux/smp.h:13,
-                    from include/linux/lockdep.h:14,
-                    from include/linux/mutex.h:17,
-                    from include/linux/kernfs.h:11,
-                    from include/linux/sysfs.h:16,
-                    from include/linux/kobject.h:20,
-                    from include/linux/of.h:17,
-                    from include/linux/clk-provider.h:9,
-                    from drivers/rtc/rtc-nct3018y.c:5:
-   drivers/rtc/rtc-nct3018y.c: In function 'nct3018y_probe':
-   drivers/rtc/rtc-nct3018y.c:513:39: warning: format '%d' expects argument of type 'int', but argument 5 has type 'long unsigned int' [-Wformat=]
-     513 |                 dev_dbg(&client->dev, "%s: NCT3018Y_BIT_TWO is :%d\n",
-         |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynamic_func_call'
-     134 |                 func(&id, ##__VA_ARGS__);               \
-         |                             ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:166:9: note: in expansion of macro '_dynamic_func_call'
-     166 |         _dynamic_func_call(fmt,__dynamic_dev_dbg,               \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:9: note: in expansion of macro 'dynamic_dev_dbg'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:30: note: in expansion of macro 'dev_fmt'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                              ^~~~~~~
-   drivers/rtc/rtc-nct3018y.c:513:17: note: in expansion of macro 'dev_dbg'
-     513 |                 dev_dbg(&client->dev, "%s: NCT3018Y_BIT_TWO is :%d\n",
-         |                 ^~~~~~~
-   drivers/rtc/rtc-nct3018y.c:513:66: note: format string is defined here
-     513 |                 dev_dbg(&client->dev, "%s: NCT3018Y_BIT_TWO is :%d\n",
-         |                                                                 ~^
-         |                                                                  |
-         |                                                                  int
-         |                                                                 %ld
->> drivers/rtc/rtc-nct3018y.c:535:22: error: 'struct rtc_device' has no member named 'uie_unsupported'
-     535 |         nct3018y->rtc->uie_unsupported = 1;
-         |                      ^~
->> drivers/rtc/rtc-nct3018y.c:561:15: error: implicit declaration of function 'rtc_register_device'; did you mean 'i2c_unregister_device'? [-Werror=implicit-function-declaration]
-     561 |         err = rtc_register_device(nct3018y->rtc);
-         |               ^~~~~~~~~~~~~~~~~~~
-         |               i2c_unregister_device
-   cc1: some warnings being treated as errors
+ drivers/net/bonding/bond_netlink.c | 87 ++++++++++++++++++------------
+ drivers/net/bonding/bond_options.c | 62 +++++++++++++--------
+ include/net/bond_options.h         |  2 +-
+ 3 files changed, 96 insertions(+), 55 deletions(-)
 
-
-vim +535 drivers/rtc/rtc-nct3018y.c
-
-   486	
-   487	static int nct3018y_probe(struct i2c_client *client,
-   488				  const struct i2c_device_id *id)
-   489	{
-   490		struct nct3018y *nct3018y;
-   491		int err;
-   492		unsigned char buf;
-   493	
-   494		if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-   495			dev_err(&client->dev, "%s: ENODEV\n", __func__);
-   496			return -ENODEV;
-   497		}
-   498	
-   499		nct3018y = devm_kzalloc(&client->dev, sizeof(struct nct3018y),
-   500					GFP_KERNEL);
-   501		if (!nct3018y)
-   502			return -ENOMEM;
-   503	
-   504		i2c_set_clientdata(client, nct3018y);
-   505		nct3018y->client = client;
-   506		device_set_wakeup_capable(&client->dev, 1);
-   507	
-   508		err = nct3018y_read_block_data(client, NCT3018Y_REG_CTRL, 1, &buf);
-   509		if (err < 0) {
-   510			dev_err(&client->dev, "%s: read error\n", __func__);
-   511			return err;
-   512		} else if (buf & NCT3018Y_BIT_TWO) {
-   513			dev_dbg(&client->dev, "%s: NCT3018Y_BIT_TWO is :%d\n",
-   514				__func__, buf & NCT3018Y_BIT_TWO);
-   515		}
-   516	
-   517		buf = 0 | NCT3018Y_BIT_TWO;
-   518		err = nct3018y_write_block_data(client, NCT3018Y_REG_CTRL, 1, &buf);
-   519		if (err < 0) {
-   520			dev_err(&client->dev, "%s: write fail, so ReadOnly\n", __func__);
-   521		} else {
-   522			buf = 0;
-   523			err = nct3018y_write_block_data(client, NCT3018Y_REG_ST, 1, &buf);
-   524			if (err < 0) {
-   525				dev_err(&client->dev, "%s: write error\n", __func__);
-   526				return err;
-   527			}
-   528		}
-   529	
-   530		nct3018y->rtc = devm_rtc_allocate_device(&client->dev);
-   531		if (IS_ERR(nct3018y->rtc))
-   532			return PTR_ERR(nct3018y->rtc);
-   533	
-   534		nct3018y->rtc->ops = &nct3018y_rtc_ops;
- > 535		nct3018y->rtc->uie_unsupported = 1;
-   536		nct3018y->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
-   537		nct3018y->rtc->range_max = RTC_TIMESTAMP_END_2099;
-   538		nct3018y->rtc->set_start_time = true;
-   539	
-   540		nct3018y->wakeup_host = devm_gpiod_get(&client->dev, "host-wakeup", GPIOD_IN);
-   541		if (IS_ERR(nct3018y->wakeup_host)) {
-   542			err = PTR_ERR(nct3018y->wakeup_host);
-   543			dev_err(&client->dev, "could not get host wakeup gpio: %d", err);
-   544			return err;
-   545		}
-   546		client->irq = gpiod_to_irq(nct3018y->wakeup_host);
-   547	
-   548		dev_dbg(&client->dev, "%s: client->irq:%d\n", __func__, client->irq);
-   549	
-   550		if (client->irq > 0) {
-   551			err = devm_request_threaded_irq(&client->dev, client->irq,
-   552					NULL, nct3018y_irq,
-   553					IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
-   554					nct3018y_driver.driver.name, client);
-   555			if (err) {
-   556				dev_err(&client->dev, "unable to request IRQ %d\n", client->irq);
-   557				return err;
-   558			}
-   559		}
-   560	
- > 561		err = rtc_register_device(nct3018y->rtc);
-   562		if (err)
-   563			return err;
-   564	
-
+diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
+index f427fa1737c7..418a4f3d00a3 100644
+--- a/drivers/net/bonding/bond_netlink.c
++++ b/drivers/net/bonding/bond_netlink.c
+@@ -151,7 +151,7 @@ static int bond_slave_changelink(struct net_device *bond_dev,
+ 		snprintf(queue_id_str, sizeof(queue_id_str), "%s:%u\n",
+ 			 slave_dev->name, queue_id);
+ 		bond_opt_initstr(&newval, queue_id_str);
+-		err = __bond_opt_set(bond, BOND_OPT_QUEUE_ID, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_QUEUE_ID, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -175,7 +175,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int mode = nla_get_u8(data[IFLA_BOND_MODE]);
+ 
+ 		bond_opt_initval(&newval, mode);
+-		err = __bond_opt_set(bond, BOND_OPT_MODE, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_MODE, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -192,7 +192,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			active_slave = slave_dev->name;
+ 		}
+ 		bond_opt_initstr(&newval, active_slave);
+-		err = __bond_opt_set(bond, BOND_OPT_ACTIVE_SLAVE, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_ACTIVE_SLAVE, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -200,7 +201,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		miimon = nla_get_u32(data[IFLA_BOND_MIIMON]);
+ 
+ 		bond_opt_initval(&newval, miimon);
+-		err = __bond_opt_set(bond, BOND_OPT_MIIMON, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_MIIMON, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -208,7 +209,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int updelay = nla_get_u32(data[IFLA_BOND_UPDELAY]);
+ 
+ 		bond_opt_initval(&newval, updelay);
+-		err = __bond_opt_set(bond, BOND_OPT_UPDELAY, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_UPDELAY, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -216,7 +217,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int downdelay = nla_get_u32(data[IFLA_BOND_DOWNDELAY]);
+ 
+ 		bond_opt_initval(&newval, downdelay);
+-		err = __bond_opt_set(bond, BOND_OPT_DOWNDELAY, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_DOWNDELAY, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -224,7 +225,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int delay = nla_get_u32(data[IFLA_BOND_PEER_NOTIF_DELAY]);
+ 
+ 		bond_opt_initval(&newval, delay);
+-		err = __bond_opt_set(bond, BOND_OPT_PEER_NOTIF_DELAY, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_PEER_NOTIF_DELAY, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -232,7 +234,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int use_carrier = nla_get_u8(data[IFLA_BOND_USE_CARRIER]);
+ 
+ 		bond_opt_initval(&newval, use_carrier);
+-		err = __bond_opt_set(bond, BOND_OPT_USE_CARRIER, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_USE_CARRIER, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -240,12 +243,14 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int arp_interval = nla_get_u32(data[IFLA_BOND_ARP_INTERVAL]);
+ 
+ 		if (arp_interval && miimon) {
+-			netdev_err(bond->dev, "ARP monitoring cannot be used with MII monitoring\n");
++			NL_SET_ERR_MSG(extack,
++				       "ARP monitoring cannot be used with MII monitoring");
+ 			return -EINVAL;
+ 		}
+ 
+ 		bond_opt_initval(&newval, arp_interval);
+-		err = __bond_opt_set(bond, BOND_OPT_ARP_INTERVAL, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_ARP_INTERVAL, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -264,7 +269,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 
+ 			bond_opt_initval(&newval, (__force u64)target);
+ 			err = __bond_opt_set(bond, BOND_OPT_ARP_TARGETS,
+-					     &newval);
++					     &newval, extack);
+ 			if (err)
+ 				break;
+ 			i++;
+@@ -297,7 +302,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 
+ 			bond_opt_initextra(&newval, &addr6, sizeof(addr6));
+ 			err = __bond_opt_set(bond, BOND_OPT_NS_TARGETS,
+-					     &newval);
++					     &newval, extack);
+ 			if (err)
+ 				break;
+ 			i++;
+@@ -312,12 +317,14 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int arp_validate = nla_get_u32(data[IFLA_BOND_ARP_VALIDATE]);
+ 
+ 		if (arp_validate && miimon) {
+-			netdev_err(bond->dev, "ARP validating cannot be used with MII monitoring\n");
++			NL_SET_ERR_MSG(extack,
++				       "ARP validating cannot be used with MII monitoring");
+ 			return -EINVAL;
+ 		}
+ 
+ 		bond_opt_initval(&newval, arp_validate);
+-		err = __bond_opt_set(bond, BOND_OPT_ARP_VALIDATE, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_ARP_VALIDATE, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -326,7 +333,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u32(data[IFLA_BOND_ARP_ALL_TARGETS]);
+ 
+ 		bond_opt_initval(&newval, arp_all_targets);
+-		err = __bond_opt_set(bond, BOND_OPT_ARP_ALL_TARGETS, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_ARP_ALL_TARGETS, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -340,7 +348,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			primary = dev->name;
+ 
+ 		bond_opt_initstr(&newval, primary);
+-		err = __bond_opt_set(bond, BOND_OPT_PRIMARY, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_PRIMARY, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -349,7 +357,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u8(data[IFLA_BOND_PRIMARY_RESELECT]);
+ 
+ 		bond_opt_initval(&newval, primary_reselect);
+-		err = __bond_opt_set(bond, BOND_OPT_PRIMARY_RESELECT, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_PRIMARY_RESELECT, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -358,7 +367,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u8(data[IFLA_BOND_FAIL_OVER_MAC]);
+ 
+ 		bond_opt_initval(&newval, fail_over_mac);
+-		err = __bond_opt_set(bond, BOND_OPT_FAIL_OVER_MAC, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_FAIL_OVER_MAC, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -367,7 +377,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u8(data[IFLA_BOND_XMIT_HASH_POLICY]);
+ 
+ 		bond_opt_initval(&newval, xmit_hash_policy);
+-		err = __bond_opt_set(bond, BOND_OPT_XMIT_HASH, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_XMIT_HASH, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -376,7 +386,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u32(data[IFLA_BOND_RESEND_IGMP]);
+ 
+ 		bond_opt_initval(&newval, resend_igmp);
+-		err = __bond_opt_set(bond, BOND_OPT_RESEND_IGMP, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_RESEND_IGMP, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -385,7 +396,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u8(data[IFLA_BOND_NUM_PEER_NOTIF]);
+ 
+ 		bond_opt_initval(&newval, num_peer_notif);
+-		err = __bond_opt_set(bond, BOND_OPT_NUM_PEER_NOTIF, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_NUM_PEER_NOTIF, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -394,7 +406,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u8(data[IFLA_BOND_ALL_SLAVES_ACTIVE]);
+ 
+ 		bond_opt_initval(&newval, all_slaves_active);
+-		err = __bond_opt_set(bond, BOND_OPT_ALL_SLAVES_ACTIVE, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_ALL_SLAVES_ACTIVE, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -403,7 +416,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u32(data[IFLA_BOND_MIN_LINKS]);
+ 
+ 		bond_opt_initval(&newval, min_links);
+-		err = __bond_opt_set(bond, BOND_OPT_MINLINKS, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_MINLINKS, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -412,7 +425,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u32(data[IFLA_BOND_LP_INTERVAL]);
+ 
+ 		bond_opt_initval(&newval, lp_interval);
+-		err = __bond_opt_set(bond, BOND_OPT_LP_INTERVAL, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_LP_INTERVAL, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -421,7 +435,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u32(data[IFLA_BOND_PACKETS_PER_SLAVE]);
+ 
+ 		bond_opt_initval(&newval, packets_per_slave);
+-		err = __bond_opt_set(bond, BOND_OPT_PACKETS_PER_SLAVE, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_PACKETS_PER_SLAVE, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -430,7 +445,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int lacp_active = nla_get_u8(data[IFLA_BOND_AD_LACP_ACTIVE]);
+ 
+ 		bond_opt_initval(&newval, lacp_active);
+-		err = __bond_opt_set(bond, BOND_OPT_LACP_ACTIVE, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_LACP_ACTIVE, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -440,7 +456,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u8(data[IFLA_BOND_AD_LACP_RATE]);
+ 
+ 		bond_opt_initval(&newval, lacp_rate);
+-		err = __bond_opt_set(bond, BOND_OPT_LACP_RATE, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_LACP_RATE, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -449,7 +465,7 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u8(data[IFLA_BOND_AD_SELECT]);
+ 
+ 		bond_opt_initval(&newval, ad_select);
+-		err = __bond_opt_set(bond, BOND_OPT_AD_SELECT, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_AD_SELECT, &newval, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -458,7 +474,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u16(data[IFLA_BOND_AD_ACTOR_SYS_PRIO]);
+ 
+ 		bond_opt_initval(&newval, actor_sys_prio);
+-		err = __bond_opt_set(bond, BOND_OPT_AD_ACTOR_SYS_PRIO, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_AD_ACTOR_SYS_PRIO, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -467,7 +484,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 			nla_get_u16(data[IFLA_BOND_AD_USER_PORT_KEY]);
+ 
+ 		bond_opt_initval(&newval, port_key);
+-		err = __bond_opt_set(bond, BOND_OPT_AD_USER_PORT_KEY, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_AD_USER_PORT_KEY, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -477,7 +495,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 
+ 		bond_opt_initval(&newval,
+ 				 nla_get_u64(data[IFLA_BOND_AD_ACTOR_SYSTEM]));
+-		err = __bond_opt_set(bond, BOND_OPT_AD_ACTOR_SYSTEM, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_AD_ACTOR_SYSTEM, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -485,7 +504,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int dynamic_lb = nla_get_u8(data[IFLA_BOND_TLB_DYNAMIC_LB]);
+ 
+ 		bond_opt_initval(&newval, dynamic_lb);
+-		err = __bond_opt_set(bond, BOND_OPT_TLB_DYNAMIC_LB, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_TLB_DYNAMIC_LB, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -494,7 +514,8 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		int missed_max = nla_get_u8(data[IFLA_BOND_MISSED_MAX]);
+ 
+ 		bond_opt_initval(&newval, missed_max);
+-		err = __bond_opt_set(bond, BOND_OPT_MISSED_MAX, &newval);
++		err = __bond_opt_set(bond, BOND_OPT_MISSED_MAX, &newval,
++				     extack);
+ 		if (err)
+ 			return err;
+ 	}
+diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+index 64f7db2627ce..4a95503384a3 100644
+--- a/drivers/net/bonding/bond_options.c
++++ b/drivers/net/bonding/bond_options.c
+@@ -636,7 +636,8 @@ static int bond_opt_check_deps(struct bonding *bond,
+ }
+ 
+ static void bond_opt_dep_print(struct bonding *bond,
+-			       const struct bond_option *opt)
++			       const struct bond_option *opt,
++			       char *buf, size_t bufsize)
+ {
+ 	const struct bond_opt_value *modeval;
+ 	struct bond_params *params;
+@@ -644,16 +645,18 @@ static void bond_opt_dep_print(struct bonding *bond,
+ 	params = &bond->params;
+ 	modeval = bond_opt_get_val(BOND_OPT_MODE, params->mode);
+ 	if (test_bit(params->mode, &opt->unsuppmodes))
+-		netdev_err(bond->dev, "option %s: mode dependency failed, not supported in mode %s(%llu)\n",
+-			   opt->name, modeval->string, modeval->value);
++		scnprintf(buf, bufsize, "option %s: mode dependency failed, not supported in mode %s(%llu)\n",
++			  opt->name, modeval->string, modeval->value);
+ }
+ 
+ static void bond_opt_error_interpret(struct bonding *bond,
+ 				     const struct bond_option *opt,
+-				     int error, const struct bond_opt_value *val)
++				     int error, const struct bond_opt_value *val,
++				     char *buf, size_t bufsize)
+ {
+ 	const struct bond_opt_value *minval, *maxval;
+ 	char *p;
++	int i = 0;
+ 
+ 	switch (error) {
+ 	case -EINVAL:
+@@ -663,38 +666,45 @@ static void bond_opt_error_interpret(struct bonding *bond,
+ 				p = strchr(val->string, '\n');
+ 				if (p)
+ 					*p = '\0';
+-				netdev_err(bond->dev, "option %s: invalid value (%s)\n",
+-					   opt->name, val->string);
++				i = scnprintf(buf, bufsize,
++					      "option %s: invalid value (%s)",
++					      opt->name, val->string);
+ 			} else {
+-				netdev_err(bond->dev, "option %s: invalid value (%llu)\n",
+-					   opt->name, val->value);
++				i = scnprintf(buf, bufsize,
++					      "option %s: invalid value (%llu)",
++					      opt->name, val->value);
+ 			}
+ 		}
+ 		minval = bond_opt_get_flags(opt, BOND_VALFLAG_MIN);
+ 		maxval = bond_opt_get_flags(opt, BOND_VALFLAG_MAX);
+ 		if (!maxval)
+ 			break;
+-		netdev_err(bond->dev, "option %s: allowed values %llu - %llu\n",
+-			   opt->name, minval ? minval->value : 0, maxval->value);
++		if (i) {
++			// index buf to overwirte '\n' from above
++			buf = &buf[i];
++			bufsize -= i;
++		}
++		scnprintf(buf, bufsize, " allowed values %llu - %llu",
++			  minval ? minval->value : 0, maxval->value);
+ 		break;
+ 	case -EACCES:
+-		bond_opt_dep_print(bond, opt);
++		bond_opt_dep_print(bond, opt, buf, bufsize);
+ 		break;
+ 	case -ENOTEMPTY:
+-		netdev_err(bond->dev, "option %s: unable to set because the bond device has slaves\n",
+-			   opt->name);
++		scnprintf(buf, bufsize, "option %s: unable to set because the bond device has slaves",
++			  opt->name);
+ 		break;
+ 	case -EBUSY:
+-		netdev_err(bond->dev, "option %s: unable to set because the bond device is up\n",
+-			   opt->name);
++		scnprintf(buf, bufsize, "option %s: unable to set because the bond device is up",
++			  opt->name);
+ 		break;
+ 	case -ENODEV:
+ 		if (val && val->string) {
+ 			p = strchr(val->string, '\n');
+ 			if (p)
+ 				*p = '\0';
+-			netdev_err(bond->dev, "option %s: interface %s does not exist!\n",
+-				   opt->name, val->string);
++			scnprintf(buf, bufsize, "option %s: interface %s does not exist!",
++				  opt->name, val->string);
+ 		}
+ 		break;
+ 	default:
+@@ -713,7 +723,8 @@ static void bond_opt_error_interpret(struct bonding *bond,
+  * must be obtained before calling this function.
+  */
+ int __bond_opt_set(struct bonding *bond,
+-		   unsigned int option, struct bond_opt_value *val)
++		   unsigned int option, struct bond_opt_value *val,
++		   struct netlink_ext_ack *extack)
+ {
+ 	const struct bond_opt_value *retval = NULL;
+ 	const struct bond_option *opt;
+@@ -734,8 +745,17 @@ int __bond_opt_set(struct bonding *bond,
+ 	}
+ 	ret = opt->set(bond, retval);
+ out:
+-	if (ret)
+-		bond_opt_error_interpret(bond, opt, ret, val);
++	if (ret) {
++		static char buf[120];
++		buf[0] = '\0';
++		bond_opt_error_interpret(bond, opt, ret, val, buf, sizeof(buf));
++		if (buf[0] != '\0') {
++			if (extack)
++				extack->_msg = buf;
++			else
++				netdev_err(bond->dev, "Error: %s\n", buf);
++		}
++	}
+ 
+ 	return ret;
+ }
+@@ -757,7 +777,7 @@ int __bond_opt_set_notify(struct bonding *bond,
+ 
+ 	ASSERT_RTNL();
+ 
+-	ret = __bond_opt_set(bond, option, val);
++	ret = __bond_opt_set(bond, option, val, NULL);
+ 
+ 	if (!ret && (bond->dev->reg_state == NETREG_REGISTERED))
+ 		call_netdevice_notifiers(NETDEV_CHANGEINFODATA, bond->dev);
+diff --git a/include/net/bond_options.h b/include/net/bond_options.h
+index 61b49063791c..ae38557adc25 100644
+--- a/include/net/bond_options.h
++++ b/include/net/bond_options.h
+@@ -107,7 +107,7 @@ struct bond_option {
+ };
+ 
+ int __bond_opt_set(struct bonding *bond, unsigned int option,
+-		   struct bond_opt_value *val);
++		   struct bond_opt_value *val, struct netlink_ext_ack *extack);
+ int __bond_opt_set_notify(struct bonding *bond, unsigned int option,
+ 			  struct bond_opt_value *val);
+ int bond_opt_tryset_rtnl(struct bonding *bond, unsigned int option, char *buf);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.27.0
+
