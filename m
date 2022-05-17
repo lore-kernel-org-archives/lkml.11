@@ -2,95 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1752BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E12AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347992AbiEQNgc (ORCPT
+        id S1347934AbiEQNiE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
+        Tue, 17 May 2022 09:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347975AbiEQNfs (ORCPT
+        with ESMTP id S1346878AbiEQNh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:35:48 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65170CF2
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:35:46 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id i19so34717589eja.11
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:35:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CczRdToQYyS79iXvOF9uezGc9FJnQwNkL8FC0j7GqZc=;
-        b=qa0WI3zitk4mo/vP9Tgu6LSAg4l9FD+vov9RuP5ZsrevoHrO6BGsT9PZZLR0s0C/ry
-         J74uOPc3PMXLsBoZ0snV+t2ugSnjriIVrvfmfJW5ROZkrO7etlFFBnmn5o6n8xlCEtOe
-         HMT3v77yUwOJI0Ag/OWI+KV0yZH/U1WpCAa7s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CczRdToQYyS79iXvOF9uezGc9FJnQwNkL8FC0j7GqZc=;
-        b=ftlfSOVnBdGifOkE7kHGv2xJrcVrDI5lZ+SoUjp2F9RmaU7RjmDQy7Vgt4VKbRrJ4n
-         1qJf7HCQiyfr15mbwpm2kbzZxsscjPDIFEatb84PjQUyB+/t07zbvogHJ3JDrnkhTmTy
-         0J1qvrZU0zh3qxbayKRzlsQk2Z/doNiH62qKDPySNYgm1q9yszjwCvDRPe06ClDK/V/z
-         jm6yA/omOftBL1izoNeZxIG59h+ioyvXvc5amIrPSqdNWfzpghR0o0yX3gRnBNivs25l
-         SmfE5zG7hHwM/FpAGfSzQRB1YXq9/17W8NQw6QFOhdx+vYZdyuWCtm7BRa4i180q8r9c
-         YdPQ==
-X-Gm-Message-State: AOAM532LI0LfIX/P9oxwK6wLAJblS1eV2CrqA8h9O/UxFhnXREqLWeOt
-        2z7iZa4hVBdFzrlvPJl6P8shjw==
-X-Google-Smtp-Source: ABdhPJyD21G2He0F3CPkBtOh7TINXtxAfy7CevKrvtEdyM5j0DLCSLTKCJ4IqkSMmDe5Tn1vj7Yy+A==
-X-Received: by 2002:a17:906:4795:b0:6f3:d1cc:7127 with SMTP id cw21-20020a170906479500b006f3d1cc7127mr20325899ejc.461.1652794544802;
-        Tue, 17 May 2022 06:35:44 -0700 (PDT)
-Received: from panicking.amarulasolutions.com (mob-176-245-91-171.net.vodafone.it. [176.245.91.171])
-        by smtp.gmail.com with ESMTPSA id jl28-20020a17090775dc00b006f50ceabcb8sm1051398ejc.102.2022.05.17.06.35.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 06:35:43 -0700 (PDT)
-From:   Michael Trimarchi <michael@amarulasolutions.com>
-To:     Shawn Guo <shawnguo@kernel.org>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@denx.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-amarula@amarulasolutions.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Simon Holesch <simon.holesch@bshg.com>
-Subject: [PATCH] arm: dts: imx6ulz-bsh-smm-m2: Support proper board power off
-Date:   Tue, 17 May 2022 15:35:40 +0200
-Message-Id: <20220517133540.2456987-1-michael@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 17 May 2022 09:37:59 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048664198E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:37:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=40nH6wtaPQSKPcYfhRzm0nohHoI8B7JXQDWdeAfb0LM=; b=ZmhUd+DTB2IdZZo+5NYoVuK+/q
+        hCaQHZ5E7hsxCJ73Jv1dv/2RIKwUzzLBanXefYUYfRR8oScViC+nxZsT342Qa818iBkowrJaQGgz7
+        3izE9vtXhP6ahmKTtP2qbY388OFC84VQWA8QZUykGQ6jEe2ixqKVFF7C2/TA+xUiOE7pT8ICODeP+
+        IAiyYNDfAp9gPNkUEJh0vRMmHgzRPhrvoOvyZGFSSJL3F7iFKt+zHVQQA0jgL0BuDvuq+PEhglRwp
+        wQ+fSlRsuG6kF1dNxWYzmrB3He0+j81Dm4vpE6Ddc8/erheaRVaUlZmQnmlnOJEDtBdrJW1QUhcDN
+        WTMp3rtA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nqxOV-00AtRa-6q; Tue, 17 May 2022 13:37:47 +0000
+Date:   Tue, 17 May 2022 14:37:47 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     YoMccU66auLAPEHa@casper.infradead.org
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Vlastimil Babka <vbabka@suse.cz>, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Michal Hocko <mhocko@suse.com>
+Subject: Re: [PATCH v2] tracing: add ACCOUNT flag for allocations from marked
+ slab caches
+Message-ID: <YoOlK2r0v6VF8R7X@casper.infradead.org>
+References: <8ef9de6a-7497-07f7-852c-befcc3843771@openvz.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8ef9de6a-7497-07f7-852c-befcc3843771@openvz.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Simon Holesch <simon.holesch@bshg.com>
+On Tue, May 17, 2022 at 12:44:14PM +0300, Vasily Averin wrote:
+>  2) rework kmem_cache_alloc* tracepoints to use cachep instead
+>     of current cachep->*size parameters. Now kmalloc[_node] and
+>     kmem_cache_alloc[_node] tracepoints do not use common template
 
-Supports initiating poweroff on SNVS_PMIC_ON_REQ signal.
-
-Signed-off-by: Simon Holesch <simon.holesch@bshg.com>
----
- arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dts | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dts b/arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dts
-index 59bcfc9a6b10..c92e4e2f6ab9 100644
---- a/arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dts
-+++ b/arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dts
-@@ -29,6 +29,10 @@ &gpmi {
- 	status = "okay";
- };
- 
-+&snvs_poweroff {
-+	status = "okay";
-+};
-+
- &uart3 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_uart3>;
--- 
-2.25.1
+You can keep the common template.  Just pass in s->object_size as well
+as s.
 
