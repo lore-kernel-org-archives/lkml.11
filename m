@@ -2,145 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D65C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351013AbiEQQhz (ORCPT
+        id S1351043AbiEQQia (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        Tue, 17 May 2022 12:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351072AbiEQQgH (ORCPT
+        with ESMTP id S243067AbiEQQi0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:36:07 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5E7CE1B
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:36:05 -0700 (PDT)
+        Tue, 17 May 2022 12:38:26 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F4E33E17;
+        Tue, 17 May 2022 09:38:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652805365; x=1684341365;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=C2Z0RiuXriPADgGLLBzT0TeztOBn4bNSdseruseNy80=;
-  b=HCIw3dA6ldATu9E+/btWKGsgIWZS7Af96zuymmtuuwJZg5hPjdd2AoCx
-   m35PNqOzAJhbYsQ7rVCWMSSDGbMJ73GHjCFPIpAqlLw1GwXw3v7u+ZGci
-   x9LCuixPyhmaysEUElwXm8CxXMAfUVRsf4HdpKyJWxjM1Sp484Qdmw3H/
-   YuUlacXYxHyPJmsau62B2u9OPSmLb1UYG636r9FIAGEPzCZOvsRVYwsaJ
-   pdTr00pQmnVwX4CVZy9lpiFvFNUJpvTq37YFZ9S3pOOwoXpCaqvZZ5iYT
-   4NghWJ1pewX9+H5dwK2edK2TwJGqQxwh6bvObhLnHfGxgzeT1l4bmO4vE
+  t=1652805505; x=1684341505;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=zl8YweXi0s0RV+9G0WFQmftqGmOUyvjXqU37od8/iVs=;
+  b=YpyeGdEpLF5wSnr69rYF0Idi+fJsjcGzsURJQEGtXOGlpWSDo+kKlElK
+   sC4NwRa7bMnwslG4WbsWj+DNSOz63AIlcqVGY8bT7inWs66BXdt3N8rYJ
+   xcyNChADQdZioXXoftQke90OC0tYHCODLqUR3Xa/DGmoklI4LANUsRaQo
+   oxFcDPw5k49gAEzu36om6QQPnaEJ20lw60hHVgpWxHyG1L7CyrKCwNUFu
+   KfMVASH1y1r6QokAzPP3q1G8qmmToOTHtJSlb/QLnqUsyiolDYS3STFfK
+   VEkmCRIyR+wCcZeYlyCxRSkG3T76KxfPLaDv97VvToXa97l6PD0KphvMT
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="296525672"
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="251755452"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="296525672"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:36:04 -0700
+   d="scan'208";a="251755452"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:38:24 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="672931173"
-Received: from danielga-mobl.amr.corp.intel.com (HELO [10.212.245.96]) ([10.212.245.96])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:36:03 -0700
-Message-ID: <e73cb19e-7dab-2fc1-b947-fac70fd607d2@intel.com>
-Date:   Tue, 17 May 2022 09:36:03 -0700
+   d="scan'208";a="605441639"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 17 May 2022 09:38:22 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 1A1C4109; Tue, 17 May 2022 19:38:22 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v2 1/2] pinctrl: intel: make irq_chip immutable
+Date:   Tue, 17 May 2022 19:38:19 +0300
+Message-Id: <20220517163820.86768-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] x86/tdx: Handle load_unaligned_zeropad() page-cross to a
- shared page
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
-        seanjc@google.com, thomas.lendacky@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/17/22 08:30, Kirill A. Shutemov wrote:
-> load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
-> The unwanted loads are typically harmless. But, they might be made to
-> totally unrelated or even unmapped memory. load_unaligned_zeropad()
-> relies on exception fixup (#PF, #GP and now #VE) to recover from these
-> unwanted loads.
-> 
-> In TDX guest the second page can be shared page and VMM may configure it
-> to trigger #VE.
-> 
-> Kernel assumes that #VE on a shared page is MMIO access and tries to
-> decode instruction to handle it. In case of load_unaligned_zeropad() it
-> may result in confusion as it is not MMIO access.
-> 
-> Check fixup table before trying to handle MMIO.
+Since recently, the kernel is nagging about mutable irq_chips:
 
-Is this a theoretical problem or was it found in practice?
+   "not an immutable chip, please consider fixing it!"
 
-> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-> index 03deb4d6920d..5fbdda2f2b86 100644
-> --- a/arch/x86/coco/tdx/tdx.c
-> +++ b/arch/x86/coco/tdx/tdx.c
-> @@ -11,6 +11,8 @@
->  #include <asm/insn.h>
->  #include <asm/insn-eval.h>
->  #include <asm/pgtable.h>
-> +#include <asm/trapnr.h>
-> +#include <asm/extable.h>
->  
->  /* TDX module Call Leaf IDs */
->  #define TDX_GET_INFO			1
-> @@ -296,6 +298,26 @@ static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
->  	if (WARN_ON_ONCE(user_mode(regs)))
->  		return false;
->  
-> +	/*
-> +	 * load_unaligned_zeropad() relies on exception fixups in case of the
-> +	 * word being a page-crosser and the second page is not accessible.
-> +	 *
-> +	 * In TDX guest the second page can be shared page and VMM may
+Drop the unneeded copy, flag it as IRQCHIP_IMMUTABLE, add the new
+helper functions and call the appropriate gpiolib functions.
 
-	In TDX guests,
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: dropped renaming part (Mika)
+ drivers/pinctrl/intel/pinctrl-intel.c | 40 +++++++++++++++++----------
+ 1 file changed, 25 insertions(+), 15 deletions(-)
 
-> +	 * configure it to trigger #VE.
-> +	 *
-> +	 * Kernel assumes that #VE on a shared page is MMIO access and tries to
-> +	 * decode instruction to handle it. In case of load_unaligned_zeropad()
-> +	 * it may result in confusion as it is not MMIO access.
-> +	 *
-> +	 * Check fixup table before trying to handle MMIO.
-> +	 */
-> +	if (fixup_exception(regs, X86_TRAP_VE, 0, ve->gla)) {
-> +		/* regs->ip is adjusted by fixup_exception() */
-> +		ve->instr_len = 0;
-> +
-> +		return true;
-> +	}
+diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
+index 826d494f3cc6..4845d0b74df9 100644
+--- a/drivers/pinctrl/intel/pinctrl-intel.c
++++ b/drivers/pinctrl/intel/pinctrl-intel.c
+@@ -1039,15 +1039,14 @@ static void intel_gpio_irq_ack(struct irq_data *d)
+ 	}
+ }
+ 
+-static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
++static void intel_gpio_irq_mask_unmask(struct gpio_chip *gc, irq_hw_number_t hwirq, bool mask)
+ {
+-	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+ 	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
+ 	const struct intel_community *community;
+ 	const struct intel_padgroup *padgrp;
+ 	int pin;
+ 
+-	pin = intel_gpio_to_pin(pctrl, irqd_to_hwirq(d), &community, &padgrp);
++	pin = intel_gpio_to_pin(pctrl, hwirq, &community, &padgrp);
+ 	if (pin >= 0) {
+ 		unsigned int gpp, gpp_offset;
+ 		unsigned long flags;
+@@ -1077,12 +1076,20 @@ static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
+ 
+ static void intel_gpio_irq_mask(struct irq_data *d)
+ {
+-	intel_gpio_irq_mask_unmask(d, true);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++	irq_hw_number_t hwirq = irqd_to_hwirq(d);
++
++	intel_gpio_irq_mask_unmask(gc, hwirq, true);
++	gpiochip_disable_irq(gc, hwirq);
+ }
+ 
+ static void intel_gpio_irq_unmask(struct irq_data *d)
+ {
+-	intel_gpio_irq_mask_unmask(d, false);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++	irq_hw_number_t hwirq = irqd_to_hwirq(d);
++
++	gpiochip_enable_irq(gc, hwirq);
++	intel_gpio_irq_mask_unmask(gc, hwirq, false);
+ }
+ 
+ static int intel_gpio_irq_type(struct irq_data *d, unsigned int type)
+@@ -1157,6 +1164,17 @@ static int intel_gpio_irq_wake(struct irq_data *d, unsigned int on)
+ 	return 0;
+ }
+ 
++static const struct irq_chip intel_gpio_irq_chip = {
++	.name		= "intel-gpio",
++	.irq_ack	= intel_gpio_irq_ack,
++	.irq_mask	= intel_gpio_irq_mask,
++	.irq_unmask	= intel_gpio_irq_unmask,
++	.irq_set_type	= intel_gpio_irq_type,
++	.irq_set_wake	= intel_gpio_irq_wake,
++	.flags		= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_IMMUTABLE,
++	GPIOCHIP_IRQ_RESOURCE_HELPERS,
++};
++
+ static int intel_gpio_community_irq_handler(struct intel_pinctrl *pctrl,
+ 					    const struct intel_community *community)
+ {
+@@ -1319,15 +1337,6 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
+ 	pctrl->chip.add_pin_ranges = intel_gpio_add_pin_ranges;
+ 	pctrl->irq = irq;
+ 
+-	/* Setup IRQ chip */
+-	pctrl->irqchip.name = dev_name(pctrl->dev);
+-	pctrl->irqchip.irq_ack = intel_gpio_irq_ack;
+-	pctrl->irqchip.irq_mask = intel_gpio_irq_mask;
+-	pctrl->irqchip.irq_unmask = intel_gpio_irq_unmask;
+-	pctrl->irqchip.irq_set_type = intel_gpio_irq_type;
+-	pctrl->irqchip.irq_set_wake = intel_gpio_irq_wake;
+-	pctrl->irqchip.flags = IRQCHIP_MASK_ON_SUSPEND;
+-
+ 	/*
+ 	 * On some platforms several GPIO controllers share the same interrupt
+ 	 * line.
+@@ -1340,8 +1349,9 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
+ 		return ret;
+ 	}
+ 
++	/* Setup IRQ chip */
+ 	girq = &pctrl->chip.irq;
+-	girq->chip = &pctrl->irqchip;
++	gpio_irq_chip_set_chip(girq, &intel_gpio_irq_chip);
+ 	/* This will let us handle the IRQ in the driver */
+ 	girq->parent_handler = NULL;
+ 	girq->num_parents = 0;
+-- 
+2.35.1
 
-This 've->instr_len = ' stuff is just a hack.
-
-ve_info is a software structure.  Why not just add a:
-
-	bool ip_adjusted;
-
-which defaults to false, then we have:
-
-	/*
-	 * Adjust RIP if the exception was handled
-	 * but RIP was not adjusted.
-	 */
-	if (!ret && !ve_info->ip_adjusted)
-		regs->ip += ve_info->instr_len;
-
-One other oddity I just stumbled upon:
-
-static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-{
-...
-        ve->instr_len = insn.length;
-
-Why does that need to override 've->instr_len'?  What was wrong with the
-gunk in r10 that came out of TDX_GET_VEINFO?
