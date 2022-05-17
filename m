@@ -2,188 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B786C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 204A1C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347581AbiEQNLu (ORCPT
+        id S1347742AbiEQNL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
+        Tue, 17 May 2022 09:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347878AbiEQNLX (ORCPT
+        with ESMTP id S1347327AbiEQNKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:11:23 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF925260;
-        Tue, 17 May 2022 06:11:21 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 0C7941F88E;
-        Tue, 17 May 2022 13:11:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652793080; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=R3V2DPM1jjc4jD8tVw3U8Rq3S0Maoan+sJ+xup8d8sI=;
-        b=FE8yzrStcygQwANxOmZrJZbOrCy87Ou5DJ3FGcXlGzv/8KcD1Q9vQAYohnpV6O9yl65Qfm
-        zyx0GaYk63CmAg8xlzK3VRV5wlBb3dplZbLwFVDWl++Ff8DNSFdVejZHiQCHUg6G6gVRgz
-        J3YUEPeJCts4dfmVUl5hnzLG7sbV2vU=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D75DF2C141;
-        Tue, 17 May 2022 13:11:17 +0000 (UTC)
-Date:   Tue, 17 May 2022 15:11:10 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-Subject: Re: [PATCH 14/30] panic: Properly identify the panic event to the
- notifiers' callbacks
-Message-ID: <YoOe7ifxfW8CEHdt@alley>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-15-gpiccoli@igalia.com>
- <YnqBsXBImU64PAOL@alley>
- <244a412c-4589-28d1-bb77-d3648d4f0b12@igalia.com>
+        Tue, 17 May 2022 09:10:45 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E9D3587F;
+        Tue, 17 May 2022 06:10:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652793038; x=1684329038;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=4u7kPxkI+qIYW7/lB1AUNG4A0JsQhATwJmmL079dvs4=;
+  b=CynHTmnY+Z3oz3ltoB5aXEWOZt/0EPZHUn6fEE1cPIgJuJKM6R5BKsTe
+   C+Crq+OUJewDNzZy1QbOMhV56V9Sb5hTaPnXJCgJkRcEPWO61Jt6XbDqy
+   odTdwEqfIFkKxCoLISKbuW2RdXaXM0kt9TR751v+s3AwxyuwkMjpL1WQh
+   LVEwR9J6oTtkdFW6PLUBGbJE7WnJ1xzQ/yYOE72YqITB6sN+ZRgdG4AFy
+   Vl1mS3vuoLLy3JA36IQkheu8fTNYEPDNR/Dgvvwb0CkjqCLfBfd1fAZdV
+   uBuK8fAaYDVANqNhqWqO3J9RXBT81qRturgcako1809pvYCqbUDuJrpcT
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="271300120"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="271300120"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:10:38 -0700
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="713844330"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.52.217])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:10:36 -0700
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>, Leo Yan <leo.yan@linaro.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH V2 4/6] perf script: Add guest_code support
+Date:   Tue, 17 May 2022 16:10:09 +0300
+Message-Id: <20220517131011.6117-5-adrian.hunter@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220517131011.6117-1-adrian.hunter@intel.com>
+References: <20220517131011.6117-1-adrian.hunter@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <244a412c-4589-28d1-bb77-d3648d4f0b12@igalia.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-05-10 13:16:54, Guilherme G. Piccoli wrote:
-> On 10/05/2022 12:16, Petr Mladek wrote:
-> > [...]
-> > Hmm, this looks like a hack. PANIC_UNUSED will never be used.
-> > All notifiers will be always called with PANIC_NOTIFIER.
-> > 
-> > The @val parameter is normally used when the same notifier_list
-> > is used in different situations.
-> > 
-> > But you are going to use it when the same notifier is used
-> > in more lists. This is normally distinguished by the @nh
-> > (atomic_notifier_head) parameter.
-> > 
-> > IMHO, it is a bad idea. First, it would confuse people because
-> > it does not follow the original design of the parameters.
-> > Second, the related code must be touched anyway when
-> > the notifier is moved into another list so it does not
-> > help much.
-> > 
-> > Or do I miss anything, please?
-> > 
-> > Best Regards,
-> > Petr
-> 
-> Hi Petr, thanks for the review.
-> 
-> I'm not strong attached to this patch, so we could drop it and refactor
-> the code of next patches to use the @nh as identification - but
-> personally, I feel this parameter could be used to identify the list
-> that called such function, in other words, what is the event that
-> triggered the callback. Some notifiers are even declared with this
-> parameter called "ev", like the event that triggers the notifier.
-> 
-> 
-> You mentioned 2 cases:
-> 
-> (a) Same notifier_list used in different situations;
-> 
-> (b) Same *notifier callback* used in different lists;
-> 
-> Mine is case (b), right? Can you show me an example of case (a)?
+Add an option to indicate that guest code can be found in the hypervisor
+process.
 
-There are many examples of case (a):
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+---
+ tools/perf/Documentation/perf-script.txt | 4 ++++
+ tools/perf/builtin-script.c              | 5 ++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-   + module_notify_list:
-	MODULE_STATE_LIVE, 	/* Normal state. */
-	MODULE_STATE_COMING,	/* Full formed, running module_init. */
-	MODULE_STATE_GOING,	/* Going away. */
-	MODULE_STATE_UNFORMED,	/* Still setting it up. */
+diff --git a/tools/perf/Documentation/perf-script.txt b/tools/perf/Documentation/perf-script.txt
+index 2012a8e6c90b..1a557ff8f210 100644
+--- a/tools/perf/Documentation/perf-script.txt
++++ b/tools/perf/Documentation/perf-script.txt
+@@ -499,6 +499,10 @@ include::itrace.txt[]
+ 	The known limitations include exception handing such as
+ 	setjmp/longjmp will have calls/returns not match.
+ 
++--guest-code::
++	Indicate that guest code can be found in the hypervisor process,
++	which is a common case for KVM test programs.
++
+ SEE ALSO
+ --------
+ linkperf:perf-record[1], linkperf:perf-script-perl[1],
+diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
+index cf5eab5431b4..96a2106a3dac 100644
+--- a/tools/perf/builtin-script.c
++++ b/tools/perf/builtin-script.c
+@@ -3884,6 +3884,8 @@ int cmd_script(int argc, const char **argv)
+ 		   "file", "file saving guest os /proc/kallsyms"),
+ 	OPT_STRING(0, "guestmodules", &symbol_conf.default_guest_modules,
+ 		   "file", "file saving guest os /proc/modules"),
++	OPT_BOOLEAN(0, "guest-code", &symbol_conf.guest_code,
++		    "Guest code can be found in hypervisor process"),
+ 	OPT_BOOLEAN('\0', "stitch-lbr", &script.stitch_lbr,
+ 		    "Enable LBR callgraph stitching approach"),
+ 	OPTS_EVSWITCH(&script.evswitch),
+@@ -3909,7 +3911,8 @@ int cmd_script(int argc, const char **argv)
+ 	if (symbol_conf.guestmount ||
+ 	    symbol_conf.default_guest_vmlinux_name ||
+ 	    symbol_conf.default_guest_kallsyms ||
+-	    symbol_conf.default_guest_modules) {
++	    symbol_conf.default_guest_modules ||
++	    symbol_conf.guest_code) {
+ 		/*
+ 		 * Enable guest sample processing.
+ 		 */
+-- 
+2.25.1
 
-
-   + netdev_chain:
-
-	NETDEV_UP	= 1,	/* For now you can't veto a device up/down */
-	NETDEV_DOWN,
-	NETDEV_REBOOT,		/* Tell a protocol stack a network interface
-				   detected a hardware crash and restarted
-				   - we can use this eg to kick tcp sessions
-				   once done */
-	NETDEV_CHANGE,		/* Notify device state change */
-	NETDEV_REGISTER,
-	NETDEV_UNREGISTER,
-	NETDEV_CHANGEMTU,	/* notify after mtu change happened */
-	NETDEV_CHANGEADDR,	/* notify after the address change */
-	NETDEV_PRE_CHANGEADDR,	/* notify before the address change */
-	NETDEV_GOING_DOWN,
-	...
-
-    + vt_notifier_list:
-
-	#define VT_ALLOCATE		0x0001 /* Console got allocated */
-	#define VT_DEALLOCATE		0x0002 /* Console will be deallocated */
-	#define VT_WRITE		0x0003 /* A char got output */
-	#define VT_UPDATE		0x0004 /* A bigger update occurred */
-	#define VT_PREWRITE		0x0005 /* A char is about to be written to the console */
-
-    + die_chain:
-
-	DIE_OOPS = 1,
-	DIE_INT3,
-	DIE_DEBUG,
-	DIE_PANIC,
-	DIE_NMI,
-	DIE_DIE,
-	DIE_KERNELDEBUG,
-	...
-
-These all call the same list/chain in different situations.
-The situation is distinguished by @val.
-
-
-> You can see in the following patches (or grep the kernel) that people are using
-> this identification parameter to determine which kind of OOPS trigger
-> the callback to condition the execution of the function to specific
-> cases.
-
-Could you please show me some existing code for case (b)?
-I am not able to find any except in your patches.
-
-Anyway, the solution in 16th patch is bad, definitely.
-hv_die_panic_notify_crash() uses "val" to disinguish
-both:
-
-     + "panic_notifier_list" vs "die_chain"
-     + die_val when callen via "die_chain"
-
-The API around "die_chain" API is not aware of enum panic_notifier_val
-and the API using "panic_notifier_list" is not aware of enum die_val.
-As I said, it is mixing apples and oranges and it is error prone.
-
-Best Regards,
-Petr
