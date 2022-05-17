@@ -2,104 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9101C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240597AbiEQNfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55974 "EHLO
+        id S1348020AbiEQNgC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 09:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347951AbiEQNfh (ORCPT
+        with ESMTP id S1347907AbiEQNf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:35:37 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E4F4CD67
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:35:31 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id 4so21780606ljw.11
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:35:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gLHS/b9qQdVVuN1R0+pvG/oH+ldjA527p+Isz/IUtsc=;
-        b=r0L6AMtlOLjXttwltWd+JbJzYHNgR+IDkHHHPjxUdZQzj0grfqgUPyBz5kKri1XMK5
-         pEJixh88Gs+7Opa0zseBHRqDrb2js/6iH1GZOFnpRJ1crVAKh4emSJje7kqbePk4rcOp
-         Ghmk2pwH5Z/SrgaUcWWyfmijBnf2QmRNq/ErW2I0CpOLCR7PlIQHd/Ud+Ua66KKkODb0
-         1ukwRvOIIhCeyElAYXdTyYi/OXYZoZiUf59QyvbLvQkRFDhV3BRD2hbTOYa2JDczixrR
-         LQjCkQRW6wEFy73Tn7eosqge128eICghzWcpWgAzPLMAuvwgnWoxpyIIdrx7YsMaIoUS
-         aSCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gLHS/b9qQdVVuN1R0+pvG/oH+ldjA527p+Isz/IUtsc=;
-        b=sJvQnCpt9OxiknDk6+S2QbZ2pJiRurHlyMi84Dk1z8qFg3JvYy0VeAl1YTrwEfzCD3
-         XwDixRjHLL1/3u7WN4Q9pJ8FluzlsHEXDlX+lP38mx1c+bOncHj07TthT1U5ym61IDTD
-         cdIjJpO/u+2LJZ+rAPDL9iYzmdoHuWJtZJ+PHVLTXnosm7yFswZh6Uarx+86wdYY8+V4
-         fCTBKJXrFG85caZ68KeItGBogpC0GcqcRAPL549NGP3pAFwLziExR6PKI4wlcqYzGexE
-         YJ3fqONhuVovmBQy/V3kzGKiWMwuqimu7Wru1lZ9uLG3K8ZtzDTZbbwWi9nlQN1Z3nCY
-         iM2w==
-X-Gm-Message-State: AOAM531FvFGXMrHBy63eYu6LEw+siBL/VwfrSn8q4mq4yTo2UzEDNDce
-        pStG6XavbKeFf823KrBEmnxc/A==
-X-Google-Smtp-Source: ABdhPJwqY+kntOQKl2ieBGyE6CPyoGfX0pDII8HGb/ETfWZEhzvSJGq9Jm4m6B3zEith92RNYqw8gA==
-X-Received: by 2002:a05:651c:1198:b0:253:c443:cdcb with SMTP id w24-20020a05651c119800b00253c443cdcbmr386635ljo.22.1652794530237;
-        Tue, 17 May 2022 06:35:30 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id 10-20020ac2568a000000b0047255d211c9sm1591084lfr.248.2022.05.17.06.35.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 06:35:29 -0700 (PDT)
-Message-ID: <f5633395-0ff8-2de2-a7e5-b99891ede33e@linaro.org>
-Date:   Tue, 17 May 2022 15:35:28 +0200
+        Tue, 17 May 2022 09:35:28 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9AA4CD5F;
+        Tue, 17 May 2022 06:35:26 -0700 (PDT)
+Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2cY844NkzgYsy;
+        Tue, 17 May 2022 21:34:36 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 21:35:24 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
+ 2022 21:35:23 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <tj@kernel.org>, <axboe@kernel.dk>, <ming.lei@redhat.com>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next] blk-throttle: delay the setting of 'BIO_THROTTLED' to when throttle is done
+Date:   Tue, 17 May 2022 21:49:09 +0800
+Message-ID: <20220517134909.2910251-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 01/20] MAINTAINERS: Add git repo path for MFC
-Content-Language: en-US
-To:     Smitha T Murthy <smitha.t@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     m.szyprowski@samsung.com, andrzej.hajda@intel.com,
-        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, jernej.skrabec@gmail.com,
-        benjamin.gaignard@collabora.com, stanimir.varbanov@linaro.org,
-        dillon.minfei@gmail.com, david.plowman@raspberrypi.com,
-        mark.rutland@arm.com, robh+dt@kernel.org, krzk+dt@kernel.org,
-        andi@etezian.org, alim.akhtar@samsung.com,
-        aswani.reddy@samsung.com, pankaj.dubey@samsung.com
-References: <20220517125548.14746-1-smitha.t@samsung.com>
- <CGME20220517125551epcas5p42cca7f0a2db6dc1d16d0e27265c43f56@epcas5p4.samsung.com>
- <20220517125548.14746-2-smitha.t@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220517125548.14746-2-smitha.t@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 14:55, Smitha T Murthy wrote:
-> Add git repo path for MFC.
-> 
-> Signed-off-by: Smitha T Murthy <smitha.t@samsung.com>
-> ---
->  MAINTAINERS | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index fd768d43e048..e53c7333562b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -2703,6 +2703,7 @@ M:	Andrzej Hajda <andrzej.hajda@intel.com>
->  L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
->  L:	linux-media@vger.kernel.org
->  S:	Maintained
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media.git
+commit 9f5ede3c01f9 ("block: throttle split bio in case of iops limit")
+introduce a new problem, for example:
 
-This is not a MFC repo, but a repo of media drivers. There is no need to
-add to every driver repo of the subsystem. It should be in subsystem
-instead.
+[root@localhost ~]# echo "8:0 1024" > /sys/fs/cgroup/blkio/blkio.throttle.write_bps_device
+[root@localhost ~]# echo $$ > /sys/fs/cgroup/blkio/cgroup.procs
+[root@localhost ~]# dd if=/dev/zero of=/dev/sda bs=10k count=1 oflag=direct &
+[1] 620
+[root@localhost ~]# dd if=/dev/zero of=/dev/sda bs=10k count=1 oflag=direct &
+[2] 626
+[root@localhost ~]# 1+0 records in
+1+0 records out
+10240 bytes (10 kB, 10 KiB) copied, 10.0038 s, 1.0 kB/s1+0 records in
+1+0 records out
 
+10240 bytes (10 kB, 10 KiB) copied, 9.23076 s, 1.1 kB/s
+-> the second bio is issued after 10s instead of 20s.
 
-Best regards,
-Krzysztof
+This is because if some bios are already queued, current bio is queued
+directly and the flag 'BIO_THROTTLED' is set. And later, when former
+bios are dispatched, this bio will be dispatched without waiting at all,
+this is due to tg_with_in_bps_limit() will return 0 if the flag is set.
+
+Instead of setting the flag when bio starts throttle, delay to when
+throttle is done to fix the problem.
+
+Fixes: 9f5ede3c01f9 ("block: throttle split bio in case of iops limit")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-throttle.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 447e1b8722f7..f952f2d942ff 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -811,7 +811,7 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+ 	/* no need to throttle if this bio's bytes have been accounted */
+-	if (bps_limit == U64_MAX || bio_flagged(bio, BIO_THROTTLED)) {
++	if (bps_limit == U64_MAX) {
+ 		if (wait)
+ 			*wait = 0;
+ 		return true;
+@@ -1226,8 +1226,10 @@ static void blk_throtl_dispatch_work_fn(struct work_struct *work)
+ 
+ 	spin_lock_irq(&q->queue_lock);
+ 	for (rw = READ; rw <= WRITE; rw++)
+-		while ((bio = throtl_pop_queued(&td_sq->queued[rw], NULL)))
++		while ((bio = throtl_pop_queued(&td_sq->queued[rw], NULL))) {
++			bio_set_flag(bio, BIO_THROTTLED);
+ 			bio_list_add(&bio_list_on_stack, bio);
++		}
+ 	spin_unlock_irq(&q->queue_lock);
+ 
+ 	if (!bio_list_empty(&bio_list_on_stack)) {
+@@ -2134,7 +2136,8 @@ bool __blk_throtl_bio(struct bio *bio)
+ 			}
+ 			break;
+ 		}
+-
++		/* this bio will be issued directly */
++		bio_set_flag(bio, BIO_THROTTLED);
+ 		/* within limits, let's charge and dispatch directly */
+ 		throtl_charge_bio(tg, bio);
+ 
+@@ -2190,7 +2193,6 @@ bool __blk_throtl_bio(struct bio *bio)
+ 
+ out_unlock:
+ 	spin_unlock_irq(&q->queue_lock);
+-	bio_set_flag(bio, BIO_THROTTLED);
+ 
+ #ifdef CONFIG_BLK_DEV_THROTTLING_LOW
+ 	if (throttled || !td->track_bio_latency)
+-- 
+2.31.1
+
