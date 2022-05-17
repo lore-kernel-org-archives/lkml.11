@@ -2,66 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCBAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 19:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FCFC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 19:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352853AbiEQTl6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 15:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
+        id S230396AbiEQTmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 15:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352854AbiEQTlj (ORCPT
+        with ESMTP id S233185AbiEQTms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 15:41:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1F4522FC;
-        Tue, 17 May 2022 12:41:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BE6BB81C09;
-        Tue, 17 May 2022 19:41:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E207C34117;
-        Tue, 17 May 2022 19:41:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652816481;
-        bh=FgdSjd/rFw8jiuUv2YH2aiwegMDQriMKJOQcbbSUmh4=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=eGZMJb+sn2IT28xBtiBLoxYYblIkuPwmKaiL/PoLYuHyqdgryUkAjg9AsXvN8uuXV
-         dKsI3xlnM1k6MxuLj43tc5JGhwauraf3OQlNMD93ZKBJDQ5WFHknx2xfWQ5zdfx/em
-         gjwyUpnrQLNJmrWyLMPn4WsMUJDX1a827f+9C5yu+TBc22ez2DoFM7gyxiFy2OFqoS
-         id9iqaterX7+vTlEg/xEorIW671sOcyMUXtUX48WdUO9p6mt5i7AbVEOo1KF20RpNE
-         Dx5cocvbrb6DXRI6/HzQ3BQMtWj5n/hO/PjrQMikNnBjj6URXaA/4NX/L/nuh3F0wY
-         Kjn+eYqXYKQeQ==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 17 May 2022 15:42:48 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3A926AF9
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 12:42:46 -0700 (PDT)
+Received: from [192.168.1.18] ([86.243.180.246])
+        by smtp.orange.fr with ESMTPA
+        id r35enso0WEMbDr35enGE51; Tue, 17 May 2022 21:42:44 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Tue, 17 May 2022 21:42:44 +0200
+X-ME-IP: 86.243.180.246
+Message-ID: <301a1d0a-971b-5b27-c5a9-86390358de9a@wanadoo.fr>
+Date:   Tue, 17 May 2022 21:42:41 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220413071318.244912-1-codrin.ciubotariu@microchip.com>
-References: <20220413071318.244912-1-codrin.ciubotariu@microchip.com>
-Subject: Re: [PATCH] clk: at91: generated: consider range when calculating best rate
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     mturquette@baylibre.com, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 17 May 2022 12:41:19 -0700
-User-Agent: alot/0.10
-Message-Id: <20220517194121.9E207C34117@smtp.kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] RDMA: remove null check after call container_of()
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>
+Newsgroups: gmane.linux.drivers.rdma,gmane.linux.kernel
+References: <1652751208-23211-1-git-send-email-baihaowen@meizu.com>
+ <20220517121646.GE63055@ziepe.ca>
+ <142a9c03-574f-adcf-bc4d-bb2a25c01e88@wanadoo.fr>
+ <20220517180303.GK63055@ziepe.ca>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220517180303.GK63055@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Codrin Ciubotariu (2022-04-13 00:13:18)
-> clk_generated_best_diff() helps in finding the parent and the divisor to
-> compute a rate closest to the required one. However, it doesn't take into
-> account the request's range for the new rate. Make sure the new rate
-> is within the required range.
->=20
-> Fixes: 8a8f4bf0c480 ("clk: at91: clk-generated: create function to find b=
-est_diff")
-> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-> ---
+Le 17/05/2022 à 20:03, Jason Gunthorpe a écrit :
+> On Tue, May 17, 2022 at 07:54:38PM +0200, Christophe JAILLET wrote:
+>> Le 17/05/2022 à 14:16, Jason Gunthorpe a écrit :
+>>> On Tue, May 17, 2022 at 09:33:28AM +0800, Haowen Bai wrote:
+>>>> container_of() will never return NULL, so remove useless code.
+>>>
+>>> It is confusing here, but it can be null.
+>>
+>> Hi,
+>>
+>> out of curiosity, can you elaborate how it can be NULL?
+> 
+> It is guarented/required that that container_of is a 0 offset. The
+> normal usage of the ib_alloc_device macro:
+> 
+> #define ib_alloc_device(drv_struct, member)                                    \
+> 	container_of(_ib_alloc_device(sizeof(struct drv_struct) +              \
+> 				      BUILD_BUG_ON_ZERO(offsetof(              \
+> 					      struct drv_struct, member))),    \
+> 		     struct drv_struct, member)
+> 
+> Enforces this property with a BUILD_BUG_ON
+> 
+> So, if the input pointer to container_of is reliably NULL or ERR_PTR
+> then the output pointer will be the same.
+> 
+> The rvt code here open codes the call because it is a mid-layer and
+> the sizeof() calculation above is not correct for it.
+> 
+> Jason
+> 
 
-Applied to clk-fixes
+Crystal clear.
+Thank you for the explanation.
+
+CJ
