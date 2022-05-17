@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01BB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3618C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343899AbiEQKXC (ORCPT
+        id S1343980AbiEQKXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46602 "EHLO
+        Tue, 17 May 2022 06:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344852AbiEQKWA (ORCPT
+        with ESMTP id S1344810AbiEQKV6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:22:00 -0400
+        Tue, 17 May 2022 06:21:58 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66EAC4BFF7;
-        Tue, 17 May 2022 03:20:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E22084BFD0;
+        Tue, 17 May 2022 03:20:19 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 38CE312FC;
-        Tue, 17 May 2022 03:20:29 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AF2B912FC;
+        Tue, 17 May 2022 03:20:19 -0700 (PDT)
 Received: from e121896.warwick.arm.com (e121896.warwick.arm.com [10.32.33.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C5C413F66F;
-        Tue, 17 May 2022 03:20:26 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3F8EC3F66F;
+        Tue, 17 May 2022 03:20:17 -0700 (PDT)
 From:   James Clark <james.clark@arm.com>
 To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
         broonie@kernel.org, acme@kernel.org
@@ -37,9 +37,9 @@ Cc:     german.gomez@arm.com, leo.yan@linaro.org,
         Jiri Olsa <jolsa@kernel.org>,
         Namhyung Kim <namhyung@kernel.org>,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 4/4] perf tools: arm64: Add support for VG register
-Date:   Tue, 17 May 2022 11:20:05 +0100
-Message-Id: <20220517102005.3022017-5-james.clark@arm.com>
+Subject: [PATCH v2 1/4] perf tools: arm64: Copy perf_regs.h from the kernel
+Date:   Tue, 17 May 2022 11:20:02 +0100
+Message-Id: <20220517102005.3022017-2-james.clark@arm.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20220517102005.3022017-1-james.clark@arm.com>
 References: <20220517102005.3022017-1-james.clark@arm.com>
@@ -49,90 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the name of the VG register so it can be used in --user-regs
-
-The event will fail to open if the register is requested but not
-available so only add it to the mask if the kernel supports sve and also
-if it supports that specific register.
+Get the updated header for the newly added VG register.
 
 Signed-off-by: James Clark <james.clark@arm.com>
 ---
- tools/perf/arch/arm64/util/perf_regs.c | 34 ++++++++++++++++++++++++++
- tools/perf/util/perf_regs.c            |  2 ++
- 2 files changed, 36 insertions(+)
+ tools/arch/arm64/include/uapi/asm/perf_regs.h | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/tools/perf/arch/arm64/util/perf_regs.c b/tools/perf/arch/arm64/util/perf_regs.c
-index 476b037eea1c..c0a921512a90 100644
---- a/tools/perf/arch/arm64/util/perf_regs.c
-+++ b/tools/perf/arch/arm64/util/perf_regs.c
-@@ -2,9 +2,11 @@
- #include <errno.h>
- #include <regex.h>
- #include <string.h>
-+#include <sys/auxv.h>
- #include <linux/kernel.h>
- #include <linux/zalloc.h>
- 
-+#include "../../../perf-sys.h"
- #include "../../../util/debug.h"
- #include "../../../util/event.h"
- #include "../../../util/perf_regs.h"
-@@ -43,6 +45,7 @@ const struct sample_reg sample_reg_masks[] = {
- 	SMPL_REG(lr, PERF_REG_ARM64_LR),
- 	SMPL_REG(sp, PERF_REG_ARM64_SP),
- 	SMPL_REG(pc, PERF_REG_ARM64_PC),
-+	SMPL_REG(vg, PERF_REG_ARM64_VG),
- 	SMPL_REG_END
+diff --git a/tools/arch/arm64/include/uapi/asm/perf_regs.h b/tools/arch/arm64/include/uapi/asm/perf_regs.h
+index d54daafa89e3..fd157f46727e 100644
+--- a/tools/arch/arm64/include/uapi/asm/perf_regs.h
++++ b/tools/arch/arm64/include/uapi/asm/perf_regs.h
+@@ -36,6 +36,11 @@ enum perf_event_arm_regs {
+ 	PERF_REG_ARM64_LR,
+ 	PERF_REG_ARM64_SP,
+ 	PERF_REG_ARM64_PC,
+-	PERF_REG_ARM64_MAX,
++
++	/* Extended/pseudo registers */
++	PERF_REG_ARM64_VG = 46, // SVE Vector Granule
++
++	PERF_REG_ARM64_MAX = PERF_REG_ARM64_PC + 1,
++	PERF_REG_ARM64_EXTENDED_MAX = PERF_REG_ARM64_VG + 1
  };
- 
-@@ -131,3 +134,34 @@ int arch_sdt_arg_parse_op(char *old_op, char **new_op)
- 
- 	return SDT_ARG_VALID;
- }
-+
-+uint64_t arch__user_reg_mask(void)
-+{
-+	struct perf_event_attr attr = {
-+		.type                   = PERF_TYPE_HARDWARE,
-+		.config                 = PERF_COUNT_HW_CPU_CYCLES,
-+		.sample_type            = PERF_SAMPLE_REGS_USER,
-+		.disabled               = 1,
-+		.exclude_kernel         = 1,
-+		.sample_period		= 1,
-+		.sample_regs_user	= PERF_REGS_MASK
-+	};
-+	int fd;
-+
-+	if (getauxval(AT_HWCAP) & HWCAP_SVE)
-+		attr.sample_regs_user |= SMPL_REG_MASK(PERF_REG_ARM64_VG);
-+
-+	/*
-+	 * Check if the pmu supports perf extended regs, before
-+	 * returning the register mask to sample.
-+	 */
-+	if (attr.sample_regs_user != PERF_REGS_MASK) {
-+		event_attr_init(&attr);
-+		fd = sys_perf_event_open(&attr, 0, -1, -1, 0);
-+		if (fd != -1) {
-+			close(fd);
-+			return attr.sample_regs_user;
-+		}
-+	}
-+	return PERF_REGS_MASK;
-+}
-diff --git a/tools/perf/util/perf_regs.c b/tools/perf/util/perf_regs.c
-index a982e40ee5a9..872dd3d38782 100644
---- a/tools/perf/util/perf_regs.c
-+++ b/tools/perf/util/perf_regs.c
-@@ -103,6 +103,8 @@ static const char *__perf_reg_name_arm64(int id)
- 		return "lr";
- 	case PERF_REG_ARM64_PC:
- 		return "pc";
-+	case PERF_REG_ARM64_VG:
-+		return "vg";
- 	default:
- 		return NULL;
- 	}
+ #endif /* _ASM_ARM64_PERF_REGS_H */
 -- 
 2.28.0
 
