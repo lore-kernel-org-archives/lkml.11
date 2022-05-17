@@ -2,72 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B825C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245676AbiEQPq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35194 "EHLO
+        id S1350450AbiEQPqc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 11:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237874AbiEQPph (ORCPT
+        with ESMTP id S1350954AbiEQPqS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:45:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6958C532F4
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:44:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B46A2CE1AFF
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:43:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E4AC34116;
-        Tue, 17 May 2022 15:43:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652802231;
-        bh=Izy6TZfGaIzRY1Pn79tgD0UhJ4xSdDmIRaB4G29KIh0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oHYpg1eIXlXWIxkNISi8Q7gkc/zKuqBeSbJdtRoeIk4ByEIwPH3C7yZHEqXgzbTlS
-         BEP9Bufmhpyj2rHhnwPJbmjde4BVNpHGUTFKd15O4BDWpMUyc4gKZIR9CxuT2D3fo5
-         XJ6fsJ5lFo7wmenRyebOSS+ISW0r1VNLJGhM+PlhymPYNu/x5TlsYAGPpF41Iy9JJ1
-         khjFILpzL7rYRVfixsWLTGLgioLiUmsjp6r44Jon5ifS78+NlZKNnBvZ61oDnUNzpf
-         WkBAdeKNrFaVYgaWdAHjEwe870dDhFGv3R5ccoM8JVT5rhtkGzrtkPGnNlsee8XpuA
-         nUD6DWnyQKEIA==
-Message-ID: <14e765db-5e51-9c17-3aa1-bddc1ba5bbb2@kernel.org>
-Date:   Tue, 17 May 2022 23:43:48 +0800
+        Tue, 17 May 2022 11:46:18 -0400
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB1BDCD;
+        Tue, 17 May 2022 08:45:59 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2fedd26615cso79230487b3.7;
+        Tue, 17 May 2022 08:45:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YYWNzMuuewxR1SV/ukbRTxfo/sdpKRPPvAFXL4eruR8=;
+        b=6XqMOD8uig4GB0Zemf0k0haKksXwhLBiIE8SA18r80Z3ssHwQqnybXwg1GszlAQwR1
+         L6rAua2PC3iq2lBO2ZWMQVEQYwh4fMc244dVv4QF+Zqe1NHR8Bew42T+AvlA5W2lxE5G
+         +bx2dyrtPCWBXbYcvpEMYrsDQswgMWPKUSp7wkgS+q0yx4j7Ykpie9f8486pVIlg2+Ff
+         tEDRx4LYqTasZtWpWg9wOBUUtTVZQ49ih13QA3AbgAY21Pxd1p8O14O4nZ9gaN+lq8zN
+         qryzsKC2HJlib5tcBDhrgSVwAh0ZD7weMxjgGKHaEUW6gVEClbyzsOlv2bnfOe5u2VTt
+         YoVQ==
+X-Gm-Message-State: AOAM532x5t3PcW5P5IxchrKKSgIO9aMHO4nfRmHVBFNYCWmJOKpljgfe
+        XFSvLvOGtm594a7EhgPmO1i3FrlVijrtSCPvZaV8hk6u
+X-Google-Smtp-Source: ABdhPJyZF4TFOOHUnKIQbbE6OWyLZ7lurMBsWJS+zPoAHDBvBWAUU9dMN0H3v61AiA1KxsbQ2EKFYjLAckJbsa6oFc8=
+X-Received: by 2002:a0d:c5c7:0:b0:2fe:e955:2c45 with SMTP id
+ h190-20020a0dc5c7000000b002fee9552c45mr14037451ywd.19.1652802359160; Tue, 17
+ May 2022 08:45:59 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 resend] erofs: make filesystem exportable
-Content-Language: en-US
-To:     Hongnan Li <hongnan.li@linux.alibaba.com>,
-        linux-erofs@lists.ozlabs.org, xiang@kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220424130104.102365-1-hongnan.li@linux.alibaba.com>
- <20220425040712.91685-1-hongnan.li@linux.alibaba.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220425040712.91685-1-hongnan.li@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220507125443.2766939-1-daniel.lezcano@linexp.org> <20220507125443.2766939-4-daniel.lezcano@linexp.org>
+In-Reply-To: <20220507125443.2766939-4-daniel.lezcano@linexp.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 17 May 2022 17:45:48 +0200
+Message-ID: <CAJZ5v0iYf0DQ+4DuN7ad4QSTmzE66MR9cgiSUn1Nh5Vu+EDBWA@mail.gmail.com>
+Subject: Re: [PATCH v2 03/14] thermal/core: Remove duplicate information when
+ an error occurs
+To:     Daniel Lezcano <daniel.lezcano@linexp.org>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Alexandre Bailon <abailon@baylibre.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/25 12:07, Hongnan Li wrote:
-> Implement export operations in order to make EROFS support accessing
-> inodes with filehandles so that it can be exported via NFS and used
-> by overlayfs.
-> 
-> Without this patch, 'exportfs -rv' will report:
-> exportfs: /root/erofs_mp does not support NFS export
-> 
-> Also tested with unionmount-testsuite and the testcase below passes now:
-> ./run --ov --erofs --verify hard-link
-> 
-> For more details about the testcase, see:
-> https://github.com/amir73il/unionmount-testsuite/pull/6
-> 
-> Signed-off-by: Hongnan Li <hongnan.li@linux.alibaba.com>
+On Sat, May 7, 2022 at 2:55 PM Daniel Lezcano <daniel.lezcano@linexp.org> wrote:
+>
+> The pr_err already tells it is an error, it is pointless to add the
+> 'Error:' string in the messages. Remove them.
+>
+> Cc: Alexandre Bailon <abailon@baylibre.com>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc; Eduardo Valentin <eduval@amazon.com>
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+> ---
+>  drivers/thermal/thermal_core.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+> index 1a405854748a..dc5a03d51f5c 100644
+> --- a/drivers/thermal/thermal_core.c
+> +++ b/drivers/thermal/thermal_core.c
+> @@ -1197,23 +1197,23 @@ thermal_zone_device_register(const char *type, int trips, int mask,
+>         struct thermal_governor *governor;
+>
+>         if (!type || strlen(type) == 0) {
+> -               pr_err("Error: No thermal zone type defined\n");
+> +               pr_err("No thermal zone type defined\n");
+>                 return ERR_PTR(-EINVAL);
+>         }
+>
+>         if (type && strlen(type) >= THERMAL_NAME_LENGTH) {
+> -               pr_err("Error: Thermal zone name (%s) too long, should be under %d chars\n",
+> +               pr_err("Thermal zone name (%s) too long, should be under %d chars\n",
+>                        type, THERMAL_NAME_LENGTH);
+>                 return ERR_PTR(-EINVAL);
+>         }
+>
+>         if (trips > THERMAL_MAX_TRIPS || trips < 0 || mask >> trips) {
+> -               pr_err("Error: Incorrect number of thermal trips\n");
+> +               pr_err("Incorrect number of thermal trips\n");
+>                 return ERR_PTR(-EINVAL);
+>         }
+>
+>         if (!ops) {
+> -               pr_err("Error: Thermal zone device ops not defined\n");
+> +               pr_err("Thermal zone device ops not defined\n");
+>                 return ERR_PTR(-EINVAL);
+>         }
+>
+> --
 
-Reviewed-by: Chao Yu <chao@kernel.org>
-
-Thanks,
+Do these need to be pr_err() messages at all?  They all seem to be
+debug-type messages regarding thermal zone drivers.
