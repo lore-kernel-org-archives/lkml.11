@@ -2,166 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348765AbiEQOMC (ORCPT
+        id S1348526AbiEQOOA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57056 "EHLO
+        Tue, 17 May 2022 10:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348525AbiEQOLI (ORCPT
+        with ESMTP id S235171AbiEQON5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:11:08 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1FB9EAE;
-        Tue, 17 May 2022 07:11:06 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 67D211F8CA;
-        Tue, 17 May 2022 14:11:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652796665; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UazRNADyyJz2HI+RS6R0a4/dm7+XkEeyBn9yGoLISk0=;
-        b=BKp7+FEVfq6NcVwdI04E/j1IXhL8fav2W9wQb6/2V+MLS4zVCpGBL04+5kiZPUHpPEWWSJ
-        UCuw6cy5UFA5oDKAHRw0jxrGspZnMX7jbttS2tX8QWMEWQryA8mHzjbrpe5MfzzbeKkAE+
-        HL6pRS/de3kEkB9TyLHSW9ZDBKYUAwA=
-Received: from suse.cz (unknown [10.100.201.202])
+        Tue, 17 May 2022 10:13:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362B94F465;
+        Tue, 17 May 2022 07:13:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 10D772C141;
-        Tue, 17 May 2022 14:11:04 +0000 (UTC)
-Date:   Tue, 17 May 2022 16:11:00 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     "Luck, Tony" <tony.luck@intel.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "bhe@redhat.com" <bhe@redhat.com>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "openipmi-developer@lists.sourceforge.net" 
-        <openipmi-developer@lists.sourceforge.net>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kernel-dev@igalia.com" <kernel-dev@igalia.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        "halves@canonical.com" <halves@canonical.com>,
-        "fabiomirmar@gmail.com" <fabiomirmar@gmail.com>,
-        "alejandro.j.jimenez@oracle.com" <alejandro.j.jimenez@oracle.com>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "bp@alien8.de" <bp@alien8.de>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "d.hatayama@jp.fujitsu.com" <d.hatayama@jp.fujitsu.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "dyoung@redhat.com" <dyoung@redhat.com>,
-        "Tang, Feng" <feng.tang@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "mikelley@microsoft.com" <mikelley@microsoft.com>,
-        "hidehiro.kawai.ez@hitachi.com" <hidehiro.kawai.ez@hitachi.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "john.ogness@linutronix.de" <john.ogness@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "paulmck@kernel.org" <paulmck@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "vgoyal@redhat.com" <vgoyal@redhat.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "will@kernel.org" <will@kernel.org>, Alex Elder <elder@kernel.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Chris Zankel <chris@zankel.net>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Corey Minyard <minyard@acm.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        James Morse <james.morse@arm.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matt Turner <mattst88@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Richard Weinberger <richard@nod.at>,
-        Robert Richter <rric@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, Wei Liu <wei.liu@kernel.org>
-Subject: Re: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
-Message-ID: <YoOs9GJ5Ovq63u5Q@alley>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-22-gpiccoli@igalia.com>
- <YoJgcC8c6LaKADZV@alley>
- <63a74b56-89ef-8d1f-d487-cdb986aab798@igalia.com>
- <bed66b9467254a5a8bafc1983dad643a@intel.com>
- <e895ce94-e6b9-caf6-e5d3-06bf0149445c@igalia.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF833615E7;
+        Tue, 17 May 2022 14:13:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E63AC385B8;
+        Tue, 17 May 2022 14:13:52 +0000 (UTC)
+Date:   Tue, 17 May 2022 10:13:51 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Li kunyu <kunyu@nfschina.com>
+Cc:     mingo@redhat.com, linux@armlinux.org.uk, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com, tglx@linutronix.de,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, liqiong@nfschina.com
+Subject: Re: [PATCH] kernel: Ftrace seems to have functions to improve
+ performance through optimization  through optimization
+Message-ID: <20220517101351.273b385f@gandalf.local.home>
+In-Reply-To: <20220513021314.59480-1-kunyu@nfschina.com>
+References: <20220512110725.22e69e3c@gandalf.local.home>
+        <20220513021314.59480-1-kunyu@nfschina.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e895ce94-e6b9-caf6-e5d3-06bf0149445c@igalia.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-05-16 13:33:51, Guilherme G. Piccoli wrote:
-> On 16/05/2022 13:18, Luck, Tony wrote:
-> >> [...]
-> > Would it be possible to have some global "kdump is configured + enabled" flag?
-> > 
-> > Then notifiers could make an informed choice on whether to deep dive to
-> > get all the possible details (when there is no kdump) or just skim the high
-> > level stuff (to maximize chance of getting a successful kdump).
-> > 
-> > -Tony
+On Fri, 13 May 2022 10:13:14 +0800
+Li kunyu <kunyu@nfschina.com> wrote:
+
+> Subject: [PATCH] kernel: Ftrace seems to have functions to improve performance through optimization  through optimization
+
+Did you forget to add a subject line. The above looks to be the beginning
+of the paragraph below.
+
+
+> Date: Fri, 13 May 2022 10:13:14 +0800
+> Message-Id: <20220513021314.59480-1-kunyu@nfschina.com>
 > 
-> Good idea Tony! What if I wire a kexec_crash_loaded() in the notifier?
+> such as ftrace_ARCH_code_*, return 0, so the FTRACE_* check is not required
 
-I like this idea.
+And even combined, the above makes no sense.
 
-One small problem is that kexec_crash_loaded() has valid result
-only under kexec_mutex. On the other hand, it should stay true
-once loaded so that the small race window should be innocent.
+This patch is not an optimization patch. If it were, the optimization
+provided is so small, it's not worth adding it.
 
-> With that, are you/Petr/Dinh OK in moving it for the info list?
+Just state that it's a clean up (I already told you this). Here, I'll do
+the work for you (but I expect a proper patch):
 
-Sounds good to me.
+  Subject: [PATCH v2] ftrace: Remove return value of ftrace_arch_modify_*()
 
-Best Regards,
-Petr
+  All instances of the function ftrace_arch_modify_prepare() and
+  ftrace_arch_modify_post_process() return zero. There's no point in
+  checking their return value. Just have them be void functions.
+
+There, that's what I would like to see.
+
+-- Steve
+
+
+> 
+> Signed-off-by: Li kunyu <kunyu@nfschina.com>
