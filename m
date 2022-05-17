@@ -2,581 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E94B1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234153AbiEQIzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59814 "EHLO
+        id S244217AbiEQI5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243853AbiEQIzH (ORCPT
+        with ESMTP id S243868AbiEQI5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:55:07 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4859C43ED2
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:54:54 -0700 (PDT)
-Received: from epcas1p2.samsung.com (unknown [182.195.41.46])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220517085450epoutp01d8e31b76a61d0a5ebbc9a47a617ecc2f~v2I2H5nYU1857618576epoutp01b
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:54:50 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220517085450epoutp01d8e31b76a61d0a5ebbc9a47a617ecc2f~v2I2H5nYU1857618576epoutp01b
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1652777690;
-        bh=9zyVG5H/gQy7SgFOMnlbheDQmbMtgiHYhAYcsTt1uag=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hBXYWXHGoFgHGatDof7iBwAjtcQ54+4DPfzvFUXk6xZLEVa+3oH3FZGZDcenWX4co
-         2lFfam9QwAZxODFYK8//lzTBPkgnCNWdmqaSDbEFGmni53J3K9Q3bRFOPROfiz34WD
-         3/w5Foc3r8jit5NUBzWSquqIJTi42LGDCSL9t4Tc=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220517085450epcas1p24c538ba26e91989a3a05e7997eab7cb9~v2I1zkvYI0692906929epcas1p2V;
-        Tue, 17 May 2022 08:54:50 +0000 (GMT)
-Received: from epsmges1p3.samsung.com (unknown [182.195.36.132]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4L2VLK1jywz4x9Ps; Tue, 17 May
-        2022 08:54:49 +0000 (GMT)
-Received: from epcas1p1.samsung.com ( [182.195.41.45]) by
-        epsmges1p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        8C.75.10038.9D263826; Tue, 17 May 2022 17:54:49 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220517085448epcas1p46423db24a3211003238b6c5947228923~v2I0ZoDW31991119911epcas1p4N;
-        Tue, 17 May 2022 08:54:48 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220517085448epsmtrp1e9b2cc5cfb7c6001c1991e1994526904~v2I0Yg46c1935519355epsmtrp1j;
-        Tue, 17 May 2022 08:54:48 +0000 (GMT)
-X-AuditID: b6c32a37-111ff70000002736-ff-628362d90862
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        0B.53.08924.8D263826; Tue, 17 May 2022 17:54:48 +0900 (KST)
-Received: from localhost.localdomain (unknown [10.113.221.102]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220517085448epsmtip2c1442e73a89280b4b8756f95659c3a49~v2I0Gjv_T0365503655epsmtip2H;
-        Tue, 17 May 2022 08:54:48 +0000 (GMT)
-From:   Chanwoo Choi <cw00.choi@samsung.com>
-To:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     johnson.wang@mediatek.com, mka@chromium.org, wenst@chromium.org,
-        jia-wei.chang@mediatek.com, andrew-sh.cheng@mediatek.com,
-        hsinyi@chromium.org, m.szyprowski@samsung.com,
-        saravanak@google.com, cw00.choi@samsung.com,
-        myungjoo.ham@samsung.com, kyungmin.park@samsung.com,
-        Saravana Kannan <skannan@codeaurora.org>,
-        Sibi Sankar <sibis@codeaurora.org>
-Subject: [PATCH v5 2/4] PM / devfreq: Add cpu based scaling support to
- passive governor
-Date:   Tue, 17 May 2022 18:21:06 +0900
-Message-Id: <20220517092108.31680-3-cw00.choi@samsung.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220517092108.31680-1-cw00.choi@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupgk+LIzCtJLcpLzFFi42LZdlhTV/dmUnOSweLpnBbb179gtbj+5Tmr
-        xYTW7cwWx/cvYbc49ivY4mzTG3aLy7vmsFl87j3CaLH2yF12i88bHjNa3G5cwWbRdegvm8W1
-        he9ZLQ5cnMhmMaPtMqsDv8fshossHpf7epk8Fmwq9Wg5uZ/Fo2/LKkaPz5vkAtiism0yUhNT
-        UosUUvOS81My89JtlbyD453jTc0MDHUNLS3MlRTyEnNTbZVcfAJ03TJzgC5WUihLzCkFCgUk
-        Fhcr6dvZFOWXlqQqZOQXl9gqpRak5BSYFugVJ+YWl+al6+WlllgZGhgYmQIVJmRntB3Zwlxw
-        vaii+cs/5gbGDXFdjJwcEgImEv/33mDpYuTiEBLYwSixet5/ZpCEkMAnRomexzYQic+MEktn
-        /WbrYuQA69i7KwwivotRYv/jE+wQzhdGiQc/zrCBdLMJaEnsf3EDzBYRsJI4/b+DGaSIWeAJ
-        k0TftG0sIAlhgUiJZT+usIPYLAKqEvuPr2AEsXmBGp53bmeCuE9eYvWGA2AncQpYS3w/vJgN
-        ZJCEQC+HxP4pa1kgilwkrjx6DNUgLPHq+BZ2CFtK4mV/GztEQzOjRMOL24wQTg+jxNFnfVDd
-        xhL7l05mAnmOWUBTYv0ufYiwosTO33PBLmIW4JN497WHFeJ/XomONiGIEmWJyw/uQu2VlFjc
-        3gkNIg+JznvJkFDpY5R4/GQH4wRGuVkICxYwMq5iFEstKM5NTy02LDCGR1lyfu4mRnCS1DLf
-        wTjt7Qe9Q4xMHIyHGCU4mJVEeA0qGpKEeFMSK6tSi/Lji0pzUosPMZoCQ28is5Rocj4wTeeV
-        xBuaWBqYmBkZm1gYmhkqifOumnY6UUggPbEkNTs1tSC1CKaPiYNTqoEpYKaV67Zj+9bb5eiY
-        mwjs83ou0vW5m02j5bpl8Fx+g1Pme6wjs2oMbENzCuVDll8/rtPLr99l5D5Z6n5FcKltuOYn
-        1yf3tz9cPXFuh9ye1FuJjyK2nj/yz8t0m/1UU/bJ8xjVWNLvPCiYeWXKk0/bvilMjbeaEi3y
-        z6bxxUTOn6mbik9uaokPzJOJ513jd+/a29dicyO5L0g+YLdkP1895ZrWaQ3uKTx123Qe37sq
-        ft/9to3P7i7pmr2hXM5N7asdWZpXTQy5ZV7+0el26YpFLS2tKmf5T/7lvyl3pD+nLEl6O5P8
-        tMtfdAKd5YNMv7Zt/ryggTn9FP+NJS/bM2JUp2z++3TR6XNf+jR6C0OVWIozEg21mIuKEwGn
-        PHK2GwQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrALMWRmVeSWpSXmKPExsWy7bCSvO6NpOYkg1kdGhbb179gtbj+5Tmr
-        xYTW7cwWx/cvYbc49ivY4mzTG3aLy7vmsFl87j3CaLH2yF12i88bHjNa3G5cwWbRdegvm8W1
-        he9ZLQ5cnMhmMaPtMqsDv8fshossHpf7epk8Fmwq9Wg5uZ/Fo2/LKkaPz5vkAtiiuGxSUnMy
-        y1KL9O0SuDLajmxhLrheVNH85R9zA+OGuC5GDg4JAROJvbvCuhg5OYQEdjBKvN/MDGJLCEhK
-        TLt4lBmiRFji8OHiLkYuoJJPjBKzZ39gB6lhE9CS2P/iBhuILSJgI3F38TUWkCJmgS9MEjNX
-        XmEESQgLhEu0Hf0KNpRFQFVi//EVYHFeASuJ553bmSCWyUus3nAArIZTwFri++HFbBAHWUns
-        P/mdZQIj3wJGhlWMkqkFxbnpucWGBUZ5qeV6xYm5xaV56XrJ+bmbGMGBrKW1g3HPqg96hxiZ
-        OBgPMUpwMCuJ8BpUNCQJ8aYkVlalFuXHF5XmpBYfYpTmYFES573QdTJeSCA9sSQ1OzW1ILUI
-        JsvEwSnVwGR2cR7DUSZ+mZdbVq7ccpJvcqnlzFj287F/9/4wCnTwydN1rJpccT2lZsnSoHcb
-        j259JjT/xfIsnTuzNy7Lzdk7p+v2nS9PNE6KPTLeZn01YOaiW8KCd45VX2xrNFLb7dbx81P9
-        r/ebu3o2nKv0sF92YJvLxzlb++ZtunA7IvVHidHev0WZz47lPbGzUl+W28bbqj7RWbtP5PDZ
-        zZ8X3BaZeHxui+r6RG8LO9lXsbkKKgJr2c0LCuYZBXjmurQkzc5hi77CadOxY4vQdK1lfeUl
-        uyRlll4PKHO0/37p/MHSzGWh5qEfdRu/xu9+L7Ys2vT4d5XvgqkJLCqzVz7S7s5zaLw5ydak
-        QURN1uT/pclKLMUZiYZazEXFiQAioGo40wIAAA==
-X-CMS-MailID: 20220517085448epcas1p46423db24a3211003238b6c5947228923
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220517085448epcas1p46423db24a3211003238b6c5947228923
-References: <20220517092108.31680-1-cw00.choi@samsung.com>
-        <CGME20220517085448epcas1p46423db24a3211003238b6c5947228923@epcas1p4.samsung.com>
+        Tue, 17 May 2022 04:57:01 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F24B04;
+        Tue, 17 May 2022 01:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652777820; x=1684313820;
+  h=message-id:date:mime-version:subject:from:to:references:
+   cc:in-reply-to:content-transfer-encoding;
+  bh=Epa/HjVJt8okWhnmRizBqofCDQRjqWnebAitXUqQmog=;
+  b=iTqRwwTnsyhhuxpdrcHkhn5AiMhcwFNZ+lioEqUawiFonRo2g30aqujW
+   x1Lrg7uTciWGhqadfXtOlzpMcucUe1Yhj8OjRm9n/l8ZNQlr0nscLx1YY
+   YrbpUWFE1mFQak1OCu8novtXHtxz8E2fSyFgaZgtr2BlFzsTiE8UmlO0H
+   VNu+1GG0lCINhpbYaTjWfRyq592QcegiWtRbcnfIE8NsS98AuVRmJCp7g
+   fKC2l3ctwYSor+8kf66/qdQWa2XeYrJLWhKkLkn4LjULckn6vrESEjgPS
+   O9B9DYFbUZhkswL8e/HwGMATL9HDGuBWBwxZjzw6dvOSWOc3QLPQADs4m
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="296392260"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="296392260"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 01:56:46 -0700
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="597024044"
+Received: from yangweij-mobl.ccr.corp.intel.com (HELO [10.255.31.115]) ([10.255.31.115])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 01:56:43 -0700
+Message-ID: <d68f61ab-d122-809b-913e-4eaf89b337c4@intel.com>
+Date:   Tue, 17 May 2022 16:56:32 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v11 14/16] KVM: x86/vmx: Flip Arch LBREn bit on guest
+ state change
+Content-Language: en-US
+From:   "Yang, Weijiang" <weijiang.yang@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+References: <20220506033305.5135-1-weijiang.yang@intel.com>
+ <20220506033305.5135-15-weijiang.yang@intel.com>
+ <9f19a5eb-3eb0-58a2-e4ee-612f3298ba82@redhat.com>
+ <9e2b5e9f-25a2-b724-c6d7-282dc987aa99@intel.com>
+ <8a15c4b4-cabe-7bc3-bd98-bd669d586616@redhat.com>
+ <5f264701-b6d5-8660-55ae-a5039d6a9d3a@intel.com>
+Cc:     "jmattson@google.com" <jmattson@google.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "kan.liang@linux.intel.com" <kan.liang@linux.intel.com>,
+        "like.xu.linux@gmail.com" <like.xu.linux@gmail.com>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "Wang, Wei W" <wei.w.wang@intel.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+In-Reply-To: <5f264701-b6d5-8660-55ae-a5039d6a9d3a@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saravana Kannan <skannan@codeaurora.org>
 
-Many CPU architectures have caches that can scale independent of the
-CPUs. Frequency scaling of the caches is necessary to make sure that the
-cache is not a performance bottleneck that leads to poor performance and
-power. The same idea applies for RAM/DDR.
+On 5/13/2022 12:02 PM, Yang, Weijiang wrote:
+>
+> On 5/12/2022 9:18 PM, Paolo Bonzini wrote:
+>> On 5/11/22 09:43, Yang, Weijiang wrote:
+>>>> Instead of using flip_arch_lbr_ctl, SMM should save the value of 
+>>>> the MSR
+>>>> in kvm_x86_ops->enter_smm, and restore it in kvm_x86_ops->leave_smm
+>>>> (feel free to do it only if guest_cpuid_has(vcpu, X86_FEATURE_LM), 
+>>>> i.e.
+>>>> the 32-bit case can be ignored).
+>>> In the case of migration in SMM, I assume kvm_x86_ops->enter_smm()
+>>> called in source side
+>>>
+>>> and kvm_x86_ops->leave_smm() is called at destination, then should the
+>>> saved LBREn be transferred
+>>>
+>>> to destination too? The destination can rely on the bit to defer 
+>>> setting
+>>> LBREn bit in
+>> Hi, it's transferred automatically if the MSR is saved in the SMM save
+>> state area.  Both enter_smm and leave_smm can access the save state 
+>> area.
+>>
+>> The enter_smm callback is called after saving "normal" state, and it has
+>> to save the state + clear the bit; likewise, the leave_smm callback is
+>> called before saving "normal" state and will restore the old value of
+>> the MSR.
+>
+> Hi, I  modified this patch to consolidate your suggestion above, see 
+> below patch.
+>
+> I added more things to ease migration handling in SMM because: 1) qemu 
+> checks
+>
+> LBREn before transfer Arch LBR MSRs. 2)Perf event is created when 
+> LBREn is being
+>
+> set.  Two things are not certain: 1) IA32_LBR_CTL doesn't have 
+> corresponding slot in
+>
+> SMRAM,not sure if we need to rely on it to transfer the MSR. 2) I 
+> chose 0x7f10 as
+>
+> the offset(CET takes 0x7f08) for storage, need you double check if 
+> it's free or used.
+>
+> Thanks a lot!
 
-To achieve this, this patch adds support for cpu based scaling to the
-passive governor. This is accomplished by taking the current frequency
-of each CPU frequency domain and then adjust the frequency of the cache
-(or any devfreq device) based on the frequency of the CPUs. It listens
-to CPU frequency transition notifiers to keep itself up to date on the
-current CPU frequency.
+Hi, Paolo,
 
-To decide the frequency of the device, the governor does one of the
-following:
-* Derives the optimal devfreq device opp from required-opps property of
-  the parent cpu opp_table.
+I found there're some rebase conflicts between this series and your kvm 
+queue branch
 
-* Scales the device frequency in proportion to the CPU frequency. So, if
-  the CPUs are running at their max frequency, the device runs at its
-  max frequency. If the CPUs are running at their min frequency, the
-  device runs at its min frequency. It is interpolated for frequencies
-  in between.
+due to PEBS patches, I can re-post a new version based on your queue 
+branch if necessary.
 
-Tested-by: Chen-Yu Tsai <wenst@chromium.org>
-Tested-by: Johnson Wang <johnson.wang@mediatek.com>
-Signed-off-by: Saravana Kannan <skannan@codeaurora.org>
-[Sibi: Integrated cpu-freqmap governor into passive_governor]
-Signed-off-by: Sibi Sankar <sibis@codeaurora.org>
-[Chanwoo: Fix conflict with latest code and cleanup code]
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
----
- drivers/devfreq/governor.h         |  22 +++
- drivers/devfreq/governor_passive.c | 298 +++++++++++++++++++++++++++--
- include/linux/devfreq.h            |  17 +-
- 3 files changed, 323 insertions(+), 14 deletions(-)
+Waiting for your comments on this patch...
 
-diff --git a/drivers/devfreq/governor.h b/drivers/devfreq/governor.h
-index b0dbfee8bbf2..335c4a491254 100644
---- a/drivers/devfreq/governor.h
-+++ b/drivers/devfreq/governor.h
-@@ -47,6 +47,28 @@
- #define DEVFREQ_GOV_ATTR_POLLING_INTERVAL		BIT(0)
- #define DEVFREQ_GOV_ATTR_TIMER				BIT(1)
- 
-+/**
-+ * struct devfreq_cpu_data - Hold the per-cpu data
-+ * @dev:	reference to cpu device.
-+ * @first_cpu:	the cpumask of the first cpu of a policy.
-+ * @opp_table:	reference to cpu opp table.
-+ * @cur_freq:	the current frequency of the cpu.
-+ * @min_freq:	the min frequency of the cpu.
-+ * @max_freq:	the max frequency of the cpu.
-+ *
-+ * This structure stores the required cpu_data of a cpu.
-+ * This is auto-populated by the governor.
-+ */
-+struct devfreq_cpu_data {
-+	struct device *dev;
-+	unsigned int first_cpu;
-+
-+	struct opp_table *opp_table;
-+	unsigned int cur_freq;
-+	unsigned int min_freq;
-+	unsigned int max_freq;
-+};
-+
- /**
-  * struct devfreq_governor - Devfreq policy governor
-  * @node:		list node - contains registered devfreq governors
-diff --git a/drivers/devfreq/governor_passive.c b/drivers/devfreq/governor_passive.c
-index fc09324a03e0..7f30088b500b 100644
---- a/drivers/devfreq/governor_passive.c
-+++ b/drivers/devfreq/governor_passive.c
-@@ -8,11 +8,85 @@
-  */
- 
- #include <linux/module.h>
-+#include <linux/cpu.h>
-+#include <linux/cpufreq.h>
-+#include <linux/cpumask.h>
-+#include <linux/slab.h>
- #include <linux/device.h>
- #include <linux/devfreq.h>
- #include "governor.h"
- 
--static int devfreq_passive_get_target_freq(struct devfreq *devfreq,
-+#define HZ_PER_KHZ	1000
-+
-+static unsigned long get_target_freq_by_required_opp(struct device *p_dev,
-+						struct opp_table *p_opp_table,
-+						struct opp_table *opp_table,
-+						unsigned long *freq)
-+{
-+	struct dev_pm_opp *opp = NULL, *p_opp = NULL;
-+	unsigned long target_freq;
-+
-+	if (!p_dev || !p_opp_table || !opp_table || !freq)
-+		return 0;
-+
-+	p_opp = devfreq_recommended_opp(p_dev, freq, 0);
-+	if (IS_ERR(p_opp))
-+		return 0;
-+
-+	opp = dev_pm_opp_xlate_required_opp(p_opp_table, opp_table, p_opp);
-+	dev_pm_opp_put(p_opp);
-+
-+	if (IS_ERR(opp))
-+		return 0;
-+
-+	target_freq = dev_pm_opp_get_freq(opp);
-+	dev_pm_opp_put(opp);
-+
-+	return target_freq;
-+}
-+
-+static int get_target_freq_with_cpufreq(struct devfreq *devfreq,
-+					unsigned long *target_freq)
-+{
-+	struct devfreq_passive_data *p_data =
-+				(struct devfreq_passive_data *)devfreq->data;
-+	struct devfreq_cpu_data *parent_cpu_data;
-+	unsigned long cpu, cpu_cur, cpu_min, cpu_max, cpu_percent;
-+	unsigned long dev_min, dev_max;
-+	unsigned long freq = 0;
-+
-+	for_each_online_cpu(cpu) {
-+		parent_cpu_data = p_data->parent_cpu_data[cpu];
-+		if (!parent_cpu_data || parent_cpu_data->first_cpu != cpu)
-+			continue;
-+
-+		/* Get target freq via required opps */
-+		cpu_cur = parent_cpu_data->cur_freq * HZ_PER_KHZ;
-+		freq = get_target_freq_by_required_opp(parent_cpu_data->dev,
-+					parent_cpu_data->opp_table,
-+					devfreq->opp_table, &cpu_cur);
-+		if (freq) {
-+			*target_freq = max(freq, *target_freq);
-+			continue;
-+		}
-+
-+		/* Use interpolation if required opps is not available */
-+		devfreq_get_freq_range(devfreq, &dev_min, &dev_max);
-+
-+		cpu_min = parent_cpu_data->min_freq;
-+		cpu_max = parent_cpu_data->max_freq;
-+		cpu_cur = parent_cpu_data->cur_freq;
-+
-+		cpu_percent = ((cpu_cur - cpu_min) * 100) / (cpu_max - cpu_min);
-+		freq = dev_min + mult_frac(dev_max - dev_min, cpu_percent, 100);
-+
-+		*target_freq = max(freq, *target_freq);
-+	}
-+
-+	return 0;
-+}
-+
-+static int get_target_freq_with_devfreq(struct devfreq *devfreq,
- 					unsigned long *freq)
- {
- 	struct devfreq_passive_data *p_data
-@@ -99,6 +173,181 @@ static int devfreq_passive_get_target_freq(struct devfreq *devfreq,
- 	return 0;
- }
- 
-+static int devfreq_passive_get_target_freq(struct devfreq *devfreq,
-+					   unsigned long *freq)
-+{
-+	struct devfreq_passive_data *p_data =
-+				(struct devfreq_passive_data *)devfreq->data;
-+	int ret;
-+
-+	if (!p_data)
-+		return -EINVAL;
-+
-+	/*
-+	 * If the devfreq device with passive governor has the specific method
-+	 * to determine the next frequency, should use the get_target_freq()
-+	 * of struct devfreq_passive_data.
-+	 */
-+	if (p_data->get_target_freq)
-+		return p_data->get_target_freq(devfreq, freq);
-+
-+	switch (p_data->parent_type) {
-+	case DEVFREQ_PARENT_DEV:
-+		ret = get_target_freq_with_devfreq(devfreq, freq);
-+		break;
-+	case CPUFREQ_PARENT_DEV:
-+		ret = get_target_freq_with_cpufreq(devfreq, freq);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		dev_err(&devfreq->dev, "Invalid parent type\n");
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static int cpufreq_passive_notifier_call(struct notifier_block *nb,
-+					 unsigned long event, void *ptr)
-+{
-+	struct devfreq_passive_data *p_data =
-+			container_of(nb, struct devfreq_passive_data, nb);
-+	struct devfreq *devfreq = (struct devfreq *)p_data->this;
-+	struct devfreq_cpu_data *parent_cpu_data;
-+	struct cpufreq_freqs *freqs = ptr;
-+	unsigned int cur_freq;
-+	int ret;
-+
-+	if (event != CPUFREQ_POSTCHANGE || !freqs ||
-+		!p_data->parent_cpu_data[freqs->policy->cpu])
-+		return 0;
-+
-+	parent_cpu_data = p_data->parent_cpu_data[freqs->policy->cpu];
-+	if (parent_cpu_data->cur_freq == freqs->new)
-+		return 0;
-+
-+	cur_freq = parent_cpu_data->cur_freq;
-+	parent_cpu_data->cur_freq = freqs->new;
-+
-+	mutex_lock(&devfreq->lock);
-+	ret = devfreq_update_target(devfreq, freqs->new);
-+	mutex_unlock(&devfreq->lock);
-+	if (ret) {
-+		parent_cpu_data->cur_freq = cur_freq;
-+		dev_err(&devfreq->dev, "failed to update the frequency.\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int cpufreq_passive_unregister_notifier(struct devfreq *devfreq)
-+{
-+	struct devfreq_passive_data *p_data
-+			= (struct devfreq_passive_data *)devfreq->data;
-+	struct devfreq_cpu_data *parent_cpu_data;
-+	int cpu, ret;
-+
-+	if (p_data->nb.notifier_call) {
-+		ret = cpufreq_unregister_notifier(&p_data->nb,
-+					CPUFREQ_TRANSITION_NOTIFIER);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	for_each_possible_cpu(cpu) {
-+		parent_cpu_data = p_data->parent_cpu_data[cpu];
-+		if (!parent_cpu_data)
-+			continue;
-+
-+		if (parent_cpu_data->opp_table)
-+			dev_pm_opp_put_opp_table(parent_cpu_data->opp_table);
-+		kfree(parent_cpu_data);
-+	}
-+
-+	return 0;
-+}
-+
-+static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
-+{
-+	struct devfreq_passive_data *p_data
-+			= (struct devfreq_passive_data *)devfreq->data;
-+	struct device *dev = devfreq->dev.parent;
-+	struct opp_table *opp_table = NULL;
-+	struct devfreq_cpu_data *parent_cpu_data;
-+	struct cpufreq_policy *policy;
-+	struct device *cpu_dev;
-+	unsigned int cpu;
-+	int ret;
-+
-+	p_data->nb.notifier_call = cpufreq_passive_notifier_call;
-+	ret = cpufreq_register_notifier(&p_data->nb, CPUFREQ_TRANSITION_NOTIFIER);
-+	if (ret) {
-+		dev_err(dev, "failed to register cpufreq notifier\n");
-+		p_data->nb.notifier_call = NULL;
-+		goto err;
-+	}
-+
-+	for_each_possible_cpu(cpu) {
-+		if (p_data->parent_cpu_data[cpu])
-+			continue;
-+
-+		policy = cpufreq_cpu_get(cpu);
-+		if (!policy) {
-+			ret = -EPROBE_DEFER;
-+			goto err;
-+		}
-+
-+		parent_cpu_data = kzalloc(sizeof(*parent_cpu_data),
-+						GFP_KERNEL);
-+		if (!parent_cpu_data) {
-+			ret = -ENOMEM;
-+			goto err_put_policy;
-+		}
-+
-+		cpu_dev = get_cpu_device(cpu);
-+		if (!cpu_dev) {
-+			dev_err(dev, "failed to get cpu device\n");
-+			ret = -ENODEV;
-+			goto err_free_cpu_data;
-+		}
-+
-+		opp_table = dev_pm_opp_get_opp_table(cpu_dev);
-+		if (IS_ERR(opp_table)) {
-+			dev_err(dev, "failed to get opp_table of cpu%d\n", cpu);
-+			ret = PTR_ERR(opp_table);
-+			goto err_free_cpu_data;
-+		}
-+
-+		parent_cpu_data->dev = cpu_dev;
-+		parent_cpu_data->opp_table = opp_table;
-+		parent_cpu_data->first_cpu = cpumask_first(policy->related_cpus);
-+		parent_cpu_data->cur_freq = policy->cur;
-+		parent_cpu_data->min_freq = policy->cpuinfo.min_freq;
-+		parent_cpu_data->max_freq = policy->cpuinfo.max_freq;
-+
-+		p_data->parent_cpu_data[cpu] = parent_cpu_data;
-+		cpufreq_cpu_put(policy);
-+	}
-+
-+	mutex_lock(&devfreq->lock);
-+	ret = devfreq_update_target(devfreq, 0L);
-+	mutex_unlock(&devfreq->lock);
-+	if (ret)
-+		dev_err(dev, "failed to update the frequency\n");
-+
-+	return ret;
-+
-+err_free_cpu_data:
-+	kfree(parent_cpu_data);
-+err_put_policy:
-+	cpufreq_cpu_put(policy);
-+err:
-+	WARN_ON(cpufreq_passive_unregister_notifier(devfreq));
-+
-+	return ret;
-+}
-+
- static int devfreq_passive_notifier_call(struct notifier_block *nb,
- 				unsigned long event, void *ptr)
- {
-@@ -131,30 +380,55 @@ static int devfreq_passive_notifier_call(struct notifier_block *nb,
- 	return NOTIFY_DONE;
- }
- 
--static int devfreq_passive_event_handler(struct devfreq *devfreq,
--				unsigned int event, void *data)
-+static int devfreq_passive_unregister_notifier(struct devfreq *devfreq)
-+{
-+	struct devfreq_passive_data *p_data
-+			= (struct devfreq_passive_data *)devfreq->data;
-+	struct devfreq *parent = (struct devfreq *)p_data->parent;
-+	struct notifier_block *nb = &p_data->nb;
-+
-+	return devfreq_unregister_notifier(parent, nb, DEVFREQ_TRANSITION_NOTIFIER);
-+}
-+
-+static int devfreq_passive_register_notifier(struct devfreq *devfreq)
- {
- 	struct devfreq_passive_data *p_data
- 			= (struct devfreq_passive_data *)devfreq->data;
- 	struct devfreq *parent = (struct devfreq *)p_data->parent;
- 	struct notifier_block *nb = &p_data->nb;
--	int ret = 0;
- 
- 	if (!parent)
- 		return -EPROBE_DEFER;
- 
-+	nb->notifier_call = devfreq_passive_notifier_call;
-+	return devfreq_register_notifier(parent, nb, DEVFREQ_TRANSITION_NOTIFIER);
-+}
-+
-+static int devfreq_passive_event_handler(struct devfreq *devfreq,
-+				unsigned int event, void *data)
-+{
-+	struct devfreq_passive_data *p_data
-+			= (struct devfreq_passive_data *)devfreq->data;
-+	int ret = -EINVAL;
-+
-+	if (!p_data)
-+		return -EINVAL;
-+
-+	if (!p_data->this)
-+		p_data->this = devfreq;
-+
- 	switch (event) {
- 	case DEVFREQ_GOV_START:
--		if (!p_data->this)
--			p_data->this = devfreq;
--
--		nb->notifier_call = devfreq_passive_notifier_call;
--		ret = devfreq_register_notifier(parent, nb,
--					DEVFREQ_TRANSITION_NOTIFIER);
-+		if (p_data->parent_type == DEVFREQ_PARENT_DEV)
-+			ret = devfreq_passive_register_notifier(devfreq);
-+		else if (p_data->parent_type == CPUFREQ_PARENT_DEV)
-+			ret = cpufreq_passive_register_notifier(devfreq);
- 		break;
- 	case DEVFREQ_GOV_STOP:
--		WARN_ON(devfreq_unregister_notifier(parent, nb,
--					DEVFREQ_TRANSITION_NOTIFIER));
-+		if (p_data->parent_type == DEVFREQ_PARENT_DEV)
-+			WARN_ON(devfreq_passive_unregister_notifier(devfreq));
-+		else if (p_data->parent_type == CPUFREQ_PARENT_DEV)
-+			WARN_ON(cpufreq_passive_unregister_notifier(devfreq));
- 		break;
- 	default:
- 		break;
-diff --git a/include/linux/devfreq.h b/include/linux/devfreq.h
-index 142474b4af96..b1e4a6f796ce 100644
---- a/include/linux/devfreq.h
-+++ b/include/linux/devfreq.h
-@@ -38,6 +38,7 @@ enum devfreq_timer {
- 
- struct devfreq;
- struct devfreq_governor;
-+struct devfreq_cpu_data;
- struct thermal_cooling_device;
- 
- /**
-@@ -288,6 +289,11 @@ struct devfreq_simple_ondemand_data {
- #endif
- 
- #if IS_ENABLED(CONFIG_DEVFREQ_GOV_PASSIVE)
-+enum devfreq_parent_dev_type {
-+	DEVFREQ_PARENT_DEV,
-+	CPUFREQ_PARENT_DEV,
-+};
-+
- /**
-  * struct devfreq_passive_data - ``void *data`` fed to struct devfreq
-  *	and devfreq_add_device
-@@ -299,8 +305,11 @@ struct devfreq_simple_ondemand_data {
-  *			using governors except for passive governor.
-  *			If the devfreq device has the specific method to decide
-  *			the next frequency, should use this callback.
-- * @this:	the devfreq instance of own device.
-- * @nb:		the notifier block for DEVFREQ_TRANSITION_NOTIFIER list
-+ * @parent_type:	the parent type of the device.
-+ * @this:		the devfreq instance of own device.
-+ * @nb:			the notifier block for DEVFREQ_TRANSITION_NOTIFIER or
-+ *			CPUFREQ_TRANSITION_NOTIFIER list.
-+ * @parent_cpu_data:	the state min/max/current frequency of all online cpu's.
-  *
-  * The devfreq_passive_data have to set the devfreq instance of parent
-  * device with governors except for the passive governor. But, don't need to
-@@ -314,9 +323,13 @@ struct devfreq_passive_data {
- 	/* Optional callback to decide the next frequency of passvice device */
- 	int (*get_target_freq)(struct devfreq *this, unsigned long *freq);
- 
-+	/* Should set the type of parent device */
-+	enum devfreq_parent_dev_type parent_type;
-+
- 	/* For passive governor's internal use. Don't need to set them */
- 	struct devfreq *this;
- 	struct notifier_block nb;
-+	struct devfreq_cpu_data *parent_cpu_data[NR_CPUS];
- };
- #endif
- 
--- 
-2.17.1
-
+>
+> ====================================================================
+>
+> From ceba1527fd87cdc789b38fce454058fca6582b0a Mon Sep 17 00:00:00 2001
+> From: Yang Weijiang <weijiang.yang@intel.com>
+> Date: Thu, 5 Aug 2021 20:48:39 +0800
+> Subject: [PATCH] KVM: x86/vmx: Flip Arch LBREn bit on guest state change
+>
+> Per spec:"IA32_LBR_CTL.LBREn is saved and cleared on #SMI, and restored
+> on RSM. On a warm reset, all LBR MSRs, including IA32_LBR_DEPTH, have 
+> their
+> values preserved. However, IA32_LBR_CTL.LBREn is cleared to 0, disabling
+> LBRs." Given migration in SMM, use a reserved bit(63) of the MSR to 
+> mirror
+> LBREn bit, it facilitates Arch LBR specific handling during live 
+> migration
+> because user space will check LBREn to decide whether it's necessary to
+> migrate the Arch LBR related MSRs. When the mirrored bit and LBREn bit 
+> are
+> both set, it means Arch LBR was active in SMM, so only create perf event
+> and defer the LBREn bit restoring to leave_smm callback.
+> Also clear LBREn at warm reset.
+>
+> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+> ---
+>  arch/x86/kvm/vmx/pmu_intel.c | 16 +++++++++++++---
+>  arch/x86/kvm/vmx/vmx.c       | 29 +++++++++++++++++++++++++++++
+>  arch/x86/kvm/vmx/vmx.h       |  1 +
+>  3 files changed, 43 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+> index 038fdb788ccd..652601ad99ea 100644
+> --- a/arch/x86/kvm/vmx/pmu_intel.c
+> +++ b/arch/x86/kvm/vmx/pmu_intel.c
+> @@ -373,6 +373,8 @@ static bool arch_lbr_depth_is_valid(struct 
+> kvm_vcpu *vcpu, u64 depth)
+>      return (depth == pmu->kvm_arch_lbr_depth);
+>  }
+>
+> +#define ARCH_LBR_IN_SMM    BIT(63)
+> +
+>  static bool arch_lbr_ctl_is_valid(struct kvm_vcpu *vcpu, u64 ctl)
+>  {
+>      struct kvm_cpuid_entry2 *entry;
+> @@ -380,7 +382,7 @@ static bool arch_lbr_ctl_is_valid(struct kvm_vcpu 
+> *vcpu, u64 ctl)
+>      if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
+>          return false;
+>
+> -    if (ctl & ~KVM_ARCH_LBR_CTL_MASK)
+> +    if (ctl & ~(KVM_ARCH_LBR_CTL_MASK | ARCH_LBR_IN_SMM))
+>          goto warn;
+>
+>      entry = kvm_find_cpuid_entry(vcpu, 0x1c, 0);
+> @@ -425,6 +427,10 @@ static int intel_pmu_get_msr(struct kvm_vcpu 
+> *vcpu, struct msr_data *msr_info)
+>          return 0;
+>      case MSR_ARCH_LBR_CTL:
+>          msr_info->data = vmcs_read64(GUEST_IA32_LBR_CTL);
+> +        if (to_vmx(vcpu)->lbr_in_smm) {
+> +            msr_info->data |= ARCH_LBR_CTL_LBREN;
+> +            msr_info->data |= ARCH_LBR_IN_SMM;
+> +        }
+>          return 0;
+>      default:
+>          if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
+> @@ -501,11 +507,15 @@ static int intel_pmu_set_msr(struct kvm_vcpu 
+> *vcpu, struct msr_data *msr_info)
+>          if (!arch_lbr_ctl_is_valid(vcpu, data))
+>              break;
+>
+> -        vmcs_write64(GUEST_IA32_LBR_CTL, data);
+> -
+>          if (intel_pmu_lbr_is_enabled(vcpu) && !lbr_desc->event &&
+>              (data & ARCH_LBR_CTL_LBREN))
+>              intel_pmu_create_guest_lbr_event(vcpu);
+> +
+> +        if (data & ARCH_LBR_IN_SMM) {
+> +            data &= ~ARCH_LBR_CTL_LBREN;
+> +            data &= ~ARCH_LBR_IN_SMM;
+> +        }
+> +        vmcs_write64(GUEST_IA32_LBR_CTL, data);
+>          return 0;
+>      default:
+>          if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 6d6ee9cf82f5..f754b9400151 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -4543,6 +4543,7 @@ static void vmx_vcpu_reset(struct kvm_vcpu 
+> *vcpu, bool init_event)
+>
+>      vmx->rmode.vm86_active = 0;
+>      vmx->spec_ctrl = 0;
+> +    vmx->lbr_in_smm = false;
+>
+>      vmx->msr_ia32_umwait_control = 0;
+>
+> @@ -4593,6 +4594,8 @@ static void vmx_vcpu_reset(struct kvm_vcpu 
+> *vcpu, bool init_event)
+>      if (!init_event) {
+>          if (static_cpu_has(X86_FEATURE_ARCH_LBR))
+>              vmcs_write64(GUEST_IA32_LBR_CTL, 0);
+> +    } else {
+> +        flip_arch_lbr_ctl(vcpu, false);
+>      }
+>  }
+>
+> @@ -7695,6 +7698,8 @@ static int vmx_smi_allowed(struct kvm_vcpu 
+> *vcpu, bool for_injection)
+>
+>  static int vmx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+>  {
+> +    struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
+> +    struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+>      struct vcpu_vmx *vmx = to_vmx(vcpu);
+>
+>      vmx->nested.smm.guest_mode = is_guest_mode(vcpu);
+> @@ -7704,12 +7709,26 @@ static int vmx_enter_smm(struct kvm_vcpu 
+> *vcpu, char *smstate)
+>      vmx->nested.smm.vmxon = vmx->nested.vmxon;
+>      vmx->nested.vmxon = false;
+>      vmx_clear_hlt(vcpu);
+> +
+> +    if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
+> +        test_bit(INTEL_PMC_IDX_FIXED_VLBR, pmu->pmc_in_use) &&
+> +        lbr_desc->event && guest_cpuid_has(vcpu, X86_FEATURE_LM)) {
+> +        u64 ctl = vmcs_read64(GUEST_IA32_LBR_CTL);
+> +
+> +        put_smstate(u64, smstate, 0x7f10, ctl);
+> +        vmcs_write64(GUEST_IA32_LBR_CTL, ctl & ~ARCH_LBR_CTL_LBREN);
+> +        vmx->lbr_in_smm = true;
+> +    }
+> +
+>      return 0;
+>  }
+>
+>  static int vmx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
+>  {
+> +    struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
+> +    struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+>      struct vcpu_vmx *vmx = to_vmx(vcpu);
+> +
+>      int ret;
+>
+>      if (vmx->nested.smm.vmxon) {
+> @@ -7725,6 +7744,16 @@ static int vmx_leave_smm(struct kvm_vcpu *vcpu, 
+> const char *smstate)
+>          vmx->nested.nested_run_pending = 1;
+>          vmx->nested.smm.guest_mode = false;
+>      }
+> +
+> +    if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
+> +        test_bit(INTEL_PMC_IDX_FIXED_VLBR, pmu->pmc_in_use) &&
+> +        lbr_desc->event && guest_cpuid_has(vcpu, X86_FEATURE_LM)) {
+> +        u64 ctl = GET_SMSTATE(u64, smstate, 0x7f10);
+> +
+> +        vmcs_write64(GUEST_IA32_LBR_CTL, ctl | ARCH_LBR_CTL_LBREN);
+> +        vmx->lbr_in_smm = false;
+> +    }
+> +
+>      return 0;
+>  }
+>
+> diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+> index b98c7e96697a..a227fe8bf288 100644
+> --- a/arch/x86/kvm/vmx/vmx.h
+> +++ b/arch/x86/kvm/vmx/vmx.h
+> @@ -351,6 +351,7 @@ struct vcpu_vmx {
+>
+>      struct pt_desc pt_desc;
+>      struct lbr_desc lbr_desc;
+> +    bool lbr_in_smm;
+>
+>      /* Save desired MSR intercept (read: pass-through) state */
+>  #define MAX_POSSIBLE_PASSTHROUGH_MSRS    15
