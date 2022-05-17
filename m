@@ -2,125 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4B1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F4EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348020AbiEQNgC (ORCPT
+        id S1348142AbiEQNgM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
+        Tue, 17 May 2022 09:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347907AbiEQNf2 (ORCPT
+        with ESMTP id S1347913AbiEQNfo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:35:28 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9AA4CD5F;
-        Tue, 17 May 2022 06:35:26 -0700 (PDT)
-Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2cY844NkzgYsy;
-        Tue, 17 May 2022 21:34:36 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 21:35:24 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
- 2022 21:35:23 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <tj@kernel.org>, <axboe@kernel.dk>, <ming.lei@redhat.com>
-CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next] blk-throttle: delay the setting of 'BIO_THROTTLED' to when throttle is done
-Date:   Tue, 17 May 2022 21:49:09 +0800
-Message-ID: <20220517134909.2910251-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 17 May 2022 09:35:44 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA777B1DE
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:35:39 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id r1so32441151ybo.7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fOF0mLHDO2JH2bQ/6nv6jUbZKAhgwoxMZS2LA7xTw8w=;
+        b=tUErUVmrc1o90SfSkKV+/w8V5J/wOadMHXCnTV+v1hGfUBiewMMlCCQ9R922MxXUFJ
+         CXL6o5kEYdeGXEZ9XUayHFw2Bx7CTXrNZEYqOR4t5UOJquSkPSk2l14FKzcrDDMN/Ki9
+         HxGEuhk227eucaLiw5I/kHK/pU2boYm3aKVx0Vb/d+pCY+m7nnLGUGp82RpL1ohf/6zT
+         wfcmlWPvfgs+skk/gSyVPvtCbMZ0carMJvFSqYO9OtBh5E8lrDwDRCORpL63t0RNyFJN
+         trV3RStYhYzRClC0rEev6roWRm/S3wq0fjSwsVvdeALYThwPJxXCf9mubOb/D7ozxHOT
+         0ExA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fOF0mLHDO2JH2bQ/6nv6jUbZKAhgwoxMZS2LA7xTw8w=;
+        b=vnszFvM1/xU++R9du3+MMnqgExR7g7p/bDbM1QOcpvkV4Rij0XTj4cc3noXcW2aCuK
+         UVExNMw4EatWS7NZkEJyszbuLNo4gPIoOIOUACpVfWd6Zfg4sgItb9m0JQ/wNOp8YAMw
+         rJ8HiZRoy6dhkatBcEo1opJ8OmmYh/ZmgWO4lL4c0hC5q0gLFYEZ0hAcnucMclGDxb+6
+         j00tBYI2nwXiA+zo5gkW3Iji8/Zhc9oKG4xCARuotTk0I0OsMR/i5e8BSdRzqzWY1BhB
+         g2WPlCAZanIDISZI3VdCmwQcWFMf+/irkHzffxZUJ3tPHcWwS+CiM4Rur+w2JcmSnEFd
+         7R7Q==
+X-Gm-Message-State: AOAM530p8vshB6UM0xg0b+x6NmNr3ITWSgpzVe6ZE5VOkdcALMr5oQDR
+        TW4Oy9aTd5j007PuU8syMfG/TP4yMehc1vysqD5XJw==
+X-Google-Smtp-Source: ABdhPJztRuQtvVBTLQg6edpSDF+qMvzQOjoWKt4vt+4eTANGq9hhZnx+sdyWM0csT1/k4MO2PGQxYV2ou6bhA2HvmKU=
+X-Received: by 2002:a25:804e:0:b0:64d:eafa:450e with SMTP id
+ a14-20020a25804e000000b0064deafa450emr5364927ybn.128.1652794538659; Tue, 17
+ May 2022 06:35:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+References: <20220516213639.123296914@linuxfoundation.org>
+In-Reply-To: <20220516213639.123296914@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 17 May 2022 19:05:27 +0530
+Message-ID: <CA+G9fYtupv8KgDhatu1u8HVtMniURxT6pi-R2MpU0dgG75KHUA@mail.gmail.com>
+Subject: Re: [PATCH 5.10 00/68] 5.10.117-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 9f5ede3c01f9 ("block: throttle split bio in case of iops limit")
-introduce a new problem, for example:
+On Tue, 17 May 2022 at 03:08, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.10.117 release.
+> There are 68 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 18 May 2022 21:35:34 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.10.117-rc2.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.10.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-[root@localhost ~]# echo "8:0 1024" > /sys/fs/cgroup/blkio/blkio.throttle.write_bps_device
-[root@localhost ~]# echo $$ > /sys/fs/cgroup/blkio/cgroup.procs
-[root@localhost ~]# dd if=/dev/zero of=/dev/sda bs=10k count=1 oflag=direct &
-[1] 620
-[root@localhost ~]# dd if=/dev/zero of=/dev/sda bs=10k count=1 oflag=direct &
-[2] 626
-[root@localhost ~]# 1+0 records in
-1+0 records out
-10240 bytes (10 kB, 10 KiB) copied, 10.0038 s, 1.0 kB/s1+0 records in
-1+0 records out
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-10240 bytes (10 kB, 10 KiB) copied, 9.23076 s, 1.1 kB/s
--> the second bio is issued after 10s instead of 20s.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-This is because if some bios are already queued, current bio is queued
-directly and the flag 'BIO_THROTTLED' is set. And later, when former
-bios are dispatched, this bio will be dispatched without waiting at all,
-this is due to tg_with_in_bps_limit() will return 0 if the flag is set.
+## Build
+* kernel: 5.10.117-rc2
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.10.y
+* git commit: 17429b76ed5416aac3996975e8e49e0b1f79ed27
+* git describe: v5.10.116-69-g17429b76ed54
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10=
+.116-69-g17429b76ed54
 
-Instead of setting the flag when bio starts throttle, delay to when
-throttle is done to fix the problem.
+## Test Regressions (compared to v5.10.116-65-g11c5de3d33a9)
+No test regressions found.
 
-Fixes: 9f5ede3c01f9 ("block: throttle split bio in case of iops limit")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- block/blk-throttle.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+## Metric Regressions (compared to v5.10.116-65-g11c5de3d33a9)
+No metric regressions found.
 
-diff --git a/block/blk-throttle.c b/block/blk-throttle.c
-index 447e1b8722f7..f952f2d942ff 100644
---- a/block/blk-throttle.c
-+++ b/block/blk-throttle.c
-@@ -811,7 +811,7 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
- 	unsigned int bio_size = throtl_bio_data_size(bio);
- 
- 	/* no need to throttle if this bio's bytes have been accounted */
--	if (bps_limit == U64_MAX || bio_flagged(bio, BIO_THROTTLED)) {
-+	if (bps_limit == U64_MAX) {
- 		if (wait)
- 			*wait = 0;
- 		return true;
-@@ -1226,8 +1226,10 @@ static void blk_throtl_dispatch_work_fn(struct work_struct *work)
- 
- 	spin_lock_irq(&q->queue_lock);
- 	for (rw = READ; rw <= WRITE; rw++)
--		while ((bio = throtl_pop_queued(&td_sq->queued[rw], NULL)))
-+		while ((bio = throtl_pop_queued(&td_sq->queued[rw], NULL))) {
-+			bio_set_flag(bio, BIO_THROTTLED);
- 			bio_list_add(&bio_list_on_stack, bio);
-+		}
- 	spin_unlock_irq(&q->queue_lock);
- 
- 	if (!bio_list_empty(&bio_list_on_stack)) {
-@@ -2134,7 +2136,8 @@ bool __blk_throtl_bio(struct bio *bio)
- 			}
- 			break;
- 		}
--
-+		/* this bio will be issued directly */
-+		bio_set_flag(bio, BIO_THROTTLED);
- 		/* within limits, let's charge and dispatch directly */
- 		throtl_charge_bio(tg, bio);
- 
-@@ -2190,7 +2193,6 @@ bool __blk_throtl_bio(struct bio *bio)
- 
- out_unlock:
- 	spin_unlock_irq(&q->queue_lock);
--	bio_set_flag(bio, BIO_THROTTLED);
- 
- #ifdef CONFIG_BLK_DEV_THROTTLING_LOW
- 	if (throttled || !td->track_bio_latency)
--- 
-2.31.1
+## Test Fixes (compared to v5.10.116-65-g11c5de3d33a9)
+No test fixes found.
 
+## Metric Fixes (compared to v5.10.116-65-g11c5de3d33a9)
+No metric fixes found.
+
+## Test result summary
+total: 93799, pass: 79054, fail: 849, skip: 12960, xfail: 936
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 41 total, 41 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 40 total, 40 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 51 total, 51 passed, 0 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
