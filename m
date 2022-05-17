@@ -2,321 +2,862 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E408C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:45:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E281BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:45:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245448AbiEQJp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
+        id S245091AbiEQJpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245391AbiEQJoh (ORCPT
+        with ESMTP id S245389AbiEQJoh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 17 May 2022 05:44:37 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED0447AF5
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:44:17 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id j4so30297083lfh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:44:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :content-language:reply-to:content-transfer-encoding;
-        bh=4Y7GTp06m87sjrCjAMpmQ5sQb3h3R2MyluXYoWhziFQ=;
-        b=MghXAnMT6KgtejKHKI+m5S8SyqmUYagS+dMS6d3Siyt9TDQsrCRUjWc6Af1jh3cJbV
-         Tqh+DfBGiOkHXNOEJMxbR7HlMjwq+wlzQD8Tnm6peub57oQqy3FrQM0iz2qatq17+g+G
-         vW64ljpV+gwxahaKaIZQlLdLl1wvofEtn20vw4bQDgnqbyetV3Ry6IsomfwJmeSIscUg
-         pV2pqY0Nzgs/8/xNTdyZtztvcr7anhSOTIrBB8HqZu/AZrudcrUXsNhCaJ8sgvtLRDrc
-         zJYjHz/fXOkFcwwbWB5v3Q5F8Pc88geDcDWRqusZeZ38rnDv5PD+1L+sa1IPyotMGU8n
-         tusA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:content-language:reply-to:content-transfer-encoding;
-        bh=4Y7GTp06m87sjrCjAMpmQ5sQb3h3R2MyluXYoWhziFQ=;
-        b=5grYqm3fIJu7cvRA/swqlKc8Zh/4gpEgzYd6D+YjjBOqno85dPdhhLtTcyGdQOia+5
-         wAMkzz8WMaa1n8opw7g0WHkCeCJDGdb4M4Jo+mirczlN3tVuN+dKbBWYN72ZMO1H/Xnj
-         XzD76jbBPcDh5lsh/nDzwJ/PXEvxDRnHb0rtF3FwK1n/E6ac/OkXzJXwqJkcjO9wBYdw
-         A417RSiOnNmXB7Pf5JkPi9g8K+N1njKS0tzzmaiR4KIX1KLGXONi/TKSiuFm+KmoImHo
-         8FZSJ+pwLzq0+tCoY1FCnZGP5QGqvm5L8YDJh18JlZgUQl/V/Sli9mKyft3LCWh3wLKF
-         AFsA==
-X-Gm-Message-State: AOAM530fBz/bOtI0UEeVAhdNlCmCazOuv7U9okLWVhS5RgIXoHWt5Piv
-        WIoZINuWyVrxo6a+QmX3yZZYgQ==
-X-Google-Smtp-Source: ABdhPJzcUizreDjMj6lesjstMRBHyYVo4l8fnzb8tHWmpwpORw+SWixzfqsvuUJJjw6CTjr+uQJjjw==
-X-Received: by 2002:a05:6512:2350:b0:472:6182:955c with SMTP id p16-20020a056512235000b004726182955cmr16059189lfu.214.1652780656167;
-        Tue, 17 May 2022 02:44:16 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.177])
-        by smtp.gmail.com with ESMTPSA id y16-20020ac24e70000000b0047255d211aasm1536573lfs.217.2022.05.17.02.44.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 02:44:15 -0700 (PDT)
-Message-ID: <8ef9de6a-7497-07f7-852c-befcc3843771@openvz.org>
-Date:   Tue, 17 May 2022 12:44:14 +0300
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBBF47AF4;
+        Tue, 17 May 2022 02:44:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652780659; x=1684316659;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=i3pmVYxuFCqM//0FM7vpsxNQ+bOyMyIYHgjWJkMbI/c=;
+  b=GcMEhNzKxJ7LgdaXIfVyBr04BRXeJPjFMHoMYWa/E6isLcE+BiQAH3aO
+   jHd/gqriY3qAhX2O9LRmc4mT2FezhrHDTHdBZ02AB44fAZZCpu68nuWtk
+   TdLan30mKbzLL03LOkuLbf61b69mRTY+oANml8wWwWZ41zuLMgs7OKF8J
+   ooCbLf8HSVQ+4dB8z5Zkr50Ok4qVHQH9MzoXBOmZJjD0K7+XvU6NUOcpV
+   AAe+8oSV8GDs/J9XV1AIT/cTp5AYpaRJQRtDm6lsKUIk8rDwZ46UHIjDu
+   owglceJLrOSyKDcttg8yAIGlOEIjSmKw6tHVif7UPKrPlWpv0mAY6zghL
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="159383578"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 02:44:17 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 17 May 2022 02:44:16 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 17 May 2022 02:44:10 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Russell King <linux@armlinux.org.uk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Marek Vasut <marex@denx.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [Patch net-next 2/9] net: dsa: microchip: move ksz_chip_data to ksz_common
+Date:   Tue, 17 May 2022 15:13:26 +0530
+Message-ID: <20220517094333.27225-3-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220517094333.27225-1-arun.ramadoss@microchip.com>
+References: <20220517094333.27225-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH v2] tracing: add ACCOUNT flag for allocations from marked slab
- caches
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Matthew Wilcox <willy@infradead.org>
-Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Michal Hocko <mhocko@suse.com>
-Content-Language: en-US
-Reply-To: YoMccU66auLAPEHa@casper.infradead.org
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dSlab caches marked with SLAB_ACCOUNT force accounting for every
-allocation from this cache even if __GFP_ACCOUNT flag is not passed.
-Unfortunately, at the moment this flag is not visible in ftrace output,
-and this makes it difficult to analyze the accounted allocations.
+This patch moves the ksz_chip_data in ksz8795 and ksz9477 to ksz_common.
+At present, the dev->chip_id is iterated with the ksz_chip_data and then
+copy its value to the ksz_dev structure. These values are declared as
+constant.
+Instead of copying the values and referencing it, this patch update the
+dev->info to the ksz_chip_data based on the chip_id in the init
+function. And also update the ksz_chip_data values for the LAN937x based
+switches.
 
-This patch adds the __GFP_ACCOUNT flag for allocations from slab caches
-marked with SLAB_ACCOUNT to the ftrace output
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
-v2:
- 1) handle kmem_cache_alloc_node() too, thanks to Shakeel
- 2) rework kmem_cache_alloc* tracepoints to use cachep instead
-    of current cachep->*size parameters. Now kmalloc[_node] and
-    kmem_cache_alloc[_node] tracepoints do not use common template
+ drivers/net/dsa/microchip/ksz8795.c    | 114 ++-------------
+ drivers/net/dsa/microchip/ksz9477.c    | 108 +++-----------
+ drivers/net/dsa/microchip/ksz_common.c | 190 +++++++++++++++++++++++--
+ drivers/net/dsa/microchip/ksz_common.h |  53 ++++++-
+ 4 files changed, 259 insertions(+), 206 deletions(-)
 
-NB: kmem_cache_alloc_node tracepoint in SLOB cannot be switched to cachep,
-    therefore it was replaced by kmalloc_node tracepoint.
----
-VvS: is this acceptable? Maybe I should split this patch?
-
-Signed-off-by: Vasily Averin <vvs@openvz.org>
----
- include/trace/events/kmem.h | 82 +++++++++++++++++++++++++++----------
- mm/slab.c                   |  7 +---
- mm/slab_common.c            |  7 ++--
- mm/slob.c                   | 10 ++---
- mm/slub.c                   |  6 +--
- 5 files changed, 71 insertions(+), 41 deletions(-)
-
-diff --git a/include/trace/events/kmem.h b/include/trace/events/kmem.h
-index 71c141804222..3b4f96e4a607 100644
---- a/include/trace/events/kmem.h
-+++ b/include/trace/events/kmem.h
-@@ -9,7 +9,7 @@
- #include <linux/tracepoint.h>
- #include <trace/events/mmflags.h>
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index 83bcabf2dc54..b6032b65afc2 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -1036,13 +1036,13 @@ static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 	int first, index, cnt;
+ 	struct ksz_port *p;
  
--DECLARE_EVENT_CLASS(kmem_alloc,
-+TRACE_EVENT(kmalloc,
- 
- 	TP_PROTO(unsigned long call_site,
- 		 const void *ptr,
-@@ -43,23 +43,41 @@ DECLARE_EVENT_CLASS(kmem_alloc,
- 		show_gfp_flags(__entry->gfp_flags))
- );
- 
--DEFINE_EVENT(kmem_alloc, kmalloc,
-+TRACE_EVENT(kmem_cache_alloc,
- 
--	TP_PROTO(unsigned long call_site, const void *ptr,
--		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
-+	TP_PROTO(unsigned long call_site,
-+		 const void *ptr,
-+		 struct kmem_cache *s,
-+		 gfp_t gfp_flags),
- 
--	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
--);
-+	TP_ARGS(call_site, ptr, s, gfp_flags),
- 
--DEFINE_EVENT(kmem_alloc, kmem_cache_alloc,
-+	TP_STRUCT__entry(
-+		__field(	unsigned long,	call_site	)
-+		__field(	const void *,	ptr		)
-+		__field(	size_t,		bytes_req	)
-+		__field(	size_t,		bytes_alloc	)
-+		__field(	unsigned long,	gfp_flags	)
-+	),
- 
--	TP_PROTO(unsigned long call_site, const void *ptr,
--		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
-+	TP_fast_assign(
-+		__entry->call_site	= call_site;
-+		__entry->ptr		= ptr;
-+		__entry->bytes_req	= s->object_size;
-+		__entry->bytes_alloc	= s->size;
-+		__entry->gfp_flags	= (__force unsigned long)gfp_flags |
-+				(s->flags & SLAB_ACCOUNT ? __GFP_ACCOUNT : 0);
-+	),
- 
--	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
-+	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s",
-+		(void *)__entry->call_site,
-+		__entry->ptr,
-+		__entry->bytes_req,
-+		__entry->bytes_alloc,
-+		show_gfp_flags(__entry->gfp_flags))
- );
- 
--DECLARE_EVENT_CLASS(kmem_alloc_node,
-+TRACE_EVENT(kmalloc_node,
- 
- 	TP_PROTO(unsigned long call_site,
- 		 const void *ptr,
-@@ -97,22 +115,42 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
- 		__entry->node)
- );
- 
--DEFINE_EVENT(kmem_alloc_node, kmalloc_node,
-+TRACE_EVENT(kmem_cache_alloc_node,
- 
--	TP_PROTO(unsigned long call_site, const void *ptr,
--		 size_t bytes_req, size_t bytes_alloc,
--		 gfp_t gfp_flags, int node),
-+	TP_PROTO(unsigned long call_site,
-+		 const void *ptr,
-+		 struct kmem_cache *s,
-+		 gfp_t gfp_flags,
-+		 int node),
- 
--	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node)
--);
-+	TP_ARGS(call_site, ptr, s, gfp_flags, node),
- 
--DEFINE_EVENT(kmem_alloc_node, kmem_cache_alloc_node,
-+	TP_STRUCT__entry(
-+		__field(	unsigned long,	call_site	)
-+		__field(	const void *,	ptr		)
-+		__field(	size_t,		bytes_req	)
-+		__field(	size_t,		bytes_alloc	)
-+		__field(	unsigned long,	gfp_flags	)
-+		__field(	int,		node		)
-+	),
- 
--	TP_PROTO(unsigned long call_site, const void *ptr,
--		 size_t bytes_req, size_t bytes_alloc,
--		 gfp_t gfp_flags, int node),
-+	TP_fast_assign(
-+		__entry->call_site	= call_site;
-+		__entry->ptr		= ptr;
-+		__entry->bytes_req	= s->object_size;
-+		__entry->bytes_alloc	= s->size;
-+		__entry->gfp_flags	= (__force unsigned long)gfp_flags |
-+				(s->flags & SLAB_ACCOUNT ? __GFP_ACCOUNT : 0);
-+		__entry->node		= node;
-+	),
- 
--	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node)
-+	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s node=%d",
-+		(void *)__entry->call_site,
-+		__entry->ptr,
-+		__entry->bytes_req,
-+		__entry->bytes_alloc,
-+		show_gfp_flags(__entry->gfp_flags),
-+		__entry->node)
- );
- 
- TRACE_EVENT(kfree,
-diff --git a/mm/slab.c b/mm/slab.c
-index 0edb474edef1..935b1c90d7f0 100644
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -3492,8 +3492,7 @@ void *__kmem_cache_alloc_lru(struct kmem_cache *cachep, struct list_lru *lru,
- {
- 	void *ret = slab_alloc(cachep, lru, flags, cachep->object_size, _RET_IP_);
- 
--	trace_kmem_cache_alloc(_RET_IP_, ret,
--			       cachep->object_size, cachep->size, flags);
-+	trace_kmem_cache_alloc(_RET_IP_, ret, cachep, flags);
- 
- 	return ret;
- }
-@@ -3606,9 +3605,7 @@ void *kmem_cache_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid)
- {
- 	void *ret = slab_alloc_node(cachep, flags, nodeid, cachep->object_size, _RET_IP_);
- 
--	trace_kmem_cache_alloc_node(_RET_IP_, ret,
--				    cachep->object_size, cachep->size,
--				    flags, nodeid);
-+	trace_kmem_cache_alloc_node(_RET_IP_, ret, cachep, flags, nodeid);
- 
- 	return ret;
- }
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 2b3206a2c3b5..12299cf450fe 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -25,13 +25,12 @@
- #include <asm/page.h>
- #include <linux/memcontrol.h>
- 
--#define CREATE_TRACE_POINTS
--#include <trace/events/kmem.h>
--
- #include "internal.h"
--
- #include "slab.h"
- 
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/kmem.h>
-+
- enum slab_state slab_state;
- LIST_HEAD(slab_caches);
- DEFINE_MUTEX(slab_mutex);
-diff --git a/mm/slob.c b/mm/slob.c
-index 40ea6e2d4ccd..69875419769c 100644
---- a/mm/slob.c
-+++ b/mm/slob.c
-@@ -610,14 +610,12 @@ static void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
- 
- 	if (c->size < PAGE_SIZE) {
- 		b = slob_alloc(c->size, flags, c->align, node, 0);
--		trace_kmem_cache_alloc_node(_RET_IP_, b, c->object_size,
--					    SLOB_UNITS(c->size) * SLOB_UNIT,
--					    flags, node);
-+		trace_kmalloc_node(_RET_IP_, b, c->object_size,
-+				   SLOB_UNITS(c->size) * SLOB_UNIT, flags, node);
+-	if ((uint)port < dev->port_cnt) {
++	if ((uint)port < dev->info->port_cnt) {
+ 		first = port;
+ 		cnt = port + 1;
  	} else {
- 		b = slob_new_pages(flags, get_order(c->size), node);
--		trace_kmem_cache_alloc_node(_RET_IP_, b, c->object_size,
--					    PAGE_SIZE << get_order(c->size),
--					    flags, node);
-+		trace_kmalloc_node(_RET_IP_, b, c->object_size,
-+				   PAGE_SIZE << get_order(c->size), flags, node);
+ 		/* Flush all ports. */
+ 		first = 0;
+-		cnt = dev->port_cnt;
++		cnt = dev->info->port_cnt;
+ 	}
+ 	for (index = first; index < cnt; index++) {
+ 		p = &dev->ports[index];
+@@ -1118,7 +1118,7 @@ static int ksz8_port_vlan_add(struct dsa_switch *ds, int port,
+ 		 * Remove Tag flag to be changed, unless there are no
+ 		 * other VLANs currently configured.
+ 		 */
+-		for (vid = 1; vid < dev->num_vlans; ++vid) {
++		for (vid = 1; vid < dev->info->num_vlans; ++vid) {
+ 			/* Skip the VID we are going to add or reconfigure */
+ 			if (vid == vlan->vid)
+ 				continue;
+@@ -1389,7 +1389,7 @@ static int ksz8_handle_global_errata(struct dsa_switch *ds)
+ 	 *   KSZ879x/KSZ877x/KSZ876x and some EEE link partners may result in
+ 	 *   the link dropping.
+ 	 */
+-	if (dev->ksz87xx_eee_link_erratum)
++	if (dev->info->ksz87xx_eee_link_erratum)
+ 		ret = ksz8_ind_write8(dev, TABLE_EEE, REG_IND_EEE_GLOB2_HI, 0);
+ 
+ 	return ret;
+@@ -1402,7 +1402,7 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 	int i, ret = 0;
+ 
+ 	dev->vlan_cache = devm_kcalloc(dev->dev, sizeof(struct vlan_table),
+-				       dev->num_vlans, GFP_KERNEL);
++				       dev->info->num_vlans, GFP_KERNEL);
+ 	if (!dev->vlan_cache)
+ 		return -ENOMEM;
+ 
+@@ -1446,7 +1446,7 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 			   (BROADCAST_STORM_VALUE *
+ 			   BROADCAST_STORM_PROT_RATE) / 100);
+ 
+-	for (i = 0; i < (dev->num_vlans / 4); i++)
++	for (i = 0; i < (dev->info->num_vlans / 4); i++)
+ 		ksz8_r_vlan_entries(dev, i);
+ 
+ 	/* Setup STP address for STP operation. */
+@@ -1571,74 +1571,6 @@ static int ksz8_switch_detect(struct ksz_device *dev)
+ 	return 0;
+ }
+ 
+-struct ksz_chip_data {
+-	u16 chip_id;
+-	const char *dev_name;
+-	int num_vlans;
+-	int num_alus;
+-	int num_statics;
+-	int cpu_ports;
+-	int port_cnt;
+-	bool ksz87xx_eee_link_erratum;
+-};
+-
+-static const struct ksz_chip_data ksz8_switch_chips[] = {
+-	{
+-		.chip_id = 0x8795,
+-		.dev_name = "KSZ8795",
+-		.num_vlans = 4096,
+-		.num_alus = 0,
+-		.num_statics = 8,
+-		.cpu_ports = 0x10,	/* can be configured as cpu port */
+-		.port_cnt = 5,		/* total cpu and user ports */
+-		.ksz87xx_eee_link_erratum = true,
+-	},
+-	{
+-		/*
+-		 * WARNING
+-		 * =======
+-		 * KSZ8794 is similar to KSZ8795, except the port map
+-		 * contains a gap between external and CPU ports, the
+-		 * port map is NOT continuous. The per-port register
+-		 * map is shifted accordingly too, i.e. registers at
+-		 * offset 0x40 are NOT used on KSZ8794 and they ARE
+-		 * used on KSZ8795 for external port 3.
+-		 *           external  cpu
+-		 * KSZ8794   0,1,2      4
+-		 * KSZ8795   0,1,2,3    4
+-		 * KSZ8765   0,1,2,3    4
+-		 * port_cnt is configured as 5, even though it is 4
+-		 */
+-		.chip_id = 0x8794,
+-		.dev_name = "KSZ8794",
+-		.num_vlans = 4096,
+-		.num_alus = 0,
+-		.num_statics = 8,
+-		.cpu_ports = 0x10,	/* can be configured as cpu port */
+-		.port_cnt = 5,		/* total cpu and user ports */
+-		.ksz87xx_eee_link_erratum = true,
+-	},
+-	{
+-		.chip_id = 0x8765,
+-		.dev_name = "KSZ8765",
+-		.num_vlans = 4096,
+-		.num_alus = 0,
+-		.num_statics = 8,
+-		.cpu_ports = 0x10,	/* can be configured as cpu port */
+-		.port_cnt = 5,		/* total cpu and user ports */
+-		.ksz87xx_eee_link_erratum = true,
+-	},
+-	{
+-		.chip_id = 0x8830,
+-		.dev_name = "KSZ8863/KSZ8873",
+-		.num_vlans = 16,
+-		.num_alus = 0,
+-		.num_statics = 8,
+-		.cpu_ports = 0x4,	/* can be configured as cpu port */
+-		.port_cnt = 3,
+-	},
+-};
+-
+ static int ksz8_switch_init(struct ksz_device *dev)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+@@ -1646,30 +1578,10 @@ static int ksz8_switch_init(struct ksz_device *dev)
+ 
+ 	dev->ds->ops = &ksz8_switch_ops;
+ 
+-	for (i = 0; i < ARRAY_SIZE(ksz8_switch_chips); i++) {
+-		const struct ksz_chip_data *chip = &ksz8_switch_chips[i];
+-
+-		if (dev->chip_id == chip->chip_id) {
+-			dev->name = chip->dev_name;
+-			dev->num_vlans = chip->num_vlans;
+-			dev->num_alus = chip->num_alus;
+-			dev->num_statics = chip->num_statics;
+-			dev->port_cnt = chip->port_cnt;
+-			dev->cpu_port = fls(chip->cpu_ports) - 1;
+-			dev->phy_port_cnt = dev->port_cnt - 1;
+-			dev->cpu_ports = chip->cpu_ports;
+-			dev->host_mask = chip->cpu_ports;
+-			dev->port_mask = (BIT(dev->phy_port_cnt) - 1) |
+-					 chip->cpu_ports;
+-			dev->ksz87xx_eee_link_erratum =
+-				chip->ksz87xx_eee_link_erratum;
+-			break;
+-		}
+-	}
+-
+-	/* no switch found */
+-	if (!dev->cpu_ports)
+-		return -ENODEV;
++	dev->cpu_port = fls(dev->info->cpu_ports) - 1;
++	dev->host_mask = dev->info->cpu_ports;
++	dev->phy_port_cnt = dev->info->port_cnt - 1;
++	dev->port_mask = (BIT(dev->phy_port_cnt) - 1) | dev->info->cpu_ports;
+ 
+ 	if (ksz_is_ksz88x3(dev)) {
+ 		ksz8->regs = ksz8863_regs;
+@@ -1688,11 +1600,11 @@ static int ksz8_switch_init(struct ksz_device *dev)
+ 	dev->reg_mib_cnt = MIB_COUNTER_NUM;
+ 
+ 	dev->ports = devm_kzalloc(dev->dev,
+-				  dev->port_cnt * sizeof(struct ksz_port),
++				  dev->info->port_cnt * sizeof(struct ksz_port),
+ 				  GFP_KERNEL);
+ 	if (!dev->ports)
+ 		return -ENOMEM;
+-	for (i = 0; i < dev->port_cnt; i++) {
++	for (i = 0; i < dev->info->port_cnt; i++) {
+ 		mutex_init(&dev->ports[i].mib.cnt_mutex);
+ 		dev->ports[i].mib.counters =
+ 			devm_kzalloc(dev->dev,
+@@ -1704,7 +1616,7 @@ static int ksz8_switch_init(struct ksz_device *dev)
  	}
  
- 	if (b && c->ctor) {
-diff --git a/mm/slub.c b/mm/slub.c
-index ed5c2c03a47a..fc6678269db0 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -3231,8 +3231,7 @@ void *__kmem_cache_alloc_lru(struct kmem_cache *s, struct list_lru *lru,
- {
- 	void *ret = slab_alloc(s, lru, gfpflags, _RET_IP_, s->object_size);
+ 	/* set the real number of ports */
+-	dev->ds->num_ports = dev->port_cnt;
++	dev->ds->num_ports = dev->info->port_cnt;
  
--	trace_kmem_cache_alloc(_RET_IP_, ret, s->object_size,
--				s->size, gfpflags);
-+	trace_kmem_cache_alloc(_RET_IP_, ret, s, gfpflags);
+ 	/* We rely on software untagging on the CPU port, so that we
+ 	 * can support both tagged and untagged VLANs
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 61dd0fa97748..c712a0011367 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -100,7 +100,7 @@ static int ksz9477_change_mtu(struct dsa_switch *ds, int port, int mtu)
+ 	/* Cache the per-port MTU setting */
+ 	dev->ports[port].max_frame = frame_size;
  
- 	return ret;
+-	for (i = 0; i < dev->port_cnt; i++)
++	for (i = 0; i < dev->info->port_cnt; i++)
+ 		max_frame = max(max_frame, dev->ports[i].max_frame);
+ 
+ 	return regmap_update_bits(dev->regmap[1], REG_SW_MTU__2,
+@@ -434,7 +434,7 @@ static void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 			   SW_FLUSH_OPTION_M << SW_FLUSH_OPTION_S,
+ 			   SW_FLUSH_OPTION_DYN_MAC << SW_FLUSH_OPTION_S);
+ 
+-	if (port < dev->port_cnt) {
++	if (port < dev->info->port_cnt) {
+ 		/* flush individual port */
+ 		ksz_pread8(dev, port, P_STP_CTRL, &data);
+ 		if (!(data & PORT_LEARN_DISABLE))
+@@ -756,7 +756,7 @@ static int ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
+ 
+ 	mutex_lock(&dev->alu_mutex);
+ 
+-	for (index = 0; index < dev->num_statics; index++) {
++	for (index = 0; index < dev->info->num_statics; index++) {
+ 		/* find empty slot first */
+ 		data = (index << ALU_STAT_INDEX_S) |
+ 			ALU_STAT_READ | ALU_STAT_START;
+@@ -787,7 +787,7 @@ static int ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
+ 	}
+ 
+ 	/* no available entry */
+-	if (index == dev->num_statics) {
++	if (index == dev->info->num_statics) {
+ 		err = -ENOSPC;
+ 		goto exit;
+ 	}
+@@ -832,7 +832,7 @@ static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
+ 
+ 	mutex_lock(&dev->alu_mutex);
+ 
+-	for (index = 0; index < dev->num_statics; index++) {
++	for (index = 0; index < dev->info->num_statics; index++) {
+ 		/* find empty slot first */
+ 		data = (index << ALU_STAT_INDEX_S) |
+ 			ALU_STAT_READ | ALU_STAT_START;
+@@ -861,7 +861,7 @@ static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
+ 	}
+ 
+ 	/* no available entry */
+-	if (index == dev->num_statics)
++	if (index == dev->info->num_statics)
+ 		goto exit;
+ 
+ 	/* clear port */
+@@ -903,7 +903,7 @@ static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
+ 	 * Check if any of the port is already set for sniffing
+ 	 * If yes, instruct the user to remove the previous entry & exit
+ 	 */
+-	for (p = 0; p < dev->port_cnt; p++) {
++	for (p = 0; p < dev->info->port_cnt; p++) {
+ 		/* Skip the current sniffing port */
+ 		if (p == mirror->to_local_port)
+ 			continue;
+@@ -946,7 +946,7 @@ static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
+ 
+ 
+ 	/* Check if any of the port is still referring to sniffer port */
+-	for (p = 0; p < dev->port_cnt; p++) {
++	for (p = 0; p < dev->info->port_cnt; p++) {
+ 		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
+ 
+ 		if ((data & (PORT_MIRROR_RX | PORT_MIRROR_TX))) {
+@@ -1194,7 +1194,7 @@ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ 			     PORT_FORCE_TX_FLOW_CTRL | PORT_FORCE_RX_FLOW_CTRL,
+ 			     false);
+ 
+-		if (dev->phy_errata_9477)
++		if (dev->info->phy_errata_9477)
+ 			ksz9477_phy_errata_setup(dev, port);
+ 	} else {
+ 		/* force flow control */
+@@ -1259,8 +1259,9 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 	struct ksz_port *p;
+ 	int i;
+ 
+-	for (i = 0; i < dev->port_cnt; i++) {
+-		if (dsa_is_cpu_port(ds, i) && (dev->cpu_ports & (1 << i))) {
++	for (i = 0; i < dev->info->port_cnt; i++) {
++		if (dsa_is_cpu_port(ds, i) &&
++		    (dev->info->cpu_ports & (1 << i))) {
+ 			phy_interface_t interface;
+ 			const char *prev_msg;
+ 			const char *prev_mode;
+@@ -1304,7 +1305,7 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 		}
+ 	}
+ 
+-	for (i = 0; i < dev->port_cnt; i++) {
++	for (i = 0; i < dev->info->port_cnt; i++) {
+ 		if (i == dev->cpu_port)
+ 			continue;
+ 		p = &dev->ports[i];
+@@ -1328,7 +1329,7 @@ static int ksz9477_setup(struct dsa_switch *ds)
+ 	int ret = 0;
+ 
+ 	dev->vlan_cache = devm_kcalloc(dev->dev, sizeof(struct vlan_table),
+-				       dev->num_vlans, GFP_KERNEL);
++				       dev->info->num_vlans, GFP_KERNEL);
+ 	if (!dev->vlan_cache)
+ 		return -ENOMEM;
+ 
+@@ -1470,96 +1471,23 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
+ 	return 0;
  }
-@@ -3266,8 +3265,7 @@ void *kmem_cache_alloc_node(struct kmem_cache *s, gfp_t gfpflags, int node)
+ 
+-struct ksz_chip_data {
+-	u32 chip_id;
+-	const char *dev_name;
+-	int num_vlans;
+-	int num_alus;
+-	int num_statics;
+-	int cpu_ports;
+-	int port_cnt;
+-	bool phy_errata_9477;
+-};
+-
+-static const struct ksz_chip_data ksz9477_switch_chips[] = {
+-	{
+-		.chip_id = 0x00947700,
+-		.dev_name = "KSZ9477",
+-		.num_vlans = 4096,
+-		.num_alus = 4096,
+-		.num_statics = 16,
+-		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+-		.port_cnt = 7,		/* total physical port count */
+-		.phy_errata_9477 = true,
+-	},
+-	{
+-		.chip_id = 0x00989700,
+-		.dev_name = "KSZ9897",
+-		.num_vlans = 4096,
+-		.num_alus = 4096,
+-		.num_statics = 16,
+-		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+-		.port_cnt = 7,		/* total physical port count */
+-		.phy_errata_9477 = true,
+-	},
+-	{
+-		.chip_id = 0x00989300,
+-		.dev_name = "KSZ9893",
+-		.num_vlans = 4096,
+-		.num_alus = 4096,
+-		.num_statics = 16,
+-		.cpu_ports = 0x07,	/* can be configured as cpu port */
+-		.port_cnt = 3,		/* total port count */
+-	},
+-	{
+-		.chip_id = 0x00956700,
+-		.dev_name = "KSZ9567",
+-		.num_vlans = 4096,
+-		.num_alus = 4096,
+-		.num_statics = 16,
+-		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+-		.port_cnt = 7,		/* total physical port count */
+-		.phy_errata_9477 = true,
+-	},
+-};
+-
+ static int ksz9477_switch_init(struct ksz_device *dev)
  {
- 	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, s->object_size);
+ 	int i;
  
--	trace_kmem_cache_alloc_node(_RET_IP_, ret,
--				    s->object_size, s->size, gfpflags, node);
-+	trace_kmem_cache_alloc_node(_RET_IP_, ret, s, gfpflags, node);
+ 	dev->ds->ops = &ksz9477_switch_ops;
  
- 	return ret;
+-	for (i = 0; i < ARRAY_SIZE(ksz9477_switch_chips); i++) {
+-		const struct ksz_chip_data *chip = &ksz9477_switch_chips[i];
+-
+-		if (dev->chip_id == chip->chip_id) {
+-			dev->name = chip->dev_name;
+-			dev->num_vlans = chip->num_vlans;
+-			dev->num_alus = chip->num_alus;
+-			dev->num_statics = chip->num_statics;
+-			dev->port_cnt = chip->port_cnt;
+-			dev->cpu_ports = chip->cpu_ports;
+-			dev->phy_errata_9477 = chip->phy_errata_9477;
+-
+-			break;
+-		}
+-	}
+-
+-	/* no switch found */
+-	if (!dev->port_cnt)
+-		return -ENODEV;
+-
+-	dev->port_mask = (1 << dev->port_cnt) - 1;
++	dev->port_mask = (1 << dev->info->port_cnt) - 1;
+ 
+ 	dev->reg_mib_cnt = SWITCH_COUNTER_NUM;
+ 	dev->mib_cnt = TOTAL_SWITCH_COUNTER_NUM;
+ 
+ 	dev->ports = devm_kzalloc(dev->dev,
+-				  dev->port_cnt * sizeof(struct ksz_port),
++				  dev->info->port_cnt * sizeof(struct ksz_port),
+ 				  GFP_KERNEL);
+ 	if (!dev->ports)
+ 		return -ENOMEM;
+-	for (i = 0; i < dev->port_cnt; i++) {
++	for (i = 0; i < dev->info->port_cnt; i++) {
+ 		spin_lock_init(&dev->ports[i].mib.stats64_lock);
+ 		mutex_init(&dev->ports[i].mib.cnt_mutex);
+ 		dev->ports[i].mib.counters =
+@@ -1572,7 +1500,7 @@ static int ksz9477_switch_init(struct ksz_device *dev)
+ 	}
+ 
+ 	/* set the real number of ports */
+-	dev->ds->num_ports = dev->port_cnt;
++	dev->ds->num_ports = dev->info->port_cnt;
+ 
+ 	return 0;
  }
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 10f127b09e58..ebb4753051d4 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -59,6 +59,172 @@ struct ksz_stats_raw {
+ 	u64 tx_discards;
+ };
+ 
++static const struct ksz_chip_data ksz_switch_chips[] = {
++	[KSZ8795] = {
++		.chip_id = KSZ8795_CHIP_ID,
++		.dev_name = "KSZ8795",
++		.num_vlans = 4096,
++		.num_alus = 0,
++		.num_statics = 8,
++		.cpu_ports = 0x10,	/* can be configured as cpu port */
++		.port_cnt = 5,		/* total cpu and user ports */
++		.ksz87xx_eee_link_erratum = true,
++	},
++
++	[KSZ8794] = {
++		/* WARNING
++		 * =======
++		 * KSZ8794 is similar to KSZ8795, except the port map
++		 * contains a gap between external and CPU ports, the
++		 * port map is NOT continuous. The per-port register
++		 * map is shifted accordingly too, i.e. registers at
++		 * offset 0x40 are NOT used on KSZ8794 and they ARE
++		 * used on KSZ8795 for external port 3.
++		 *           external  cpu
++		 * KSZ8794   0,1,2      4
++		 * KSZ8795   0,1,2,3    4
++		 * KSZ8765   0,1,2,3    4
++		 * port_cnt is configured as 5, even though it is 4
++		 */
++		.chip_id = KSZ8794_CHIP_ID,
++		.dev_name = "KSZ8794",
++		.num_vlans = 4096,
++		.num_alus = 0,
++		.num_statics = 8,
++		.cpu_ports = 0x10,	/* can be configured as cpu port */
++		.port_cnt = 5,		/* total cpu and user ports */
++		.ksz87xx_eee_link_erratum = true,
++	},
++
++	[KSZ8765] = {
++		.chip_id = KSZ8765_CHIP_ID,
++		.dev_name = "KSZ8765",
++		.num_vlans = 4096,
++		.num_alus = 0,
++		.num_statics = 8,
++		.cpu_ports = 0x10,	/* can be configured as cpu port */
++		.port_cnt = 5,		/* total cpu and user ports */
++		.ksz87xx_eee_link_erratum = true,
++	},
++
++	[KSZ8830] = {
++		.chip_id = KSZ8830_CHIP_ID,
++		.dev_name = "KSZ8863/KSZ8873",
++		.num_vlans = 16,
++		.num_alus = 0,
++		.num_statics = 8,
++		.cpu_ports = 0x4,	/* can be configured as cpu port */
++		.port_cnt = 3,
++	},
++
++	[KSZ9477] = {
++		.chip_id = KSZ9477_CHIP_ID,
++		.dev_name = "KSZ9477",
++		.num_vlans = 4096,
++		.num_alus = 4096,
++		.num_statics = 16,
++		.cpu_ports = 0x7F,	/* can be configured as cpu port */
++		.port_cnt = 7,		/* total physical port count */
++		.phy_errata_9477 = true,
++	},
++
++	[KSZ9897] = {
++		.chip_id = KSZ9897_CHIP_ID,
++		.dev_name = "KSZ9897",
++		.num_vlans = 4096,
++		.num_alus = 4096,
++		.num_statics = 16,
++		.cpu_ports = 0x7F,	/* can be configured as cpu port */
++		.port_cnt = 7,		/* total physical port count */
++		.phy_errata_9477 = true,
++	},
++
++	[KSZ9893] = {
++		.chip_id = KSZ9893_CHIP_ID,
++		.dev_name = "KSZ9893",
++		.num_vlans = 4096,
++		.num_alus = 4096,
++		.num_statics = 16,
++		.cpu_ports = 0x07,	/* can be configured as cpu port */
++		.port_cnt = 3,		/* total port count */
++	},
++
++	[KSZ9567] = {
++		.chip_id = KSZ9567_CHIP_ID,
++		.dev_name = "KSZ9567",
++		.num_vlans = 4096,
++		.num_alus = 4096,
++		.num_statics = 16,
++		.cpu_ports = 0x7F,	/* can be configured as cpu port */
++		.port_cnt = 7,		/* total physical port count */
++		.phy_errata_9477 = true,
++	},
++
++	[LAN9370] = {
++		.chip_id = LAN9370_CHIP_ID,
++		.dev_name = "LAN9370",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		.cpu_ports = 0x10,	/* can be configured as cpu port */
++		.port_cnt = 5,		/* total physical port count */
++	},
++
++	[LAN9371] = {
++		.chip_id = LAN9371_CHIP_ID,
++		.dev_name = "LAN9371",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		.cpu_ports = 0x30,	/* can be configured as cpu port */
++		.port_cnt = 6,		/* total physical port count */
++	},
++
++	[LAN9372] = {
++		.chip_id = LAN9372_CHIP_ID,
++		.dev_name = "LAN9372",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		.cpu_ports = 0x30,	/* can be configured as cpu port */
++		.port_cnt = 8,		/* total physical port count */
++	},
++
++	[LAN9373] = {
++		.chip_id = LAN9373_CHIP_ID,
++		.dev_name = "LAN9373",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		.cpu_ports = 0x38,	/* can be configured as cpu port */
++		.port_cnt = 5,		/* total physical port count */
++	},
++
++	[LAN9374] = {
++		.chip_id = LAN9374_CHIP_ID,
++		.dev_name = "LAN9374",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		.cpu_ports = 0x30,	/* can be configured as cpu port */
++		.port_cnt = 8,		/* total physical port count */
++	},
++};
++
++static const struct ksz_chip_data *ksz_lookup_info(unsigned int prod_num)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(ksz_switch_chips); i++) {
++		const struct ksz_chip_data *chip = &ksz_switch_chips[i];
++
++		if (chip->chip_id == prod_num)
++			return chip;
++	}
++
++	return NULL;
++}
++
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
+ {
+ 	struct rtnl_link_stats64 *stats;
+@@ -207,7 +373,7 @@ static void ksz_mib_read_work(struct work_struct *work)
+ 	struct ksz_port *p;
+ 	int i;
+ 
+-	for (i = 0; i < dev->port_cnt; i++) {
++	for (i = 0; i < dev->info->port_cnt; i++) {
+ 		if (dsa_is_unused_port(dev->ds, i))
+ 			continue;
+ 
+@@ -242,7 +408,7 @@ void ksz_init_mib_timer(struct ksz_device *dev)
+ 
+ 	INIT_DELAYED_WORK(&dev->mib_read, ksz_mib_read_work);
+ 
+-	for (i = 0; i < dev->port_cnt; i++)
++	for (i = 0; i < dev->info->port_cnt; i++)
+ 		dev->dev_ops->port_init_cnt(dev, i);
+ }
+ EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
+@@ -382,7 +548,7 @@ int ksz_port_mdb_add(struct dsa_switch *ds, int port,
+ 	int empty = 0;
+ 
+ 	alu.port_forward = 0;
+-	for (index = 0; index < dev->num_statics; index++) {
++	for (index = 0; index < dev->info->num_statics; index++) {
+ 		if (!dev->dev_ops->r_sta_mac_table(dev, index, &alu)) {
+ 			/* Found one already in static MAC table. */
+ 			if (!memcmp(alu.mac, mdb->addr, ETH_ALEN) &&
+@@ -395,11 +561,11 @@ int ksz_port_mdb_add(struct dsa_switch *ds, int port,
+ 	}
+ 
+ 	/* no available entry */
+-	if (index == dev->num_statics && !empty)
++	if (index == dev->info->num_statics && !empty)
+ 		return -ENOSPC;
+ 
+ 	/* add entry */
+-	if (index == dev->num_statics) {
++	if (index == dev->info->num_statics) {
+ 		index = empty - 1;
+ 		memset(&alu, 0, sizeof(alu));
+ 		memcpy(alu.mac, mdb->addr, ETH_ALEN);
+@@ -426,7 +592,7 @@ int ksz_port_mdb_del(struct dsa_switch *ds, int port,
+ 	struct alu_struct alu;
+ 	int index;
+ 
+-	for (index = 0; index < dev->num_statics; index++) {
++	for (index = 0; index < dev->info->num_statics; index++) {
+ 		if (!dev->dev_ops->r_sta_mac_table(dev, index, &alu)) {
+ 			/* Found one already in static MAC table. */
+ 			if (!memcmp(alu.mac, mdb->addr, ETH_ALEN) &&
+@@ -436,7 +602,7 @@ int ksz_port_mdb_del(struct dsa_switch *ds, int port,
+ 	}
+ 
+ 	/* no available entry */
+-	if (index == dev->num_statics)
++	if (index == dev->info->num_statics)
+ 		goto exit;
+ 
+ 	/* clear port */
+@@ -537,6 +703,7 @@ EXPORT_SYMBOL(ksz_switch_alloc);
+ int ksz_switch_register(struct ksz_device *dev,
+ 			const struct ksz_dev_ops *ops)
+ {
++	const struct ksz_chip_data *info;
+ 	struct device_node *port, *ports;
+ 	phy_interface_t interface;
+ 	unsigned int port_num;
+@@ -567,6 +734,13 @@ int ksz_switch_register(struct ksz_device *dev,
+ 	if (dev->dev_ops->detect(dev))
+ 		return -EINVAL;
+ 
++	info = ksz_lookup_info(dev->chip_id);
++	if (!info)
++		return -ENODEV;
++
++	/* Update the compatible info with the probed one */
++	dev->info = info;
++
+ 	ret = dev->dev_ops->init(dev);
+ 	if (ret)
+ 		return ret;
+@@ -574,7 +748,7 @@ int ksz_switch_register(struct ksz_device *dev,
+ 	/* Host port interface will be self detected, or specifically set in
+ 	 * device tree.
+ 	 */
+-	for (port_num = 0; port_num < dev->port_cnt; ++port_num)
++	for (port_num = 0; port_num < dev->info->port_cnt; ++port_num)
+ 		dev->ports[port_num].interface = PHY_INTERFACE_MODE_NA;
+ 	if (dev->dev->of_node) {
+ 		ret = of_get_phy_mode(dev->dev->of_node, &interface);
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 28cda79b090f..a8f73e9a63ac 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -26,6 +26,18 @@ struct ksz_port_mib {
+ 	struct spinlock stats64_lock;
+ };
+ 
++struct ksz_chip_data {
++	u32 chip_id;
++	const char *dev_name;
++	int num_vlans;
++	int num_alus;
++	int num_statics;
++	int cpu_ports;
++	int port_cnt;
++	bool phy_errata_9477;
++	bool ksz87xx_eee_link_erratum;
++};
++
+ struct ksz_port {
+ 	bool remove_tag;		/* Remove Tag flag set, for ksz8795 only */
+ 	int stp_state;
+@@ -48,6 +60,7 @@ struct ksz_device {
+ 	struct dsa_switch *ds;
+ 	struct ksz_platform_data *pdata;
+ 	const char *name;
++	const struct ksz_chip_data *info;
+ 
+ 	struct mutex dev_mutex;		/* device access */
+ 	struct mutex regmap_mutex;	/* regmap access */
+@@ -64,20 +77,13 @@ struct ksz_device {
+ 
+ 	/* chip specific data */
+ 	u32 chip_id;
+-	int num_vlans;
+-	int num_alus;
+-	int num_statics;
+ 	int cpu_port;			/* port connected to CPU */
+-	int cpu_ports;			/* port bitmap can be cpu port */
+ 	int phy_port_cnt;
+-	int port_cnt;
+ 	u8 reg_mib_cnt;
+ 	int mib_cnt;
+ 	const struct mib_names *mib_names;
+ 	phy_interface_t compat_interface;
+ 	u32 regs_size;
+-	bool phy_errata_9477;
+-	bool ksz87xx_eee_link_erratum;
+ 	bool synclko_125;
+ 	bool synclko_disable;
+ 
+@@ -94,6 +100,39 @@ struct ksz_device {
+ 	u16 port_mask;
+ };
+ 
++/* List of supported models */
++enum ksz_model {
++	KSZ8795,
++	KSZ8794,
++	KSZ8765,
++	KSZ8830,
++	KSZ9477,
++	KSZ9897,
++	KSZ9893,
++	KSZ9567,
++	LAN9370,
++	LAN9371,
++	LAN9372,
++	LAN9373,
++	LAN9374,
++};
++
++enum ksz_chip_id {
++	KSZ8795_CHIP_ID = 0x8795,
++	KSZ8794_CHIP_ID = 0x8794,
++	KSZ8765_CHIP_ID = 0x8765,
++	KSZ8830_CHIP_ID = 0x8830,
++	KSZ9477_CHIP_ID = 0x00947700,
++	KSZ9897_CHIP_ID = 0x00989700,
++	KSZ9893_CHIP_ID = 0x00989300,
++	KSZ9567_CHIP_ID = 0x00956700,
++	LAN9370_CHIP_ID = 0x00937000,
++	LAN9371_CHIP_ID = 0x00937100,
++	LAN9372_CHIP_ID = 0x00937200,
++	LAN9373_CHIP_ID = 0x00937300,
++	LAN9374_CHIP_ID = 0x00937400,
++};
++
+ struct alu_struct {
+ 	/* entry 1 */
+ 	u8	is_static:1;
 -- 
-2.31.1
+2.33.0
 
