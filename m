@@ -2,147 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7152C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E905AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244968AbiEQJQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
+        id S239196AbiEQJQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244480AbiEQJPL (ORCPT
+        with ESMTP id S244835AbiEQJQU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:15:11 -0400
-Received: from out199-9.us.a.mail.aliyun.com (out199-9.us.a.mail.aliyun.com [47.90.199.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498B437A0D;
-        Tue, 17 May 2022 02:15:09 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VDTPyuR_1652778903;
-Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VDTPyuR_1652778903)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 17 May 2022 17:15:05 +0800
-Date:   Tue, 17 May 2022 17:15:02 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Chao Yu <chao@kernel.org>, xiang@kernel.org,
-        linux-erofs@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Chao Yu <chao.yu@oppo.com>, fsdevel@vger.kernel.org
-Subject: Re: [PATCH] erofs: support idmapped mounts
-Message-ID: <YoNnlpGBFm7dh6yD@B-P7TQMD6M-0146.local>
-References: <20220517073210.3569589-1-chao@kernel.org>
- <20220517090622.4wrtrjmzknh66bci@wittgenstein>
+        Tue, 17 May 2022 05:16:20 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F61D65D8
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:16:18 -0700 (PDT)
+Date:   Tue, 17 May 2022 11:16:14 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652778976;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=f6jzBcvG4gkF3uY8ZyoOC/6JteZBe2MtYGB4fOc1h/c=;
+        b=XaHurQNoRkqxYt7/3hysF0hF7RFzvUXz2KOcGZzQtpL/n11nWYGprYZ/g3Nc3B7iDRW21L
+        lKG5LrFZaDRT88t6+U8Dj+zeyRqgvT5TYJISAxcwZ7/G6VifErGb6LgAuYTI/pFZO6AgQo
+        j+/eD4rOfXDD6flLpHqkEck7/P9NpaoTRO5wO2g4ifiVmpoJbXTIBWKwuajqEMkwy8jDSh
+        e0vWVH6loPL7U44au3uTa13O9txIx2tuKgbgc09NV3RGgAfIQmKzfhrhQRAqRUpTrFYIbW
+        liQeSFAp4Jvx4mCV2BozDMtoR729wXqd5Xuofy9A3liOiTmP6baFRk9Dtt/FNA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652778976;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=f6jzBcvG4gkF3uY8ZyoOC/6JteZBe2MtYGB4fOc1h/c=;
+        b=+8xCkTz1GsImU+vdcgwYneHsxOLwFZSv8xUfUfFie+LwNPtCRyJ/MJxTuivA3V99WqLeTy
+        epaO0Y653xSGMHCw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH] locking/lockdep: Use sched_clock() for random numbers.
+Message-ID: <YoNn3pTkm5+QzE5k@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220517090622.4wrtrjmzknh66bci@wittgenstein>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christian,
+Since the rewrote of prandom_u32(), in the commit mentioned below, the
+function uses sleeping locks which extracing random numbers and filling
+the batch.
+This breaks lockdep on PREEMPT_RT because lock_pin_lock() disables
+interrupts while calling __lock_pin_lock(). This can't be moved earlier
+because the main user of the function (rq_pin_lock()) invokes that
+function after disabling interrupts in order to acquire the lock.
 
-On Tue, May 17, 2022 at 11:06:22AM +0200, Christian Brauner wrote:
-> On Tue, May 17, 2022 at 03:32:10PM +0800, Chao Yu wrote:
-> > This patch enables idmapped mounts for erofs, since all dedicated helpers
-> > for this functionality existsm, so, in this patch we just pass down the
-> > user_namespace argument from the VFS methods to the relevant helpers.
-> > 
-> > Simple idmap example on erofs image:
-> > 
-> > 1. mkdir dir
-> > 2. touch dir/file
-> > 3. mkfs.erofs erofs.img dir
-> > 4. mount -t erofs -o loop erofs.img  /mnt/erofs/
-> > 
-> > 5. ls -ln /mnt/erofs/
-> > total 0
-> > -rw-rw-r-- 1 1000 1000 0 May 17 15:26 file
-> > 
-> > 6. mount-idmapped --map-mount b:0:1001:1 /mnt/erofs/ /mnt/scratch_erofs/
-> > 
-> > 7. ls -ln /mnt/scratch_erofs/
-> > total 0
-> > -rw-rw-r-- 1 65534 65534 0 May 17 15:26 file
-> 
-> Your current example maps id 0 in the filesystem to id 1001 in the
-> mount. But since no files with id 0 exist in the filesystem you're
-> illustrating that unmapped ids are correctly reported as overflow{g,u}id.
-> 
-> I think what you'd rather want to show is something like this:
-> 
-> 5. ls -ln /mnt/erofs/
-> total 0
-> -rw-rw-r-- 1 1000 1000 0 May 17 15:26 file
-> 
-> 6. mount-idmapped --map-mount b:1000:1001:1 /mnt/erofs/ /mnt/scratch_erofs/
-> 
-> 7. ls -ln /mnt/scratch_erofs/
-> total 0
-> -rw-rw-r-- 1 1001 1001 0 May 17 15:26 file
-> 
-> where id 1000 in the filesystem maps to id 1001 in the mount.
-> 
-> > 
-> > Signed-off-by: Chao Yu <chao.yu@oppo.com>
-> > ---
-> 
-> Overall this is currently the smallest patch to support idmapped mounts.
-> 
-> Is erofs integrated with xfstests in any way?
-> For read-only filesystems we probably only need to verify that {g,u}id
-> are correctly reported. All the writable aspects are irrelevant.
+The cookie does not require random numbers as its goal is to provide a
+random value in order to notice unexpected "unlock + lock" sites.
 
-Currently most generic xfstests test cases are unsuitable for erofs.
+Use sched_clock() to provide random numbers.
 
-Instead we have regression testcases for EROFS specific since it needs
-to generate images with care,
- https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/log/?h=experimental-tests
+Fixes: a0103f4d86f88 ("random32: use real rng for non-deterministic randomness")
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
 
-Also we have an erofsstress to do long time random stress workloads,
-https://github.com/erofs/erofsstress
+So if the architecture does not provide sched_clock() and does not
+enabled GENERIC_SCHED_CLOCK then we use jiffies here. Most of them do
+one or the other except for alpha, csky, hexagon, ... but I don't worry
+here since arm*, power*, x86* do provide it.
 
-But yeah, it's some awkward that fstests idmapped mount testcases may
-be unsuitable for EROFS for now. I will add some new testcases to build
-images and test for this behavior.
+ kernel/locking/lockdep.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> Looks good,
-> Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index 81e87280513ea..f06b91ca6482d 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -5432,7 +5432,7 @@ static struct pin_cookie __lock_pin_lock(struct lockdep_map *lock)
+ 			 * be guessable and still allows some pin nesting in
+ 			 * our u32 pin_count.
+ 			 */
+-			cookie.val = 1 + (prandom_u32() >> 16);
++			cookie.val = 1 + (sched_clock() & 0xffff);
+ 			hlock->pin_count += cookie.val;
+ 			return cookie;
+ 		}
+-- 
+2.36.1
 
-Thanks for your review!
-
-Thanks,
-Gao Xiang
-
-> 
-> >  fs/erofs/inode.c | 2 +-
-> >  fs/erofs/super.c | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
-> > index e8b37ba5e9ad..5320bf52c1ce 100644
-> > --- a/fs/erofs/inode.c
-> > +++ b/fs/erofs/inode.c
-> > @@ -370,7 +370,7 @@ int erofs_getattr(struct user_namespace *mnt_userns, const struct path *path,
-> >  	stat->attributes_mask |= (STATX_ATTR_COMPRESSED |
-> >  				  STATX_ATTR_IMMUTABLE);
-> >  
-> > -	generic_fillattr(&init_user_ns, inode, stat);
-> > +	generic_fillattr(mnt_userns, inode, stat);
-> >  	return 0;
-> >  }
-> >  
-> > diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-> > index 0c4b41130c2f..7dc5f2e8ddee 100644
-> > --- a/fs/erofs/super.c
-> > +++ b/fs/erofs/super.c
-> > @@ -781,7 +781,7 @@ static struct file_system_type erofs_fs_type = {
-> >  	.name           = "erofs",
-> >  	.init_fs_context = erofs_init_fs_context,
-> >  	.kill_sb        = erofs_kill_sb,
-> > -	.fs_flags       = FS_REQUIRES_DEV,
-> > +	.fs_flags       = FS_REQUIRES_DEV | FS_ALLOW_IDMAP,
-> >  };
-> >  MODULE_ALIAS_FS("erofs");
-> >  
-> > -- 
-> > 2.25.1
-> > 
