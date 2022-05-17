@@ -2,138 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 625DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349716AbiEQPLx (ORCPT
+        id S1349734AbiEQPMg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
+        Tue, 17 May 2022 11:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349691AbiEQPLp (ORCPT
+        with ESMTP id S1346572AbiEQPMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:11:45 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08C63BF8F
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:11:43 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id n8so17600392plh.1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:11:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=cmLXabcPdJC5+Jr+geeae2kzppnXJw8ILHcl1Qm7vBw=;
-        b=CMbAPHf6t+S5Kg1C4GszZxleCRPzPCJZatJ1Uhgf4vk0o6lS847ZRTFjB8hGXzHMWl
-         ll+/Pk58qJPLoniMeyG8G08xqU5f8Y1cYHkaDkQ68EI4RSuceZvg8L88QzT3nG1ggMQh
-         wpCPXtWUjd3VPVCZAzB0zNj9VYjpBbBGN0i5lSZugdLoFWYUYY403CgSeaPvbw/GJWfo
-         KoWb+QmOkyIhZFiG13zp7J2QOwQr5UeggVUWxzffet1NnT0TxQlosvVe3iY8p187yVk4
-         PGriacZsHbGjO6/cFvWrqRlURZJrIBSd0FdYh8B5fOKv/rRpHcFyySilRPJurX8HmkZ+
-         GF4g==
+        Tue, 17 May 2022 11:12:31 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7749C3BFB0;
+        Tue, 17 May 2022 08:12:29 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id i66so22584899oia.11;
+        Tue, 17 May 2022 08:12:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=cmLXabcPdJC5+Jr+geeae2kzppnXJw8ILHcl1Qm7vBw=;
-        b=fLdmcChxAB/4QpLAQZiMrdezlEU0kPvYvWEte+7NwPYQwzKxf3Q1B29dCs6Kqw1ftM
-         y4zTHVLdXjsAmGGCMiFZ6JqHNGSzKAPq2e4HqeZfasvVSJQF4RTkQas3KhX+pk/mppdG
-         OQA+KMx+/w3+xH0x160+2KZdxeBF3M3ChAFztRkbSz5Ts4UjCWIUx2BpE0+i3Z4ygKoN
-         bbW+3NJRpy2/1bEcRGe63w889LZWaT4KjFsCgBz6epz6hKDp15y1hEl4pRNzs22gNood
-         XC2Qm1IneD/2Y8IhEskj3IGnU0TN/w3xnBMhFoejHHQCDXjqAMXIs08+re5TPqY8btSL
-         p95w==
-X-Gm-Message-State: AOAM530hZGmQe3RAY9xWGShKZmBWSK2X8iw5tQ3AH2DxHBwXVlf8N0Xp
-        s6/RrfVOJ8jG/d5f0QaLJkdY
-X-Google-Smtp-Source: ABdhPJy/8+de+j926ut7sfC02FyPhUMi0LcfxLj34YwOAks7Rl82lL4Rj6Y5maOSEeF2PjT7605A/g==
-X-Received: by 2002:a17:902:dad1:b0:161:9abb:fb75 with SMTP id q17-20020a170902dad100b001619abbfb75mr6145785plx.135.1652800303244;
-        Tue, 17 May 2022 08:11:43 -0700 (PDT)
-Received: from thinkpad ([117.207.31.8])
-        by smtp.gmail.com with ESMTPSA id ja1-20020a170902efc100b001617e18e253sm4280263plb.143.2022.05.17.08.11.36
+         :mime-version:content-disposition:in-reply-to;
+        bh=/dfPBNJl0BkkDm6rR5f4i06anC7912qzGjQ5goLE40g=;
+        b=2n/fzMUTSwTKyejr6B4dtfNN8S4TK6C8wkKV/s5VUwqDf8yE0IrKq2+Wxvf2BLJJKM
+         DFrxFNljJC8nTGADlY6YiJ8zIp+ZBJ/nULXKP7zRbrzQ5bjlhj93GVEvhrAeQjjyDoIN
+         XNr+k8obA0FIxDANq7j5EwIOv36CnfahXEDcQ54zUtH+CiKIFtA/Uxi9s6JLutI2ygv9
+         8qre4UgnheUQI21RQ02VdD1hxqnZW6m6rAQGGpYaXtvl/H4UdMsat3ZOtFhfEHFQ71yo
+         Tk8Bymi0r6isPuc84+x00M+4n6HE5oEkBgfdFT8kBrsAvFW2MWvYZ7wb5ELwwnj9fbEc
+         zTig==
+X-Gm-Message-State: AOAM531MQtYBsDKRh70EBjVQho7zDsTzIP5/gxJdu7Rl8vMcLm021GGJ
+        +hPiFrGQ8TNmNxM9CLE4rQ==
+X-Google-Smtp-Source: ABdhPJzFfTUvwCWIB29bpybZvUCdBP4mQtaARfqBdm4hexGTPcJAiUL22/ZT2iuFmMl1WRl2Y3/ivQ==
+X-Received: by 2002:a05:6808:ec2:b0:2f7:34db:691e with SMTP id q2-20020a0568080ec200b002f734db691emr16118754oiv.252.1652800348779;
+        Tue, 17 May 2022 08:12:28 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t15-20020a056830224f00b0060603221235sm3331otd.5.2022.05.17.08.12.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 08:11:42 -0700 (PDT)
-Date:   Tue, 17 May 2022 20:41:34 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     bhelgaas@google.com, lorenzo.pieralisi@arm.com, kbusch@kernel.org,
-        hch@lst.de, linux-nvme@lists.infradead.org,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, svarbanov@mm-sol.com,
-        bjorn.andersson@linaro.org, axboe@fb.com,
-        quic_vbadigan@quicinc.com, quic_krichai@quicinc.com,
-        quic_nitirawa@quicinc.com, vidyas@nvidia.com, sagi@grimberg.me
-Subject: Re: [PATCH 2/3] PCI: dwc: qcom: Set suspend_poweroff flag for SC7280
-Message-ID: <20220517151134.GB4528@thinkpad>
-References: <20220513110027.31015-3-manivannan.sadhasivam@linaro.org>
- <20220516201950.GA1047412@bhelgaas>
+        Tue, 17 May 2022 08:12:28 -0700 (PDT)
+Received: (nullmailer pid 1045233 invoked by uid 1000);
+        Tue, 17 May 2022 15:12:26 -0000
+Date:   Tue, 17 May 2022 10:12:26 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     sboyd@kernel.org, tglx@linutronix.de, aisheng.dong@nxp.com,
+        linux@armlinux.org.uk, olof@lixom.net, kernel@pengutronix.de,
+        festevam@gmail.com, leoyang.li@nxp.com, dev@lynxeye.de,
+        linus.walleij@linaro.org, daniel.lezcano@linaro.org,
+        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        tharvey@gateworks.com, cniedermaier@dh-electronics.com,
+        linux-gpio@vger.kernel.org, stefan@agner.ch, arnd@arndb.de,
+        linux-clk@vger.kernel.org, s.hauer@pengutronix.de,
+        linux-imx@nxp.com, Mr.Bossman075@gmail.com,
+        giulio.benetti@benettiengineering.com, soc@kernel.org,
+        abel.vesa@nxp.com, linux-kernel@vger.kernel.org, clin@suse.com,
+        marcel.ziswiler@toradex.com, mturquette@baylibre.com,
+        devicetree@vger.kernel.org, sebastian.reichel@collabora.com,
+        shawnguo@kernel.org
+Subject: Re: [PATCH v3 04/15] dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT1170
+ compatible
+Message-ID: <20220517151226.GA1045177-robh@kernel.org>
+References: <20220517032802.451743-1-Mr.Bossman075@gmail.com>
+ <20220517032802.451743-3-Mr.Bossman075@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220516201950.GA1047412@bhelgaas>
+In-Reply-To: <20220517032802.451743-3-Mr.Bossman075@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 03:19:50PM -0500, Bjorn Helgaas wrote:
-> On Fri, May 13, 2022 at 04:30:26PM +0530, Manivannan Sadhasivam wrote:
-> > For aggressive power saving on SC7280 SoCs, the power for the PCI devices
-> > will be taken off during system suspend. Hence, notify the same to the
-> > PCI device drivers using "suspend_poweroff" flag so that the drivers can
-> > prepare the PCI devices to handle the poweroff and recover them during
-> > resume.
+On Mon, 16 May 2022 23:27:51 -0400, Jesse Taube wrote:
+> Add i.MXRT1170 compatible string to Documentation.
 > 
-> No doubt "power ... will be taken off during system suspend" is true,
-> but this isn't very informative.  Is this a property of SC7280?  A
-> choice made by the SC7280 driver?  Why is this not applicable to other
-> systems?
+> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> ---
+> V1 -> V2:
+>  - New commit to fix dtbs_check
+> V2 -> V3:
+>  - Fix typo
+>  - Remove unused const
+> ---
+>  Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
 
-The SC7280's RPMh firmware is cutting off the PCIe power domain during system
-suspend. And as I explained in previous patch, the RC driver itself may put the
-devices in D3cold conditionally on this platform. The reason is to save power
-as this chipset is being used in Chromebooks.
-
-Thanks,
-Mani
-
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > ---
-> >  drivers/pci/controller/dwc/pcie-qcom.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-> > index 6ab90891801d..4b0ad2827f8f 100644
-> > --- a/drivers/pci/controller/dwc/pcie-qcom.c
-> > +++ b/drivers/pci/controller/dwc/pcie-qcom.c
-> > @@ -199,6 +199,7 @@ struct qcom_pcie_cfg {
-> >  	unsigned int has_ddrss_sf_tbu_clk:1;
-> >  	unsigned int has_aggre0_clk:1;
-> >  	unsigned int has_aggre1_clk:1;
-> > +	unsigned int suspend_poweroff:1;
-> >  };
-> >  
-> >  struct qcom_pcie {
-> > @@ -1220,6 +1221,10 @@ static int qcom_pcie_init_2_7_0(struct qcom_pcie *pcie)
-> >  	if (pcie->cfg->pipe_clk_need_muxing)
-> >  		clk_set_parent(res->pipe_clk_src, res->ref_clk_src);
-> >  
-> > +	/* Indicate PCI device drivers that the power will be taken off during system suspend */
-> > +	if (pcie->cfg->suspend_poweroff)
-> > +		pci->pp.bridge->suspend_poweroff = true;
-> > +
-> >  	ret = clk_bulk_prepare_enable(res->num_clks, res->clks);
-> >  	if (ret < 0)
-> >  		goto err_disable_regulators;
-> > @@ -1548,6 +1553,7 @@ static const struct qcom_pcie_cfg sc7280_cfg = {
-> >  	.ops = &ops_1_9_0,
-> >  	.has_tbu_clk = true,
-> >  	.pipe_clk_need_muxing = true,
-> > +	.suspend_poweroff = true,
-> >  };
-> >  
-> >  static const struct dw_pcie_ops dw_pcie_ops = {
-> > -- 
-> > 2.25.1
-> > 
-
--- 
-மணிவண்ணன் சதாசிவம்
+Acked-by: Rob Herring <robh@kernel.org>
