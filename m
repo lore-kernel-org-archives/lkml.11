@@ -2,107 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63705C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348145AbiEQN6T (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
+        id S240313AbiEQN6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 09:58:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347595AbiEQN6H (ORCPT
+        with ESMTP id S1347280AbiEQN6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:58:07 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75B43C4A7
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:58:05 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id c24so22004966lfv.11
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:58:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eVaeE8EmFrZMCLqtcrlHzNvDehbUwPxJkr68zMJQkE0=;
-        b=keEYssJeA35i6Sta2I6KzzG+AyLAfGU3Lx5PpJy7XNJd46Oikjsl41K2FOclcNwgsf
-         LqEnxpal51K+s3Phphr9gnko8bztzkVvQMsZQXRbcHbIr5ZnHY04mUhXClzZfjIpyvfu
-         JN9u/WWFVTrS4rRPtrtQzTDX9UHmrPHcNwDmSP1Sf1+qW7loeTyBdIzkPd9y5JfV5bsS
-         b9fc4HEg9c5FtmdbLVKOFO47fPPvdiC9fbVkmb7R8UW54e/N5wXAgSffVIgmIhziQj9q
-         +Cfuea8uomdXM/3DRACVZLltyktTJwr4fDkOFZHDT75WmQilucE/VyjIzTvR+zh/8i15
-         rLaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=eVaeE8EmFrZMCLqtcrlHzNvDehbUwPxJkr68zMJQkE0=;
-        b=GMs0JIiCeKbAJl4dW5IyH0AScOtg6yWtWGcS/V1csH5slJLLP0IVsnDxlQoL6PiDDD
-         GNoGTHP2gcTQ9RHnq8MiYz6hg9S3MwxsQTTL2c0X3dFerYUGuh8utlkWzgjDramAg8vu
-         ocOOeYNUp0l8UJT7QaRhQCSkAGmwmXALvbk3hVWuu2mcV/1tmaUILPSWeQOWmTOzQfY6
-         u5fdPjLuasKOxlyIeJeCaL1/+K8rdptvXK2Yx7ewwF/bVvDQu6Nvo2IT6/ELHkPQAdfr
-         hauhigumx02wE6Gcd9aP0CrzbWnSI1uTug0CDdXMMWDGAgXNd2H3L3PJBvyisrGAlY82
-         ye1A==
-X-Gm-Message-State: AOAM531Z7SBnqZoetuYt5Wm5zjkY2tZwtDcHCyZ3lR6cE8boq1BAtXc+
-        /6soTL+VK+vRiunwtfNGfkuE0w==
-X-Google-Smtp-Source: ABdhPJxw8xo2pjvHxPlfO7zErtguu1LhEFbww2MX8pjsfBIN1zJWlGEkdKQlYDEvVNX2wu/6K/T+fw==
-X-Received: by 2002:a05:6512:1399:b0:448:9f0b:bf4f with SMTP id p25-20020a056512139900b004489f0bbf4fmr16621673lfa.67.1652795884116;
-        Tue, 17 May 2022 06:58:04 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id t8-20020ac25488000000b0047255d21117sm1602236lfk.70.2022.05.17.06.58.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 06:58:03 -0700 (PDT)
-Message-ID: <9606459e-7d9f-90af-1c5c-263e8ab1fae1@linaro.org>
-Date:   Tue, 17 May 2022 15:58:02 +0200
+        Tue, 17 May 2022 09:58:16 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B353C71C
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:58:12 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 00EDB1F37E;
+        Tue, 17 May 2022 13:58:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652795891; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5G+a9MugMNh38fuvlfEb6EKwdMwJlLHbuAXDShGNoYA=;
+        b=K5Ufg3JKysAmmHPQl/5CMCFuXvX/eK6hrxjSo7eJHRJH9ula7lfsWLp0dXe5PHjtKNVPwe
+        9QrTiPjgYzoVnadJvHLLUtFUIdL2JSWaFc2hMf5cMxYAl8QHn3c6nwUcER/wm8bY4VPRaW
+        Ywun+jzHXvVgAvxcxxHXb/ui6kSvips=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652795891;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5G+a9MugMNh38fuvlfEb6EKwdMwJlLHbuAXDShGNoYA=;
+        b=rW4eglMxdND2r666K7VhWKrQkXN7aaykr3558rISZDjivqY3hjH+RL/6cip/11+bbLPTym
+        wputB41cmfjZyKDg==
+Received: from suse.de (unknown [10.163.32.246])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id E6BF22C141;
+        Tue, 17 May 2022 13:58:09 +0000 (UTC)
+Date:   Tue, 17 May 2022 14:58:07 +0100
+From:   Mel Gorman <mgorman@suse.de>
+To:     Tianchen Ding <dtcccc@linux.alibaba.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] sched: Queue task on wakelist in the same llc if the
+ wakee cpu is idle
+Message-ID: <20220517135807.GS20579@suse.de>
+References: <20220513062427.2375743-1-dtcccc@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 03/20] dt-bindings: media: s5p-mfc: Add mfcv12 variant
-Content-Language: en-US
-To:     Smitha T Murthy <smitha.t@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     m.szyprowski@samsung.com, andrzej.hajda@intel.com,
-        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, jernej.skrabec@gmail.com,
-        benjamin.gaignard@collabora.com, stanimir.varbanov@linaro.org,
-        dillon.minfei@gmail.com, david.plowman@raspberrypi.com,
-        mark.rutland@arm.com, robh+dt@kernel.org, krzk+dt@kernel.org,
-        andi@etezian.org, alim.akhtar@samsung.com,
-        aswani.reddy@samsung.com, pankaj.dubey@samsung.com,
-        linux-fsd@tesla.com
-References: <20220517125548.14746-1-smitha.t@samsung.com>
- <CGME20220517125558epcas5p228cdf5f665468d3fd065d88a5d0ad157@epcas5p2.samsung.com>
- <20220517125548.14746-4-smitha.t@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220517125548.14746-4-smitha.t@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20220513062427.2375743-1-dtcccc@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 14:55, Smitha T Murthy wrote:
-> Adds DT schema for s5p-mfc with a new compatible
-> string for mfcv12 variant.
+On Fri, May 13, 2022 at 02:24:27PM +0800, Tianchen Ding wrote:
+> We notice the commit 518cd6234178 ("sched: Only queue remote wakeups
+> when crossing cache boundaries") disabled queuing tasks on wakelist when
+> the cpus share llc. This is because, at that time, the scheduler must
+> send IPIs to do ttwu_queue_wakelist. Nowadays, ttwu_queue_wakelist also
+> supports TIF_POLLING, so this is not a problem now when the wakee cpu is
+> in idle polling.
 > 
-> Cc: linux-fsd@tesla.com
-> Signed-off-by: Smitha T Murthy <smitha.t@samsung.com>
+> Benefits:
+>   Queuing the task on idle cpu can help improving performance on waker cpu
+>   and utilization on wakee cpu, and further improve locality because
+>   the wakee cpu can handle its own rq. This patch helps improving rt on
+>   our real java workloads where wakeup happens frequently.
+> 
+> Does this patch bring IPI flooding?
+>   For archs with TIF_POLLING_NRFLAG (e.g., x86), there will be no
+>   difference if the wakee cpu is idle polling. If the wakee cpu is idle
+>   but not polling, the later check_preempt_curr() will send IPI too.
+> 
+
+That's a big if. Polling does not last very long -- somewhere between 10
+and 62 microseconds for HZ=1000 or 250 microseconds for HZ=250. It may
+not bring IPI flooding depending on the workload but it will increase
+IPI counts.
+
+>   For archs without TIF_POLLING_NRFLAG (e.g., arm64), the IPI is
+>   unavoidable, since the later check_preempt_curr() will send IPI when
+>   wakee cpu is idle.
+> 
+> Benchmark:
+> running schbench -m 2 -t 8 on 8269CY:
+> 
+> without patch:
+> Latency percentiles (usec)
+>         50.0000th: 10
+>         75.0000th: 14
+>         90.0000th: 16
+>         95.0000th: 16
+>         *99.0000th: 17
+>         99.5000th: 20
+>         99.9000th: 23
+>         min=0, max=28
+> 
+> with patch:
+> Latency percentiles (usec)
+>         50.0000th: 6
+>         75.0000th: 8
+>         90.0000th: 9
+>         95.0000th: 9
+>         *99.0000th: 10
+>         99.5000th: 10
+>         99.9000th: 14
+>         min=0, max=16
+> 
+> We've also tested unixbench and see about 10% improvement on Pipe-based
+> Context Switching, and no performance regression on other test cases.
+
+It'll show a benefit for any heavily communicating tasks that rapidly
+enters/exits idle because the wakee CPU may be still polling due to the
+rapid enter/exit pattern.
+
+> Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
 > ---
->  Documentation/devicetree/bindings/media/s5p-mfc.yaml | 1 +
->  1 file changed, 1 insertion(+)
+>  kernel/sched/core.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/media/s5p-mfc.yaml b/Documentation/devicetree/bindings/media/s5p-mfc.yaml
-> index fff7c7e0d575..209da53f3582 100644
-> --- a/Documentation/devicetree/bindings/media/s5p-mfc.yaml
-> +++ b/Documentation/devicetree/bindings/media/s5p-mfc.yaml
-> @@ -21,6 +21,7 @@ properties:
->        - samsung,mfc-v8                  # Exynos5800
->        - samsung,exynos5433-mfc          # Exynos5433
->        - samsung,mfc-v10                 # Exynos7880
-> +      - samsung,mfc-v12                 # Tesla FSD
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index 51efaabac3e4..cae5011a8b1f 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -3820,6 +3820,9 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+>  	if (!cpu_active(cpu))
+>  		return false;
+>  
+> +	if (cpu == smp_processor_id())
+> +		return false;
+> +
+>  	/*
+>  	 * If the CPU does not share cache, then queue the task on the
+>  	 * remote rqs wakelist to avoid accessing remote data.
 
-No. We moved already to SoC specific comaptibles. You introduced back
-wrong pattern with MFCv10, but it should be rather fixed. Don't go back
-to it...
+Is this suggesting that the running CPU should try sending an IPI to
+itself?
 
-Best regards,
-Krzysztof
+> @@ -3827,6 +3830,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+>  	if (!cpus_share_cache(smp_processor_id(), cpu))
+>  		return true;
+>  
+> +	/*
+> +	 * If the CPU is idle, let itself do activation to improve utilization.
+> +	 */
+> +	if (available_idle_cpu(cpu))
+> +		return true;
+> +
+>  	/*
+>  	 * If the task is descheduling and the only running task on the
+>  	 * CPU then use the wakelist to offload the task activation to
+
+It is highly likely that the target CPU is idle given that we almost
+certainly called select_idle_sibling() before reaching here.
+
+I suspect what you are trying to do is use the wakelist regardless of
+locality if the CPU is polling because polling means an IPI is avoided
+but it's not what the patch does.
+
+> @@ -3842,9 +3851,6 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+>  static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
+>  {
+>  	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu, wake_flags)) {
+> -		if (WARN_ON_ONCE(cpu == smp_processor_id()))
+> -			return false;
+> -
+>  		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
+>  		__ttwu_queue_wakelist(p, cpu, wake_flags);
+>  		return true;
+
+
+
+
+> -- 
+> 2.27.0
+> 
+
+-- 
+Mel Gorman
+SUSE Labs
