@@ -2,99 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 074BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32775C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348050AbiEQNo4 (ORCPT
+        id S1347157AbiEQNrp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
+        Tue, 17 May 2022 09:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243712AbiEQNox (ORCPT
+        with ESMTP id S232732AbiEQNrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:44:53 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E814B868
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:44:52 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id q76so16963853pgq.10
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:44:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pt9MMK51ZD888dBndiS0dCoASz75vrxRph8/MPvQlS8=;
-        b=S3DU+VBR0vm772cv1uuDUnEMbgqi5yllUJiH1XBd8ZgQ4Aa6e3xzZKy/FSRlhnfEjm
-         7KwPw1ZSSGIIpXU9+ll+6Bspg6BaRGB+ZMNu9SvgRA6OsgIwgPx5KMqgyRt9SE0ufuWL
-         c6oamKAdAHZvfeiBmoeFJd1Bw3EYnZffuqldI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pt9MMK51ZD888dBndiS0dCoASz75vrxRph8/MPvQlS8=;
-        b=5TN8h0yYEK//Mp+hnyrXn8VB2pnmuOa6gHq1Kvv3PyD104e9rVaHxfc4HESaKrHiIP
-         /pTZTdA+WSj2KPrUOBmPv1qppfqtM1DrqW0M5ytysk3DCD51iXYrFFCtseX6C3urtRVP
-         1Cou4brHlRxjdgEMQj26tzv6erTa+ThZww6Kq3viz2FhM03w/DI0QkvjWqN3HjpnNBEx
-         wqY2WlSh/VkAo10Ns+aQzpd3p4RQS2ZUWwqukHsaNADe9yLqYRumAkxz1Xrk4LydquFk
-         M1MEtLCPu8qyX4gJg7z6F1P1ghGReEu9tM+qiBC2vud5aL7fYY3hLxwarBNqh2AoPSTN
-         67Jg==
-X-Gm-Message-State: AOAM533ECPDhQ6eA/CUXr1sevQQyiM9r0wD2CI9cs47wXNRKhGlhX+uD
-        pOBtXKhusuNaPCYCp/ezn9mzj28LBqjgV3GZ9tOACw==
-X-Google-Smtp-Source: ABdhPJywjPgdoOw/JtyQqrp/ClohzClPu2c7khu0+BbVFnTWtqh85DgsiXbxBLueR83+PuwsPeQwxmrLYwQItGP6LFw=
-X-Received: by 2002:a05:6a00:1891:b0:50d:e6e7:acae with SMTP id
- x17-20020a056a00189100b0050de6e7acaemr22569699pfh.26.1652795091779; Tue, 17
- May 2022 06:44:51 -0700 (PDT)
+        Tue, 17 May 2022 09:47:43 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C594C426
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:47:39 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2cmp55gfzGpRD;
+        Tue, 17 May 2022 21:44:42 +0800 (CST)
+Received: from dggpemm500016.china.huawei.com (7.185.36.25) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 21:47:36 +0800
+Received: from huawei.com (10.67.174.33) by dggpemm500016.china.huawei.com
+ (7.185.36.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
+ 2022 21:47:36 +0800
+From:   "GONG, Ruiqi" <gongruiqi1@huawei.com>
+To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        "Jani Nikula" <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+CC:     <intel-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        Wang Weiyang <wangweiyang2@huawei.com>,
+        "Xiu Jianfeng" <xiujianfeng@huawei.com>, <gongruiqi1@huawei.com>
+Subject: [PATCH -next] drm/i915: fix compilation errors caused by `-fsanitize=shift`
+Date:   Tue, 17 May 2022 21:47:33 +0000
+Message-ID: <20220517214733.139446-1-gongruiqi1@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220517133540.2456987-1-michael@amarulasolutions.com> <bd342e6be1723daa3787c7088c3510d0@denx.de>
-In-Reply-To: <bd342e6be1723daa3787c7088c3510d0@denx.de>
-From:   Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Date:   Tue, 17 May 2022 15:44:40 +0200
-Message-ID: <CAOf5uw=QxFM=CCFLZ=fZCfn9BBz1aFpkPQuED1uHxHRABwMHMQ@mail.gmail.com>
-Subject: Re: [PATCH] arm: dts: imx6ulz-bsh-smm-m2: Support proper board power off
-To:     Fabio Estevam <festevam@denx.de>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-amarula@amarulasolutions.com,
-        Rob Herring <robh+dt@kernel.org>,
-        "Ariel D'Alessandro" <ariel.dalessandro@collabora.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Simon Holesch <simon.holesch@bshg.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.174.33]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500016.china.huawei.com (7.185.36.25)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabio
+Fix the compilation errors produced by building recent mainline on x86
+with allmodconfig:
 
-On Tue, May 17, 2022 at 3:41 PM Fabio Estevam <festevam@denx.de> wrote:
->
-> Hi Michael,
->
-> On 17/05/2022 10:35, Michael Trimarchi wrote:
-> > From: Simon Holesch <simon.holesch@bshg.com>
-> >
-> > Supports initiating poweroff on SNVS_PMIC_ON_REQ signal.
-> >
-> > Signed-off-by: Simon Holesch <simon.holesch@bshg.com>
->
-> You missed your own Signed-off-by tag here.
+(1st type of errors)
+  drivers/gpu/drm/i915/display/intel_ddi.c:1916:2: error: case label does not reduce to an integer constant
+  case PORT_CLK_SEL_WRPLL1:
+  ^~~~
 
-It's fine, I can add Tested-by: Michael Trimarchi <michael@amarulasolutions.com>
+(2nd type of errors)
+  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_1360’ declared with attribute error: FIELD_PREP: mask is not constant
+    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+                                        ^
+  ...
+  drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c:2316:3: note: in expansion of macro ‘FIELD_PREP’
+     FIELD_PREP(GUC_KLV_0_KEY, GUC_CONTEXT_POLICIES_KLV_ID_##id) | \
+     ^~~~~~~~~~
+  drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c:2323:1: note: in expansion of macro ‘MAKE_CONTEXT_POLICY_ADD’
+   MAKE_CONTEXT_POLICY_ADD(preemption_timeout, PREEMPTION_TIMEOUT)
+   ^~~~~~~~~~~~~~~~~~~~~~~
 
-Michael
+which are all induced by `-fsanitize=shift`.
 
+Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
+---
+ drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h |  2 +-
+ .../i915/gt/uc/abi/guc_communication_ctb_abi.h   |  2 +-
+ drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h    |  4 ++--
+ .../gpu/drm/i915/gt/uc/abi/guc_messages_abi.h    |  2 +-
+ drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h       |  2 +-
+ drivers/gpu/drm/i915/i915_reg.h                  | 16 ++++++++--------
+ 6 files changed, 14 insertions(+), 14 deletions(-)
 
-
+diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
+index be9ac47fa9d0..3ada7358a698 100644
+--- a/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
++++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
+@@ -50,7 +50,7 @@
+ 
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_LEN		(GUC_HXG_REQUEST_MSG_MIN_LEN + 3u)
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_0_MBZ		GUC_HXG_REQUEST_MSG_0_DATA0
+-#define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_KEY		(0xffff << 16)
++#define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_KEY		(0xffffu << 16)
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_LEN		(0xffff << 0)
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_2_VALUE32		GUC_HXG_REQUEST_MSG_n_DATAn
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_3_VALUE64		GUC_HXG_REQUEST_MSG_n_DATAn
+diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
+index c9086a600bce..c97ff7c38576 100644
+--- a/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
++++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
+@@ -82,7 +82,7 @@ static_assert(sizeof(struct guc_ct_buffer_desc) == 64);
+ #define GUC_CTB_HDR_LEN				1u
+ #define GUC_CTB_MSG_MIN_LEN			GUC_CTB_HDR_LEN
+ #define GUC_CTB_MSG_MAX_LEN			256u
+-#define GUC_CTB_MSG_0_FENCE			(0xffff << 16)
++#define GUC_CTB_MSG_0_FENCE			(0xffffu << 16)
+ #define GUC_CTB_MSG_0_FORMAT			(0xf << 12)
+ #define   GUC_CTB_FORMAT_HXG			0u
+ #define GUC_CTB_MSG_0_RESERVED			(0xf << 8)
+diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h
+index 4a59478c3b5c..e811896a80a0 100644
+--- a/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h
++++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h
+@@ -29,8 +29,8 @@
+  */
+ 
+ #define GUC_KLV_LEN_MIN				1u
+-#define GUC_KLV_0_KEY				(0xffff << 16)
+-#define GUC_KLV_0_LEN				(0xffff << 0)
++#define GUC_KLV_0_KEY				(0xffffu << 16)
++#define GUC_KLV_0_LEN				(0xffffu << 0)
+ #define GUC_KLV_n_VALUE				(0xffffffff << 0)
+ 
+ /**
+diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
+index 29ac823acd4c..901595300f82 100644
+--- a/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
++++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
+@@ -40,7 +40,7 @@
+  */
+ 
+ #define GUC_HXG_MSG_MIN_LEN			1u
+-#define GUC_HXG_MSG_0_ORIGIN			(0x1 << 31)
++#define GUC_HXG_MSG_0_ORIGIN			(0x1u << 31)
+ #define   GUC_HXG_ORIGIN_HOST			0u
+ #define   GUC_HXG_ORIGIN_GUC			1u
+ #define GUC_HXG_MSG_0_TYPE			(0x7 << 28)
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h b/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
+index 66027a42cda9..22d2c1836f65 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
++++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
+@@ -28,7 +28,7 @@
+ #define   GS_MIA_HALT_REQUESTED		  (0x02 << GS_MIA_SHIFT)
+ #define   GS_MIA_ISR_ENTRY		  (0x04 << GS_MIA_SHIFT)
+ #define   GS_AUTH_STATUS_SHIFT		30
+-#define   GS_AUTH_STATUS_MASK		  (0x03 << GS_AUTH_STATUS_SHIFT)
++#define   GS_AUTH_STATUS_MASK		  (0x03u << GS_AUTH_STATUS_SHIFT)
+ #define   GS_AUTH_STATUS_BAD		  (0x01 << GS_AUTH_STATUS_SHIFT)
+ #define   GS_AUTH_STATUS_GOOD		  (0x02 << GS_AUTH_STATUS_SHIFT)
+ 
+diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
+index 9ccb67eec1bd..8c10d66561b0 100644
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -7566,19 +7566,19 @@ enum skl_power_gate {
+ #define  PORT_CLK_SEL_LCPLL_810		(2 << 29)
+ #define  PORT_CLK_SEL_SPLL		(3 << 29)
+ #define  PORT_CLK_SEL_WRPLL(pll)	(((pll) + 4) << 29)
+-#define  PORT_CLK_SEL_WRPLL1		(4 << 29)
+-#define  PORT_CLK_SEL_WRPLL2		(5 << 29)
+-#define  PORT_CLK_SEL_NONE		(7 << 29)
++#define  PORT_CLK_SEL_WRPLL1		(4u << 29)
++#define  PORT_CLK_SEL_WRPLL2		(5u << 29)
++#define  PORT_CLK_SEL_NONE		(7u << 29)
+ #define  PORT_CLK_SEL_MASK		(7 << 29)
+ 
+ /* On ICL+ this is the same as PORT_CLK_SEL, but all bits change. */
+ #define DDI_CLK_SEL(port)		PORT_CLK_SEL(port)
+ #define  DDI_CLK_SEL_NONE		(0x0 << 28)
+-#define  DDI_CLK_SEL_MG			(0x8 << 28)
+-#define  DDI_CLK_SEL_TBT_162		(0xC << 28)
+-#define  DDI_CLK_SEL_TBT_270		(0xD << 28)
+-#define  DDI_CLK_SEL_TBT_540		(0xE << 28)
+-#define  DDI_CLK_SEL_TBT_810		(0xF << 28)
++#define  DDI_CLK_SEL_MG			(0x8u << 28)
++#define  DDI_CLK_SEL_TBT_162		(0xCu << 28)
++#define  DDI_CLK_SEL_TBT_270		(0xDu << 28)
++#define  DDI_CLK_SEL_TBT_540		(0xEu << 28)
++#define  DDI_CLK_SEL_TBT_810		(0xFu << 28)
+ #define  DDI_CLK_SEL_MASK		(0xF << 28)
+ 
+ /* Transcoder clock selection */
 -- 
-Michael Nazzareno Trimarchi
-Co-Founder & Chief Executive Officer
-M. +39 347 913 2170
-michael@amarulasolutions.com
-__________________________________
+2.17.1
 
-Amarula Solutions BV
-Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
-T. +31 (0)85 111 9172
-info@amarulasolutions.com
-www.amarulasolutions.com
