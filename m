@@ -2,205 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0445BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231887AbiEQDog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 23:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
+        id S235993AbiEQDov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 23:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiEQDob (ORCPT
+        with ESMTP id S234653AbiEQDop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 23:44:31 -0400
-X-Greylist: delayed 165 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 20:44:30 PDT
-Received: from p3plwbeout16-02.prod.phx3.secureserver.net (p3plsmtp16-02-2.prod.phx3.secureserver.net [173.201.193.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E8F2AE19
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:44:30 -0700 (PDT)
-Received: from mailex.mailcore.me ([94.136.40.143])
-        by :WBEOUT: with ESMTP
-        id qo5gnMhrziIQcqo5hntOkL; Mon, 16 May 2022 20:41:45 -0700
-X-CMAE-Analysis: v=2.4 cv=UI8YoATy c=1 sm=1 tr=0 ts=62831979
- a=EhJYbXVJKsomWlz4CTV+qA==:117 a=84ok6UeoqCVsigPHarzEiQ==:17
- a=ggZhUymU-5wA:10 a=IkcTkHD0fZMA:10 a=oZkIemNP1mAA:10 a=anyJmfQTAAAA:8
- a=NEAV23lmAAAA:8 a=i3X5FwGiAAAA:8 a=QyXUC8HyAAAA:8 a=i-5SCMXTAAAA:20
- a=qMDeoKeJ2IOt-7S2xNsA:9 a=QEXdDO2ut3YA:10 a=YJ_ntbLOlx1v6PCnmBeL:22
- a=mmqRlSCDY2ywfjPLJ4af:22
-X-SECURESERVER-ACCT: phillip@squashfs.org.uk  
-X-SID:  qo5gnMhrziIQc
-Received: from 82-69-79-175.dsl.in-addr.zen.co.uk ([82.69.79.175] helo=[192.168.178.33])
-        by smtp12.mailcore.me with esmtpa (Exim 4.94.2)
-        (envelope-from <phillip@squashfs.org.uk>)
-        id 1nqo5f-0006FM-HL; Tue, 17 May 2022 04:41:44 +0100
-Message-ID: <c3175517-4177-d4d8-0aeb-9c21bc748149@squashfs.org.uk>
-Date:   Tue, 17 May 2022 04:41:39 +0100
+        Mon, 16 May 2022 23:44:45 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AE646653
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:44:39 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso1221020pjj.4
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HiOpix41GB5BHq08iCoL+4J7NeWeXx9NRhdLIRrYo6M=;
+        b=JnuaI49VgF6nFsSKPtNL++ozMVIxOTAB5Dxq74d+ROFsma5fB6GC4kR3iwAgyhwB/g
+         upJKL0belC1JZAh4Ep2TmHbLJ/Ih8JvmN1GMHHKxljoawGhdw5u3IPbp1WQSTIEEkarE
+         pCxp6+ifwXStfVodBc2ecbpvj4++bWVm3GqP4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HiOpix41GB5BHq08iCoL+4J7NeWeXx9NRhdLIRrYo6M=;
+        b=l6JbBanYa20aO7cM257nIXMATzX5g6m1G2AUlZaSP3Gkh+ighAkoSQFUjsROgY9zif
+         gOyYHmpOy7y0mwtdu+FkIhVNOFcMijMUQv02YhJQo91lww7zreh8C0uWBLup+cDTyzT0
+         JQ17Kc84cUnS5zWDvrJ8GNj/hxOKsNmsIH+AUiNjpJcgX9vOMZvbXZQDJ5KmxAYktZAo
+         gVOwPblOdcNhaH+c3Em/Oib7LU1SIa8Y1s+qVSKBhF4pEdis8cTAKzElMWEtqkl4CLhE
+         FvfDn/lh97Dcu88qtH6Pp04v+sy77KkMpdBm04OuEb0fGs2l6d++TTMHVS0tcwkhj1PT
+         7PnA==
+X-Gm-Message-State: AOAM532gGbglWU1oQoKoHINOJivreOjUc2BfQSFCY5bevPFnhnf/e+f+
+        7KAuzQlGzU9xfRlJEF95DwgcUwZnBgiwdw==
+X-Google-Smtp-Source: ABdhPJw2bzLqlq4aNLrLxAfJaNPzwLT5uJMUgBJTkm3oE4Bw5SRZ+uHA67xhyevEZEYXntRBkoyFnw==
+X-Received: by 2002:a17:90b:33c6:b0:1dc:ba92:41bb with SMTP id lk6-20020a17090b33c600b001dcba9241bbmr22600450pjb.26.1652759078847;
+        Mon, 16 May 2022 20:44:38 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id b8-20020a17090a990800b001df6216e89dsm458974pjp.28.2022.05.16.20.44.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 20:44:38 -0700 (PDT)
+Date:   Mon, 16 May 2022 20:44:37 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] LoadPin: Enable loading from trusted dm-verity
+ devices
+Message-ID: <202205162038.B2D1BBAB3@keescook>
+References: <20220504195419.1143099-1-mka@chromium.org>
+ <20220504125404.v3.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
+ <B7FB2BE6-DF1C-414A-B4C2-0C15FD1CBF75@chromium.org>
+ <YoKVSEJyHvFg/V9+@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/2] squashfs: implement readahead
-To:     kernel test robot <lkp@intel.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>
-Cc:     kbuild-all@lists.01.org, Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-References: <20220516105100.1412740-3-hsinyi@chromium.org>
- <202205162301.zVca8ZpM-lkp@intel.com>
-From:   Phillip Lougher <phillip@squashfs.org.uk>
-In-Reply-To: <202205162301.zVca8ZpM-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Mailcore-Auth: 439999529
-X-Mailcore-Domain: 1394945
-X-123-reg-Authenticated:  phillip@squashfs.org.uk  
-X-Originating-IP: 82.69.79.175
-X-CMAE-Envelope: MS4xfKzxtVGOLpzSCAPytfyjWBCz98QpopkUuTDwp+DxP0GGNVy4FBCNUre0ik48sxwx840iujBDq9VobtGPOgSCk9NFV9qa1Dfyzu03hIAWsTQWPNZ1/xQH
- PcGvprMrpTWgzUmsoKyFK1J61XdwfV6VjFDS93KpphSazaqkJAiLrGnjcauT9gFmSxShCTknCDLkC7w33MSzc8oOwCYBmCfXv1I=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoKVSEJyHvFg/V9+@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/05/2022 17:01, kernel test robot wrote:
-> Hi Hsin-Yi,
+On Mon, May 16, 2022 at 11:17:44AM -0700, Matthias Kaehlcke wrote:
+> On Fri, May 13, 2022 at 03:36:26PM -0700, Kees Cook wrote:
+> > 
+> > 
+> > On May 4, 2022 12:54:18 PM PDT, Matthias Kaehlcke <mka@chromium.org> wrote:
+> > >Extend LoadPin to allow loading of kernel files from trusted dm-verity [1]
+> > >devices.
+> > >
+> > >This change adds the concept of trusted verity devices to LoadPin. LoadPin
+> > >maintains a list of root digests of verity devices it considers trusted.
+> > >Userspace can populate this list through an ioctl on the new LoadPin
+> > >securityfs entry 'dm-verity'. The ioctl receives a file descriptor of
+> > >a file with verity digests as parameter. Verity reads the digests from
+> > >this file after confirming that the file is located on the pinned root.
+> > >The list of trusted digests can only be set up once, which is typically
+> > >done at boot time.
+> > >
+> > >When a kernel file is read LoadPin first checks (as usual) whether the file
+> > >is located on the pinned root, if so the file can be loaded. Otherwise, if
+> > >the verity extension is enabled, LoadPin determines whether the file is
+> > >located on a verity backed device and whether the root digest of that
+> > 
+> > I think this should be "... on an already trusted device ..."
 > 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on next-20220513]
-> [cannot apply to akpm-mm/mm-everything v5.18-rc7 v5.18-rc6 v5.18-rc5 v5.18-rc7]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
+> It's not entirely clear which part you want me to substitute. 'an already
+> trusted device' makes me wonder whether you are thinking about reading the
+> list of digests, and not the general case of reading a kernel file, which
+> this paragraph intends to describe.
 
-This is fixed by
+Sorry, I think I confused myself while reading what you'd written. I
+think it's fine as is. I think I had skipped around in my mind thinking
+about the trusted verity hashes file coming from the pinned root, but
+you basically already said that. :) Nevermind!
 
-[PATCH 3/2] squashfs: always build "file direct" version of page actor
+> > >+static int read_trusted_verity_root_digests(unsigned int fd)
+> > >+{
+> > >+	struct fd f;
+> > >+	void *data;
+> > 
+> > Probably easier if this is u8 *?
+> 
+> Maybe slightly, it would then require a cast when passing it to
+> kernel_read_file()
 
-Which I have just sent.
-
-Phillip
+Oh, good point. That is a kinda weird API.
 
 > 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Hsin-Yi-Wang/Implement-readahead-for-squashfs/20220516-185438
-> base:    1e1b28b936aed946122b4e0991e7144fdbbfd77e
-> config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220516/202205162301.zVca8ZpM-lkp@intel.com/config)
-> compiler: m68k-linux-gcc (GCC) 11.3.0
-> reproduce (this is a W=1 build):
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # https://github.com/intel-lab-lkp/linux/commit/573e1f2ced0df097c30c595d5bf5a9e7a5fcb8d5
->          git remote add linux-review https://github.com/intel-lab-lkp/linux
->          git fetch --no-tags linux-review Hsin-Yi-Wang/Implement-readahead-for-squashfs/20220516-185438
->          git checkout 573e1f2ced0df097c30c595d5bf5a9e7a5fcb8d5
->          # save the config file
->          mkdir build_dir && cp config build_dir/.config
->          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
->     fs/squashfs/file.c: In function 'squashfs_readahead':
->>> fs/squashfs/file.c:526:17: error: implicit declaration of function 'squashfs_page_actor_init_special'; did you mean 'squashfs_page_actor_init'? [-Werror=implicit-function-declaration]
->       526 |         actor = squashfs_page_actor_init_special(pages, max_pages, 0);
->           |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->           |                 squashfs_page_actor_init
->     fs/squashfs/file.c:526:15: warning: assignment to 'struct squashfs_page_actor *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
->       526 |         actor = squashfs_page_actor_init_special(pages, max_pages, 0);
->           |               ^
->     fs/squashfs/file.c: At top level:
->>> fs/squashfs/file.c:577:9: error: request for member 'readahead' in something not a structure or union
->       577 |         .readahead = squashfs_readahead
->           |         ^
->     cc1: some warnings being treated as errors
-> 
-> 
-> vim +526 fs/squashfs/file.c
-> 
->     498	
->     499	static void squashfs_readahead(struct readahead_control *ractl)
->     500	{
->     501		struct inode *inode = ractl->mapping->host;
->     502		struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
->     503		size_t mask = (1UL << msblk->block_log) - 1;
->     504		size_t shift = msblk->block_log - PAGE_SHIFT;
->     505		loff_t req_end = readahead_pos(ractl) + readahead_length(ractl);
->     506		loff_t start = readahead_pos(ractl) &~ mask;
->     507		size_t len = readahead_length(ractl) + readahead_pos(ractl) - start;
->     508		struct squashfs_page_actor *actor;
->     509		unsigned int nr_pages = 0;
->     510		struct page **pages;
->     511		u64 block = 0;
->     512		int bsize, res, i, index;
->     513		int file_end = i_size_read(inode) >> msblk->block_log;
->     514		unsigned int max_pages = 1UL << shift;
->     515	
->     516		readahead_expand(ractl, start, (len | mask) + 1);
->     517	
->     518		if (readahead_pos(ractl) + readahead_length(ractl) < req_end ||
->     519		    file_end == 0)
->     520			return;
->     521	
->     522		pages = kmalloc_array(max_pages, sizeof(void *), GFP_KERNEL);
->     523		if (!pages)
->     524			return;
->     525	
->   > 526		actor = squashfs_page_actor_init_special(pages, max_pages, 0);
->     527		if (!actor)
->     528			goto out;
->     529	
->     530		for (;;) {
->     531			nr_pages = __readahead_batch(ractl, pages, max_pages);
->     532			if (!nr_pages)
->     533				break;
->     534	
->     535			if (readahead_pos(ractl) >= i_size_read(inode) ||
->     536			    nr_pages < max_pages)
->     537				goto skip_pages;
->     538	
->     539			index = pages[0]->index >> shift;
->     540			if ((pages[nr_pages - 1]->index >> shift) != index)
->     541				goto skip_pages;
->     542	
->     543			bsize = read_blocklist(inode, index, &block);
->     544			if (bsize == 0)
->     545				goto skip_pages;
->     546	
->     547			res = squashfs_read_data(inode->i_sb, block, bsize, NULL,
->     548						 actor);
->     549	
->     550			if (res >= 0)
->     551				for (i = 0; i < nr_pages; i++)
->     552					SetPageUptodate(pages[i]);
->     553	
->     554			for (i = 0; i < nr_pages; i++) {
->     555				unlock_page(pages[i]);
->     556				put_page(pages[i]);
->     557			}
->     558		}
->     559	
->     560		kfree(actor);
->     561		kfree(pages);
->     562		return;
->     563	
->     564	skip_pages:
->     565		for (i = 0; i < nr_pages; i++) {
->     566			unlock_page(pages[i]);
->     567			put_page(pages[i]);
->     568		}
->     569	
->     570		kfree(actor);
->     571	out:
->     572		kfree(pages);
->     573	}
->     574	
->     575	const struct address_space_operations squashfs_aops = {
->     576		.read_folio = squashfs_read_folio
->   > 577		.readahead = squashfs_readahead
-> 
+> > >+	int rc;
+> > >+	char *p, *d;
+> > >+
+> > >+	/* The list of trusted root digests can only be set up once */
+> > >+	if (!list_empty(&trusted_verity_root_digests))
+> > >+		return -EPERM;
+> > >+
+> > >+	f = fdget(fd);
+> > >+	if (!f.file)
+> > >+		return -EINVAL;
+> > >+
+> > >+	data = kzalloc(SZ_4K, GFP_KERNEL);
+> > >+	if (!data) {
+> > >+		rc = -ENOMEM;
+> > >+		goto err;
+> > >+	}
+> > >+
+> > >+	rc = kernel_read_file(f.file, 0, &data, SZ_4K - 1, NULL, READING_POLICY);
+> > >+	if (rc < 0)
+> > >+		goto err;
 
+So maybe, here, you could do:
+
+	p = data;
+	p[rc] '\0';
+	p = strim(p);
+
+etc... (the void * -> char * cast in the assignment should be accepted
+without warning?)
+
+> > >+
+> > >+	((char *)data)[rc] = '\0';
+> > >+
+> > >+	p = strim(data);
+> > >+	while ((d = strsep(&p, ",")) != NULL) {
+> > 
+> > Maybe be flexible and add newline as a separator too?
+> 
+> Sure, I can add that. I'd also be fine with just allowing a newline as
+> separator, which seems a reasonable format for a sysfs file.
+
+Yeah, that was my thinking too. And easier to parse for command line
+tools, etc. Not a requirement at all, but might make testing easier,
+etc.
+
+-- 
+Kees Cook
