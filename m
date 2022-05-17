@@ -2,114 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 256F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 691FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245120AbiEQJpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
+        id S239794AbiEQJpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245143AbiEQJof (ORCPT
+        with ESMTP id S245377AbiEQJoh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:44:35 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B75C47ACF;
-        Tue, 17 May 2022 02:44:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652780650; x=1684316650;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MY73mTxaNzmfINOX3HHpRcVnHeDiQGinOqwrS6cKUFM=;
-  b=qQXstknZEc4ib8wVv7QQedC5lCsf7bH8brgk8nNLVDYC+1C2ERZgKi9k
-   RcMfFzUoGuast4Ce+AvsCMrqAaxPQHGMNZO5jkmBZbdE+4RwwNIvegPbh
-   VmMaOfvB7jg+4SwxoIiPPmVIuXteBkPQcUjuYeChDgdLVeZ3NrSeFvDUN
-   3xKU66s4sqOL7pIkLe4LNozRlobEJ5B1EoHmEiAV9qxq4F2g0SnoMMhQt
-   iNREF6Ozyui4OzeaHluQhumuGzCYDWJH6sTACPyoNYLOpNTmeoJ1XTgsa
-   vMOzxNRlsY3DYnWNlfwshDialFVjGNv0TWG5+zmUxh4TgQKlXqfV5Drv/
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="173714678"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 02:44:08 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 17 May 2022 02:44:08 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 17 May 2022 02:44:02 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Russell King <linux@armlinux.org.uk>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Marek Vasut <marex@denx.de>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [Patch net-next 1/9] net: dsa: microchip: ksz8795: update the port_cnt value in ksz_chip_data
-Date:   Tue, 17 May 2022 15:13:25 +0530
-Message-ID: <20220517094333.27225-2-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220517094333.27225-1-arun.ramadoss@microchip.com>
-References: <20220517094333.27225-1-arun.ramadoss@microchip.com>
+        Tue, 17 May 2022 05:44:37 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F3F47AD8;
+        Tue, 17 May 2022 02:44:14 -0700 (PDT)
+X-UUID: 7808b7859d8b418ab7c6aae70101b4d6-20220517
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:4c919e80-f6f1-4c2b-a180-6b1d639b2c9e,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:2dc47be2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 7808b7859d8b418ab7c6aae70101b4d6-20220517
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1524489763; Tue, 17 May 2022 17:44:10 +0800
+Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 17 May 2022 17:44:09 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 17 May 2022 17:44:09 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 17 May 2022 17:44:07 +0800
+Message-ID: <9f290b2bbdfd4b9d46b81d3ab02c2f50999e95e5.camel@mediatek.com>
+Subject: Re: [PATCH v2 2/2] memory: mtk-smi: Add support for MT6795 Helio X10
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+CC:     <krzysztof.kozlowski@linaro.org>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <konrad.dybcio@somainline.org>, <marijn.suijten@somainline.org>,
+        <martin.botka@somainline.org>,
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        <phone-devel@vger.kernel.org>, <paul.bouchara@somainline.org>,
+        <kernel@collabora.com>, <yi.kuo@mediatek.com>,
+        <anthony.huang@mediatek.com>, <wendy-st.lin@mediatek.com>
+Date:   Tue, 17 May 2022 17:44:07 +0800
+In-Reply-To: <f222e1c5-4ce1-a42d-ceef-a292136d8b61@collabora.com>
+References: <20220513150633.387200-1-angelogioacchino.delregno@collabora.com>
+         <20220513150633.387200-3-angelogioacchino.delregno@collabora.com>
+         <cf2442b9c7124ebf1ce62ae5df597f003fa447d7.camel@mediatek.com>
+         <f222e1c5-4ce1-a42d-ceef-a292136d8b61@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The port_cnt value in the structure is not used in the switch_init.
-Instead it uses the fls(chip->cpu_port), this is due to one of port in
-the ksz8794 unavailable. The cpu_port for the 8794 is 0x10, fls(0x10) =
-5, hence updating it directly in the ksz_chip_data structure in order to
-same with all the other switches in ksz8795.c and ksz9477.c files.
+On Tue, 2022-05-17 at 10:27 +0200, AngeloGioacchino Del Regno wrote:
+> Il 17/05/22 08:37, Yong Wu ha scritto:
+> > On Fri, 2022-05-13 at 17:06 +0200, AngeloGioacchino Del Regno
+> > wrote:
+> > > The MediaTek Helio X10 (MT6795) SoC has 5 LARBs and one common
+> > > SMI
+> > > instance without any sub-common and without GALS.
+> > > 
+> > > While the smi-common configuration is specific to this SoC, on
+> > > the
+> > > LARB side, this is similar to MT8173, in the sense that it
+> > > doesn't
+> > > need the port in LARB, and the register layout is also compatible
+> > > with that one, which makes us able to fully reuse the smi-larb
+> > > platform data struct that was introduced for MT8173.
+> > > 
+> > > Signed-off-by: AngeloGioacchino Del Regno <
+> > > angelogioacchino.delregno@collabora.com>
+> > > ---
+> > >   drivers/memory/mtk-smi.c | 17 +++++++++++++++++
+> > >   1 file changed, 17 insertions(+)
+> > > 
+> > > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> > > index 86a3d34f418e..7e7c3ede19e4 100644
+> > > --- a/drivers/memory/mtk-smi.c
+> > > +++ b/drivers/memory/mtk-smi.c
+> > > @@ -21,11 +21,13 @@
+> > >   /* SMI COMMON */
+> > >   #define SMI_L1LEN			0x100
+> > >   
+> > > +#define SMI_L1_ARB			0x200
+> > >   #define SMI_BUS_SEL			0x220
+> > >   #define SMI_BUS_LARB_SHIFT(larbid)	((larbid) << 1)
+> > >   /* All are MMU0 defaultly. Only specialize mmu1 here. */
+> > >   #define F_MMU1_LARB(larbid)		(0x1 <<
+> > > SMI_BUS_LARB_SHIFT(larbid))
+> > >   
+> > > +#define SMI_FIFO_TH0			0x230
+> > 
+> > Does the name come from the coda you got?
+> > It is called SMI_READ_FIFO_TH in my coda.
+> > 
+> 
+> Documentation for this SoC is not public and I have no access to it,
+> so
+> everything that you see here comes from reading downstream kernel
+> code :-(
+> 
+> I'll change the name to SMI_READ_FIFO_TH as suggested, thanks!
+> 
+> > >   #define SMI_M4U_TH			0x234
+> > >   #define SMI_FIFO_TH1			0x238
+> > >   #define SMI_FIFO_TH2			0x23c
+> > > @@ -360,6 +362,7 @@ static const struct of_device_id
+> > > mtk_smi_larb_of_ids[] = {
+> > >   	{.compatible = "mediatek,mt2701-smi-larb", .data =
+> > > &mtk_smi_larb_mt2701},
+> > >   	{.compatible = "mediatek,mt2712-smi-larb", .data =
+> > > &mtk_smi_larb_mt2712},
+> > >   	{.compatible = "mediatek,mt6779-smi-larb", .data =
+> > > &mtk_smi_larb_mt6779},
+> > > +	{.compatible = "mediatek,mt6795-smi-larb", .data =
+> > > &mtk_smi_larb_mt8173},
+> > >   	{.compatible = "mediatek,mt8167-smi-larb", .data =
+> > > &mtk_smi_larb_mt8167},
+> > >   	{.compatible = "mediatek,mt8173-smi-larb", .data =
+> > > &mtk_smi_larb_mt8173},
+> > >   	{.compatible = "mediatek,mt8183-smi-larb", .data =
+> > > &mtk_smi_larb_mt8183},
+> > > @@ -541,6 +544,13 @@ static struct platform_driver
+> > > mtk_smi_larb_driver = {
+> > >   	}
+> > >   };
+> > >   
+> > > +static const struct mtk_smi_reg_pair
+> > > mtk_smi_common_mt6795_init[SMI_COMMON_INIT_REGS_NR] = {
+> > > +	{SMI_L1_ARB, 0x1b},
+> > > +	{SMI_M4U_TH, 0xce810c85},
+> > > +	{SMI_FIFO_TH1, 0x43214c8},
+> > > +	{SMI_FIFO_TH0, 0x191f},
+> > > +};
+> > > +
+> > >   static const struct mtk_smi_reg_pair
+> > > mtk_smi_common_mt8195_init[SMI_COMMON_INIT_REGS_NR] = {
+> > >   	{SMI_L1LEN, 0xb},
+> > >   	{SMI_M4U_TH, 0xe100e10},
+> > > @@ -565,6 +575,12 @@ static const struct mtk_smi_common_plat
+> > > mtk_smi_common_mt6779 = {
+> > >   		    F_MMU1_LARB(5) | F_MMU1_LARB(6) |
+> > > F_MMU1_LARB(7),
+> > >   };
+> > >   
+> > > +static const struct mtk_smi_common_plat mtk_smi_common_mt6795 =
+> > > {
+> > > +	.type	  = MTK_SMI_GEN2,
+> > > +	.bus_sel  = BIT(0),
+> > 
+> > Like the other larbs, use F_MMU1_LARB(0) here?
+> > 
+> 
+> I agree that F_MMU1_LARB(0) == (1 << (0 << 1)) == BIT(0), but that
+> would
+> not be correct and induce other people to mistake, I think?
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/net/dsa/microchip/ksz8795.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+F_MMU1_LARB(x) means larbx enter MMU1. this is correct for me.
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index f91deea9368e..83bcabf2dc54 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1607,6 +1607,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
- 		 * KSZ8794   0,1,2      4
- 		 * KSZ8795   0,1,2,3    4
- 		 * KSZ8765   0,1,2,3    4
-+		 * port_cnt is configured as 5, even though it is 4
- 		 */
- 		.chip_id = 0x8794,
- 		.dev_name = "KSZ8794",
-@@ -1614,7 +1615,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
- 		.num_alus = 0,
- 		.num_statics = 8,
- 		.cpu_ports = 0x10,	/* can be configured as cpu port */
--		.port_cnt = 4,		/* total cpu and user ports */
-+		.port_cnt = 5,		/* total cpu and user ports */
- 		.ksz87xx_eee_link_erratum = true,
- 	},
- 	{
-@@ -1653,7 +1654,7 @@ static int ksz8_switch_init(struct ksz_device *dev)
- 			dev->num_vlans = chip->num_vlans;
- 			dev->num_alus = chip->num_alus;
- 			dev->num_statics = chip->num_statics;
--			dev->port_cnt = fls(chip->cpu_ports);
-+			dev->port_cnt = chip->port_cnt;
- 			dev->cpu_port = fls(chip->cpu_ports) - 1;
- 			dev->phy_port_cnt = dev->port_cnt - 1;
- 			dev->cpu_ports = chip->cpu_ports;
--- 
-2.33.0
+OK. Maybe the macro name is not good. About the macro background,
+please see:
+567e58cf96dd (memory: mtk-smi: Add bus_sel for mt8183)
+
+If you have better name for this, please tell me:)
+
+> Downstream doesn't do MMU1 bits, but MMU0 in this case... but if you
+> can
+> check on internal documentation and confirm that the downstream
+> kernel's
+> logic is wrong on that - and that you've verified that this should 
+
+I don't know the detailed downstream code, But I find a internal branch
+about this SoC. I see the bus_sel did set to 0x1 as you did here. thus
+I don't think the downstream kernel is wrong. 0x1 means larb0 enter
+MMU1 while the others still enter MMU0. we could use F_MMU1_LARB(0)
+here.
+
+> indeed
+> be F_MMU1_LARB(x), you'll get a big(bigger) thank you from me :-)
+> 
+> Meanwhile...
+> 
+> Thanks!
+> Angelo
+> 
+> > 
+> > After the two changes,
+> > 
+> > Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+> > 
+> > Thanks.
 
