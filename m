@@ -2,100 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B21CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F897C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240129AbiEQBDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 21:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52944 "EHLO
+        id S233160AbiEQBDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 21:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237037AbiEQBDS (ORCPT
+        with ESMTP id S243352AbiEQBDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 21:03:18 -0400
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3267244A18
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 18:03:16 -0700 (PDT)
-Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 16 May 2022 21:03:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E102547057
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 18:03:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652749410;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sr0Su8VmpTGq2+kXIOmhRI/79j0nmk1mBS04kJYAJN4=;
+        b=bz58WmnbLyUh7rQW2G1ohm0DyCDaiZ4dAi9dETfk5PrAHpHFh6m4GC+x+hiVW1oSGRHZes
+        gkDhhD4uNNKBjEqhZCDkcbsycnTvASDHw5qytXbhrezgTsW282tFVBVWUOvMI2hpYLtD2q
+        0IdDUhrHTQwxUTiFE8AFNvBVE1oibLE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-91-KnC_sT4AMFiEFxMcx4vgGw-1; Mon, 16 May 2022 21:03:24 -0400
+X-MC-Unique: KnC_sT4AMFiEFxMcx4vgGw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 8233147B;
-        Mon, 16 May 2022 18:03:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1652749396;
-        bh=WcK2JUZcjleYQ+ehJoqWZx1V98FwapKGFaS6k/OLh8g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H0nNjK825o6tRHWW3XPRoKEtGmyN5Wx2qzJJMWtd3360P2BOJH/AcfQMpVkQT5B7Z
-         UQodwU6YcypPd5D/F1Kch895CPbtyFjodwOgNHCd+BZoT0mnoP4SiaWum/MIQjDkvN
-         Mjta35KAfqlIWuOkJAnFF2730JxVOYJQ16OBOPc4=
-Date:   Mon, 16 May 2022 18:03:12 -0700
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Chanwoo Choi <cwchoi00@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        openbmc@lists.ozlabs.org,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: Re: [PATCH v2 2/2] extcon: Add extcon-regulator driver
-Message-ID: <YoL0UGR+TiZojL9Y@hatter.bewilderbeest.net>
-References: <20220505232557.10936-1-zev@bewilderbeest.net>
- <20220505232557.10936-3-zev@bewilderbeest.net>
- <e27ff1b2-c82f-8335-340f-ae1fa914ed30@gmail.com>
- <YnkyIBh2HnXXLHw3@sirena.org.uk>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2719B80A0B9;
+        Tue, 17 May 2022 01:03:24 +0000 (UTC)
+Received: from localhost (unknown [10.72.47.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7C7FD7774;
+        Tue, 17 May 2022 01:03:23 +0000 (UTC)
+From:   Xiubo Li <xiubli@redhat.com>
+To:     jlayton@kernel.org, viro@zeniv.linux.org.uk
+Cc:     idryomov@gmail.com, vshankar@redhat.com,
+        ceph-devel@vger.kernel.org, arnd@arndb.de, mcgrof@kernel.org,
+        akpm@linux-foundation.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xiubo Li <xiubli@redhat.com>
+Subject: [PATCH v2 1/2] fs/dcache: add d_compare() helper support
+Date:   Tue, 17 May 2022 09:03:15 +0800
+Message-Id: <20220517010316.81483-2-xiubli@redhat.com>
+In-Reply-To: <20220517010316.81483-1-xiubli@redhat.com>
+References: <20220517010316.81483-1-xiubli@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnkyIBh2HnXXLHw3@sirena.org.uk>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Adding Sebastian for drivers/power discussion]
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+---
+ fs/dcache.c            | 15 +++++++++++++++
+ include/linux/dcache.h |  2 ++
+ 2 files changed, 17 insertions(+)
 
-On Mon, May 09, 2022 at 08:24:16AM PDT, Mark Brown wrote:
-> On Mon, May 09, 2022 at 09:24:39PM +0900, Chanwoo Choi wrote:
-> > Hi Zev,
-> > 
-> > I checked this patch. But, it doesn't look like the extcon provider
-> > driver. Because basically, extcon provider driver need the circuit
-> > in order to detect the kind of external connector. But, there are
-> > no any code for detection. Just add the specific sysfs attribute
-> > for only this driver. It is not standard interface.
-> 
-> OTOH it's something where if I look at the physical system with the
-> hardware there's a clearly visible external connector that I can point
-> to - it just happens to not support hotplug.  It's not clear what other
-> system it would sit in, and it seems like an application that displays
-> external connections on a system in a UI would be able to do something
-> sensible with it.
-
-Chanwoo, any further thoughts on Mark's reasoning above?
-
-I certainly understand the reluctance to add an extcon driver that 
-doesn't really do anything with the extcon API, and I have no idea when 
-we might end up enhancing it to do something more meaningful with that 
-API (I don't know of any hardware at the moment that would need it).
-
-That said, as Mark points out, the hardware *is* ultimately an "external 
-connector" (if a very simplistic one).
-
-Do you have any other ideas for where this functionality could go?  Greg 
-wasn't enthusiastic about a previous revision that had it in 
-drivers/misc -- though now a fair amount of what was in that version is 
-now going to be in the regulator core, so maybe that could be 
-reconsidered?
-
-Or maybe something under drivers/power, though it's not really a supply 
-or a reset device...drivers/power/output.c or something?
-
-Personally I don't have any terribly strong opinions on this, I'd just 
-like to reach a mutually-agreeable consensus on a place for it to live.
-
-
-Thanks,
-Zev
+diff --git a/fs/dcache.c b/fs/dcache.c
+index 93f4f5ee07bf..95a72f92a94b 100644
+--- a/fs/dcache.c
++++ b/fs/dcache.c
+@@ -2262,6 +2262,21 @@ static inline bool d_same_name(const struct dentry *dentry,
+ 				       name) == 0;
+ }
+ 
++/**
++ * d_compare - compare dentry name with case-exact name
++ * @parent: parent dentry
++ * @dentry: the negative dentry that was passed to the parent's lookup func
++ * @name:   the case-exact name to be associated with the returned dentry
++ *
++ * Return: 0 if names are same, or 1
++ */
++bool d_compare(const struct dentry *parent, const struct dentry *dentry,
++	       const struct qstr *name)
++{
++	return !d_same_name(dentry, parent, name);
++}
++EXPORT_SYMBOL(d_compare);
++
+ /**
+  * __d_lookup_rcu - search for a dentry (racy, store-free)
+  * @parent: parent dentry
+diff --git a/include/linux/dcache.h b/include/linux/dcache.h
+index f5bba51480b2..444b2230e5c3 100644
+--- a/include/linux/dcache.h
++++ b/include/linux/dcache.h
+@@ -233,6 +233,8 @@ extern struct dentry * d_alloc_parallel(struct dentry *, const struct qstr *,
+ 					wait_queue_head_t *);
+ extern struct dentry * d_splice_alias(struct inode *, struct dentry *);
+ extern struct dentry * d_add_ci(struct dentry *, struct inode *, struct qstr *);
++extern bool d_compare(const struct dentry *parent, const struct dentry *dentry,
++		      const struct qstr *name);
+ extern struct dentry * d_exact_alias(struct dentry *, struct inode *);
+ extern struct dentry *d_find_any_alias(struct inode *inode);
+ extern struct dentry * d_obtain_alias(struct inode *);
+-- 
+2.36.0.rc1
 
