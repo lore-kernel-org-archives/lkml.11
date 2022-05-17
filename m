@@ -2,196 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86122C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F09C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240841AbiEQH12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
+        id S241087AbiEQH1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236256AbiEQH1W (ORCPT
+        with ESMTP id S240787AbiEQH10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:27:22 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66F943EED;
-        Tue, 17 May 2022 00:27:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652772441; x=1684308441;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xMiGsrSeghOS0yjMoEbRiyjbU0nqO5uR7AcrlNt3J5A=;
-  b=ggq73x3T+oyIP0vmECDazyNkvoSAj52VnRNSaqI7GE5OJ0tD0qWJF9Pl
-   UjmdDZ1LW7yfkNCjeTK5IlE0O24wjLad5DYfvqChjIbZlZqKB5Pkh6cHI
-   R7LlVM4nwxYGjO4u7mQ/1XO6+2i7SlunR8kmIFQgbqOEvinNEiD9nChER
-   s4fb/ieOFyZ/1i9Zg46ni9MPJBjMmHjFMe0Oa4Q7HGTFLuA7FMLHE5WHn
-   uB1ic2L0AIZ0alc9hkUxVWhIhGqSK421SA+/WVDwOWC98i2YCvRp7C2It
-   h/D1ECe0ntQNv3362US5cDKJlb+/IavI0BwSM2+0zLvEnXhvM/WVFSjKT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="251607351"
-X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="251607351"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 00:27:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="605228191"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 17 May 2022 00:27:11 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqrbr-0000ij-AK;
-        Tue, 17 May 2022 07:27:11 +0000
-Date:   Tue, 17 May 2022 15:26:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Richard Guy Briggs <rgb@redhat.com>,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Paul Moore <paul@paul-moore.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Steve Grubb <sgrubb@redhat.com>,
-        Richard Guy Briggs <rgb@redhat.com>, Jan Kara <jack@suse.cz>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: Re: [PATCH v3 2/3] fanotify: define struct members to hold response
- decision context
-Message-ID: <202205171508.anzweWlm-lkp@intel.com>
-References: <1520f08c023d1e919b1a2af161d5a19367b6b4bf.1652730821.git.rgb@redhat.com>
+        Tue, 17 May 2022 03:27:26 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0DB43EED;
+        Tue, 17 May 2022 00:27:24 -0700 (PDT)
+Received: from kwepemi100021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L2SMs5W4MzbcBg;
+        Tue, 17 May 2022 15:26:01 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100021.china.huawei.com (7.221.188.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 15:27:21 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 15:27:20 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Arnd Bergmann <arnd@arndb.de>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>, <linux-arch@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        <wangkefeng.wang@huawei.com>, Guohanjun <guohanjun@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>
+Subject: [PATCH -next 0/2] mm: fix some page table check related issues
+Date:   Tue, 17 May 2022 07:45:46 +0000
+Message-ID: <20220517074548.2227779-1-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1520f08c023d1e919b1a2af161d5a19367b6b4bf.1652730821.git.rgb@redhat.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Richard,
+This patchset solves some ptc-related issues found recently.
 
-Thank you for the patch! Perhaps something to improve:
+Tong Tiangen (2):
+  riscv/mm: fix two page table check related issues
+  arm64/mm: fix page table check compile error for
+    CONFIG_PGTABLE_LEVELS=2
 
-[auto build test WARNING on jack-fs/fsnotify]
-[also build test WARNING on pcmoore-audit/next linux/master linus/master v5.18-rc7 next-20220516]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Richard-Guy-Briggs/fanotify-Allow-user-space-to-pass-back-additional-audit-info/20220517-044904
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jack/linux-fs.git fsnotify
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220517/202205171508.anzweWlm-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/4d1fc23ae264424a2007ef5a3cfc1b4dbc8d82db
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Richard-Guy-Briggs/fanotify-Allow-user-space-to-pass-back-additional-audit-info/20220517-044904
-        git checkout 4d1fc23ae264424a2007ef5a3cfc1b4dbc8d82db
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash fs/notify/fanotify/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/asm-generic/bug.h:22,
-                    from arch/m68k/include/asm/bug.h:32,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/m68k/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from arch/m68k/include/asm/irqflags.h:6,
-                    from include/linux/irqflags.h:16,
-                    from arch/m68k/include/asm/atomic.h:6,
-                    from include/linux/atomic.h:7,
-                    from include/linux/rcupdate.h:25,
-                    from include/linux/sysctl.h:26,
-                    from include/linux/fanotify.h:5,
-                    from fs/notify/fanotify/fanotify_user.c:2:
-   fs/notify/fanotify/fanotify_user.c: In function 'process_access_response':
->> fs/notify/fanotify/fanotify_user.c:325:18: warning: format '%lu' expects argument of type 'long unsigned int', but argument 8 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-     325 |         pr_debug("%s: group=%p fd=%d response=%u type=%u size=%lu\n", __func__,
-         |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:336:21: note: in definition of macro 'pr_fmt'
-     336 | #define pr_fmt(fmt) fmt
-         |                     ^~~
-   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
-     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
-     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:570:9: note: in expansion of macro 'dynamic_pr_debug'
-     570 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~
-   fs/notify/fanotify/fanotify_user.c:325:9: note: in expansion of macro 'pr_debug'
-     325 |         pr_debug("%s: group=%p fd=%d response=%u type=%u size=%lu\n", __func__,
-         |         ^~~~~~~~
-   fs/notify/fanotify/fanotify_user.c:325:65: note: format string is defined here
-     325 |         pr_debug("%s: group=%p fd=%d response=%u type=%u size=%lu\n", __func__,
-         |                                                               ~~^
-         |                                                                 |
-         |                                                                 long unsigned int
-         |                                                               %u
-
-
-vim +325 fs/notify/fanotify/fanotify_user.c
-
-   316	
-   317	static int process_access_response(struct fsnotify_group *group,
-   318					   struct fanotify_response *response_struct,
-   319					   size_t count)
-   320	{
-   321		struct fanotify_perm_event *event;
-   322		int fd = response_struct->fd;
-   323		u32 response = response_struct->response;
-   324	
- > 325		pr_debug("%s: group=%p fd=%d response=%u type=%u size=%lu\n", __func__,
-   326			 group, fd, response, response_struct->extra_info_type, count);
-   327		if (fd < 0)
-   328			return -EINVAL;
-   329		/*
-   330		 * make sure the response is valid, if invalid we do nothing and either
-   331		 * userspace can send a valid response or we will clean it up after the
-   332		 * timeout
-   333		 */
-   334		if (FAN_INVALID_RESPONSE_MASK(response))
-   335			return -EINVAL;
-   336		if ((response & FAN_AUDIT) && !FAN_GROUP_FLAG(group, FAN_ENABLE_AUDIT))
-   337			return -EINVAL;
-   338		if (response & FAN_EXTRA) {
-   339			if (count < offsetofend(struct fanotify_response, extra_info_type))
-   340				return -EINVAL;
-   341			switch (response_struct->extra_info_type) {
-   342			case FAN_RESPONSE_INFO_NONE:
-   343				break;
-   344			case FAN_RESPONSE_INFO_AUDIT_RULE:
-   345				if (count < offsetofend(struct fanotify_response, extra_info))
-   346					return -EINVAL;
-   347				break;
-   348			default:
-   349				return -EINVAL;
-   350			}
-   351		}
-   352		spin_lock(&group->notification_lock);
-   353		list_for_each_entry(event, &group->fanotify_data.access_list,
-   354				    fae.fse.list) {
-   355			if (event->fd != fd)
-   356				continue;
-   357	
-   358			list_del_init(&event->fae.fse.list);
-   359			finish_permission_event(group, event, response_struct);
-   360			wake_up(&group->fanotify_data.access_waitq);
-   361			return 0;
-   362		}
-   363		spin_unlock(&group->notification_lock);
-   364	
-   365		return -ENOENT;
-   366	}
-   367	
+ arch/arm64/include/asm/pgtable.h    | 33 +++++++++++++++--------------
+ arch/riscv/include/asm/pgtable-64.h |  5 +++++
+ arch/riscv/include/asm/pgtable.h    |  5 -----
+ include/asm-generic/pgtable-nopmd.h |  2 ++
+ 4 files changed, 24 insertions(+), 21 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
