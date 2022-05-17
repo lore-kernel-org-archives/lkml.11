@@ -2,100 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4192BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4476AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349144AbiEQOkk (ORCPT
+        id S1349191AbiEQOl7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
+        Tue, 17 May 2022 10:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232190AbiEQOki (ORCPT
+        with ESMTP id S1349171AbiEQOl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:40:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EFEF2E9
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:40:36 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L2f0Z6BXtzhZFm;
-        Tue, 17 May 2022 22:39:58 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 22:40:33 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 22:40:33 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     SeongJae Park <sj@kernel.org>
-CC:     Andrew Morton <akpm@linux-foundation.org>, <damon@lists.linux.dev>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH] mm: damon: Use HPAGE_PMD_SIZE
-Date:   Tue, 17 May 2022 22:51:20 +0800
-Message-ID: <20220517145120.118523-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
+        Tue, 17 May 2022 10:41:58 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E96FB1
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:41:57 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id y41so17039781pfw.12
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:41:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NZRXMYALDTEfzJrYaNW6lXt081qNZ509LXFQ98V4Tb4=;
+        b=RBLPzCKSyloEyfcJ2gJauS7uRn/AF2xeL0KIWvJBn6UXtfxcXiwt37LSNcoTLV8qLK
+         Q3+2v7M+t7qfnPr3MLVHsQ0/tv0+xX/afV6m/Vb3TX9gh65F1VYYT8LSBAFpHMzE9Jz3
+         hGyw6ibm/y+myZpdRju0tdCqZh0oRpb1G/LPoKGhQvX4dHbPvXVeL9KpZ6tx3MU4dQFv
+         81FyFOQmeXqqWvIZl1HX/hMz/7BExDq9W4XKcw04AYzMXkpncUmMGsXSXJs0ecuuYeHn
+         0wGVupkAjsbm1mrOGgVyn5jhfTzIbtdKt9nVggWcwQogBZNsTKCMAhbiSCsnQTInVb+1
+         EfMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NZRXMYALDTEfzJrYaNW6lXt081qNZ509LXFQ98V4Tb4=;
+        b=OJaaABuiiN5h2+q2u1zYp7YUqnotP+5gBy9ff+CVXQo3nOtwo0NBHMV+2FeSP2ghpg
+         xVLLJw8j+U1/FRmNlZfku4jY+nfSSsDkZGWsbI1P+qR79Dt2YjrqjZ1m18sJfYoZjsRy
+         slOOak0oIKZFwNfiQyeKBb3KpCoCmAtWQBLTepWIMAhoNnrDbdHIlj+1WpkZHwUih6nz
+         iQvSMRNpV4Vl2p5B+3tJiMmSAyEC2rS4n9gF9PzKuRdYMn33ob4TM8ItZVRl7Y3BVmYW
+         1Q7xIa6wni2tesfOSlCJmfaxL3BEhX0ySAC0eA3EtBfmDuOS/YrCesW0QZq2nQe5w3ve
+         KL2g==
+X-Gm-Message-State: AOAM530YB6Ak2sA7ORt92W/BjVD+2ol+ThVtIl3NH4n/b8qSHRBeDUiF
+        COd9LMQUa2zQBiWL0fRa1Vmh3tY5xPf5xYk54RRrpw==
+X-Google-Smtp-Source: ABdhPJythY7CcBjNDjJNkMiS8VsvtM0EExDHS3VL0rsXDMq/FB+LdQvTc0tfhf5HXXCtdzluspt5T40ewEXQsN+l+6k=
+X-Received: by 2002:a63:d4c:0:b0:3f5:cc48:9fa3 with SMTP id
+ 12-20020a630d4c000000b003f5cc489fa3mr2158954pgn.509.1652798516626; Tue, 17
+ May 2022 07:41:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+References: <20220517143320.99649-1-songmuchun@bytedance.com>
+In-Reply-To: <20220517143320.99649-1-songmuchun@bytedance.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Tue, 17 May 2022 07:41:45 -0700
+Message-ID: <CALvZod4Qd6Sr=PDGwkiJu54kGMmj_=MMDzGjJZZAzYDqgGm53A@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: add myself as a memcg reviewer
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using HPAGE_PMD_SIZE instead of open code.
+On Tue, May 17, 2022 at 7:34 AM Muchun Song <songmuchun@bytedance.com> wrote:
+>
+> I have been focusing on mm for the past two years. e.g. developing,
+> fixing bugs, reviewing.  I have fixed lots of races (including memcg).
+> I would like to help people working on memcg or related by reviewing
+> their work.  Let me be Cc'd on patches related to memcg.
+>
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- mm/damon/ops-common.c | 3 +--
- mm/damon/paddr.c      | 2 +-
- mm/damon/vaddr.c      | 2 +-
- 3 files changed, 3 insertions(+), 4 deletions(-)
+Acked-by: Shakeel Butt <shakeelb@google.com>
 
-diff --git a/mm/damon/ops-common.c b/mm/damon/ops-common.c
-index e346cc10d143..10ef20b2003f 100644
---- a/mm/damon/ops-common.c
-+++ b/mm/damon/ops-common.c
-@@ -73,8 +73,7 @@ void damon_pmdp_mkold(pmd_t *pmd, struct mm_struct *mm, unsigned long addr)
- 	}
- 
- #ifdef CONFIG_MMU_NOTIFIER
--	if (mmu_notifier_clear_young(mm, addr,
--				addr + ((1UL) << HPAGE_PMD_SHIFT)))
-+	if (mmu_notifier_clear_young(mm, addr, addr + HPAGE_PMD_SIZE))
- 		referenced = true;
- #endif /* CONFIG_MMU_NOTIFIER */
- 
-diff --git a/mm/damon/paddr.c b/mm/damon/paddr.c
-index 21474ae63bc7..b40ff5811bb2 100644
---- a/mm/damon/paddr.c
-+++ b/mm/damon/paddr.c
-@@ -106,7 +106,7 @@ static bool __damon_pa_young(struct folio *folio, struct vm_area_struct *vma,
- 			result->accessed = pmd_young(*pvmw.pmd) ||
- 				!folio_test_idle(folio) ||
- 				mmu_notifier_test_young(vma->vm_mm, addr);
--			result->page_sz = ((1UL) << HPAGE_PMD_SHIFT);
-+			result->page_sz = HPAGE_PMD_SIZE;
- #else
- 			WARN_ON_ONCE(1);
- #endif	/* CONFIG_TRANSPARENT_HUGEPAGE */
-diff --git a/mm/damon/vaddr.c b/mm/damon/vaddr.c
-index 9a56ff60f244..5767be72c181 100644
---- a/mm/damon/vaddr.c
-+++ b/mm/damon/vaddr.c
-@@ -443,7 +443,7 @@ static int damon_young_pmd_entry(pmd_t *pmd, unsigned long addr,
- 		if (pmd_young(*pmd) || !page_is_idle(page) ||
- 					mmu_notifier_test_young(walk->mm,
- 						addr)) {
--			*priv->page_sz = ((1UL) << HPAGE_PMD_SHIFT);
-+			*priv->page_sz = HPAGE_PMD_SIZE;
- 			priv->young = true;
- 		}
- 		put_page(page);
--- 
-2.35.3
-
+Thanks for your continuous help.
