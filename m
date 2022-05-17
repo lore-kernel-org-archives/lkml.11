@@ -2,113 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3583BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236281AbiEQDdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 23:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50472 "EHLO
+        id S231844AbiEQDgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 23:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231251AbiEQDd3 (ORCPT
+        with ESMTP id S239647AbiEQDgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 23:33:29 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246E2403E3
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:33:27 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id q76so15828675pgq.10
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:33:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=6lMCmhAYh+FvKYdNdXdz6Z38uBA0dGxW92CXeTkkVHI=;
-        b=n8WjxB3Nj3gvAFxKXFL3OrDnlrBoacgytSGaFjMBE9s/LFRzUKHHXob4w0r2AQ5IKo
-         tYNienYmpEVD+bM3YbFEIiV4sn8Fq5tT0DySB7eaGNheP3Py6K6yd2pAok543L01wiLt
-         LywDoZZuJfuDt8WNiy39SM1tTXRASndm+9/Io=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=6lMCmhAYh+FvKYdNdXdz6Z38uBA0dGxW92CXeTkkVHI=;
-        b=QK9nU2QZ8aaJJKBO5onyFGfQ0ZGDrkBLRRrjPAMLz7VdPD5JJ2du2ho/vW+VwDc4EF
-         eh+HlkQHF4vD111f7JHwq2/hssiApw1QAr+T92r/u+P541XZf3fXDH35W8SCaa3SAUUx
-         XbOH4nRjqC9cY31r4nYXgSxiZPPhT6dUdhJEwt/6dXxXoYvL3d/mVZDaQsvQFo1ncgRO
-         WJP6tlWuS77vlCRG85i6q06mPKPIenqwF0u/l65fHLa3j1I/xCjEJk5iwWopyn1xkljJ
-         ojlbWCKKhhqDgDT6k7wrro6LDmGl7OonyYzRXoqhgh9VlWc+eqWtG7Z7c0tZsjv3vvoz
-         nM9Q==
-X-Gm-Message-State: AOAM531itHFMG8//H747MoxhtGuw1+9nEOlG9ZaKrg/dXR+18XR0bCKE
-        Fb6hCPQMloF6MMauvxHJoSzZDA==
-X-Google-Smtp-Source: ABdhPJwiDhEUG94kRJnu4hhVriBlgTIp0ehSqJnWQZzKxaKBO/5HlPva5aRc7j6KHroEmoc3T9Io9w==
-X-Received: by 2002:a63:8ac1:0:b0:3db:515d:76d2 with SMTP id y184-20020a638ac1000000b003db515d76d2mr18315027pgd.152.1652758406602;
-        Mon, 16 May 2022 20:33:26 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id u8-20020a170902714800b0015e8d4eb281sm5995338plm.203.2022.05.16.20.33.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 20:33:26 -0700 (PDT)
-Date:   Mon, 16 May 2022 20:33:25 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Christophe de Dinechin <dinechin@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v3] sched/core: Address classes via __begin_sched_classes
-Message-ID: <202205162032.5161269A45@keescook>
-References: <20220517030024.3388355-1-keescook@chromium.org>
+        Mon, 16 May 2022 23:36:38 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA1A40A33;
+        Mon, 16 May 2022 20:36:35 -0700 (PDT)
+Received: from kwepemi100013.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L2MFY5QQSz1JCSt;
+        Tue, 17 May 2022 11:35:13 +0800 (CST)
+Received: from kwepemm600018.china.huawei.com (7.193.23.140) by
+ kwepemi100013.china.huawei.com (7.221.188.136) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 11:36:33 +0800
+Received: from huawei.com (10.174.176.88) by kwepemm600018.china.huawei.com
+ (7.193.23.140) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
+ 2022 11:36:32 +0800
+From:   gaochao <gaochao49@huawei.com>
+To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>, <x86@kernel.org>
+CC:     <hpa@zytor.com>, <ebiggers@google.com>,
+        <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] crypto: Fix build error when CRYPTO_BLAKE2S_X86=m && CRYPTO_ALGAPI2=m && CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y
+Date:   Tue, 17 May 2022 11:36:30 +0800
+Message-ID: <20220517033630.1182-1-gaochao49@huawei.com>
+X-Mailer: git-send-email 2.28.0.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220517030024.3388355-1-keescook@chromium.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.176.88]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600018.china.huawei.com (7.193.23.140)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 08:00:23PM -0700, Kees Cook wrote:
-> GCC 12 is very sensitive about array checking, and views all negative
-> array accesses as unsafe (a not unreasonable position). Redefine
-> sched_class_highest in terms of its location from __begin_sched_classes,
-> and redefine sched_class_lowest to the actual lowest sched class instead
-> of one lower. This also means the for_class_range() must be redefined to
-> be inclusive, which means its 1 caller must be adjusted to have its
-> "lowest" argument bumped up one position. Silences this warning:
-> 
-> In file included from kernel/sched/core.c:81:
-> kernel/sched/core.c: In function ‘set_rq_online.part.0’:
-> kernel/sched/sched.h:2197:52: error: array subscript -1 is outside array bounds of ‘struct sched_class[44343134792571037]’
->  [-Werror=array-bounds]
->  2197 | #define sched_class_lowest  (__begin_sched_classes - 1)
->       |                                                    ^
-> kernel/sched/sched.h:2200:41: note: in definition of macro ‘for_class_range’
->  2200 |         for (class = (_from); class != (_to); class--)
->       |                                         ^~~
-> kernel/sched/sched.h:2203:53: note: in expansion of macro ‘sched_class_lowest’
->  2203 |for_class_range(class, sched_class_highest, sched_class_lowest)
->       |                                            ^~~~~~~~~~~~~~~~~~
-> kernel/sched/core.c:9115:17: note: in expansion of macro ‘for_each_class’
->  9115 |                 for_each_class(class) {
->       |                 ^~~~~~~~~~~~~~
-> kernel/sched/sched.h:2193:27: note: at offset -208 into object ‘__begin_sched_classes’ of size [0, 9223372036854775807]
->  2193 | extern struct sched_class __begin_sched_classes[];
->       |                           ^~~~~~~~~~~~~~~~~~~~~
-> 
-> The introduce and use of sched_class_higher() could just be a bare "+ 1",
-> but this code's backwards walking and non-inclusive for loop was weird
-> enough, it seemed back to explicitly describe the manipulation
-> happening.
+If CRYPTO=m, CRYPTO_ALGAPI=m, CRYPTO_ALGAPI2=m, CRYPTO_BLAKE2S_X86=m,
+CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y
+bulding fails:
 
-I just need to start today over. This should read:
+arch/x86/crypto/blake2s-glue.o: In function `blake2s_compress':
+(.text+0x5a): undefined reference to `crypto_simd_disabled_for_test'
+make: *** [vmlinux] Error 1
 
- The introduction and use of sched_class_higher() could just be a bare
- "+ 1", but this code's backwards-walking and non-inclusive for loop was
- weird enough, it seemed best to explicitly describe the manipulation
- happening.
+When CRYPTO_MANAGER_EXTRA_TESTS=y, blake2s_compress will call
+crypto_simd_disabled_for_test.
+When CRYPTO_ALGAPI2=m, crypto_algapi build as a module,
+but if CONFIG_CRYPTO_BLAKE2S_X86=m at the same time,
+libblake2s-x86_64.o build with obj-y, this will accuse the above error.
 
--- 
-Kees Cook
+To fix this error:
+1 Choose CRYPTO_ALGAPI2 for CRYPTO_BLAKE2S_X86
+when CRYPTO_MANAGER_EXTRA_TESTS=y.
+2 build libblake2s-x86_64.o as a module when CONFIG_CRYPTO_BLAKE2S_X86=y
+
+Fixes: 8fc5f2ad896b ("crypto: testmgr - Move crypto_simd_disabled_for_test out")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: gaochao <gaochao49@huawei.com>
+---
+ arch/x86/crypto/Makefile | 2 +-
+ crypto/Kconfig           | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
+index 2831685adf6f..54b2469fa49a 100644
+--- a/arch/x86/crypto/Makefile
++++ b/arch/x86/crypto/Makefile
+@@ -63,7 +63,7 @@ sha512-ssse3-y := sha512-ssse3-asm.o sha512-avx-asm.o sha512-avx2-asm.o sha512_s
+
+ obj-$(CONFIG_CRYPTO_BLAKE2S_X86) += blake2s-x86_64.o
+ blake2s-x86_64-y := blake2s-shash.o
+-obj-$(if $(CONFIG_CRYPTO_BLAKE2S_X86),y) += libblake2s-x86_64.o
++obj-$(CONFIG_CRYPTO_BLAKE2S_X86) += libblake2s-x86_64.o
+ libblake2s-x86_64-y := blake2s-core.o blake2s-glue.o
+
+ obj-$(CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL) += ghash-clmulni-intel.o
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index 19197469cfab..e61598f8f8c5 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -714,6 +714,7 @@ config CRYPTO_BLAKE2S_X86
+ 	depends on X86 && 64BIT
+ 	select CRYPTO_LIB_BLAKE2S_GENERIC
+ 	select CRYPTO_ARCH_HAVE_LIB_BLAKE2S
++	select CRYPTO_ALGAPI2 if CRYPTO_MANAGER_EXTRA_TESTS
+
+ config CRYPTO_CRCT10DIF
+ 	tristate "CRCT10DIF algorithm"
+--
+2.17.1
+
