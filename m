@@ -2,126 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0617EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:35:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B898FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349078AbiEQOfT (ORCPT
+        id S1349097AbiEQOfh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34424 "EHLO
+        Tue, 17 May 2022 10:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348989AbiEQOfP (ORCPT
+        with ESMTP id S1348989AbiEQOfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:35:15 -0400
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.160])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9020D4FC77;
-        Tue, 17 May 2022 07:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652798110;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=J4Lj0h3j4UiNNQppf5MxuIa77BYo4dAXtQP4Rxpu7fw=;
-    b=QZqk9E23590GTpmbxMTUuk5j4tRFRmOkyDwSOSmdsJ7dv1/lJ++cHBy1oG5QI+50zH
-    HOP6jI27BwViVGeT4QJLCiEkdLR19qtY0bIUWaj2KE4c7Vh9hkC3Jw9YHUdALYLI8Jqi
-    pXAjmVDTMYAnIzZr0mkS5Hjo8ZGGxD6yS/JH8+JXA7ptnAJV2TH38uPdrkF99Va2pIRY
-    S2vxTvAswIvcHAPlZK5zrR1MCfGDIabQ96qj832DoAdTS6zXaP6tjSraN8banBk5ewcS
-    zIxGFe5obSEBY2Afik6QUeYwqzHf5salqYWWhYprOslJWUhOlp3hvI9JZnaGR6oGRNTS
-    lgZA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b00::b82]
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id R0691fy4HEZAEW5
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 17 May 2022 16:35:10 +0200 (CEST)
-Message-ID: <22590a57-c7c6-39c6-06d5-11c6e4e1534b@hartkopp.net>
-Date:   Tue, 17 May 2022 16:35:05 +0200
+        Tue, 17 May 2022 10:35:30 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03DA74FC79;
+        Tue, 17 May 2022 07:35:29 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9F61A21CAC;
+        Tue, 17 May 2022 14:35:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652798127; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jgvKwJyxQy0RTaoF5NNfAc97nv5WUFvl/AOcJ3/X9dU=;
+        b=RkBtCW1df314cInTItdNXWETZwL6U7kjsXupg+j/SZS8w+9tOhsI2t4gFksowOEmRppcLu
+        zXBXN03IHw4gAlbkpovC5tg20aIvUHoAqjeyfvTEvjTdI86nBlXKFydqhAwJQPJkSZBSm1
+        EgD3c5nCbWhRhhta3IUb8q6Wb/RKbcs=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 773712C141;
+        Tue, 17 May 2022 14:35:27 +0000 (UTC)
+Date:   Tue, 17 May 2022 16:35:25 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Maninder Singh <maninder1.s@samsung.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
+        Vaneet Narang <v.narang@samsung.com>,
+        "swboyd@chromium.org" <swboyd@chromium.org>,
+        "ojeda@kernel.or" <ojeda@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "avimalin@gmail.com" <avimalin@gmail.com>,
+        "atomlin@redhat.com" <atomlin@redhat.com>,
+        Onkarnath <onkarnath.1@samsung.com>
+Subject: Re: [PATCH modules-next 1/1] kallsyms: enhance %pS/s/b printing when
+ KALLSYSMS is disabled
+Message-ID: <YoOykGzkWB+k7Las@alley>
+References: <202205111513.3AD646936@keescook>
+ <20220421041542.9195-1-maninder1.s@samsung.com>
+ <CGME20220421041604epcas5p414cf2e851d1bd828a151dc6b2b004680@epcms5p3>
+ <20220517035810epcms5p3f7dc52887e356559b55a2cbf9d04a039@epcms5p3>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Content-Language: en-US
-To:     Max Staudt <max@enpas.org>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
- <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
- <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
- <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
- <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
- <20220517104545.eslountqjppvcnz2@pengutronix.de>
- <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
- <20220517141404.578d188a.max@enpas.org>
- <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
- <20220517143921.08458f2c.max@enpas.org>
- <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
- <20220517154301.5bf99ba9.max@enpas.org>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220517154301.5bf99ba9.max@enpas.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517035810epcms5p3f7dc52887e356559b55a2cbf9d04a039@epcms5p3>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue 2022-05-17 09:28:10, Maninder Singh wrote:
+> Hi Kees,
+> 
+> > 
+> > I'd like this patch reverted from -next.
+> > - too many logical changes is a single patch
+> 
+> ok, will try to break patch in separate patches.
+> 
+> > - addition of dangerous API usage
+> 
+> sprintf was alraedy there, just changed its position
+> and in current logic it seems not possible to change it.
+> 
+> Because sprint_symbol interface is made without len of array
+> 
+> int sprint_symbol(char *buffer, unsigned long address)
+> {
+>         return __sprint_symbol(buffer, address, 0, 1, 0);
+> }
+> EXPORT_SYMBOL_GPL(sprint_symbol);
+
+Sigh, the kallsyms API is not safe in general. For example,
+the following functions have the same problem:
+
+unsigned long kallsyms_lookup_name(const char *name);
+const char *kallsyms_lookup(unsigned long addr,
+			    unsigned long *symbolsize,
+			    unsigned long *offset,
+			    char **modname, char *namebuf);
+int lookup_symbol_name(unsigned long addr, char *symname);
+int lookup_symbol_attrs(unsigned long addr, unsigned long *size, unsigned long *offset, char *modname, char *name);
 
 
-On 17.05.22 15:43, Max Staudt wrote:
-> On Tue, 17 May 2022 15:35:03 +0200
-> Oliver Hartkopp <socketcan@hartkopp.net> wrote:
-> 
->> Oh, I didn't want to introduce two new kernel modules but to have
->> can_dev in different 'feature levels'.
-> 
-> Which I agree is a nice idea, as long as heisenbugs can be avoided :)
-> 
-> (as for the separate modules vs. feature levels of can-dev - sorry, my
-> two paragraphs were each referring to a different idea. I mixed them
-> into one single email...)
-> 
-> 
-> Maybe the can-skb and rx-offload parts could be a *visible* sub-option
-> of can-dev in Kconfig, which is normally optional, but immediately
-> force-selected once a CAN HW driver is selected?
+> So either we need to change API declaration for all cases.
+> please suggest, then I can make one separate change to include
+> size of buffer as argument.
 
-I think it should be even more simple.
+It would be lovely if you could fix the API.
 
-When you enter the current Kconfig page of "CAN Device Drivers" every 
-selection of vcan/vxcan/slcan should directly select CAN_DEV_SW.
+> otherwise there is no benefit to take care of size at some places only.
 
-The rest could stay the same, e.g. selecting CAN_DEV "Platform CAN 
-drivers with Netlink support" which then enables CAN_CALC_BITTIMING and 
-CAN_LEDS to be selectable. Which also makes sure the old .config files 
-still apply.
+Well, the sprint_*() APIs are more dangerous because the underlying
+__sprint_symbol() could do several sprintf() calls. It is not easy
+to compute the sufficient buffer size.
 
-And finally the selection of flexcan, ti_hecc and
-mcp251xfd automatically selects CAN_DEV_RX_OFFLOAD.
+The *lookup*() APIs are slightly more safe because the buffer is
+just for the symbol name. The size always should be KSYM_NAME_LEN.
+Anyway, it would be great to make it safe as well.
 
-Then only some more Makefile magic has to be done to build can-dev.ko 
-accordingly.
-
-Best regards,
-Oliver
-
-
-
-> 
-> 
->> But e.g. the people that are running Linux instances in a cloud only
->> using vcan and vxcan would not need to carry the entire
->> infrastructure of CAN hardware support and rx-offload.
-> 
-> Out of curiosity, do you have an example use case for this vcan cloud
-> setup? I can't dream one up...
-> 
-> 
-> 
-> Max
+Best Regards,
+Petr
