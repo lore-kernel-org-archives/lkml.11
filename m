@@ -2,51 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DED5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9167CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350606AbiEQPms (ORCPT
+        id S1345500AbiEQPm5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
+        Tue, 17 May 2022 11:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350485AbiEQPlh (ORCPT
+        with ESMTP id S1350474AbiEQPlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:41:37 -0400
+        Tue, 17 May 2022 11:41:35 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892FF41300;
-        Tue, 17 May 2022 08:41:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2C54130C;
+        Tue, 17 May 2022 08:41:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652802096; x=1684338096;
+  t=1652802094; x=1684338094;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=JCcEV/p27oXy+SVtfRE3Ssp6Itei+XlgrjZFi0lR+dc=;
-  b=FbyuM+PYJoEw9nm+pXAEB/ZrvJ9g+o+5tDH2F+GtQklvVLNfDpcQS0Vt
-   SwLgdOFsyDgO1BDfsfCTuBO6s5y3cj+JkVi503swpxwpdJg6xxRvb7v4i
-   Y4OOIVArclOoh5oWE6lN0qH9C4Fm2gV/PN8BH+1TOXP4qKIDfHQ9Q74fD
-   sFFwNCdOC0alEObdA4Jd9I/ue5bd92MKt21R7t3RvdOyPBUKJPPZBiyb4
-   7u4QgBB9HvC6hEnCzjE4yaSr40XcY4TFCiYKO+yWnEH0kercbfRVdXs+g
-   E+y8h5ee7ONn2LLmJzFK2DRZR4oeSoAi7lGlwh1ohjfHQJKHEDQh3p04i
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632100"
+  bh=bybU1LR0dCz2wUxGc5274gqzruD0/zCUSImGb6leP60=;
+  b=iWcp+zC12TwmnePKVb1g5rCzNWbAWU3rL31d6cz6+Aw+UCXFWy2cTFKc
+   WgiU+TANlGTzzhTR2pvb/YeKv16nSZXOQ1KdJx0LjXAKjmd+z3ho8Reno
+   X4E7/KtteIgAihwNIG+hpgwviHA9cVTCMKi08VPNqvgZnAOnb77PwSmRg
+   cb3yvJzo+oOtIeuW2TSdh8C1Zh1e8xDbAnHEHUpWSNIRU2FMNJ59Xpu48
+   /RQfJ+BgE+ABVxCgMLnHiq3d9nacAOe3RvGhi5XiXioCWC84c1kvvNF7D
+   HIEAzTrD6iItVKlb9BXlNLqozIMsQAIFqgD9exOlWdTIG+v1ZWqmX1hbF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632094"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="357632100"
+   d="scan'208";a="357632094"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:33 -0700
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="626533568"
+   d="scan'208";a="626533554"
 Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:33 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:32 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com,
         kan.liang@linux.intel.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v12 05/16] KVM: x86: Add Arch LBR MSRs to msrs_to_save_all list
-Date:   Tue, 17 May 2022 11:40:49 -0400
-Message-Id: <20220517154100.29983-6-weijiang.yang@intel.com>
+Cc:     Like Xu <like.xu@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v12 02/16] perf/x86/lbr: Simplify the exposure check for the LBR_INFO registers
+Date:   Tue, 17 May 2022 11:40:46 -0400
+Message-Id: <20220517154100.29983-3-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220517154100.29983-1-weijiang.yang@intel.com>
 References: <20220517154100.29983-1-weijiang.yang@intel.com>
@@ -56,43 +59,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Arch LBR MSR_ARCH_LBR_DEPTH and MSR_ARCH_LBR_CTL are queried by
-userspace application before it wants to {save|restore} the Arch LBR
-data. Other LBR related data MSRs are omitted here intentionally due
-to lengthy list(32*3). Userspace can still use KVM_{GET|SET}_MSRS to
-access them if necessary.
+From: Like Xu <like.xu@linux.intel.com>
 
-Suggested-by: Jim Mattson <jmattson@google.com>
+The x86_pmu.lbr_info is 0 unless explicitly initialized, so there's
+no point checking x86_pmu.intel_cap.lbr_format.
+
+Cc: Peter Zijlstra <peterz@infradead.org>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Reviewed-by: Jim Mattson <jmattson@google.com>
 ---
- arch/x86/kvm/x86.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/events/intel/lbr.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 247c58f5c8af..93b027aed2f3 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1458,6 +1458,7 @@ static const u32 msrs_to_save_all[] = {
- 	MSR_F15H_PERF_CTR3, MSR_F15H_PERF_CTR4, MSR_F15H_PERF_CTR5,
- 	MSR_IA32_XFD, MSR_IA32_XFD_ERR,
- 	MSR_IA32_XSS,
-+	MSR_ARCH_LBR_CTL, MSR_ARCH_LBR_DEPTH,
- };
+diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
+index fe1742c4ca49..4529ce448b2e 100644
+--- a/arch/x86/events/intel/lbr.c
++++ b/arch/x86/events/intel/lbr.c
+@@ -1874,12 +1874,10 @@ void __init intel_pmu_arch_lbr_init(void)
+  */
+ int x86_perf_get_lbr(struct x86_pmu_lbr *lbr)
+ {
+-	int lbr_fmt = x86_pmu.intel_cap.lbr_format;
+-
+ 	lbr->nr = x86_pmu.lbr_nr;
+ 	lbr->from = x86_pmu.lbr_from;
+ 	lbr->to = x86_pmu.lbr_to;
+-	lbr->info = (lbr_fmt == LBR_FORMAT_INFO) ? x86_pmu.lbr_info : 0;
++	lbr->info = x86_pmu.lbr_info;
  
- static u32 msrs_to_save[ARRAY_SIZE(msrs_to_save_all)];
-@@ -6741,6 +6742,11 @@ static void kvm_init_msr_list(void)
- 			if (!supported_xss)
- 				continue;
- 			break;
-+		case MSR_ARCH_LBR_DEPTH:
-+		case MSR_ARCH_LBR_CTL:
-+			if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-+				continue;
-+			break;
- 		default:
- 			break;
- 		}
+ 	return 0;
+ }
 -- 
 2.27.0
 
