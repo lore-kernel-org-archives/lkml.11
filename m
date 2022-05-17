@@ -2,57 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5236C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA01C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbiEQWFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58676 "EHLO
+        id S230115AbiEQWI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbiEQWFs (ORCPT
+        with ESMTP id S230040AbiEQWIY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:05:48 -0400
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CC1134;
-        Tue, 17 May 2022 15:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=AqOwTe1WYDilo14XAd3xKHqdHGS/uTUyPBKfuE4y0GU=; b=asov2CXAoWleBDgblXMHkwDM03
-        6tOIBvwyZ+ZOgZIst9Q7xbqMXazNnGiVmRD09yZK4GTD5dG2ZcxrJfQpiI0hqm2zuaZM8tSMslFE5
-        mL+lLmYFvbfmXveMiaE4KPPVuGRZjFqUDnWv56JLkZT3Pk2GkhjwhcVBW3cTDgyxqsbVm9i9eOELH
-        OUrs/PysJYtH+uotJPxbqcQ8UZRJDxohiwogO2OdfDYZcFRycs7ECvqN0+3sj1u6gatpn1+2spiyg
-        Na7YqttJXM0vMI0s8gXqTvt29ycbf7pDLT/39REMfEU7xt5GFV8fyjPKZRjrErpFkTUWFngwBhYnf
-        xZ4yI5ow==;
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nr5K2-00Fqdf-FW; Tue, 17 May 2022 22:05:42 +0000
-Date:   Tue, 17 May 2022 22:05:42 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     akpm@linux-foundation.org, x86@kernel.org,
-        linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] net: unexport csum_and_copy_{from,to}_user
-Message-ID: <YoQcNkB6R/E3vf51@zeniv-ca.linux.org.uk>
-References: <20220421070440.1282704-1-hch@lst.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421070440.1282704-1-hch@lst.de>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+        Tue, 17 May 2022 18:08:24 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B645377FA
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:08:23 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2fede3f229cso4575417b3.8
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:08:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=X9rd48IcOQMlJI4fL1LiOmaxrjRg+Q4uXQPcsoEgV+k=;
+        b=FlPd4Ema1RTlqOmUDneIdv1KEKzfvy5j81NCIQeDPZybHktJlCFTbLL4ZkCjfGPLVC
+         nMHR9eGulo22rP5seemivgemqbsWdMosN/8jIZz+5WRGX7iR97kNyjmLjJacDnOJnsdn
+         L+Rhi1RJ/5Vk2i2KnaG7WO10vJsTNBLaN4eITTnEPWFkpEzMB8yYbbm8Q3GEMOzVP5MQ
+         3HSQqqhUCeOpRHu4aKeQ6HDtK32bZIUNT2zL/+Kj+9UEztN8TtaM/gqYK841nJ9TcN5g
+         GMI5o9E8QNXP+KkedPoVP3OeQsAjzD9IDLkczE0Iu+oj9bEqvQO47sCQW8NfvLUrFFVE
+         NZ5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=X9rd48IcOQMlJI4fL1LiOmaxrjRg+Q4uXQPcsoEgV+k=;
+        b=7YuknLu1Skfdsae56zpV1glFmixxNYMSM85FTGiwJbdDtGgdn2pB+SD9wqKwQDSUqS
+         qCV9GImRi4Xozny3d1wtoHCGqAvP+2h7qS+x9mlifNjlqCTkEhJw1JfUFE9umm1Ss56+
+         3COzmh5o9n3Ro5/F8gEYteZxyEhzGVpZbHsqh2f7nOXjHfzl3/0lDoZH8TFfHXk42Bkc
+         1g+EenIGC4GxBK5mMXwDohIB4p7+6L0q1OX7dFFvl1Gc/idhLBFR9JGvmFwO2wwOLW+4
+         HH14xZZui/EyhwWUDcE7aGomHgzCKoDcVUwmovZCydbbIK4x4N9uWxUaDAGXooNmblHe
+         ZY0Q==
+X-Gm-Message-State: AOAM532gxPwuZOf/ELxKgw/sVA0bLNyVbL49WAifmSNV0YyUIe2XIACz
+        F88Le6BsUBt8yWOvMCP3chYoGC1i7CUgy48=
+X-Google-Smtp-Source: ABdhPJyAvSIgyxv8X2AWvhlPaUJR0PhTeRsTDBvxqVMgCBrF0GHmO5hdx8s6AygIcKEcbgRoxQnJXpmt/P1nufI=
+X-Received: from tansuresh.svl.corp.google.com ([2620:15c:2c5:13:3c9b:5345:708:1378])
+ (user=tansuresh job=sendgmr) by 2002:a05:6902:84:b0:63d:4a3d:eb5 with SMTP id
+ h4-20020a056902008400b0063d4a3d0eb5mr24596845ybs.145.1652825302496; Tue, 17
+ May 2022 15:08:22 -0700 (PDT)
+Date:   Tue, 17 May 2022 15:08:13 -0700
+Message-Id: <20220517220816.1635044-1-tansuresh@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+Subject: [PATCH v3 0/3] Asynchronous shutdown interface and example implementation
+From:   Tanjore Suresh <tansuresh@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, Tanjore Suresh <tansuresh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 09:04:40AM +0200, Christoph Hellwig wrote:
-> csum_and_copy_from_user and csum_and_copy_to_user are exported by
-> a few architectures, but not actually used in modular code.  Drop
-> the exports.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+Problem:
 
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
+Some of our machines are configured with  many NVMe devices and
+are validated for strict shutdown time requirements. Each NVMe
+device plugged into the system, typicaly takes about 4.5 secs
+to shutdown. A system with 16 such NVMe devices will takes
+approximately 80 secs to shutdown and go through reboot.
 
-Not sure which tree should it go through - Arnd's, perhaps?
+The current shutdown APIs as defined at bus level is defined to be
+synchronous. Therefore, more devices are in the system the greater
+the time it takes to shutdown. This shutdown time significantly
+contributes the machine reboot time.
+
+Solution:
+
+This patch set proposes an asynchronous shutdown interface at bus level,
+modifies the core driver, device shutdown routine to exploit the
+new interface while maintaining backward compatibility with synchronous
+implementation already existing (Patch 1 of 3) and exploits new interface
+to enable all PCI-E based devices to use asynchronous interface semantics
+if necessary (Patch 2 of 3). The implementation at PCI-E level also works
+in a backward compatible way, to allow exiting device implementation
+to work with current synchronous semantics. Only show cases an example
+implementation for NVMe device to exploit this asynchronous shutdown
+interface. (Patch 3 of 3).
+
+Changelog:
+
+v2: - Replaced the shutdown_pre & shutdown_post entry point names with the
+      recommended names (async_shutdown_start and asynch_shutdown_end).
+
+    - Comment about ordering requirements between bridge shutdown versus
+      leaf/endpoint shutdown was agreed to be different when calling
+      async_shutdown_start and async_shutdown_end. Now this implements the
+      same order of calling both start and end entry points.
+
+v3: - This notes clarifies why power management framework was not
+      considered for implementing this shutdown optimization.
+      There is no code change done. This change notes clarfies
+      the reasoning only.
+
+      This patch is only for shutdown of the system. The shutdown
+      entry points are traditionally have different requirement
+      where all devices are brought to a quiescent state and then
+      system power may be removed (power down request scenarios)
+      and also the same entry point is used to shutdown all devices
+      and re-initialized and restarted (soft shutdown/reboot
+      scenarios).
+
+      Whereas, the device power management (dpm)  allows the device
+      to bring down any device configured in the system that may be
+      idle to various low power states that the device may support
+      in a selective manner and based on transitions that device
+      implementation allows. The power state transitions initiated
+      by the system can be achieved using 'dpm' interfaces already
+      specified.
+
+      Therefore the request to use the 'dpm' interface to achieve
+      this shutdown optimization is not the right approach as the
+      suggested interface is meant to solve an orthogonal requirement
+      and have historically been kept separate from the shutdown entry
+      points defined and its associated semantics.
+
+Tanjore Suresh (3):
+  driver core: Support asynchronous driver shutdown
+  PCI: Support asynchronous shutdown
+  nvme: Add async shutdown support
+
+ drivers/base/core.c        | 38 +++++++++++++++++-
+ drivers/nvme/host/core.c   | 28 +++++++++----
+ drivers/nvme/host/nvme.h   |  8 ++++
+ drivers/nvme/host/pci.c    | 80 ++++++++++++++++++++++++--------------
+ drivers/pci/pci-driver.c   | 20 ++++++++--
+ include/linux/device/bus.h | 12 ++++++
+ include/linux/pci.h        |  4 ++
+ 7 files changed, 149 insertions(+), 41 deletions(-)
+
+-- 
+2.36.0.550.gb090851708-goog
+
