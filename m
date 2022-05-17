@@ -2,109 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8219C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EB9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348089AbiEQNyz (ORCPT
+        id S1345123AbiEQNzi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41860 "EHLO
+        Tue, 17 May 2022 09:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348129AbiEQNyq (ORCPT
+        with ESMTP id S229486AbiEQNz2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:54:46 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAF24C42F
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:54:45 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id i24so16944026pfa.7
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:54:45 -0700 (PDT)
+        Tue, 17 May 2022 09:55:28 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365566240;
+        Tue, 17 May 2022 06:55:28 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id j6so16916173pfe.13;
+        Tue, 17 May 2022 06:55:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2hxCz8qFJl1d7hHxqcVamwqBk//vAbJimyLly9GCnKI=;
-        b=riq1xk5q0YgWYKXzXPguRcCsM0+VTO1y7eIyaMS49ZOlWO0TmrpePr1BvcyZR6cqlz
-         g++20MP4NUnvS8jeSzQraLOsI2yQYmlXjU6GMSBrcdZBPIBT2YUKJDDYNRKGbWjq/e5i
-         xJk2cEqFW8vrhOKVxIefon2MbhEA8llpUFRW4=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=K+LAqDD+F6fRsWPFZvzdAiO5ZgIytUys9dztE+gfcQQ=;
+        b=EOdbgtl34ixbVgAJLZc8ETdro9gjQwVKZazi4979GABOOWX4rwBHIx2i6CPKx9/XM2
+         6KfXpc5sUiVI5f2wE4knvYRB05sP/3c1wY2Sm2vp8YLKxkANB8Tz5aSOhwv/x1L2Hja7
+         zwOOjz2+KlvKC8ouKFkfs+iaroRl/pk1GUcnorLKmr39NxEzIzxzTHyl8rv4m9WH5AAX
+         j1W9N+LtcMKOFXYm994W5TlbPBrvUj4PCmJXzQ0dY9z/pjMPI5GBkD//TjIrW5+nBdHS
+         zqzzlEAgsNQMcS7DjMfOEwErOxOJ1FHKBnvT5poPKAfxmGNB3XbuqJKvSL9IuAhpFwUv
+         543A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2hxCz8qFJl1d7hHxqcVamwqBk//vAbJimyLly9GCnKI=;
-        b=IaB5e0R8fGgoX9Vl4By+hFFAa6jcR7Uy06kqFLvMUYFcum9kAeoq0B4kQ6qnLTz1U0
-         0gayayp9pj9bYLf2skXFQAvE3j0wa3Ac8PeMl85G91/pfO+wp8kYHBBYa9KbGSlZr8GF
-         5PjywBcwPbhr57MNGhNLPazWOb0otnlFwnekah5Lnj0UTgFHUh6gEx0AstDVKlPd/3uu
-         SFI81hDOQ/GXkar7tUnjbC5wVa5wQO8ssARQ9LalTNQr6PguacT3Rrchz4Qkp0BqrylT
-         tpIR153ZbXPk9Yd7dQIEyvqrOMPX5tzDDwox6fkSHhTBNu4rd07WyuyqVXPfbGpNa5so
-         +5rQ==
-X-Gm-Message-State: AOAM530iwilq2lUMnfcpGVi+dpcjYtOo0VVhqFIw3KihkhG+lLIIlYqX
-        iIdKNP6nwNEl4s/rB0EVm/7PhiXPpDXtMvfbntVTmQ==
-X-Google-Smtp-Source: ABdhPJxcVXd5rP7wLs8+pVlrfBwoBKnNHSpR/3Kdud5yWPKX14PCnvlYqR1yfJ7JSkYonCPbyrGV/sWgFgtL1M49WLk=
-X-Received: by 2002:a63:cd01:0:b0:3f2:7f8d:14e8 with SMTP id
- i1-20020a63cd01000000b003f27f8d14e8mr6309251pgg.491.1652795684638; Tue, 17
- May 2022 06:54:44 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=K+LAqDD+F6fRsWPFZvzdAiO5ZgIytUys9dztE+gfcQQ=;
+        b=a/XJD8XKTYKcvNUPV/seCWwmSc0ZekgGHWvx8DCDIlXbmMj2k2BmgeQaM9nbAT4BmF
+         Nds0MI3LySaZEIAndFsh4g9xzVzCX0BWmON+/Rd4P5PBv0/aVhX1P0gXkrV+ts+GW6Nz
+         Vu7jpATX3eXZwqNc3PaU64RgXI5vGPYMKdvUwCpFufx4R6pGi6yZk052zN4moxxGETFF
+         y31bljHl+tEY3yVV+f8MvmLr3njR68IIRPgipAmDck9B4NXeBxMUp+WhFnIbOGSlP0PN
+         xjQ362jO3z7FA179amjt1rdbgkKsZhbR4HvUpLYe7BZrfAabanEHK3kOlhy3mpRCH5/0
+         85ug==
+X-Gm-Message-State: AOAM533franGvr5ddCQ7Yz/TqBtEonxmsVL6uzaxEkrJh5ALaQv5spU3
+        hS5Vexe0BfCQRjLzNBa/hjs=
+X-Google-Smtp-Source: ABdhPJyiQbjNdbnR+v3TO+EAqzoeftLu9wLP2lz6DZD/fQHUw1AAz+vzuC2sSl/oS/kxI3aU9hOVpw==
+X-Received: by 2002:a62:d155:0:b0:50d:3c4e:37ec with SMTP id t21-20020a62d155000000b0050d3c4e37ecmr22512611pfl.60.1652795727713;
+        Tue, 17 May 2022 06:55:27 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id x27-20020aa7941b000000b005181133ff2dsm735292pfo.176.2022.05.17.06.55.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 06:55:27 -0700 (PDT)
+Date:   Tue, 17 May 2022 06:55:25 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Harini Katakam <harini.katakam@xilinx.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        claudiu.beznea@microchip.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
+        radhey.shyam.pandey@xilinx.com
+Subject: Re: [PATCH 0/3] Macb PTP updates
+Message-ID: <20220517135525.GC3344@hoboy.vegasvil.org>
+References: <20220517073259.23476-1-harini.katakam@xilinx.com>
 MIME-Version: 1.0
-References: <20220517133540.2456987-1-michael@amarulasolutions.com>
- <bd342e6be1723daa3787c7088c3510d0@denx.de> <CAOf5uw=QxFM=CCFLZ=fZCfn9BBz1aFpkPQuED1uHxHRABwMHMQ@mail.gmail.com>
- <7e434e2426ab61476e5f58db764cbd9f@denx.de>
-In-Reply-To: <7e434e2426ab61476e5f58db764cbd9f@denx.de>
-From:   Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Date:   Tue, 17 May 2022 15:54:31 +0200
-Message-ID: <CAOf5uw=-AmHfw48csFQ_1U1Aj2B4yEAMoLT_-iHDC=EwALJwkA@mail.gmail.com>
-Subject: Re: [PATCH] arm: dts: imx6ulz-bsh-smm-m2: Support proper board power off
-To:     Fabio Estevam <festevam@denx.de>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-amarula@amarulasolutions.com,
-        Rob Herring <robh+dt@kernel.org>,
-        "Ariel D'Alessandro" <ariel.dalessandro@collabora.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Simon Holesch <simon.holesch@bshg.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517073259.23476-1-harini.katakam@xilinx.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+On Tue, May 17, 2022 at 01:02:56PM +0530, Harini Katakam wrote:
+> Macb PTP updates to handle PTP one step sync support and other minor
+> enhancements.
+> 
+> Harini Katakam (3):
+>   net: macb: Fix PTP one step sync support
+>   net: macb: Enable PTP unicast
+>   net: macb: Optimize reading HW timestamp
+> 
+>  drivers/net/ethernet/cadence/macb.h      |  4 ++
+>  drivers/net/ethernet/cadence/macb_main.c | 61 +++++++++++++++++++-----
+>  drivers/net/ethernet/cadence/macb_ptp.c  | 12 +++--
+>  3 files changed, 63 insertions(+), 14 deletions(-)
 
-On Tue, May 17, 2022 at 3:50 PM Fabio Estevam <festevam@denx.de> wrote:
->
-> Hi Michael,
->
-> On 17/05/2022 10:44, Michael Nazzareno Trimarchi wrote:
->
-> >> You missed your own Signed-off-by tag here.
-> >
-> > It's fine, I can add Tested-by: Michael Trimarchi
-> > <michael@amarulasolutions.com>
->
-> If you are transmitting someone else's patch, then you need to add
-> your own Signed-off-by to it.
->
-> This is explained in Documentation/process/submitting-patches.rst:
->
-> "Any further SoBs (Signed-off-by:'s) following the author's SoB are from
-> people handling and transporting the patch, but were not involved in its
-> development. SoB chains should reflect the **real** route a patch took
-> as it was propagated to the maintainers and ultimately to Linus, with
-> the first SoB entry signalling primary authorship of a single author."
+For the series:
 
-Done, thank you
-
-Michael
-
-
--- 
-Michael Nazzareno Trimarchi
-Co-Founder & Chief Executive Officer
-M. +39 347 913 2170
-michael@amarulasolutions.com
-__________________________________
-
-Amarula Solutions BV
-Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
-T. +31 (0)85 111 9172
-info@amarulasolutions.com
-www.amarulasolutions.com
+Acked-by: Richard Cochran <richardcochran@gmail.com>
