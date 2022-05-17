@@ -2,83 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90626C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D36C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232663AbiEQAag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 20:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
+        id S234002AbiEQAd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 20:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230283AbiEQAab (ORCPT
+        with ESMTP id S229493AbiEQAdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 20:30:31 -0400
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D747940A1D;
-        Mon, 16 May 2022 17:30:30 -0700 (PDT)
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-d39f741ba0so22333345fac.13;
-        Mon, 16 May 2022 17:30:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YQVN+0aN39IpaYMuebo1q6u+VmYpyIQaFAaYjEhhLfA=;
-        b=U52Brx61F33swa/Llufb3G492DaDl4JD8pcdptn6PEGvevAM9LZoXFYZBPkgI+85tq
-         LvZrfkV1kGT3VZqL22naunkhjaPXLkEU49z7Y6SOblXhwEcG6N/7gnUKAKtadFHn0ltm
-         xfML5WtYZg8+GNQwEwYfKRk1HcnynyOyLA0VsiMa7/d7TOzdcA1YLhwTYHGYPlZqGma1
-         KwFI8fwAFLD0WBc6gVMdeOgbvHi/NydMn2a7kep/XPPFJ4RVisah0HQvvrDPVbczwSmD
-         SPTBMQ03n3NC/N7aTsBJ/DwZXjcitTmHOSaX7UtHaZYrKa72dauq5cHdl/OgBmhUf3z/
-         B1Wg==
-X-Gm-Message-State: AOAM531LP0tt3YhUkpBddLm3gJv425Ij3fBxcgheLQ1imEchGiTnuGXP
-        /boNd4P3cWTKhCqt9k3GTA==
-X-Google-Smtp-Source: ABdhPJzvuavi64CC+eyeNQXFNzzyGsrniCBrhGnBD6tQrOzFZuRr1TGa7uqPJjXXzOcujYRrHxvvEw==
-X-Received: by 2002:a05:6870:e888:b0:f1:a0c6:a5be with SMTP id q8-20020a056870e88800b000f1a0c6a5bemr3947697oan.35.1652747430147;
-        Mon, 16 May 2022 17:30:30 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r196-20020acaa8cd000000b00325cda1ffa5sm4319340oie.36.2022.05.16.17.30.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 17:30:29 -0700 (PDT)
-Received: (nullmailer pid 3654685 invoked by uid 1000);
-        Tue, 17 May 2022 00:30:28 -0000
-Date:   Mon, 16 May 2022 19:30:28 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Heidelberg <david@ixit.cz>, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Luca Weiss <luca@z3ntu.xyz>
-Subject: Re: [PATCH 04/11] dt-bindings: pinctrl: qcom,pmic-gpio: add
- 'input-disable'
-Message-ID: <20220517003028.GA3654626-robh@kernel.org>
-References: <20220507194913.261121-1-krzysztof.kozlowski@linaro.org>
- <20220507194913.261121-5-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220507194913.261121-5-krzysztof.kozlowski@linaro.org>
+        Mon, 16 May 2022 20:33:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7389924F33
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:33:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39FA6B816AA
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0A1FC385AA;
+        Tue, 17 May 2022 00:33:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652747602;
+        bh=0pM6ajRonXAd36beDn0bSIZ5S34lHL+3SAO1ZfDWDBY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YJUHs/Tzpopnj0FkV/p0abeft/SHtGlPtnE3cUHAfI7TfoCxowJ8pQbbVtIbkUi0S
+         lNmZCxe/TRSTUEg9ZN3CaJfh/0II+hvE0DulkxwHOFsRRoqdtUtlmgQ8lruX3eZixN
+         KW2cJLcVEv4sej5IJf1xo5FAKcuwUVvSiYvyvtSk=
+Date:   Mon, 16 May 2022 17:33:21 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Jaewon Kim <jaewon31.kim@samsung.com>
+Cc:     vbabka@suse.cz, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        jaewon31.kim@gmail.com, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [RFC PATCH] page_ext: create page extension for all memblock
+ memory regions
+Message-Id: <20220516173321.67402b7f09eacc43d4e476f4@linux-foundation.org>
+In-Reply-To: <20220509074330.4822-1-jaewon31.kim@samsung.com>
+References: <CGME20220509073953epcas1p127f2d36186316642068c92c5d9dee1c4@epcas1p1.samsung.com>
+        <20220509074330.4822-1-jaewon31.kim@samsung.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 07 May 2022 21:49:06 +0200, Krzysztof Kozlowski wrote:
-> 'input-disable' is already used and supported by common pinctrl
-> bindings, so add it also here to fix warnings like:
-> 
->   arch/arm64/boot/dts/qcom/qrb5165-rb5.dtb: gpio@c000: lt9611-rst-state: 'oneOf' conditional failed, one must be fixed:
->     'input-disable' does not match any of the regexes: 'pinctrl-[0-9]+'
->     'function', 'input-disable', 'output-high', 'pins', 'power-source' do not match any of the regexes: '(pinconf|-pins)$', 'pinctrl-[0-9]+'
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+On Mon,  9 May 2022 16:43:30 +0900 Jaewon Kim <jaewon31.kim@samsung.com> wrote:
 
-Acked-by: Rob Herring <robh@kernel.org>
+> The page extension can be prepared for each section. But if the first
+> page is not valid, the page extension for the section was not
+> initialized though there were many other valid pages within the section.
+> 
+> To support the page extension for all sections, refer to memblock memory
+> regions. If the page is valid use the nid from pfn_to_nid, otherwise use
+> the previous nid.
+> 
+> Also this pagech changed log to include total sections and a section
+> size.
+> 
+> i.e.
+> allocated 100663296 bytes of page_ext for 64 sections (1 section : 0x8000000)
+
+Cc Joonsoo, who wrote this code.
+Cc Mike, for memblock.
+
+Thanks.
+
+> 
+> diff --git a/mm/page_ext.c b/mm/page_ext.c
+> index 2e66d934d63f..506d58b36a1d 100644
+> --- a/mm/page_ext.c
+> +++ b/mm/page_ext.c
+> @@ -381,41 +381,43 @@ static int __meminit page_ext_callback(struct notifier_block *self,
+>  void __init page_ext_init(void)
+>  {
+>  	unsigned long pfn;
+> -	int nid;
+> +	int nid = 0;
+> +	struct memblock_region *rgn;
+> +	int nr_section = 0;
+> +	unsigned long next_section_pfn = 0;
+>  
+>  	if (!invoke_need_callbacks())
+>  		return;
+>  
+> -	for_each_node_state(nid, N_MEMORY) {
+> +	/*
+> +	 * iterate each memblock memory region and do not skip a section having
+> +	 * !pfn_valid(pfn)
+> +	 */
+> +	for_each_mem_region(rgn) {
+>  		unsigned long start_pfn, end_pfn;
+>  
+> -		start_pfn = node_start_pfn(nid);
+> -		end_pfn = node_end_pfn(nid);
+> -		/*
+> -		 * start_pfn and end_pfn may not be aligned to SECTION and the
+> -		 * page->flags of out of node pages are not initialized.  So we
+> -		 * scan [start_pfn, the biggest section's pfn < end_pfn) here.
+> -		 */
+> +		start_pfn = (unsigned long)(rgn->base >> PAGE_SHIFT);
+> +		end_pfn = start_pfn + (unsigned long)(rgn->size >> PAGE_SHIFT);
+> +
+> +		if (start_pfn < next_section_pfn)
+> +			start_pfn = next_section_pfn;
+> +
+>  		for (pfn = start_pfn; pfn < end_pfn;
+>  			pfn = ALIGN(pfn + 1, PAGES_PER_SECTION)) {
+>  
+> -			if (!pfn_valid(pfn))
+> -				continue;
+> -			/*
+> -			 * Nodes's pfns can be overlapping.
+> -			 * We know some arch can have a nodes layout such as
+> -			 * -------------pfn-------------->
+> -			 * N0 | N1 | N2 | N0 | N1 | N2|....
+> -			 */
+> -			if (pfn_to_nid(pfn) != nid)
+> -				continue;
+> +			if (pfn_valid(pfn))
+> +				nid = pfn_to_nid(pfn);
+> +			nr_section++;
+>  			if (init_section_page_ext(pfn, nid))
+>  				goto oom;
+>  			cond_resched();
+>  		}
+> +		next_section_pfn = pfn;
+>  	}
+> +
+>  	hotplug_memory_notifier(page_ext_callback, 0);
+> -	pr_info("allocated %ld bytes of page_ext\n", total_usage);
+> +	pr_info("allocated %ld bytes of page_ext for %d sections (1 section : 0x%x)\n",
+> +		total_usage, nr_section, (1 << SECTION_SIZE_BITS));
+>  	invoke_init_callbacks();
+>  	return;
+>  
+> -- 
+> 2.17.1
+> 
