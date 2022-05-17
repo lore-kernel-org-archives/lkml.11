@@ -2,413 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 908D4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BCAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238868AbiEQNKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51018 "EHLO
+        id S1347371AbiEQNK5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 09:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347244AbiEQNKe (ORCPT
+        with ESMTP id S1347232AbiEQNKk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:10:34 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB0A3527F
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:10:33 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id u35so14205228qtc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:10:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=gmcEONG9+1ciQ4BCBbXzW8ZQDb+rsVHZqrgwG8DaMVQ=;
-        b=YJ0ED44z23pbl+P0XROevtNAm0SqaJo88E/l43ihL8FMAQhguoBMua+P2AaUk8FsXS
-         zxfm+aHHe6u+sRwL+RxlSkGYKRgAi9kET9lKDdYsoCCB5ogXqlUSc5BO03OsEJRpukEu
-         MqzzaIVr8znWiQV7p0LyOGTIXgrf4+c+dyRpGXYIFGL4+t5ztE0dYrav98i8lHGVnbq0
-         5i210eusk5r+5pzembYuRgi1Y6jFkx7LXeXo/L4uMEMPxnMZ7ETQzkEZb6KAmxmy10qi
-         2VjbmkgU9V6sqYlnwzk+mD+IFABCj2a1fvNJ+22LmAR6/iwcePsR0mXa6DYUxfXqhOMV
-         Dd4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gmcEONG9+1ciQ4BCBbXzW8ZQDb+rsVHZqrgwG8DaMVQ=;
-        b=hBn9oIRjS1Rg/4fA+fjd07DExPsPI1LAebsxbO510w1U9wSyLzBLUcScDw/182TJTM
-         eehHRkrMRHXpd+X6SysaDOaqFILzzLsNhMRxjfZ8CoaQR0W1VXrUoGXZUwqLgj15Z0/i
-         NuuWSPTJL2bNsq5gTm4ZkGGYzSDEAeApkTc7LO8Yd7eovcQUemtzQPQIGimwe2dBc4k+
-         4Y1Y+WlfkvHSgHyWyS19JeXGiH20tO/2GFasABnx7ODp2d5WPkgrR+ud0y7emH+74Al0
-         2wuStc2MavFxP6AYkcYaTV36SK/c8bbOsywFQEj63reUxhZZkt1+WPyUtdYOZpqhWbsY
-         rRkQ==
-X-Gm-Message-State: AOAM532wyBTwpEjX0ofYDbSGAk6cGFnHQs9LV2+2ETlZ2u03wZJr5wpQ
-        gahAc8MD9hDlR9RY/y5Ny3Q9UV15lP+o8AFcLKOE+IuI0u/tpA==
-X-Google-Smtp-Source: ABdhPJxW5436ieTpqMAgy8L7fLhNe6yUCi6stTzb+m969x6iSFVNEBg+amjnzNevI6b2UqXe20N9hOQuBoCrx/AAB7Q=
-X-Received: by 2002:ac8:4e4f:0:b0:2f8:f64a:ee94 with SMTP id
- e15-20020ac84e4f000000b002f8f64aee94mr6285219qtw.97.1652793031974; Tue, 17
- May 2022 06:10:31 -0700 (PDT)
+        Tue, 17 May 2022 09:10:40 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032003585F;
+        Tue, 17 May 2022 06:10:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652793036; x=1684329036;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HfzEJ9vltPpB7NqHUUbPqOHhmBSeJ/AMSXfEoxvz9AU=;
+  b=UHFXn3DhIbrEIBZhPTgswpg1ohkolHYG8z958ubTVL3txTHYQVPxOPDC
+   cz3lpSX49vWXPXn3kQswsr35GD/eQLoBhfqN0q1S1idNWhYoUMcHYKbdW
+   ri3nuMHvysazdWSuajzyCUj97iKvtvWSX+ARGLxnqUW0LKCBHTnuAtK7G
+   L+VZrgiNoN5OFUDAOxdutpJXq80OkWp9BuN9HSqonbPJDTqkTHYSMNb3w
+   xfYBUK+BDWqoF00EL9ChTyZnuTM5PK/C5r4fobkSVBHviZcrfT4MJ8sN3
+   VP2Z3ynnwH+CffC99BPo9FoRIltGEuKclU06iCUMFihadnhoY2QziEXAJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="271300116"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="271300116"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:10:35 -0700
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="713844304"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.52.217])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:10:33 -0700
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>, Leo Yan <leo.yan@linaro.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH V2 3/6] perf tools: Add guest_code support
+Date:   Tue, 17 May 2022 16:10:08 +0300
+Message-Id: <20220517131011.6117-4-adrian.hunter@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220517131011.6117-1-adrian.hunter@intel.com>
+References: <20220517131011.6117-1-adrian.hunter@intel.com>
 MIME-Version: 1.0
-References: <CGME20220509073953epcas1p127f2d36186316642068c92c5d9dee1c4@epcas1p1.samsung.com>
- <20220509074330.4822-1-jaewon31.kim@samsung.com> <20220516173321.67402b7f09eacc43d4e476f4@linux-foundation.org>
- <YoNcBG6kQnmLZ3Z9@linux.ibm.com> <CAJrd-UuzTh-0Ee9+rMRES9onP_EkvJS-VpPP66J4M4n0Ku0ZWA@mail.gmail.com>
- <YoObTJcBUjeW+2l2@linux.ibm.com>
-In-Reply-To: <YoObTJcBUjeW+2l2@linux.ibm.com>
-From:   Jaewon Kim <jaewon31.kim@gmail.com>
-Date:   Tue, 17 May 2022 22:10:20 +0900
-Message-ID: <CAJrd-UtYqEMy+Yr9gP0v0dZ3HZ=fCHe67dTRe=5YtLWrbmd1UQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] page_ext: create page extension for all memblock
- memory regions
-To:     Mike Rapoport <rppt@linux.ibm.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Jaewon Kim <jaewon31.kim@samsung.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Joonsoo Kim <iamjoonsoo.kim@lge.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-64
-59
+A common case for KVM test programs is that the test program acts as the
+hypervisor, creating, running and destroying the virtual machine, and
+providing the guest object code from its own object code. In this case,
+the VM is not running an OS, but only the functions loaded into it by the
+hypervisor test program, and conveniently, loaded at the same virtual
+addresses.
 
-2022=EB=85=84 5=EC=9B=94 17=EC=9D=BC (=ED=99=94) =EC=98=A4=ED=9B=84 9:55, M=
-ike Rapoport <rppt@linux.ibm.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
->
-> On Tue, May 17, 2022 at 08:38:18PM +0900, Jaewon Kim wrote:
-> > Hello Mike Rapoport
-> > Thank you for your comment.
-> >
-> > Oh really? Could you point out the code or the commit regarding 'all
-> > struct pages in any section should be valid and
-> > properly initialized' ?
->
-> There were several commits that refactored the memory map initialization,
-> freeing of the unused memory map and abuse of pfn_valid() as a substitute
-> of "is memory valid" semantics.
->
-> > Actually I am using v5.10 based source tree on an arm64 device.
->
-> Then most probably your change is not relevant for the upstream kernel.
-> Did you observe any issues with page_ext initialization on v5.18-rcN
-> kernels?
+Normally to resolve addresses, MMAP events are needed to map addresses
+back to the object code and debug symbols for that object code.
 
-Actually I observed only 59 sections were initialized for page_ext and
-missed 5 sections.
-It should be totally 64 sections * 128 MB =3D 8,192 MB
+Currently, there is no way to get such mapping information from guests
+but, in the scenario described above, the guest has the same mappings
+as the hypervisor, so support for that scenario can be achieved.
 
->
-> > I tried to look up and found the following commit in v5.16-rc1, did
-> > you mean this?
-> > 3de360c3fdb3 arm64/mm: drop HAVE_ARCH_PFN_VALID
->
-> Yes, this is one of those commits.
->
-> > I guess memblock_is_memory code in pfn_valid in arch/arm64/mm/init.c, v=
-5.10
-> > might affect the page_ext_init.
->
-> Yes. In 5.10 the pfn_valid() test in page_ext_init() will skip an entire
-> section if the first pfn in that section is not memory that can be mapped
-> in the linear map.
->
-> But again, this should be fixed in the latest kernels.
+To support that, copy the host thread's maps to the guest thread's maps.
+Note, we do not discover the guest until we encounter a guest event,
+which works well because it is not until then that we know that the host
+thread's maps have been set up.
 
-Great! Thank you for your explanation.
-I will check it someday later when I use the latest kernel on our devices.
-The next version on our devices seems to be v5.15 though.
+Typically the main function for the guest object code is called
+"guest_code", hence the name chosen for this feature. Note, that is just a
+convention, the function could be named anything, and the tools do not
+care.
 
-Thank you
-Jaewon Kim
+This is primarily aimed at supporting Intel PT, or similar, where trace
+data can be recorded for a guest. Refer to the final patch in this series
+"perf intel-pt: Add guest_code support" for an example.
 
->
-> > Thank you
-> >
-> > 2022=EB=85=84 5=EC=9B=94 17=EC=9D=BC (=ED=99=94) =EC=98=A4=ED=9B=84 5:2=
-5, Mike Rapoport <rppt@linux.ibm.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
-> > >
-> > > On Mon, May 16, 2022 at 05:33:21PM -0700, Andrew Morton wrote:
-> > > > On Mon,  9 May 2022 16:43:30 +0900 Jaewon Kim <jaewon31.kim@samsung=
-.com> wrote:
-> > > >
-> > > > > The page extension can be prepared for each section. But if the f=
-irst
-> > > > > page is not valid, the page extension for the section was not
-> > > > > initialized though there were many other valid pages within the s=
-ection.
-> > >
-> > > What do you mean by "first page [in a section] is not valid"?
-> > > In recent kernels all struct pages in any section should be valid and
-> > > properly initialized.
-> > >
-> > > > > To support the page extension for all sections, refer to memblock=
- memory
-> > > > > regions. If the page is valid use the nid from pfn_to_nid, otherw=
-ise use
-> > > > > the previous nid.
-> > > > >
-> > > > > Also this pagech changed log to include total sections and a sect=
-ion
-> > > > > size.
-> > > > >
-> > > > > i.e.
-> > > > > allocated 100663296 bytes of page_ext for 64 sections (1 section =
-: 0x8000000)
-> > > >
-> > > > Cc Joonsoo, who wrote this code.
-> > > > Cc Mike, for memblock.
-> > > >
-> > > > Thanks.
-> > > >
-> > > > >
-> > > > > diff --git a/mm/page_ext.c b/mm/page_ext.c
-> > > > > index 2e66d934d63f..506d58b36a1d 100644
-> > > > > --- a/mm/page_ext.c
-> > > > > +++ b/mm/page_ext.c
-> > > > > @@ -381,41 +381,43 @@ static int __meminit page_ext_callback(stru=
-ct notifier_block *self,
-> > > > >  void __init page_ext_init(void)
-> > > > >  {
-> > > > >     unsigned long pfn;
-> > > > > -   int nid;
-> > > > > +   int nid =3D 0;
-> > > > > +   struct memblock_region *rgn;
-> > > > > +   int nr_section =3D 0;
-> > > > > +   unsigned long next_section_pfn =3D 0;
-> > > > >
-> > > > >     if (!invoke_need_callbacks())
-> > > > >             return;
-> > > > >
-> > > > > -   for_each_node_state(nid, N_MEMORY) {
-> > > > > +   /*
-> > > > > +    * iterate each memblock memory region and do not skip a sect=
-ion having
-> > > > > +    * !pfn_valid(pfn)
-> > > > > +    */
-> > > > > +   for_each_mem_region(rgn) {
-> > > > >             unsigned long start_pfn, end_pfn;
-> > > > >
-> > > > > -           start_pfn =3D node_start_pfn(nid);
-> > > > > -           end_pfn =3D node_end_pfn(nid);
-> > > > > -           /*
-> > > > > -            * start_pfn and end_pfn may not be aligned to SECTIO=
-N and the
-> > > > > -            * page->flags of out of node pages are not initializ=
-ed.  So we
-> > > > > -            * scan [start_pfn, the biggest section's pfn < end_p=
-fn) here.
-> > > > > -            */
-> > > > > +           start_pfn =3D (unsigned long)(rgn->base >> PAGE_SHIFT=
-);
-> > > > > +           end_pfn =3D start_pfn + (unsigned long)(rgn->size >> =
-PAGE_SHIFT);
-> > > > > +
-> > > > > +           if (start_pfn < next_section_pfn)
-> > > > > +                   start_pfn =3D next_section_pfn;
-> > > > > +
-> > > > >             for (pfn =3D start_pfn; pfn < end_pfn;
-> > > > >                     pfn =3D ALIGN(pfn + 1, PAGES_PER_SECTION)) {
-> > > > >
-> > > > > -                   if (!pfn_valid(pfn))
-> > > > > -                           continue;
-> > > > > -                   /*
-> > > > > -                    * Nodes's pfns can be overlapping.
-> > > > > -                    * We know some arch can have a nodes layout =
-such as
-> > > > > -                    * -------------pfn-------------->
-> > > > > -                    * N0 | N1 | N2 | N0 | N1 | N2|....
-> > > > > -                    */
-> > > > > -                   if (pfn_to_nid(pfn) !=3D nid)
-> > > > > -                           continue;
-> > > > > +                   if (pfn_valid(pfn))
-> > > > > +                           nid =3D pfn_to_nid(pfn);
-> > > > > +                   nr_section++;
-> > > > >                     if (init_section_page_ext(pfn, nid))
-> > > > >                             goto oom;
-> > > > >                     cond_resched();
-> > > > >             }
-> > > > > +           next_section_pfn =3D pfn;
-> > > > >     }
-> > > > > +
-> > > > >     hotplug_memory_notifier(page_ext_callback, 0);
-> > > > > -   pr_info("allocated %ld bytes of page_ext\n", total_usage);
-> > > > > +   pr_info("allocated %ld bytes of page_ext for %d sections (1 s=
-ection : 0x%x)\n",
-> > > > > +           total_usage, nr_section, (1 << SECTION_SIZE_BITS));
-> > > > >     invoke_init_callbacks();
-> > > > >     return;
-> > > > >
-> > > > > --
-> > > > > 2.17.1
-> > > > >
-> > >
-> > > --
-> > > Sincerely yours,
-> > > Mike.
->
-> --
-> Sincerely yours,
-> Mike.
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+---
+ tools/perf/util/event.c       |  7 ++-
+ tools/perf/util/machine.c     | 87 +++++++++++++++++++++++++++++++++++
+ tools/perf/util/machine.h     |  2 +
+ tools/perf/util/session.c     |  7 +++
+ tools/perf/util/symbol_conf.h |  3 +-
+ 5 files changed, 103 insertions(+), 3 deletions(-)
 
-2022=EB=85=84 5=EC=9B=94 17=EC=9D=BC (=ED=99=94) =EC=98=A4=ED=9B=84 9:55, M=
-ike Rapoport <rppt@linux.ibm.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
->
-> On Tue, May 17, 2022 at 08:38:18PM +0900, Jaewon Kim wrote:
-> > Hello Mike Rapoport
-> > Thank you for your comment.
-> >
-> > Oh really? Could you point out the code or the commit regarding 'all
-> > struct pages in any section should be valid and
-> > properly initialized' ?
->
-> There were several commits that refactored the memory map initialization,
-> freeing of the unused memory map and abuse of pfn_valid() as a substitute
-> of "is memory valid" semantics.
->
-> > Actually I am using v5.10 based source tree on an arm64 device.
->
-> Then most probably your change is not relevant for the upstream kernel.
-> Did you observe any issues with page_ext initialization on v5.18-rcN
-> kernels?
->
-> > I tried to look up and found the following commit in v5.16-rc1, did
-> > you mean this?
-> > 3de360c3fdb3 arm64/mm: drop HAVE_ARCH_PFN_VALID
->
-> Yes, this is one of those commits.
->
-> > I guess memblock_is_memory code in pfn_valid in arch/arm64/mm/init.c, v=
-5.10
-> > might affect the page_ext_init.
->
-> Yes. In 5.10 the pfn_valid() test in page_ext_init() will skip an entire
-> section if the first pfn in that section is not memory that can be mapped
-> in the linear map.
->
-> But again, this should be fixed in the latest kernels.
->
-> > Thank you
-> >
-> > 2022=EB=85=84 5=EC=9B=94 17=EC=9D=BC (=ED=99=94) =EC=98=A4=ED=9B=84 5:2=
-5, Mike Rapoport <rppt@linux.ibm.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
-> > >
-> > > On Mon, May 16, 2022 at 05:33:21PM -0700, Andrew Morton wrote:
-> > > > On Mon,  9 May 2022 16:43:30 +0900 Jaewon Kim <jaewon31.kim@samsung=
-.com> wrote:
-> > > >
-> > > > > The page extension can be prepared for each section. But if the f=
-irst
-> > > > > page is not valid, the page extension for the section was not
-> > > > > initialized though there were many other valid pages within the s=
-ection.
-> > >
-> > > What do you mean by "first page [in a section] is not valid"?
-> > > In recent kernels all struct pages in any section should be valid and
-> > > properly initialized.
-> > >
-> > > > > To support the page extension for all sections, refer to memblock=
- memory
-> > > > > regions. If the page is valid use the nid from pfn_to_nid, otherw=
-ise use
-> > > > > the previous nid.
-> > > > >
-> > > > > Also this pagech changed log to include total sections and a sect=
-ion
-> > > > > size.
-> > > > >
-> > > > > i.e.
-> > > > > allocated 100663296 bytes of page_ext for 64 sections (1 section =
-: 0x8000000)
-> > > >
-> > > > Cc Joonsoo, who wrote this code.
-> > > > Cc Mike, for memblock.
-> > > >
-> > > > Thanks.
-> > > >
-> > > > >
-> > > > > diff --git a/mm/page_ext.c b/mm/page_ext.c
-> > > > > index 2e66d934d63f..506d58b36a1d 100644
-> > > > > --- a/mm/page_ext.c
-> > > > > +++ b/mm/page_ext.c
-> > > > > @@ -381,41 +381,43 @@ static int __meminit page_ext_callback(stru=
-ct notifier_block *self,
-> > > > >  void __init page_ext_init(void)
-> > > > >  {
-> > > > >     unsigned long pfn;
-> > > > > -   int nid;
-> > > > > +   int nid =3D 0;
-> > > > > +   struct memblock_region *rgn;
-> > > > > +   int nr_section =3D 0;
-> > > > > +   unsigned long next_section_pfn =3D 0;
-> > > > >
-> > > > >     if (!invoke_need_callbacks())
-> > > > >             return;
-> > > > >
-> > > > > -   for_each_node_state(nid, N_MEMORY) {
-> > > > > +   /*
-> > > > > +    * iterate each memblock memory region and do not skip a sect=
-ion having
-> > > > > +    * !pfn_valid(pfn)
-> > > > > +    */
-> > > > > +   for_each_mem_region(rgn) {
-> > > > >             unsigned long start_pfn, end_pfn;
-> > > > >
-> > > > > -           start_pfn =3D node_start_pfn(nid);
-> > > > > -           end_pfn =3D node_end_pfn(nid);
-> > > > > -           /*
-> > > > > -            * start_pfn and end_pfn may not be aligned to SECTIO=
-N and the
-> > > > > -            * page->flags of out of node pages are not initializ=
-ed.  So we
-> > > > > -            * scan [start_pfn, the biggest section's pfn < end_p=
-fn) here.
-> > > > > -            */
-> > > > > +           start_pfn =3D (unsigned long)(rgn->base >> PAGE_SHIFT=
-);
-> > > > > +           end_pfn =3D start_pfn + (unsigned long)(rgn->size >> =
-PAGE_SHIFT);
-> > > > > +
-> > > > > +           if (start_pfn < next_section_pfn)
-> > > > > +                   start_pfn =3D next_section_pfn;
-> > > > > +
-> > > > >             for (pfn =3D start_pfn; pfn < end_pfn;
-> > > > >                     pfn =3D ALIGN(pfn + 1, PAGES_PER_SECTION)) {
-> > > > >
-> > > > > -                   if (!pfn_valid(pfn))
-> > > > > -                           continue;
-> > > > > -                   /*
-> > > > > -                    * Nodes's pfns can be overlapping.
-> > > > > -                    * We know some arch can have a nodes layout =
-such as
-> > > > > -                    * -------------pfn-------------->
-> > > > > -                    * N0 | N1 | N2 | N0 | N1 | N2|....
-> > > > > -                    */
-> > > > > -                   if (pfn_to_nid(pfn) !=3D nid)
-> > > > > -                           continue;
-> > > > > +                   if (pfn_valid(pfn))
-> > > > > +                           nid =3D pfn_to_nid(pfn);
-> > > > > +                   nr_section++;
-> > > > >                     if (init_section_page_ext(pfn, nid))
-> > > > >                             goto oom;
-> > > > >                     cond_resched();
-> > > > >             }
-> > > > > +           next_section_pfn =3D pfn;
-> > > > >     }
-> > > > > +
-> > > > >     hotplug_memory_notifier(page_ext_callback, 0);
-> > > > > -   pr_info("allocated %ld bytes of page_ext\n", total_usage);
-> > > > > +   pr_info("allocated %ld bytes of page_ext for %d sections (1 s=
-ection : 0x%x)\n",
-> > > > > +           total_usage, nr_section, (1 << SECTION_SIZE_BITS));
-> > > > >     invoke_init_callbacks();
-> > > > >     return;
-> > > > >
-> > > > > --
-> > > > > 2.17.1
-> > > > >
-> > >
-> > > --
-> > > Sincerely yours,
-> > > Mike.
->
-> --
-> Sincerely yours,
-> Mike.
+diff --git a/tools/perf/util/event.c b/tools/perf/util/event.c
+index 6439c888ae38..0476bb3a4188 100644
+--- a/tools/perf/util/event.c
++++ b/tools/perf/util/event.c
+@@ -683,9 +683,12 @@ static bool check_address_range(struct intlist *addr_list, int addr_range,
+ int machine__resolve(struct machine *machine, struct addr_location *al,
+ 		     struct perf_sample *sample)
+ {
+-	struct thread *thread = machine__findnew_thread(machine, sample->pid,
+-							sample->tid);
++	struct thread *thread;
+ 
++	if (symbol_conf.guest_code && !machine__is_host(machine))
++		thread = machine__findnew_guest_code(machine, sample->pid);
++	else
++		thread = machine__findnew_thread(machine, sample->pid, sample->tid);
+ 	if (thread == NULL)
+ 		return -1;
+ 
+diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+index e67b5a7670f3..009061852808 100644
+--- a/tools/perf/util/machine.c
++++ b/tools/perf/util/machine.c
+@@ -392,6 +392,93 @@ struct machine *machines__find_guest(struct machines *machines, pid_t pid)
+ 	return machine;
+ }
+ 
++/*
++ * A common case for KVM test programs is that the test program acts as the
++ * hypervisor, creating, running and destroying the virtual machine, and
++ * providing the guest object code from its own object code. In this case,
++ * the VM is not running an OS, but only the functions loaded into it by the
++ * hypervisor test program, and conveniently, loaded at the same virtual
++ * addresses.
++ *
++ * Normally to resolve addresses, MMAP events are needed to map addresses
++ * back to the object code and debug symbols for that object code.
++ *
++ * Currently, there is no way to get such mapping information from guests
++ * but, in the scenario described above, the guest has the same mappings
++ * as the hypervisor, so support for that scenario can be achieved.
++ *
++ * To support that, copy the host thread's maps to the guest thread's maps.
++ * Note, we do not discover the guest until we encounter a guest event,
++ * which works well because it is not until then that we know that the host
++ * thread's maps have been set up.
++ *
++ * This function returns the guest thread. Apart from keeping the data
++ * structures sane, using a thread belonging to the guest machine, instead
++ * of the host thread, allows it to have its own comm (refer
++ * thread__set_guest_comm()).
++ */
++static struct thread *findnew_guest_code(struct machine *machine,
++					 struct machine *host_machine,
++					 pid_t pid)
++{
++	struct thread *host_thread;
++	struct thread *thread;
++	int err;
++
++	if (!machine)
++		return NULL;
++
++	thread = machine__findnew_thread(machine, -1, pid);
++	if (!thread)
++		return NULL;
++
++	/* Assume maps are set up if there are any */
++	if (thread->maps->nr_maps)
++		return thread;
++
++	host_thread = machine__find_thread(host_machine, -1, pid);
++	if (!host_thread)
++		goto out_err;
++
++	thread__set_guest_comm(thread, pid);
++
++	/*
++	 * Guest code can be found in hypervisor process at the same address
++	 * so copy host maps.
++	 */
++	err = maps__clone(thread, host_thread->maps);
++	thread__put(host_thread);
++	if (err)
++		goto out_err;
++
++	return thread;
++
++out_err:
++	thread__zput(thread);
++	return NULL;
++}
++
++struct thread *machines__findnew_guest_code(struct machines *machines, pid_t pid)
++{
++	struct machine *host_machine = machines__find(machines, HOST_KERNEL_ID);
++	struct machine *machine = machines__findnew(machines, pid);
++
++	return findnew_guest_code(machine, host_machine, pid);
++}
++
++struct thread *machine__findnew_guest_code(struct machine *machine, pid_t pid)
++{
++	struct machines *machines = machine->machines;
++	struct machine *host_machine;
++
++	if (!machines)
++		return NULL;
++
++	host_machine = machines__find(machines, HOST_KERNEL_ID);
++
++	return findnew_guest_code(machine, host_machine, pid);
++}
++
+ void machines__process_guests(struct machines *machines,
+ 			      machine__process_t process, void *data)
+ {
+diff --git a/tools/perf/util/machine.h b/tools/perf/util/machine.h
+index 0d113771e8c8..01a5fca643b7 100644
+--- a/tools/perf/util/machine.h
++++ b/tools/perf/util/machine.h
+@@ -168,6 +168,8 @@ struct machine *machines__find_host(struct machines *machines);
+ struct machine *machines__find(struct machines *machines, pid_t pid);
+ struct machine *machines__findnew(struct machines *machines, pid_t pid);
+ struct machine *machines__find_guest(struct machines *machines, pid_t pid);
++struct thread *machines__findnew_guest_code(struct machines *machines, pid_t pid);
++struct thread *machine__findnew_guest_code(struct machine *machine, pid_t pid);
+ 
+ void machines__set_id_hdr_size(struct machines *machines, u16 id_hdr_size);
+ void machines__set_comm_exec(struct machines *machines, bool comm_exec);
+diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
+index f9a320694b85..6577e1227bd5 100644
+--- a/tools/perf/util/session.c
++++ b/tools/perf/util/session.c
+@@ -1410,6 +1410,13 @@ static struct machine *machines__find_for_cpumode(struct machines *machines,
+ 		else
+ 			pid = sample->pid;
+ 
++		/*
++		 * Guest code machine is created as needed and does not use
++		 * DEFAULT_GUEST_KERNEL_ID.
++		 */
++		if (symbol_conf.guest_code)
++			return machines__findnew(machines, pid);
++
+ 		return machines__find_guest(machines, pid);
+ 	}
+ 
+diff --git a/tools/perf/util/symbol_conf.h b/tools/perf/util/symbol_conf.h
+index a70b3ec09dac..bc3d046fbb63 100644
+--- a/tools/perf/util/symbol_conf.h
++++ b/tools/perf/util/symbol_conf.h
+@@ -43,7 +43,8 @@ struct symbol_conf {
+ 			report_individual_block,
+ 			inline_name,
+ 			disable_add2line_warn,
+-			buildid_mmap2;
++			buildid_mmap2,
++			guest_code;
+ 	const char	*vmlinux_name,
+ 			*kallsyms_name,
+ 			*source_prefix,
+-- 
+2.25.1
+
