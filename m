@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88851C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24879C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350625AbiEQPnC (ORCPT
+        id S1350376AbiEQPnH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
+        Tue, 17 May 2022 11:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350537AbiEQPll (ORCPT
+        with ESMTP id S1350511AbiEQPlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:41:41 -0400
+        Tue, 17 May 2022 11:41:39 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E20541312;
-        Tue, 17 May 2022 08:41:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D763240E7C;
+        Tue, 17 May 2022 08:41:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652802100; x=1684338100;
+  t=1652802098; x=1684338098;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=STQFum0/F5thK1+ZnYkq73Joe3larBz4vqtOK4/IDZk=;
-  b=nbQKXlqstyZCw+wIilutWOUIa0VNdmGmK/HYgGuzE4BxEY+v4M6NS20e
-   Igk3pu5tK7P/CRg7EaK+vi0vFy4ORbXulsQv8bB8MrS5yjT3jeSVpY7Ua
-   WvsPr7DMVJcAWbW7M7+4Age3TUjFj+VY3Vcan8UcE6YBIr4QsgTJTPRWK
-   e5MBPS+mOyXcc5BtyPY0Cc0ZsRniObCnt9nJK2/Q4yuoeWsVzdqpMtIws
-   TFXgkYgAuc2DI2H23VJGnK3iBkEhiDsEfRsg3f5ES8sFE1LG6OTOUla02
-   aTwMs5qpuVURPXswaXujUjxZWNflQ5jBA/FfOtO4Ut91clqvnNCs2nf3+
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632116"
+  bh=xR/611xpvRKGSSt6US+B7XzEs4L6LdH7uwkJelvOZ/Q=;
+  b=UInopzvSS1CiRRwyNSm9BHswGGOOMbd63hkSYI7ZaYv/ggvXsDooURfQ
+   9zJK8S5RBW5thESsr1WHk8v4ccaeldr9Ds+JgkEi1QyiuRAD/HqCOV8dN
+   ybS0qoDH7YYG5gsVAtBQ9amIxg6sARft4CJz/rDVUhBas0T9rluJ72tCg
+   uagzuDXmj0PItycrppg8mQ/nDVm+ENgbra3sNBWyh2r7ljWMmNmSJOGzp
+   xM347j10gvZTozKluMShU74QebsFwWCc+UMjVWIuveBGwyRLkb64qhIEx
+   8wb89FXSrAOPKBS/twetRw69ANunAOXkOsZsA/QkB3B+i9a96xDdT7bYV
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632112"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="357632116"
+   d="scan'208";a="357632112"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:36 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:35 -0700
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="626533607"
+   d="scan'208";a="626533596"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:35 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
@@ -43,10 +43,11 @@ To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com,
         kan.liang@linux.intel.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v12 14/16] KVM: x86/vmx: Flip Arch LBREn bit on guest state change
-Date:   Tue, 17 May 2022 11:40:58 -0400
-Message-Id: <20220517154100.29983-15-weijiang.yang@intel.com>
+Cc:     Like Xu <like.xu@linux.intel.com>,
+        Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v12 11/16] KVM: x86: Add XSAVE Support for Architectural LBR
+Date:   Tue, 17 May 2022 11:40:55 -0400
+Message-Id: <20220517154100.29983-12-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220517154100.29983-1-weijiang.yang@intel.com>
 References: <20220517154100.29983-1-weijiang.yang@intel.com>
@@ -56,81 +57,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Per spec:"IA32_LBR_CTL.LBREn is saved and cleared on #SMI, and restored
-on RSM. On a warm reset, all LBR MSRs, including IA32_LBR_DEPTH, have their
-values preserved. However, IA32_LBR_CTL.LBREn is cleared to 0, disabling
-LBRs." At guest SMM entry, store guest IA32_LBR_CTL in SMRAM and clear LBREn
-in VMCS, do reverse things at SMM exit. Also clear LBREn at warm reset.
+From: Like Xu <like.xu@linux.intel.com>
 
-Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+On processors supporting XSAVES and XRSTORS, Architectural LBR XSAVE
+support is enumerated from CPUID.(EAX=0DH, ECX=1):ECX[bit 15].
+The detailed sub-leaf for Arch LBR is enumerated in CPUID.(0DH, 0FH).
+
+XSAVES provides a faster means than RDMSR for guest to read all LBRs.
+When guest IA32_XSS[bit 15] is set, the Arch LBR state can be saved using
+XSAVES and restored by XRSTORS with the appropriate RFBM.
+
+Signed-off-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 ---
- arch/x86/kvm/vmx/vmx.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ arch/x86/kvm/vmx/vmx.c | 4 ++++
+ arch/x86/kvm/x86.c     | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 7dfa961d6829..9b2f84998b45 100644
+index 7238628acb90..1b7194b9b6bc 100644
 --- a/arch/x86/kvm/vmx/vmx.c
 +++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4674,6 +4674,8 @@ static void vmx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
- 	if (!init_event) {
- 		if (static_cpu_has(X86_FEATURE_ARCH_LBR))
- 			vmcs_write64(GUEST_IA32_LBR_CTL, 0);
-+	} else {
-+		disable_arch_lbr_ctl(vcpu);
+@@ -7546,6 +7546,10 @@ static __init void vmx_set_cpu_caps(void)
+ 		kvm_cpu_cap_check_and_set(X86_FEATURE_DS);
+ 		kvm_cpu_cap_check_and_set(X86_FEATURE_DTES64);
  	}
- }
- 
-@@ -7796,6 +7798,8 @@ static int vmx_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 
- static int vmx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
- {
-+	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
-+	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
- 
- 	vmx->nested.smm.guest_mode = is_guest_mode(vcpu);
-@@ -7805,11 +7809,22 @@ static int vmx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
- 	vmx->nested.smm.vmxon = vmx->nested.vmxon;
- 	vmx->nested.vmxon = false;
- 	vmx_clear_hlt(vcpu);
-+
-+	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
-+	    test_bit(INTEL_PMC_IDX_FIXED_VLBR, pmu->pmc_in_use) &&
-+	    lbr_desc->event && guest_cpuid_has(vcpu, X86_FEATURE_LM)) {
-+		u64 ctl = vmcs_read64(GUEST_IA32_LBR_CTL);
-+
-+		put_smstate(u64, smstate, 0x7f10, ctl);
-+		vmcs_write64(GUEST_IA32_LBR_CTL, ctl & ~ARCH_LBR_CTL_LBREN);
++	if (!cpu_has_vmx_arch_lbr()) {
++		kvm_cpu_cap_clear(X86_FEATURE_ARCH_LBR);
++		supported_xss &= ~XFEATURE_MASK_LBR;
 +	}
-+
- 	return 0;
- }
  
- static int vmx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
- {
-+	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
- 	int ret;
+ 	if (!enable_sgx) {
+ 		kvm_cpu_cap_clear(X86_FEATURE_SGX);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 90b3129a2fbe..637ecd19c646 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -224,7 +224,7 @@ static struct kvm_user_return_msrs __percpu *user_return_msrs;
+ 				| XFEATURE_MASK_BNDCSR | XFEATURE_MASK_AVX512 \
+ 				| XFEATURE_MASK_PKRU | XFEATURE_MASK_XTILE)
  
-@@ -7826,6 +7841,17 @@ static int vmx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
- 		vmx->nested.nested_run_pending = 1;
- 		vmx->nested.smm.guest_mode = false;
- 	}
-+
-+	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
-+	    guest_cpuid_has(vcpu, X86_FEATURE_LM)) {
-+		u64 ctl = GET_SMSTATE(u64, smstate, 0x7f10);
-+
-+		vmcs_write64(GUEST_IA32_LBR_CTL, ctl | ARCH_LBR_CTL_LBREN);
-+
-+		if (intel_pmu_lbr_is_enabled(vcpu) && !lbr_desc->event)
-+			intel_pmu_create_guest_lbr_event(vcpu);
-+	}
-+
- 	return 0;
- }
+-#define KVM_SUPPORTED_XSS     0
++#define KVM_SUPPORTED_XSS     XFEATURE_MASK_LBR
  
+ u64 __read_mostly host_efer;
+ EXPORT_SYMBOL_GPL(host_efer);
 -- 
 2.27.0
 
