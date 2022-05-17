@@ -2,196 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7795CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D53C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350014AbiEQU1e (ORCPT
+        id S1352910AbiEQU2D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 16:27:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51536 "EHLO
+        Tue, 17 May 2022 16:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346758AbiEQU1a (ORCPT
+        with ESMTP id S234683AbiEQU17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 16:27:30 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1028F527ED
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:27:29 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id n2-20020a056e021ba200b002d12462a1d1so85056ili.15
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:27:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=cRFwbGYYYJrN0dgN69OptN10qmU7nYDStfYj3Rja69A=;
-        b=pMn9ydg+ROs5VS6E5IJ0BXexhn0JNyBwdsrPgzRu3j5OtOPte6HHJCDzRqCtYV9uhx
-         mYqTMfvY1YeifqMx/YJuVtyw+Anp7+1g+6b3QBPCkB/9RUVE1d364HOX5/zM2RiWSO5I
-         Sbkq5CpbHZ+5BKT5cVfFjwTmT6DwyQ8PcOabY6M2tbaKnvJGGWKiyyJzyRTCUdj7kcfu
-         cEY2HVEEgXhFKzPrGqKeyWHkDOofD8akP84OCm6fI1ezxDq0JBUf4GLXLXjgADreCh64
-         qqnpSvFyBbEU7LpUJ2coPXJTfnV2FwWvW45PbExGep0sUjcRJTEBYmQnkazmRZ0IWBuF
-         6CPw==
-X-Gm-Message-State: AOAM533UoKafDewSzslucmwQRDfm0Isg0lHgqhQOFfyfWvXuF7g3TevS
-        8DLDY0WxatT6mvCzlacsErPCNRv0czzXRkIMXhrD9Wbfi/sf
-X-Google-Smtp-Source: ABdhPJxE11PZVRGHuTc9YY6/4wD1M/n3WhPIaE5dUdD2PTj5uKoKvDiQvKBXgpJCcrbYrkCE7MhUBGsD9En8T/m/CeEOx1CPSAoX
+        Tue, 17 May 2022 16:27:59 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FD5527EA
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:27:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652819278; x=1684355278;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=3vKHHKgoh+36e4WdvV0tcuXmnLDyIUERFmKWJ2bCzMg=;
+  b=XYi6IucXtWX6rEuLP8/uH4qOcnmF28j+ScjfmvQ70NVdRqZIralbQhlV
+   USSrbcypvplyBthVW04/8brhYuPT1MRMuBFzBs2vLqC9e1rgbXhM0/iHw
+   wkAy1Pg/K9+ArRMpnU/IMEgUIXr9HQOLf9q9m3RIL0wIkhYMmwQMww977
+   MnRbpWBiCT6QyaMTkfaIbGmGHCaxZd9RXvnYByamPgN3yyLtfV3T53Mj7
+   1qtliGKo/BVi2HgFKAPYRsDO6HojuoTWI2TUKt7xI05/Y5WSSknidDKx4
+   3yJmnAoExkvBrbZvTJUvl2FSykNH4/zJGtopm6XC8a6NAbQU24eQ+jZJk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="251832560"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="251832560"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 13:27:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="545078895"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 17 May 2022 13:27:57 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nr3nQ-0001N2-KA;
+        Tue, 17 May 2022 20:27:56 +0000
+Date:   Wed, 18 May 2022 04:27:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.18-rc1 8/9]
+ arch/arm/include/asm/memory.h:333:33: error: 'KERNEL_PFN_OFFSET' undeclared;
+ did you mean 'KERNEL_OFFSET'?
+Message-ID: <202205180458.0iXDsFhX-lkp@intel.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:15c9:b0:32d:b26d:a01e with SMTP id
- i9-20020a05663815c900b0032db26da01emr13379939jat.11.1652819248466; Tue, 17
- May 2022 13:27:28 -0700 (PDT)
-Date:   Tue, 17 May 2022 13:27:28 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002ecf9805df3af808@google.com>
-Subject: [syzbot] KASAN: slab-out-of-bounds Read in cttimeout_net_exit
-From:   syzbot <syzbot+92968395eedbdbd3617d@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, edumazet@google.com,
-        fw@strlen.de, kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pabeni@redhat.com,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.18-rc1
+head:   67a8d6eb3d015908f35d6091c02f17d7c3b55bf3
+commit: 52cbc963c5c9daba74109e9782e3487cdf48fe5c [8/9] ARM: Compile the kernel into VMALLOC
+config: arm-lpc18xx_defconfig (https://download.01.org/0day-ci/archive/20220518/202205180458.0iXDsFhX-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=52cbc963c5c9daba74109e9782e3487cdf48fe5c
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.18-rc1
+        git checkout 52cbc963c5c9daba74109e9782e3487cdf48fe5c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm prepare
 
-syzbot found the following issue on:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-HEAD commit:    65a9dedc11d6 net: phy: marvell: Add errata section 5.1 for..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16fafa9ef00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c05eee2efc702eed
-dashboard link: https://syzkaller.appspot.com/bug?extid=92968395eedbdbd3617d
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+All errors (new ones prefixed by >>):
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+92968395eedbdbd3617d@syzkaller.appspotmail.com
-
-bond0 (unregistering): (slave bond_slave_1): Releasing backup interface
-bond0 (unregistering): (slave bond_slave_0): Releasing backup interface
-bond0 (unregistering): Released all slaves
-==================================================================
-BUG: KASAN: slab-out-of-bounds in __list_del_entry_valid+0xcc/0xf0 lib/list_debug.c:42
-Read of size 8 at addr ffff888051af75b8 by task kworker/u4:5/1223
-
-CPU: 1 PID: 1223 Comm: kworker/u4:5 Not tainted 5.18.0-rc6-syzkaller-01553-g65a9dedc11d6 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
- print_report mm/kasan/report.c:429 [inline]
- kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
- __list_del_entry_valid+0xcc/0xf0 lib/list_debug.c:42
- __list_del_entry include/linux/list.h:134 [inline]
- list_del include/linux/list.h:148 [inline]
- cttimeout_net_exit+0x211/0x540 net/netfilter/nfnetlink_cttimeout.c:617
- ops_exit_list+0xb0/0x170 net/core/net_namespace.c:162
- cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:594
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
- </TASK>
-
-Allocated by task 9270:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
- kmalloc include/linux/slab.h:586 [inline]
- kzalloc include/linux/slab.h:714 [inline]
- cttimeout_new_timeout+0x51f/0xa50 net/netfilter/nfnetlink_cttimeout.c:156
- nfnetlink_rcv_msg+0xbcd/0x13f0 net/netfilter/nfnetlink.c:297
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
- nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:655
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- ____sys_sendmsg+0x6eb/0x810 net/socket.c:2460
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2514
- __sys_sendmsg net/socket.c:2543 [inline]
- __do_sys_sendmsg net/socket.c:2552 [inline]
- __se_sys_sendmsg net/socket.c:2550 [inline]
- __x64_sys_sendmsg+0x132/0x220 net/socket.c:2550
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff888051af7500
- which belongs to the cache kmalloc-128 of size 128
-The buggy address is located 56 bytes to the right of
- 128-byte region [ffff888051af7500, ffff888051af7580)
-
-The buggy address belongs to the physical page:
-page:ffffea000146bdc0 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888051af7100 pfn:0x51af7
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 ffffea0001ed5e48 ffffea0001cf4b08 ffff888010c418c0
-raw: ffff888051af7100 000000000010000b 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112cc0(GFP_USER|__GFP_NOWARN|__GFP_NORETRY), pid 7027, tgid 7027 (cmp), ts 227162348638, free_ts 227160439771
- prep_new_page mm/page_alloc.c:2441 [inline]
- get_page_from_freelist+0xba2/0x3e00 mm/page_alloc.c:4182
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5408
- __alloc_pages_node include/linux/gfp.h:587 [inline]
- alloc_slab_page mm/slub.c:1801 [inline]
- allocate_slab+0x80/0x3c0 mm/slub.c:1944
- new_slab mm/slub.c:2004 [inline]
- ___slab_alloc+0x8df/0xf20 mm/slub.c:3005
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3092
- slab_alloc_node mm/slub.c:3183 [inline]
- __kmalloc_node+0x2cb/0x390 mm/slub.c:4458
- kmalloc_array_node include/linux/slab.h:676 [inline]
- kcalloc_node include/linux/slab.h:681 [inline]
- memcg_alloc_slab_cgroups+0x8b/0x140 mm/memcontrol.c:2810
- account_slab mm/slab.h:652 [inline]
- allocate_slab+0x2c9/0x3c0 mm/slub.c:1960
- new_slab mm/slub.c:2004 [inline]
- ___slab_alloc+0x8df/0xf20 mm/slub.c:3005
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3092
- slab_alloc_node mm/slub.c:3183 [inline]
- slab_alloc mm/slub.c:3225 [inline]
- __kmem_cache_alloc_lru mm/slub.c:3232 [inline]
- kmem_cache_alloc+0x360/0x3b0 mm/slub.c:3242
- vm_area_dup+0x88/0x3f0 kernel/fork.c:467
- __split_vma+0xa5/0x550 mm/mmap.c:2712
- split_vma+0x95/0xd0 mm/mmap.c:2770
- mprotect_fixup+0x72d/0x950 mm/mprotect.c:494
- do_mprotect_pkey+0x532/0x980 mm/mprotect.c:650
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1356 [inline]
- free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1406
- free_unref_page_prepare mm/page_alloc.c:3328 [inline]
- free_unref_page+0x19/0x6a0 mm/page_alloc.c:3423
- __vunmap+0x85d/0xd30 mm/vmalloc.c:2667
- free_work+0x58/0x70 mm/vmalloc.c:97
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
-
-Memory state around the buggy address:
- ffff888051af7480: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888051af7500: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc
->ffff888051af7580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                        ^
- ffff888051af7600: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888051af7680: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
+   In file included from arch/arm/include/asm/page.h:163,
+                    from arch/arm/include/asm/thread_info.h:14,
+                    from include/linux/thread_info.h:60,
+                    from include/asm-generic/preempt.h:5,
+                    from ./arch/arm/include/generated/asm/preempt.h:1,
+                    from include/linux/preempt.h:78,
+                    from include/linux/rcupdate.h:27,
+                    from include/linux/rculist.h:11,
+                    from include/linux/pid.h:5,
+                    from include/linux/sched.h:14,
+                    from arch/arm/kernel/asm-offsets.c:11:
+   arch/arm/include/asm/memory.h: In function 'virt_to_pfn':
+>> arch/arm/include/asm/memory.h:333:33: error: 'KERNEL_PFN_OFFSET' undeclared (first use in this function); did you mean 'KERNEL_OFFSET'?
+     333 |                                 KERNEL_PFN_OFFSET);
+         |                                 ^~~~~~~~~~~~~~~~~
+         |                                 KERNEL_OFFSET
+   arch/arm/include/asm/memory.h:333:33: note: each undeclared identifier is reported only once for each function it appears in
+   make[2]: *** [scripts/Makefile.build:120: arch/arm/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1194: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+vim +333 arch/arm/include/asm/memory.h
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+   322	
+   323	static inline unsigned long virt_to_pfn(const void *p)
+   324	{
+   325		unsigned long kaddr = (unsigned long)p;
+   326		if (!IS_ENABLED(CONFIG_ARM_KERNEL_IN_VMALLOC)) {
+   327			return (((kaddr - PAGE_OFFSET) >> PAGE_SHIFT) +
+   328				PHYS_PFN_OFFSET);
+   329		} else {
+   330			if ((kaddr >= KERNEL_OFFSET) &&
+   331			    (kaddr < (KERNEL_OFFSET + KERNEL_SECTION_SIZE))) {
+   332				return (((kaddr - KERNEL_OFFSET) >> PAGE_SHIFT) +
+ > 333					KERNEL_PFN_OFFSET);
+   334			} else {
+   335				return (((kaddr - PAGE_OFFSET) >> PAGE_SHIFT) +
+   336					PHYS_PFN_OFFSET);
+   337			}
+   338		}
+   339	}
+   340	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
