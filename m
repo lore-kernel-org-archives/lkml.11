@@ -2,99 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C940C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240220AbiEQKM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
+        id S1343785AbiEQKNI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343788AbiEQKMK (ORCPT
+        with ESMTP id S1343797AbiEQKMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 17 May 2022 06:12:10 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B6514D3D
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:11:08 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id p189so10136642wmp.3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:11:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6Lu6f0d73oazesEuBZHPdAXNcyn4PVdVtPrb/jDtJ6I=;
-        b=PlrnrUEHymszdmHIcng8m5vAcej0j3tS1D+N6uRoaq2jGq1Lud4hO07wDpPnifs7M/
-         N/vvnuH1VyKSKuf5jjfMwvHHwgGEAqepEt4WN5wZoWgUbHqByJgAXy0ynt9kfNGhBJTF
-         u/CBML7Fc+zPlufcDyzUM7hBtKgfx86N+8J2KH36TNtwBON/wbS65BRMBiOTQnvXbZbL
-         08UEURw98dqxbXLiRPy2CPx7WNDrimZWTDE2R1lHlLqmxZxC8YUVfD4r9Y9bmtdZrfzv
-         08trCDrphc+izqhWbp98xkwW8BX+BXF3SQcAeqhWU8rl1PR/ylvM2FRID1cL2hfnBAzp
-         M8yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6Lu6f0d73oazesEuBZHPdAXNcyn4PVdVtPrb/jDtJ6I=;
-        b=kek11BFlfn4PJwp2JKxw9jXL7FGIwx72yYebm2dmWuciVVsIiv4Vce4WYgfq2nj6KY
-         nVVaGp4sliBHQL6Hs9MudylMP1vWfxrvCPBMPJCCMnXCY601l2LY9bVMxQCOkhj7zzHG
-         8FBht9Muke8t5yh8y3Pwz4SCIZW/Qgz9dMxFV/zdwBk7Eae4SBwKkks3aYYt6VU32ZSh
-         g0NTC0V66Raq+Wg9Fqysz8jrOvHxG193JPpD9fci12AI5SLd/jTl13uVTIwntildD4em
-         6KEzZ+lJnvB0IGFL+5uDXHWzD1pozwTVI0B6NN5w1XxqKrspBqqKo1bt9Xce6QpBL9Fv
-         IvBQ==
-X-Gm-Message-State: AOAM530Sn3GPh8RZ8FEILT3s3cSOs1nEk/qc2iXANWoBUfZZSycFnZLV
-        Nlu83S+R2qlvAB65W7wm0jufEnXuMSI9wFyI
-X-Google-Smtp-Source: ABdhPJzEcdGO4BEiKj9MU8Numtdd2YBnuh41a11Our/iJU2bQwHov5H0jYcNsPvff8YEb2UsONtN/w==
-X-Received: by 2002:a05:600c:3d8c:b0:394:6097:9994 with SMTP id bi12-20020a05600c3d8c00b0039460979994mr30990364wmb.29.1652782266658;
-        Tue, 17 May 2022 03:11:06 -0700 (PDT)
-Received: from uffe-XPS13.acentic.lan ([193.117.214.243])
-        by smtp.gmail.com with ESMTPSA id e12-20020adfa44c000000b0020c5253d8dcsm11767731wra.40.2022.05.17.03.11.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 03:11:05 -0700 (PDT)
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-To:     linux-mmc@vger.kernel.org,
-        Jean Rene Dawin <jdawin@math.uni-bielefeld.de>,
-        "H . Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Huijin Park <huijin.park@samsung.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.com
-Subject: [PATCH] mmc: core: Fix busy polling for MMC_SEND_OP_COND again
-Date:   Tue, 17 May 2022 12:10:46 +0200
-Message-Id: <20220517101046.27512-1-ulf.hansson@linaro.org>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0339E15FF6;
+        Tue, 17 May 2022 03:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=KEpTTAEC9xfg+HRhDO
+        p/Qpj2o7vJYyBbGM+BScxTLJY=; b=e4PqQu2T7ZY9F0k/gJYwdtr1BVuwA0iqS3
+        snAQ7SgDPMMANONxOxIb27SvjnwnYPCxaC280PloajwBrIIxS39BHmWLjxbJPDfF
+        ry3E+6lN0/nGtC12z6CMjw4eujlY+EmUCGcVnL3fNOMQSrEd0RtxUYvpOPqewHx/
+        7bjUYz/og=
+Received: from localhost.localdomain (unknown [202.112.113.212])
+        by smtp7 (Coremail) with SMTP id C8CowADnlLkOcYNigRf3Cw--.43433S4;
+        Tue, 17 May 2022 17:55:38 +0800 (CST)
+From:   Yuanjun Gong <ruc_gongyuanjun@163.com>
+To:     Yuanjun Gong <ruc_gongyuanjun@163.com>,
+        Benson Leung <bleung@chromium.org>,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Subject: [PATCH 1/1] platform/chrome: check *dest of memcpy
+Date:   Tue, 17 May 2022 17:55:21 +0800
+Message-Id: <20220517095521.6897-1-ruc_gongyuanjun@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: C8CowADnlLkOcYNigRf3Cw--.43433S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Aw15KF4UJw4DuFWUXrykuFg_yoW8XrWxpF
+        Z5ur17Ca10ka18Kw4Utay293W3Xw18tr97u3yxua4rXws8JasxAryFya4rCF1vyryxJ34Y
+        yryktF1rWa1xZFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRKii-UUUUU=
+X-Originating-IP: [202.112.113.212]
+X-CM-SenderInfo: 5uxfsw5rqj53pdqm30i6rwjhhfrp/1tbiJw0E5V5vB8SlZwABs6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It turned out that polling period for MMC_SEND_OP_COND, that currently is
-set to 1ms, still isn't sufficient. In particular a Micron eMMC on a
-Beaglebone platform, is reported to sometimes fail to initialize.
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-Additional test, shows that extending the period to 4ms is working fine, so
-let's make that change.
+In regulator/cros-ec-regulator.c, cros_ec_cmd is sometimes called
+with *indata set to NULL.
 
-Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-Tested-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-Fixes: 1760fdb6fe9f (mmc: core: Restore (almost) the busy polling for MMC_SEND_OP_COND")
-Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
-Cc: stable@vger.kernel.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+static int cros_ec_regulator_enable(struct regulator_dev *dev){
+...
+     cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_ENABLE, &cmd,
+			  sizeof(cmd), NULL, 0)
+...}
+
+Don't do memcpy if indata is NULL.
+
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
 ---
- drivers/mmc/core/mmc_ops.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/chrome/cros_ec_proto.c | 2 +-
+ drivers/regulator/cros-ec-regulator.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-index 180d7e9d3400..81c55bfd6e0c 100644
---- a/drivers/mmc/core/mmc_ops.c
-+++ b/drivers/mmc/core/mmc_ops.c
-@@ -21,7 +21,7 @@
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index c4caf2e2de82..da175c57cff7 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -938,7 +938,7 @@ int cros_ec_command(struct cros_ec_device *ec_dev,
+ 	if (ret < 0)
+ 		goto error;
  
- #define MMC_BKOPS_TIMEOUT_MS		(120 * 1000) /* 120s */
- #define MMC_SANITIZE_TIMEOUT_MS		(240 * 1000) /* 240s */
--#define MMC_OP_COND_PERIOD_US		(1 * 1000) /* 1ms */
-+#define MMC_OP_COND_PERIOD_US		(4 * 1000) /* 4ms */
- #define MMC_OP_COND_TIMEOUT_MS		1000 /* 1s */
+-	if (insize)
++	if (indata && insize)
+ 		memcpy(indata, msg->data, insize);
+ error:
+ 	kfree(msg);
+diff --git a/drivers/regulator/cros-ec-regulator.c b/drivers/regulator/cros-ec-regulator.c
+index c4754f3cf233..1c7ff085e492 100644
+--- a/drivers/regulator/cros-ec-regulator.c
++++ b/drivers/regulator/cros-ec-regulator.c
+@@ -44,7 +44,7 @@ static int cros_ec_cmd(struct cros_ec_device *ec, u32 version, u32 command,
+ 	if (ret < 0)
+ 		goto cleanup;
  
- static const u8 tuning_blk_pattern_4bit[] = {
+-	if (insize)
++	if (indata && insize)
+ 		memcpy(indata, msg->data, insize);
+ 
+ cleanup:
 -- 
-2.25.1
+2.17.1
 
