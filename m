@@ -2,104 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E529C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C26AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351091AbiEQQmV (ORCPT
+        id S1351102AbiEQQm3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
+        Tue, 17 May 2022 12:42:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351081AbiEQQmP (ORCPT
+        with ESMTP id S1351099AbiEQQmW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:42:15 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35136403C3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:42:14 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id d15so32312753lfk.5
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:42:14 -0700 (PDT)
+        Tue, 17 May 2022 12:42:22 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A4E403C3
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:42:20 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id r11so33364812ybg.6
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:42:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=X+ZIsvVjUuwlh/wMsd673AwYnSIKugcP1RnbxXgeB7M=;
-        b=V8osDecpKG1CjUJgHbXhszmxjy2U6L5nGE72cpZ9wzdBseZt01yt+Z4mmHiEAt594M
-         BNqhFNGWjAm8E9llNlZJhF++9DHOQfxrAZVLSUa3Axy8oqQ+ReQqs74mJBVZgyQZa4lT
-         qOpPZirzW3loPIh1wPdjoJshtTrfYXMGx/KgiEQMCw5CVv0fVVqc0R5kTe6xea1aoeRo
-         UCxDV8YnZi0hgkTAF5f38w3ARVMhSRvJbZt0TIhplhn9V70cOcfuemjsVkA+vfLl5GYQ
-         fnELcWbYh9v4jj6y6/n6LCNH9i8RWUqtgra/HnsQkQlsOI8pNTwR4uTbKE3aFuawAaZl
-         6jVw==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HMoOpKOlu+k7LW37DRFl0GsXtUqddEd+oHDo/auxrgg=;
+        b=fu8oxRN+9yYdHMKb8ZvWKHsQDWY7Y5UXQpgbzHN1HxclG7VW5xwjhxk3lxjz4fSoh9
+         e4m33w1jcki7Z6eVL0nQCG1gNGqtwbUfo2nX4gCNE5UZN/rV3Bhev+EBNTvZ1PyJRA/U
+         5pDrF08raIAQUR0/IJbsDRkFExpqf8jLdoiqI+iNmnNK8DRRw7pBUgomD9QCF0fojDhO
+         DybV63SWO4xmYpbC5QYdY72PleePs3F4gSjZzG9Bnx+v+sArkswwyj72Tpd7yp5JMinu
+         wO08p1+oe/Y3lbU+socKu4TdYdrMdNs1ZUmeDZlo+DHQemERs7ucpZBGRawrLQsssihn
+         WIGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=X+ZIsvVjUuwlh/wMsd673AwYnSIKugcP1RnbxXgeB7M=;
-        b=6i6kPYZ9xaNRX6NNTBzl2SJO+6CJzpvBRjDAH6wQogAVG7Zbg1+0DIGtVNz8SX/BVM
-         J7HhexbuiRvFsRjjQLWIl0+5ZDFkhvKFZvzOKwfeLYdzL6XzeF9iRPgWBJ45MGodtmIY
-         aHzjDKGxNQ2I6iBzdHdgY2TDth7VH8/KhZnauqZwPG5/ccvFTwfSHpod0MQchUFg/qy5
-         a2Wd2G/S2tTiFqvojl4++o9qVYgLYdpTHaz06dfAX+vMXWluv6hYl3EZGBUz5VnAfNrQ
-         eBkNRrh/R8unHHLyQ1Qy5c66dY1+20VmUL+2idrEb6g1KeBkx61yuAOXI2jFRqIVBpGB
-         WNAg==
-X-Gm-Message-State: AOAM53118vfqW0BLOrzhImYSi7jfx4cYMKnEBFRHD0gjh64UnQVPHkFH
-        zfDkv67Vh2jhsTdYIamYeaX/aA==
-X-Google-Smtp-Source: ABdhPJxmKZP+YUmR4TA93TjSj+0oUrnGYJTJhLZ9zVqZmhZg9tbge+VD7odfkhYj4w2QPj6YTGDhpQ==
-X-Received: by 2002:a05:6512:4008:b0:450:bd56:50b3 with SMTP id br8-20020a056512400800b00450bd5650b3mr17936796lfb.552.1652805732538;
-        Tue, 17 May 2022 09:42:12 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id a2-20020a056512390200b00477b38eabd1sm6624lfu.94.2022.05.17.09.42.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 09:42:11 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 74B9F10453E; Tue, 17 May 2022 19:44:03 +0300 (+03)
-Date:   Tue, 17 May 2022 19:44:03 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Jakub =?utf-8?Q?Mat=C4=9Bna?= <matenajakub@gmail.com>
-Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
-        linux-kernel@vger.kernel.org, vbabka@suse.cz, mhocko@kernel.org,
-        mgorman@techsingularity.net, willy@infradead.org,
-        liam.howlett@oracle.com, hughd@google.com, riel@surriel.com,
-        rostedt@goodmis.org, peterz@infradead.org, david@redhat.com
-Subject: Re: [RFC PATCH v3 0/6] Removing limitations of merging anonymous VMAs
-Message-ID: <20220517164403.nabrtbkezex7uof4@box.shutemov.name>
-References: <20220516125405.1675-1-matenajakub@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HMoOpKOlu+k7LW37DRFl0GsXtUqddEd+oHDo/auxrgg=;
+        b=rqXdScy3e30zfLa2/TbNrCEHYddc+yYmVtnQ1SV33OAUA+gHcwwsmkzd5+6c2Jub5L
+         Kma8lkG+Hh2KnLoNhnX9TuKErCYBYbpz/dzLD6xbddRoncE8WoeYPtfbwopHb/lhVZHG
+         ncX+K649LCHcsaMt4hQlOjER49d8w424ckZE4YJ+qxtWDM3XNZJkWFGu3QQXu6VBJnsZ
+         PlCJFlTKdplXDuP7kkV8026CKta+l3sKLNreFi75BzpbCD9OM7yPD0CA8BFQFN5dTAeU
+         akyclfuBx0/pJX4D4owGHmo7dlzZRZgKKv6VrEVQx3RPFJtgpxmWM8H5LO2GQRq2CHcG
+         PZcQ==
+X-Gm-Message-State: AOAM531k6xFoYGli2+DfRFS5+uVmdt5LEibBxJvCjeVvX42wutqAwqDU
+        qThxwajfqjLjqxKTPKj4w3jSF3gWYKcxM6chzdfcFg==
+X-Google-Smtp-Source: ABdhPJxHjRPLoNTgsjT3o/XgWtKKJX8krSIPM4pcOr8f6InoMA/ExhFPEuR8BMoBPUOqfesTrH5yxdTL4PeCtF8Vu0I=
+X-Received: by 2002:a25:aa30:0:b0:64d:ebad:538d with SMTP id
+ s45-20020a25aa30000000b0064debad538dmr6335668ybi.603.1652805739369; Tue, 17
+ May 2022 09:42:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220516125405.1675-1-matenajakub@gmail.com>
+References: <20220516193614.773450018@linuxfoundation.org>
+In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 17 May 2022 22:12:07 +0530
+Message-ID: <CA+G9fYsRFZK87_9Xfcbraft9R34cqp7ZjcGsxvY65E3rMv=O3A@mail.gmail.com>
+Subject: Re: [PATCH 4.19 00/32] 4.19.244-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 02:53:59PM +0200, Jakub Matěna wrote:
-> This is a series of patches that try to improve merge success rate when
-> VMAs are being moved, resized or otherwise modified.
-> 
-> Motivation
-> In the current kernel it is impossible to merge two anonymous VMAs
-> if one of them was moved. That is because VMA's page offset is
-> set according to the virtual address where it was created and in
-> order to merge two VMAs page offsets need to follow up.
-> Another problem when merging two faulted VMA's is their anon_vma. In
-> current kernel these anon_vmas have to be the one and the same.
-> Otherwise merge is again not allowed.
-> There are several places from which vma_merge() is called and therefore
-> several use cases that might profit from this upgrade. These include
-> mmap (that fills a hole between two VMAs), mremap (that moves VMA next
-> to another one or again perfectly fills a hole), mprotect (that modifies
-> protection and allows merging with a neighbor) and brk (that expands VMA
-> so that it is adjacent to a neighbor).
-> Missed merge opportunities increase the number of VMAs of a process
-> and in some cases can cause problems when a max count is reached.
+On Tue, 17 May 2022 at 01:11, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.244 release.
+> There are 32 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.19.244-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Hm. You are talking about missed opportunities, but do you know any
-workload that would measurably benefit from the change?
 
-The changes are not trivial. And rmap code is complex enough as it is.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-I expect common cases to get slower due to additional checks that do not
-result in more merges. I donno, the effort looks dubious to me as of now.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
--- 
- Kirill A. Shutemov
+## Build
+* kernel: 4.19.244-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-4.19.y
+* git commit: bc41838f2dd87b1c999e8eb02de3c503953f0ab7
+* git describe: v4.19.243-33-gbc41838f2dd8
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
+.243-33-gbc41838f2dd8
+
+## Test Regressions (compared to v4.19.242-16-ga96b764d90b5)
+No test regressions found.
+
+## Metric Regressions (compared to v4.19.242-16-ga96b764d90b5)
+No metric regressions found.
+
+## Test Fixes (compared to v4.19.242-16-ga96b764d90b5)
+No test fixes found.
+
+## Metric Fixes (compared to v4.19.242-16-ga96b764d90b5)
+No metric fixes found.
+
+## Test result summary
+total: 74073, pass: 60228, fail: 866, skip: 11511, xfail: 1468
+
+## Build Summary
+* arm: 275 total, 275 passed, 0 failed
+* arm64: 39 total, 39 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 19 total, 19 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 27 total, 27 passed, 0 failed
+* powerpc: 55 total, 54 passed, 1 failed
+* s390: 12 total, 12 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 38 total, 38 passed, 0 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
