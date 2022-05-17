@@ -2,216 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A93C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 02:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 02:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230310AbiEQCYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 22:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
+        id S234060AbiEQC2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 22:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiEQCYE (ORCPT
+        with ESMTP id S229553AbiEQC2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 22:24:04 -0400
-Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B9E53D1FC;
-        Mon, 16 May 2022 19:24:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=lTBhx
-        p2EfVojczwDke4E/Onuf36SXf/m+vxj1MMdS2Y=; b=K6NlZ9QpriWOehObiwcCW
-        pE3iFoBEuRVoIUNkpmAnABQTWS8xwo6jXXfDwuQ5jbHAhPGifkxC5uTlGvPQuGiy
-        kUsAAnQ9eT0171ARPVgOufstlCt9tFJLy0bZgjlR45aNrDd9IDvSeFkNoFonE878
-        KrJ3CCaBcKTwmrhIejxA8A=
-Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.20])
-        by smtp9 (Coremail) with SMTP id DcCowAB3USwR_IJiF3ohDQ--.61255S4;
-        Tue, 17 May 2022 09:36:19 +0800 (CST)
-From:   qianfanguijin@163.com
-To:     linux-sunxi@lists.linux.dev
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        qianfan Zhao <qianfanguijin@163.com>
-Subject: [PATCH v5 2/3] ARM: dts: sun8i-r40: add opp table for cpu
-Date:   Tue, 17 May 2022 09:36:06 +0800
-Message-Id: <20220517013607.2252-3-qianfanguijin@163.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220517013607.2252-1-qianfanguijin@163.com>
-References: <20220517013607.2252-1-qianfanguijin@163.com>
+        Mon, 16 May 2022 22:28:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EF4AE72;
+        Mon, 16 May 2022 19:28:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEAB5B816D6;
+        Tue, 17 May 2022 02:28:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1DADC385AA;
+        Tue, 17 May 2022 02:28:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652754492;
+        bh=2BK+qccsnYN9U4J+o3pYJeINww3jHTy6bx3/JTI0z3I=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MEbKNlPKH8gSYH1nlIUFrAU9S7BvJyRP0at6+SbdlQfrai23Uc1GAG5RWHaiDpThW
+         ISal0fCB2hXg5wXbtKyujurYcAycwltkYuT5tEUqMBg4tmgKgXUebeOMZGx7NYMfqU
+         utxt2ZS+LP/ht3FZG8GBlNpSldZwtAW+UC+Gh0RSymGdTt+IGwQeE9R9QTS1IoIJLf
+         1ncZa27hX+sRLZvNrn4Zxv5dhO9ne9WZfv0Ds7A2hKjNUCRgM6EsUic8Pd1sm2ek6/
+         RmAHBom1p62paArJ/mSNLSoUW7lL/0KbzpwoKzEhRea4cAJSCiwSDXJyWy5avrGl27
+         dkN1hkQm6h7vQ==
+Message-ID: <ffef8bce-3eb8-0e7e-dd64-e97c59251d2b@kernel.org>
+Date:   Tue, 17 May 2022 10:28:08 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcCowAB3USwR_IJiF3ohDQ--.61255S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWxGrWxXF1UKw4xur17Xry5urg_yoWrZFy8pw
-        17Zr4kGrs7Wr1Yq342gry8KF18uFWv9F4Yyry5C348Jrn7X34DJr97tr9akrWDXr43X3yI
-        9Fs5Xr9rtw1DZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07Ubo7tUUUUU=
-X-Originating-IP: [218.201.129.20]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiQhQE7VaECXNrTAAAsw
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3] f2fs: fix to do sanity check for inline inode
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Ming Yan <yanming@tju.edu.cn>, Chao Yu <chao.yu@oppo.com>
+References: <20220515090547.1914-1-chao@kernel.org>
+ <YoLwd3CUBIFn7+rS@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YoLwd3CUBIFn7+rS@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: qianfan Zhao <qianfanguijin@163.com>
+On 2022/5/17 8:46, Jaegeuk Kim wrote:
+> On 05/15, Chao Yu wrote:
+>> Yanming reported a kernel bug in Bugzilla kernel [1], which can be
+>> reproduced. The bug message is:
+>>
+>> The kernel message is shown below:
+>>
+>> kernel BUG at fs/inode.c:611!
+>> Call Trace:
+>>   evict+0x282/0x4e0
+>>   __dentry_kill+0x2b2/0x4d0
+>>   dput+0x2dd/0x720
+>>   do_renameat2+0x596/0x970
+>>   __x64_sys_rename+0x78/0x90
+>>   do_syscall_64+0x3b/0x90
+>>
+>> [1] https://bugzilla.kernel.org/show_bug.cgi?id=215895
+>>
+>> The bug is due to fuzzed inode has both inline_data and encrypted flags.
+>> During f2fs_evict_inode(), as the inode was deleted by rename(), it
+>> will cause inline data conversion due to conflicting flags. The page
+>> cache will be polluted and the panic will be triggered in clear_inode().
+>>
+>> Try fixing the bug by doing more sanity checks for inline data inode in
+>> sanity_check_inode().
+>>
+>> Cc: stable@vger.kernel.org
+>> Reported-by: Ming Yan <yanming@tju.edu.cn>
+>> Signed-off-by: Chao Yu <chao.yu@oppo.com>
+>> ---
+>> v3:
+>> - clean up commit message suggested by Bagas Sanjaya.
+>>   fs/f2fs/f2fs.h  | 8 ++++++++
+>>   fs/f2fs/inode.c | 3 +--
+>>   2 files changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+>> index 492af5b96de1..0dc2461ef02c 100644
+>> --- a/fs/f2fs/f2fs.h
+>> +++ b/fs/f2fs/f2fs.h
+>> @@ -4126,6 +4126,14 @@ static inline void f2fs_set_encrypted_inode(struct inode *inode)
+>>    */
+>>   static inline bool f2fs_post_read_required(struct inode *inode)
+>>   {
+>> +	/*
+>> +	 * used by sanity_check_inode(), when disk layout fields has not
+>> +	 * been synchronized to inmem fields.
+>> +	 */
+>> +	if (S_ISREG(inode->i_mode) && (file_is_encrypt(inode) ||
+>> +		F2FS_I(inode)->i_flags & F2FS_COMPR_FL ||
+>> +		file_is_verity(inode)))
+>> +		return true;
+> 
+> Again, I prefer to check this in sanity_check_inode(), since we don't need to
+> check all the time here.
 
-OPP table value is get from allwinner lichee linux-3.10 kernel driver
+Sure, how about adding a new parameter for f2fs_may_inline_data() to indicate
+its caller is sanity_check_inode(), and do the checks here only for such path?
 
-Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
----
- .../boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |  1 +
- arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi      | 52 +++++++++++++++++++
- arch/arm/boot/dts/sun8i-r40-feta40i.dtsi      |  1 +
- arch/arm/boot/dts/sun8i-r40.dtsi              |  8 +++
- arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts      |  1 +
- .../boot/dts/sun8i-v40-bananapi-m2-berry.dts  |  1 +
- 6 files changed, 64 insertions(+)
- create mode 100644 arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi
+Thanks,
 
-diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-index 4f30018ec4a2..28197bbcb1d5 100644
---- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-+++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-@@ -43,6 +43,7 @@
- 
- /dts-v1/;
- #include "sun8i-r40.dtsi"
-+#include "sun8i-r40-cpu-opp.dtsi"
- 
- #include <dt-bindings/gpio/gpio.h>
- 
-diff --git a/arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi b/arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi
-new file mode 100644
-index 000000000000..4faa22d3bac8
---- /dev/null
-+++ b/arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi
-@@ -0,0 +1,52 @@
-+/{
-+	cpu0_opp_table: opp_table0 {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+
-+		opp-720000000 {
-+			opp-hz = /bits/ 64 <720000000>;
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+
-+		opp-912000000 {
-+			opp-hz = /bits/ 64 <912000000>;
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+
-+		opp-1008000000 {
-+			opp-hz = /bits/ 64 <1008000000>;
-+			opp-microvolt = <1160000 1160000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+
-+		opp-1104000000 {
-+			opp-hz = /bits/ 64 <1104000000>;
-+			opp-microvolt = <1240000 1240000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+
-+		opp-1200000000 {
-+			opp-hz = /bits/ 64 <1200000000>;
-+			opp-microvolt = <1300000 1300000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+	};
-+};
-+
-+&cpu0 {
-+	operating-points-v2 = <&cpu0_opp_table>;
-+};
-+
-+&cpu1 {
-+	operating-points-v2 = <&cpu0_opp_table>;
-+};
-+
-+&cpu2 {
-+	operating-points-v2 = <&cpu0_opp_table>;
-+};
-+
-+&cpu3 {
-+	operating-points-v2 = <&cpu0_opp_table>;
-+};
-diff --git a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
-index b872b51a346d..9f39b5a2bb35 100644
---- a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
-@@ -5,6 +5,7 @@
- //  Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- 
- #include "sun8i-r40.dtsi"
-+#include "sun8i-r40-cpu-opp.dtsi"
- 
- &cpu0 {
- 	cpu-supply = <&reg_dcdc2>;
-diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
-index 291f4784e86c..ae2a5ebd9924 100644
---- a/arch/arm/boot/dts/sun8i-r40.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40.dtsi
-@@ -84,24 +84,32 @@ cpu0: cpu@0 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <0>;
-+			clocks = <&ccu CLK_CPU>;
-+			clock-names = "cpu";
- 		};
- 
- 		cpu1: cpu@1 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <1>;
-+			clocks = <&ccu CLK_CPU>;
-+			clock-names = "cpu";
- 		};
- 
- 		cpu2: cpu@2 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <2>;
-+			clocks = <&ccu CLK_CPU>;
-+			clock-names = "cpu";
- 		};
- 
- 		cpu3: cpu@3 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <3>;
-+			clocks = <&ccu CLK_CPU>;
-+			clock-names = "cpu";
- 		};
- 	};
- 
-diff --git a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
-index 0eb1990742ff..9f472521f4a4 100644
---- a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
-+++ b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
-@@ -45,6 +45,7 @@
- 
- /dts-v1/;
- #include "sun8i-r40.dtsi"
-+#include "sun8i-r40-cpu-opp.dtsi"
- 
- #include <dt-bindings/gpio/gpio.h>
- 
-diff --git a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
-index fdf8bd12faaa..434871040aca 100644
---- a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
-+++ b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
-@@ -42,6 +42,7 @@
- 
- /dts-v1/;
- #include "sun8i-r40.dtsi"
-+#include "sun8i-r40-cpu-opp.dtsi"
- 
- #include <dt-bindings/gpio/gpio.h>
- 
--- 
-2.25.1
-
+> 
+>>   	return f2fs_encrypted_file(inode) || fsverity_active(inode) ||
+>>   		f2fs_compressed_file(inode);
+>>   }
+>> diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
+>> index 2fce8fa0dac8..5e494c98e3c2 100644
+>> --- a/fs/f2fs/inode.c
+>> +++ b/fs/f2fs/inode.c
+>> @@ -276,8 +276,7 @@ static bool sanity_check_inode(struct inode *inode, struct page *node_page)
+>>   		}
+>>   	}
+>>   
+>> -	if (f2fs_has_inline_data(inode) &&
+>> -			(!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))) {
+>> +	if (f2fs_has_inline_data(inode) && !f2fs_may_inline_data(inode)) {
+>>   		set_sbi_flag(sbi, SBI_NEED_FSCK);
+>>   		f2fs_warn(sbi, "%s: inode (ino=%lx, mode=%u) should not have inline_data, run fsck to fix",
+>>   			  __func__, inode->i_ino, inode->i_mode);
+>> -- 
+>> 2.32.0
