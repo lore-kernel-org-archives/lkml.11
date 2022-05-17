@@ -2,118 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B57C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32550C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241025AbiEQA7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 20:59:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41634 "EHLO
+        id S242097AbiEQBAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 21:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240967AbiEQA7V (ORCPT
+        with ESMTP id S240711AbiEQA7m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 20:59:21 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB75B44A18
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:59:18 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id x12so15615111pgj.7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:59:18 -0700 (PDT)
+        Mon, 16 May 2022 20:59:42 -0400
+Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B1A46165
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:59:39 -0700 (PDT)
+Received: by mail-ua1-x930.google.com with SMTP id f13so6459076uax.11
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:59:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Rbi1cvE5ak+hokclc7/2ypGdn+hwauLG7pccARXZlxA=;
-        b=L7/wFcUdrihAHg2tWxQZVZ5Ma8QOx+e3d/RecGna7IX0vFVaBzoBUEJkuTNpyd/j0c
-         0Oo/Zd+HKFURzHqmVR/0k7INDLW3PyHQdpBAby5k/TGUJeixpsypg/t7oqC1gIveV6dT
-         u3WOWOu2USXZ9vuv/0aGn3njErWsZiFp3jRnEBqcsgaxTrgZvKxFapKsLzYw8tp+6h6H
-         pyl947i29Eh62sRHPDrjnX4ng5kLkhrf2BmS7gXtWkMIyB68JrqaWnSROPsB6AvBUqwz
-         5sTOWvcKK++i+qGn66jOc0600o+NHYS8nSngeLjxUvToGDv3Xk1onjeaaWbr3K4ybWkw
-         18ag==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dOFwWvCzKdZRiDREe2Yw7hYWmMD5WfY21+v62r2lSAQ=;
+        b=NTVAN5OeH9zigQ0ls1wYbMQdNrPMZcFb9eIgEhfEZr2WW26Rik9MXZfufZOyienHwS
+         EtCJYc9E3eLm7MDJG7hZXuyEeCr40N7ediAdDIWhArm2cAg9D7Kr4e032+E1U32YWc0G
+         /U2iI4O3u6CXHMWIP5u6U1Xv8y+Q6zs+nQg7Jq0QVXIkrjokFICe/7s/jVdSPh+5/qWY
+         70LTFRRCGbO7ofPPDFdPz1f0TJw+0iS0eHH+3Cjqt7Baa1sF7vuwm3w1pMHst+p+nxP2
+         SVvvtyCQq4Gw03JOqXql1xUiJoPxveThLJHhVFiOWQOTyNE5bN9q8KE9ns01rX5MbfHb
+         TXtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Rbi1cvE5ak+hokclc7/2ypGdn+hwauLG7pccARXZlxA=;
-        b=iAOk7omkOq1yYoule1wmgF0u2GB9wzHHd1rwX7KyIO+P/1xKwIAhoZzRvPNJKKOcdq
-         ze6N9zWQtG9Bwd9+OQlDHxWW6Bw/SyK6j/XL6VayA59fkob4tbhaN7X5d/xGW+PvrCSv
-         RIjtS6EC5AkI6zJviLW04CiNnogvAeAV84jsoJInghQoDT5YVOntC95OhF1ksvXp70VZ
-         L8Rprdqk1IwtsogGSFvye1FMD7B80iupuBgMJ73Ypp4am5/VOqMpJ+k0b855o+Iouzjf
-         MjB08+jHcNy+RSO2wAbugLuh1wOTQRnllXZIZfqO668CU/i7AsP2BFghiaCR5ZW7TdeU
-         rrKA==
-X-Gm-Message-State: AOAM531eBz22ERaXdXWu+t8ZlgpannTH8IexOTGcsoQZZNr319qeJS8M
-        0I5rlaxvEuCxsJbw7GR7j+MDDg==
-X-Google-Smtp-Source: ABdhPJyDkWFZSIWGdJi2+hm9e5X8axcTewLtO8q0CfFLeV14161+OanEVvu8b1FeF9pghca3/OgklA==
-X-Received: by 2002:a05:6a00:1d8f:b0:510:9430:8021 with SMTP id z15-20020a056a001d8f00b0051094308021mr20031512pfw.55.1652749158260;
-        Mon, 16 May 2022 17:59:18 -0700 (PDT)
-Received: from [10.254.192.228] ([139.177.225.229])
-        by smtp.gmail.com with ESMTPSA id a1-20020a170902900100b0015e8d4eb2dfsm7531269plp.297.2022.05.16.17.59.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 17:59:17 -0700 (PDT)
-Message-ID: <bcd0956a-9aa0-3211-801b-1f1eace6de79@bytedance.com>
-Date:   Tue, 17 May 2022 08:57:55 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dOFwWvCzKdZRiDREe2Yw7hYWmMD5WfY21+v62r2lSAQ=;
+        b=PellfF91FTeK1PRBK19MuOdugnfFkqisIBpoPot0euf2tICjtgqebHpAJH2J3QRbsp
+         I/3AF6ZlfK0rBOf0bviH1mm+GTDu79/dcFq35zHg2lmNh7d9XcH7WQLnv5l63YqQ2l+8
+         N+wB9RJjG23ClzaqkehHVfjBj/wXQd4LAGj37jmziggzMp60E+7ojMW+QWFt1DxGbj4h
+         rCTmG0tSF66SMXdoee8OFO3HFZl9rAZPZh6jyddyXkWjEidJnXcpiDIC0pQNc5XMYQ3L
+         BhQoTB9reu54phElIRozh7Gjnm8YEfOnm/AKSitTSnuo4StA1bJEv5XVL2iThm1kIwhT
+         8GCg==
+X-Gm-Message-State: AOAM531gmSn+C4xq/qNX+P06eqPePHJc/uGbnGaM0Ma0DHUGp1ZI6E0s
+        vEcOp47ISXQzRw4Hs7omS6luYLCaUUBZYrxjXwttIH9VovM=
+X-Google-Smtp-Source: ABdhPJzUATlCmOwVxvtyGMPLZTFI3CdKHj+ab34xGnvXgjnRelrRNAxacHbpkOiuBmn4Vnfm9PRhXxXIbgYbEjTZfX4=
+X-Received: by 2002:ab0:1525:0:b0:365:95fa:4e51 with SMTP id
+ o34-20020ab01525000000b0036595fa4e51mr7147536uae.121.1652749178730; Mon, 16
+ May 2022 17:59:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [Phishing Risk] [External] Re: [PATCH] blk-iocost: fix very large
- vtime when iocg activate
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>
-Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com
-References: <20220516084045.96004-1-zhouchengming@bytedance.com>
- <YoKb7wpkz3xoCS6s@slm.duckdns.org>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <YoKb7wpkz3xoCS6s@slm.duckdns.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220516154838.7044-1-bp@alien8.de>
+In-Reply-To: <20220516154838.7044-1-bp@alien8.de>
+From:   Stephane Eranian <eranian@google.com>
+Date:   Mon, 16 May 2022 17:59:27 -0700
+Message-ID: <CABPqkBSL8BLN-mWXNJX9YYCn26kK1J-nz2B_vFjbxLPw+P1uHQ@mail.gmail.com>
+Subject: Re: [PATCH] perf/x86/amd: Run AMD BRS code only on supported hw
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/17 02:46, Tejun Heo wrote:
-> On Mon, May 16, 2022 at 04:40:45PM +0800, Chengming Zhou wrote:
->> When the first iocg activate after blk_iocost_init(), now->vnow
->> maybe smaller than ioc->margins.target, cause very large vtarget
->> since it's u64.
->>
->> 	vtarget = now->vnow - ioc->margins.target;
->> 	atomic64_add(vtarget - vtime, &iocg->vtime);
->>
->> Then the iocg's vtime will be very large too, larger than now->vnow.
-> 
-> It's a wrapping counter. Please take a look at how time_before64() and
-> friends work.
+On Mon, May 16, 2022 at 8:48 AM Borislav Petkov <bp@alien8.de> wrote:
+>
+> From: Borislav Petkov <bp@suse.de>
+>
+> This fires on a Fam16h machine here:
+>
+>  unchecked MSR access error: WRMSR to 0xc000010f (tried to write 0x0000000000000018) \
+>     at rIP: 0xffffffff81007db1 (amd_brs_reset+0x11/0x50)
+>  Call Trace:
+>   <TASK>
+>   amd_pmu_cpu_starting
+>   ? x86_pmu_dead_cpu
+>   x86_pmu_starting_cpu
+>   cpuhp_invoke_callback
+>   ? x86_pmu_starting_cpu
+>   ? x86_pmu_dead_cpu
+>   cpuhp_issue_call
+>   ? x86_pmu_starting_cpu
+>   __cpuhp_setup_state_cpuslocked
+>   ? x86_pmu_dead_cpu
+>   ? x86_pmu_starting_cpu
+>   __cpuhp_setup_state
+>   ? map_vsyscall
+>   init_hw_perf_events
+>   ? map_vsyscall
+>   do_one_initcall
+>   ? _raw_spin_unlock_irqrestore
+>   ? try_to_wake_up
+>   kernel_init_freeable
+>   ? rest_init
+>   kernel_init
+>   ret_from_fork
+>
+> because that CPU hotplug callback gets executed on any AMD CPU - not
+> only on the BRS-enabled ones. Check the BRS feature bit properly.
+>
+Thanks for catching this. I tested on Zen2 (Fam17h) and it did not
+trigger the problem, yet I think
+the problem in amd_brs_reset() is there.
 
-Hi Tejun, below is from the trace of test on original code:
+> Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-By: Stephane Eranian <eranian@google.com>
 
-iocost_iocg_activate: [vda:/user.slice] now=38343468:2171657838 vrate=137438 \
-period=0->0 vtime=18446744007162209454 weight=6553600/6553600 hweight=65536/65536
-
-The vtime value is very large, much larger than vnow. Maybe the commit message
-is a little misleading?
-
-And I take a look at how time_before64() work:
-
-#define time_after64(a,b)	\
-	(typecheck(__u64, a) &&	\
-	 typecheck(__u64, b) && \
-	 ((__s64)((b) - (a)) < 0))
-#define time_before64(a,b)	time_after64(b,a)
-
-I still don't get why my changes are wrong. :-)
-
-> 
-> Nacked-by: Tejun Heo <tj@kernel.org>
-> 
-> Again, please spend more effort understanding the code before sending these
-> subtle patches.
-
-Ok, will do. This problem is found from the trace of test, then verified fixed
-using the trace of the same test with this patch.
-
-Thanks.
-
-> 
-> Thanks.
-> 
+> ---
+>  arch/x86/events/amd/brs.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/x86/events/amd/brs.c b/arch/x86/events/amd/brs.c
+> index 895c82165d85..bee8765a1e9b 100644
+> --- a/arch/x86/events/amd/brs.c
+> +++ b/arch/x86/events/amd/brs.c
+> @@ -57,7 +57,7 @@ static inline u64 get_debug_extn_cfg(void)
+>
+>  static bool __init amd_brs_detect(void)
+>  {
+> -       if (!boot_cpu_has(X86_FEATURE_BRS))
+> +       if (!cpu_feature_enabled(X86_FEATURE_BRS))
+>                 return false;
+>
+>         switch (boot_cpu_data.x86) {
+> @@ -112,6 +112,9 @@ static inline int amd_brs_get_tos(union amd_debug_extn_cfg *cfg)
+>   */
+>  void amd_brs_reset(void)
+>  {
+> +       if (!cpu_feature_enabled(X86_FEATURE_BRS))
+> +               return;
+> +
+>         /*
+>          * Reset config
+>          */
+> --
+> 2.35.1
+>
