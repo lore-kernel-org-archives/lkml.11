@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A63C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B8DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245122AbiEQJpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
+        id S245343AbiEQJp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245173AbiEQJo5 (ORCPT
+        with ESMTP id S245115AbiEQJom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:44:57 -0400
+        Tue, 17 May 2022 05:44:42 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C0D41F87;
-        Tue, 17 May 2022 02:44:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F56941F82;
+        Tue, 17 May 2022 02:44:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652780697; x=1684316697;
+  t=1652780679; x=1684316679;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1jxT36R+3tJwAloKz/X6TUFAHJWZhPH+eeb4zPAuguM=;
-  b=SsEyHIikr0Dp9520qdqaVxNKHL7GAmoufM13nVNCDqyrsUSIj/xcGFg+
-   ld3SF0aXBGKBS000KGJG8amg9rWXoRwIWnT2FycjVgjZ6clfnmRcu6yXp
-   pJu87eXxhCPxJx+7FOq7y8kAcL1pafBj+zHzsqw+dFo5QGwNM+Clv5nYH
-   kZJixUrVKAhkme1kJB8puCuD3bNqXJvTBxRzzp45EwfqD5jB6BKEG/T2V
-   emWjuH0HnSVhJGzTfczb7k2thKJwhre53QCzkbdORQMZs5fj0gnLpytUf
-   H261lUnPFvzhLLw1ETQzSwBH/u8pf6DK52Qw2yEgXvBUI50tTMKnoDSVv
-   g==;
+  bh=Frb05pp2v3DKRoYHhBX4jB5uLNVSIPanuglEZU9u9jA=;
+  b=K+ied2UNvucCF4TBsRfYtAnBDqs5RkmUcmrJwxJ5vJF2rxewA4LvtO2U
+   6T2to0CI8PfqOPVxOTjlzXoSyaQe2Os8V/0tvoF5BX8L6SoRdGN8NGnV4
+   6wDdXzU99joN28As59o9dDyHZP+2U51s+hCCSbCNGt95iFlYwjfcpYQAs
+   2Pdwsy3QFGER9tTCCbLMK19aPawJGj3vKoXAr5+HZcPq6Q/Nf2/iv+JGG
+   9DEjJlOWHTjHmlCWqmvJUTFk5XahpWpJmBHGYHjujWrxcrSoPGhu14bxv
+   s4clIQQOj36EbowhUUH0SF+hqA34inWjYEJ/3ocPi24yLPmkJXEGVc/9M
+   A==;
 X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="164023238"
+   d="scan'208";a="164391186"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 02:44:56 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 02:44:38 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 17 May 2022 02:44:54 -0700
+ 15.1.2375.17; Tue, 17 May 2022 02:44:38 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 17 May 2022 02:44:48 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 17 May 2022 02:44:32 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Russell King <linux@armlinux.org.uk>,
@@ -54,9 +54,9 @@ CC:     Russell King <linux@armlinux.org.uk>,
         Marek Vasut <marex@denx.de>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>,
         Eric Dumazet <edumazet@google.com>
-Subject: [Patch net-next 7/9] net: dsa: move mib->cnt_ptr reset code to ksz_common.c
-Date:   Tue, 17 May 2022 15:13:31 +0530
-Message-ID: <20220517094333.27225-8-arun.ramadoss@microchip.com>
+Subject: [Patch net-next 5/9] net: dsa: microchip: move port memory allocation to ksz_common
+Date:   Tue, 17 May 2022 15:13:29 +0530
+Message-ID: <20220517094333.27225-6-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220517094333.27225-1-arun.ramadoss@microchip.com>
 References: <20220517094333.27225-1-arun.ramadoss@microchip.com>
@@ -67,69 +67,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+ksz8795 and ksz9477 init function initializes the memory to dev->ports,
+mib counters and assigns the ds real number of ports. Since both the
+routines are same, moved the allocation of port memory to
+ksz_switch_register after init.
 
-mib->cnt_ptr resetting is handled in multiple places as part of
-port_init_cnt(). Hence moved mib->cnt_ptr code to ksz common layer
-and removed from individual product files.
-
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 2 --
- drivers/net/dsa/microchip/ksz9477.c    | 3 ---
- drivers/net/dsa/microchip/ksz_common.c | 8 +++++++-
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 20 --------------------
+ drivers/net/dsa/microchip/ksz9477.c    | 22 ----------------------
+ drivers/net/dsa/microchip/ksz_common.c | 21 +++++++++++++++++++++
+ 3 files changed, 21 insertions(+), 42 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 251048ffd3d4..d6162b00e4fb 100644
+index 764e16b4f24b..3490b6072641 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -388,8 +388,6 @@ static void ksz8_port_init_cnt(struct ksz_device *dev, int port)
- 					dropped, &mib->counters[mib->cnt_ptr]);
- 		++mib->cnt_ptr;
- 	}
--	mib->cnt_ptr = 0;
--	memset(mib->counters, 0, dev->info->mib_cnt * sizeof(u64));
- }
+@@ -1494,7 +1494,6 @@ static int ksz8_switch_detect(struct ksz_device *dev)
+ static int ksz8_switch_init(struct ksz_device *dev)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+-	int i;
  
- static void ksz8_r_table(struct ksz_device *dev, int table, u16 addr, u64 *data)
+ 	dev->ds->ops = &ksz8_switch_ops;
+ 
+@@ -1513,25 +1512,6 @@ static int ksz8_switch_init(struct ksz_device *dev)
+ 		ksz8->shifts = ksz8795_shifts;
+ 	}
+ 
+-	dev->ports = devm_kzalloc(dev->dev,
+-				  dev->info->port_cnt * sizeof(struct ksz_port),
+-				  GFP_KERNEL);
+-	if (!dev->ports)
+-		return -ENOMEM;
+-	for (i = 0; i < dev->info->port_cnt; i++) {
+-		mutex_init(&dev->ports[i].mib.cnt_mutex);
+-		dev->ports[i].mib.counters =
+-			devm_kzalloc(dev->dev,
+-				     sizeof(u64) *
+-				     (dev->info->mib_cnt + 1),
+-				     GFP_KERNEL);
+-		if (!dev->ports[i].mib.counters)
+-			return -ENOMEM;
+-	}
+-
+-	/* set the real number of ports */
+-	dev->ds->num_ports = dev->info->port_cnt;
+-
+ 	/* We rely on software untagging on the CPU port, so that we
+ 	 * can support both tagged and untagged VLANs
+ 	 */
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 7cffc3388106..22ef56e2cb7b 100644
+index f7d4a3498e5d..d4729f0dd831 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -274,9 +274,6 @@ static void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
- 	ksz_write8(dev, REG_SW_MAC_CTRL_6, SW_MIB_COUNTER_FLUSH);
- 	ksz_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT__4, 0);
- 	mutex_unlock(&mib->cnt_mutex);
+@@ -1432,32 +1432,10 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
+ 
+ static int ksz9477_switch_init(struct ksz_device *dev)
+ {
+-	int i;
 -
--	mib->cnt_ptr = 0;
--	memset(mib->counters, 0, dev->info->mib_cnt * sizeof(u64));
+ 	dev->ds->ops = &ksz9477_switch_ops;
+ 
+ 	dev->port_mask = (1 << dev->info->port_cnt) - 1;
+ 
+-	dev->ports = devm_kzalloc(dev->dev,
+-				  dev->info->port_cnt * sizeof(struct ksz_port),
+-				  GFP_KERNEL);
+-	if (!dev->ports)
+-		return -ENOMEM;
+-	for (i = 0; i < dev->info->port_cnt; i++) {
+-		spin_lock_init(&dev->ports[i].mib.stats64_lock);
+-		mutex_init(&dev->ports[i].mib.cnt_mutex);
+-		dev->ports[i].mib.counters =
+-			devm_kzalloc(dev->dev,
+-				     sizeof(u64) *
+-				     (dev->info->mib_cnt + 1),
+-				     GFP_KERNEL);
+-		if (!dev->ports[i].mib.counters)
+-			return -ENOMEM;
+-	}
+-
+-	/* set the real number of ports */
+-	dev->ds->num_ports = dev->info->port_cnt;
+-
+ 	return 0;
  }
  
- static enum dsa_tag_protocol ksz9477_get_tag_protocol(struct dsa_switch *ds,
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index c0acb12fab6d..873a6469934f 100644
+index 243032b29ff2..8f90bf29fd4c 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -560,8 +560,14 @@ void ksz_init_mib_timer(struct ksz_device *dev)
+@@ -844,6 +844,7 @@ int ksz_switch_register(struct ksz_device *dev,
+ 	phy_interface_t interface;
+ 	unsigned int port_num;
+ 	int ret;
++	int i;
  
- 	INIT_DELAYED_WORK(&dev->mib_read, ksz_mib_read_work);
+ 	if (dev->pdata)
+ 		dev->chip_id = dev->pdata->chip_id;
+@@ -885,6 +886,26 @@ int ksz_switch_register(struct ksz_device *dev,
+ 	if (ret)
+ 		return ret;
  
--	for (i = 0; i < dev->info->port_cnt; i++)
++	dev->ports = devm_kzalloc(dev->dev,
++				  dev->info->port_cnt * sizeof(struct ksz_port),
++				  GFP_KERNEL);
++	if (!dev->ports)
++		return -ENOMEM;
++
 +	for (i = 0; i < dev->info->port_cnt; i++) {
-+		struct ksz_port_mib *mib = &dev->ports[i].mib;
-+
- 		dev->dev_ops->port_init_cnt(dev, i);
-+
-+		mib->cnt_ptr = 0;
-+		memset(mib->counters, 0, dev->info->mib_cnt * sizeof(u64));
++		spin_lock_init(&dev->ports[i].mib.stats64_lock);
++		mutex_init(&dev->ports[i].mib.cnt_mutex);
++		dev->ports[i].mib.counters =
++			devm_kzalloc(dev->dev,
++				     sizeof(u64) * (dev->info->mib_cnt + 1),
++				     GFP_KERNEL);
++		if (!dev->ports[i].mib.counters)
++			return -ENOMEM;
 +	}
- }
- EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
- 
++
++	/* set the real number of ports */
++	dev->ds->num_ports = dev->info->port_cnt;
++
+ 	/* Host port interface will be self detected, or specifically set in
+ 	 * device tree.
+ 	 */
 -- 
 2.33.0
 
