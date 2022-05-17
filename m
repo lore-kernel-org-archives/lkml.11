@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:46:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344581AbiEQKqW (ORCPT
+        id S1344604AbiEQKqd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
+        Tue, 17 May 2022 06:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343594AbiEQKpP (ORCPT
+        with ESMTP id S1344616AbiEQKpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:45:15 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E487D45063
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:45:13 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id k30so11458389wrd.5
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:45:13 -0700 (PDT)
+        Tue, 17 May 2022 06:45:11 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDA8326D8
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:45:10 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id v191-20020a1cacc8000000b00397001398c0so1120708wme.5
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:45:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=i/m+NNWu2JHnuPHL4+y0AU2AuVhAajCRwsy8obi59CI=;
-        b=a55lv+v9G1iGQh3SC5UoT1eu8lm5LE9geHZ1wKPD16zHwyTs5maCCpHYMZYGuMli8k
-         eqS6chlNU4Z093iBZ2QJVLl63s0XzlHqXGgmIPi2Ol1JH12uFeN3HWSEyWDTXkPLQP0t
-         U+E4UW82ubzGsmy//4Vq/3PomdWwGPMdaVNO0TRKUAIBiRjmknjN1f6JGCHbn20fBIUP
-         GcUja2mM57TRJa6/hb2mi+jSWOIg6MnVqjQEFgLtyx1lInrl+i2E0XnIK+3S7HNKTJoJ
-         0xS1VFjS8raKKifAaVtHroF6U+Tgm61sPsDz137jRT3JMirvR/cf//XWiTHLWop5ZwCX
-         yLBw==
+        bh=LbqWA0ma3Gj0jvWCSxtRNJBD3Bf6tu8RmToQD/S/1tA=;
+        b=DbFwuJQo294/gbHi6rpEOZU7Bz8G1bkjIMoiFErEualQSecRSwmKf1I2+jZW9Z2kpu
+         zBVu9cWLVGg/qgCYtp5WtCi23R9+i/eukUmUrAjhKuuHzpuiVzKj67SBAKNQTmStarsG
+         cji3nj6EAMJWiT1Zh/7be54brEwpGjD5HPbEz2Wd3onKo0e8XxXp9IqAmVwqCb3Vq6+e
+         CgAYJ4j1MuC+KdFWv3ABusFIBQ0l1g39ZCx6YtNXwVH0Sa5wvaC3V/2UUGF6Rj9e0A5b
+         L/nnlvt5EB0IhTt3AJWuQqGZL9frRl1iSdijBdq9iBvdtf6BmnTUPndhbOw2PJom5nr3
+         UlzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=i/m+NNWu2JHnuPHL4+y0AU2AuVhAajCRwsy8obi59CI=;
-        b=nlQpCnFDE0Y9H/bj+gKhyhY/BMrvZh5wCZUV4D6gpuUl6NJUvFbGehPQI+rwgyqNQF
-         uRNihnurrHnwqqOP4HmTQO2MTSHY31DZGAmC/uYuK8ezHyFxEN6kyFGmLrcCiS+gt7Ke
-         v4PqKyYh2SxjkFn6Ai0vGCqAM0MrUy6oolXDdctEghPAJOqUsKHR7UQue/MPT/IwHyol
-         /Ubx5dlI61An5SjrVRSTDqV/xwBijOyLIrgXLy28+WdnLNUk5bM6c0AsvzG5fE3S1II9
-         RkrSOlVVNnvYj41SqirkDmSNK1K9Dsb6YaKmW2n4EpL+ZT95tAfKAPPjZekqwLAHaXZy
-         InGQ==
-X-Gm-Message-State: AOAM532SCCkwJEmUH72oi1NMDm6rnncRXXPV6wQRJzA0gTxznYj1TTC4
-        Pu4pgKayqSAFi8KucLvSZdo=
-X-Google-Smtp-Source: ABdhPJykxA/wZQx/LJ70b1lvIii1f5r3I+B9eGeKN/b+bphmV/WRsgPRqg1XaQ9KhAkrKT2W68T/hQ==
-X-Received: by 2002:a05:6000:144f:b0:20c:6090:3040 with SMTP id v15-20020a056000144f00b0020c60903040mr17412026wrx.479.1652784312414;
-        Tue, 17 May 2022 03:45:12 -0700 (PDT)
+        bh=LbqWA0ma3Gj0jvWCSxtRNJBD3Bf6tu8RmToQD/S/1tA=;
+        b=S2BPn2H3k54+UZmqHwAzYhqMOFW6mvbo3GtrONZKUR7/yl2VXjfTkYcU/30k2HtexJ
+         fMwJZuv+DfUrVZjY1Y970LLQCWiB2J7eq07/AzK0SqdWGju/J6hU8U/J0Bwdk5WgIl2R
+         sPLgNwspJbrkdf5/gBjozFr1zQ9OnIal2WCW/Hex9+s6QCwQxgCQxVmC/Sg4fXPjUXkm
+         jLllTljIQhfq5VBVv9+XguUPG1KNr/u0F3mRRWALzeW760j3lwuyLccndMI0TGe7WtMA
+         oEK4ve/6ULPGmlUq4X4FLYFKICDGzlmcio+zk00Ji6a/+lIhzagHjZwTCtNM+OI0xE7O
+         XQMQ==
+X-Gm-Message-State: AOAM530EEBL77oKBuFKKTGjhhPXg/cZKoEfgSKXJOGsg0qM7QGOTHMe+
+        nOrO3fa+h9tdx8WGzGDZH4pyKwwADIg=
+X-Google-Smtp-Source: ABdhPJyrKgC4/kWiVatQEZYepXXoDCRN9um/5NtYnhfJ1Yi7jh8UaBOqub6l8zKFfl2CnzbkDj3Nag==
+X-Received: by 2002:a1c:f710:0:b0:394:1960:e8a1 with SMTP id v16-20020a1cf710000000b003941960e8a1mr20749622wmh.154.1652784309472;
+        Tue, 17 May 2022 03:45:09 -0700 (PDT)
 Received: from octofox.metropolis ([178.134.210.144])
-        by smtp.gmail.com with ESMTPSA id r5-20020adfbb05000000b0020d00174eabsm8612218wrg.94.2022.05.17.03.45.11
+        by smtp.gmail.com with ESMTPSA id r5-20020adfbb05000000b0020d00174eabsm8612218wrg.94.2022.05.17.03.45.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 03:45:12 -0700 (PDT)
+        Tue, 17 May 2022 03:45:09 -0700 (PDT)
 From:   Max Filippov <jcmvbkbc@gmail.com>
 To:     linux-xtensa@linux-xtensa.org
 Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
         Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH v3 3/3] xtensa: improve call0 ABI probing
-Date:   Tue, 17 May 2022 03:44:58 -0700
-Message-Id: <20220517104458.257799-4-jcmvbkbc@gmail.com>
+Subject: [PATCH v3 1/3] xtensa: add trap handler for division by zero
+Date:   Tue, 17 May 2022 03:44:56 -0700
+Message-Id: <20220517104458.257799-2-jcmvbkbc@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220517104458.257799-1-jcmvbkbc@gmail.com>
 References: <20220517104458.257799-1-jcmvbkbc@gmail.com>
@@ -65,92 +65,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When call0 userspace ABI support by probing is enabled instructions that
-cause illegal instruction exception when PS.WOE is clear are retried
-with PS.WOE set before calling c-level exception handler. Record user pc
-at which PS.WOE was set in the fast exception handler and clear PS.WOE
-in the c-level exception handler if we get there from the same address.
+Add c-level handler for the division by zero exception and kill the task
+if it was thrown from the kernel space or send SIGFPE otherwise.
 
 Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 ---
-Changes v1->v2:
+ arch/xtensa/kernel/traps.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-- split ABI probing improvement from the artificial division by 0
-
- arch/xtensa/include/asm/thread_info.h |  4 ++++
- arch/xtensa/kernel/asm-offsets.c      |  3 +++
- arch/xtensa/kernel/entry.S            |  5 +++++
- arch/xtensa/kernel/traps.c            | 12 ++++++++++++
- 4 files changed, 24 insertions(+)
-
-diff --git a/arch/xtensa/include/asm/thread_info.h b/arch/xtensa/include/asm/thread_info.h
-index 52974317a6b6..326db1c1d5d8 100644
---- a/arch/xtensa/include/asm/thread_info.h
-+++ b/arch/xtensa/include/asm/thread_info.h
-@@ -56,6 +56,10 @@ struct thread_info {
- 	/* result of the most recent exclusive store */
- 	unsigned long		atomctl8;
- #endif
-+#ifdef CONFIG_USER_ABI_CALL0_PROBE
-+	/* Address where PS.WOE was enabled by the ABI probing code */
-+	unsigned long		ps_woe_fix_addr;
-+#endif
- 
- 	/*
- 	 * If i-th bit is set then coprocessor state is loaded into the
-diff --git a/arch/xtensa/kernel/asm-offsets.c b/arch/xtensa/kernel/asm-offsets.c
-index 9a1db6ffcbf4..da38de20ae59 100644
---- a/arch/xtensa/kernel/asm-offsets.c
-+++ b/arch/xtensa/kernel/asm-offsets.c
-@@ -88,6 +88,9 @@ int main(void)
- 	OFFSET(TI_STSTUS, thread_info, status);
- 	OFFSET(TI_CPU, thread_info, cpu);
- 	OFFSET(TI_PRE_COUNT, thread_info, preempt_count);
-+#ifdef CONFIG_USER_ABI_CALL0_PROBE
-+	OFFSET(TI_PS_WOE_FIX_ADDR, thread_info, ps_woe_fix_addr);
-+#endif
- 
- 	/* struct thread_info (offset from start_struct) */
- 	DEFINE(THREAD_RA, offsetof (struct task_struct, thread.ra));
-diff --git a/arch/xtensa/kernel/entry.S b/arch/xtensa/kernel/entry.S
-index 3224b4ceca34..e3eae648ba2e 100644
---- a/arch/xtensa/kernel/entry.S
-+++ b/arch/xtensa/kernel/entry.S
-@@ -1056,6 +1056,11 @@ ENTRY(fast_illegal_instruction_user)
- 	movi	a3, PS_WOE_MASK
- 	or	a0, a0, a3
- 	wsr	a0, ps
-+#ifdef CONFIG_USER_ABI_CALL0_PROBE
-+	GET_THREAD_INFO(a3, a2)
-+	rsr	a0, epc1
-+	s32i	a0, a3, TI_PS_WOE_FIX_ADDR
-+#endif
- 	l32i	a3, a2, PT_AREG3
- 	l32i	a0, a2, PT_AREG0
- 	rsr	a2, depc
 diff --git a/arch/xtensa/kernel/traps.c b/arch/xtensa/kernel/traps.c
-index 2b75b252b626..f97d43a8d13d 100644
+index 138a86fbe9d7..24d11b44fa57 100644
 --- a/arch/xtensa/kernel/traps.c
 +++ b/arch/xtensa/kernel/traps.c
-@@ -317,6 +317,18 @@ static bool check_div0(struct pt_regs *regs)
+@@ -49,6 +49,7 @@
+  */
  
- static void do_illegal_instruction(struct pt_regs *regs)
- {
-+#ifdef CONFIG_USER_ABI_CALL0_PROBE
-+	/*
-+	 * When call0 application encounters an illegal instruction fast
-+	 * exception handler will attempt to set PS.WOE and retry failing
-+	 * instruction.
-+	 * If we get here we know that that instruction is also illegal
-+	 * with PS.WOE set, so it's not related to the windowed option
-+	 * hence PS.WOE may be cleared.
-+	 */
-+	if (regs->pc == current_thread_info()->ps_woe_fix_addr)
-+		regs->ps &= ~PS_WOE_MASK;
-+#endif
- 	if (check_div0(regs)) {
- 		do_div0(regs);
- 		return;
+ static void do_illegal_instruction(struct pt_regs *regs);
++static void do_div0(struct pt_regs *regs);
+ static void do_interrupt(struct pt_regs *regs);
+ #if XTENSA_FAKE_NMI
+ static void do_nmi(struct pt_regs *regs);
+@@ -95,7 +96,7 @@ static dispatch_init_table_t __initdata dispatch_init_table[] = {
+ #ifdef SUPPORT_WINDOWED
+ { EXCCAUSE_ALLOCA,		USER|KRNL, fast_alloca },
+ #endif
+-/* EXCCAUSE_INTEGER_DIVIDE_BY_ZERO unhandled */
++{ EXCCAUSE_INTEGER_DIVIDE_BY_ZERO, 0,	   do_div0 },
+ /* EXCCAUSE_PRIVILEGED unhandled */
+ #if XCHAL_UNALIGNED_LOAD_EXCEPTION || XCHAL_UNALIGNED_STORE_EXCEPTION
+ #ifdef CONFIG_XTENSA_UNALIGNED_USER
+@@ -307,6 +308,11 @@ static void do_illegal_instruction(struct pt_regs *regs)
+ 	force_sig(SIGILL);
+ }
+ 
++static void do_div0(struct pt_regs *regs)
++{
++	__die_if_kernel("Unhandled division by 0 in kernel", regs, SIGKILL);
++	force_sig_fault(SIGFPE, FPE_INTDIV, (void __user *)regs->pc);
++}
+ 
+ /*
+  * Handle unaligned memory accesses from user space. Kill task.
 -- 
 2.30.2
 
