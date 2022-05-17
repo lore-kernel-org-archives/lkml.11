@@ -2,244 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B562BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928CCC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235200AbiEQDkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 23:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37356 "EHLO
+        id S233016AbiEQDnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 23:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235960AbiEQDkv (ORCPT
+        with ESMTP id S229508AbiEQDnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 23:40:51 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0212AFC
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:40:49 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2ff155c239bso29224347b3.2
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:40:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=677cDWpgH8GvesDxcRnGkKjYm3aHwCnLyfkOuwTpuvE=;
-        b=yrnmPlKVq0LGnM60CZmd/5XYFlk4jq82qelp4gG+0m6JXVSSMzF86B5zEVYuyfY2Pb
-         LjfGsYWN6tfqwX6pySR3FnLYLDjC0WIebjG+WUHGFKBxfDAshrLd9zJyq83k+58IJabC
-         kWq47xZj/HzADqjFpslTbNa6qDofaUYOob/XKai9ZLXaHiVz+lGwKG+iZVb0Bj0y/YJG
-         rmoG212u0L7U1hACDrZV7p6m9FEgjbeMHJTxddK1UpAW4Qhb09KSTgLGKRmZPv922asm
-         nNRgOMsYPu0NcvYo6iHJJj5VpDGfYsRnphTv6Nhdfei4h6fr4rbm4FdM4S1/kKzZkkxl
-         ryQg==
+        Mon, 16 May 2022 23:43:05 -0400
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654CB23BCE;
+        Mon, 16 May 2022 20:43:01 -0700 (PDT)
+Received: by mail-oi1-f178.google.com with SMTP id v65so20931448oig.10;
+        Mon, 16 May 2022 20:43:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=677cDWpgH8GvesDxcRnGkKjYm3aHwCnLyfkOuwTpuvE=;
-        b=HRldMeAohGdiUWpvc9npYhqJEaeexJxto0crvhHWpC7cP0rs62g36YxxWxSTzNfQat
-         6KIRZ514tFVDSOET3oYgihPnfneIfu1UhdMviJiS9ChKnY9WA51xMY7NEmPIHHu4t0hd
-         kaN1DwKTknCjncMCI7YL4CcGnvfPvPBcOuyPH4N29GidwUwxBZNWsX4tvVtQUR5hXd70
-         JnO1HUBYUJWZklGwNBfg+HZsJRDv7xg2RjWln+Ma9O6GYFnOkxQFUeeyB+j+DvHb6RrG
-         wW7TyPhsZrCDF59PFjPTExN1LAUV8QpRvJhvTokfmMyJn6v508KUhq8FD/dpf3KbswQg
-         eKrA==
-X-Gm-Message-State: AOAM532kDtvbzErpyOGOiJDLAZNk+LLtsbWTdIUUkigd4anpia5IjEoS
-        alHIt/3CT4Ue9Lo7SnlTdruPBPzuvuhaZMvdIambuQ==
-X-Google-Smtp-Source: ABdhPJykVBxmFIohvZ/wsLkXwzcFRuVH8Z3z4vecVzCsIb3i+tg8vTynWaRJdXp5TWZxhQtS7SxaQWNaFhE0G8NiQX4=
-X-Received: by 2002:a05:690c:443:b0:2fe:eefc:1ad5 with SMTP id
- bj3-20020a05690c044300b002feeefc1ad5mr10155459ywb.199.1652758848625; Mon, 16
- May 2022 20:40:48 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=EfCcbYh50CkyfYSUX07YnV+CadQTQKAbHumUgKo7SVY=;
+        b=8AgL+Yn5KK4F3OBDEv3/9cujAWYiuhkqLMmWQztrvkMjjB8ogDmdykhFRBjO2SxWhC
+         cslC1rSwIM5wGHleNQZQl6A3Ywns/i4sDNK+pUX/OgwE+qo32z8DyVRf8uAsGDpQEIK0
+         5h7/3RE+r9GRcMyFuhyo1Vofpd8JPbjGjm8zQiYFleRQHYn0sjFZrRRlDsJPwaHCUc5L
+         ET6KvNX2O6XazHdLL+/RbkAB00MxoLBfbdlLJ+r64ZJ22d0Lq6jqknJqSoNxgsOJilBu
+         eNzQjiQNEsK1n+ORJTGxtpLRPdJn/HcIeNyghiJlawz847aImlqdoaaakeuI4bR/Dg6x
+         F0Ww==
+X-Gm-Message-State: AOAM533CVyan4S47jfejSk8hFv/o1wIrVI6JLJFPMrrLA46dngnmyriy
+        avf4Dw5xB25lUkz7oVFh7PHvbMirIOUlynNMca8=
+X-Google-Smtp-Source: ABdhPJzPxl7PLeTa0zBb28kzCLiPRofRnTZ7ipEja5DIYHSk9s5VA51aEmUHdDYoLRr3+bHtCPTr9trfpKN1nQW+siQ=
+X-Received: by 2002:a05:6808:16ac:b0:2f9:52e5:da90 with SMTP id
+ bb44-20020a05680816ac00b002f952e5da90mr14951433oib.5.1652758980720; Mon, 16
+ May 2022 20:43:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220516193625.489108457@linuxfoundation.org>
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 17 May 2022 09:10:37 +0530
-Message-ID: <CA+G9fYsEs43YK_n8pzLaPJY6adjQ1bqH48oSxi7Dd1v=xpt9Qw@mail.gmail.com>
-Subject: Re: [PATCH 5.17 000/114] 5.17.9-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
+References: <20220513040519.1499333-1-irogers@google.com> <20220513040519.1499333-5-irogers@google.com>
+In-Reply-To: <20220513040519.1499333-5-irogers@google.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Mon, 16 May 2022 20:42:49 -0700
+Message-ID: <CAM9d7ciD=uH7rNSmK5oJEksPYsagwpQA1J-MC3N0RpzLaakscg@mail.gmail.com>
+Subject: Re: [PATCH 4/7] perf test: Basic mmap use skip
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
+        Carsten Haitzler <carsten.haitzler@arm.com>,
+        Marco Elver <elver@google.com>,
+        John Garry <john.garry@huawei.com>,
+        Michael Petlan <mpetlan@redhat.com>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 17 May 2022 at 01:25, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Thu, May 12, 2022 at 9:05 PM Ian Rogers <irogers@google.com> wrote:
 >
-> This is the start of the stable review cycle for the 5.17.9 release.
-> There are 114 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> If opening the first event fails for basic mmap it is more likely
+> permission related that a true error. Mark the test as skip in this
+> case and add a skip reason.
 >
-> Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
-> Anything received after that time might be too late.
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/tests/mmap-basic.c | 22 ++++++++++++++++++++--
+>  1 file changed, 20 insertions(+), 2 deletions(-)
 >
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.17.9-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.17.y
-> and the diffstat can be found below.
+> diff --git a/tools/perf/tests/mmap-basic.c b/tools/perf/tests/mmap-basic.c
+> index c3c17600f29c..32f0a63fa157 100644
+> --- a/tools/perf/tests/mmap-basic.c
+> +++ b/tools/perf/tests/mmap-basic.c
+> @@ -31,7 +31,7 @@
+>   */
+>  static int test__basic_mmap(struct test_suite *test __maybe_unused, int subtest __maybe_unused)
+>  {
+> -       int err = -1;
+> +       int err = TEST_FAIL;
+>         union perf_event *event;
+>         struct perf_thread_map *threads;
+>         struct perf_cpu_map *cpus;
+> @@ -83,6 +83,14 @@ static int test__basic_mmap(struct test_suite *test __maybe_unused, int subtest
+>                 evsels[i] = evsel__newtp("syscalls", name);
+>                 if (IS_ERR(evsels[i])) {
+>                         pr_debug("evsel__new(%s)\n", name);
+> +                       if (i == 0) {
+> +                               /*
+> +                                * Failure to open first event is more likely
+> +                                * related to permissions so flag the failure as
+> +                                * a skip.
+> +                                */
+> +                               err = TEST_SKIP;
+
+This is not about perf_event_open() but it accesses
+tracefs to get the type number of the trace event.
+
+The evsel__newtp() seems to return the errno in a
+negative number.  It'd be better to check if it's
+-EACCES actually.
+
+Thanks,
+Namhyung
+
+
+> +                       }
+>                         goto out_delete_evlist;
+>                 }
 >
-> thanks,
+> @@ -166,4 +174,14 @@ static int test__basic_mmap(struct test_suite *test __maybe_unused, int subtest
+>         return err;
+>  }
 >
-> greg k-h
-
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
-
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-## Build
-* kernel: 5.17.9-rc1
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-5.17.y
-* git commit: e1382731ef4e5e1634896596ebe74e48b9ed2b73
-* git describe: v5.17.8-115-ge1382731ef4e
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.17.y/build/v5.17=
-.8-115-ge1382731ef4e
-
-## Test Regressions (compared to v5.17.7-12-g841daaf9b4bb)
-No test regressions found.
-
-## Metric Regressions (compared to v5.17.7-12-g841daaf9b4bb)
-No metric regressions found.
-
-## Test Fixes (compared to v5.17.7-12-g841daaf9b4bb)
-No test fixes found.
-
-## Metric Fixes (compared to v5.17.7-12-g841daaf9b4bb)
-No metric fixes found.
-
-## Test result summary
-total: 105256, pass: 88573, fail: 1048, skip: 14403, xfail: 1232
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 296 total, 293 passed, 3 failed
-* arm64: 47 total, 47 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 45 total, 41 passed, 4 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 41 total, 38 passed, 3 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 59 total, 56 passed, 3 failed
-* riscv: 27 total, 27 passed, 0 failed
-* s390: 26 total, 23 passed, 3 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 47 total, 47 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* prep-tmp-disk
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+> -DEFINE_SUITE("Read samples using the mmap interface", basic_mmap);
+> +static struct test_case tests__basic_mmap[] = {
+> +       TEST_CASE_REASON("Read samples using the mmap interface",
+> +                        basic_mmap,
+> +                        "permissions"),
+> +       {       .name = NULL, }
+> +};
+> +
+> +struct test_suite suite__basic_mmap = {
+> +       .desc = "Read samples using the mmap interface",
+> +       .test_cases = tests__basic_mmap,
+> +};
+> --
+> 2.36.0.550.gb090851708-goog
+>
