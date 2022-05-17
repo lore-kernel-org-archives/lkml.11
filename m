@@ -2,79 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6802DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A042C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351099AbiEQQmh (ORCPT
+        id S1351121AbiEQQms (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56544 "EHLO
+        Tue, 17 May 2022 12:42:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351114AbiEQQmf (ORCPT
+        with ESMTP id S1351106AbiEQQmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:42:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1381D403FF
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:42:32 -0700 (PDT)
+        Tue, 17 May 2022 12:42:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1EC403D7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:42:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 654CB6130C
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 16:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A4DAC385B8;
-        Tue, 17 May 2022 16:42:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82EB9B8181B
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 16:42:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73A2DC385B8;
+        Tue, 17 May 2022 16:42:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652805751;
-        bh=40QgoKo6FsbvUbi5QdZQ8LuhD5fRy9TTvAullSg1NJ0=;
+        s=k20201202; t=1652805761;
+        bh=1IrxNJ1bp3kbA2oD6OHuufL2ZTrxl/ACrlKCvG7jTxQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IwWIlS2PIiYyBVnn4Mwh5gpkaGvjZ9XXs6xAfg/B47Nwbmbxt1jD4gbBJqWNjqdMQ
-         9HsczaMvfd1/rGWYbOOfRQQ8ljqODK0+cJuySkUlONzKGxTAf8vwfrIVpXgVVx8uEs
-         2wEIDbBj2r6oEJ8Bg+f36Z7hiv1BLcfQOKNiXlvcmlPA51l29SkqrSaHJPFlCkSIOv
-         ZO+9XIU4/ifqWs5xRjRbqYPsENsylbITKTx1dz0Y7FgDcqk5osLy4ZTnejsI+dxtEZ
-         bmhi2bch/bLTXyegzpR1TlkIA84eFyb3Od9vzJccH13ypTlfBkZZJB3euhFYap4q4G
-         St6J2fKtLWqSA==
-Date:   Tue, 17 May 2022 09:42:29 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Maximilian Heyne <mheyne@amazon.de>
-Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, xen-devel@lists.xenproject.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] x86: xen: remove STACK_FRAME_NON_STANDARD from xen_cpuid
-Message-ID: <20220517164229.ixz7fqxwrxwmiizn@treble>
-References: <20220517162425.100567-1-mheyne@amazon.de>
+        b=hQeQSS+V1lj64xDAGzkxKJCHnkihMRbBKk2KbalQc+XmCt4HPchv4lCVWrSfzd2Od
+         5K9XN4lutNDsC40vvqk8mXq0gt+/ob0xmC3xmHOjP5iI7Kh/J2VY2WTe5UVmzEk3uH
+         YDKCHwuDl7AEKV/0qhQOD4dXaCjUxV7iIGJlNg1kxu7e/RDsyVbHof/Vr2HYcw2FXG
+         Vdmt22FdW9mQG5UDeUIpwIXE5D3u+PeV5Dt6Aie3aCTujOhLapO+j8pGhnxZKoPV4Q
+         Izz8BTiWQmqm8/WksnkH830yWMBwQZe8w3ylhaGQ85eS+VAL26Dlw2J0L8CNHZCqtg
+         EsTsYVHVsDQfg==
+Date:   Wed, 18 May 2022 00:33:52 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        kasan-dev@googlegroups.com
+Subject: Re: [PATCH v2 2/4] riscv: introduce unified static key mechanism for
+ CPU features
+Message-ID: <YoPOcHvhWEqeEwzo@xhacker>
+References: <20220508160749.984-1-jszhang@kernel.org>
+ <20220508160749.984-3-jszhang@kernel.org>
+ <CAK9=C2Xinc6Y9ue+3ZOvKOOgru7wvJNcEPLvO4aZGuQqETXi2w@mail.gmail.com>
+ <YnkoKxaPbrTnZPQv@xhacker>
+ <CAOnJCU+XR5mtqKBQLMj3JgsTPgvAQdO_jj2FWqcu7f9MezNCKA@mail.gmail.com>
+ <YoCollqhS93NJZjL@xhacker>
+ <CAAhSdy3_av5H-V_d5ynwgfeZYsCnCSd5pFSEKCzDSDBbD+pGLA@mail.gmail.com>
+ <YoKIv2ATRdQfYbBf@xhacker>
+ <CAK9=C2VJ-+bu20+QOfKrq6cEBE93Yi21U=zU9AKOSQi1GGHWiA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220517162425.100567-1-mheyne@amazon.de>
+In-Reply-To: <CAK9=C2VJ-+bu20+QOfKrq6cEBE93Yi21U=zU9AKOSQi1GGHWiA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 04:24:25PM +0000, Maximilian Heyne wrote:
-> Since commit 4d65adfcd119 ("x86: xen: insn: Decode Xen and KVM
-> emulate-prefix signature"), objtool is able to correctly parse the
-> prefixed instruction in xen_cpuid and emit correct orc unwind
-> information. Hence, marking the function as STACKFRAME_NON_STANDARD is
-> no longer needed.
+On Tue, May 17, 2022 at 09:31:50AM +0530, Anup Patel wrote:
+> On Mon, May 16, 2022 at 11:02 PM Jisheng Zhang <jszhang@kernel.org> wrote:
+> >
+...
+> > Currently, RISCV_ISA_EXT_MAX equals to 64 while the base ID is 26.
+> > In those 26 base IDs, only F/D and V need static key, it means
+> > we waste at least 24 static keys.
 > 
-> This commit is basically a revert of commit 983bb6d254c7 ("x86/xen: Mark
-> xen_cpuid() stack frame as non-standard").
+> If you want to save space of unused static keys then there are other
+> ways.
 > 
-> Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
-> CC: Josh Poimboeuf <jpoimboe@kernel.org>
+> For example, you can create a small static key array which has
+> many-to-one relation with the ISA extension numbers. For ISA extension
+
+"any problem in computer science can be solved with another layer of
+indirection" ;)
+I see your points, thanks very much! But I think the array should
+be a static inline function to make use of compiler optimization to
+avoid the array references for performance. And the static key check
+maybe used in modules, I want to export less vars.
+I'm cooking the patches, will send out for review soon.
+
+> which are always ON or always OFF, we can use fixed FALSE and
+> TRUE keys. Something like below.
 > 
-> cr: https://code.amazon.com/reviews/CR-69645080
-      ^^^^^
+> enum riscv_isa_ext_key {
+>     RISCV_ISA_EXT_KEY_FALSE = 0,
+>     RISCV_ISA_EXT_KEY_TRUE,
+>     RISCV_ISA_EXT_KEY_FLOAD, /* For 'F' and 'D' */
+>     RISCV_ISA_EXT_KEY_VECTOR, /* For all vector extensions */
+>     RISCV_ISA_EXT_KEY_SVINVAL,
+>     RISCV_ISA_EXT_KEY_SSCOFPMT,
+>     RISCV_ISA_EXT_KEY_MAX,
+> };
+> 
+> extern unsigned char __riscv_isa_ext_id2key[RISCV_ISA_EXT_ID_MAX];
+> extern struct static_key_false __riscv_isa_ext_keys[RISCV_ISA_EXT_KEY_MAX];
+> 
+> static __always_inline bool __riscv_isa_extension_keycheck(unsigned int ext)
+> {
+>     if (RISCV_ISA_EXT_ID_MAX <= ext)
+>         return false;
+>     return static_branch_unlikely(&__riscv_isa_ext_keys[__riscv_isa_ext_id2key[ext]]);
+> }
+> #define riscv_isa_extension_keycheck(ext)    \
+>     __riscv_isa_extension_keycheck(RISCV_ISA_EXT_##ext)
+> 
 
-This looks like an internal amazon link and should be removed.
-Otherwise, looks good to me.
-
-Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
-
--- 
-Josh
