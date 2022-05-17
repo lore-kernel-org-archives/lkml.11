@@ -2,128 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED98C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 987ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:23:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352106AbiEQSWo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54628 "EHLO
+        id S240567AbiEQSX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 14:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352086AbiEQSWZ (ORCPT
+        with ESMTP id S231624AbiEQSXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:22:25 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FAB2C66B;
-        Tue, 17 May 2022 11:22:19 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id ds11so6581059pjb.0;
-        Tue, 17 May 2022 11:22:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=B5z0WBrh/BYYCHvUIIawnVVkGhzF2/2dcuB+5FV8icU=;
-        b=AbmiKr13LjgHA635CCvhqbpmwmKepo6wngtA1F550JNQxJC3Osg5bRdXGL1Vo2Tc62
-         2pMzTwyxYU1XYVg1C7uebLES6pcrHRK2QxLTtQocI5ovbyD1qY6J2Mihj+vKZXcVbZ7V
-         gRHae3em/E3V7nEQO9M+Nz+p0CpCEaTyxAqkzPjXHK1ya0KdxUhhGg8S4j8iyS3Lgq0O
-         2D9RNoI2E/dqrxK0kl0vIVRIPo8FIl2HWYAKorCso6+5P7A6qOejYQXrMi3SnyhhsgdN
-         O+P38Ygoube0r5jgLDrdBSf4JK003qLs1rac/B7MBOmDy7S1muUWBg7aIGe3G05mv45s
-         UibA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=B5z0WBrh/BYYCHvUIIawnVVkGhzF2/2dcuB+5FV8icU=;
-        b=ueYU1p0Vxk+OfjOJy4VW54/DL4YmLQbXUL1vW6aM1wQ9im1+zVRqXbKLYULPxnO0Th
-         OFSNFGrTPjy5Hr+NT4XkbInU6J+bvSsV7nDUGNv4di8TM7NVupjzUDB1sapJej88dsxB
-         ETT0L6w3YABBytv6knLANvyZ3NHARXnW1MJpELQLFp10QDpl2bBfNzcDTX5C4aAvuYXm
-         nucXQLTSsjERAzu5Gy/aqDPodrkC7B8bCWDBoypSvZc8f3DibwvdowDttjDGpKg3Oee+
-         IO4d0DMNoatdzK+4UXqcmU3rore+vsYqKnl+WHe6W7uKlvMn8rpIjKfEITwsYKuX6CRN
-         /BAg==
-X-Gm-Message-State: AOAM5318Xn9nZqNcSS70f0mTLnvDqQN0TGjSb809FTYwuDC1ocY7hAh2
-        Tqd1oXHRjwJRZecyIs9pzfkoZe4Zpbo=
-X-Google-Smtp-Source: ABdhPJzke1BkFrhoZLv3sDgDH8hPpHFfyyxhP4PJLb+EMGslHLQiFUrYb3dRzNamgAsCzZrgIwfIuw==
-X-Received: by 2002:a17:902:d896:b0:15e:fb07:ba92 with SMTP id b22-20020a170902d89600b0015efb07ba92mr23648389plz.148.1652811738511;
-        Tue, 17 May 2022 11:22:18 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x4-20020a17090ad68400b001d7dd00c231sm1998141pju.22.2022.05.17.11.22.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 11:22:18 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Nishad Kamdar <nishadkamdar@gmail.com>,
-        =?UTF-8?q?Christian=20L=C3=B6hle?= <CLoehle@hyperstone.com>,
-        linux-mmc@vger.kernel.org (open list:MULTIMEDIA CARD (MMC), SECURE
-        DIGITAL (SD) AND...), linux-kernel@vger.kernel.org (open list),
-        alcooperx@gmail.com, kdasu.kdev@gmail.com
-Subject: [PATCH stable 4.19 2/3] mmc: block: Use generic_cmd6_time when modifying INAND_CMD38_ARG_EXT_CSD
-Date:   Tue, 17 May 2022 11:22:10 -0700
-Message-Id: <20220517182211.249775-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220517182211.249775-1-f.fainelli@gmail.com>
-References: <20220517182211.249775-1-f.fainelli@gmail.com>
+        Tue, 17 May 2022 14:23:54 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFD92E69B
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:23:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652811833; x=1684347833;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=cVASZeehZPzVQcfIe1W63eMYaBq8ukqRbdCkBKBfXcs=;
+  b=JHbHJ317ymOuKiZSqi3vrS9BouI1Zu82rW2w7hW6eCrWsGsfPAcSPJ8C
+   Q+VBoQbZ8aa2GN6EHNbqQRvuH6boixxIz66tEBPNsrZPXgVqIfZiJBB+y
+   VurawU7YmTmV0wcOwD2nEEYmuwTXLlt1xPYz4nJZEFLdXZpvRdJNKKhsk
+   jfMKCLZeouTI/FujkEoKpCexjczppDQ/7p2cx7riXA0WGe6J4P8QaQmLy
+   U3OgXE3/ROQ26pT9OJ3q4dnVIlZQJW2/bMYAsLJZ7jtQ1n9i9/iahmTYb
+   auGgioYJQQfKif8rJHuYjeMTGEfQVU+axSHaN6y7Gj0Sr5QzO0RjOQl3Z
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="251789979"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="251789979"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 11:23:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="713990909"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 17 May 2022 11:23:52 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nr1rL-0001Fz-Sn;
+        Tue, 17 May 2022 18:23:51 +0000
+Date:   Wed, 18 May 2022 02:23:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [rt-devel:linux-5.18.y-rt-rebase 54/94] kernel/softirq.c:640:1:
+ sparse: sparse: symbol '__pcpu_scope_timersd' was not declared. Should it be
+ static?
+Message-ID: <202205180238.To9TlvaY-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git linux-5.18.y-rt-rebase
+head:   df0c990058a5bce1eed5d3512c6efe4eacc62bed
+commit: 191f7764ab356da2cb7fc1a216b56b6ec0405f04 [54/94] rcutorture: Also force sched priority to timersd on boosting test.
+config: i386-randconfig-s002-20220516 (https://download.01.org/0day-ci/archive/20220518/202205180238.To9TlvaY-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/commit/?id=191f7764ab356da2cb7fc1a216b56b6ec0405f04
+        git remote add rt-devel https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git
+        git fetch --no-tags rt-devel linux-5.18.y-rt-rebase
+        git checkout 191f7764ab356da2cb7fc1a216b56b6ec0405f04
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
 
-commit ad91619aa9d78ab1c6d4a969c3db68bc331ae76c upstream
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The INAND_CMD38_ARG_EXT_CSD is a vendor specific EXT_CSD register, which is
-used to prepare an erase/trim operation. However, it doesn't make sense to
-use a timeout of 10 minutes while updating the register, which becomes the
-case when the timeout_ms argument for mmc_switch() is set to zero.
 
-Instead, let's use the generic_cmd6_time, as that seems like a reasonable
-timeout to use for these cases.
+sparse warnings: (new ones prefixed by >>)
+>> kernel/softirq.c:640:1: sparse: sparse: symbol '__pcpu_scope_timersd' was not declared. Should it be static?
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20200122142747.5690-3-ulf.hansson@linaro.org
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/mmc/core/block.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+vim +/__pcpu_scope_timersd +640 kernel/softirq.c
 
-diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
-index 630f3bcba56d..f7379c3473e1 100644
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1133,7 +1133,7 @@ static void mmc_blk_issue_discard_rq(struct mmc_queue *mq, struct request *req)
- 					 arg == MMC_TRIM_ARG ?
- 					 INAND_CMD38_ARG_TRIM :
- 					 INAND_CMD38_ARG_ERASE,
--					 0);
-+					 card->ext_csd.generic_cmd6_time);
- 		}
- 		if (!err)
- 			err = mmc_erase(card, from, nr, arg);
-@@ -1175,7 +1175,7 @@ static void mmc_blk_issue_secdiscard_rq(struct mmc_queue *mq,
- 				 arg == MMC_SECURE_TRIM1_ARG ?
- 				 INAND_CMD38_ARG_SECTRIM1 :
- 				 INAND_CMD38_ARG_SECERASE,
--				 0);
-+				 card->ext_csd.generic_cmd6_time);
- 		if (err)
- 			goto out_retry;
- 	}
-@@ -1193,7 +1193,7 @@ static void mmc_blk_issue_secdiscard_rq(struct mmc_queue *mq,
- 			err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
- 					 INAND_CMD38_ARG_EXT_CSD,
- 					 INAND_CMD38_ARG_SECTRIM2,
--					 0);
-+					 card->ext_csd.generic_cmd6_time);
- 			if (err)
- 				goto out_retry;
- 		}
+   639	
+ > 640	DEFINE_PER_CPU(struct task_struct *, timersd);
+   641	static DEFINE_PER_CPU(unsigned long, pending_timer_softirq);
+   642	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
