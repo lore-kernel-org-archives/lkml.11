@@ -2,138 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8581CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F7D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343529AbiEQKJD (ORCPT
+        id S1343543AbiEQKJX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        Tue, 17 May 2022 06:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245760AbiEQKFl (ORCPT
+        with ESMTP id S240124AbiEQKHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:05:41 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02E949C9F;
-        Tue, 17 May 2022 03:05:11 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id y32so30390182lfa.6;
-        Tue, 17 May 2022 03:05:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=25GtIoitw+ZTlzSdukQ7WOPmbkJJHbA+G1F2JqOUPCg=;
-        b=OD/oBRJQvC09yFulvynVFmg5bIQgbGkZh5k15Ylg2dYQR/LVFqVH5v2UBGviF1S2+R
-         1Gj0BSqWsra1NjlBMun1RetI2YgmIGm5zHF8TnRwNCgU6gPc1WvPPErI6Z/cfo7MOlo5
-         I2hVY0N9fVt9Ui62nZpice02zg83O1TIdgO5+upw1IPyNFH47kZYsLAc2pB09nE2zF0W
-         jnrklqqpBsdK0sqFkFNpCXllL2zUhMzfZ9D9La76wohjWLHSECu/1cI46IbRyBSl26bG
-         LrjhqS6ZC4IBQ+p74Czp5xdFmDS7K5XeBBFzubUbI/TkfZM6MvS/My6TFFIPSYu0N7o6
-         tCuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=25GtIoitw+ZTlzSdukQ7WOPmbkJJHbA+G1F2JqOUPCg=;
-        b=by7k7hXWtmA4zDTa7k9RdYNI7i+WnxJRa6Jt4x61aSa27ImHr8Z4HfNNhqcxhDlFgm
-         bUtvns6d2DVAYsUi3J7gTbx07zBE2kftzMIfZvX9KdaRMSuppUOzMMSLquJzZlsljOYe
-         4qIvkj14OZ5QU5yUDJO5YMXrMlEWwBeZb5vkh3UgAACPX4jN83lU7GwDqrp3Ogj6RcYe
-         vVzKFmAZAFby4J+aFTd0FnQNJwfYCq1mOxneSnUV6VKmKyvyUIrbvj9JR/+g0e28tMdT
-         BeCnaOJH6zqm4kWvZ2EBAq/snBhSBpNrL4hXC/Sv+uxJeP3khxEm34QwOOGPqmmAcRqi
-         V3GA==
-X-Gm-Message-State: AOAM5338ctLcFDoIXI06pC+J143k9deMdDrwx0IFVPE+K1dt1jp8bR7E
-        lgC3I1REggWO/c6Z1Ncmgcc=
-X-Google-Smtp-Source: ABdhPJxLVyTObUX+R4E5Tn6dZ4YNA2w3W0p4AvbybfDxgisgorYGKfA4XMH8NTFJdPuV3IVe2suFiA==
-X-Received: by 2002:a05:6512:3090:b0:473:a636:dbee with SMTP id z16-20020a056512309000b00473a636dbeemr16124368lfd.119.1652781909895;
-        Tue, 17 May 2022 03:05:09 -0700 (PDT)
-Received: from mobilestation ([95.79.189.214])
-        by smtp.gmail.com with ESMTPSA id a3-20020ac25e63000000b0047255d211acsm1541267lfr.219.2022.05.17.03.05.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 03:05:09 -0700 (PDT)
-Date:   Tue, 17 May 2022 13:05:07 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/4] clk: Baikal-T1 DDR/PCIe resets and some xGMAC
- fixes
-Message-ID: <20220517100507.2ng3se7bbl2eqbz3@mobilestation>
-References: <20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru>
- <20220512001156.x6kqyhi3vjjpqch6@mobilestation>
- <20220512152705.GA2506@lpieralisi>
- <20220512171150.GA164627@thinkpad>
- <20220512211431.r23r6daua36lty7d@mobilestation>
- <20220517074020.56093C34100@smtp.kernel.org>
+        Tue, 17 May 2022 06:07:52 -0400
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B55E82CDE2
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:07:50 -0700 (PDT)
+Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 05B9E48B;
+        Tue, 17 May 2022 03:07:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1652782070;
+        bh=7/tSQcJTwFlAYZHGtTGrf3lNts+XD/u1WDbgTy1/QUE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dtOrTtJckFMCgB1Kh/uKzZFiJTssUMa2AnTJ557wFFDA0lC0NeVbCReLIqNVRj4WI
+         oRpRAKh+LlvUMDY2l2aWPXJH1SEHC23TLCjXCIRrZ4HurkFSU0XnwGDsbF3s0jA0WQ
+         4tok2RfF7GhCzV1W4hZ5C+5xobLfDLI7z1mzbMF8=
+Date:   Tue, 17 May 2022 03:07:48 -0700
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Chanwoo Choi <cw00.choi@samsung.com>
+Cc:     Mark Brown <broonie@kernel.org>, Chanwoo Choi <cwchoi00@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        openbmc@lists.ozlabs.org,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: Re: [PATCH v2 2/2] extcon: Add extcon-regulator driver
+Message-ID: <YoNz9NPLkYSd8i/s@hatter.bewilderbeest.net>
+References: <20220505232557.10936-1-zev@bewilderbeest.net>
+ <20220505232557.10936-3-zev@bewilderbeest.net>
+ <e27ff1b2-c82f-8335-340f-ae1fa914ed30@gmail.com>
+ <YnkyIBh2HnXXLHw3@sirena.org.uk>
+ <CGME20220517010322epcas1p45d7fdaa06d23f07533350b7d0cf9e9d6@epcas1p4.samsung.com>
+ <YoL0UGR+TiZojL9Y@hatter.bewilderbeest.net>
+ <bc6595c8-5f05-ac2c-63e0-f442f9ec83be@samsung.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220517074020.56093C34100@smtp.kernel.org>
+In-Reply-To: <bc6595c8-5f05-ac2c-63e0-f442f9ec83be@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 12:40:18AM -0700, Stephen Boyd wrote:
-> Quoting Serge Semin (2022-05-12 14:14:31)
-> > On Thu, May 12, 2022 at 10:41:50PM +0530, Manivannan Sadhasivam wrote:
-> > > On Thu, May 12, 2022 at 04:27:05PM +0100, Lorenzo Pieralisi wrote:
-> > > > So in short, this series has to go through the usual clock tree review
-> > > > process.
-> > > > 
+On Mon, May 16, 2022 at 08:15:31PM PDT, Chanwoo Choi wrote:
+> Hi Mark, Zev,
+> 
+> On 5/17/22 10:03 AM, Zev Weiss wrote:
+> > [Adding Sebastian for drivers/power discussion]
 > > 
-> > I do know the normal procedure. But if patches concern different
-> > subsystems but for some reason inter-depended somehow it's ok to merge
-> > them in via a single repo. In my case the platform clock driver has
-> > been updated in a way so to support the reset-controls utilized in the
-> > PCIe driver altered in another patchset. So I didn't want to leave the
-> > kernel not working in the framework of my platform on any git hash
-> > state. That's why I asked to merge the patchsets in via the same repo.
-> > The kernel would be still buildable though.
+> > On Mon, May 09, 2022 at 08:24:16AM PDT, Mark Brown wrote:
+> >> On Mon, May 09, 2022 at 09:24:39PM +0900, Chanwoo Choi wrote:
+> >>> Hi Zev,
+> >>>
+> >>> I checked this patch. But, it doesn't look like the extcon provider
+> >>> driver. Because basically, extcon provider driver need the circuit
+> >>> in order to detect the kind of external connector. But, there are
+> >>> no any code for detection. Just add the specific sysfs attribute
+> >>> for only this driver. It is not standard interface.
+> >>
+> >> OTOH it's something where if I look at the physical system with the
+> >> hardware there's a clearly visible external connector that I can point
+> >> to - it just happens to not support hotplug.  It's not clear what other
+> >> system it would sit in, and it seems like an application that displays
+> >> external connections on a system in a UI would be able to do something
+> >> sensible with it.
+> > 
+> > Chanwoo, any further thoughts on Mark's reasoning above?
+> > 
+> > I certainly understand the reluctance to add an extcon driver that 
+> > doesn't really do anything with the extcon API, and I have no idea when 
+> > we might end up enhancing it to do something more meaningful with that 
+> > API (I don't know of any hardware at the moment that would need it).
+> > 
+> > That said, as Mark points out, the hardware *is* ultimately an "external 
+> > connector" (if a very simplistic one).
+> > 
+> > Do you have any other ideas for where this functionality could go?  Greg 
+> > wasn't enthusiastic about a previous revision that had it in 
+> > drivers/misc -- though now a fair amount of what was in that version is 
+> > now going to be in the regulator core, so maybe that could be 
+> > reconsidered?
+> > 
+> > Or maybe something under drivers/power, though it's not really a supply 
+> > or a reset device...drivers/power/output.c or something?
+> > 
+> > Personally I don't have any terribly strong opinions on this, I'd just 
+> > like to reach a mutually-agreeable consensus on a place for it to live.
 > > 
 > 
+> After Mark's reply, I considered extcon provider driver without hotplug
+> feature. I think that extcon need to support the following something:
+> 
+> 1. Need to specify the type of external connector instead of EXTCON_NONE.
+> 2. extcon subsystem provides the standard sysfs interface
+>    for non-hotplug extcon provider driver.
+> 3. User can control the state of external connector via
+>    the standard extcon sysfs attributes.
+> 
+> 
+> For example of extcon provider driver,
+> static const unsigned int supported_cables[] = {
+> 	EXTCON_USB,
+> 	EXTCON_NONE,
+> };
+> 
+> int extcon_usb_callback(int connector_id, int property_id, int state, void *data) {
+> 	struct extcon_dev *edev = data;
+> 
+> 	if (id == EXTCON_USB && property_id == EXTCON_NOT_HOTPLUG) {
+> 		regulator_enable() or regulator_disable()
+> 	}
+> 
+> 	return 0;
+> }
+> 
+> int extcon_provider_probe(...) {
+> 	edev = devm_extcon_dev_allocate(dev, supported_cables);
+> 
+> 	devm_extcon_dev_register(dev, edev);
+> 
+> 	extcon_set_property_capability(edev, EXTCON_USB, EXTCON_NOT_HOTPLUG);
+> 	extcon_set_property_callback(edev, EXTCON_USB, extcon_usb_callback);
+> 
+> 	...
+> }
+> 
+> And then user can change the state of each external connector
+> via '/sys/class/extcon/extcon0/cable.0/state' 
+> if cable.0 contains the EXTCON_NOT_HOTPLUG property.
+> 
+> I'm designing this approach. But it has not yet decided
+> because try to check that this approach is right or not.
+> 
 
-> Is it going to be broken if I merge the clk patches through clk tree?
+Okay, so if I'm understanding correctly we'd be using the extcon 
+subsystem's existing attached/detached state to model (and control) the 
+on/off state of the power output?
 
-No. It won't be broken.
+That could work for the particular hardware I'm dealing with at the 
+moment, though I'd be a bit concerned that conflating the two might 
+constrain things in the future if there's some similar but slightly more 
+sophisticated hardware we'd want to extend the same driver to support.  
+For example on a power connector with some capability for presence 
+detection, we might want to be able to support "attached but powered 
+off" as a valid state for it to be in -- would the above approach be 
+able to do that?
 
-> Has it ever worked?
 
-It has and is working well except some minor fixes provided in this
-petchset:
-[PATCH v3 1/4] clk: baikal-t1: Fix invalid xGMAC PTP clock divider
-[PATCH v3 2/4] clk: baikal-t1: Define shared xGMAC ref/ptp clocks parent
-
-> Does the kernel still boot, just PCIe fails if the
-> patches are applied?
-
-Yes, the kernel will be bootable. There won't be any problem if the patches
-in this series are applied because it is self-consistent. As I
-said in the cover letter there is an implicit dependency of another series
-"[PATCH v2 00/17] PCI: dwc: Add dma-ranges/YAML-schema/Baikal-T1 support"
-(https://lore.kernel.org/linux-pci/20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru/T/#me3c5c248adad9760702b545bd4bacd89d5f8a2bd)
-from this one. In particular the functionality implemented in the
-patch
-"[PATCH v2 17/17] PCI: dwc: Add Baikal-T1 PCIe controller support"
-(https://lore.kernel.org/linux-pci/20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru/T/#m219e11c38c4ab8db0c2520c4050366d641598600)
-depends on the patches 3 and 4 of this patchset. But the
-dependency is implicit hidden under the DT clock/reset bindings layer.
-The Baikal-T1 PCIe platform driver will just fail to probe the host
-controller device if this series isn't applied. So the clock/reset
-patchset can be freely merged in via the clk tree especially seeing
-the PCIe Host/EP subsystem maintainer is going to be AFK from
-Wednesday and my series will sadly but likely hang up in limbo for a
-while.
-
--Sergey
+Thanks,
+Zev
 
