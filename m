@@ -2,145 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B62AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C22C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:27:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235422AbiEQB0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 21:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49284 "EHLO
+        id S240029AbiEQB03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 21:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238028AbiEQB0O (ORCPT
+        with ESMTP id S231737AbiEQBZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 21:26:14 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A259DE76;
-        Mon, 16 May 2022 18:26:08 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L2JNY3nGxz4xXg;
-        Tue, 17 May 2022 11:26:04 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652750767;
-        bh=tkYVY8vY6gNXvhNcIMOR3JtLqVvtFEVE1/mN6wPOWUk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZZgzEDLQnaf6r4fxEK2XvXqQ9ILLumgcUyDX9pffXKhjln/3/aaj90oI3dRgDBxzW
-         c5wEPkPDRhP8maNZ+ddWJWAiHp1rXv+/sSGttzZi2NzSBcZGG1w3axvTKTGoD8vvVY
-         K2Z2vtcjeqVloNTt0ncz3YJ6uAtmMmJ49DSDUzNftop/FbivS/WA//rpy9HvPIrOKu
-         UBynFeylLQeoufORqJbWAZaT/SdE46o+qcLVE1RSNkNl2cN9DoRBK/vqgTwZ2TvVIH
-         ClbERCLO7pnDZCUNcCRPl5FiGbhyyID2jeRMGlEVmuzfTeOMxnuPPThI8OpbRaCGZT
-         3TmIiw7pyvH+A==
-Date:   Tue, 17 May 2022 11:26:00 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Dave Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc:     Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>,
-        Anusha Srivatsa <anusha.srivatsa@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Lucas De Marchi <lucas.demarchi@intel.com>
-Subject: linux-next: manual merge of the drm tree with the drm-intel-fixes
- tree
-Message-ID: <20220517112600.7d8d63b3@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/71OL0cAFBGAD+j4wVZ5FF=6";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        Mon, 16 May 2022 21:25:54 -0400
+Received: from azure-sdnproxy-2.icoremail.net (azure-sdnproxy.icoremail.net [52.175.55.52])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id A843664DE;
+        Mon, 16 May 2022 18:25:49 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [124.236.130.193])
+        by mail-app3 (Coremail) with SMTP id cC_KCgB37k2L+YJikKJdAA--.2429S2;
+        Tue, 17 May 2022 09:25:40 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org, kuba@kernel.org
+Cc:     krzysztof.kozlowski@linaro.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, broonie@kernel.org,
+        netdev@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v2] NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
+Date:   Tue, 17 May 2022 09:25:30 +0800
+Message-Id: <20220517012530.75714-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgB37k2L+YJikKJdAA--.2429S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7tr1xWrW5XF1xKr45tw1UZFb_yoW8try7pF
+        WSgFyDZF48Jr1UXFWvvw4ktw4YywnYg34qka9ruw4rJ3sYqrn5tw40yFyYvFWfZrZ7JF42
+        qF4Ykr129FnrJ3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
+        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCY02Avz4vE14v_KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
+        DU0xZFpf9x0JUHpB-UUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg0NAVZdtZtoKQAAsn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/71OL0cAFBGAD+j4wVZ5FF=6
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+There are sleep in atomic context bugs when the request to secure
+element of st-nci is timeout. The root cause is that nci_skb_alloc
+with GFP_KERNEL parameter is called in st_nci_se_wt_timeout which is
+a timer handler. The call paths that could trigger bugs are shown below:
 
-Hi all,
+    (interrupt context 1)
+st_nci_se_wt_timeout
+  nci_hci_send_event
+    nci_hci_send_data
+      nci_skb_alloc(..., GFP_KERNEL) //may sleep
 
-Today's linux-next merge of the drm tree got a conflict in:
+   (interrupt context 2)
+st_nci_se_wt_timeout
+  nci_hci_send_event
+    nci_hci_send_data
+      nci_send_data
+        nci_queue_tx_data_frags
+          nci_skb_alloc(..., GFP_KERNEL) //may sleep
 
-  drivers/gpu/drm/i915/i915_reg.h
+This patch changes allocation mode of nci_skb_alloc from GFP_KERNEL to
+GFP_ATOMIC in order to prevent atomic context sleeping. The GFP_ATOMIC
+flag makes memory allocation operation could be used in atomic context.
 
-between commit:
-
-  54395a33718a ("drm/i915/dmc: Add MMIO range restrictions")
-
-from the drm-intel-fixes tree and commit:
-
-  9c67d9e84c7d ("drm/i915/dmc: split out dmc registers to a separate file")
-
-from the drm tree.
-
-I fixed it up (I used the latter version of this file and applied the
-following patch) and can carry the fix as necessary. This is now fixed
-as far as linux-next is concerned, but any non trivial conflicts should
-be mentioned to your upstream maintainer when your tree is submitted for
-merging.  You may also want to consider cooperating with the maintainer
-of the conflicting tree to minimise any particularly complex conflicts.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 17 May 2022 11:19:42 +1000
-Subject: [PATCH] fi up for "drm/i915/dmc: Add MMIO range restrictions"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Fixes: ed06aeefdac3 ("nfc: st-nci: Rename st21nfcb to st-nci")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
- drivers/gpu/drm/i915/display/intel_dmc_regs.h | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Changes in v2:
+  - Change the Fixes tag to commit st_nci_se_wt_timeout was added.
 
-diff --git a/drivers/gpu/drm/i915/display/intel_dmc_regs.h b/drivers/gpu/dr=
-m/i915/display/intel_dmc_regs.h
-index d65e698832eb..7853827988d4 100644
---- a/drivers/gpu/drm/i915/display/intel_dmc_regs.h
-+++ b/drivers/gpu/drm/i915/display/intel_dmc_regs.h
-@@ -17,6 +17,22 @@
- #define DMC_LAST_WRITE_VALUE	0xc003b400
- #define DMC_MMIO_START_RANGE	0x80000
- #define DMC_MMIO_END_RANGE	0x8FFFF
-+#define DMC_V1_MMIO_START_RANGE	0x80000
-+#define TGL_MAIN_MMIO_START	0x8F000
-+#define TGL_MAIN_MMIO_END	0x8FFFF
-+#define _TGL_PIPEA_MMIO_START	0x92000
-+#define _TGL_PIPEA_MMIO_END	0x93FFF
-+#define _TGL_PIPEB_MMIO_START	0x96000
-+#define _TGL_PIPEB_MMIO_END	0x97FFF
-+#define ADLP_PIPE_MMIO_START	0x5F000
-+#define ADLP_PIPE_MMIO_END	0x5FFFF
-+
-+#define TGL_PIPE_MMIO_START(dmc_id)	_PICK_EVEN(((dmc_id) - 1), _TGL_PIPEA_=
-MMIO_START,\
-+						_TGL_PIPEB_MMIO_START)
-+
-+#define TGL_PIPE_MMIO_END(dmc_id)	_PICK_EVEN(((dmc_id) - 1), _TGL_PIPEA_MM=
-IO_END,\
-+						_TGL_PIPEB_MMIO_END)
-+
- #define SKL_DMC_DC3_DC5_COUNT	_MMIO(0x80030)
- #define SKL_DMC_DC5_DC6_COUNT	_MMIO(0x8002C)
- #define BXT_DMC_DC3_DC5_COUNT	_MMIO(0x80038)
---=20
-2.35.1
+ net/nfc/nci/data.c | 2 +-
+ net/nfc/nci/hci.c  | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---=20
-Cheers,
-Stephen Rothwell
+diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
+index 6055dc9a82a..aa5e712adf0 100644
+--- a/net/nfc/nci/data.c
++++ b/net/nfc/nci/data.c
+@@ -118,7 +118,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
+ 
+ 		skb_frag = nci_skb_alloc(ndev,
+ 					 (NCI_DATA_HDR_SIZE + frag_len),
+-					 GFP_KERNEL);
++					 GFP_ATOMIC);
+ 		if (skb_frag == NULL) {
+ 			rc = -ENOMEM;
+ 			goto free_exit;
+diff --git a/net/nfc/nci/hci.c b/net/nfc/nci/hci.c
+index 19703a649b5..78c4b6addf1 100644
+--- a/net/nfc/nci/hci.c
++++ b/net/nfc/nci/hci.c
+@@ -153,7 +153,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
+ 
+ 	i = 0;
+ 	skb = nci_skb_alloc(ndev, conn_info->max_pkt_payload_len +
+-			    NCI_DATA_HDR_SIZE, GFP_KERNEL);
++			    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
+ 	if (!skb)
+ 		return -ENOMEM;
+ 
+@@ -184,7 +184,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
+ 		if (i < data_len) {
+ 			skb = nci_skb_alloc(ndev,
+ 					    conn_info->max_pkt_payload_len +
+-					    NCI_DATA_HDR_SIZE, GFP_KERNEL);
++					    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
+ 			if (!skb)
+ 				return -ENOMEM;
+ 
+-- 
+2.17.1
 
---Sig_/71OL0cAFBGAD+j4wVZ5FF=6
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKC+agACgkQAVBC80lX
-0GzKtwf+LSwY5OtuMW6tK+yxiDnG2ucVOlHcikXV0ch51Xi4IGTCtw1uqL3mbGY1
-DYzhbJCDfR0zlV4Xh5AVmr9VRG8OHILN2I756HHlk9DO41GJNborf7XDrRZq+qiC
-LwXk5NXIOY0G5jqoPLWdbEpgHl4k4+UsVwgK/cdXVYfHUGxCzoTbtgqqDWUO0hZF
-a1fH/hv1AbkfQOA13OSL+zqqg6N0iynToEM6d3NPhZJ0Smq+uNfayT+Krkp1sYId
-+pES0iewe5qwnbeExW9EQB29v/gFCMjkJcXP2WDP/HYD0KUdtJJK7qMsUdH19XCa
-2LieLtxlv7wUjQ8gNcWv8WFV18HD8w==
-=rdvW
------END PGP SIGNATURE-----
-
---Sig_/71OL0cAFBGAD+j4wVZ5FF=6--
