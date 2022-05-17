@@ -2,115 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB55C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 02:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 105A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 02:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234746AbiEQCBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 22:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
+        id S235924AbiEQCDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 22:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232719AbiEQCA7 (ORCPT
+        with ESMTP id S229491AbiEQCDi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 22:00:59 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD44DEB8;
-        Mon, 16 May 2022 19:00:56 -0700 (PDT)
-Received: from canpemm100009.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L2K792DWNzgYH5;
-        Tue, 17 May 2022 09:59:33 +0800 (CST)
-Received: from dggpeml500026.china.huawei.com (7.185.36.106) by
- canpemm100009.china.huawei.com (7.192.105.213) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 10:00:53 +0800
-Received: from dggpeml500026.china.huawei.com ([7.185.36.106]) by
- dggpeml500026.china.huawei.com ([7.185.36.106]) with mapi id 15.01.2375.024;
- Tue, 17 May 2022 10:00:53 +0800
-From:   shaozhengchao <shaozhengchao@huawei.com>
-To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-CC:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        yuehaibing <yuehaibing@huawei.com>
-Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IFtQQVRDSCBicGYtbmV4dF0gc2FtcGxlcy9icGY6?=
- =?utf-8?Q?_check_detach_prog_exist_or_not_in_xdp=5Ffwd?=
-Thread-Topic: =?utf-8?B?562U5aSNOiBbUEFUQ0ggYnBmLW5leHRdIHNhbXBsZXMvYnBmOiBjaGVjayBk?=
- =?utf-8?Q?etach_prog_exist_or_not_in_xdp=5Ffwd?=
-Thread-Index: AQHYYz67ysyf9xnyEEa5gXY59XVHBq0VxqsAgACPrJD//4OmgIAMgjnQ
-Date:   Tue, 17 May 2022 02:00:52 +0000
-Message-ID: <942eaafecf074ae8a5bb336c18658453@huawei.com>
-References: <20220509005105.271089-1-shaozhengchao@huawei.com>
- <87pmknyr6b.fsf@toke.dk> <f9c85578b94a4a38b3f7b9c796810a30@huawei.com>
- <87h75zynz2.fsf@toke.dk>
-In-Reply-To: <87h75zynz2.fsf@toke.dk>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.178.66]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 16 May 2022 22:03:38 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DD23B024;
+        Mon, 16 May 2022 19:03:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1652753017; x=1684289017;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9LQDczlsUbioUw/chrc6rYRzu+eQYkbhPFuXOp7w9iA=;
+  b=ru1ietjoJinwmICh8vOn12eq5QxlwBe1rW1/PW+Zgl6mJCF8SBZunFB3
+   nNlOsRlwsdbVHh6L2D/owY0dS/QVeZ0WwXtr0Tsp8mjqak2cG+UbGUqU5
+   jonlNLGjz6Uj1NMK9u5cdac5mDeEKuEndGYuQ/8V7A9C6DrhJ92Thk9iL
+   U=;
+X-IronPort-AV: E=Sophos;i="5.91,231,1647302400"; 
+   d="scan'208";a="89072190"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-51ba86d8.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 17 May 2022 02:03:36 +0000
+Received: from EX13MTAUWC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-51ba86d8.us-west-2.amazon.com (Postfix) with ESMTPS id 38B7BC0732;
+        Tue, 17 May 2022 02:03:36 +0000 (UTC)
+Received: from EX13D02UWC004.ant.amazon.com (10.43.162.236) by
+ EX13MTAUWC002.ant.amazon.com (10.43.162.240) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 17 May 2022 02:03:34 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D02UWC004.ant.amazon.com (10.43.162.236) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 17 May 2022 02:03:34 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
+ Server id 15.0.1497.32 via Frontend Transport; Tue, 17 May 2022 02:03:33
+ +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id 8E22F2128; Tue, 17 May 2022 02:03:33 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <german.gomez@arm.com>,
+        <leo.yan@linaro.org>, <acme@kernel.org>
+CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
+        <Nick.Forrington@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <andrew.kilroy@arm.com>, <james.clark@arm.com>,
+        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
+        <lihuafei1@huawei.com>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <mingo@redhat.com>,
+        <namhyung@kernel.org>, <peterz@infradead.org>, <will@kernel.org>
+Subject: [PATCH v9 1/5] perf: Add SNOOP_PEER flag to perf mem data struct
+Date:   Tue, 17 May 2022 02:03:22 +0000
+Message-ID: <20220517020326.18580-2-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220517020326.18580-1-alisaidi@amazon.com>
+References: <20220517020326.18580-1-alisaidi@amazon.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCi0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7tuS6ujogVG9rZSBIw7hpbGFuZC1Kw7hy
-Z2Vuc2VuIFttYWlsdG86dG9rZUBrZXJuZWwub3JnXSANCuWPkemAgeaXtumXtDogMjAyMuW5tDXm
-nIg55pelIDE4OjU1DQrmlLbku7bkuro6IHNoYW96aGVuZ2NoYW8gPHNoYW96aGVuZ2NoYW9AaHVh
-d2VpLmNvbT47IGJwZkB2Z2VyLmtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxp
-bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGFzdEBrZXJuZWwub3JnOyBkYW5pZWxAaW9nZWFy
-Ym94Lm5ldDsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3JnOyBoYXdrQGtlcm5l
-bC5vcmc7IGpvaG4uZmFzdGFiZW5kQGdtYWlsLmNvbTsgYW5kcmlpQGtlcm5lbC5vcmc7IGthZmFp
-QGZiLmNvbTsgc29uZ2xpdWJyYXZpbmdAZmIuY29tOyB5aHNAZmIuY29tOyBrcHNpbmdoQGtlcm5l
-bC5vcmcNCuaKhOmAgTogd2VpeW9uZ2p1biAoQSkgPHdlaXlvbmdqdW4xQGh1YXdlaS5jb20+OyB5
-dWVoYWliaW5nIDx5dWVoYWliaW5nQGh1YXdlaS5jb20+DQrkuLvpopg6IFJlOiDnrZTlpI06IFtQ
-QVRDSCBicGYtbmV4dF0gc2FtcGxlcy9icGY6IGNoZWNrIGRldGFjaCBwcm9nIGV4aXN0IG9yIG5v
-dCBpbiB4ZHBfZndkDQoNCnNoYW96aGVuZ2NoYW8gPHNoYW96aGVuZ2NoYW9AaHVhd2VpLmNvbT4g
-d3JpdGVzOg0KDQo+IC0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCj4g5Y+R5Lu25Lq6OiBUb2tlIEjD
-uGlsYW5kLUrDuHJnZW5zZW4gW21haWx0bzp0b2tlQGtlcm5lbC5vcmddDQo+IOWPkemAgeaXtumX
-tDogMjAyMuW5tDXmnIg55pelIDE3OjQ2DQo+IOaUtuS7tuS6ujogc2hhb3poZW5nY2hhbyA8c2hh
-b3poZW5nY2hhb0BodWF3ZWkuY29tPjsgYnBmQHZnZXIua2VybmVsLm9yZzsgDQo+IG5ldGRldkB2
-Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGFzdEBrZXJuZWwu
-b3JnOyANCj4gZGFuaWVsQGlvZ2VhcmJveC5uZXQ7IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFA
-a2VybmVsLm9yZzsgDQo+IGhhd2tAa2VybmVsLm9yZzsgam9obi5mYXN0YWJlbmRAZ21haWwuY29t
-OyBhbmRyaWlAa2VybmVsLm9yZzsgDQo+IGthZmFpQGZiLmNvbTsgc29uZ2xpdWJyYXZpbmdAZmIu
-Y29tOyB5aHNAZmIuY29tOyBrcHNpbmdoQGtlcm5lbC5vcmcNCj4g5oqE6YCBOiB3ZWl5b25nanVu
-IChBKSA8d2VpeW9uZ2p1bjFAaHVhd2VpLmNvbT47IHNoYW96aGVuZ2NoYW8gDQo+IDxzaGFvemhl
-bmdjaGFvQGh1YXdlaS5jb20+OyB5dWVoYWliaW5nIDx5dWVoYWliaW5nQGh1YXdlaS5jb20+DQo+
-IOS4u+mimDogUmU6IFtQQVRDSCBicGYtbmV4dF0gc2FtcGxlcy9icGY6IGNoZWNrIGRldGFjaCBw
-cm9nIGV4aXN0IG9yIG5vdCANCj4gaW4geGRwX2Z3ZA0KPg0KPiBaaGVuZ2NoYW8gU2hhbyA8c2hh
-b3poZW5nY2hhb0BodWF3ZWkuY29tPiB3cml0ZXM6DQo+DQo+PiBCZWZvcmUgZGV0YWNoIHRoZSBw
-cm9nLCB3ZSBzaG91bGQgY2hlY2sgZGV0YWNoIHByb2cgZXhpc3Qgb3Igbm90Lg0KPg0KPiBJZiB3
-ZSdyZSBhZGRpbmcgc3VjaCBhIGNoZWNrIHdlIHNob3VsZCBhbHNvIGNoZWNrIHRoYXQgaXQncyB0
-aGUgKnJpZ2h0KiBwcm9ncmFtLiBJLmUuLCBxdWVyeSB0aGUgSUQgZm9yIHRoZSBwcm9ncmFtIG5h
-bWUgYW5kIGNoZWNrIHRoYXQgaXQgbWF0Y2hlcyB3aGF0IHRoZSBwcm9ncmFtIGF0dGFjaGVkLCB0
-aGVuIG9idGFpbiBhbiBmZCBhbmQgcGFzcyB0aGF0IGFzIFhEUF9FWFBFQ1RFRF9GRCBvbiBkZXRh
-Y2ggdG8gbWFrZSBzdXJlIGl0IHdhc24ndCBzd2FwcGVkIG91dCBpbiB0aGUgbWVhbnRpbWUuLi4N
-Cj4NCj4gLVRva2UNCj4NCj4gVGhhbmsgeW91IGZvciB5b3VyIHJlcGx5LiBXaGVuIGZpbmlzaCBy
-dW5uaW5nIHhkcF9md2QgdG8gYXR0YXRjaCBwcm9nLCANCj4gdGhlIHByb2dyYW0gd2lsbCBleGl0
-IGFuZCBjYW4ndCBzdG9yZSBmZCBhcyBYRFBfRVhQRUNURURfRkQuDQo+DQo+IEkgdGhpbmsgdGhl
-IHNhbXBsZSB4ZHBfZndkIC1kIGlzIGp1c3QgZGV0YWNoIHByb2cgYW5kIGRvbid0IGNhcmUgaWYg
-DQo+IHRoZSBmZCBpcyBleHBlY3RlZC4NCg0KU28gd2h5IGFyZSB5b3UgYWRkaW5nIHRoZSBjaGVj
-az8gRWl0aGVyIGtlZXAgaXQgdGhlIHdheSBpdCBpcywgb3IgYWRkIGEgcHJvcGVyIGNoZWNrIHRo
-YXQgZXhhbWluZXMgdGhlIHByb2dyYW0gdHlwZTsgeW91J3JlIHJpZ2h0IHRoYXQgaXQgZG9lc24n
-dCBzdG9yZSB0aGUgcHJvZyBGRCwgYnV0IHlvdSBjYW4gc3RpbGwgY2hlY2sgdGhlIHByb2dyYW0g
-bmFtZSBhbmQgc2VlIGlmIGl0IG1hdGNoZXMgdG8gZ2V0IHNvbWUgaWRlYSB0aGF0IGl0J3Mgbm90
-IGEgdG90YWxseSBzZXBhcmF0ZSBwcm9ncmFtIHRoYXQncyBsb2FkZWQuIEkgdGhpbmsgZG9pbmcg
-c28gd291bGQgYmUgYW4gaW1wcm92ZW1lbnQgdG8gdGhlIHNhbXBsZSwgYnV0IGp1c3QgYWRkaW5n
-IGEgY2hlY2sgaWYgYSBwcm9ncmFtIGlzIGxvYWRlZCBpcyBub3QsIHJlYWxseS4uLg0KDQotVG9r
-ZQ0KDQoNCkNvdWxkIEkgYWRkIGhlbHBlciBmdW5jdGlvbiB0byBpbXBsZW1lbnQgdGhpcyBmdW5j
-dGlvbiB3aGljaCBjYW4gY2hlY2sgdGhlIHByb2dyYW0gbmFtZSBhbmQgc2VlIGlmIGl0IGF0dGFj
-aCB0byB0aGUgZGV2aWNlLg0KDQotWmhlbmdjaGFvIFNoYW8NCg==
+Add a flag to the perf mem data struct to signal that a request caused a
+cache-to-cache transfer of a line from a peer of the requestor and
+wasn't sourced from a lower cache level.  The line being moved from one
+peer cache to another has latency and performance implications. On Arm64
+Neoverse systems the data source can indicate a cache-to-cache transfer
+but not if the line is dirty or clean, so instead of overloading HITM
+define a new flag that indicates this type of transfer.
+
+Signed-off-by: Ali Saidi <alisaidi@amazon.com>
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+Reviewed-by: Kajol Jain<kjain@linux.ibm.com>
+---
+ include/uapi/linux/perf_event.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+index d37629dbad72..7b88bfd097dc 100644
+--- a/include/uapi/linux/perf_event.h
++++ b/include/uapi/linux/perf_event.h
+@@ -1310,7 +1310,7 @@ union perf_mem_data_src {
+ #define PERF_MEM_SNOOP_SHIFT	19
+ 
+ #define PERF_MEM_SNOOPX_FWD	0x01 /* forward */
+-/* 1 free */
++#define PERF_MEM_SNOOPX_PEER	0x02 /* xfer from peer */
+ #define PERF_MEM_SNOOPX_SHIFT  38
+ 
+ /* locked instruction */
+-- 
+2.32.0
+
