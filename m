@@ -2,136 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23315C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:36:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E72C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241436AbiEQHgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
+        id S241617AbiEQHhB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241783AbiEQHfi (ORCPT
+        with ESMTP id S241504AbiEQHfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:35:38 -0400
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869D14992E;
-        Tue, 17 May 2022 00:34:10 -0700 (PDT)
-Received: by mail-qt1-f180.google.com with SMTP id v14so12594346qtc.3;
-        Tue, 17 May 2022 00:34:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TNMTs/nof9Veg9iAE0MH+wUHLc/qfyV0Zv09DHMPg6E=;
-        b=IMH32/I/rWwFqegIRezHENdkaAXco04rJbAFYkawxyDmUlnEqRS8V8L6JbrxT60Bza
-         1HsUcnQAc/nJNzw8NjUQCaz7xbHHFIjhrB03gTwA5YTcEFsV5EMmSjQEVla3XNI++Cib
-         69PAoykNYKR3EC+63wmjK4eswteNbOnpzaTdOYiwHmrsWcExOfR4D3CFYeWtLJxoA20Z
-         wi35siBYa5Lmm9ACWVB9DlfJf51r0qehYvEaf0hkBmg7ibtBrJE3G+zgDjRDewPr+4pM
-         RvTuHivwfp8oEewmSdPNYPTB06nc1gLTN0pwbYFLON2t2VZ8n+jFQk8Or712yCffOOc7
-         6h8g==
-X-Gm-Message-State: AOAM531PkNf0KH3R8gyXwVjBXIqPGBEQRcpYJffDlqALDVR2Pa6y8LlK
-        2Dnk4Kk6JXUYcs86Hf9ROgkU8cYCIhUx4g==
-X-Google-Smtp-Source: ABdhPJy0H/bHBhdz84jGwlYYO4BdKs++9Jg1f08UthITQKI14YvMV3H1nNI0e5Bdd0rxiSfWq55T+g==
-X-Received: by 2002:a05:622a:178f:b0:2f3:dd2e:6054 with SMTP id s15-20020a05622a178f00b002f3dd2e6054mr18662520qtk.554.1652772849540;
-        Tue, 17 May 2022 00:34:09 -0700 (PDT)
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
-        by smtp.gmail.com with ESMTPSA id n26-20020a05620a153a00b0069fc13ce22esm7262293qkk.95.2022.05.17.00.34.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 00:34:09 -0700 (PDT)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2ec42eae76bso177730367b3.10;
-        Tue, 17 May 2022 00:34:09 -0700 (PDT)
-X-Received: by 2002:a81:ad11:0:b0:2fe:fb00:a759 with SMTP id
- l17-20020a81ad11000000b002fefb00a759mr9584801ywh.283.1652772848730; Tue, 17
- May 2022 00:34:08 -0700 (PDT)
+        Tue, 17 May 2022 03:35:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A8649C87
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:34:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BFFBB8173F
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:34:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3387C34100;
+        Tue, 17 May 2022 07:34:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652772852;
+        bh=mWtRFK07XdthxAyT5dCny+PVTYE0BwB4uEKr/xRO3zk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bLdytL7ALgmmfQn81ZRSqUooLSS+0Z05fX0kdO1KvKOt+ZhdAe9cGuYMEdjYKwb8y
+         psJQtyxYjhQOCNdu6eeHOJp8uCb0Ux8uB7GmdNAKZuoaSE66j4BDbzR0ddIbU2zHtv
+         uSzzXAuRMn0CBCXipi/Vq1CFe7y5w789X77Q7CGAmdkXs8M0izbRA1FW2eGPP2K/rf
+         sPly7nBMPbAAMGDp35FKAFE4ERIp3cHynAMVPtQGbRXQJInxT5VbBjDZFwhh4KGiHo
+         Z6tKa6zAXSojS7+KAV5LYek0hfg9hfvZDOVu0cCQlWL2WO22quFLa5qeI0uPKmpvV5
+         z92QWzj3wOxWA==
+From:   Chao Yu <chao@kernel.org>
+To:     xiang@kernel.org
+Cc:     chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH] erofs: support idmapped mounts
+Date:   Tue, 17 May 2022 15:32:10 +0800
+Message-Id: <20220517073210.3569589-1-chao@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220513132500.32395-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220513132500.32395-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 17 May 2022 09:33:57 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXL7p9G2BHeOWV1T5Ehy6i9gtefn3DmKsiadtcxH9_HsQ@mail.gmail.com>
-Message-ID: <CAMuHMdXL7p9G2BHeOWV1T5Ehy6i9gtefn3DmKsiadtcxH9_HsQ@mail.gmail.com>
-Subject: Re: [PATCH] Input: gpio-keys - Cancel delayed work only in case of GPIO
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input <linux-input@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 6:44 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> gpio_keys module can either accept gpios or interrupts. The module
-> initializes delayed work in case of gpios only and not for interrupts,
-> so make sure cancel_delayed_work_sync() is called only when bdata->gpiod
-> is true.
->
-> This fixes the issue seen below when the gpio_keys module is unloaded and
-> an interrupt pin is used instead of GPIO:
->
-> [  360.297569] ------------[ cut here ]------------
-> [  360.302303] WARNING: CPU: 0 PID: 237 at kernel/workqueue.c:3066 __flush_work+0x414/0x470
-> [  360.310531] Modules linked in: gpio_keys(-)
-> [  360.314797] CPU: 0 PID: 237 Comm: rmmod Not tainted 5.18.0-rc5-arm64-renesas-00116-g73636105874d-dirty #166
-> [  360.324662] Hardware name: Renesas SMARC EVK based on r9a07g054l2 (DT)
-> [  360.331270] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [  360.338318] pc : __flush_work+0x414/0x470
-> [  360.342385] lr : __cancel_work_timer+0x140/0x1b0
-> [  360.347065] sp : ffff80000a7fba00
-> [  360.350423] x29: ffff80000a7fba00 x28: ffff000012b9c5c0 x27: 0000000000000000
-> [  360.357664] x26: ffff80000a7fbb80 x25: ffff80000954d0a8 x24: 0000000000000001
-> [  360.364904] x23: ffff800009757000 x22: 0000000000000000 x21: ffff80000919b000
-> [  360.372143] x20: ffff00000f5974e0 x19: ffff00000f5974e0 x18: ffff8000097fcf48
-> [  360.379382] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000053f40
-> [  360.386622] x14: ffff800009850e88 x13: 0000000000000002 x12: 000000000000a60c
-> [  360.393861] x11: 000000000000a610 x10: 0000000000000000 x9 : 0000000000000008
-> [  360.401100] x8 : 0101010101010101 x7 : 00000000a473c394 x6 : 0080808080808080
-> [  360.408339] x5 : 0000000000000001 x4 : 0000000000000000 x3 : ffff80000919b458
-> [  360.415578] x2 : ffff8000097577f0 x1 : 0000000000000001 x0 : 0000000000000000
-> [  360.422818] Call trace:
-> [  360.425299]  __flush_work+0x414/0x470
-> [  360.429012]  __cancel_work_timer+0x140/0x1b0
-> [  360.433340]  cancel_delayed_work_sync+0x10/0x18
-> [  360.437931]  gpio_keys_quiesce_key+0x28/0x58 [gpio_keys]
-> [  360.443327]  devm_action_release+0x10/0x18
-> [  360.447481]  release_nodes+0x8c/0x1a0
-> [  360.451194]  devres_release_all+0x90/0x100
-> [  360.455346]  device_unbind_cleanup+0x14/0x60
-> [  360.459677]  device_release_driver_internal+0xe8/0x168
-> [  360.464883]  driver_detach+0x4c/0x90
-> [  360.468509]  bus_remove_driver+0x54/0xb0
-> [  360.472485]  driver_unregister+0x2c/0x58
-> [  360.476462]  platform_driver_unregister+0x10/0x18
-> [  360.481230]  gpio_keys_exit+0x14/0x828 [gpio_keys]
-> [  360.486088]  __arm64_sys_delete_module+0x1e0/0x270
-> [  360.490945]  invoke_syscall+0x40/0xf8
-> [  360.494661]  el0_svc_common.constprop.3+0xf0/0x110
-> [  360.499515]  do_el0_svc+0x20/0x78
-> [  360.502877]  el0_svc+0x48/0xf8
-> [  360.505977]  el0t_64_sync_handler+0x88/0xb0
-> [  360.510216]  el0t_64_sync+0x148/0x14c
-> [  360.513930] irq event stamp: 4306
-> [  360.517288] hardirqs last  enabled at (4305): [<ffff8000080b0300>] __cancel_work_timer+0x130/0x1b0
-> [  360.526359] hardirqs last disabled at (4306): [<ffff800008d194fc>] el1_dbg+0x24/0x88
-> [  360.534204] softirqs last  enabled at (4278): [<ffff8000080104a0>] _stext+0x4a0/0x5e0
-> [  360.542133] softirqs last disabled at (4267): [<ffff8000080932ac>] irq_exit_rcu+0x18c/0x1b0
-> [  360.550591] ---[ end trace 0000000000000000 ]---
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+This patch enables idmapped mounts for erofs, since all dedicated helpers
+for this functionality existsm, so, in this patch we just pass down the
+user_namespace argument from the VFS methods to the relevant helpers.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Simple idmap example on erofs image:
 
-Gr{oetje,eeting}s,
+1. mkdir dir
+2. touch dir/file
+3. mkfs.erofs erofs.img dir
+4. mount -t erofs -o loop erofs.img  /mnt/erofs/
 
-                        Geert
+5. ls -ln /mnt/erofs/
+total 0
+-rw-rw-r-- 1 1000 1000 0 May 17 15:26 file
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+6. mount-idmapped --map-mount b:0:1001:1 /mnt/erofs/ /mnt/scratch_erofs/
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+7. ls -ln /mnt/scratch_erofs/
+total 0
+-rw-rw-r-- 1 65534 65534 0 May 17 15:26 file
+
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+ fs/erofs/inode.c | 2 +-
+ fs/erofs/super.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
+index e8b37ba5e9ad..5320bf52c1ce 100644
+--- a/fs/erofs/inode.c
++++ b/fs/erofs/inode.c
+@@ -370,7 +370,7 @@ int erofs_getattr(struct user_namespace *mnt_userns, const struct path *path,
+ 	stat->attributes_mask |= (STATX_ATTR_COMPRESSED |
+ 				  STATX_ATTR_IMMUTABLE);
+ 
+-	generic_fillattr(&init_user_ns, inode, stat);
++	generic_fillattr(mnt_userns, inode, stat);
+ 	return 0;
+ }
+ 
+diff --git a/fs/erofs/super.c b/fs/erofs/super.c
+index 0c4b41130c2f..7dc5f2e8ddee 100644
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@ -781,7 +781,7 @@ static struct file_system_type erofs_fs_type = {
+ 	.name           = "erofs",
+ 	.init_fs_context = erofs_init_fs_context,
+ 	.kill_sb        = erofs_kill_sb,
+-	.fs_flags       = FS_REQUIRES_DEV,
++	.fs_flags       = FS_REQUIRES_DEV | FS_ALLOW_IDMAP,
+ };
+ MODULE_ALIAS_FS("erofs");
+ 
+-- 
+2.25.1
+
