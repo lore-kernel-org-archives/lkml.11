@@ -2,181 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD4EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE12C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239465AbiEQHWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
+        id S240521AbiEQHXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiEQHWV (ORCPT
+        with ESMTP id S240026AbiEQHXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:22:21 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8963942A3A
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:22:20 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id l13-20020a056e0212ed00b002d07cd1db63so7361209iln.7
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:22:20 -0700 (PDT)
+        Tue, 17 May 2022 03:23:10 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C3E433A7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:23:08 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id gh6so33009371ejb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:23:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XCRBYrzQvjS4psczJqPKiR1yzwCr9m3dz6Q37fPyVWc=;
+        b=Y+3U6RnS5g0NIQcBmmgAFfin+pi/+a/jPrVCWPhBW+wYgF2cSsb3M9D77GNCflSTLE
+         DuAd444CkknzbOxbH53oJu1XKZgh2AoixtIitZUNJO3NO+Ydx9EvUHuDQMCpvSe43iEQ
+         QEhcbkeZmmMYjJLcHMC8U+Cc712bPHzz/R0J0VQC32sQlLTywUuST3WoQJOu6G10pDPd
+         Cs33cc3KwxDjJTyh9y51ug9mQtClFsS1n9R2JjShh8Eu1uO3rT90uSqpi64EvY/3rOFI
+         ogIZHNtUCvcKf4lDtXgaceDzl7RbqErhWse6Z/rn76GdjFd8u+2WoqA6AufZNKXXBQD6
+         U0Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=EW5Q6QKsJ+9pJ/H1EnmsJZVigDkNagilqi9r8wZQf8c=;
-        b=44ul8s6HuEg/b63HJtGecFiQMzOWmxk3VtQe5rmvvvtmLNVDP7lHdErNf2QVwUN5Q/
-         kHABgZ3C9Z/MTVeOfAZzFrwfFQNvO5//KZPLrSw+A7eAF1qpZw9yQqzoOIoaU1gBTenE
-         UvjzfSOoo3wgvMIiEmpHSmA7AyXTMukJDho00seQFuBYrdagtohB/wZVewqL+v2hFfxS
-         sKY4h9A8+Ec1HuyyVn4lRzf3YpMA4FDb61qmScn6Be3Dpvkp7ZzIna8Eh5GW07CNvfgu
-         JD9t2rd0SAVXYy+GoChnZjyoNQnywHOrQKvf8f0BSSeg2uJJnnHz/NtkRp8wFHp3ACkD
-         Z13w==
-X-Gm-Message-State: AOAM533DDwHONePU2D6vO77qL+zCYJbU6Ib+I5c8U68J9cmzpzqW9+2T
-        4HDKaXIo49ctKSmGhAW3VULmjIQyiaKk7ZtRAHHNiKafNB+2
-X-Google-Smtp-Source: ABdhPJxNBlC94Li+OwfrMSHh7d5d52CQJhBaXh1yO6XqCJcp9M+IG5Up61bUzX4DRglaLc6Jnho1gM11b9bgUP+UMNHF+trXWBUg
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XCRBYrzQvjS4psczJqPKiR1yzwCr9m3dz6Q37fPyVWc=;
+        b=BKuSIs5y0Uoq4e9VkIXWUUywUULQXtJ44XJy4iOjEqBDgVLEyF/IylD1ry7cOUEFZY
+         aIcc/1TAYzwFw+xSFwd+CCm/JVefsDVV1e46eIEo7gr4dlFPXwXgWsqlU2cL3/fgYV9a
+         DadxYyi6nRBLhI0ejlh1ra+6rpQ/foQeaQZbY+RfUGsRUwwzsR1vZ3SL/XHi8HGn3e1P
+         4j79v+oPeAXNtAPJOa04WFRpIwvk5WgK+FqOb6oHLMCbloRTHIilEyLj4uxD9n9l5uzl
+         NhYU2aYRYiCDlALqno0+3jY4aI1mZgMKHRgiZGHh9g9T04xykI5FC8I5kBsaDbNkcW4L
+         lC5A==
+X-Gm-Message-State: AOAM533zXRhN0kSjdMkS02zrfKtxr3vtBzM2nBjBHqAcyYIFVWHX6TY7
+        kAYMfXEGdjPWyX+xQ69wxwB+YQ==
+X-Google-Smtp-Source: ABdhPJzfy58cHRd3DOtRyIs4xD25jMmDSEeBJchqbp3rg8jiISTRXl4sNXSb1FiD4HqnpEQqekmgeA==
+X-Received: by 2002:a17:907:3f1d:b0:6f4:ce49:52ea with SMTP id hq29-20020a1709073f1d00b006f4ce4952eamr17969703ejc.47.1652772187446;
+        Tue, 17 May 2022 00:23:07 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id s12-20020a508d0c000000b0042617ba63d7sm6354380eds.97.2022.05.17.00.23.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 00:23:07 -0700 (PDT)
+Message-ID: <c948c2ed-d222-5c16-4df4-daf078c886cc@linaro.org>
+Date:   Tue, 17 May 2022 09:23:05 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a92:c262:0:b0:2d1:3722:a3eb with SMTP id
- h2-20020a92c262000000b002d13722a3ebmr1365360ild.270.1652772139941; Tue, 17
- May 2022 00:22:19 -0700 (PDT)
-Date:   Tue, 17 May 2022 00:22:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004bc82405df30009e@google.com>
-Subject: [syzbot] BUG: sleeping function called from invalid context in binder_ioctl
-From:   syzbot <syzbot+46fff6434a7f968ecb39@syzkaller.appspotmail.com>
-To:     arve@android.com, brauner@kernel.org, cmllamas@google.com,
-        gregkh@linuxfoundation.org, hridya@google.com,
-        joel@joelfernandes.org, linux-kernel@vger.kernel.org,
-        maco@android.com, surenb@google.com,
-        syzkaller-bugs@googlegroups.com, tkjos@android.com,
-        tkjos@google.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 4/4] dt-bindings: arm: qcom: Add more sc7180 Chromebook
+ board bindings
+Content-Language: en-US
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220513095722.v2.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+ <20220513095722.v2.4.Ie8713bc0377672ed8dd71189e66fc0b77226fb85@changeid>
+ <125970b0-af71-1695-a3ab-10a159ac63a5@linaro.org>
+ <CAD=FV=XR+WwWmrB1wGX65=szBc2PbGNOHbm2tiQT5Wp8CPG0Kg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAD=FV=XR+WwWmrB1wGX65=szBc2PbGNOHbm2tiQT5Wp8CPG0Kg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    3f7bdc402fb0 Add linux-next specific files for 20220516
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=105218c6f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e4eb3c0c4b289571
-dashboard link: https://syzkaller.appspot.com/bug?extid=46fff6434a7f968ecb39
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11105599f00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16c7b2b1f00000
-
-The issue was bisected to:
-
-commit bd32889e841c12533d09a1bd02bba932baa9ed8f
-Author: Carlos Llamas <cmllamas@google.com>
-Date:   Fri Apr 29 23:56:41 2022 +0000
-
-    binder: add BINDER_GET_EXTENDED_ERROR ioctl
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1422c845f00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1622c845f00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1222c845f00000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+46fff6434a7f968ecb39@syzkaller.appspotmail.com
-Fixes: bd32889e841c ("binder: add BINDER_GET_EXTENDED_ERROR ioctl")
-
-BUG: sleeping function called from invalid context at lib/usercopy.c:28
-in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3613, name: syz-executor152
-preempt_count: 1, expected: 0
-RCU nest depth: 0, expected: 0
-1 lock held by syz-executor152/3613:
- #0: ffff8880777572f8 (&proc->inner_lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:360 [inline]
- #0: ffff8880777572f8 (&proc->inner_lock){+.+.}-{2:2}, at: _binder_inner_proc_lock drivers/android/binder.c:283 [inline]
- #0: ffff8880777572f8 (&proc->inner_lock){+.+.}-{2:2}, at: binder_ioctl_get_extended_error drivers/android/binder.c:5167 [inline]
- #0: ffff8880777572f8 (&proc->inner_lock){+.+.}-{2:2}, at: binder_ioctl+0x798/0x6d80 drivers/android/binder.c:5390
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 0 PID: 3613 Comm: syz-executor152 Not tainted 5.18.0-rc6-next-20220516-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- __might_resched.cold+0x222/0x26b kernel/sched/core.c:9791
- __might_fault+0x6c/0x170 mm/memory.c:5567
- _copy_to_user+0x25/0x140 lib/usercopy.c:28
- copy_to_user include/linux/uaccess.h:160 [inline]
- binder_ioctl_get_extended_error drivers/android/binder.c:5168 [inline]
- binder_ioctl+0x7aa/0x6d80 drivers/android/binder.c:5390
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3ae108e059
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fff28fbd878 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f3ae108e059
-RDX: 0000000000000000 RSI: 00000000c00c6211 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 00007f3ae10fbe40 R09: 00007f3ae10fbe40
-R10: 00007fff28fbd2f0 R11: 0000000000000246 R12: 00007fff28fbd8b0
-R13: 00007fff28fbd8a0 R14: 00007fff28fbd890 R15: 0000000000000000
- </TASK>
-
-=============================
-[ BUG: Invalid wait context ]
-5.18.0-rc6-next-20220516-syzkaller #0 Tainted: G        W        
------------------------------
-syz-executor152/3613 is trying to lock:
-ffff888073415f98 (&mm->mmap_lock#2){++++}-{3:3}, at: __might_fault+0xa1/0x170 mm/memory.c:5569
-other info that might help us debug this:
-context-{4:4}
-1 lock held by syz-executor152/3613:
- #0: ffff8880777572f8 (&proc->inner_lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:360 [inline]
- #0: ffff8880777572f8 (&proc->inner_lock){+.+.}-{2:2}, at: _binder_inner_proc_lock drivers/android/binder.c:283 [inline]
- #0: ffff8880777572f8 (&proc->inner_lock){+.+.}-{2:2}, at: binder_ioctl_get_extended_error drivers/android/binder.c:5167 [inline]
- #0: ffff8880777572f8 (&proc->inner_lock){+.+.}-{2:2}, at: binder_ioctl+0x798/0x6d80 drivers/android/binder.c:5390
-stack backtrace:
-CPU: 0 PID: 3613 Comm: syz-executor152 Tainted: G        W         5.18.0-rc6-next-20220516-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_lock_invalid_wait_context kernel/locking/lockdep.c:4705 [inline]
- check_wait_context kernel/locking/lockdep.c:4766 [inline]
- __lock_acquire.cold+0xdb/0x3b4 kernel/locking/lockdep.c:5003
- lock_acquire kernel/locking/lockdep.c:5665 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
- __might_fault mm/memory.c:5570 [inline]
- __might_fault+0x104/0x170 mm/memory.c:5563
- _copy_to_user+0x25/0x140 lib/usercopy.c:28
- copy_to_user include/linux/uaccess.h:160 [inline]
- binder_ioctl_get_extended_error drivers/android/binder.c:5168 [inline]
- binder_ioctl+0x7aa/0x6d80 drivers/android/binder.c:5390
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3ae108e059
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fff28fbd878 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f3ae108e059
-RDX: 0000000000000000 RSI: 00000000c00c6211 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 00007f3ae10fbe40 R09: 00007f3ae10fbe40
-R10: 00007fff28fbd2f0 R11: 0000000000000246 R12: 00007fff28fbd8b0
-R13: 00007fff28fbd8a0 R14: 00007fff28fbd890 R15: 0000000000000000
- </TASK>
-binder: 3613:3613 ioctl c00c6211 0 returned -14
+On 16/05/2022 17:16, Doug Anderson wrote:
+> Hi,
+> 
+> On Mon, May 16, 2022 at 12:05 AM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> On 13/05/2022 18:59, Douglas Anderson wrote:
+>>> This adds board bindings for boards that are downstream but not quite
+>>> upstream yet.
+>>>
+>>> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+>>> ---
+>>>
+>>> Changes in v2:
+>>> - Use a "description" instead of a comment for each item.
+>>> - Use the marketing name instead of the code name where possible.
+>>
+>> These should be published with the patch adding their upstream DTS/DTSI.
+>> There is no point to list all possible boards in the world from any
+>> downstream source. For upstream there is no particular benefit for such
+>> bindings, for downstream you also said there is no.
+> 
+> Joe has been working on upstreaming these boards:
+> 
+> https://lore.kernel.org/r/20220510154406.v5.1.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid/
+> 
+> I think there is little chance that they won't go upstream at this
+> point. However, we're at a time in the merge window where it will be
+> several weeks before anything can land. If Joe were to include this
+> patch as part of his series I suspect it would be much more confusing
+> because it would add an unnecessary dependency between my series and
+> his and make it harder for Bjorn to apply it later. Keeping the patch
+> with my series means that the series can be applied more easily.
+> 
+> How about: I'll add a link to his latest posting in my next version.
+> Then, in the future (after these bindings patches have landed) then
+> future boards can go together with their bindings.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Sure, sounds good.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+
+Best regards,
+Krzysztof
