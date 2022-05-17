@@ -2,73 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 069D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 19:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 340E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 19:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352865AbiEQTlb (ORCPT
+        id S1352834AbiEQTlz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 15:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58690 "EHLO
+        Tue, 17 May 2022 15:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352853AbiEQTlE (ORCPT
+        with ESMTP id S1352958AbiEQTlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 15:41:04 -0400
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDDE1D317;
-        Tue, 17 May 2022 12:41:03 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2ef5380669cso1810917b3.9;
-        Tue, 17 May 2022 12:41:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jA+ZZ535mW9lkveex/k/BNBtXLLURKxBnX7kfn3Gewg=;
-        b=oF1guhNrPBsF9TeKexacQWWMM7lgyzQXxgX/Ehysj0hdK0X2jMp88v7PjSKQYsZGAp
-         DhTBZpMnGUKp8XpWYeLjiHk8uIfhPQ5Aguu0CbBJlT9svNOl5pSQuHpKAGdyNC9EKkXE
-         HbYB2isKJkdyqAwZtJj+YCSnk1OLMOrBqFHF1eJO6g9pOx8s83SL7AfZsRclygCdknL6
-         7w8+gFvGD3V7ExlWD4AjLzDsdXttMoa+uAHgGNrhVq2YC7l8/WNSmQBnUhozJ7ttSdYw
-         dxAJXVBvpybOtd3eH4+i4vcMsaiKL+9HoMK2A5PbaLPTx4fEnygUiUSWjdpNGYERg5tO
-         Zv3Q==
-X-Gm-Message-State: AOAM533rmzBem1ghiK6vBvUfFUwUzh5Z8RpbGYrQ2iExHK3PG3xXlEz1
-        r4j2VeeA90YC5vxj6e2rfEUWrYH8ZFaqLRp6vKI=
-X-Google-Smtp-Source: ABdhPJzXrvE9IpiiD2ZV48IvdHIaUJPb9W/rDCWV4FPmB+OWzA3lnnkB24Bh7kEgg7Y7If3dUf60H1mV3gFva2yD2vE=
-X-Received: by 2002:a81:1b97:0:b0:2db:640f:49d8 with SMTP id
- b145-20020a811b97000000b002db640f49d8mr26970283ywb.326.1652816462836; Tue, 17
- May 2022 12:41:02 -0700 (PDT)
+        Tue, 17 May 2022 15:41:46 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F47135A80;
+        Tue, 17 May 2022 12:41:44 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:3d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id B82CC2ED;
+        Tue, 17 May 2022 19:41:43 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net B82CC2ED
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1652816503; bh=vc/mJB154ai0SSpGlWahmWov7w9vRHD/u4MB2x7MD0s=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=QVtajxX9Ui4rJWwE94scwj+Ns42KZggGfOmFffQuBplqmcoMGkGJfsvNJqvVt9pla
+         CBh4oJcE4uc8Fz8iz5x3kIOmz0cqhnAGOnxcrLldfq5fTYvybXWx4r5Ha5GP3nJMzq
+         UDWnxTELudspMNDjPBTW/MgdjXvTIEilGLIA0x5GWrlqtrxLGljs4nfklw7EgIAtMZ
+         zejvFNYYdc7ba+LbJXQ6PLSPYnyW0mPNegwTfB5oV+oLLDJNN0UhG1z8PCOSM9dCLC
+         sN9tYm+a8UwNxVN9kak8c/5txM1iiSjk57BTjpkhOxRwTp7+a0lWh03vu6ln8XJZZE
+         Zkz5sD/BkLphQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Akira Yokosawa <akiyks@gmail.com>
+Subject: Re: [PATCH] docs: pdfdocs: Add space for chapter counts >= 100 in TOC
+In-Reply-To: <bdb60ba3-7813-47d0-74f9-7c31dd912d95@gmail.com>
+References: <bdb60ba3-7813-47d0-74f9-7c31dd912d95@gmail.com>
+Date:   Tue, 17 May 2022 13:41:43 -0600
+Message-ID: <87h75ouetk.fsf@meer.lwn.net>
 MIME-Version: 1.0
-References: <20220516030251.42323-1-schspa@gmail.com> <CAKohpo==gvvyd2HxL3sLTqXS-VbFeprkgAdSAjU3mnbq4Qn-Jg@mail.gmail.com>
-In-Reply-To: <CAKohpo==gvvyd2HxL3sLTqXS-VbFeprkgAdSAjU3mnbq4Qn-Jg@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 17 May 2022 21:40:51 +0200
-Message-ID: <CAJZ5v0gzYQJ+j2M64ct68ghOCmffdoeakh=FPwRv2DTe1mwbFQ@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] cpufreq: Abort show/store for half initialized policy
-To:     Viresh Kumar <viresh.kumar@linaro.org>,
-        Schspa Shi <schspa@gmail.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 12:25 PM Viresh Kumar <viresh.kumar@linaro.org> wrote:
->
-> On Mon, 16 May 2022 at 04:03, Schspa Shi <schspa@gmail.com> wrote:
-> >
-> > If policy initialization fails after the sysfs files are created,
-> > there is a possibility that we may end up running show()/store()
-> > callbacks for half initialized policies, which may have unpredictable
-> > outcomes.
-> >
-> > Abort show/store in such a case by making sure the policy is active.
-> > Also inactivate the policy on such failures.
-> >
-> > Signed-off-by: Schspa Shi <schspa@gmail.com>
->
-> Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Akira Yokosawa <akiyks@gmail.com> writes:
 
-Applied along with the [2/2], with some adjustments in the subject and
-changelog, as 5.19 material.
+> It turns out that networking.pdf has exceeded 100 chapters and
+> titles of chapters >= 100 collide with their counts in its table
+> of contents (TOC).
+>
+> Increase relevant params by 0.6em in the preamble to avoid such
+> ugly collisions.
+>
+> While at it, fix a typo in comment (subsection).
+>
+> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> ---
+>  Documentation/sphinx/kerneldoc-preamble.sty | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
 
-Thanks!
+Applied, thanks.
+
+jon
