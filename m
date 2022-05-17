@@ -2,163 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 086BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346401AbiEQMsm (ORCPT
+        id S1346414AbiEQMuy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
+        Tue, 17 May 2022 08:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243529AbiEQMsj (ORCPT
+        with ESMTP id S1345863AbiEQMuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:48:39 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6883C70B
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 05:48:38 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L2bX221Lwz4xZ2;
-        Tue, 17 May 2022 22:48:34 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1652791714;
-        bh=TDeqjo10z/lPZ0BTlKdpVqFzl6dlu8tIpR5fp3YJtjE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=QiiFptg0D+ihDZM7seo2f+wYINfaOQNzMLR2VUHUpdeOE9fgLMzgZG8P6+JxAZ/EZ
-         s9p7+wdZZVWhxWP+MfhjuHYudBMb/UAx8dzeYhWd0diY2cArjEdh5wsZzEkYcX3cmb
-         9tJUCVSHBHPpqLwbQMheLzEZzX3kcPFW+b2JIDzYWKapSFKpzGd+wnGbLMsx7cEGCO
-         Hu1/l2PeemupH2wtS6DrVtVfhQwkPHPgYNkC5ukyXdHX2iahKgUglygE2HH9PgOKVL
-         WNDGK6AT5tNxuDYULhkA/m1akdKYydLpFO1S65TSHdqOjwwz4zeVE6uLGr9aq/XGTC
-         R4Ly3ybYFX18Q==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] powerpc/irq: Remove arch_local_irq_restore() for
- !CONFIG_CC_HAS_ASM_GOTO
-In-Reply-To: <58df50c9e77e2ed945bacdead30412770578886b.1652715336.git.christophe.leroy@csgroup.eu>
-References: <58df50c9e77e2ed945bacdead30412770578886b.1652715336.git.christophe.leroy@csgroup.eu>
-Date:   Tue, 17 May 2022 22:48:32 +1000
-Message-ID: <871qwspbof.fsf@mpe.ellerman.id.au>
+        Tue, 17 May 2022 08:50:52 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD322BD8;
+        Tue, 17 May 2022 05:50:51 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so23999427fac.7;
+        Tue, 17 May 2022 05:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GysULI/ZfZDq/ifdK02cU3IT0z2WzCFl4Ysj82w0CZc=;
+        b=iZsrBbCas+XJD6+nJaJpieDcMF16GM0aHjZBjAa2oM8Vsfc06zUIkK+Ner+bskKUo/
+         Mlm4ArfdVZwBhOlP2Vk3Md6plAS3sTYWEHcJIgt9r2AYs9liKUV04daeJUTEBkQuKewk
+         H5qtc22tfUPdbAWErW5qNZ3HDxeX57p5F2QWWg1PWury8c9n3yr5ucrDA3pwheN7PehK
+         5p8NFHY8/PBIgYmWROyngSmq3Cfu/nQ5XKB3KSZbIFeVMHvxXR/+My9sYvGNy7tMSslW
+         ZiDn76RPxP4Kbj2PJD5abUhTUZ+sfXiGZxPaZF97lFwy5eJ7g27472dZ+iQLLsn1J98Z
+         AH0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=GysULI/ZfZDq/ifdK02cU3IT0z2WzCFl4Ysj82w0CZc=;
+        b=FxZ3WtnNc9zgcrwPnwl/7ebWIDdhjFPyltRFQVaPHFagoLgcpzfI+5dRJpQd7QbKav
+         FJ4H/K3+u4MsKLLVadupobGHvCtpeMUVtiq1PRD15Kp5w70spntP7v8k9+7MHTUYlRoc
+         +8FFN1d9y3BRGzs8Ki5EnJUFqEvL4/1o282L+wWSIkuuR8pbHNKlW3s5EcFYdVzNTEVR
+         5JxsK9oQMeA+v3vo9VSi3vMeqyG9bYiCJFxzB3oKFw1vgxHSSXXiMExpr+IqKhQ8LZ2m
+         bOwKTUcY/gjeoVSGKIbIpA1a8le+dp06TtkH+50BmB7KXjVlt2+W89VlSbrkjUSEfqv0
+         +YZQ==
+X-Gm-Message-State: AOAM530dOkKcvvMZiHGf2A4DFpZa5z4HlU2ppgj1TSxk+MbiU2lRs2eh
+        v6d8WREsfRbs/UdN4Ft4zH2+P8WHn0EOKQ==
+X-Google-Smtp-Source: ABdhPJzreh3KBieNutd7OK8er9g6pj2PFaeO7uFVsgfU9iy3fXyZh8bCuur0K9hRaLFP5at8Vb7Q8w==
+X-Received: by 2002:a05:6870:796:b0:da:3d6a:101d with SMTP id en22-20020a056870079600b000da3d6a101dmr12384297oab.20.1652791850764;
+        Tue, 17 May 2022 05:50:50 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a21-20020a4ad5d5000000b0035eb4e5a6c9sm5146019oot.31.2022.05.17.05.50.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 05:50:50 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 17 May 2022 05:50:49 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     keliu <liuke94@huawei.com>
+Cc:     jdelvare@suse.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] hwmon: Directly use ida_alloc()/free()
+Message-ID: <20220517125049.GA3500570@roeck-us.net>
+References: <20220517063126.2142637-1-liuke94@huawei.com>
+ <20220517063126.2142637-2-liuke94@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517063126.2142637-2-liuke94@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christophe Leroy <christophe.leroy@csgroup.eu> writes:
-> All supported versions of GCC support asm goto.
+On Tue, May 17, 2022 at 06:31:26AM +0000, keliu wrote:
+> Use ida_alloc()/ida_free() instead of deprecated
+> ida_simple_get()/ida_simple_remove() .
+> 
+> Signed-off-by: keliu <liuke94@huawei.com>
 
-I thought clang was the one that only recently added support for asm
-goto.
+Applied, after updating subject to include the driver name.
 
-<looks>
+Guenter
 
-Apparently clang added support in 2019, in clang 9. The earliest clang
-we claim to support is 11.
-
-So this patch is good, I'll just adjust the change log to say GCC/clang.
-
-cheers
-
-> diff --git a/arch/powerpc/kernel/irq.c b/arch/powerpc/kernel/irq.c
-> index c768cde03e36..dd09919c3c66 100644
-> --- a/arch/powerpc/kernel/irq.c
-> +++ b/arch/powerpc/kernel/irq.c
-> @@ -216,7 +216,6 @@ static inline void replay_soft_interrupts_irqrestore(void)
->  #define replay_soft_interrupts_irqrestore() replay_soft_interrupts()
->  #endif
->  
-> -#ifdef CONFIG_CC_HAS_ASM_GOTO
->  notrace void arch_local_irq_restore(unsigned long mask)
->  {
->  	unsigned char irq_happened;
-> @@ -312,82 +311,6 @@ notrace void arch_local_irq_restore(unsigned long mask)
->  	__hard_irq_enable();
->  	preempt_enable();
+> ---
+>  drivers/hwmon/ibmaem.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/hwmon/ibmaem.c b/drivers/hwmon/ibmaem.c
+> index de6baf6ca3d1..5c4cf742f5ae 100644
+> --- a/drivers/hwmon/ibmaem.c
+> +++ b/drivers/hwmon/ibmaem.c
+> @@ -482,7 +482,7 @@ static void aem_delete(struct aem_data *data)
+>  	ipmi_destroy_user(data->ipmi.user);
+>  	platform_set_drvdata(data->pdev, NULL);
+>  	platform_device_unregister(data->pdev);
+> -	ida_simple_remove(&aem_ida, data->id);
+> +	ida_free(&aem_ida, data->id);
+>  	kfree(data);
 >  }
-> -#else
-> -notrace void arch_local_irq_restore(unsigned long mask)
-> -{
-> -	unsigned char irq_happened;
-> -
-> -	/* Write the new soft-enabled value */
-> -	irq_soft_mask_set(mask);
-> -	if (mask)
-> -		return;
-> -
-> -	if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
-> -		WARN_ON_ONCE(in_nmi() || in_hardirq());
-> -
-> -	/*
-> -	 * From this point onward, we can take interrupts, preempt,
-> -	 * etc... unless we got hard-disabled. We check if an event
-> -	 * happened. If none happened, we know we can just return.
-> -	 *
-> -	 * We may have preempted before the check below, in which case
-> -	 * we are checking the "new" CPU instead of the old one. This
-> -	 * is only a problem if an event happened on the "old" CPU.
-> -	 *
-> -	 * External interrupt events will have caused interrupts to
-> -	 * be hard-disabled, so there is no problem, we
-> -	 * cannot have preempted.
-> -	 */
-> -	irq_happened = get_irq_happened();
-> -	if (!irq_happened) {
-> -		if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
-> -			WARN_ON_ONCE(!(mfmsr() & MSR_EE));
-> -		return;
-> -	}
-> -
-> -	/* We need to hard disable to replay. */
-> -	if (!(irq_happened & PACA_IRQ_HARD_DIS)) {
-> -		if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
-> -			WARN_ON_ONCE(!(mfmsr() & MSR_EE));
-> -		__hard_irq_disable();
-> -		local_paca->irq_happened |= PACA_IRQ_HARD_DIS;
-> -	} else {
-> -		/*
-> -		 * We should already be hard disabled here. We had bugs
-> -		 * where that wasn't the case so let's dbl check it and
-> -		 * warn if we are wrong. Only do that when IRQ tracing
-> -		 * is enabled as mfmsr() can be costly.
-> -		 */
-> -		if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG)) {
-> -			if (WARN_ON_ONCE(mfmsr() & MSR_EE))
-> -				__hard_irq_disable();
-> -		}
-> -
-> -		if (irq_happened == PACA_IRQ_HARD_DIS) {
-> -			local_paca->irq_happened = 0;
-> -			__hard_irq_enable();
-> -			return;
-> -		}
-> -	}
-> -
-> -	/*
-> -	 * Disable preempt here, so that the below preempt_enable will
-> -	 * perform resched if required (a replayed interrupt may set
-> -	 * need_resched).
-> -	 */
-> -	preempt_disable();
-> -	irq_soft_mask_set(IRQS_ALL_DISABLED);
-> -	trace_hardirqs_off();
-> -
-> -	replay_soft_interrupts_irqrestore();
-> -	local_paca->irq_happened = 0;
-> -
-> -	trace_hardirqs_on();
-> -	irq_soft_mask_set(IRQS_ENABLED);
-> -	__hard_irq_enable();
-> -	preempt_enable();
-> -}
-> -#endif
->  EXPORT_SYMBOL(arch_local_irq_restore);
 >  
->  /*
-> -- 
-> 2.35.1
+> @@ -539,7 +539,7 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
+>  		data->power_period[i] = AEM_DEFAULT_POWER_INTERVAL;
+>  
+>  	/* Create sub-device for this fw instance */
+> -	data->id = ida_simple_get(&aem_ida, 0, 0, GFP_KERNEL);
+> +	data->id = ida_alloc(&aem_ida, GFP_KERNEL);
+>  	if (data->id < 0)
+>  		goto id_err;
+>  
+> @@ -600,7 +600,7 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
+>  	platform_set_drvdata(data->pdev, NULL);
+>  	platform_device_unregister(data->pdev);
+>  dev_err:
+> -	ida_simple_remove(&aem_ida, data->id);
+> +	ida_free(&aem_ida, data->id);
+>  id_err:
+>  	kfree(data);
+>  
+> @@ -679,7 +679,7 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
+>  		data->power_period[i] = AEM_DEFAULT_POWER_INTERVAL;
+>  
+>  	/* Create sub-device for this fw instance */
+> -	data->id = ida_simple_get(&aem_ida, 0, 0, GFP_KERNEL);
+> +	data->id = ida_alloc(&aem_ida, GFP_KERNEL);
+>  	if (data->id < 0)
+>  		goto id_err;
+>  
+> @@ -740,7 +740,7 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
+>  	platform_set_drvdata(data->pdev, NULL);
+>  	platform_device_unregister(data->pdev);
+>  dev_err:
+> -	ida_simple_remove(&aem_ida, data->id);
+> +	ida_free(&aem_ida, data->id);
+>  id_err:
+>  	kfree(data);
+>  
