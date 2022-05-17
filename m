@@ -2,125 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0880C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A434DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242912AbiEQBBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 21:01:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
+        id S235473AbiEQBC1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 21:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242167AbiEQBBO (ORCPT
+        with ESMTP id S230270AbiEQBCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 21:01:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C035F275DA;
-        Mon, 16 May 2022 18:01:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652749273; x=1684285273;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Wov2LQaQVG/3AxlEqLF0YKuINCkabUjD2lygg5Hs/uo=;
-  b=fT5qgD0WQlF6T9Fn8C0EAQ5dQycc7rJhmUwMD2IMx2c2D5G8ztOBUf2W
-   NKLSYBx2V6xg5Rt7ixeGReAjoeqGbJpJLC16dwo3UDxZlClEV7DAyI+9R
-   0Z94i4QAvO4doqBZqe1NzEVvpgSp+106cpz1c14I/1rT8C2Mo/AcnOKAk
-   AVoX6hq5SFwcEngwI2UC38eMHOuBHBu6uW0jwupzaDM0nOpB2B1xSiYdL
-   Unc5xnnEIIjAKvP4zGypOK9fAZmysLC0huiQaSo+oWfykGnbqmUSs2HWO
-   +dkS7rja3mY+3JgZ6kP7V/hirBx+/m1GXmANEBZOHbkKJxeBGaWxDc8Mc
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="296284238"
-X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
-   d="scan'208";a="296284238"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 18:01:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
-   d="scan'208";a="596817843"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 16 May 2022 18:00:58 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqla6-0000Sd-0v;
-        Tue, 17 May 2022 01:00:58 +0000
-Date:   Tue, 17 May 2022 09:00:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Piyush Malgujar <pmalgujar@marvell.com>, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        sgarapati@marvell.com, sbalcerak@marvell.com, cchavva@marvell.com,
-        Piyush Malgujar <pmalgujar@marvell.com>
-Subject: Re: [PATCH 1/3] drivers: i2c: thunderx: octeontx2 clock divisor
- logic changes
-Message-ID: <202205170856.ko6UxqWi-lkp@intel.com>
-References: <20220511133659.29176-2-pmalgujar@marvell.com>
+        Mon, 16 May 2022 21:02:23 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED1F3EAB3;
+        Mon, 16 May 2022 18:02:22 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id a3so10922088ybg.5;
+        Mon, 16 May 2022 18:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uqWi4OnHu9ri4Nfr1SRDUI9tIGr2rwk7haOnQsBD3Ys=;
+        b=T92+XNl0GBjaHOZaaCfUzuxLeNI0GDBCfW61td3Vb4FeCnL/deQ1MMtkdearq4YlGX
+         9Nd0pBSrkLfd1ABfSyJiZvbo7fsIfPTUUUZToYOvWgYkcGWhOqvYsI+y2AAo9ht40+0j
+         XLiIOtmucBvTUa47yg1F6IYvyBqWlr6EVJsktPOpW8ugS+TejTtjC1YxS0pIq0YiX6bz
+         ELbIbSsL4vBAaSs6ulh31xB3jZpJgid/5L9ZK8FJmBt6A4H+KXdPXMlb6xKwa/mV3jAh
+         aklSiLr46NP0TqPB+F+iczNUX8HM8x1YW3oLpfAGzPX5AWE0BSZF71rwPqXYZDf79SDH
+         lytA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uqWi4OnHu9ri4Nfr1SRDUI9tIGr2rwk7haOnQsBD3Ys=;
+        b=ZJUadBir1R+urqBBX3DfPIfRjK+dSms2AYGSiaycjB1NCZW4ZEJLLTULsmRO2Z19XX
+         lKAwCNifRpjyVpFwKqPiOSh+dKBqxnu/LjIclveCJ+K4e6zt42UwRBbJcDM0ZXC8dufb
+         Am69nVOo5RGNtWr3YiopccxR8sjGBJQ7SFxPlduxBbidPFOnhnvbdLTFiGdm9wQqeHaf
+         0OE62/dX1nV0E6CqHtH+He2LtzfXOb2K5Za12pd24k0eeQf4iArwykwBW7IpXnpNRnAk
+         8gtODgzUbe4j67j79HGFb+je7CuHK81kfKgM3vfGtonVCf2/exoeuU9/NsfMaY/Vh4ag
+         gkRw==
+X-Gm-Message-State: AOAM530V3KkmRwcfYYD0SDYTdnNaEsMc5KtaisiGZpgDGpZj4fAgxKnC
+        XFKT2MGoFx5zHErbDiOeGP3asjB3lJAU4KS+hbTu9ZyY+5E=
+X-Google-Smtp-Source: ABdhPJwxnH9d3ESAOWYk+zXNYrQeMU2xxTnLHC6hsf4faWRrotO6pkgfo6ewrvrH7mmXg7ahw++WqR31QTpU8QKvOHc=
+X-Received: by 2002:a25:2c55:0:b0:64d:f682:db36 with SMTP id
+ s82-20020a252c55000000b0064df682db36mr754823ybs.352.1652749341908; Mon, 16
+ May 2022 18:02:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511133659.29176-2-pmalgujar@marvell.com>
+References: <20220415103414.86555-1-jiangshanlai@gmail.com> <YoK3zEVj+DuIBEs7@google.com>
+In-Reply-To: <YoK3zEVj+DuIBEs7@google.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Tue, 17 May 2022 09:02:09 +0800
+Message-ID: <CAJhGHyBYaASEkB7FqGQ3FThgNDkOzvHmC5KFw9y0SEu3we8s3A@mail.gmail.com>
+Subject: Re: [PATCH] kvm: x86/svm/nested: Cache PDPTEs for nested NPT in PAE
+ paging mode
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Avi Kivity <avi@redhat.com>,
+        "open list:KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)" 
+        <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Piyush,
+On Tue, May 17, 2022 at 4:45 AM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Fri, Apr 15, 2022, Lai Jiangshan wrote:
+> > From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+> >
+> > When NPT enabled L1 is PAE paging, vcpu->arch.mmu->get_pdptrs() which
+> > is nested_svm_get_tdp_pdptr() reads the guest NPT's PDPTE from memroy
+> > unconditionally for each call.
+> >
+> > The guest PAE root page is not write-protected.
+> >
+> > The mmu->get_pdptrs() in FNAME(walk_addr_generic) might get different
+> > values every time or it is different from the return value of
+> > mmu->get_pdptrs() in mmu_alloc_shadow_roots().
+> >
+> > And it will cause FNAME(fetch) installs the spte in a wrong sp
+> > or links a sp to a wrong parent since FNAME(gpte_changed) can't
+> > check these kind of changes.
+> >
+> > Cache the PDPTEs and the problem is resolved.  The guest is responsible
+> > to info the host if its PAE root page is updated which will cause
+> > nested vmexit and the host updates the cache when next nested run.
+>
+> Hmm, no, the guest is responsible for invalidating translations that can be
+> cached in the TLB, but the guest is not responsible for a full reload of PDPTEs.
+> Per the APM, the PDPTEs can be cached like regular PTEs:
+>
+>   Under SVM, however, when the processor is in guest mode with PAE enabled, the
+>   guest PDPT entries are not cached or validated at this point, but instead are
+>   loaded and checked on demand in the normal course of address translation, just
+>   like page directory and page table entries. Any reserved bit violations ared
+>   etected at the point of use, and result in a page-fault (#PF) exception rather
+>   than a general-protection (#GP) exception.
+>
+> So if L1 modifies a PDPTE from !PRESENT (or RESERVED) to PRESENT (and valid), then
+> any active L2 vCPUs should recognize the new PDPTE without a nested VM-Exit because
+> the old entry can't have been cached in the TLB.
 
-Thank you for the patch! Yet something to improve:
+In this case, it is still !PRESENT in the shadow page, and it will cause
+a vmexit when L2 tries to use the translation.  I can't see anything wrong
+in TLB or vTLB(shadow pages).
 
-[auto build test ERROR on wsa/i2c/for-next]
-[also build test ERROR on linux/master linus/master v5.18-rc7 next-20220516]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+But I think some code is needed to reload the cached PDPTEs
+when guest_mmu->get_pdptrs() returns !PRESENT and reload mmu if
+the cache is changed. (and add code to avoid infinite loop)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Piyush-Malgujar/drivers-i2c-thunderx-Marvell-thunderx-i2c-changes/20220511-213853
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git i2c/for-next
-config: mips-randconfig-r025-20220516 (https://download.01.org/0day-ci/archive/20220517/202205170856.ko6UxqWi-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/56654d280f7c130d4f1d78eb8a3fa57fedc86b7b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Piyush-Malgujar/drivers-i2c-thunderx-Marvell-thunderx-i2c-changes/20220511-213853
-        git checkout 56654d280f7c130d4f1d78eb8a3fa57fedc86b7b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
+The patch fails to reload mmu if the cache is changed which
+leaves the problem described in the changelog partial resolved
+only.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Maybe we need to add mmu parameter back in load_pdptrs() for it.
 
-All errors (new ones prefixed by >>):
+>
+> In practice, snapshotting at nested VMRUN would likely work, but architecturally
+> it's wrong and could cause problems if L1+L2 are engange in paravirt shenanigans,
+> e.g. async #PF comes to mind.
+>
+> I believe the correct way to fix this is to write-protect nNPT PDPTEs like all other
+> shadow pages, which shouldn't be too awful to do as part of your series to route
+> PDPTEs through kvm_mmu_get_page().
 
-   In file included from drivers/i2c/busses/i2c-octeon-platdrv.c:27:
->> drivers/i2c/busses/i2c-octeon-core.h:223:21: error: incomplete definition of type 'struct pci_dev'
-           u32 chip_id = (pdev->subsystem_device >> 12) & 0xF;
-                          ~~~~^
-   include/asm-generic/pci_iomap.h:10:8: note: forward declaration of 'struct pci_dev'
-   struct pci_dev;
-          ^
-   1 error generated.
-
-
-vim +223 drivers/i2c/busses/i2c-octeon-core.h
-
-   213	
-   214	#define PCI_SUBSYS_DEVID_9XXX 0xB
-   215	/**
-   216	 * octeon_i2c_is_otx2 - check for chip ID
-   217	 * @pdev: PCI dev structure
-   218	 *
-   219	 * Returns TRUE if OcteonTX2, FALSE otherwise.
-   220	 */
-   221	static inline bool octeon_i2c_is_otx2(struct pci_dev *pdev)
-   222	{
- > 223		u32 chip_id = (pdev->subsystem_device >> 12) & 0xF;
-   224	
-   225		return (chip_id == PCI_SUBSYS_DEVID_9XXX);
-   226	}
-   227	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+In the one-off special shadow page (will be renamed to one-off local
+shadow page)
+patchsets, PAE PDPTEs is not write-protected.  Wirte-protecting it causing nasty
+code.
