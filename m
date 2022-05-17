@@ -2,142 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17638C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:21:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DECFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242117AbiEQUVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 16:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
+        id S1352907AbiEQUWK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 16:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352961AbiEQUVW (ORCPT
+        with ESMTP id S1346834AbiEQUWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 16:21:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979DD31DEC
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:21:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0ECCDB81C50
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 20:21:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A465CC385B8;
-        Tue, 17 May 2022 20:21:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652818875;
-        bh=FUw9l4CEWJbA9/ZM7b1TCp7eWq+8/wCm8DPSvUGG3T4=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=r4KUhRHhufPM63pNUB6CmLAX4u4xMJo5dlQGS2SMPpOWhshwbXRO/d66JtnfYOO5q
-         0LbTnM7jIHPi4aa6j/kxlk+UXIh/KXQQg3C05ODO02/e8MxJcF/08bnl1EUXljw39F
-         jFHhuhOAYWqTUAOlF20+Z4IUlmlvWjgvgP2FEh1fS7/st8pxPHfliv6dTXQ7smWUXa
-         Fa5ZG0ZxoCVnb6YHe6Rd/cToc11p2hb5gVQHYHsHZOba/yYJ5dlu5IGhB6DYOfQYiD
-         JbzxyCcn/muQruVQz2t10S6lUmnVXX4p3emmkDkQvtMm6OHDwZlePrqUtEo+17yyaR
-         r+XVcgvdcDJ0w==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 41A4E5C086D; Tue, 17 May 2022 13:21:15 -0700 (PDT)
-Date:   Tue, 17 May 2022 13:21:15 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Minchan Kim <minchan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Dias <joaodias@google.com>,
-        David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
-Message-ID: <20220517202115.GE1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <f7ff4186-e629-a5da-3f4d-ec629b0c8dd9@nvidia.com>
- <20220512004949.GK1790663@paulmck-ThinkPad-P17-Gen-1>
- <YnxczoehQJ+x6m9Y@google.com>
- <0accce46-fac6-cdfb-db7f-d08396bf9d35@nvidia.com>
- <aafc0954-80df-dceb-03f2-2caea29cbbda@nvidia.com>
- <YnyCqwY4DxcZ/NjM@google.com>
- <20220517140049.GF63055@ziepe.ca>
- <ef901bdb-6117-bad4-2f26-c80df270b86e@nvidia.com>
- <20220517192825.GM63055@ziepe.ca>
- <b6eef200-43d1-7913-21ed-176b05fcb4fe@nvidia.com>
+        Tue, 17 May 2022 16:22:06 -0400
+Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.148])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E347551E6E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:22:04 -0700 (PDT)
+Received: (wp-smtpd smtp.tlen.pl 25005 invoked from network); 17 May 2022 22:22:01 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1652818921; bh=9ovi1FLOubpAPQv/lsODTtczv1FUcAB21cjp/YOWmuc=;
+          h=From:To:Cc:Subject;
+          b=cPqYGL7HgHwWrg1WcUe9hM7PLyTlZXXLSu5NJECaVtm3CJ+UkBcJiqP9pijmW3e/f
+           VP5v/nUG2ZhpF/oaQiYhoP61pj//b33TQ+a4iOERKbrYl5UBGEZ+zyqA/8BPN0J6BD
+           jfAGoP2WOxeiyHHd3d2ftUB19w+pRP9++Tx+jV4c=
+Received: from aafg236.neoplus.adsl.tpnet.pl (HELO localhost.localdomain) (mat.jonczyk@o2.pl@[83.4.136.236])
+          (envelope-sender <mat.jonczyk@o2.pl>)
+          by smtp.tlen.pl (WP-SMTPD) with SMTP
+          for <linux-kernel@vger.kernel.org>; 17 May 2022 22:22:01 +0200
+From:   =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
+To:     linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Prarit Bhargava <prarit@redhat.com>
+Subject: [PATCH v2 resend 1/2] x86/rtc: rewrite mach_get_cmos_time to delete duplicated code
+Date:   Tue, 17 May 2022 22:21:30 +0200
+Message-Id: <20220517202131.379939-2-mat.jonczyk@o2.pl>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220517202131.379939-1-mat.jonczyk@o2.pl>
+References: <20220517202131.379939-1-mat.jonczyk@o2.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6eef200-43d1-7913-21ed-176b05fcb4fe@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: 432265b158737b545904e0712bae5acf
+X-WP-AV: skaner antywirusowy Poczty o2
+X-WP-SPAM: NO 0000000 [cYNx]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 01:12:02PM -0700, John Hubbard wrote:
-> On 5/17/22 12:28, Jason Gunthorpe wrote:
-> > > If you compare this to the snippet above, you'll see that there is
-> > > an extra mov statement, and that one dereferences a pointer from
-> > > %rax:
-> > > 
-> > >      mov    (%rax),%rbx
-> > 
-> > That is the same move as:
-> > 
-> >     mov    0x8(%rdx,%rax,8),%rbx
-> > 
-> > Except that the EA calculation was done in advance and stored in rax.
-> > 
-> > lea isn't a memory reference, it is just computing the pointer value
-> > that 0x8(%rdx,%rax,8) represents. ie the lea computes
-> > 
-> >    %rax = %rdx + %rax*8 + 6
-> > 
-> > Which is then fed into the mov. Maybe it is an optimization to allow
-> > one pipe to do the shr and an other to the EA - IDK, seems like a
-> > random thing for the compiler to do.
+There are functions in drivers/rtc/rtc-mc146818-lib.c that handle
+reading from / writing to the CMOS RTC clock. mach_get_cmos_time() in
+arch/x86/kernel/rtc.c did not use them and was mostly a duplicate of
+mc146818_get_time(). Modify mach_get_cmos_time() to use
+mc146818_get_time() and remove the duplicated code.
 
-Maybe an optimization suppressed due to the volatile nature of the
-load?  If so, perhaps it might be considered a compiler bug.  Though
-it is quite difficult to get optimization bugs involving volatile
-to be taken seriously.
+mach_get_cmos_time() used a different algorithm than
+mc146818_get_time(), but these functions are equivalent. The major
+differences were:
 
-> Apologies for getting that wrong, and thanks for walking me through the
-> asm.
-> 
-> [...]
-> > 
-> > Paul can correct me, but I understand we do not have a list of allowed
-> > operations that are exempted from the READ_ONCE() requirement. ie it
-> > is not just conditional branching that requires READ_ONCE().
-> > 
-> > This is why READ_ONCE() must always be on the memory load, because the
-> > point is to sanitize away the uncertainty that comes with an unlocked
-> > read of unstable memory contents. READ_ONCE() samples the value in
-> > memory, and removes all tearing, multiload, etc "instability" that may
-> > effect down stream computations. In this way down stream compulations
-> > become reliable.
-> > 
-> > Jason
-> 
-> So then:
+- mc146818_get_time() is better refined: it was updated in
+  commit 05a0302c3548 ("rtc: mc146818: Prevent reading garbage")
+  to take account of various edge conditions,
 
-Works for me!
+- when the UIP ("Update in progress") bit of the RTC is set,
+  mach_get_cmos_time() was busy waiting with cpu_relax() while
+  mc146818_get_time() is now using mdelay(1) in every loop iteration,
 
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
+- mach_get_cmos_time() assumed that the RTC year must be >= 2000, which
+  may not be true on some old boxes with a dead battery,
 
-							Thanx, Paul
+- mach_get_cmos_time() was holding the rtc_lock for a long time.
 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 0e42038382c1..b404f87e2682 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -482,7 +482,12 @@ unsigned long __get_pfnblock_flags_mask(const struct page *page,
->         word_bitidx = bitidx / BITS_PER_LONG;
->         bitidx &= (BITS_PER_LONG-1);
-> 
-> -       word = bitmap[word_bitidx];
-> +       /*
-> +        * This races, without locks, with set_pageblock_migratetype(). Ensure
-> +        * a consistent (non-tearing) read of the memory array, so that results,
-> +        * even though racy, are not corrupted.
-> +        */
-> +       word = READ_ONCE(bitmap[word_bitidx]);
->         return (word >> bitidx) & mask;
->  }
-> 
-> 
-> thanks,
-> -- 
-> John Hubbard
-> NVIDIA
+As a bonus, mach_get_cmos_time() after the modification does not hang
+indefinitely if the CMOS RTC is not present.
+
+The RTC writing counterpart, mach_set_rtc_mmss() is already using
+mc146818_get_time() from drivers/rtc. This was done in
+        commit 3195ef59cb42 ("x86: Do full rtc synchronization with ntp")
+It appears that mach_get_cmos_time() was simply forgotten.
+
+mach_get_cmos_time() is really used only in read_persistent_clock64(),
+which is called only in a few places in kernel/time/timekeeping.c .
+
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: x86@kernel.org
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Prarit Bhargava <prarit@redhat.com>
+
+---
+
+v2:
+  - use pr_err() in place of pr_err_ratelimited(). mach_get_cmos_time()
+    is not called frequently, so ratelimiting is not necessary.
+  - tweak commit description.
+---
+ arch/x86/kernel/rtc.c | 59 +++++--------------------------------------
+ 1 file changed, 7 insertions(+), 52 deletions(-)
+
+diff --git a/arch/x86/kernel/rtc.c b/arch/x86/kernel/rtc.c
+index 586f718b8e95..1cadc8a15267 100644
+--- a/arch/x86/kernel/rtc.c
++++ b/arch/x86/kernel/rtc.c
+@@ -4,11 +4,8 @@
+  */
+ #include <linux/platform_device.h>
+ #include <linux/mc146818rtc.h>
+-#include <linux/acpi.h>
+-#include <linux/bcd.h>
+ #include <linux/export.h>
+ #include <linux/pnp.h>
+-#include <linux/of.h>
+ 
+ #include <asm/vsyscall.h>
+ #include <asm/x86_init.h>
+@@ -20,15 +17,12 @@
+ /*
+  * This is a special lock that is owned by the CPU and holds the index
+  * register we are working with.  It is required for NMI access to the
+- * CMOS/RTC registers.  See include/asm-i386/mc146818rtc.h for details.
++ * CMOS/RTC registers.  See arch/x86/include/asm/mc146818rtc.h for details.
+  */
+ volatile unsigned long cmos_lock;
+ EXPORT_SYMBOL(cmos_lock);
+ #endif /* CONFIG_X86_32 */
+ 
+-/* For two digit years assume time is always after that */
+-#define CMOS_YEARS_OFFS 2000
+-
+ DEFINE_SPINLOCK(rtc_lock);
+ EXPORT_SYMBOL(rtc_lock);
+ 
+@@ -62,8 +56,7 @@ int mach_set_rtc_mmss(const struct timespec64 *now)
+ 
+ void mach_get_cmos_time(struct timespec64 *now)
+ {
+-	unsigned int status, year, mon, day, hour, min, sec, century = 0;
+-	unsigned long flags;
++	struct rtc_time tm;
+ 
+ 	/*
+ 	 * If pm_trace abused the RTC as storage, set the timespec to 0,
+@@ -74,51 +67,13 @@ void mach_get_cmos_time(struct timespec64 *now)
+ 		return;
+ 	}
+ 
+-	spin_lock_irqsave(&rtc_lock, flags);
+-
+-	/*
+-	 * If UIP is clear, then we have >= 244 microseconds before
+-	 * RTC registers will be updated.  Spec sheet says that this
+-	 * is the reliable way to read RTC - registers. If UIP is set
+-	 * then the register access might be invalid.
+-	 */
+-	while ((CMOS_READ(RTC_FREQ_SELECT) & RTC_UIP))
+-		cpu_relax();
+-
+-	sec = CMOS_READ(RTC_SECONDS);
+-	min = CMOS_READ(RTC_MINUTES);
+-	hour = CMOS_READ(RTC_HOURS);
+-	day = CMOS_READ(RTC_DAY_OF_MONTH);
+-	mon = CMOS_READ(RTC_MONTH);
+-	year = CMOS_READ(RTC_YEAR);
+-
+-#ifdef CONFIG_ACPI
+-	if (acpi_gbl_FADT.header.revision >= FADT2_REVISION_ID &&
+-	    acpi_gbl_FADT.century)
+-		century = CMOS_READ(acpi_gbl_FADT.century);
+-#endif
+-
+-	status = CMOS_READ(RTC_CONTROL);
+-	WARN_ON_ONCE(RTC_ALWAYS_BCD && (status & RTC_DM_BINARY));
+-
+-	spin_unlock_irqrestore(&rtc_lock, flags);
+-
+-	if (RTC_ALWAYS_BCD || !(status & RTC_DM_BINARY)) {
+-		sec = bcd2bin(sec);
+-		min = bcd2bin(min);
+-		hour = bcd2bin(hour);
+-		day = bcd2bin(day);
+-		mon = bcd2bin(mon);
+-		year = bcd2bin(year);
++	if (mc146818_get_time(&tm)) {
++		pr_err("Unable to read current time from RTC\n");
++		now->tv_sec = now->tv_nsec = 0;
++		return;
+ 	}
+ 
+-	if (century) {
+-		century = bcd2bin(century);
+-		year += century * 100;
+-	} else
+-		year += CMOS_YEARS_OFFS;
+-
+-	now->tv_sec = mktime64(year, mon, day, hour, min, sec);
++	now->tv_sec = rtc_tm_to_time64(&tm);
+ 	now->tv_nsec = 0;
+ }
+ 
+-- 
+2.25.1
+
