@@ -2,76 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89382C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 04:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 04:12:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbiEQELu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 00:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
+        id S234404AbiEQEM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 00:12:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235688AbiEQELq (ORCPT
+        with ESMTP id S231202AbiEQEMJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 00:11:46 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77A34507B
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 21:11:44 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2fedd26615cso61884827b3.7
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 21:11:44 -0700 (PDT)
+        Tue, 17 May 2022 00:12:09 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C994248E
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 21:12:08 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-ee1e7362caso22770369fac.10
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 21:12:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NO/qVr25gl9DWObhrjxNHN1PGGWIrTbPudg44b/JLeI=;
-        b=6KEbpLl+WAWuaT8l95JqbSOJgxSfJpLNEobjxxcKridU4U1e87XUTvnUWU6odxyltG
-         sXCcYvAJY+6YB1DpztmiFEnawZUnjEhrpZdrVqDMMN1cGgA1leE+uGdC2eL9FIQFSPdB
-         xEO8+E2C/VI8ufjhzynb2Z+cjaYGHRHv3EiZaE0UgmgXsHBuI952bSfrr9GwiudXZovw
-         CVqHc0o16YBvjIQ9aiw2/bi+cIfUuynJXbTcERUtjLZy+1Zd8Een7qt0NcebDbVycA6i
-         4xth0GFVrEk/CoU07cQjxYG1M9u2NZERL1P5PXhcCQ6ywkbKUWXRQHnHLustaralGwoS
-         2tXg==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TlJCMH2FdCNPLWx49l55pMqLQ3UABJUlfuAXOJuTElk=;
+        b=C5oFYvzH8Ig5w+3POqaqd1r6m6neJ/5MesAzXzSXLZiDCGZm5XBQD9Z64UtjmSHTT8
+         E1Bz4NShHu87UB5nBgqKH6frsBhQKF78/PU/i4MCpAv+tnj5ha91GJ+HnRDxkm8Hi3QA
+         tjCZEkWlnrrS8Ev1x2rxU2wU8yzQIO4UW0Wrk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NO/qVr25gl9DWObhrjxNHN1PGGWIrTbPudg44b/JLeI=;
-        b=gss9NKENX7QWPoFoVnLiATU1sdhXn+lZGrVyms1Y4vVBv0pJjdsQBtDpWBuGkbFakC
-         cWYQ3G2liPkKRKiJF5h50P0P6LFSkbJFJ78Zu9n8WV9rLp8+h8SP398e/YHwNZXrVSBG
-         2OumIYOmAgsdvbHjQlJ97H0EKJSL0aOXVt6bPKhnreKE+R3E/I3w3XUwPu1IFLupuiRZ
-         uNUQc7/NcY2+oTx/atbmjBHCF7G3GcOaGsLUPotMQNywxr0tLPRTyVJNSKT+RUNr0LN1
-         YsTYJ7MDUMkjH4GSe17aXFxcwq9lLPNIWnUE0wD3kN/x1BuIJZDXP1U6mIxU4AldhPWK
-         31oA==
-X-Gm-Message-State: AOAM533H/E1a+pB6q86NL6gZY+9Xfu+UuNMKYChB+WIzJB9fZtVmOSN/
-        irUmq4K8DvxZ7NUU7dyFph3rO+ziB4cUb1PDnzJYgg==
-X-Google-Smtp-Source: ABdhPJw94mquCu2tzO4e+v+R3EKZQm+TzZ6hT1GPqsmlWqCmuAgQDMm/rqRAJ7UuVR8eO1d1Omo9W844ZRuDq2Cs1+Q=
-X-Received: by 2002:a81:7b05:0:b0:2f4:e45a:b06e with SMTP id
- w5-20020a817b05000000b002f4e45ab06emr23607287ywc.458.1652760704159; Mon, 16
- May 2022 21:11:44 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TlJCMH2FdCNPLWx49l55pMqLQ3UABJUlfuAXOJuTElk=;
+        b=8LDbdDx9LKM9/flOxeASCDJVW5E9CZPem6KAj4B/GE2ItaFd1BmEb+P3bc2qNggxkt
+         2y+v1W+2mwgFqrpivG3EPLz9Z8mxQWb9aZOiipeGsRtRjhCyaHx9E7BKEssVjY1WSvoO
+         cd0xSLztEOBjQjWhQyaTZ7lBBEpw6GfFolgHuHkfI0vfHqAmZCNPsmtASzh4eS7vH3vB
+         vMKZ1dlUD9PnFG/mKsyFipxVavGCXNgY7zN8sOgP3GtVP5EODMHLgpUqjUsQPt1zEGZ0
+         RXJxJB6wtqOcKfEqL5jBtWDotwbTUoSZGbLGgml8yGUiaRPLNiRwui6FWMfvWb5Fg1pw
+         qPZA==
+X-Gm-Message-State: AOAM53208kXlGV1lyCT3UhQ5tmJRmA6Ep4ZJG29HSyYR3FdwhdCCwZbF
+        +1EliaI1rPTLCkLk8Q1Udrt9IA==
+X-Google-Smtp-Source: ABdhPJxI+RAcT5/CDIXDyKfSB5VLBbSqlC/fd7gcYi6FeMRFCjsE60eO6g94NhgvYUtZtGJlO1zEfg==
+X-Received: by 2002:a05:6870:5707:b0:de:2cb8:7759 with SMTP id k7-20020a056870570700b000de2cb87759mr17401197oap.20.1652760727342;
+        Mon, 16 May 2022 21:12:07 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id e45-20020a9d01b0000000b0060603221281sm4545449ote.81.2022.05.16.21.12.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 21:12:07 -0700 (PDT)
+Subject: Re: [PATCH 5.4 00/43] 5.4.195-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220516193614.714657361@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <857df26a-b357-eec0-c994-9086173a03ba@linuxfoundation.org>
+Date:   Mon, 16 May 2022 22:12:06 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20220516173930.159535-1-bh1scw@gmail.com>
-In-Reply-To: <20220516173930.159535-1-bh1scw@gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 17 May 2022 12:11:08 +0800
-Message-ID: <CAMZfGtU8GYN6aLepHr3z=AvJ4XivmWpPdnvUBgaJUnmf37-28Q@mail.gmail.com>
-Subject: Re: [PATCH] blk-cgroup: Remove unnecessary rcu_read_lock/unlock()
-To:     bh1scw@gmail.com
-Cc:     Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Cgroups <cgroups@vger.kernel.org>,
-        "open list:BLOCK LAYER" <linux-block@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220516193614.714657361@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 1:39 AM <bh1scw@gmail.com> wrote:
->
-> From: Fanjun Kong <bh1scw@gmail.com>
->
-> spin_lock_irq/spin_unlock_irq contains preempt_disable/enable().
-> Which can serve as RCU read-side critical region, so remove
-> rcu_read_lock/unlock().
->
-> Signed-off-by: Fanjun Kong <bh1scw@gmail.com>
+On 5/16/22 1:36 PM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.195 release.
+> There are 43 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.195-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Compiled and booted on my test system. No dmesg regressions.
 
-Thanks.
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
