@@ -2,90 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35794C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A10FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242121AbiEQINO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38440 "EHLO
+        id S242868AbiEQINZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242556AbiEQIMC (ORCPT
+        with ESMTP id S242560AbiEQIMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 17 May 2022 04:12:02 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19123CA5D
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:12:00 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id gh6so33234881ejb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:12:00 -0700 (PDT)
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88A93CA63;
+        Tue, 17 May 2022 01:12:00 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id l11so16284541pgt.13;
+        Tue, 17 May 2022 01:12:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=wgki0G9Wv5/n5UTtWnBOnizEKI49Vz+o/9uXaANdQKM=;
-        b=KH000ohs4fSRZFwYuUErgsFjS+0iNt/SolTKyFfq26a3M3FIDXGsqXxQEfc5l8K4mu
-         3sWrag2zururob2VyYFZxro19RauMPzVqz4rLMmCA/XP1pPNk0b9bxkrk9obSUqCWZAw
-         IpgWgDAPdSpYAiMun3VHd2A1jY8fF581XNbGbs0BFzR5W/muhOob3IM/cf5qt/l4HpKd
-         /u4qbkk60mPFKIp6lUcL5PziR5DToDcieBM24iVWCKjYqQMF5Pcd7+bKCBBOVIWE9HNj
-         LUHTOyd4M6BSh14CfxJMclr9f+7hRnFdPTkusygmS9+yp4rVJwSiE4DCt9PVeDNLJRnz
-         eFmg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=g1ch9JUquSiEZY3rT3hSUX6ygAPZRU7aK66mWZEBfMc=;
+        b=l677yDNNh9wM4HRRDrc8fmNazcJaTtnExXMIiStTblbYqswMP/1Yb4icbI8+x6S15N
+         8i5htd0voQ8OGBSg6AMUd22fcJPWmLrl2z4/pMWE6eadWgvUVoto7ispzDPdwEEmwp9L
+         YwrscQlwAPckHiJJD/iV1Ri17RUSmarPkYhWzUceEZlvJ//h/uzoEPIBCSo73v3b0I8F
+         hmX1mtUkLnMK9Pzf+9jq6wrBb06BqBJfYiW9GVbc8lBZVC2AHkrH3PXMKSQ3Y4erDCiJ
+         Trt5W6P5AT84DMeSRdS0BWFM20ol1VnXOOMNacOTjBaO8bGFNkEgx6yABSljQ55sTXbl
+         wS8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wgki0G9Wv5/n5UTtWnBOnizEKI49Vz+o/9uXaANdQKM=;
-        b=VmQedNW8Hrn7BvTZUvOrIFK9qOOWDOeXqPYx/B2XL0rfQFs5XQAJerce9oriZh+w3R
-         EyXnWAnLixf7AwZEc44SDYEF5+wiOB6zlIfsUNDIXaKw07eGEpP3A72/t2q4uSE/Tw8A
-         aHgluRPyuV/pHbIumI2TSOKIXDMxYoWIsD3EWXpoeL6zkFJZZGer2y7tpcwggEnn43DZ
-         3TXpip4kYzINS+amqtKlgnfM1NN3WwHG/IGRuSZcT7T/MhCW1+7TDYN0sbFJtMgHEtGS
-         FI4gsfymhPycgdf1YMfm6M8McaJPqABAT75LescNPwf+hS+w2Vst0wYRrVCQ1nVhGZr4
-         OsqQ==
-X-Gm-Message-State: AOAM530P6aDJR9XGsqk5DUZTjE7sdYhb0jANn/QqoNuFTgrPWxG1IUe4
-        BWVqdp/ha0JZrl5hrO+gUevcqQ==
-X-Google-Smtp-Source: ABdhPJyiJ3rLUoJTATJaGDEwhiHxCghwyEgdBWxx+/58U3F4TRYwNr4DHdavl9jouiCx3wsL9t04uA==
-X-Received: by 2002:a17:907:2bde:b0:6f3:8e91:3a60 with SMTP id gv30-20020a1709072bde00b006f38e913a60mr18053727ejc.434.1652775119498;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=g1ch9JUquSiEZY3rT3hSUX6ygAPZRU7aK66mWZEBfMc=;
+        b=MNPfE2Lifm/J1ocRPiYEZ5Ti5B/DoavjzALGoliK5R4oibrKUGm5ZkbzclmepiNxVN
+         ky7yT3Rv88sT6OxOAa9InFD7bZigKUCc/8M7699D6JzT4NbIz519cZgrsg6UpYIQDZ2S
+         XxgWEvRCY4O8M5cf87QUOSXPJ73Zg53lGa9CHAcj1VJEKrqBUdGvxusb8krPBmz6iRUt
+         zj9huwyN3wDXq2oZP7xXkF/4Qu93TCXzI1MnD8ogXO2fsacIA1Utk2h3P+Ymy6nVWHNk
+         4W1U0uA8HJAlqkibCuhEWhKzUrWGSuAFwjgRgiALltTLGFpxPpdlFfT9xcOm1nVkmmeN
+         RyUg==
+X-Gm-Message-State: AOAM533i/2kdeGCqosaS59uD8Q6vum7hphLzvn4Q7cdu1uoAEUgEeXOa
+        n3OzFU3YOheW+1IT5+lXwSE=
+X-Google-Smtp-Source: ABdhPJz2PsC+b5mYRzZkRLbT7AMmFLF8v2YXPSNob5tFcH88kb+tlwa9H+e9nMX8+cwevoL0ITO5yw==
+X-Received: by 2002:a65:6b8a:0:b0:3db:7dc5:fec2 with SMTP id d10-20020a656b8a000000b003db7dc5fec2mr17831059pgw.223.1652775120427;
+        Tue, 17 May 2022 01:12:00 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.20])
+        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.11.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 17 May 2022 01:11:59 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id f4-20020a056402194400b0042aa6a43ccdsm3830418edz.28.2022.05.17.01.11.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 01:11:59 -0700 (PDT)
-Message-ID: <824e71c1-11e9-a5f6-1706-e3970e42ef90@linaro.org>
-Date:   Tue, 17 May 2022 10:11:57 +0200
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     edumazet@google.com
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Subject: [PATCH net-next v2 3/9] net: sock: introduce sk_stream_kill_queues_reason()
+Date:   Tue, 17 May 2022 16:10:02 +0800
+Message-Id: <20220517081008.294325-4-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220517081008.294325-1-imagedong@tencent.com>
+References: <20220517081008.294325-1-imagedong@tencent.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 07/11] dt-bindings: clocks: qcom,gcc-ipq8074: support
- power domains
-Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, bjorn.andersson@linaro.org,
-        agross@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        tdas@codeaurora.org, absahu@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmitry.baryshkov@linaro.org
-References: <20220515210048.483898-1-robimarko@gmail.com>
- <20220515210048.483898-7-robimarko@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220515210048.483898-7-robimarko@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/05/2022 23:00, Robert Marko wrote:
-> GCC inside of IPQ8074 also provides power management via built-in GDSCs.
-> In order to do so, '#power-domain-cells' must be set to 1.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
-> ---
-> Changes in v4:
-> * Alphabetically sort the cells properties
+From: Menglong Dong <imagedong@tencent.com>
 
+Introduce the function sk_stream_kill_queues_reason() and make the
+origin sk_stream_kill_queues() an inline call to it.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ include/net/sock.h | 8 +++++++-
+ net/core/stream.c  | 7 ++++---
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 73063c88a249..085838ce70d5 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1128,12 +1128,18 @@ int sk_stream_wait_connect(struct sock *sk, long *timeo_p);
+ int sk_stream_wait_memory(struct sock *sk, long *timeo_p);
+ void sk_stream_wait_close(struct sock *sk, long timeo_p);
+ int sk_stream_error(struct sock *sk, int flags, int err);
+-void sk_stream_kill_queues(struct sock *sk);
++void sk_stream_kill_queues_reason(struct sock *sk,
++				  enum skb_drop_reason reason);
+ void sk_set_memalloc(struct sock *sk);
+ void sk_clear_memalloc(struct sock *sk);
+ 
+ void __sk_flush_backlog(struct sock *sk);
+ 
++static inline void sk_stream_kill_queues(struct sock *sk)
++{
++	sk_stream_kill_queues_reason(sk, SKB_DROP_REASON_NOT_SPECIFIED);
++}
++
+ static inline bool sk_flush_backlog(struct sock *sk)
+ {
+ 	if (unlikely(READ_ONCE(sk->sk_backlog.tail))) {
+diff --git a/net/core/stream.c b/net/core/stream.c
+index 06b36c730ce8..a562b23a1a6e 100644
+--- a/net/core/stream.c
++++ b/net/core/stream.c
+@@ -190,10 +190,11 @@ int sk_stream_error(struct sock *sk, int flags, int err)
+ }
+ EXPORT_SYMBOL(sk_stream_error);
+ 
+-void sk_stream_kill_queues(struct sock *sk)
++void sk_stream_kill_queues_reason(struct sock *sk,
++				  enum skb_drop_reason reason)
+ {
+ 	/* First the read buffer. */
+-	__skb_queue_purge(&sk->sk_receive_queue);
++	__skb_queue_purge_reason(&sk->sk_receive_queue, reason);
+ 
+ 	/* Next, the write queue. */
+ 	WARN_ON(!skb_queue_empty(&sk->sk_write_queue));
+@@ -209,4 +210,4 @@ void sk_stream_kill_queues(struct sock *sk)
+ 	 * have gone away, only the net layer knows can touch it.
+ 	 */
+ }
+-EXPORT_SYMBOL(sk_stream_kill_queues);
++EXPORT_SYMBOL(sk_stream_kill_queues_reason);
+-- 
+2.36.1
 
-Best regards,
-Krzysztof
