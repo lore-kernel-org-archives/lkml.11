@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3911DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346520AbiEQMwH (ORCPT
+        id S1346527AbiEQMwN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51994 "EHLO
+        Tue, 17 May 2022 08:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346427AbiEQMvr (ORCPT
+        with ESMTP id S1346417AbiEQMvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 17 May 2022 08:51:47 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B84D340A12;
-        Tue, 17 May 2022 05:51:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48CF23F889;
+        Tue, 17 May 2022 05:51:39 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id B7985BB3;
-        Tue, 17 May 2022 15:52:33 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru B7985BB3
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id B184EBD4;
+        Tue, 17 May 2022 15:52:35 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru B184EBD4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1652791953;
-        bh=byo7LdWAOntp9CHllRKOliNs4EMYYCQa53BtH26Ghrw=;
+        d=baikalelectronics.ru; s=mail; t=1652791955;
+        bh=HvFRjLfRZVpB1a2dJ+Y3tW+LbZlq0RtxiS2ht743LVQ=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=rJ2lXTr4YB4apAAZuUuBZtaghhWL+Uw5NEz82MDjGYCIuU88xbd6PwHVGbej2QT50
-         x9LIw/pedOkU4kVe9dasa0w2fnK41yU8ZtrAQYHmAmK17js75O5qgiLJg92Zc9xLk5
-         B/4WX0aVFn8ou9tIORRyalDwcWAHymDnqp/+7crg=
+        b=GZINoVA2cAE0s74DZOslmcgg+RVjJqa0Yu+dH52V7n5FiZ88SUN2JtUEUhAD00Oht
+         b2KQdUEQqH/1hTaA282qN7kIWiZ/BAPSY1vPa46TKMVBpkrxHKgae52gikT9uVwfFt
+         yPRxGka2qPU2fq31JQQvnVVJKNZEASyEeDWkHEPo=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 17 May 2022 15:51:36 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 17 May 2022 15:51:38 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Jingoo Han <jingoohan1@gmail.com>,
         Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
@@ -43,9 +44,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Frank Li <Frank.Li@nxp.com>, <linux-pci@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 01/13] PCI: dwc: Stop link in the host init error and de-initialization
-Date:   Tue, 17 May 2022 15:50:46 +0300
-Message-ID: <20220517125058.18488-2-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v3 03/13] PCI: dwc: Add unroll iATU space support to the regions disable method
+Date:   Tue, 17 May 2022 15:50:48 +0300
+Message-ID: <20220517125058.18488-4-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220517125058.18488-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220517125058.18488-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -56,59 +57,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's logically correct to undo everything what was done in case of an
-error is discovered or in the corresponding cleanup counterpart. Otherwise
-the host controller will be left in an undetermined state. Seeing the link
-is set up in the Host-initialization method it will be right to
-de-activate it there in the cleanup-on-error block and stop the link in
-the antagonistic routine - dw_pcie_host_deinit(). The link de-activation
-is a platform-specific thing and is supposed to be implemented in the
-framework of the dw_pcie_ops.stop_link() operation.
+The dw_pcie_disable_atu() method was introduced in the commit f8aed6ec624f
+("PCI: dwc: designware: Add EP mode support"). Since then it hasn't
+changed at all.  For all that time the method has supported the viewport
+version of the iATU CSRs only. Basically it works for the DW PCIe IP-cores
+older than v4.80a since the newer controllers are equipped with the
+unrolled iATU/eDMA space. It means the methods using it like
+pci_epc_ops.clear_bar and pci_epc_ops.unmap_addr callbacks just don't work
+correctly for the DW PCIe controllers with unrolled iATU CSRs. The same
+concerns the dw_pcie_setup_rc() method, which disables the outbound iATU
+entries before re-initializing them.
 
-Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
+So in order to fix the problems denoted above let's convert the
+dw_pcie_disable_atu() method to disabling the iATU inbound and outbound
+regions in the unrolled iATU CSRs in case the DW PCIe controller has been
+synthesized with the ones support. The former semantics will be remained
+for the controller having iATU mapped over the viewport.
+
+Fixes: f8aed6ec624f ("PCI: dwc: designware: Add EP mode support")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- .../pci/controller/dwc/pcie-designware-host.c    | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 2fa86f32d964..7403b1709726 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -420,8 +420,14 @@ int dw_pcie_host_init(struct pcie_port *pp)
- 	bridge->sysdata = pp;
- 
- 	ret = pci_host_probe(bridge);
--	if (!ret)
--		return 0;
-+	if (ret)
-+		goto err_stop_link;
-+
-+	return 0;
-+
-+err_stop_link:
-+	if (pci->ops && pci->ops->stop_link)
-+		pci->ops->stop_link(pci);
- 
- err_free_msi:
- 	if (pp->has_msi_ctrl)
-@@ -432,8 +438,14 @@ EXPORT_SYMBOL_GPL(dw_pcie_host_init);
- 
- void dw_pcie_host_deinit(struct pcie_port *pp)
+---
+
+Changelog v3:
+- Convert region variable type to u32 in order to fix the implicit type
+  conversion peculiarity. (@kbot)
+---
+ drivers/pci/controller/dwc/pcie-designware.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index d92c8a25094f..84fef21efdbc 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -491,7 +491,7 @@ int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
+ 			 enum dw_pcie_region_type type)
  {
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-+
- 	pci_stop_root_bus(pp->bridge->bus);
- 	pci_remove_root_bus(pp->bridge->bus);
-+
-+	if (pci->ops && pci->ops->stop_link)
-+		pci->ops->stop_link(pci);
-+
- 	if (pp->has_msi_ctrl)
- 		dw_pcie_free_msi(pp);
+-	int region;
++	u32 region;
+ 
+ 	switch (type) {
+ 	case DW_PCIE_REGION_INBOUND:
+@@ -504,8 +504,18 @@ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
+ 		return;
+ 	}
+ 
+-	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
+-	dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
++	if (pci->iatu_unroll_enabled) {
++		if (region == PCIE_ATU_REGION_INBOUND) {
++			dw_pcie_writel_ib_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
++						 ~(u32)PCIE_ATU_ENABLE);
++		} else {
++			dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
++						 ~(u32)PCIE_ATU_ENABLE);
++		}
++	} else {
++		dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
++		dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
++	}
  }
+ 
+ int dw_pcie_wait_for_link(struct dw_pcie *pci)
 -- 
 2.35.1
 
