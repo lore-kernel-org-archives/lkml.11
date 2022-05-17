@@ -2,105 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD49C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E75B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348868AbiEQSNq (ORCPT
+        id S1352103AbiEQSOC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
+        Tue, 17 May 2022 14:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352028AbiEQSNX (ORCPT
+        with ESMTP id S1352090AbiEQSMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:13:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55AF51329;
-        Tue, 17 May 2022 11:12:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B4372CE1B8B;
-        Tue, 17 May 2022 18:12:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8B1C34100;
-        Tue, 17 May 2022 18:12:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652811153;
-        bh=p7jmOET1fg/asHsIyFWI9moVO8ao+wZmw/Hn3Cysut8=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=sZr50USaCN4pVIx4i6btT6YLqq+PnmiI1/cxIPefMD6VbsfxIpC4mI0mwv4nVDQdj
-         J210APDwuC0nGAy78Q3/aHExJfXhP+sF/dTrCmkfCkdA5COSMQLs86Uzz/UpO9BZiE
-         unA5mJRQVuH19mtBdbCe7yc9RahmXZw3FcZyGKOiTsrRET/SRQT1/TcgjCEOTajTe5
-         4uvuWW3HKJwGvtpG4H+3hBWgXvBRukmPm1y0qs/7PucLSriU22O8q49fqyonsr3NE1
-         2t1O8zQCIqBzr+zVblb5BAdkqahmB2S1KNWrLXSTIzmFHdY+O3ePwApR+jqGSqbi1Y
-         jm/AZXabctd0A==
-Message-ID: <0e8da958a222e5c1dccaaf1600b08bdb8705b48e.camel@kernel.org>
-Subject: Re: [PATCH v10 2/7] KEYS: trusted: allow use of kernel RNG for key
- material
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     James Bottomley <jejb@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        David Howells <dhowells@redhat.com>, kernel@pengutronix.de,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        David Gstir <david@sigma-star.at>,
-        Michael Walle <michael@walle.cc>,
-        John Ernberg <john.ernberg@actia.se>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Horia =?UTF-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Franck LENORMAND <franck.lenormand@nxp.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Date:   Tue, 17 May 2022 21:10:57 +0300
-In-Reply-To: <YoPa7C8xs8lgKtwv@zx2c4.com>
-References: <20220513145705.2080323-1-a.fatoum@pengutronix.de>
-         <20220513145705.2080323-3-a.fatoum@pengutronix.de>
-         <YoPa7C8xs8lgKtwv@zx2c4.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.1 
+        Tue, 17 May 2022 14:12:05 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90133F883;
+        Tue, 17 May 2022 11:12:04 -0700 (PDT)
+Date:   Tue, 17 May 2022 18:12:02 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652811123;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BXI8z8bcDcRqqUjaLQmbtMzYJPa/NdLvRj4SrxwHIIs=;
+        b=OZ3B96nVMavYX+QLN7TOmgNdKMqRmukdrOZ2kpPxnUqCMoky4CGZd2dVMW8rCT9tm9gfeO
+        1coLTMoPx8nKe54dHLCJnKXJaV7/hMOGH5dzXqPfmPXNTSiv463KHx3Lz4QdM+16SO6VwM
+        kFW+ZAm3RsG2im/vPNmwNd6lNGaUNPOA+LfFmhz9DkisQJg3n9ccZTR1pwrlCkD2kLjXAo
+        V/WhQxTu+HYCAe2foyXvqgAhHavc6uYBuMzJe/3vVuozYllG+koyVUk2uNv+ld0F9EWbtb
+        NTTjVYXk4cqxqbDC+Z2CzdY8Slwrdolee3Wm3p8cI6xVmJXURGdGbZLWfn6DNw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652811123;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BXI8z8bcDcRqqUjaLQmbtMzYJPa/NdLvRj4SrxwHIIs=;
+        b=QoBnHZSmniXk15eevK5NM5zMgMGQXCfT/4N+7puPFJG8EYxcZTHW+6UeCIdTiT6uxiSaWa
+        hZbVpwyGFBIlKKCg==
+From:   "tip-bot2 for Reinette Chatre" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/sgx] x86/sgx: Mark PCMD page as dirty when modifying contents
+Cc:     stable@vger.kernel.org,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Haitao Huang <haitao.huang@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: =?utf-8?q?=3C00cd2ac480db01058d112e347b32599c1a806bc4=2E16523?=
+ =?utf-8?q?89823=2Egit=2Ereinette=2Echatre=40intel=2Ecom=3E?=
+References: =?utf-8?q?=3C00cd2ac480db01058d112e347b32599c1a806bc4=2E165238?=
+ =?utf-8?q?9823=2Egit=2Ereinette=2Echatre=40intel=2Ecom=3E?=
 MIME-Version: 1.0
+Message-ID: <165281112223.4207.18287723903860533713.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gVHVlLCAyMDIyLTA1LTE3IGF0IDE5OjI3ICswMjAwLCBKYXNvbiBBLiBEb25lbmZlbGQgd3Jv
-dGU6Cj4gT24gRnJpLCBNYXkgMTMsIDIwMjIgYXQgMDQ6NTc6MDBQTSArMDIwMCwgQWhtYWQgRmF0
-b3VtIHdyb3RlOgo+ID4gK8KgwqDCoMKgwqDCoMKgdHJ1c3RlZC5ybmc9wqDCoMKgwqBbS0VZU10K
-PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgRm9ybWF0
-OiA8c3RyaW5nPgo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqBUaGUgUk5HIHVzZWQgdG8gZ2VuZXJhdGUga2V5IG1hdGVyaWFsIGZvciB0cnVzdGVkIGtl
-eXMuCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoENh
-biBiZSBvbmUgb2Y6Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoC0gImtlcm5lbCIKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgLSB0aGUgc2FtZSB2YWx1ZSBhcyB0cnVzdGVkLnNvdXJjZTogInRwbSIgb3Ig
-InRlZSIKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-LSAiZGVmYXVsdCIKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgSWYgbm90IHNwZWNpZmllZCwgImRlZmF1bHQiIGlzIHVzZWQuIEluIHRoaXMgY2FzZSwK
-PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgdGhlIFJO
-RydzIGNob2ljZSBpcyBsZWZ0IHRvIGVhY2ggaW5kaXZpZHVhbCB0cnVzdCBzb3VyY2UuCj4gPiAr
-Cj4gCj4gQXMgYSBnZW5lcmFsIG1lY2hhbmlzbSwgSSBvYmplY3QgdG8gdGhpcy4gVGhlIGtlcm5l
-bCdzIFJORyBtdXN0IGJlCj4gdHJ1c3RlZCBpbiB0aGUgZmlyc3QgcGxhY2UgZm9yIGtleSBtYXRl
-cmlhbC4gVGhhdCdzIHRoZSB3aG9sZSBwb2ludCBvZgo+IGl0LgoKSSB3b3VsZCByZWxheCB0aGlz
-ICBhIGJpdDoga2VybmVsJ3MgUk5HIG11c3QgYmUgaW1wbGljaXRseSBtdXN0IGJlCnRydXN0ZWQu
-IElmIHRoZSBwYXJhbWV0ZXIgaXMgdXNlZCwgeW91IG1ha2UgYW4gZXhwbGljaXQgY2hvaWNlIHRo
-YXQKeW91IGFyZSBhd2FyZSBvZiB0aGUgdHJ1c3QuCgpJZiB0aGlzIHdhcyBvcHQtb3V0IHBhcmFt
-ZXRlciwgaW5zdGVhZCBvZiBvcHQtaW4sIEkgd291bGQgZ2V0IHlvdXIKYXJndW1lbnQuCgo+IEhv
-d2V2ZXIsIGl0IHNvdW5kcyBsaWtlIHlvdSdyZSBub3QgcHJvcG9zaW5nIGEgZ2VuZXJhbCBtZWNo
-YW5pc20sIGJ1dAo+IGp1c3Qgc29tZXRoaW5nIHBhcnRpY3VsYXIgdG8gdGhpcyAidHJ1c3RlZCBr
-ZXlzIiBidXNpbmVzcy4gSW4gdGhhdCBjYXNlLAo+IHRoaXMgc2hvdWxkIGJlIGEgbW9kdWxlIGZs
-YWcsIGFuZCB0aHVzIG5vdCBkb2N1bWVudGVkIGhlcmUsIGJ1dCByYXRoZXIKPiBzb21lIHBsYWNl
-IG5hbWVzcGFjZWQgdG8geW91ciB0cnVzdGVkIGtleXMgc3R1ZmYuICJ0cnVzdGVkX2tleXMucHJl
-ZmVycmVkX3JuZz17d2hhdGV2ZXJ9IgoKSG93ZXZlciwgSSB0aGluayB0aGlzIGEgZ29vZCBwcm9w
-b3NhbC4gTGV0J3MgbWFrZSBpdCBhIG1vZHVsZSBwYXJhbWV0ZXIKaW5zdGVhZC4KCj4gSmFzb24K
-CkJSLCBKYXJra28K
+The following commit has been merged into the x86/sgx branch of tip:
 
+Commit-ID:     2154e1c11b7080aa19f47160bd26b6f39bbd7824
+Gitweb:        https://git.kernel.org/tip/2154e1c11b7080aa19f47160bd26b6f39bbd7824
+Author:        Reinette Chatre <reinette.chatre@intel.com>
+AuthorDate:    Thu, 12 May 2022 14:50:58 -07:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Mon, 16 May 2022 15:17:14 -07:00
+
+x86/sgx: Mark PCMD page as dirty when modifying contents
+
+Recent commit 08999b2489b4 ("x86/sgx: Free backing memory
+after faulting the enclave page") expanded __sgx_encl_eldu()
+to clear an enclave page's PCMD (Paging Crypto MetaData)
+from the PCMD page in the backing store after the enclave
+page is restored to the enclave.
+
+Since the PCMD page in the backing store is modified the page
+should be marked as dirty to ensure the modified data is retained.
+
+Cc: stable@vger.kernel.org
+Fixes: 08999b2489b4 ("x86/sgx: Free backing memory after faulting the enclave page")
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-by: Haitao Huang <haitao.huang@intel.com>
+Link: https://lkml.kernel.org/r/00cd2ac480db01058d112e347b32599c1a806bc4.1652389823.git.reinette.chatre@intel.com
+---
+ arch/x86/kernel/cpu/sgx/encl.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 398695a..5104a42 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -84,6 +84,7 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
+ 	}
+ 
+ 	memset(pcmd_page + b.pcmd_offset, 0, sizeof(struct sgx_pcmd));
++	set_page_dirty(b.pcmd);
+ 
+ 	/*
+ 	 * The area for the PCMD in the page was zeroed above.  Check if the
