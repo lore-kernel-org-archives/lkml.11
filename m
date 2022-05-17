@@ -2,187 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32775C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347157AbiEQNrp (ORCPT
+        id S1347191AbiEQNuf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
+        Tue, 17 May 2022 09:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232732AbiEQNrn (ORCPT
+        with ESMTP id S232153AbiEQNub (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:47:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C594C426
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:47:39 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2cmp55gfzGpRD;
-        Tue, 17 May 2022 21:44:42 +0800 (CST)
-Received: from dggpemm500016.china.huawei.com (7.185.36.25) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+        Tue, 17 May 2022 09:50:31 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED0B4C790
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:50:28 -0700 (PDT)
+Received: from fraeml738-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L2cqw2BnSz67xWY;
+        Tue, 17 May 2022 21:47:24 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml738-chm.china.huawei.com (10.206.15.219) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 21:47:36 +0800
-Received: from huawei.com (10.67.174.33) by dggpemm500016.china.huawei.com
- (7.185.36.25) with Microsoft SMTP Server (version=TLS1_2,
+ 15.1.2375.24; Tue, 17 May 2022 15:50:25 +0200
+Received: from [10.47.88.19] (10.47.88.19) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
- 2022 21:47:36 +0800
-From:   "GONG, Ruiqi" <gongruiqi1@huawei.com>
-To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        "Jani Nikula" <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-CC:     <intel-gfx@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        Wang Weiyang <wangweiyang2@huawei.com>,
-        "Xiu Jianfeng" <xiujianfeng@huawei.com>, <gongruiqi1@huawei.com>
-Subject: [PATCH -next] drm/i915: fix compilation errors caused by `-fsanitize=shift`
-Date:   Tue, 17 May 2022 21:47:33 +0000
-Message-ID: <20220517214733.139446-1-gongruiqi1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+ 2022 14:50:24 +0100
+Message-ID: <1043830a-02af-bf8a-6089-0eb7a84a8e85@huawei.com>
+Date:   Tue, 17 May 2022 14:50:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.174.33]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500016.china.huawei.com (7.185.36.25)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [RFC PATCH] dma-iommu: Add iommu_dma_max_mapping_size()
+To:     Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <will@kernel.org>, <hch@lst.de>, <m.szyprowski@samsung.com>
+CC:     <chenxiang66@hisilicon.com>, <thunder.leizhen@huawei.com>,
+        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+        <liyihang6@hisilicon.com>
+References: <1652706361-92557-1-git-send-email-john.garry@huawei.com>
+ <f5b78c9c-312e-70ab-ecbb-f14623a4b6e3@arm.com>
+ <9160031b-50be-6993-5a8e-f238391962c5@huawei.com>
+ <8f193bdd-3a0a-f9ed-0726-e6081f374320@arm.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <8f193bdd-3a0a-f9ed-0726-e6081f374320@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.88.19]
+X-ClientProxiedBy: lhreml743-chm.china.huawei.com (10.201.108.193) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the compilation errors produced by building recent mainline on x86
-with allmodconfig:
+On 17/05/2022 13:02, Robin Murphy wrote:
+>>>
+>>> Indeed, sorry but NAK for this being nonsense. As I've said at least 
+>>> once before, if the unnecessary SAC address allocation attempt slows 
+>>> down your workload, make it not do that in the first place. If you 
+>>> don't like the existing command-line parameter then fine, > there are 
+>>> plenty of
+>>> other options, it just needs to be done in a way that doesn't break 
+>>> x86 systems with dodgy firmware, as my first attempt turned out to.
+>>
+>> Sorry, but I am not interested in this. It was discussed in Jan last 
+>> year without any viable solution.
+> 
+> Er, OK, if you're not interested in solving that problem I don't see why 
+> you'd bring it up, but hey ho. *I* still think it's important, so I 
+> guess I'll revive my old patch with a CONFIG_X86 bodge and have another 
+> go at some point.
 
-(1st type of errors)
-  drivers/gpu/drm/i915/display/intel_ddi.c:1916:2: error: case label does not reduce to an integer constant
-  case PORT_CLK_SEL_WRPLL1:
-  ^~~~
+Let me rephrase, I would be happy to help fix that problem if we really 
+can get it fixed, however for my problem it's better to try to get the 
+SCSI driver to stop requesting uncached IOVAs foremost.
 
-(2nd type of errors)
-  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_1360’ declared with attribute error: FIELD_PREP: mask is not constant
-    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                                        ^
-  ...
-  drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c:2316:3: note: in expansion of macro ‘FIELD_PREP’
-     FIELD_PREP(GUC_KLV_0_KEY, GUC_CONTEXT_POLICIES_KLV_ID_##id) | \
-     ^~~~~~~~~~
-  drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c:2323:1: note: in expansion of macro ‘MAKE_CONTEXT_POLICY_ADD’
-   MAKE_CONTEXT_POLICY_ADD(preemption_timeout, PREEMPTION_TIMEOUT)
-   ^~~~~~~~~~~~~~~~~~~~~~~
+> 
+>> Anyway we still have the long-term IOVA aging issue, and requesting 
+>> non-cached IOVAs is involved in that. So I would rather keep the SCSI 
+>> driver to requesting cached IOVAs all the time.
+>>
+>> I did try to do it the other way around - configuring the IOVA caching 
+>> range according to the drivers requirement but that got nowhere.
 
-which are all induced by `-fsanitize=shift`.
+Note that this is still not a final solution as it's not always viable 
+to ask a user to unbind + bind the driver.
 
-Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
----
- drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h |  2 +-
- .../i915/gt/uc/abi/guc_communication_ctb_abi.h   |  2 +-
- drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h    |  4 ++--
- .../gpu/drm/i915/gt/uc/abi/guc_messages_abi.h    |  2 +-
- drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h       |  2 +-
- drivers/gpu/drm/i915/i915_reg.h                  | 16 ++++++++--------
- 6 files changed, 14 insertions(+), 14 deletions(-)
+> 
+> FWIW I thought that all looked OK, it just kept getting drowned out by 
+> more critical things in my inbox so I hoped someone else might comment. 
+> If it turns out that I've become the de-facto IOVA maintainer in 
+> everyone else's minds now and they're all waiting for my word then fair 
+> enough, I just need to know and reset my expectations accordingly. Joerg?
 
-diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
-index be9ac47fa9d0..3ada7358a698 100644
---- a/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
-+++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
-@@ -50,7 +50,7 @@
- 
- #define HOST2GUC_SELF_CFG_REQUEST_MSG_LEN		(GUC_HXG_REQUEST_MSG_MIN_LEN + 3u)
- #define HOST2GUC_SELF_CFG_REQUEST_MSG_0_MBZ		GUC_HXG_REQUEST_MSG_0_DATA0
--#define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_KEY		(0xffff << 16)
-+#define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_KEY		(0xffffu << 16)
- #define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_LEN		(0xffff << 0)
- #define HOST2GUC_SELF_CFG_REQUEST_MSG_2_VALUE32		GUC_HXG_REQUEST_MSG_n_DATAn
- #define HOST2GUC_SELF_CFG_REQUEST_MSG_3_VALUE64		GUC_HXG_REQUEST_MSG_n_DATAn
-diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
-index c9086a600bce..c97ff7c38576 100644
---- a/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
-+++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
-@@ -82,7 +82,7 @@ static_assert(sizeof(struct guc_ct_buffer_desc) == 64);
- #define GUC_CTB_HDR_LEN				1u
- #define GUC_CTB_MSG_MIN_LEN			GUC_CTB_HDR_LEN
- #define GUC_CTB_MSG_MAX_LEN			256u
--#define GUC_CTB_MSG_0_FENCE			(0xffff << 16)
-+#define GUC_CTB_MSG_0_FENCE			(0xffffu << 16)
- #define GUC_CTB_MSG_0_FORMAT			(0xf << 12)
- #define   GUC_CTB_FORMAT_HXG			0u
- #define GUC_CTB_MSG_0_RESERVED			(0xf << 8)
-diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h
-index 4a59478c3b5c..e811896a80a0 100644
---- a/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h
-+++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h
-@@ -29,8 +29,8 @@
-  */
- 
- #define GUC_KLV_LEN_MIN				1u
--#define GUC_KLV_0_KEY				(0xffff << 16)
--#define GUC_KLV_0_LEN				(0xffff << 0)
-+#define GUC_KLV_0_KEY				(0xffffu << 16)
-+#define GUC_KLV_0_LEN				(0xffffu << 0)
- #define GUC_KLV_n_VALUE				(0xffffffff << 0)
- 
- /**
-diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
-index 29ac823acd4c..901595300f82 100644
---- a/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
-+++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
-@@ -40,7 +40,7 @@
-  */
- 
- #define GUC_HXG_MSG_MIN_LEN			1u
--#define GUC_HXG_MSG_0_ORIGIN			(0x1 << 31)
-+#define GUC_HXG_MSG_0_ORIGIN			(0x1u << 31)
- #define   GUC_HXG_ORIGIN_HOST			0u
- #define   GUC_HXG_ORIGIN_GUC			1u
- #define GUC_HXG_MSG_0_TYPE			(0x7 << 28)
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h b/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
-index 66027a42cda9..22d2c1836f65 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
-@@ -28,7 +28,7 @@
- #define   GS_MIA_HALT_REQUESTED		  (0x02 << GS_MIA_SHIFT)
- #define   GS_MIA_ISR_ENTRY		  (0x04 << GS_MIA_SHIFT)
- #define   GS_AUTH_STATUS_SHIFT		30
--#define   GS_AUTH_STATUS_MASK		  (0x03 << GS_AUTH_STATUS_SHIFT)
-+#define   GS_AUTH_STATUS_MASK		  (0x03u << GS_AUTH_STATUS_SHIFT)
- #define   GS_AUTH_STATUS_BAD		  (0x01 << GS_AUTH_STATUS_SHIFT)
- #define   GS_AUTH_STATUS_GOOD		  (0x02 << GS_AUTH_STATUS_SHIFT)
- 
-diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
-index 9ccb67eec1bd..8c10d66561b0 100644
---- a/drivers/gpu/drm/i915/i915_reg.h
-+++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -7566,19 +7566,19 @@ enum skl_power_gate {
- #define  PORT_CLK_SEL_LCPLL_810		(2 << 29)
- #define  PORT_CLK_SEL_SPLL		(3 << 29)
- #define  PORT_CLK_SEL_WRPLL(pll)	(((pll) + 4) << 29)
--#define  PORT_CLK_SEL_WRPLL1		(4 << 29)
--#define  PORT_CLK_SEL_WRPLL2		(5 << 29)
--#define  PORT_CLK_SEL_NONE		(7 << 29)
-+#define  PORT_CLK_SEL_WRPLL1		(4u << 29)
-+#define  PORT_CLK_SEL_WRPLL2		(5u << 29)
-+#define  PORT_CLK_SEL_NONE		(7u << 29)
- #define  PORT_CLK_SEL_MASK		(7 << 29)
- 
- /* On ICL+ this is the same as PORT_CLK_SEL, but all bits change. */
- #define DDI_CLK_SEL(port)		PORT_CLK_SEL(port)
- #define  DDI_CLK_SEL_NONE		(0x0 << 28)
--#define  DDI_CLK_SEL_MG			(0x8 << 28)
--#define  DDI_CLK_SEL_TBT_162		(0xC << 28)
--#define  DDI_CLK_SEL_TBT_270		(0xD << 28)
--#define  DDI_CLK_SEL_TBT_540		(0xE << 28)
--#define  DDI_CLK_SEL_TBT_810		(0xF << 28)
-+#define  DDI_CLK_SEL_MG			(0x8u << 28)
-+#define  DDI_CLK_SEL_TBT_162		(0xCu << 28)
-+#define  DDI_CLK_SEL_TBT_270		(0xDu << 28)
-+#define  DDI_CLK_SEL_TBT_540		(0xEu << 28)
-+#define  DDI_CLK_SEL_TBT_810		(0xFu << 28)
- #define  DDI_CLK_SEL_MASK		(0xF << 28)
- 
- /* Transcoder clock selection */
--- 
-2.17.1
+It would be great to see an improvement here...
 
+> 
+>>> Furthermore, if a particular SCSI driver doesn't benefit from 
+>>> mappings larger than 256KB, then that driver is also free to limit 
+>>> its own mapping size. There are other folks out there with use-cases 
+>>> for mapping *gigabytes* at once; you don't get to cripple the API and 
+>>> say that that's suddenly not allowed just because it happens to make 
+>>> your thing go faster, that's absurd.
+>>
+>> I'd say less catastrophically slow, not faster.
+>>
+>> So how to inform the SCSI driver of this caching limit then so that it 
+>> may limit the SGL length?
+> 
+> Driver-specific mechanism; block-layer-specific mechanism; redefine this 
+> whole API to something like dma_opt_mapping_size(), as a limit above 
+> which mappings might become less efficient or start to fail (callback to 
+> my thoughts on [1] as well, I suppose); many options.
+
+ok, fine.
+
+> Just not imposing 
+> a ridiculously low *maximum* on everyone wherein mapping calls "should 
+> not be larger than the returned value" when that's clearly bollocks.
+
+I agree that this change is in violation as the documentation clearly 
+implies a hard limit.
+
+However, FWIW, from looking at users of dma_max_mapping_size(), they 
+seem to use in a similar way to SCSI/block layer core, i.e. use this 
+value to limit the max SGL total len per IO command. And not as a method 
+to learn max DMA consistent mappings size for ring buffers, etc.
+
+Anyway I'll look at dma_opt_mapping_size() but I am not sure how keen 
+Christoph will be on this... it is strange to introduce that API due to 
+peculiarity of the IOVA allocator.
+
+> 
+> 
+> [1] 
+> https://lore.kernel.org/linux-iommu/20220510142109.777738-1-ltykernel@gmail.com/
+
+Thanks,
+John
