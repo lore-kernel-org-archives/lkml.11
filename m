@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3693C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345636AbiEQMAt (ORCPT
+        id S1345681AbiEQMAy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52166 "EHLO
+        Tue, 17 May 2022 08:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345716AbiEQMAV (ORCPT
+        with ESMTP id S1345713AbiEQMAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:00:21 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9284CD44;
-        Tue, 17 May 2022 05:00:10 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id i19so34183722eja.11;
-        Tue, 17 May 2022 05:00:10 -0700 (PDT)
+        Tue, 17 May 2022 08:00:19 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821234C43C;
+        Tue, 17 May 2022 05:00:08 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ch13so34137891ejb.12;
+        Tue, 17 May 2022 05:00:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PAidMuA0ZfVLTFeYOY0jFETaKP5wFrL8y0MLkBWu2Mo=;
-        b=Nk38ea2oeCbD8O058H3VMyJ5yxX8JNiGPQpf+RzwZfoUMwizfXVES2qnc9DmjDPskO
-         mdfUkp40tpgTIdf47RFecu2Jcdrw/5mMPCwVREBWaF7qwSwbX7ptM7FpV6GQIsoJkyRJ
-         E65deQoZm31KLlt7aSQfFSKyC0j6rwfTIUCmg5AjVW9YZfTlp7mtbwi7k2bubvbQSolJ
-         xWoFprG43WD5xZNMKS62A7dfGGM/L5IYE2WD0yTwBGxbwwJ6XxAKYHrtw8OI0FHnVf5g
-         Ezkd4GYMaaCCiUzlnXmkn9P6dlzdsKO0yQCL6xI6v32ujTsjkac2WUYmaH8dS3JLt5HP
-         AS0Q==
+        bh=DzxGK66oNP5EqUefEbuvx65uQZvfKjOjhE65FjoDOMc=;
+        b=O1XqqJDdR2eKJn/3+OmYQ8rAWfD4lpv59KEyW9LqI5Xv3yM95R0odaM6rY6AJ8Wzf7
+         gthXPzyZjbt/tmmUwoYQsxPZtYHjG0bp/WPjm+Eqo9IOjT+pzF107RMGE7ePVstiUK04
+         8e+XwrfEQeAeFooHrsV49qZuAr80wGOvxNey1OIaUjVM6mOEPxI99SSivwIppHcjKc2j
+         FayCvvMFnOo/+TZYHJ1fFRZGw2/9zjVKC9Mho6wJtml0b4McXU2kFzOeKcaLaJ4xBZb2
+         6dj6W9PMBZI0Rpe7BOZ0ghzLxX2KHdNaH+QvTYnJT6q5RqIcesTwLvZ5p97f7+wevmsh
+         UiJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PAidMuA0ZfVLTFeYOY0jFETaKP5wFrL8y0MLkBWu2Mo=;
-        b=vXx7jm7Ol55tQjJuZZYdkDCHVwRAguPZu9rnlgPyjweVHiJAbhnGOE3EYvGns9UtFr
-         2GtY8RkpkNRWejhQIrK1IZ0vcDTs2HvR8qqtNorGMEcNoK6sYGxtb59d45GKSSaed+Zv
-         /MUQX/PIX452/v1Zul6qid3k+fHv7WXjI9Mj6yf4GKCHd0NzEyQhF4wEiQM7X/l6AGvO
-         J8bVk3/Wk/3RUoHRO2Jp9DQZys9rDcGLyzkOvJUPq+RWs0AD/VQogWhnSVrTXy+Hk8p8
-         o08N/hXnmrhuGM56Wm31c/QGbxfjYNaXb6BgVkVjGX2ng7EvFgu7pIMm8iDGBamBFved
-         55ow==
-X-Gm-Message-State: AOAM530MI1DZjGa/KzX11z5J+LfZnGoyTxN13Eoi89HQv1hqlO/fc4E4
-        LBPtNvi7B9Nz9rrciBnUI8w=
-X-Google-Smtp-Source: ABdhPJx0xq/cRbDvNlIWIcAne3Bp5H3b6MmvrYn/C0TdCB8KTbJZ+25ILBRKVac9wWnRXsboSjTLwQ==
-X-Received: by 2002:a17:907:7e85:b0:6f4:78f1:75b5 with SMTP id qb5-20020a1709077e8500b006f478f175b5mr19728011ejc.54.1652788809052;
-        Tue, 17 May 2022 05:00:09 -0700 (PDT)
+        bh=DzxGK66oNP5EqUefEbuvx65uQZvfKjOjhE65FjoDOMc=;
+        b=US+fAqdhoAoEmzfzpLWbE3Eu0mWq9hycjQu0zqO672y91KbGV389nYS+SXuWQdPnF2
+         lj0EJTGGw+NNwdDcTpnQOZNZXVhJim0IZLEGK46C2TKUU2MvkVsvLt7p0lCl1mfNSxHJ
+         zKnt5pbDqpXvo5BhjXlB+Z1r/VcHM7dfel8U4JGT1BKueKFUHhXzxqE4RgroSdpRmILK
+         M19Rid/BDgzfosEAr96p+ELdwwcZH5HcV6bdKyr83vSNyBfJBHoLg9mmGe9F1rqQ5sIc
+         oJHGtOsjngLuvpgBoN+MWyNex6SjjHd3+un0ILmj1TJblWH7cj16sjZbmvTFI5J2CY0b
+         ICGw==
+X-Gm-Message-State: AOAM531zjzkczMruDqFTKvE9cJ6KAeqLQ9bNHCIwsJsghr1y4O9047Mk
+        m9zj++8v9D7svd9f9yY1BGM=
+X-Google-Smtp-Source: ABdhPJy5lPqbw1Cp4jdlGAc/DEDvey5xejh9pUs7hRyiTR6u33fGRoBQ4S4v04bAYQG4DlXFeiGmeQ==
+X-Received: by 2002:a17:907:8c06:b0:6f4:9935:9049 with SMTP id ta6-20020a1709078c0600b006f499359049mr19792354ejc.517.1652788806982;
+        Tue, 17 May 2022 05:00:06 -0700 (PDT)
 Received: from fedora.robimarko.hr (dh207-98-105.xnet.hr. [88.207.98.105])
-        by smtp.googlemail.com with ESMTPSA id hg16-20020a1709072cd000b006f3ef214e20sm948793ejc.134.2022.05.17.05.00.08
+        by smtp.googlemail.com with ESMTPSA id hg16-20020a1709072cd000b006f3ef214e20sm948793ejc.134.2022.05.17.05.00.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 05:00:08 -0700 (PDT)
+        Tue, 17 May 2022 05:00:06 -0700 (PDT)
 From:   Robert Marko <robimarko@gmail.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
         broonie@kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v2 6/6] arm64: dts: ipq8074: add VQMMC supply
-Date:   Tue, 17 May 2022 14:00:00 +0200
-Message-Id: <20220517120000.71048-6-robimarko@gmail.com>
+Subject: [PATCH v2 4/6] regulator: qcom_spmi: Add support for PMP8074 regulators
+Date:   Tue, 17 May 2022 13:59:58 +0200
+Message-Id: <20220517120000.71048-4-robimarko@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220517120000.71048-1-robimarko@gmail.com>
 References: <20220517120000.71048-1-robimarko@gmail.com>
@@ -67,32 +67,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SDHCI controller claims DDR, HS200 and HS400 1.8V support, however it
-cannot achieve those using the 2.95V I/O that is the default set by
-firmware.
+PMP8074 is a companion PMIC for the Qualcomm IPQ8074 WiSoC-s.
 
-Since we know have access to the PMP8074 PMIC provided LDO that provides
-the I/O voltage set it as VQMMC supply so that higher speeds can actually
-be achieved.
+It features 5 HF-SMPS and 13 LDO regulators.
+
+This commit adds support for S3 and S4 HF-SMPS buck regulators of
+the HFS430 type and LDO11 of the HT_P150 type.
+S3 is the CPU cluster voltage supply, S4 supplies the UBI32 NPU cores
+and LDO11 is the SDIO/eMMC I/O voltage regulator required for high speeds.
 
 Signed-off-by: Robert Marko <robimarko@gmail.com>
 ---
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/regulator/qcom_spmi-regulator.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index d1a0b77c38a4..fea3c4ee3565 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -476,6 +476,8 @@ sdhc_1: sdhci@7824900 {
- 			mmc-hs400-1_8v;
- 			bus-width = <8>;
+diff --git a/drivers/regulator/qcom_spmi-regulator.c b/drivers/regulator/qcom_spmi-regulator.c
+index 38bbc70241ae..696b088aae40 100644
+--- a/drivers/regulator/qcom_spmi-regulator.c
++++ b/drivers/regulator/qcom_spmi-regulator.c
+@@ -2137,6 +2137,13 @@ static const struct spmi_regulator_data pms405_regulators[] = {
+ 	{ }
+ };
  
-+			vqmmc-supply = <&l11>;
++static const struct spmi_regulator_data pmp8074_regulators[] = {
++	{ "s3", 0x1a00, "vdd_s3"},
++	{ "s4", 0x1d00, "vdd_s4"},
++	{ "l11", 0x4a00, "vdd_l10_l11_l12_l13"},
++	{ }
++};
 +
- 			status = "disabled";
- 		};
- 
+ static const struct of_device_id qcom_spmi_regulator_match[] = {
+ 	{ .compatible = "qcom,pm8004-regulators", .data = &pm8004_regulators },
+ 	{ .compatible = "qcom,pm8005-regulators", .data = &pm8005_regulators },
+@@ -2150,6 +2157,7 @@ static const struct of_device_id qcom_spmi_regulator_match[] = {
+ 	{ .compatible = "qcom,pm660-regulators", .data = &pm660_regulators },
+ 	{ .compatible = "qcom,pm660l-regulators", .data = &pm660l_regulators },
+ 	{ .compatible = "qcom,pms405-regulators", .data = &pms405_regulators },
++	{ .compatible = "qcom,pmp8074-regulators", .data = &pmp8074_regulators },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, qcom_spmi_regulator_match);
 -- 
 2.36.1
 
