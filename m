@@ -2,52 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3E1C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4777CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350365AbiEQPlu (ORCPT
+        id S1350348AbiEQPlz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
+        Tue, 17 May 2022 11:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350499AbiEQPli (ORCPT
+        with ESMTP id S1350460AbiEQPle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:41:38 -0400
+        Tue, 17 May 2022 11:41:34 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80AA41318;
-        Tue, 17 May 2022 08:41:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AEC940E7C;
+        Tue, 17 May 2022 08:41:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652802097; x=1684338097;
+  t=1652802094; x=1684338094;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=z7fia9oToB15GCd1Yc1rfWsEIimPCVJTziCOUL77EO4=;
-  b=cUSp/S4Zgrs5+fPW7Vib0KAhDuvMezrhzbXAi9kiOuFl5zr2f2CUAb2O
-   mqyMcksk3L+eFFkyC9HVZA4aHWUEDOHbEt5xfpSXZpMEh0fvhymm437tB
-   feQN+TfsKw4fAW9DTUcQZBmGA38VjELFLHgpvGkE/nMa0anhyfnYI6lpG
-   qkBgLp4adQWvUizKa/yKHrpy9d5u6IOeNNaiR47WEn9rFysXj0nfj4KW4
-   2kwTwnqIMGPMTv4xFSoIbnRQf3XGo0e4ksFc8UaAhMd/+TJckZy4vI4kt
-   qpSbBibAi4DapopE21P0QI2ocSxvHWK0V9RZD2ZIhc95Zh3T4hjzWUFxC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632108"
+  bh=GOB8cTBeHai+pCWfEMfwO/R4JwVJByoNcZuExMPWTjs=;
+  b=nMvG6fIbXkWlSDIVi6dcdpebwOfk3EW+RRaGxTeHW0qMi0Y7KeA6LTkV
+   iAjZ+IdtSGSX6RmetiWQX4QkGDl9J+AIvgfAIjEQataGqNRAqnY53MlTl
+   q0XnBNF35yJih81UL8V0C2mAGZVET4XAnSygnUKTS40QJ0y0656ptS1oh
+   0NDkM1IrvRFu14qsUPLN4YJE/ZI3tPFgNLROYWyQEue4oXUngG9gT84Wi
+   oZCBray/cslhqpgZYoJ5cKiFOPd2yc9TEcV0rPa6NoXriM7pUVF18oK0/
+   pvJkl8mXmofu10xHIl9NB0tMeoDIj6dsZBF3xb1eZnnl7Dgbt0rOtFkTH
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632092"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="357632108"
+   d="scan'208";a="357632092"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:35 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:32 -0700
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="626533584"
+   d="scan'208";a="626533547"
 Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:34 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:32 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com,
         kan.liang@linux.intel.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Like Xu <like.xu@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
         Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v12 09/16] KVM: x86: Refine the matching and clearing logic for supported_xss
-Date:   Tue, 17 May 2022 11:40:53 -0400
-Message-Id: <20220517154100.29983-10-weijiang.yang@intel.com>
+Subject: [PATCH v12 01/16] perf/x86/intel: Fix the comment about guest LBR support on KVM
+Date:   Tue, 17 May 2022 11:40:45 -0400
+Message-Id: <20220517154100.29983-2-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220517154100.29983-1-weijiang.yang@intel.com>
 References: <20220517154100.29983-1-weijiang.yang@intel.com>
@@ -59,60 +61,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Like Xu <like.xu@linux.intel.com>
 
-Refine the code path of the existing clearing of supported_xss in this way:
-initialize the supported_xss with the filter of KVM_SUPPORTED_XSS mask and
-update its value in a bit clear manner (rather than bit setting).
+Starting from v5.12, KVM reports guest LBR and extra_regs support
+when the host has relevant support. Just delete this part of the
+comment and fix a typo incidentally.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Signed-off-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 ---
- arch/x86/kvm/vmx/vmx.c | 5 +++--
- arch/x86/kvm/x86.c     | 6 +++++-
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ arch/x86/events/intel/core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index fe4bb9b610ae..e442b30f1ca3 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7552,9 +7552,10 @@ static __init void vmx_set_cpu_caps(void)
- 		kvm_cpu_cap_set(X86_FEATURE_UMIP);
- 
- 	/* CPUID 0xD.1 */
--	supported_xss = 0;
--	if (!cpu_has_vmx_xsaves())
-+	if (!cpu_has_vmx_xsaves()) {
- 		kvm_cpu_cap_clear(X86_FEATURE_XSAVES);
-+		supported_xss = 0;
-+	}
- 
- 	/* CPUID 0x80000001 and 0x7 (RDPID) */
- 	if (!cpu_has_vmx_rdtscp()) {
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 93b027aed2f3..90b3129a2fbe 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -224,6 +224,8 @@ static struct kvm_user_return_msrs __percpu *user_return_msrs;
- 				| XFEATURE_MASK_BNDCSR | XFEATURE_MASK_AVX512 \
- 				| XFEATURE_MASK_PKRU | XFEATURE_MASK_XTILE)
- 
-+#define KVM_SUPPORTED_XSS     0
-+
- u64 __read_mostly host_efer;
- EXPORT_SYMBOL_GPL(host_efer);
- 
-@@ -11702,8 +11704,10 @@ int kvm_arch_hardware_setup(void *opaque)
- 
- 	rdmsrl_safe(MSR_EFER, &host_efer);
- 
--	if (boot_cpu_has(X86_FEATURE_XSAVES))
-+	if (boot_cpu_has(X86_FEATURE_XSAVES)) {
- 		rdmsrl(MSR_IA32_XSS, host_xss);
-+		supported_xss = host_xss & KVM_SUPPORTED_XSS;
-+	}
- 
- 	kvm_init_pmu_capability();
- 
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index f136be17c1e2..1c70ab856bf4 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -6494,8 +6494,7 @@ __init int intel_pmu_init(void)
+ 					  x86_pmu.intel_ctrl);
+ 	/*
+ 	 * Access LBR MSR may cause #GP under certain circumstances.
+-	 * E.g. KVM doesn't support LBR MSR
+-	 * Check all LBT MSR here.
++	 * Check all LBR MSR here.
+ 	 * Disable LBR access if any LBR MSRs can not be accessed.
+ 	 */
+ 	if (x86_pmu.lbr_tos && !check_msr(x86_pmu.lbr_tos, 0x3UL))
 -- 
 2.27.0
 
