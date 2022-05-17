@@ -2,228 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A248C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:58:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344668AbiEQK5r (ORCPT
+        id S1344718AbiEQK6W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53658 "EHLO
+        Tue, 17 May 2022 06:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344811AbiEQK5h (ORCPT
+        with ESMTP id S1344720AbiEQK6M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:57:37 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12D2749FA0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:57:22 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D2AB91042;
-        Tue, 17 May 2022 03:57:21 -0700 (PDT)
-Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B32B73F66F;
-        Tue, 17 May 2022 03:57:20 -0700 (PDT)
-Date:   Tue, 17 May 2022 11:57:18 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     Qing Wang <wangqing@vivo.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] arch_topology: Use llc_id instead of package_id
-Message-ID: <20220517105718.tvpmj2xxb2qj3bev@bogus>
-References: <20220513083400.343706-1-dietmar.eggemann@arm.com>
- <20220513090330.z25fwthekn4rjkwq@bogus>
- <afafbb0c-5279-bee8-1ef4-434733e2a552@arm.com>
- <20220513110312.wy6g5avs7ngkmhfu@bogus>
- <634a4b8c-84d2-51a9-ef54-33b81683c849@arm.com>
- <20220516103524.35swlxp2367baxx6@bogus>
- <beda044e-0b91-4359-c6bf-5e34c285fc5c@arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <beda044e-0b91-4359-c6bf-5e34c285fc5c@arm.com>
+        Tue, 17 May 2022 06:58:12 -0400
+X-Greylist: delayed 360 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 03:58:04 PDT
+Received: from zg8tndyumtaxlji0oc4xnzya.icoremail.net (zg8tndyumtaxlji0oc4xnzya.icoremail.net [46.101.248.176])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 9E98749906;
+        Tue, 17 May 2022 03:58:04 -0700 (PDT)
+Received: from jleng.ambarella.net (unknown [180.169.129.130])
+        by mail-app4 (Coremail) with SMTP id cS_KCgAHHyIxfoNiwSVaAA--.8062S2;
+        Tue, 17 May 2022 18:51:35 +0800 (CST)
+From:   3090101217@zju.edu.cn
+To:     masahiroy@kernel.org, michal.lkml@markovi.net,
+        ndesaulniers@google.com
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jing Leng <jleng@ambarella.com>
+Subject: [PATCH] kbuild: Fix include path in scripts/Makefile.modpost
+Date:   Tue, 17 May 2022 18:51:28 +0800
+Message-Id: <20220517105128.9720-1-3090101217@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgAHHyIxfoNiwSVaAA--.8062S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7urW7Cw43Kr1UXF1rXw17Awb_yoW8Jw1rpw
+        s8Cw13CFZ7JrWvg3WxJrZ3J34j93sayw4Y93W0qF17trnFvrs2vr4ayrZ8uw1Sk348ArWU
+        W347Ca4xAa48Z3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBab7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+        8E87Iv6xkF7I0E14v26rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2vYz4IE4I80cI0F6IAv
+        xc0EwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ew
+        Av7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY
+        6r1j6r4UM4x0Y48IcxkI7VAKI48JM4kE6xkIj40Ew7xC0wCY02Avz4vE14v_Gw1l42xK82
+        IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC2
+        0s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMI
+        IF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF
+        0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87
+        Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07jrSdgUUUUU=
+X-CM-SenderInfo: qtqziiyqrsilo62m3hxhgxhubq/1tbiAwINBVNG3GxzgAAAsf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dietmar,
+From: Jing Leng <jleng@ambarella.com>
 
-Thanks for the detailed response.
+When building an external module, if users don't need to separate the
+compilation output and source code, they run the following command:
+"make -C $(LINUX_SRC_DIR) M=$(PWD)". At this point, "$(KBUILD_EXTMOD)"
+and "$(src)" are the same.
 
-On Tue, May 17, 2022 at 11:14:44AM +0200, Dietmar Eggemann wrote:
-> On 16/05/2022 12:35, Sudeep Holla wrote:
-> > On Fri, May 13, 2022 at 02:04:29PM +0200, Dietmar Eggemann wrote:
-> >> On 13/05/2022 13:03, Sudeep Holla wrote:
-> >>> On Fri, May 13, 2022 at 12:42:00PM +0200, Dietmar Eggemann wrote:
-> >>>> On 13/05/2022 11:03, Sudeep Holla wrote:
-> >>>>> On Fri, May 13, 2022 at 10:34:00AM +0200, Dietmar Eggemann wrote:
-> 
-> [...]
-> 
-> >> cat /sys/kernel/debug/sched/domains/cpu0/domain*/name
-> >> CLS
-> >> MC
-> >> ... I skip the NUMA levels
-> >>
-> >> # cat /proc/schedstat | awk '{print $1 " " $2 }' | grep ^[cd] | head -5
-> >> cpu0 0
-> >> domain0 00000000,00000000,0000000f <--  4 CPUs <-- cluster_id
-> >> domain1 00000000,00000000,00ffffff <-- 24 CPUs
-> >>
-> >> If you use cluster_id for 1. level cluster then you cover MC's 24 CPUs
-> > 
-> > OK, the way I am looking at this from CPU topology perspective seem to be
-> > different from what you are expecting here w.r.t sched_domains.
-> > 
-> > IMO, these cpumasks on its own must represent real CPU topology and how it
-> > is used via cpu_*_mask by the scheduler domains is different.
-> 
-> I'm afraid that in case we want to change the mapping of scheduler
-> (topology) flags (like SD_SHARE_PKG_RESOURCES) via `*_flags()` of
-> default_topology[] we would have to consider all ACPI corner cases (see
-> cpu_coregroup_mask()) as well.
-> 
-> See (1) further down.
->
+If they need to separate them, they run "make -C $(KERNEL_SRC_DIR)
+O=$(KERNEL_OUT_DIR) M=$(OUT_DIR) src=$(PWD)". Before running the
+command, they need to copy "Kbuild" or "Makefile" to "$(OUT_DIR)" to
+prevent compilation failure.
 
-Understood.
+So the kernel should change the included path to avoid the copy operation.
 
-> [...]
-> 
-> > I see on Juno with SCHED_CLUSTER and cluster masks set, I see CLS and MC
-> > domains.
-> 
-> Right but that's not really correct from the scheduler's POV.
->
+Signed-off-by: Jing Leng <jleng@ambarella.com>
+---
+ scripts/Makefile.modpost | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-OK
+diff --git a/scripts/Makefile.modpost b/scripts/Makefile.modpost
+index 48585c4d04ad..0273bf7375e2 100644
+--- a/scripts/Makefile.modpost
++++ b/scripts/Makefile.modpost
+@@ -87,8 +87,7 @@ obj := $(KBUILD_EXTMOD)
+ src := $(obj)
+ 
+ # Include the module's Makefile to find KBUILD_EXTRA_SYMBOLS
+-include $(if $(wildcard $(KBUILD_EXTMOD)/Kbuild), \
+-             $(KBUILD_EXTMOD)/Kbuild, $(KBUILD_EXTMOD)/Makefile)
++include $(if $(wildcard $(src)/Kbuild), $(src)/Kbuild, $(src)/Makefile)
+ 
+ # modpost option for external modules
+ MODPOST += -e
+-- 
+2.17.1
 
-> Juno has LLC on cpumasks [0,3-5] and [1-2], not on [0-5]. So the most
-> important information is the highest Sched Domain with the
-> SD_SHARE_PKG_RESOURCES flag. This is the MC layer (cpu_core_flags() in
-> default_topology[]). So the scheduler would think that [0-5] are sharing
-> LLC.
->
-
-Ah OK, but if LLC sibling masks are updated, cpu_coregroup_mask() takes
-care of it IIUC, right ?
-
-> You have LLC at:
-> 
-> cat /sys/devices/system/cpu/cpu0/cache/index2/shared_cpu_list
->                                        ^^^^^^
-> 0,3-5
-> 
-> but the scheduler sees the highest SD_SHARE_PKG_RESOURCES on MC:
-> 
-> cat /sys/kernel/debug/sched/domains/cpu0/domain1/flags
->                                          ^^^^^^^
-> ... SD_SHARE_PKG_RESOURCES ...
-> 
-> [...]
-> 
-> >> For one level (MC) yes, but not for 2 (MC and CLS). And cluster_id was
-> >> introduces for the 2. level.
-> >>
-> > 
-> > That sounds wrong and not what ACPI PPTT code says. My series just aligns
-> > with what is done with ACPI PPTT IIUC. I need to check that again if my
-> > understand differs from what is being done. But the example of Kunpeng920
-> > aligns with my understanding.
-> 
-> (1) IMHO, as long as we don't consider cache (llc) information in DT we
-> can't have the same coverage as ACPI.
->
-
-Agreed. But we are not changing any topology masks as per sched domain
-requirements as they get exposed to the userspace as is.
-
-> Let's take an ACPI !CONFIG_NUMA Kunpeng920 as an example.
-> 
-> # cat /sys/kernel/debug/sched/domains/cpu0/domain*/name
-> CLS
-> MC
-> DIE
-> 
-> # cat /sys/kernel/debug/sched/domains/cpu0/domain*/flags
-> SD_BALANCE_NEWIDLE SD_BALANCE_EXEC SD_BALANCE_FORK SD_WAKE_AFFINE
->   SD_SHARE_PKG_RESOURCES SD_PREFER_SIBLING
->   ^^^^^^^^^^^^^^^^^^^^^^
-> SD_BALANCE_NEWIDLE SD_BALANCE_EXEC SD_BALANCE_FORK SD_WAKE_AFFINE
->   SD_SHARE_PKG_RESOURCES SD_PREFER_SIBLING
->   ^^^^^^^^^^^^^^^^^^^^^^
-> SD_BALANCE_NEWIDLE SD_BALANCE_EXEC SD_BALANCE_FORK SD_WAKE_AFFINE
->   SD_PREFER_SIBLING
-> 
-> cat /proc/schedstat | awk '{print $1 " " $2 }' | grep ^[cd] | head -4
-> cpu0 0
-> domain0 00000000,00000000,0000000f
-> domain1 00000000,00000000,00ffffff <-- (2)
-> domain2 ffffffff,ffffffff,ffffffff
-> 
-> cat /sys/devices/system/cpu/cpu0/topology/thread_siblings_list
-> 0
-> cat /sys/devices/system/cpu/cpu0/topology/core_cpus_list
-> 0
-> cat /sys/devices/system/cpu/cpu0/topology/cluster_cpus_list
-> 0-3
-> cat /sys/devices/system/cpu/cpu0/topology/core_siblings_list
-> 0-47
-> cat /sys/devices/system/cpu/cpu0/topology/package_cpus_list
-> 0-47
-> 
-> The MC mask 00ffffff is not derived from any topology mask but from the
-> llc (index3) mask:
-> 
-> cat /sys/devices/system/cpu/cpu0/cache/index3/shared_cpu_list
->                                        ^^^^^^
-> 0-23 <-- (2)
->
-
-Understood and on Juno if we get llc_siblings right, the sched domains
-must be sorted correctly ?
-
->
-> Coming back to the original request (the support of Armv9 L2 complexes
-> in Android) from Qing on systems like QC SM8450:
->
->       .---------------.
-> CPU   |0 1 2 3 4 5 6 7|
->       +---------------+
-> uarch |l l l l m m m b| (so called tri-gear: little, medium, big)
->       +---------------+
->   L2  |   |   | | | | |
->       +---------------+
->   L3  |<--         -->|
->       +---------------+
->       |<-- cluster -->|
->       +---------------+
->       |<--   DSU   -->|
->       '---------------'
->
-> This still wouldn't be possible. We know that Phantom Domain (grouping
-> after uarch) is not supported in mainline but heavily used in Android
-> (legacy deps).
->
-
-Correct, unless you convince to get a suitable notion of *whatever*
-phantom domains represent into the DT bindings, they don't exist.
-If someone wants to support this config, they must first represent that
-in the firmware so that OS can infer information from the same.
-
-> If we say we only support L2 sharing (asymmetric here since only CPU0-3
-> have it !!!) and we don't support Phantom then your approach will work
-> for such systems.
-
-Thanks, as I said what is *Phantom* domain ;) ? Can you point me to the
-DT or ACPI binding for the same ? Just kidding, I know they don't exist.
-
-Anyways, I understand your concern that llc_sibling must go with my set
-of topology changes which I agree. Is that the only concern ?
-
---
-Regards,
-Sudeep
