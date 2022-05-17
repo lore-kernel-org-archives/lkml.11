@@ -2,99 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B530C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E568FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:39:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235092AbiEQDi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 23:38:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35674 "EHLO
+        id S235607AbiEQDjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 23:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230019AbiEQDiw (ORCPT
+        with ESMTP id S230019AbiEQDjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 23:38:52 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E642C46667;
-        Mon, 16 May 2022 20:38:51 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id a23-20020a17090acb9700b001df4e9f4870so1140743pju.1;
-        Mon, 16 May 2022 20:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=j1LH341yIniJ4rqGd7AgQUaUDLGYBFu3ii/SlaNgQuQ=;
-        b=K5NO9UsaiPRnVdZowuUHe25GTQNzSN4ZNDNd9UAyQ1HT8ytDvFoSTVc4wYdA/udZOJ
-         MdQJZjs7j8hdJbcQbHN0ZP1Vq5MBYXzv/szTkwaxAjBBztdpX1RECOhUToHj9iMzX4f7
-         5armpR4LKS33BrUQLfFZOjlNObl28uRYzPCUPwhOrhRz/yPE9cPO7rtUSSb9PXzZHJQb
-         YEYScy8uiu7wizFUBoVKEUqhJbdix1+xzLQb94zE+G55KtYfm9six/KmyZAU0w2JnkI2
-         aCR7W8fE0e+uGr1PYJpFp2Opy2/yAjbeHBqXZs4BepnC7QSk4IROEim3A0wtpe79as/d
-         LR2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=j1LH341yIniJ4rqGd7AgQUaUDLGYBFu3ii/SlaNgQuQ=;
-        b=6JYTAwIOV1UPqPk3hWQjFs9ajAzGk/6ZoupvY6Eqo/Jb1T9LbiVlr9pXXVEgGq6/ZA
-         mvU1IiHFS15jBBYNkoChe1QOfOrmcSWx/LconOYjmgnjVdmvYOJxfNIaYJSEDaCNT6Cl
-         LZziXwFSmevmNWXLuNBSk3iJrUPL34M0KWf0QMTUY83y4+t2DsMxwJKm3XJTaLRvOubw
-         Q/pGaBXQmgvzccrTz6Dk6Pa8G9EKCyEtoBN+lsnhshlsdtvTUg0WJJ9AqV1CJnRaxLvW
-         q9aPAPpaIqfuFX+dULud5EfKh/+Ku9FG2Vhj8OgIV2UG6ummfLz1nxDpXUDxCTOrmqHc
-         Xx7g==
-X-Gm-Message-State: AOAM531hIfCNsCv6wriKDL4pPB5csbIetJYN3jWfzOK/XhshKueC/451
-        VtSbf0zUSLBBnTNaJt5yk3E=
-X-Google-Smtp-Source: ABdhPJySNjPHbQqbEaw/ASfGGIRtO1/knPMJQFd1VNfrNjn0Psn31QAKwhMtPRwfmDfgDwGAuCP3tw==
-X-Received: by 2002:a17:90b:48d1:b0:1df:4fc8:c2d7 with SMTP id li17-20020a17090b48d100b001df4fc8c2d7mr9345842pjb.45.1652758731390;
-        Mon, 16 May 2022 20:38:51 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id u18-20020a17090341d200b001616e19537esm3679843ple.213.2022.05.16.20.38.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 20:38:50 -0700 (PDT)
-Message-ID: <0f4790f1-5c7d-3d6c-4044-8912b52c6d48@gmail.com>
-Date:   Mon, 16 May 2022 20:38:49 -0700
+        Mon, 16 May 2022 23:39:31 -0400
+X-Greylist: delayed 165 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 20:39:28 PDT
+Received: from p3plwbeout12-01.prod.phx3.secureserver.net (p3plsmtp12-01-2.prod.phx3.secureserver.net [173.201.192.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC1B46667
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:39:28 -0700 (PDT)
+Received: from mailex.mailcore.me ([94.136.40.141])
+        by :WBEOUT: with ESMTP
+        id qo0onJ0i9sfAiqo0pnEve5; Mon, 16 May 2022 20:36:43 -0700
+X-CMAE-Analysis: v=2.4 cv=ZYnYiuZA c=1 sm=1 tr=0 ts=6283184b
+ a=bheWAUFm1xGnSTQFbH9Kqg==:117 a=84ok6UeoqCVsigPHarzEiQ==:17
+ a=ggZhUymU-5wA:10 a=oZkIemNP1mAA:10 a=QyXUC8HyAAAA:8 a=FXvPX3liAAAA:8
+ a=XPsDEoqG7ybQwvttNyoA:9 a=UObqyxdv-6Yh2QiB9mM_:22
+X-SECURESERVER-ACCT: phillip@squashfs.org.uk  
+X-SID:  qo0onJ0i9sfAi
+Received: from 82-69-79-175.dsl.in-addr.zen.co.uk ([82.69.79.175] helo=localhost.localdomain)
+        by smtp12.mailcore.me with esmtpa (Exim 4.94.2)
+        (envelope-from <phillip@squashfs.org.uk>)
+        id 1nqo0n-0004Sd-I9; Tue, 17 May 2022 04:36:41 +0100
+From:   Phillip Lougher <phillip@squashfs.org.uk>
+To:     hsinyi@chromium.org
+Cc:     Xiongwei.Song@windriver.com, akpm@linux-foundation.org,
+        houtao1@huawei.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, miaoxie@huawei.com, phillip@squashfs.org.uk,
+        squashfs-devel@lists.sourceforge.net, willy@infradead.org,
+        yi.zhang@huawei.com, zhengliang6@huawei.com,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 3/2] squashfs: always build "file direct" version of page actor
+Date:   Tue, 17 May 2022 04:35:57 +0100
+Message-Id: <20220517033557.3492-1-phillip@squashfs.org.uk>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220516105100.1412740-1-hsinyi@chromium.org>
+References: <20220516105100.1412740-1-hsinyi@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 5.10 00/66] 5.10.117-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220516193619.400083785@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220516193619.400083785@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Mailcore-Auth: 439999529
+X-Mailcore-Domain: 1394945
+X-123-reg-Authenticated:  phillip@squashfs.org.uk  
+X-Originating-IP: 82.69.79.175
+X-CMAE-Envelope: MS4xfLXFLpLlRfbfGXBeIXJRjWEIJMQTP/XFm/vMyPYOSe6SM0A23GT2mpoUz9+Zc8x4Soo2M0DUY2qw+DY5ySWQ8RAel8+bf53qo1n7d/9tJ6W91LlDDvtT
+ Y8UxEsGHooRoeWuPtwlLz6hOpWq1+YSlAelThS/vS96T+KK8QGXT+t/ftHyKa32yaKlEY3Itg0zRamQ6MMvp7X3JM6O8MjXqb6I=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Squashfs_readahead uses the "file direct" version of the page
+actor, and so build it unconditionally.
 
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Phillip Lougher <phillip@squashfs.org.uk>
+---
+ fs/squashfs/Makefile     |  4 ++--
+ fs/squashfs/page_actor.h | 41 ----------------------------------------
+ 2 files changed, 2 insertions(+), 43 deletions(-)
 
-On 5/16/2022 12:36 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.117 release.
-> There are 66 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.117-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/fs/squashfs/Makefile b/fs/squashfs/Makefile
+index 7bd9b8b856d0..477c89a519ee 100644
+--- a/fs/squashfs/Makefile
++++ b/fs/squashfs/Makefile
+@@ -5,9 +5,9 @@
+ 
+ obj-$(CONFIG_SQUASHFS) += squashfs.o
+ squashfs-y += block.o cache.o dir.o export.o file.o fragment.o id.o inode.o
+-squashfs-y += namei.o super.o symlink.o decompressor.o
++squashfs-y += namei.o super.o symlink.o decompressor.o page_actor.o
+ squashfs-$(CONFIG_SQUASHFS_FILE_CACHE) += file_cache.o
+-squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o page_actor.o
++squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_SINGLE) += decompressor_single.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_MULTI) += decompressor_multi.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU) += decompressor_multi_percpu.o
+diff --git a/fs/squashfs/page_actor.h b/fs/squashfs/page_actor.h
+index 2e3073ace009..26e07373af8a 100644
+--- a/fs/squashfs/page_actor.h
++++ b/fs/squashfs/page_actor.h
+@@ -6,46 +6,6 @@
+  * Phillip Lougher <phillip@squashfs.org.uk>
+  */
+ 
+-#ifndef CONFIG_SQUASHFS_FILE_DIRECT
+-struct squashfs_page_actor {
+-	void	**page;
+-	int	pages;
+-	int	length;
+-	int	next_page;
+-};
+-
+-static inline struct squashfs_page_actor *squashfs_page_actor_init(void **page,
+-	int pages, int length)
+-{
+-	struct squashfs_page_actor *actor = kmalloc(sizeof(*actor), GFP_KERNEL);
+-
+-	if (actor == NULL)
+-		return NULL;
+-
+-	actor->length = length ? : pages * PAGE_SIZE;
+-	actor->page = page;
+-	actor->pages = pages;
+-	actor->next_page = 0;
+-	return actor;
+-}
+-
+-static inline void *squashfs_first_page(struct squashfs_page_actor *actor)
+-{
+-	actor->next_page = 1;
+-	return actor->page[0];
+-}
+-
+-static inline void *squashfs_next_page(struct squashfs_page_actor *actor)
+-{
+-	return actor->next_page == actor->pages ? NULL :
+-		actor->page[actor->next_page++];
+-}
+-
+-static inline void squashfs_finish_page(struct squashfs_page_actor *actor)
+-{
+-	/* empty */
+-}
+-#else
+ struct squashfs_page_actor {
+ 	union {
+ 		void		**buffer;
+@@ -76,4 +36,3 @@ static inline void squashfs_finish_page(struct squashfs_page_actor *actor)
+ 	actor->squashfs_finish_page(actor);
+ }
+ #endif
+-#endif
 -- 
-Florian
+2.34.1
+
