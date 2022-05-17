@@ -2,101 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90937C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B833EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244286AbiEQKH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35260 "EHLO
+        id S245674AbiEQKIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233900AbiEQKFo (ORCPT
+        with ESMTP id S1343511AbiEQKFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:05:44 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CEB49F23
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:05:22 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f7dbceab08so152147647b3.10
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:05:22 -0700 (PDT)
+        Tue, 17 May 2022 06:05:53 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF209FEE
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:05:50 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id l38-20020a05600c1d2600b00395b809dfbaso980882wms.2
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:05:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=ZA9V5lO/+F+bF8jz1FqVjCsKgJDekjpTcf5RC67Rb+U=;
-        b=CN+dHXm2PBRqvy1rf8fgS0o1jp5PYo7NivTVKQ/nKjhnlxSy7HON46mSOSXnbxnGt0
-         0sM5TU3u1zBA21392OldZVr96LXY6KYit/jNYjk5EXR2CKoahlGMahwQ3FJUVseXyfI9
-         cjBk1AWdrStlRBMUoPYESDY747UFkaFerpdGd9zJn2SF9wswLfipINF+E48kcMMNxFzF
-         q4qSS/wz8gpL9dt631yseTk9m+wgmd+eNfv/jyPAJqke0+nnHbJavlK+Dqkq+5zr3Lw2
-         jkxf/YGWa6gjweNW4DGXn5BjStf5V4Q9H6pXaZnnq3VkYUYWaAXIH05H2Uc9MjHsoekj
-         DBNA==
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HyGdG5hdHtnAbHtcbhlYB3o/m/Iup0FsxrmZdcSyIhY=;
+        b=hW0Lm6qeax17fQPafdhAi3j58GQnzrxokEbAfsmlPX52e8zERDq6JhEGfSUt7RP59x
+         iYdwSVq7et8mPArZYNIahzZqP+k5MdWlI8RCzSRIbkw/TE3ZjMTb2cX9al9E9Beuu7aY
+         fCtus6L/jGqXqa3A1b9RmnmLIdzhgPt5rV4n0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=ZA9V5lO/+F+bF8jz1FqVjCsKgJDekjpTcf5RC67Rb+U=;
-        b=f2KkjFRz5Z8+gPW73uUochJzmlI4KhesIKzObn8L2nldgvGfPFgkTmZYrf/KBoJyGy
-         Kg1sg/OoQi1pYjDV8QX/fdepMWki4QPbYJKkQ2/J1mFwMqolSzCxpdoTpJC1kR5PzWKQ
-         7CYDbre0ScsyJH9hdez48N0SbFUuCQOkVTZl0uRFG8pIlaQeole9OKvq91uoBXSJN0Fb
-         hVyCN7Vlfv/WehcanPjDzqAXbqOXUhFysNF8j3kfeMsp/vtbP2+SkC6l+bUTNl9qRKqp
-         p8SWtXaXv0O11EOGmRDoFmK39GSGcwgHO6QmY6Z4f8pnCBW5ZHI14SyzUNsYR5uofyD3
-         VblA==
-X-Gm-Message-State: AOAM531twZ1dS/VuBEDujElJjcKYAleKFDQtxloYUo/StbltTB8aUcjA
-        t/7Tqn3nXn3g8/1WgSxCmb+/jPAvsonRHXovZLpIQpe0BBusa0lrp49qV+INgbqTy1GGcu3i2RF
-        +Q+CLpfP1zuG5Sd+TRfVamJdbEbNjdVzFphmzXh6JxXWat3SNCtkqTe0uQbRF5NF7MFEekR7h
-X-Google-Smtp-Source: ABdhPJzMkGHc7O1/Q7FmKZm+eLOtBU+xuDYiFF/nyYQhd08PMvWlme4OLTlm9m4QdO//1tq2jicPIWNqvZsR
-X-Received: from suichen.svl.corp.google.com ([2620:15c:2c5:13:ae7d:134a:180d:9b32])
- (user=suichen job=sendgmr) by 2002:a25:6406:0:b0:64b:17e3:9dd with SMTP id
- y6-20020a256406000000b0064b17e309ddmr21661588ybb.186.1652781921142; Tue, 17
- May 2022 03:05:21 -0700 (PDT)
-Date:   Tue, 17 May 2022 03:05:04 -0700
-Message-Id: <20220517100505.2569874-1-suichen@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [RFC Patch v5 0/1] i2c: core: Adapter and client stats as sysfs attributes
-From:   Sui Chen <suichen@google.com>
-To:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        wsa@kernel.org, openbmc@lists.ozlabs.org, tali.perry1@gmail.com
-Cc:     joel@jms.id.au, andrew@aj.id.au, benjaminfair@google.com,
-        krellan@google.com, Sui Chen <suichen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HyGdG5hdHtnAbHtcbhlYB3o/m/Iup0FsxrmZdcSyIhY=;
+        b=T3QPYzTzlL3dMciSIbMK+nDxuncHps+2+CUdfZUH0rBARd4G/nYylRPIn7o3mZJARE
+         9/hg0nIdQza441nC7F8amAPfl/cgwKPRBZ5GXg78+Fxz2roEb7Qr4FzlPyuGNXcpsyO1
+         HerHOpB+L9jR3aRzOgHnYW7KpI7xxsaD6Yq1HgPfpivp11HS45r05sMH5d5qm5aE/8XB
+         W1rLO76C1JDgHOnxSBdyXdxfpnXpitDL/+DDL1RoMx2fSwHqyuC++B7Oiep3MoihquOi
+         FZ8UraMv3eB3DD+I3JEJIB44gA+Do0VUsLsEE5Ihh4g7O97Cy4T/ZQpelpEq65HQ4TeX
+         nB+w==
+X-Gm-Message-State: AOAM530IKHutafmcr2bG8UsTQGipkWrydUFCkYLqN3oLioLMEnHr2Hvf
+        0jIdIY/cMiNU9Ixm6GUQK98a0A==
+X-Google-Smtp-Source: ABdhPJy/lII4hO4bT2sYwnq0DcH6vcVkDel6Xf6SwWAJ3naxf+4MmDGYnJxePcBcZ7c6pxuTKCJerQ==
+X-Received: by 2002:a7b:cf36:0:b0:394:e58:b64b with SMTP id m22-20020a7bcf36000000b003940e58b64bmr31134145wmg.125.1652781949497;
+        Tue, 17 May 2022 03:05:49 -0700 (PDT)
+Received: from localhost.localdomain (mob-176-245-118-121.net.vodafone.it. [176.245.118.121])
+        by smtp.gmail.com with ESMTPSA id s2-20020adfa282000000b0020e0b9487besm1528730wra.109.2022.05.17.03.05.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 03:05:48 -0700 (PDT)
+From:   Michael Trimarchi <michael@amarulasolutions.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH] net: fec: Avoid to allocate rx buffer using ATOMIC in ndo_open
+Date:   Tue, 17 May 2022 12:05:44 +0200
+Message-Id: <20220517100544.2326499-1-michael@amarulasolutions.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change adds statistics to the i2c_adapter structure as Wolfram
-previously suggested
-(https://lore.kernel.org/linux-i2c/YgEYEk355t8C4J1x@shikoro/).
-It also adds relevant statistics to the per-address i2c_clients where
-applicable.
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The list of statistics are:
-
-- bus_errors
-- nacks
-- recovery_successes / recovery_failures (only applicable to
-  i2c_adapter)
-- timeouts
-- messages (only applicable to i2c_client)
-- transfers (only applicable to i2c_adapter)
-
-The statistics are located in /sys/class/i2c-adapter/i2c-x/stats and
-/sys/class/i2c-adapter/i2c-x/x-xxxx/stats respectively.
-
-Since the counting is done in __i2c_transfer, where the number of
-messages transferred is not known upon error, the error counters are
-attributed to all unique addresses that appear in the message list
-passed into __i2c_transfer.
-
-Currently an rbtree is used to find the i2c_client located at a certain
-address. Would be happy to know if there is a better way of doing this.
-
-Thanks!
-
-Sui Chen (1):
-  i2c debug counters as sysfs attributes
-
- drivers/i2c/i2c-core-base.c | 240 +++++++++++++++++++++++++++++++++++-
- drivers/i2c/i2c-dev.c       |  94 ++++++++++++++
- include/linux/i2c.h         |  41 ++++++
- 3 files changed, 374 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 9f33ec838b52..09eb6ea9a584 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3076,7 +3076,7 @@ fec_enet_alloc_rxq_buffers(struct net_device *ndev, unsigned int queue)
+ 	rxq = fep->rx_queue[queue];
+ 	bdp = rxq->bd.base;
+ 	for (i = 0; i < rxq->bd.ring_size; i++) {
+-		skb = netdev_alloc_skb(ndev, FEC_ENET_RX_FRSIZE);
++		skb = __netdev_alloc_skb(ndev, FEC_ENET_RX_FRSIZE, GFP_KERNEL);
+ 		if (!skb)
+ 			goto err_alloc;
+ 
 -- 
-2.36.0.550.gb090851708-goog
+2.25.1
 
