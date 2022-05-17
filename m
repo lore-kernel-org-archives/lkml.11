@@ -2,111 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E46C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF69C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231402AbiEQWq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
+        id S231437AbiEQWsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbiEQWq5 (ORCPT
+        with ESMTP id S231219AbiEQWsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:46:57 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69563FD96
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:46:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652827616; x=1684363616;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UPbb30qoGysGCMXmrylZxu9LDvbk/g1BrvZvUwm92gE=;
-  b=kywTdcAsYEveIIeAjSNy2luiwIos45EkgsczZ6+Z0PEk4lB3eIKZ6cYa
-   gDywFYzrIrvO1/GZiqHYrEMbAxf7UuBv6ocptJu3qpzQ8yVhSI7WGbWZi
-   ASMou6C2LnFhrMjXd1hfBtDterpnU/xX9QVmnPIf5c5kbmeDfgvWXbEV1
-   TxLd4i0RjTYILkoBRi7R3LqfW/xI6lMpJfoKqGyGjg6lDx108aD8P8Ylr
-   PZgilogDoVlv2+XFk1uQCNgJi9UlAEBpTzsBW6Nibd7ZOlQfGLgTuf3ba
-   qXMcyw/zc4eXqYKzrk1wUHmYWT4e7hAP0tF4AOXV2NgTcHzVj6OouNlhD
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271309955"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="271309955"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 15:46:56 -0700
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="597388075"
-Received: from hrong1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.21.169])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 15:46:55 -0700
-Date:   Tue, 17 May 2022 15:46:55 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        Tue, 17 May 2022 18:48:36 -0400
+X-Greylist: delayed 554 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 15:48:35 PDT
+Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D6B52E6E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:48:34 -0700 (PDT)
+X-Envelope-From: thomas@x-berg.in-berlin.de
+Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
+        by einhorn.in-berlin.de  with ESMTPS id 24HMcbtL364300
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 00:38:37 +0200
+Received: from thomas by x-berg.in-berlin.de with local (Exim 4.94.2)
+        (envelope-from <thomas@x-berg.in-berlin.de>)
+        id 1nr5pt-0007Y6-GD; Wed, 18 May 2022 00:38:37 +0200
+Date:   Wed, 18 May 2022 00:38:37 +0200
+From:   Thomas Osterried <thomas@osterried.de>
+To:     Lu Wei <luwei32@huawei.com>
+Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V10 33/44] kmap: Make kmap work for devmap protected pages
-Message-ID: <YoQl3yLa4iDCjicO@iweiny-desk3>
-References: <20220419170649.1022246-1-ira.weiny@intel.com>
- <20220419170649.1022246-34-ira.weiny@intel.com>
- <Ymq3yrQ3rmgnbX1o@infradead.org>
- <Ynxh/5jewIuGwb5d@iweiny-desk3>
+Subject: Re: [PATCH net-next] ax25: merge repeat codes in
+ ax25_dev_device_down()
+Message-ID: <YoQj7eND7/2KSBFs@x-berg.in-berlin.de>
+References: <20220516062804.254742-1-luwei32@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ynxh/5jewIuGwb5d@iweiny-desk3>
+In-Reply-To: <20220516062804.254742-1-luwei32@huawei.com>
+Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 06:25:19PM -0700, Ira wrote:
-> On Thu, Apr 28, 2022 at 08:50:34AM -0700, Christoph Hellwig wrote:
-> > On Tue, Apr 19, 2022 at 10:06:38AM -0700, ira.weiny@intel.com wrote:
-> > > index a77be5630209..32ed07c2994b 100644
-> > > --- a/include/linux/highmem-internal.h
-> > > +++ b/include/linux/highmem-internal.h
-> > > @@ -151,6 +151,8 @@ static inline void totalhigh_pages_add(long count)
-> > >  
-> > >  #else /* CONFIG_HIGHMEM */
-> > >  
-> > > +#include <linux/memremap.h>
-> > 
-> > Uuuh, I'd really prefer to avoid having to pull in memremap.h into
-> > basically the whole kernel build.
-> > 
+Hello,
+
+three comments.
+
+
+1. We need time for questions and discussions
+
+In the past, we had several problems with patches that went upstream which
+obviously not have been tested.
+We have several requests by our community at linux-hams, that we need
+to have a chance to read a patch proposal, and have time to test it,
+before things become worse.
+
+
+2. Due to some patches that went in the current torwalds-tree, ax25 became
+unusable in a production environment (!).
+
+I'll come to this in another mail, with description and proposal for a fix.
+We are currently testing it and like to send it on linux-hams with request
+to comment and test.
+
+
+3. About this patch for ax25_dev_device_down() which reached netdev-next:
+
+Looks good regarding the changes.
+
+But when looking at it, it raises a question due to an older patch, that introduced
+dev_put_track().
+It's just a question of comprehension:
+  If the position of the device that has to be removed is
+    - at the head of the device list: do dev_put_track()
+    - in the the device list or at the end: dev_put_track()
+    - not in the device list: do _not_ dev_put_track().
+      Why? - Not obviously clear. I think, because an interface could exist,
+      but is set to down and thus is not part of the list (-> then you can't see
+      it as /proc/sys/net/ax25/<name>).
+
+
+-> Personally, I'd consider
+
+- this better readable:
+
+	int found = 0;
+
+	if (ax25_dev_list == ax25_dev) {
+		ax25_dev_list = s->next;
+		found = 1;
+	} else {
+		for (s = ax25_dev_list; s != NULL && s->next != NULL; s = s->next) {
+			if (s->next == ax25_dev) {
+				s->next = s->next->next;
+				found = 1;
+				break;
+			}
+		}
+	}
+
+	spin_unlock_bh(&ax25_dev_lock);
+	ax25_dev_put(ax25_dev);
+	dev->ax25_ptr = NULL;
+	if (found)
+		dev_put_track(dev, &ax25_dev->dev_tracker);
+	ax25_dev_put(ax25_dev);
+
+
+- ..or with goto:
+
+	int found = 1;
+
+	if (ax25_dev_list == ax25_dev) {
+		ax25_dev_list = s->next;
+		goto out;
+	}
+	for (s = ax25_dev_list; s != NULL && s->next != NULL; s = s->next) {
+		if (s->next == ax25_dev) {
+			s->next = s->next->next;
+			goto out;
+		}
+	}
+	found = 0;
+
+out:
+	spin_unlock_bh(&ax25_dev_lock);
+	ax25_dev_put(ax25_dev);
+	dev->ax25_ptr = NULL;
+	if (found)
+		dev_put_track(dev, &ax25_dev->dev_tracker);
+	ax25_dev_put(ax25_dev);
+
+
+
+- ..than this:
+
+	if ((s = ax25_dev_list) == ax25_dev) {
+		ax25_dev_list = s->next;
+		goto unlock_put;
+	}
+
+	while (s != NULL && s->next != NULL) {
+		if (s->next == ax25_dev) {
+			s->next = ax25_dev->next;
+			goto unlock_put;
+		}
+
+		s = s->next;
+	}
+	spin_unlock_bh(&ax25_dev_lock);
+	dev->ax25_ptr = NULL;
+	ax25_dev_put(ax25_dev);
+	return;
+
+unlock_put:
+	spin_unlock_bh(&ax25_dev_lock);
+	ax25_dev_put(ax25_dev);
+	dev->ax25_ptr = NULL;
+	dev_put_track(dev, &ax25_dev->dev_tracker);
+	ax25_dev_put(ax25_dev);
+
+
+
+vy 73,
+	- Thomas  dl9sau
+
+
+On Mon, May 16, 2022 at 02:28:04PM +0800, Lu Wei wrote:
+> Merge repeat codes to reduce the duplication.
 > 
-> Fair enough.  What should I call a header to store the new pgmap_set_*() calls?
+> Signed-off-by: Lu Wei <luwei32@huawei.com>
+> ---
+>  net/ax25/ax25_dev.c | 22 ++++++++++------------
+>  1 file changed, 10 insertions(+), 12 deletions(-)
 > 
-> devmap_prot.h
+> diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
+> index d2a244e1c260..b80fccbac62a 100644
+> --- a/net/ax25/ax25_dev.c
+> +++ b/net/ax25/ax25_dev.c
+> @@ -115,23 +115,13 @@ void ax25_dev_device_down(struct net_device *dev)
+>  
+>  	if ((s = ax25_dev_list) == ax25_dev) {
+>  		ax25_dev_list = s->next;
+> -		spin_unlock_bh(&ax25_dev_lock);
+> -		ax25_dev_put(ax25_dev);
+> -		dev->ax25_ptr = NULL;
+> -		dev_put_track(dev, &ax25_dev->dev_tracker);
+> -		ax25_dev_put(ax25_dev);
+> -		return;
+> +		goto unlock_put;
+>  	}
+>  
+>  	while (s != NULL && s->next != NULL) {
+>  		if (s->next == ax25_dev) {
+>  			s->next = ax25_dev->next;
+> -			spin_unlock_bh(&ax25_dev_lock);
+> -			ax25_dev_put(ax25_dev);
+> -			dev->ax25_ptr = NULL;
+> -			dev_put_track(dev, &ax25_dev->dev_tracker);
+> -			ax25_dev_put(ax25_dev);
+> -			return;
+> +			goto unlock_put;
+>  		}
+>  
+>  		s = s->next;
+> @@ -139,6 +129,14 @@ void ax25_dev_device_down(struct net_device *dev)
+>  	spin_unlock_bh(&ax25_dev_lock);
+>  	dev->ax25_ptr = NULL;
+>  	ax25_dev_put(ax25_dev);
+> +	return;
+> +
+> +unlock_put:
+> +	spin_unlock_bh(&ax25_dev_lock);
+> +	ax25_dev_put(ax25_dev);
+> +	dev->ax25_ptr = NULL;
+> +	dev_put_track(dev, &ax25_dev->dev_tracker);
+> +	ax25_dev_put(ax25_dev);
+>  }
+>  
+>  int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
+> -- 
+> 2.17.1
 > 
-> ?
 > 
-> Or I could just add the calls into highmem-internal.h.  That might be more
-> appropriate given the new direction of that interface.
-> 
-> I think I'm leaning toward that vs adding another header.
-
-Ok there is a trade off here which I'm not sure is a good idea.
-
-In order to make kmap faster I carefully placed the devmap_protected() call
-completely inline.[1]  This specifically checks the PGMAP_PROTECTION flag in
-dev_pagemap.[1]
-
-I see only 2 ways of not including memremap.h in highmem-internal.h.
-
-1) Make this check a function call and place it in memremap.c
-2) Move struct dev_pagemap (and it's dependencies) to another header.
-
-Number 2 negates any positive effect of splitting the header file.
-
-Number 1 is going to force some overhead on all ZONE_DEVICE pages if PMEM is in
-the system.
-
-Do you think the extra run time overhead is a reasonable trade off to
-eliminating the header?
-
-Ira
-
-[1] https://lore.kernel.org/lkml/20220419170649.1022246-29-ira.weiny@intel.com/
