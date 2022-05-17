@@ -2,70 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E27C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350214AbiEQPit (ORCPT
+        id S1350258AbiEQPji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
+        Tue, 17 May 2022 11:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350563AbiEQPif (ORCPT
+        with ESMTP id S230267AbiEQPjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:38:35 -0400
-Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C171D50468;
-        Tue, 17 May 2022 08:38:30 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id C621FFF88D;
-        Tue, 17 May 2022 15:38:29 +0000 (UTC)
-Date:   Tue, 17 May 2022 17:38:26 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Message-ID: <20220517173821.445c5e90.max@enpas.org>
-In-Reply-To: <22590a57-c7c6-39c6-06d5-11c6e4e1534b@hartkopp.net>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
-        <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
-        <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
-        <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
-        <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
-        <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
-        <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
-        <20220517104545.eslountqjppvcnz2@pengutronix.de>
-        <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
-        <20220517141404.578d188a.max@enpas.org>
-        <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
-        <20220517143921.08458f2c.max@enpas.org>
-        <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
-        <20220517154301.5bf99ba9.max@enpas.org>
-        <22590a57-c7c6-39c6-06d5-11c6e4e1534b@hartkopp.net>
+        Tue, 17 May 2022 11:39:35 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B10227
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:39:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652801974; x=1684337974;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vjEkaJTkjDDJBA3jZlCF4IOQPC13hVXrVqeqKghrK44=;
+  b=ZnLrhydA9V3mKwa+bMjBJ5iEzYi6vaDi76t+XMO6DuZuIJszyLCwdxQ1
+   yGkWoJlBDOlqzNU+mW+Ran7N0wfeaxaCBnSkiDxuSWtKWZQvwIO/84RMK
+   xXuSOyOto+BwOH/yqEHAOPRAdWmzEk3daxLJgePRandz7SXM138yF6SOr
+   qXykrljHQbVA2eeU80Bm76unwjEHIps2Q04H54vguTKAJja6X08f/AjHM
+   GEUs0w9rcmK739xfqFXgbXHuYqlATeK7MRO5H7iC5ZQSkrSYA9Wwy5H1T
+   3WHDJwEVSeV6adh0zNIU7mXifWYFQHk24VRystFwbSMrJR7x3xD7yfgbZ
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="156418168"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 08:37:56 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 17 May 2022 08:37:56 -0700
+Received: from ROU-LT-M43238L.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 17 May 2022 08:37:54 -0700
+From:   <nicolas.ferre@microchip.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        <arm@kernel.org>, <soc@kernel.org>
+CC:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Linux Kernel list <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [GIT PULL] ARM: at91: dt for 5.19 #2
+Date:   Tue, 17 May 2022 17:32:52 +0200
+Message-ID: <20220517153252.92393-1-nicolas.ferre@microchip.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Organization: microchip
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 17 May 2022 16:35:05 +0200
-Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-> I think it should be even more simple.
-> 
-> When you enter the current Kconfig page of "CAN Device Drivers" every 
-> selection of vcan/vxcan/slcan should directly select CAN_DEV_SW.
+Arnd, Olof,
 
-I'm a bit lost - what would CAN_DEV_SW do?
+Here is the (late) second batch of dt changes for 5.19. It's not crucial code,
+so you can just postopone its inclusion without any problem.
 
-If it enables can_dropped_invalid_skb(), then the HW drivers would also
-need to depend on CAN_DEV_SW directly or indirectly, or am I missing
-something?
+Thanks, best regards,
+  Nicolas
 
+The following changes since commit 46a9556d977e290a18890fb4cf07d19b0da16f31:
 
+  ARM: dts: kswitch-d10: enable networking (2022-05-13 16:42:43 +0300)
 
-Max
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/at91/linux.git tags/at91-dt-5.19-2
+
+for you to fetch changes up to 821cb05f6b4b024847624de0d0e5765c7b09b947:
+
+  ARM: dts: at91: sama7g5ek: add node for PDMC0 (2022-05-17 17:14:42 +0200)
+
+----------------------------------------------------------------
+AT91 DT #2 for 5.19:
+
+- at91: more DT compliance updates for RTC and RTT nodes
+- at91: sama7g5: add microphone support
+
+----------------------------------------------------------------
+Codrin Ciubotariu (2):
+      ARM: dts: at91: sama7g5: add nodes for PDMC
+      ARM: dts: at91: sama7g5ek: add node for PDMC0
+
+Sergiu Moga (2):
+      ARM: dts: at91: Add the required 'atmel, rtt-rtc-time-reg' property
+      ARM: dts: at91: Use the generic "rtc" node name for the rtt IPs
+
+ arch/arm/boot/dts/at91-sama7g5ek.dts | 21 ++++++++++++++++++++-
+ arch/arm/boot/dts/at91sam9261ek.dts  |  4 ++++
+ arch/arm/boot/dts/at91sam9263ek.dts  |  4 ++++
+ arch/arm/boot/dts/at91sam9rlek.dts   |  4 ++++
+ arch/arm/boot/dts/sam9x60.dtsi       |  2 +-
+ arch/arm/boot/dts/sama7g5.dtsi       | 26 +++++++++++++++++++++++++-
+ 6 files changed, 58 insertions(+), 3 deletions(-)
+
+-- 
+Nicolas Ferre
