@@ -2,221 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C06C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E71AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346388AbiEQMrY (ORCPT
+        id S1346355AbiEQMrq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42316 "EHLO
+        Tue, 17 May 2022 08:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346352AbiEQMrT (ORCPT
+        with ESMTP id S1346386AbiEQMrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:47:19 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A813C707;
-        Tue, 17 May 2022 05:47:17 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 441B71F8B9;
-        Tue, 17 May 2022 12:47:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652791636;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0W2aB+gcSjG4kNtv/FxRZAREXphQHFMH1ilNeTwZmUA=;
-        b=k2psAUXokp98i31xB04jcbNRqFQR14AQgy9tjflO6J9LysSMujnjCejo/Fa4zbTev0ooEg
-        2CQo/BW+ZU4ZxpUSPql0p60m5wulSKEgwd8XwK7XH+s52P8eXn7I41Pn2OYcJUUrWI0U7c
-        fs2AfbH+hzjOovyl3SuUEr76V/g/Ov8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652791636;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0W2aB+gcSjG4kNtv/FxRZAREXphQHFMH1ilNeTwZmUA=;
-        b=fRTsocok6zVIpkBsGGHYSn41srt0D7U7KTJM2r3q1Rhulmrl8S1WyQKNhUEKW3h/Rnw2yw
-        P1TzucC02HahBQCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D82C413305;
-        Tue, 17 May 2022 12:47:15 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id x6q+M1OZg2KuHgAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 17 May 2022 12:47:15 +0000
-Date:   Tue, 17 May 2022 14:42:57 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
-        pankydev8@gmail.com, dsterba@suse.com, hch@lst.de,
-        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, jiangbo.365@bytedance.com,
-        linux-block@vger.kernel.org, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, dm-devel@redhat.com
-Subject: Re: [PATCH v4 08/13] btrfs:zoned: make sb for npo2 zone devices
- align with sb log offsets
-Message-ID: <20220517124257.GD18596@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
-        axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
-        pankydev8@gmail.com, dsterba@suse.com, hch@lst.de,
-        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, jiangbo.365@bytedance.com,
-        linux-block@vger.kernel.org, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, dm-devel@redhat.com
-References: <20220516165416.171196-1-p.raghav@samsung.com>
- <CGME20220516165429eucas1p272c8b4325a488675f08f2d7016aa6230@eucas1p2.samsung.com>
- <20220516165416.171196-9-p.raghav@samsung.com>
+        Tue, 17 May 2022 08:47:23 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C9F3C4B7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 05:47:21 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id q15so843566pgr.4
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 05:47:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uPzI2NrDruMsQhpRvojLxqAMj39DRNPyO6rdqBSN6WI=;
+        b=8MnH6yhBAp56fktUprxfKAWWVHVAc10JTu9Cu3lZkdbut6LdHfKVs6lUqV0hKis3kO
+         7JHDLaQBSlglECY2YwhiCXKBAMuAgpb+/S5hPklqFZFOYsn4jvR59jxlTfEZKb+7muhg
+         pXBAxpnN5Uca1L5YFqmvqN+PEnBkZDtH4Yn85SwLx8RsNnhmdVwIbcww7HXHUsAXRSn7
+         +eYmoHri323IPMJd4LYxD8DVMWIp8bgb8A8HUJZ7ODKO/WqkLJYPevkR/amqvi+HJ8Xs
+         n3Hw5W28f1Oopd7cfnE3q5CE6xaMOUvNBj2wCMuYMIitIlZ6vktHucsRjoseTHV1XQwe
+         vqeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uPzI2NrDruMsQhpRvojLxqAMj39DRNPyO6rdqBSN6WI=;
+        b=M3oF9jTJky7jzqjaD7pWsGHeZ4mZqGzm90394AMQ+Apv9kgQQsE157LJzQyNVb0tG4
+         SNm6BAVfCll6ITZYPNB4umz4a7L1E5AXJnhU9+3JwbFo/blHIaYvnVJqWSXT4VfdmX9K
+         IcadF9FxYblY5x8VTg9x3Y1HiQr4h5iDxoOg0Uic0PNL89BLxJEvvZcmPUVU2vhLAdMo
+         BhXfZdrzseGLdWBLBz7SeS3axerQ7CLmSZRjDQMW958htylO/joFoL7BZdbD4P8EUTrp
+         PSRbzyHKSAFB+07nlQk8Q2EVcxqKCe8zlwpoR2j5BWVckcf3wvwnARk4J4tqs2BX7Cp3
+         Zj0g==
+X-Gm-Message-State: AOAM533PZDFacnQyULYd4+FvpCAMQTIzOZFONEgsK0g+ed0nALxsyDhv
+        sfDUCd9yn2N8NqGGnofV/Q2vFQ==
+X-Google-Smtp-Source: ABdhPJx1CPqw/ut3dzEX3LKjQ08PsOTU2iRbFD2/TlBgCe3+4sFB4uej65dGSXc4brDcrHOKXOCGuQ==
+X-Received: by 2002:a05:6a00:2484:b0:50e:68e:d5a5 with SMTP id c4-20020a056a00248400b0050e068ed5a5mr22340952pfv.47.1652791641262;
+        Tue, 17 May 2022 05:47:21 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id y13-20020a170902b48d00b00161ac982b52sm1372754plr.95.2022.05.17.05.47.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 05:47:19 -0700 (PDT)
+Message-ID: <3d271554-9ddc-07ad-3ff8-30aba31f8bf2@kernel.dk>
+Date:   Tue, 17 May 2022 06:47:17 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516165416.171196-9-p.raghav@samsung.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [REPORT] Use-after-free Read in __fdget_raw in v5.10.y
+Content-Language: en-US
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <YoOJ/T4QRKC+fAZE@google.com>
+ <97cba3e1-4ef7-0a17-8456-e0787d6702c6@kernel.dk>
+ <YoOT7Cyobsed5IE3@google.com>
+ <d503d5ff-4bc5-2bd0-00d3-cd7b0a0724cb@kernel.dk>
+ <YoOW2+ov8KF1YcYF@google.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <YoOW2+ov8KF1YcYF@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 06:54:11PM +0200, Pankaj Raghav wrote:
-> Superblocks for zoned devices are fixed as 2 zones at 0, 512GB and 4TB.
-> These are fixed at these locations so that recovery tools can reliably
-> retrieve the superblocks even if one of the mirror gets corrupted.
+On 5/17/22 6:36 AM, Lee Jones wrote:
+> On Tue, 17 May 2022, Jens Axboe wrote:
 > 
-> power of 2 zone sizes align at these offsets irrespective of their
-> value but non power of 2 zone sizes will not align.
+>> On 5/17/22 6:24 AM, Lee Jones wrote:
+>>> On Tue, 17 May 2022, Jens Axboe wrote:
+>>>
+>>>> On 5/17/22 5:41 AM, Lee Jones wrote:
+>>>>> Good afternoon Jens, Pavel, et al.,
+>>>>>
+>>>>> Not sure if you are presently aware, but there appears to be a
+>>>>> use-after-free issue affecting the io_uring worker driver (fs/io-wq.c)
+>>>>> in Stable v5.10.y.
+>>>>>
+>>>>> The full sysbot report can be seen below [0].
+>>>>>
+>>>>> The C-reproducer has been placed below that [1].
+>>>>>
+>>>>> I had great success running this reproducer in an infinite loop.
+>>>>>
+>>>>> My colleague reverse-bisected the fixing commit to:
+>>>>>
+>>>>>   commit fb3a1f6c745ccd896afadf6e2d6f073e871d38ba
+>>>>>   Author: Jens Axboe <axboe@kernel.dk>
+>>>>>   Date:   Fri Feb 26 09:47:20 2021 -0700
+>>>>>
+>>>>>        io-wq: have manager wait for all workers to exit
+>>>>>
+>>>>>        Instead of having to wait separately on workers and manager, just have
+>>>>>        the manager wait on the workers. We use an atomic_t for the reference
+>>>>>        here, as we need to start at 0 and allow increment from that. Since the
+>>>>>        number of workers is naturally capped by the allowed nr of processes,
+>>>>>        and that uses an int, there is no risk of overflow.
+>>>>>
+>>>>>        Signed-off-by: Jens Axboe <axboe@kernel.dk>
+>>>>>
+>>>>>     fs/io-wq.c | 30 ++++++++++++++++++++++--------
+>>>>>     1 file changed, 22 insertions(+), 8 deletions(-)
+>>>>
+>>>> Does this fix it:
+>>>>
+>>>> commit 886d0137f104a440d9dfa1d16efc1db06c9a2c02
+>>>> Author: Jens Axboe <axboe@kernel.dk>
+>>>> Date:   Fri Mar 5 12:59:30 2021 -0700
+>>>>
+>>>>     io-wq: fix race in freeing 'wq' and worker access
+>>>>
+>>>> Looks like it didn't make it into 5.10-stable, but we can certainly
+>>>> rectify that.
+>>>
+>>> Thanks for your quick response Jens.
+>>>
+>>> This patch doesn't apply cleanly to v5.10.y.
+>>
+>> This is probably why it never made it into 5.10-stable :-/
 > 
-> To make sure the first zone at mirror 1 and mirror 2 align, write zero
-> operation is performed to move the write pointer of the first zone to
-> the expected offset. This operation is performed only after a zone reset
-> of the first zone, i.e., when the second zone that contains the sb is FULL.
-
-Is it a good idea to do the "write zeros", instead of a plain "set write
-pointer"? I assume setting write pointer is instant, while writing
-potentially hundreds of megabytes may take significiant time. As the
-functions may be called from random contexts, the increased time may
-become a problem.
-
-> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
-> ---
->  fs/btrfs/zoned.c | 68 ++++++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 63 insertions(+), 5 deletions(-)
+> Right.  It doesn't apply at all unfortunately.
 > 
-> diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
-> index 3023c871e..805aeaa76 100644
-> --- a/fs/btrfs/zoned.c
-> +++ b/fs/btrfs/zoned.c
-> @@ -760,11 +760,44 @@ int btrfs_check_mountopts_zoned(struct btrfs_fs_info *info)
->  	return 0;
->  }
->  
-> +static int fill_sb_wp_offset(struct block_device *bdev, struct blk_zone *zone,
-> +			     int mirror, u64 *wp_ret)
-> +{
-> +	u64 offset = 0;
-> +	int ret = 0;
-> +
-> +	ASSERT(!is_power_of_two_u64(zone->len));
-> +	ASSERT(zone->wp == zone->start);
-> +	ASSERT(mirror != 0);
+>>> I'll have a go at back-porting it.  Please bear with me.
+>>
+>> Let me know if you into issues with that and I can help out.
+> 
+> I think the dependency list is too big.
+> 
+> Too much has changed that was never back-ported.
+> 
+> Actually the list of patches pertaining to fs/io-wq.c alone isn't so
+> bad, I did start to back-port them all but some of the big ones have
+> fs/io_uring.c changes incorporated and that list is huge (256 patches
+> from v5.10 to the fixing patch mentioned above).
 
-This could simply accept 0 as the mirror offset too, the calculation is
-trivial.
+The problem is that 5.12 went to the new worker setup, and this patch
+landed after that even though it also applies to the pre-native workers.
+Hence the dependency chain isn't really as long as it seems, probably
+just a few patches backporting the change references and completions.
 
-> +
-> +	switch (mirror) {
-> +	case 1:
-> +		div64_u64_rem(BTRFS_SB_LOG_FIRST_OFFSET >> SECTOR_SHIFT,
-> +			      zone->len, &offset);
-> +		break;
-> +	case 2:
-> +		div64_u64_rem(BTRFS_SB_LOG_SECOND_OFFSET >> SECTOR_SHIFT,
-> +			      zone->len, &offset);
-> +		break;
-> +	}
-> +
-> +	ret =  blkdev_issue_zeroout(bdev, zone->start, offset, GFP_NOFS, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	zone->wp += offset;
-> +	zone->cond = BLK_ZONE_COND_IMP_OPEN;
-> +	*wp_ret = zone->wp << SECTOR_SHIFT;
-> +
-> +	return 0;
-> +}
-> +
->  static int sb_log_location(struct block_device *bdev, struct blk_zone *zones,
-> -			   int rw, u64 *bytenr_ret)
-> +			   int rw, int mirror, u64 *bytenr_ret)
->  {
->  	u64 wp;
->  	int ret;
-> +	bool zones_empty = false;
->  
->  	if (zones[0].type == BLK_ZONE_TYPE_CONVENTIONAL) {
->  		*bytenr_ret = zones[0].start << SECTOR_SHIFT;
-> @@ -775,13 +808,31 @@ static int sb_log_location(struct block_device *bdev, struct blk_zone *zones,
->  	if (ret != -ENOENT && ret < 0)
->  		return ret;
->  
-> +	if (ret == -ENOENT)
-> +		zones_empty = true;
-> +
->  	if (rw == WRITE) {
->  		struct blk_zone *reset = NULL;
-> +		bool is_sb_offset_write_req = false;
-> +		u32 reset_zone_nr = -1;
->  
-> -		if (wp == zones[0].start << SECTOR_SHIFT)
-> +		if (wp == zones[0].start << SECTOR_SHIFT) {
->  			reset = &zones[0];
-> -		else if (wp == zones[1].start << SECTOR_SHIFT)
-> +			reset_zone_nr = 0;
-> +		} else if (wp == zones[1].start << SECTOR_SHIFT) {
->  			reset = &zones[1];
-> +			reset_zone_nr = 1;
-> +		}
-> +
-> +		/*
-> +		 * Non po2 zone sizes will not align naturally at
-> +		 * mirror 1 (512GB) and mirror 2 (4TB). The wp of the
-> +		 * 1st zone in those superblock mirrors need to be
-> +		 * moved to align at those offsets.
-> +		 */
+I'll take a look this afternoon.
 
-Please move this comment to the helper fill_sb_wp_offset itself, there
-it's more discoverable.
+-- 
+Jens Axboe
 
-> +		is_sb_offset_write_req =
-> +			(zones_empty || (reset_zone_nr == 0)) && mirror &&
-> +			!is_power_of_2(zones[0].len);
-
-Accepting 0 as the mirror number would also get rid of this wild
-expression substituting and 'if'.
-
->  
->  		if (reset && reset->cond != BLK_ZONE_COND_EMPTY) {
->  			ASSERT(sb_zone_is_full(reset));
-> @@ -795,6 +846,13 @@ static int sb_log_location(struct block_device *bdev, struct blk_zone *zones,
->  			reset->cond = BLK_ZONE_COND_EMPTY;
->  			reset->wp = reset->start;
->  		}
-> +
-> +		if (is_sb_offset_write_req) {
-
-And get rid of the conditional. The point of supporting both po2 and
-nonpo2 is to hide any implementation details to wrappers as much as
-possible.
-
-> +			ret = fill_sb_wp_offset(bdev, &zones[0], mirror, &wp);
-> +			if (ret)
-> +				return ret;
-> +		}
-> +
->  	} else if (ret != -ENOENT) {
->  		/*
->  		 * For READ, we want the previous one. Move write pointer to
