@@ -2,158 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7708C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245642AbiEQKlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
+        id S1344462AbiEQKmW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:42:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344446AbiEQKlB (ORCPT
+        with ESMTP id S1344397AbiEQKl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:41:01 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B784B49A
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:41:00 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E845A1042;
-        Tue, 17 May 2022 03:40:59 -0700 (PDT)
-Received: from [10.57.82.55] (unknown [10.57.82.55])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 590E93F66F;
-        Tue, 17 May 2022 03:40:58 -0700 (PDT)
-Message-ID: <f5b78c9c-312e-70ab-ecbb-f14623a4b6e3@arm.com>
-Date:   Tue, 17 May 2022 11:40:52 +0100
+        Tue, 17 May 2022 06:41:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F0DBF7B
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:41:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F26C7B81829
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 10:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95684C34100;
+        Tue, 17 May 2022 10:41:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652784105;
+        bh=rEjHDbuf51t9QAOOo/GMmQiQFx59C37vt/2A1ZBKTyE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LkbnQ0viorSecGNLevKgXLYcHzYv0JUcwbBmLFv1aMjGQEBoXZ/q/kjqZ/Jd+Eds4
+         WdCH5ZWwQAC/5V9eVmkYwq9nj4pmVGgr5dldC3EJqTRwN+9kbcWEV3CIy4Y8h6p2ZA
+         5VZi9GocsHbsvHHJQPlYn1aUMeOmY5AhpFybGYgDcMafKKyKItCZvI/FMymFIkA9X1
+         /LPH4Lbc+RTy/r1K3y6Hh7lU1a4QRutqz1H5/DzdwNRIiPR47zCBsmSmy813ggwqI9
+         Kwy//d9KWMhkejdiSChQrcgNYGxdGI0zUAB4Xdjib+/SgNgFqo74u8XdVC4dyRXw3S
+         3HZ8ZqSa6pTqg==
+From:   Chao Yu <chao@kernel.org>
+To:     xiang@kernel.org
+Cc:     chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org,
+        Christian Brauner <brauner@kernel.org>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH v2] erofs: support idmapped mounts
+Date:   Tue, 17 May 2022 18:41:03 +0800
+Message-Id: <20220517104103.3570721-1-chao@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [RFC PATCH] dma-iommu: Add iommu_dma_max_mapping_size()
-Content-Language: en-GB
-To:     John Garry <john.garry@huawei.com>, joro@8bytes.org,
-        will@kernel.org, hch@lst.de, m.szyprowski@samsung.com
-Cc:     chenxiang66@hisilicon.com, thunder.leizhen@huawei.com,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        liyihang6@hisilicon.com
-References: <1652706361-92557-1-git-send-email-john.garry@huawei.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1652706361-92557-1-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-16 14:06, John Garry wrote:
-> For streaming DMA mappings involving an IOMMU and whose IOVA len regularly
-> exceeds the IOVA rcache upper limit (meaning that they are not cached),
-> performance can be reduced.
-> 
-> Add the IOMMU callback for DMA mapping API dma_max_mapping_size(), which
-> allows the drivers to know the mapping limit and thus limit the requested
-> IOVA lengths.
-> 
-> This resolves the performance issue originally reported in [0] for a SCSI
-> HBA driver which was regularly mapping SGLs which required IOVAs in
-> excess of the IOVA caching limit. In this case the block layer limits the
-> max sectors per request - as configured in __scsi_init_queue() - which
-> will limit the total SGL length the driver tries to map and in turn limits
-> IOVA lengths requested.
-> 
-> [0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
-> 
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
-> Sending as an RFC as iommu_dma_max_mapping_size() is a soft limit, and not
-> a hard limit which I expect is the semantics of dma_map_ops.max_mapping_size
+This patch enables idmapped mounts for erofs, since all dedicated helpers
+for this functionality existsm, so, in this patch we just pass down the
+user_namespace argument from the VFS methods to the relevant helpers.
 
-Indeed, sorry but NAK for this being nonsense. As I've said at least 
-once before, if the unnecessary SAC address allocation attempt slows 
-down your workload, make it not do that in the first place. If you don't 
-like the existing command-line parameter then fine, there are plenty of 
-other options, it just needs to be done in a way that doesn't break x86 
-systems with dodgy firmware, as my first attempt turned out to.
+Simple idmap example on erofs image:
 
-Furthermore, if a particular SCSI driver doesn't benefit from mappings 
-larger than 256KB, then that driver is also free to limit its own 
-mapping size. There are other folks out there with use-cases for mapping 
-*gigabytes* at once; you don't get to cripple the API and say that 
-that's suddenly not allowed just because it happens to make your thing 
-go faster, that's absurd.
+1. mkdir dir
+2. touch dir/file
+3. mkfs.erofs erofs.img dir
+4. mount -t erofs -o loop erofs.img  /mnt/erofs/
 
-Thanks,
-Robin.
+5. ls -ln /mnt/erofs/
+total 0
+-rw-rw-r-- 1 1000 1000 0 May 17 15:26 file
 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 09f6e1c0f9c0..e2d5205cde37 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1442,6 +1442,21 @@ static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
->   	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
->   }
->   
-> +static size_t iommu_dma_max_mapping_size(struct device *dev)
-> +{
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	struct iommu_dma_cookie *cookie;
-> +
-> +	if (!domain)
-> +		return 0;
-> +
-> +	cookie = domain->iova_cookie;
-> +	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
-> +		return 0;
-> +
-> +	return iova_rcache_range();
-> +}
-> +
->   static const struct dma_map_ops iommu_dma_ops = {
->   	.alloc			= iommu_dma_alloc,
->   	.free			= iommu_dma_free,
-> @@ -1462,6 +1477,7 @@ static const struct dma_map_ops iommu_dma_ops = {
->   	.map_resource		= iommu_dma_map_resource,
->   	.unmap_resource		= iommu_dma_unmap_resource,
->   	.get_merge_boundary	= iommu_dma_get_merge_boundary,
-> +	.max_mapping_size	= iommu_dma_max_mapping_size,
->   };
->   
->   /*
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index db77aa675145..9f00b58d546e 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -26,6 +26,11 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
->   static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
->   static void free_iova_rcaches(struct iova_domain *iovad);
->   
-> +unsigned long iova_rcache_range(void)
-> +{
-> +	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
-> +}
-> +
->   static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
->   {
->   	struct iova_domain *iovad;
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 320a70e40233..ae3e18d77e6c 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -79,6 +79,8 @@ static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
->   int iova_cache_get(void);
->   void iova_cache_put(void);
->   
-> +unsigned long iova_rcache_range(void);
-> +
->   void free_iova(struct iova_domain *iovad, unsigned long pfn);
->   void __free_iova(struct iova_domain *iovad, struct iova *iova);
->   struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
-> @@ -105,6 +107,11 @@ static inline void iova_cache_put(void)
->   {
->   }
->   
-> +static inline unsigned long iova_rcache_range(void)
-> +{
-> +	return 0;
-> +}
-> +
->   static inline void free_iova(struct iova_domain *iovad, unsigned long pfn)
->   {
->   }
+6. mount-idmapped --map-mount b:1000:1001:1 /mnt/erofs/ /mnt/scratch_erofs/
+
+7. ls -ln /mnt/scratch_erofs/
+total 0
+-rw-rw-r-- 1 1001 1001 0 May 17 15:26 file
+
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+v2:
+- fix testcase pointed out by Christian Brauner.
+ fs/erofs/inode.c | 2 +-
+ fs/erofs/super.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
+index e8b37ba5e9ad..5320bf52c1ce 100644
+--- a/fs/erofs/inode.c
++++ b/fs/erofs/inode.c
+@@ -370,7 +370,7 @@ int erofs_getattr(struct user_namespace *mnt_userns, const struct path *path,
+ 	stat->attributes_mask |= (STATX_ATTR_COMPRESSED |
+ 				  STATX_ATTR_IMMUTABLE);
+ 
+-	generic_fillattr(&init_user_ns, inode, stat);
++	generic_fillattr(mnt_userns, inode, stat);
+ 	return 0;
+ }
+ 
+diff --git a/fs/erofs/super.c b/fs/erofs/super.c
+index 0c4b41130c2f..7dc5f2e8ddee 100644
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@ -781,7 +781,7 @@ static struct file_system_type erofs_fs_type = {
+ 	.name           = "erofs",
+ 	.init_fs_context = erofs_init_fs_context,
+ 	.kill_sb        = erofs_kill_sb,
+-	.fs_flags       = FS_REQUIRES_DEV,
++	.fs_flags       = FS_REQUIRES_DEV | FS_ALLOW_IDMAP,
+ };
+ MODULE_ALIAS_FS("erofs");
+ 
+-- 
+2.25.1
+
