@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D13C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 21:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE74DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 21:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353128AbiEQVCn (ORCPT
+        id S1353125AbiEQVDb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 17:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
+        Tue, 17 May 2022 17:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348023AbiEQVCh (ORCPT
+        with ESMTP id S235046AbiEQVDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 17:02:37 -0400
+        Tue, 17 May 2022 17:03:25 -0400
 Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFA0532FD;
-        Tue, 17 May 2022 14:02:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569A2532FD;
+        Tue, 17 May 2022 14:03:24 -0700 (PDT)
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 3C0CE1C0B9B; Tue, 17 May 2022 23:02:35 +0200 (CEST)
-Date:   Tue, 17 May 2022 23:02:34 +0200
+        id 19E851C0B9B; Tue, 17 May 2022 23:03:23 +0200 (CEST)
+Date:   Tue, 17 May 2022 23:03:22 +0200
 From:   Pavel Machek <pavel@denx.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
@@ -27,36 +27,36 @@ Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
         lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
         f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
         slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 00/32] 4.19.244-rc1 review
-Message-ID: <20220517210234.GB23355@duo.ucw.cz>
-References: <20220516193614.773450018@linuxfoundation.org>
+Subject: Re: [PATCH 4.9 00/19] 4.9.315-rc1 review
+Message-ID: <20220517210322.GC23355@duo.ucw.cz>
+References: <20220516193613.497233635@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="Y7xTucakfITjPcLV"
+        protocol="application/pgp-signature"; boundary="w7PDEPdKQumQfZlR"
 Content-Disposition: inline
-In-Reply-To: <20220516193614.773450018@linuxfoundation.org>
+In-Reply-To: <20220516193613.497233635@linuxfoundation.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---Y7xTucakfITjPcLV
+--w7PDEPdKQumQfZlR
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi!
 
-> This is the start of the stable review cycle for the 4.19.244 release.
-> There are 32 patches in this series, all will be posted as a response
+> This is the start of the stable review cycle for the 4.9.315 release.
+> There are 19 patches in this series, all will be posted as a response
 > to this one.  If anyone has any issues with these being applied, please
 > let me know.
 
 CIP testing did not find any problems here:
 
 https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.19.y
+4.9.y
 
 Tested-by: Pavel Machek (CIP) <pavel@denx.de>
 
@@ -67,14 +67,14 @@ Best regards,
 DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
 HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
---Y7xTucakfITjPcLV
+--w7PDEPdKQumQfZlR
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYoQNagAKCRAw5/Bqldv6
-8pN6AJ0XkGcHO96EVQgwRxRWDzoSAw13hwCdG/TGc7oW2CeGBBd8zbXhgA4GV3w=
-=7qZ6
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYoQNmgAKCRAw5/Bqldv6
+8octAJ9CtHn6gYpfz6pPH1Kcws9G/yjuQwCdEq2mjuYi2Oqc/9AGlGeykosJQr0=
+=Vu2V
 -----END PGP SIGNATURE-----
 
---Y7xTucakfITjPcLV--
+--w7PDEPdKQumQfZlR--
