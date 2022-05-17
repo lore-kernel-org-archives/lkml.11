@@ -2,106 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E9BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346299AbiEQMl4 (ORCPT
+        id S1345926AbiEQMnQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
+        Tue, 17 May 2022 08:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346238AbiEQMlH (ORCPT
+        with ESMTP id S242996AbiEQMnM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:41:07 -0400
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D965175B9;
-        Tue, 17 May 2022 05:41:06 -0700 (PDT)
-Received: by mail-ot1-f46.google.com with SMTP id z5-20020a9d62c5000000b00606041d11f1so12097915otk.2;
-        Tue, 17 May 2022 05:41:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=j5BrlQzLDAXkM38uIDVehzNU2wxoisuVTDhfLkPcVrc=;
-        b=0RDRgmF5G0qzalk5RL6th1GOCJU0myYv2zLfiBlAJBtMZPSKWD/5sPjHHKvQR/h4oQ
-         NgeAxTRGsS4c01xg/0WQx5skz4VAgfF+gGQWxNDyfdi2+hpSni3bGrfhM3kmA+zh1lSh
-         00hNz8q/7jEpkBcPRgx0e889iJzvgH2DQ08ROspAAy44xG71Dnf9kINt0rrLDcw7n942
-         oMwz97RAzRgvBt2a/QML5ZyEZxsTcikkZ32s/A4NkMzNOLGJluzuTYStBi671l/bbz/n
-         0To9aW1AaIRcSA+Mg0ASMt3Un4aTJitEdhMrncIMuGqAW/nWt58zyYwOBFNJrKFo5/y+
-         tFWQ==
-X-Gm-Message-State: AOAM532YVkDdX4C13O3NO9uTjVdWbXkIfYpR+XlH5QOqNSp/bxQl8k36
-        XwL30Db+vdoOtHfJqStL0g==
-X-Google-Smtp-Source: ABdhPJxJmvcvtYfkkdf1N9RF24PpCjCJKFrr+60SDWwOuXaRZwDYasMaqX9n9wa5JyRWrgIr2jVGlw==
-X-Received: by 2002:a05:6830:1491:b0:606:103c:6680 with SMTP id s17-20020a056830149100b00606103c6680mr7862250otq.18.1652791265485;
-        Tue, 17 May 2022 05:41:05 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r196-20020acaa8cd000000b00325cda1ffa5sm4743640oie.36.2022.05.17.05.41.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 05:41:04 -0700 (PDT)
-Received: (nullmailer pid 785394 invoked by uid 1000);
-        Tue, 17 May 2022 12:40:59 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Krishna Kurapati <quic_kriskura@quicinc.com>
-Cc:     Matthias Kaehlcke <mka@chromium.org>, linux-usb@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        quic_pkondeti@quicinc.com, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, quic_ppratap@quicinc.com,
-        quic_vpulyala@quicinc.com,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org
-In-Reply-To: <1652723410-1630-2-git-send-email-quic_kriskura@quicinc.com>
-References: <1652723410-1630-1-git-send-email-quic_kriskura@quicinc.com> <1652723410-1630-2-git-send-email-quic_kriskura@quicinc.com>
-Subject: Re: [v5 1/3] dt-bindings: phy: qcom,usb-snps-femto-v2: Add phy override params bindings
-Date:   Tue, 17 May 2022 07:40:59 -0500
-Message-Id: <1652791259.453681.785393.nullmailer@robh.at.kernel.org>
+        Tue, 17 May 2022 08:43:12 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A10626556
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 05:43:11 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0726B1042;
+        Tue, 17 May 2022 05:43:11 -0700 (PDT)
+Received: from [10.57.82.55] (unknown [10.57.82.55])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 05AA13F66F;
+        Tue, 17 May 2022 05:43:08 -0700 (PDT)
+Message-ID: <f971aea9-8ae1-95f8-b10a-cd77e9704dc0@arm.com>
+Date:   Tue, 17 May 2022 13:43:03 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 2/5] iommu: Add blocking_domain_ops field in iommu_ops
+Content-Language: en-GB
+To:     Baolu Lu <baolu.lu@linux.intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20220516015759.2952771-1-baolu.lu@linux.intel.com>
+ <20220516015759.2952771-3-baolu.lu@linux.intel.com>
+ <8a0fc6cf-f46e-f17e-2b76-099ada1683c3@arm.com>
+ <20220516135741.GV1343366@nvidia.com>
+ <c8492b29-bc27-ae12-d5c4-9fbbc797e310@linux.intel.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <c8492b29-bc27-ae12-d5c4-9fbbc797e310@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 23:20:08 +0530, Krishna Kurapati wrote:
-> From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+On 2022-05-17 03:37, Baolu Lu wrote:
+> Hi Jason,
 > 
-> Add device tree bindings for SNPS phy tuning parameters.
+> On 2022/5/16 21:57, Jason Gunthorpe wrote:
+>> On Mon, May 16, 2022 at 12:22:08PM +0100, Robin Murphy wrote:
+>>> On 2022-05-16 02:57, Lu Baolu wrote:
+>>>> Each IOMMU driver must provide a blocking domain ops. If the hardware
+>>>> supports detaching domain from device, setting blocking domain equals
+>>>> detaching the existing domain from the deivce. Otherwise, an UNMANAGED
+>>>> domain without any mapping will be used instead.
+>>> Unfortunately that's backwards - most of the implementations of 
+>>> .detach_dev
+>>> are disabling translation entirely, meaning the device ends up 
+>>> effectively
+>>> in passthrough rather than blocked.
+>> Ideally we'd convert the detach_dev of every driver into either
+>> a blocking or identity domain. The trick is knowing which is which..
 > 
-> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
-> ---
->  .../bindings/phy/qcom,usb-snps-femto-v2.yaml       | 105 +++++++++++++++++++++
->  1 file changed, 105 insertions(+)
+> I am still a bit puzzled about how the blocking_domain should be used 
+> when it is extended to support ->set_dev_pasid.
 > 
+> If it's a blocking domain, the IOMMU driver knows that setting the
+> blocking domain to device pasid means detaching the existing one.
+> 
+> But if it's an identity domain, how could the IOMMU driver choose
+> between:
+> 
+>   - setting the input domain to the pasid on device; or,
+>   - detaching the existing domain.
+> 
+> I've ever thought about below solutions:
+> 
+> - Checking the domain types and dispatching them to different
+>    operations.
+> - Using different blocking domains for different types of domains.
+> 
+> But both look rough.
+> 
+>>
+>> Guessing going down the list:
+>>   apple dart - blocking, detach_dev calls apple_dart_hw_disable_dma() 
+>> same as
+>>                IOMMU_DOMAIN_BLOCKED
+>>           [I wonder if this drive ris wrong in other ways though because
+>>                 I dont see a remove_streams in attach_dev]
+>>   exynos - this seems to disable the 'sysmmu' so I'm guessing this is
+>>            identity
+>>   iommu-vmsa - Comment says 'disable mmu translaction' so I'm guessing
+>>                this is idenity
+>>   mkt_v1 - Code looks similar to mkt, which is probably identity.
+>>   rkt - No idea
+>>   sprd - No idea
+>>   sun50i - This driver confusingly treats identity the same as
+>>            unmanaged, seems wrong, no idea.
+>>   amd - Not sure, clear_dte_entry() seems to set translation on but 
+>> points
+>>         the PTE to 0 ? Based on the spec table 8 I would have expected
+>>         TV to be clear which would be blocking. Maybe a bug??
+>>   arm smmu qcomm - not sure
+>>   intel - blocking
+>>
+>> These doesn't support default domains, so detach_dev should return
+>> back to DMA API ownership, which is either identity or something weird:
+>>   fsl_pamu - identity due to the PPC use of dma direct
+>>   msm
+>>   mkt
+>>   omap
+>>   s390 - platform DMA ops
+>>   terga-gart - Usually something called a GART would be 0 length once
+>>                disabled, guessing blocking?
+>>   tegra-smmu
+>>
+>> So, the approach here should be to go driver by driver and convert
+>> detach_dev to either identity, blocking or just delete it entirely,
+>> excluding the above 7 that don't support default domains. And get acks
+>> from the driver owners.
+>>
+> 
+> Agreed. There seems to be a long way to go. I am wondering if we could
+> decouple this refactoring from my new SVA API work? We can easily switch
+> .detach_dev_pasid to using blocking domain later.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+FWIW from my point of view I'm happy with having a .detach_dev_pasid op 
+meaning implicitly-blocked access for now. On SMMUv3, PASIDs don't mix 
+with our current notion of IOMMU_DOMAIN_IDENTITY (nor the potential one 
+for IOMMU_DOMAIN_BLOCKED), so giving PASIDs functional symmetry with 
+devices would need significantly more work anyway.
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml: properties:qcom,hs-rise-fall-time-bp: 'minimim' is not one of ['$ref', 'additionalItems', 'additionalProperties', 'allOf', 'anyOf', 'const', 'contains', 'default', 'dependencies', 'dependentRequired', 'dependentSchemas', 'deprecated', 'description', 'else', 'enum', 'exclusiveMaximum', 'exclusiveMinimum', 'items', 'if', 'minItems', 'minimum', 'maxItems', 'maximum', 'multipleOf', 'not', 'oneOf', 'pattern', 'patternProperties', 'properties', 'required', 'then', 'type', 'typeSize', 'unevaluatedProperties', 'uniqueItems']
-	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml: properties:qcom,hs-crossover-voltage-microvolt: '$ref' should not be valid under {'const': '$ref'}
-	hint: Standard unit suffix properties don't need a type $ref
-	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml: ignoring, error in schema: properties: qcom,hs-rise-fall-time-bp
-Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.example.dtb:0:0: /example-0/phy@88e2000: failed to match any schema with compatible: ['qcom,sm8150-usb-hs-phy']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Thanks,
+Robin.
