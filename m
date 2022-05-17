@@ -2,150 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6722C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B68C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243243AbiEQJtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
+        id S243823AbiEQJuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240577AbiEQJth (ORCPT
+        with ESMTP id S231300AbiEQJur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:49:37 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782BDD75
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:49:35 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so1043806wms.3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:49:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DpqDpoQ86mGSjzackjYkVGZOrE1fChU7d/OHtDBy5EU=;
-        b=JBJ4uw2WKDeIWvcfPr6VMC3QifoJJHZdiRve30tbTssMBsrWPXJjyCPE4OLjvTLhIl
-         NfpC0Yr5uC7W4OoIJi6uPcYxeykP6LQDFomc0Mc97wUPX3Lx1L+yJ96wYwF9BxKoz11P
-         3qYfDeLNaTA1z4tLD1DIVmiENnxUZZuBhsZQ+OXuEUmXDSU2jX/nsQkK/D+JiHsKYX6u
-         r+3BlZTdD1i6WuQuHPAQI0DigRani3hSo/X4/VSuS2dQKxXtDsvJIBQ8l6kUuzZUTIl3
-         lOUwkQYk6J67knsyfXbi+n+CPdm1j0BQUfyQY+99K025CyBM+oOqcAe2T2yIjyMj3jPI
-         gu1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DpqDpoQ86mGSjzackjYkVGZOrE1fChU7d/OHtDBy5EU=;
-        b=3Jl/ROYELWt9MSpwzdGBkbxCDFFb9vfHAbo+61pBM75e091OcXkSiOSv89++62g5sC
-         fQtQWFe9kJQhRb5FpjVq9x9njIDXldZUWwT/Y+Pu5V8I+kKIxjQIY1x0EL6eN1UJiBH+
-         f7faZjZlETzhdCyY0uiCSUlI64ivtkRDqiL4wzOZZBj8s7/A4zD7VdZG7Z5Pe/AyGuyw
-         ZSThu6c0FF46B6ZrvQYyrvCp4yX217kkY07CwIkbvLUzcjGoaUIWi9633KzllfHpgyRS
-         bpbY+dFkrmR/f3I3X6Na1y56kMRkWFxCReo38H9fuKwX+1pL/mDXaHbTjHHnL4Fu0acW
-         DfgQ==
-X-Gm-Message-State: AOAM530G6gCHLYqopGXyBDBzodrFlpBCrWLLORs1AGjf8PijSzdROxva
-        qsL4owWNVXVBh1cl6+B/p4A=
-X-Google-Smtp-Source: ABdhPJxc6NR92FTeptvCA4+hO3jyue1+FXlzsbJf5GQrUyJsTPK+G1Wfwa9RezLJurVEM4iHWeVcLA==
-X-Received: by 2002:a05:600c:224a:b0:394:8ec:3d37 with SMTP id a10-20020a05600c224a00b0039408ec3d37mr20467646wmm.19.1652780973999;
-        Tue, 17 May 2022 02:49:33 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id k1-20020a7bc301000000b003942a244f49sm1370233wmj.34.2022.05.17.02.49.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 02:49:33 -0700 (PDT)
-Message-ID: <bb1aea80-a926-8545-646e-bb526bc5cb84@gmail.com>
-Date:   Tue, 17 May 2022 11:49:32 +0200
+        Tue, 17 May 2022 05:50:47 -0400
+X-Greylist: delayed 469 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 02:50:42 PDT
+Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30803BBB;
+        Tue, 17 May 2022 02:50:40 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowADX3oYKboNiPsfaBw--.53394S2;
+        Tue, 17 May 2022 17:42:35 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] net: af_key: add check for pfkey_broadcast in function pfkey_process
+Date:   Tue, 17 May 2022 17:42:31 +0800
+Message-Id: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 3/5] soc: mediatek: pwrap: Move and check return value
- of platform_get_irq()
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        nfraprado@collabora.com, rex-bc.chen@mediatek.com,
-        zhiyong.tao@mediatek.com
-References: <20220516124659.69484-1-angelogioacchino.delregno@collabora.com>
- <20220516124659.69484-4-angelogioacchino.delregno@collabora.com>
- <ad736290-2e01-f867-d2ec-867a4385005a@gmail.com>
- <03ac9b18-cb5d-5ff6-d220-f2f4062cea7e@collabora.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <03ac9b18-cb5d-5ff6-d220-f2f4062cea7e@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowADX3oYKboNiPsfaBw--.53394S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZryrKw4fuw15Cr4kGFyDJrb_yoWDCrX_Cr
+        1xXF43Cws8tr9a9r17tw4Syr1DAr4UurZagFZaq34rX3yDKr12grWvkFn3JryYgrWjgr45
+        Ar95Cws7ZF1xujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbwAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48J
+        MxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwV
+        AFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv2
+        0xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4
+        v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E
+        14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+If skb_clone() returns null pointer, pfkey_broadcast() will
+return error.
+Therefore, it should be better to check the return value of
+pfkey_broadcast() and return error if fails.
 
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ net/key/af_key.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-On 17/05/2022 11:34, AngeloGioacchino Del Regno wrote:
-> Il 17/05/22 11:18, Matthias Brugger ha scritto:
->>
->>
->> On 16/05/2022 14:46, AngeloGioacchino Del Regno wrote:
->>> Move the call to platform_get_irq() earlier in the probe function
->>> and check for its return value: if no interrupt is specified, it
->>> wouldn't make sense to try to call devm_request_irq() so, in that
->>> case, we can simply return early.
->>>
->>> Moving the platform_get_irq() call also makes it possible to use
->>> one less goto, as clocks aren't required at that stage.
->>>
->>> Signed-off-by: AngeloGioacchino Del Regno 
->>> <angelogioacchino.delregno@collabora.com>
->>> Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
->>> Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
->>> ---
->>>   drivers/soc/mediatek/mtk-pmic-wrap.c | 5 ++++-
->>>   1 file changed, 4 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c 
->>> b/drivers/soc/mediatek/mtk-pmic-wrap.c
->>> index 852514366f1f..332cbcabc299 100644
->>> --- a/drivers/soc/mediatek/mtk-pmic-wrap.c
->>> +++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
->>> @@ -2204,6 +2204,10 @@ static int pwrap_probe(struct platform_device *pdev)
->>>       if (!wrp)
->>>           return -ENOMEM;
->>> +    irq = platform_get_irq(pdev, 0);
->>> +    if (irq < 0)
->>> +        return irq;
->>> +
->>>       platform_set_drvdata(pdev, wrp);
->>>       wrp->master = of_device_get_match_data(&pdev->dev);
->>> @@ -2316,7 +2320,6 @@ static int pwrap_probe(struct platform_device *pdev)
->>>       if (HAS_CAP(wrp->master->caps, PWRAP_CAP_INT1_EN))
->>>           pwrap_writel(wrp, wrp->master->int1_en_all, PWRAP_INT1_EN);
->>> -    irq = platform_get_irq(pdev, 0);
->>
->> For better readability of the code I'd prefer to keep platform_get_irq next to 
->> devm_request_irq. I understand that you did this change so that you don't have 
->> to code
->> if (irq < 0) {
->>      ret = irq;
->>      goto err_out2;
->> }
->>
->> Or do I miss something?
->>
-> 
-> That's for the sake of reducing gotos in the code... but there's a bigger
-> picture that I haven't explained in this commit and that will come later
-> because I currently don't have the necessary time to perform a "decent"
-> testing.
-> 
-> As I was explaining - the bigger pictures implies adding a new function for
-> clock teardown, that we will add as a devm action:
-> 
-> devm_add_action_or_reset(&pdev->dev, pwrap_clk_disable_unprepare, wrp)
-> 
-> ...so that we will be able to remove *all* gotos from the probe function.
-> 
-> Sounds good?
-> 
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index fd51db3be91c..92e9d75dba2f 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2826,8 +2826,10 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
+ 
+-	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
++	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
++	if (err)
++		return err;
+ 
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+-- 
+2.25.1
 
-Sounds good, but that means we could get rid of the goto as well. Anyway I 
-prefer to have platform_get_irq next to devm_request_irq. If we can get rid of 
-the goto in the future, great.
-
-Regards,
-Matthias
