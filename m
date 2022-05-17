@@ -2,64 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5634CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 17:54:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F1AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 17:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351664AbiEQRy4 (ORCPT
+        id S1351662AbiEQRzP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 13:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44702 "EHLO
+        Tue, 17 May 2022 13:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351669AbiEQRyw (ORCPT
+        with ESMTP id S1351669AbiEQRzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 13:54:52 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45C53FBE1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 10:54:49 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id r1P4nJQwzAym2r1P4nqVqo; Tue, 17 May 2022 19:54:47 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Tue, 17 May 2022 19:54:47 +0200
-X-ME-IP: 86.243.180.246
-Message-ID: <142a9c03-574f-adcf-bc4d-bb2a25c01e88@wanadoo.fr>
-Date:   Tue, 17 May 2022 19:54:38 +0200
+        Tue, 17 May 2022 13:55:11 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2611B3FBD7;
+        Tue, 17 May 2022 10:55:11 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-e93bbb54f9so25091638fac.12;
+        Tue, 17 May 2022 10:55:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3Rz9xM6L/PdFLe2DC5teg7et/sWEkDBUDfsO7wKp1Ug=;
+        b=RMe0pD7TVBbxFqs67A4mvZrrSoe30MLmbxGzBLaJUClOz5NmZYNsy1Us97HaIuTky9
+         HrMssWQfGRmy+NolL25caeS9rS2A6B2INsqgZxkyRkzHMda/lNvbnrwstF7sYsglYL6R
+         Z3MfYPARvw83bM7C1INL2oq37Jc5SgsJIb7AIyxVpNIIRYU5HCm9zrcaXIJXWJZglklQ
+         1tPfRAoNZ71nclEQdiOk/Av6HBHBPSFroq/xVgg4u0zeJ24r7rt5dITq3oGndKmK3+Qs
+         cv5T404h+xYSfPsudyAV0Y3axFcdFG0YiwQqA+OGgIXe+pxz+Udv0bW8QIx0IuxKPIQ+
+         zETw==
+X-Gm-Message-State: AOAM533Avqto1f5ZCs0P/ZXl3ZJWGADZAF0lwfrSAj3QjF+E/lFy44XQ
+        Fo7YZgTLmxPEWWW98/W6cw==
+X-Google-Smtp-Source: ABdhPJxzGypqSGPDF8mxExdHUPXY12D4MFsWIAtlDUUPD2mZXrrLhnXEbnsalAawIOkCIjlcxx5cHA==
+X-Received: by 2002:a05:6870:c692:b0:e9:5368:10df with SMTP id cv18-20020a056870c69200b000e9536810dfmr13441575oab.182.1652810110382;
+        Tue, 17 May 2022 10:55:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q15-20020a056870828f00b000e686d13887sm30911oae.33.2022.05.17.10.55.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 10:55:09 -0700 (PDT)
+Received: (nullmailer pid 1318269 invoked by uid 1000);
+        Tue, 17 May 2022 17:55:08 -0000
+Date:   Tue, 17 May 2022 12:55:08 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, quic_subbaram@quicinc.com,
+        linux-arm-msm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        quic_collinsd@quicinc.com, Mark Brown <broonie@kernel.org>,
+        quic_jprakash@quicinc.com, swboyd@chromium.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V12 3/9] dt-bindings: mfd: pm8008: Add regulators for
+ pm8008
+Message-ID: <20220517175508.GA1318235-robh@kernel.org>
+References: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1652275113-10277-4-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] RDMA: remove null check after call container_of()
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Haowen Bai <baihaowen@meizu.com>
-Cc:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1652751208-23211-1-git-send-email-baihaowen@meizu.com>
- <20220517121646.GE63055@ziepe.ca>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220517121646.GE63055@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652275113-10277-4-git-send-email-quic_c_skakit@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 17/05/2022 à 14:16, Jason Gunthorpe a écrit :
-> On Tue, May 17, 2022 at 09:33:28AM +0800, Haowen Bai wrote:
->> container_of() will never return NULL, so remove useless code.
+On Wed, 11 May 2022 18:48:27 +0530, Satya Priya wrote:
+> Add regulators and their parent supplies along with example.
 > 
-> It is confusing here, but it can be null. 
-
-Hi,
-
-out of curiosity, can you elaborate how it can be NULL?
-
-CJ
-
-> If you want to do this then
-> you have to split out the _ib_alloc_device call and check it
-> seperately.
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+> Changes in V12:
+>  - None.
 > 
-> Jason
+> Changes in V11:
+>  - Add ldos directly under pm8008@8 node, remove the intermediate "regulators"
+>    node.
+> 
+> Changes in V10:
+>  - Regulators are added as a part of pm8008@8 device. Change bindings doc
+>    accordingly.
+> 
+> Changes in V9:
+>  - Remove description for reg and drop unused phandle from example.
+> 
+> Changes in V8:
+>  - This is split from pm8008.yaml binding.
+> 
+>  .../devicetree/bindings/mfd/qcom,pm8008.yaml       | 50 ++++++++++++++++++++++
+>  1 file changed, 50 insertions(+)
 > 
 
+Reviewed-by: Rob Herring <robh@kernel.org>
