@@ -2,63 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3152FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C24C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239487AbiEQA6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 20:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
+        id S232191AbiEQA6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 20:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239837AbiEQA4A (ORCPT
+        with ESMTP id S239719AbiEQAzx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 20:56:00 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86CE201A6
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:55:59 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id q4so15980683plr.11
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:55:59 -0700 (PDT)
+        Mon, 16 May 2022 20:55:53 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62042DEA3;
+        Mon, 16 May 2022 17:55:46 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso958517pjj.4;
+        Mon, 16 May 2022 17:55:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JuZm0iyeNXKvBw7CRNXXxjER+lmIsZfs9nGcE1KNIMA=;
-        b=H5MdmlFKJmCnyxJIjM/qpwTxPaW0iw9pGgyPhqb86vIvFdIh9MsqnbGRdbo3jl3DD1
-         NZN0aiW77lj3kr3NKdkj4BPOdHAU/UPyX/6yZIrzwOxS54MnqkBsCqlB9WP06jWpjRKH
-         m72bcJwu6Ybfqm+nkmSy/X7omkA497/BL3qqkBDNks8sOGs5dx4iXkYFEcNLrjByTLJo
-         QLuP6rY2ypxJZSFaiaqB4i7xxnDSVXrNwXFBd++H697yAHCrtvVNnax0Mo0KofZm06co
-         4k7PzeBN94R4jk21clzsMW07xHsrjYvmkSSiFrwl5uSuGe6TzUsJPulniHg1JJ9LPoQ3
-         YyYA==
+        bh=oszu+rft9ZMt8hn3XlfQBiWXh4vkWerpEVjVpNGVwQE=;
+        b=GmR3175J1QJA++Kl/bkM18GAR0pdIOR/nKTuYJ02O2yIkNWXEOJPq5w2+cfh2DL/TI
+         +jpF745GD82YqiM0gAdhkEKWSc1XbAzth44QQ+UornMYJ4amJjWzRY33tQN2cmVR4ZWe
+         aUt8vVXkkVq0g7off74SJU92u11TirCMvQligM3DUzTK7LwzvsjXzY8jNQyQTQVHUY6G
+         Wl/ZlIgB8DVF8oJQKkNjJGtI74NFgq2+9SOhSvo8bQx38xZOaKs6snbLQD2nvg3DT4wT
+         j7yJRDZp4nZL3LnHSNNdGMqGRVp+SBRs8NMW1exWDQAv5MMUkn6s4sPJL4eNLfA873eH
+         Wwzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JuZm0iyeNXKvBw7CRNXXxjER+lmIsZfs9nGcE1KNIMA=;
-        b=7CFPH51ru3SdQdKFeyZBlTmzyLMy6TOhQsOGVqQ89LF16hUhLfSouJXOQDIx17Nj+9
-         4CCSvqALDUkCQp9siSQmQfgzLkz3yQotAI8/oY6Imk4ZyeUg3W4+8/IayDEHqh7HLbiL
-         QomuBUl77zXX/f/GVmWI8uVJcH4aOrh36RffJCJ3fZ/471Tl/hQCImk5JkTmr7GXrZN9
-         m+KImIvoEaAcRJmf72ppDFNryrfuRlKy0CFg+/2UmThriGTDfJiACLCiyg0l88XHPBk3
-         Bg/iJfQ0KQjq7hAUbShIG6G/A1tR4M35D7V4V+QOU6ePrAjGohbmYeh7AtbhafPiVGBM
-         59cQ==
-X-Gm-Message-State: AOAM531aOkxl6p1Vgh4cokb0ZnRWFIZaVo+H2LDPGayQ6oOm5nklpnHx
-        5RyJs5tW5z23OsPA6Rs1zEeaZeQGoRoZlQ==
-X-Google-Smtp-Source: ABdhPJyuJHialPFzmk9jCitdBmrkLR09Y4G9IMW9rKIhLzuMTvlJo4x/V3N31o577AIjRUWU+WBkgg==
-X-Received: by 2002:a17:902:db07:b0:15e:b669:42a2 with SMTP id m7-20020a170902db0700b0015eb66942a2mr19595241plx.80.1652748958849;
-        Mon, 16 May 2022 17:55:58 -0700 (PDT)
+        bh=oszu+rft9ZMt8hn3XlfQBiWXh4vkWerpEVjVpNGVwQE=;
+        b=veYIC+h+A4zg0b7UWqwWJlDCvLPIpRUv/1yxy+CU1IYSF6NNZ8psnOmMAveYLobQna
+         5WV24ZS0mQzhki7NoxQ/CSCZUNa2HfiPkLNtnwaGg9a2xfCBPJDmgxTEPJItSaxvEkWW
+         K71kzgFbEyGKo14lwtb8sts5GoBhkIRc0NZ3VVy/FHFBLAoz0JkpQ8B5MMvMYq/gGH/a
+         uyX11BztmYu/rl67yBhXt3wOsrRO8/VXqo+vDaFiZhQpDhE93VfX9hBmu5lInyKzX5mG
+         o8R9OOJfSY8az1n+iWoFxzUJW1r6KZATradB2fy0TcCK/2TxxjI9vzgXHvSZCjGF1VSK
+         7VJQ==
+X-Gm-Message-State: AOAM532+XcaJnOvigQUJUa3x3O8MimYT/47q0OUDwva7KQPenxFg8CwX
+        rewvzBJenoF+SUXxSBhkAMzaV8OeOgEElw==
+X-Google-Smtp-Source: ABdhPJx6yIrIZNvt4OMM4DykP/blCEK67dJ+2zkDI1WzYEMFAxHoTyKI6A15UXJyEq9tmctm+aFOgQ==
+X-Received: by 2002:a17:902:ce11:b0:15f:4acc:f1fb with SMTP id k17-20020a170902ce1100b0015f4accf1fbmr19520857plg.76.1652748945576;
+        Mon, 16 May 2022 17:55:45 -0700 (PDT)
 Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id r2-20020a170903020200b0015e8d4eb29asm7582806plh.228.2022.05.16.17.55.57
+        by smtp.gmail.com with ESMTPSA id p26-20020a62b81a000000b0050dc7628177sm7474333pfe.81.2022.05.16.17.55.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 17:55:58 -0700 (PDT)
+        Mon, 16 May 2022 17:55:44 -0700 (PDT)
 From:   Stafford Horne <shorne@gmail.com>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Openrisc <openrisc@lists.librecores.org>,
         Stafford Horne <shorne@gmail.com>,
         Jonas Bonn <jonas@southpole.se>,
         Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH v2 10/13] openrisc/time: Fix symbol scope warnings
-Date:   Tue, 17 May 2022 09:55:07 +0900
-Message-Id: <20220517005510.3500105-11-shorne@gmail.com>
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH v2 06/13] openrisc: Update litex defconfig to support glibc userland
+Date:   Tue, 17 May 2022 09:55:03 +0900
+Message-Id: <20220517005510.3500105-7-shorne@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220517005510.3500105-1-shorne@gmail.com>
 References: <20220517005510.3500105-1-shorne@gmail.com>
@@ -68,42 +78,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Spare reported the following warnings:
-    arch/openrisc/kernel/time.c:64:1: warning: symbol 'clockevent_openrisc_timer' was not declared. Should it be static?
-    arch/openrisc/kernel/time.c:66:6: warning: symbol 'openrisc_clockevent_init' was not declared. Should it be static?
+I have been using a litex SoC for glibc verification.  Update the
+default litex config to support required userspace API's needed for the
+full glibc testsuite to pass.
 
-This patch fixes by:
-
- - Add static declaration to clockevent_openrisc_timer as it's used only in
-   this file.
- - Add include for asm/time.h for openrisc_clockevent_init declaration.
+This includes enabling the litex mmc driver and filesystems used
+in a typical litex environment.
 
 Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
- arch/openrisc/kernel/time.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/openrisc/configs/or1klitex_defconfig | 33 +++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-diff --git a/arch/openrisc/kernel/time.c b/arch/openrisc/kernel/time.c
-index 6d18989d63d0..8e26c1af5441 100644
---- a/arch/openrisc/kernel/time.c
-+++ b/arch/openrisc/kernel/time.c
-@@ -23,6 +23,7 @@
- #include <linux/of_clk.h>
- 
- #include <asm/cpuinfo.h>
-+#include <asm/time.h>
- 
- /* Test the timer ticks to count, used in sync routine */
- inline void openrisc_timer_set(unsigned long count)
-@@ -61,7 +62,7 @@ static int openrisc_timer_set_next_event(unsigned long delta,
-  * timers) we cannot enable the PERIODIC feature.  The tick timer can run using
-  * one-shot events, so no problem.
-  */
--DEFINE_PER_CPU(struct clock_event_device, clockevent_openrisc_timer);
-+static DEFINE_PER_CPU(struct clock_event_device, clockevent_openrisc_timer);
- 
- void openrisc_clockevent_init(void)
- {
+diff --git a/arch/openrisc/configs/or1klitex_defconfig b/arch/openrisc/configs/or1klitex_defconfig
+index d695879a4d26..4c0138340bd9 100644
+--- a/arch/openrisc/configs/or1klitex_defconfig
++++ b/arch/openrisc/configs/or1klitex_defconfig
+@@ -1,22 +1,55 @@
++CONFIG_SYSVIPC=y
++CONFIG_POSIX_MQUEUE=y
++CONFIG_CGROUPS=y
++CONFIG_NAMESPACES=y
++CONFIG_USER_NS=y
+ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_CC_OPTIMIZE_FOR_SIZE=y
++CONFIG_SGETMASK_SYSCALL=y
+ CONFIG_EMBEDDED=y
+ CONFIG_OPENRISC_BUILTIN_DTB="or1klitex"
++# CONFIG_OPENRISC_HAVE_INST_RORI is not set
+ CONFIG_HZ_100=y
++CONFIG_OPENRISC_HAVE_SHADOW_GPRS=y
+ CONFIG_NET=y
+ CONFIG_PACKET=y
++CONFIG_PACKET_DIAG=y
+ CONFIG_UNIX=y
++CONFIG_UNIX_DIAG=y
+ CONFIG_INET=y
++CONFIG_IP_MULTICAST=y
++CONFIG_IP_ADVANCED_ROUTER=y
++CONFIG_INET_UDP_DIAG=y
++CONFIG_INET_RAW_DIAG=y
++# CONFIG_WIRELESS is not set
++# CONFIG_ETHTOOL_NETLINK is not set
+ CONFIG_DEVTMPFS=y
+ CONFIG_DEVTMPFS_MOUNT=y
+ CONFIG_OF_OVERLAY=y
+ CONFIG_NETDEVICES=y
+ CONFIG_LITEX_LITEETH=y
++# CONFIG_WLAN is not set
+ CONFIG_SERIAL_LITEUART=y
+ CONFIG_SERIAL_LITEUART_CONSOLE=y
+ CONFIG_TTY_PRINTK=y
++# CONFIG_GPIO_CDEV is not set
++CONFIG_MMC=y
++CONFIG_MMC_LITEX=y
++# CONFIG_VHOST_MENU is not set
++# CONFIG_IOMMU_SUPPORT is not set
+ CONFIG_LITEX_SOC_CONTROLLER=y
++CONFIG_EXT2_FS=y
++CONFIG_EXT3_FS=y
++CONFIG_MSDOS_FS=y
++CONFIG_VFAT_FS=y
++CONFIG_EXFAT_FS=y
+ CONFIG_TMPFS=y
++CONFIG_NFS_FS=y
++CONFIG_NFS_V3_ACL=y
++CONFIG_NFS_V4=y
++CONFIG_NLS_CODEPAGE_437=y
++CONFIG_NLS_ISO8859_1=y
++CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,bpf"
+ CONFIG_PRINTK_TIME=y
+ CONFIG_PANIC_ON_OOPS=y
+ CONFIG_SOFTLOCKUP_DETECTOR=y
 -- 
 2.31.1
 
