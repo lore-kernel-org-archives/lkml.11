@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 207AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70596C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344888AbiEQLHq (ORCPT
+        id S1344911AbiEQLIF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 07:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
+        Tue, 17 May 2022 07:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234372AbiEQLHn (ORCPT
+        with ESMTP id S1344899AbiEQLH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 07:07:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30CA60FB;
-        Tue, 17 May 2022 04:07:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B5E560AE0;
-        Tue, 17 May 2022 11:07:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2AB9C385B8;
-        Tue, 17 May 2022 11:07:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652785661;
-        bh=5tBsPYW0JHeXxvdkgiNd1jJmfnPjditVESh5dkxWeFo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kAw5YJsIfHwu8sfxpkMfWCIKj9sv+lv3f9AseTWanqKK8fuyWV/H4HRERRLDlhPEP
-         46gRtUfGOMQsC3l1fCQOVunxMr9/6+UbKQXUpqQENSd2w9rjp6DynvKkrgalWSjTiG
-         +lIGJjNfEbmTsWwM5x35LJWjkh01C59MGJZyfDUhwKfyrQY0yCBTS7rYSxIyrHTcf9
-         ji6kX4MZN4PKEtlNJZGmRWs0N2fAkgcY+uOYnur0ODRxnrmif9jXri2sf8DqqAmhhB
-         uBnu5Rlv3+Z6gnuTyPZUd6EONJ17l/5GzrFhNXb6WWm9ZZXF50k2CI09JVH6akXoJT
-         AUx+re60NY5bg==
-Date:   Tue, 17 May 2022 12:07:35 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, acme@kernel.org,
-        german.gomez@arm.com, leo.yan@linaro.org,
-        mathieu.poirier@linaro.org, john.garry@huawei.com,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mark Rutland <mark.rutland@arm.com>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] arm64/sve: Add Perf extensions documentation
-Message-ID: <YoOB9y9WR901CyTp@sirena.org.uk>
-References: <20220517100743.3020667-1-james.clark@arm.com>
- <20220517100743.3020667-3-james.clark@arm.com>
+        Tue, 17 May 2022 07:07:59 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6E419020;
+        Tue, 17 May 2022 04:07:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652785677; x=1684321677;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=OPXJ4evp1SveqnRrI1ZxE35Iny9xfr/vhM5iE/upNFU=;
+  b=WX0H/gnkazyTGL/0gOV4I5YSFaOZAAsoSeEEv5PoLpx5p428FWvZ0rZ4
+   CDKiLeTMqCJgbUYl/FL64TQxSqoYMQU0UyRRSbkZwArIKICNTVQq+dA2N
+   4V8HQeWl6KICtsrCOc6UX2RVr/XIcfkg51r0SP0MwcpZ9xp643aCm4CtE
+   vVSVMftrv4PfOOzjOAs05QPM4vKeMzrYKqvFK/q3bTS3dOaWfBTU43WGs
+   YfR3KUUJc1hFjewPT+o6KuoUUC0gP19be954vIBzC9/eHgP4AOV0LKp3u
+   VY4kl7JSxWZF6SfqILlHf0QV5Xia6jckfVujC/783/uU6aLTZPulR/Aql
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="271268665"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="271268665"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 04:07:57 -0700
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="568830894"
+Received: from mtarral-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.52.88])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 04:07:54 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Sean Anderson <sean.anderson@seco.com>,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 1/9] serial: uartline: Fix BRKINT clearing
+Date:   Tue, 17 May 2022 14:07:29 +0300
+Message-Id: <20220517110737.37148-2-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220517110737.37148-1-ilpo.jarvinen@linux.intel.com>
+References: <20220517110737.37148-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="iuQTJ7qbN0XNIs6b"
-Content-Disposition: inline
-In-Reply-To: <20220517100743.3020667-3-james.clark@arm.com>
-X-Cookie: Fats Loves Madelyn.
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+BRKINT is within c_iflag rather than c_cflag.
 
---iuQTJ7qbN0XNIs6b
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: Sean Anderson <sean.anderson@seco.com>
+Fixes: ea017f5853e9 (tty: serial: uartlite: Prevent changing fixed parameters)
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/uartlite.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On Tue, May 17, 2022 at 11:07:43AM +0100, James Clark wrote:
-> Document that the VG register is available in Perf samples
->=20
-> Signed-off-by: James Clark <james.clark@arm.com>
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 007db67292a2..880e2afbb97b 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -321,7 +321,8 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	struct uartlite_data *pdata = port->private_data;
+ 
+ 	/* Set termios to what the hardware supports */
+-	termios->c_cflag &= ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE);
++	termios->c_iflag &= ~BRKINT;
++	termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CSIZE);
+ 	termios->c_cflag |= pdata->cflags & (PARENB | PARODD | CSIZE);
+ 	tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
+ 
+-- 
+2.30.2
 
-Reviewed-by: Mark Brown <broonie@kernel.org>
-
---iuQTJ7qbN0XNIs6b
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKDgfYACgkQJNaLcl1U
-h9BhmQf6An4DDFzlaW5rZWv/57ry7Yu0oiLAUrQ7m5XIlZszVEkFKP27yfGhGYTz
-5mcAcBKnMkQgBCN7Cj7MLkgwpEfO8EWhKvCd5JsU/BpFeXoj1bZQxmUMGbbwl36c
-oqJkE5sFYM0+cNaxK1YdKn2esA7q1WRqWsxf20FSc3RAbutamcwrUtU1oVfQzz6C
-FtAF05pUcUj3ViC9mLhf4wLvE2wwqOnQ8Hv8dRRDHZm0pzn61/ow+7f3zLEEdpXh
-dQxTEB1/l/1dISvPFvPcApYJYc+3qMqpn+7x07GhiqCSGN+/bZL5AODRP7j3IQDF
-v23ZAxfxi8uaU8WHLjZY3/8kZ/IxPA==
-=1IeJ
------END PGP SIGNATURE-----
-
---iuQTJ7qbN0XNIs6b--
