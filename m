@@ -2,289 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1331C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B786C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347488AbiEQNLs (ORCPT
+        id S1347581AbiEQNLu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
+        Tue, 17 May 2022 09:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347456AbiEQNLF (ORCPT
+        with ESMTP id S1347878AbiEQNLX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:11:05 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7653616F;
-        Tue, 17 May 2022 06:10:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652793048; x=1684329048;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BSepHG6NLjphmtN4/CabMFGbJVm7iu8RDaTfkt+svNE=;
-  b=C5Ontgvj0DOfXBtesznzQTh5AZyAoIt0sFNUNzOm50DRLPKO9moQXqKB
-   0weefZhYF3ry5JSQeH2NyHWVezGkGAoYjFnmwDlwebvASxG8IymNKuEt4
-   4vktl/hK+fxY5vjC5xkkGnLPfpy5iB3ct0//pEGkiZ3uOja4coTksru1m
-   swxhBEvgJ/H/ITAhHjTsLedTySyUNlhYqYARAnIOvSVbvZjWiAi9JxsSk
-   cgyQy6v2pf5fRpHBYIRf7UpilKMIUCY6g+tNWr/T8B/gp2gOe4z9T3wsI
-   pPkxKbJtiKyp4Ufq1OgPhWxLnV9Y7vzZxI0Wd6Rom9fw1E17Vzzq6cw+8
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="357588679"
-X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="357588679"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:10:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="713844376"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.52.217])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:10:41 -0700
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>, Leo Yan <leo.yan@linaro.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, kvm@vger.kernel.org
-Subject: [PATCH V2 6/6] perf intel-pt: Add guest_code support
-Date:   Tue, 17 May 2022 16:10:11 +0300
-Message-Id: <20220517131011.6117-7-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220517131011.6117-1-adrian.hunter@intel.com>
-References: <20220517131011.6117-1-adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+        Tue, 17 May 2022 09:11:23 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF925260;
+        Tue, 17 May 2022 06:11:21 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0C7941F88E;
+        Tue, 17 May 2022 13:11:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652793080; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=R3V2DPM1jjc4jD8tVw3U8Rq3S0Maoan+sJ+xup8d8sI=;
+        b=FE8yzrStcygQwANxOmZrJZbOrCy87Ou5DJ3FGcXlGzv/8KcD1Q9vQAYohnpV6O9yl65Qfm
+        zyx0GaYk63CmAg8xlzK3VRV5wlBb3dplZbLwFVDWl++Ff8DNSFdVejZHiQCHUg6G6gVRgz
+        J3YUEPeJCts4dfmVUl5hnzLG7sbV2vU=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D75DF2C141;
+        Tue, 17 May 2022 13:11:17 +0000 (UTC)
+Date:   Tue, 17 May 2022 15:11:10 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org
+Subject: Re: [PATCH 14/30] panic: Properly identify the panic event to the
+ notifiers' callbacks
+Message-ID: <YoOe7ifxfW8CEHdt@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-15-gpiccoli@igalia.com>
+ <YnqBsXBImU64PAOL@alley>
+ <244a412c-4589-28d1-bb77-d3648d4f0b12@igalia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <244a412c-4589-28d1-bb77-d3648d4f0b12@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A common case for KVM test programs is that the test program acts as the
-hypervisor, creating, running and destroying the virtual machine, and
-providing the guest object code from its own object code. In this case,
-the VM is not running an OS, but only the functions loaded into it by the
-hypervisor test program, and conveniently, loaded at the same virtual
-addresses.
+On Tue 2022-05-10 13:16:54, Guilherme G. Piccoli wrote:
+> On 10/05/2022 12:16, Petr Mladek wrote:
+> > [...]
+> > Hmm, this looks like a hack. PANIC_UNUSED will never be used.
+> > All notifiers will be always called with PANIC_NOTIFIER.
+> > 
+> > The @val parameter is normally used when the same notifier_list
+> > is used in different situations.
+> > 
+> > But you are going to use it when the same notifier is used
+> > in more lists. This is normally distinguished by the @nh
+> > (atomic_notifier_head) parameter.
+> > 
+> > IMHO, it is a bad idea. First, it would confuse people because
+> > it does not follow the original design of the parameters.
+> > Second, the related code must be touched anyway when
+> > the notifier is moved into another list so it does not
+> > help much.
+> > 
+> > Or do I miss anything, please?
+> > 
+> > Best Regards,
+> > Petr
+> 
+> Hi Petr, thanks for the review.
+> 
+> I'm not strong attached to this patch, so we could drop it and refactor
+> the code of next patches to use the @nh as identification - but
+> personally, I feel this parameter could be used to identify the list
+> that called such function, in other words, what is the event that
+> triggered the callback. Some notifiers are even declared with this
+> parameter called "ev", like the event that triggers the notifier.
+> 
+> 
+> You mentioned 2 cases:
+> 
+> (a) Same notifier_list used in different situations;
+> 
+> (b) Same *notifier callback* used in different lists;
+> 
+> Mine is case (b), right? Can you show me an example of case (a)?
 
-To support that, a new option "--guest-code" has been added in
-previous patches.
+There are many examples of case (a):
 
-In this patch, add support also to Intel PT.
+   + module_notify_list:
+	MODULE_STATE_LIVE, 	/* Normal state. */
+	MODULE_STATE_COMING,	/* Full formed, running module_init. */
+	MODULE_STATE_GOING,	/* Going away. */
+	MODULE_STATE_UNFORMED,	/* Still setting it up. */
 
-In particular, ensure guest_code thread is set up before attempting to
-walk object code or synthesize samples.
 
-Example:
+   + netdev_chain:
 
- # perf record --kcore -e intel_pt/cyc/ -- tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test
- [ perf record: Woken up 1 times to write data ]
- [ perf record: Captured and wrote 0.280 MB perf.data ]
- # perf script --guest-code --itrace=bep --ns -F-period,+addr,+flags
- [SNIP]
-   tsc_msrs_test 18436 [007] 10897.962087733:      branches:   call                   ffffffffc13b2ff5 __vmx_vcpu_run+0x15 (vmlinux) => ffffffffc13b2f50 vmx_update_host_rsp+0x0 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962087733:      branches:   return                 ffffffffc13b2f5d vmx_update_host_rsp+0xd (vmlinux) => ffffffffc13b2ffa __vmx_vcpu_run+0x1a (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962087733:      branches:   call                   ffffffffc13b303b __vmx_vcpu_run+0x5b (vmlinux) => ffffffffc13b2f80 vmx_vmenter+0x0 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962087836:      branches:   vmentry                ffffffffc13b2f82 vmx_vmenter+0x2 (vmlinux) =>                0 [unknown] ([unknown])
-   [guest/18436] 18436 [007] 10897.962087836:      branches:   vmentry                               0 [unknown] ([unknown]) =>           402c81 guest_code+0x131 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-   [guest/18436] 18436 [007] 10897.962087836:      branches:   call                             402c81 guest_code+0x131 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dba0 ucall+0x0 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-   [guest/18436] 18436 [007] 10897.962088248:      branches:   vmexit                           40dba0 ucall+0x0 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>                0 [unknown] ([unknown])
-   tsc_msrs_test 18436 [007] 10897.962088248:      branches:   vmexit                                0 [unknown] ([unknown]) => ffffffffc13b2fa0 vmx_vmexit+0x0 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962088248:      branches:   jmp                    ffffffffc13b2fa0 vmx_vmexit+0x0 (vmlinux) => ffffffffc13b2fd2 vmx_vmexit+0x32 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962088256:      branches:   return                 ffffffffc13b2fd2 vmx_vmexit+0x32 (vmlinux) => ffffffffc13b3040 __vmx_vcpu_run+0x60 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962088270:      branches:   return                 ffffffffc13b30b6 __vmx_vcpu_run+0xd6 (vmlinux) => ffffffffc13b2f2e vmx_vcpu_enter_exit+0x4e (vmlinux)
- [SNIP]
-   tsc_msrs_test 18436 [007] 10897.962089321:      branches:   call                   ffffffffc13b2ff5 __vmx_vcpu_run+0x15 (vmlinux) => ffffffffc13b2f50 vmx_update_host_rsp+0x0 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962089321:      branches:   return                 ffffffffc13b2f5d vmx_update_host_rsp+0xd (vmlinux) => ffffffffc13b2ffa __vmx_vcpu_run+0x1a (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962089321:      branches:   call                   ffffffffc13b303b __vmx_vcpu_run+0x5b (vmlinux) => ffffffffc13b2f80 vmx_vmenter+0x0 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962089424:      branches:   vmentry                ffffffffc13b2f82 vmx_vmenter+0x2 (vmlinux) =>                0 [unknown] ([unknown])
-   [guest/18436] 18436 [007] 10897.962089424:      branches:   vmentry                               0 [unknown] ([unknown]) =>           40dba0 ucall+0x0 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-   [guest/18436] 18436 [007] 10897.962089701:      branches:   jmp                              40dc1b ucall+0x7b (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dc39 ucall+0x99 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-   [guest/18436] 18436 [007] 10897.962089701:      branches:   jcc                              40dc3c ucall+0x9c (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dc20 ucall+0x80 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-   [guest/18436] 18436 [007] 10897.962089701:      branches:   jcc                              40dc3c ucall+0x9c (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dc20 ucall+0x80 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-   [guest/18436] 18436 [007] 10897.962089701:      branches:   jcc                              40dc37 ucall+0x97 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dc50 ucall+0xb0 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-   [guest/18436] 18436 [007] 10897.962089878:      branches:   vmexit                           40dc55 ucall+0xb5 (/home/ahunter/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>                0 [unknown] ([unknown])
-   tsc_msrs_test 18436 [007] 10897.962089878:      branches:   vmexit                                0 [unknown] ([unknown]) => ffffffffc13b2fa0 vmx_vmexit+0x0 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962089878:      branches:   jmp                    ffffffffc13b2fa0 vmx_vmexit+0x0 (vmlinux) => ffffffffc13b2fd2 vmx_vmexit+0x32 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962089887:      branches:   return                 ffffffffc13b2fd2 vmx_vmexit+0x32 (vmlinux) => ffffffffc13b3040 __vmx_vcpu_run+0x60 (vmlinux)
-   tsc_msrs_test 18436 [007] 10897.962089901:      branches:   return                 ffffffffc13b30b6 __vmx_vcpu_run+0xd6 (vmlinux) => ffffffffc13b2f2e vmx_vcpu_enter_exit+0x4e (vmlinux)
- [SNIP]
+	NETDEV_UP	= 1,	/* For now you can't veto a device up/down */
+	NETDEV_DOWN,
+	NETDEV_REBOOT,		/* Tell a protocol stack a network interface
+				   detected a hardware crash and restarted
+				   - we can use this eg to kick tcp sessions
+				   once done */
+	NETDEV_CHANGE,		/* Notify device state change */
+	NETDEV_REGISTER,
+	NETDEV_UNREGISTER,
+	NETDEV_CHANGEMTU,	/* notify after mtu change happened */
+	NETDEV_CHANGEADDR,	/* notify after the address change */
+	NETDEV_PRE_CHANGEADDR,	/* notify before the address change */
+	NETDEV_GOING_DOWN,
+	...
 
- # perf kvm --guest-code --guest --host report -i perf.data --stdio | head -20
+    + vt_notifier_list:
 
- # To display the perf.data header info, please use --header/--header-only options.
- #
- #
- # Total Lost Samples: 0
- #
- # Samples: 12  of event 'instructions'
- # Event count (approx.): 2274583
- #
- # Children      Self  Command        Shared Object         Symbol
- # ........  ........  .............  ....................  ...........................................
- #
-    54.70%     0.00%  tsc_msrs_test  [kernel.vmlinux]      [k] entry_SYSCALL_64_after_hwframe
-            |
-            ---entry_SYSCALL_64_after_hwframe
-               do_syscall_64
-               |
-               |--29.44%--syscall_exit_to_user_mode
-               |          exit_to_user_mode_prepare
-               |          task_work_run
-               |          __fput
+	#define VT_ALLOCATE		0x0001 /* Console got allocated */
+	#define VT_DEALLOCATE		0x0002 /* Console will be deallocated */
+	#define VT_WRITE		0x0003 /* A char got output */
+	#define VT_UPDATE		0x0004 /* A bigger update occurred */
+	#define VT_PREWRITE		0x0005 /* A char is about to be written to the console */
 
-For more information about Perf tools support for Intel® Processor Trace
-refer:
+    + die_chain:
 
-  https://perf.wiki.kernel.org/index.php/Perf_tools_support_for_Intel%C2%AE_Processor_Trace
+	DIE_OOPS = 1,
+	DIE_INT3,
+	DIE_DEBUG,
+	DIE_PANIC,
+	DIE_NMI,
+	DIE_DIE,
+	DIE_KERNELDEBUG,
+	...
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/perf/Documentation/perf-intel-pt.txt | 70 ++++++++++++++++++++++
- tools/perf/util/intel-pt.c                 | 20 ++++++-
- 2 files changed, 88 insertions(+), 2 deletions(-)
+These all call the same list/chain in different situations.
+The situation is distinguished by @val.
 
-diff --git a/tools/perf/Documentation/perf-intel-pt.txt b/tools/perf/Documentation/perf-intel-pt.txt
-index 92532d0d3618..74370fc47246 100644
---- a/tools/perf/Documentation/perf-intel-pt.txt
-+++ b/tools/perf/Documentation/perf-intel-pt.txt
-@@ -1398,6 +1398,76 @@ There were none.
-           :17006 17006 [001] 11500.262869216:  ffffffff8220116e error_entry+0xe ([guest.kernel.kallsyms])               pushq  %rax
- 
- 
-+Tracing Virtual Machines - Guest Code
-+-------------------------------------
-+
-+A common case for KVM test programs is that the test program acts as the
-+hypervisor, creating, running and destroying the virtual machine, and
-+providing the guest object code from its own object code. In this case,
-+the VM is not running an OS, but only the functions loaded into it by the
-+hypervisor test program, and conveniently, loaded at the same virtual
-+addresses. To support that, option "--guest-code" has been added to perf script
-+and perf kvm report.
-+
-+Here is an example tracing a test program from the kernel's KVM selftests:
-+
-+ # perf record --kcore -e intel_pt/cyc/ -- tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test
-+ [ perf record: Woken up 1 times to write data ]
-+ [ perf record: Captured and wrote 0.280 MB perf.data ]
-+ # perf script --guest-code --itrace=bep --ns -F-period,+addr,+flags
-+ [SNIP]
-+   tsc_msrs_test 18436 [007] 10897.962087733:      branches:   call                   ffffffffc13b2ff5 __vmx_vcpu_run+0x15 (vmlinux) => ffffffffc13b2f50 vmx_update_host_rsp+0x0 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962087733:      branches:   return                 ffffffffc13b2f5d vmx_update_host_rsp+0xd (vmlinux) => ffffffffc13b2ffa __vmx_vcpu_run+0x1a (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962087733:      branches:   call                   ffffffffc13b303b __vmx_vcpu_run+0x5b (vmlinux) => ffffffffc13b2f80 vmx_vmenter+0x0 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962087836:      branches:   vmentry                ffffffffc13b2f82 vmx_vmenter+0x2 (vmlinux) =>                0 [unknown] ([unknown])
-+   [guest/18436] 18436 [007] 10897.962087836:      branches:   vmentry                               0 [unknown] ([unknown]) =>           402c81 guest_code+0x131 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-+   [guest/18436] 18436 [007] 10897.962087836:      branches:   call                             402c81 guest_code+0x131 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dba0 ucall+0x0 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-+   [guest/18436] 18436 [007] 10897.962088248:      branches:   vmexit                           40dba0 ucall+0x0 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>                0 [unknown] ([unknown])
-+   tsc_msrs_test 18436 [007] 10897.962088248:      branches:   vmexit                                0 [unknown] ([unknown]) => ffffffffc13b2fa0 vmx_vmexit+0x0 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962088248:      branches:   jmp                    ffffffffc13b2fa0 vmx_vmexit+0x0 (vmlinux) => ffffffffc13b2fd2 vmx_vmexit+0x32 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962088256:      branches:   return                 ffffffffc13b2fd2 vmx_vmexit+0x32 (vmlinux) => ffffffffc13b3040 __vmx_vcpu_run+0x60 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962088270:      branches:   return                 ffffffffc13b30b6 __vmx_vcpu_run+0xd6 (vmlinux) => ffffffffc13b2f2e vmx_vcpu_enter_exit+0x4e (vmlinux)
-+ [SNIP]
-+   tsc_msrs_test 18436 [007] 10897.962089321:      branches:   call                   ffffffffc13b2ff5 __vmx_vcpu_run+0x15 (vmlinux) => ffffffffc13b2f50 vmx_update_host_rsp+0x0 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962089321:      branches:   return                 ffffffffc13b2f5d vmx_update_host_rsp+0xd (vmlinux) => ffffffffc13b2ffa __vmx_vcpu_run+0x1a (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962089321:      branches:   call                   ffffffffc13b303b __vmx_vcpu_run+0x5b (vmlinux) => ffffffffc13b2f80 vmx_vmenter+0x0 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962089424:      branches:   vmentry                ffffffffc13b2f82 vmx_vmenter+0x2 (vmlinux) =>                0 [unknown] ([unknown])
-+   [guest/18436] 18436 [007] 10897.962089424:      branches:   vmentry                               0 [unknown] ([unknown]) =>           40dba0 ucall+0x0 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-+   [guest/18436] 18436 [007] 10897.962089701:      branches:   jmp                              40dc1b ucall+0x7b (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dc39 ucall+0x99 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-+   [guest/18436] 18436 [007] 10897.962089701:      branches:   jcc                              40dc3c ucall+0x9c (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dc20 ucall+0x80 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-+   [guest/18436] 18436 [007] 10897.962089701:      branches:   jcc                              40dc3c ucall+0x9c (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dc20 ucall+0x80 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-+   [guest/18436] 18436 [007] 10897.962089701:      branches:   jcc                              40dc37 ucall+0x97 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>           40dc50 ucall+0xb0 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test)
-+   [guest/18436] 18436 [007] 10897.962089878:      branches:   vmexit                           40dc55 ucall+0xb5 (/home/user/git/work/tools/testing/selftests/kselftest_install/kvm/tsc_msrs_test) =>                0 [unknown] ([unknown])
-+   tsc_msrs_test 18436 [007] 10897.962089878:      branches:   vmexit                                0 [unknown] ([unknown]) => ffffffffc13b2fa0 vmx_vmexit+0x0 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962089878:      branches:   jmp                    ffffffffc13b2fa0 vmx_vmexit+0x0 (vmlinux) => ffffffffc13b2fd2 vmx_vmexit+0x32 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962089887:      branches:   return                 ffffffffc13b2fd2 vmx_vmexit+0x32 (vmlinux) => ffffffffc13b3040 __vmx_vcpu_run+0x60 (vmlinux)
-+   tsc_msrs_test 18436 [007] 10897.962089901:      branches:   return                 ffffffffc13b30b6 __vmx_vcpu_run+0xd6 (vmlinux) => ffffffffc13b2f2e vmx_vcpu_enter_exit+0x4e (vmlinux)
-+ [SNIP]
-+
-+ # perf kvm --guest-code --guest --host report -i perf.data --stdio | head -20
-+
-+ # To display the perf.data header info, please use --header/--header-only options.
-+ #
-+ #
-+ # Total Lost Samples: 0
-+ #
-+ # Samples: 12  of event 'instructions'
-+ # Event count (approx.): 2274583
-+ #
-+ # Children      Self  Command        Shared Object         Symbol
-+ # ........  ........  .............  ....................  ...........................................
-+ #
-+    54.70%     0.00%  tsc_msrs_test  [kernel.vmlinux]      [k] entry_SYSCALL_64_after_hwframe
-+            |
-+            ---entry_SYSCALL_64_after_hwframe
-+               do_syscall_64
-+               |
-+               |--29.44%--syscall_exit_to_user_mode
-+               |          exit_to_user_mode_prepare
-+               |          task_work_run
-+               |          __fput
-+
-+
- Event Trace
- -----------
- 
-diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
-index ec43d364d0de..66f23006cfff 100644
---- a/tools/perf/util/intel-pt.c
-+++ b/tools/perf/util/intel-pt.c
-@@ -192,6 +192,7 @@ struct intel_pt_queue {
- 	pid_t next_tid;
- 	struct thread *thread;
- 	struct machine *guest_machine;
-+	struct thread *guest_thread;
- 	struct thread *unknown_guest_thread;
- 	pid_t guest_machine_pid;
- 	bool exclude_kernel;
-@@ -688,6 +689,11 @@ static int intel_pt_get_guest(struct intel_pt_queue *ptq)
- 	ptq->guest_machine = NULL;
- 	thread__zput(ptq->unknown_guest_thread);
- 
-+	if (symbol_conf.guest_code) {
-+		thread__zput(ptq->guest_thread);
-+		ptq->guest_thread = machines__findnew_guest_code(machines, pid);
-+	}
-+
- 	machine = machines__find_guest(machines, pid);
- 	if (!machine)
- 		return -1;
-@@ -729,11 +735,16 @@ static int intel_pt_walk_next_insn(struct intel_pt_insn *intel_pt_insn,
- 	cpumode = intel_pt_nr_cpumode(ptq, *ip, nr);
- 
- 	if (nr) {
--		if (cpumode != PERF_RECORD_MISC_GUEST_KERNEL ||
-+		if ((!symbol_conf.guest_code && cpumode != PERF_RECORD_MISC_GUEST_KERNEL) ||
- 		    intel_pt_get_guest(ptq))
- 			return -EINVAL;
- 		machine = ptq->guest_machine;
--		thread = ptq->unknown_guest_thread;
-+		thread = ptq->guest_thread;
-+		if (!thread) {
-+			if (cpumode != PERF_RECORD_MISC_GUEST_KERNEL)
-+				return -EINVAL;
-+			thread = ptq->unknown_guest_thread;
-+		}
- 	} else {
- 		thread = ptq->thread;
- 		if (!thread) {
-@@ -1300,6 +1311,7 @@ static void intel_pt_free_queue(void *priv)
- 	if (!ptq)
- 		return;
- 	thread__zput(ptq->thread);
-+	thread__zput(ptq->guest_thread);
- 	thread__zput(ptq->unknown_guest_thread);
- 	intel_pt_decoder_free(ptq->decoder);
- 	zfree(&ptq->event_buf);
-@@ -2372,6 +2384,10 @@ static int intel_pt_sample(struct intel_pt_queue *ptq)
- 		ptq->sample_ipc = ptq->state->flags & INTEL_PT_SAMPLE_IPC;
- 	}
- 
-+	/* Ensure guest code maps are set up */
-+	if (symbol_conf.guest_code && (state->from_nr || state->to_nr))
-+		intel_pt_get_guest(ptq);
-+
- 	/*
- 	 * Do PEBS first to allow for the possibility that the PEBS timestamp
- 	 * precedes the current timestamp.
--- 
-2.25.1
 
+> You can see in the following patches (or grep the kernel) that people are using
+> this identification parameter to determine which kind of OOPS trigger
+> the callback to condition the execution of the function to specific
+> cases.
+
+Could you please show me some existing code for case (b)?
+I am not able to find any except in your patches.
+
+Anyway, the solution in 16th patch is bad, definitely.
+hv_die_panic_notify_crash() uses "val" to disinguish
+both:
+
+     + "panic_notifier_list" vs "die_chain"
+     + die_val when callen via "die_chain"
+
+The API around "die_chain" API is not aware of enum panic_notifier_val
+and the API using "panic_notifier_list" is not aware of enum die_val.
+As I said, it is mixing apples and oranges and it is error prone.
+
+Best Regards,
+Petr
