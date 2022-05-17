@@ -2,230 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A98C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45AD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240066AbiEQHJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60002 "EHLO
+        id S241371AbiEQHLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241438AbiEQHJX (ORCPT
+        with ESMTP id S240281AbiEQHLF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:09:23 -0400
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FE748E5C;
-        Tue, 17 May 2022 00:08:50 -0700 (PDT)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 24GIXDTM016182;
-        Tue, 17 May 2022 00:08:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=zMofEuPkvIzt9JRbGzhFdxabEkO0mjT/5NIYwzPztU0=;
- b=mFwjEEXOjHkhV1dETndFqCxeafw5GxRiyc4gpdkwL3ON1dDnt3daES0nmNXYpVPlyHbS
- 5M3692AmK2ofXgjY7IdAx1682P0l0uNjXHr7HZNbFatMqWZ2kPN34J5OP482ZUYwXnio
- qhbXp6PKAkOTTh8xY+kOaGVOLkyAhBZ8m0c= 
-Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2043.outbound.protection.outlook.com [104.47.51.43])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3g283wff86-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 00:08:33 -0700
+        Tue, 17 May 2022 03:11:05 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F95BC02
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:11:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652771463; x=1684307463;
+  h=message-id:date:subject:references:to:cc:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=VN6iiUEWy8lD+K7fG/k3CXwRMFZuwSAgLBA8q2GC2AY=;
+  b=AUFvABZssIUNhNOA7B3xNIrCVBb8nUMHlxRHjEIXlYB0w+AXXHsxBX7W
+   fp2uvQtQ/wYPy6bT17G6lEIMGJIscwnsh7+bEVhnh7ReWOowOfU5JhOdG
+   mjqj3hVI0X08XWLm98/aQV72Kqz6W8knxfOKWc5FE4xmnynVL4z5YLuUn
+   DhiLiSg6SNkF2blsah9B05vwd+ufSRSyzT4Q1HqTY0XDMxs6qrvP4/FkC
+   1dvh60W4srmNuhRa+MZeaLug5TzNQyHNaVWABLo4dfLRbReo+2Ma4mvnb
+   RjaX8Fd9kQsW9gT52cJ5SmEMnkn8S1Mh2OHfs53UMUs84VZcSjWlrQec7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="250985517"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="250985517"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 00:11:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="660480731"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by FMSMGA003.fm.intel.com with ESMTP; 17 May 2022 00:11:02 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 17 May 2022 00:11:01 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 17 May 2022 00:11:01 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.177)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 17 May 2022 00:11:01 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZGhJWTEuZgk2xFNjNFtNyOliQ0AUgwU+gv6rWEeLjHYfkJNx8Oehr/3GasQasq2hjvJZT2m9OSy7NBFrw2HEOyfQcTwtmdQ/goEzHU1DCKrhm+mXe1GR7XNbkQxnhJm8muS3DGfzqufr/NS6wNnMEm+KdCsAfWEsnY1zU2K/+IbyBt4Xd/A6q2piJqwqw9LOV1P5U9y0PxhUpxpTjwxTw+qaE7bXz+VSLqQqDTfObaZmNuRgzJC1Qd4x6dXYk4/CNPzj7ZWROGT32MA+yDmMY3JdotYAvU78IUC85VN/ryJU1N4tKcLo9t7hOFIw+zdUI/bRyXGmF8z3ERP2lbHfzw==
+ b=cwQ8ZR+fznjpem1HlwPlYSQz+HIeJdIkalcSxINvxJywCYkIn/fhAKxlOMG4C4IzJ/h77p3apLr33KMmJGc3HVQpcvdXWg1QS2p75esOc+jYNdkeyjxNYgmNcqMPXsExEK5xwO0SVyswg468o9cORlMBUVFHyLTap4DPdXDodCl9hcIC5gwhe0gq7W36s2Ie+x6BRNeV4lEwY2Cex7gfk56Rtn/FW4CJDFOt0xshHve6rZ+rnbnqyX+y0hdp+Ud0v0AuyrAyI2E7XsdQ1PmFpWfdHR9ldg0Wy8pQhIYKG0BB9C4FFm4wtLABMfYfwb3qCA4khtZvuhW+awQ1VRDnRw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zMofEuPkvIzt9JRbGzhFdxabEkO0mjT/5NIYwzPztU0=;
- b=XgJ0Hm6ypVSTZ/zn6j5levNvsYi7XcPtyd3KSRsiiwInE7PKof0RoCYWwlaWLT+Y7NryhvIszZJIXykGr92GsqzLtMY3MPhi+vlqIZ0M+Jz52/6CzhfsZO3cKG91CyWQ15dKzTQuD7TTggx2luyhyP5jZDMjFY+ioFMp85/s6x1wekBQ8PJUA2mdvlRYm1t/CwEjMgeLwOGMkqAgbLKmE3b7Da2vNHyI7nY6iRhQ3gaCYOBjd4vSNxcxJBDE26s3APnWzJ7n2X12/l+cicYyt1fw9irIfM4/YQ0oa37oeGJGjZtVSqcOIvUYNZG+I/MEf76rHv6fPr64Oy4n9GwH7g==
+ bh=c8Gi2mPPkepMY8jaeEM1hpkv5T4OvWevgAaLV5pUC+I=;
+ b=GSuQ16ypMeruTvhsMWBwBgL2iSYtmn8zx46fcCj8SAMQRr3kwuIyeBxD2ZWmVEbiAlmdnYIas1Y0jSbh0FQ4TzGpzDERJapx7NbbX8AnKkXhqrNa0Ik4xpwaMGyeKFuyfXvIjb1qSNDhsPR++cNr2iJw5gKiEZi0/H9HYa/8VBllFy3enrRWV8QJqFyhoX71+IgjKb2neStZoMknqKKlfv1wKrtnzcWy2fzTmTZexyJnsNOpVsU37lGlH8UoADhHuvXKa1hIVFIOKZr0sC4TDa0A0TQd0fNQpZYl+YO8+c8b6O3KlBrept6QOiYIN5kVMyezjwauvZsjw5LYjs3MvA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by BL3PR15MB5409.namprd15.prod.outlook.com (2603:10b6:208:3b1::22) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MW4PR11MB5933.namprd11.prod.outlook.com (2603:10b6:303:16a::15)
+ by SN6PR11MB2846.namprd11.prod.outlook.com (2603:10b6:805:5b::25) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Tue, 17 May
- 2022 07:08:32 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::5811:4996:bbfd:3c53]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::5811:4996:bbfd:3c53%7]) with mapi id 15.20.5273.013; Tue, 17 May 2022
- 07:08:31 +0000
-Message-ID: <2a722851-e99f-176e-0f0b-4c32854f762d@fb.com>
-Date:   Tue, 17 May 2022 00:08:28 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH bpf v2 2/4] bpf_trace: support 32-bit kernels in
- bpf_kprobe_multi_link_attach
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.17; Tue, 17 May
+ 2022 07:10:59 +0000
+Received: from MW4PR11MB5933.namprd11.prod.outlook.com
+ ([fe80::1169:fc9:c1ef:248e]) by MW4PR11MB5933.namprd11.prod.outlook.com
+ ([fe80::1169:fc9:c1ef:248e%7]) with mapi id 15.20.5250.018; Tue, 17 May 2022
+ 07:10:59 +0000
+Message-ID: <3aa2df14-929f-6849-00f3-31d40e9cb33a@intel.com>
+Date:   Tue, 17 May 2022 15:09:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.0
+Subject: [lunn:v5.18-rc4-stacked-bridges 1/2] kismet: WARNING: unmet direct
+ dependencies detected for KEYBOARD_GPIO_POLLED when selected by ZII_RAP
+References: <202205171346.hbcZqjB1-lkp@intel.com>
 Content-Language: en-US
-To:     Eugene Syromiatnikov <esyr@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-References: <20220516230506.GA25374@asgard.redhat.com>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <20220516230506.GA25374@asgard.redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Paul Gazzillo <paul@pgazz.com>,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        <kbuild-all@lists.01.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Andrey Smirnov <andrew.smirnov@gmail.com>
+From:   kernel test robot <yujie.liu@intel.com>
+In-Reply-To: <202205171346.hbcZqjB1-lkp@intel.com>
+X-Forwarded-Message-Id: <202205171346.hbcZqjB1-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR05CA0129.namprd05.prod.outlook.com
- (2603:10b6:a03:33d::14) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+X-ClientProxiedBy: SG2PR06CA0194.apcprd06.prod.outlook.com (2603:1096:4:1::26)
+ To MW4PR11MB5933.namprd11.prod.outlook.com (2603:10b6:303:16a::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0e54c73f-ad2d-4fb9-39c5-08da37d40ca1
-X-MS-TrafficTypeDiagnostic: BL3PR15MB5409:EE_
-X-Microsoft-Antispam-PRVS: <BL3PR15MB5409700D5C1CEE5FDFBB9ECFD3CE9@BL3PR15MB5409.namprd15.prod.outlook.com>
-X-FB-Source: Internal
+X-MS-Office365-Filtering-Correlation-Id: ce4e46ea-d4c8-4c4e-e062-08da37d46494
+X-MS-TrafficTypeDiagnostic: SN6PR11MB2846:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <SN6PR11MB28464319B1A8A27BA01AF33DFBCE9@SN6PR11MB2846.namprd11.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JI94gLRb7KKKL1lhLSTtdbdqG6h6hYeIJTRIBRBaLMJPanqCsa7wv8ipmZzoCdJzXWDrP/+47ShiSgzNNc2X4ppCe8XvH63SQglLIP60IgtrSR0LdXbRtHFoqojvO+qZZt9SSHY6UABLHXFn+DeGS6O94m8HSxS5uSSInHrkRn1gVcwjBAkaxF8d6c/TRZZNPmYi6CokJQYkG6awU/0Zc0g1jNCkYaOk9PVr+jn+JiOj+lGeIVXU7LLIDAkZjSVBVH1QAwjeIgrDrIMJH6CSzWzN/Ip5F3FQaovPMjwi+kQ/Xh+UlAuOWJsKV8Q80LPfUlgsY83v7zS5+HwfY9Zyk4oH/vfkfKS2dcs0QUhMG8OSrIcwb2Hd3qoXJxSuBCCBdXo29woc7fM2+e2bxfjN2QaUmCA/TXruzKNEszThHe6+hW7Gg239Hqjo1uUhD4ky4vQwXSRs7GiaAcj5wVJmmUh+v0uqT1SkzHOA1Xjy0WCSi44fIykxuClgKryZvek6vdYXRyD3cWtlCRlFlTeDPo/zxeHfL3WC08qjrIF+yesAzfL1Ry0PxsJ+NMGROo+FV2gfjI6epJ1yU5klSl5aWWSQP9uiSzJVoMeatIWl72mpSSVdseRSyot/jIvNRJMR7ypXZQFDE38+xTkwZ9tDPUBHiK4loI2kgxFG3mdCR4ruCwuMZarUDswGDaXgYwUcx/OkkGZt2twXDl0REHnP+8EvGM3dlzrFMUbCSsFtKYtGzDS8/H8TV9eXQJ0u8FBOWEktt3qucdX/KRYEaQILWw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(54906003)(31696002)(36756003)(6512007)(4326008)(6486002)(86362001)(31686004)(7416002)(66946007)(66556008)(66476007)(316002)(8936002)(508600001)(186003)(53546011)(8676002)(6506007)(2906002)(52116002)(6666004)(5660300002)(38100700002)(83380400001)(2616005)(43740500002)(45980500001)(309714004);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: s5CigtdMMbjJ2EXrT7BDQtWBBU8iygPTqailH0MIWtnWZyEpoMOQtSD6rKIvmp94f3Vov6Vq8f3uFRBEsn83X47MfVd7OtEuGuH6Kk+2OKzIK+UOf8JDq5HsJp25UDvD9MldPC4PMicCqWY+VyN04R01p/hMZ9nqqlb7qbiw+KBxbeeKDuwbqTG+tRDzTLn3ZMvpueLlJqHUjH7ayyN1c+APHWbVMLvh8eUxSmIRmJY2+lAKxrOY8RRQcxTg10Yqk2yQctR1yj7cAbWtJ4XQS7142MuCMX/uWcp8a1+NKS+USE/jtOh5pKpJmZvlqcL4tc7490koX1sBeEav1c9xn+cPcw3uwPbtsQj1Q2FJ89V/bmZ+0mRACr3cDOjSt80ve1xvSVxtkrTiQrUGrdAVDny8B87dUmvCtbk+jLPTkbtXwHZbC+ZeI/UeDZ8/23P7bo+Gw5dgNRjXtDumcrFgNEMwdYwmLxEpK9SWjEsZ0eyqz9x0bqNbdlnn7B/oQx1gKshemv9MkJOgAWM/zZfo1/6ZKKnQBLR1UNpes6mHz/MKi2qnCZMWO93CIgKeCNcVLumSwW+f72tqG05QB3cFZh2Q5ghIeDJC7sJBcr24GGyF3UIXWR1tWgrHESbOh8h0hTZUFSs/E8G1ea3S1aZi68snHtnlOjhd1VEWcAjdWQRuAhvrxBDPmCd74yjgw/p04uisvO4Kh3q5LXhZkyIuKRBVuwakn5Fd5vWUBCzy2Jb7yCxhqw/3pf53MfLlKY26GIGeJAm6qh3WZsiFEmrDutdXADHFaU+m620mo+q1e1iiD1V6cU+B0Fl3VGQR6ALU2U49wzf2bMcN3N685wMd1962WcjLzpdV1qBfK7otiqs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5933.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(6916009)(6506007)(186003)(2616005)(83380400001)(66556008)(66476007)(8676002)(31696002)(86362001)(66946007)(6512007)(26005)(6666004)(31686004)(82960400001)(5660300002)(8936002)(966005)(6486002)(38100700002)(4326008)(36756003)(54906003)(508600001)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZmwvcmZCR28zSCtIcHEvckR1M1ZFQmx3eDZMS05kTk01dmh4NUhQeHBTQUVx?=
- =?utf-8?B?b1N4a0ZoS3NUazdaaHpDOHpqUTFZQjRqeGp1ODdqK3hoK2ZEQ0RTcHlmUU44?=
- =?utf-8?B?UW5qV1lGaWFHelk4MEJYSnRod1Awem5GRGI1SXlnZWlRdlFnaFVxTHF0cDR3?=
- =?utf-8?B?Z3hLZkdUbkFjS2tSSXFBS21BcVk3WTlrTmxiTDBCeTFKak4xY2xyaDBlUUY4?=
- =?utf-8?B?SllHMWkxRjFxazlxcCsrbS9CaGlKc251SnZNbGlXNG1vQ2JyL0x2UmQveG9t?=
- =?utf-8?B?VWM4SmYza0t4TThtZTM1YXVycXkvU3Y2VmFKKzZFb0xqeDBVYm10ZkFaN2RR?=
- =?utf-8?B?YWtzR25MbVd4ZUQ3UmNRMXMza0V1cVlRbHVTN1JhM3IrTW1zbk1STGo3NVJr?=
- =?utf-8?B?RUNCYWdZdFExeTFzamlucE1oQmVqQTBiVGJvUVVPZ3JWVUI4Um1ZbHZiU1k5?=
- =?utf-8?B?UWpUdlpSZTZXd0dPQ0hBRnZCeXhIZ0crTnQxMFlBWnRvYUpoejhQL2M4d3c2?=
- =?utf-8?B?SUorWEhtYkFDUFpQOHVIN254UmVkR1ZQcTd6ME5LbkhCUkErK1dUeThhb2cv?=
- =?utf-8?B?NE8rdkhWaDVSTElNS0orcEdKK3hiZXE1SzdiMnNTQVJ3elg4WXlxVVpESk1W?=
- =?utf-8?B?aUo4enYyMzI1cTYzMFRIbjJpR1hOdWFVRlZtOEU5MkZUVndKaWdFTVQwR2Jw?=
- =?utf-8?B?S3BsT2RlZTRrRHg1ME94VTRpRWpZclBvbTBORVgrL0IvYm9CVVlXUnpiL3FC?=
- =?utf-8?B?aWtnMUQrbDJMWFR6OTZXaXErdTFFOU03WGhkQ3JVTkYySEFUVW1PejBBUGlN?=
- =?utf-8?B?VUdTcmVQaUhpbCs5UnRzS29jR1JPWnd1eWsrUllxcnNqSGprYVVXK1g4dEJ6?=
- =?utf-8?B?UlVjQnRlMlkvTnlEeFErdGRRbzY3YnZNZ3A0bkRURHRpbWNpa1hhSXZvdHYr?=
- =?utf-8?B?NVRnQXpUNk5xRlNUSmlBWmpXQ0pwVzFvM0tMUTJnN0lSTEdUUkZIcmNYRC9X?=
- =?utf-8?B?Tk1TQXE1TDdSY2EveHFkOGg3WkkxU0duMUJZNEk1UFRrRk5mYm04ZHYwZE5B?=
- =?utf-8?B?N2VuYkFxNjJzTVN3bC85VEZJcTlIRWxHS0x0QXpDN041Y0pyTkZWRzJpM0lX?=
- =?utf-8?B?UmwvT1J6ekZJMUFadzF2WEpyVDh2NStpY2lhd3U5ZEtBZ0pSTGxSOThhTlhj?=
- =?utf-8?B?N1FUUWJVVE8ySFJpVm90MlRlTmNXYm85eFdBUDZiL0J0bHVrdmF2MXp6VDVP?=
- =?utf-8?B?V0lKemMyejV5NEhkck14VWVUSkQ3SXRMOGlTeEtWZlp2RTlBZDFHcUY4ejhG?=
- =?utf-8?B?Zm1jN21qR0xKeTVpWWNTVlNzSG9pNDgrSnI5MmRTMmFlL0tlQjl1bnBud0FB?=
- =?utf-8?B?ME01NElidndxOXBSQjdDN3dqQVJVTHd2TzI3aGJlaG9Cd2pCWklnc1h6cXNa?=
- =?utf-8?B?ZGR5bTFFUjdtU1BhZHVCVlZneDJoNGQ2a2lEeVB6NXA2TndwTUdPK1dEcnJI?=
- =?utf-8?B?d2NyUFlqcVNmdFFXUWlmWnlrTmJIZXRMYWJnQ3dOd2oyVUhKeis0ZWJQWWo4?=
- =?utf-8?B?NzVONUdRWVhSWkpBS0IyWDJOWjRtcWxaNG9HVlRlVU94OExxZzk3WHdYa0p1?=
- =?utf-8?B?Y2lmRWNQenM5L0xLM1V4SFJhUGJvellqUERWdjNEZExRTmVsSXR1MWxLWVQr?=
- =?utf-8?B?YXRwYnpscG1TckpBS2FsVENBcVVRQ0VpS3prRzJtUjZuSk5UaHdHaVg4Qnh6?=
- =?utf-8?B?Y1VocEJNZDJUVmJxV0duc0tQa01QQnhWeWlRTXRNWGI1bWk0V2FSTFVZb2RQ?=
- =?utf-8?B?UjdJTGVKT05tM2FMZ2RQdlNLamRBYWtLR0NoT043N2NYMVg1NUhocENIV0N1?=
- =?utf-8?B?bFBJZ3NYZmJuQjFJQzBqVktyRzhlL1p4TnJWL0gyYzhrWFhvbkUraExVRjFp?=
- =?utf-8?B?TzNMK1BhUUg4Vm0rM1VDOWtSUEZ0YmJPZG84c3dvRVRwQnZZUkY5SStCcity?=
- =?utf-8?B?YjBFQzRZQW1uNlRmOGl4SFhCYzJtRmkwcFdMdk0vWS9BTWtpKzdod2FKbjEx?=
- =?utf-8?B?UnJGc0xDMUVQd1hBSk9rL25hY1ZJTkFQOUlnZ0d4YURESmFhc1prTUh1UGtl?=
- =?utf-8?B?U1luWEVFUnc4L3lqTEtmMkk4cDc2cHhxcjRzeitHalBCS1ZsaE9HeGd6T1lQ?=
- =?utf-8?B?dmdTUjRkbmhvMjhpdGJRa0R3b09MeGRiMTBaMVRHMWxOMXlMZndSSUFmLzZY?=
- =?utf-8?B?SWxUN0Q1NWJyUEc2Y2E3cDZyZnpkMUJmOFJob2gxVENKVjliUTFSNFByUU1x?=
- =?utf-8?B?QU9JdFpiRnlOS2ZhZndoNTJuMTFwTUdVeXFlTExhU1ExZWRrekMrcFFBYisv?=
- =?utf-8?Q?7DBcX2ilpsGGnGt0=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e54c73f-ad2d-4fb9-39c5-08da37d40ca1
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WTVyeHUrMHd4bWVFb3ZNdm4zUWNua0dzaEhOQVBlK3JUZ1dHUlZqclgwSFFM?=
+ =?utf-8?B?dmpsREh3UHQ5SmE2b25uU1NJUVBLd0JpN094RkNHd1I1RVlLdTQyWTJVbWRX?=
+ =?utf-8?B?MFhTU2kxM3B3cm9ESWZwR0NSTzU5ZVY4djFxR2xLS1VEbTJva1RrSnczL1pL?=
+ =?utf-8?B?OFdUeFhHWnRtR1luUTZqcXBibGh1RE5JMTRtY1Zna2pLUDNMcTRrQjVTV214?=
+ =?utf-8?B?ancrK2ZkcWZCNzlScjNOYWNCeUNMdG9EUm96VFFoenlacHRMOE91R1RKL0s5?=
+ =?utf-8?B?N2NIbzBPdTJoVTRKSXkwOG51b25FRUVoZGtFak5WZXh3b1hEZEhCUXFrSS9u?=
+ =?utf-8?B?OUMrZGozV0p4SnVneTVZc3JURW8rRWNNdWlQUm8vVnY3ODRlVUpvdE11ckw3?=
+ =?utf-8?B?Y1h6RjNablpRQkhoR0pYQWhLRE56L2FZZEpSeWRFQ3ZzWlhBdDZOMW1Ucm1M?=
+ =?utf-8?B?bDZ4L0gwWldaNGhPejJDSlFhL3ZiSEVkOWY5cXN3MFVUa3JaZk5HN1hyUkdy?=
+ =?utf-8?B?WjFKbjdrSUdBd3lNRm1XSG54UVBIZlh1NWswREVUeHp6V3pONWY1emVGbnd4?=
+ =?utf-8?B?TWoyTVNDVUpDNTE5aDJQRzh6cXVzQ1I2dEtWdVBYK01DRWtjYjl6dUdKTXdU?=
+ =?utf-8?B?MkRGcmJ5VXk5QnVpVThWeC9aSkpDaC96UHZiWW5UeStwQlVNdzFiN20xOXo3?=
+ =?utf-8?B?TlpSaUhMZFAxRnp6cTJOTVJEN1pDNVJ0b3lGTnBoemhJOHBvNE5LT0tvOGFQ?=
+ =?utf-8?B?ZzMxVjJOTU9LL05vU1dVM0dvL294K0lHNnNEeDBhYjdPQjkwUXJiTjIzQ1dO?=
+ =?utf-8?B?REYrNkxzckh4azd6c0t1YllDbE0yL1R0NXRQeUk4ZVdPcUVRRGQ1U1QxRGpM?=
+ =?utf-8?B?YWxEZTh2RWN3dnpWZjM1OW1ERHVNOFhvM1cwekJJR2xVaTkraXJhUXhvYmdO?=
+ =?utf-8?B?bzhVUEZhQUpGRks5eDdza1gxT3hkc1JmUjFnL3ZGQkVOWm5jUXZ4a3dWVW05?=
+ =?utf-8?B?d1JQREhXM3ZNSjJwRTZTcWFPUEVjd2N5Y1Z3NkpYaTkzcU1IT2xLR3dNdURi?=
+ =?utf-8?B?T01KMDFjS0dFZ3hieE5aMzN1TDlpc1JoNlZ4UXdHWGtobHNWV2RKUGF1aWlu?=
+ =?utf-8?B?Zlh6aWVLZ2xDVGpFcHpQZkRHdUF2R2d4SzlmWE5SWkoxL1A5RkcyM0p3Y2w5?=
+ =?utf-8?B?UjRwTlBJNlpzZTF2WjU0MWNzeGJjOHpveUNPSlZxQVpuMWw2RHByVlpNRnBV?=
+ =?utf-8?B?clpVQmdaWlJZOFBWc0lUdVJ3VzVobGlzVXBmaUxHVjNFNmdkNW5WNVFrQ2VR?=
+ =?utf-8?B?eEZaRzhtSkVZaEd4eTdpc2F4Q3AwU2pmY24wd0VoYUwrNFd0dTlXU1V3Q2x2?=
+ =?utf-8?B?Nlo2bUhBOGdFaTRvdWhaUnFCZzg2a1V1Wmx1cTAvaFRRTUZYc2ZiTWtvamRs?=
+ =?utf-8?B?MEJwWnUwTTc1OFVjaUhERHYxMzBVQlVxYVNjSUZiS3VKQnlWRUNsRTFPUkJZ?=
+ =?utf-8?B?YkpBQnRhWXhRMTQ1SWpoZUZUWXo2b0h6b1NZRnNraUtGaHlHNmxFZ0FmK29O?=
+ =?utf-8?B?L0NrUlJSWWJ5TmwwckY2cEhSa1FnaVVSemkvdXhnQ3NCTUllRXlPazJDZ3di?=
+ =?utf-8?B?eUttZnQ2SzQzVHNpRElBcVFWd3lEZ2dKaG9sUXZLQzlmTm4wT0t1UEQ2ZFRF?=
+ =?utf-8?B?WnFnMmx0cHJodkpOeUd4czRQR3FqMXl3Y3I3U1QwM0NQNTE3cE5RbEZhdVZW?=
+ =?utf-8?B?eTJmR0I4V0lnaGJVZzhHUWxpRVRWUlQwY1UwTTVtOFVaNEdncHZEL2wzQmIw?=
+ =?utf-8?B?cVRHNHdTYWs5aVZ4TWJBVzY1TVM2Tk9USS9ZdXhYNWw3WTRjdThCOWFjazNw?=
+ =?utf-8?B?VnlBZXVYZmtuemFVRjlHMnlhd0NOdVBiQnZ2dFhmTys1alVicUhhQ0t3QWE3?=
+ =?utf-8?B?ZWkzR2JxemJwTVh1djFMU0hkRTFLQ2ltMlY4dC9xS0FsbjEvb0NHblYvWmlW?=
+ =?utf-8?B?Z0JHdFFTYlpyTFdGL1dpb1ZZUUVUSDYzRnpNOVBqWDREcUpVY1l3OHZoRndD?=
+ =?utf-8?B?R2VyazM4ZzhTUUoxblJBN05uTnFlZ1d6WVZmb3FCaXhKUFYxZkNZZFlGMmhl?=
+ =?utf-8?B?NFFrc05PRTF5RjFEdllSWVd6dWIxakhURkI2aFQ0T1BGYUhkeENvRXFuUmRE?=
+ =?utf-8?B?Q0RseDI4blBGNWt3NHBmdTA0VVh5bDZqZm94RE5NS0pmdFNnSG1YQXB5VnlZ?=
+ =?utf-8?B?ejArOFRndkgxd3NSN0M3aEovc2hoSFI1dHJxcmVuN3BKa3JBTFJUTnQrMTl0?=
+ =?utf-8?B?bmlFenNEelhwYURPOUpmRmJycW0yR0pSSWk1eVlPREdWeitRRGdhVXo2QkRV?=
+ =?utf-8?Q?r7Grz2Waramhhq+4=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce4e46ea-d4c8-4c4e-e062-08da37d46494
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5933.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2022 07:08:31.2083
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2022 07:10:58.9699
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 051x/ctxOjPs6DxX6KqFBZOnFIcJipE3rIJ6vBfGRXkfmUPthYDZLOk8uFd3Ah24
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR15MB5409
-X-Proofpoint-GUID: KeZfh98U5TKsV-beGOpLlKQ-A7n71dkk
-X-Proofpoint-ORIG-GUID: KeZfh98U5TKsV-beGOpLlKQ-A7n71dkk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-17_01,2022-05-16_02,2022-02-23_01
+X-MS-Exchange-CrossTenant-UserPrincipalName: crLZFVr2X5g0I0STi31pMGMElwqCob9QEKqu9cuFN56gHugKhSaG0hB4k6ztVXUoBWbcARux5XVm+zzXaCQlhg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2846
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/lunn/linux.git v5.18-rc4-stacked-bridges
+head:   54c29cf210da59f450762e12946a2dec224c6850
+commit: 104ddfd33f3bd72e3a37262edefff94c0c7d55d4 [1/2] platform/x86: Add Zodiac Radio Access Point platform driver
+config: (https://download.01.org/0day-ci/archive/20220517/202205171346.hbcZqjB1-lkp@intel.com/config)
+reproduce:
+         # https://github.com/lunn/linux/commit/104ddfd33f3bd72e3a37262edefff94c0c7d55d4
+         git remote add lunn https://github.com/lunn/linux.git
+         git fetch --no-tags lunn v5.18-rc4-stacked-bridges
+         git checkout 104ddfd33f3bd72e3a37262edefff94c0c7d55d4
+         # 1. reproduce by kismet
+            # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
+            kismet --linux-ksrc=linux --selectees CONFIG_KEYBOARD_GPIO_POLLED --selectors CONFIG_ZII_RAP -a=x86_64
+         # 2. reproduce by make
+            # save the config file to linux source tree
+            cd linux
+            make ARCH=x86_64 olddefconfig
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <yujie.liu@intel.com>
 
 
-On 5/16/22 4:05 PM, Eugene Syromiatnikov wrote:
-> It seems that there is no reason not to support 32-bit architectures;
-> doing so requires a bit of rework with respect to cookies handling,
-> however, as the current code implicitly assumes
-> that sizeof(long) == sizeof(u64).
-> 
-> Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-> ---
->   kernel/trace/bpf_trace.c | 18 +++++++++---------
->   1 file changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index f1d4e68..bf5bcfb 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -2406,16 +2406,12 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->   	struct bpf_link_primer link_primer;
->   	void __user *ucookies;
->   	unsigned long *addrs;
-> -	u32 flags, cnt, size;
-> +	u32 flags, cnt, size, cookies_size;
->   	void __user *uaddrs;
->   	u64 *cookies = NULL;
->   	void __user *usyms;
->   	int err;
->   
-> -	/* no support for 32bit archs yet */
-> -	if (sizeof(u64) != sizeof(void *))
-> -		return -EOPNOTSUPP;
-> -
->   	if (prog->expected_attach_type != BPF_TRACE_KPROBE_MULTI)
->   		return -EINVAL;
->   
-> @@ -2425,6 +2421,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->   
->   	uaddrs = u64_to_user_ptr(attr->link_create.kprobe_multi.addrs);
->   	usyms = u64_to_user_ptr(attr->link_create.kprobe_multi.syms);
-> +	ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
->   	if (!!uaddrs == !!usyms)
->   		return -EINVAL;
->   
-> @@ -2432,8 +2429,11 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->   	if (!cnt)
->   		return -EINVAL;
->   
-> -	if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size))
-> +	if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size) ||
-> +	    (ucookies &&
-> +	     check_mul_overflow(cnt, (u32)sizeof(*cookies), &cookies_size))) {
->   		return -EOVERFLOW;
-> +	}
->   	size = cnt * sizeof(*addrs);
+kismet warnings: (new ones prefixed by >>)
+ >> kismet: WARNING: unmet direct dependencies detected for KEYBOARD_GPIO_POLLED when selected by ZII_RAP
 
-size has been calculated, no need to calculate again.
+    WARNING: unmet direct dependencies detected for NET_DSA
+      Depends on [n]: NET [=y] && (BRIDGE [=y] || BRIDGE [=y]=n) && (HSR [=n] || HSR [=n]=n) && INET [=n] && NETDEVICES [=n]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
 
->   	addrs = kvmalloc(size, GFP_KERNEL);
->   	if (!addrs)
-> @@ -2450,14 +2450,14 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->   			goto error;
->   	}
->   
-> -	ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
->   	if (ucookies) {
-> -		cookies = kvmalloc(size, GFP_KERNEL);
-> +		cookies_size = cnt * sizeof(*cookies);
+    WARNING: unmet direct dependencies detected for IGB
+      Depends on [n]: NETDEVICES [=n] && ETHERNET [=n] && NET_VENDOR_INTEL [=n] && PCI [=n] && PTP_1588_CLOCK_OPTIONAL [=y]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
 
-same for cookies_size.
+    WARNING: unmet direct dependencies detected for PINCTRL_SX150X
+      Depends on [n]: PINCTRL [=y] && I2C [=n]=y
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
 
-> +		cookies = kvmalloc(cookies_size, GFP_KERNEL);
->   		if (!cookies) {
->   			err = -ENOMEM;
->   			goto error;
->   		}
-> -		if (copy_from_user(cookies, ucookies, size)) {
-> +		if (copy_from_user(cookies, ucookies, cookies_size)) {
->   			err = -EFAULT;
->   			goto error;
->   		}
+    WARNING: unmet direct dependencies detected for EEPROM_AT24
+      Depends on [n]: I2C [=n] && SYSFS [=y]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for MMC_SDHCI_PCI
+      Depends on [n]: MMC [=y] && MMC_SDHCI [=y] && PCI [=n]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for RTC_DRV_DS1307
+      Depends on [n]: RTC_CLASS [=y] && I2C [=n]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for NET_DSA_MV88E6XXX
+      Depends on [n]: NETDEVICES [=n] && NET_DSA [=y] && PTP_1588_CLOCK_OPTIONAL [=y]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for PHYLIB
+      Depends on [n]: NETDEVICES [=n]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for USB_SERIAL
+      Depends on [n]: USB_SUPPORT [=n] && USB [=n] && TTY [=y]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for USB_SERIAL_FTDI_SIO
+      Depends on [n]: USB_SUPPORT [=n] && USB [=n] && USB_SERIAL [=y]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for MDIO_BITBANG
+      Depends on [n]: NETDEVICES [=n] && MDIO_DEVICE [=n] && MDIO_BUS [=n]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for MDIO_GPIO
+      Depends on [n]: NETDEVICES [=n] && MDIO_DEVICE [=n] && MDIO_BUS [=n] && MDIO_BITBANG [=y] && (GPIOLIB [=y] || COMPILE_TEST [=n])
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for I2C_OCORES
+      Depends on [n]: I2C [=n] && HAS_IOMEM [=y]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for DS1682
+      Depends on [n]: I2C [=n]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for KEYBOARD_GPIO_POLLED
+      Depends on [n]: INPUT [=y] && INPUT_KEYBOARD [=n] && GPIOLIB [=y]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for USB_SERIAL_CONSOLE
+      Depends on [n]: USB_SUPPORT [=n] && USB [=n] && USB_SERIAL [=y]=y
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+    WARNING: unmet direct dependencies detected for MARVELL_PHY
+      Depends on [n]: NETDEVICES [=n] && PHYLIB [=y]
+      Selected by [y]:
+      - ZII_RAP [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y]
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
