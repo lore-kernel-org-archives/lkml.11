@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62781C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0413BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239433AbiEQPm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
+        id S1350460AbiEQPmi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 11:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350480AbiEQPlg (ORCPT
+        with ESMTP id S1350545AbiEQPlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:41:36 -0400
+        Tue, 17 May 2022 11:41:42 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE33B3F898;
-        Tue, 17 May 2022 08:41:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F22F40E7C;
+        Tue, 17 May 2022 08:41:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652802095; x=1684338095;
+  t=1652802101; x=1684338101;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=PEXOfXI4uz6C2S1/YHi/L6djsDKaGD2Ad2yRpTJujp8=;
-  b=FOAjO8h262azEfu/RsEQBdqTznoUQSZSdNE0sGjKZ7P8LhKA3EFygppi
-   g4u0yXjlnb7s5kQnUM0LJNwQ0WgjIserY3N3oO1ZO/OGhW4CGJ977vhtH
-   v2nEmG9ijx3CcjhitW94h12m9hCtS1MwLek8LL8Ith6wNTLnji9obfd/J
-   CJ0iqAnZluaDEkE96TMbW1TXOE6JBq9zXiYUsxwyxnJoErc3ymDmVCgwr
-   GBWxlBqT73WdGpQUj5P5CcKC3Qw4JPeyy8AZ29vznDdHRjvguTSVKqi2h
-   S7Nz4qVyKWcDm2TR84/rGSDcIn7267fCK554/Niu/upVxKCQoOfCWi+Uq
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632098"
+  bh=FYcsQ3yBA55TzunpKA1JkgwmQnJRWTNGqxFrZwfAGHg=;
+  b=YGfYu0skA9Xwc3MFkt+fDBGl0T/xkDkn8yBxgBb6vxyvEMMJUDhIxrlW
+   w62Yzx5/dhKhr4Gnhs0rmlerSiVfzv1S1Xp2eHNKvqPrq3L/GPfz87n0W
+   +NubFSAjH9qzeqzj+mKbIsr4OfojbR/lUrMjdzpuqexpLuBXD9ayUC6sw
+   qoRpV33QoJTSn5lu6txNKSn842Qqfoyv5f6iuvApXWFn6ic2yzoLrzdE7
+   m+YpWidQkd68qxRFcUbG6UGYAgBR1E2wSgNa32P5j46rnXTxzirD/tKND
+   VcuonhfQSINuWZg1G3Kau4ZPMdAa3CZeereSr4EZ2vPnPYHMiIfHHo9tk
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632118"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="357632098"
+   d="scan'208";a="357632118"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:33 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:36 -0700
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="626533564"
+   d="scan'208";a="626533614"
 Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:33 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:36 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com,
         kan.liang@linux.intel.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Yang Weijiang <weijiang.yang@intel.com>,
-        Zhang Yi Z <yi.z.zhang@linux.intel.com>
-Subject: [PATCH v12 04/16] KVM: x86: Refresh CPUID on writes to MSR_IA32_XSS
-Date:   Tue, 17 May 2022 11:40:48 -0400
-Message-Id: <20220517154100.29983-5-weijiang.yang@intel.com>
+        Like Xu <like.xu@linux.intel.com>
+Subject: [PATCH v12 16/16] KVM: x86/cpuid: Advertise Arch LBR feature in CPUID
+Date:   Tue, 17 May 2022 11:41:00 -0400
+Message-Id: <20220517154100.29983-17-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220517154100.29983-1-weijiang.yang@intel.com>
 References: <20220517154100.29983-1-weijiang.yang@intel.com>
@@ -56,64 +57,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Updated CPUID.0xD.0x1, which reports the current required storage size
-of all features enabled via XCR0 | XSS, when the guest's XSS is modified.
+Add Arch LBR feature bit in CPU cap-mask to expose the feature.
+Only max LBR depth is supported for guest, and it's consistent
+with host Arch LBR settings.
 
-Note, KVM does not yet support any XSS based features, i.e. supported_xss
-is guaranteed to be zero at this time.
-
-Co-developed-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
-Signed-off-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
+Co-developed-by: Like Xu <like.xu@linux.intel.com>
+Signed-off-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
 ---
- arch/x86/kvm/cpuid.c | 16 +++++++++++++---
- arch/x86/kvm/x86.c   |  6 ++++--
- 2 files changed, 17 insertions(+), 5 deletions(-)
+ arch/x86/kvm/cpuid.c | 33 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 8c1a3b2430a8..b88609847188 100644
+index b88609847188..1a2fb9a8c0d5 100644
 --- a/arch/x86/kvm/cpuid.c
 +++ b/arch/x86/kvm/cpuid.c
-@@ -239,9 +239,19 @@ static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_e
- 		best->ebx = xstate_required_size(vcpu->arch.xcr0, false);
- 
- 	best = cpuid_entry2_find(entries, nent, 0xD, 1);
--	if (best && (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
--		     cpuid_entry_has(best, X86_FEATURE_XSAVEC)))
--		best->ebx = xstate_required_size(vcpu->arch.xcr0, true);
+@@ -102,6 +102,16 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
+ 		if (vaddr_bits != 48 && vaddr_bits != 57 && vaddr_bits != 0)
+ 			return -EINVAL;
+ 	}
++	best = cpuid_entry2_find(entries, nent, 0x1c, 0);
 +	if (best) {
-+		if (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
-+		    cpuid_entry_has(best, X86_FEATURE_XSAVEC))  {
-+			u64 xstate = vcpu->arch.xcr0 | vcpu->arch.ia32_xss;
++		unsigned int eax, ebx, ecx, edx;
 +
-+			best->ebx = xstate_required_size(xstate, true);
-+		}
++		/* Reject user-space CPUID if depth is different from host's.*/
++		cpuid_count(0x1c, 0, &eax, &ebx, &ecx, &edx);
 +
-+		if (!cpuid_entry_has(best, X86_FEATURE_XSAVES)) {
-+			best->ecx = 0;
-+			best->edx = 0;
-+		}
++		if ((best->eax & 0xff) != BIT(fls(eax & 0xff) - 1))
++			return -EINVAL;
 +	}
  
- 	best = __kvm_find_kvm_cpuid_features(vcpu, entries, nent);
- 	if (kvm_hlt_in_guest(vcpu->kvm) && best &&
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 6dcfedf10734..247c58f5c8af 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3613,8 +3613,10 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		 */
- 		if (data & ~supported_xss)
- 			return 1;
--		vcpu->arch.ia32_xss = data;
--		kvm_update_cpuid_runtime(vcpu);
-+		if (vcpu->arch.ia32_xss != data) {
-+			vcpu->arch.ia32_xss = data;
-+			kvm_update_cpuid_runtime(vcpu);
-+		}
+ 	/*
+ 	 * Exposing dynamic xfeatures to the guest requires additional
+@@ -598,7 +608,7 @@ void kvm_set_cpu_caps(void)
+ 		F(SPEC_CTRL_SSBD) | F(ARCH_CAPABILITIES) | F(INTEL_STIBP) |
+ 		F(MD_CLEAR) | F(AVX512_VP2INTERSECT) | F(FSRM) |
+ 		F(SERIALIZE) | F(TSXLDTRK) | F(AVX512_FP16) |
+-		F(AMX_TILE) | F(AMX_INT8) | F(AMX_BF16)
++		F(AMX_TILE) | F(AMX_INT8) | F(AMX_BF16) | F(ARCH_LBR)
+ 	);
+ 
+ 	/* TSC_ADJUST and ARCH_CAPABILITIES are emulated in software. */
+@@ -1038,6 +1048,27 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+ 				goto out;
+ 		}
  		break;
- 	case MSR_SMI_COUNT:
- 		if (!msr_info->host_initiated)
++	/* Architectural LBR */
++	case 0x1c: {
++		u32 lbr_depth_mask = entry->eax & 0xff;
++
++		if (!lbr_depth_mask ||
++		    !kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR)) {
++			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
++			break;
++		}
++		/*
++		 * KVM only exposes the maximum supported depth, which is the
++		 * fixed value used on the host side.
++		 * KVM doesn't allow VMM userspace to adjust LBR depth because
++		 * guest LBR emulation depends on the configuration of host LBR
++		 * driver.
++		 */
++		lbr_depth_mask = BIT((fls(lbr_depth_mask) - 1));
++		entry->eax &= ~0xff;
++		entry->eax |= lbr_depth_mask;
++		break;
++	}
+ 	/* Intel AMX TILE */
+ 	case 0x1d:
+ 		if (!kvm_cpu_cap_has(X86_FEATURE_AMX_TILE)) {
 -- 
 2.27.0
 
