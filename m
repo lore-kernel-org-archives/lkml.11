@@ -2,127 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E10C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 17:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F63C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 17:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351457AbiEQRd2 (ORCPT
+        id S1351488AbiEQRfC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 13:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50350 "EHLO
+        Tue, 17 May 2022 13:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351447AbiEQRdZ (ORCPT
+        with ESMTP id S1351442AbiEQRe6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 13:33:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B6E23A18E
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 10:33:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652808804;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LGLIFlTQ2OG0Nit+kOZYpbPmMvBDDMh/ziDLpygha+E=;
-        b=i4pQegMjADJUz20HOFBJN7TwR/hT7gjcGQd6Y0br+RcxSPb3cDP3TD4E1pby+BqhnuZmvB
-        SxSlpfxXkSG7mmVlUHnxIYTAWnfZhJw/rZvhbMD7Arc0qGbAZqBdNfML6R7lzb5EB8/V6K
-        GRgyJyzHmm4ke0XPwQO9rzaSqNzf+s8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-296-IzFfBergOc-7ZtGOxWWsKg-1; Tue, 17 May 2022 13:33:22 -0400
-X-MC-Unique: IzFfBergOc-7ZtGOxWWsKg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 17 May 2022 13:34:58 -0400
+Received: from mr5.vodafonemail.de (mr5.vodafonemail.de [145.253.228.165])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3CC36B71;
+        Tue, 17 May 2022 10:34:56 -0700 (PDT)
+Received: from smtp.vodafone.de (unknown [10.0.0.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3462685A5BE;
-        Tue, 17 May 2022 17:33:21 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.8.76])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F570492C14;
-        Tue, 17 May 2022 17:33:19 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     liuhangbin@gmail.com
-Cc:     andy@greyhouse.net, davem@davemloft.net, dsahern@gmail.com,
-        eric.dumazet@gmail.com, j.vosburgh@gmail.com, jtoppins@redhat.com,
-        kuba@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
-        vfalico@gmail.com, vladimir.oltean@nxp.com,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 net] bonding: fix missed rcu protection
-Date:   Tue, 17 May 2022 13:32:58 -0400
-Message-Id: <a4ed2a83d38a58b0984edb519382c867204b7ea2.1652804144.git.jtoppins@redhat.com>
-In-Reply-To: <20220517082312.805824-1-liuhangbin@gmail.com>
-References: <20220517082312.805824-1-liuhangbin@gmail.com>
+        by mr5.vodafonemail.de (Postfix) with ESMTPS id 4L2jtP4MBWz1yD8;
+        Tue, 17 May 2022 17:34:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arcor.de;
+        s=vfde-mb-mr2-21dec; t=1652808894;
+        bh=xKVE1jpFaS3mcKSw9eHly4WxbUlHLqJhaociBjMo48w=;
+        h=Date:From:To:Subject:Message-ID:References:Content-Type:
+         In-Reply-To:From;
+        b=XrJlrlSMPp7lfwIGzlOCdXYVfKO9dAGibYKOOjiIeOS9heuAwVsbdDI9DbrhfSdyG
+         0irxqQY9kmnAiGjeFzdBznFYlOhg+/hqiR4jn5ZjZobm42b0eL0fl7Tr3AUfFxKyi7
+         o7OGx+zQBHO6pJhTZuHAU0aKpXrEwErqbnV1J6O8=
+Received: from arcor.de (p57a2318f.dip0.t-ipconnect.de [87.162.49.143])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp.vodafone.de (Postfix) with ESMTPSA id 4L2jt83NKWzMkrh;
+        Tue, 17 May 2022 17:34:37 +0000 (UTC)
+Date:   Tue, 17 May 2022 19:34:29 +0200
+From:   Reinhard Speyerer <rspmn@arcor.de>
+To:     Carl =?utf-8?B?WWluKOaut+W8oOaIkCk=?= <carl.yin@quectel.com>
+Cc:     "johan@kernel.org" <johan@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] USB: serial: option: add Quectel BG95 modem
+Message-ID: <YoPcpRroPVlRvjcd@arcor.de>
+References: <TYZPR06MB4270471E08BF0BCDBF24722186CE9@TYZPR06MB4270.apcprd06.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+In-Reply-To: <TYZPR06MB4270471E08BF0BCDBF24722186CE9@TYZPR06MB4270.apcprd06.prod.outlook.com>
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-size: 7075
+X-purgate-ID: 155817::1652808892-00007BC1-A3168A8B/0/0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
-RESEND, list still didn't receive my last version
+On Tue, May 17, 2022 at 01:14:34AM +0000, Carl Yin(殷张成) wrote:
+> Hi Reinhard:
+>     Although BG95 supports at+qcfgext="usbnet", "rmnet", but lots of QMI message do not support, 
+>     E.g WDS_START_NETWORK_INTERFACE, so "rmnet" is basically useless.
+> 
 
-The diffstat is slightly larger but IMO a slightly more readable version.
-When I was reading v2 I found myself jumping around.
-I only compile tested it, so YMMV.
+Hi Carl,
 
-If this amount of change is too much v2 from Hangbin looks correct to
-me.
+I am aware of the limitations of the QMI interface on Qualcomm MDM9205-based
+devices. There are however cases where a certain functionality is not
+available on the AT interface. For example AT+COPS=? does not return LTE
+Cat-NB1 networks while QMI NAS_SCAN_NETS returns them.
 
- drivers/net/bonding/bond_main.c | 31 ++++++++++++++++++++-----------
- 1 file changed, 20 insertions(+), 11 deletions(-)
+Having the option driver bind to the QMI interface although it is not
+a serial port might also slow down the port probing of ModemManager.
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 38e152548126..f9d27b63c454 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -5591,23 +5591,32 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
- 	const struct ethtool_ops *ops;
- 	struct net_device *real_dev;
- 	struct phy_device *phydev;
-+	int ret = 0;
- 
-+	rcu_read_lock();
- 	real_dev = bond_option_active_slave_get_rcu(bond);
--	if (real_dev) {
--		ops = real_dev->ethtool_ops;
--		phydev = real_dev->phydev;
--
--		if (phy_has_tsinfo(phydev)) {
--			return phy_ts_info(phydev, info);
--		} else if (ops->get_ts_info) {
--			return ops->get_ts_info(real_dev, info);
--		}
--	}
-+	if (real_dev)
-+		dev_hold(real_dev);
-+	rcu_read_unlock();
-+
-+	if (!real_dev)
-+		goto software;
- 
-+	ops = real_dev->ethtool_ops;
-+	phydev = real_dev->phydev;
-+
-+	if (phy_has_tsinfo(phydev))
-+		ret = phy_ts_info(phydev, info);
-+	else if (ops->get_ts_info)
-+		ret = ops->get_ts_info(real_dev, info);
-+
-+	dev_put(real_dev);
-+	return ret;
-+
-+software:
- 	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
- 				SOF_TIMESTAMPING_SOFTWARE;
- 	info->phc_index = -1;
--
- 	return 0;
- }
- 
--- 
-2.27.0
+Therefore I suggested to add the RSVD(3) flag.
 
+Regards,
+Reinhard
+
+> On Tuesday, May 17, 2022 at 05:13 AM +0000, Reinhard Speyerer wrote:
+> 
+> > On Mon, May 16, 2022 at 06:10:17AM +0000, Carl Yin(殷张成) wrote:
+> > > The BG95 modem has 2 USB configurations that are configurable via the
+> > > AT command AT+QCFGEXT="usbnet",["ecm"|"modem"] which make the
+> > modem
+> > > enumerate with the following interfaces, respectively:
+> > >
+> > > "modem": Diag + GNSS + Modem + Modem
+> > > "ecm"  : DIAG + GNSS + Modem + ECM
+> > 
+> > Hi Carl,
+> > 
+> > what about the AT+QCFGEXT="usbnet","rmnet" configuration available on
+> > several firmware versions which makes the BG95 enumerate as Diag + GNSS +
+> > Modem + QMI:
+> > 
+> > T:  Bus=02 Lev=02 Prnt=06 Port=01 Cnt=02 Dev#=  8 Spd=480  MxCh= 0
+> > D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+> > P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+> > S:  Manufacturer=Quectel, Incorporated
+> > S:  Product=Quectel LPWA Module
+> > S:  SerialNumber=xxxxxxxx
+> > C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+> > I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> > E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+> > E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> > E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > 
+> > >
+> > > A detailed description of the USB configuration for each mode follows:
+> > >
+> > > +QCFGEXT: "usbnet","modem"
+> > > -------------------------
+> > > T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  3 Spd=480  MxCh= 0
+> > > D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+> > > P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+> > > S:  Manufacturer=Quectel, Incorporated
+> > > S:  Product=Quectel LPWA Module
+> > > S:  SerialNumber=884328a2
+> > > C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+> > > I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > > E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > > E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > > E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> > > E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+> > > E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> > > E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > >
+> > > +QCFGEXT: "usbnet","ecm"
+> > > -----------------------
+> > > T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  4 Spd=480  MxCh= 0
+> > > D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+> > > P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+> > > S:  Manufacturer=Quectel, Incorporated
+> > > S:  Product=Quectel LPWA Module
+> > > S:  SerialNumber=884328a2
+> > > C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
+> > > A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+> > > I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > > E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > > E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> > > E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> > > E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00
+> > > Driver=cdc_ether
+> > > E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> > > I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00
+> > > Driver=cdc_ether
+> > > I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00
+> > > Driver=cdc_ether
+> > > E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > > E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> > >
+> > > Signed-off-by: Carl Yin <carl.yin@quectel.com>
+> > > ---
+> > >  drivers/usb/serial/option.c | 5 +++++
+> > >  1 file changed, 5 insertions(+)
+> > >
+> > > diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+> > > index 152ad8826..f91b2a67d 100644
+> > > --- a/drivers/usb/serial/option.c
+> > > +++ b/drivers/usb/serial/option.c
+> > > @@ -256,6 +256,7 @@ static void option_instat_callback(struct urb *urb);
+> > >  #define QUECTEL_PRODUCT_RM500Q			0x0800
+> > >  #define QUECTEL_PRODUCT_EC200S_CN		0x6002
+> > >  #define QUECTEL_PRODUCT_EC200T			0x6026
+> > > +#define QUECTEL_PRODUCT_BG95			0x0700
+> > >
+> > >  #define CMOTECH_VENDOR_ID			0x16d8
+> > >  #define CMOTECH_PRODUCT_6001			0x6001
+> > > @@ -1143,6 +1144,10 @@ static const struct usb_device_id option_ids[] = {
+> > >  	  .driver_info = ZLP },
+> > >  	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID,
+> > QUECTEL_PRODUCT_EC200S_CN, 0xff, 0, 0) },
+> > >  	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID,
+> > > QUECTEL_PRODUCT_EC200T, 0xff, 0, 0) },
+> > > +	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID,
+> > QUECTEL_PRODUCT_BG95, 0xff, 0xff, 0xff),
+> > > +	  .driver_info = ZLP },
+> > 
+> > Could you please add a RSVD(3) flag to the driver_info here to avoid that the
+> > option driver incorrectly binds to the QMI interface?
+> > 
+> > Regards,
+> > Reinhard
+> > 
+> > > +	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID,
+> > QUECTEL_PRODUCT_BG95, 0xff, 0xfe, 0xff),
+> > > +	  .driver_info = ZLP },
+> > >
+> > >  	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_6001) },
+> > >  	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_CMU_300) },
+> > > --
+> > > 2.17.1
+> > >
