@@ -2,179 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AADC3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9791DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241240AbiEQMee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42616 "EHLO
+        id S1345753AbiEQMgx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 08:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242745AbiEQMea (ORCPT
+        with ESMTP id S232779AbiEQMgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:34:30 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D214B876;
-        Tue, 17 May 2022 05:34:28 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 4F01221CD1;
-        Tue, 17 May 2022 12:34:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652790867;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HuIMRN14JGi6FVhkYyikXn4jfOnEwx41w5UWTDF8TaI=;
-        b=Z8zGI2cKe92t43wF3IU8bzZyLOD1eIzVh+XRmfFfA6iEaBK3UDTIJIKDdQYPthEOG3zt1o
-        g2YKAKlDnuaZQmDsxJ5dBK03IpuardW3AsptMLcG2p3bv0Z/s6ifQGoHjb3qEhcPPor/Sg
-        aozwRi1f3Fd79OLBoBPL33qpmG9NK9c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652790867;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HuIMRN14JGi6FVhkYyikXn4jfOnEwx41w5UWTDF8TaI=;
-        b=Iw3UGc1yIjzzyQ8fyKM97yOidrUBmUbrPGDJQSoaNowvHl51NhOMmoquPvOoNgp/eBpYAo
-        pjcfAiOlbvzbLCCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E47AA13305;
-        Tue, 17 May 2022 12:34:26 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 8iC/NlKWg2KVFwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 17 May 2022 12:34:26 +0000
-Date:   Tue, 17 May 2022 14:30:08 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
-        pankydev8@gmail.com, dsterba@suse.com, hch@lst.de,
-        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, jiangbo.365@bytedance.com,
-        linux-block@vger.kernel.org, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, dm-devel@redhat.com,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH v4 07/13] btrfs: zoned: use generic btrfs zone helpers to
- support npo2 zoned devices
-Message-ID: <20220517123008.GC18596@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
-        axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
-        pankydev8@gmail.com, dsterba@suse.com, hch@lst.de,
-        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, jiangbo.365@bytedance.com,
-        linux-block@vger.kernel.org, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, dm-devel@redhat.com,
-        Luis Chamberlain <mcgrof@kernel.org>
-References: <20220516165416.171196-1-p.raghav@samsung.com>
- <CGME20220516165428eucas1p1374b5f9592db3ca6a6551aff975537ce@eucas1p1.samsung.com>
- <20220516165416.171196-8-p.raghav@samsung.com>
+        Tue, 17 May 2022 08:36:50 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CE92F007
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 05:36:46 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id a5so20780355wrp.7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 05:36:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=yh9KCD3prrmtE3wT14QIp/KiLRwsEOgLjY+dd/br9aM=;
+        b=u05Y8niqeoVzLfYO77y8i8hMVDuTewNJJbexl4ODRci2203r1K0fKY9bvVdGOB5mn4
+         bVMrP0r7GneRcIBIMgJD1BTN62sLCJoi+oea9YFo/9f+Wk4USFY06kuEH3e0bBcWSvnA
+         s5zAgVJ5eW3eI9YDtRlTRW451z/7sZcSTX7FMd0tcr8XF58BIpU+VNjFNNTu1wQKLB8R
+         3c7Yz9FfDQENoh9AtnPWRQNEosyPPMP2G4Bg2Il3d3N8HEvGVNvUmNVw7t8EDUjp1flv
+         WVslgR3Bi4vqE6pZ7Nvzlkd7Ss/ZlRYMrBXaFsjiqgwKJhD+5LJo09Q723axwUxUqpPa
+         AG5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=yh9KCD3prrmtE3wT14QIp/KiLRwsEOgLjY+dd/br9aM=;
+        b=LvubYrrwIqkGLA3Yf+9XOYgAlix+Y5g8FO3FvSUI/mP7VvGlLsyOnjZ3O/3d0prGbt
+         tqHVbzelXi15qdklGbbOmiMj1f/tGm3dRIrJIrM8uROvnJopKod4SKV//aR5SueyTXlU
+         YzDWXgMyoY0gIcXPwyS8ZnmSUe2dsRgM+u70dr25hq93TQ3DQekE14a6z3YUV9+k5PkC
+         X55ol4yWcgagozcgThKJgxa1X2yCAgxoppnboyyMTIsv3lfLxvjXuO4pyU6S0QcOv3ax
+         /PVyhrNuTQIlh8XSWi5kqf8YW1r7VqEzPsCKMROX5UtAUZT9B3agu68fg3851n7Q63Eb
+         7Btw==
+X-Gm-Message-State: AOAM532wGR041CKhftY2ClVgrIMi/2iR5xWE4LDRmNOM0825UtoXkTbQ
+        R09oEo2OrpeMAT3DNVsUJln3gQ==
+X-Google-Smtp-Source: ABdhPJzKrtC8VWaJvzTf7lZpSvoGPSyOvAwojNTFmifbEtZlEYHySohWNBzK0i2sBlEfWLbMT4VAag==
+X-Received: by 2002:a5d:470c:0:b0:20d:135:2fb3 with SMTP id y12-20020a5d470c000000b0020d01352fb3mr12009595wrq.559.1652791005419;
+        Tue, 17 May 2022 05:36:45 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id g2-20020adfa482000000b0020c5253d8dfsm12328385wrb.43.2022.05.17.05.36.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 05:36:44 -0700 (PDT)
+Date:   Tue, 17 May 2022 13:36:43 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [REPORT] Use-after-free Read in __fdget_raw in v5.10.y
+Message-ID: <YoOW2+ov8KF1YcYF@google.com>
+References: <YoOJ/T4QRKC+fAZE@google.com>
+ <97cba3e1-4ef7-0a17-8456-e0787d6702c6@kernel.dk>
+ <YoOT7Cyobsed5IE3@google.com>
+ <d503d5ff-4bc5-2bd0-00d3-cd7b0a0724cb@kernel.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220516165416.171196-8-p.raghav@samsung.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d503d5ff-4bc5-2bd0-00d3-cd7b0a0724cb@kernel.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 06:54:10PM +0200, Pankaj Raghav wrote:
-> Add helpers to calculate alignment, round up and round down
-> for zoned devices. These helpers encapsulates the necessary handling for
-> power_of_2 and non-power_of_2 zone sizes. Optimized calculations are
-> performed for zone sizes that are power_of_2 with log and shifts.
+On Tue, 17 May 2022, Jens Axboe wrote:
+
+> On 5/17/22 6:24 AM, Lee Jones wrote:
+> > On Tue, 17 May 2022, Jens Axboe wrote:
+> > 
+> >> On 5/17/22 5:41 AM, Lee Jones wrote:
+> >>> Good afternoon Jens, Pavel, et al.,
+> >>>
+> >>> Not sure if you are presently aware, but there appears to be a
+> >>> use-after-free issue affecting the io_uring worker driver (fs/io-wq.c)
+> >>> in Stable v5.10.y.
+> >>>
+> >>> The full sysbot report can be seen below [0].
+> >>>
+> >>> The C-reproducer has been placed below that [1].
+> >>>
+> >>> I had great success running this reproducer in an infinite loop.
+> >>>
+> >>> My colleague reverse-bisected the fixing commit to:
+> >>>
+> >>>   commit fb3a1f6c745ccd896afadf6e2d6f073e871d38ba
+> >>>   Author: Jens Axboe <axboe@kernel.dk>
+> >>>   Date:   Fri Feb 26 09:47:20 2021 -0700
+> >>>
+> >>>        io-wq: have manager wait for all workers to exit
+> >>>
+> >>>        Instead of having to wait separately on workers and manager, just have
+> >>>        the manager wait on the workers. We use an atomic_t for the reference
+> >>>        here, as we need to start at 0 and allow increment from that. Since the
+> >>>        number of workers is naturally capped by the allowed nr of processes,
+> >>>        and that uses an int, there is no risk of overflow.
+> >>>
+> >>>        Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> >>>
+> >>>     fs/io-wq.c | 30 ++++++++++++++++++++++--------
+> >>>     1 file changed, 22 insertions(+), 8 deletions(-)
+> >>
+> >> Does this fix it:
+> >>
+> >> commit 886d0137f104a440d9dfa1d16efc1db06c9a2c02
+> >> Author: Jens Axboe <axboe@kernel.dk>
+> >> Date:   Fri Mar 5 12:59:30 2021 -0700
+> >>
+> >>     io-wq: fix race in freeing 'wq' and worker access
+> >>
+> >> Looks like it didn't make it into 5.10-stable, but we can certainly
+> >> rectify that.
+> > 
+> > Thanks for your quick response Jens.
+> > 
+> > This patch doesn't apply cleanly to v5.10.y.
 > 
-> btrfs_zoned_is_aligned() is added instead of reusing bdev_zone_aligned()
-> helper due to some use cases in btrfs where zone alignment is checked
-> before having access to the underlying block device such as in this
-> function: btrfs_load_block_group_zone_info().
+> This is probably why it never made it into 5.10-stable :-/
+
+Right.  It doesn't apply at all unfortunately.
+
+> > I'll have a go at back-porting it.  Please bear with me.
 > 
-> Use the generic btrfs zone helpers to calculate zone index, check zone
-> alignment, round up and round down operations.
-> 
-> The zone_size_shift field is not needed anymore as generic helpers are
-> used for calculation.
+> Let me know if you into issues with that and I can help out.
 
-Overall this looks reasonable to me.
+I think the dependency list is too big.
 
-> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
-> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
-> ---
->  fs/btrfs/volumes.c | 24 +++++++++-------
->  fs/btrfs/zoned.c   | 72 ++++++++++++++++++++++------------------------
->  fs/btrfs/zoned.h   | 43 +++++++++++++++++++++++----
->  3 files changed, 85 insertions(+), 54 deletions(-)
-> 
-> --- a/fs/btrfs/zoned.c
-> +++ b/fs/btrfs/zoned.c
-> @@ -1108,14 +1101,14 @@ int btrfs_reset_device_zone(struct btrfs_device *device, u64 physical,
->  int btrfs_ensure_empty_zones(struct btrfs_device *device, u64 start, u64 size)
->  {
->  	struct btrfs_zoned_device_info *zinfo = device->zone_info;
-> -	const u8 shift = zinfo->zone_size_shift;
-> -	unsigned long begin = start >> shift;
-> -	unsigned long end = (start + size) >> shift;
-> +	unsigned long begin = bdev_zone_no(device->bdev, start >> SECTOR_SHIFT);
-> +	unsigned long end =
-> +		bdev_zone_no(device->bdev, (start + size) >> SECTOR_SHIFT);
+Too much has changed that was never back-ported.
 
-There are unsinged long types here though I'd rather see u64, better for
-a separate patch. Fixed width types are cleaner here and in the zoned
-code as there's always some conversion to/from sectors.
+Actually the list of patches pertaining to fs/io-wq.c alone isn't so
+bad, I did start to back-port them all but some of the big ones have
+fs/io_uring.c changes incorporated and that list is huge (256 patches
+from v5.10 to the fixing patch mentioned above).
 
->  	u64 pos;
->  	int ret;
->  
-> -	ASSERT(IS_ALIGNED(start, zinfo->zone_size));
-> -	ASSERT(IS_ALIGNED(size, zinfo->zone_size));
-> +	ASSERT(btrfs_zoned_is_aligned(start, zinfo->zone_size));
-> +	ASSERT(btrfs_zoned_is_aligned(size, zinfo->zone_size));
->  
->  	if (end > zinfo->nr_zones)
->  		return -ERANGE;
-> --- a/fs/btrfs/zoned.h
-> +++ b/fs/btrfs/zoned.h
-> @@ -30,6 +30,36 @@ struct btrfs_zoned_device_info {
->  	u32 sb_zone_location[BTRFS_SUPER_MIRROR_MAX];
->  };
->  
-> +static inline bool btrfs_zoned_is_aligned(u64 pos, u64 zone_size)
-> +{
-> +	u64 remainder = 0;
-> +
-> +	if (is_power_of_two_u64(zone_size))
-> +		return IS_ALIGNED(pos, zone_size);
-> +
-> +	div64_u64_rem(pos, zone_size, &remainder);
-> +	return remainder == 0;
-> +}
-> +
-> +static inline u64 btrfs_zoned_roundup(u64 pos, u64 zone_size)
-> +{
-> +	if (is_power_of_two_u64(zone_size))
-> +		return ALIGN(pos, zone_size);
-
-Please use round_up as the rounddown helper uses round_down
-
-> +
-> +	return div64_u64(pos + zone_size - 1, zone_size) * zone_size;
-> +}
-> +
-> +static inline u64 btrfs_zoned_rounddown(u64 pos, u64 zone_size)
-> +{
-> +	u64 remainder = 0;
-> +	if (is_power_of_two_u64(zone_size))
-> +		return round_down(pos, zone_size);
-> +
-> +	div64_u64_rem(pos, zone_size, &remainder);
-> +	pos -= remainder;
-> +	return pos;
-> +}
-> +
->  #ifdef CONFIG_BLK_DEV_ZONED
->  int btrfs_get_dev_zone(struct btrfs_device *device, u64 pos,
->  		       struct blk_zone *zone);
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
