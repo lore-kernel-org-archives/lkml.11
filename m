@@ -2,90 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADFF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B491C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235475AbiEQI12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
+        id S243196AbiEQI1p convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243158AbiEQI0M (ORCPT
+        with ESMTP id S243014AbiEQI0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:26:12 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370EBF44
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:26:11 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 24H8CR7V039693;
-        Tue, 17 May 2022 16:12:27 +0800 (GMT-8)
-        (envelope-from neal_liu@aspeedtech.com)
-Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 17 May
- 2022 16:26:04 +0800
-From:   Neal Liu <neal_liu@aspeedtech.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "Andrew Jeffery" <andrew@aj.id.au>,
-        Felipe Balbi <balbi@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Li Yang" <leoyang.li@nxp.com>
-CC:     Neal Liu <neal_liu@aspeedtech.com>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <linaro-mm-sig@lists.linaro.org>
-Subject: [PATCH v2 2/3] ARM: dts: aspeed: Add USB2.0 device controller node
-Date:   Tue, 17 May 2022 16:25:57 +0800
-Message-ID: <20220517082558.3534161-3-neal_liu@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220517082558.3534161-1-neal_liu@aspeedtech.com>
-References: <20220517082558.3534161-1-neal_liu@aspeedtech.com>
+        Tue, 17 May 2022 04:26:48 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFC8433E8E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:26:46 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-206-u0rpxtwWMv-63K0ptBJSiA-1; Tue, 17 May 2022 09:26:43 +0100
+X-MC-Unique: u0rpxtwWMv-63K0ptBJSiA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Tue, 17 May 2022 09:26:42 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Tue, 17 May 2022 09:26:42 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Peter Zijlstra' <peterz@infradead.org>,
+        Mikulas Patocka <mpatocka@redhat.com>
+CC:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] objtool: fix objtool regression on x32 systems
+Thread-Topic: [PATCH] objtool: fix objtool regression on x32 systems
+Thread-Index: AQHYaWt5OldbokCz9EWxs3iZW4E54K0iu3XQ
+Date:   Tue, 17 May 2022 08:26:42 +0000
+Message-ID: <738a941ba2ff4e2db8f2268b281d9bd5@AcuMS.aculab.com>
+References: <alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com>
+ <YoJwtCeVzYUm6Uhg@hirez.programming.kicks-ass.net>
+ <alpine.LRH.2.02.2205161145070.30905@file01.intranet.prod.int.rdu2.redhat.com>
+ <20220516212517.GP76023@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220516212517.GP76023@worktop.programming.kicks-ass.net>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.10.10]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 24H8CR7V039693
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add USB2.0 device controller(udc) node to device tree
-for AST2600.
+From: Peter Zijlstra
+> Sent: 16 May 2022 22:25
+...
+> A quick look seems to suggest at least all the 'offset' fields should be
+> u64 or something. The only reason that works is because -mcmodel=kernel
+> keeps everything in the 2G range to make s32 immediates work. But it
+> isn't right.
 
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
----
- arch/arm/boot/dts/aspeed-g6.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Offsets in instructions are only 8bit or 32bit.
+The mod/reg/rm and SiB encodings don't support anything else.
+If offsets might be large then they have to be loaded into
+registers - which will slow things down.
 
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index 3d5ce9da42c3..5517313eb2b5 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -298,6 +298,16 @@ vhub: usb-vhub@1e6a0000 {
- 			status = "disabled";
- 		};
- 
-+		udc: udc@1e6a2000 {
-+			compatible = "aspeed,ast2600-udc";
-+			reg = <0x1e6a2000 0x300>;
-+			interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&syscon ASPEED_CLK_GATE_USBPORT2CLK>;
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&pinctrl_usb2bd_default>;
-+			status = "disabled";
-+		};
-+
- 		apb {
- 			compatible = "simple-bus";
- 			#address-cells = <1>;
--- 
-2.25.1
+Immediates can be 64bit (but not if the addressing mode
+includes an offset).
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
