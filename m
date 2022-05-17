@@ -2,184 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8028C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C5CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243247AbiEQQjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:39:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S1351047AbiEQQmK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 12:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236502AbiEQQja (ORCPT
+        with ESMTP id S242619AbiEQQmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:39:30 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B3A33E86;
-        Tue, 17 May 2022 09:39:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=nkckcEBnQlRsFTpASqSz6WprnZRaV0YhYSvPtBA0AVg=; b=GXitEwhCwUT4w9+D5pmH2zeSKa
-        60OoBts2cxKaTjkNlztKOiPg7JmJSxA8Nf6Mc3GM9eoyPx0kgrCnR1AZ6EjsP0NE4+IxyqcasC5FH
-        Bzs6mPDD2Ojz26SlVHGGSFKa4MS4PaKNy9b4ykBdp04iHw75Gq64zjSE08zAzR/RUXjez/E1PIcPr
-        w9iTODel9NpjUtjDaWlc8Esr0zkZKONhALq9dFCmuDS5Nj18Wn3hMj4H1VTlzFy6uMc+YdCA3ReKq
-        k/CxfFfQpOp3w1u8K+s1/QjiYVlCZZRZYeOFoWStjActxBApHl98rSBUYLtUajOsHPvmBlqZChf2A
-        VEU39bjw==;
-Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nr0Da-008gju-GJ; Tue, 17 May 2022 18:38:42 +0200
-Message-ID: <b9ec2fc8-216f-f261-8417-77b6dd95e25c@igalia.com>
-Date:   Tue, 17 May 2022 13:37:58 -0300
+        Tue, 17 May 2022 12:42:06 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A1B3FD93
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:42:05 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id s68so882962pgb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:42:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UAaK0aU2k1qQWWA1NGAVdax/L+mO0Yx8sa53VfFr0E0=;
+        b=FAg0TouXgjpk19jvVBTpS2yi0HzoIqR5b71b+PMKbwpZMPO1LZuzVCe6EPm3a5bf2v
+         fbkXVBiZV3TOhPvfJAuAFYvSLRndrHQfQ5j9leSEEt+ykDBiFbuwbZuYBNdSvm/WCtcV
+         4NJAmUPPZEXXatIF9oal5vnGZW+3qSjbzPslrTO2NwswDDhykcQ5dAZg9vq5LUgqdna8
+         Ic4mhJj3ws2m0H7Mg85/Nqf/7UzLcn7QcqxrwY6Z8TZ1yC0mCWalS7N/mUyc02Aaf5MN
+         EonoD/leoWhq/NP4bLZK5VS360YZhsvG9+qln6ggH/W9TTnTg/Jfbwmzr0ea1XnjG8ez
+         /AAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UAaK0aU2k1qQWWA1NGAVdax/L+mO0Yx8sa53VfFr0E0=;
+        b=2a2FGU8S8CifOCpEuPqXRnBIxMCGmcWTyMnqonONkTO3ZMqegvYWOQlst3QKHugDmE
+         q2/TzHGZvwri4s5xgTazFORjNHYiXorQ3Mqeb6UW2q1P9muUNV/42xCpwBHDS9YYQ9Pe
+         Cun9lVaPY/Pp6HnEg0Lno3hsrSVRRUALAnZmBv4MV2Ve3iLqJr9sPpl+tezLNRzl9BvE
+         a12IZdAnRwZbu5Zl1pC7yhuj61KIgttegOq7kR4makFmupmNsLmQzUDe/kgdLbfTRHWL
+         3nrBxgxbm76RPFiIuRgoudq2XGV3d+TbqThX2G6gbQjEr3EBvEfV2lhc50Tk92hz7L80
+         fnpQ==
+X-Gm-Message-State: AOAM532YoaHYwHWt23TLmV/WgjXQSzSMQviTD/ryMJ0GF62FB5zYfBwb
+        Pp002+QrDnW3w1fUW0aC/qL65A==
+X-Google-Smtp-Source: ABdhPJyze21TTVro1wc6Lf6A3iR1HlwFnF4lUSG1rF8LQuPROGGD1VpxYzDbokW9v5V+R2VGUNNr/Q==
+X-Received: by 2002:a63:43c2:0:b0:3c1:829a:5602 with SMTP id q185-20020a6343c2000000b003c1829a5602mr20449743pga.252.1652805724330;
+        Tue, 17 May 2022 09:42:04 -0700 (PDT)
+Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
+        by smtp.gmail.com with ESMTPSA id j15-20020a170903024f00b0015eee3ab203sm9562937plh.49.2022.05.17.09.42.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 09:42:03 -0700 (PDT)
+Date:   Tue, 17 May 2022 16:41:59 +0000
+From:   David Matlack <dmatlack@google.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)" 
+        <kvm@vger.kernel.org>, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH V2 3/7] KVM: X86/MMU: Link PAE root pagetable with its
+ children
+Message-ID: <YoPQV0wDIMBr3HKG@google.com>
+References: <20220503150735.32723-1-jiangshanlai@gmail.com>
+ <20220503150735.32723-4-jiangshanlai@gmail.com>
+ <YoLlzcejEDh8VpoB@google.com>
+ <CAJhGHyCKdxti0gDjDP27MDd=bK+0BecXqzExo5t-WAOQLO5WwA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>, Evan Green <evgreen@chromium.org>,
-        David Gow <davidgow@google.com>,
-        Julius Werner <jwerner@chromium.org>
-Cc:     Scott Branden <scott.branden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Sebastian Reichel <sre@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
-        kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de,
-        Kees Cook <keescook@chromium.org>, luto@kernel.org,
-        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
-        peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
-        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
-        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        zhenwei pi <pizhenwei@bytedance.com>,
-        Stephen Boyd <swboyd@chromium.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
- <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
- <CAE=gft7ds+dHfEkRz8rnSH1EbTpGTpKbi5Wxj9DW0Jr5mX_j4w@mail.gmail.com>
- <YoOi9PFK/JnNwH+D@alley>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YoOi9PFK/JnNwH+D@alley>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJhGHyCKdxti0gDjDP27MDd=bK+0BecXqzExo5t-WAOQLO5WwA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 10:28, Petr Mladek wrote:
-> [...]
->>> Disagree here. I'm looping Google maintainers, so they can comment.
->>> (CCed Evan, David, Julius)
->>>
->>> This notifier is clearly a hypervisor notification mechanism. I've fixed
->>> a locking stuff there (in previous patch), I feel it's low-risk but even
->>> if it's mid-risk, the class of such callback remains a perfect fit with
->>> the hypervisor list IMHO.
->>
->> This logs a panic to our "eventlog", a tiny logging area in SPI flash
->> for critical and power-related events. In some cases this ends up
->> being the only clue we get in a Chromebook feedback report that a
->> panic occurred, so from my perspective moving it to the front of the
->> line seems like a good idea.
+On Tue, May 17, 2022 at 09:13:54AM +0800, Lai Jiangshan wrote:
+> On Tue, May 17, 2022 at 8:01 AM David Matlack <dmatlack@google.com> wrote:
+> >
+> > On Tue, May 03, 2022 at 11:07:31PM +0800, Lai Jiangshan wrote:
+> > > From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+> > >
+> > > When special shadow pages are activated, link_shadow_page() might link
+> > > a special shadow pages which is the PAE root for PAE paging with its
+> > > children.
+> > >
+> > > Add make_pae_pdpte() to handle it.
+> > >
+> > > The code is not activated since special shadow pages are not activated
+> > > yet.
+> > >
+> > > Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+> > > ---
+> > >  arch/x86/kvm/mmu/mmu.c  | 6 +++++-
+> > >  arch/x86/kvm/mmu/spte.c | 7 +++++++
+> > >  arch/x86/kvm/mmu/spte.h | 1 +
+> > >  3 files changed, 13 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> > > index 126f0cd07f98..3fe70ad3bda2 100644
+> > > --- a/arch/x86/kvm/mmu/mmu.c
+> > > +++ b/arch/x86/kvm/mmu/mmu.c
+> > > @@ -2277,7 +2277,11 @@ static void link_shadow_page(struct kvm_vcpu *vcpu, u64 *sptep,
+> > >
+> > >       BUILD_BUG_ON(VMX_EPT_WRITABLE_MASK != PT_WRITABLE_MASK);
+> > >
+> > > -     spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
+> > > +     if (unlikely(sp->role.level == PT32_ROOT_LEVEL &&
+> > > +                  vcpu->arch.mmu->root_role.level == PT32E_ROOT_LEVEL))
+> > > +             spte = make_pae_pdpte(sp->spt);
+> > > +     else
+> > > +             spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
+> > >
+> > >       mmu_spte_set(sptep, spte);
+> > >
+> > > diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
+> > > index 75c9e87d446a..ccd9267a58ca 100644
+> > > --- a/arch/x86/kvm/mmu/spte.c
+> > > +++ b/arch/x86/kvm/mmu/spte.c
+> > > @@ -251,6 +251,13 @@ u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index)
+> > >       return child_spte;
+> > >  }
+> > >
+> > > +u64 make_pae_pdpte(u64 *child_pt)
+> > > +{
+> > > +     /* The only ignore bits in PDPTE are 11:9. */
+> > > +     BUILD_BUG_ON(!(GENMASK(11,9) & SPTE_MMU_PRESENT_MASK));
+> > > +     return __pa(child_pt) | PT_PRESENT_MASK | SPTE_MMU_PRESENT_MASK |
+> > > +             shadow_me_value;
+> >
+> > If I'm reading mmu_alloc_{direct,shadow}_roots() correctly, PAE page
+> > directories just get: root | PT_PRESENT_MASK | shadow_me_value. Is there
+> > a reason to add SPTE_MMU_PRESENT_MASK or am I misreading the code?
 > 
-> IMHO, this would really better fit into the pre-reboot notifier list:
+> Because it has a struct kvm_mmu_page associated with it now.
 > 
->    + the callback stores the log so it is similar to kmsg_dump()
->      or console_flush_on_panic()
+> sp->spt[i] requires SPTE_MMU_PRESENT_MASK if it is present.
+
+Ah of course. e.g. FNAME(fetch) will call is_shadow_present_pte() on PAE
+PDPTEs.
+
+Could you also update the comment above SPTE_MMU_PRESENT_MASK? Right now it
+says: "Use bit 11, as it is ignored by all flavors of SPTEs and checking a low
+bit often generates better code than for a high bit, e.g. 56+." I think it
+would be helpful to also meniton that SPTE_MMU_PRESENT_MASK is also used in
+PDPTEs which only ignore bits 11:9.
+
+
 > 
->    + the callback should be proceed after "info" notifiers
->      that might add some other useful information.
-> 
-> Honestly, I am not sure what exactly hypervisor callbacks do. But I
-> think that they do not try to extract the kernel log because they
-> would need to handle the internal format.
-> 
-
-I guess the main point in your response is : "I am not sure what exactly
-hypervisor callbacks do". We need to be sure about the semantics of such
-list, and agree on that.
-
-So, my opinion about this first list, that we call "hypervisor list",
-is: it contains callbacks that
-
-(1) should run early, preferably before kdump (or even if kdump isn't
-set, should run ASAP);
-
-(2) these callbacks perform some communication with an abstraction that
-runs "below" the kernel, like a firmware or hypervisor. Classic example:
-pvpanic, that communicates with VMM (usually qemu) and allow such VMM to
-snapshot the full guest memory, for example.
-
-(3) Should be low-risk. What defines risk is the level of reliability of
-subsequent operations - if the callback have 50% of chance of "bricking"
-the system totally and prevent kdump / kmsg_dump() / reboot , this is
-high risk one for example.
-
-Some good fits IMO: pvpanic, sstate_panic_event() [sparc], fadump in
-powerpc, etc.
-
-So, this is a good case for the Google notifier as well - it's not
-collecting data like the dmesg (hence your second bullet seems to not
-apply here, info notifiers won't add info to be collected by gsmi). It
-is a firmware/hypervisor/whatever-gsmi-is notification mechanism, that
-tells such "lower" abstraction a panic occurred. It seems low risk and
-we want it to run ASAP, if possible.
-
-So, I'd like to keep it here, unless gsmi maintainers disagree or I'm
-perhaps misunderstanding the meaning of this first list.
-Cheers,
-
-
-Guilherme
+> >
+> > > +}
+> > >
+> > >  u64 make_nonleaf_spte(u64 *child_pt, bool ad_disabled)
+> > >  {
+> > > diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
+> > > index fbbab180395e..09a7e4ba017a 100644
+> > > --- a/arch/x86/kvm/mmu/spte.h
+> > > +++ b/arch/x86/kvm/mmu/spte.h
+> > > @@ -413,6 +413,7 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+> > >              u64 old_spte, bool prefetch, bool can_unsync,
+> > >              bool host_writable, u64 *new_spte);
+> > >  u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index);
+> > > +u64 make_pae_pdpte(u64 *child_pt);
+> > >  u64 make_nonleaf_spte(u64 *child_pt, bool ad_disabled);
+> > >  u64 make_mmio_spte(struct kvm_vcpu *vcpu, u64 gfn, unsigned int access);
+> > >  u64 mark_spte_for_access_track(u64 spte);
+> > > --
+> > > 2.19.1.6.gb485710b
+> > >
