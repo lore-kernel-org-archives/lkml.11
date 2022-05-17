@@ -2,104 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 04:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA556C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 04:14:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236738AbiEQENg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 00:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
+        id S237674AbiEQEOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 00:14:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237129AbiEQENJ (ORCPT
+        with ESMTP id S234450AbiEQEN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 00:13:09 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4A53FD96;
-        Mon, 16 May 2022 21:13:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652760788; x=1684296788;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1drYWkhJXlza+p8qJe1jaRor29et4ZBJVwKRLeAW2M8=;
-  b=SiGl200o+/Cm2HNH10aLAdWCKrnkzGLuzsLoWWSTWTAn3ioW6jA8nODT
-   cXjOaUy6E393lzwiu5aNJ2YN84WeRBmWtwdFwv04fqDJMp/npZaEntdjn
-   4W+1xF2chcWA4pI+YNbpx/oq7pEKo/zuxXUIXkcLCYLjQpYJvNXK8Hkq9
-   O07M0GCI9B/0MjupVK8obb0fh4UANapDzBY+0gGdzHn9wDr7RGclUkvPT
-   l9Ms5Gb60tnlNJY2/dSnxPdG2PvMaYEssDF4/Wes0AmGrh+2i71vNrRy/
-   gbbXfEUt5BCKaiuFhrYaSHGm7JPVLqN47rDHnNTvE2mSsDd3j2MgLjrjh
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="268630910"
-X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
-   d="scan'208";a="268630910"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 21:13:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,231,1647327600"; 
-   d="scan'208";a="699868498"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 16 May 2022 21:13:04 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nqoZz-0000ap-DK;
-        Tue, 17 May 2022 04:13:03 +0000
-Date:   Tue, 17 May 2022 12:12:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
-        damien.lemoal@opensource.wdc.com, pankydev8@gmail.com,
-        dsterba@suse.com, hch@lst.de
-Cc:     kbuild-all@lists.01.org, linux-nvme@lists.infradead.org,
-        linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        jiangbo.365@bytedance.com, linux-block@vger.kernel.org,
-        gost.dev@samsung.com, p.raghav@samsung.com,
-        linux-kernel@vger.kernel.org, dm-devel@redhat.com,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Hannes Reinecke <hare@suse.de>
-Subject: Re: [PATCH v4 11/13] null_blk: allow non power of 2 zoned devices
-Message-ID: <202205171251.o9RZslnw-lkp@intel.com>
-References: <20220516165416.171196-12-p.raghav@samsung.com>
+        Tue, 17 May 2022 00:13:59 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7623247562
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 21:13:41 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-edf3b6b0f2so22770542fac.9
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 21:13:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vlS8HH9kxm8e7oyzOpwYqn9TLCV2qWKpTfyr5YCSt/A=;
+        b=CT4MNXpeWUvPhXVxDxbzENUUVOBdGOtNsdLT3PNgZBjzQzggYUNwg9TQNBSMqRJ5oX
+         A/IFlgHmL78OhQcSWWAXh1RmrEVFQ2ax328nk9PDnPouUKz/7q6iWR7GiP5KgX4xibFS
+         JQuT/HBwSrRNsJSgKbaJsI5u2uEQWDicABhts=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vlS8HH9kxm8e7oyzOpwYqn9TLCV2qWKpTfyr5YCSt/A=;
+        b=6+KkXBDlX8MxJzNTuMACnNbxPW3C9Gy7xEnEc6X6PNW0PrfjZzTJuenmPC2JWylDV7
+         hvQmZ5g/8o4WnUHBURNROEeRicegfAxQf/9b6SOcQgRQIwJNgFZejGyQwKsxx8VNOHpb
+         emiva5RS/ZXCfoG2WXqoRZYDIRIVznUNMatiFW9yJoDFI5KWpyVG8Okk0osAgHXAu/PG
+         wUoJFX6xjX/bGWMAMSSBLotwSWnwqBTy5lXG1jFryWiLBV6zVKoMLHuj1I5M4OCmiUuV
+         AtCLAPcQEI2Kbx59IKgpFoeKE9qbRZqvEgorQzCs1lKm0YvT43CeWYIR3gIovEj5LuZm
+         zwuQ==
+X-Gm-Message-State: AOAM531d3AKLnLMw/SlEmlcPgOluf+km6muOuosAn2+qAvgpOds3i8KM
+        I6w/nRrVKqor4DILAQcP9hQWCw==
+X-Google-Smtp-Source: ABdhPJyTolo27BXXMRFHmmDpLVwb/LF3OFgkIccSFPHKl8sSgsbI/7a8ff7sIIrhkmoyHgyh5wnILA==
+X-Received: by 2002:a05:6870:d0ce:b0:ed:9988:ba91 with SMTP id k14-20020a056870d0ce00b000ed9988ba91mr11286681oaa.205.1652760820159;
+        Mon, 16 May 2022 21:13:40 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id ed5-20020a056870b78500b000e686d1387asm6121653oab.20.2022.05.16.21.13.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 21:13:39 -0700 (PDT)
+Subject: Re: [PATCH 5.17 000/114] 5.17.9-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220516193625.489108457@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <03643f12-8c15-a2ca-0897-5539b805930b@linuxfoundation.org>
+Date:   Mon, 16 May 2022 22:13:38 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516165416.171196-12-p.raghav@samsung.com>
+In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pankaj,
+On 5/16/22 1:35 PM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.9 release.
+> There are 114 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.9-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Thank you for the patch! Yet something to improve:
+Compiled and booted on my test system. No dmesg regressions.
 
-[auto build test ERROR on next-20220516]
-[also build test ERROR on v5.18-rc7]
-[cannot apply to axboe-block/for-next kdave/for-next device-mapper-dm/for-next linus/master v5.18-rc7 v5.18-rc6 v5.18-rc5]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Pankaj-Raghav/block-make-blkdev_nr_zones-and-blk_queue_zone_no-generic-for-npo2-zsze/20220517-015435
-base:    3f7bdc402fb06f897ff1f492a2d42e1f7c2efedb
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220517/202205171251.o9RZslnw-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/1fc6f61076425c29e51cfa376f8dee4dbf588ed1
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Pankaj-Raghav/block-make-blkdev_nr_zones-and-blk_queue_zone_no-generic-for-npo2-zsze/20220517-015435
-        git checkout 1fc6f61076425c29e51cfa376f8dee4dbf588ed1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   m68k-linux-ld: drivers/block/null_blk/zoned.o: in function `null_init_zoned_dev':
->> zoned.c:(.text+0x9c6): undefined reference to `__udivdi3'
-   `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+thanks,
+-- Shuah
