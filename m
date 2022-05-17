@@ -2,114 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0530C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349892AbiEQQAO (ORCPT
+        id S1349824AbiEQQCj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
+        Tue, 17 May 2022 12:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350476AbiEQQAK (ORCPT
+        with ESMTP id S231485AbiEQQCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:00:10 -0400
-Received: from qproxy1-pub.mail.unifiedlayer.com (qproxy1-pub.mail.unifiedlayer.com [173.254.64.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8274FC59
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:00:03 -0700 (PDT)
-Received: from gproxy2-pub.mail.unifiedlayer.com (unknown [69.89.18.3])
-        by qproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id 7AD0E8028FF7
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 16:00:02 +0000 (UTC)
-Received: from cmgw11.mail.unifiedlayer.com (unknown [10.0.90.126])
-        by progateway4.mail.pro1.eigbox.com (Postfix) with ESMTP id C322810047E05
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 16:00:01 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id qzc9nOEk7j8kTqzc9nRfb4; Tue, 17 May 2022 16:00:01 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=MbSpB7zf c=1 sm=1 tr=0 ts=6283c681
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=oZkIemNP1mAA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+aLKMSsEsDQFVQ47DJGtHYttyzEqzxCqwJh+LaaGbcQ=; b=Q6NK//nazYz+8usZcjkcglTZD6
-        G6TOc+qH2MWE5hf25fFuJn0e01+PitSD4/Is+CGDi9fHFdxXOtdffpk4HhZcj7Lr3iaq21e9G2rjk
-        ttkC+ClKXe6Zt2TzaSTwFFuLzbfXzmnGMmxTvCv5jAbM1UQ0xVe5UnXrDbabEMhWrOkPilurY1F2w
-        pSS2b5ZSkTtOfyeAQYg3IXxcaxmFoF3eQbGGzcT8LE0wjq2h/Ausickz7STQK/VlLrLRc3B/nevfe
-        rQZ9tcetC8Ei3fCgoFMfDZ3Iewp0Az9dzEnDMa0M+7eCJ591axCJZilDYAHCt/nrxQnIVgLp1DL9F
-        0D+nhd4A==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:51286 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nqzc7-003Mqi-Uf; Tue, 17 May 2022 10:00:00 -0600
-Subject: Re: [PATCH 5.15 000/102] 5.15.41-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220516193623.989270214@linuxfoundation.org>
-In-Reply-To: <20220516193623.989270214@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <9d8c79e3-6ea8-96f6-157c-1b5733693911@w6rz.net>
-Date:   Tue, 17 May 2022 08:59:57 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 17 May 2022 12:02:37 -0400
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1E92F39A;
+        Tue, 17 May 2022 09:02:36 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2ff39b44b06so6504697b3.13;
+        Tue, 17 May 2022 09:02:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kW+aTBI3GUuS4AtTEj2lYQ2dwz3Tt3kiKnZkdF26p9k=;
+        b=1ges2W1h2Dbpl4Rzs9liIF3uMrwClnfvVh7Oab9d7CwTlTqUt/jRr0otxJElsSDIFq
+         3I2nayz2cnDCB0o7p2E9bzHs6Qw+R2UH0CNAsHe/PNxQsD9x9cB+xOkkE4MJlp6i+tpl
+         7+O2TLTM3En7JxgI3tW2GdhkpbXxieq8Dl7TUq+41LLFMkKJwhR1tNUwIdaAqyPv5M7G
+         bSrfUNgWXKt5HpFHUAVBWXEDCU+yRQf6FPxMFkCOYcfWoZvGbYk2qA7aOjqXBjY38P5h
+         NIWTP8zA4hgROcD2jVy9lvdNo7ax65RYa6/CpAoGHAH9wCrHVfR6ZWMukGI3UpXdjKzK
+         gRSg==
+X-Gm-Message-State: AOAM533YDa0UpBq3xpWJxi674OMiNajm5ChgKtThQX//u2ZI8kqsCp+Q
+        cLc4LFuKj4/ywrsqRhU2aJz02UuwCY8UbmHuZAM=
+X-Google-Smtp-Source: ABdhPJwzZGGSK5X2wGO9/Ae7NeKwMSMDwZ6QfwBdVrQtWVBBDAKzSVJ+LYrMrO9BGHzxb1ks9WLG5IeBzA7UKsAw0tk=
+X-Received: by 2002:a81:91d4:0:b0:2fe:e300:3581 with SMTP id
+ i203-20020a8191d4000000b002fee3003581mr14970551ywg.7.1652803355679; Tue, 17
+ May 2022 09:02:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nqzc7-003Mqi-Uf
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:51286
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+References: <20220426221523.3056696-1-daniel.lezcano@linexp.org>
+In-Reply-To: <20220426221523.3056696-1-daniel.lezcano@linexp.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 17 May 2022 18:02:24 +0200
+Message-ID: <CAJZ5v0hMVDePyu53hLyoxOZuScuUD_oQGE+NrnnhHqQwi-8o3g@mail.gmail.com>
+Subject: Re: [PATCH 00/15] thermal OF rework
+To:     Daniel Lezcano <daniel.lezcano@linexp.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Alexandre Bailon <abailon@baylibre.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/16/22 12:35 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.41 release.
-> There are 102 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, Apr 27, 2022 at 12:15 AM Daniel Lezcano
+<daniel.lezcano@linexp.org> wrote:
 >
-> Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
-> Anything received after that time might be too late.
+> The thermal framework initialization with the device tree appears to
+> be complicated and hard to make it to evolve.
 >
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.41-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
+> It contains duplication of almost the same thermal generic structures
+> and has an assymetric initialization making hard any kind of serious
+> changes for more complex features. One of them is the multiple sensors
+> support per thermal zone.
 >
-> thanks,
+> In order to set the scene for the aforementioned feature with generic
+> code, we need to cleanup and rework the device tree initialization.
 >
-> greg k-h
+> However this rework is not obvious because of the multiple components
+> entering in the composition of a thermal zone and being initialized at
+> different moments. For instance, a cooling device can be initialized
+> before a sensor, so the thermal zones must exist before the cooling
+> device as well as the sensor. This asynchonous initialization forces
+> the thermal zone to be created with fake ops because they are
+> mandotory and build a list of cooling devices which is used to lookup
+> afterwards when the cooling device driver is registering itself.
+>
+> Actually, the correct behavior IMHO, would be having a sensor
+> registration resulting in the thermal zone creation. If the cooling
+> device is registered before, it won't find the thermal zone and should
+> return -EPROBE_DEFER.
+>
+> As there could be a large number of changes, this first series provide
+> some steps forward for a simpler device tree initialization.
+>
+> The first patch could appear scary as it touches a big number of files
+> but it is actually just renaming a structure name
+>
+> Daniel Lezcano (15):
+>   thermal/core: Rename thermal_zone_device to thermal_zone
+>   thermal/core: Change thermal_zone_ops to thermal_sensor_ops
+>   thermal/core: Add a thermal sensor structure in the thermal zone
+>   thermal/core: Remove duplicate information when an error occurs
+>   thermal/of: Replace device node match with device node search
+>   thermal/of: Remove the device node pointer for thermal_trip
+>   thermal/of: Move thermal_trip structure to thermal.h
+>   thermal/core: Remove unneeded EXPORT_SYMBOLS
+>   thermal/core: Move thermal_set_delay_jiffies to static
+>   thermal/core: Rename trips to ntrips
+>   thermal/core: Add thermal_trip in thermal_zone
+>   thermal/core: Register with the trip points
+>   thermal/of: Store the trips in the thermal zone
+>   thermal/of: Use thermal trips stored in the thermal zone
+>   thermal/of: Initialize trip points separately
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+Generally, the series looks reasonable to me, but I'm not convinced
+about the first patch.
 
-Tested-by: Ron Economos <re@w6rz.net>
+It looks like a decision needs to be made regarding how exactly a
+"thermal zone" is going to be defined now and how it is going to be
+related to thermal sensors.
 
+My basic question is this: If trip points are associated with thermal
+sensors, then what a thermal zone really is and what is it useful for?
