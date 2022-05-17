@@ -2,103 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B320C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 02:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 545CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 02:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbiEQCq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 22:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
+        id S232903AbiEQCtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 22:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiEQCqW (ORCPT
+        with ESMTP id S229463AbiEQCtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 22:46:22 -0400
-X-Greylist: delayed 1169 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 19:46:20 PDT
-Received: from spamsz.greatwall.com.cn (spamfw.greatwall.com.cn [111.48.58.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88FC634BAF
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 19:46:19 -0700 (PDT)
-X-ASG-Debug-ID: 1652754406-0ec57263b407e40001-xx1T2L
-Received: from greatwall.com.cn (mailsz.greatwall.com.cn [10.46.20.97]) by spamsz.greatwall.com.cn with ESMTP id V3eY5To10NSIOIpO; Tue, 17 May 2022 10:26:46 +0800 (CST)
-X-Barracuda-Envelope-From: lianglixue@greatwall.com.cn
-X-Barracuda-RBL-Trusted-Forwarder: 10.46.20.97
-Received: from localhost.localdomain (unknown [223.104.68.17])
-        by mailsz.greatwall.com.cn (Coremail) with SMTP id YRQuCgA3lVJHBoNiEXwVAA--.9935S2;
-        Tue, 17 May 2022 10:19:53 +0800 (CST)
-From:   lixue liang <lianglixue@greatwall.com.cn>
-X-Barracuda-RBL-IP: 223.104.68.17
-X-Barracuda-Effective-Source-IP: UNKNOWN[223.104.68.17]
-X-Barracuda-Apparent-Source-IP: 223.104.68.17
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lixue liang <lianglixue@greatwall.com.cn>
-Subject: [PATCH v3 3/3] igb_main: Assign random MAC address instead of fail in case of invalid one
-Date:   Tue, 17 May 2022 02:25:46 +0000
-X-ASG-Orig-Subj: [PATCH v3 3/3] igb_main: Assign random MAC address instead of fail in case of invalid one
-Message-Id: <20220517022546.86523-1-lianglixue@greatwall.com.cn>
-X-Mailer: git-send-email 2.27.0
+        Mon, 16 May 2022 22:49:16 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DEA34BAF
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 19:49:12 -0700 (PDT)
+Received: from epcas1p4.samsung.com (unknown [182.195.41.48])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220517024906epoutp033d2eb5772bdd875b20941586e4cad528~vxJgmLGn-0821608216epoutp031
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:49:06 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220517024906epoutp033d2eb5772bdd875b20941586e4cad528~vxJgmLGn-0821608216epoutp031
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1652755746;
+        bh=m8MmM8ZpNLaHPx5XCo4DcWLCrHO3tBmGGFvelMK1O/Y=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=NQX/7KbEth7d+h6DPxDX9MZEM6hYs1U0Rz5Sj31WAykrrn2f+E3lPT1Tc0J0vN/sS
+         RMm3Wl176ZHY/BFYrHmF5WpRZMa+YHkNfgdh6YUwdsQZMpe2DpPI6F+aVYvvV2/5qc
+         6h/qxae1hY2Pm3JI8uHWR2AVKie1wF6/P6t82fhY=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220517024905epcas1p1c22d497c3d23b92a2aca2ba8007411b7~vxJf9crsm1719217192epcas1p1P;
+        Tue, 17 May 2022 02:49:05 +0000 (GMT)
+Received: from epsmges1p4.samsung.com (unknown [182.195.36.145]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4L2LDJ1Lq1z4x9Pt; Tue, 17 May
+        2022 02:49:04 +0000 (GMT)
+Received: from epcas1p3.samsung.com ( [182.195.41.47]) by
+        epsmges1p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        CA.5E.10354.02D03826; Tue, 17 May 2022 11:49:04 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220517024903epcas1p2e146717a160c3dfbe42a8fa97a7280af~vxJecEnmz2519525195epcas1p2j;
+        Tue, 17 May 2022 02:49:03 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220517024903epsmtrp297f61c339114860407154d82fd99bea7~vxJebKT_q0655806558epsmtrp2w;
+        Tue, 17 May 2022 02:49:03 +0000 (GMT)
+X-AuditID: b6c32a38-49fff70000002872-b9-62830d200207
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        6A.B9.08924.F1D03826; Tue, 17 May 2022 11:49:03 +0900 (KST)
+Received: from [10.113.221.102] (unknown [10.113.221.102]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220517024903epsmtip1a6182b19cfef90dec31167c7ae123ef6~vxJeOJQtF1395013950epsmtip1m;
+        Tue, 17 May 2022 02:49:03 +0000 (GMT)
+Subject: Re: [PATCH v2 2/2] extcon: Add extcon-regulator driver
+To:     Zev Weiss <zev@bewilderbeest.net>, Mark Brown <broonie@kernel.org>
+Cc:     Chanwoo Choi <cwchoi00@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        openbmc@lists.ozlabs.org,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+From:   Chanwoo Choi <cw00.choi@samsung.com>
+Organization: Samsung Electronics
+Message-ID: <bc6595c8-5f05-ac2c-63e0-f442f9ec83be@samsung.com>
+Date:   Tue, 17 May 2022 12:15:31 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101
+        Thunderbird/59.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: YRQuCgA3lVJHBoNiEXwVAA--.9935S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kw1rtry3JF4rKw1xXrW3Awb_yoW8JF4Dpa
-        ykJFWIgrykXr4jg3ykXw4xZas0ka90qa45GrZxAw1F9Fn0vrWDAr45K347tryrJrZ5Zanx
-        tr4avw4kuan8JaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxV
-        W0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0E
-        wIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E74
-        80Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0
-        I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04
-        k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
-        xVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUZa9-UUUUU=
-X-CM-SenderInfo: xold0w5ol03v46juvthwzdzzoofrzhdfq/
-X-Barracuda-Connect: mailsz.greatwall.com.cn[10.46.20.97]
-X-Barracuda-Start-Time: 1652754406
-X-Barracuda-URL: https://spamfw.greatwall.com.cn:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at greatwall.com.cn
-X-Barracuda-Scan-Msg-Size: 1262
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Bayes: INNOCENT GLOBAL 0.4610 1.0000 0.0000
-X-Barracuda-Spam-Score: 0.00
-X-Barracuda-Spam-Status: No, SCORE=0.00 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=9.0 tests=
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.98058
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
+In-Reply-To: <YoL0UGR+TiZojL9Y@hatter.bewilderbeest.net>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrLJsWRmVeSWpSXmKPExsWy7bCmvq4Cb3OSQctkDoupD5+wWTw7qm3R
+        vHg9m8W3Kx1MFpd3zWGzuN24gs3iVMsLFou7r/0srjy9wOLA6bHgtrfHjrtLGD12zrrL7rFp
+        VSebx/65a9g9zs9YyOjRt2UVo8fnTXIBHFHZNhmpiSmpRQqpecn5KZl56bZK3sHxzvGmZgaG
+        uoaWFuZKCnmJuam2Si4+AbpumTlAxykplCXmlAKFAhKLi5X07WyK8ktLUhUy8otLbJVSC1Jy
+        CkwL9IoTc4tL89L18lJLrAwNDIxMgQoTsjP2rNAtOCRd8fV8I3MDY69YFyMnh4SAiUTXwz3s
+        XYxcHEICOxglFu+4xAThfGKUmHK8jRWkSkjgM6PEuV0SXYwcYB2vFoRB1OxilDh6fi4zhPOe
+        UaJl7XUmkAZhAXuJCYvXgtkiAm4SS15vBStiFpjOJLFz3k5mkASbgJbE/hc32EBsfgFFias/
+        HjOC2LwCdhLbVnaCxVkEVCXaL05iB7FFBcIkTm5rgaoRlDg58wkLyEWcAhYSWz7qg4SZBcQl
+        bj2ZzwRhy0tsfzsHbK+EwAEOiQeXd7NB/OwicfDfQihbWOLV8S3sELaUxOd3e9kgGpoZJRpe
+        3GaEcHqA/nzWxwJRZSyxf+lkJpDNzAKaEut36UOEFSV2/p7LCLGZT+Ld1x5WSHDxSnS0CUGU
+        KEtcfnCXCcKWlFjc3sk2gVFpFpJ3ZiH5YRaSH2YhLFvAyLKKUSy1oDg3PbXYsMAEHtnJ+bmb
+        GMHpVstiB+Pctx/0DjEycTAeYpTgYFYS4TWoaEgS4k1JrKxKLcqPLyrNSS0+xGgKDOCJzFKi
+        yfnAhJ9XEm9oYmlgYmZkbGJhaGaoJM7bO/V0opBAemJJanZqakFqEUwfEwenVANTQ/ev/2Z8
+        DusmtVt/VH0+45xKttWpaZsmP1GWnHns/o/UJ0mihoVZzF+Sf3astbC4fDn+K7tSu/fMECOn
+        939/e3BuPtfu4WIaZuy0OzEw11EyLuqytIjT8ZNeR6p/9MyMi0m83nmNy06h1rvZnEfnOu/i
+        k1y7jTa6lH5yWbYsMk72wAKfiZG71qmXPpVIi8pvV0uU601j6G75dC46Rjso7jHvxLaIWX8v
+        s97nzLMLUv/MxenzRnx30rPtLiEcT3u7lgnoX0rSTWFkLBW4FmjT/bPW2d5vg9d6nq8Mj2st
+        jkZbvmD8zq97SrcinbVyS6VOiOgtof2T1bkc1ds3btr8iPvE+aP3vxf47L82R4mlOCPRUIu5
+        qDgRAKzjGidABAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGIsWRmVeSWpSXmKPExsWy7bCSnK48b3OSwew3ahZTHz5hs3h2VNui
+        efF6NotvVzqYLC7vmsNmcbtxBZvFqZYXLBZ3X/tZXHl6gcWB02PBbW+PHXeXMHrsnHWX3WPT
+        qk42j/1z17B7nJ+xkNGjb8sqRo/Pm+QCOKK4bFJSczLLUov07RK4Mvas0C04JF3x9XwjcwNj
+        r1gXIweHhICJxKsFYV2MnBxCAjsYJZ58MgGxJQQkJaZdPMoMUSIscfhwcRcjF1DJW0aJhXt7
+        mEFqhAXsJSYsXssEYosIuEkseb2VGaSIWWA6k8TpT/eYIDoOM0ksunCKBaSKTUBLYv+LG2wg
+        Nr+AosTVH48ZQWxeATuJbSs7weIsAqoS7RcnsYPYogJhEjuXPGaCqBGUODnzCQvIRZwCFhJb
+        PuqDhJkF1CX+zLvEDGGLS9x6Mp8JwpaX2P52DvMERuFZSLpnIWmZhaRlFpKWBYwsqxglUwuK
+        c9Nziw0LjPJSy/WKE3OLS/PS9ZLzczcxgqNOS2sH455VH/QOMTJxMB5ilOBgVhLhNahoSBLi
+        TUmsrEotyo8vKs1JLT7EKM3BoiTOe6HrZLyQQHpiSWp2ampBahFMlomDU6qByXWJyo2jL3lv
+        hs2+IvNuh8+s91qHKnr/BFs96n4bJr6tT3Qu4+PyI9s3F3uHRkU//zO/4KTkiXlrpVh12q9c
+        Ms1U2/S7OfH3re3LQt1V//4RqO1I8K5Ui6qdtWffM7YTzVOPzfxxuj9fRGxa6tZdM07zC1u0
+        tf37+1sywTZdQFG13uKaZMSRbd8ntMf7sh15/PKUU43l9yn7ORdl7GEsDFGxOMMtEdQW56LU
+        3rHu8YM5pQ/E3+0+l3xaZn6jfeZW0U3nq/03/j8gGHpm63m5GWoKxSW23yzveysetu7f/Uxy
+        WtcuXabFJlqf9683Da6J+792x9ueqIW/jAKi15SwHfTZ8ELNW1Ep9Dq38vxqEyWW4oxEQy3m
+        ouJEAISIuwcpAwAA
+X-CMS-MailID: 20220517024903epcas1p2e146717a160c3dfbe42a8fa97a7280af
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220517010322epcas1p45d7fdaa06d23f07533350b7d0cf9e9d6
+References: <20220505232557.10936-1-zev@bewilderbeest.net>
+        <20220505232557.10936-3-zev@bewilderbeest.net>
+        <e27ff1b2-c82f-8335-340f-ae1fa914ed30@gmail.com>
+        <YnkyIBh2HnXXLHw3@sirena.org.uk>
+        <CGME20220517010322epcas1p45d7fdaa06d23f07533350b7d0cf9e9d6@epcas1p4.samsung.com>
+        <YoL0UGR+TiZojL9Y@hatter.bewilderbeest.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some cases, when the user uses igb_set_eeprom to modify the MAC
-address to be invalid, the igb driver will fail to load. If there is no
-network card device, the user must modify it to a valid MAC address by
-other means.
+Hi Mark, Zev,
 
-Since the MAC address can be modified, then add a random valid MAC address
-to replace the invalid MAC address in the driver can be workable, it can
-continue to finish the loading, and output the relevant log reminder.
+On 5/17/22 10:03 AM, Zev Weiss wrote:
+> [Adding Sebastian for drivers/power discussion]
+> 
+> On Mon, May 09, 2022 at 08:24:16AM PDT, Mark Brown wrote:
+>> On Mon, May 09, 2022 at 09:24:39PM +0900, Chanwoo Choi wrote:
+>>> Hi Zev,
+>>>
+>>> I checked this patch. But, it doesn't look like the extcon provider
+>>> driver. Because basically, extcon provider driver need the circuit
+>>> in order to detect the kind of external connector. But, there are
+>>> no any code for detection. Just add the specific sysfs attribute
+>>> for only this driver. It is not standard interface.
+>>
+>> OTOH it's something where if I look at the physical system with the
+>> hardware there's a clearly visible external connector that I can point
+>> to - it just happens to not support hotplug.  It's not clear what other
+>> system it would sit in, and it seems like an application that displays
+>> external connections on a system in a UI would be able to do something
+>> sensible with it.
+> 
+> Chanwoo, any further thoughts on Mark's reasoning above?
+> 
+> I certainly understand the reluctance to add an extcon driver that 
+> doesn't really do anything with the extcon API, and I have no idea when 
+> we might end up enhancing it to do something more meaningful with that 
+> API (I don't know of any hardware at the moment that would need it).
+> 
+> That said, as Mark points out, the hardware *is* ultimately an "external 
+> connector" (if a very simplistic one).
+> 
+> Do you have any other ideas for where this functionality could go?  Greg 
+> wasn't enthusiastic about a previous revision that had it in 
+> drivers/misc -- though now a fair amount of what was in that version is 
+> now going to be in the regulator core, so maybe that could be 
+> reconsidered?
+> 
+> Or maybe something under drivers/power, though it's not really a supply 
+> or a reset device...drivers/power/output.c or something?
+> 
+> Personally I don't have any terribly strong opinions on this, I'd just 
+> like to reach a mutually-agreeable consensus on a place for it to live.
+> 
 
-Signed-off-by: lixue liang <lianglixue@greatwall.com.cn>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+After Mark's reply, I considered extcon provider driver without hotplug
+feature. I think that extcon need to support the following something:
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 746233befade..40f43534a3af 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -3362,7 +3362,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		eth_hw_addr_random(netdev);
- 		ether_addr_copy(hw->mac.addr, netdev->dev_addr);
- 		dev_err(&pdev->dev,
--			"Invalid MAC Address, already assigned random MAC Address\n");
-+			"Invalid MAC address, already assigned random MAC address\n");
- 	}
- 
- 	igb_set_default_mac_filter(adapter);
+1. Need to specify the type of external connector instead of EXTCON_NONE.
+2. extcon subsystem provides the standard sysfs interface
+   for non-hotplug extcon provider driver.
+3. User can control the state of external connector via
+   the standard extcon sysfs attributes.
+
+
+For example of extcon provider driver,
+static const unsigned int supported_cables[] = {
+	EXTCON_USB,
+	EXTCON_NONE,
+};
+
+int extcon_usb_callback(int connector_id, int property_id, int state, void *data) {
+	struct extcon_dev *edev = data;
+
+	if (id == EXTCON_USB && property_id == EXTCON_NOT_HOTPLUG) {
+		regulator_enable() or regulator_disable()
+	}
+
+	return 0;
+}
+
+int extcon_provider_probe(...) {
+	edev = devm_extcon_dev_allocate(dev, supported_cables);
+
+	devm_extcon_dev_register(dev, edev);
+
+	extcon_set_property_capability(edev, EXTCON_USB, EXTCON_NOT_HOTPLUG);
+	extcon_set_property_callback(edev, EXTCON_USB, extcon_usb_callback);
+
+	...
+}
+
+And then user can change the state of each external connector
+via '/sys/class/extcon/extcon0/cable.0/state' 
+if cable.0 contains the EXTCON_NOT_HOTPLUG property.
+
+I'm designing this approach. But it has not yet decided
+because try to check that this approach is right or not.
+
 -- 
-2.27.0
-
+Best Regards,
+Chanwoo Choi
+Samsung Electronics
