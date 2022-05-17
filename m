@@ -2,177 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiEQHmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
+        id S235375AbiEQHmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241921AbiEQHkz (ORCPT
+        with ESMTP id S238993AbiEQHk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:40:55 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3C049913;
-        Tue, 17 May 2022 00:40:18 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id x12so16239286pgj.7;
-        Tue, 17 May 2022 00:40:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3JIi35a05HlwmtXgYjoMMqH3apQkJy16BsSKQ0IeZYY=;
-        b=YvVF6GN/oHRONG4pG0tHKxAIsMk4nySfZa1PV8UOY6QlMDsnoDE0nMKIk0oaqY+rBp
-         wJiEf9VZRVuvoSTt9elAqAYS6vd9eX8war5g36Xy5i3lYoboWRmzYXsuxKs3Qy5H/vqS
-         Q48bPei2UuqOnG4oC2+uwlQXnNc9XveUvkuE6eW5KMVu4UnzOQZn9FPxgR6HGIulvgkR
-         OpQZgsvdTiivT0PuPk1SPcCk5fgAGagONYvVtpZuuDY5HSFXc2ENCnHYYxNbRH3H5nhe
-         r3kbMvrNDqxJhBba5Kfrx0xf1SdU518y8dadLIT5yP1gA6ZcvQB+lQwul9RCqjJWuguG
-         8ZTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3JIi35a05HlwmtXgYjoMMqH3apQkJy16BsSKQ0IeZYY=;
-        b=Xd1CiYhIYJsXbDwDbvVEY19ekZ9OcgwAKxNCsSsQ4v6pIMyWTJGVtAhCQxYBN7K8RN
-         P0/WOHIbRSaAk6NHcT49X4T6OKoQIrcpblKThUvuZ3PlfUCsjKJaQVK4NI1QAg4AZJlm
-         rArstK6Yau0YaVULZTXiFh7U5C8ZM9g61OyHkI2B9rLIOlPTWU2kAzNTnki0NH2aWYQk
-         87zQKeCcMFxDDUQfyTyb+40N3sf50Bf/Audh8bInfaf7gO5FwsmACv2iRkIzsQiythxp
-         PCdf6EFu1ddz8ErjI40TAQsvrF8qLcKqYIgqQ60SXjVfJMhfhO8d8PlOsaMzAUZsKS9L
-         YL+w==
-X-Gm-Message-State: AOAM5338yCfBNs8TzfyHosrnF/Pa7KOArRU8ajO1ZCm+scpMkp3F7Czs
-        L/PPP2HPPc20Uoo85o3xoQk4T7UwyvdllYP+SAk=
-X-Google-Smtp-Source: ABdhPJw2vMxovqHxTbBNACfTJTqTQvVubPVnhdiksMpuJRdbeCueW4xNdxf72xlu0K7Q66DpvSpBz2mG2nhObYdpM3A=
-X-Received: by 2002:a63:2c4a:0:b0:3c1:df82:cf0e with SMTP id
- s71-20020a632c4a000000b003c1df82cf0emr18770299pgs.474.1652773217490; Tue, 17
- May 2022 00:40:17 -0700 (PDT)
+        Tue, 17 May 2022 03:40:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963774991E;
+        Tue, 17 May 2022 00:40:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 076FC60F9A;
+        Tue, 17 May 2022 07:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56093C34100;
+        Tue, 17 May 2022 07:40:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652773220;
+        bh=1GMphxsy6bjIVoh6DDdhoMypOAa7uTUskHeD6nHAIPE=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=Cch60QK8tAM5c/5Iy4d62l3BI0i33ugZf01GCElZ/fCQt+cpLoBlCECy7annnP7ie
+         JZ4qm1WMhig5wLBn/NJU4Miv2WhsNKaRUAxfyAt03vxAJNn1YXKaiz72X/t0nQ8Qp2
+         7CXoROJMcovsWMtuMIxpBtGd32RCnbjAiDf2HNPdC0r2c0wFoFqdSXD6idmvx9j0O1
+         1VALm0VpJPhykgWCo16l8uBFN7hXQWxD3k+cVDSFliLBEggIxyMaio4PDQWVsfrt1v
+         ksPEWRQcA3izP2JC3PBPO8flmtd3hzd1zvMEnkmmVgblz26kV4TleoUl7Y8gy0SABJ
+         AZzzeWbvjA/7A==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220509105847.8238-1-dharamhans87@gmail.com>
-In-Reply-To: <20220509105847.8238-1-dharamhans87@gmail.com>
-From:   Dharmendra Hans <dharamhans87@gmail.com>
-Date:   Tue, 17 May 2022 13:10:05 +0530
-Message-ID: <CACUYsyE-83unRZvFLC+FQ1260+u3A2i5=JtuRC5cj44yvpYLMQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/1] FUSE: Allow non-extending parallel direct writes
-To:     Miklos Szeredi <miklos@szeredi.hu>, Vivek Goyal <vgoyal@redhat.com>
-Cc:     linux-fsdevel@vger.kernel.org,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220512211431.r23r6daua36lty7d@mobilestation>
+References: <20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru> <20220512001156.x6kqyhi3vjjpqch6@mobilestation> <20220512152705.GA2506@lpieralisi> <20220512171150.GA164627@thinkpad> <20220512211431.r23r6daua36lty7d@mobilestation>
+Subject: Re: [PATCH v3 0/4] clk: Baikal-T1 DDR/PCIe resets and some xGMAC fixes
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-clk@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <fancer.lancer@gmail.com>
+Date:   Tue, 17 May 2022 00:40:18 -0700
+User-Agent: alot/0.10
+Message-Id: <20220517074020.56093C34100@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 9, 2022 at 4:29 PM Dharmendra Singh <dharamhans87@gmail.com> wrote:
->
-> It is observed that currently in Fuse, for direct writes, we hold
-> inode lock for the full duration of the request. As a result,
-> only one direct write request can proceed on the same file. This,
-> I think is due to various reasons such as serialization needed by
-> USER space fuse implementations/file size issues/write failures.
->
-> This patch allows parallel writes to proceed on the same file by
-> by holding shared lock on the non-extending writes and exlusive
-> lock on extending writes.
->
-> For measuring performance, I carried out test on these
-> changes over example/passthrough.c (part of libfuse) by setting
-> direct-io and parallel_direct_writes flags on the file.
->
-> Note that we disabled write to underlying file system from passthrough
-> as we wanted to check gain for Fuse only. Fio was used to test
-> the impact of these changes on File-per-job and Single shared File.
-> CPU binding was performed on passthrough process only.
->
-> Job file for SSF:
-> [global]
-> directory=/tmp/dest
-> filename=ssf
-> size=100g
-> blocksize=1m
-> ioengine=sync
-> group_reporting=1
-> fallocate=none
-> runtime=60
-> stonewall
->
-> [write]
-> rw=randwrite:256
-> rw_sequencer=sequential
-> fsync_on_close=1
->
->
-> Job file for file-per-job:
-> [sequential-write]
-> rw=write
-> size=100G
-> directory=/tmp/dest/
-> group_reporting
-> name=sequential-write-direct
-> bs=1M
-> runtime=60
->
->
-> Results:
->
-> unpatched=================
->
-> File  per job
->
->
-> Fri May  6 09:36:52 EDT 2022
-> numjobs: 1  WRITE: bw=3441MiB/s (3608MB/s), 3441MiB/s-3441MiB/s (3608MB/s-3608MB/s), io=100GiB (107GB), run=29762-29762msec
-> numjobs: 2  WRITE: bw=8174MiB/s (8571MB/s), 8174MiB/s-8174MiB/s (8571MB/s-8571MB/s), io=200GiB (215GB), run=25054-25054msec
-> numjobs: 4  WRITE: bw=14.9GiB/s (15.0GB/s), 14.9GiB/s-14.9GiB/s (15.0GB/s-15.0GB/s), io=400GiB (429GB), run=26900-26900msec
-> numjobs: 8  WRITE: bw=23.4GiB/s (25.2GB/s), 23.4GiB/s-23.4GiB/s (25.2GB/s-25.2GB/s), io=800GiB (859GB), run=34115-34115msec
-> numjobs: 16  WRITE: bw=24.5GiB/s (26.3GB/s), 24.5GiB/s-24.5GiB/s (26.3GB/s-26.3GB/s), io=1469GiB (1577GB), run=60001-60001msec
-> numjobs: 32  WRITE: bw=20.5GiB/s (21.0GB/s), 20.5GiB/s-20.5GiB/s (21.0GB/s-21.0GB/s), io=1229GiB (1320GB), run=60003-60003msec
->
->
-> SSF
->
-> Fri May  6 09:46:38 EDT 2022
-> numjobs: 1  WRITE: bw=3624MiB/s (3800MB/s), 3624MiB/s-3624MiB/s (3800MB/s-3800MB/s), io=100GiB (107GB), run=28258-28258msec
-> numjobs: 2  WRITE: bw=5801MiB/s (6083MB/s), 5801MiB/s-5801MiB/s (6083MB/s-6083MB/s), io=200GiB (215GB), run=35302-35302msec
-> numjobs: 4  WRITE: bw=4794MiB/s (5027MB/s), 4794MiB/s-4794MiB/s (5027MB/s-5027MB/s), io=281GiB (302GB), run=60001-60001msec
-> numjobs: 8  WRITE: bw=3946MiB/s (4137MB/s), 3946MiB/s-3946MiB/s (4137MB/s-4137MB/s), io=231GiB (248GB), run=60003-60003msec
-> numjobs: 16  WRITE: bw=4040MiB/s (4236MB/s), 4040MiB/s-4040MiB/s (4236MB/s-4236MB/s), io=237GiB (254GB), run=60006-60006msec
-> numjobs: 32  WRITE: bw=2822MiB/s (2959MB/s), 2822MiB/s-2822MiB/s (2959MB/s-2959MB/s), io=165GiB (178GB), run=60013-60013msec
->
->
-> Patched=====
->
-> File per job
->
-> Fri May  6 10:05:46 EDT 2022
-> numjobs: 1  WRITE: bw=3193MiB/s (3348MB/s), 3193MiB/s-3193MiB/s (3348MB/s-3348MB/s), io=100GiB (107GB), run=32068-32068msec
-> numjobs: 2  WRITE: bw=9084MiB/s (9525MB/s), 9084MiB/s-9084MiB/s (9525MB/s-9525MB/s), io=200GiB (215GB), run=22545-22545msec
-> numjobs: 4  WRITE: bw=14.8GiB/s (15.9GB/s), 14.8GiB/s-14.8GiB/s (15.9GB/s-15.9GB/s), io=400GiB (429GB), run=26986-26986msec
-> numjobs: 8  WRITE: bw=24.5GiB/s (26.3GB/s), 24.5GiB/s-24.5GiB/s (26.3GB/s-26.3GB/s), io=800GiB (859GB), run=32624-32624msec
-> numjobs: 16  WRITE: bw=24.2GiB/s (25.0GB/s), 24.2GiB/s-24.2GiB/s (25.0GB/s-25.0GB/s), io=1451GiB (1558GB), run=60001-60001msec
-> numjobs: 32  WRITE: bw=19.3GiB/s (20.8GB/s), 19.3GiB/s-19.3GiB/s (20.8GB/s-20.8GB/s), io=1160GiB (1245GB), run=60002-60002msec
->
->
-> SSF
->
-> Fri May  6 09:58:33 EDT 2022
-> numjobs: 1  WRITE: bw=3137MiB/s (3289MB/s), 3137MiB/s-3137MiB/s (3289MB/s-3289MB/s), io=100GiB (107GB), run=32646-32646msec
-> numjobs: 2  WRITE: bw=7736MiB/s (8111MB/s), 7736MiB/s-7736MiB/s (8111MB/s-8111MB/s), io=200GiB (215GB), run=26475-26475msec
-> numjobs: 4  WRITE: bw=14.4GiB/s (15.4GB/s), 14.4GiB/s-14.4GiB/s (15.4GB/s-15.4GB/s), io=400GiB (429GB), run=27869-27869msec
-> numjobs: 8  WRITE: bw=22.6GiB/s (24.3GB/s), 22.6GiB/s-22.6GiB/s (24.3GB/s-24.3GB/s), io=800GiB (859GB), run=35340-35340msec
-> numjobs: 16  WRITE: bw=25.6GiB/s (27.5GB/s), 25.6GiB/s-25.6GiB/s (27.5GB/s-27.5GB/s), io=1535GiB (1648GB), run=60001-60001msec
-> numjobs: 32  WRITE: bw=20.2GiB/s (21.7GB/s), 20.2GiB/s-20.2GiB/s (21.7GB/s-21.7GB/s), io=1211GiB (1300GB), run=60003-60003msec
->
->
->
-> SSF gain in percentage:-
-> For 1 fio thread: +0%
-> For 2 fio threads: +0%
-> For 4 fio threads: +42%
-> For 8 fio threads: +246.8%
-> For 16 fio threads: +549%
-> For 32 fio threads: +630.33%
+Quoting Serge Semin (2022-05-12 14:14:31)
+> On Thu, May 12, 2022 at 10:41:50PM +0530, Manivannan Sadhasivam wrote:
+> > On Thu, May 12, 2022 at 04:27:05PM +0100, Lorenzo Pieralisi wrote:
+> > > So in short, this series has to go through the usual clock tree review
+> > > process.
+> > >=20
+>=20
+> I do know the normal procedure. But if patches concern different
+> subsystems but for some reason inter-depended somehow it's ok to merge
+> them in via a single repo. In my case the platform clock driver has
+> been updated in a way so to support the reset-controls utilized in the
+> PCIe driver altered in another patchset. So I didn't want to leave the
+> kernel not working in the framework of my platform on any git hash
+> state. That's why I asked to merge the patchsets in via the same repo.
+> The kernel would be still buildable though.
+>=20
 
-A gentle reminder to look into the suggested changes.
-
-
-Thanks,
-Dharmendra
+Is it going to be broken if I merge the clk patches through clk tree?
+Has it ever worked? Does the kernel still boot, just PCIe fails if the
+patches are applied?
