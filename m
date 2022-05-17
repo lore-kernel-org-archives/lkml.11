@@ -2,97 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F32C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:48:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237916AbiEQHod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33160 "EHLO
+        id S238957AbiEQHsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbiEQHoa (ORCPT
+        with ESMTP id S229797AbiEQHr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:44:30 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8271C1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:44:29 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so856959wms.3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=GeBUOwMtlUJXTRUysICohEtNecUKuIK32F5RW3LBD8E=;
-        b=jSQfurSZoLCu/ecIEGtXRqUJGG5lmXEBzgxp0yfX0Ju3dv9SdPy8huwCsGTpcR2j3v
-         0HS99sC1AT8P/NBTJot2xMttBWZa/MQeulNwQpTjVZuiMA6YdGvxK/ilct6nTGrW95Pz
-         8OGUNKQK0lrQXAV+X5zzQL4otZeK915ASp+WEjGOcl17I43nxtEImhDiIr3peaKuT/MK
-         zKlpMhXoMk6xWNDfnh0yG9yPVqLlVZcqTh4cDCtAXW3eJWkQZvng4m61AoJj0SmyDyIJ
-         gZlKOBUBtOCdN/WsTvxgdJoD33d+/krusMFpWqlZi7SC1Gf02n1CFlXN6y8Stc5qHFpD
-         C2pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=GeBUOwMtlUJXTRUysICohEtNecUKuIK32F5RW3LBD8E=;
-        b=ubKB+B92JRN7FLuivRP5s/b4hjy1xnp7agOgVmD0/R5GoZuzfL7+1Yfo3VHuzL+ofQ
-         R8XYcm5x1DCOGtl5tKhjz7oe5lcoOKYJ8uW7cd76ZIIrrggt2xtFFDKTwcnS9KK8alPP
-         /DGjq9vorUMdV7mz6cBaxjmN8v+alUnk6QBCjmDF9IE/xd7nug+hbc98xBijG8Nvx/1S
-         yl1mzWsRQK80TedpPYHlb3ecNToa0bBN/pZ5satRshPbyQhkG7EazDJ2v1tkfkDFpzYO
-         cdQylDybQ+Wqoys3DUEdDnoWimTpmONpTqEpeaDSxOHeYUhbaDfmGXKf3/MGvKcW1Ynu
-         3BvQ==
-X-Gm-Message-State: AOAM531azvcalwNaeZtyZCLdtHAOrSIvSbRCtJsHcfyyr0mxrcb8ONLJ
-        xhZ1yzeXpdMoQERQCB7QwvMLIMENbQqwMQ==
-X-Google-Smtp-Source: ABdhPJw6WRmdGTZdQGzE0o3kXC0cOK9cKdioBhbLksj2XIDveW94c6axpGgQVquU/0ojwo7V+rYo6g==
-X-Received: by 2002:a05:600c:1d17:b0:394:646d:fd73 with SMTP id l23-20020a05600c1d1700b00394646dfd73mr30224003wms.103.1652773468281;
-        Tue, 17 May 2022 00:44:28 -0700 (PDT)
-Received: from giga-mm.localdomain ([195.245.23.54])
-        by smtp.gmail.com with ESMTPSA id bg31-20020a05600c3c9f00b003942a244ed7sm1182942wmb.28.2022.05.17.00.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 00:44:27 -0700 (PDT)
-Message-ID: <c80f2441c19766ef13a44c5cd62ec5af6a1e4af3.camel@gmail.com>
-Subject: Re: [PATCH v2] ep93xx: clock: Do not return the address of the
- freed memory
-From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
-To:     Genjian Zhang <zhanggenjian123@gmail.com>,
-        hsweeten@visionengravers.com, linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Genjian Zhang <zhanggenjian@kylinos.cn>
-Date:   Tue, 17 May 2022 09:44:26 +0200
-In-Reply-To: <20220517073946.1339333-1-zhanggenjian@kylinos.cn>
-References: <20220517073946.1339333-1-zhanggenjian@kylinos.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.1 
+        Tue, 17 May 2022 03:47:56 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486242ED76;
+        Tue, 17 May 2022 00:47:53 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D2EE51F383;
+        Tue, 17 May 2022 07:47:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652773671; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ghycn6t5xJ3FJyT4xCbUwPxtWo84lq0XciIN7RNaQPw=;
+        b=i868hRhnCUZBdkwQJa44Asp8b1Nc0V/TynvKKK44LKL3NafC+P3RNwyXMfDY3KbBG+R/Na
+        QdJYGCO+I4wuL88+HbcyfHGK2GjIZhYTN7K/FceKkrk0akPVhVfISw3W42ziV+/uv2tpu8
+        brVz8X3/ql+x4n1JTJm778CHu2zXdBY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652773671;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ghycn6t5xJ3FJyT4xCbUwPxtWo84lq0XciIN7RNaQPw=;
+        b=Q9pVjJenIkTEi5h+JnIgeYZNGJuWpAXJulbLyZhBh6PUEVTplPxsxls8rVimwa1DseFClU
+        x/giIQLPPpKrznAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 391BD13305;
+        Tue, 17 May 2022 07:47:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xvtrCiZTg2ILfwAAMHmgww
+        (envelope-from <osalvador@suse.de>); Tue, 17 May 2022 07:47:50 +0000
+Date:   Tue, 17 May 2022 09:47:48 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v12 3/7] mm: memory_hotplug: enumerate all supported
+ section flags
+Message-ID: <YoNTJNfhUO7/oUrn@localhost.localdomain>
+References: <20220516102211.41557-1-songmuchun@bytedance.com>
+ <20220516102211.41557-4-songmuchun@bytedance.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516102211.41557-4-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGhhbmsgeW91IEdlbmppYW4hCgpPbiBUdWUsIDIwMjItMDUtMTcgYXQgMTU6MzkgKzA4MDAsIEdl
-bmppYW4gWmhhbmcgd3JvdGU6Cj4gQXZvaWQgcmV0dXJuIGZyZWVkIG1lbW9yeSBhZGRyZXNzZXMs
-TW9kaWZpZWQgdG8gdGhlIGFjdHVhbCBlcnJvcgo+IHJldHVybiB2YWx1ZSBvZiBjbGtfcmVnaXN0
-ZXIoKS4KPiAKPiBGaXhlczogOTY0NWNjYzdiZDdhICgiZXA5M3h4OiBjbG9jazogY29udmVydCBp
-bi1wbGFjZSB0byBDT01NT05fQ0xLIikKPiBTaWduZWQtb2ZmLWJ5OiBHZW5qaWFuIFpoYW5nIDx6
-aGFuZ2dlbmppYW5Aa3lsaW5vcy5jbj4KCkFja2VkLWJ5OiBBbGV4YW5kZXIgU3ZlcmRsaW4gPGFs
-ZXhhbmRlci5zdmVyZGxpbkBnbWFpbC5jb20+Cgo+IC0tLQo+IMKgYXJjaC9hcm0vbWFjaC1lcDkz
-eHgvY2xvY2suYyB8IDEwICsrKysrKy0tLS0KPiDCoDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlv
-bnMoKyksIDQgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL21hY2gtZXA5
-M3h4L2Nsb2NrLmMgYi9hcmNoL2FybS9tYWNoLWVwOTN4eC9jbG9jay5jCj4gaW5kZXggNGZhNmVh
-NTQ2MWI3Li44NWE0OTZkZGM2MTkgMTAwNjQ0Cj4gLS0tIGEvYXJjaC9hcm0vbWFjaC1lcDkzeHgv
-Y2xvY2suYwo+ICsrKyBiL2FyY2gvYXJtL21hY2gtZXA5M3h4L2Nsb2NrLmMKPiBAQCAtMzQ1LDkg
-KzM0NSwxMCBAQCBzdGF0aWMgc3RydWN0IGNsa19odyAqY2xrX2h3X3JlZ2lzdGVyX2RkaXYoY29u
-c3QgY2hhciAqbmFtZSwKPiDCoMKgwqDCoMKgwqDCoMKgcHNjLT5ody5pbml0ID0gJmluaXQ7Cj4g
-wqAKPiDCoMKgwqDCoMKgwqDCoMKgY2xrID0gY2xrX3JlZ2lzdGVyKE5VTEwsICZwc2MtPmh3KTsK
-PiAtwqDCoMKgwqDCoMKgwqBpZiAoSVNfRVJSKGNsaykpCj4gK8KgwqDCoMKgwqDCoMKgaWYgKElT
-X0VSUihjbGspKSB7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBrZnJlZShwc2Mp
-Owo+IC0KPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIEVSUl9DQVNUKGNs
-ayk7Cj4gK8KgwqDCoMKgwqDCoMKgfQo+IMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gJnBzYy0+aHc7
-Cj4gwqB9Cj4gwqAKPiBAQCAtNDUyLDkgKzQ1MywxMCBAQCBzdGF0aWMgc3RydWN0IGNsa19odyAq
-Y2xrX2h3X3JlZ2lzdGVyX2Rpdihjb25zdCBjaGFyICpuYW1lLAo+IMKgwqDCoMKgwqDCoMKgwqBw
-c2MtPmh3LmluaXQgPSAmaW5pdDsKPiDCoAo+IMKgwqDCoMKgwqDCoMKgwqBjbGsgPSBjbGtfcmVn
-aXN0ZXIoTlVMTCwgJnBzYy0+aHcpOwo+IC3CoMKgwqDCoMKgwqDCoGlmIChJU19FUlIoY2xrKSkK
-PiArwqDCoMKgwqDCoMKgwqBpZiAoSVNfRVJSKGNsaykpIHsKPiDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoGtmcmVlKHBzYyk7Cj4gLQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqByZXR1cm4gRVJSX0NBU1QoY2xrKTsKPiArwqDCoMKgwqDCoMKgwqB9Cj4gwqDCoMKgwqDC
-oMKgwqDCoHJldHVybiAmcHNjLT5odzsKPiDCoH0KPiDCoAoKLS0gCkFsZXhhbmRlciBTdmVyZGxp
-bi4KCg==
+On Mon, May 16, 2022 at 06:22:07PM +0800, Muchun Song wrote:
+> We are almost running out of free slots, only one bit is available in the
 
+I would be more precise about what are we running out of. Free slots of
+what?
+
+> worst case (powerpc with 256k pages).  However, there are still some free
+> slots on other architectures (e.g. x86_64 has 10 bits available, arm64
+> has 8 bits available with worst case of 64K pages).  We have hard coded
+> those numbers in code, it is inconvenient to use those bits on other
+> architectures except powerpc.  So transfer those section flags to
+> enumeration to make it easy to add new section flags in the future. Also,
+> move SECTION_TAINT_ZONE_DEVICE into the scope of CONFIG_ZONE_DEVICE
+> to save a bit on non-zone-device case.
+> 
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> ---
+...
+> --- a/include/linux/mmzone.h
+> +++ b/include/linux/mmzone.h
+> @@ -1418,16 +1418,37 @@ extern size_t mem_section_usage_size(void);
+>   *      (equal SECTION_SIZE_BITS - PAGE_SHIFT), and the
+>   *      worst combination is powerpc with 256k pages,
+>   *      which results in PFN_SECTION_SHIFT equal 6.
+> - * To sum it up, at least 6 bits are available.
+> + * To sum it up, at least 6 bits are available on all architectures.
+> + * However, we can exceed 6 bits on some other architectures except
+> + * powerpc (e.g. 15 bits are available on x86_64, 13 bits are available
+> + * with the worst case of 64K pages on arm64) if we make sure the
+> + * exceeded bit is not applicable to powerpc.
+>   */
+> -#define SECTION_MARKED_PRESENT		(1UL<<0)
+> -#define SECTION_HAS_MEM_MAP		(1UL<<1)
+> -#define SECTION_IS_ONLINE		(1UL<<2)
+> -#define SECTION_IS_EARLY		(1UL<<3)
+> -#define SECTION_TAINT_ZONE_DEVICE	(1UL<<4)
+> -#define SECTION_MAP_LAST_BIT		(1UL<<5)
+> +#define ENUM_SECTION_FLAG(MAPPER)						\
+> +	MAPPER(MARKED_PRESENT)							\
+> +	MAPPER(HAS_MEM_MAP)							\
+> +	MAPPER(IS_ONLINE)							\
+> +	MAPPER(IS_EARLY)							\
+> +	MAPPER(TAINT_ZONE_DEVICE, CONFIG_ZONE_DEVICE)				\
+> +	MAPPER(MAP_LAST_BIT)
+> +
+> +#define __SECTION_SHIFT_FLAG_MAPPER_0(x)
+> +#define __SECTION_SHIFT_FLAG_MAPPER_1(x)	SECTION_##x##_SHIFT,
+> +#define __SECTION_SHIFT_FLAG_MAPPER(x, ...)	\
+> +	__PASTE(__SECTION_SHIFT_FLAG_MAPPER_, IS_ENABLED(__VA_ARGS__))(x)
+> +
+> +#define __SECTION_FLAG_MAPPER_0(x)
+> +#define __SECTION_FLAG_MAPPER_1(x)		SECTION_##x = BIT(SECTION_##x##_SHIFT),
+> +#define __SECTION_FLAG_MAPPER(x, ...)		\
+> +	__PASTE(__SECTION_FLAG_MAPPER_, IS_ENABLED(__VA_ARGS__))(x)
+> +
+> +enum {
+> +	ENUM_SECTION_FLAG(__SECTION_SHIFT_FLAG_MAPPER)
+> +	ENUM_SECTION_FLAG(__SECTION_FLAG_MAPPER)
+> +};
+> +
+>  #define SECTION_MAP_MASK		(~(SECTION_MAP_LAST_BIT-1))
+> -#define SECTION_NID_SHIFT		6
+> +#define SECTION_NID_SHIFT		SECTION_MAP_LAST_BIT_SHIFT
+
+Is this really worth the extra code? And it might be me that I am not
+familiar with all this magic, but it looks overcomplicated.
+Maybe some comments here and there help clarifying what it is going on
+here.
+
+>  static inline struct page *__section_mem_map_addr(struct mem_section *section)
+>  {
+> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> index 111684878fd9..aef3f041dec7 100644
+> --- a/mm/memory_hotplug.c
+> +++ b/mm/memory_hotplug.c
+> @@ -655,12 +655,18 @@ static void __meminit resize_pgdat_range(struct pglist_data *pgdat, unsigned lon
+>  
+>  }
+>  
+> +#ifdef CONFIG_ZONE_DEVICE
+>  static void section_taint_zone_device(unsigned long pfn)
+>  {
+>  	struct mem_section *ms = __pfn_to_section(pfn);
+>  
+>  	ms->section_mem_map |= SECTION_TAINT_ZONE_DEVICE;
+>  }
+> +#else
+> +static inline void section_taint_zone_device(unsigned long pfn)
+> +{
+> +}
+> +#endif
+>  
+>  /*
+>   * Associate the pfn range with the given zone, initializing the memmaps
+> -- 
+> 2.11.0
+> 
+> 
+
+-- 
+Oscar Salvador
+SUSE Labs
