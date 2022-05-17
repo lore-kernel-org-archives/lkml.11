@@ -2,98 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0396C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:36:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C239C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352975AbiEQUgJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 16:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
+        id S238231AbiEQUgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 16:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353031AbiEQUgH (ORCPT
+        with ESMTP id S238041AbiEQUgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 16:36:07 -0400
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE771D8;
-        Tue, 17 May 2022 13:36:04 -0700 (PDT)
-Received: from g550jk.arnhem.chello.nl (a246182.upc-a.chello.nl [62.163.246.182])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 52B8BCC9D9;
-        Tue, 17 May 2022 20:35:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1652819732; bh=iON8ZRL1eW/DULXxtgulxs3OwCDAEDeckZe6GD8UEwE=;
-        h=From:To:Cc:Subject:Date;
-        b=h18DEOpeTUcEE3Ryyjt0J8JkJznvM7hgRmJhBDTiPqOh+wY55opjWlbXOLFH5f64z
-         4vL8wjw77l+tj2qFOHqaocuJyEpHyC4xAT6N03ZRGsgJY/BqGBr0OumkE1sfEIr+jD
-         eOpXUgr9htmVONzLyDD5VXJ5A/v0JNpEA+vBQAK8=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca@z3ntu.xyz>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: dts: qcom: msm8974: Add BAM DMUX Ethernet/IP device
-Date:   Tue, 17 May 2022 22:34:51 +0200
-Message-Id: <20220517203450.1155696-1-luca@z3ntu.xyz>
-X-Mailer: git-send-email 2.36.0
+        Tue, 17 May 2022 16:36:35 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CA812D0A
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:36:33 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id h85so50163iof.12
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KHgiralzuwbFYrH+IllvrNWzKpGXUYjClQCXhgMdPIg=;
+        b=GKY+T8a74JPC5oygV6JYinz0XupyZf5nuPsS8x7/JQJd625CnhFlz9MXvOLFvi73LR
+         i4XQ8WVu2rjVh4w7ftvXu1vazbiAUZTMQvaPPC5baLuUlBqPgUnp8zQck3y79SfoOXwU
+         1LQxoi9EFlmiVwv/k7YM/V6r+2JqLN8TTm6DA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KHgiralzuwbFYrH+IllvrNWzKpGXUYjClQCXhgMdPIg=;
+        b=t8cOlITvq07L7eyO65SeP2O16oHdioDa+WhrxH1ozix23u6SvYZPcokX0IanIvAU+h
+         5lSJIod40YxN0tE2nkg0JpMvM9Q6zDHaimM1RxtTgGCN9NeNmNL6uTng6vgIHXTZAt0x
+         TOn10wzcQmE2jVys9PySaGe7HkhnhXxYJl3KErhnqMJmHXT7fd7Tly1jm9LZDbvTurGb
+         3sUwt8NCcpw3Q6fRCziA7inkH5Con2LNUCkbA4A11qsUhmxCjhuuL1neCz6lm86ndmMc
+         Rv8htaJZRDHveOjaH2wA1Rr5fuHAy985782Ym0m5rIKISua2d6o92A2d+TR6D+0xjPzf
+         S6kw==
+X-Gm-Message-State: AOAM533XuTrjo8zR2Tic9jYqrz5/Fud6ZgOro/T2J8SwdDE0ZljtD0Gq
+        lHjsjA3qtw1Ih28tpdTbClBIPQ==
+X-Google-Smtp-Source: ABdhPJw4ZLk2eDS1D5mvut9Aory4w5I6AIEkUqZYTHdTGGciZm7EGv0WNnrJ3Ob4cjtDb+VgpkKWZQ==
+X-Received: by 2002:a05:6638:1416:b0:32b:c48f:f9f5 with SMTP id k22-20020a056638141600b0032bc48ff9f5mr13053507jad.207.1652819792971;
+        Tue, 17 May 2022 13:36:32 -0700 (PDT)
+Received: from shuah-tx13.internal ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id h24-20020a0566380f1800b0032b3a7817d6sm17114jas.154.2022.05.17.13.36.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 13:36:32 -0700 (PDT)
+From:   Shuah Khan <skhan@linuxfoundation.org>
+To:     arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] misc: alcor_pci: set NULL intfdata and clear pci master
+Date:   Tue, 17 May 2022 14:36:30 -0600
+Message-Id: <20220517203630.45232-1-skhan@linuxfoundation.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-BAM DMUX is used as the network interface to the modem.
+alcor_pci doesn't set driver data to NULL and clear pci master when
+probe fails. Doesn't clear pci master from remove interface. Clearing
+pci master is necessary to disable bus mastering and prevent DMAs after
+driver removal.
 
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Fix alcor_pci_probe() to set driver data to NULL and clear pci master
+from its error path. Fix alcor_pci_remove() to clear pci master.
+
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 ---
- arch/arm/boot/dts/qcom-msm8974.dtsi | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/misc/cardreader/alcor_pci.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index 814ad0b46232..ffa6f874917a 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -1146,6 +1146,18 @@ spmi_bus: spmi@fc4cf000 {
- 			#interrupt-cells = <4>;
- 		};
+diff --git a/drivers/misc/cardreader/alcor_pci.c b/drivers/misc/cardreader/alcor_pci.c
+index 3f514d77a843..9080f9f150a2 100644
+--- a/drivers/misc/cardreader/alcor_pci.c
++++ b/drivers/misc/cardreader/alcor_pci.c
+@@ -317,12 +317,15 @@ static int alcor_pci_probe(struct pci_dev *pdev,
+ 	ret = mfd_add_devices(&pdev->dev, priv->id, alcor_pci_cells,
+ 			ARRAY_SIZE(alcor_pci_cells), NULL, 0, NULL);
+ 	if (ret < 0)
+-		goto error_release_regions;
++		goto error_clear_drvdata;
  
-+		bam_dmux_dma: dma-controller@fc834000 {
-+			compatible = "qcom,bam-v1.4.0";
-+			reg = <0xfc834000 0x7000>;
-+			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
-+			#dma-cells = <1>;
-+			qcom,ee = <0>;
-+
-+			num-channels = <6>;
-+			qcom,num-ees = <1>;
-+			qcom,powered-remotely;
-+		};
-+
- 		remoteproc_mss: remoteproc@fc880000 {
- 			compatible = "qcom,msm8974-mss-pil";
- 			reg = <0xfc880000 0x100>, <0xfc820000 0x020>;
-@@ -1180,6 +1192,20 @@ mpss {
- 				memory-region = <&mpss_region>;
- 			};
+ 	alcor_pci_aspm_ctrl(priv, 0);
  
-+			bam_dmux: bam-dmux {
-+				compatible = "qcom,bam-dmux";
-+
-+				interrupt-parent = <&modem_smsm>;
-+				interrupts = <1 IRQ_TYPE_EDGE_BOTH>, <11 IRQ_TYPE_EDGE_BOTH>;
-+				interrupt-names = "pc", "pc-ack";
-+
-+				qcom,smem-states = <&apps_smsm 1>, <&apps_smsm 11>;
-+				qcom,smem-state-names = "pc", "pc-ack";
-+
-+				dmas = <&bam_dmux_dma 4>, <&bam_dmux_dma 5>;
-+				dma-names = "tx", "rx";
-+			};
-+
- 			smd-edge {
- 				interrupts = <GIC_SPI 25 IRQ_TYPE_EDGE_RISING>;
+ 	return 0;
+ 
++error_clear_drvdata:
++	pci_clear_master(pdev);
++	pci_set_drvdata(pdev, NULL);
+ error_release_regions:
+ 	pci_release_regions(pdev);
+ error_free_ida:
+@@ -343,6 +346,7 @@ static void alcor_pci_remove(struct pci_dev *pdev)
+ 	ida_free(&alcor_pci_idr, priv->id);
+ 
+ 	pci_release_regions(pdev);
++	pci_clear_master(pdev);
+ 	pci_set_drvdata(pdev, NULL);
+ }
  
 -- 
-2.36.0
+2.34.1
 
