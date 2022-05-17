@@ -2,63 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE99C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF31C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236309AbiEQAde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 20:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
+        id S233803AbiEQAfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 20:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229638AbiEQAdZ (ORCPT
+        with ESMTP id S229613AbiEQAfv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 20:33:25 -0400
-Received: from out199-15.us.a.mail.aliyun.com (out199-15.us.a.mail.aliyun.com [47.90.199.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BFE2715E;
-        Mon, 16 May 2022 17:33:23 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VDPIy.u_1652747598;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VDPIy.u_1652747598)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 17 May 2022 08:33:19 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     mchehab@kernel.org
-Cc:     eugen.hristev@microchip.com, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] media: atmel: atmel-isc-base: remove unneeded semicolon
-Date:   Tue, 17 May 2022 08:33:17 +0800
-Message-Id: <20220517003317.122054-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Mon, 16 May 2022 20:35:51 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA23D130
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:35:50 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id w130so20711786oig.0
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:35:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4PVGGuxc9ZyUOJ1tHjoyl2dymltFthy0B+E7Sw+J42M=;
+        b=nfqtFXnTGOPZxAFd1Lz+1d12jCgsAih4qDV1EY6Tvbl+0akZYChQ5Edmn9Uy0ZuML2
+         /Yr2uYhf+wPUsW+RhlPj0jnrgI6xQnFnDJXSdsS2bB2o2rEq8kT5IQzy30s3KZT90pj3
+         UHgi++aGzhoNWQSG7KMtVVGVzZ8lXDP3PxyzHRe/cj2CsiK8ysEKX+N/C/JCofnhP6Zy
+         ysHoSuNHqM8uW8oykrmhadP4GJgmD8QVWKo1rTWmFdO3T0RLNLOU8o5Y2if5frE7OzBe
+         tqgcEGsK8+XiuMXFj87N0IFHRR1P/0s3glsmvAukolmHIqsHn647aZrbjw9qXweuOLeg
+         q85A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4PVGGuxc9ZyUOJ1tHjoyl2dymltFthy0B+E7Sw+J42M=;
+        b=W458CLhIF6PeNAkBu6aIv44wSg3hSt/ZV6eDvHQ+mUYOAOX8ZkzB5+Gicgd0Tu1G1h
+         t+3jaY1s4glhPlyyA9uUeh9xWvV2iDNSdlihGNMk30lF+tMQciZW8M75a9HtMHQT4eEZ
+         QMtnZfZ1yF8pXrR+71X57aeiu+v5y1Si7MjxXuad1h7z08VSk+8ZJuMgYO5exqrbdUj1
+         1cdGfFZNNCAWysz0my4wg2FXGsiVzuZv0IgGTbByK8byxXDZWVtdPNRYkX7iY/kSUfnW
+         DPXNCwtSzqmkT0QOyOnYvKLncJCdX2YZI6oP7HTE9w2nusxgyRS2TQHzYNP6hFEH2W73
+         dGYA==
+X-Gm-Message-State: AOAM531CTo510gEZ1yrfa2zIzFWq2lhM8M8Yu3zFDs1GK+tdmxON2Xp5
+        Cd/5NhA2ZZ1q/4rzHMLtsYKCPRzvGbVCkQd4nKZ2Gw==
+X-Google-Smtp-Source: ABdhPJw5B1NweHHaLVC4lRIhd+qyP/8JLgQyMfz7YK8nShVG08v7sqngNhnkN1GmZyWt//h2whVvG0TuH3ANoPCzPGs=
+X-Received: by 2002:a05:6808:2125:b0:326:b51f:bbc2 with SMTP id
+ r37-20020a056808212500b00326b51fbbc2mr15101655oiw.13.1652747749600; Mon, 16
+ May 2022 17:35:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20181205191956.31480-1-ehabkost@redhat.com> <66796b4a-f5be-baeb-07ea-db95764e4bab@redhat.com>
+In-Reply-To: <66796b4a-f5be-baeb-07ea-db95764e4bab@redhat.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Mon, 16 May 2022 17:35:38 -0700
+Message-ID: <CALMp9eT2+299s3DE=q8AnDnMXj+H249dzytmHw6EqnRqCaqsVw@mail.gmail.com>
+Subject: Re: [PATCH] kvm: x86: Report STIBP on GET_SUPPORTED_CPUID
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Eduardo Habkost <ehabkost@redhat.com>,
+        =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>,
+        kvm@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org,
+        KarimAllah Ahmed <karahmed@amazon.de>,
+        David Woodhouse <dwmw2@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminate the following coccicheck warning:
-./drivers/media/platform/atmel/atmel-isc-base.c:1469:2-3: Unneeded
-semicolon
+On Fri, Dec 14, 2018 at 2:55 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+> On 05/12/18 20:19, Eduardo Habkost wrote:
+> > Months ago, we have added code to allow direct access to MSR_IA32_SPEC_CTRL
+> > to the guest, which makes STIBP available to guests.  This was implemented
+> > by commits d28b387fb74d ("KVM/VMX: Allow direct access to
+> > MSR_IA32_SPEC_CTRL") and b2ac58f90540 ("KVM/SVM: Allow direct access to
+> > MSR_IA32_SPEC_CTRL").
+> >
+> > However, we never updated GET_SUPPORTED_CPUID to let userspace know that
+> > STIBP can be enabled in CPUID.  Fix that by updating
+> > kvm_cpuid_8000_0008_ebx_x86_features and kvm_cpuid_7_0_edx_x86_features.
+> >
+> > Signed-off-by: Eduardo Habkost <ehabkost@redhat.com>
+> > ...
+> Queued, thanks.
+>
+> Paolo
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/media/platform/atmel/atmel-isc-base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-index 2f07a50035c8..88308bb9c079 100644
---- a/drivers/media/platform/atmel/atmel-isc-base.c
-+++ b/drivers/media/platform/atmel/atmel-isc-base.c
-@@ -1466,7 +1466,7 @@ static void isc_awb_work(struct work_struct *w)
- 	if (isc->stop) {
- 		mutex_unlock(&isc->awb_mutex);
- 		return;
--	};
-+	}
- 
- 	isc_update_profile(isc);
- 
--- 
-2.20.1.7.g153144c
+On second thought, I believe this is premature. KVM does not currently
+support Intel's STIBP.
 
+From volume 4 of the SDM, "Prevents indirect branch predictions on
+*all* logical processors on the core from being controlled by any
+sibling logical processor in the same core." (emphasis mine)
+
+In particular, if two virtual HT siblings are running on different
+physical cores, and one of them sets IA32_SPEC_CTRL.STIBP, KVM must
+intercept the MSR write, track down the sibling vCPU thread, and
+ensure that IA32_SPEC_CTRL.STIBP is set on its logical processor.
+Moreover, whenever a vCPU thread migrates to a new logical processor,
+IA32_SPEC_CTRL.STIBP on the logical processor must be set to the
+logical or of the vCPU thread's own IA32_SPEC_CTRL.STIBP value and its
+sibling vCPU thread's IA32_SPEC_CTRL.STIBP value. Note that this
+implies that IA32_SPEC_CTRL cannot be a pass-through MSR.
