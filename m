@@ -2,97 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9036AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:17:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B42A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348703AbiEQORM (ORCPT
+        id S1348730AbiEQORP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45114 "EHLO
+        Tue, 17 May 2022 10:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348678AbiEQORB (ORCPT
+        with ESMTP id S1348671AbiEQORA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:17:01 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0209027B31
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:16:57 -0700 (PDT)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        Tue, 17 May 2022 10:17:00 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0307827FCD
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:16:56 -0700 (PDT)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id CE16C3FE02
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 009983F5FB
         for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 14:16:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
         s=20210705; t=1652797014;
-        bh=jd0VeL2AHDg2LJ77yGx5/LqXbrOfozyrVLrb5aNQFDs=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=Madh/6q7XAypFTWAb+klSABjy42yRADR1g+VPB6PqR/AXJ4ZfRoKUbGsfWJy6eH/a
-         33eVJfsj1FlKIpvULtS3fRv/JpU3n94iz/r2RXost2eTMXtg+VsJWyCGGR6O8mjTHz
-         pG19I84vCDTR60NYPo4Gpwb57Wn+Zco0neu2UHuuOVrwB1X0UQ2wBXjZIKOcbEgYzc
-         HI5wu9dQifCXc495yuybSdN3ERpb/RRIPI0YNAwu7XIicbktV8jwvrg1UDif9pOCbe
-         01UsTdplLyc2s1wt2SL4GRIxRAQK+q2fIoWHHcXckz6NYbs7boNlOWv351PNYjDWjJ
-         vGa6a2lhG6H4Q==
-Received: by mail-ed1-f69.google.com with SMTP id s9-20020aa7c549000000b0042ab6ab62f0so3468711edr.14
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:16:54 -0700 (PDT)
+        bh=amqAY6a7uXQ/wQEdkz2aFV8cXJ/9YzvYuaPpxxw+q7Y=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=bWtB1BdEIfK0c1ZKH3IgcR6gAs/KglR7Om8jdw06cwhpGAk7Nq/KrIfmJdp31jOjY
+         iYAbVEaYy++EABgTMqxgeEJzKpL7dV4hnnl17cJXiq9Rw8FLi+nhwDDXBzcMtm+h7b
+         roKhwJG2ygALof16YF+iyXFLCoqbr27dFCcUHaxbo7HdYROYzsFECady2OazDghKZM
+         IQ5ag22sHqn85FLlxUATZMLCAIbKjl6B96/18/ZRZzjmqPumIvU09a9PIgAx+vzpu6
+         axM1cNbvLIbK9nZxs/lHuNhSMNnNCrkdhgUo8Gg6HCc9dBKEQyI/qHLvlrnHCvAm1N
+         6+FxmdDE0zDfQ==
+Received: by mail-ed1-f72.google.com with SMTP id w14-20020a50fa8e000000b0042ab142d677so4122371edr.11
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:16:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jd0VeL2AHDg2LJ77yGx5/LqXbrOfozyrVLrb5aNQFDs=;
-        b=eLKn/IUe/kkNpdfUigDVPKu/demaxQYikimshl6r/nfYiR0qs8QoTYzkopg2/oHPg7
-         zN+rf9O+kMfcPNbzoHToykkpW/JCNZ8ZKdos3DGI0cUxfs8BtBqCz9eyqhIYHXD+vQ+0
-         X6r4YN9oaH0mzOIMv9pOklBsYXyS77B9aBLIx4kB2r6hT93qYuRCjAE816ahrGTlgubi
-         ZIv1bRT3I+G4/fTfvvTCEe138dBbyqxiak7dltQO5VpBAtXEwifEJtAlXfvg9GKr2Y9W
-         voMjpggr5VAliNcoO1fRQkkr3COKx7O9CiLuTzU7hw4UX1e3oy+699fdT4lYrYoclWkT
-         6+Bg==
-X-Gm-Message-State: AOAM532t0KH5V+6nz5jCNBqgvVX4PsM4aYn5UTSOUNOZxZAwIm5hzI5+
-        KrvBpXDjk5enlQa49rIdTDdci0wryZq/ugsuZMLs+l26lMLozT5NT2/zJjwPCnsjZqDKy36R5qz
-        jIBSUWerrhb4kWFW56gNHK1ggmlj1kckS+vpAc821Ow==
-X-Received: by 2002:a05:6402:50d1:b0:428:1473:d173 with SMTP id h17-20020a05640250d100b004281473d173mr19483717edb.37.1652797014195;
-        Tue, 17 May 2022 07:16:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzVGQQllvDVL22W9vm1yn30AQX8KZPUMac9s5RQYuLreNrjRJi+7Mn3AHtfZi39PUoez11LEg==
-X-Received: by 2002:a05:6402:50d1:b0:428:1473:d173 with SMTP id h17-20020a05640250d100b004281473d173mr19483697edb.37.1652797014057;
-        Tue, 17 May 2022 07:16:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=amqAY6a7uXQ/wQEdkz2aFV8cXJ/9YzvYuaPpxxw+q7Y=;
+        b=N+hpt+B4AjbH5fb8KzUMFs2K2n3N4mioadCXna6hLAPI3i4ieZHpHz8Fp2QzAwZ0un
+         N3Vb9VDfRh6qrjFcaPeeaW0v6XiXfD/kwrLKguaDRJsBkL/73VjC+n0QYzUy36T08S1+
+         bIpWhHQM63O/rLFswOlhzQ6gYGAAk78qNQ5KZucajNJI/q+RTa0LmWKD60y4beX0yMe/
+         cXFvHYNmNJZPOQMI7sOLk/DM3Bea24Jls+bygRX8s7iUJPQYjhSKcKg8ERJxahH8KFtK
+         CGVbJu6sne05q84GegGFa0RuStSyCaS6XPydRc4oajrOnEUlxnJtDrXIatMqAM9w0Ve+
+         09Ig==
+X-Gm-Message-State: AOAM5305TT+FzE8ngz/voKJlGo+PgfYFNNvShSxGUaFFfH0aSEzhf75B
+        uSmf1O1wna28l/O9okQ6SCAsD96aA5vkIwLH/A07WgV982mwggtGVoegLS0IWBz6uKR+nVSKRSU
+        emvPY8mHoUa6zKZNyeYW4z0HPyJQiCI32iSqMd5pI4Q==
+X-Received: by 2002:a05:6402:388d:b0:42a:ba9f:f85c with SMTP id fd13-20020a056402388d00b0042aba9ff85cmr8333380edb.292.1652797012297;
+        Tue, 17 May 2022 07:16:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwWqmUr3EfSZZVLUvlRBufZdHAW5+JbfxPJcgeJBp6Kk7yUuKbrIK7KXP7YPNiw+kSP4ald9A==
+X-Received: by 2002:a05:6402:388d:b0:42a:ba9f:f85c with SMTP id fd13-20020a056402388d00b0042aba9ff85cmr8333360edb.292.1652797012077;
+        Tue, 17 May 2022 07:16:52 -0700 (PDT)
 Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id bo3-20020a170906d04300b006f3ef214dcesm1065035ejb.52.2022.05.17.07.16.53
+        by smtp.gmail.com with ESMTPSA id bo3-20020a170906d04300b006f3ef214dcesm1065035ejb.52.2022.05.17.07.16.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 07:16:53 -0700 (PDT)
+        Tue, 17 May 2022 07:16:51 -0700 (PDT)
 From:   Juerg Haefliger <juerg.haefliger@canonical.com>
 X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
 To:     catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org
 Cc:     linux-kernel@vger.kernel.org,
         Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH 2/2] arm64: Kconfig.platforms: Add comments
-Date:   Tue, 17 May 2022 16:16:48 +0200
-Message-Id: <20220517141648.331976-3-juergh@canonical.com>
+Subject: [PATCH 0/2] arm64: Kconfig: Style cleanups
+Date:   Tue, 17 May 2022 16:16:46 +0200
+Message-Id: <20220517141648.331976-1-juergh@canonical.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220517141648.331976-1-juergh@canonical.com>
-References: <20220517141648.331976-1-juergh@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add trailing comments to endmenu statements for better readability.
+The majority of the Kconfig files use a single tab for basic indentation
+and a single tab followed by two whitespaces for help text indentation.
+Fix the lines that don't follow this convention.
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- arch/arm64/Kconfig.platforms | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+While at it:
+  - Add trailing comments to endif/endmenu statements for better
+    readability.
 
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index 30b123cde02c..de9a18d3026f 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -325,4 +325,4 @@ config ARCH_ZYNQMP
- 	help
- 	  This enables support for Xilinx ZynqMP Family
- 
--endmenu
-+endmenu # "Platform selection"
+Juerg Haefliger (2):
+  arm64: Kconfig: Fix indentation and add comments
+  arm64: Kconfig.platforms: Add comments
+
+ arch/arm64/Kconfig           | 95 ++++++++++++++++++------------------
+ arch/arm64/Kconfig.platforms |  2 +-
+ 2 files changed, 48 insertions(+), 49 deletions(-)
+
 -- 
 2.32.0
 
