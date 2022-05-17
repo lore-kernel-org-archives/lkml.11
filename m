@@ -2,297 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A06E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 949F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343618AbiEQKKo (ORCPT
+        id S1343763AbiEQKLv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:10:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        Tue, 17 May 2022 06:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343711AbiEQKK1 (ORCPT
+        with ESMTP id S1343782AbiEQKKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:10:27 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D52B48E5C;
-        Tue, 17 May 2022 03:08:17 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id m12so16908832plb.4;
-        Tue, 17 May 2022 03:08:17 -0700 (PDT)
+        Tue, 17 May 2022 06:10:48 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30804BBA8;
+        Tue, 17 May 2022 03:09:28 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id t6so24033416wra.4;
+        Tue, 17 May 2022 03:09:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :organization;
-        bh=nSi8lK2ej4jIE2r69Kt4C5FMLn19t1lg4OcZ7Ppi7IU=;
-        b=UWfYE+cpD9WMJu9KnJuygH3cS+SM3blxo0BVKxeZelk2xlsTyaklywaJVMXsx78o1I
-         e7NLkGSQPUa7m5xcJ4WY7cDx01SSVqDjzIw1FQYlGfXCXsI+40h2/hVVrsgvqWfJ0hcz
-         pC9QyV3mTFWk0VonSIC1kUSs7JuOnJwSy4C6e7rBo3hwy3MGVhdmzI8wNV59hfub/Tu9
-         A7rAFlb4r44YbnrFU1nbwZC+dSJJ/SGeWbRrc7VIyO5j25rTMqxYAbrRNTvVZPys/sXB
-         2u7gQP7/txtGSqwiT20JKgRrj8IJw3pXPCTcFRQMu74mz/mGcdHDLXXmtpFmCLaLllnP
-         FPug==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=t4zPUKpv7XaTfwCy6u8+Y9X67AplsbkFXvPulu0ea1U=;
+        b=aEs+kBHg2LKI6or1oWTOXdLQLX5BKJra6ZJ/JQVkHM6rAssedHYEsM5LLwYPaUnEW1
+         Er8hzUj6HM+y4+yiwXyGVakR9K1eW0wFG7ntWYX5PrRIhZBrwU73bj12BVqv7NW1xe73
+         rziM/EwhIps3HhQpVH3xaVdy9KwZFJThIxS8WO2QzKsRYwexHJQ5FVMx/yzgcCpRvCX3
+         /cEjZ9eofAuUBTLY2ZjgATPazGtrs7j+Kro5NGKhNPAU9Qsj1jj4Xk0gUlM5P2xco1/S
+         iWjuFJt8aUKqornzfztDZjF2cIMAHiiJJ4upNIaJSphy/O4g63nrhNzt3IXXaiTJKFZi
+         6qgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:organization;
-        bh=nSi8lK2ej4jIE2r69Kt4C5FMLn19t1lg4OcZ7Ppi7IU=;
-        b=dG5kPtzYZrMXTlDhOsdEWmSTVnby1M6vVSPuWjAmp7LK7zJV+DDLROPBWSir+sZeaM
-         a3v6j8BHl+lru0c/gzsb6JkiBRprN9t95HdxlOtv/jtJPfIDeae9eOh6FGAGR7gA3Ke0
-         01cBbObRLlgwUwXJnY3RTEJXGdcEoezkJhN/H9EOYLc+6FrbqmufLpjxAMQ7z+nxFGqz
-         rpBdgz9wX9OjpSG8vLtdyA/Mc4fFiY3g6MPmXfwiaHnC5+yUFzBgoOpL7frAAFooeP7/
-         8lNk9AoNrlmEpRRebCuk3BZ1b71kmCHYV0a3nC+iGZWxe8fDlhv7unUEyl5b9PPo4zzP
-         fXlQ==
-X-Gm-Message-State: AOAM530/BTnJbXt4jsZOxKHAxMwDweKY7u7y11GSO2DkTG0tZivDjG8v
-        HDwqN6ZMPEPslysOraCBKK8CcM9NapalkzZQ
-X-Google-Smtp-Source: ABdhPJxgo0Wpy3KbEIsntRkAH+/+GKHFDPPdJ5mefTYTF58kO0wQA3UMMkLkCE2pprzLUInzPxu1Aw==
-X-Received: by 2002:a17:902:e84d:b0:15e:b0af:477b with SMTP id t13-20020a170902e84d00b0015eb0af477bmr21452788plg.49.1652782096536;
-        Tue, 17 May 2022 03:08:16 -0700 (PDT)
-Received: from localhost.localdomain ([219.91.171.244])
-        by smtp.googlemail.com with ESMTPSA id a10-20020a631a0a000000b003c6ab6ba06csm8202595pga.79.2022.05.17.03.08.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 03:08:16 -0700 (PDT)
-From:   Dharmendra Singh <dharamhans87@gmail.com>
-To:     miklos@szeredi.hu, vgoyal@redhat.com
-Cc:     Dharmendra Singh <dharamhans87@gmail.com>,
-        linux-fsdevel@vger.kernel.org, fuse-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, bschubert@ddn.com,
-        Dharmendra Singh <dsingh@ddn.com>
-Subject: [PATCH v5 3/3] FUSE: Implement atomic lookup + open
-Date:   Tue, 17 May 2022 15:37:44 +0530
-Message-Id: <20220517100744.26849-4-dharamhans87@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220517100744.26849-1-dharamhans87@gmail.com>
-References: <20220517100744.26849-1-dharamhans87@gmail.com>
-Organization: DDN STORAGE
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=t4zPUKpv7XaTfwCy6u8+Y9X67AplsbkFXvPulu0ea1U=;
+        b=shN6m1f3JJttSDu5wdr946HWluh2OFbBAFh9tBuq4FG3LbQzU5KSdwT58xFjR4+Wv9
+         zUD7UaewMcUtFMzs4nI2y8P3m2HpBn04FWBeuHyoaHsZU6nYRRzBUUT0KpB0CAID39Yv
+         kLVZXSwi/SMkYaNl5j3CMYMc1aJlY5Q4nUKORHiRW8O8O2uqzJ5s2fj3CnK0jcLZS7dB
+         EzLKFQ/+vYSwZIRZabIVu2J4vRg4qU+esPhAh+bGYAIk0QGVew549YLABwGv8Cv3hpx+
+         oVdH63EU3kwu/TyO/pdxgP+KiHUczJDWi5pncUKQI2zF/0X0vZv0eOljPi3pwH7PKsO8
+         3fFg==
+X-Gm-Message-State: AOAM532gMOeY859zNspEHeWvJXSon/DOjtgzNSwjdVjnwtXljpFv5+0w
+        ZLbGNQW4Qd4I8dEbJ5HrHKM=
+X-Google-Smtp-Source: ABdhPJzK4FAOgEnNQs53gtSOtT0Y8b5G++nzf2lJHnk/cY7kMsd4pENS/ntIKs/HT0Xr5wKaUtO4JA==
+X-Received: by 2002:a5d:6989:0:b0:20d:b25:f5 with SMTP id g9-20020a5d6989000000b0020d0b2500f5mr6372658wru.616.1652782167330;
+        Tue, 17 May 2022 03:09:27 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id s7-20020a05600c29c700b003942a244ec2sm1443015wmd.7.2022.05.17.03.09.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 03:09:26 -0700 (PDT)
+Message-ID: <3e9f0936-efee-cedf-6e2b-4dd9de79fc4e@gmail.com>
+Date:   Tue, 17 May 2022 12:09:25 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v7 0/3] cpufreq: mediatek: Cleanup and support MT8183 and
+ MT8186
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
+        hsinyi@google.com, khilman@baylibre.com,
+        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220516111130.13325-1-rex-bc.chen@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220516111130.13325-1-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can optimize aggressive lookups which are triggered when
-there is normal open for file/dir (dentry is new/negative).
 
-Here in this case since we are anyway going to open the file/dir
-with USER SPACE, avoid this separate lookup call into libfuse
-and combine it with open call into libfuse.
 
-This lookup + open in single call to libfuse has been named
-as atomic open. It is expected that USER SPACE opens the file
-and fills in the attributes, which are then used to make inode
-stand/revalidate in the kernel cache.
+On 16/05/2022 13:11, Rex-BC Chen wrote:
+> Cpufreq is a DVFS driver used for power saving to scale the clock frequency
+> and supply the voltage for CPUs. This series do some cleanup for MediaTek
+> cpufreq drivers and add support for MediaTek SVS[2] and MediaTek CCI
+> devfreq[3] which are supported in MT8183 and MT8186.
+> 
 
-Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
----
- fs/fuse/dir.c             | 109 ++++++++++++++++++++++++++++----------
- fs/fuse/fuse_i.h          |   3 ++
- include/uapi/linux/fuse.h |   2 +-
- 3 files changed, 84 insertions(+), 30 deletions(-)
+Series applied to v5.19-next/dts64
 
-diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
-index 517c9add014d..cb99e529b3e9 100644
---- a/fs/fuse/dir.c
-+++ b/fs/fuse/dir.c
-@@ -516,14 +516,15 @@ static int get_security_context(struct dentry *entry, umode_t mode,
- }
- 
- /*
-- * Atomic create+open operation
-+ * If user has not implemented create ext or Atomic open + lookup
-+ * then fall back to usual Atomic create/open operations.
-  *
-- * If the filesystem doesn't support this, then fall back to separate
-- * 'mknod' + 'open' requests.
-+ * If the filesystem doesn't support Atomic create + open, then
-+ * fall back to separate 'mknod' + 'open' requests.
-  */
- static int fuse_atomic_common(struct inode *dir, struct dentry *entry,
--			      struct file *file, unsigned int flags,
--			      umode_t mode, uint32_t opcode)
-+			      struct dentry **alias, struct file *file,
-+			      unsigned int flags, umode_t mode, uint32_t opcode)
- {
- 	int err;
- 	struct inode *inode;
-@@ -538,10 +539,21 @@ static int fuse_atomic_common(struct inode *dir, struct dentry *entry,
- 	struct dentry *res = NULL;
- 	void *security_ctx = NULL;
- 	u32 security_ctxlen;
--	bool ext_create = (opcode == FUSE_CREATE_EXT ? true : false);
-+	bool simple_create = (opcode == FUSE_CREATE ? true : false);
-+	bool create_ops = (simple_create || opcode == FUSE_CREATE_EXT) ?
-+			   true : false;
-+	bool skipped_lookup = (opcode == FUSE_CREATE_EXT ||
-+			       opcode == FUSE_ATOMIC_OPEN) ? true : false;
-+
-+	if (alias)
-+		*alias = NULL;
- 
- 	/* Userspace expects S_IFREG in create mode */
--	BUG_ON((mode & S_IFMT) != S_IFREG);
-+	if (create_ops && (mode & S_IFMT) != S_IFREG) {
-+		WARN_ON(1);
-+		err = -EINVAL;
-+		goto out_err;
-+	}
- 
- 	forget = fuse_alloc_forget();
- 	err = -ENOMEM;
-@@ -616,33 +628,38 @@ static int fuse_atomic_common(struct inode *dir, struct dentry *entry,
- 	}
- 	kfree(forget);
- 	/*
--	 * In extended create, fuse_lookup() was skipped, which also uses
--	 * d_splice_alias(). As we come directly here after picking up dentry
--	 * it is very much likely that dentry has DCACHE_PAR_LOOKUP flag set
--	 * on it so call d_splice_alias().
-+	 * In extended create/atomic open, fuse_lookup() is skipped which also
-+	 * uses d_splice_alias(). As we come directly here after picking up
-+	 * dentry it is very much likely that dentry has DCACHE_PAR_LOOKUP flag
-+	 * set on it so call d_splice_alias().
- 	 */
--	if (!ext_create && !d_in_lookup(entry))
--		d_instantiate(entry, inode);
--	else {
-+	if (skipped_lookup) {
- 		res = d_splice_alias(inode, entry);
--		if (IS_ERR(res)) {
--			/* Close the file in user space, but do not unlink it,
--			 * if it was created - with network file systems other
--			 * clients might have already accessed it.
--			 */
--			fi = get_fuse_inode(inode);
--			fuse_sync_release(fi, ff, flags);
--			fuse_queue_forget(fm->fc, forget, outentry.nodeid, 1);
--			err = PTR_ERR(res);
--			goto out_err;
-+		if (res) {
-+			if (IS_ERR(res)) {
-+				/* Close the file in user space, but do not unlink it,
-+				 * if it was created - with network file systems other
-+				 * clients might have already accessed it.
-+				 */
-+				fi = get_fuse_inode(inode);
-+				fuse_sync_release(fi, ff, flags);
-+				fuse_queue_forget(fm->fc, forget, outentry.nodeid, 1);
-+				err = PTR_ERR(res);
-+				goto out_err;
-+			}
-+			entry = res;
-+			if (alias)
-+				*alias = res;
- 		}
--	}
-+	} else
-+		d_instantiate(entry, inode);
-+
- 	fuse_change_entry_timeout(entry, &outentry);
- 	/*
- 	 * This should be always set when the file is created, but only
- 	 * CREATE_EXT introduced FOPEN_FILE_CREATED to user space.
- 	 */
--	if (!ext_create || (outopen.open_flags & FOPEN_FILE_CREATED)) {
-+	if (simple_create || (outopen.open_flags & FOPEN_FILE_CREATED)) {
- 		fuse_dir_changed(dir);
- 		file->f_mode |= FMODE_CREATED;
- 	}
-@@ -674,7 +691,7 @@ static int fuse_create_ext(struct inode *dir, struct dentry *entry,
- 	if (fc->no_create_ext)
- 		return -ENOSYS;
- 
--	err = fuse_atomic_common(dir, entry, file, flags, mode,
-+	err = fuse_atomic_common(dir, entry, NULL, file, flags, mode,
- 				 FUSE_CREATE_EXT);
- 	/* If ext create is not implemented then indicate in fc so that next
- 	 * request falls back to normal create instead of going into libufse and
-@@ -687,6 +704,31 @@ static int fuse_create_ext(struct inode *dir, struct dentry *entry,
- 	return err;
- }
- 
-+static int fuse_do_atomic_open(struct inode *dir, struct dentry *entry,
-+				struct dentry **alias, struct file *file,
-+				unsigned int flags, umode_t mode)
-+{
-+	int err;
-+	struct fuse_conn *fc = get_fuse_conn(dir);
-+
-+	if (fc->no_atomic_open)
-+		return -ENOSYS;
-+
-+	err = fuse_atomic_common(dir, entry, alias, file, flags, mode,
-+				 FUSE_ATOMIC_OPEN);
-+
-+	/* Set if atomic open not implemented */
-+	if (err == -ENOSYS) {
-+		if (!fc->no_atomic_open)
-+			fc->no_atomic_open = 1;
-+
-+	} else if (!fc->atomic_o_trunc) {
-+		/* If atomic open is set then imply atomic truncate as well */
-+		fc->atomic_o_trunc = 1;
-+	}
-+	return err;
-+}
-+
- static int fuse_mknod(struct user_namespace *, struct inode *, struct dentry *,
- 		      umode_t, dev_t);
- static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
-@@ -695,13 +737,22 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
- {
- 	int err;
- 	struct fuse_conn *fc = get_fuse_conn(dir);
--	struct dentry *res = NULL;
-+	struct dentry *res = NULL, *alias = NULL;
- 	bool create = flags & O_CREAT ? true : false;
- 
- 	if (fuse_is_bad(dir))
- 		return -EIO;
- 
-+	if (!create && !fc->no_atomic_open) {
-+		err = fuse_do_atomic_open(dir, entry, &alias,
-+					  file, flags, mode);
-+		res = alias;
-+		if (err != -ENOSYS)
-+			goto out_dput;
-+	}
-+
- lookup:
-+	/* Fall back to open- user space does not have full atomic open */
- 	if ((!create || fc->no_create_ext) && d_in_lookup(entry)) {
- 		res = fuse_lookup(dir, entry, 0);
- 		if (IS_ERR(res))
-@@ -723,7 +774,7 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
- 		if (err == -ENOSYS)
- 			goto lookup;
- 	} else
--		err = fuse_atomic_common(dir, entry, file, flags, mode,
-+		err = fuse_atomic_common(dir, entry, NULL, file, flags, mode,
- 					 FUSE_CREATE);
- 	if (err == -ENOSYS) {
- 		fc->no_create = 1;
-diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
-index 266133dcab5e..949c230e14c7 100644
---- a/fs/fuse/fuse_i.h
-+++ b/fs/fuse/fuse_i.h
-@@ -675,6 +675,9 @@ struct fuse_conn {
- 	 */
- 	unsigned no_create_ext:1;
- 
-+	/** Is atomic open implemented by fs ? */
-+	unsigned no_atomic_open : 1;
-+
- 	/** Is opendir/releasedir not implemented by fs? */
- 	unsigned no_opendir:1;
- 
-diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
-index bebe4be3f1cb..f4c94e5bbffc 100644
---- a/include/uapi/linux/fuse.h
-+++ b/include/uapi/linux/fuse.h
-@@ -540,7 +540,7 @@ enum fuse_opcode {
- 	FUSE_REMOVEMAPPING	= 49,
- 	FUSE_SYNCFS		= 50,
- 	FUSE_CREATE_EXT		= 51,
--
-+	FUSE_ATOMIC_OPEN	= 52,
- 	/* CUSE specific operations */
- 	CUSE_INIT		= 4096,
- 
--- 
-2.17.1
+Thanks!
 
+> Changes for v7:
+> 1. Drop all drviers patches because they are all accepted.
+> 2. Correct clock/clock-name for cci in dts.
+> 
+> Changes for v6:
+> 1. Reorder patches in this series.
+> 2. Add a new patch to do unregister platform device.
+> 3. Modify drivers from maintainer's advice.
+> 
+> Reference series:
+> [1]: V1 of this series is present by Jia-Wei Chang.
+>       https://lore.kernel.org/all/20220307122151.11666-1-jia-wei.chang@mediatek.com/
+> 
+> [2]: The MediaTek CCI devfreq driver is introduced in another series.
+>       https://lore.kernel.org/all/20220425125546.4129-1-johnson.wang@mediatek.com/
+> 
+> [3]: The MediaTek SVS driver is introduced in another series.
+>       https://lore.kernel.org/all/20220420102044.10832-1-roger.lu@mediatek.com/
+> 
+> Rex-BC Chen (3):
+>    arm64: dts: mediatek: Add opp table and clock property for MT8183
+>      cpufreq
+>    arm64: dts: mediatek: Add MediaTek CCI node for MT8183
+>    arm64: dts: mediatek: Add mediatek,cci property for MT8183 cpufreq
+> 
+>   arch/arm64/boot/dts/mediatek/mt8183-evb.dts   |  36 +++
+>   .../arm64/boot/dts/mediatek/mt8183-kukui.dtsi |   4 +
+>   arch/arm64/boot/dts/mediatek/mt8183.dtsi      | 286 ++++++++++++++++++
+>   3 files changed, 326 insertions(+)
+> 
