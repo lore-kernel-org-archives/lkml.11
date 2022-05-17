@@ -2,61 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C09AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B747C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241512AbiEQMAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
+        id S1344092AbiEQMAq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 08:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343758AbiEQMAN (ORCPT
+        with ESMTP id S1345714AbiEQMAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:00:13 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644554C7BB;
-        Tue, 17 May 2022 05:00:07 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id i9so2992394edr.8;
-        Tue, 17 May 2022 05:00:07 -0700 (PDT)
+        Tue, 17 May 2022 08:00:19 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9F04C431;
+        Tue, 17 May 2022 05:00:09 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id l18so34182924ejc.7;
+        Tue, 17 May 2022 05:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ooYOi4l5nQa47D/Eah2WC+R7MerVr/2GEpfrRHxpbMA=;
-        b=Rz+2p3JKDR+LdtBba/c+Ac/6pGd9TQdiVpse9+imTRFwhjQLUkaJ6FGMgxK6wBtGy5
-         1XjK03HrIl7K1CN43snO2OZXbKBcDNooi0yZ/QXCYYYhC5S0rrBXXsLPT7J0+78VQRs7
-         JDU4xW8daSCst+PYuLHJC2S27xamh7aigmuGENg/zoLQHizilFLVswuBFd7ZmBknm/3i
-         mQAWLzgwZG80zYdUxoE1H9fk1xBQOfApCX30spsJXxXYzAIK2zkSGIyFC8nNr3SntpWU
-         oxfhmHttqwgIh7pxqCow/J6dIHhsD01C5Q62i3aqczggn1IlW+thFK4E3G3/rDaGX3u2
-         NyQA==
+        bh=S1hlOjb+KKdy0/QG/BxO1k2JNdhSZM3UJOdwKv3T7/8=;
+        b=BU2KTNM4aG0nn5hJWHP5ZC3Ez46/Z+TnTCi2W7zcOdcbNCX4fglgyfFxa2cHGtM8Rw
+         A6/srugFXEv1nzy7qWO4TPhGJuBhSi8uUANJCqjDL4SBt8SrNla2ZST48FHpzVnIUj84
+         6FRr1Mk8mjynIoFK5EKKR3fjwc2C/DXnY71Mief70mWbVoLq+7gjFKYYV8P53sIQemX8
+         b/G5aVVyVJNTMUIoa+xzD2AUoQekDDd7KPsag63QKN8Gmm6Fm38xN5Yae7rAq1AoHxEz
+         n5yKXyK9w5D6aAYvXW1yCMXBlVXNim7cKiw+MNvc8gi9ZzPJ2bdLJq71Zk2GLBC/Vuu/
+         aSEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ooYOi4l5nQa47D/Eah2WC+R7MerVr/2GEpfrRHxpbMA=;
-        b=fsUnMsAtVIYxuafZ6MBjOF61ahjT/2KRHCoqJ7y42XDMYxIxeKR0Fw/7YyAv+TG/e/
-         rPV/YPW14Y14E20kVLwiAcWOOPThgW9GzbIoKdUtXNvPr6aDf2v6QMOwqZ80vx7A0jCR
-         IiGKYhj4+DYwwQ+0MYlnCZIqNpCqMAHAkmhzkd2YHwxWTpQDQ71CTXf55hG9ND/dHF3y
-         29KRpwXI8d1ACTNUm0+t0Yagaz02ShPSf9eePf5mG6wlCIHWyehMbXLZ5M+zTMXSV03R
-         obrwvtHyZhb7KEHDpB31bl1CTE8gzIlBsoT7ykwA0PBUAnWqsV5fU5JDvWWu1xZIn1Gx
-         k7lg==
-X-Gm-Message-State: AOAM532QuFcLkB63aTdflL5Ht9fAwSAtqpyrE0wQhvrxPZnX3g/dLKo2
-        z5V6niNDS4uT4D8uz5VmJL31PAVAMOiWxw==
-X-Google-Smtp-Source: ABdhPJxo9vL9nnCYYerUvqY0tYnOcWm/jA8rwxXqEm5mkWDvisQFpPgEq7Dxps/NSmqam2HBYhBsSQ==
-X-Received: by 2002:a50:a68e:0:b0:42a:c9ae:469 with SMTP id e14-20020a50a68e000000b0042ac9ae0469mr2199445edc.202.1652788806011;
-        Tue, 17 May 2022 05:00:06 -0700 (PDT)
+        bh=S1hlOjb+KKdy0/QG/BxO1k2JNdhSZM3UJOdwKv3T7/8=;
+        b=yLidfNKebGCOao4SFSqYXnPY0EnXYPnxH+b2/+IMpWTJ8FehB2hJB+b0wuksioEuLp
+         9wa1hE7KkCIm7ZUqlVKsDAf3+Za8jXBI2VQ1+X/ka8mQCXGXOtYafjpOYdE+UfUzPj7P
+         gAmR5fqa/PI0GdYJsX3Ib6EtvJy5JYBqiEN7YPWctHXH3F29g+A4GlO98cYTjz2vpBW3
+         xMH81Mgnt6qx++M96ZXzQCy/upT5IAdN+aDTxGv6639Rp8+jKEk3IFr4eacEyWX4qsKH
+         34sA36ohnDqzu0O408V2CccFW3UDZReSfRQmkqP2tNIul7Js5DIytnNwfL/+Js/OuAuW
+         IpGw==
+X-Gm-Message-State: AOAM530BOaATufCZbYYQFja8p5nbKQ1P46iu/bmmBRedvM6wYLFqymAv
+        7LMUPE6naLI340dvJjmKZ4VtJA/Uk4J7Yg==
+X-Google-Smtp-Source: ABdhPJzS14AXLwhmzYl0Su0S93YfqX+6XOFjUdkedc6MteP8Kt4tfH+b2zdN1Nl35XOglwIUKGvmgQ==
+X-Received: by 2002:a17:907:a0c8:b0:6f7:492e:e74c with SMTP id hw8-20020a170907a0c800b006f7492ee74cmr19173903ejc.670.1652788808057;
+        Tue, 17 May 2022 05:00:08 -0700 (PDT)
 Received: from fedora.robimarko.hr (dh207-98-105.xnet.hr. [88.207.98.105])
-        by smtp.googlemail.com with ESMTPSA id hg16-20020a1709072cd000b006f3ef214e20sm948793ejc.134.2022.05.17.05.00.05
+        by smtp.googlemail.com with ESMTPSA id hg16-20020a1709072cd000b006f3ef214e20sm948793ejc.134.2022.05.17.05.00.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 05:00:05 -0700 (PDT)
+        Tue, 17 May 2022 05:00:07 -0700 (PDT)
 From:   Robert Marko <robimarko@gmail.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
         broonie@kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v2 3/6] dt-bindings: regulator: qcom,spmi-regulator: add PMP8074 PMIC
-Date:   Tue, 17 May 2022 13:59:57 +0200
-Message-Id: <20220517120000.71048-3-robimarko@gmail.com>
+Subject: [PATCH v2 5/6] arm64: dts: ipq8074: add SPMI PMP8074 PMIC regulators
+Date:   Tue, 17 May 2022 13:59:59 +0200
+Message-Id: <20220517120000.71048-5-robimarko@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220517120000.71048-1-robimarko@gmail.com>
 References: <20220517120000.71048-1-robimarko@gmail.com>
@@ -66,25 +67,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the PMP8074 PMIC compatible.
+PMP8074 is used in IPQ8074 and provides S3 for cores,
+S4 for UBI core and LDO11 for SDIO/eMMC.
+
+So, lets add the nodes in preparation for DVFS later.
 
 Signed-off-by: Robert Marko <robimarko@gmail.com>
 ---
- .../devicetree/bindings/regulator/qcom,spmi-regulator.yaml       | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 34 +++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-index 5c747c832529..4c7c693a48ab 100644
---- a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-@@ -23,6 +23,7 @@ properties:
-       - qcom,pm8950-regulators
-       - qcom,pm8994-regulators
-       - qcom,pmi8994-regulators
-+      - qcom,pmp8074-regulators
-       - qcom,pms405-regulators
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+index 789fec7c6aa4..d1a0b77c38a4 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -5,6 +5,7 @@
  
-   qcom,saw-reg:
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/clock/qcom,gcc-ipq8074.h>
++#include <dt-bindings/spmi/spmi.h>
+ 
+ / {
+ 	model = "Qualcomm Technologies, Inc. IPQ8074";
+@@ -421,6 +422,39 @@ spmi_bus: spmi@200f000 {
+ 			interrupt-controller;
+ 			#interrupt-cells = <4>;
+ 			cell-index = <0>;
++
++			pmic@1 {
++				compatible ="qcom,spmi-pmic";
++				reg = <0x1 SPMI_USID>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				regulators {
++					compatible = "qcom,pmp8074-regulators";
++
++					s3: s3 {
++						regulator-name = "vdd_s3";
++						regulator-min-microvolt = <592000>;
++						regulator-max-microvolt = <1064000>;
++						regulator-always-on;
++						regulator-boot-on;
++					};
++
++					s4: s4 {
++						regulator-name = "vdd_s4";
++						regulator-min-microvolt = <712000>;
++						regulator-max-microvolt = <992000>;
++						regulator-always-on;
++						regulator-boot-on;
++					};
++
++					l11: l11 {
++						regulator-name = "l11";
++						regulator-min-microvolt = <1800000>;
++						regulator-max-microvolt = <3300000>;
++					};
++				};
++			};
+ 		};
+ 
+ 		sdhc_1: sdhci@7824900 {
 -- 
 2.36.1
 
