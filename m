@@ -2,155 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8769BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27660C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242037AbiEQHwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
+        id S242074AbiEQHwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241857AbiEQHwB (ORCPT
+        with ESMTP id S242014AbiEQHwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:52:01 -0400
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382351B7A7
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:51:59 -0700 (PDT)
-Received: by mail-ua1-x92f.google.com with SMTP id ay15so6687669uab.9
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:51:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WShrHtR7o1bEMN+GHtHpoPB1ADyCcz+AwfB1sJZyYR4=;
-        b=LOFlwn77BRGGTHQ9iEWKPwBc8EC7NIg2bDsjKTz7PFhls9SUyJa0RoGbGs4i0gbs2h
-         FhVaPs5DErd6RbgHLLK0Psn0eW45ltdzDAmbdKIaYF8kbVhy3CrR3d7qdO6TueERI14t
-         1nslAb6aebvVqxtyL6KGKnnuTrLo4NW+MwcPU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WShrHtR7o1bEMN+GHtHpoPB1ADyCcz+AwfB1sJZyYR4=;
-        b=mE0/3OrvYCnjkRXuFwb3ahu7JYnbCGsDWJ2nWA+ASlRJekRstRyYXuTy1a+k3lPlk1
-         vD9ACFkVIWslkiIZ7avc4dlyg+yfXflV2eHoSTw+pgXvlCcJHcDn0NhWVhZT84CVjUfv
-         CkSlSaqn2NH6kg3RYKyBpEDbHKP6mej9XOCz5jutSF+mb6A3UEWzRAFKJ9alRWBXjfPf
-         JyfFXqnZll0Yn7ZGxqb5wM5unEhMZQfoKmXkdprk8xoKIFZgS/F2fMiXOsF6/u0oqgcF
-         7ueszcvRbIpkWASeygb7MbU2NItVwbzV5AOber72m1ORlBo3UbJzv1rZkLjogegVp26d
-         vlyA==
-X-Gm-Message-State: AOAM5302O7nn3IPswa9luUCiwuHAPDDPZ5c8qN3Ckyy94jK02S0uktsy
-        Lm41g9RNT/i9lcEDfxKa0Yapa9gF7JN8vZYHI3FgCQ==
-X-Google-Smtp-Source: ABdhPJwEplLYKvh+UGWkRWwFL7aUrldDFea1pw9lk57FA3WLEL60dkwzpZTESwKPQX9FIONp5mTUpyvS1luMK3t7Bqs=
-X-Received: by 2002:a9f:3193:0:b0:35d:21ec:4ae1 with SMTP id
- v19-20020a9f3193000000b0035d21ec4ae1mr7292105uad.100.1652773918317; Tue, 17
- May 2022 00:51:58 -0700 (PDT)
+        Tue, 17 May 2022 03:52:04 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF6B1CB02;
+        Tue, 17 May 2022 00:52:01 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L2SwJ0nT3z1JCGB;
+        Tue, 17 May 2022 15:50:40 +0800 (CST)
+Received: from [10.174.179.215] (10.174.179.215) by
+ canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 15:51:59 +0800
+Subject: Re: linux-next: Tree for May 16 (drm/msm: kconfig warning)
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
+References: <20220516205718.2c5a52f9@canb.auug.org.au>
+ <e61b5844-2595-4138-bf64-5b4d48ec8a4f@infradead.org>
+From:   YueHaibing <yuehaibing@huawei.com>
+Message-ID: <65ec4f4f-5fba-73eb-e73c-81366d94ac0b@huawei.com>
+Date:   Tue, 17 May 2022 15:51:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-References: <20220516105100.1412740-1-hsinyi@chromium.org> <20220517033557.3492-1-phillip@squashfs.org.uk>
-In-Reply-To: <20220517033557.3492-1-phillip@squashfs.org.uk>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Tue, 17 May 2022 15:51:32 +0800
-Message-ID: <CAJMQK-g2G=yDC9GW9Kcpuia+kdOcH_-WpR8xyLvx+5w0BHJJmg@mail.gmail.com>
-Subject: Re: [PATCH 3/2] squashfs: always build "file direct" version of page actor
-To:     Phillip Lougher <phillip@squashfs.org.uk>
-Cc:     Xiongwei.Song@windriver.com, akpm@linux-foundation.org,
-        houtao1@huawei.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, miaoxie@huawei.com,
-        squashfs-devel@lists.sourceforge.net, willy@infradead.org,
-        yi.zhang@huawei.com, zhengliang6@huawei.com,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <e61b5844-2595-4138-bf64-5b4d48ec8a4f@infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 11:36 AM Phillip Lougher
-<phillip@squashfs.org.uk> wrote:
->
-> Squashfs_readahead uses the "file direct" version of the page
-> actor, and so build it unconditionally.
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Phillip Lougher <phillip@squashfs.org.uk>
-Tested-by: Hsin-Yi Wang <hsinyi@chromium.org>
+On 2022/5/16 23:10, Randy Dunlap wrote:
+> 
+> On 5/16/22 03:57, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> Changes since 20220513:
+>>
+> 
+> on i386 or x86_64:
+> 
+> WARNING: unmet direct dependencies detected for DRM_DP_AUX_BUS
+>   Depends on [n]: HAS_IOMEM [=y] && DRM [=y] && OF [=n]
+>   Selected by [y]:
+>   - DRM_MSM [=y] && HAS_IOMEM [=y] && DRM [=y] && (ARCH_QCOM || SOC_IMX5 || COMPILE_TEST [=y]) && COMMON_CLK [=y] && IOMMU_SUPPORT [=y] && (QCOM_OCMEM [=n] || QCOM_OCMEM [=n]=n) && (QCOM_LLCC [=n] || QCOM_LLCC [=n]=n) && (QCOM_COMMAND_DB [=n] || QCOM_COMMAND_DB [=n]=n)
 
-Tested with CONFIG_SQUASHFS_FILE_DIRECT unselected. I'll pick this
-patch to the series. Thanks
+This is fixed by
+https://www.spinics.net/lists/kernel/msg4349168.html
 
-> ---
->  fs/squashfs/Makefile     |  4 ++--
->  fs/squashfs/page_actor.h | 41 ----------------------------------------
->  2 files changed, 2 insertions(+), 43 deletions(-)
->
-> diff --git a/fs/squashfs/Makefile b/fs/squashfs/Makefile
-> index 7bd9b8b856d0..477c89a519ee 100644
-> --- a/fs/squashfs/Makefile
-> +++ b/fs/squashfs/Makefile
-> @@ -5,9 +5,9 @@
->
->  obj-$(CONFIG_SQUASHFS) += squashfs.o
->  squashfs-y += block.o cache.o dir.o export.o file.o fragment.o id.o inode.o
-> -squashfs-y += namei.o super.o symlink.o decompressor.o
-> +squashfs-y += namei.o super.o symlink.o decompressor.o page_actor.o
->  squashfs-$(CONFIG_SQUASHFS_FILE_CACHE) += file_cache.o
-> -squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o page_actor.o
-> +squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o
->  squashfs-$(CONFIG_SQUASHFS_DECOMP_SINGLE) += decompressor_single.o
->  squashfs-$(CONFIG_SQUASHFS_DECOMP_MULTI) += decompressor_multi.o
->  squashfs-$(CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU) += decompressor_multi_percpu.o
-> diff --git a/fs/squashfs/page_actor.h b/fs/squashfs/page_actor.h
-> index 2e3073ace009..26e07373af8a 100644
-> --- a/fs/squashfs/page_actor.h
-> +++ b/fs/squashfs/page_actor.h
-> @@ -6,46 +6,6 @@
->   * Phillip Lougher <phillip@squashfs.org.uk>
->   */
->
-> -#ifndef CONFIG_SQUASHFS_FILE_DIRECT
-> -struct squashfs_page_actor {
-> -       void    **page;
-> -       int     pages;
-> -       int     length;
-> -       int     next_page;
-> -};
-> -
-> -static inline struct squashfs_page_actor *squashfs_page_actor_init(void **page,
-> -       int pages, int length)
-> -{
-> -       struct squashfs_page_actor *actor = kmalloc(sizeof(*actor), GFP_KERNEL);
-> -
-> -       if (actor == NULL)
-> -               return NULL;
-> -
-> -       actor->length = length ? : pages * PAGE_SIZE;
-> -       actor->page = page;
-> -       actor->pages = pages;
-> -       actor->next_page = 0;
-> -       return actor;
-> -}
-> -
-> -static inline void *squashfs_first_page(struct squashfs_page_actor *actor)
-> -{
-> -       actor->next_page = 1;
-> -       return actor->page[0];
-> -}
-> -
-> -static inline void *squashfs_next_page(struct squashfs_page_actor *actor)
-> -{
-> -       return actor->next_page == actor->pages ? NULL :
-> -               actor->page[actor->next_page++];
-> -}
-> -
-> -static inline void squashfs_finish_page(struct squashfs_page_actor *actor)
-> -{
-> -       /* empty */
-> -}
-> -#else
->  struct squashfs_page_actor {
->         union {
->                 void            **buffer;
-> @@ -76,4 +36,3 @@ static inline void squashfs_finish_page(struct squashfs_page_actor *actor)
->         actor->squashfs_finish_page(actor);
->  }
->  #endif
-> -#endif
-> --
-> 2.34.1
->
+> 
+> 
+> Full randconfig file is attached.
+> 
