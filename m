@@ -2,98 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A1BC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236500AbiEQHDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
+        id S240750AbiEQHDb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240521AbiEQHB3 (ORCPT
+        with ESMTP id S240732AbiEQHCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:01:29 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C803150B
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:22 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id i27so32769063ejd.9
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZjLxakQ0FSfyTvd+sfZt6yVLmsWKYw5HJWioql1MULA=;
-        b=HQY/XKhJJ47vJX89ecJOgBcJXEoDja7yEsRe5wcWIsu8QaGJ2m1Dcghz5EmgQ3FIJr
-         oTJk5/mqhhfdh1m/eCuJ2iffLzQdvYxFus6pfki7RqQ9iRuQFVkglT7vd8zBzqNWMRB2
-         7OBCSLwbi8LSEX1ZKUC9ZdHXZ+XfO8o3eTY3UpkllrQvjJWD8e4NTY5jpoKyzVdFQbZc
-         0oQJe2FoxJi88Ddlb18TiePefyEKxRuO+uTs+uk9Az/mraqj5tGef4HIyIFnFOR1akoT
-         1C9/lt0alTRFJOdRVRSpwCjZhAaKafX4lRgAd0F2FLibWsiG/cmrU/vsiRHMA54O7UPQ
-         /DQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZjLxakQ0FSfyTvd+sfZt6yVLmsWKYw5HJWioql1MULA=;
-        b=1IWLHaVxs2YrLV3cT6aJ8tmyUgR4PCO1CXwqEavsAnF2kQx5vPLr/vRg4o5CTOKLMn
-         5FHMyXQYlieoTxe3QxRDuoLcbDo6vvLEcm8L+3M44RBZRRjGJdZolkTUDnXtxIwpxY0Y
-         DwerKHYZwJkWtqM7b6frFp5+coijfINoGeenwY85VOihKLv111QUo0U6yJvHndvI44Pr
-         u3ATcu43pRJbISEFl4Bfy6BU1Meqx+/B06c86gNO1GKPZ8H+Duj/pNbd3r3Yy7nM7Esz
-         7byZQ6OxsJzbrSrHu0iMNKQc71P6S51wiYZML238LjACPoD2sq8wQrZfAIPHSPmdF6Lm
-         OXJA==
-X-Gm-Message-State: AOAM5317JCytEcEIa+vrw2Hbf04ICturSUVwyWWnli5dtF1KSHWrmFIw
-        WOlksycf6K7KdkEHawvW2pxKJg==
-X-Google-Smtp-Source: ABdhPJxTPLYtnDAjRe9X2IdxWarT1jcYAAPfoKCM0yNozDKFc/Ek6ZjA+hyu70A8B8uGnhpicokqAQ==
-X-Received: by 2002:a17:907:948d:b0:6fa:7f00:ed57 with SMTP id dm13-20020a170907948d00b006fa7f00ed57mr18079250ejc.761.1652770881471;
-        Tue, 17 May 2022 00:01:21 -0700 (PDT)
-Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id b5-20020a056402138500b0042617ba637esm6487016edv.8.2022.05.17.00.01.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 00:01:21 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Tue, 17 May 2022 03:02:20 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EE9473A0;
+        Tue, 17 May 2022 00:02:01 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A1ADA10000B;
+        Tue, 17 May 2022 07:01:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652770920;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9KazaW1SkFx7SybTXPFRmtUBoimvEisxPHGbF+BGpFc=;
+        b=R5CTzLA4Ubtz8fYfQ2SDt3yt3caIj3yrtuf0wjEBNuwsMPcn30DzUr5KYbk4TNHmWe5fGn
+        PceQ1IHai4j++s5NU/WJqjbOkn2Legv9KSeORmjtH8o9pkGx3aFTRfx+W7+ZT9URZnolio
+        rdvxiV4rfaQVB4ISVYv/iuthulsjxDhJH3SrSqohMvKj6qwxjd0LAicq3OjeHg35EOYnlx
+        n46ipD/l/baalEMoG1wmOkd/dNPzNzBChI9l0XUYPajQTBeBpIpPdUb3AhJZpwaMbDJqQa
+        h3H3Vpkf1+E6oKnbD4wWfESDyqbNcBgFMRC22ANt+DxSQlDY99MkW97sHrc7qQ==
+Date:   Tue, 17 May 2022 09:01:56 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 03/12] dt-bindings: remoteproc: qcom,adsp: add interconnects
-Date:   Tue, 17 May 2022 09:01:04 +0200
-Message-Id: <20220517070113.18023-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220517070113.18023-1-krzysztof.kozlowski@linaro.org>
-References: <20220517070113.18023-1-krzysztof.kozlowski@linaro.org>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH net-next v2 2/5] net: dsa: add out-of-band tagging
+ protocol
+Message-ID: <20220517090156.3fde5a8f@pc-20.home>
+In-Reply-To: <20220514224002.vvmd43lnjkbsw2g3@skbuf>
+References: <20220514150656.122108-1-maxime.chevallier@bootlin.com>
+        <20220514150656.122108-3-maxime.chevallier@bootlin.com>
+        <20220514224002.vvmd43lnjkbsw2g3@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SM8350 ADSP Peripheral Image Loader already defines interconnects, so
-document the property:
+Hi Vlad,
 
-  sm8350-hdk.dtb: remoteproc@4080000: 'interconnects' does not match any of the regexes: 'pinctrl-[0-9]+'
+On Sat, 14 May 2022 22:40:03 +0000
+Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+> On Sat, May 14, 2022 at 05:06:53PM +0200, Maxime Chevallier wrote:
+> > This tagging protocol is designed for the situation where the link
+> > between the MAC and the Switch is designed such that the Destination
+> > Port, which is usually embedded in some part of the Ethernet
+> > Header, is sent out-of-band, and isn't present at all in the
+> > Ethernet frame.
+> > 
+> > This can happen when the MAC and Switch are tightly integrated on an
+> > SoC, as is the case with the Qualcomm IPQ4019 for example, where
+> > the DSA tag is inserted directly into the DMA descriptors. In that
+> > case, the MAC driver is responsible for sending the tag to the
+> > switch using the out-of-band medium. To do so, the MAC driver needs
+> > to have the information of the destination port for that skb.
+> > 
+> > This out-of-band tagging protocol is using the very beggining of
+> > the skb headroom to store the tag. The drawback of this approch is
+> > that the headroom isn't initialized upon allocating it, therefore
+> > we have a chance that the garbage data that lies there at
+> > allocation time actually ressembles a valid oob tag. This is only
+> > problematic if we are sending/receiving traffic on the master port,
+> > which isn't a valid DSA use-case from the beggining. When dealing
+> > from traffic to/from a slave port, then the oob tag will be
+> > initialized properly by the tagger or the mac driver through the
+> > use of the dsa_oob_tag_push() call.
+> > 
+> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> > ---  
+> 
+> Why put the DSA pseudo-header at skb->head rather than push it using
+> skb_push()? I thought you were going to check for the presence of a
+> DSA header using something like skb->mac_len == ETH_HLEN + tag len,
+> but right now it sounds like treating garbage in the headroom as a
+> valid DSA tag is indeed a potential problem. If you can't sort that
+> out using information from the header offsets alone, maybe an skb
+> extension is required?
 
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-index 810ef9d2bcc1..6e1fdfe91043 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-@@ -67,6 +67,9 @@ properties:
-     minItems: 1
-     maxItems: 8
- 
-+  interconnects:
-+    maxItems: 1
-+
-   interrupts:
-     minItems: 5
-     maxItems: 6
--- 
-2.32.0
+Indeed, I thought of that, the main reason is that pushing/poping in
+itself is not enough, you also have to move the whole mac_header to
+leave room for the tag, and then re-set it in it's original location.
+There's nothing wrong with this, but it looked a bit cumbersome just to
+insert a dummy tag that gets removed rightaway. Does that make sense ?
 
+But yes I would really like to get a way to know wether the tag is
+there or not, I'll dig a bit more to see if I can find a way to get
+this info from the various skb offsets in a reliable way.
+
+Thanks,
+
+Maxime
