@@ -2,190 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04954C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EEF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237698AbiEQHHk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        id S230229AbiEQHHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232105AbiEQHHe (ORCPT
+        with ESMTP id S232100AbiEQHHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 17 May 2022 03:07:34 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27EF46B08;
-        Tue, 17 May 2022 00:07:31 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2RxY1HtxzhZ9q;
-        Tue, 17 May 2022 15:06:41 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
- 2022 15:07:27 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: [PATCH bpf-next v4 0/6] bpf trampoline for arm64
-Date:   Tue, 17 May 2022 03:18:32 -0400
-Message-ID: <20220517071838.3366093-1-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BDDB46B37;
+        Tue, 17 May 2022 00:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652771253; x=1684307253;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=XNPRoduK8u66OuSH/+gKHpuARySH4hD7poDFDsr7rSk=;
+  b=cFGtmmmmie5521zKkg/hb9cbNI1m33RlPVNB6xrWJw25SCnWXBLSIfVq
+   NUj35ds15noGQqIy0Jau68RzKap9HggjXfI0XYtzAhowiS5+9zusvRSL/
+   JY4qufVUhnOFooMpdKoqTTjKsa5lAYWuxS2hqhNyQ2ScB9PMd4M51L0BR
+   hmjRrVqpGxg5h5xS3FM983x9IxJ1m2KyYbqLMQ2zcPjncMg+LEuXaAtxO
+   n4+umwZlMzquwF40lPJtGa4vTz9Esoph2IUsHa/C+nBXpkJSXQ7HxeGXE
+   z2Tc43Bx4DCX37XHpDEMPYUlxsop9npo19sGn7GeDTnB1K+FJljcUA6Gb
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="250984918"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="250984918"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 00:07:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="596980463"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga008.jf.intel.com with ESMTP; 17 May 2022 00:07:32 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 17 May 2022 00:07:32 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 17 May 2022 00:07:32 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 17 May 2022 00:07:32 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.109)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 17 May 2022 00:07:31 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nRApGva/4S5idOg8PcVrbZT33fnW7hAeDKFIzWqjZZPcZL2OO4lcTzQlh5J2tQl1uihW+65xQy0TJCcJGk4hfQmQ3f2mZCy7hoAVTN/eeMtOpcno2gSuP6fyMiSFtJwcIm5pCuPIZtbHxIbZtRO3AUD+YlZU21xfS2SJ2V+9Pdg5+MwZw/Qw+X+DOxG86hn+u2N4728XyhUywJgmRv93xgu/SPoPt93ItfU42Hbvd4GD9Na8dsiMUn26pwUS6vftxU2NZ54LuEhPDe36ypn8VHY7//NJWXeM4heZNTV39B0CozWUPpLjrcBdskIf+059mkk0UY8r6hbhwwLqT2mR/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2mv9ToMEbZfgb81LRb7O7Nd+tKmxpDxFRo38cskiMt8=;
+ b=UOp5nwwPRznn2e0Hx852K6UjHLxNeOMrWD8o4Uq9bNgS8ozb0t1YUVt4cJV4OYwWbx6i2HAyAIX//uzJemgVPJhwil7Y6Y5J3NcmAmYEI1eflB4tupP8O0O9gqV9Q7ZqvGiIwQqv2xed4W6iHwRfVcgE5iBg93U8D5W7PElF5nR/OQhi/sEpEEOE78XFakONS2Bvyex6KTKclSotGGIdJn0dme0XCTt6XcuCnmZ2lKgXZKEPKC57JuwIYFl3rtE5/y4wQpLd6ZD62gSZdvdK3PDq6rxtSKv0C3OfQvtaoOa8UBF07QBOpVqJyVopf4XI9DjVencM57QPvGHQ6owPAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
+ by MWHPR11MB1904.namprd11.prod.outlook.com (2603:10b6:300:111::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Tue, 17 May
+ 2022 07:07:30 +0000
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::829:3da:fb91:c8e7]) by BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::829:3da:fb91:c8e7%6]) with mapi id 15.20.5250.018; Tue, 17 May 2022
+ 07:07:30 +0000
+From:   "G, GurucharanX" <gurucharanx.g@intel.com>
+To:     Bernard Zhao <zhaojunkui2008@126.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     "bernard@vivo.com" <bernard@vivo.com>
+Subject: RE: [Intel-wired-lan] [PATCH] intel/i40e: delete if NULL check before
+ dev_kfree_skb
+Thread-Topic: [Intel-wired-lan] [PATCH] intel/i40e: delete if NULL check
+ before dev_kfree_skb
+Thread-Index: AQHYZTzOQMmO4kPqPEi5xAu279lZRq0irvZQ
+Date:   Tue, 17 May 2022 07:07:30 +0000
+Message-ID: <BYAPR11MB3367D27F04977C53C9744AC1FCCE9@BYAPR11MB3367.namprd11.prod.outlook.com>
+References: <20220511065451.655335-1-zhaojunkui2008@126.com>
+In-Reply-To: <20220511065451.655335-1-zhaojunkui2008@126.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1239056c-0d18-4d85-4e9f-08da37d3e858
+x-ms-traffictypediagnostic: MWHPR11MB1904:EE_
+x-microsoft-antispam-prvs: <MWHPR11MB190412D6049158239C937874FCCE9@MWHPR11MB1904.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: nYzhwqfXAwEaC6b8u3pK2JK+UYcBnLPat1Fc6ET6x54GIhLxpjvDNpfJaJDFiUaepQcR7pYlG1JriCqyVv+hZgh14rLrvA5RhcKZ5kQBCMq6XtDJmRY/US/GeFVxY9dXCtjUp/WGRC41csDM5cv5HQgv1iTHgsvCWLKqPrD1spimWufr85Ybo7p4LzxiqweuTKILnEMgD8B0VGdtZoD5GYOTsdwJHhJx8tG6+U/la3tOnYE8vsuSuDRzyF3+riO8VPcAKMe6fb5LBwd0QCdAIVXwybF35kyIN9tWqilqutAuMDiZgyD+V6LgW1m8UEE0+G3iv0AFurg8+ogmBxw7r33LdwflUvJdaV12FkJGb1oKZyaNPJz1Li5g1d5ohpErNKLLvG2kIVaR6AksxUxa3GO+jF7dsBEEBfSj4buJ3siPKlz9LD8TllVMWMqfIZF3flvEk8gH8ijuya26ls++6MTUh3Tc975FoSYR9BoQhkDEvO7Fy4aMfVvbfEh/V4m7hVFfpxD7OmwALaNS6OJSeOTY2uwNuSEk9eDZhUz/pfWbzG55fw1cJ5HZfBoBm+xdjh2HLTkbuKn0B29YD2CDPz1poWu+2s70CsvrkYPg/s1ygQMAWt90nSsUmSz+sgFzqcblI3RzJy291wM3cwNPqqqq/UQJWfcjncSmOA+Vb794ipixCYcOKAHk/aChGKw6k9K2s2lLptkpptSCV/tSsuDCHQaOSemZ3Pze8aBX40U=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(82960400001)(7696005)(38070700005)(921005)(38100700002)(71200400001)(86362001)(83380400001)(66946007)(66446008)(8676002)(4744005)(55016003)(316002)(8936002)(110136005)(2906002)(52536014)(55236004)(53546011)(6506007)(186003)(33656002)(9686003)(26005)(122000001)(66476007)(66556008)(5660300002)(64756008)(4326008)(76116006)(508600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?nRGmhE5umHrkGxvC2ViHkM44N5UHa3cxIhoUZuCXUUwDUUnUkgz/sYkLVcrt?=
+ =?us-ascii?Q?sUvtCUuUFbTJHlSG8QMi0lxAGB7KWK6RCtb6CtpgVpTbMU8GG3V/3mpmThFy?=
+ =?us-ascii?Q?ZE66aL78n0K3/0cPKQFXwX2sr1MovxLzTALq/VNuYpVeS9Y2FhozmtviaYHJ?=
+ =?us-ascii?Q?ib6UKIFNpZZko7O+GNBVuUk+yZ1pSnWsqV9D3hF2XWfTx16BGd0Wmyh7i30p?=
+ =?us-ascii?Q?LwoQxW5jcXHrgepOY2vKBylslYNx/RB2UK0U4Bn0Fh7hEhvIaLItOYlkNSGn?=
+ =?us-ascii?Q?KWZMQfKnIEMoiFbKL7PiVK4aSe4GOzvwd1AF0nxFp8I0jYTtB3KtwG5qsfuf?=
+ =?us-ascii?Q?BmUVadO5UxuSPuSP45e20/3thXNJRBCZiCf7PFCnbHJvWk1I/OVTJr2vMoLd?=
+ =?us-ascii?Q?pE8YsYWJiyxbd9pBkuVta9Jpk9LU0WMhICddCLZqcreEGl2s3aT76ptLPcsc?=
+ =?us-ascii?Q?seb8epjeE/ihxlwhlJZSDMiz72b8dSv0EyukFYi2sJAzRZv46OKWBctdmHU3?=
+ =?us-ascii?Q?uNWdAwIlDMGT5o5RemJPDXBQiz4roOfuKc7SHQBmasDOeWtoygChA3wHtpTj?=
+ =?us-ascii?Q?eXST6LiB52VYrfak9DrVddZLcWF31hRIOJ6tHM8hVKHMcsUyH+eQSqn4yjO3?=
+ =?us-ascii?Q?slZ3r+QPKxPgsP0l2LaFad43OjduwXxjHGuUoKISuhD0/0V5FwgUlK7lRUsP?=
+ =?us-ascii?Q?vO3VdyUYM3ucSXV8oNhNLPVvdibzyk3zS39GFkhlROnK6R/qcncGPuK/5goV?=
+ =?us-ascii?Q?dEG7Glkzch7b2f1hjyKdfFBaBsd2nPhMTn/+rtEiDaDQMFeg8v1FvFCX3UAa?=
+ =?us-ascii?Q?/TqXyZoBPZSfMzED4i5nI8pNZCWEcy8o3otp7YcPC7nSF9YX/Ne7jvkSxN2e?=
+ =?us-ascii?Q?rik9sD79nNtVq650MSV4VBpnDzNDtSXfEuf1RZU9weVNC3Rh2j+h+MuGSTCX?=
+ =?us-ascii?Q?uNiOurIB/Tt7C7c9FS92faIxOAwroAga86kJpWV44rlrxYfcFXxOJDcVK2pG?=
+ =?us-ascii?Q?8/rU9iN+cAIlKbqv4OP+X2z+oZMZCUHdfeG9OvIRPMZylqLVoly5NNWtZeqP?=
+ =?us-ascii?Q?8QZ85lnAq5PYvvRzXo7J6ri8zqk1UXvdmU4YFUCSWu5LCrTeUWGsV/ciBgBd?=
+ =?us-ascii?Q?Z1J1B29xrORmPvGsHmAEBSJofQJuvi9PmOz0R/doVAIjGoSoWCl/j4sYRo62?=
+ =?us-ascii?Q?zeS6VissYWIprjbudNU/aK+4CROwUP2OxGo15oAq1A4fNy3Ql1Nd2sr+ouEh?=
+ =?us-ascii?Q?Jid0XEy3ll4XwQZMrTyM1hNQHVZ6qUeyzf0BDdlNDoXSGl/aC7bQ9ZcSGDy/?=
+ =?us-ascii?Q?yuYJTinTth2XAqGIdveaQXG9+fwd1VbCBxG94VDyYBeMvlzsCuGCxKnFD+AC?=
+ =?us-ascii?Q?jggEqiD347JmKdA9nIr9MGXKbvYa77w2PKmCraJK6qsTDh9Y9k/albjmnu4p?=
+ =?us-ascii?Q?3XkYYNjUVFtSCi+VgTIiHm1bdX+ggKhNgzYLxatQlvi0Dh2IK5EZtGe/9SDJ?=
+ =?us-ascii?Q?1Z+i8RsUiS+IJXWhPbpkOmD3t6R6Wl6i6OR4dpv32iQoSdOQ0MyFJTWGezuY?=
+ =?us-ascii?Q?SgyjRKgE2tDtV2WK3R+o0y3CGF1LuhZQ/aeU2PGS6Hz+u8OVghWLsEfCZ89p?=
+ =?us-ascii?Q?uL6h97sfrNgmsq8rohrJJ/LQo95zX14BOapmDuSvS+uAHoahzTLlH8fOq3h/?=
+ =?us-ascii?Q?smOpe9DR8kA3smFdDV/A4ab+2+qDLFDoW/+oYFkQssFzi5slhB6PNZLiinc8?=
+ =?us-ascii?Q?e+ulnmzV6Q=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1239056c-0d18-4d85-4e9f-08da37d3e858
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2022 07:07:30.1606
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jK9zMhVEi/3pGcDKLmgZWbhMYHB0Z2liXndLJCItl8izYEWGi518y0Q4FwssURAABCTFkiyexF5qaLv6lgNbyw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1904
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bpf trampoline support for arm64. Most of the logic is the same as
-x86.
 
-Tested on raspberry pi 4b and qemu with KASLR disabled (avoid long jump),
-result:
- #9  /1     bpf_cookie/kprobe:OK
- #9  /2     bpf_cookie/multi_kprobe_link_api:FAIL
- #9  /3     bpf_cookie/multi_kprobe_attach_api:FAIL
- #9  /4     bpf_cookie/uprobe:OK
- #9  /5     bpf_cookie/tracepoint:OK
- #9  /6     bpf_cookie/perf_event:OK
- #9  /7     bpf_cookie/trampoline:OK
- #9  /8     bpf_cookie/lsm:OK
- #9         bpf_cookie:FAIL
- #18 /1     bpf_tcp_ca/dctcp:OK
- #18 /2     bpf_tcp_ca/cubic:OK
- #18 /3     bpf_tcp_ca/invalid_license:OK
- #18 /4     bpf_tcp_ca/dctcp_fallback:OK
- #18 /5     bpf_tcp_ca/rel_setsockopt:OK
- #18        bpf_tcp_ca:OK
- #51 /1     dummy_st_ops/dummy_st_ops_attach:OK
- #51 /2     dummy_st_ops/dummy_init_ret_value:OK
- #51 /3     dummy_st_ops/dummy_init_ptr_arg:OK
- #51 /4     dummy_st_ops/dummy_multiple_args:OK
- #51        dummy_st_ops:OK
- #55        fentry_fexit:OK
- #56        fentry_test:OK
- #57 /1     fexit_bpf2bpf/target_no_callees:OK
- #57 /2     fexit_bpf2bpf/target_yes_callees:OK
- #57 /3     fexit_bpf2bpf/func_replace:OK
- #57 /4     fexit_bpf2bpf/func_replace_verify:OK
- #57 /5     fexit_bpf2bpf/func_sockmap_update:OK
- #57 /6     fexit_bpf2bpf/func_replace_return_code:OK
- #57 /7     fexit_bpf2bpf/func_map_prog_compatibility:OK
- #57 /8     fexit_bpf2bpf/func_replace_multi:OK
- #57 /9     fexit_bpf2bpf/fmod_ret_freplace:OK
- #57        fexit_bpf2bpf:OK
- #58        fexit_sleep:OK
- #59        fexit_stress:OK
- #60        fexit_test:OK
- #67        get_func_args_test:OK
- #68        get_func_ip_test:OK
- #104       modify_return:OK
- #237       xdp_bpf2bpf:OK
 
-bpf_cookie/multi_kprobe_link_api and bpf_cookie/multi_kprobe_attach_api
-failed due to lack of multi_kprobe on arm64.
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Bernard Zhao
+> Sent: Wednesday, May 11, 2022 12:25 PM
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+> Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>;
+> intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org
+> Cc: bernard@vivo.com; Bernard Zhao <zhaojunkui2008@126.com>
+> Subject: [Intel-wired-lan] [PATCH] intel/i40e: delete if NULL check befor=
+e
+> dev_kfree_skb
+>=20
+> dev_kfree_skb check if the input parameter NULL and do the right
+> thing, there is no need to check again.
+> This change is to cleanup the code a bit.
+>=20
+> Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>=20
 
-v4:
-- Run the test cases on raspberry pi 4b
-- Rebase and add cookie to trampoline
-- As Steve suggested, move trace_direct_tramp() back to entry-ftrace.S to
-  avoid messing up generic code with architecture specific code
-- As Jakub suggested, merge patch 4 and patch 5 of v3 to provide full function
-  in one patch
-- As Mark suggested, add a comment for the use of aarch64_insn_patch_text_nosync()
-- Do not generate trampoline for long jump to avoid triggering ftrace_bug
-- Round stack size to multiples of 16B to avoid SPAlignmentFault
-- Use callee saved register x20 to reduce the use of mov_i64
-- Add missing BTI J instructions
-- Trivial spelling and code sytle fixes
-
-v3: https://lore.kernel.org/bpf/20220424154028.1698685-1-xukuohai@huawei.com/
-- Append test results for bpf_tcp_ca, dummy_st_ops, fexit_bpf2bpf,
-  xdp_bpf2bpf
-- Support to poke bpf progs
-- Fix return value of arch_prepare_bpf_trampoline() to the total number
-  of bytes instead of number of instructions 
-- Do not check whether CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled in
-  arch_prepare_bpf_trampoline, since the trampoline may be hooked to a bpf
-  prog
-- Restrict bpf_arch_text_poke() to poke bpf text only, as kernel functions
-  are poked by ftrace
-- Rewrite trace_direct_tramp() in inline assembly in trace_selftest.c
-  to avoid messing entry-ftrace.S
-- isolate arch_ftrace_set_direct_caller() with macro
-  CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS to avoid compile error
-  when this macro is disabled
-- Some trivial code sytle fixes
-
-v2: https://lore.kernel.org/bpf/20220414162220.1985095-1-xukuohai@huawei.com/
-- Add Song's ACK
-- Change the multi-line comment in is_valid_bpf_tramp_flags() into net
-  style (patch 3)
-- Fix a deadloop issue in ftrace selftest (patch 2)
-- Replace pt_regs->x0 with pt_regs->orig_x0 in patch 1 commit message 
-- Replace "bpf trampoline" with "custom trampoline" in patch 1, as
-  ftrace direct call is not only used by bpf trampoline.
-
-v1: https://lore.kernel.org/bpf/20220413054959.1053668-1-xukuohai@huawei.com/
-
-Xu Kuohai (6):
-  arm64: ftrace: Add ftrace direct call support
-  ftrace: Fix deadloop caused by direct call in ftrace selftest
-  bpf: Move is_valid_bpf_tramp_flags() to the public trampoline code
-  bpf, arm64: Impelment bpf_arch_text_poke() for arm64
-  bpf, arm64: bpf trampoline for arm64
-  selftests/bpf: Fix trivial typo in fentry_fexit.c
-
- arch/arm64/Kconfig                            |   2 +
- arch/arm64/include/asm/ftrace.h               |  22 +
- arch/arm64/kernel/asm-offsets.c               |   1 +
- arch/arm64/kernel/entry-ftrace.S              |  28 +-
- arch/arm64/net/bpf_jit.h                      |   1 +
- arch/arm64/net/bpf_jit_comp.c                 | 523 +++++++++++++++++-
- arch/x86/net/bpf_jit_comp.c                   |  20 -
- include/linux/bpf.h                           |   6 +
- kernel/bpf/bpf_struct_ops.c                   |   4 +-
- kernel/bpf/trampoline.c                       |  34 +-
- kernel/trace/trace_selftest.c                 |   2 +
- .../selftests/bpf/prog_tests/fentry_fexit.c   |   4 +-
- 12 files changed, 603 insertions(+), 44 deletions(-)
-
--- 
-2.30.2
-
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Int=
+el)
