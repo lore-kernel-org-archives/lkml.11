@@ -2,376 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1616DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BBA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349951AbiEQPtQ (ORCPT
+        id S1349674AbiEQPuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47700 "EHLO
+        Tue, 17 May 2022 11:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234543AbiEQPtN (ORCPT
+        with ESMTP id S234543AbiEQPuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:49:13 -0400
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78684236;
-        Tue, 17 May 2022 08:49:12 -0700 (PDT)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2f863469afbso192617717b3.0;
-        Tue, 17 May 2022 08:49:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VWogli/pW05aFBBg7KsBp0A7vldGxHspbOQvXcRSAFM=;
-        b=i93WRrzkXs+KjXb6GuXX9zKTZeVl27E/vZ4MO7Z6S5FPlVYUMPZHxJ0qV2idvOL/Ws
-         HIvIaT0r3ddV0SqQvhERqN/jzb1n0xcszdK74lrBAvGCRIVi40qqViFdYU0p38YTDUEF
-         CA5E1x1h2hY5YFr0x+W3sAk8ohHKUFwtKdKkTK0cx9W+z2KNA2/bGJPAXhPkvuK8bHHB
-         dyV8MLiv+FscoGvOMkkdfp7oomHZgDSBDDIDnh6a/Kgspai5Fedmfivyw9e8JuZEn0yN
-         06v5+jVzgjpWbaZlzUYNRnKfIn0rJwR1CIf7CniGZ8DO1uMZFOnMyxWqtJvnxFo0HDio
-         gALw==
-X-Gm-Message-State: AOAM53062TACYm4qJpXJGTyuMl5oRRG+nJybg79U/wCZaoy7FnQcXK+q
-        L1RVL2vfQS2rLe05UFuLjsCqfMFtmt+gUEJNNyA=
-X-Google-Smtp-Source: ABdhPJz+VVjgUE0zkQrHgO9YJFE3f4UIkeP8cSUtkZc6vH6YKRwei6tjzDlaCIlEm/jsPuiRZM3A/VYRO9+O+Fm7jS4=
-X-Received: by 2002:a81:91d4:0:b0:2fe:e300:3581 with SMTP id
- i203-20020a8191d4000000b002fee3003581mr14901615ywg.7.1652802551620; Tue, 17
- May 2022 08:49:11 -0700 (PDT)
+        Tue, 17 May 2022 11:50:14 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2048.outbound.protection.outlook.com [40.107.244.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EEB424AE;
+        Tue, 17 May 2022 08:50:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NnjDqMHaChFnmUDADF8UQvVuGgOvT4kxOI22wpoT+9jaVN/s3/5TjGQ5M7tEESyfEt/jFHD+1ReO670a/T5/jdCoIklaC0XFW89PvDRdk24Nr9r+63uzb5cBjqJHVsNserUB3qbvETDbuNo/NUQ0lTQTT54IvwnYg+8pG6KSAep8iLR36SvO8OY5/JKjQvjZtP1zOK9MmePD/omJ4QEC/hByG0uZXZMz6aDQ65DHB2AOHFVrdICrHoaHvjRWbgazfIpH7h++ErlWPTQa+2mgKYu6Eaxiip2IGWajuhkSemYRvl19YeZnOCK0//NsYLamBu7YwDnymfzQ33Yi7LrlHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+AfdnHkrsB8hvOnfwFuh0+FlxbNKsiOVp9HqYS+8yNo=;
+ b=bZtYnvtOlQmYEdGA7DNySe+j+D3MLK8xiz3MaiaIWiabBb1lVD38rbtTp5FeHNLOM8HAKe4polUJMfxWM/16B8YD4sppn853dCASJMz3IfK/xwR8vh5HdUGWijWTMcogXGTtJhoypm3X5+o6X1cEnUlbGJeXo0w73PYiHo9iDjzbezE7duAk9AVSo6o7lavt1dugw3YNJu7PddrvcZT/3sZGyPvJ1qlPW1SabosS+sQA3LIxX4sBFO37xdC9uyzPm5RcR5cfTveSBaXIWJ8OqIuUZY2V/nkF6CONMfmDqAm79pVrROpFxyS+j+Jt4ZnebddADG2v/IbXfXCblBuDFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+AfdnHkrsB8hvOnfwFuh0+FlxbNKsiOVp9HqYS+8yNo=;
+ b=L1hfk3c0rfnfJgbTm4vLxCM3EW16jHp82RpeuLdjAEl39o++gs72kDj+yAwYwPFKqM5H8G30VKRU2w3S9n5hLfc02tNFKwaq9TsAY0Mayoa+vZkJVAguPqEkHJSkQfJA6i9vSh8R4+T7dWifYpaG6jEoeYam826JiZ8J2rguVGg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM5PR12MB1594.namprd12.prod.outlook.com (2603:10b6:4:e::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5250.17; Tue, 17 May 2022 15:50:10 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::db8:5b23:acf0:6f9a]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::db8:5b23:acf0:6f9a%4]) with mapi id 15.20.5250.018; Tue, 17 May 2022
+ 15:50:10 +0000
+Message-ID: <e0d23029-21e9-b1bb-9d35-1bfcdd3dca12@amd.com>
+Date:   Tue, 17 May 2022 10:50:08 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3] crypto: ccp - Use kzalloc for sev ioctl interfaces to
+ prevent kernel memory leak
+Content-Language: en-US
+To:     John Allen <john.allen@amd.com>, herbert@gondor.apana.org.au,
+        linux-crypto@vger.kernel.org
+Cc:     seanjc@google.com, Ashish.Kalra@amd.com,
+        linux-kernel@vger.kernel.org, theflow@google.com,
+        rientjes@google.com, pgonda@google.com, stable@vger.kernel.org
+References: <20220517153958.262959-1-john.allen@amd.com>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <20220517153958.262959-1-john.allen@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH2PR05CA0025.namprd05.prod.outlook.com (2603:10b6:610::38)
+ To DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
 MIME-Version: 1.0
-References: <20220426221523.3056696-1-daniel.lezcano@linexp.org> <20220426221523.3056696-11-daniel.lezcano@linexp.org>
-In-Reply-To: <20220426221523.3056696-11-daniel.lezcano@linexp.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 17 May 2022 17:49:00 +0200
-Message-ID: <CAJZ5v0gU2DKN8=Me0=fwKLC-ZOL=W4dPaSCpBWO+3FQfMVGgXA@mail.gmail.com>
-Subject: Re: [PATCH 10/15] thermal/core: Rename trips to ntrips
-To:     Daniel Lezcano <daniel.lezcano@linexp.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Alexandre Bailon <abailon@baylibre.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3fc66352-9727-45ad-3f5d-08da381cec33
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1594:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB159463404095B82503F36105ECCE9@DM5PR12MB1594.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: llMoM5ImIkLM2lKy/msPo7ItNp23dzzSR8hHlZWRINcTnfxi34uJfhLSrD63iFgHaErJbira+0e2kcrT37QfvjB52fmbs5XQCZekQQRya3oh9UFCKSXPlkcBlel2hdM71Y1PQ/kqTnY8MUVpeA7l6PhjxfSdoOt66+mX+C20XcqESe6DrEfhjN3e1YGk5OMJT4rUzvia4Cj98HX4TbwOW4woJD4YbOuuPTtvIcXNZlslPTN6NsWUMQyDcZ3BVvIFH6CoTGw9TaxBr8atbY8NrdbJRg8IU7rZ7QXZvCsdnTayXui4ZWgGqzeV/g6CQBA9omSLTJejUDP3YqPcd8D+BH3IaYJ0A30dXPHAjeuxTjXkTUy/060KMl3ha4FKL72Zi4Kdt+OV1edb6yL318e0a7QAU4hYSngyQP2LPAht3xomUd7B2hyLxVlvLx9q4zeZRDXK3LMtqFj4ev4r2f1lub/cZaBZbqw0vkUVq1ssglpbfh3mhX7+3ij5FWOy4o5PnVB4sZ/NhpkMEfkByTEdSrAUo2GHVi7V8ElMMaOUNBB71gyRGXYToEJfYmGvTTR+cjQD3lpy+7Cvf7RiuQl/6JkxxiZXeGGbP2LvgBbGOhV2tIp2J94yxlLEpiTmaP8VmsdxnziU1YKS0nw/v27bm1cWYTFoY+InDiwpU8Q8bMIVeGSL/OmJ+fbxF2pQn3vh8PCeUQcNz6cO+y9qhz94McED5JZf8bDcj8KJoI/4vsEXu4e49o5lx9mCtbx6Z/zk
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(2616005)(2906002)(4326008)(31696002)(186003)(66476007)(66946007)(31686004)(5660300002)(66556008)(36756003)(53546011)(6506007)(83380400001)(508600001)(6512007)(6486002)(316002)(86362001)(38100700002)(8936002)(26005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V2ZjQ0Y4YjdZRS8wWkxDbGRYeVJPdU9EL3NGV3NQRHBrR3kyS0VJMUZNMjhY?=
+ =?utf-8?B?SGFqK3E5YnB1RmNmV1Z2QXIybk5RZS9HVTZDajZGYTRFMmM0dHBlYUJxVFQ1?=
+ =?utf-8?B?U2xLTDRKamMyQTdaRWlpcVhpU3BrR0x4RVpwdXQ4N0tKZ2pwbXV1Y2xjc0Nw?=
+ =?utf-8?B?d0NyYzkreWRnMUZMTFNobFp4VHg3dVlGMVdIaHZvNk45dWgxcHNmTlhOVkI5?=
+ =?utf-8?B?NFdEeXJDQXN3ajllSFRBNkh3bHlzNmN0UndJa0NwRlpqR09jejVuOCs2ak1k?=
+ =?utf-8?B?Sjhza2lRWXIrOFNNNis1VmNpTjIvcFE2b21KUzNIamRVVlgxQm5DMkw3YUFT?=
+ =?utf-8?B?eEZJTDRjYTI4Ykd3SXYvemVuMlNuSTNvU2tKWTRGVXpMR09xbDRkODBNa3dU?=
+ =?utf-8?B?SWNmZnBXVS8vaG95Ykoxd0ZpWjZUV2x1dzExUWttY2VrenlkclFEYkY4d2Zq?=
+ =?utf-8?B?T2k3QU02YXVrWFVuaS9yWkxSa3FRYThXdkc2T2d4dE9YcGswYTNuWGswZU1T?=
+ =?utf-8?B?bCtBYUNpQmkvTW9iKzI2anlqNVR0dElJZFM5WGc5VWt1SHVKN2Z0U1RtMHRB?=
+ =?utf-8?B?cjhrOUJSNGZGc0IvZk90cUVSY3RoK3llUysyTlhVandrNU5oUnUxeS9oc040?=
+ =?utf-8?B?NlV3S3FSSHVoWmE3Tmx2elFvV1JZNnNpOURnWmdUdDBoYTlXRE5vbjIyaUpO?=
+ =?utf-8?B?YlF5YmdiNk5QRENRTVpYZnMyRktISmFLa0plUGN6bjh2OGtDWWxpK0dPMUhD?=
+ =?utf-8?B?dGxhRjQ2THpZS2VQenVxNHNDMGozeVNnVDA1UGc1dWlBSXJreCtlaVZJWmpV?=
+ =?utf-8?B?ZE4vdFlzbXR0dmpVdFFEc2twSkdFNFd2cGc1bU5JMlAzVk54SkNKaUZKdWRE?=
+ =?utf-8?B?Uk40cm9kZGl3U1ZxUkdZQnQ5RnQ0TU1SODA4YW5xSlZrWHFhZEw5YThaOHlp?=
+ =?utf-8?B?dU9DNlNEREJPT0ZWU1ZZcUNVQlZDQjhteWdqRWZTamZRRWhyRVZtRHFsc1VL?=
+ =?utf-8?B?dFV1YXNnSGFWK3NxM0VFcHpBS052S01xb0ZQa1hqSjZ4MnNmTTFqSldCenhr?=
+ =?utf-8?B?cVZML0tvdE9TTVBTR1hiV3VEbExiN09RR2lobU5jZk5sWDZjajBQRndtRmxL?=
+ =?utf-8?B?djNnRXEyZzcyb0ZNb0owUWh2cU1kMytyYXZ6eFhoRWYvNUsrclUraHJtNDQz?=
+ =?utf-8?B?RGltbTVjcWdxandVQ3JVcW5SWUhWSUpEdHVvdndnOU5PQXFLeFlVQVk2VzJj?=
+ =?utf-8?B?MWU3ZmNNU1JDRWNVbVNrQ3JFbXNRU05GUnJ3bndhS05UWkNLaW5HVkxtM0RO?=
+ =?utf-8?B?ZVZTT1UwbU1Lb2R3b1RkWE1uMGI1YWdvRkpGamZxUGE1emJsQzJOemN0dHQ4?=
+ =?utf-8?B?VDJjLzBlUHlEcjQ4QXQvY0ZFTnVpMjIzblBkMnpmMEYvbEI5ekNQbHBNZzJ2?=
+ =?utf-8?B?L3hYTmZtVlhCeWJFNWRIelhIWG55R044Nll5b0RQUjcvYkgyem1aSkMwK1NJ?=
+ =?utf-8?B?NlhpaWNWOVN4eS93ellaLzYzNDBkUFE0UWc4NG51dGUwTURBMzlkb1FoUG44?=
+ =?utf-8?B?NE92TjloSDlzQlJrdEtMRjdWOCs4akhtNzcyOGtRM2o3Z1ZnU2Y1d3FPc1RV?=
+ =?utf-8?B?VmVYdDVpb0VCR0d0TS9pTWgyMEN1c2F6dGFlRHlmZHFvaDBTMnBRQnE3aTlE?=
+ =?utf-8?B?ZXlaKzVQUllzRmJ0VE5xTHNnSDdjbDg4OVA4bTFIQ1FqK0xJSGp4RmUwR3I5?=
+ =?utf-8?B?ZUhIN3hQZnFaK2V6VW9JcVNwRGZrVWNUS0tkVTgvV3h3ZFdhZlB0SC91UDdz?=
+ =?utf-8?B?QkVaU3BsWENOS0p6VzhMRnNNc3ZXamFDMjVrd3hVMllUb2FNQ096dXJaK0Rm?=
+ =?utf-8?B?U0c4b2tpLzhuU2lDaTNqMkczcTBRb3VYcGF2S0QyM0FIVXIxYXJXU2dKNHNY?=
+ =?utf-8?B?emJobG50ZERqVVRIRklEM0o0cnVDV0Q1TitlckZ0Zm9rYTJIOHhmUm1yemlP?=
+ =?utf-8?B?eTZFb0dSTWxDd0ZFdkJ0T3hCWFpnb0RXZzBEcGJCcWFocFcwbTUxWHYvTExx?=
+ =?utf-8?B?ZnZuYlF6WUFOc0VodWtZUGl3WXI0TEN4WTk2VHk0UkxmQy9XTXBXbWVPRDFn?=
+ =?utf-8?B?b1MwM0dzM0lxdFdWRDhwdGxYMlRSbHEwRDVYVmM4ZEQ0MThRZUVyaTFla21I?=
+ =?utf-8?B?L0FTWjNlR0J5TVZNSVowMGg0UVRyalBGUHRMellKMDBibExZOHlOZGd5bW5z?=
+ =?utf-8?B?My9IMDlCUm5pNnlBTS9vNFd0TG9Kdll2RE9pYkt0L2F3T2NwMzdacVF2RG9I?=
+ =?utf-8?B?aS9JOVpQVUhaa0RINU1wUGRTZ0d5SXUzcCtndnQ0eWdTNW9Nc2Q0Zz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3fc66352-9727-45ad-3f5d-08da381cec33
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2022 15:50:10.0461
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: h0AeKZuDEftdFj7EIjJpsoRrYtC1LlniZJOt+xnL3wpeRp9LgIPRSZbTK5xVttMa06zcmU1a0k55iwLJcP6f0w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1594
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 12:15 AM Daniel Lezcano
-<daniel.lezcano@linexp.org> wrote:
->
-> In order to use thermal trips defined in the thermal structure, rename
-> the 'trips' field to 'ntrips' to have the 'trips' field containing the
-> thermal trip points.
-
-So I would call this trips_count.
-
->
-> Cc: Alexandre Bailon <abailon@baylibre.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc; Eduardo Valentin <eduval@amazon.com>
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+On 5/17/22 10:39, John Allen wrote:
+> For some sev ioctl interfaces, input may be passed that is less than or
+> equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data that PSP
+> firmware returns. In this case, kmalloc will allocate memory that is the
+> size of the input rather than the size of the data. Since PSP firmware
+> doesn't fully overwrite the buffer, the sev ioctl interfaces with the
+> issue may return uninitialized slab memory.
+> 
+> Currently, all of the ioctl interfaces in the ccp driver are safe, but
+> to prevent future problems, change all ioctl interfaces that allocate
+> memory with kmalloc to use kzalloc and memset the data buffer to zero in
+> sev_ioctl_do_platform_status.
+> 
+> Fixes: e799035609e15 ("crypto: ccp: Implement SEV_PEK_CSR ioctl command")
+> Fixes: 76a2b524a4b1d ("crypto: ccp: Implement SEV_PDH_CERT_EXPORT ioctl command")
+> Fixes: d6112ea0cb344 ("crypto: ccp - introduce SEV_GET_ID2 command")
+> Cc: stable@vger.kernel.org
+> Reported-by: Andy Nguyen <theflow@google.com>
+> Suggested-by: David Rientjes <rientjes@google.com>
+> Suggested-by: Peter Gonda <pgonda@google.com>
+> Signed-off-by: John Allen <john.allen@amd.com>
 > ---
->  drivers/thermal/gov_fair_share.c        |  6 +++---
->  drivers/thermal/gov_power_allocator.c   |  4 ++--
->  drivers/thermal/tegra/tegra30-tsensor.c |  2 +-
->  drivers/thermal/thermal_core.c          | 20 ++++++++++----------
->  drivers/thermal/thermal_helpers.c       |  4 ++--
->  drivers/thermal/thermal_netlink.c       |  2 +-
->  drivers/thermal/thermal_sysfs.c         | 22 +++++++++++-----------
->  include/linux/thermal.h                 |  2 +-
->  8 files changed, 31 insertions(+), 31 deletions(-)
->
-> diff --git a/drivers/thermal/gov_fair_share.c b/drivers/thermal/gov_fair_share.c
-> index 3ce42a8e9dbd..82a89465a614 100644
-> --- a/drivers/thermal/gov_fair_share.c
-> +++ b/drivers/thermal/gov_fair_share.c
-> @@ -25,10 +25,10 @@ static int get_trip_level(struct thermal_zone *tz)
->         int trip_temp;
->         enum thermal_trip_type trip_type;
->
-> -       if (tz->trips == 0 || !tz->sensor.ops->get_trip_temp)
-> +       if (tz->ntrips == 0 || !tz->sensor.ops->get_trip_temp)
->                 return 0;
->
-> -       for (count = 0; count < tz->trips; count++) {
-> +       for (count = 0; count < tz->ntrips; count++) {
->                 tz->sensor.ops->get_trip_temp(tz, count, &trip_temp);
->                 if (tz->temperature < trip_temp)
->                         break;
-> @@ -53,7 +53,7 @@ static long get_target_state(struct thermal_zone *tz,
->
->         cdev->ops->get_max_state(cdev, &max_state);
->
-> -       return (long)(percentage * level * max_state) / (100 * tz->trips);
-> +       return (long)(percentage * level * max_state) / (100 * tz->ntrips);
->  }
->
->  /**
-> diff --git a/drivers/thermal/gov_power_allocator.c b/drivers/thermal/gov_power_allocator.c
-> index 448baaa642a5..3385e8345f73 100644
-> --- a/drivers/thermal/gov_power_allocator.c
-> +++ b/drivers/thermal/gov_power_allocator.c
-> @@ -527,7 +527,7 @@ static void get_governor_trips(struct thermal_zone *tz,
->         last_active = INVALID_TRIP;
->         last_passive = INVALID_TRIP;
->
-> -       for (i = 0; i < tz->trips; i++) {
-> +       for (i = 0; i < tz->ntrips; i++) {
->                 enum thermal_trip_type type;
->                 int ret;
->
-> @@ -668,7 +668,7 @@ static int power_allocator_bind(struct thermal_zone *tz)
->
->         get_governor_trips(tz, params);
->
-> -       if (tz->trips > 0) {
-> +       if (tz->ntrips > 0) {
->                 ret = tz->sensor.ops->get_trip_temp(tz,
->                                                     params->trip_max_desired_temperature,
->                                                     &control_temp);
-> diff --git a/drivers/thermal/tegra/tegra30-tsensor.c b/drivers/thermal/tegra/tegra30-tsensor.c
-> index ad35a9694845..2678f2111070 100644
-> --- a/drivers/thermal/tegra/tegra30-tsensor.c
-> +++ b/drivers/thermal/tegra/tegra30-tsensor.c
-> @@ -316,7 +316,7 @@ static void tegra_tsensor_get_hw_channel_trips(struct thermal_zone *tzd,
->         *hot_trip  = 85000;
->         *crit_trip = 90000;
->
-> -       for (i = 0; i < tzd->trips; i++) {
-> +       for (i = 0; i < tzd->ntrips; i++) {
->                 enum thermal_trip_type type;
->                 int trip_temp;
->
-> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-> index e741c932236e..79cb9e0a7229 100644
-> --- a/drivers/thermal/thermal_core.c
-> +++ b/drivers/thermal/thermal_core.c
-> @@ -505,7 +505,7 @@ void thermal_zone_update(struct thermal_zone *tz,
->
->         tz->notify_event = event;
->
-> -       for (count = 0; count < tz->trips; count++)
-> +       for (count = 0; count < tz->ntrips; count++)
->                 handle_thermal_trip(tz, count);
->  }
->  EXPORT_SYMBOL_GPL(thermal_zone_update);
-> @@ -630,7 +630,7 @@ int thermal_zone_bind_cooling_device(struct thermal_zone *tz,
->         unsigned long max_state;
->         int result, ret;
->
-> -       if (trip >= tz->trips || trip < 0)
-> +       if (trip >= tz->ntrips || trip < 0)
->                 return -EINVAL;
->
->         list_for_each_entry(pos1, &thermal_tz_list, node) {
-> @@ -811,7 +811,7 @@ static void __bind(struct thermal_zone *tz, int mask,
->  {
->         int i, ret;
->
-> -       for (i = 0; i < tz->trips; i++) {
-> +       for (i = 0; i < tz->ntrips; i++) {
->                 if (mask & (1 << i)) {
->                         unsigned long upper, lower;
->
-> @@ -1056,7 +1056,7 @@ static void __unbind(struct thermal_zone *tz, int mask,
->  {
->         int i;
->
-> -       for (i = 0; i < tz->trips; i++)
-> +       for (i = 0; i < tz->ntrips; i++)
->                 if (mask & (1 << i))
->                         thermal_zone_unbind_cooling_device(tz, i, cdev);
->  }
-> @@ -1168,7 +1168,7 @@ static void thermal_set_delay_jiffies(unsigned long *delay_jiffies, int delay_ms
->  /**
->   * thermal_zone_register() - register a new thermal zone device
->   * @type:      the thermal zone device type
-> - * @trips:     the number of trip points the thermal zone support
-> + * @ntrips:    the number of trip points the thermal zone support
->   * @mask:      a bit string indicating the writeablility of trip points
->   * @devdata:   private device data
->   * @ops:       standard thermal zone device callbacks
-> @@ -1190,7 +1190,7 @@ static void thermal_set_delay_jiffies(unsigned long *delay_jiffies, int delay_ms
->   * IS_ERR*() helpers.
->   */
->  struct thermal_zone *
-> -thermal_zone_register(const char *type, int trips, int mask,
-> +thermal_zone_register(const char *type, int ntrips, int mask,
->                              void *devdata, struct thermal_sensor_ops *ops,
->                              struct thermal_zone_params *tzp, int passive_delay,
->                              int polling_delay)
-> @@ -1214,7 +1214,7 @@ thermal_zone_register(const char *type, int trips, int mask,
->                 return ERR_PTR(-EINVAL);
->         }
->
-> -       if (trips > THERMAL_MAX_TRIPS || trips < 0 || mask >> trips) {
-> +       if (ntrips > THERMAL_MAX_TRIPS || ntrips < 0 || mask >> ntrips) {
->                 pr_err("Incorrect number of thermal trips\n");
->                 return ERR_PTR(-EINVAL);
->         }
-> @@ -1224,7 +1224,7 @@ thermal_zone_register(const char *type, int trips, int mask,
->                 return ERR_PTR(-EINVAL);
->         }
->
-> -       if (trips > 0 && (!ops->get_trip_type || !ops->get_trip_temp))
-> +       if (ntrips > 0 && (!ops->get_trip_type || !ops->get_trip_temp))
->                 return ERR_PTR(-EINVAL);
->
->         tz = kzalloc(sizeof(*tz), GFP_KERNEL);
-> @@ -1254,7 +1254,7 @@ thermal_zone_register(const char *type, int trips, int mask,
->         tz->tzp = tzp;
->         tz->device.class = &thermal_class;
->         tz->devdata = devdata;
-> -       tz->trips = trips;
-> +       tz->ntrips = ntrips;
->
->         thermal_set_delay_jiffies(&tz->passive_delay_jiffies, passive_delay);
->         thermal_set_delay_jiffies(&tz->polling_delay_jiffies, polling_delay);
-> @@ -1272,7 +1272,7 @@ thermal_zone_register(const char *type, int trips, int mask,
->         if (result)
->                 goto release_device;
->
-> -       for (count = 0; count < trips; count++) {
-> +       for (count = 0; count < ntrips; count++) {
->                 if (tz->sensor.ops->get_trip_type(tz, count, &trip_type) ||
->                     tz->sensor.ops->get_trip_temp(tz, count, &trip_temp) ||
->                     !trip_temp)
-> diff --git a/drivers/thermal/thermal_helpers.c b/drivers/thermal/thermal_helpers.c
-> index aa687dee4d64..183bbec4d492 100644
-> --- a/drivers/thermal/thermal_helpers.c
-> +++ b/drivers/thermal/thermal_helpers.c
-> @@ -89,7 +89,7 @@ int thermal_zone_get_temp(struct thermal_zone *tz, int *temp)
->         ret = tz->sensor.ops->get_temp(tz, temp);
->
->         if (IS_ENABLED(CONFIG_THERMAL_EMULATION) && tz->emul_temperature) {
-> -               for (count = 0; count < tz->trips; count++) {
-> +               for (count = 0; count < tz->ntrips; count++) {
->                         ret = tz->sensor.ops->get_trip_type(tz, count, &type);
->                         if (!ret && type == THERMAL_TRIP_CRITICAL) {
->                                 ret = tz->sensor.ops->get_trip_temp(tz, count,
-> @@ -137,7 +137,7 @@ void thermal_zone_set_trips(struct thermal_zone *tz)
->         if (!tz->sensor.ops->set_trips || !tz->sensor.ops->get_trip_hyst)
->                 goto exit;
->
-> -       for (i = 0; i < tz->trips; i++) {
-> +       for (i = 0; i < tz->ntrips; i++) {
->                 int trip_low;
->
->                 tz->sensor.ops->get_trip_temp(tz, i, &trip_temp);
-> diff --git a/drivers/thermal/thermal_netlink.c b/drivers/thermal/thermal_netlink.c
-> index 0e95f113d525..0b770af9aab3 100644
-> --- a/drivers/thermal/thermal_netlink.c
-> +++ b/drivers/thermal/thermal_netlink.c
-> @@ -469,7 +469,7 @@ static int thermal_genl_cmd_tz_get_trip(struct param *p)
->
->         mutex_lock(&tz->lock);
->
-> -       for (i = 0; i < tz->trips; i++) {
-> +       for (i = 0; i < tz->ntrips; i++) {
->
->                 enum thermal_trip_type type;
->                 int temp, hyst = 0;
-> diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
-> index 33d8c9f47990..63ea7aad3217 100644
-> --- a/drivers/thermal/thermal_sysfs.c
-> +++ b/drivers/thermal/thermal_sysfs.c
-> @@ -416,15 +416,15 @@ static int create_trip_attrs(struct thermal_zone *tz, int mask)
->         int indx;
->
->         /* This function works only for zones with at least one trip */
-> -       if (tz->trips <= 0)
-> +       if (tz->ntrips <= 0)
->                 return -EINVAL;
->
-> -       tz->trip_type_attrs = kcalloc(tz->trips, sizeof(*tz->trip_type_attrs),
-> +       tz->trip_type_attrs = kcalloc(tz->ntrips, sizeof(*tz->trip_type_attrs),
->                                       GFP_KERNEL);
->         if (!tz->trip_type_attrs)
->                 return -ENOMEM;
->
-> -       tz->trip_temp_attrs = kcalloc(tz->trips, sizeof(*tz->trip_temp_attrs),
-> +       tz->trip_temp_attrs = kcalloc(tz->ntrips, sizeof(*tz->trip_temp_attrs),
->                                       GFP_KERNEL);
->         if (!tz->trip_temp_attrs) {
->                 kfree(tz->trip_type_attrs);
-> @@ -432,7 +432,7 @@ static int create_trip_attrs(struct thermal_zone *tz, int mask)
->         }
->
->         if (tz->sensor.ops->get_trip_hyst) {
-> -               tz->trip_hyst_attrs = kcalloc(tz->trips,
-> +               tz->trip_hyst_attrs = kcalloc(tz->ntrips,
->                                               sizeof(*tz->trip_hyst_attrs),
->                                               GFP_KERNEL);
->                 if (!tz->trip_hyst_attrs) {
-> @@ -442,7 +442,7 @@ static int create_trip_attrs(struct thermal_zone *tz, int mask)
->                 }
->         }
->
-> -       attrs = kcalloc(tz->trips * 3 + 1, sizeof(*attrs), GFP_KERNEL);
-> +       attrs = kcalloc(tz->ntrips * 3 + 1, sizeof(*attrs), GFP_KERNEL);
->         if (!attrs) {
->                 kfree(tz->trip_type_attrs);
->                 kfree(tz->trip_temp_attrs);
-> @@ -451,7 +451,7 @@ static int create_trip_attrs(struct thermal_zone *tz, int mask)
->                 return -ENOMEM;
->         }
->
-> -       for (indx = 0; indx < tz->trips; indx++) {
-> +       for (indx = 0; indx < tz->ntrips; indx++) {
->                 /* create trip type attribute */
->                 snprintf(tz->trip_type_attrs[indx].name, THERMAL_NAME_LENGTH,
->                          "trip_point_%d_type", indx);
-> @@ -478,7 +478,7 @@ static int create_trip_attrs(struct thermal_zone *tz, int mask)
->                         tz->trip_temp_attrs[indx].attr.store =
->                                                         trip_point_temp_store;
->                 }
-> -               attrs[indx + tz->trips] = &tz->trip_temp_attrs[indx].attr.attr;
-> +               attrs[indx + tz->ntrips] = &tz->trip_temp_attrs[indx].attr.attr;
->
->                 /* create Optional trip hyst attribute */
->                 if (!tz->sensor.ops->get_trip_hyst)
-> @@ -496,10 +496,10 @@ static int create_trip_attrs(struct thermal_zone *tz, int mask)
->                         tz->trip_hyst_attrs[indx].attr.store =
->                                         trip_point_hyst_store;
->                 }
-> -               attrs[indx + tz->trips * 2] =
-> +               attrs[indx + tz->ntrips * 2] =
->                                         &tz->trip_hyst_attrs[indx].attr.attr;
->         }
-> -       attrs[tz->trips * 3] = NULL;
-> +       attrs[tz->ntrips * 3] = NULL;
->
->         tz->trips_attribute_group.attrs = attrs;
->
-> @@ -540,7 +540,7 @@ int thermal_zone_create_device_groups(struct thermal_zone *tz,
->         for (i = 0; i < size - 2; i++)
->                 groups[i] = thermal_zone_attribute_groups[i];
->
-> -       if (tz->trips) {
-> +       if (tz->ntrips) {
->                 result = create_trip_attrs(tz, mask);
->                 if (result) {
->                         kfree(groups);
-> @@ -561,7 +561,7 @@ void thermal_zone_destroy_device_groups(struct thermal_zone *tz)
->         if (!tz)
->                 return;
->
-> -       if (tz->trips)
-> +       if (tz->ntrips)
->                 destroy_trip_attrs(tz);
->
->         kfree(tz->device.groups);
-> diff --git a/include/linux/thermal.h b/include/linux/thermal.h
-> index c3bd01ac4cb0..e58a2f053e1c 100644
-> --- a/include/linux/thermal.h
-> +++ b/include/linux/thermal.h
-> @@ -170,7 +170,7 @@ struct thermal_zone {
->         struct thermal_attr *trip_hyst_attrs;
->         enum thermal_device_mode mode;
->         void *devdata;
-> -       int trips;
-> +       int ntrips;
->         unsigned long trips_disabled;   /* bitmap for disabled trips */
->         unsigned long passive_delay_jiffies;
->         unsigned long polling_delay_jiffies;
-> --
-> 2.25.1
->
+> v2:
+>    - Add fixes tags and CC stable@vger.kernel.org
+> v3:
+>    - memset data buffer to zero in sev_ioctl_do_platform_status
+> ---
+>   drivers/crypto/ccp/sev-dev.c | 10 ++++++----
+>   1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+> index 6ab93dfd478a..da143cc3a8f5 100644
+> --- a/drivers/crypto/ccp/sev-dev.c
+> +++ b/drivers/crypto/ccp/sev-dev.c
+> @@ -551,6 +551,8 @@ static int sev_ioctl_do_platform_status(struct sev_issue_cmd *argp)
+>   	struct sev_user_data_status data;
+>   	int ret;
+>   
+> +	memset(&data, 0, sizeof(data));
+> +
+
+Probably needs an additional Fixes: tag now?
+
+Fixes: 38103671aad3 ("crypto: ccp: Use the stack and common buffer for status commands")
+
+Thanks,
+Tom
+
+>   	ret = __sev_do_cmd_locked(SEV_CMD_PLATFORM_STATUS, &data, &argp->error);
+>   	if (ret)
+>   		return ret;
+> @@ -604,7 +606,7 @@ static int sev_ioctl_do_pek_csr(struct sev_issue_cmd *argp, bool writable)
+>   	if (input.length > SEV_FW_BLOB_MAX_SIZE)
+>   		return -EFAULT;
+>   
+> -	blob = kmalloc(input.length, GFP_KERNEL);
+> +	blob = kzalloc(input.length, GFP_KERNEL);
+>   	if (!blob)
+>   		return -ENOMEM;
+>   
+> @@ -828,7 +830,7 @@ static int sev_ioctl_do_get_id2(struct sev_issue_cmd *argp)
+>   	input_address = (void __user *)input.address;
+>   
+>   	if (input.address && input.length) {
+> -		id_blob = kmalloc(input.length, GFP_KERNEL);
+> +		id_blob = kzalloc(input.length, GFP_KERNEL);
+>   		if (!id_blob)
+>   			return -ENOMEM;
+>   
+> @@ -947,14 +949,14 @@ static int sev_ioctl_do_pdh_export(struct sev_issue_cmd *argp, bool writable)
+>   	if (input.cert_chain_len > SEV_FW_BLOB_MAX_SIZE)
+>   		return -EFAULT;
+>   
+> -	pdh_blob = kmalloc(input.pdh_cert_len, GFP_KERNEL);
+> +	pdh_blob = kzalloc(input.pdh_cert_len, GFP_KERNEL);
+>   	if (!pdh_blob)
+>   		return -ENOMEM;
+>   
+>   	data.pdh_cert_address = __psp_pa(pdh_blob);
+>   	data.pdh_cert_len = input.pdh_cert_len;
+>   
+> -	cert_blob = kmalloc(input.cert_chain_len, GFP_KERNEL);
+> +	cert_blob = kzalloc(input.cert_chain_len, GFP_KERNEL);
+>   	if (!cert_blob) {
+>   		ret = -ENOMEM;
+>   		goto e_free_pdh;
