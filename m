@@ -2,54 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9167CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88851C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345500AbiEQPm5 (ORCPT
+        id S1350625AbiEQPnC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
+        Tue, 17 May 2022 11:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350474AbiEQPlf (ORCPT
+        with ESMTP id S1350537AbiEQPll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:41:35 -0400
+        Tue, 17 May 2022 11:41:41 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2C54130C;
-        Tue, 17 May 2022 08:41:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E20541312;
+        Tue, 17 May 2022 08:41:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652802094; x=1684338094;
+  t=1652802100; x=1684338100;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=bybU1LR0dCz2wUxGc5274gqzruD0/zCUSImGb6leP60=;
-  b=iWcp+zC12TwmnePKVb1g5rCzNWbAWU3rL31d6cz6+Aw+UCXFWy2cTFKc
-   WgiU+TANlGTzzhTR2pvb/YeKv16nSZXOQ1KdJx0LjXAKjmd+z3ho8Reno
-   X4E7/KtteIgAihwNIG+hpgwviHA9cVTCMKi08VPNqvgZnAOnb77PwSmRg
-   cb3yvJzo+oOtIeuW2TSdh8C1Zh1e8xDbAnHEHUpWSNIRU2FMNJ59Xpu48
-   /RQfJ+BgE+ABVxCgMLnHiq3d9nacAOe3RvGhi5XiXioCWC84c1kvvNF7D
-   HIEAzTrD6iItVKlb9BXlNLqozIMsQAIFqgD9exOlWdTIG+v1ZWqmX1hbF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632094"
+  bh=STQFum0/F5thK1+ZnYkq73Joe3larBz4vqtOK4/IDZk=;
+  b=nbQKXlqstyZCw+wIilutWOUIa0VNdmGmK/HYgGuzE4BxEY+v4M6NS20e
+   Igk3pu5tK7P/CRg7EaK+vi0vFy4ORbXulsQv8bB8MrS5yjT3jeSVpY7Ua
+   WvsPr7DMVJcAWbW7M7+4Age3TUjFj+VY3Vcan8UcE6YBIr4QsgTJTPRWK
+   e5MBPS+mOyXcc5BtyPY0Cc0ZsRniObCnt9nJK2/Q4yuoeWsVzdqpMtIws
+   TFXgkYgAuc2DI2H23VJGnK3iBkEhiDsEfRsg3f5ES8sFE1LG6OTOUla02
+   aTwMs5qpuVURPXswaXujUjxZWNflQ5jBA/FfOtO4Ut91clqvnNCs2nf3+
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632116"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="357632094"
+   d="scan'208";a="357632116"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:33 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:36 -0700
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="626533554"
+   d="scan'208";a="626533607"
 Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:32 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:35 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com,
         kan.liang@linux.intel.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Like Xu <like.xu@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v12 02/16] perf/x86/lbr: Simplify the exposure check for the LBR_INFO registers
-Date:   Tue, 17 May 2022 11:40:46 -0400
-Message-Id: <20220517154100.29983-3-weijiang.yang@intel.com>
+Cc:     Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v12 14/16] KVM: x86/vmx: Flip Arch LBREn bit on guest state change
+Date:   Tue, 17 May 2022 11:40:58 -0400
+Message-Id: <20220517154100.29983-15-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220517154100.29983-1-weijiang.yang@intel.com>
 References: <20220517154100.29983-1-weijiang.yang@intel.com>
@@ -59,38 +56,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <like.xu@linux.intel.com>
+Per spec:"IA32_LBR_CTL.LBREn is saved and cleared on #SMI, and restored
+on RSM. On a warm reset, all LBR MSRs, including IA32_LBR_DEPTH, have their
+values preserved. However, IA32_LBR_CTL.LBREn is cleared to 0, disabling
+LBRs." At guest SMM entry, store guest IA32_LBR_CTL in SMRAM and clear LBREn
+in VMCS, do reverse things at SMM exit. Also clear LBREn at warm reset.
 
-The x86_pmu.lbr_info is 0 unless explicitly initialized, so there's
-no point checking x86_pmu.intel_cap.lbr_format.
-
-Cc: Peter Zijlstra <peterz@infradead.org>
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Signed-off-by: Like Xu <like.xu@linux.intel.com>
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 ---
- arch/x86/events/intel/lbr.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/x86/kvm/vmx/vmx.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-index fe1742c4ca49..4529ce448b2e 100644
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -1874,12 +1874,10 @@ void __init intel_pmu_arch_lbr_init(void)
-  */
- int x86_perf_get_lbr(struct x86_pmu_lbr *lbr)
- {
--	int lbr_fmt = x86_pmu.intel_cap.lbr_format;
--
- 	lbr->nr = x86_pmu.lbr_nr;
- 	lbr->from = x86_pmu.lbr_from;
- 	lbr->to = x86_pmu.lbr_to;
--	lbr->info = (lbr_fmt == LBR_FORMAT_INFO) ? x86_pmu.lbr_info : 0;
-+	lbr->info = x86_pmu.lbr_info;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 7dfa961d6829..9b2f84998b45 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -4674,6 +4674,8 @@ static void vmx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	if (!init_event) {
+ 		if (static_cpu_has(X86_FEATURE_ARCH_LBR))
+ 			vmcs_write64(GUEST_IA32_LBR_CTL, 0);
++	} else {
++		disable_arch_lbr_ctl(vcpu);
+ 	}
+ }
  
+@@ -7796,6 +7798,8 @@ static int vmx_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+ 
+ static int vmx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+ {
++	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
++	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 
+ 	vmx->nested.smm.guest_mode = is_guest_mode(vcpu);
+@@ -7805,11 +7809,22 @@ static int vmx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+ 	vmx->nested.smm.vmxon = vmx->nested.vmxon;
+ 	vmx->nested.vmxon = false;
+ 	vmx_clear_hlt(vcpu);
++
++	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
++	    test_bit(INTEL_PMC_IDX_FIXED_VLBR, pmu->pmc_in_use) &&
++	    lbr_desc->event && guest_cpuid_has(vcpu, X86_FEATURE_LM)) {
++		u64 ctl = vmcs_read64(GUEST_IA32_LBR_CTL);
++
++		put_smstate(u64, smstate, 0x7f10, ctl);
++		vmcs_write64(GUEST_IA32_LBR_CTL, ctl & ~ARCH_LBR_CTL_LBREN);
++	}
++
  	return 0;
  }
+ 
+ static int vmx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
+ {
++	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 	int ret;
+ 
+@@ -7826,6 +7841,17 @@ static int vmx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
+ 		vmx->nested.nested_run_pending = 1;
+ 		vmx->nested.smm.guest_mode = false;
+ 	}
++
++	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
++	    guest_cpuid_has(vcpu, X86_FEATURE_LM)) {
++		u64 ctl = GET_SMSTATE(u64, smstate, 0x7f10);
++
++		vmcs_write64(GUEST_IA32_LBR_CTL, ctl | ARCH_LBR_CTL_LBREN);
++
++		if (intel_pmu_lbr_is_enabled(vcpu) && !lbr_desc->event)
++			intel_pmu_create_guest_lbr_event(vcpu);
++	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.27.0
 
