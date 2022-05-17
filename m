@@ -2,70 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6588CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D34C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:38:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349361AbiEQPhT (ORCPT
+        id S1350379AbiEQPiN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38566 "EHLO
+        Tue, 17 May 2022 11:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350364AbiEQPfy (ORCPT
+        with ESMTP id S1350412AbiEQPiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:35:54 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F67506D9;
-        Tue, 17 May 2022 08:35:35 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24HFYsQ9026768
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 11:34:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1652801701; bh=vMDcL1Sj3ecZF/PHO33RMl8MajLs+NitzTG2owdTZQA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=QWWYv+c38E0Js5EJ5O4LH7stm0/N/0G+zlZGaxwbAbrJcoBFiFX+I8aMjlxDXtdcH
-         HpQFgO3vNojUXJc8f+tn6qApIq1oq89uILHK6aqbgkyPptilbkipvXh8b+UDCORwcJ
-         NTcZRZaecteMkr4C9FEtPqcOV8/1Z/mJK25oUPZYeYBBp6sBYjgpZEf9xgcokZgDBW
-         jWBIxHO+AVv5V5gBQlM1SENquz5Y+sM7mT5fnlB7PvD9DdOkb+WioPJCoeulEVoACn
-         ngUKDte0snQOFU95pMNMLZkRMx8s9GtBCC6kwv6i26eYPhX3g2IKwzeEwICOgNvimy
-         LqJbC9V4JwF5A==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 8636C15C3EC0; Tue, 17 May 2022 11:34:54 -0400 (EDT)
-Date:   Tue, 17 May 2022 11:34:54 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
-        pankydev8@gmail.com, gost.dev@samsung.com,
-        damien.lemoal@opensource.wdc.com, jiangbo.365@bytedance.com,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        dm-devel@redhat.com, dsterba@suse.com, linux-btrfs@vger.kernel.org
-Subject: Re: [dm-devel] [PATCH v4 00/13] support non power of 2 zoned devices
-Message-ID: <YoPAnj9ufkt5nh1G@mit.edu>
-References: <CGME20220516165418eucas1p2be592d9cd4b35f6b71d39ccbe87f3fef@eucas1p2.samsung.com>
- <20220516165416.171196-1-p.raghav@samsung.com>
- <20220517081048.GA13947@lst.de>
+        Tue, 17 May 2022 11:38:00 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06955047D;
+        Tue, 17 May 2022 08:37:04 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:55038)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nqzFo-00HUt8-UL; Tue, 17 May 2022 09:36:56 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38510 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nqzFn-00CCn9-VR; Tue, 17 May 2022 09:36:56 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Huacai Chen <chenhuacai@gmail.com>
+Cc:     WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "<linux-arch@vger.kernel.org>" <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Al Viro <viro@zeniv.linux.org.uk>
+References: <20220514080402.2650181-1-chenhuacai@loongson.cn>
+        <20220514080402.2650181-15-chenhuacai@loongson.cn>
+        <ef37e578-d843-6a2f-2108-2a26dc54bece@xen0n.name>
+        <CAAhV-H7UwLJLiMtjkW0xxfsBBaCPXqkQ-d+ZW4rm+=igvVP6ew@mail.gmail.com>
+        <b30e5b28-2a3a-f3a6-1bb1-592323f6eadd@xen0n.name>
+        <87bkvxd12b.fsf@email.froward.int.ebiederm.org>
+        <CAAhV-H7R4hioE-dHVxAnPmeJJ-eqiWkdmZWxNDfLesuvURCLcw@mail.gmail.com>
+Date:   Tue, 17 May 2022 10:36:48 -0500
+In-Reply-To: <CAAhV-H7R4hioE-dHVxAnPmeJJ-eqiWkdmZWxNDfLesuvURCLcw@mail.gmail.com>
+        (Huacai Chen's message of "Tue, 17 May 2022 10:08:18 +0800")
+Message-ID: <87v8u49nn3.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517081048.GA13947@lst.de>
+Content-Type: text/plain
+X-XM-SPF: eid=1nqzFn-00CCn9-VR;;;mid=<87v8u49nn3.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/z8zdXGiWLxn4UIls5cu+131SNiPOvwrA=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH V10 14/22] LoongArch: Add signal handling support
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 10:10:48AM +0200, Christoph Hellwig wrote:
-> I'm a little surprised about all this activity.
-> 
-> I though the conclusion at LSF/MM was that for Linux itself there
-> is very little benefit in supporting this scheme.  It will massively
-> fragment the supported based of devices and applications, while only
-> having the benefit of supporting some Samsung legacy devices.
+Huacai Chen <chenhuacai@gmail.com> writes:
 
-FWIW,
+> Hi, Eric,
+>
+> On Mon, May 16, 2022 at 10:07 PM Eric W. Biederman
+> <ebiederm@xmission.com> wrote:
+>>
+>> I can understand exporting these values but the names aren't very
+>> well namespaced at all.  Which means they could accidentially
+>> conflict with things.
+>>
+>> It would probably be better to do:
+>> SC_USED_FP
+>> SC_ADDRERR_RD
+>> SC_ADDRERR_WR
+> SC_ prefix is good, but ADRERR_RD/ADRERR_WR is used together with
+> SIGSEGV/SIGBUS, so I want to keep the same as BUS_ADRERR (a single D)
+> if possible.
 
-That wasn't my impression from that LSF/MM session, but once the
-videos become available, folks can decide for themselves.
+Fair enough about the single D.  Please add the prefix in the next
+version. Especially for kabi symbols in a namespace is a very good idea.
 
-       	      		       	   	  - Ted
+
+>> Given that neither lsx_context nor lasx_context are used in the kernel
+>> code yet I would very much prefer that their inclusion wait until there
+>> is actual code that needs them.
+>>
+>> If nothing else that will put the definitions in context so people can
+>> more easily see the big picture and understand how the pieces fit.
+> OK, I will remove lsx_context/lasx_context in the next version.
+
+Thanks,
+Eric
