@@ -2,108 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0191FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60EA7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349538AbiEQPDV (ORCPT
+        id S1349548AbiEQPDp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40580 "EHLO
+        Tue, 17 May 2022 11:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243507AbiEQPDR (ORCPT
+        with ESMTP id S1349545AbiEQPDm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:03:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98BF96410;
-        Tue, 17 May 2022 08:03:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBECDB818FF;
-        Tue, 17 May 2022 15:03:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 630F4C385B8;
-        Tue, 17 May 2022 15:03:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652799793;
-        bh=byrQErYFQlhTfmVu1YurdHSZ08z5LZgcXvlnYcs4SNQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PfOhPDT8JZh+i0Zzmvh43u+bFH15pqQHxC336x4IG8IhA0fOYeHf7sozb4ZDErIe4
-         +BuRy6sTNNOHxYJAJJP/LF6A6UqAPJxrmZxVSmV5EoQpTLODj+ITlUA0yS9YOPcuUF
-         vEcEEQlHoIxpS/HGtKxEILNFjDVjqYYaweWKzVg7yQMb/vE7lMhuYl+ehVfAi/gkaH
-         T+LWH1Ze8q2tUdEGk41szWe12+t9IMlcBTxH75eEMAZTm8NO76MIdiko3l0yGiPAb4
-         jXkliKItJblCTFEjnuPzGqGca7eZMhXtIniJZKFv9uBhhYKAPdNkKgWX7Rd4yat+rc
-         MiiVMevf0KThA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 07C8F400B1; Tue, 17 May 2022 12:03:10 -0300 (-03)
-Date:   Tue, 17 May 2022 12:03:10 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        James Clark <james.clark@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v3 0/2] Fix topdown event weak grouping
-Message-ID: <YoO5Lp1UHMowHLmH@kernel.org>
-References: <20220517052724.283874-1-irogers@google.com>
+        Tue, 17 May 2022 11:03:42 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7336A286F1
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:03:41 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id hh4so14462930qtb.10
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:03:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nYw9MLrmTgrCyt32icuujwVIUmzRK3qobN37OJ0H6Dk=;
+        b=YIjyNubMBQN3j3kq8COxDOs9ZfyumC6z67UoQ2FYG9OrbcSw89m7muMq6Ee/AEBQIN
+         Znt8L77xweytRK5+XWVErzOjLGyuLd781OgCT7nEzZ+2p42AFQcJW6+vMmMqNqb6imCH
+         yC5ny4vzLdqIcnFqOtpkVy9/pchereg5BA/DDcpwXqViuGISm1EmqlzOWKyzrzLEX8fW
+         PDZupU2SGzflxTCdTC9+1ls0wSz05ZJSH8vKc7S2E+G40p9vgyR74ZH21+jPx5Ew26MD
+         sZbtW2pwcterOngapb6X791W2mKDNIB20J4hw3mTG8/RNL6irZULDmfs53nRiHWko8FA
+         +p/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nYw9MLrmTgrCyt32icuujwVIUmzRK3qobN37OJ0H6Dk=;
+        b=z/n7PryDfQNjsO4d9H93nQ1lCQxXAJ38kAqP+16f+pFG42fqFUXXiZxYPTeCJ2pkyh
+         UzaLJMsJUSxEoAv6ZZSvNwRXkltZ1EX5/oh5i9ga6xTt2TGhBfQjeuPf67RBO3aFMNLx
+         MR4NnGda9Db428SZqbzDKQaLWprNn6e1rE4ymm6K4l4Wct7QlFPzTiyG3Ta3dxncRqFU
+         MxWb9AQT6YKa8qCNACy841VoMpMTHU2HuDgTxWixEEW2cueklByMUcsgA2ZFf7rPwcHF
+         uKdtRWhAaAdIE1PtUNj7k53m3Q9vn9GiFpQbb4kWosdtc2YHsTV2yF7z8nJXyZ+jeYl0
+         PfkA==
+X-Gm-Message-State: AOAM530tbiJeUTb3TLDUa3sYSu5eALVJLDQ00jcZM/idqm+CGUcHWzZ8
+        9LQHAUUaQNRdPRVQ1aIw8joeFA==
+X-Google-Smtp-Source: ABdhPJzNAviWPSBXWWUJ/iGKw+c/h25D3QSyPMqu9y9mjuiv7nOxJijw6Gy3AK7v52SKehoMul0w4Q==
+X-Received: by 2002:ac8:7f43:0:b0:2f3:d55d:7296 with SMTP id g3-20020ac87f43000000b002f3d55d7296mr20083913qtk.635.1652799820611;
+        Tue, 17 May 2022 08:03:40 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id u123-20020ae9d881000000b006a0462eb091sm7772405qkf.80.2022.05.17.08.03.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 08:03:39 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nqyjb-0084ZN-6l; Tue, 17 May 2022 12:03:39 -0300
+Date:   Tue, 17 May 2022 12:03:39 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     longli@microsoft.com
+Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH 09/12] net: mana: Move header files to a common location
+Message-ID: <20220517150339.GI63055@ziepe.ca>
+References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
+ <1652778276-2986-10-git-send-email-longli@linuxonhyperv.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220517052724.283874-1-irogers@google.com>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <1652778276-2986-10-git-send-email-longli@linuxonhyperv.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, May 16, 2022 at 10:27:22PM -0700, Ian Rogers escreveu:
-> Keep topdown events within a group when a weak group is broken. This
-> is a requirement as topdown events must form a group.
+On Tue, May 17, 2022 at 02:04:33AM -0700, longli@linuxonhyperv.com wrote:
+> From: Long Li <longli@microsoft.com>
 > 
-> Add perf stat testing including for required topdown event group
-> behaviors.
+> In preparation to add MANA RDMA driver, move all the required header files
+> to a common location for use by both Ethernet and RDMA drivers.
 > 
-> Note: as with existing topdown evsel/evlist code topdown events are
-> assumed to be on the PMU "cpu". On Alderlake the PMU "cpu_core" should
-> also be tested. Future changes can fix Alderlake.
+> Signed-off-by: Long Li <longli@microsoft.com>
+> ---
+>  MAINTAINERS                                                   | 1 +
+>  drivers/net/ethernet/microsoft/mana/gdma_main.c               | 2 +-
+>  drivers/net/ethernet/microsoft/mana/hw_channel.c              | 4 ++--
+>  drivers/net/ethernet/microsoft/mana/mana_bpf.c                | 2 +-
+>  drivers/net/ethernet/microsoft/mana/mana_en.c                 | 2 +-
+>  drivers/net/ethernet/microsoft/mana/mana_ethtool.c            | 2 +-
+>  drivers/net/ethernet/microsoft/mana/shm_channel.c             | 2 +-
+>  {drivers/net/ethernet/microsoft => include/linux}/mana/gdma.h | 0
+>  .../ethernet/microsoft => include/linux}/mana/hw_channel.h    | 0
+>  {drivers/net/ethernet/microsoft => include/linux}/mana/mana.h | 0
+>  .../ethernet/microsoft => include/linux}/mana/shm_channel.h   | 0
+>  11 files changed, 8 insertions(+), 7 deletions(-)
+>  rename {drivers/net/ethernet/microsoft => include/linux}/mana/gdma.h (100%)
+>  rename {drivers/net/ethernet/microsoft => include/linux}/mana/hw_channel.h (100%)
+>  rename {drivers/net/ethernet/microsoft => include/linux}/mana/mana.h (100%)
+>  rename {drivers/net/ethernet/microsoft => include/linux}/mana/shm_channel.h (100%)
 
-Thanks, applied.
+I know mlx5 did it like this, but I wonder if include/net is more
+appropriate?
 
-- Arnaldo
+Or maybe include/aux/?
 
- 
-> v3. Fix computation of number of events in leader's group.
->     Adds reviewed-by: Liang, Kan <kan.liang@linux.intel.com
-> v2. Correct behavior wrt pmu prefixed events and avoid the test using
->     deprecated events: Suggested-by: Liang, Kan <kan.liang@linux.intel.com>
-> 
-> Ian Rogers (2):
->   perf evlist: Keep topdown counters in weak group
->   perf test: Add basic stat and topdown group test
-> 
->  tools/perf/arch/x86/util/evsel.c | 12 ++++++
->  tools/perf/tests/shell/stat.sh   | 67 ++++++++++++++++++++++++++++++++
->  tools/perf/util/evlist.c         | 16 +++++++-
->  tools/perf/util/evsel.c          | 10 +++++
->  tools/perf/util/evsel.h          |  3 ++
->  5 files changed, 106 insertions(+), 2 deletions(-)
->  create mode 100755 tools/perf/tests/shell/stat.sh
-> 
-> -- 
-> 2.36.0.550.gb090851708-goog
-
--- 
-
-- Arnaldo
+Jason
