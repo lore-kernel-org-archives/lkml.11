@@ -2,175 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C01C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 17:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F25B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 17:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351575AbiEQRlA (ORCPT
+        id S1351555AbiEQRmY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 13:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36652 "EHLO
+        Tue, 17 May 2022 13:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351550AbiEQRkr (ORCPT
+        with ESMTP id S242639AbiEQRmV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 13:40:47 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1068FE0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 10:40:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652809245; x=1684345245;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+C363D2f4ARqD1nu+m9rjffoqaPnSfI4xOAqk8WxIjY=;
-  b=EVo6YZeBuFAls22XolpgKsuDhYpLHd7ZbNjZ8RJXac/Wr7QoDQ6fldib
-   NKQDe7BmUU4Yn+ZVzLOc2LB2suSBQZjNV06r76Y1KWobR+F1llNCyW0Nl
-   a4B7PaNoCh/BE2qpg0DMWAxUVn85iA3asz4tnvzE8l8EPpiB6sxuUFh6e
-   +MX1xx0zcu99DNVLYJrBCIuvZWmnyagGaUO6lgm/Oi4YfMWjd4VWK4rQg
-   pA8bwKwCUSEmthL3Ri8SxE+B+lhnXvGCGqgDta9ejt8GN7VVwgOcKmZaV
-   T1BBs8YQa6j1DK1bQ3/FV1ZukunzmR9voiWB1IdbJVtZ1agYAf2O3XoDg
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271389077"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="271389077"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 10:40:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="817002026"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 17 May 2022 10:40:41 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 2A264CE; Tue, 17 May 2022 20:40:42 +0300 (EEST)
-Date:   Tue, 17 May 2022 20:40:42 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
-        seanjc@google.com, thomas.lendacky@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] x86/tdx: Handle load_unaligned_zeropad() page-cross to a
- shared page
-Message-ID: <20220517174042.v6s7wm3u5j2ebaoq@black.fi.intel.com>
-References: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
- <e73cb19e-7dab-2fc1-b947-fac70fd607d2@intel.com>
+        Tue, 17 May 2022 13:42:21 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE45D128
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 10:42:20 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-f1d2ea701dso1067531fac.10
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 10:42:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eg7EH5Vrvb2fKjVFmkcCg9Zq9x2kct9i+zNiZ3Rb9nE=;
+        b=e1JvkQ93rAtCK7sn488U3SuJf4AoUESglxHXrKJTTMMkNeQNcU7i/nTgft7PxtzV81
+         JTZb2e0ArclXtYmdxk/G5BmXdnm+y8WTIxYFtmcmGcWKgMQy1d7RhscLPElAzT1nXsHj
+         Xd2uFtRkYUUKQb5Cxhh1Wdfsp9NSTDDMoVQRs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eg7EH5Vrvb2fKjVFmkcCg9Zq9x2kct9i+zNiZ3Rb9nE=;
+        b=y42rDLssUbag7VD0I2mGt2mEOTdSuEwSuWv2rjNgD7AgoIYfjyd3TkQsHs7hBNcqh6
+         3dQs29TA8pxKb7Eh2hLBbXG3JgXco//0Gr20YtIi4totMlYmJHH9gw4ynwkTppu2eHY/
+         NJ6heHxVlLmQZ7lpfdODzEyOm3jYgt8mvwCe/UX5qj51XXFarXJuzT4SdvNP1uKBzXKK
+         72mjS5WAROKJABjvjzwr85Sskf/rsiaVMvyy1Eg9S08W7ADiNXhLYps1WvWfaJb4z1hG
+         l+H0LLmNQI/WPMoNNoVtMEl4Zcv8O8102zBHUALJeRtZfJDwMMgvPd+Provwf1eNUj+o
+         4r7g==
+X-Gm-Message-State: AOAM530F1/4l0NELVCOjs2O9hpqPQZE/7Q3XHjxZQbD1fJrrleVSfXp/
+        TKs1aNixAXPs0mmCVaEB7lpU+y+CF33WJw==
+X-Google-Smtp-Source: ABdhPJwG8nRhvgI3W3FvY8JhBMDKh/vmTRfPNtrQFd2+D9mVFgIkrYE7TIfZVm9LReOVStGuql5sow==
+X-Received: by 2002:a05:6870:2053:b0:e9:3c2f:23d9 with SMTP id l19-20020a056870205300b000e93c2f23d9mr18943081oad.158.1652809339364;
+        Tue, 17 May 2022 10:42:19 -0700 (PDT)
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com. [209.85.167.179])
+        by smtp.gmail.com with ESMTPSA id i10-20020acaea0a000000b00328e70cae5csm42389oih.43.2022.05.17.10.42.18
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 10:42:18 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id j12so23188877oie.1
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 10:42:18 -0700 (PDT)
+X-Received: by 2002:a05:6808:d52:b0:328:acfc:d274 with SMTP id
+ w18-20020a0568080d5200b00328acfcd274mr11183218oik.174.1652808882898; Tue, 17
+ May 2022 10:34:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e73cb19e-7dab-2fc1-b947-fac70fd607d2@intel.com>
+References: <20220504232102.469959-1-evgreen@chromium.org> <20220506160807.GA1060@bug>
+ <CAE=gft6m75T0UC2DBhfFhuSMW6TK7aatD_04sQ18WosgGVsATw@mail.gmail.com> <CAJZ5v0gxq=EA_WWUiCR_w8o87iTHDR7OC5wi=GRBaAQS2ofd5w@mail.gmail.com>
+In-Reply-To: <CAJZ5v0gxq=EA_WWUiCR_w8o87iTHDR7OC5wi=GRBaAQS2ofd5w@mail.gmail.com>
+From:   Evan Green <evgreen@chromium.org>
+Date:   Tue, 17 May 2022 10:34:05 -0700
+X-Gmail-Original-Message-ID: <CAE=gft6V6RLc-d4AOuRUVU2u1jMGghDRSrFqiCqMCLxemui8Pw@mail.gmail.com>
+Message-ID: <CAE=gft6V6RLc-d4AOuRUVU2u1jMGghDRSrFqiCqMCLxemui8Pw@mail.gmail.com>
+Subject: Re: [PATCH 00/10] Encrypted Hibernation
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, LKML <linux-kernel@vger.kernel.org>,
+        Matthew Garrett <mgarrett@aurora.tech>,
+        Daniil Lunev <dlunev@google.com>, zohar@linux.ibm.com,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        linux-integrity@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Hao Wu <hao.wu@rubrik.com>, James Morris <jmorris@namei.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Len Brown <len.brown@intel.com>,
+        Matthew Garrett <matthewgarrett@google.com>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        "Serge E. Hallyn" <serge@hallyn.com>, axelj <axelj@axis.com>,
+        keyrings@vger.kernel.org,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-security-module@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 09:36:03AM -0700, Dave Hansen wrote:
-> On 5/17/22 08:30, Kirill A. Shutemov wrote:
-> > load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
-> > The unwanted loads are typically harmless. But, they might be made to
-> > totally unrelated or even unmapped memory. load_unaligned_zeropad()
-> > relies on exception fixup (#PF, #GP and now #VE) to recover from these
-> > unwanted loads.
-> > 
-> > In TDX guest the second page can be shared page and VMM may configure it
-> > to trigger #VE.
-> > 
-> > Kernel assumes that #VE on a shared page is MMIO access and tries to
-> > decode instruction to handle it. In case of load_unaligned_zeropad() it
-> > may result in confusion as it is not MMIO access.
-> > 
-> > Check fixup table before trying to handle MMIO.
-> 
-> Is this a theoretical problem or was it found in practice?
+Hi Rafael,
 
-No, it was found based on analysis.
+On Tue, May 17, 2022 at 9:06 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>
+> On Mon, May 9, 2022 at 6:44 PM Evan Green <evgreen@chromium.org> wrote:
+> >
+> > On Fri, May 6, 2022 at 9:08 AM Pavel Machek <pavel@ucw.cz> wrote:
+> > >
+> > > Hi!
+> > >
+> > > > We are exploring enabling hibernation in some new scenarios. However,
+> > > > our security team has a few requirements, listed below:
+> > > > 1. The hibernate image must be encrypted with protection derived from
+> > > >    both the platform (eg TPM) and user authentication data (eg
+> > > >    password).
+> > > > 2. Hibernation must not be a vector by which a malicious userspace can
+> > > >    escalate to the kernel.
+> > >
+> > > Can you (or your security team) explain why requirement 2. is needed?
+> > >
+> > > On normal systems, trusted userspace handles kernel upgrades (for example),
+> > > so it can escalate to kernel priviledges.
+> > >
+> >
+> > Our systems are a little more sealed up than a normal distro, we use
+> > Verified Boot [1]. To summarize, RO firmware with an embedded public
+> > key verifies that the kernel+commandline was signed by Google. The
+> > commandline includes the root hash of the rootfs as well (where the
+> > modules live). So when an update is applied (A/B style, including the
+> > whole rootfs), assuming the RO firmware stayed RO (which requires
+> > physical measures to defeat), we can guarantee that the kernel,
+> > commandline, and rootfs have not been tampered with.
+> >
+> > Verified boot gives us confidence that on each boot, we're at least
+> > starting from known code. This makes it more challenging for an
+> > attacker to persist an exploit across reboot. With the kernel and
+> > modules verified, we try to make it non-trivial for someone who does
+> > manage to gain root execution once from escalating to kernel
+> > execution. Hibernation would be one obvious escalation route, so we're
+> > hoping to find a way to enable it without handing out that easy
+> > primitive.
+> >
+> > [1] https://www.chromium.org/chromium-os/chromiumos-design-docs/verified-boot/
+>
+> So I guess this really is an RFC.
 
-The problem was found in practice for private pages (see the patch in the
-unaccepted memory support patchset), but not for shared.
+Yes, I suppose it is.
 
-For shared I had to do some tricks to get it triggered. Shared pages that
-configured to trigger MMIO normally comes from ioremap() and they are not
-mapped next to normally allocated pages. I had to force this situation.
+>
+> Honestly, I need more time to go through this and there are pieces of
+> it that need to be looked at other people (like the TPM-related
+> changes).
 
-But there are normally allocated pages that we make shared, like SWIOTLB
-buffer. These pages usually do not trigger #VE, but malicious host can
-configure them to trigged it at any point.
+No problem, thanks for the reply to let me know. I expect some back
+and forth in terms of what should be hidden behind abstractions and
+where exactly things should live. But I wanted to get this out to
+upstream as early as I could, just to get initial reactions on the
+overall concept and design. Looking forward to hearing your thoughts
+when you get a chance, and let me know if there are others I should be
+adding that I've missed.
 
-Even after I forced the situation, insn_decode_mmio() worked fine as
-load_unaligned_zeropad() uses a flavour of MOV that insn_decode_mmio() can
-decode. But it gets situation worse: we ask host to handle MMIO for the
-address in private page and it allows host to override the part of the
-word that comes from the private pages. :/
+-Evan
 
-> > diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-> > index 03deb4d6920d..5fbdda2f2b86 100644
-> > --- a/arch/x86/coco/tdx/tdx.c
-> > +++ b/arch/x86/coco/tdx/tdx.c
-> > @@ -11,6 +11,8 @@
-> >  #include <asm/insn.h>
-> >  #include <asm/insn-eval.h>
-> >  #include <asm/pgtable.h>
-> > +#include <asm/trapnr.h>
-> > +#include <asm/extable.h>
-> >  
-> >  /* TDX module Call Leaf IDs */
-> >  #define TDX_GET_INFO			1
-> > @@ -296,6 +298,26 @@ static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-> >  	if (WARN_ON_ONCE(user_mode(regs)))
-> >  		return false;
-> >  
-> > +	/*
-> > +	 * load_unaligned_zeropad() relies on exception fixups in case of the
-> > +	 * word being a page-crosser and the second page is not accessible.
-> > +	 *
-> > +	 * In TDX guest the second page can be shared page and VMM may
-> 
-> 	In TDX guests,
-> 
-> > +	 * configure it to trigger #VE.
-> > +	 *
-> > +	 * Kernel assumes that #VE on a shared page is MMIO access and tries to
-> > +	 * decode instruction to handle it. In case of load_unaligned_zeropad()
-> > +	 * it may result in confusion as it is not MMIO access.
-> > +	 *
-> > +	 * Check fixup table before trying to handle MMIO.
-> > +	 */
-> > +	if (fixup_exception(regs, X86_TRAP_VE, 0, ve->gla)) {
-> > +		/* regs->ip is adjusted by fixup_exception() */
-> > +		ve->instr_len = 0;
-> > +
-> > +		return true;
-> > +	}
-> 
-> This 've->instr_len = ' stuff is just a hack.
-> 
-> ve_info is a software structure.  Why not just add a:
-> 
-> 	bool ip_adjusted;
-> 
-> which defaults to false, then we have:
-> 
-> 	/*
-> 	 * Adjust RIP if the exception was handled
-> 	 * but RIP was not adjusted.
-> 	 */
-> 	if (!ret && !ve_info->ip_adjusted)
-> 		regs->ip += ve_info->instr_len;
-> 
-> One other oddity I just stumbled upon:
-> 
-> static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-> {
-> ...
->         ve->instr_len = insn.length;
-> 
-> Why does that need to override 've->instr_len'?  What was wrong with the
-> gunk in r10 that came out of TDX_GET_VEINFO?
-
-TDX module doesn't decode MMIO instruction and does not provide valid size
-of it. We had to do it manually, based on decoding.
-
-Given that we had to adjust IP in handle_mmio() anyway, do you still think
-"ve->instr_len = 0;" is wrong? I dislike ip_adjusted more.
-
--- 
- Kirill A. Shutemov
+>
+> Thanks!
