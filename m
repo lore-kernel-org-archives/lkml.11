@@ -2,82 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 309F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350985AbiEQQgq (ORCPT
+        id S1351013AbiEQQhz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39454 "EHLO
+        Tue, 17 May 2022 12:37:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238721AbiEQQgn (ORCPT
+        with ESMTP id S1351072AbiEQQgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:36:43 -0400
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0C120BD4;
-        Tue, 17 May 2022 09:36:41 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id p139so12431861ybc.11;
-        Tue, 17 May 2022 09:36:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=XzZsCz+FEDhr5zfSeWU+bowEEKWP57VJ8xk562lPInY=;
-        b=jqNRJecgJWG0orNedLcyhTebhAn71pml9sD8cIVjuQ8SU0FHi8ccPrbqjIeU+OW73/
-         2bUrYGHMs8dOz1SFbl9nZhiGasxkH9pkdm2AmuiHRAIKWt7gwtMxbVIQ6nPbGQovnig7
-         iE3KbEipVsTN5rpVbF40QLqTf52iHhZXi5TlAmR13bPXnLJr6Ah/M3QwVBzB+AGBiWZ6
-         A6wbVcZFjKBSVxIPT5YT/U/JYQdoGn1JWXS6IxEFm0VviPALGxr7wFj9VPx21iWUAlgc
-         3mA/6heoo2URQh6gztBgPjsnaQ0dKM5bJ6+k7j9oS2RibvWigb1VLRpso7zZumCwuiqB
-         c+eQ==
-X-Gm-Message-State: AOAM532kbN1Xz5K7dcCqSWZQ8gaEMags9pMBXQUM6XSNssKTOj3B4IdW
-        GnXukWGoeRZOttVXFooPN2VHGAlUOlIAfuideAmQgGJjM7Y=
-X-Google-Smtp-Source: ABdhPJx2hgUuHv/xBi+xAczLQQBmVAOVbS0p3qrHUhTBhMGTALjD7CIZDEbnEjM2Yt3ZNyEVKnHWuOzfmJE4CMXdgM4=
-X-Received: by 2002:a25:ed06:0:b0:64d:e12f:5229 with SMTP id
- k6-20020a25ed06000000b0064de12f5229mr7140356ybh.622.1652805401179; Tue, 17
- May 2022 09:36:41 -0700 (PDT)
+        Tue, 17 May 2022 12:36:07 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5E7CE1B
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:36:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652805365; x=1684341365;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=C2Z0RiuXriPADgGLLBzT0TeztOBn4bNSdseruseNy80=;
+  b=HCIw3dA6ldATu9E+/btWKGsgIWZS7Af96zuymmtuuwJZg5hPjdd2AoCx
+   m35PNqOzAJhbYsQ7rVCWMSSDGbMJ73GHjCFPIpAqlLw1GwXw3v7u+ZGci
+   x9LCuixPyhmaysEUElwXm8CxXMAfUVRsf4HdpKyJWxjM1Sp484Qdmw3H/
+   YuUlacXYxHyPJmsau62B2u9OPSmLb1UYG636r9FIAGEPzCZOvsRVYwsaJ
+   pdTr00pQmnVwX4CVZy9lpiFvFNUJpvTq37YFZ9S3pOOwoXpCaqvZZ5iYT
+   4NghWJ1pewX9+H5dwK2edK2TwJGqQxwh6bvObhLnHfGxgzeT1l4bmO4vE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="296525672"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="296525672"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:36:04 -0700
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="672931173"
+Received: from danielga-mobl.amr.corp.intel.com (HELO [10.212.245.96]) ([10.212.245.96])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:36:03 -0700
+Message-ID: <e73cb19e-7dab-2fc1-b947-fac70fd607d2@intel.com>
+Date:   Tue, 17 May 2022 09:36:03 -0700
 MIME-Version: 1.0
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 17 May 2022 18:36:30 +0200
-Message-ID: <CAJZ5v0ghkfwSznen8DTiS_O_obYWmOw8R_RyqK4ZYur+Kkus8w@mail.gmail.com>
-Subject: [GIT PULL] Thermal control fix for v5.18-rc8
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] x86/tdx: Handle load_unaligned_zeropad() page-cross to a
+ shared page
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
+        seanjc@google.com, thomas.lendacky@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On 5/17/22 08:30, Kirill A. Shutemov wrote:
+> load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
+> The unwanted loads are typically harmless. But, they might be made to
+> totally unrelated or even unmapped memory. load_unaligned_zeropad()
+> relies on exception fixup (#PF, #GP and now #VE) to recover from these
+> unwanted loads.
+> 
+> In TDX guest the second page can be shared page and VMM may configure it
+> to trigger #VE.
+> 
+> Kernel assumes that #VE on a shared page is MMIO access and tries to
+> decode instruction to handle it. In case of load_unaligned_zeropad() it
+> may result in confusion as it is not MMIO access.
+> 
+> Check fixup table before trying to handle MMIO.
 
-Please pull from the tag
+Is this a theoretical problem or was it found in practice?
 
- git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
- thermal-5.18-rc8
+> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+> index 03deb4d6920d..5fbdda2f2b86 100644
+> --- a/arch/x86/coco/tdx/tdx.c
+> +++ b/arch/x86/coco/tdx/tdx.c
+> @@ -11,6 +11,8 @@
+>  #include <asm/insn.h>
+>  #include <asm/insn-eval.h>
+>  #include <asm/pgtable.h>
+> +#include <asm/trapnr.h>
+> +#include <asm/extable.h>
+>  
+>  /* TDX module Call Leaf IDs */
+>  #define TDX_GET_INFO			1
+> @@ -296,6 +298,26 @@ static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
+>  	if (WARN_ON_ONCE(user_mode(regs)))
+>  		return false;
+>  
+> +	/*
+> +	 * load_unaligned_zeropad() relies on exception fixups in case of the
+> +	 * word being a page-crosser and the second page is not accessible.
+> +	 *
+> +	 * In TDX guest the second page can be shared page and VMM may
 
-with top-most commit 7b145802ba545ecf9446ce6d67d6011b73dac0e0
+	In TDX guests,
 
- thermal: int340x: Mode setting with new OS handshake
+> +	 * configure it to trigger #VE.
+> +	 *
+> +	 * Kernel assumes that #VE on a shared page is MMIO access and tries to
+> +	 * decode instruction to handle it. In case of load_unaligned_zeropad()
+> +	 * it may result in confusion as it is not MMIO access.
+> +	 *
+> +	 * Check fixup table before trying to handle MMIO.
+> +	 */
+> +	if (fixup_exception(regs, X86_TRAP_VE, 0, ve->gla)) {
+> +		/* regs->ip is adjusted by fixup_exception() */
+> +		ve->instr_len = 0;
+> +
+> +		return true;
+> +	}
 
-on top of commit c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
+This 've->instr_len = ' stuff is just a hack.
 
- Linux 5.18-rc6
+ve_info is a software structure.  Why not just add a:
 
-to receive a thermal control fix for 5.18-rc8.
+	bool ip_adjusted;
 
-This fixes up a recent change in the int340x thermal driver that
-inadvertently broke thermal zone handling on some systems (Srinivas
-Pandruvada).
+which defaults to false, then we have:
 
-Thanks!
+	/*
+	 * Adjust RIP if the exception was handled
+	 * but RIP was not adjusted.
+	 */
+	if (!ret && !ve_info->ip_adjusted)
+		regs->ip += ve_info->instr_len;
 
+One other oddity I just stumbled upon:
 
----------------
+static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
+{
+...
+        ve->instr_len = insn.length;
 
-Srinivas Pandruvada (1):
-      thermal: int340x: Mode setting with new OS handshake
-
----------------
-
- .../intel/int340x_thermal/int3400_thermal.c        | 48 ++++++++++++++--------
- 1 file changed, 32 insertions(+), 16 deletions(-)
+Why does that need to override 've->instr_len'?  What was wrong with the
+gunk in r10 that came out of TDX_GET_VEINFO?
