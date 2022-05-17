@@ -2,84 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49812C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237298AbiEQKmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43258 "EHLO
+        id S1344457AbiEQKn1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344458AbiEQKml (ORCPT
+        with ESMTP id S229546AbiEQKnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:42:41 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E48CE1D;
-        Tue, 17 May 2022 03:42:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652784156; x=1684320156;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=WBs2eI6X8CZ5YiF7kldg80ncAuzPV9s8G23gHoKP1l0=;
-  b=hIOQCk5sPE7Ox63waenkmLEssNJTware8Kg7pEcWXo23vDzFuVZnKT3m
-   yCwh+YQ2DhpxfijttqdkO558+a2VhYBYtLMdfQdt59D446u/gzqazLc1/
-   mC6IqipH15GvLCfk4viV6wp48EaUDhE+C8oPLRw+HUXlRQOE7XKcQHQGO
-   /eh9Jc/LaATIEtXRPCPh/rTuZ2YCsZEYaNMpMGwdu/iyLgVEBzeKL1dcw
-   QfKgYX2/JcQjbtEXlkKjU0EwvWFCssYR4Vwx/pNn/gCqMDy52h4QybP1P
-   R8/dIRLuaftePiKIUst/9nadQG/J0SrEZTto4OFfPjKbLf10DOmSx6xhV
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="156367300"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 03:42:35 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 17 May 2022 03:42:34 -0700
-Received: from conor-HP-Z240-Tower-Workstation.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 17 May 2022 03:42:32 -0700
-From:   Conor Paxton <conor.paxton@microchip.com>
-To:     <conor.dooley@microchip.com>, Palmer Dabbelt <palmer@dabbelt.com>
-CC:     Lewis Hanly <lewis.hanly@microchip.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        <linux-riscv@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Conor Paxton <conor.paxton@microchip.com>
-Subject: [PATCH] riscv: dts: microchip: fix gpio1 reg property typo
-Date:   Tue, 17 May 2022 11:40:58 +0100
-Message-ID: <20220517104058.2004734-1-conor.paxton@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 17 May 2022 06:43:18 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F09429CAD;
+        Tue, 17 May 2022 03:43:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652784195; x=1684320195;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=7p0dGKuqEbRbw64q/uX8k4TvVX18WXNffIzyoespWLo=;
+  b=ZBv1sodi6Dkxi95/dTxAJWQiZopCesSk76THFzKgy4kEkhIj2NGtvR3P
+   2EEruRHt67a42rZTaTkUVBJNNnh4Tuz02lgfR1lQr0hFRdVpWhQoj9T1u
+   IKItkcMezx/Bxhl33nSsiTsCc9jbRn/MOMmxnFiZXcj80V+0DK6AAqlMG
+   g=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 17 May 2022 03:43:15 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 03:43:15 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 17 May 2022 03:43:15 -0700
+Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 17 May 2022 03:43:11 -0700
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+To:     <bjorn.andersson@linaro.org>, <mani@kernel.org>,
+        <jassisinghbrar@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <agross@kernel.org>, Prasad Sodagudi <quic_psodagud@quicinc.com>,
+        Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [PATCH v3] mailbox: qcom-ipcc: Log the pending interrupt during resume
+Date:   Tue, 17 May 2022 16:13:00 +0530
+Message-ID: <1652784180-10142-1-git-send-email-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix reg address typo in the gpio1 stanza.
+From: Prasad Sodagudi <quic_psodagud@quicinc.com>
 
-Signed-off-by: Conor Paxton <conor.paxton@microchip.com>
+Enable logging of the pending interrupt that triggered device wakeup. This
+logging information helps to debug IRQs that cause periodic device wakeups
+by printing the detailed information of pending IPCC interrupts.
+
+Scenario: Device wakeup caused by Modem crash
+Logs:
+qcom-ipcc mailbox: virq: 182 triggered client-id: 2; signal-id: 2
+
+From the IPCC bindings it can further be understood that the client here is
+IPCC_CLIENT_MPSS and the signal was IPCC_MPROC_SIGNAL_SMP2P.
+
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Prasad Sodagudi <quic_psodagud@quicinc.com>
+Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
 ---
- arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-index 746c4d4e7686..cf2f55e1dcb6 100644
---- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-+++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-@@ -366,7 +366,7 @@ gpio0: gpio@20120000 {
+V3:
+ * Use pm_sleep_ptr and convert info to dbg [Mani]
+ * Fixup commit message
+
+V2:
+ * Fix build error when ipcc is a module [Kernel Test Bot]
+
+ drivers/mailbox/qcom-ipcc.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/drivers/mailbox/qcom-ipcc.c b/drivers/mailbox/qcom-ipcc.c
+index c5d963222014..5a42bc2a1083 100644
+--- a/drivers/mailbox/qcom-ipcc.c
++++ b/drivers/mailbox/qcom-ipcc.c
+@@ -254,6 +254,24 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
+ 	return devm_mbox_controller_register(dev, mbox);
+ }
  
- 		gpio1: gpio@20121000 {
- 			compatible = "microchip,mpfs-gpio";
--			reg = <000 0x20121000 0x0 0x1000>;
-+			reg = <0x0 0x20121000 0x0 0x1000>;
- 			interrupt-parent = <&plic>;
- 			interrupt-controller;
- 			#interrupt-cells = <1>;
++static int qcom_ipcc_pm_resume(struct device *dev)
++{
++	struct qcom_ipcc *ipcc = dev_get_drvdata(dev);
++	u32 hwirq;
++	int virq;
++
++	hwirq = readl(ipcc->base + IPCC_REG_RECV_ID);
++	if (hwirq == IPCC_NO_PENDING_IRQ)
++		return 0;
++
++	virq = irq_find_mapping(ipcc->irq_domain, hwirq);
++
++	dev_dbg(dev, "virq: %d triggered client-id: %ld; signal-id: %ld\n", virq,
++		FIELD_GET(IPCC_CLIENT_ID_MASK, hwirq), FIELD_GET(IPCC_SIGNAL_ID_MASK, hwirq));
++
++	return 0;
++}
++
+ static int qcom_ipcc_probe(struct platform_device *pdev)
+ {
+ 	struct qcom_ipcc *ipcc;
+@@ -324,6 +342,10 @@ static const struct of_device_id qcom_ipcc_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, qcom_ipcc_of_match);
+ 
++static const struct dev_pm_ops qcom_ipcc_dev_pm_ops = {
++	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, qcom_ipcc_pm_resume)
++};
++
+ static struct platform_driver qcom_ipcc_driver = {
+ 	.probe = qcom_ipcc_probe,
+ 	.remove = qcom_ipcc_remove,
+@@ -331,6 +353,7 @@ static struct platform_driver qcom_ipcc_driver = {
+ 		.name = "qcom-ipcc",
+ 		.of_match_table = qcom_ipcc_of_match,
+ 		.suppress_bind_attrs = true,
++		.pm = pm_sleep_ptr(&qcom_ipcc_dev_pm_ops),
+ 	},
+ };
+ 
 -- 
-2.25.1
+2.7.4
 
