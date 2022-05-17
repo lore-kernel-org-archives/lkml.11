@@ -2,116 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE4FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 997B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240968AbiEQHiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
+        id S236250AbiEQHiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241421AbiEQHgw (ORCPT
+        with ESMTP id S241583AbiEQHg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:36:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 579C7483AD
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:36:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652773008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pQ8Tbw3YXlfFnImshaS6CSiXIKXl6akxMQXuGl5HlAA=;
-        b=bUYDPIEYgGGiZJUKm/Elz3BUY44sLTC3SlA5P/xU41dt6r+TQECuNJRGSvcm3bg+kJqAso
-        WGe7aOrm4FIFn3LqyM9ieBGQANPcrwE5PtBBOgOB5SDiQMfjYj34vSfdemttfRqooowDas
-        lS4QIOmqQKuMkIWdYNyimrRYBs8RSRQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-556-Mlcp5x2wPqa4VISOC-SGlw-1; Tue, 17 May 2022 03:36:44 -0400
-X-MC-Unique: Mlcp5x2wPqa4VISOC-SGlw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 17 May 2022 03:36:58 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5727048889;
+        Tue, 17 May 2022 00:36:57 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 404C9101AA47;
-        Tue, 17 May 2022 07:36:43 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 771137774;
-        Tue, 17 May 2022 07:36:39 +0000 (UTC)
-Date:   Tue, 17 May 2022 09:36:36 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v3 3/4] bpf_trace: handle compat in copy_user_syms
-Message-ID: <2a56d66cf4b9430982e81233f49d6c54988df056.1652772731.git.esyr@redhat.com>
-References: <cover.1652772731.git.esyr@redhat.com>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 0A34C1FBB6;
+        Tue, 17 May 2022 07:36:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652773016; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5k0bGOWkmGL1ogvQ/PreqJMh1U1K6c4WBr2eA6nTSAM=;
+        b=k1hgAxLHcPwk3vEQCWus51vT4+BvTaLYR+QHOAK3xVmdoQKgPHeTu+DfO+WesNLefN3po0
+        R9NLCarCPlMgTyosDYGCmIU+OFXfYoedIUeJqf22LVR7R7WTOJIFAY9q5u3r9V4b43Ynpm
+        HwcHrcODHBHUS8nc5lhJa/98sGVBFMo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652773016;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5k0bGOWkmGL1ogvQ/PreqJMh1U1K6c4WBr2eA6nTSAM=;
+        b=Z7Cu/hEg/PUSiAGDXraTHHfvdp/4d1ELwywNgsiUNKfH1qhjPTS9AIU7zlSRB73PQws//V
+        lEnTbGxt5LhUgrBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2B88A13305;
+        Tue, 17 May 2022 07:36:55 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ueW0BpdQg2LmeQAAMHmgww
+        (envelope-from <osalvador@suse.de>); Tue, 17 May 2022 07:36:55 +0000
+Date:   Tue, 17 May 2022 09:36:53 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v12 2/7] mm: hugetlb_vmemmap: use kstrtobool for
+ hugetlb_vmemmap param parsing
+Message-ID: <YoNQlbaaUE+3+zE8@localhost.localdomain>
+References: <20220516102211.41557-1-songmuchun@bytedance.com>
+ <20220516102211.41557-3-songmuchun@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1652772731.git.esyr@redhat.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+In-Reply-To: <20220516102211.41557-3-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For compat processes, userspace size for syms pointers is different.
-Provide compat handling for copying array elements from the user space.
+On Mon, May 16, 2022 at 06:22:06PM +0800, Muchun Song wrote:
+> Use kstrtobool rather than open coding "on" and "off" parsing in
+> mm/hugetlb_vmemmap.c,  which is more powerful to handle all kinds
+> of parameters like 'Yy1Nn0' or [oO][NnFf] for "on" and "off".
+> 
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+> Acked-by: David Hildenbrand <david@redhat.com>
 
-Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- kernel/trace/bpf_trace.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index a93a54f..9d3028a 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2253,6 +2253,24 @@ struct user_syms {
- 	char *buf;
- };
- 
-+static inline int get_arr_ptr(unsigned long *p,
-+			      unsigned long __user *uaddr, u32 idx)
-+{
-+	if (unlikely(in_compat_syscall())) {
-+		compat_uptr_t __user *compat_uaddr = (compat_uptr_t __user *)uaddr;
-+		compat_uptr_t val;
-+		int err;
-+
-+		err = __get_user(val, compat_uaddr + idx);
-+		if (!err)
-+			*p = val;
-+
-+		return err;
-+	} else {
-+		return __get_user(*p, uaddr + idx);
-+	}
-+}
-+
- static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32 cnt)
- {
- 	unsigned long __user usymbol;
-@@ -2270,7 +2288,7 @@ static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32
- 		goto error;
- 
- 	for (p = buf, i = 0; i < cnt; i++) {
--		if (__get_user(usymbol, usyms + i)) {
-+		if (get_arr_ptr(&usymbol, usyms, i)) {
- 			err = -EFAULT;
- 			goto error;
- 		}
+
 -- 
-2.1.4
-
+Oscar Salvador
+SUSE Labs
