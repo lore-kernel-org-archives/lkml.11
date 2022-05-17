@@ -2,101 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 075FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 137B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352283AbiEQShF (ORCPT
+        id S1352282AbiEQSiQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:37:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        Tue, 17 May 2022 14:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352278AbiEQSg6 (ORCPT
+        with ESMTP id S231630AbiEQSiN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:36:58 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F1B3669E;
-        Tue, 17 May 2022 11:36:56 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24HIO9vF000774;
-        Tue, 17 May 2022 18:36:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=xSpmZomObbwmdVwXU2DztWRfkUMxLlEd6R0FQm0Cvqk=;
- b=U94saHecCqVzoNu8qSKsqaxqQOnUHnOAGuX1nuUvJeauNa8TJZtT17AqmzfFL9ZeFu3/
- iOiz0wnGoEW6GNCUu7HBlXSXX6iVCbFb+EiFiOFXZ+MUiOGF/8/d5zOWAqNoGbB3EZZ5
- p0sI+bhehLgnQjYenZ8w6GZAiXy2BFm7udHVHXW+SRhh60lR2qmbv/8AyvjxcNwtBr3W
- PMK/e7XO9BhPQrYY9dwCaE+rRXmCjyT/S/iIcGpF1dNtIY0Kg7okwy/+5v/Iw/688qDq
- dRrzPgIZKmi9JP3G7vY7xO0u3z/VwzzSlvW2vrZlNPA0eWol2xa/7apWUwZ4KybdMhTx vg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4gy10bky-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 18:36:54 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24HIOO3s001298;
-        Tue, 17 May 2022 18:36:54 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4gy10bk7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 18:36:54 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24HI7mkN007589;
-        Tue, 17 May 2022 18:36:53 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma03dal.us.ibm.com with ESMTP id 3g242ad2gh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 18:36:53 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24HIapVu35914134
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 17 May 2022 18:36:52 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D784D6A054;
-        Tue, 17 May 2022 18:36:51 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C1B596A04F;
-        Tue, 17 May 2022 18:36:50 +0000 (GMT)
-Received: from [9.65.254.31] (unknown [9.65.254.31])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue, 17 May 2022 18:36:50 +0000 (GMT)
-Message-ID: <08b82fea-b728-0920-297a-a0d3dd8cc176@linux.ibm.com>
-Date:   Tue, 17 May 2022 14:36:50 -0400
+        Tue, 17 May 2022 14:38:13 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4AC37BF8
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:38:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652812693; x=1684348693;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FTTY9ZFMfeTd8CI19p2u5YEYLQvqFSdIkPKeSEcRj4U=;
+  b=YUuJ/uUKTbiDNFd4y++5VrAtg9TpHLmaQenw1VguwtX41VOsbhYcMRF/
+   +WV0jZz/ovTh+WHJfS7eQRHhBgYjW+E8ObYQgDD0n7CfZOzOp8KeKP4Fe
+   VYbasYy4TvlRO7GunlbYTbiEkFfGWN9jqVa275WZBao3zWJUM6JdUEeGS
+   wwNSrmswYoqYhBDSfdikZlBQtDBiz6ZTjH6SyfPxWhCU/dvRPiBJeUOYZ
+   QGskWD3gpuE6SjUsaml91/F7Ork3NINy/Q9NA4CSxLKovZaGw83ziWULl
+   8bN9fKRiUZPr3iWIzLVMvNFZs4sWOAi/nUmcbAcNKejAp2N0+8d/tYKlM
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="251180154"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="251180154"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 11:38:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="555910452"
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+  by orsmga002.jf.intel.com with ESMTP; 17 May 2022 11:38:12 -0700
+Date:   Tue, 17 May 2022 11:41:54 -0700
+From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 21/29] x86/nmi: Add an NMI_WATCHDOG NMI handler
+ category
+Message-ID: <20220517184154.GA6711@ranerica-svr.sc.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-22-ricardo.neri-calderon@linux.intel.com>
+ <87a6bqrelv.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v19 07/20] s390/vfio-ap: rename matrix_dev->lock mutex to
- matrix_dev->mdevs_lock
-Content-Language: en-US
-To:     jjherne@linux.ibm.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
-        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
-        alex.williamson@redhat.com, kwankhede@nvidia.com,
-        fiuczy@linux.ibm.com
-References: <20220404221039.1272245-1-akrowiak@linux.ibm.com>
- <20220404221039.1272245-8-akrowiak@linux.ibm.com>
- <a26ce34d-0ed8-5479-805b-d863ff056848@linux.ibm.com>
-From:   Tony Krowiak <akrowiak@linux.ibm.com>
-In-Reply-To: <a26ce34d-0ed8-5479-805b-d863ff056848@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: GDXWZ8emObZJ-VNq_4SmZ7TreLcKDhWa
-X-Proofpoint-GUID: EZERV1N4eoBxGDdVK1OzneBLJqNJ3fMW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-17_03,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- lowpriorityscore=0 phishscore=0 priorityscore=1501 bulkscore=0 spamscore=0
- mlxlogscore=827 mlxscore=0 clxscore=1015 suspectscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205170108
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87a6bqrelv.ffs@tglx>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thank you for the review.
+On Mon, May 09, 2022 at 03:59:40PM +0200, Thomas Gleixner wrote:
+> On Thu, May 05 2022 at 17:00, Ricardo Neri wrote:
+> > Add a NMI_WATCHDOG as a new category of NMI handler. This new category
+> > is to be used with the HPET-based hardlockup detector. This detector
+> > does not have a direct way of checking if the HPET timer is the source of
+> > the NMI. Instead, it indirectly estimates it using the time-stamp counter.
+> >
+> > Therefore, we may have false-positives in case another NMI occurs within
+> > the estimated time window. For this reason, we want the handler of the
+> > detector to be called after all the NMI_LOCAL handlers. A simple way
+> > of achieving this with a new NMI handler category.
+> >
+> > @@ -379,6 +385,10 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
+> >  	}
+> >  	raw_spin_unlock(&nmi_reason_lock);
+> >  
+> > +	handled = nmi_handle(NMI_WATCHDOG, regs);
+> > +	if (handled == NMI_HANDLED)
+> > +		goto out;
+> > +
+> 
+> How is this supposed to work reliably?
+> 
+> If perf is active and the HPET NMI and the perf NMI come in around the
+> same time, then nmi_handle(LOCAL) can swallow the NMI and the watchdog
+> won't be checked. Because MSI is strictly edge and the message is only
+> sent once, this can result in a stale watchdog, no?
 
-On 5/17/22 10:02 AM, Jason J. Herne wrote:
-> Reviewed-by: Jason J. Herne <jjherne@linux.ibm.com>
+This is true. Instead, at the end of each NMI I should _also_ check if the TSC
+is within the expected value of the HPET NMI watchdog. In this way, unrelated
+NMIs (e.g., perf NMI) are handled and we don't miss the NMI from the HPET
+channel.
 
+Thanks and BR,
+Ricardo
