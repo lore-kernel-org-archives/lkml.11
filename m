@@ -2,83 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D2B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C30C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352918AbiEQUWS (ORCPT
+        id S1352938AbiEQUW0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 16:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41966 "EHLO
+        Tue, 17 May 2022 16:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350882AbiEQUWG (ORCPT
+        with ESMTP id S1352903AbiEQUWJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 16:22:06 -0400
+        Tue, 17 May 2022 16:22:09 -0400
 Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.148])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0603C522EA
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:22:02 -0700 (PDT)
-Received: (wp-smtpd smtp.tlen.pl 23163 invoked from network); 17 May 2022 22:21:57 +0200
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A72151E6E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:22:07 -0700 (PDT)
+Received: (wp-smtpd smtp.tlen.pl 26781 invoked from network); 17 May 2022 22:22:04 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
-          t=1652818917; bh=iMnkwwcgkRQnDEbHbyihhtkLo3AnSPyvGVvhigcz/wQ=;
+          t=1652818924; bh=KT7q9eMAxby7uyk2jYuKh3OvBVpIpHr8zoPO+QpVv2U=;
           h=From:To:Cc:Subject;
-          b=wbdwRHHCksWIFUlj+g9uIxBfeoRccU+WyZJN2o2kiKP3kaA/Ih+8QGccJZJrbOAzL
-           dzGoPPZiS/b55VQeCRtCvHXyT9vzE7Xrb8DQKpLbBE8fExfklylBS46S7korX6R4aM
-           v6DerqqdYWGhYHV/hYaZXcs8hmEueDHBxON7f4Ew=
+          b=MqFcUpGC1tSz4iKrU9o7A43ozQ6I+O5TYeYaJ7wCk6ChPs6yzJL7KNquqCSNB1DXQ
+           dq56mIf9YpUFl6DZArNhO4x5rejzK9xqo/Jg+SlLRWYVmAKDO4ScqFYlp3V01cyN+y
+           Kh3SvKjTzgeyU6TpHsLZzdbhZgYInE+1cUxHqAao=
 Received: from aafg236.neoplus.adsl.tpnet.pl (HELO localhost.localdomain) (mat.jonczyk@o2.pl@[83.4.136.236])
           (envelope-sender <mat.jonczyk@o2.pl>)
           by smtp.tlen.pl (WP-SMTPD) with SMTP
-          for <linux-kernel@vger.kernel.org>; 17 May 2022 22:21:57 +0200
+          for <linux-kernel@vger.kernel.org>; 17 May 2022 22:22:04 +0200
 From:   =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
 To:     linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH v2 resend 0/2] x86/rtc: refactoring
-Date:   Tue, 17 May 2022 22:21:29 +0200
-Message-Id: <20220517202131.379939-1-mat.jonczyk@o2.pl>
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH v2 resend 2/2] x86/rtc: rename mach_set_rtc_mmss
+Date:   Tue, 17 May 2022 22:21:31 +0200
+Message-Id: <20220517202131.379939-3-mat.jonczyk@o2.pl>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220517202131.379939-1-mat.jonczyk@o2.pl>
+References: <20220517202131.379939-1-mat.jonczyk@o2.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-WP-MailID: 3f74181e37c2ca240d5ab56c2001b014
+X-WP-MailID: 5861db3696100fcc0889870520856aca
 X-WP-AV: skaner antywirusowy Poczty o2
-X-WP-SPAM: NO 0000000 [8QOU]                               
+X-WP-SPAM: NO 0000000 [USOE]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Once upon a time, before
+commit 3195ef59cb42 ("x86: Do full rtc synchronization with ntp")
+in 2013, the function set only the minute and seconds registers
+of the CMOS RTC. This is no longer true, so rename the function to
+mach_set_cmos_time.
 
-The first and main patch of this series removes duplicated code in
-mach_get_cmos_time() in arch/x86/kernel/rtc.c . This function performed
-the same thing as mc146818_get_time() - reading the time from the CMOS
-RTC - but used a different algorithm. So modify it to use common
-mc146818_get_time().
-
-The second patch renames a function in arch/x86/kernel/rtc.c.
-
-Tested originally (on top of 5.18-rc3) on 3 computers, and in i386 and
-amd64 VMs.
-
-Greetings,
-Mateusz
-
-v2:
-  - drop the previously first patch ("rtc-mc146818-lib: reduce RTC_UIP
-    polling period"). Its intent was to make behaviour of
-    mc146818_get_time() more similar to the existing version of
-    mach_get_cmos_time() by decreasing the polling period in
-    mc146818_get_time(). However, I determined that this does not matter
-    for users of mach_get_cmos_time().
-
-  - use pr_err instead of pr_err_ratelimited in the first remaining
-    patch,
-
-  - small patch description modifications.
-        
 Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Ingo Molnar <mingo@redhat.com>
@@ -86,20 +63,58 @@ Cc: Borislav Petkov <bp@alien8.de>
 Cc: Dave Hansen <dave.hansen@linux.intel.com>
 Cc: x86@kernel.org
 Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+ arch/x86/include/asm/mc146818rtc.h | 2 +-
+ arch/x86/kernel/rtc.c              | 4 ++--
+ arch/x86/kernel/x86_init.c         | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-Mateusz Jończyk (2):
-  x86/rtc: rewrite mach_get_cmos_time to delete duplicated code
-  x86/rtc: rename mach_set_rtc_mmss
-
- arch/x86/include/asm/mc146818rtc.h |  2 +-
- arch/x86/kernel/rtc.c              | 63 +++++-------------------------
- arch/x86/kernel/x86_init.c         |  2 +-
- 3 files changed, 11 insertions(+), 56 deletions(-)
-
-
-base-commit: 42226c989789d8da4af1de0c31070c96726d990c
+diff --git a/arch/x86/include/asm/mc146818rtc.h b/arch/x86/include/asm/mc146818rtc.h
+index 97198001e567..6115bb3d5795 100644
+--- a/arch/x86/include/asm/mc146818rtc.h
++++ b/arch/x86/include/asm/mc146818rtc.h
+@@ -95,7 +95,7 @@ static inline unsigned char current_lock_cmos_reg(void)
+ unsigned char rtc_cmos_read(unsigned char addr);
+ void rtc_cmos_write(unsigned char val, unsigned char addr);
+ 
+-extern int mach_set_rtc_mmss(const struct timespec64 *now);
++extern int mach_set_cmos_time(const struct timespec64 *now);
+ extern void mach_get_cmos_time(struct timespec64 *now);
+ 
+ #define RTC_IRQ 8
+diff --git a/arch/x86/kernel/rtc.c b/arch/x86/kernel/rtc.c
+index 1cadc8a15267..349046434513 100644
+--- a/arch/x86/kernel/rtc.c
++++ b/arch/x86/kernel/rtc.c
+@@ -27,13 +27,13 @@ DEFINE_SPINLOCK(rtc_lock);
+ EXPORT_SYMBOL(rtc_lock);
+ 
+ /*
+- * In order to set the CMOS clock precisely, set_rtc_mmss has to be
++ * In order to set the CMOS clock precisely, mach_set_cmos_time has to be
+  * called 500 ms after the second nowtime has started, because when
+  * nowtime is written into the registers of the CMOS clock, it will
+  * jump to the next second precisely 500 ms later. Check the Motorola
+  * MC146818A or Dallas DS12887 data sheet for details.
+  */
+-int mach_set_rtc_mmss(const struct timespec64 *now)
++int mach_set_cmos_time(const struct timespec64 *now)
+ {
+ 	unsigned long long nowtime = now->tv_sec;
+ 	struct rtc_time tm;
+diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
+index e84ee5cdbd8c..57353519bc11 100644
+--- a/arch/x86/kernel/x86_init.c
++++ b/arch/x86/kernel/x86_init.c
+@@ -138,7 +138,7 @@ struct x86_platform_ops x86_platform __ro_after_init = {
+ 	.calibrate_cpu			= native_calibrate_cpu_early,
+ 	.calibrate_tsc			= native_calibrate_tsc,
+ 	.get_wallclock			= mach_get_cmos_time,
+-	.set_wallclock			= mach_set_rtc_mmss,
++	.set_wallclock			= mach_set_cmos_time,
+ 	.iommu_shutdown			= iommu_shutdown_noop,
+ 	.is_untracked_pat_range		= is_ISA_range,
+ 	.nmi_init			= default_nmi_init,
 -- 
 2.25.1
 
