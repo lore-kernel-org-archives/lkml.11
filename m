@@ -2,94 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C82C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:35:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0396C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352964AbiEQUfg (ORCPT
+        id S1352975AbiEQUgJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 16:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
+        Tue, 17 May 2022 16:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350301AbiEQUfd (ORCPT
+        with ESMTP id S1353031AbiEQUgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 16:35:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E50A52B2C;
-        Tue, 17 May 2022 13:35:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA349616E7;
+        Tue, 17 May 2022 16:36:07 -0400
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE771D8;
+        Tue, 17 May 2022 13:36:04 -0700 (PDT)
+Received: from g550jk.arnhem.chello.nl (a246182.upc-a.chello.nl [62.163.246.182])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 52B8BCC9D9;
         Tue, 17 May 2022 20:35:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D267CC385B8;
-        Tue, 17 May 2022 20:35:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652819732;
-        bh=qzd2QVWtJy9wJyXpi03zRg6PCfu4G05Seli8kQ2WBfI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=dDXexWqjZpelT8RXlw4QdHHoHREjKRON5ZIRTHT25t+nPTapjiDAVee49dW9E75/n
-         ZvyNLBgSnE8H0jbF4gSiveFQ7k6DG9gzJzl8+2YfBL+MuqLSSfoFMPyFRZ4pLMKihi
-         S2nAsN0B93U7I39M7MDCbAss43EGwKP0VIDEbc5QKbkUsLWYdmyRP3TsiNisZrgj6S
-         fPseAVcGXm5HSkCRtpT5wYFyAbCijFODBzfu8BklnFlNEHGXnurmfRzWm28cQQs7gG
-         +hjR6eF3A2H5yEIIL802cP3bfcdaRK5YwB6co6xRJyp3djUe/xLp2LoXk5+tRwCAhC
-         udROXbdAI9tKQ==
-Date:   Tue, 17 May 2022 15:35:30 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1652819732; bh=iON8ZRL1eW/DULXxtgulxs3OwCDAEDeckZe6GD8UEwE=;
+        h=From:To:Cc:Subject:Date;
+        b=h18DEOpeTUcEE3Ryyjt0J8JkJznvM7hgRmJhBDTiPqOh+wY55opjWlbXOLFH5f64z
+         4vL8wjw77l+tj2qFOHqaocuJyEpHyC4xAT6N03ZRGsgJY/BqGBr0OumkE1sfEIr+jD
+         eOpXUgr9htmVONzLyDD5VXJ5A/v0JNpEA+vBQAK8=
+From:   Luca Weiss <luca@z3ntu.xyz>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Luca Weiss <luca@z3ntu.xyz>, Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Stefan Gottwald <gottwald@igel.com>,
-        Steev Klimaszewski <steev@kali.org>
-Subject: [GIT PULL] PCI fixes for v5.18
-Message-ID: <20220517203530.GA1102878@bhelgaas>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ARM: dts: qcom: msm8974: Add BAM DMUX Ethernet/IP device
+Date:   Tue, 17 May 2022 22:34:51 +0200
+Message-Id: <20220517203450.1155696-1-luca@z3ntu.xyz>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+BAM DMUX is used as the network interface to the modem.
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+---
+ arch/arm/boot/dts/qcom-msm8974.dtsi | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-are available in the Git repository at:
+diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
+index 814ad0b46232..ffa6f874917a 100644
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -1146,6 +1146,18 @@ spmi_bus: spmi@fc4cf000 {
+ 			#interrupt-cells = <4>;
+ 		};
+ 
++		bam_dmux_dma: dma-controller@fc834000 {
++			compatible = "qcom,bam-v1.4.0";
++			reg = <0xfc834000 0x7000>;
++			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
++			#dma-cells = <1>;
++			qcom,ee = <0>;
++
++			num-channels = <6>;
++			qcom,num-ees = <1>;
++			qcom,powered-remotely;
++		};
++
+ 		remoteproc_mss: remoteproc@fc880000 {
+ 			compatible = "qcom,msm8974-mss-pil";
+ 			reg = <0xfc880000 0x100>, <0xfc820000 0x020>;
+@@ -1180,6 +1192,20 @@ mpss {
+ 				memory-region = <&mpss_region>;
+ 			};
+ 
++			bam_dmux: bam-dmux {
++				compatible = "qcom,bam-dmux";
++
++				interrupt-parent = <&modem_smsm>;
++				interrupts = <1 IRQ_TYPE_EDGE_BOTH>, <11 IRQ_TYPE_EDGE_BOTH>;
++				interrupt-names = "pc", "pc-ack";
++
++				qcom,smem-states = <&apps_smsm 1>, <&apps_smsm 11>;
++				qcom,smem-state-names = "pc", "pc-ack";
++
++				dmas = <&bam_dmux_dma 4>, <&bam_dmux_dma 5>;
++				dma-names = "tx", "rx";
++			};
++
+ 			smd-edge {
+ 				interrupts = <GIC_SPI 25 IRQ_TYPE_EDGE_RISING>;
+ 
+-- 
+2.36.0
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git tags/pci-v5.18-fixes-1
-
-for you to fetch changes up to a3b69dd0ad6265c29c4b6fb381cd76fb3bebdf8c:
-
-  Revert "PCI: aardvark: Rewrite IRQ code to chained IRQ handler" (2022-05-16 15:58:47 -0500)
-
-----------------------------------------------------------------
-PCI fixes:
-
-  - Avoid putting Elo i2 PCIe Ports in D3cold because downstream devices
-    are inaccessible after going back to D0 (Rafael J. Wysocki)
-
-  - Qualcomm SM8250 has a ddrss_sf_tbu clock but SC8180X does not; make a
-    SC8180X-specific config without the clock so it probes correctly (Bjorn
-    Andersson)
-
-  - Revert aardvark chained IRQ handler rewrite because it broke interrupt
-    affinity (Pali Rohár)
-
-----------------------------------------------------------------
-Bjorn Andersson (1):
-      PCI: qcom: Remove ddrss_sf_tbu clock from SC8180X
-
-Pali Rohár (1):
-      Revert "PCI: aardvark: Rewrite IRQ code to chained IRQ handler"
-
-Rafael J. Wysocki (1):
-      PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold
-
- drivers/pci/controller/dwc/pcie-qcom.c |  7 ++++-
- drivers/pci/controller/pci-aardvark.c  | 48 ++++++++++++++++------------------
- drivers/pci/pci.c                      | 10 +++++++
- 3 files changed, 38 insertions(+), 27 deletions(-)
