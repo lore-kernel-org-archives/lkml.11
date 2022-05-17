@@ -2,144 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F86EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D1EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351729AbiEQSBi (ORCPT
+        id S1351713AbiEQSDJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
+        Tue, 17 May 2022 14:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351727AbiEQSBZ (ORCPT
+        with ESMTP id S1345621AbiEQSDH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:01:25 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342703FD82;
-        Tue, 17 May 2022 11:01:24 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24HHfsC1018713;
-        Tue, 17 May 2022 18:01:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=tmdhMwxKEVX3PeaTU8UyOIcfU9EAXEHP60T3yrcx/ms=;
- b=iQ/tTXc8K7hYdk29JTAn6AdDxWpo5BFoYk8bIOK/f0jA9MdT51YH1G9DdjyU0j6bmfiX
- LsWtTYzORxsn/6W8zhouy+/+2xd37D7SNeEh73frFJlNvDX+DWnEd0CyZe4VbxbfoRuR
- xysYaaVh4VdyB2BuWD7n8Q+1LV8D0gl9PdQJGbI52gZjcQ5dCFk9DyIvwi1wUwISLDnp
- 84FlcO0Oli/sjkAPOvnUwGvBt5UdlxfqONVz7N+0pFE35G5VRM4o/SEDeCagBoX5u7Lc
- lfP97ccKggdUxaOiaBs/QVIeADIkzvQZCuwoPgqN8wMsQSmRbEREnr2yFUDVyAkR73PT Qg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4gb28cw3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 18:01:17 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24HHl8nQ017286;
-        Tue, 17 May 2022 18:01:17 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4gb28cuy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 18:01:17 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24HHgddO001394;
-        Tue, 17 May 2022 18:01:14 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3g2429ckj7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 18:01:14 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24HI1B1w48824672
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 17 May 2022 18:01:11 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 30B404C046;
-        Tue, 17 May 2022 18:01:11 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B368B4C044;
-        Tue, 17 May 2022 18:01:10 +0000 (GMT)
-Received: from osiris (unknown [9.145.64.16])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 17 May 2022 18:01:10 +0000 (GMT)
-Date:   Tue, 17 May 2022 20:01:09 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Jann Horn <jannh@google.com>,
-        Harald Freudenberger <freude@linux.ibm.com>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] s390/crypto: fix scatterwalk_unmap() callers in AES-GCM
-Message-ID: <YoPi5eH+oFJ2anQh@osiris>
-References: <20220517143047.3054498-1-jannh@google.com>
+        Tue, 17 May 2022 14:03:07 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8CA3FBC3
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:03:06 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id 185so15147267qke.7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:03:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=qYLGulgiXtqkGHB5690TZrqi9P52kY4/ILEk7GNvo8I=;
+        b=d1EWMzvycfAGBYsJZQZH5yrENWSi0Lz37ujcaPlZJ4unA4H0x3pCDDdIZeuaKcwI6N
+         rCxeOBcZd2ndnT4BRF+FeOisiuQXpk0ExFqrIfVAqFKk1yxTNEHuHuZXSkKIfFvGqZX+
+         bFlI31Uf4DpfWyUopf5y37IaB+mI2+gBIuSMpW24FZD++Wcf8M+DkPQVTgK+XFjWSe6I
+         dzkKPf6tEMKiIMnHu3nRX35QXLshgVU0NU1MzvHua1QhYf6D15Tj8zUK7MpZpyHl0SCs
+         zsw07DghloAy/d1e1yumQDMQdrvnMnPMIsIR6DuwWvUzRe3qQyqcrtmButecDXmlj7mX
+         rqvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=qYLGulgiXtqkGHB5690TZrqi9P52kY4/ILEk7GNvo8I=;
+        b=I+WORPChGJXcI+FJgdBTHO5K0MrTXU5c/BHdI59zE0mR/6WlH3O1FIiNjQtKwaHmEE
+         ga5fSvYR4oS2AiI8yMd6/7/8d3PTq3Q4SsSPwOW8VqAbbVMFGOsMpZnSjHMEYueM7rBp
+         VwDFhkxtlIFpP/7k1donC3bmxoQmWSwGC7cphNDCL6K1rKsNc3nd7ONAyNZ/fnHnscog
+         eZNeWvqbl2DVbGXkCmZ57Ag5bTlX1Agdv+BBcdnuqlqgq3mLQX9tVzHmPC7HrctaKc/m
+         5GKuHZFDG3ggKnMBqIaGYgIkb0nVYFora4WRDFcqEjIMUGmeM+KK96DRD3QaRfDMYqDd
+         Qcqg==
+X-Gm-Message-State: AOAM5334L52GQcT/BdAHqQ3HgJ04dj5QFXnUjMeFrTD1qbvePGQXdQbE
+        F6nt5/VREzhynKegWEBFZC0i3Q==
+X-Google-Smtp-Source: ABdhPJzERzhGKPBQiikc9HIAelrTIToUaE4SM6vylFfp/3XqAiKYqLEFKxNbx2dUn/bo6K2457Es0Q==
+X-Received: by 2002:a37:2f06:0:b0:6a0:5596:f395 with SMTP id v6-20020a372f06000000b006a05596f395mr16675021qkh.298.1652810585229;
+        Tue, 17 May 2022 11:03:05 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id o5-20020a05620a110500b006a0b40689b6sm7737036qkk.135.2022.05.17.11.03.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 11:03:04 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nr1XD-0087sl-Ll; Tue, 17 May 2022 15:03:03 -0300
+Date:   Tue, 17 May 2022 15:03:03 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Haowen Bai <baihaowen@meizu.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] RDMA: remove null check after call container_of()
+Message-ID: <20220517180303.GK63055@ziepe.ca>
+References: <1652751208-23211-1-git-send-email-baihaowen@meizu.com>
+ <20220517121646.GE63055@ziepe.ca>
+ <142a9c03-574f-adcf-bc4d-bb2a25c01e88@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220517143047.3054498-1-jannh@google.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: D5hoV9tVBnozGV6HodEoQOPD7mxgR36h
-X-Proofpoint-ORIG-GUID: olvVvJLd3dEjFcB0RK5hhMJdxWYOnVii
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-17_03,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 phishscore=0
- spamscore=0 suspectscore=0 clxscore=1015 mlxlogscore=846 bulkscore=0
- impostorscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205170107
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <142a9c03-574f-adcf-bc4d-bb2a25c01e88@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 04:30:47PM +0200, Jann Horn wrote:
-> The argument of scatterwalk_unmap() is supposed to be the void* that was
-> returned by the previous scatterwalk_map() call.
-> The s390 AES-GCM implementation was instead passing the pointer to the
-> struct scatter_walk.
+On Tue, May 17, 2022 at 07:54:38PM +0200, Christophe JAILLET wrote:
+> Le 17/05/2022 à 14:16, Jason Gunthorpe a écrit :
+> > On Tue, May 17, 2022 at 09:33:28AM +0800, Haowen Bai wrote:
+> > > container_of() will never return NULL, so remove useless code.
+> > 
+> > It is confusing here, but it can be null.
 > 
-> This doesn't actually break anything because scatterwalk_unmap() only uses
-> its argument under CONFIG_HIGHMEM and ARCH_HAS_FLUSH_ON_KUNMAP.
+> Hi,
 > 
-> Note that I have not tested this patch in any way, not even compile-tested
-> it.
-> 
-> Fixes: bf7fa038707c ("s390/crypto: add s390 platform specific aes gcm support.")
-> Signed-off-by: Jann Horn <jannh@google.com>
-> ---
-> IDK which tree this has to go through - s390 or crypto?
-> maybe s390 is better, since they can actually test it?
-> 
->  arch/s390/crypto/aes_s390.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> out of curiosity, can you elaborate how it can be NULL?
 
-This can go via the s390 tree, however I'd like to have an ACK from
-Harald, who wrote the original code.
+It is guarented/required that that container_of is a 0 offset. The
+normal usage of the ib_alloc_device macro:
 
-> diff --git a/arch/s390/crypto/aes_s390.c b/arch/s390/crypto/aes_s390.c
-> index 54c7536f2482..1023e9d43d44 100644
-> --- a/arch/s390/crypto/aes_s390.c
-> +++ b/arch/s390/crypto/aes_s390.c
-> @@ -701,7 +701,7 @@ static inline void _gcm_sg_unmap_and_advance(struct gcm_sg_walk *gw,
->  					     unsigned int nbytes)
->  {
->  	gw->walk_bytes_remain -= nbytes;
-> -	scatterwalk_unmap(&gw->walk);
-> +	scatterwalk_unmap(gw->walk_ptr);
->  	scatterwalk_advance(&gw->walk, nbytes);
->  	scatterwalk_done(&gw->walk, 0, gw->walk_bytes_remain);
->  	gw->walk_ptr = NULL;
-> @@ -776,7 +776,7 @@ static int gcm_out_walk_go(struct gcm_sg_walk *gw, unsigned int minbytesneeded)
->  		goto out;
->  	}
->  
-> -	scatterwalk_unmap(&gw->walk);
-> +	scatterwalk_unmap(gw->walk_ptr);
->  	gw->walk_ptr = NULL;
->  
->  	gw->ptr = gw->buf;
-> 
-> base-commit: 42226c989789d8da4af1de0c31070c96726d990c
-> -- 
-> 2.36.0.550.gb090851708-goog
-> 
+#define ib_alloc_device(drv_struct, member)                                    \
+	container_of(_ib_alloc_device(sizeof(struct drv_struct) +              \
+				      BUILD_BUG_ON_ZERO(offsetof(              \
+					      struct drv_struct, member))),    \
+		     struct drv_struct, member)
+
+Enforces this property with a BUILD_BUG_ON
+
+So, if the input pointer to container_of is reliably NULL or ERR_PTR
+then the output pointer will be the same.
+
+The rvt code here open codes the call because it is a mid-layer and
+the sizeof() calculation above is not correct for it.
+
+Jason
