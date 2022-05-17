@@ -2,83 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C58AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235375AbiEQHmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
+        id S241387AbiEQHmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238993AbiEQHk4 (ORCPT
+        with ESMTP id S242557AbiEQHlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:40:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963774991E;
-        Tue, 17 May 2022 00:40:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 076FC60F9A;
-        Tue, 17 May 2022 07:40:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56093C34100;
-        Tue, 17 May 2022 07:40:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652773220;
-        bh=1GMphxsy6bjIVoh6DDdhoMypOAa7uTUskHeD6nHAIPE=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=Cch60QK8tAM5c/5Iy4d62l3BI0i33ugZf01GCElZ/fCQt+cpLoBlCECy7annnP7ie
-         JZ4qm1WMhig5wLBn/NJU4Miv2WhsNKaRUAxfyAt03vxAJNn1YXKaiz72X/t0nQ8Qp2
-         7CXoROJMcovsWMtuMIxpBtGd32RCnbjAiDf2HNPdC0r2c0wFoFqdSXD6idmvx9j0O1
-         1VALm0VpJPhykgWCo16l8uBFN7hXQWxD3k+cVDSFliLBEggIxyMaio4PDQWVsfrt1v
-         ksPEWRQcA3izP2JC3PBPO8flmtd3hzd1zvMEnkmmVgblz26kV4TleoUl7Y8gy0SABJ
-         AZzzeWbvjA/7A==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 17 May 2022 03:41:04 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50B412D31
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:40:48 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id nk9-20020a17090b194900b001df2fcdc165so1701334pjb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:40:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AeK9VUF3y97S0wYhYQH6NYZJR1s4W4dg36hM35BXnkI=;
+        b=VupddrZxTMFF73/Fue6HCMHW6Yoruq+qwq1j8nmvyN4q3Kge6zBZmPbdbCdhgTNm7G
+         K+3ZCUSOnhFe9Tc9O82layM+tqkcZrUl3Q46xhogrMcMxeqPGFN+drURYDqqrMXiojaK
+         uhO/q1kBMMAnidWWpeoyoejNNuF0pfTHTFkYOaGLo4IvJ/E6DncS2hO8zUPNDHpVgAwQ
+         duFj/ge7M0qSOkwcJXtDYFGn1yAsJNkMRjBdjiCnGLGtrZqW3z5N9qLn3lhFQ90b/qmG
+         iEtb+lzlqKNW/vo0tGOWZ0wP0ZO1AttJaL+Pn/ZL7zvvCYJMX13P/9+/Cgy2JiIb7JI4
+         ibUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AeK9VUF3y97S0wYhYQH6NYZJR1s4W4dg36hM35BXnkI=;
+        b=syHyH9QK/Fb4qhS3+Lk3Q+hMKHNcxynxQzs63IqgikXOCEGCstl18bUtNY+xfYJBMT
+         ko2tt13BouBrEPmb+/wBRdhTeCeftK3eBkl4Gin/CB3BKRG1IxTqB7B6ojzNGZZXTBYv
+         92OL8Tl2aTgwk/97Z5COs3RbjI1M8xjmJ1KNoDqZIzOhWbB2eEhwGtIoA+q0taVCS/xF
+         oJcLEAdIR+DMgiEKc7qzWUZQXKMMeHgNlGpbPqPHriF+qWc97+cOWf2e00iNKwc5x3Ar
+         WVPpb1G8CqGpPSy/CQ86wYQAtof4v7zKo7zrNJRYo2D5At++8GtleBjBuxj5dXenBsZ4
+         gFGQ==
+X-Gm-Message-State: AOAM531vdE9VxRMrxHfKvGS3QAYh6u9C+Tp3ampmSiqLLOlju1UQpFCi
+        IIJK9DD3zBwtQ8JfCC5TWvE=
+X-Google-Smtp-Source: ABdhPJw3kAp82GIvb+U/WV5uzx98ZnVuNSiGaWQ74X5doZXomOr+UfBtgAq9ucg9N8O/pRcE5pOx1w==
+X-Received: by 2002:a17:90a:778c:b0:1df:56a5:8474 with SMTP id v12-20020a17090a778c00b001df56a58474mr9439550pjk.63.1652773248364;
+        Tue, 17 May 2022 00:40:48 -0700 (PDT)
+Received: from localhost.localdomain ([103.167.60.51])
+        by smtp.gmail.com with ESMTPSA id n22-20020a056a0007d600b0050dc7628139sm8551987pfu.19.2022.05.17.00.40.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 00:40:47 -0700 (PDT)
+From:   Genjian Zhang <zhanggenjian123@gmail.com>
+X-Google-Original-From: Genjian Zhang <zhanggenjian@kylinos.cn>
+To:     hsweeten@visionengravers.com, alexander.sverdlin@gmail.com,
+        linux@armlinux.org.uk
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        zhanggenjian123@gmail.com, Genjian Zhang <zhanggenjian@kylinos.cn>
+Subject: [PATCH v2] ep93xx: clock: Do not return the address of the freed memory
+Date:   Tue, 17 May 2022 15:39:46 +0800
+Message-Id: <20220517073946.1339333-1-zhanggenjian@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220512211431.r23r6daua36lty7d@mobilestation>
-References: <20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru> <20220512001156.x6kqyhi3vjjpqch6@mobilestation> <20220512152705.GA2506@lpieralisi> <20220512171150.GA164627@thinkpad> <20220512211431.r23r6daua36lty7d@mobilestation>
-Subject: Re: [PATCH v3 0/4] clk: Baikal-T1 DDR/PCIe resets and some xGMAC fixes
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Serge Semin <fancer.lancer@gmail.com>
-Date:   Tue, 17 May 2022 00:40:18 -0700
-User-Agent: alot/0.10
-Message-Id: <20220517074020.56093C34100@smtp.kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Serge Semin (2022-05-12 14:14:31)
-> On Thu, May 12, 2022 at 10:41:50PM +0530, Manivannan Sadhasivam wrote:
-> > On Thu, May 12, 2022 at 04:27:05PM +0100, Lorenzo Pieralisi wrote:
-> > > So in short, this series has to go through the usual clock tree review
-> > > process.
-> > >=20
->=20
-> I do know the normal procedure. But if patches concern different
-> subsystems but for some reason inter-depended somehow it's ok to merge
-> them in via a single repo. In my case the platform clock driver has
-> been updated in a way so to support the reset-controls utilized in the
-> PCIe driver altered in another patchset. So I didn't want to leave the
-> kernel not working in the framework of my platform on any git hash
-> state. That's why I asked to merge the patchsets in via the same repo.
-> The kernel would be still buildable though.
->=20
+Avoid return freed memory addresses,Modified to the actual error
+return value of clk_register().
 
-Is it going to be broken if I merge the clk patches through clk tree?
-Has it ever worked? Does the kernel still boot, just PCIe fails if the
-patches are applied?
+Fixes: 9645ccc7bd7a ("ep93xx: clock: convert in-place to COMMON_CLK")
+Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
+---
+ arch/arm/mach-ep93xx/clock.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
+index 4fa6ea5461b7..85a496ddc619 100644
+--- a/arch/arm/mach-ep93xx/clock.c
++++ b/arch/arm/mach-ep93xx/clock.c
+@@ -345,9 +345,10 @@ static struct clk_hw *clk_hw_register_ddiv(const char *name,
+ 	psc->hw.init = &init;
+ 
+ 	clk = clk_register(NULL, &psc->hw);
+-	if (IS_ERR(clk))
++	if (IS_ERR(clk)) {
+ 		kfree(psc);
+-
++		return ERR_CAST(clk);
++	}
+ 	return &psc->hw;
+ }
+ 
+@@ -452,9 +453,10 @@ static struct clk_hw *clk_hw_register_div(const char *name,
+ 	psc->hw.init = &init;
+ 
+ 	clk = clk_register(NULL, &psc->hw);
+-	if (IS_ERR(clk))
++	if (IS_ERR(clk)) {
+ 		kfree(psc);
+-
++		return ERR_CAST(clk);
++	}
+ 	return &psc->hw;
+ }
+ 
+-- 
+2.25.1
+
