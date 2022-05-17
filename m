@@ -2,156 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD204C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B46C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237768AbiEQBxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 21:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54556 "EHLO
+        id S238108AbiEQBxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 21:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiEQBxl (ORCPT
+        with ESMTP id S232437AbiEQBxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 16 May 2022 21:53:41 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A2439174
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 18:53:40 -0700 (PDT)
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 6CC1C3FE02
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:53:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1652752416;
-        bh=0IJeGuY5tYKvN9axhAJnVrgVgRACxJYzXE/eYjk+nos=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=IpuQr5fTBtNkIoXTS+mr+yt8mixkfmYsXfCzGrGINQ8dnGNf5mWrDgsx7BpApLjLS
-         fZQlV6M6PTEgWaTn2IpbqOVGiGqRGwP5RMZLUX0MiJHM0/r3frTfUrsaDDmbNZBOvB
-         KRRhLbBY2Ti1QDCLMSzQVNUTEHC/GUB6zP1ZiTfO+W4tTNgfiwnlHvuZTynvA1BXJ8
-         NZyOoR61czGm3epwA1jXT7cRtH4Gy29lnuUiDMTO9r+gQs6VJL8E2zalYTH7LAaPWL
-         /0caV6ZR8CofHePsB6bx4Pz6NCe+kHQ2ov4hOg+FhOQaFO9U6oPSX6kFpat4ziqjU7
-         rUHTGq+ubeldA==
-Received: by mail-oi1-f199.google.com with SMTP id w205-20020acaadd6000000b0032637f774d0so6034965oie.20
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 18:53:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0IJeGuY5tYKvN9axhAJnVrgVgRACxJYzXE/eYjk+nos=;
-        b=ScJHclTJL5hoMES0rPKzYYk+sUBNC2OM57bxu4X3Hr61bgcxndEJdy88lFEbj8tolw
-         r+5f8VTC9wdZW2zGAPf8o3EOVTKx1QLFOVPYttWxCBeEifI76eHt4ENrhBL4NERJ+A/w
-         uHgcPhtrjZsbuihF03GMdocF7AO7vb9dQVOs0342PCVPNIsbODzme0aK5HN2BzAGkCO4
-         hjMA9Z5OLRN2xnWxxRqwhX3Ba4QbeMMI8afqm7f+T0ES5Sy1xBYIv7BsYTl2O/3R0s+D
-         Af9l6h9yKSNwnJ7+QWYzYA0LRQyyY0e5dymkJO+M0nT10K1xGLbK2xAzRM/MkL9ovkSh
-         kqKA==
-X-Gm-Message-State: AOAM532faCyhGuRhpAJzW+/H4ASNzJ4osTK8I6T+gLMM6Yfskh9Om6y/
-        EAsrN447637HXtIzQq2txct0nRbWB02y86uhSnrR/LS0WSsmsw4A3Wh589rj87appFaJYY+vnZL
-        /c2eQcZIO0tp0TJEEPTGcpp1QD2T0op5nhHfEEOCIn/o7dk8C8KSf4XQy5w==
-X-Received: by 2002:a05:6830:33cf:b0:5af:4018:fc2a with SMTP id q15-20020a05683033cf00b005af4018fc2amr7287427ott.161.1652752415162;
-        Mon, 16 May 2022 18:53:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxQKaMjm+HGo56tEW8iIAzIfXbZpXdSSZ5jTkEIdP2Cq6Z/yGa2ufblWkAi6dIjmMf/A7vt0doEce2wz99pDv4=
-X-Received: by 2002:a05:6830:33cf:b0:5af:4018:fc2a with SMTP id
- q15-20020a05683033cf00b005af4018fc2amr7287417ott.161.1652752414886; Mon, 16
- May 2022 18:53:34 -0700 (PDT)
+Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5CF134B9C;
+        Mon, 16 May 2022 18:53:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Sv4p5
+        7RP4vVkhn/nojtlVRpzvQRuq8AhJ6Z3TmpD4+w=; b=VxH5ML3iwGU3p2+s48oUA
+        VlBBYuU1SIfOAwIg4a2DQ1H3ahskebu2lahBGeRqfSIeD74nHbIcFTcnxmNPCjCv
+        ALCYc2BjIxAW0DSTFSgb3I43FFFHsY4qt52PxMQg93zZu+unp19LrZdyRdqFMQ44
+        3coOnfQvmoiHx/0JkuempQ=
+Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.20])
+        by smtp9 (Coremail) with SMTP id DcCowAB3USwR_IJiF3ohDQ--.61255S3;
+        Tue, 17 May 2022 09:36:19 +0800 (CST)
+From:   qianfanguijin@163.com
+To:     linux-sunxi@lists.linux.dev
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        qianfan Zhao <qianfanguijin@163.com>
+Subject: [PATCH v5 1/3] ARM: dts: sun8i-r40: Add "cpu-supply" node for sun8i-r40 based board
+Date:   Tue, 17 May 2022 09:36:05 +0800
+Message-Id: <20220517013607.2252-2-qianfanguijin@163.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220517013607.2252-1-qianfanguijin@163.com>
+References: <20220517013607.2252-1-qianfanguijin@163.com>
 MIME-Version: 1.0
-References: <20220516130047.3887590-1-trix@redhat.com> <YoJ0I/XPoj1B/+mm@dev-arch.thelio-3990X>
- <d34498ad-0230-7c73-8f1f-9ca59fbf930f@redhat.com>
-In-Reply-To: <d34498ad-0230-7c73-8f1f-9ca59fbf930f@redhat.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Tue, 17 May 2022 09:53:23 +0800
-Message-ID: <CAAd53p57APcectWW-NN_=HE6JkTQRk717cWNZ5iJcP+MtEYjog@mail.gmail.com>
-Subject: Re: [PATCH] misc: rtsx: Set setting_reg2 before use.
-To:     Tom Rix <trix@redhat.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>, arnd@arndb.de,
-        gregkh@linuxfoundation.org, ndesaulniers@google.com,
-        ricky_wu@realtek.com, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcCowAB3USwR_IJiF3ohDQ--.61255S3
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Aw4UuryxWFW3uw4UGw4fuFg_yoW8ur4xpw
+        17CrZ7Gwn3WF15t347WrWDGr1UCFykW3yYvF15C34fJrsrXaykXryftwnakrZ8Xr4fJ3y0
+        93s5Xr97Xw4DX3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziQVyfUUUUU=
+X-Originating-IP: [218.201.129.20]
+X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbCqRwE7V0Dfef3EwAAs8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 1:06 AM Tom Rix <trix@redhat.com> wrote:
->
->
-> On 5/16/22 8:56 AM, Nathan Chancellor wrote:
-> > On Mon, May 16, 2022 at 09:00:47AM -0400, Tom Rix wrote:
-> >> The clang build fails with
-> >> rts5261.c:406:13: error: variable 'setting_reg2' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
-> >>          } else if (efuse_valid == 0) {
-> >>                     ^~~~~~~~~~~~~~~~
-> >>
-> >> setting_reg2 is set in this block
-> >>    if (efuse_valid == 2 || efuse_valid == 3) {
-> >> ..
-> >>    } else if (efuse_valid == 0) {
-> >>      // default
-> >> ..
-> >>    }
-> >> But efuse_valid can also have a value of 1.
-> >> Change the 'else if' to 'else' to make the second block the default.
-> >>
-> >> Fixes: b1c5f3085149 ("misc: rtsx: add rts5261 efuse function")
-> >> Signed-off-by: Tom Rix <trix@redhat.com>
-> > I am not sure if this fix is correct from a functional standpoint (i.e.
-> > is treating efuse_valid == 1 the same as efuse_valid == 0 correct?) but
-> > it is better than not handling this value altogether. For what it's
-> > worth:
->
-> I looked at how the code used to work, this seemed better than
-> initializing to NULL.
+From: qianfan Zhao <qianfanguijin@163.com>
 
-Or maybe use a single if block?
+The CPU of sun8i-r40 is powered by PMIC, let's add "cpu-supply" node.
 
-u16 setting_reg1 =PCR_SETTING_REG1 , setting_reg2 = PCR_SETTING_REG2;
-...
-if ((efuse_valid == 2 || efuse_valid == 3) && (valid != 3) {
-    setting_reg1 = PCR_SETTING_REG4;
-    setting_reg2 = PCR_SETTING_REG5;
-}
+Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+---
+ arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts | 4 ++++
+ arch/arm/boot/dts/sun8i-r40-feta40i.dtsi          | 4 ++++
+ arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts          | 4 ++++
+ arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts | 4 ++++
+ 4 files changed, 16 insertions(+)
 
-Kai-Heng
+diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+index a6a1087a0c9b..4f30018ec4a2 100644
+--- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
++++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+@@ -113,6 +113,10 @@ &ahci {
+ 	status = "okay";
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &de {
+ 	status = "okay";
+ };
+diff --git a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
+index 265e0fa57a32..b872b51a346d 100644
+--- a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
++++ b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
+@@ -6,6 +6,10 @@
+ 
+ #include "sun8i-r40.dtsi"
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &i2c0 {
+ 	status = "okay";
+ 
+diff --git a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
+index 6931aaab2382..0eb1990742ff 100644
+--- a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
++++ b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
+@@ -88,6 +88,10 @@ &ahci {
+ 	status = "okay";
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &de {
+ 	status = "okay";
+ };
+diff --git a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
+index 47954551f573..fdf8bd12faaa 100644
+--- a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
++++ b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
+@@ -107,6 +107,10 @@ &ahci {
+ 	status = "okay";
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &de {
+ 	status = "okay";
+ };
+-- 
+2.25.1
 
->
-> >
-> > Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-> >
-> > As a side note, it is unfortunate that this change made it into -next
-> > when there was an outstanding report about this warning:
->
->  From the clang side, this is a build break and my static analysis infra
-> goes down.
->
-> These build breaks seem to happening every week, is there a precommit
-> clang gating test that could be done for -next ?
->
-> Tom
->
-> >
-> > https://lore.kernel.org/202205100220.WyAyhKap-lkp@intel.com/
-> >
-> >> ---
-> >>   drivers/misc/cardreader/rts5261.c | 2 +-
-> >>   1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/misc/cardreader/rts5261.c b/drivers/misc/cardreader/rts5261.c
-> >> index 749cc5a46d13..f22634b14dc8 100644
-> >> --- a/drivers/misc/cardreader/rts5261.c
-> >> +++ b/drivers/misc/cardreader/rts5261.c
-> >> @@ -403,7 +403,7 @@ static void rts5261_init_from_hw(struct rtsx_pcr *pcr)
-> >>                      setting_reg1 = PCR_SETTING_REG4;
-> >>                      setting_reg2 = PCR_SETTING_REG5;
-> >>              }
-> >> -    } else if (efuse_valid == 0) {
-> >> +    } else {
-> >>              // default
-> >>              setting_reg1 = PCR_SETTING_REG1;
-> >>              setting_reg2 = PCR_SETTING_REG2;
-> >> --
-> >> 2.27.0
-> >>
-> > Cheers,
-> > Nathan
-> >
->
