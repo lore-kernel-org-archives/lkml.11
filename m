@@ -2,155 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C37CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9AB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230315AbiEQWQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
+        id S230342AbiEQWRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiEQWQp (ORCPT
+        with ESMTP id S229527AbiEQWRP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:16:45 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FEA37025
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:16:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652825804; x=1684361804;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6W6rvkplRpdMvYjau1H8ykuxkSdmIy9T0OZizqtcYdI=;
-  b=MAM4O9sKE/XHk3UxpWre/N+eglN7HENKGJQaJGH2buIU4qtqQuJ1I50i
-   deTiVesvrzFhkEk/w5on7ljWzp57F9IykS2iW5E8mjCBUK4rT637wYQLw
-   kLRGVlu1P572yrSszzYqfFVb3LVtw+p+i2fYaKeij+pXAYEXQgjTqTpS6
-   9xoKfy71B+rIBKfK6Il0PVcxJN0zS6lmNyKrTsJW0CZQK4rLS43ZI7+qB
-   JYs1bWFA34pshVNfJDkDXUjn7SrC2KvDM5T/KfBK0anL+bstQbp532oR9
-   erIMhuDfryYLrgk7Kax/Q4ziU5fdle93YUkSU6/etGk3hoQCCh/ofj4s/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271047142"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="271047142"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 15:16:43 -0700
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="673081091"
-Received: from danielga-mobl.amr.corp.intel.com (HELO [10.212.245.96]) ([10.212.245.96])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 15:16:42 -0700
-Message-ID: <083519ab-752f-9815-7741-22b3fcc03322@intel.com>
-Date:   Tue, 17 May 2022 15:16:42 -0700
+        Tue, 17 May 2022 18:17:15 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BFB37025;
+        Tue, 17 May 2022 15:17:13 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id q18so54851pln.12;
+        Tue, 17 May 2022 15:17:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=cwZoaiE0qmCYO1y5XITA8VMbwPlD4wCftR3Cmz5EzWQ=;
+        b=WpIU6+iLtUdKTEvfXkzkkeqrJv+csuMlTbkjyZ58RL7R+atph3mOyl0ILFcR/qdoDi
+         TTgrO/o5IWMVBVAzHWsfezMALCkir658HhBEzdo14Az8nieVvefMCGxyKRRAAQeJBeU2
+         TgyxLi5mEAd7+S44hm2Nsz81jXVETx3PHvaKwdRwalYXqjdJJWGYYZudW6nU/JJYUkDl
+         MFm87cBXuubtsS7skOsTVisERs5t2hxvaINJqDcjO42vMYFP0j0z3SidKH21n1yLam0U
+         tyVfeAQBqh6Ri7F0jdM0TCToUMYl5XPdfqsS+XDD/tgGjw/Ajx7gIeWC8VgJioTsWhgN
+         a7qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cwZoaiE0qmCYO1y5XITA8VMbwPlD4wCftR3Cmz5EzWQ=;
+        b=sqlEctfGAK8Q1dtELjb6tzqxGsM/Lj/HKFOmc9EWQkcc66Y+kC/V9fIPJnXf3fEXVW
+         lOQ4Jn8fxrFB0HkrRPRawqZdeXujkYDEPqW+KvmMAQnj8E+eKisrSvJIhZalqhf2Nm7T
+         8ksaOu0QdJbzmZPkynhaM+w6wc7yvvWLiP/pxRN69y4jdVEAe/WjVcsQZq8Yksc/GkYq
+         YE9RHUVXCwj5TdFEd+ic32ZdhsdvyxQVwVlxfAIbA11yuAGJxoZB2BpKsr/eWJL7dceT
+         EK0MhnIoJ6eXGm/vCMKS/Aa0sInhdE+D9u7LBjIT8v1z9XKXgRiHj4r8FcggFkRp/1RI
+         Lw/w==
+X-Gm-Message-State: AOAM532xPK0KjU0JLzt9d5z0LFjQXP8C45Ybp8u//8DalBuLJ/n4g1yX
+        2yWh9MkGg5zEiSEeb3P5kF4=
+X-Google-Smtp-Source: ABdhPJxPQ3x6WdCO0nqnEy5e3j1aSQWYkXx9yZ8Le1Oqsy6rlgqK8t8SljOVxU9+aNkBz0dHa3H9hA==
+X-Received: by 2002:a17:90a:a385:b0:1cb:bfa8:ae01 with SMTP id x5-20020a17090aa38500b001cbbfa8ae01mr26754743pjp.116.1652825833285;
+        Tue, 17 May 2022 15:17:13 -0700 (PDT)
+Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
+        by smtp.gmail.com with ESMTPSA id i71-20020a62874a000000b0050dc7628141sm246532pfe.27.2022.05.17.15.17.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 15:17:12 -0700 (PDT)
+Date:   Tue, 17 May 2022 15:15:00 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Christophe de Dinechin <dinechin@redhat.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] nodemask: Fix return values to be unsigned
+Message-ID: <YoQeZIl2P9wOK+u8@yury-laptop>
+References: <20220517212234.868181-1-keescook@chromium.org>
+ <20220517212234.868181-3-keescook@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] x86/tdx: Handle load_unaligned_zeropad() page-cross to a
- shared page
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        seanjc@google.com
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
-        thomas.lendacky@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
- <e73cb19e-7dab-2fc1-b947-fac70fd607d2@intel.com>
- <20220517174042.v6s7wm3u5j2ebaoq@black.fi.intel.com>
- <c761e774-8014-6fa9-cf21-e7cd8f7aca54@intel.com>
- <20220517201710.ixbpsaga5jzvokvy@black.fi.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220517201710.ixbpsaga5jzvokvy@black.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220517212234.868181-3-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/17/22 13:17, Kirill A. Shutemov wrote:
->>> Given that we had to adjust IP in handle_mmio() anyway, do you still think
->>> "ve->instr_len = 0;" is wrong? I dislike ip_adjusted more.
->> Something is wrong about it.
->>
->> You could call it 've->instr_bytes_to_handle' or something. Then it
->> makes actual logical sense when you handle it to zero it out.  I just
->> want it to be more explicit when the upper levels need to do something.
->>
->> Does ve->instr_len==0 both when the TDX module isn't providing
->> instruction sizes *and* when no handling is necessary?  That seems like
->> an unfortunate logical multiplexing of 0.
-> For EPT violation, ve->instr_len has *something* (not zero) that doesn't
-> match the actual instruction size. I dig out that it is filled with data
-> from VMREAD(0x440C), but I don't know where is the ultimate origin of the
-> data.
+On Tue, May 17, 2022 at 02:22:34PM -0700, Kees Cook wrote:
+> The nodemask routines had mixed return values that provided potentially
+> signed return values that could never happen. This was leading to the
+> compiler getting confusing about the range of possible return values
+> (it was thinking things could be negative where they could not be). Fix
+> all the nodemask routines that should be returning unsigned
+> (or bool) values. Silences:
+> 
+>  mm/swapfile.c: In function ‘setup_swap_info’:
+>  mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds of ‘struct plist_node[]’ [-Werror=array-bounds]
+>   2291 |                                 p->avail_lists[i].prio = 1;
+>        |                                 ~~~~~~~~~~~~~~^~~
+>  In file included from mm/swapfile.c:16:
+>  ./include/linux/swap.h:292:27: note: while referencing ‘avail_lists’
+>    292 |         struct plist_node avail_lists[]; /*
+>        |                           ^~~~~~~~~~~
+> 
+> Reported-by: Christophe de Dinechin <dinechin@redhat.com>
+> Link: https://lore.kernel.org/lkml/20220414150855.2407137-3-dinechin@redhat.com/
+> Cc: Alexey Dobriyan <adobriyan@gmail.com>
+> Cc: Yury Norov <yury.norov@gmail.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Zhen Lei <thunder.leizhen@huawei.com>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  include/linux/nodemask.h | 38 +++++++++++++++++++-------------------
+>  lib/nodemask.c           |  2 +-
+>  2 files changed, 20 insertions(+), 20 deletions(-)
+> 
+> diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
+> index 567c3ddba2c4..2c39663c3407 100644
+> --- a/include/linux/nodemask.h
+> +++ b/include/linux/nodemask.h
+> @@ -42,11 +42,11 @@
+>   * void nodes_shift_right(dst, src, n)	Shift right
+>   * void nodes_shift_left(dst, src, n)	Shift left
+>   *
+> - * int first_node(mask)			Number lowest set bit, or MAX_NUMNODES
+> - * int next_node(node, mask)		Next node past 'node', or MAX_NUMNODES
+> - * int next_node_in(node, mask)		Next node past 'node', or wrap to first,
+> + * unsigned int first_node(mask)	Number lowest set bit, or MAX_NUMNODES
+> + * unsigend int next_node(node, mask)	Next node past 'node', or MAX_NUMNODES
+> + * unsigned int next_node_in(node, mask) Next node past 'node', or wrap to first,
+>   *					or MAX_NUMNODES
+> - * int first_unset_node(mask)		First node not set in mask, or 
+> + * unsigned int first_unset_node(mask)	First node not set in mask, or
+>   *					MAX_NUMNODES
+>   *
+>   * nodemask_t nodemask_of_node(node)	Return nodemask with bit 'node' set
+> @@ -153,7 +153,7 @@ static inline void __nodes_clear(nodemask_t *dstp, unsigned int nbits)
+>  
+>  #define node_test_and_set(node, nodemask) \
+>  			__node_test_and_set((node), &(nodemask))
+> -static inline int __node_test_and_set(int node, nodemask_t *addr)
+> +static inline bool __node_test_and_set(int node, nodemask_t *addr)
+>  {
+>  	return test_and_set_bit(node, addr->bits);
+>  }
+> @@ -200,7 +200,7 @@ static inline void __nodes_complement(nodemask_t *dstp,
+>  
+>  #define nodes_equal(src1, src2) \
+>  			__nodes_equal(&(src1), &(src2), MAX_NUMNODES)
+> -static inline int __nodes_equal(const nodemask_t *src1p,
+> +static inline bool __nodes_equal(const nodemask_t *src1p,
+>  					const nodemask_t *src2p, unsigned int nbits)
+>  {
+>  	return bitmap_equal(src1p->bits, src2p->bits, nbits);
+> @@ -208,7 +208,7 @@ static inline int __nodes_equal(const nodemask_t *src1p,
+>  
+>  #define nodes_intersects(src1, src2) \
+>  			__nodes_intersects(&(src1), &(src2), MAX_NUMNODES)
+> -static inline int __nodes_intersects(const nodemask_t *src1p,
+> +static inline bool __nodes_intersects(const nodemask_t *src1p,
+>  					const nodemask_t *src2p, unsigned int nbits)
+>  {
+>  	return bitmap_intersects(src1p->bits, src2p->bits, nbits);
+> @@ -216,20 +216,20 @@ static inline int __nodes_intersects(const nodemask_t *src1p,
+>  
+>  #define nodes_subset(src1, src2) \
+>  			__nodes_subset(&(src1), &(src2), MAX_NUMNODES)
+> -static inline int __nodes_subset(const nodemask_t *src1p,
+> +static inline bool __nodes_subset(const nodemask_t *src1p,
+>  					const nodemask_t *src2p, unsigned int nbits)
+>  {
+>  	return bitmap_subset(src1p->bits, src2p->bits, nbits);
+>  }
+>  
+>  #define nodes_empty(src) __nodes_empty(&(src), MAX_NUMNODES)
+> -static inline int __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
+> +static inline bool __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
+>  {
+>  	return bitmap_empty(srcp->bits, nbits);
+>  }
+>  
+>  #define nodes_full(nodemask) __nodes_full(&(nodemask), MAX_NUMNODES)
+> -static inline int __nodes_full(const nodemask_t *srcp, unsigned int nbits)
+> +static inline bool __nodes_full(const nodemask_t *srcp, unsigned int nbits)
+>  {
+>  	return bitmap_full(srcp->bits, nbits);
+>  }
+> @@ -260,15 +260,15 @@ static inline void __nodes_shift_left(nodemask_t *dstp,
+>            > MAX_NUMNODES, then the silly min_ts could be dropped. */
+>  
+>  #define first_node(src) __first_node(&(src))
+> -static inline int __first_node(const nodemask_t *srcp)
+> +static inline unsigned int __first_node(const nodemask_t *srcp)
+>  {
+> -	return min_t(int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
+> +	return min_t(unsigned int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
+>  }
+>  
+>  #define next_node(n, src) __next_node((n), &(src))
+> -static inline int __next_node(int n, const nodemask_t *srcp)
+> +static inline unsigned int __next_node(int n, const nodemask_t *srcp)
+>  {
+> -	return min_t(int,MAX_NUMNODES,find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
+> +	return min_t(unsigned int, MAX_NUMNODES, find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
+>  }
+>  
+>  /*
+> @@ -276,7 +276,7 @@ static inline int __next_node(int n, const nodemask_t *srcp)
+>   * the first node in src if needed.  Returns MAX_NUMNODES if src is empty.
+>   */
+>  #define next_node_in(n, src) __next_node_in((n), &(src))
+> -int __next_node_in(int node, const nodemask_t *srcp);
+> +unsigned int __next_node_in(int node, const nodemask_t *srcp);
+>  
+>  static inline void init_nodemask_of_node(nodemask_t *mask, int node)
+>  {
+> @@ -296,9 +296,9 @@ static inline void init_nodemask_of_node(nodemask_t *mask, int node)
+>  })
+>  
+>  #define first_unset_node(mask) __first_unset_node(&(mask))
+> -static inline int __first_unset_node(const nodemask_t *maskp)
+> +static inline unsigned int __first_unset_node(const nodemask_t *maskp)
+>  {
+> -	return min_t(int,MAX_NUMNODES,
+> +	return min_t(unsigned int, MAX_NUMNODES,
+>  			find_first_zero_bit(maskp->bits, MAX_NUMNODES));
+>  }
+>  
+> @@ -436,11 +436,11 @@ static inline int num_node_state(enum node_states state)
+>  
+>  #define first_online_node	first_node(node_states[N_ONLINE])
+>  #define first_memory_node	first_node(node_states[N_MEMORY])
+> -static inline int next_online_node(int nid)
+> +static inline unsigned int next_online_node(int nid)
+>  {
+>  	return next_node(nid, node_states[N_ONLINE]);
+>  }
+> -static inline int next_memory_node(int nid)
+> +static inline unsigned int next_memory_node(int nid)
+>  {
+>  	return next_node(nid, node_states[N_MEMORY]);
+>  }
+> diff --git a/lib/nodemask.c b/lib/nodemask.c
+> index 3aa454c54c0d..a334cf722189 100644
+> --- a/lib/nodemask.c
+> +++ b/lib/nodemask.c
+> @@ -3,7 +3,7 @@
+>  #include <linux/module.h>
+>  #include <linux/random.h>
+>  
+> -int __next_node_in(int node, const nodemask_t *srcp)
+> +unsigned int __next_node_in(int node, const nodemask_t *srcp)
+>  {
+>  	int ret = __next_node(node, srcp);
 
-The SDM has a breakdown:
-
-	27.2.5 Information for VM Exits Due to Instruction Execution
-
-I didn't realize it came from VMREAD.  I guess I assumed it came from
-some TDX module magic.  Silly me.
-
-The SDM makes it sound like we should be more judicious about using
-'ve->instr_len' though.  "All VM exits other than those listed in the
-above items leave this field undefined."  Looking over
-virt_exception_kernel(), we've got five cases from CPU instructions that
-cause unconditional VMEXITs:
-
-        case EXIT_REASON_HLT:
-        case EXIT_REASON_MSR_READ:
-        case EXIT_REASON_MSR_WRITE:
-        case EXIT_REASON_CPUID:
-        case EXIT_REASON_IO_INSTRUCTION:
-
-and should have that field filled out, plus one that doesn't:
-
-        case EXIT_REASON_IO_INSTRUCTION:
-
-It seems awfully fragile to me to have the hardware be providing the
-'instr_len' in those cases, but not in one other one.  The data in there
-is garbage for EXIT_REASON_IO_INSTRUCTION.  The reason we don't consume
-garbage is that all the paths leading out of handle_mmio() that return
-true also set 've->instr_len'.  But that logic is entirely opaque.
-
-It's also borderline criminal to have six functions that look identical
-(in that switch statement), but one of them has different behavior for
-'ve->instr_len'.
-
-I'd probably do it like this:
-
-static int handle_halt(struct ve_info *ve)
-{
-        /*
-         * Since non safe halt is mainly used in CPU offlining
-         * and the guest will always stay in the halt state, don't
-         * call the STI instruction (set do_sti as false).
-         */
-        const bool irq_disabled = irqs_disabled();
-        const bool do_sti = false;
-
-        if (__halt(irq_disabled, do_sti))
-                return -EIO;
-
-	/*
-	 * VM-exit instruction length is defined for HLT.  See:
-	 * "Information for VM Exits Due to Instruction Execution"
-	 * in the SDM.
-	 */
-        return ve->insn_length;
-}
-
-Any >=0 return means the exception was handled and it tells the caller
-hoe much to advance RIP.
-
-Then handle_mmio() can say:
-
-	/*
-	 * VM-exit instruction length is not provided for the EPT
-	 * violations that MMIO causes.  Use the insn_decode() length:
-	 */
-        return insn.length;
-
-See?  Now everybody that goes and writes a new #VE exception helper has
-a chance of actually getting this right.  As it stands, if someone adds
-one more of these, they'll probably get random behavior.  This way, they
-actually have to choose.  They _might_ even go looking at the SDM.
+Now this should be unsigned int, right?
+  
+> -- 
+> 2.32.0
