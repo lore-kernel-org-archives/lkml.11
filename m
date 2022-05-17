@@ -2,107 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C58AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F32C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241387AbiEQHmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
+        id S237916AbiEQHod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242557AbiEQHlE (ORCPT
+        with ESMTP id S229797AbiEQHoa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:41:04 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50B412D31
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:40:48 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id nk9-20020a17090b194900b001df2fcdc165so1701334pjb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:40:48 -0700 (PDT)
+        Tue, 17 May 2022 03:44:30 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8271C1
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:44:29 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so856959wms.3
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:44:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AeK9VUF3y97S0wYhYQH6NYZJR1s4W4dg36hM35BXnkI=;
-        b=VupddrZxTMFF73/Fue6HCMHW6Yoruq+qwq1j8nmvyN4q3Kge6zBZmPbdbCdhgTNm7G
-         K+3ZCUSOnhFe9Tc9O82layM+tqkcZrUl3Q46xhogrMcMxeqPGFN+drURYDqqrMXiojaK
-         uhO/q1kBMMAnidWWpeoyoejNNuF0pfTHTFkYOaGLo4IvJ/E6DncS2hO8zUPNDHpVgAwQ
-         duFj/ge7M0qSOkwcJXtDYFGn1yAsJNkMRjBdjiCnGLGtrZqW3z5N9qLn3lhFQ90b/qmG
-         iEtb+lzlqKNW/vo0tGOWZ0wP0ZO1AttJaL+Pn/ZL7zvvCYJMX13P/9+/Cgy2JiIb7JI4
-         ibUw==
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=GeBUOwMtlUJXTRUysICohEtNecUKuIK32F5RW3LBD8E=;
+        b=jSQfurSZoLCu/ecIEGtXRqUJGG5lmXEBzgxp0yfX0Ju3dv9SdPy8huwCsGTpcR2j3v
+         0HS99sC1AT8P/NBTJot2xMttBWZa/MQeulNwQpTjVZuiMA6YdGvxK/ilct6nTGrW95Pz
+         8OGUNKQK0lrQXAV+X5zzQL4otZeK915ASp+WEjGOcl17I43nxtEImhDiIr3peaKuT/MK
+         zKlpMhXoMk6xWNDfnh0yG9yPVqLlVZcqTh4cDCtAXW3eJWkQZvng4m61AoJj0SmyDyIJ
+         gZlKOBUBtOCdN/WsTvxgdJoD33d+/krusMFpWqlZi7SC1Gf02n1CFlXN6y8Stc5qHFpD
+         C2pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AeK9VUF3y97S0wYhYQH6NYZJR1s4W4dg36hM35BXnkI=;
-        b=syHyH9QK/Fb4qhS3+Lk3Q+hMKHNcxynxQzs63IqgikXOCEGCstl18bUtNY+xfYJBMT
-         ko2tt13BouBrEPmb+/wBRdhTeCeftK3eBkl4Gin/CB3BKRG1IxTqB7B6ojzNGZZXTBYv
-         92OL8Tl2aTgwk/97Z5COs3RbjI1M8xjmJ1KNoDqZIzOhWbB2eEhwGtIoA+q0taVCS/xF
-         oJcLEAdIR+DMgiEKc7qzWUZQXKMMeHgNlGpbPqPHriF+qWc97+cOWf2e00iNKwc5x3Ar
-         WVPpb1G8CqGpPSy/CQ86wYQAtof4v7zKo7zrNJRYo2D5At++8GtleBjBuxj5dXenBsZ4
-         gFGQ==
-X-Gm-Message-State: AOAM531vdE9VxRMrxHfKvGS3QAYh6u9C+Tp3ampmSiqLLOlju1UQpFCi
-        IIJK9DD3zBwtQ8JfCC5TWvE=
-X-Google-Smtp-Source: ABdhPJw3kAp82GIvb+U/WV5uzx98ZnVuNSiGaWQ74X5doZXomOr+UfBtgAq9ucg9N8O/pRcE5pOx1w==
-X-Received: by 2002:a17:90a:778c:b0:1df:56a5:8474 with SMTP id v12-20020a17090a778c00b001df56a58474mr9439550pjk.63.1652773248364;
-        Tue, 17 May 2022 00:40:48 -0700 (PDT)
-Received: from localhost.localdomain ([103.167.60.51])
-        by smtp.gmail.com with ESMTPSA id n22-20020a056a0007d600b0050dc7628139sm8551987pfu.19.2022.05.17.00.40.45
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=GeBUOwMtlUJXTRUysICohEtNecUKuIK32F5RW3LBD8E=;
+        b=ubKB+B92JRN7FLuivRP5s/b4hjy1xnp7agOgVmD0/R5GoZuzfL7+1Yfo3VHuzL+ofQ
+         R8XYcm5x1DCOGtl5tKhjz7oe5lcoOKYJ8uW7cd76ZIIrrggt2xtFFDKTwcnS9KK8alPP
+         /DGjq9vorUMdV7mz6cBaxjmN8v+alUnk6QBCjmDF9IE/xd7nug+hbc98xBijG8Nvx/1S
+         yl1mzWsRQK80TedpPYHlb3ecNToa0bBN/pZ5satRshPbyQhkG7EazDJ2v1tkfkDFpzYO
+         cdQylDybQ+Wqoys3DUEdDnoWimTpmONpTqEpeaDSxOHeYUhbaDfmGXKf3/MGvKcW1Ynu
+         3BvQ==
+X-Gm-Message-State: AOAM531azvcalwNaeZtyZCLdtHAOrSIvSbRCtJsHcfyyr0mxrcb8ONLJ
+        xhZ1yzeXpdMoQERQCB7QwvMLIMENbQqwMQ==
+X-Google-Smtp-Source: ABdhPJw6WRmdGTZdQGzE0o3kXC0cOK9cKdioBhbLksj2XIDveW94c6axpGgQVquU/0ojwo7V+rYo6g==
+X-Received: by 2002:a05:600c:1d17:b0:394:646d:fd73 with SMTP id l23-20020a05600c1d1700b00394646dfd73mr30224003wms.103.1652773468281;
+        Tue, 17 May 2022 00:44:28 -0700 (PDT)
+Received: from giga-mm.localdomain ([195.245.23.54])
+        by smtp.gmail.com with ESMTPSA id bg31-20020a05600c3c9f00b003942a244ed7sm1182942wmb.28.2022.05.17.00.44.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 00:40:47 -0700 (PDT)
-From:   Genjian Zhang <zhanggenjian123@gmail.com>
-X-Google-Original-From: Genjian Zhang <zhanggenjian@kylinos.cn>
-To:     hsweeten@visionengravers.com, alexander.sverdlin@gmail.com,
-        linux@armlinux.org.uk
+        Tue, 17 May 2022 00:44:27 -0700 (PDT)
+Message-ID: <c80f2441c19766ef13a44c5cd62ec5af6a1e4af3.camel@gmail.com>
+Subject: Re: [PATCH v2] ep93xx: clock: Do not return the address of the
+ freed memory
+From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
+To:     Genjian Zhang <zhanggenjian123@gmail.com>,
+        hsweeten@visionengravers.com, linux@armlinux.org.uk
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        zhanggenjian123@gmail.com, Genjian Zhang <zhanggenjian@kylinos.cn>
-Subject: [PATCH v2] ep93xx: clock: Do not return the address of the freed memory
-Date:   Tue, 17 May 2022 15:39:46 +0800
-Message-Id: <20220517073946.1339333-1-zhanggenjian@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Genjian Zhang <zhanggenjian@kylinos.cn>
+Date:   Tue, 17 May 2022 09:44:26 +0200
+In-Reply-To: <20220517073946.1339333-1-zhanggenjian@kylinos.cn>
+References: <20220517073946.1339333-1-zhanggenjian@kylinos.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.44.1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoid return freed memory addresses,Modified to the actual error
-return value of clk_register().
-
-Fixes: 9645ccc7bd7a ("ep93xx: clock: convert in-place to COMMON_CLK")
-Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
----
- arch/arm/mach-ep93xx/clock.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
-index 4fa6ea5461b7..85a496ddc619 100644
---- a/arch/arm/mach-ep93xx/clock.c
-+++ b/arch/arm/mach-ep93xx/clock.c
-@@ -345,9 +345,10 @@ static struct clk_hw *clk_hw_register_ddiv(const char *name,
- 	psc->hw.init = &init;
- 
- 	clk = clk_register(NULL, &psc->hw);
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
- 		kfree(psc);
--
-+		return ERR_CAST(clk);
-+	}
- 	return &psc->hw;
- }
- 
-@@ -452,9 +453,10 @@ static struct clk_hw *clk_hw_register_div(const char *name,
- 	psc->hw.init = &init;
- 
- 	clk = clk_register(NULL, &psc->hw);
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
- 		kfree(psc);
--
-+		return ERR_CAST(clk);
-+	}
- 	return &psc->hw;
- }
- 
--- 
-2.25.1
+VGhhbmsgeW91IEdlbmppYW4hCgpPbiBUdWUsIDIwMjItMDUtMTcgYXQgMTU6MzkgKzA4MDAsIEdl
+bmppYW4gWmhhbmcgd3JvdGU6Cj4gQXZvaWQgcmV0dXJuIGZyZWVkIG1lbW9yeSBhZGRyZXNzZXMs
+TW9kaWZpZWQgdG8gdGhlIGFjdHVhbCBlcnJvcgo+IHJldHVybiB2YWx1ZSBvZiBjbGtfcmVnaXN0
+ZXIoKS4KPiAKPiBGaXhlczogOTY0NWNjYzdiZDdhICgiZXA5M3h4OiBjbG9jazogY29udmVydCBp
+bi1wbGFjZSB0byBDT01NT05fQ0xLIikKPiBTaWduZWQtb2ZmLWJ5OiBHZW5qaWFuIFpoYW5nIDx6
+aGFuZ2dlbmppYW5Aa3lsaW5vcy5jbj4KCkFja2VkLWJ5OiBBbGV4YW5kZXIgU3ZlcmRsaW4gPGFs
+ZXhhbmRlci5zdmVyZGxpbkBnbWFpbC5jb20+Cgo+IC0tLQo+IMKgYXJjaC9hcm0vbWFjaC1lcDkz
+eHgvY2xvY2suYyB8IDEwICsrKysrKy0tLS0KPiDCoDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlv
+bnMoKyksIDQgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL21hY2gtZXA5
+M3h4L2Nsb2NrLmMgYi9hcmNoL2FybS9tYWNoLWVwOTN4eC9jbG9jay5jCj4gaW5kZXggNGZhNmVh
+NTQ2MWI3Li44NWE0OTZkZGM2MTkgMTAwNjQ0Cj4gLS0tIGEvYXJjaC9hcm0vbWFjaC1lcDkzeHgv
+Y2xvY2suYwo+ICsrKyBiL2FyY2gvYXJtL21hY2gtZXA5M3h4L2Nsb2NrLmMKPiBAQCAtMzQ1LDkg
+KzM0NSwxMCBAQCBzdGF0aWMgc3RydWN0IGNsa19odyAqY2xrX2h3X3JlZ2lzdGVyX2RkaXYoY29u
+c3QgY2hhciAqbmFtZSwKPiDCoMKgwqDCoMKgwqDCoMKgcHNjLT5ody5pbml0ID0gJmluaXQ7Cj4g
+wqAKPiDCoMKgwqDCoMKgwqDCoMKgY2xrID0gY2xrX3JlZ2lzdGVyKE5VTEwsICZwc2MtPmh3KTsK
+PiAtwqDCoMKgwqDCoMKgwqBpZiAoSVNfRVJSKGNsaykpCj4gK8KgwqDCoMKgwqDCoMKgaWYgKElT
+X0VSUihjbGspKSB7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBrZnJlZShwc2Mp
+Owo+IC0KPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIEVSUl9DQVNUKGNs
+ayk7Cj4gK8KgwqDCoMKgwqDCoMKgfQo+IMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gJnBzYy0+aHc7
+Cj4gwqB9Cj4gwqAKPiBAQCAtNDUyLDkgKzQ1MywxMCBAQCBzdGF0aWMgc3RydWN0IGNsa19odyAq
+Y2xrX2h3X3JlZ2lzdGVyX2Rpdihjb25zdCBjaGFyICpuYW1lLAo+IMKgwqDCoMKgwqDCoMKgwqBw
+c2MtPmh3LmluaXQgPSAmaW5pdDsKPiDCoAo+IMKgwqDCoMKgwqDCoMKgwqBjbGsgPSBjbGtfcmVn
+aXN0ZXIoTlVMTCwgJnBzYy0+aHcpOwo+IC3CoMKgwqDCoMKgwqDCoGlmIChJU19FUlIoY2xrKSkK
+PiArwqDCoMKgwqDCoMKgwqBpZiAoSVNfRVJSKGNsaykpIHsKPiDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoGtmcmVlKHBzYyk7Cj4gLQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqByZXR1cm4gRVJSX0NBU1QoY2xrKTsKPiArwqDCoMKgwqDCoMKgwqB9Cj4gwqDCoMKgwqDC
+oMKgwqDCoHJldHVybiAmcHNjLT5odzsKPiDCoH0KPiDCoAoKLS0gCkFsZXhhbmRlciBTdmVyZGxp
+bi4KCg==
 
