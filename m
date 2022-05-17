@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC04DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C44C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231377AbiEQWds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45630 "EHLO
+        id S231432AbiEQWdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231376AbiEQWdf (ORCPT
+        with ESMTP id S231364AbiEQWdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:33:35 -0400
+        Tue, 17 May 2022 18:33:43 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B85D14738C
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:33:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80BA94738C
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:33:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652826811;
+        s=mimecast20190719; t=1652826821;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
         bh=xsgZD2xN95jcvNsVYdiJpz1wstzqtrmwvWpl/rt8mrs=;
-        b=L8fzmDd0uHM83sPFQiJ6i5qF/xxWBxqf1kRgBkoa4ILD17qJWuoxBzULtuUcf9rwocq7cm
-        cB6sm7y+t3Y67yXFZfOxMlIyG+yBwZc/eH8OyKHqr8/Vze0IFhVJn1/cd37amHq8BOaYp7
-        NoOCB61XYkABnpt5fDgpj+gcnZWYGFs=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        b=Js7VkRPvMV+8h8BvFZkIWA8fL+QpIRmFtzMGbFF2kJ9C10qfnE7qupz7k40TC2opmf826f
+        xVXlD3XofEG0mXu1Iy77i37jAqYHAgk8kkl9DFv/l2trd1QhzPd7iGTMYw5FMW7flp2Mzw
+        SJ2SpCbt/jwvmqsrT8hHqZ1Mbw/7m6E=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-79-PTKlFvK5M5iFlJ37ooRhyw-1; Tue, 17 May 2022 18:33:30 -0400
-X-MC-Unique: PTKlFvK5M5iFlJ37ooRhyw-1
-Received: by mail-qt1-f198.google.com with SMTP id h5-20020ac81385000000b002f3f91834ffso414772qtj.10
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:33:30 -0700 (PDT)
+ us-mta-487-UG_BkEwtN_CBvzl7Opai3Q-1; Tue, 17 May 2022 18:33:40 -0400
+X-MC-Unique: UG_BkEwtN_CBvzl7Opai3Q-1
+Received: by mail-qv1-f69.google.com with SMTP id kd30-20020a056214401e00b0045a96ed0d4aso215718qvb.17
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:33:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
          :references:organization:user-agent:mime-version
          :content-transfer-encoding;
         bh=xsgZD2xN95jcvNsVYdiJpz1wstzqtrmwvWpl/rt8mrs=;
-        b=OFuuL+YhJjoz/OLO7kn15tveosKlVw1RkjBM0CeoDV1b45zAxY42ajpM1tFExIkfKz
-         WLjk2fRLYeNJtIbu+HUyeHRCR4YPsHQH/b/CbkAf4Af7nT2Nt4IzpSgm4pR2wzp1cF13
-         oxy8cpYMCtp+LxmrAfV6CAnL7Im7/l6SlFCI3X1rDwReg4UFoLBitukL9YAEoIB3NOe6
-         MGNi0rmn2Bx1i52R/iZQXqetWEmmjAnuC+Tq5Gffgf9h9I/2wg/oq0Z3pbNfrF72bn5K
-         NwsSlmqq5Ql/pytW50juEUkXiCRuTyuT3QLBYuzXG0a7Sv+84Sj+o44Dl1wCsP3mMvRT
-         OJDw==
-X-Gm-Message-State: AOAM533eTyI6FJa3iNAY1xo0UiLddo9MMXPKSuORonNQjoyBPyMo2a+0
-        uYkwlQzxPQhwCD5iakz7qXvouSUGXfrxk08nIa/erYLKORp2ash6jO6LlnW5UBif3i8Yi+W14Qd
-        0YxrYq1cRUAxJy+omoJj1sISM
-X-Received: by 2002:a05:620a:4727:b0:6a0:3036:8bfe with SMTP id bs39-20020a05620a472700b006a030368bfemr18258015qkb.239.1652826809385;
-        Tue, 17 May 2022 15:33:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz1rJobn4JcdOWoAqeK93N2MhQ5S8q1IuwRVLFycp/5h0rBE3NqehxIR7DkNsuosW/5+564Lw==
-X-Received: by 2002:a05:620a:4727:b0:6a0:3036:8bfe with SMTP id bs39-20020a05620a472700b006a030368bfemr18258006qkb.239.1652826809198;
-        Tue, 17 May 2022 15:33:29 -0700 (PDT)
+        b=C5SRU+ifDWayoXOIdfpQ6wr1GiHXuE3WMkUue/TMEFxxh2Z8lSFf9Sf5lb8wvtHwYA
+         5no4TUZuOuSuh1tYtg1rFlJcwWckOJ+orS3vZFaOerGKv6M51AnkqHWO5hKnq/4hsmJB
+         erEH7tZ6U+twYVJMx1pG8uqjhQQ2J4MytJUSzJRsnn7AyTQHKAu2xpk7+D+nkg+LEnBC
+         1jUR0MblElpB31map1ClVKYh/5GAtrS5amSdIXLBm4ak5o6RR7+EmrOvWwmjN8jbNSE0
+         AWesu3QrpeHcprG0eu4orK29Z8jlR07uzUi5t/8CGNt1O1H8aL8+vXpQxMuFdvdqsnIp
+         6+Og==
+X-Gm-Message-State: AOAM533yg0G253GAcANj8/IkiZ/DwBHtzdMF9g5XJdO74hn5G1MENfEd
+        UyEhkCxXgx0q0uNdZREdOcwgFCCGJUnMEnUQ9BfnHn0z5GxP1A7HLr6dGoegx8Ss+sD2rfdvLLn
+        Ed4/CMsNwZo6ks0R7tV0e6eOF
+X-Received: by 2002:a05:622a:4d4:b0:2f3:c529:5f89 with SMTP id q20-20020a05622a04d400b002f3c5295f89mr22472718qtx.158.1652826820079;
+        Tue, 17 May 2022 15:33:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxNH3lIfhXQ3QcRjAYZSIHBy4cUOe+o8UjX9lacQqYYbq3FNnSKIvDUgOrGldFFWLAX52lxvw==
+X-Received: by 2002:a05:622a:4d4:b0:2f3:c529:5f89 with SMTP id q20-20020a05622a04d400b002f3c5295f89mr22472711qtx.158.1652826819889;
+        Tue, 17 May 2022 15:33:39 -0700 (PDT)
 Received: from [192.168.8.138] (static-71-184-137-158.bstnma.ftas.verizon.net. [71.184.137.158])
-        by smtp.gmail.com with ESMTPSA id z197-20020a3765ce000000b0069fc13ce212sm276480qkb.67.2022.05.17.15.31.11
+        by smtp.gmail.com with ESMTPSA id g12-20020ac8070c000000b002f39b99f69csm114858qth.54.2022.05.17.15.33.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 15:31:56 -0700 (PDT)
-Message-ID: <aed19bec63ddcb63bf87582754c96d7fbe2c06b3.camel@redhat.com>
+        Tue, 17 May 2022 15:33:39 -0700 (PDT)
+Message-ID: <4382925e2e4174598214f3a9f74b373a5fca40fd.camel@redhat.com>
 Subject: Re: [PATCH v2] drm/nouveau: reorder nouveau_drm_device_fini
 From:   Lyude Paul <lyude@redhat.com>
 To:     Mark Menzynski <mmenzyns@redhat.com>, linux-kernel@vger.kernel.org
@@ -64,7 +64,7 @@ Cc:     Ben Skeggs <bskeggs@redhat.com>, Karol Herbst <kherbst@redhat.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
-Date:   Tue, 17 May 2022 18:31:03 -0400
+Date:   Tue, 17 May 2022 18:33:38 -0400
 In-Reply-To: <20220516133103.324365-1-mmenzyns@redhat.com>
 References: <20220516133103.324365-1-mmenzyns@redhat.com>
 Organization: Red Hat Inc.
