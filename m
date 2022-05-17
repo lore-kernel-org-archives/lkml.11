@@ -2,628 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D684C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:01:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346019AbiEQMBJ (ORCPT
+        id S1345733AbiEQMBn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
+        Tue, 17 May 2022 08:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345696AbiEQMAJ (ORCPT
+        with ESMTP id S1346240AbiEQMBS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:00:09 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAFA4C7B4;
-        Tue, 17 May 2022 05:00:05 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id i40so7083150eda.7;
-        Tue, 17 May 2022 05:00:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=F+6WG3N5xv4+sMjttDuWqOLjGk9TC15LZ/t5RIcY7bs=;
-        b=isxMZCvpM6acXCIPo/3tv8fTWgUiCcGCsv49FzHxzkmJcsoVyooXGAt1q2DiwCy0go
-         8FAH7a72h34okawoFOSj2kecHBqyEpT/z8O6gTYuJf4jnykxOKYET57ugM1Thvqo4fD3
-         9cF07Db7yW0Yf12lcQcl4bXqaI/5u6MBeIZwJnyU10LYMq73r/tVVaAgSzPu1aZruDe5
-         4K4VI8oiGqc4J2ykv9DS22rKb21Gayr9RHwoZtSV/+5NPwE7qFSZ2SfNSMdzXbtdtF+E
-         ABbamZnflpVTc3HgNXzQz4BIc9t7RUK5LE172ufEnThNhU1g7dKPNGw8IxKJpxVwiPi2
-         Ud+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=F+6WG3N5xv4+sMjttDuWqOLjGk9TC15LZ/t5RIcY7bs=;
-        b=gxShBi6E5HrrTkTETAoN/3UIUlbuauH6M8NB1p39zeI2qDd8VSEXF7at3IX6Fx+jmn
-         wm95ZiP4OS1oPfkEAZgqytPKW7MlyxIMb93yuYdah5OB8gqEtr1ewKsP16QHzO5glcr1
-         TMGxQ7uk4hUGDdwhW86KCNtNCMFSYTaVa95UZs9GaeFLVgC2uo72h2KhSKmLR6R01l2Z
-         r7aJfIRmfDhAsaKmw/bfWiYZOPlMFWuTtONMPyfqSahB+aZ39cmtEijnFvnDTjDZ2xog
-         OaQjvTA2GzMHpqWN/oH3nyGaukJuwj5pgLHz5XWMs7SzdkV69btcCrTwoCJGVR9duYRn
-         c8wQ==
-X-Gm-Message-State: AOAM533EroU6+KFW4zrVnl+pZVvJsT8AnR0tqNCNac83/ovNvI9Abv6B
-        BU4Qu4jjejXb+pn8PTbpNtU=
-X-Google-Smtp-Source: ABdhPJwAHG/YZ/96i2OoPVe6xI9nsdtbCRhrMtNz5FwxTZgBGRO4d3NW/HYYIt+5IV/QhjZUtN8qtw==
-X-Received: by 2002:a05:6402:17c1:b0:428:8016:d98d with SMTP id s1-20020a05640217c100b004288016d98dmr18608219edy.5.1652788803795;
-        Tue, 17 May 2022 05:00:03 -0700 (PDT)
-Received: from fedora.robimarko.hr (dh207-98-105.xnet.hr. [88.207.98.105])
-        by smtp.googlemail.com with ESMTPSA id hg16-20020a1709072cd000b006f3ef214e20sm948793ejc.134.2022.05.17.05.00.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 05:00:03 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v2 1/6] dt-bindings: regulator: qcom,spmi-regulator: Convert to dtschema
-Date:   Tue, 17 May 2022 13:59:55 +0200
-Message-Id: <20220517120000.71048-1-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 17 May 2022 08:01:18 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60139.outbound.protection.outlook.com [40.107.6.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49941D304;
+        Tue, 17 May 2022 05:00:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PXPiEB6GZYPGpTnR++wYm4jO3xl+2235x9ErNvgK18+1fuVe8IHivhLQ7fvi1JrnjPufDl1goucF8XUZuQrH9na6rhAdTqJC0vlHV5bZU1PCl6vYxc4I/eed/uvPYMKh/15eMUIBKpc4FdOsqJA84bHDhEX9Hyg+kzNsugd4V2M04HYgh/CQwDlGm0peUyttCk6XOyvkAsy0iFZeS5lL5fkE7nHv68EidFLiDqE9GozrN8GQjXJOiXVyBURDlNlEjMHQA6ASjTthoWgMCLNV+cgMEneI9s7oS1ZwDyp3dRs1bAXzEAY+Obi3rmHi5Llfw/roRPWtej59XsD0zTQ26Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qclagXNExXA6z94vBsuYLxcxNwfsAzXajZX+B/4gqI4=;
+ b=ERBem4Cmg0sz9keOoEjOByStMXEvJaWSTYIljSzfW51J0YXqTUjNOoccZHY5p7G7rZ7bu4iwsqPTOhg0JwsyaDnK4myPFDevTIEunZGT795qc7CvempF8hYx50Gbm1ZPEfe2Bz1TUrUB+4Z8Jn3rRfsveS33vkW+ieusomWpStTS96dEKVCU/lcKxgu5cV4+r7NWVAwXjWeO2RzewOh81FUIXBAIrjtI3QVsgcJuXmN+Ymo6HvixzM2NTavNX5NkFYXNxy9dAV+ILWdjeU2pWKkiUWXndtRAMRh1PT5CCQ8lPRoOQ7bgiMUuRVYNb9g+kdOStaCFT3u6IFKtUf7ffA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
+ dkim=pass header.d=axentia.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qclagXNExXA6z94vBsuYLxcxNwfsAzXajZX+B/4gqI4=;
+ b=pS8wfKNS4XkIOyJnDGs9eNF3Bcno01D2jO6TIaNYbi+/pStWhzXaXhxGvf7xqCi+pPkQv5zp8P69VoFVSKtfvV6IqBgsbp0wHyXNX7y4fBWPwnA6cjuSSjf4p47MlM3GILJrkE3cjz7XmQFmv0T959D8XOGjqfnS81HFdin2tqU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axentia.se;
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com (2603:10a6:208:ed::15)
+ by DB6PR02MB3078.eurprd02.prod.outlook.com (2603:10a6:6:21::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Tue, 17 May
+ 2022 12:00:51 +0000
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::dcef:9022:d307:3e8a]) by AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::dcef:9022:d307:3e8a%4]) with mapi id 15.20.5250.018; Tue, 17 May 2022
+ 12:00:51 +0000
+Message-ID: <6a6b9fe4-d588-1150-5f83-d91c91be9924@axentia.se>
+Date:   Tue, 17 May 2022 14:00:49 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 4/4] mux: lan966: Add support for flexcom mux
+ controller
+Content-Language: sv
+To:     Michael Walle <michael@walle.cc>
+Cc:     Manohar.Puri@microchip.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        devicetree@vger.kernel.org, kavyasree.kotagiri@microchip.com,
+        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, nicolas.ferre@microchip.com
+References: <e43d766f-ec63-93d7-6b19-05b32579e6e3@axentia.se>
+ <20220517115327.4139280-1-michael@walle.cc>
+From:   Peter Rosin <peda@axentia.se>
+In-Reply-To: <20220517115327.4139280-1-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: OL1P279CA0003.NORP279.PROD.OUTLOOK.COM
+ (2603:10a6:e10:12::8) To AM0PR02MB4436.eurprd02.prod.outlook.com
+ (2603:10a6:208:ed::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 413a35f5-cf44-4215-1a66-08da37fce38c
+X-MS-TrafficTypeDiagnostic: DB6PR02MB3078:EE_
+X-Microsoft-Antispam-PRVS: <DB6PR02MB3078794FA621C198E686F0C9BCCE9@DB6PR02MB3078.eurprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XYf0Wrj5jL8wKIpkEeQO5CsTb1qmxrPj8kpQKUAfoW3nT3rHPrOyupc+R5xpif4Js51TEobyy1205zfKnLuSRgcNPQKEY8QTgSg9DWRGSogOI24S6sKO+1V8+IqHr86NqhqFIYtL9JgD0uCypfzCJ4q5jMqLvpR4VprBg6dIrqdwYoEyJAHtG3UPAzNhM1+JwMNMmvQivO3n3Gu7n/roUB40Xq/g4Gp3jmoCHz6TgxkCq3levMiUT2YTyqVmFGrK67hOuzZ6kSbNV8mc6+v+GWkhqQoQt5uwk3t6MM2MX5pQQIpnptwD3/2HTqlNxFRCyLcyo+xYqkUI9c31QitiVcry2yu1kHp9LDmBStYICFRhkh1EqK+b4XPE16BYBf1psSm8O7kIx4Yseuax626N66M8efO9IBRIWxHyXtx37aXhsjgvZUTUQgSGE06wD/kowBD8m/5yKWe9BL01KAxWOWmTXAfrySfF44mVEecNdcNip1sHHymCVOpMSy2Ksdvmr4fAST60dwkFw+eTVlyzUiVlEUJoGRcolSLd6ounHU/2KCtoq/7S9czefpPOjIC1/NYuyliD85xIRFZOtMNSq+ZHtgmDtvUbOhjPLJhMXZvCpv5oDQNtqpKuFu7nDdw3S14id6V0gaL+XOwijPcmthVHzAJt9UdcPXkOXVuos+Hu7L9mPiRo2/pKkSLLk5ZxJiu5uELfUY5nVgPeordfz8LF2I5LDydgP5D5xEJckj1uxMUC+TobphPELWdcIO8ST5MTANuZbnr+ICHCpQKtjFWbfLtWkiyDXhae4ozopVbHQsxxip6p/4ZYR5cy+bf1
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB4436.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(136003)(39830400003)(396003)(376002)(346002)(366004)(41300700001)(186003)(6916009)(86362001)(38100700002)(8676002)(66476007)(4326008)(2616005)(316002)(966005)(6486002)(6506007)(6512007)(26005)(66556008)(2906002)(7416002)(36756003)(31686004)(66946007)(508600001)(5660300002)(31696002)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MGN5cEVvdldOSU5sV3V2K1FXR1Z4WnloSWRlS01XZFo1Z2Z5UEpaK29DNEdX?=
+ =?utf-8?B?V0VON2pmZ1hkQXo1a1Jxenk1Q2xaekNiM0s2ZTJOK0JVM3Y4WE5RNWhrVnEx?=
+ =?utf-8?B?Y0pKejRQVC9naTBJQ2psTnhnc1RaZmh4ekFZVU9SVzRaV3o1dC9BckRTUHNU?=
+ =?utf-8?B?THYxWXpEV3pqcHpDbWFPRWU4SlU1RlFqc2h3Y04zam80OGVyVll1MktwK2s2?=
+ =?utf-8?B?cm13L1F0R2pjcmY1MFR6dDZQZkZvb2R4ZnRCUnhZa1V2NGFDNk9zOTdncW94?=
+ =?utf-8?B?K3BTZHQ3VjJOWG1LeWovR0VhYTFsZ05wcEgxZ08zK2k5U1JTZ0I1cEJmT1Zm?=
+ =?utf-8?B?ZnR6Z05MalhiRmVwRUlMUUM3cGI1RFhsNUZ5MXZBclA3WmduT1dYWlMwNzlv?=
+ =?utf-8?B?elJiSTBVSDlqcmpGMGV0WXpuNXo5LzBXcy9vbE9zbVRaWDBPaTRGbmZEdVFu?=
+ =?utf-8?B?bVQ3UFVocFlVbUlYVXFzcHpVYjhqZWdFMGpWZEFJV256Wk94QU5xTVY4UjVC?=
+ =?utf-8?B?dnVFL1czM0owZGZsNERYeHpRYWdGOXFiUGl0NnM4Si9pQ1JsNk9YSm0wZVBa?=
+ =?utf-8?B?cE8vLzVDUXV4ZENqUmlaRGt3SW1Ob0U3anlCZzV3UjlmSlpwbXdxUlJOL1l0?=
+ =?utf-8?B?VDMwRkhGNkJucVJoRVAxNkpzdy9tNzFqUHFTYkZUUk5BbytpdkFiaTNVcm1n?=
+ =?utf-8?B?U3ZiRnpLYzFZVHJuSHVkTHI5SzNnQVZtKzZNTjB3Y0k3OHIwU2diV2x2aUFK?=
+ =?utf-8?B?OXVUZjhzUHdUei9CUjRwU2dYK25TdjBXandmTzN0QjduM1lCb2lObTRLRzZR?=
+ =?utf-8?B?Mk5seHI5eUFQNmttOURrYnlYMi8xQ292OEx0UzZLYys2QStVejlIU0VzZ3ZM?=
+ =?utf-8?B?UkUwWkxQWXdZbnl1bHNJaklXbnBaUWwwUno5V3BVWTV4TXZYQjhyU0loNmsw?=
+ =?utf-8?B?ZUJBVWx6ZlBCcW8xNmhyUHhRdDA2YXI0Ykc0OEZXbTUveThoZ0JhUU5YTGo3?=
+ =?utf-8?B?UTRGMXFydmZTUGFyaW1UOWQ0M2k3NDJYNEtJZ3FtODFLV1hic0o2dTNhOHV4?=
+ =?utf-8?B?dE1WUVUwUlZ2SGdsdEZSdU1tWk5mMlVRSWI4eWEzUDlFTGRuSzJPbEVnYmZp?=
+ =?utf-8?B?dWpCWHlzNm5tZFJtdHNidTAvbHVwS1p1amptR2RybFFQbU9qamFJM0tUaUhH?=
+ =?utf-8?B?b1JpTEhLUldKek1meHF6WE5Hb0Y1K2FxRjNKZTR1UitKYjRWSnFSZXU3R05T?=
+ =?utf-8?B?MFFnQTZTZkxtZzBUODhyZkQxQllnUjdYR3FxOVBIcHg1dzhVN25TaTBMeWFH?=
+ =?utf-8?B?NlRCb3lFdGRJTmdiU3pIV0hBR0RPcm8wSm9SWWRzZ3cwMkVROTZpYnlwdXFY?=
+ =?utf-8?B?bFBZMm1HN0xZcy83bHFyZ0NORDJWUTZ2c05OaVhqNTI3VFVHN21wN2J6bEp1?=
+ =?utf-8?B?bEVPRXV5ZFBKUlpFZFRzOFp4R25jcTZyeW55aUJEMmh3c1Z5bkVqc2FrLzVy?=
+ =?utf-8?B?SHovQytpY1k2RlZQb0RtUU9sU3hoRWdrSjJsZThDdEx6b3cvdGdGVFcvVm5D?=
+ =?utf-8?B?b3MzUzBRZnI4ckVGR1lWYmYyV3B4MnpjMDVEclJ2R2g4eWYrVnQ1Q2dESk50?=
+ =?utf-8?B?RFUxOTcyb0Q1ck5BSjBnYXlqeUZkbjFDczkwblJUVVd3MVNNN3FWU0tBSTlz?=
+ =?utf-8?B?eVY1SWNBZWRXMExOTEhueHM4ZVN0ZHg4QnJOYzZUczRzZm1KRG8vMzFKNC9Q?=
+ =?utf-8?B?aytSOFA4R2h5U2htMDhhZ0NxR2dsbTdSQkJhYjhncCtOUnlKUDhHZEk4QjJP?=
+ =?utf-8?B?VFB1VGd4cWNVQXpZZStHOCtrcTg1ZXMrTTE1dW9tNHBKWTlFMGQrcUJHeEtX?=
+ =?utf-8?B?aVBCSHc2eEJ5U3ZYZTNoUnkyem1kaldFcSs4NzIydEtQUVVhU0Q1Nm42d1lQ?=
+ =?utf-8?B?L1NGbnI2TDJKdXgxcFBGNXBsam9jVy84aDBIbkRydkV3Y0o2MWZVTTg4eUhC?=
+ =?utf-8?B?dXdNUk52d0V5YkhaQmI5RkxxcVBSNElaNjd5NWVuOWFOWEM0bXdNR3grRGll?=
+ =?utf-8?B?ZXBnZFpxWWt5UW5hSkRSMGdLTk1JSVZsTVI3TkhGTlR4UnNQNVE0Qnc0VmNL?=
+ =?utf-8?B?NmJPMXRJTTcydlVaczNnOHBJeVc5TTJNQVYwbjRsQXBlNGQ4TStKUnhwb0xp?=
+ =?utf-8?B?MnhDSWpoM0IySGdHeEU2MXJWMEEvOG5TU2VXbUI3cHNSSXpaQlFoNjc4dE1u?=
+ =?utf-8?B?ZXIvMzNPaXdpd1RPdTc0NGFMbk5KVXl4L0NSYzZYd0k3c3BZbWpxYWFRYWls?=
+ =?utf-8?B?SVlvOUJIVis0dEx3ZjViUElNZVFta2FHSUVsN0JpMnY0S1g2UEdSQT09?=
+X-OriginatorOrg: axentia.se
+X-MS-Exchange-CrossTenant-Network-Message-Id: 413a35f5-cf44-4215-1a66-08da37fce38c
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB4436.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2022 12:00:51.6648
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: syrjmbSv4HdMPZJA9Ycn89ELHampF0uuGcnH5fxyTYbI2U5gR9yQtU6axoeXxjGv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR02MB3078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the bindings of Qualcomm SPMI regulators to DT schema.
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
-I am aware that syscon alone is not really acceptable, its converted
-directly from the old text bindings.
 
-There is also the issue of some MSM8994, MSM8996 and APQ8096 devices using
-'#address-cells', '#size-cells', some even defining reg property for
-regulators.
+2022-05-17 at 13:53, Michael Walle wrote:
+> Hi,
+> 
+>>> +struct mux_lan966x {
+>>
+>> Why is the file named lan966, but then everything inside lan966x?
+> 
+> So I was about to reply to the bindings but since that question
+> came up here, too, I'll do it here.
+> 
+> IMHO the name "lan966" is super confusing and if I followed it
+> correctly, it was just invented because the DT guys don't want to
+> have a wildcard in the compatibles. But LAN966 isn't a real product,
+> just LAN9662 and LAN9668 is.
 
-Any advice on how to solve these issues is appreciated.
+No wonder I failed when I searched the web for "lan966"...
 
-Changes in v2:
-* Remove the forgotten text bindings
-* Move allOf after patternProperties
-* Use my private email as the maintainer email
----
- .../regulator/qcom,spmi-regulator.txt         | 347 ------------------
- .../regulator/qcom,spmi-regulator.yaml        | 176 +++++++++
- 2 files changed, 176 insertions(+), 347 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.txt
- create mode 100644 Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
+So, as you were told in the thread you point at below, you name
+stuff after one of them (and not some random thing that doesn't
+exist), but then handle both in the same file(s). Like you would
+have if one was introduced first and the other came later.
 
-diff --git a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.txt b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.txt
-deleted file mode 100644
-index c2a39b121b1b..000000000000
---- a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.txt
-+++ /dev/null
-@@ -1,347 +0,0 @@
--Qualcomm SPMI Regulators
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: must be one of:
--			"qcom,pm8004-regulators"
--			"qcom,pm8005-regulators"
--			"qcom,pm8226-regulators"
--			"qcom,pm8841-regulators"
--			"qcom,pm8916-regulators"
--			"qcom,pm8941-regulators"
--			"qcom,pm8950-regulators"
--			"qcom,pm8994-regulators"
--			"qcom,pmi8994-regulators"
--			"qcom,pm660-regulators"
--			"qcom,pm660l-regulators"
--			"qcom,pms405-regulators"
--
--- interrupts:
--	Usage: optional
--	Value type: <prop-encoded-array>
--	Definition: List of OCP interrupts.
--
--- interrupt-names:
--	Usage: required if 'interrupts' property present
--	Value type: <string-array>
--	Definition: List of strings defining the names of the
--		    interrupts in the 'interrupts' property 1-to-1.
--		    Supported values are "ocp-<regulator_name>", where
--		    <regulator_name> corresponds to a voltage switch
--		    type regulator.
--
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_s4-supply:
--- vdd_s5-supply:
--- vdd_s6-supply:
--- vdd_s7-supply:
--- vdd_s8-supply:
--	Usage: optional (pm8841 only)
--	Value type: <phandle>
--	Definition: Reference to regulator supplying the input pin, as
--		    described in the data sheet.
--
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_s4-supply:
--- vdd_l1_l3-supply:
--- vdd_l2-supply:
--- vdd_l4_l5_l6-supply:
--- vdd_l7-supply:
--- vdd_l8_l11_l14_l15_l16-supply:
--- vdd_l9_l10_l12_l13_l17_l18-supply:
--	Usage: optional (pm8916 only)
--	Value type: <phandle>
--	Definition: Reference to regulator supplying the input pin, as
--		    described in the data sheet.
--
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_l1_l3-supply:
--- vdd_l2_lvs_1_2_3-supply:
--- vdd_l4_l11-supply:
--- vdd_l5_l7-supply:
--- vdd_l6_l12_l14_l15-supply:
--- vdd_l8_l16_l18_19-supply:
--- vdd_l9_l10_l17_l22-supply:
--- vdd_l13_l20_l23_l24-supply:
--- vdd_l21-supply:
--- vin_5vs-supply:
--	Usage: optional (pm8941 only)
--	Value type: <phandle>
--	Definition: Reference to regulator supplying the input pin, as
--		    described in the data sheet.
--
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_s4-supply:
--- vdd_s4-supply:
--- vdd_s5-supply:
--- vdd_s6-supply:
--- vdd_l1_l19-supply:
--- vdd_l2_l23-supply:
--- vdd_l3-supply:
--- vdd_l4_l5_l6_l7_l16-supply:
--- vdd_l8_l11_l12_l17_l22-supply:
--- vdd_l9_l10_l13_l14_l15_l18-supply:
--- vdd_l20-supply:
--- vdd_l21-supply:
--	Usage: optional (pm8950 only)
--	Value type: <phandle>
--	Definition: reference to regulator supplying the input pin, as
--		    described in the data sheet
--
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_s4-supply:
--- vdd_s5-supply:
--- vdd_s6-supply:
--- vdd_s7-supply:
--- vdd_s8-supply:
--- vdd_s9-supply:
--- vdd_s10-supply:
--- vdd_s11-supply:
--- vdd_s12-supply:
--- vdd_l1-supply:
--- vdd_l2_l26_l28-supply:
--- vdd_l3_l11-supply:
--- vdd_l4_l27_l31-supply:
--- vdd_l5_l7-supply:
--- vdd_l6_l12_l32-supply:
--- vdd_l8_l16_l30-supply:
--- vdd_l9_l10_l18_l22-supply:
--- vdd_l13_l19_l23_l24-supply:
--- vdd_l14_l15-supply:
--- vdd_l17_l29-supply:
--- vdd_l20_l21-supply:
--- vdd_l25-supply:
--- vdd_lvs_1_2-supply:
--	Usage: optional (pm8994 only)
--	Value type: <phandle>
--	Definition: Reference to regulator supplying the input pin, as
--		    described in the data sheet.
--
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_l1-supply:
--	Usage: optional (pmi8994 only)
--	Value type: <phandle>
--	Definition: Reference to regulator supplying the input pin, as
--		    described in the data sheet.
--
--- vdd_l1_l6_l7-supply:
--- vdd_l2_l3-supply:
--- vdd_l5-supply:
--- vdd_l8_l9_l10_l11_l12_l13_l14-supply:
--- vdd_l15_l16_l17_l18_l19-supply:
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_s5-supply:
--- vdd_s6-supply:
--	Usage: optional (pm660 only)
--	Value type: <phandle>
--	Definition: Reference to regulator supplying the input pin, as
--		    described in the data sheet.
--
--- vdd_l1_l9_l10-supply:
--- vdd_l2-supply:
--- vdd_l3_l5_l7_l8-supply:
--- vdd_l4_l6-supply:
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_s4-supply:
--- vdd_s5-supply:
--	Usage: optional (pm660l only)
--	Value type: <phandle>
--	Definition: Reference to regulator supplying the input pin, as
--		    described in the data sheet.
--
--- vdd_l1_l2-supply:
--- vdd_l3_l8-supply:
--- vdd_l4-supply:
--- vdd_l5_l6-supply:
--- vdd_l10_l11_l12_l13-supply:
--- vdd_l7-supply:
--- vdd_l9-supply:
--- vdd_s1-supply:
--- vdd_s2-supply:
--- vdd_s3-supply:
--- vdd_s4-supply:
--- vdd_s5-supply
--	Usage: optional (pms405 only)
--	Value type: <phandle>
--	Definition: Reference to regulator supplying the input pin, as
--		    described in the data sheet.
--
--- qcom,saw-reg:
--	Usage: optional
--	Value type: <phandle>
--	Description: Reference to syscon node defining the SAW registers.
--
--
--The regulator node houses sub-nodes for each regulator within the device. Each
--sub-node is identified using the node's name, with valid values listed for each
--of the PMICs below.
--
--pm8004:
--	s2, s5
--
--pm8005:
--	s1, s2, s3, s4
--
--pm8841:
--	s1, s2, s3, s4, s5, s6, s7, s8
--
--pm8916:
--	s1, s2, s3, s4, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13,
--	l14, l15, l16, l17, l18
--
--pm8941:
--	s1, s2, s3, s4, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13,
--	l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, lvs1, lvs2, lvs3,
--	5vs1, 5vs2
--
--pm8994:
--	s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, l1, l2, l3, l4, l5,
--	l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20,
--	l21, l22, l23, l24, l25, l26, l27, l28, l29, l30, l31, l32, lvs1, lvs2
--
--pmi8994:
--	s1, s2, s3, l1
--
--The content of each sub-node is defined by the standard binding for regulators -
--see regulator.txt - with additional custom properties described below:
--
--- regulator-initial-mode:
--	Usage: optional
--	Value type: <u32>
--	Description: 2 = Set initial mode to auto mode (automatically select
--		    between HPM and LPM); not available on boost type
--		    regulators.
--
--		    1 = Set initial mode to high power mode (HPM), also referred
--		    to as NPM. HPM consumes more ground current than LPM, but
--		    it can source significantly higher load current. HPM is not
--		    available on boost type regulators. For voltage switch type
--		    regulators, HPM implies that over current protection and
--		    soft start are active all the time.
--
--		    0 = Set initial mode to low power mode (LPM).
--
--- qcom,ocp-max-retries:
--	Usage: optional
--	Value type: <u32>
--	Description: Maximum number of times to try toggling a voltage switch
--		     off and back on as a result of consecutive over current
--		     events.
--
--- qcom,ocp-retry-delay:
--	Usage: optional
--	Value type: <u32>
--	Description: Time to delay in milliseconds between each voltage switch
--		     toggle after an over current event takes place.
--
--- qcom,pin-ctrl-enable:
--	Usage: optional
--	Value type: <u32>
--	Description: Bit mask specifying which hardware pins should be used to
--		     enable the regulator, if any; supported bits are:
--			0 = ignore all hardware enable signals
--			BIT(0) = follow HW0_EN signal
--			BIT(1) = follow HW1_EN signal
--			BIT(2) = follow HW2_EN signal
--			BIT(3) = follow HW3_EN signal
--
--- qcom,pin-ctrl-hpm:
--	Usage: optional
--	Value type: <u32>
--	Description: Bit mask specifying which hardware pins should be used to
--		     force the regulator into high power mode, if any;
--		     supported bits are:
--			0 = ignore all hardware enable signals
--			BIT(0) = follow HW0_EN signal
--			BIT(1) = follow HW1_EN signal
--			BIT(2) = follow HW2_EN signal
--			BIT(3) = follow HW3_EN signal
--			BIT(4) = follow PMIC awake state
--
--- qcom,vs-soft-start-strength:
--	Usage: optional
--	Value type: <u32>
--	Description: This property sets the soft start strength for voltage
--		     switch type regulators; supported values are:
--			0 = 0.05 uA
--			1 = 0.25 uA
--			2 = 0.55 uA
--			3 = 0.75 uA
--
--- qcom,saw-slave:
--	Usage: optional
--	Value type: <boo>
--	Description: SAW controlled gang slave. Will not be configured.
--
--- qcom,saw-leader:
--	Usage: optional
--	Value type: <boo>
--	Description: SAW controlled gang leader. Will be configured as
--		     SAW regulator.
--
--Example:
--
--	regulators {
--		compatible = "qcom,pm8941-regulators";
--		vdd_l1_l3-supply = <&s1>;
--
--		s1: s1 {
--			regulator-min-microvolt = <1300000>;
--			regulator-max-microvolt = <1400000>;
--		};
--
--		...
--
--		l1: l1 {
--			regulator-min-microvolt = <1225000>;
--			regulator-max-microvolt = <1300000>;
--		};
--
--		....
--	};
--
--Example 2:
--
--	saw3: syscon@9A10000 {
--		compatible = "syscon";
--		reg = <0x9A10000 0x1000>;
--	};
--
--	...
--
--	spm-regulators {
--		compatible = "qcom,pm8994-regulators";
--		qcom,saw-reg = <&saw3>;
--		s8 {
--			qcom,saw-slave;
--		};
--		s9 {
--			qcom,saw-slave;
--		};
--		s10 {
--			qcom,saw-slave;
--		};
--		pm8994_s11_saw: s11 {
--			qcom,saw-leader;
--			regulator-always-on;
--			regulator-min-microvolt = <900000>;
--			regulator-max-microvolt = <1140000>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-new file mode 100644
-index 000000000000..5c747c832529
---- /dev/null
-+++ b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-@@ -0,0 +1,176 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/qcom,spmi-regulator.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm SPMI Regulators
-+
-+maintainers:
-+  - Robert Marko <robimarko@gmail.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,pm660-regulators
-+      - qcom,pm660l-regulators
-+      - qcom,pm8004-regulators
-+      - qcom,pm8005-regulators
-+      - qcom,pm8226-regulators
-+      - qcom,pm8841-regulators
-+      - qcom,pm8916-regulators
-+      - qcom,pm8941-regulators
-+      - qcom,pm8950-regulators
-+      - qcom,pm8994-regulators
-+      - qcom,pmi8994-regulators
-+      - qcom,pms405-regulators
-+
-+  qcom,saw-reg:
-+    description: Reference to syscon node defining the SAW registers
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+
-+patternProperties:
-+  ".*-supply$":
-+    description: Input supply phandle(s) for this node
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+
-+  "^((s|l|lvs|5vs)[0-9]*)$":
-+    description: List of regulators and its properties
-+    $ref: regulator.yaml#
-+
-+    properties:
-+      qcom,ocp-max-retries:
-+        description:
-+          Maximum number of times to try toggling a voltage switch off and
-+          back on as a result of consecutive over current events
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+
-+      qcom,ocp-retry-delay:
-+        description:
-+          Time to delay in milliseconds between each voltage switch toggle
-+          after an over current event takes place
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+
-+      qcom,pin-ctrl-enable:
-+        description:
-+          Bit mask specifying which hardware pins should be used to enable the
-+          regulator, if any.
-+          Supported bits are
-+          0 = ignore all hardware enable signals
-+          BIT(0) = follow HW0_EN signal
-+          BIT(1) = follow HW1_EN signal
-+          BIT(2) = follow HW2_EN signal
-+          BIT(3) = follow HW3_EN signal
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+        minimum: 0
-+        maximum: 15
-+
-+      qcom,pin-ctrl-hpm:
-+        description:
-+          Bit mask specifying which hardware pins should be used to force the
-+          regulator into high power mode, if any.
-+          Supported bits are
-+          0 = ignore all hardware enable signals
-+          BIT(0) = follow HW0_EN signal
-+          BIT(1) = follow HW1_EN signal
-+          BIT(2) = follow HW2_EN signal
-+          BIT(3) = follow HW3_EN signal
-+          BIT(4) = follow PMIC awake state
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+        minimum: 0
-+        maximum: 31
-+
-+      qcom,vs-soft-start-strength:
-+        description:
-+          This property sets the soft start strength for voltage switch type
-+          regulators.
-+          Supported values are
-+          0 = 0.05 uA
-+          1 = 0.25 uA
-+          2 = 0.55 uA
-+          3 = 0.75 uA
-+        $ref: "/schemas/types.yaml#/definitions/uint32"
-+        minimum: 0
-+        maximum: 3
-+
-+      qcom,saw-slave:
-+        description: SAW controlled gang slave. Will not be configured.
-+        type: boolean
-+
-+      qcom,saw-leader:
-+        description:
-+          SAW controlled gang leader. Will be configured as SAW regulator.
-+        type: boolean
-+
-+      unevaluatedProperties: false
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,pm8941-regulators
-+    then:
-+      properties:
-+        interrupts:
-+          items:
-+            - description: Over-current protection interrupt for 5V S1
-+            - description: Over-current protection interrupt for 5V S2
-+        interrupt-names:
-+          items:
-+            - const: ocp-5vs1
-+            - const: ocp-5vs2
-+
-+unevaluatedProperties: false
-+
-+required:
-+  - compatible
-+
-+examples:
-+  - |
-+    regulators {
-+      compatible = "qcom,pm8941-regulators";
-+      vdd_l1_l3-supply = <&s1>;
-+
-+      s1: s1 {
-+        regulator-min-microvolt = <1300000>;
-+        regulator-max-microvolt = <1400000>;
-+      };
-+
-+      l1: l1 {
-+        regulator-min-microvolt = <1225000>;
-+        regulator-max-microvolt = <1300000>;
-+      };
-+    };
-+
-+  - |
-+    saw3: syscon@9a10000 {
-+      compatible = "syscon";
-+      reg = <0x9a10000 0x1000>;
-+    };
-+
-+    regulators {
-+      compatible = "qcom,pm8994-regulators";
-+      qcom,saw-reg = <&saw3>;
-+
-+      s8 {
-+        qcom,saw-slave;
-+      };
-+
-+      s9 {
-+        qcom,saw-slave;
-+      };
-+
-+      s10 {
-+        qcom,saw-slave;
-+      };
-+
-+      pm8994_s11_saw: s11 {
-+        qcom,saw-leader;
-+        regulator-always-on;
-+        regulator-min-microvolt = <900000>;
-+        regulator-max-microvolt = <1140000>;
-+      };
-+    };
-+...
--- 
-2.36.1
+Cheers,
+Peter
 
+> 
+> I'd really prefer to have a consistent naming. I've said it once
+> [1], having "lan966" (over lan966x) feels like cheating and is even
+> worse, because everyone would assume there is a thing named LAN966.
+> lan966x might lead the reader to think twice what the 'x' means.
+> 
+> So I'd prefer to have lan966x in the documentation and the drivers
+> and just "microchip,lan9668" or "microchip,lan9662" in the
+> compatibles.
+> 
+> -michael
+> 
+> [1] https://lore.kernel.org/linux-devicetree/d18291ff8d81f03a58900935d92115f2@walle.cc/
