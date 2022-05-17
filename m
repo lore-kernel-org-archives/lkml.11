@@ -2,99 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C3D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63865C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239226AbiEQKta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56802 "EHLO
+        id S1343674AbiEQKwE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344823AbiEQKse (ORCPT
+        with ESMTP id S1344690AbiEQKu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:48:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4EE4B1FE
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:48:07 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nqukH-0000lW-37; Tue, 17 May 2022 12:48:05 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 588EC80430;
-        Tue, 17 May 2022 10:45:46 +0000 (UTC)
-Date:   Tue, 17 May 2022 12:45:45 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Message-ID: <20220517104545.eslountqjppvcnz2@pengutronix.de>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
- <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
- <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
- <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
- <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+        Tue, 17 May 2022 06:50:56 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3097D36317
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:50:54 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id nk9-20020a17090b194900b001df2fcdc165so2098928pjb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:50:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vVR6zNLI+c0k/X+csgUVN8nm7PvvodORekMaxXxc1M0=;
+        b=P2qf7Qtgz9XAg7exjMtb8+M9Sz0eO/t+AfddkwEFhWXoNRj99c1cdjLjuh/0JEsXQQ
+         dEsp4+DhbXW+qtdL1mcwW46guWWKLsujaG/UKrR1X03zrXbgN4RrR2vU+qzqQEJ59fQi
+         s5vtF0YquujenckSNVmVwq36pv5QhYE5WUXR7LUOLCf8UpFsjf8nzHdAp/1BCCVygnqH
+         IuoHakDVI4ykqxHBI9Fgp927b+FWf9Rfxjlnfz1ktQh+G+mkGGV9acXsQK8qXcDZBb3j
+         LY1JeU3X2Ixd2FUjs7iER8Xag1kDOEv6loGhpWZNd2YECqd2RE39jSBpEiCs4GBe0pFB
+         DSyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vVR6zNLI+c0k/X+csgUVN8nm7PvvodORekMaxXxc1M0=;
+        b=P+DZnk9sPtscYyMM7drLJidcQ8BGStjxBWwKeMB6OJeVmS3lPKu4p4won6TwXMjcUB
+         bJXiaK3Yruhs9H8JC1K/59EVQeX/nv2hv+gffRQ0DenLmNul3niwre9iyBNirIUSLAeS
+         wWmQwyHq5U5WEObiw7YGZro5dsaFz8yZ3cNdd9mKICRZwtwbl4Xgfdqbms+3tlF16AZq
+         5Np6JGI2eOmhOAwh3Km80eYVFaOccFH9YFQR+m/RcZWFE/DnahNi7eFD6ZUNpkle49Vo
+         y00qqUJsHDmTD4xh1X2B/4X9kEZcUKuOTtCqNYniw45ELPMm+AEm6YYvLwwspLsU/nrI
+         hfRQ==
+X-Gm-Message-State: AOAM533V/hcO5BFU6+QTJg5gO6D0rjFmNfLSZ4X4Hltoi8TU+NZgj6vt
+        F4FPL1+Yy9bx9LrWdZLfnJDlZg==
+X-Google-Smtp-Source: ABdhPJzJrylNLgqRP10b0FK8mEviLe31EBXM9tkz9+Fpl4VtpNbhDD1nImE+3rO4hV1KxBwVXYjkqw==
+X-Received: by 2002:a17:902:c7cd:b0:161:8b6f:73c3 with SMTP id r13-20020a170902c7cd00b001618b6f73c3mr7000127pla.156.1652784653611;
+        Tue, 17 May 2022 03:50:53 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([46.249.98.195])
+        by smtp.gmail.com with ESMTPSA id m6-20020a17090a858600b001df47e47d41sm1336540pjn.36.2022.05.17.03.50.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 03:50:53 -0700 (PDT)
+Date:   Tue, 17 May 2022 18:50:45 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        broonie@kernel.org, acme@kernel.org, german.gomez@arm.com,
+        mathieu.poirier@linaro.org, john.garry@huawei.com,
+        Will Deacon <will@kernel.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 1/4] perf tools: arm64: Copy perf_regs.h from the
+ kernel
+Message-ID: <20220517105045.GB153558@leoy-ThinkPad-X240s>
+References: <20220517102005.3022017-1-james.clark@arm.com>
+ <20220517102005.3022017-2-james.clark@arm.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dy5lya2n3tvgocui"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220517102005.3022017-2-james.clark@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, May 17, 2022 at 11:20:02AM +0100, James Clark wrote:
+> Get the updated header for the newly added VG register.
+> 
+> Signed-off-by: James Clark <james.clark@arm.com>
 
---dy5lya2n3tvgocui
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
 
-On 17.05.2022 16:04:53, Vincent MAILHOL wrote:
-> So slcan, v(x)can and can-dev will select can-skb, and some of the
-> hardware drivers (still have to figure out the list) will select
-> can-rx-offload (other dependencies will stay as it is today).
-
-For rx-offload that's flexcan, ti_hecc and mcp251xfd
-
-> I think that splitting the current can-dev into can-skb + can-dev +
-> can-rx-offload is enough. Please let me know if you see a need for
-> more.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---dy5lya2n3tvgocui
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKDfNcACgkQrX5LkNig
-011riwf+MG2N6WIbcv9M35tGFR/qSkQ4Bn10GPfSr+mjOjaWam9XZnsHy0E8gB0+
-Cx1npRDb54aEkQ8zeVZMCl4GQQiiwgr3qlBaOwTz4N8i02D8mIDDZwTIfGpqprey
-5PAcI7Xz+xM5Pc889OHbGq3F0qIx0VEnzBLAyzW/RscpbrFrIW3gpYJHA6Qz34zD
-5kc8lW8wYb7ev2wIevJ2aDQaqGhzh0sWVHv8IDrB1hBvAy9m/uS1jhfzboVGdZ0+
-oVR+COehpBdVkcQZaKjgrO6MEdmB7Uoir0AqBOTGB4huRR5jJzawnp9vP55/A0CU
-upqO2ta1qwcIzFGw+CbtAsCjYaU06Q==
-=NtJl
------END PGP SIGNATURE-----
-
---dy5lya2n3tvgocui--
+> ---
+>  tools/arch/arm64/include/uapi/asm/perf_regs.h | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/arch/arm64/include/uapi/asm/perf_regs.h b/tools/arch/arm64/include/uapi/asm/perf_regs.h
+> index d54daafa89e3..fd157f46727e 100644
+> --- a/tools/arch/arm64/include/uapi/asm/perf_regs.h
+> +++ b/tools/arch/arm64/include/uapi/asm/perf_regs.h
+> @@ -36,6 +36,11 @@ enum perf_event_arm_regs {
+>  	PERF_REG_ARM64_LR,
+>  	PERF_REG_ARM64_SP,
+>  	PERF_REG_ARM64_PC,
+> -	PERF_REG_ARM64_MAX,
+> +
+> +	/* Extended/pseudo registers */
+> +	PERF_REG_ARM64_VG = 46, // SVE Vector Granule
+> +
+> +	PERF_REG_ARM64_MAX = PERF_REG_ARM64_PC + 1,
+> +	PERF_REG_ARM64_EXTENDED_MAX = PERF_REG_ARM64_VG + 1
+>  };
+>  #endif /* _ASM_ARM64_PERF_REGS_H */
+> -- 
+> 2.28.0
+> 
