@@ -2,126 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A54B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 819B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239496AbiEQH2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
+        id S241423AbiEQH2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240906AbiEQH13 (ORCPT
+        with ESMTP id S240969AbiEQH0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:27:29 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC3743EF4;
-        Tue, 17 May 2022 00:27:28 -0700 (PDT)
-Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2SL90wTHzGpxl;
-        Tue, 17 May 2022 15:24:33 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 15:27:26 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 15:27:25 +0800
-From:   Tong Tiangen <tongtiangen@huawei.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Arnd Bergmann <arnd@arndb.de>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-riscv@lists.infradead.org>, <linux-arch@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Tong Tiangen <tongtiangen@huawei.com>,
-        <wangkefeng.wang@huawei.com>, Guohanjun <guohanjun@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>
-Subject: [PATCH -next 2/2] arm64/mm: fix page table check compile error for CONFIG_PGTABLE_LEVELS=2
-Date:   Tue, 17 May 2022 07:45:48 +0000
-Message-ID: <20220517074548.2227779-3-tongtiangen@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220517074548.2227779-1-tongtiangen@huawei.com>
-References: <20220517074548.2227779-1-tongtiangen@huawei.com>
+        Tue, 17 May 2022 03:26:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85D665D5;
+        Tue, 17 May 2022 00:26:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84360B816BC;
+        Tue, 17 May 2022 07:26:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A26C385B8;
+        Tue, 17 May 2022 07:26:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652772363;
+        bh=e8dB8oDjlXZshFziU7mg5/YVotBJgiM7Y3R11mue6ng=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=kJqctlKYqneUbfzJtm1UnZc5Akz5kdUaXVHoKu5QJA+itkCv3eBNmM8bB9PwIzeri
+         9PDB1RaZk4ejs5kc97tHLAL1u4B1TTFrlgJ+6lXTv4MQMjotbWQ45y77YXilLcUMLZ
+         KdZ5rbTeEKrJkFX7PUgsec6BpFvTz4/YB58SCp4LWppPfbF/271Xwt80tvnZKnpntH
+         NYR7GDNG7dZKjwNjJKMi5Q0ovizlAWr2+Dn28RYNP9JqnstOjmd0kVbcSOGouaitti
+         eAKfKcefKCpzSohnC7LhlrioWUlOCVSE7ciOdBDEOWVAlXi+E1ST2V3q8iJ/ZgeE2f
+         q+TvFiydtsm4w==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220511200206.2458274-1-jernej.skrabec@gmail.com>
+References: <20220511200206.2458274-1-jernej.skrabec@gmail.com>
+Subject: Re: [PATCH] Revert "clk: sunxi-ng: sun6i-rtc: Add support for H6"
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     wens@csie.org, samuel@sholland.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>, a.zummo@towertech.it,
+        alexandre.belloni@bootlin.com, mturquette@baylibre.com
+Date:   Tue, 17 May 2022 00:26:01 -0700
+User-Agent: alot/0.10
+Message-Id: <20220517072603.33A26C385B8@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_PGTABLE_LEVELS=2 and CONFIG_ARCH_SUPPORTS_PAGE_TABLE_CHECK=y,
-then we trigger a compile error:
+Quoting Jernej Skrabec (2022-05-11 13:02:06)
+> This reverts commit 1738890a3165ccd0da98ebd3e2d5f9b230d5afa8.
+>=20
+> Commit 1738890a3165 ("clk: sunxi-ng: sun6i-rtc: Add support for H6")
+> breaks HDMI output on Tanix TX6 mini board. Exact reason isn't known,
+> but because that commit doesn't actually improve anything, let's just
+> revert it.
+>=20
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> ---
 
-  error: implicit declaration of function 'pte_user_accessible_page'
-
-Move the definition of page table check helper out of branch
-CONFIG_PGTABLE_LEVELS > 2
-
-Fixes: daf214c14dbe ("arm64/mm: enable ARCH_SUPPORTS_PAGE_TABLE_CHECK")
-Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
----
- arch/arm64/include/asm/pgtable.h | 33 ++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
-
-diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-index 4e61cde27f9f..979601528f1e 100644
---- a/arch/arm64/include/asm/pgtable.h
-+++ b/arch/arm64/include/asm/pgtable.h
-@@ -667,22 +667,6 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- #define pud_valid(pud)		pte_valid(pud_pte(pud))
- #define pud_user(pud)		pte_user(pud_pte(pud))
- 
--#ifdef CONFIG_PAGE_TABLE_CHECK
--static inline bool pte_user_accessible_page(pte_t pte)
--{
--	return pte_present(pte) && (pte_user(pte) || pte_user_exec(pte));
--}
--
--static inline bool pmd_user_accessible_page(pmd_t pmd)
--{
--	return pmd_present(pmd) && (pmd_user(pmd) || pmd_user_exec(pmd));
--}
--
--static inline bool pud_user_accessible_page(pud_t pud)
--{
--	return pud_present(pud) && pud_user(pud);
--}
--#endif
- 
- static inline void set_pud(pud_t *pudp, pud_t pud)
- {
-@@ -855,6 +839,23 @@ static inline int pgd_devmap(pgd_t pgd)
- }
- #endif
- 
-+#ifdef CONFIG_PAGE_TABLE_CHECK
-+static inline bool pte_user_accessible_page(pte_t pte)
-+{
-+	return pte_present(pte) && (pte_user(pte) || pte_user_exec(pte));
-+}
-+
-+static inline bool pmd_user_accessible_page(pmd_t pmd)
-+{
-+	return pmd_present(pmd) && (pmd_user(pmd) || pmd_user_exec(pmd));
-+}
-+
-+static inline bool pud_user_accessible_page(pud_t pud)
-+{
-+	return pud_present(pud) && pud_user(pud);
-+}
-+#endif
-+
- /*
-  * Atomic pte/pmd modifications.
-  */
--- 
-2.25.1
-
+Applied to clk-fixes
