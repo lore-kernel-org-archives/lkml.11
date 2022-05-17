@@ -2,106 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E706C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E00CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245368AbiEQKBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
+        id S245426AbiEQKC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245633AbiEQKBF (ORCPT
+        with ESMTP id S231372AbiEQKCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:01:05 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B245B41F91;
-        Tue, 17 May 2022 03:01:01 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=ziyangzhang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VDUBn8Y_1652781657;
-Received: from 30.39.94.219(mailfrom:ZiyangZhang@linux.alibaba.com fp:SMTPD_---0VDUBn8Y_1652781657)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 17 May 2022 18:00:58 +0800
-Message-ID: <55d724a8-ed7d-ae92-ca6d-3582e13587db@linux.alibaba.com>
-Date:   Tue, 17 May 2022 18:00:57 +0800
+        Tue, 17 May 2022 06:02:16 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E35F2D;
+        Tue, 17 May 2022 03:02:14 -0700 (PDT)
+X-UUID: b63e995b8210496ba0dba6811dc8b7f3-20220517
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:401017f9-3c99-46d5-b8bf-e3595f1903e4,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.5,REQID:401017f9-3c99-46d5-b8bf-e3595f1903e4,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:2a19b09,CLOUDID:31577ce2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:b694db9682df,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: b63e995b8210496ba0dba6811dc8b7f3-20220517
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 195184224; Tue, 17 May 2022 18:02:08 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 17 May 2022 18:02:07 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 17 May 2022 18:02:07 +0800
+Message-ID: <eab324a190c47cd139c243d1034fa44aa51f9377.camel@mediatek.com>
+Subject: Re: [PATCH v6 00/10] cpufreq: mediatek: Cleanup and support MT8183
+ and MT8186
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+CC:     <rafael@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
+        <hsinyi@google.com>, <khilman@baylibre.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 17 May 2022 18:02:07 +0800
+In-Reply-To: <dde746ce-5663-e12f-4537-4206945b6b59@gmail.com>
+References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
+         <20220506042004.hqzpb66shak4y7rz@vireshk-i7>
+         <86851bd03128cc61082d516ebff929d3637063cb.camel@mediatek.com>
+         <20220512052732.iqphgpveoyrqjlqg@vireshk-i7>
+         <af82434adea0b648d74ed5ffd123e0faaaac6508.camel@mediatek.com>
+         <20220512054825.aqe4g4lupuqj3rcq@vireshk-i7>
+         <ca85977bcff2e3de925d7ab834b8654ec5ddf8c1.camel@mediatek.com>
+         <dde746ce-5663-e12f-4537-4206945b6b59@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH V2 1/1] ubd: add io_uring based userspace block driver
-Content-Language: en-US
-To:     Ming Lei <ming.lei@redhat.com>
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Harris James R <james.r.harris@intel.com>,
-        io-uring@vger.kernel.org,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-References: <20220517055358.3164431-1-ming.lei@redhat.com>
- <20220517055358.3164431-2-ming.lei@redhat.com>
-From:   Ziyang Zhang <ZiyangZhang@linux.alibaba.com>
-In-Reply-To: <20220517055358.3164431-2-ming.lei@redhat.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/17 13:53, Ming Lei wrote:
+On Tue, 2022-05-17 at 11:57 +0200, Matthias Brugger wrote:
+> 
+> On 12/05/2022 08:05, Rex-BC Chen wrote:
+> > On Thu, 2022-05-12 at 11:18 +0530, Viresh Kumar wrote:
+> > > On 12-05-22, 13:33, Rex-BC Chen wrote:
+> > > > Matthias is not the member of mediatek, so I think we still
+> > > > need
+> > > > his
+> > > > feedback for these three patches.
+> > > 
+> > > Please ping him and ask for his feedback then.
+> > > 
+> > 
+> > ok, I will do this.
+> > Thanks!
+> > 
+> 
+> Sorry for the late reply. I'll take the DTS patches through my tree.
+> As I'm late 
+> to the game this will be for v5.20.
+> 
+> Regards,
+> Matthias
 
-> +
-> +static void ubd_cancel_queue(struct ubd_queue *ubq)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ubq->q_depth; i++) {
-> +		struct ubd_io *io = &ubq->ios[i];
-> +
-> +		if (io->flags & UBD_IO_FLAG_ACTIVE) {
-> +			io->flags &= ~UBD_IO_FLAG_ACTIVE;
-> +			io_uring_cmd_done(io->cmd, UBD_IO_RES_ABORT, 0);
-> +		}
-> +	}
-> +}
+Hello Matthias,
 
-Hi Ming,
+Thanks for you reply,
+I send another version for this series.
+Please refer to this:
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=641933
 
-When ubdsrv sends STOP_DEV and all active IOs in ubd_drv are done(UBD_IO_RES_ABORT),
-there may be still some IOs handled by ubdsrv(UBD_IO_FLAG_ACTIVE not set).
-When these IOs complete and return to ubd_drv, how to handle them?
-I find that UBD_IO_FETCH_REQ are still set,
-so will these IOs be issued to ubdsrv again or canceled?
-(I see ubd_drv fails IOs when the daemon is dying 
-but maybe here the daemon is still alive)
-
-
-
-> +
-> +/* Cancel all pending commands, must be called after del_gendisk() returns */
-> +static void ubd_cancel_dev(struct ubd_device *ub)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ub->dev_info.nr_hw_queues; i++)
-> +		ubd_cancel_queue(ubd_get_queue(ub, i));
-> +}
-> +
-> +static void ubd_stop_dev(struct ubd_device *ub)
-> +{
-> +	mutex_lock(&ub->mutex);
-> +	if (!disk_live(ub->ub_disk))
-> +		goto unlock;
-> +
-> +	del_gendisk(ub->ub_disk);
-> +	ub->dev_info.state = UBD_S_DEV_DEAD;
-> +	ub->dev_info.ubdsrv_pid = -1;
-> +	ubd_cancel_dev(ub);
-> + unlock:
-> +	mutex_unlock(&ub->mutex);
-> +	cancel_delayed_work_sync(&ub->monitor_work);
-> +}
-> +
-> +static int ubd_ctrl_stop_dev(struct ubd_device *ub)
-> +{
-> +	ubd_stop_dev(ub);
-> +	return 0;
-> +}
-> +
+BRs,
+Rex
 
