@@ -2,170 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF309C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239699AbiEQDNb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 23:13:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
+        id S230332AbiEQDQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 23:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239648AbiEQDNV (ORCPT
+        with ESMTP id S229512AbiEQDQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 23:13:21 -0400
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5E440A13;
-        Mon, 16 May 2022 20:13:20 -0700 (PDT)
-Received: by mail-oi1-f176.google.com with SMTP id e189so20910737oia.8;
-        Mon, 16 May 2022 20:13:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PWhv8SUJ7Zi/KQsr7OOR1d8BfvT5pK75grSbAtZ3mLs=;
-        b=l0nfXAAVQbga+lEfnM7gmAl2xbS58DEieZl9riWRs02jOjfjdZ9/o3t+JCx//KnStW
-         DmG73SRzvvxnmvh4oBZ48nxHeCHQEFUUVsU7mqWQgial8ELwN+41LsqbXQxLl8o5ekyt
-         jI9yF4999oThvsWikeEEY+3H3C81hMDtXjOSbsTnR3h7feSB11ERI6pKS7P2UmnbdBcn
-         VgqBxoLPcgRW15cFtDnvY9Yt3j8MwPdxdwi2Bqw9ynyNBLqyTDCMLwtMunZ5SxhilMsu
-         ziThsoytp7G7LQdaLKtIfXxrrgVPcFKDQ5ljFi8cnj2dyPNVwTaIEya+sDJUgsyCXV7u
-         sSPQ==
-X-Gm-Message-State: AOAM5304WRnHaz+yLl/CTaGMarLq/LTWwx18S1BvIs/D22dTgEK56fEC
-        hkvxPA9lcFjZ2FDwYYxuCviQJQW9ACERv83Pt8U=
-X-Google-Smtp-Source: ABdhPJw/s9VGkv+VwVcVjajwVKXNJB//UKWE7QSo6EgoadpgYV01Q+mpv6cZ6Ihl1BzegtnGy0ujzQO2o8Qcz0bYTjc=
-X-Received: by 2002:a05:6808:2218:b0:326:bd8c:d044 with SMTP id
- bd24-20020a056808221800b00326bd8cd044mr9426742oib.92.1652757199897; Mon, 16
- May 2022 20:13:19 -0700 (PDT)
+        Mon, 16 May 2022 23:16:43 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58736248F1
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:16:42 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L2Lpc5dzXzcbVg;
+        Tue, 17 May 2022 11:15:20 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
+ 2022 11:16:40 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <linux@armlinux.org.uk>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <clement.leger@bootlin.com>, <arnd@arndb.de>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] ARM: at91: pm: Fix rand build error
+Date:   Tue, 17 May 2022 11:16:06 +0800
+Message-ID: <20220517031606.11628-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-References: <20220513090237.10444-1-adrian.hunter@intel.com> <20220513090237.10444-4-adrian.hunter@intel.com>
-In-Reply-To: <20220513090237.10444-4-adrian.hunter@intel.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Mon, 16 May 2022 20:13:08 -0700
-Message-ID: <CAM9d7chFeVZNm_WTqrLzv74U13RPQtTvezxbP41GLte+ir6P_A@mail.gmail.com>
-Subject: Re: [PATCH 3/6] perf tools: Add guest_code support
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        KVM <kvm@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Adrian,
+If ATMEL_PM is y but PM is n, build fails:
 
-On Fri, May 13, 2022 at 2:03 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> A common case for KVM test programs is that the guest object code can be
-> found in the hypervisor process (i.e. the test program running on the
-> host). To support that, copy the host thread's maps to the guest thread's
-> maps. Note, we do not discover the guest until we encounter a guest event,
-> which works well because it is not until then that we know that the host
-> thread's maps have been set up.
->
-> Typically the main function for the guest object code is called
-> "guest_code", hence the name chosen for this feature.
+arch/arm/mach-at91/pm.c:1435:13: error: redefinition of ‘at91rm9200_pm_init’
+ void __init at91rm9200_pm_init(void)
+             ^~~~~~~~~~~~~~~~~~
+In file included from arch/arm/mach-at91/pm.c:29:0:
+arch/arm/mach-at91/generic.h:19:27: note: previous definition of ‘at91rm9200_pm_init’ was here
+ static inline void __init at91rm9200_pm_init(void) { }
+                           ^~~~~~~~~~~~~~~~~~
 
-Ok, so that's just a convention and there's no hard-coded
-support for the "guest_code" function in this code, right?
+ATMEL_PM should not be enabled independently, it is only selected by Soc.
 
->
-> This is primarily aimed at supporting Intel PT, or similar, where trace
-> data can be recorded for a guest. Refer to the final patch in this series
-> "perf intel-pt: Add guest_code support" for an example.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-> ---
->  tools/perf/util/event.c       |  7 +++-
->  tools/perf/util/machine.c     | 70 +++++++++++++++++++++++++++++++++++
->  tools/perf/util/machine.h     |  2 +
->  tools/perf/util/session.c     |  7 ++++
->  tools/perf/util/symbol_conf.h |  3 +-
->  5 files changed, 86 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/perf/util/event.c b/tools/perf/util/event.c
-> index 6439c888ae38..0476bb3a4188 100644
-> --- a/tools/perf/util/event.c
-> +++ b/tools/perf/util/event.c
-> @@ -683,9 +683,12 @@ static bool check_address_range(struct intlist *addr_list, int addr_range,
->  int machine__resolve(struct machine *machine, struct addr_location *al,
->                      struct perf_sample *sample)
->  {
-> -       struct thread *thread = machine__findnew_thread(machine, sample->pid,
-> -                                                       sample->tid);
-> +       struct thread *thread;
->
-> +       if (symbol_conf.guest_code && !machine__is_host(machine))
-> +               thread = machine__findnew_guest_code(machine, sample->pid);
-> +       else
-> +               thread = machine__findnew_thread(machine, sample->pid, sample->tid);
->         if (thread == NULL)
->                 return -1;
->
-> diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
-> index e67b5a7670f3..ae2e1fb422e2 100644
-> --- a/tools/perf/util/machine.c
-> +++ b/tools/perf/util/machine.c
-> @@ -392,6 +392,76 @@ struct machine *machines__find_guest(struct machines *machines, pid_t pid)
->         return machine;
->  }
->
-> +/*
-> + * A common case for KVM test programs is that the guest object code can be
-> + * found in the hypervisor process (i.e. the test program running on the host).
-> + * To support that, copy the host thread's maps to the guest thread's maps.
-> + * Note, we do not discover the guest until we encounter a guest event,
-> + * which works well because it is not until then that we know that the host
-> + * thread's maps have been set up.
-> + */
-> +static struct thread *findnew_guest_code(struct machine *machine,
+Fixes: f2f5cf78a333 ("ARM: at91: pm: add support for sama5d2 secure suspend")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ arch/arm/mach-at91/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But this function returns a thread and IIUC that's the task which
-does the host to guest transition.  Then why not calling it just
-findnew__hypervisor() ?
+diff --git a/arch/arm/mach-at91/Kconfig b/arch/arm/mach-at91/Kconfig
+index 3d7e66976206..3dd9e718661b 100644
+--- a/arch/arm/mach-at91/Kconfig
++++ b/arch/arm/mach-at91/Kconfig
+@@ -219,7 +219,7 @@ config SOC_SAMA5
+ 	select SRAM if PM
+ 
+ config ATMEL_PM
+-	bool "Atmel PM support"
++	bool
+ 
+ config ATMEL_SECURE_PM
+ 	bool "Atmel Secure PM support"
+-- 
+2.17.1
 
-Thanks,
-Namhyung
-
-
-> +                                        struct machine *host_machine,
-> +                                        pid_t pid)
-> +{
-> +       struct thread *host_thread;
-> +       struct thread *thread;
-> +       int err;
-> +
-> +       if (!machine)
-> +               return NULL;
-> +
-> +       thread = machine__findnew_thread(machine, -1, pid);
-> +       if (!thread)
-> +               return NULL;
-> +
-> +       /* Assume maps are set up if there are any */
-> +       if (thread->maps->nr_maps)
-> +               return thread;
-> +
-> +       host_thread = machine__find_thread(host_machine, -1, pid);
-> +       if (!host_thread)
-> +               goto out_err;
-> +
-> +       thread__set_guest_comm(thread, pid);
-> +
-> +       /*
-> +        * Guest code can be found in hypervisor process at the same address
-> +        * so copy host maps.
-> +        */
-> +       err = maps__clone(thread, host_thread->maps);
-> +       thread__put(host_thread);
-> +       if (err)
-> +               goto out_err;
-> +
-> +       return thread;
-> +
-> +out_err:
-> +       thread__zput(thread);
-> +       return NULL;
-> +}
-> +
