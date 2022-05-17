@@ -2,146 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5152C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13342C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242671AbiEQIMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35908 "EHLO
+        id S236485AbiEQIMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242751AbiEQILX (ORCPT
+        with ESMTP id S242895AbiEQIL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:11:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8549A3CA5B;
-        Tue, 17 May 2022 01:11:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 068D0611E2;
-        Tue, 17 May 2022 08:11:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AEDEC34100;
-        Tue, 17 May 2022 08:11:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652775081;
-        bh=G13kXIW4s6Pcy4BSlXyMefkAe8ns85SmAcmOmBOdOws=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=p6T8WwRRYkq2Yr0T/ugAAQuYioRnEv9Co8Aatc3ztL3Sf3qbQEVqRmJCyQLC/13sF
-         r58+AhSwc7onQTwwl7a6AXjvMYaAVXkFNlfxGpV3rAjCeQ09b+4JkxxilV/u1Hwvao
-         tydOTumob09OYzt2yEM5VPCT9Dh1pLqyR8qKZzSCS9PMraIE7Zv9RQ9qqsjkRwfYTm
-         kkMQL36jqxoVJAj7ZMGMrijXHfH1bgROd7xoxzJzuCHAS+2GtDSdNgCJiZCtsJ6ASM
-         0oy7RONFwjQC+DS25khs0akCVDftbxlIwPaZz0UaS14K8ewH4IEfMuQtTQxR3MbQSO
-         5/GERxxc/muMg==
-Received: by mail-oi1-f177.google.com with SMTP id v66so21451132oib.3;
-        Tue, 17 May 2022 01:11:21 -0700 (PDT)
-X-Gm-Message-State: AOAM531Bsclh2cAi8FQXDsawrejLDRziW/tF59TjGYVFUh27piSJ28gz
-        EVJZg2MjDfYDHDiL7T4DuGZt1GdIluq3JUOH4MQ=
-X-Google-Smtp-Source: ABdhPJy1CTbEQsyqgIE8jj4/8WvmUlhpYtiVDu0SgAQke0jlX2w6xF+xlZ/GA4o6rm7siIum7OpWULRH6bxfMSxVboo=
-X-Received: by 2002:a05:6808:1314:b0:326:e438:d8cd with SMTP id
- y20-20020a056808131400b00326e438d8cdmr15625016oiv.228.1652775080613; Tue, 17
- May 2022 01:11:20 -0700 (PDT)
+        Tue, 17 May 2022 04:11:57 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D603CA57;
+        Tue, 17 May 2022 01:11:56 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id w200so337252pfc.10;
+        Tue, 17 May 2022 01:11:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PFUmdFHadjVSWKgDGHvFdEqXwH0fA/y0X+v/6NyB02o=;
+        b=SC/hukbpWW+a5yMv8Ch5Ltq/54B7Mk7Iu1ukbh1d7rHYnYYhrB6da5wxfRnd2pPA4g
+         z4tFRZp99sljMCjD3eEIwdnFo34IriXuZ7hDrmIePOlhabDDw2e6QacyA5IMdiq7LlLO
+         LFFhsaQh3mSZ3Vq+IIP17m9m+M8JOPaBFx0GdXC3lgzoSbjzgQuXT/OI8hSy6XRz8Pmp
+         nqu29qV61LkwpbeUHCs2ygbuRPuLfz2n/0o5lefGEW8Yl6c4vRYsyYKgbAwL1xzdlrKT
+         CwP6DIjokwTmmhsZpLx2Vv0f2miFFutRTVtWI46daf2MA+bzBI2ITdJP0vLopRos2yBX
+         I92A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PFUmdFHadjVSWKgDGHvFdEqXwH0fA/y0X+v/6NyB02o=;
+        b=3G/+GhEoB/5csZ+VHJF7GuaCocNPctJnN3mn3FxgSr6le/Qp3hx6Gy8sEYoUvj7R7x
+         92tOkzG892cwo4bb9pMrXMp2aCmXlZn3TAjvtOljQD1Q8vGi8TVq+lTc3Sql5ixdkbYk
+         e9TBxDTC9WSBpcMV2EkGKmgHA7WDe5GTXOZ80IA9OXEeR5FgNVzGz0uQUQ4TL1UY22Uh
+         sbabHBw/jXzUnUazlMrR6wj5Uku4GSnLFZMrj0BrIKkQklm1glcz17w1+RNvayIdVmyy
+         uh0dV1peF5mSphpBGxWW6JmXMSO+WL2KAEBaxA88v8Ww8cACE9aDCyHL2C+BX3rpibGF
+         HSKg==
+X-Gm-Message-State: AOAM530M8kK8JyeFwKnqrgb0ApZ3cEzCOBquEfVxkalGCOAszLXtIMuT
+        yQPBAOyoupYg9wTD/5EPj68=
+X-Google-Smtp-Source: ABdhPJyjWuQLM53tDQ80cZZXhrYJPrAkc/zBQyq0h4cTnU147xlc7UBjKuawyMF2GNTSOBSc1HbyVA==
+X-Received: by 2002:a63:2b0b:0:b0:39d:890a:ab68 with SMTP id r11-20020a632b0b000000b0039d890aab68mr18266378pgr.247.1652775116105;
+        Tue, 17 May 2022 01:11:56 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.20])
+        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.11.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 01:11:55 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     edumazet@google.com
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Subject: [PATCH net-next v2 2/9] net: skb: introduce __skb_queue_purge_reason()
+Date:   Tue, 17 May 2022 16:10:01 +0800
+Message-Id: <20220517081008.294325-3-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220517081008.294325-1-imagedong@tencent.com>
+References: <20220517081008.294325-1-imagedong@tencent.com>
 MIME-Version: 1.0
-References: <20220516101635.1082132-1-yoan.picchi@arm.com> <20220516101635.1082132-3-yoan.picchi@arm.com>
-In-Reply-To: <20220516101635.1082132-3-yoan.picchi@arm.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 17 May 2022 10:11:09 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGAiA-SkTFD5EgcacYao0RKT7oK0AxvxkR7Ho_KZSGXCw@mail.gmail.com>
-Message-ID: <CAMj1kXGAiA-SkTFD5EgcacYao0RKT7oK0AxvxkR7Ho_KZSGXCw@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] Removes the x86 dependency on the QAT drivers
-To:     yoan.picchi@arm.com
-Cc:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        qat-linux <qat-linux@intel.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 at 12:16, <yoan.picchi@arm.com> wrote:
->
-> From: Yoan Picchi <yoan.picchi@arm.com>
->
-> This dependency looks outdated. After the previous patch, we have been able
-> to use this driver to encrypt some data and to create working VF on arm64.
->
-> Signed-off-by: Yoan Picchi <yoan.picchi@arm.com>
+From: Menglong Dong <imagedong@tencent.com>
 
-Are you sure the driver is safe for non-coherent DMA as well?
+Introduce __skb_queue_purge_reason() to empty a skb list with drop
+reason and make __skb_queue_purge() an inline call to it.
 
-> ---
->  drivers/crypto/qat/Kconfig | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/crypto/qat/Kconfig b/drivers/crypto/qat/Kconfig
-> index 4b90c0f22b03..88df2cf4cac9 100644
-> --- a/drivers/crypto/qat/Kconfig
-> +++ b/drivers/crypto/qat/Kconfig
-> @@ -17,7 +17,7 @@ config CRYPTO_DEV_QAT
->
->  config CRYPTO_DEV_QAT_DH895xCC
->         tristate "Support for Intel(R) DH895xCC"
-> -       depends on X86 && PCI
-> +       depends on PCI
->         select CRYPTO_DEV_QAT
->         help
->           Support for Intel(R) DH895xcc with Intel(R) QuickAssist Technology
-> @@ -28,7 +28,7 @@ config CRYPTO_DEV_QAT_DH895xCC
->
->  config CRYPTO_DEV_QAT_C3XXX
->         tristate "Support for Intel(R) C3XXX"
-> -       depends on X86 && PCI
-> +       depends on PCI
->         select CRYPTO_DEV_QAT
->         help
->           Support for Intel(R) C3xxx with Intel(R) QuickAssist Technology
-> @@ -39,7 +39,7 @@ config CRYPTO_DEV_QAT_C3XXX
->
->  config CRYPTO_DEV_QAT_C62X
->         tristate "Support for Intel(R) C62X"
-> -       depends on X86 && PCI
-> +       depends on PCI
->         select CRYPTO_DEV_QAT
->         help
->           Support for Intel(R) C62x with Intel(R) QuickAssist Technology
-> @@ -50,7 +50,7 @@ config CRYPTO_DEV_QAT_C62X
->
->  config CRYPTO_DEV_QAT_4XXX
->         tristate "Support for Intel(R) QAT_4XXX"
-> -       depends on X86 && PCI
-> +       depends on PCI
->         select CRYPTO_DEV_QAT
->         help
->           Support for Intel(R) QuickAssist Technology QAT_4xxx
-> @@ -61,7 +61,7 @@ config CRYPTO_DEV_QAT_4XXX
->
->  config CRYPTO_DEV_QAT_DH895xCCVF
->         tristate "Support for Intel(R) DH895xCC Virtual Function"
-> -       depends on X86 && PCI
-> +       depends on PCI
->         select PCI_IOV
->         select CRYPTO_DEV_QAT
->
-> @@ -74,7 +74,7 @@ config CRYPTO_DEV_QAT_DH895xCCVF
->
->  config CRYPTO_DEV_QAT_C3XXXVF
->         tristate "Support for Intel(R) C3XXX Virtual Function"
-> -       depends on X86 && PCI
-> +       depends on PCI
->         select PCI_IOV
->         select CRYPTO_DEV_QAT
->         help
-> @@ -86,7 +86,7 @@ config CRYPTO_DEV_QAT_C3XXXVF
->
->  config CRYPTO_DEV_QAT_C62XVF
->         tristate "Support for Intel(R) C62X Virtual Function"
-> -       depends on X86 && PCI
-> +       depends on PCI
->         select PCI_IOV
->         select CRYPTO_DEV_QAT
->         help
-> --
-> 2.25.1
->
+Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ include/linux/skbuff.h | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index dfc568844df2..e9659a63961a 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3323,18 +3323,24 @@ static inline int skb_orphan_frags_rx(struct sk_buff *skb, gfp_t gfp_mask)
+ }
+ 
+ /**
+- *	__skb_queue_purge - empty a list
++ *	__skb_queue_purge_reason - empty a list with specific drop reason
+  *	@list: list to empty
++ *	@reason: drop reason
+  *
+  *	Delete all buffers on an &sk_buff list. Each buffer is removed from
+  *	the list and one reference dropped. This function does not take the
+  *	list lock and the caller must hold the relevant locks to use it.
+  */
+-static inline void __skb_queue_purge(struct sk_buff_head *list)
++static inline void __skb_queue_purge_reason(struct sk_buff_head *list,
++					    enum skb_drop_reason reason)
+ {
+ 	struct sk_buff *skb;
+ 	while ((skb = __skb_dequeue(list)) != NULL)
+-		kfree_skb(skb);
++		kfree_skb_reason(skb, reason);
++}
++static inline void __skb_queue_purge(struct sk_buff_head *list)
++{
++	__skb_queue_purge_reason(list, SKB_DROP_REASON_NOT_SPECIFIED);
+ }
+ void skb_queue_purge(struct sk_buff_head *list);
+ 
+-- 
+2.36.1
+
