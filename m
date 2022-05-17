@@ -2,136 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbiEQW34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
+        id S231226AbiEQWco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230510AbiEQW3x (ORCPT
+        with ESMTP id S230510AbiEQWck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:29:53 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C26F52E6C
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:29:50 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id bq30so565803lfb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:29:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vRrKK940tfY15AL/k2whqSoFtZdbDZpofZ1keoPwuls=;
-        b=bmW79KvYYbX9yJ25BckYi9U4OZPqh9WoGqI0OtODtPwXovUvFB0Mlx7LQg5aEmBLUA
-         BiVzwzxveln6wne0cgVGF37mWxwUOsxkjXFyhS7Ax8UPP2uL61asXWWhB84s9eLrEoZI
-         afCElLueYI9Ar3gaweUf3VPgkl8g5E5Xa1bH3nfox4kc7tal/yDxEE7djtQyPkLGrlNm
-         FZTPC87BoRi7kWr611X2F6GFlucPK7Ih5N/LkMzOwVzwow7t/qDugrr5X5/tiMk8pEf7
-         pcJeNVa+Qj8MSJRjtdM+pY3HWqdoLYvA/hhXaTzVduKO35znsTrdWKlyNc4Jl4t0AgRo
-         3SZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vRrKK940tfY15AL/k2whqSoFtZdbDZpofZ1keoPwuls=;
-        b=Tduh0rNSDIsMsYKIjlBEQI7m0es65z5IbZwE7b2HQsCXl42hguibEuD/jkwS/SewZn
-         gPNlCyQ/q7Vopyb0sE+XKfUAHEqKyRZw87g9ykDHysVf0eAwmLilUKf6F74GcEIVzyle
-         Vx/3iPq7WM0k/s0BEqlxG/WQJ90oOScB0L19mMPH0XK/lVQu/oJonYcanDVqfSFzMKeB
-         VdqotuxpBD0h8FnPxa5xiGRqsZy+epva/WRgxM/DzE2o6bg23pFAG/pA7TMA/OJI6+yX
-         CBfuZse7cQ+e5by9C9H1jKcNQM+LyuDwBonB6Aq7JnJu9zi+WeMeGhWRPfEeyltZZOCV
-         0hVw==
-X-Gm-Message-State: AOAM532vxfsi2gTsstIPA3cBQ6GVT2EeQQoerVOzu6DdstnFGYNS9dcZ
-        BXomxahhQAnVPm8nJZRMQnbPo6eR3S6fHx9PpRBj6Q==
-X-Google-Smtp-Source: ABdhPJzAQmbCDjA2O7dLfFPHDMx+mXoBHhB/mP3eIxQ/7+fxV1qQkpaIZEiwttGEcDDfQrLU5iW98Ti7DlMBe9dnlbo=
-X-Received: by 2002:a05:6512:1d1:b0:471:f63a:b182 with SMTP id
- f17-20020a05651201d100b00471f63ab182mr18342309lfp.392.1652826588756; Tue, 17
- May 2022 15:29:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <Yk7/T8BJITwz+Og1@Pauls-MacBook-Pro.local> <CAKwvOdkEULT_OOeaaCneJjbrE=O3kC8SMDs2thFa9gBfpuo2Jg@mail.gmail.com>
- <YmKF5tiH4W8AVdXe@Pauls-MacBook-Pro.local>
-In-Reply-To: <YmKF5tiH4W8AVdXe@Pauls-MacBook-Pro.local>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 17 May 2022 15:29:36 -0700
-Message-ID: <CAKwvOd=yLgY_0SwfBuOAzo=+zeWNMu4FMp65y0bi_RM+1G3NWQ@mail.gmail.com>
-Subject: Re: Dangerous addr to ctrl dependency transformation in fs/nfs/delegation.c::nfs_server_return_marked_delegations()?
-To:     =?UTF-8?Q?Paul_Heidekr=C3=BCger?= <paul.heidekrueger@in.tum.de>
-Cc:     "Jose E. Marchesi" <jemarch@gnu.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        llvm@lists.linux.dev, Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>
+        Tue, 17 May 2022 18:32:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B0D3E0F5;
+        Tue, 17 May 2022 15:32:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BD640CE1D34;
+        Tue, 17 May 2022 22:32:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84AEFC385B8;
+        Tue, 17 May 2022 22:32:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652826756;
+        bh=+fGT+G+Sm41/oPKm1sHP2aDVVweBeZsmQEMpw6vMTw8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=UH6jExUv2g5GqaSWS8bUWObiI+Xs5uLSeLchUYhu8G1EzG9xlniD/mDnX8sID2yxm
+         fVsZKryGCdxYWNmqx+FguvXBUQ0irzLgXPZnfEozx2VEr6D8TA7r/n02nTJMA/vORV
+         dqlzSi1KS6vTncbRKqn0oueyq5G+ymPMJ1HwT//kdljLvbnOOtRr1KJ25akxgbReqR
+         pfCOoDRyT5xrOaZFDfV5qryEeQ+FCazthltaVald3RPHQoGPwygrI2sN3HCJxt9O7r
+         0dxgy8RXVPRbxmQEIsE6aR8lK3wZPdhxR3qEYcXhav90pahYH1+l+nHslpKwKw3OID
+         r2CLjKW5kKx2Q==
+Message-ID: <4bbdac4563817326cc5777aa6ec5fcb366235492.camel@kernel.org>
+Subject: Re: [PATCH] netfs: Use container_of() for offset casting
+From:   Jeff Layton <jlayton@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     David Howells <dhowells@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Date:   Tue, 17 May 2022 18:32:34 -0400
+In-Reply-To: <20220517210230.864239-1-keescook@chromium.org>
+References: <20220517210230.864239-1-keescook@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 3:39 AM Paul Heidekr=C3=BCger
-<paul.heidekrueger@in.tum.de> wrote:
->
-> On Thu, Apr 14, 2022 at 02:21:25PM -0700, Nick Desaulniers wrote:
-> > On Thu, Apr 7, 2022 at 8:22 AM Paul Heidekr=C3=BCger
-> > <paul.heidekrueger@in.tum.de> wrote:
-> > >
-> > > Hi all,
-> > >
-> > > work on my dependency checker tool is progressing nicely, and it is
-> > > flagging, what I believe is, a harmful addr to ctrl dependency
-> > > transformation. For context, see [1] and [2]. I'm using the Clang
-> > > compiler.
-> > > [1]: https://linuxplumbersconf.org/event/7/contributions/821/attachme=
-nts/598/1075/LPC_2020_--_Dependency_ordering.pdf
-> > > [2]: https://lore.kernel.org/llvm/YXknxGFjvaB46d%2Fp@Pauls-MacBook-Pr=
-o/T/#u
-> >
-> > Hi Paul,
-> > Thanks for the report and your (and your team's) work on this tool.
-> > Orthogonal to your report, Jose (cc'ed) and I are currently in the
-> > planning process to put together a Kernel+Toolchain microconference
-> > track at Linux Plumbers Conference [0] this year (Sept 12-14) in
-> > Dublin, Ireland.  Would you or someone from your group be able and
-> > interested in presenting more information about your work to an
-> > audience of kernel and toolchain developers at such an event?
-> >
-> > Would others be interested in such a topic? (What do they say in
-> > Starship Troopers...?...Would you like to know more?)
-> >
-> > [0] https://lpc.events/event/16/
-> > --
-> > Thanks,
-> > ~Nick Desaulniers
->
-> Hi Nick and Jose,
->
-> Many thanks for inviting us! I would love to do a talk at LPC! Hopefully
-> in person too.
->
-> Given that there have been several talks around this topic at LPC
-> already, it seems very fitting, and we'll hopefully have more to share
-> by then. Actually we have more to share already :-)
->
-> https://lore.kernel.org/all/YmKE%2FXgmRnGKrBbB@Pauls-MacBook-Pro.local/T/=
-#u
->
-> I assume we will have to submit an abstract soon?
+On Tue, 2022-05-17 at 14:02 -0700, Kees Cook wrote:
+> While randstruct was satisfied with using an open-coded "void *" offset
+> cast for the netfs_i_context <-> inode casting, __builtin_object_size()
+> as used by FORTIFY_SOURCE was not as easily fooled. Switch to using
+> an internally defined netfs_i_context/inode struct for doing a full
+> container_of() casting. This keeps both randstruct and __bos() happy
+> under GCC 12. Silences:
+>=20
+> In file included from ./include/linux/string.h:253,
+>                  from ./include/linux/ceph/ceph_debug.h:7,
+>                  from fs/ceph/inode.c:2:
+> In function =E2=80=98fortify_memset_chk=E2=80=99,
+>     inlined from =E2=80=98netfs_i_context_init=E2=80=99 at ./include/linu=
+x/netfs.h:326:2,
+>     inlined from =E2=80=98ceph_alloc_inode=E2=80=99 at fs/ceph/inode.c:46=
+3:2:
+> ./include/linux/fortify-string.h:242:25: warning: call to =E2=80=98__writ=
+e_overflow_field=E2=80=99 declared with attribute warning:
+> detected write beyond size of field (1st parameter); maybe use struct_gro=
+up()? [-Wattribute-warning]
+>   242 |                         __write_overflow_field(p_size_field, size=
+);
+>       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+>=20
+> Reported-by: Jeff Layton <jlayton@kernel.org>
+> Link: https://lore.kernel.org/lkml/d2ad3a3d7bdd794c6efb562d2f2b655fb67756=
+b9.camel@kernel.org
+> Cc: Jeff Layton <jlayton@kernel.org>
+> Cc: David Howells <dhowells@redhat.com>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+> If this looks good I can add it to my hardening tree, or if you want to
+> carry it, I can respin this without the earlier randstruct changes and
+> drop that patch from my tree?
+> ---
+>  include/linux/netfs.h | 15 +++++++++++++--
+>  1 file changed, 13 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/include/linux/netfs.h b/include/linux/netfs.h
+> index 0c33b715cbfd..cce5a9b53a8a 100644
+> --- a/include/linux/netfs.h
+> +++ b/include/linux/netfs.h
+> @@ -286,6 +286,17 @@ extern void netfs_put_subrequest(struct netfs_io_sub=
+request *subreq,
+>  				 bool was_async, enum netfs_sreq_ref_trace what);
+>  extern void netfs_stats_show(struct seq_file *);
+> =20
+> +/*
+> + * The struct netfs_i_context instance must always follow the VFS inode,
+> + * but existing users want to avoid a substructure name space, so just
+> + * use this internally to perform the needed container_of() offset
+> + * casting, which will keep both FORTIFY_SOURCE and randstruct happy.
+> + */
+> +struct netfs_i_c_pair {
+> +	struct inode inode;
+> +	struct netfs_i_context ctx;
+> +};
+> +
+>  /**
+>   * netfs_i_context - Get the netfs inode context from the inode
+>   * @inode: The inode to query
+> @@ -295,7 +306,7 @@ extern void netfs_stats_show(struct seq_file *);
+>   */
+>  static inline struct netfs_i_context *netfs_i_context(struct inode *inod=
+e)
+>  {
+> -	return (void *)inode + sizeof(*inode);
+> +	return &container_of(inode, struct netfs_i_c_pair, inode)->ctx;
+>  }
+> =20
+>  /**
+> @@ -307,7 +318,7 @@ static inline struct netfs_i_context *netfs_i_context=
+(struct inode *inode)
+>   */
+>  static inline struct inode *netfs_inode(struct netfs_i_context *ctx)
+>  {
+> -	return (void *)ctx - sizeof(struct inode);
+> +	return &container_of(ctx, struct netfs_i_c_pair, ctx)->inode;
+>  }
+> =20
+>  /**
 
-Yes, if you go to: https://lpc.events/event/16/abstracts/
+This patch didn't apply cleanly for me to a recent tree, but I was able
+to wiggle it into place and it seemed to work.
 
-click "Submit new abstract" in the bottom right.
-
-Under the "Track" dropdown, please select "Toolchains Track."
---=20
-Thanks,
-~Nick Desaulniers
+Tested-by: Jeff Layton <jlayton@kernel.org>
