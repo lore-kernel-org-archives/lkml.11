@@ -2,97 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 331DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0AC6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 20:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353105AbiEQUyR (ORCPT
+        id S1353109AbiEQUyl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 16:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        Tue, 17 May 2022 16:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353043AbiEQUxy (ORCPT
+        with ESMTP id S1353060AbiEQUyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 16:53:54 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C6E52525;
-        Tue, 17 May 2022 13:53:51 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id en5so497547edb.1;
-        Tue, 17 May 2022 13:53:51 -0700 (PDT)
+        Tue, 17 May 2022 16:54:32 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57868532D8
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:54:23 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id y63so301897oia.7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 13:54:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PAidMuA0ZfVLTFeYOY0jFETaKP5wFrL8y0MLkBWu2Mo=;
-        b=f4MOu4Orlds854J3Sjm8sYUcUV6qSn/fZ3l9OYZ5K4F6E9Y+oC9AAPkLy1eqvHjE1x
-         UuvM6w59Yo6rsmK78I+ZHrd/IztXVyb/mRdR4OH0jE2mytYs8Yd5ezAwobp/wQ1b3WeD
-         RgwIR/h8ABXxMXdBQylEYsuJZORtjxui+R2NfAtNZGsDkZ21LCgCFvIMGzxJUBOEMfG5
-         pyN9n9jLL5Vctr/o3kXuIdl0xfyC2UXnNiXVUY9j7ZnTwPTh3bmMWEyPSeJVZxpzDFE5
-         NRZfhXtqNBvEKJzO/I48LMBCd17P38CmAO74EMEki0I0d0K2uiGnx1k78oKjx0/c79k0
-         4l8A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=esDt/ygm4WEDZW7NMBdetNiik4xOkEth8NzDieBlCmM=;
+        b=gKPmFVts67I2YaFCueBVBPv+QGDtrzBVPTDht4HFOb5YFVrVAJavab1X62rwiHplrN
+         VncmnllGh57N9jrTzqfTqGc5yIPFpxPnljl/ZjIipTZTdtqC6C8zpFQf2s/qjCk33CJh
+         8k12YFzRsrSu6fZp+UzNMxc9epUCkGnAnpBfTrytYfRjNFrn2EIHyS7UU++CwnQR70OU
+         sM7VXfNgZZqhxwygU9E0tuwvWtOec/6A9sb7cgHCJaEOhxl/SScAbGLsrSIebHComKlX
+         lnRhLgoCnY+rfY3t9H2mEbFQWJc1L0KeLSTYt9Kho1f4lacmL2xHeR2LD7E3OuxKacqq
+         A2Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PAidMuA0ZfVLTFeYOY0jFETaKP5wFrL8y0MLkBWu2Mo=;
-        b=SvylEEoHuclOLFxf1kLZI+4jQxDOjUQxlDPninok2g1TiTpsHqM2eNcnhtHOjPHFzn
-         rhJxeokdKWSj7BuxYufI+z45xduItz8OKC74YAQTTN71A5niYvrsW0rpw5ZVYSEi+vOP
-         kTfUtorQO1kMprnBD3b0iJVYpuEFTXmz/u3oUVvp9ZoXmrYKrUoWJhbvdRUc9kMwFUsy
-         x4MWu3EAgNYE3zSb3w9xhX/yA3hwq3skKPhfGnyudtobUNwmrcYMAISA2eQJTuLcQu+y
-         05jKK0C2M0sM8vOarMwaiUvA+tBfJlng4JtX+znSaGunpHo1Lrn0aeDOK0qvaltZz76X
-         8UJQ==
-X-Gm-Message-State: AOAM5321dqhfZYDj9ScOv0pAHHGbRjxO9yb+Upk+TzuV2hY0ZnTYB7om
-        fb4cq8bN8c3pv2FcVFCKtwc=
-X-Google-Smtp-Source: ABdhPJzHrBMHkcmpaUrEVq9M2mG0iY3Zq86tClH9XaiJXLfERoeVAlOjyc20MwK4KfGezBnTR1SIdQ==
-X-Received: by 2002:a50:fa8e:0:b0:42a:b1f4:91c7 with SMTP id w14-20020a50fa8e000000b0042ab1f491c7mr12779105edr.140.1652820831573;
-        Tue, 17 May 2022 13:53:51 -0700 (PDT)
-Received: from fedora.robimarko.hr ([188.252.220.143])
-        by smtp.googlemail.com with ESMTPSA id v22-20020a17090651d600b006f3ef214e10sm120907ejk.118.2022.05.17.13.53.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 13:53:51 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v3 6/6] arm64: dts: ipq8074: add VQMMC supply
-Date:   Tue, 17 May 2022 22:53:41 +0200
-Message-Id: <20220517205341.536587-6-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220517205341.536587-1-robimarko@gmail.com>
-References: <20220517205341.536587-1-robimarko@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=esDt/ygm4WEDZW7NMBdetNiik4xOkEth8NzDieBlCmM=;
+        b=bgeEwoVgR9SBga12DIhsmKUVmJRgkLhEgXPGDf+hPxPWyU8YjzWJ64x15TpCwEUMiA
+         6sbIoo8CUdCvriOpO2KEl9VRGgVtMVnBfm0w6aRmH72a3u/s2XUWQuyM0quGyHTvWKtE
+         uAEAd7oPrfyblAtQhX+9n7j8/K35ivHw5WNbG8y8xRCvaH8wTXoXxJbh7JSdDaFBd4Ok
+         nthtG2svU1XbohoSTjZf/+TYLFDKlrlC4EJn67eVMc6n4BrKLkD0dxTfRVamO9ddAonE
+         0F+i58YwwmJARcVS4NY0dWVAT0cNJWfgZMsnhs8yPA68MXT6HQVk25XeTgcFxk4LF5vr
+         t5sQ==
+X-Gm-Message-State: AOAM533KhqkJdMFi2gfSHPOSRWl+cQadPzilZLQwpjl/l7D2GvNj1w57
+        qXMUlv4x0w4vlP2yHEkiQJZX46odGuP23XtKZrVtX+DG
+X-Google-Smtp-Source: ABdhPJw5kDEeaiSUetF9RsHYAT9bdeIQ0xtHtRebB/nPLWv2c7rooin4F070ALFh4+gFNaanpLJlsuw6NgGTUnO/ZC4=
+X-Received: by 2002:a05:6808:f8e:b0:328:a601:a425 with SMTP id
+ o14-20020a0568080f8e00b00328a601a425mr12159725oiw.253.1652820862717; Tue, 17
+ May 2022 13:54:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220517095700.7291-1-ruc_gongyuanjun@163.com>
+In-Reply-To: <20220517095700.7291-1-ruc_gongyuanjun@163.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 17 May 2022 16:54:11 -0400
+Message-ID: <CADnq5_MM7pV-yXRdqRsqoWOugOF8SjXgvksXWoot5W+VkLeAGw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] radeon: fix a possible null pointer dereference
+To:     Yuanjun Gong <ruc_gongyuanjun@163.com>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SDHCI controller claims DDR, HS200 and HS400 1.8V support, however it
-cannot achieve those using the 2.95V I/O that is the default set by
-firmware.
+Applied.  Thanks!
 
-Since we know have access to the PMP8074 PMIC provided LDO that provides
-the I/O voltage set it as VQMMC supply so that higher speeds can actually
-be achieved.
-
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index d1a0b77c38a4..fea3c4ee3565 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -476,6 +476,8 @@ sdhc_1: sdhci@7824900 {
- 			mmc-hs400-1_8v;
- 			bus-width = <8>;
- 
-+			vqmmc-supply = <&l11>;
-+
- 			status = "disabled";
- 		};
- 
--- 
-2.36.1
-
+On Tue, May 17, 2022 at 9:13 AM Yuanjun Gong <ruc_gongyuanjun@163.com> wrote:
+>
+> From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+>
+> In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+> is assigned to mode, which will lead to a NULL pointer dereference
+> on failure of drm_mode_duplicate(). Add a check to avoid npd.
+>
+> The failure status of drm_cvt_mode() on the other path is checked too.
+>
+> Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+> ---
+>  drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+> index 0cb1345c6ba4..fabe4f4ca124 100644
+> --- a/drivers/gpu/drm/radeon/radeon_connectors.c
+> +++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+> @@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+>             native_mode->vdisplay != 0 &&
+>             native_mode->clock != 0) {
+>                 mode = drm_mode_duplicate(dev, native_mode);
+> +               if (!mode)
+> +                       return NULL;
+>                 mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+>                 drm_mode_set_name(mode);
+>
+> @@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+>                  * simpler.
+>                  */
+>                 mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
+> +               if (!mode)
+> +                       return NULL;
+>                 mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+>                 DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
+>         }
+> --
+> 2.17.1
+>
