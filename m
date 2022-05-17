@@ -2,137 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8BE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 02:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A93C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 02:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232913AbiEQCWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 22:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60192 "EHLO
+        id S230310AbiEQCYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 22:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiEQCW0 (ORCPT
+        with ESMTP id S229553AbiEQCYE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 22:22:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9626A1835C;
-        Mon, 16 May 2022 19:22:24 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2Kcb08VLzhZDH;
-        Tue, 17 May 2022 10:21:35 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 10:21:57 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 10:21:56 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>,
-        <linux-hwmon@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] hwmon: Directly use ida_alloc()/free()
-Date:   Tue, 17 May 2022 02:40:22 +0000
-Message-ID: <20220517024022.1980274-1-liuke94@huawei.com>
+        Mon, 16 May 2022 22:24:04 -0400
+Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B9E53D1FC;
+        Mon, 16 May 2022 19:24:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=lTBhx
+        p2EfVojczwDke4E/Onuf36SXf/m+vxj1MMdS2Y=; b=K6NlZ9QpriWOehObiwcCW
+        pE3iFoBEuRVoIUNkpmAnABQTWS8xwo6jXXfDwuQ5jbHAhPGifkxC5uTlGvPQuGiy
+        kUsAAnQ9eT0171ARPVgOufstlCt9tFJLy0bZgjlR45aNrDd9IDvSeFkNoFonE878
+        KrJ3CCaBcKTwmrhIejxA8A=
+Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.20])
+        by smtp9 (Coremail) with SMTP id DcCowAB3USwR_IJiF3ohDQ--.61255S4;
+        Tue, 17 May 2022 09:36:19 +0800 (CST)
+From:   qianfanguijin@163.com
+To:     linux-sunxi@lists.linux.dev
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        qianfan Zhao <qianfanguijin@163.com>
+Subject: [PATCH v5 2/3] ARM: dts: sun8i-r40: add opp table for cpu
+Date:   Tue, 17 May 2022 09:36:06 +0800
+Message-Id: <20220517013607.2252-3-qianfanguijin@163.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220517013607.2252-1-qianfanguijin@163.com>
+References: <20220517013607.2252-1-qianfanguijin@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcCowAB3USwR_IJiF3ohDQ--.61255S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxGrWxXF1UKw4xur17Xry5urg_yoWrZFy8pw
+        17Zr4kGrs7Wr1Yq342gry8KF18uFWv9F4Yyry5C348Jrn7X34DJr97tr9akrWDXr43X3yI
+        9Fs5Xr9rtw1DZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07Ubo7tUUUUU=
+X-Originating-IP: [218.201.129.20]
+X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiQhQE7VaECXNrTAAAsw
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+From: qianfan Zhao <qianfanguijin@163.com>
 
-Signed-off-by: keliu <liuke94@huawei.com>
+OPP table value is get from allwinner lichee linux-3.10 kernel driver
+
+Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
 ---
- drivers/hwmon/hwmon.c  |  6 +++---
- drivers/hwmon/ibmaem.c | 10 +++++-----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ .../boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |  1 +
+ arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi      | 52 +++++++++++++++++++
+ arch/arm/boot/dts/sun8i-r40-feta40i.dtsi      |  1 +
+ arch/arm/boot/dts/sun8i-r40.dtsi              |  8 +++
+ arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts      |  1 +
+ .../boot/dts/sun8i-v40-bananapi-m2-berry.dts  |  1 +
+ 6 files changed, 64 insertions(+)
+ create mode 100644 arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi
 
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 22de7a9e7ba7..2e2cd79d89eb 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -764,7 +764,7 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
- 			 "hwmon: '%s' is not a valid name attribute, please fix\n",
- 			 name);
+diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+index 4f30018ec4a2..28197bbcb1d5 100644
+--- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
++++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+@@ -43,6 +43,7 @@
  
--	id = ida_simple_get(&hwmon_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&hwmon_ida, GFP_KERNEL);
- 	if (id < 0)
- 		return ERR_PTR(id);
+ /dts-v1/;
+ #include "sun8i-r40.dtsi"
++#include "sun8i-r40-cpu-opp.dtsi"
  
-@@ -856,7 +856,7 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
- free_hwmon:
- 	hwmon_dev_release(hdev);
- ida_remove:
--	ida_simple_remove(&hwmon_ida, id);
-+	ida_free(&hwmon_ida, id);
- 	return ERR_PTR(err);
- }
+ #include <dt-bindings/gpio/gpio.h>
  
-@@ -968,7 +968,7 @@ void hwmon_device_unregister(struct device *dev)
+diff --git a/arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi b/arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi
+new file mode 100644
+index 000000000000..4faa22d3bac8
+--- /dev/null
++++ b/arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi
+@@ -0,0 +1,52 @@
++/{
++	cpu0_opp_table: opp_table0 {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp-720000000 {
++			opp-hz = /bits/ 64 <720000000>;
++			opp-microvolt = <1000000 1000000 1300000>;
++			clock-latency-ns = <2000000>;
++		};
++
++		opp-912000000 {
++			opp-hz = /bits/ 64 <912000000>;
++			opp-microvolt = <1100000 1100000 1300000>;
++			clock-latency-ns = <2000000>;
++		};
++
++		opp-1008000000 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <1160000 1160000 1300000>;
++			clock-latency-ns = <2000000>;
++		};
++
++		opp-1104000000 {
++			opp-hz = /bits/ 64 <1104000000>;
++			opp-microvolt = <1240000 1240000 1300000>;
++			clock-latency-ns = <2000000>;
++		};
++
++		opp-1200000000 {
++			opp-hz = /bits/ 64 <1200000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <2000000>;
++		};
++	};
++};
++
++&cpu0 {
++	operating-points-v2 = <&cpu0_opp_table>;
++};
++
++&cpu1 {
++	operating-points-v2 = <&cpu0_opp_table>;
++};
++
++&cpu2 {
++	operating-points-v2 = <&cpu0_opp_table>;
++};
++
++&cpu3 {
++	operating-points-v2 = <&cpu0_opp_table>;
++};
+diff --git a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
+index b872b51a346d..9f39b5a2bb35 100644
+--- a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
++++ b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
+@@ -5,6 +5,7 @@
+ //  Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
  
- 	if (likely(sscanf(dev_name(dev), HWMON_ID_FORMAT, &id) == 1)) {
- 		device_unregister(dev);
--		ida_simple_remove(&hwmon_ida, id);
-+		ida_free(&hwmon_ida, id);
- 	} else
- 		dev_dbg(dev->parent,
- 			"hwmon_device_unregister() failed: bad class ID!\n");
-diff --git a/drivers/hwmon/ibmaem.c b/drivers/hwmon/ibmaem.c
-index de6baf6ca3d1..5c4cf742f5ae 100644
---- a/drivers/hwmon/ibmaem.c
-+++ b/drivers/hwmon/ibmaem.c
-@@ -482,7 +482,7 @@ static void aem_delete(struct aem_data *data)
- 	ipmi_destroy_user(data->ipmi.user);
- 	platform_set_drvdata(data->pdev, NULL);
- 	platform_device_unregister(data->pdev);
--	ida_simple_remove(&aem_ida, data->id);
-+	ida_free(&aem_ida, data->id);
- 	kfree(data);
- }
+ #include "sun8i-r40.dtsi"
++#include "sun8i-r40-cpu-opp.dtsi"
  
-@@ -539,7 +539,7 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
- 		data->power_period[i] = AEM_DEFAULT_POWER_INTERVAL;
+ &cpu0 {
+ 	cpu-supply = <&reg_dcdc2>;
+diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
+index 291f4784e86c..ae2a5ebd9924 100644
+--- a/arch/arm/boot/dts/sun8i-r40.dtsi
++++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+@@ -84,24 +84,32 @@ cpu0: cpu@0 {
+ 			compatible = "arm,cortex-a7";
+ 			device_type = "cpu";
+ 			reg = <0>;
++			clocks = <&ccu CLK_CPU>;
++			clock-names = "cpu";
+ 		};
  
- 	/* Create sub-device for this fw instance */
--	data->id = ida_simple_get(&aem_ida, 0, 0, GFP_KERNEL);
-+	data->id = ida_alloc(&aem_ida, GFP_KERNEL);
- 	if (data->id < 0)
- 		goto id_err;
+ 		cpu1: cpu@1 {
+ 			compatible = "arm,cortex-a7";
+ 			device_type = "cpu";
+ 			reg = <1>;
++			clocks = <&ccu CLK_CPU>;
++			clock-names = "cpu";
+ 		};
  
-@@ -600,7 +600,7 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
- 	platform_set_drvdata(data->pdev, NULL);
- 	platform_device_unregister(data->pdev);
- dev_err:
--	ida_simple_remove(&aem_ida, data->id);
-+	ida_free(&aem_ida, data->id);
- id_err:
- 	kfree(data);
+ 		cpu2: cpu@2 {
+ 			compatible = "arm,cortex-a7";
+ 			device_type = "cpu";
+ 			reg = <2>;
++			clocks = <&ccu CLK_CPU>;
++			clock-names = "cpu";
+ 		};
  
-@@ -679,7 +679,7 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
- 		data->power_period[i] = AEM_DEFAULT_POWER_INTERVAL;
+ 		cpu3: cpu@3 {
+ 			compatible = "arm,cortex-a7";
+ 			device_type = "cpu";
+ 			reg = <3>;
++			clocks = <&ccu CLK_CPU>;
++			clock-names = "cpu";
+ 		};
+ 	};
  
- 	/* Create sub-device for this fw instance */
--	data->id = ida_simple_get(&aem_ida, 0, 0, GFP_KERNEL);
-+	data->id = ida_alloc(&aem_ida, GFP_KERNEL);
- 	if (data->id < 0)
- 		goto id_err;
+diff --git a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
+index 0eb1990742ff..9f472521f4a4 100644
+--- a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
++++ b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
+@@ -45,6 +45,7 @@
  
-@@ -740,7 +740,7 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
- 	platform_set_drvdata(data->pdev, NULL);
- 	platform_device_unregister(data->pdev);
- dev_err:
--	ida_simple_remove(&aem_ida, data->id);
-+	ida_free(&aem_ida, data->id);
- id_err:
- 	kfree(data);
+ /dts-v1/;
+ #include "sun8i-r40.dtsi"
++#include "sun8i-r40-cpu-opp.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ 
+diff --git a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
+index fdf8bd12faaa..434871040aca 100644
+--- a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
++++ b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
+@@ -42,6 +42,7 @@
+ 
+ /dts-v1/;
+ #include "sun8i-r40.dtsi"
++#include "sun8i-r40-cpu-opp.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
  
 -- 
 2.25.1
