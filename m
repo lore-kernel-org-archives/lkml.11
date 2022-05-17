@@ -2,94 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C940C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8697C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343785AbiEQKNI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
+        id S244450AbiEQKNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:13:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343797AbiEQKMK (ORCPT
+        with ESMTP id S1343865AbiEQKMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:12:10 -0400
-Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0339E15FF6;
-        Tue, 17 May 2022 03:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=KEpTTAEC9xfg+HRhDO
-        p/Qpj2o7vJYyBbGM+BScxTLJY=; b=e4PqQu2T7ZY9F0k/gJYwdtr1BVuwA0iqS3
-        snAQ7SgDPMMANONxOxIb27SvjnwnYPCxaC280PloajwBrIIxS39BHmWLjxbJPDfF
-        ry3E+6lN0/nGtC12z6CMjw4eujlY+EmUCGcVnL3fNOMQSrEd0RtxUYvpOPqewHx/
-        7bjUYz/og=
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp7 (Coremail) with SMTP id C8CowADnlLkOcYNigRf3Cw--.43433S4;
-        Tue, 17 May 2022 17:55:38 +0800 (CST)
-From:   Yuanjun Gong <ruc_gongyuanjun@163.com>
-To:     Yuanjun Gong <ruc_gongyuanjun@163.com>,
-        Benson Leung <bleung@chromium.org>,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Subject: [PATCH 1/1] platform/chrome: check *dest of memcpy
-Date:   Tue, 17 May 2022 17:55:21 +0800
-Message-Id: <20220517095521.6897-1-ruc_gongyuanjun@163.com>
+        Tue, 17 May 2022 06:12:41 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1211C11F;
+        Tue, 17 May 2022 03:11:58 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id bo5so16461949pfb.4;
+        Tue, 17 May 2022 03:11:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=MM5thYIrVi5i+cbkS2jxRX5IeuN8MkqxSCa5bh/mFUY=;
+        b=pFloAIsahv1LwGSPVFyN6dinFSmhbMza4Vj8W2MJNhWmxS2b9/L6hWtqpbRrWkaTVI
+         /KJ7EX8tq2oiwEpZA1GT1FCRreo8J8rZ57OjbOk+r2oIV0tJozfD2UGqQ9MVFBbxMv4u
+         pat9rZAwUgwEnR3M7OIzK2z1LI3trsh6u5wHkGtla9OnrTpzuHkAPQS/2ilDPm2+vcnt
+         pkx+fL20/OuALewWgpgaB00fxyLRIWvAwtLpkMDMC3sE3OehpYT3IgTiS/GchsV0rg5S
+         QsniY+nwgp56xJGCMdHNzAZiF/rlqsYysxJAt2D3FP98kCwzem8qI8XzLIk2+vDmcZPl
+         B6HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=MM5thYIrVi5i+cbkS2jxRX5IeuN8MkqxSCa5bh/mFUY=;
+        b=lFpRxsoKRjfska6D+jHLGvLjnULd0pOvp3x41C21P9/o+4DcBu6MTLncr9cCq1mm50
+         hn5x9SQw//Ug5NTkbd+k3DiRdhkqEqGBgtbyQVFi1nCPZRmg0RzTbXFchQc7lX16TA5U
+         sDoE6mLL+0FoAzBPaIg0ec/rsx5EdvWBqSJ5IngOf8RdoUDViZwUMbM/5ClE2KuAhKTV
+         4z6beICtv1hxLnymJiJZPhubzi4KWvoQLa5BXkPlFuZPSt2Nsi1RuaHBOZlqa4qP/TiA
+         jhBGwQ+QEdJ6B1/bNS+7sornspasIYn4IQu9YlkyI/znmTfApb7+Pkedr2Vd9Vw17SNk
+         AG/w==
+X-Gm-Message-State: AOAM531I25CVgPdCV9OVaQdb03TRkYliTQ5TFyNMnQ2KyO+Pm3dyGhU3
+        hz5IGEJTTQkDb5tqaux3iw==
+X-Google-Smtp-Source: ABdhPJzxvdrgUgkR++3q5wIQdY+NCisWO/v8qM2lIGnIGECEDfN/2e7awdGf+ibdbfFc5k3MyvQKrg==
+X-Received: by 2002:a05:6a00:996:b0:505:b6d2:abc8 with SMTP id u22-20020a056a00099600b00505b6d2abc8mr21562749pfg.11.1652782317854;
+        Tue, 17 May 2022 03:11:57 -0700 (PDT)
+Received: from localhost (220-133-130-217.hinet-ip.hinet.net. [220.133.130.217])
+        by smtp.gmail.com with ESMTPSA id br22-20020a17090b0f1600b001df82551cf2sm1225548pjb.44.2022.05.17.03.11.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 17 May 2022 03:11:57 -0700 (PDT)
+From:   Tyrone Ting <warp5tw@gmail.com>
+To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        wsa@kernel.org, andriy.shevchenko@linux.intel.com,
+        jarkko.nikula@linux.intel.com, semen.protsenko@linaro.org,
+        rafal@milecki.pl, sven@svenpeter.dev, jsd@semihalf.com,
+        jie.deng@intel.com, lukas.bulwahn@gmail.com, arnd@arndb.de,
+        olof@lixom.net, warp5tw@gmail.com, tali.perry@nuvoton.com,
+        Avi.Fishman@nuvoton.com, tomer.maimon@nuvoton.com,
+        KWLIU@nuvoton.com, JJLIU0@nuvoton.com, kfting@nuvoton.com
+Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 01/10] dt-bindings: i2c: npcm: support NPCM845
+Date:   Tue, 17 May 2022 18:11:33 +0800
+Message-Id: <20220517101142.28421-2-warp5tw@gmail.com>
 X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: C8CowADnlLkOcYNigRf3Cw--.43433S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Aw15KF4UJw4DuFWUXrykuFg_yoW8XrWxpF
-        Z5ur17Ca10ka18Kw4Utay293W3Xw18tr97u3yxua4rXws8JasxAryFya4rCF1vyryxJ34Y
-        yryktF1rWa1xZFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRKii-UUUUU=
-X-Originating-IP: [202.112.113.212]
-X-CM-SenderInfo: 5uxfsw5rqj53pdqm30i6rwjhhfrp/1tbiJw0E5V5vB8SlZwABs6
+In-Reply-To: <20220517101142.28421-1-warp5tw@gmail.com>
+References: <20220517101142.28421-1-warp5tw@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Tyrone Ting <kfting@nuvoton.com>
 
-In regulator/cros-ec-regulator.c, cros_ec_cmd is sometimes called
-with *indata set to NULL.
+Add compatible and nuvoton,sys-mgr description for NPCM i2c module.
 
-static int cros_ec_regulator_enable(struct regulator_dev *dev){
-...
-     cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_ENABLE, &cmd,
-			  sizeof(cmd), NULL, 0)
-...}
-
-Don't do memcpy if indata is NULL.
-
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_proto.c | 2 +-
- drivers/regulator/cros-ec-regulator.c   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ .../bindings/i2c/nuvoton,npcm7xx-i2c.yaml     | 25 +++++++++++++++----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index c4caf2e2de82..da175c57cff7 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -938,7 +938,7 @@ int cros_ec_command(struct cros_ec_device *ec_dev,
- 	if (ret < 0)
- 		goto error;
+diff --git a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+index 128444942aec..09d2591e1fa3 100644
+--- a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
++++ b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+@@ -7,17 +7,18 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: nuvoton NPCM7XX I2C Controller Device Tree Bindings
  
--	if (insize)
-+	if (indata && insize)
- 		memcpy(indata, msg->data, insize);
- error:
- 	kfree(msg);
-diff --git a/drivers/regulator/cros-ec-regulator.c b/drivers/regulator/cros-ec-regulator.c
-index c4754f3cf233..1c7ff085e492 100644
---- a/drivers/regulator/cros-ec-regulator.c
-+++ b/drivers/regulator/cros-ec-regulator.c
-@@ -44,7 +44,7 @@ static int cros_ec_cmd(struct cros_ec_device *ec, u32 version, u32 command,
- 	if (ret < 0)
- 		goto cleanup;
+ description: |
+-  The NPCM750x includes sixteen I2C bus controllers. All Controllers support
+-  both master and slave mode. Each controller can switch between master and slave
+-  at run time (i.e. IPMB mode). Each controller has two 16 byte HW FIFO for TX and
+-  RX.
++  I2C bus controllers of the NPCM series support both master and
++  slave mode. Each controller can switch between master and slave at run time
++  (i.e. IPMB mode). HW FIFO for TX and RX are supported.
  
--	if (insize)
-+	if (indata && insize)
- 		memcpy(indata, msg->data, insize);
+ maintainers:
+   - Tali Perry <tali.perry1@gmail.com>
  
- cleanup:
+ properties:
+   compatible:
+-    const: nuvoton,npcm750-i2c
++    enum:
++      - nuvoton,npcm750-i2c
++      - nuvoton,npcm845-i2c
+ 
+   reg:
+     maxItems: 1
+@@ -36,6 +37,10 @@ properties:
+     default: 100000
+     enum: [100000, 400000, 1000000]
+ 
++  nuvoton,sys-mgr:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: The phandle of system manager register node.
++
+ required:
+   - compatible
+   - reg
+@@ -44,6 +49,15 @@ required:
+ 
+ allOf:
+   - $ref: /schemas/i2c/i2c-controller.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: nuvoton,npcm845-i2c
++
++    then:
++      required:
++        - nuvoton,sys-mgr
+ 
+ unevaluatedProperties: false
+ 
+@@ -57,6 +71,7 @@ examples:
+         clock-frequency = <100000>;
+         interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
+         compatible = "nuvoton,npcm750-i2c";
++        nuvoton,sys-mgr = <&gcr>;
+     };
+ 
+ ...
 -- 
 2.17.1
 
