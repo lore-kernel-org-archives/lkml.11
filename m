@@ -2,139 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9219C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 734B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350620AbiEQPud (ORCPT
+        id S1350597AbiEQPwr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
+        Tue, 17 May 2022 11:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350495AbiEQPuP (ORCPT
+        with ESMTP id S1346893AbiEQPwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:50:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BAB004F47C
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:50:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652802612;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6h7GjHXovS7HJ4Kp5wqYSGdYt0+9AQpi6DLOx1zqHHk=;
-        b=bUeMce+2eB36pTjYH0dRgMEPdTye0Pmc3dsmlzAWlF4ZOyC71yuHIuzh/AirMZoE/uyFcC
-        uKPgPHesr9wsWLjqNXBWmaqOyGzTnJKd0VwPT9hP+I2UUNyztjiM3HEh/owQEuk6u+GcsD
-        tWpu/AgS2RkKehnkL3Et1NbowbXwZck=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-571-20ng5kgcO-CKBmFv_Lz9uA-1; Tue, 17 May 2022 11:50:10 -0400
-X-MC-Unique: 20ng5kgcO-CKBmFv_Lz9uA-1
-Received: by mail-ed1-f69.google.com with SMTP id r8-20020a056402018800b00428b43999feso12171738edv.5
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:50:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=6h7GjHXovS7HJ4Kp5wqYSGdYt0+9AQpi6DLOx1zqHHk=;
-        b=nOziIlfju6brrKtkHlX3pnpOb4tyRvp99c5n9mtv+/dT9kCuc9Hem4fqyDDyHsymCI
-         bbqz0RBibtGDKQN6Bu4Gk6LdOfCcE0df6Qof7jltdC04917sAnMSp6xg2+ymEuN1roAl
-         UsxcJURxEqz8i4hmAMjaBjboccH/ZGGIA6onXN2THVJKXpD5uC7VqvJ2uZEDV7J4HHjx
-         ovv18L9TXgIorJVGnvrRTEHNF9kpmbv344IjAt3ILUQxzOsFBbgZZlpdpI40xCDhlzIB
-         l797Vy2NHRHUzW1qOq1uQJe9J73wPK/WyMYoH+VruJHvZWlhfuxz9vGf4DUQquXytkg4
-         VnQg==
-X-Gm-Message-State: AOAM532GqvaOMh9WXafCu6nmmTRqstpSFiROGKYgi16yZxO4y1O4qgTn
-        nCeI2oZUf+lquo7hxFy9pJUPZmmQqNC1J0hCuQ9Pb7xq0f6pU+EXmiXrM/psQU1IUEKAVFfsOH+
-        dUeA4O6O6xgfwHlZ7db7Hb4xE
-X-Received: by 2002:a17:907:1b1c:b0:6f0:10e2:7a9b with SMTP id mp28-20020a1709071b1c00b006f010e27a9bmr21197677ejc.58.1652802609254;
-        Tue, 17 May 2022 08:50:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwauTfVmlCJoRiKhXSBiOeT/A7JIF17V3tL8pRBRkaE+ZWZTtEnTbdgpF/bFVMc/K/bASQynw==
-X-Received: by 2002:a17:907:1b1c:b0:6f0:10e2:7a9b with SMTP id mp28-20020a1709071b1c00b006f010e27a9bmr21197664ejc.58.1652802609081;
-        Tue, 17 May 2022 08:50:09 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id u11-20020a50eacb000000b0042617ba6383sm7426505edp.13.2022.05.17.08.50.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 08:50:08 -0700 (PDT)
-Message-ID: <04f2e08c-4c39-16d3-d785-f36494c6256c@redhat.com>
-Date:   Tue, 17 May 2022 17:50:08 +0200
+        Tue, 17 May 2022 11:52:44 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B65227;
+        Tue, 17 May 2022 08:52:41 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 2063A1F44901
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652802759;
+        bh=VLzWzYuHr/VzEBBJLbkAVVXYd+h4cdCEC+8NQ7kC4JA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TE9QVuqAXjGy+Z0+mzBT9lESF2kymZU/vtdnDdQpa+fEy+Ahnn/7U/Kb0t4Ga9siQ
+         qY6K1SAUcEVdkJ6C7N9qWt7RTzVN7Ghop87kTcapeCDNbpCOanJhfjJ263OEU4i4R/
+         JVGX9VlCbFERCSFx87F+qD+s+j9c8XbrgfRwMUSQabVlisK67SIxF/EykUlaEAjbMF
+         iEpgw8wxJx+pZsaZmiNvrdGjZOf/K/MyXeZVO0dXd8CF8Ea0u9lWeXL9Y9gsulir1T
+         /jPuxypQZDjg1aZKFP9H3bHcjFMRhi6qruWysx/WHmXntxuiFa8NACCuPsHTxppIzM
+         scv2j6GelbU0w==
+Date:   Tue, 17 May 2022 11:52:34 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Hui Liu <hui.liu@mediatek.com>
+Subject: Re: [PATCH 1/1] arm64: dts: mt8192: Add vcodec lat and core nodes
+Message-ID: <20220517155234.5sa6vd23x2zrltht@notapiano>
+References: <20220408104124.31395-1-allen-kh.cheng@mediatek.com>
+ <20220408104124.31395-2-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: Linux regressions report for mainline [2022-05-09] (was: Linux
- 5.18-rc6)
-Content-Language: en-US
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "Regzbot (on behalf of Thorsten Leemhuis)" 
-        <regressions@leemhuis.info>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux regressions mailing list <regressions@lists.linux.dev>
-References: <CAHk-=wi0vqZQUAS67tBsJQW+dtt89m+dqA-Z4bOs8CH-mm8u2w@mail.gmail.com>
- <165209064657.193515.10163777181547077546@leemhuis.info>
- <CAHk-=wj0gHsG6iw3D8ufptm9a_dvTSqrrOFY9WopObbYbyuwnA@mail.gmail.com>
- <54664f6a-b046-1330-e794-cb533e942a94@redhat.com>
-In-Reply-To: <54664f6a-b046-1330-e794-cb533e942a94@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220408104124.31395-2-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Apr 08, 2022 at 06:41:24PM +0800, Allen-KH Cheng wrote:
+> Add vcodec lat and core nodes for mt8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
 Hi,
 
-On 5/9/22 21:04, Hans de Goede wrote:
-> Hi,
+With the new mt8192 scp.img firmware merged on linux-firmware [1] and the
+mtk-vcodec decoder support for mt8192 merged in the media tree [2], the DT nodes
+for the decoder added in this patch are the last missing piece to have the
+decoder usable on mt8192-based machines.
+
+With this patch applied, I was able to run fluster [3] on
+mt8192-asurada-spherion and obtain the following results:
+
+VP8: 59/61
+VP9: 249/303
+H.264: 92/135
+
+So,
+
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+
+Thanks,
+Nícolas
+
+[1] https://lore.kernel.org/all/CA+5PVA43SgXKz5EA6RTk74FxiDALy899G1Rvi_aO=q9Yd_pCKw@mail.gmail.com/
+[2] https://lore.kernel.org/all/875b24355315311db3a0c846be5f553b3d0c7498.camel@mediatek.com/
+[3] https://github.com/fluendo/fluster
+
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 60 ++++++++++++++++++++++++
+>  1 file changed, 60 insertions(+)
 > 
-> On 5/9/22 19:20, Linus Torvalds wrote:
->> On Mon, May 9, 2022 at 3:47 AM Regzbot (on behalf of Thorsten
->> Leemhuis) <regressions@leemhuis.info> wrote:
->>>
->>> Hi Linus! Here's a quick compilation of open reports about regressions in
->>> 5.18-rc that I'm currently aware of; most of the reports are quite
->>> recent and there afaics is nothing that looks particularly worrisome.
->>
->> Well, the Intel GPU issue seems likely to cause problems for lots of people:
->>
->>> [ *NEW* ] drm/i915: BYT rendering broken due to "Remove short-term pins from execbuf, v6"
->>> -----------------------------------------------------------------------------------------
->>> https://linux-regtracking.leemhuis.info/regzbot/regression/1366349e-f96a-3f2c-3094-f5cd1a6fa31f@redhat.com/
->>> https://lore.kernel.org/dri-devel/1366349e-f96a-3f2c-3094-f5cd1a6fa31f@redhat.com/
->>>
->>> By Hans de Goede; 0 days ago; 2 activities, latest 0 days ago.
->>> Introduced in b5cfe6f7a6e1 (v5.18-rc1)
->>>
->>> Recent activities from: Tvrtko Ursulin (1), Hans de Goede (1)
->>
->> Although it looks possible that it mainly affects old chipsets (ie the
->> two reports are for a Bay Trail chip and a Core 2 Duo chip - I have no
->> idea how they compare).
->>
->> That probably means there are a lot of machines out there, but likely
->> not the kind that most kernel developers will be testing, so not a ton
->> of reports until it hits distro kernels etc.
->>
->> It looks like Maarten is already involved.
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index 18a58239d6f1..c7f4b2fbb315 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -1120,6 +1120,66 @@
+>  			power-domains = <&spm MT8192_POWER_DOMAIN_ISP2>;
+>  		};
+>  
+> +		vcodec_dec: vcodec-dec@16000000 {
+> +			compatible = "mediatek,mt8192-vcodec-dec";
+> +			reg = <0 0x16000000 0 0x1000>;
+> +			mediatek,scp = <&scp>;
+> +			iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>;
+> +			dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			ranges = <0 0 0 0x16000000 0 0x26000>;
+> +
+> +			vcodec_lat: vcodec-lat@10000 {
+> +				compatible = "mediatek,mtk-vcodec-lat";
+> +				reg = <0x0 0x10000 0 0x800>;
+> +				interrupts = <GIC_SPI 426 IRQ_TYPE_LEVEL_HIGH 0>;
+> +				iommus = <&iommu0 M4U_PORT_L5_VDEC_LAT0_VLD_EXT>,
+> +					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_VLD2_EXT>,
+> +					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_AVC_MV_EXT>,
+> +					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_PRED_RD_EXT>,
+> +					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_TILE_EXT>,
+> +					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_WDMA_EXT>,
+> +					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_RG_CTRL_DMA_EXT>,
+> +					 <&iommu0 M4U_PORT_L5_VDEC_UFO_ENC_EXT>;
+> +				clocks = <&topckgen CLK_TOP_VDEC_SEL>,
+> +					 <&vdecsys_soc CLK_VDEC_SOC_VDEC>,
+> +					 <&vdecsys_soc CLK_VDEC_SOC_LAT>,
+> +					 <&vdecsys_soc CLK_VDEC_SOC_LARB1>,
+> +					 <&topckgen CLK_TOP_MAINPLL_D4>;
+> +				clock-names = "sel", "soc-vdec", "soc-lat", "vdec", "top";
+> +				assigned-clocks = <&topckgen CLK_TOP_VDEC_SEL>;
+> +				assigned-clock-parents = <&topckgen CLK_TOP_MAINPLL_D4>;
+> +				power-domains = <&spm MT8192_POWER_DOMAIN_VDEC>;
+> +			};
+> +
+> +			vcodec_core: vcodec-core@25000 {
+> +				compatible = "mediatek,mtk-vcodec-core";
+> +				reg = <0 0x25000 0 0x1000>;
+> +				interrupts = <GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH 0>;
+> +				iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_UFO_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_PP_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_PRED_RD_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_PRED_WR_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_PPWRAP_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_TILE_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_VLD_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_VLD2_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_AVC_MV_EXT>,
+> +					 <&iommu0 M4U_PORT_L4_VDEC_RG_CTRL_DMA_EXT>;
+> +				clocks = <&topckgen CLK_TOP_VDEC_SEL>,
+> +					 <&vdecsys CLK_VDEC_VDEC>,
+> +					 <&vdecsys CLK_VDEC_LAT>,
+> +					 <&vdecsys CLK_VDEC_LARB1>,
+> +					 <&topckgen CLK_TOP_MAINPLL_D4>;
+> +				clock-names = "sel", "soc-vdec", "soc-lat", "vdec", "top";
+> +				assigned-clocks = <&topckgen CLK_TOP_VDEC_SEL>;
+> +				assigned-clock-parents = <&topckgen CLK_TOP_MAINPLL_D4>;
+> +				power-domains = <&spm MT8192_POWER_DOMAIN_VDEC2>;
+> +			};
+> +		};
+> +
+>  		larb5: larb@1600d000 {
+>  			compatible = "mediatek,mt8192-smi-larb";
+>  			reg = <0 0x1600d000 0 0x1000>;
+> -- 
+> 2.18.0
 > 
-> This is being tracked here:
-> https://gitlab.freedesktop.org/drm/intel/-/issues/5806
 > 
-> I've just tested a patch from Maarten which fixes things for me,
-> so hopefully we can get this resolved soon.
-
-Maarten, it would be nice if we can get this fixed before 5.18
-is released. What is the status of getting your:
-
-https://patchwork.freedesktop.org/patch/485889/
-
-patch for this merged ?
-
-Regards,
-
-Hans
-
