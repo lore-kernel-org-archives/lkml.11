@@ -2,89 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B86CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E43ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240327AbiEQHbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
+        id S236176AbiEQHcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232531AbiEQHbX (ORCPT
+        with ESMTP id S229894AbiEQHcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:31:23 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2023BB16;
-        Tue, 17 May 2022 00:31:22 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id v11so16155427pff.6;
-        Tue, 17 May 2022 00:31:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1f0Z9m+vbuD/qdSf6InzF9TURBzbVV0rFya1IWbNtOo=;
-        b=NpF/ctrLv7ZXdNrGCvD0hg21ovh+HtPwfrjn2Vn5+Kaz9xxkY2bSYYX+jvXLILwQmK
-         GNLyzcfB9p5vtLQyy080RlDn8BI/wOniIJePP1KfvLiFgwFrQd2W2jb1Gjn+tfUWmqSg
-         oBuNRiQ/JvyIjvF86rQ94VnSC37y9e+rwNNOkVJr86rgx1kQ6N+DBrz75BSMppUymB4a
-         8vIJ3KqS7hfl2k07Q0i8lZWEIxmNWOfhMWwhtEa/aH0p0X8X5hnj6QH0zvS7wnEo439v
-         7pQqte7CIDeDmOeRajJft70DLqgo/e06I4kSUJW1Ztg9IyrJ/WQKDI2KPfQxXVjnbHgL
-         hPow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1f0Z9m+vbuD/qdSf6InzF9TURBzbVV0rFya1IWbNtOo=;
-        b=zyW3g2G2h2u+w9s5Z7eI4WNhlAQ0MKGV6pfrTtEdtn2Ov4ubtqGBSZWZKrkrSTzoxt
-         xLuu0MG5SnsAf5Pk5xT0D5VBQJJ04bUsNSjHP8kjm5uz7J8+73SHItvs8z6eVWT5bI0l
-         00oQq/lgZTVNW21/OFG+sSPL2arWq1YuyGylPI4alW4ZxipVrn/FcVZ4PgMekVY+CyVK
-         iu1s3DhvzLBYp/uV9sm0yPjA8407MClb3j8wEvfDdgYDL4qjgQWxd36wj6HxClCzjhac
-         BNc3erEWubkq+0Y2tGFWCRJA8G0i9j69eTDl/4+PVN45WVK3WjSp1xbNRmr2nfaFQUKr
-         qFxg==
-X-Gm-Message-State: AOAM533xoHriCkdHJs0oa3y4qMUY/QG2sYliwAz1xVeb0fG0MRDrLXCo
-        OOos9jctqbwvykXSkXrKyOI=
-X-Google-Smtp-Source: ABdhPJwBwlRgEtz4CIsRDE4/P/1KoC5oYgFYvc/cOm0mBXaUY0xTLJMW8V47e9NdfQAaW9fdCky+9g==
-X-Received: by 2002:a63:89c7:0:b0:3da:ee16:c84 with SMTP id v190-20020a6389c7000000b003daee160c84mr18727427pgd.320.1652772681611;
-        Tue, 17 May 2022 00:31:21 -0700 (PDT)
-Received: from localhost.localdomain ([103.197.71.140])
-        by smtp.gmail.com with ESMTPSA id c22-20020a17090ad91600b001df3d5a441bsm914186pjv.53.2022.05.17.00.31.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 00:31:21 -0700 (PDT)
-From:   Shida Zhang <starzhangzsd@gmail.com>
-X-Google-Original-From: Shida Zhang <zhangshida@kylinos.cn>
-To:     tj@kernel.org, lizefan.x@bytedance.com, hannes@cmpxchg.org
-Cc:     zhangshida@kylinos.cn, starzhangzsd@gmail.com,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
-Subject: [PATCH] cgroup: fix potential null pointer risk
-Date:   Tue, 17 May 2022 15:31:06 +0800
-Message-Id: <20220517073106.1704628-1-zhangshida@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 17 May 2022 03:32:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00416186DC
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:32:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D55460B49
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:32:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46A38C34100;
+        Tue, 17 May 2022 07:32:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652772762;
+        bh=oYBMRWypwUlY+I18dy7jJamOgc3MRE83oGpSjY67/Pc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1hSa10/16k78Z+PxemJ+EjyDgvmoRwDlDW7/zPt2BNrO5KGxfEWRgBwcjiwgq+GEr
+         +tQWvIplSMKfCT7nRBmH3SqDHhbePoNkxzeYjAwVRuv+Y1bFlwmCIoH6HrIT04+EO+
+         gLsqKEcEFkYZT/kQxMeLPSd2r22i4Jx6h7A6K6Zc=
+Date:   Tue, 17 May 2022 09:32:38 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Guixin Liu <kanie@linux.alibaba.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] uio: Replace mutex info_lock with percpu_ref
+Message-ID: <YoNPlgoUIzduNXih@kroah.com>
+References: <1652161831-77791-1-git-send-email-kanie@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652161831-77791-1-git-send-email-kanie@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We previously assumed 'parent' could be null,
-so null pointer judgment should be added.
+On Tue, May 10, 2022 at 01:50:31PM +0800, Guixin Liu wrote:
+> If the underlying driver works in parallel, the mutex info_lock in uio 
+> will force driver to work sequentially, so that become performance 
+> bottleneck. Lets replace it with percpu_ref for better performance. 
+> 
+> Use tcm_loop and tcmu(backstore is file, and I did some work to make tcmu
+> work in parallel at uio_write() path) to evaluate performance,
+> fio job: fio -filename=/dev/sdb  -direct=1 -size=2G -name=1 -thread
+> -runtime=60 -time_based  -rw=randread -numjobs=16 -iodepth=16 -bs=128k
+> 
+> Without this patch:
+> 	READ: bw=2828MiB/s (2965MB/s), 176MiB/s-177MiB/s (185MB/s-186MB/s), 
+> io=166GiB (178GB), run=60000-60001msec
+> 
+> With this patch:
+> 	READ: bw=3382MiB/s (3546MB/s), 211MiB/s-212MiB/s (221MB/s-222MB/s), 
+> io=198GiB (213GB), run=60001-60001msec
+> 
+> Reviewed-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+> Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
 
-Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
----
- kernel/cgroup/cgroup.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Why is UIO being used for a block device?  Why not use a real block
+driver instead that can properly handle the locking issues involved
+here?
 
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index adb820e98f24..7f230b0ab644 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -5701,7 +5701,8 @@ static int cgroup_destroy_locked(struct cgroup *cgrp)
- 	}
- 	spin_unlock_irq(&css_set_lock);
- 
--	cgroup1_check_for_release(parent);
-+	if (parent)
-+		cgroup1_check_for_release(parent);
- 
- 	cgroup_bpf_offline(cgrp);
- 
--- 
-2.25.1
 
+
+> ---
+>  drivers/uio/uio.c          | 95 ++++++++++++++++++++++++++++++++++------------
+>  include/linux/uio_driver.h |  5 ++-
+>  2 files changed, 75 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/uio/uio.c b/drivers/uio/uio.c
+> index 43afbb7..72c16ba 100644
+> --- a/drivers/uio/uio.c
+> +++ b/drivers/uio/uio.c
+> @@ -24,6 +24,8 @@
+>  #include <linux/kobject.h>
+>  #include <linux/cdev.h>
+>  #include <linux/uio_driver.h>
+> +#include <linux/completion.h>
+> +#include <linux/percpu-refcount.h>
+>  
+>  #define UIO_MAX_DEVICES		(1U << MINORBITS)
+>  
+> @@ -218,7 +220,9 @@ static ssize_t name_show(struct device *dev,
+>  	struct uio_device *idev = dev_get_drvdata(dev);
+>  	int ret;
+>  
+> -	mutex_lock(&idev->info_lock);
+> +	if (!percpu_ref_tryget_live(&idev->info_ref))
+> +		return -EINVAL;
+> +
+
+You are now just putting the contention to a per-cpu lock, so any
+single-cpu load will have the same issue, right?  And your example above
+is a single-cpu load, so how is this any faster?  Is the mutex going
+across all cpus to sync such a load that moving this to a percpu thing
+that much better?
+
+And as you have now split this into one-lock-per-cpu instead of
+one-lock-per-device, you just broke the situation where multiple threads
+are accessing the same device at the same time, right?
+
+You have also changed the functionality of the driver to force userspace
+to handle when the lock can not be taken as previously it would always
+work and just delay until it did happen.  What workflow does that now
+affect that always assumed that these code paths would succeed?
+
+Also the kernel test bot found problems with the patch :(
+
+thanks,
+
+greg k-h
