@@ -2,75 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 154DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:43:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34952C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245152AbiEQJna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
+        id S238849AbiEQJoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245296AbiEQJnL (ORCPT
+        with ESMTP id S245287AbiEQJnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:43:11 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6668847AD5
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:42:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=fQ18bOcZWJMyAOKMn21TJxJUQnxc5EQ7lV5e0eJOw3w=; b=NCJWKwPUDShydKFyRRzQuMq03g
-        XLxK2W86U+yT80ivw3iDDPC0RpdoWXMW5hKMEwwhAUpAAZuQj9a84KM8kRKinDxclVfWG7kr2I3C6
-        lE08zKXv6LjvnwXJeKSGauLcxiLyVvtrHONlzkyKCRsWuxaPKuuwe6ZCttplx3qQKN9YYPXXU59Ni
-        TzBGFzQhUwvwVLboS4Y53SbEww9YPxlu0nLjUUogUfZ+zQMZkN+eA3mfUy+zW2C90OkMUF7d1+fG5
-        BYqZbEnk5HWBqER1pCeNxbST2lVmpYee5adlJVSHpzRso4R3PDhsxtrIiQRSrduTjgZdc/RdVqYn6
-        PeBm+ZGw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nqtiX-00AjnR-Es; Tue, 17 May 2022 09:42:13 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0BF043003AA;
-        Tue, 17 May 2022 11:42:13 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id EAD7C202BC439; Tue, 17 May 2022 11:42:12 +0200 (CEST)
-Date:   Tue, 17 May 2022 11:42:12 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] objtool: fix objtool regression on x32 systems
-Message-ID: <YoNt9GhFdKKqjuiu@hirez.programming.kicks-ass.net>
-References: <alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com>
- <YoJwtCeVzYUm6Uhg@hirez.programming.kicks-ass.net>
- <alpine.LRH.2.02.2205161145070.30905@file01.intranet.prod.int.rdu2.redhat.com>
- <20220516212517.GP76023@worktop.programming.kicks-ass.net>
- <738a941ba2ff4e2db8f2268b281d9bd5@AcuMS.aculab.com>
+        Tue, 17 May 2022 05:43:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBBF403CE;
+        Tue, 17 May 2022 02:43:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A181A61525;
+        Tue, 17 May 2022 09:43:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFAB7C385B8;
+        Tue, 17 May 2022 09:43:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652780583;
+        bh=Tgs7wjVeAohg0a4a9UvVZ0DjnQPxJiN7q9133B2mpK4=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=gcJI45JVKHpymUm+2nipGubhimzqiurnLTNBUUNn47UUWoOu0RYfESarTrptQrHDO
+         OlF6L/uqYYQ2HOnw34dODO8DziPPMnO2SaUNNTBfQh6dQNPeyWTQDWnBxo5Nm6TDtD
+         frI3L7Sa/+iWn4SI2rewYf0n/KjkRNhe+pfwP9B5Yg+gDQnDp0qnmMPlCel408GnMR
+         gRgAvTcEn/tNOK3UxP0s4MvMFXGdbrKLqNV5UtW2vA6U6wYE0xds0mRHRQKcNVbJUj
+         0fRgMuOqPG+Wm0bEA3D4lJdXKT7c+qZ5V+/CTY6gpGeOgpZ5TSV1kw0i0zaJdETa8o
+         wazCp7uHJeJGQ==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AEF4938E92E; Tue, 17 May 2022 11:42:59 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To:     shaozhengchao <shaozhengchao@huawei.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+Cc:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        yuehaibing <yuehaibing@huawei.com>
+Subject: Re: =?utf-8?B?562U5aSNOiDnrZTlpI06?= [PATCH bpf-next] samples/bpf:
+ check detach prog exist
+ or not in xdp_fwd
+In-Reply-To: <942eaafecf074ae8a5bb336c18658453@huawei.com>
+References: <20220509005105.271089-1-shaozhengchao@huawei.com>
+ <87pmknyr6b.fsf@toke.dk> <f9c85578b94a4a38b3f7b9c796810a30@huawei.com>
+ <87h75zynz2.fsf@toke.dk> <942eaafecf074ae8a5bb336c18658453@huawei.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 17 May 2022 11:42:59 +0200
+Message-ID: <877d6kcx5o.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <738a941ba2ff4e2db8f2268b281d9bd5@AcuMS.aculab.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 08:26:42AM +0000, David Laight wrote:
-> From: Peter Zijlstra
-> > Sent: 16 May 2022 22:25
-> ...
-> > A quick look seems to suggest at least all the 'offset' fields should be
-> > u64 or something. The only reason that works is because -mcmodel=kernel
-> > keeps everything in the 2G range to make s32 immediates work. But it
-> > isn't right.
-> 
-> Offsets in instructions are only 8bit or 32bit.
-> The mod/reg/rm and SiB encodings don't support anything else.
-> If offsets might be large then they have to be loaded into
-> registers - which will slow things down.
+> Could I add helper function to implement this function which can check
+> the program name and see if it attach to the device.
 
-Not relevant; these are Elf64_Addr fields, objtool currently uses
-'unsigned long' for them, but that goes sideways if ILP32.
+You just need to call bpf_prog_get_fd_by_id() followed by
+bpf_obj_get_info_by_fd(), and the program name will be in info.name.
+Here's an example in libxdp where we pull out the prog name:
+
+https://github.com/xdp-project/xdp-tools/blob/master/lib/libxdp/libxdp.c#L1165
+
+-Toke
