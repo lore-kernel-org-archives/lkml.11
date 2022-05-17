@@ -2,109 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E81C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 897A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:42:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346464AbiEQNkD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
+        id S243912AbiEQNl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 09:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244994AbiEQNkA (ORCPT
+        with ESMTP id S1347124AbiEQNlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:40:00 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E0648392;
-        Tue, 17 May 2022 06:39:59 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id w4so24786660wrg.12;
-        Tue, 17 May 2022 06:39:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DsBS2/0Li2RTw7178mLULg48Zs19XBetfneW5cg8piM=;
-        b=JzTtfBTPN6klmcyWZvGAuDo41K7gC3NRB/ZnLbSQve78vTlIPseVgWEwQcbngEAnsm
-         Ev9YEst0Skd9z8uUrnTWNhZry7G9ms9XoMIx54ZkTxjSge7JYwYf2rspETUsoRlw5n8+
-         mRJnGORLr27OoArd3j3oE3EBFZZhCsAOvsGtL71RJOnnSweBs3QiHQxEjiKIqtAxkEFb
-         ybUIJEerOjiltVv7mrnm7UTqneqDuZUFOnXnaB1Uvg+wxEd7H87R3s434KY7eVQSE/4X
-         VTsJvAJnaxRgu7VoMnFkjaKLPeu1dwItjJwdThTLn0S37zO/owu/gxr5Uz6iaOCJi5bA
-         ibTg==
+        Tue, 17 May 2022 09:41:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1F6F1901E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652794899;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rcgoxye+RRDn/HQa/bQ/dm45ldKxX6uZBW2Ftk3ScGM=;
+        b=GPuYHkxXi3m2FfLAa9f8a5Tue60YyLTKOZsa/Mfx9d+c0+KYoDbGgoTlG6MRg/p0PDPgP5
+        jeZPvyu7O6Xlrzb9IjFO7tFLNnoUc7Jw2pN2m6Ic3ZxNcvI7Pw/Vzvuql9wZ+GdPmtecKN
+        nmvHA+LWY1q253KqxUmt9fr5SUXCUIw=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-298-cuW2KZQsNP-K9-2AU0dn5A-1; Tue, 17 May 2022 09:41:36 -0400
+X-MC-Unique: cuW2KZQsNP-K9-2AU0dn5A-1
+Received: by mail-wr1-f72.google.com with SMTP id f17-20020adff451000000b0020d076c19a5so1281978wrp.0
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:41:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DsBS2/0Li2RTw7178mLULg48Zs19XBetfneW5cg8piM=;
-        b=lw25LkxlPtiVIa82ZcJ5dU2lAsNVofPDBVraUsJhzuEhYmDlJJAfnStqheQ5+tllJy
-         kGbEXJmuKeweZ90mHKSlGtxqkKuR9QPQkg7+5Iu9VaPpOWDszvD4EOnszVODtFQBSmO/
-         bfPA9pZp/ifRoDpv3XSoXF4WTHiPbSwtFqvvv0hbrGb95p83/6L9f48R35IPkrRSXmDM
-         DYzN7hrQA3S/rtUIjr4H7MVKTu8JNqtALgolW/l/ek2DxIzY7Cg5dNAKK3kVeK9Vn5R6
-         a1WHVhtqtkedhvVJEmK2AKPlD2G3prmX3Iyeo3hvuVqPwgso8ZClMnelU/fm2AafcY4d
-         EJwg==
-X-Gm-Message-State: AOAM533dJoJqlH85Tb/Oeuivg5u2Ew38EDRqEOzAk9d0k2VmInlXPUVX
-        M/g1VEGVr1oRYlvO8ZrfAuM=
-X-Google-Smtp-Source: ABdhPJxWrjm2QUO2A8gYNnTZ7koN2aGc20TGB2/o9TVputiWZLQC99N41GyCU4zmF5peUzLsT4aYdw==
-X-Received: by 2002:a5d:4649:0:b0:20a:e17e:56de with SMTP id j9-20020a5d4649000000b0020ae17e56demr18783120wrs.450.1652794798225;
-        Tue, 17 May 2022 06:39:58 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id d7-20020adfc807000000b0020c5253d8e4sm12056061wrh.48.2022.05.17.06.39.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 06:39:57 -0700 (PDT)
-Message-ID: <21581440-a65c-ee8c-95e4-0e179c2838dd@gmail.com>
-Date:   Tue, 17 May 2022 15:39:56 +0200
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Rcgoxye+RRDn/HQa/bQ/dm45ldKxX6uZBW2Ftk3ScGM=;
+        b=8BBbIzdjDRHlsmw8S+FVLGwtBKLUQ+soSutz2wyZNadjaMqvkjswKRvjXXnuVhIqok
+         PaWTroX0AWaqsIMfaBa0aQkfXeX57VdRmaRa98w+y+uwwElCKpaqHD2LX4zn/wtTLraU
+         TpJsKNnr5biS5zuDZaaT3jJY6aC9bzoRcd3eBW0XW6/WOIH5IUICuD5+7PGxYcpUKRAN
+         pX0heV++6KmZQk8K/Uspr2jaoICArYrrM7W+u5YDd9ikP38uW/1dDhM2wRIlEwo8Irsh
+         nFdb7IiZY2TErcbLxDFaJw4ptVktFDZYgg4Nem3MwuayB6SvpXXFQajY+NHYJBfZD2uz
+         LYpw==
+X-Gm-Message-State: AOAM531iwL4of6K0kvi62UpQJJvj2IOBeNygSOFkLago4kfOE2CIw7u8
+        SZySlyOO6XGPZ30ja4sdUl/WhnnjH8PWrL6mptIZmbcE+kHJqO4fLJOa/5lZAykp8Orwm+A5dt1
+        uyVqkVKKJWBn/ddTI/xPZqTlc3m2ME3PqEFfXDSY5IVhdcPq/5+V6h1pOy4P2oL66re/1qkDdok
+        Zq
+X-Received: by 2002:a05:600c:3641:b0:38e:4b2f:330 with SMTP id y1-20020a05600c364100b0038e4b2f0330mr32028442wmq.180.1652794895139;
+        Tue, 17 May 2022 06:41:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyRn9SODL1CzaKtVz0YNiiMOy1/tcqkq0qTESapTZMo+sFwzVO0bjmPTe0TVbwx5mkrv36TIg==
+X-Received: by 2002:a05:600c:3641:b0:38e:4b2f:330 with SMTP id y1-20020a05600c364100b0038e4b2f0330mr32028412wmq.180.1652794894791;
+        Tue, 17 May 2022 06:41:34 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id l31-20020a05600c1d1f00b003942a244ecesm2196631wms.19.2022.05.17.06.41.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 06:41:34 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 04/34] KVM: x86: hyper-v: Handle
+ HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
+In-Reply-To: <YoKo1An5t7+owfzR@google.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+ <20220414132013.1588929-5-vkuznets@redhat.com>
+ <YoKo1An5t7+owfzR@google.com>
+Date:   Tue, 17 May 2022 15:41:33 +0200
+Message-ID: <87mtfguvhu.fsf@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 0/6] dt-bindings: arm: MediaTek: Fix clock bindings
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, sboyd@kernel.org,
-        chun-jie.chen@mediatek.com, rex-bc.chen@mediatek.com,
-        wenst@chromium.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220517101514.21639-1-angelogioacchino.delregno@collabora.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220517101514.21639-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Sean Christopherson <seanjc@google.com> writes:
 
+> On Thu, Apr 14, 2022, Vitaly Kuznetsov wrote:
+>> @@ -1862,15 +1890,58 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+>>  {
+>>  	struct kvm_vcpu_hv_tlb_flush_ring *tlb_flush_ring;
+>>  	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+>> +	struct kvm_vcpu_hv_tlb_flush_entry *entry;
+>> +	int read_idx, write_idx;
+>> +	u64 address;
+>> +	u32 count;
+>> +	int i, j;
+>>  
+>> -	kvm_vcpu_flush_tlb_guest(vcpu);
+>> -
+>> -	if (!hv_vcpu)
+>> +	if (!tdp_enabled || !hv_vcpu) {
+>> +		kvm_vcpu_flush_tlb_guest(vcpu);
+>>  		return;
+>> +	}
+>>  
+>>  	tlb_flush_ring = &hv_vcpu->tlb_flush_ring;
+>>  
+>> -	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
+>> +	/*
+>> +	 * TLB flush must be performed on the target vCPU so 'read_idx'
+>> +	 * (AKA 'tail') cannot change underneath, the compiler is free
+>> +	 * to re-read it.
+>> +	 */
+>> +	read_idx = tlb_flush_ring->read_idx;
+>> +
+>> +	/*
+>> +	 * 'write_idx' (AKA 'head') can be concurently updated by a different
+>> +	 * vCPU so we must be sure it's read once.
+>> +	 */
+>> +	write_idx = READ_ONCE(tlb_flush_ring->write_idx);
+>> +
+>> +	/* Pairs with smp_wmb() in hv_tlb_flush_ring_enqueue() */
+>> +	smp_rmb();
+>> +
+>> +	for (i = read_idx; i != write_idx; i = (i + 1) % KVM_HV_TLB_FLUSH_RING_SIZE) {
+>> +		entry = &tlb_flush_ring->entries[i];
+>> +
+>> +		if (entry->flush_all)
+>> +			goto out_flush_all;
+>> +
+>> +		/*
+>> +		 * Lower 12 bits of 'address' encode the number of additional
+>> +		 * pages to flush.
+>> +		 */
+>> +		address = entry->addr & PAGE_MASK;
+>> +		count = (entry->addr & ~PAGE_MASK) + 1;
+>> +		for (j = 0; j < count; j++)
+>> +			static_call(kvm_x86_flush_tlb_gva)(vcpu, address + j * PAGE_SIZE);
+>> +	}
+>> +	++vcpu->stat.tlb_flush;
+>
+> Bumping tlb_flush is inconsistent with how KVM handles INVLPG, and could be wrong
+> if the ring is empty (might be impossible without a bug?).  And if my math is right,
+> or at least in the ballpark, tlb_flush will be incremented once regardless of whether
+> the loop flushed 1 page or 64k pages (completely full ring, full count on every one).
+>
+> I'd prefer to either drop the stat adjustment entirely, or bump invlpg in the loop, e.g.
+>
+> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+> index 56f06cf85282..5654c9d56289 100644
+> --- a/arch/x86/kvm/hyperv.c
+> +++ b/arch/x86/kvm/hyperv.c
+> @@ -1945,10 +1945,11 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+>         for (i = read_idx; i != write_idx; i = (i + 1) % KVM_HV_TLB_FLUSH_RING_SIZE) {
+>                 address = tlb_flush_ring->entries[i] & PAGE_MASK;
+>                 count = (tlb_flush_ring->entries[i] & ~PAGE_MASK) + 1;
+> -               for (j = 0; j < count; j++)
+> +               for (j = 0; j < count; j++) {
+>                         static_call(kvm_x86_flush_tlb_gva)(vcpu, address + j * PAGE_SIZE);
+> +                       ++vcpu->stat.invlpg;
+> +               }
+>         }
+> -       ++vcpu->stat.tlb_flush;
+>
+>  out_empty_ring:
+>         tlb_flush_ring->read_idx = write_idx;
+>
 
-On 17/05/2022 12:15, AngeloGioacchino Del Regno wrote:
-> As per Rob Herring's review [1] on my mt6795 clocks bindings patches, for
-> which I've used the already upstreamed ones as a base, it was found that
-> these bindings have some issues.
-> This series is addressing the issues that were found by Rob on my series,
-> which are present on all of the already merged bindings.
-> 
-> [1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220513165050.500831-5-angelogioacchino.delregno@collabora.com/#24859953
+My idea was that flushing individual GVAs is always 'less intrusive'
+than flushing the whole address space which counts as '1' in
+'stat.tlb_flush'. Yes, 'flush 1 GVA' is equal to 'flush 64k' but on the
+other hand if we do the math yor way we get:
+- flush the whole address space: "stat.tlb_flush" is incremented by '1'.
+- flush 100 indivudual GVAs: "stat.tlb_flush" is incremented by '100'.
 
-I would say we could squash patches here and make it 3 instead of 6.
-In any case for the whole series:
+What if we instead give 'stat.tlb_flush' the following meaning here:
+"how many indivudual TLB flush requests were submitted", i.e.:
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+         for (i = read_idx; i != write_idx; i = (i + 1) % KVM_HV_TLB_FLUSH_RING_SIZE) {
+                 address = tlb_flush_ring->entries[i] & PAGE_MASK;
+                 count = (tlb_flush_ring->entries[i] & ~PAGE_MASK) + 1;
+                 for (j = 0; j < count; j++)
+                         static_call(kvm_x86_flush_tlb_gva)(vcpu, address + j * PAGE_SIZE);
+                 ++vcpu->stat.invlpg;
+          }
 
-> 
-> AngeloGioacchino Del Regno (6):
->    dt-bindings: arm: mt8186-clock: Remove unnecessary 'items' and fix
->      formatting
->    dt-bindings: arm: mt8186: Set #clock-cells as required property
->    dt-bindings: arm: mt8195-clock: Remove unnecessary 'items' and fix
->      formatting
->    dt-bindings: arm: mt8195: Set #clock-cells as required property
->    dt-bindings: arm: mt8192-clock: Remove unnecessary 'items'
->    dt-bindings: arm: mt8192: Set #clock-cells as required property
-> 
->   .../arm/mediatek/mediatek,mt8186-clock.yaml   | 29 ++++-----
->   .../mediatek/mediatek,mt8186-sys-clock.yaml   |  1 +
->   .../arm/mediatek/mediatek,mt8192-clock.yaml   | 46 +++++++--------
->   .../mediatek/mediatek,mt8192-sys-clock.yaml   |  1 +
->   .../arm/mediatek/mediatek,mt8195-clock.yaml   | 59 ++++++++++---------
->   .../mediatek/mediatek,mt8195-sys-clock.yaml   |  1 +
->   6 files changed, 71 insertions(+), 66 deletions(-)
-> 
+(something in between what I have now and what you suggest). What do you think?
+
+-- 
+Vitaly
+
