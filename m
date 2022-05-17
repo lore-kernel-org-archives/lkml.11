@@ -2,147 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C94C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351198AbiEQQtm (ORCPT
+        id S1351211AbiEQQvV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
+        Tue, 17 May 2022 12:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347947AbiEQQtf (ORCPT
+        with ESMTP id S1351207AbiEQQu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:49:35 -0400
-X-Greylist: delayed 8400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 09:49:33 PDT
-Received: from 9.mo552.mail-out.ovh.net (9.mo552.mail-out.ovh.net [87.98.180.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970414EF54
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:49:33 -0700 (PDT)
-Received: from mxplan5.mail.ovh.net (unknown [10.109.143.159])
-        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 99C30272DB;
-        Tue, 17 May 2022 12:03:05 +0000 (UTC)
-Received: from kaod.org (37.59.142.95) by DAG4EX1.mxp5.local (172.16.2.31)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.6; Tue, 17 May
- 2022 14:03:03 +0200
-Authentication-Results: garm.ovh; auth=pass (GARM-95G00170ed3db5-be56-4885-81a9-6c1aa5207cce,
-                    BB146B841C735870D6401592F5D215EFF71F43F0) smtp.auth=clg@kaod.org
-X-OVh-ClientIp: 82.64.250.170
-Message-ID: <a17b2446-f5a6-d606-8ef4-3931b8bc94da@kaod.org>
-Date:   Tue, 17 May 2022 14:03:02 +0200
+        Tue, 17 May 2022 12:50:59 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5AE2BE7;
+        Tue, 17 May 2022 09:50:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652806257; x=1684342257;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9E/vttDFy0EFq5zSJDnsg0HX9OScE43/QxlsTcLOYjs=;
+  b=UJP/OC/2KaLR5AWSQouaN1Gn86vjq8OiJlF4rj4czHPCzl1W20K28/yj
+   E48d3/mnsQq9MGhMPHzQhwRhrS6Y9ylFqNVpHBMnlQzakcyonIljuzsw2
+   /Wlm3MGAXM1oMtPb2hLe8UQuNX3atEIBNZ9vkcedVhvpUGBy4ergUvyFX
+   USfbcdLREcD1wZsXsiZkkCqkqs3CEOdeqtxwb/KkLBc1nYuLP1tD28tAR
+   WclN2XblDZRwtPIi/cwTw74EfMRQWhqcVg5SJNkZoebwdvVUp/h9Mi/k8
+   UV1rn/PnmsWXLJovpJLIVBzc1DbLDpUNsAlV4eHBj+wSiX16F1JMgMiJl
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271371030"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="271371030"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:50:57 -0700
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="672939443"
+Received: from abhuwalk-mobl1.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.246.60])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:50:55 -0700
+Message-ID: <7b1a9f3b5b5087f47bf4839858c7bfebdb60aa2f.camel@linux.intel.com>
+Subject: Re: [PATCH v2 01/14] thermal/core: Change thermal_zone_ops to
+ thermal_sensor_ops
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linexp.org>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Alexandre Bailon <abailon@baylibre.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>, Len Brown <lenb@kernel.org>,
+        Raju Rangoju <rajur@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Peter Kaestle <peter@piie.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Niklas =?ISO-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuansheng Liu <chuansheng.liu@intel.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Antoine Tenart <atenart@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
+        "open list:CXGB4 ETHERNET DRIVER (CXGB4)" <netdev@vger.kernel.org>,
+        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:ACER ASPIRE ONE TEMPERATURE AND FAN DRIVER" 
+        <platform-driver-x86@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:RENESAS R-CAR THERMAL DRIVERS" 
+        <linux-renesas-soc@vger.kernel.org>
+Date:   Tue, 17 May 2022 09:50:54 -0700
+In-Reply-To: <CAJZ5v0ik_JQ4Awtw7iR68W4-9ZL8FRDsDd-kWmL-n09fgg3reg@mail.gmail.com>
+References: <20220507125443.2766939-1-daniel.lezcano@linexp.org>
+         <20220507125443.2766939-2-daniel.lezcano@linexp.org>
+         <CAJZ5v0ik_JQ4Awtw7iR68W4-9ZL8FRDsDd-kWmL-n09fgg3reg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: (subset) [PATCH v7 00/11] spi: spi-mem: Convert Aspeed SMC driver
- to spi-mem
-Content-Language: en-US
-To:     Pratyush Yadav <p.yadav@ti.com>, Mark Brown <broonie@kernel.org>
-CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <andrew@aj.id.au>, <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <richard@nod.at>,
-        <joel@jms.id.au>, <tudor.ambarus@microchip.com>,
-        <miquel.raynal@bootlin.com>, <chin-ting_kuo@aspeedtech.com>,
-        <linux-aspeed@lists.ozlabs.org>, <vigneshr@ti.com>,
-        <linux-kernel@vger.kernel.org>
-References: <20220509175616.1089346-1-clg@kaod.org>
- <165272636363.750911.14933122170662994904.b4-ty@kernel.org>
- <20220517110509.2e6xbwot63yl6a3c@ti.com>
-From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
-In-Reply-To: <20220517110509.2e6xbwot63yl6a3c@ti.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [37.59.142.95]
-X-ClientProxiedBy: DAG5EX1.mxp5.local (172.16.2.41) To DAG4EX1.mxp5.local
- (172.16.2.31)
-X-Ovh-Tracer-GUID: 80e81b9c-232a-483c-aa21-84c362e6a333
-X-Ovh-Tracer-Id: 10302265625168612228
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrheejgdeghecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfevfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnheptdehkeelieetvddtlefgveeuheduheetledvtdfgfeffledvjeekjeegledvkeeunecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkpheptddrtddrtddrtddpfeejrdehledrudegvddrleehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pratyush,
-
-On 5/17/22 13:05, Pratyush Yadav wrote:
-> Hi Cedric,
+On Tue, 2022-05-17 at 17:42 +0200, Rafael J. Wysocki wrote:
+> On Sat, May 7, 2022 at 2:55 PM Daniel Lezcano
+> <daniel.lezcano@linexp.org> wrote:
+> > 
+> > A thermal zone is software abstraction of a sensor associated with
+> > properties and cooling devices if any.
+> > 
+> > The fact that we have thermal_zone and thermal_zone_ops mixed is
+> > confusing and does not clearly identify the different components
+> > entering in the thermal management process. A thermal zone appears
+> > to
+> > be a sensor while it is not.
 > 
-> On 16/05/22 07:39PM, Mark Brown wrote:
->> On Mon, 9 May 2022 19:56:05 +0200, Cédric Le Goater wrote:
->>> This series adds a new SPI driver using the spi-mem interface for the
->>> Aspeed static memory controllers of the AST2600, AST2500 and AST2400
->>> SoCs.
->>>
->>>   * AST2600 Firmware SPI Memory Controller (FMC)
->>>   * AST2600 SPI Flash Controller (SPI1 and SPI2)
->>>   * AST2500 Firmware SPI Memory Controller (FMC)
->>>   * AST2500 SPI Flash Controller (SPI1 and SPI2)
->>>   * AST2400 New Static Memory Controller (also referred as FMC)
->>>   * AST2400 SPI Flash Controller (SPI)
->>>
->>> [...]
->>
->> Applied to
->>
->>     https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
->>
->> Thanks!
->>
->> [02/11] dt-bindings: spi: Convert the Aspeed SMC controllers device tree binding
->>          commit: ce9858ea499da025684a7a5f19823c2c3f14bdce
->> [03/11] spi: spi-mem: Convert Aspeed SMC driver to spi-mem
->>          commit: 9c63b846e6df43e5b3d31263f7db545f32deeda3
->> [04/11] spi: aspeed: Add support for direct mapping
->>          commit: 9da06d7bdec7dad8018c23b180e410ef2e7a4367
->> [05/11] spi: aspeed: Adjust direct mapping to device size
->>          commit: bb084f94e1bca4a5c4f689d7aa9b410220c1ed71
->> [06/11] spi: aspeed: Workaround AST2500 limitations
->>          commit: 5785eedee42c34cfec496199a80fa8ec9ddcf7fe
->> [07/11] spi: aspeed: Add support for the AST2400 SPI controller
->>          commit: 53526ab27d9c256504f267713aea60db7af18fb0
->> [08/11] spi: aspeed: Calibrate read timings
->>          commit: eeaec1ea05c0e0f08e04c6844f20cc24a2fcc0f4
+> Well, the majority of the operations in thermal_zone_ops don't apply
+> to thermal sensors.  For example, ->set_trips(), ->get_trip_type(),
+> ->get_trip_temp().
 > 
-> I have repeatedly objected to this patch [0][1][2] and you have
-> repeatedly decided to not address my objections. 
+In past we discussed adding thermal sensor sysfs with threshold to
+notify temperature.
 
-That's a very harsh way of saying things. I did not decide anything
-or ignore your comments. I answered your questions and acknowledged
-that indeed the read training was done under the dirmap handler but
-this was not a concern today since we had all the required information
-from spimem.
+So sensor can have set/get_threshold() functions instead of the
+set/get_trip for zones.
 
-We waited _together_, 5 or 6 weeks, for more inputs on how to address
-the concerns you raised regarding the sustainability of this method.
+Like we have /sys/class/thermal_zone* we can have
+/sys/class/thermal_sensor*.
 
-> I won't spend any more time fighting it. 
+Thermal sensor(s) are bound to  thermal zones. This can also include
+multiple sensors in a zone and can create a virtual sensor also.
 
-This is not a fight. I don't know why you interpret it that way.
+Thanks,
+Srinivas
 
-Now, since you object so explicitly, and since this patchset has
-not reached the Linux kernel yet, we should consider dropping it.
-I rather do that than push crap in mainline. But then, please,
-provide solutions and not only objections !
-
-> But I will say that you should not expect any
-> guarantees that SPI NOR or SPI NAND will not break your calibration in
-> the future if they decide to move the dirmap_create() call around.
-
-If that's the case one day, we have multiple solutions :
-
-   - stop doing the training
-   - move the training to the appropriate handler if it exists
-   - use a default value
-  
->> [11/11] mtd: spi-nor: aspeed: set the decoding size to at least 2MB for AST2600
->>          commit: 73ae97e3cabb580639f02f12a192324a53c4bebb
->>
+> > In order to set the scene for multiple thermal sensors aggregated
+> > into
+> > a single thermal zone. Rename the thermal_zone_ops to
+> > thermal_sensor_ops, that will appear clearyl the thermal zone is
+> > not a
+> > sensor but an abstraction of one [or multiple] sensor(s).
 > 
-> [0] https://patchwork.kernel.org/project/spi-devel-general/patch/20220325100849.2019209-9-clg@kaod.org/
-> [1] https://patchwork.kernel.org/project/spi-devel-general/patch/20220214094231.3753686-9-clg@kaod.org/
-> [2] https://lore.kernel.org/all/20220208190636.h6dubktkmuosvdxo@ti.com/
+> So I'm not convinced that the renaming mentioned above is
+> particularly
+> clean either.
+> 
+> IMV the way to go would be to split the thermal sensor operations,
+> like ->get_temp(), out of thermal_zone_ops.
+> 
+> But then it is not clear what a thermal zone with multiple sensors in
+> it really means.  I guess it would require an aggregation function to
+> combine the thermal sensors in it that would produce an effective
+> temperature to check against the trip points.
+> 
+> Honestly, I don't think that setting a separate set of trips for each
+> sensor in a thermal zone would make a lot of sense.
 
-Regards,
-
-Cédric.
