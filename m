@@ -2,170 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10555C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E3ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235649AbiEQBh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 21:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
+        id S236956AbiEQBiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 21:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiEQBhZ (ORCPT
+        with ESMTP id S229692AbiEQBh5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 21:37:25 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5862E68F;
-        Mon, 16 May 2022 18:37:24 -0700 (PDT)
-Received: from kwepemi100017.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L2JWw6bypzCsjd;
-        Tue, 17 May 2022 09:32:28 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- kwepemi100017.china.huawei.com (7.221.188.163) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 09:37:22 +0800
-Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
- (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
- 2022 09:37:21 +0800
-Subject: Re: [PATCH v8 4/8] perf arm: Refactor event list iteration in
- auxtrace_record__init()
-To:     John Garry <john.garry@huawei.com>,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
-        <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <acme@kernel.org>,
-        <jonathan.cameron@huawei.com>
-CC:     <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mark.rutland@arm.com>, <joro@8bytes.org>,
-        <shameerali.kolothum.thodi@huawei.com>, <peterz@infradead.org>,
-        <mingo@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>
-References: <20220516125223.32012-1-yangyicong@hisilicon.com>
- <20220516125223.32012-5-yangyicong@hisilicon.com>
- <d874dd82-30fd-f8e0-b7ab-0c9d14e47324@huawei.com>
-From:   "liuqi (BA)" <liuqi115@huawei.com>
-Message-ID: <164bf8c9-70d1-6c34-0269-1be109ca1ae0@huawei.com>
-Date:   Tue, 17 May 2022 09:37:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Mon, 16 May 2022 21:37:57 -0400
+Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72AC72E6A2;
+        Mon, 16 May 2022 18:37:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=7G8Kb
+        AmludJDMdA3ZiXqK+V/H8kA2kjapKKgVRW8jhc=; b=lJE2W15X5D1aKIQlx7UNx
+        ZMWlyYARWJYJf05qA7uRMDHbZAb1E10n6frNPPXux7L/4eR6aDVjmYNUbvSghR7z
+        6m2q3ghPxQCyAstAw9lAIcLGjuUPv/FTlgABl6WnKDZHdLvNlUi8NZ0KInuv+hHp
+        WqUV+Ux6n0SHQNSjDcqqGo=
+Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.20])
+        by smtp9 (Coremail) with SMTP id DcCowAB3USwR_IJiF3ohDQ--.61255S2;
+        Tue, 17 May 2022 09:36:18 +0800 (CST)
+From:   qianfanguijin@163.com
+To:     linux-sunxi@lists.linux.dev
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        qianfan Zhao <qianfanguijin@163.com>
+Subject: [PATCH v5 0/3] ARM: sun8i-r40: CPU improve
+Date:   Tue, 17 May 2022 09:36:04 +0800
+Message-Id: <20220517013607.2252-1-qianfanguijin@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <d874dd82-30fd-f8e0-b7ab-0c9d14e47324@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.101.67]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+X-CM-TRANSID: DcCowAB3USwR_IJiF3ohDQ--.61255S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxAFykZw13Xr4rAryUuw1kuFg_yoWrJFWfpr
+        1UJr1UGr4UJr1UJr17tr1rJr1UJr1UJr1UJr15Jr1UJr1UJF1UJr1UJr15Jr4UGrn8Ar1U
+        tr1UJryUG34DJrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zNfOxUUUUUU=
+X-Originating-IP: [218.201.129.20]
+X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiXBME7VXl26j8kwAAsK
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: qianfan Zhao <qianfanguijin@163.com>
+
+Change history:
+===============
+v5(2022-05-17):
+- Move opp tables to sun8i-r40-cpu-opp.dtsi
+- cpufreq supports 720M, 912M, 1G, 1.1G, 1.2G
+- Add cooling supports
+
+v4(2022-05-16):
+- Invert two patches.
+- Drop the cpufreqs that exceeds 1G in opp tables.
+
+v3:
+- remove "allwinner-r40" compatible from allowlist.
+- split dts in two part.
+
+Test:
+=====
+
+cpufreq was tested by tools: https://github.com/ssvb/cpuburn-arm
+
+1. cpufreq-ljt-stress-test
+
+- root@ubuntu:~/cpuburn-arm-master# ./cpufreq-ljt-stress-test 
+- CPU stress test, which is doing JPEG decoding by libjpeg-turbo
+- at different cpufreq operating points.
+- 
+- Testing CPU 0
+-  1200 MHz ............................................................ OK
+-  1104 MHz ............................................................ OK
+-  1008 MHz ............................................................ OK
+-   912 MHz ............................................................ OK
+-   720 MHz ............................................................ OK
+- 
+- Testing CPU 1
+-  1200 MHz ............................................................ OK
+-  1104 MHz ............................................................ OK
+-  1008 MHz ............................................................ OK
+-   912 MHz ............................................................ OK
+-   720 MHz ............................................................ OK
+- 
+- Testing CPU 2
+-  1200 MHz ............................................................ OK
+-  1104 MHz ............................................................ OK
+-  1008 MHz ............................................................ OK
+-   912 MHz ............................................................ OK
+-   720 MHz ............................................................ OK
+- 
+- Testing CPU 3
+-  1200 MHz ............................................................ OK
+-  1104 MHz ............................................................ OK
+-  1008 MHz ............................................................ OK
+-   912 MHz ............................................................ OK
+-   720 MHz ............................................................ OK
+
+Overall result : PASSED
+
+2. cpu freq slow down when cpuburn-a7.out running
+
+- temperature: 79213, online: 0-3, freq: 1200000
+- temperature: 79213, online: 0-3, freq: 1200000
+- temperature: 80230, online: 0-3, freq: 1104000
+- temperature: 78874, online: 0-3, freq: 1200000
+- temperature: 80004, online: 0-3, freq: 1104000
+- temperature: 79213, online: 0-3, freq: 1200000
+- temperature: 78196, online: 0-3, freq: 1200000
+- temperature: 79891, online: 0-3, freq: 1200000
+- temperature: 78422, online: 0-3, freq: 1200000
+- temperature: 80343, online: 0-3, freq: 1104000
+- temperature: 80343, online: 0-3, freq: 1104000
 
 
-On 2022/5/17 0:29, John Garry wrote:
-> On 16/05/2022 13:52, Yicong Yang wrote:
-> 
-> As requested before, please mention "perf tool" in the commit subject
-"perf arm" is used referenced to previous commit, ok, will mention "perf 
-tool" in the commit subject next time.
+qianfan Zhao (3):
+  ARM: dts: sun8i-r40: Add "cpu-supply" node for sun8i-r40 based board
+  ARM: dts: sun8i-r40: add opp table for cpu
+  ARM: dts: sun8i-r40: Add thermal trip points/cooling maps
 
-Thanks,
-Qi
-> 
->> From: Qi Liu <liuqi115@huawei.com>
->>
->> Use find_pmu_for_event() to simplify logic in auxtrace_record__init().
->>
->> Signed-off-by: Qi Liu <liuqi115@huawei.com>
->> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
->> ---
->>   tools/perf/arch/arm/util/auxtrace.c | 53 ++++++++++++++++++-----------
->>   1 file changed, 34 insertions(+), 19 deletions(-)
->>
->> diff --git a/tools/perf/arch/arm/util/auxtrace.c 
->> b/tools/perf/arch/arm/util/auxtrace.c
->> index 5fc6a2a3dbc5..384c7cfda0fd 100644
->> --- a/tools/perf/arch/arm/util/auxtrace.c
->> +++ b/tools/perf/arch/arm/util/auxtrace.c
->> @@ -50,16 +50,32 @@ static struct perf_pmu **find_all_arm_spe_pmus(int 
->> *nr_spes, int *err)
->>       return arm_spe_pmus;
->>   }
->> +static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
->> +                       int pmu_nr, struct evsel *evsel)
->> +{
->> +    int i;
->> +
->> +    if (!pmus)
->> +        return NULL;
->> +
->> +    for (i = 0; i < pmu_nr; i++) {
->> +        if (evsel->core.attr.type == pmus[i]->type)
->> +            return pmus[i];
->> +    }
->> +
->> +    return NULL;
->> +}
->> +
->>   struct auxtrace_record
->>   *auxtrace_record__init(struct evlist *evlist, int *err)
->>   {
->> -    struct perf_pmu    *cs_etm_pmu;
->> +    struct perf_pmu    *cs_etm_pmu = NULL;
->> +    struct perf_pmu **arm_spe_pmus = NULL;
->>       struct evsel *evsel;
->> -    bool found_etm = false;
->> +    struct perf_pmu *found_etm = NULL;
->>       struct perf_pmu *found_spe = NULL;
->> -    struct perf_pmu **arm_spe_pmus = NULL;
->> +    int auxtrace_event_cnt = 0;
->>       int nr_spes = 0;
->> -    int i = 0;
->>       if (!evlist)
->>           return NULL;
->> @@ -68,24 +84,23 @@ struct auxtrace_record
->>       arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
->>       evlist__for_each_entry(evlist, evsel) {
->> -        if (cs_etm_pmu &&
->> -            evsel->core.attr.type == cs_etm_pmu->type)
->> -            found_etm = true;
->> -
->> -        if (!nr_spes || found_spe)
->> -            continue;
->> -
->> -        for (i = 0; i < nr_spes; i++) {
->> -            if (evsel->core.attr.type == arm_spe_pmus[i]->type) {
->> -                found_spe = arm_spe_pmus[i];
->> -                break;
->> -            }
->> -        }
->> +        if (cs_etm_pmu && !found_etm)
->> +            found_etm = find_pmu_for_event(&cs_etm_pmu, 1, evsel);
->> +
->> +        if (arm_spe_pmus && !found_spe)
->> +            found_spe = find_pmu_for_event(arm_spe_pmus, nr_spes, 
->> evsel);
->>       }
->> +
->>       free(arm_spe_pmus);
->> -    if (found_etm && found_spe) {
->> -        pr_err("Concurrent ARM Coresight ETM and SPE operation not 
->> currently supported\n");
->> +    if (found_etm)
->> +        auxtrace_event_cnt++;
->> +
->> +    if (found_spe)
->> +        auxtrace_event_cnt++;
->> +
->> +    if (auxtrace_event_cnt > 1) {
->> +        pr_err("Concurrent AUX trace operation not currently 
->> supported\n");
->>           *err = -EOPNOTSUPP;
->>           return NULL;
->>       }
-> 
-> .
+ .../boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |  5 ++
+ arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi      | 52 +++++++++++++++++++
+ arch/arm/boot/dts/sun8i-r40-feta40i.dtsi      |  5 ++
+ arch/arm/boot/dts/sun8i-r40.dtsi              | 36 +++++++++++++
+ arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts      |  5 ++
+ .../boot/dts/sun8i-v40-bananapi-m2-berry.dts  |  5 ++
+ 6 files changed, 108 insertions(+)
+ create mode 100644 arch/arm/boot/dts/sun8i-r40-cpu-opp.dtsi
+
+-- 
+2.25.1
+
