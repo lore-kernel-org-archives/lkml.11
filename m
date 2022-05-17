@@ -2,505 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD7BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59024C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241555AbiEQIFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
+        id S240100AbiEQIHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236264AbiEQIFh (ORCPT
+        with ESMTP id S233841AbiEQIG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:05:37 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500DB3EBA0;
-        Tue, 17 May 2022 01:05:34 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2T9l1n5fzGnxs;
-        Tue, 17 May 2022 16:02:19 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 16:05:12 +0800
-CC:     <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
-        <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <acme@kernel.org>, <john.garry@huawei.com>,
-        <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mark.rutland@arm.com>, <joro@8bytes.org>,
-        <shameerali.kolothum.thodi@huawei.com>, <peterz@infradead.org>,
-        <mingo@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <linuxarm@huawei.com>
-Subject: Re: [PATCH v8 2/8] hwtracing: hisi_ptt: Add trace function support
- for HiSilicon PCIe Tune and Trace device
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-References: <20220516125223.32012-1-yangyicong@hisilicon.com>
- <20220516125223.32012-3-yangyicong@hisilicon.com>
- <20220516150333.000031d7@Huawei.com>
-From:   Yicong Yang <yangyicong@huawei.com>
-Message-ID: <a233704a-5b73-4286-cae5-dba0d8454c93@huawei.com>
-Date:   Tue, 17 May 2022 16:05:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Tue, 17 May 2022 04:06:58 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7C03A1B9;
+        Tue, 17 May 2022 01:06:55 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 560B6220EA;
+        Tue, 17 May 2022 08:06:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652774814; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5F+aPyH3Gd8cJunxSwAhNocJOxxfM5+XN2unB6PBMpw=;
+        b=J2ahlJDur7mj94MqXcrTXveWrdwUxnp9IpuioHjzGOAwggkJMbu4Z1gEna/6kZ+tpeAfeL
+        G5K2am0TDt8Ke1WouOZ67PWQNeoRxH7o9Ip4MZAbahCqru2ISrO+JLz/DAebNiGCNdQsv4
+        C6XSlYjBdw+M0lB9h8baHw+ajekvup0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652774814;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5F+aPyH3Gd8cJunxSwAhNocJOxxfM5+XN2unB6PBMpw=;
+        b=kXXh7rwpYziBdC4r17l/rnn64bs7NUowGKuwMCl96t8ZFzPuztFPR9kifKLrp92eAxJc0U
+        lm15Us7noaH6tkDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E8BAD13305;
+        Tue, 17 May 2022 08:06:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id nRurNJxXg2KLCQAAMHmgww
+        (envelope-from <osalvador@suse.de>); Tue, 17 May 2022 08:06:52 +0000
+Date:   Tue, 17 May 2022 10:06:51 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v12 7/7] mm: hugetlb_vmemmap: add
+ hugetlb_optimize_vmemmap sysctl
+Message-ID: <YoNXm2c5fJq8luqf@localhost.localdomain>
+References: <20220516102211.41557-1-songmuchun@bytedance.com>
+ <20220516102211.41557-8-songmuchun@bytedance.com>
 MIME-Version: 1.0
-In-Reply-To: <20220516150333.000031d7@Huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516102211.41557-8-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/16 22:03, Jonathan Cameron wrote:
-> On Mon, 16 May 2022 20:52:17 +0800
-> Yicong Yang <yangyicong@hisilicon.com> wrote:
+On Mon, May 16, 2022 at 06:22:11PM +0800, Muchun Song wrote:
+> We must add hugetlb_free_vmemmap=on (or "off") to the boot cmdline and
+> reboot the server to enable or disable the feature of optimizing vmemmap
+> pages associated with HugeTLB pages.  However, rebooting usually takes a
+> long time.  So add a sysctl to enable or disable the feature at runtime
+> without rebooting.  Why we need this?  There are 3 use cases.
 > 
->> HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex integrated
->> Endpoint(RCiEP) device, providing the capability to dynamically monitor and
->> tune the PCIe traffic and trace the TLP headers.
->>
->> Add the driver for the device to enable the trace function. Register PMU
->> device of PTT trace, then users can use trace through perf command. The
->> driver makes use of perf AUX trace function and support the following
->> events to configure the trace:
->>
->> - filter: select Root port or Endpoint to trace
->> - type: select the type of traced TLP headers
->> - direction: select the direction of traced TLP headers
->> - format: select the data format of the traced TLP headers
->>
->> This patch initially add a basic driver of PTT trace.
->>
->> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> 1) The feature of minimizing overhead of struct page associated with each
+> HugeTLB is disabled by default without passing "hugetlb_free_vmemmap=on"
+> to the boot cmdline. When we (ByteDance) deliver the servers to the
+> users who want to enable this feature, they have to configure the grub
+> (change boot cmdline) and reboot the servers, whereas rebooting usually
+> takes a long time (we have thousands of servers).  It's a very bad
+> experience for the users.  So we need a approach to enable this feature
+> after rebooting. This is a use case in our practical environment.
 > 
-> Hi Yicong,
+> 2) Some use cases are that HugeTLB pages are allocated 'on the fly'
+> instead of being pulled from the HugeTLB pool, those workloads would be
+> affected with this feature enabled.  Those workloads could be identified
+> by the characteristics of they never explicitly allocating huge pages
+> with 'nr_hugepages' but only set 'nr_overcommit_hugepages' and then let
+> the pages be allocated from the buddy allocator at fault time.  We can
+> confirm it is a real use case from the commit 099730d67417.  For those
+> workloads, the page fault time could be ~2x slower than before. We
+> suspect those users want to disable this feature if the system has enabled
+> this before and they don't think the memory savings benefit is enough to
+> make up for the performance drop.
 > 
-> It's been a while since I looked at this driver, so I'll admit
-> I can't remember if any of the things I've raised below were
-> previously discussed. 
+> 3) If the workload which wants vmemmap pages to be optimized and the
+> workload which wants to set 'nr_overcommit_hugepages' and does not want
+> the extera overhead at fault time when the overcommitted pages be
+> allocated from the buddy allocator are deployed in the same server.
+> The user could enable this feature and set 'nr_hugepages' and
+> 'nr_overcommit_hugepages', then disable the feature.  In this case,
+> the overcommited HugeTLB pages will not encounter the extra overhead
+> at fault time.
+
+I am having issues parsing point 3), specially the first part.
+IIUC, you are saying we have two kind of different workloads:
+
+- one that wants to have hugetlb vmemmap pages optimized
+- one that wants to allocate hugetlb pages at fault time rather than
+  allocating them via /proc/..., but does not want to suffer the
+  overhead of optimizing the vmemmap pages when faulting them
+
+Then you say the user could enable the optimization and allocate
+those pages via nr_hugepages, and then disable the feature.
+So, when we fault in those pages, the pages are already in the
+pool, right? And are already optimized.
+
 > 
-> All minor stuff (biggest is question of failing cleanly in unlikely
-> case of failing the allocation in the filter addition vs carrying
-> on anyway), so feel free to add
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> ---
+>  Documentation/admin-guide/sysctl/vm.rst | 38 ++++++++++++++++++++
+>  include/linux/page-flags.h              |  6 ++--
+>  mm/hugetlb_vmemmap.c                    | 61 ++++++++++++++++++++++-----------
+>  3 files changed, 81 insertions(+), 24 deletions(-)
 > 
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
+> index 747e325ebcd0..d7374a1e8ac9 100644
+> --- a/Documentation/admin-guide/sysctl/vm.rst
+> +++ b/Documentation/admin-guide/sysctl/vm.rst
+> @@ -562,6 +562,44 @@ Change the minimum size of the hugepage pool.
+>  See Documentation/admin-guide/mm/hugetlbpage.rst
+>  
+>  
+> +hugetlb_optimize_vmemmap
+> +========================
+> +
+> +This knob is not available when the size of 'struct page' (a structure defined
+> +in include/linux/mm_types.h) is not power of two (an unusual system config could
+> +result in this).
+> +
+> +Enable (set to 1) or disable (set to 0) the feature of optimizing vmemmap pages
+> +associated with each HugeTLB page.
+> +
+> +Once enabled, the vmemmap pages of subsequent allocation of HugeTLB pages from
+> +buddy allocator will be optimized (7 pages per 2MB HugeTLB page and 4095 pages
+> +per 1GB HugeTLB page), whereas already allocated HugeTLB pages will not be
+> +optimized.  When those optimized HugeTLB pages are freed from the HugeTLB pool
+> +to the buddy allocator, the vmemmap pages representing that range needs to be
+> +remapped again and the vmemmap pages discarded earlier need to be rellocated
+> +again.  If your use case is that HugeTLB pages are allocated 'on the fly' (e.g.
+> +never explicitly allocating HugeTLB pages with 'nr_hugepages' but only set
+> +'nr_overcommit_hugepages', those overcommitted HugeTLB pages are allocated 'on
+> +the fly') instead of being pulled from the HugeTLB pool, you should weigh the
+> +benefits of memory savings against the more overhead (~2x slower than before)
+> +of allocation or freeing HugeTLB pages between the HugeTLB pool and the buddy
+> +allocator.  Another behavior to note is that if the system is under heavy memory
+> +pressure, it could prevent the user from freeing HugeTLB pages from the HugeTLB
+> +pool to the buddy allocator since the allocation of vmemmap pages could be
+> +failed, you have to retry later if your system encounter this situation.
+> +
+> +Once disabled, the vmemmap pages of subsequent allocation of HugeTLB pages from
+> +buddy allocator will not be optimized meaning the extra overhead at allocation
+> +time from buddy allocator disappears, whereas already optimized HugeTLB pages
+> +will not be affected.  If you want to make sure there are no optimized HugeTLB
+> +pages, you can set "nr_hugepages" to 0 first and then disable this.  Note that
+> +writing 0 to nr_hugepages will make any "in use" HugeTLB pages become surplus
+> +pages.  So, those surplus pages are still optimized until they are no longer
+> +in use.  You would need to wait for those surplus pages to be released before
+> +there are no optimized pages in the system.
+> +
+> +
+>  nr_hugepages_mempolicy
+>  ======================
+>  
+> diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+> index 404f4ede17f5..07d8d444d9f1 100644
+> --- a/include/linux/page-flags.h
+> +++ b/include/linux/page-flags.h
+> @@ -200,8 +200,7 @@ enum pageflags {
+>  #ifndef __GENERATING_BOUNDS_H
+>  
+>  #ifdef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+> -DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+> -			 hugetlb_optimize_vmemmap_key);
+> +DECLARE_STATIC_KEY_FALSE(hugetlb_optimize_vmemmap_key);
+>  
+>  /*
+>   * If the feature of optimizing vmemmap pages associated with each HugeTLB
+> @@ -221,8 +220,7 @@ DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+>   */
+>  static __always_inline const struct page *page_fixed_fake_head(const struct page *page)
+>  {
+> -	if (!static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+> -				 &hugetlb_optimize_vmemmap_key))
+> +	if (!static_branch_unlikely(&hugetlb_optimize_vmemmap_key))
+>  		return page;
+>  
+>  	/*
+> diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
+> index d1fea65fec98..02862f117c2b 100644
+> --- a/mm/hugetlb_vmemmap.c
+> +++ b/mm/hugetlb_vmemmap.c
+> @@ -22,23 +22,15 @@
+>  #define RESERVE_VMEMMAP_NR		1U
+>  #define RESERVE_VMEMMAP_SIZE		(RESERVE_VMEMMAP_NR << PAGE_SHIFT)
+>  
+> -DEFINE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+> -			hugetlb_optimize_vmemmap_key);
+> +DEFINE_STATIC_KEY_FALSE(hugetlb_optimize_vmemmap_key);
+>  EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
+>  
+> +static bool optimize_vmemmap_enabled =
+> +	IS_ENABLED(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON);
+> +
+>  static int __init hugetlb_vmemmap_early_param(char *buf)
+>  {
+> -	bool enable;
+> -
+> -	if (kstrtobool(buf, &enable))
+> -		return -EINVAL;
+> -
+> -	if (enable)
+> -		static_branch_enable(&hugetlb_optimize_vmemmap_key);
+> -	else
+> -		static_branch_disable(&hugetlb_optimize_vmemmap_key);
+> -
+> -	return 0;
+> +	return kstrtobool(buf, &optimize_vmemmap_enabled);
+>  }
+>  early_param("hugetlb_free_vmemmap", hugetlb_vmemmap_early_param);
+>  
+> @@ -69,8 +61,10 @@ int hugetlb_vmemmap_alloc(struct hstate *h, struct page *head)
+>  	 */
+>  	ret = vmemmap_remap_alloc(vmemmap_addr, vmemmap_end, vmemmap_reuse,
+>  				  GFP_KERNEL | __GFP_NORETRY | __GFP_THISNODE);
+> -	if (!ret)
+> +	if (!ret) {
+>  		ClearHPageVmemmapOptimized(head);
+> +		static_branch_dec(&hugetlb_optimize_vmemmap_key);
+> +	}
+>  
+>  	return ret;
+>  }
+> @@ -81,6 +75,9 @@ static unsigned int optimizable_vmemmap_pages(struct hstate *h,
+>  	unsigned long pfn = page_to_pfn(head);
+>  	unsigned long end = pfn + pages_per_huge_page(h);
+>  
+> +	if (!READ_ONCE(optimize_vmemmap_enabled))
+> +		return 0;
+> +
+>  	for (; pfn < end; pfn += PAGES_PER_SECTION) {
+>  		if (section_cannot_optimize_vmemmap(__pfn_to_section(pfn)))
+>  			return 0;
+> @@ -98,6 +95,8 @@ void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
+>  	if (!vmemmap_pages)
+>  		return;
+>  
+> +	static_branch_inc(&hugetlb_optimize_vmemmap_key);
+> +
+>  	vmemmap_addr	+= RESERVE_VMEMMAP_SIZE;
+>  	vmemmap_end	= vmemmap_addr + (vmemmap_pages << PAGE_SHIFT);
+>  	vmemmap_reuse	= vmemmap_addr - PAGE_SIZE;
+> @@ -107,7 +106,9 @@ void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
+>  	 * to the page which @vmemmap_reuse is mapped to, then free the pages
+>  	 * which the range [@vmemmap_addr, @vmemmap_end] is mapped to.
+>  	 */
+> -	if (!vmemmap_remap_free(vmemmap_addr, vmemmap_end, vmemmap_reuse))
+> +	if (vmemmap_remap_free(vmemmap_addr, vmemmap_end, vmemmap_reuse))
+> +		static_branch_dec(&hugetlb_optimize_vmemmap_key);
+> +	else
+>  		SetHPageVmemmapOptimized(head);
+>  }
+>  
+> @@ -124,13 +125,8 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
+>  	BUILD_BUG_ON(__NR_USED_SUBPAGE >=
+>  		     RESERVE_VMEMMAP_SIZE / sizeof(struct page));
+>  
+> -	if (!static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+> -				 &hugetlb_optimize_vmemmap_key))
+> -		return;
+> -
+>  	if (!is_power_of_2(sizeof(struct page))) {
+>  		pr_warn_once("cannot optimize vmemmap pages because \"struct page\" crosses page boundaries\n");
+> -		static_branch_disable(&hugetlb_optimize_vmemmap_key);
+>  		return;
+>  	}
+>  
+> @@ -149,3 +145,28 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
+>  	pr_info("can optimize %d vmemmap pages for %s\n",
+>  		h->optimize_vmemmap_pages, h->name);
+>  }
+> +
+> +#ifdef CONFIG_PROC_SYSCTL
+> +static struct ctl_table hugetlb_vmemmap_sysctls[] = {
+> +	{
+> +		.procname	= "hugetlb_optimize_vmemmap",
+> +		.data		= &optimize_vmemmap_enabled,
+> +		.maxlen		= sizeof(optimize_vmemmap_enabled),
+> +		.mode		= 0644,
+> +		.proc_handler	= proc_dobool,
+> +	},
+> +	{ }
+> +};
+> +
+> +static int __init hugetlb_vmemmap_sysctls_init(void)
+> +{
+> +	/*
+> +	 * If "struct page" crosses page boundaries, the vmemmap pages cannot
+> +	 * be optimized.
+> +	 */
+> +	if (is_power_of_2(sizeof(struct page)))
+> +		register_sysctl_init("vm", hugetlb_vmemmap_sysctls);
+> +	return 0;
+> +}
+> +late_initcall(hugetlb_vmemmap_sysctls_init);
+> +#endif /* CONFIG_PROC_SYSCTL */
+> -- 
+> 2.11.0
 > 
->> diff --git a/drivers/hwtracing/ptt/Makefile b/drivers/hwtracing/ptt/Makefile
->> new file mode 100644
->> index 000000000000..908c09a98161
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/Makefile
->> @@ -0,0 +1,2 @@
->> +# SPDX-License-Identifier: GPL-2.0
->> +obj-$(CONFIG_HISI_PTT) += hisi_ptt.o
->> diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
->> new file mode 100644
->> index 000000000000..ef25ce98f664
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/hisi_ptt.c
-> 
-> 
-> ...
-> 
-> 
->> +
->> +static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
->> +{
->> +	struct hisi_ptt_filter_desc *filter;
->> +	struct hisi_ptt *hisi_ptt = data;
->> +
->> +	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
->> +	if (!filter) {
->> +		pci_err(hisi_ptt->pdev, "failed to add filter %s\n", pci_name(pdev));
-> 
-> If this fails we carry on anyway (no error checking on the bus_walk).
-> I think we should error out in that case (would need to use a flag placed
-> somewhere in hisi_ptt to tell we had an error).
-> 
-> That would complicate the unwind though.
-> Easiest way to do that unwind is probably to register a separate
-> devm_add_action_or_reset() callback for each filter.
-> 
-> If you prefer to carry on even with this allocation error, then maybe add a comment
-> here somewhere to make it clear that will happen.
 > 
 
-I'd prefer to carry on with this memory allocation error because this may not be fatal
-as: 1) the filter maybe partial initialized but the trace is available with resident
-filters and 2) the driver log here provides enough information that which filter has
-problem to add. 3) furthermore the tune function doesn't rely on this so we give a
-chance for the tune to be available if the filter allocation failed.
-
-The log message provide information about what happened here, will add a comment here
-why we decide to carry on:
-
-	/*
-	 * We won't fail the probe if filter allocation failed here. The filters
-	 * should be partial initialized and users would know which filter fails
-	 * through the log. Other functions of PTT device are still available.
-	 */
-	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
-	if (!filter) {
-		pci_err(hisi_ptt->pdev, "failed to add filter %s\n", pci_name(pdev));
-		return -ENOMEM;
-	}
-
-It's better to manually manage the filters as we're going to add support of dynamically
-updating the filters, which means the filter can be added/removed after probe. With
-devres it'll be complex to keep the order (the new added one will be released before
-the PMU unregistration, which is not expected).
-
-Will address the rest comments.
-
-Thanks,
-Yicong
-
->> +		return -ENOMEM;
->> +	}
->> +
->> +	filter->devid = PCI_DEVID(pdev->bus->number, pdev->devfn);
->> +
->> +	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT) {
->> +		filter->is_port = true;
->> +		list_add_tail(&filter->list, &hisi_ptt->port_filters);
->> +
->> +		/* Update the available port mask */
->> +		hisi_ptt->port_mask |= hisi_ptt_get_filter_val(filter->devid, true);
->> +	} else {
->> +		list_add_tail(&filter->list, &hisi_ptt->req_filters);
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static void hisi_ptt_release_filters(void *data)
->> +{
->> +	struct hisi_ptt_filter_desc *filter, *tmp;
->> +	struct hisi_ptt *hisi_ptt = data;
->> +
->> +	list_for_each_entry_safe(filter, tmp, &hisi_ptt->req_filters, list) {
->> +		list_del(&filter->list);
->> +		kfree(filter);
-> 
-> I think with separate release per entry above, this bit become simpler as
-> we walk all the elements in the devm_ callback list rather than two lists here.
-> 
->> +	}
->> +
->> +	list_for_each_entry_safe(filter, tmp, &hisi_ptt->port_filters, list) {
->> +		list_del(&filter->list);
->> +		kfree(filter);
->> +	}
->> +}
->> +
-> 
-> ...
-> 
->> +
->> +static int hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
->> +{
->> +	struct pci_dev *pdev = hisi_ptt->pdev;
->> +	struct pci_bus *bus;
->> +	int ret;
->> +	u32 reg;
->> +
->> +	INIT_LIST_HEAD(&hisi_ptt->port_filters);
->> +	INIT_LIST_HEAD(&hisi_ptt->req_filters);
->> +
->> +	ret = hisi_ptt_config_trace_buf(hisi_ptt);
->> +	if (ret)
->> +		return ret;
->> +
->> +	/*
->> +	 * The device range register provides the information about the
->> +	 * root ports which the RCiEP can control and trace. The RCiEP
->> +	 * and the root ports it support are on the same PCIe core, with
->> +	 * same domain number but maybe different bus number. The device
->> +	 * range register will tell us which root ports we can support,
->> +	 * Bit[31:16] indicates the upper BDF numbers of the root port,
->> +	 * while Bit[15:0] indicates the lower.
->> +	 */
->> +	reg = readl(hisi_ptt->iobase + HISI_PTT_DEVICE_RANGE);
->> +	hisi_ptt->upper_bdf = FIELD_GET(HISI_PTT_DEVICE_RANGE_UPPER, reg);
->> +	hisi_ptt->lower_bdf = FIELD_GET(HISI_PTT_DEVICE_RANGE_LOWER, reg);
->> +
->> +	bus = pci_find_bus(pci_domain_nr(pdev->bus), PCI_BUS_NUM(hisi_ptt->upper_bdf));
->> +	if (bus)
->> +		pci_walk_bus(bus, hisi_ptt_init_filters, hisi_ptt);
->> +
->> +	ret = devm_add_action_or_reset(&pdev->dev, hisi_ptt_release_filters, hisi_ptt);
->> +	if (ret)
->> +		return ret;
->> +
->> +	hisi_ptt->trace_ctrl.on_cpu = -1;
->> +	return 0;
->> +}
->> +
->> +static ssize_t available_root_port_filters_show(struct device *dev,
->> +						struct device_attribute *attr,
->> +						char *buf)
->> +{
->> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
->> +	struct hisi_ptt_filter_desc *filter;
->> +	int pos = 0;
->> +
->> +	if (list_empty(&hisi_ptt->port_filters)) {
->> +		pos = sysfs_emit(buf, "\n");
->> +		goto out;
->> +	}
->> +
->> +	list_for_each_entry(filter, &hisi_ptt->port_filters, list) {
->> +		u16 devid = filter->devid;
->> +		pos += sysfs_emit_at(buf, pos, "%04x:%02x:%02x.%d\t0x%05lx\n",
->> +				     pci_domain_nr(hisi_ptt->pdev->bus),
->> +				     PCI_BUS_NUM(devid),
->> +				     PCI_SLOT(devid & 0xff),
->> +				     PCI_FUNC(devid & 0xff),
->> +				     hisi_ptt_get_filter_val(devid, true) |
->> +				     HISI_PTT_PMU_FILTER_IS_PORT);
->> +	}
->> +
->> +out:
-> 
-> As below. I'd directly return in the empty case and drop the label.
-> 
->> +	return pos;
->> +}
->> +static DEVICE_ATTR_ADMIN_RO(available_root_port_filters);
->> +
->> +static ssize_t available_requester_filters_show(struct device *dev,
->> +						struct device_attribute *attr,
->> +						char *buf)
->> +{
->> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
->> +	struct hisi_ptt_filter_desc *filter;
->> +	int pos = 0;
->> +
->> +	if (list_empty(&hisi_ptt->req_filters)) {
->> +		pos = sysfs_emit(buf, "\n");
->> +		goto out;
->> +	}
->> +
->> +	list_for_each_entry(filter, &hisi_ptt->req_filters, list) {
->> +		u16 devid = filter->devid;
->> +		pos += sysfs_emit_at(buf, pos, "%04x:%02x:%02x.%d\t0x%05x\n",
->> +				     pci_domain_nr(hisi_ptt->pdev->bus),
->> +				     PCI_BUS_NUM(devid),
->> +				     PCI_SLOT(devid & 0xff),
->> +				     PCI_FUNC(devid & 0xff),
->> +				     hisi_ptt_get_filter_val(devid, false));
->> +	}
->> +
->> +out:
-> 
-> Why bother with the label?  Given empty is a special case, you can
-> just do
-> 	return sysfs_emit(buf, "\n");
-> 
-> above.
-> 
->> +	return pos;
->> +}
->> +static DEVICE_ATTR_ADMIN_RO(available_requester_filters);
-> 
-> 
->> +static int hisi_ptt_trace_valid_filter(struct hisi_ptt *hisi_ptt, u64 config)
->> +{
->> +	unsigned long val, port_mask = hisi_ptt->port_mask;
->> +	struct hisi_ptt_filter_desc *filter;
->> +	int ret = -EINVAL;
->> +
->> +	hisi_ptt->trace_ctrl.is_port = FIELD_GET(HISI_PTT_PMU_FILTER_IS_PORT, config);
->> +	val = FIELD_GET(HISI_PTT_PMU_FILTER_VAL_MASK, config);
->> +
->> +	/*
->> +	 * Port filters are defined as bit mask. For port filters, check
->> +	 * the bits in the @val are within the range of hisi_ptt->port_mask
->> +	 * and whether it's empty or not, otherwise user has specified
->> +	 * some unsupported root ports.
->> +	 *
->> +	 * For Requester ID filters, walk the available filter list to see
->> +	 * whether we have one matched.
->> +	 */
->> +	if (!hisi_ptt->trace_ctrl.is_port) {
->> +		list_for_each_entry(filter, &hisi_ptt->req_filters, list) {
->> +			if (val == hisi_ptt_get_filter_val(filter->devid, filter->is_port)) {
->> +				ret = 0;
-> 				return 0; ?
-> 
-> Unless someone has previously requested this particular form...
-> 
-> 
->> +				break;
->> +			}
->> +		}
->> +	} else if (bitmap_subset(&val, &port_mask, BITS_PER_LONG)) {
->> +		ret = 0;
-> 
-> 		return 0;
-> 
->> +	}
->> +
->> +	if (ret)
->> +		return ret;
-> 
-> If you get here, return -EINVAL;
-> 
->> +
->> +	return 0;
->> +}
->> +
->> +static void hisi_ptt_pmu_init_configs(struct hisi_ptt *hisi_ptt, struct perf_event *event)
-> 
->> +static int hisi_ptt_pmu_event_init(struct perf_event *event)
->> +{
->> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(event->pmu);
->> +	int ret;
->> +	u32 val;
->> +
->> +	if (event->cpu < 0) {
->> +		dev_dbg(event->pmu->dev, "Per-task mode not supported\n");
->> +		return -EOPNOTSUPP;
->> +	}
->> +
->> +	if (event->attr.type != hisi_ptt->hisi_ptt_pmu.type)
->> +		return -ENOENT;
->> +
->> +	ret = hisi_ptt_trace_valid_filter(hisi_ptt, event->attr.config);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	val = FIELD_GET(HISI_PTT_PMU_DIRECTION_MASK, event->attr.config);
->> +	ret = hisi_ptt_trace_valid_direction(val);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	val = FIELD_GET(HISI_PTT_PMU_TYPE_MASK, event->attr.config);
->> +	ret = hisi_ptt_trace_valid_type(val);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	val = FIELD_GET(HISI_PTT_PMU_FORMAT_MASK, event->attr.config);
->> +	ret = hisi_ptt_trace_valid_format(val);
-> You could do
-> 
-> 	return hisi_ptt_trace_valid_format(val);
-> 
-> Up to you on this one.
-> 
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	return 0;
->> +}
->> +
-> 
-> 
-> 
-> 
->> +/*
->> + * The DMA of PTT trace can only use direct mapping, due to some
->> + * hardware restriction. Check whether there is an IOMMU or the
-> 
-> "Check whether there is no IOMMU or the policy of the IOMMU domain
-> is passthrough, otherwise the trace cannot work."
-> 
-> (need the "no" for the IOMMU presence)
-> 
->> + * policy of the IOMMU domain is passthrough, otherwise the trace
->> + * cannot work.
->> + *
->> + * The PTT device is supposed to behind an ARM SMMUv3, which
->> + * should have passthrough the device by a quirk.
->> + */
->> +static int hisi_ptt_check_iommu_mapping(struct pci_dev *pdev)
->> +{
->> +	struct iommu_domain *iommu_domain;
->> +
->> +	iommu_domain = iommu_get_domain_for_dev(&pdev->dev);
->> +	if (!iommu_domain || iommu_domain->type == IOMMU_DOMAIN_IDENTITY)
->> +		return 0;
->> +
->> +	return -EOPNOTSUPP;
->> +}
->> +
-> 
-> ...
-> 
->> +
->> +static int hisi_ptt_cpu_teardown(unsigned int cpu, struct hlist_node *node)
->> +{
->> +	struct hisi_ptt *hisi_ptt;
->> +	int target, src;
->> +
->> +	hisi_ptt = hlist_entry_safe(node, struct hisi_ptt, hotplug_node);
->> +	src = hisi_ptt->trace_ctrl.on_cpu;
->> +
->> +	if (!hisi_ptt->trace_ctrl.started || src != cpu)
->> +		return 0;
->> +
->> +	target = cpumask_any(cpumask_of_node(dev_to_node(&hisi_ptt->pdev->dev)));
->> +	if (target < nr_cpumask_bits) {
->> +		dev_err(hisi_ptt->hisi_ptt_pmu.dev, "no available cpu for perf context migration\n");
-> 
-> Very long line, and not obvious disadvantage in splitting it before the string.
-> 
->> +		return 0;
->> +	}
->> +
->> +	perf_pmu_migrate_context(&hisi_ptt->hisi_ptt_pmu, src, target);
->> +	WARN_ON(irq_set_affinity(pci_irq_vector(hisi_ptt->pdev, HISI_PTT_TRACE_DMA_IRQ),
->> +				 cpumask_of(cpu)));
->> +	hisi_ptt->trace_ctrl.on_cpu = target;
->> +
->> +	return 0;
->> +}
->> +
-> 
->> diff --git a/drivers/hwtracing/ptt/hisi_ptt.h b/drivers/hwtracing/ptt/hisi_ptt.h
->> new file mode 100644
->> index 000000000000..2344e4195648
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/hisi_ptt.h
-> 
-> 
->> +/**
->> + * struct hisi_ptt_filter_desc - Descriptor of the PTT trace filter
->> + * @list:    entry of this descriptor in the filter list
->> + * @is_port: the PCI device of the filter is a Root Port or not
->> + * @devid:   the PCI device's devid of the filter
->> + */
->> +struct hisi_ptt_filter_desc {
->> +	struct list_head list;
->> +	bool is_port;
->> +	u16 devid;
->> +};
->> +
->> +
-> 
-> Trivial if you are doing a v9: one blank line only.
-> 
->> +/**
->> + * struct hisi_ptt_pmu_buf - Descriptor of the AUX buffer of PTT trace
->> + * @length:   size of the AUX buffer
->> + * @nr_pages: number of pages of the AUX buffer
->> + * @base:     start address of AUX buffer
->> + * @pos:      position in the AUX buffer to commit traced data
->> + */
->> +struct hisi_ptt_pmu_buf {
->> +	size_t length;
->> +	int nr_pages;
->> +	void *base;
->> +	long pos;
->> +};
->> +
-> 
-> .
-> 
+-- 
+Oscar Salvador
+SUSE Labs
