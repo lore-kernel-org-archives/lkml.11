@@ -2,84 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8764FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245092AbiEQJ5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
+        id S241595AbiEQJ6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245316AbiEQJ5a (ORCPT
+        with ESMTP id S245347AbiEQJ5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:57:30 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 580ED3F881;
-        Tue, 17 May 2022 02:57:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=dAN5rQx//OjLAAbOjO
-        sE0mviFNWECN52JE1qKyTqmK0=; b=DY5Reg58DB4MSpMkgPmXwlujKIKq9An438
-        BIm7spLWaHMUzma0Jh7jO+Uu9RPXv7m4ScAJVq15V8pXmHKFYYmLPAzDzCv2SOBb
-        lQU6J2+Z8yF57uWAhD0xTIom8FHP7Ad8SJcKjVeuO4XmSECZwSKw2DiPka2PH95g
-        sR5jBA2Qs=
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp8 (Coremail) with SMTP id DMCowAC3cx11cYNi12q8Cw--.34092S4;
-        Tue, 17 May 2022 17:57:19 +0800 (CST)
-From:   Yuanjun Gong <ruc_gongyuanjun@163.com>
-To:     Yuanjun Gong <ruc_gongyuanjun@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Subject: [PATCH 1/1] radeon: fix a possible null pointer dereference
-Date:   Tue, 17 May 2022 17:57:00 +0800
-Message-Id: <20220517095700.7291-1-ruc_gongyuanjun@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: DMCowAC3cx11cYNi12q8Cw--.34092S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Zw4DZFW8Cw1kZF1xXw43ZFb_yoW8XF43pF
-        W7Gr9Iyr9ag39rGFyxAF9rWryUu348GF18Grn8u3ZrC3Z8Kry7JF17u345J3s3AF98uw1U
-        tr18Ga429F1xCFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piQBMZUUUUU=
-X-Originating-IP: [202.112.113.212]
-X-CM-SenderInfo: 5uxfsw5rqj53pdqm30i6rwjhhfrp/1tbiJw0E5V5vB8SlZwADs4
+        Tue, 17 May 2022 05:57:42 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA6D38181;
+        Tue, 17 May 2022 02:57:41 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id r6-20020a1c2b06000000b00396fee5ebc9so977324wmr.1;
+        Tue, 17 May 2022 02:57:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vkbPSe6+lbN9CgRiuIs5X2zmL0tJEg4PuoARLaGrjvs=;
+        b=OosLfLz7al3FcOZC7A+KBKjtG62QHZMTp+4/P4+CXZ6od3wajq6h0IvIK++O4SRbnc
+         fK0X36zpiYXLjUGV5JSdKvbFIeSGqyWxjC6Eu6LhzNq0/vBW22bNpbyoTzYkiTnIbZmx
+         7m+X1EVuosimr7zWLMXeOQxDDzfTpUFxqTQNlpouG/kOhBT/rcFTBcE33zZRgpJ0KOo5
+         MrPKmLtsyjUkbTyQWr4+DBCwMD9jDv0g2DT7nWMOuTgwrqH1stHzbxS31l4cEXrzwbgk
+         nnfnZjrlHwx5rFT+F1Px1Zb9D+irjdobOmsFHehYqON55+owGp+IDa6Z+gtWv3DTsfi2
+         MWCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vkbPSe6+lbN9CgRiuIs5X2zmL0tJEg4PuoARLaGrjvs=;
+        b=ypt8siMpI9uB2K3cjfNdG1/JQOPWUS3iwI8l0Xj+QyUgbLXgkIA3LFA9U1HSzY3I+Z
+         QPfjAjAv/8osP8ZQAdrnmsnVsDd/lwGQKmRp2DONpAaqepZ97PBDDVa2Xu5wLUWmDwPY
+         6dpHTKC3CPvRUyITP1XJiD3XWDuMdghlpG0xt0HetrFaFN6Hm8kniIRU2jAGdv29SlgW
+         VST8tc6+IlrCQ+NOh+QVE89nzvQkE2PJIGOw5MXzu94VwNnG661574jiCLb16oU9PPfM
+         QfYScPCRXm4/bs8ORYuEsstI1FwzZYia65eAT7MxchR6kscax8Tq4j/GYtowX55zUZls
+         52yA==
+X-Gm-Message-State: AOAM532cHejepq7QJHaK6EjYhSvZDgAzsixvCRwSwYP8CtgBxU8u5lHI
+        aBZVTSP0My3vm2pdHxGJ/AY=
+X-Google-Smtp-Source: ABdhPJx2Y7sHu8IoFE8w1v+BrUgCcLNWC3tjiunbkuXLBwpxYw6yZeq3jVkMV9Vc9/hzmXYODRpJ6Q==
+X-Received: by 2002:a05:600c:240a:b0:394:18b:d722 with SMTP id 10-20020a05600c240a00b00394018bd722mr31834039wmp.177.1652781459678;
+        Tue, 17 May 2022 02:57:39 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id c13-20020adfa70d000000b0020c5253d8bfsm12028639wrd.11.2022.05.17.02.57.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 02:57:39 -0700 (PDT)
+Message-ID: <dde746ce-5663-e12f-4537-4206945b6b59@gmail.com>
+Date:   Tue, 17 May 2022 11:57:37 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v6 00/10] cpufreq: mediatek: Cleanup and support MT8183
+ and MT8186
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     rafael@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
+        hsinyi@google.com, khilman@baylibre.com,
+        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
+ <20220506042004.hqzpb66shak4y7rz@vireshk-i7>
+ <86851bd03128cc61082d516ebff929d3637063cb.camel@mediatek.com>
+ <20220512052732.iqphgpveoyrqjlqg@vireshk-i7>
+ <af82434adea0b648d74ed5ffd123e0faaaac6508.camel@mediatek.com>
+ <20220512054825.aqe4g4lupuqj3rcq@vireshk-i7>
+ <ca85977bcff2e3de925d7ab834b8654ec5ddf8c1.camel@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <ca85977bcff2e3de925d7ab834b8654ec5ddf8c1.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
-is assigned to mode, which will lead to a NULL pointer dereference
-on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-The failure status of drm_cvt_mode() on the other path is checked too.
+On 12/05/2022 08:05, Rex-BC Chen wrote:
+> On Thu, 2022-05-12 at 11:18 +0530, Viresh Kumar wrote:
+>> On 12-05-22, 13:33, Rex-BC Chen wrote:
+>>> Matthias is not the member of mediatek, so I think we still need
+>>> his
+>>> feedback for these three patches.
+>>
+>> Please ping him and ask for his feedback then.
+>>
+> 
+> ok, I will do this.
+> Thanks!
+> 
 
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
----
- drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Sorry for the late reply. I'll take the DTS patches through my tree. As I'm late 
+to the game this will be for v5.20.
 
-diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
-index 0cb1345c6ba4..fabe4f4ca124 100644
---- a/drivers/gpu/drm/radeon/radeon_connectors.c
-+++ b/drivers/gpu/drm/radeon/radeon_connectors.c
-@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 	    native_mode->vdisplay != 0 &&
- 	    native_mode->clock != 0) {
- 		mode = drm_mode_duplicate(dev, native_mode);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		drm_mode_set_name(mode);
- 
-@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 		 * simpler.
- 		 */
- 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
- 	}
--- 
-2.17.1
-
+Regards,
+Matthias
