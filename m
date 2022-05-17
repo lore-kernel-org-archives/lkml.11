@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A774C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBFC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:59:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350745AbiEQP7o (ORCPT
+        id S1350735AbiEQP7r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40804 "EHLO
+        Tue, 17 May 2022 11:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350715AbiEQP7e (ORCPT
+        with ESMTP id S1350731AbiEQP7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:59:34 -0400
+        Tue, 17 May 2022 11:59:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6282049F8C
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:59:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A164CD57
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:59:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B308BB81AB1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:59:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DB2FC34116;
-        Tue, 17 May 2022 15:59:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28BF4B81AB0
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:59:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85CB5C34116;
+        Tue, 17 May 2022 15:59:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652803170;
-        bh=HhBecZ0/0C++sVEsHjpIv1pbIB0KELfp5GVr+V5tmag=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=DxItctP5gYRBhGRnJYuIlPvB+JbtsBMJ0TnVwULf86ngLiQ9TJRpgqOb2Zomc8zxE
-         bveWrVURMhsqD4oLrADLkO6FEOlXltAniwgUzlo/L+ythhY07hNVYlbZXtRl88Hmi1
-         0Pd0m4zMBzvzGomRuwdm4x8EtTBJ217AhJ7MHaForkNM3yGuFtlC/Av61OFIhGpNpt
-         9nQoaJt5JXRfS3tRqe3q4QXEYnPN0lByjdL4aDXhUhXk2l3zFiI31b+qtJX63UVMwv
-         ccaOnO3vgwGpfx/i6HNcxL84ki9IGEmSuF7B9RNTcs5jdeYbxzYuqb2JxCzwHJFL0m
-         hx2bRbcsIMTOg==
+        s=k20201202; t=1652803175;
+        bh=b+oHipmTddyUCEfLTe547iUSxup2tDJx6tkGs3EkcXY=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=Kb6FevduQQnc1BDygTI2jCYW67vnYL3xn6yXj2HsklomkzAxOo3vLaCowVAMKt/wG
+         coVoWx/1r5nCedFjxgHUgmQ+w27+RQx8ed4EOPQZaxUedoEe9kYDBqBpmP/PnYz2SP
+         6vH+vb/hzz3Rd/i23twIenU/wFnKwrXnn7tC+jQo2YswCSZ35mlf5WWsg98k40yGiE
+         RHjrbg1PZ25E6GxWOnFT+G5r4nIdBalCCQ51E/GO7CA6ZTe6TuZmRb/EPrgGKIYwTt
+         GsyS0shiFBoU4BR2XZKokD2gNfIK+9qc07I7osDz5XnEa3IY1auUCWFj8e/4XNqV3Y
+         xR9v48lqFyRyw==
 From:   Mark Brown <broonie@kernel.org>
-To:     linma@zju.edu.cn, tiwai@suse.com, oder_chiou@realtek.com,
-        alsa-devel@alsa-project.org, lgirdwood@gmail.com, perex@perex.cz,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220516092035.28283-1-linma@zju.edu.cn>
-References: <20220516092035.28283-1-linma@zju.edu.cn>
-Subject: Re: [PATCH v0] ASoC: rt5645: Fix errorenous cleanup order
-Message-Id: <165280316877.1635268.8412157029649432133.b4-ty@kernel.org>
-Date:   Tue, 17 May 2022 16:59:28 +0100
+To:     tiwai@suse.com, Vijendar.Mukunda@amd.com, lgirdwood@gmail.com,
+        perex@perex.cz, yuehaibing@huawei.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220514023806.34768-1-yuehaibing@huawei.com>
+References: <20220514023806.34768-1-yuehaibing@huawei.com>
+Subject: Re: [PATCH -next] ASoC: amd: vangogh: Remove duplicate include files
+Message-Id: <165280317326.1635268.6024055141505339683.b4-ty@kernel.org>
+Date:   Tue, 17 May 2022 16:59:33 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,18 +49,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 17:20:35 +0800, Lin Ma wrote:
-> There is a logic error when removing rt5645 device as the function
-> rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
-> delete the &rt5645->btn_check_timer latter. However, since the timer
-> handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
-> this cleanup order is buggy.
+On Sat, 14 May 2022 10:38:06 +0800, YueHaibing wrote:
+> Remove duplicated includes.
 > 
-> That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
-> run with the rt5645_btn_check_callback, the canceled jack_detect_work
-> will be rescheduled again, leading to possible use-after-free.
 > 
-> [...]
 
 Applied to
 
@@ -68,8 +60,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: rt5645: Fix errorenous cleanup order
-      commit: 2def44d3aec59e38d2701c568d65540783f90f2f
+[1/1] ASoC: amd: vangogh: Remove duplicate include files
+      commit: d91835655cc9047f8b5c40530791bd3bc020f1bd
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
