@@ -2,98 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96008C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17647C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiEQWvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49638 "EHLO
+        id S231501AbiEQWvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231489AbiEQWvE (ORCPT
+        with ESMTP id S231500AbiEQWvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:51:04 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F7A4F455
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:51:02 -0700 (PDT)
+        Tue, 17 May 2022 18:51:12 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09224EDEF;
+        Tue, 17 May 2022 15:51:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652827862; x=1684363862;
+  t=1652827870; x=1684363870;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Zzsg2WuJh6uzhJovq8XCrnmcAqakpF47E+0Mjk8izlQ=;
-  b=Mh/zA90wHaa8IFQn2f2jnLCbmi/O2VIOSYlevYAzw6yV0zzCMYjK62Yi
-   fZbpItEcukbDLIbv4aKGJ95B7vfdxZUt49cEfO/Iqq2+rmXpX75Z0W16j
-   nQk+ODyMeYdjfNKT1tpKuEi3J3NJ+Gfyicag2u4BtVJkFk0+s5lZzABLW
-   7aWrjpJXuCal+QHM8lfFxnKlcQZ4p2JG8mXNIDcJyornvWLTQdWflz2f5
-   DsFnZ8wf5SdAGvVp0dQvKoJvWOG5tx5VdriJ/qnhGo+DZzCyUjuVdY4vM
-   dfSQU5yMIT/lrhwxQnYyLtFmRe9dtZgFcvtRce3DAT7nxEzWTMtoORy+B
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="251879809"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=lD4nNHQSnMzTtlVoVRqZlFdUilVrXDHOwhvUGNnxuFY=;
+  b=k198JORXLBmBlNmlQ4jShtpnbqhX469DUIoFzqGCSmWAip5zlO8lvNjp
+   PI7iGfOhfj4e3nPobyXr/wEDa4IO3pVWxKKmDt5zkWGSjkWeN0N7C2mjM
+   W/A+oDMiUPTCBMmIIRqICPHPXNBPivjk79YBC0LSBRPuH6eClJWLsw7Ke
+   jVLc9BsOCSepYfmTExbhWX7vGW6PlHNxvijGtUdxc27c93M32XVDSa5Fg
+   Xd4njtumDRLz202CIsxcOKWabq8724d3RdO0TE1NC5XZqh6B08Ip/CdzW
+   MRcdDf/hCp8V63FiVx8DGgGtCUIndoP9CMzSFmGZ2iMZG6hAzUS7e1Xu2
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="334409458"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="251879809"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 15:51:02 -0700
+   d="scan'208";a="334409458"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 15:51:09 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="660835593"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by FMSMGA003.fm.intel.com with ESMTP; 17 May 2022 15:51:00 -0700
-Date:   Tue, 17 May 2022 15:54:43 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     x86@kernel.org, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 15/29] x86/hpet: Add helper function
- hpet_set_comparator_periodic()
-Message-ID: <20220517225443.GA8069@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
- <87mtfufifa.ffs@tglx>
- <20220513211944.GE22683@ranerica-svr.sc.intel.com>
- <87pmkgsf31.ffs@tglx>
+   d="scan'208";a="714089048"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 17 May 2022 15:51:06 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nr61y-0001Wz-3A;
+        Tue, 17 May 2022 22:51:06 +0000
+Date:   Wed, 18 May 2022 06:50:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
+        jikos@kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        benjamin.tissoires@redhat.com, spbnick@gmail.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stefanberzl@gmail.com,
+        =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+Subject: Re: [PATCH for-5.19/uclogic 4/4] HID: uclogic: Add support for
+ XP-PEN Deco L
+Message-ID: <202205180632.TtyLPtA5-lkp@intel.com>
+References: <20220516181323.59554-5-jose.exposito89@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <87pmkgsf31.ffs@tglx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220516181323.59554-5-jose.exposito89@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 10:17:38AM +0200, Thomas Gleixner wrote:
-> On Fri, May 13 2022 at 14:19, Ricardo Neri wrote:
-> > On Fri, May 06, 2022 at 11:41:13PM +0200, Thomas Gleixner wrote:
-> >> The argument about not bloating the code
-> >> with an "obvious???" function which is quite small is slightly beyond my
-> >> comprehension level.
-> >
-> > That obvious function would look like this:
-> >
-> > void hpet_set_comparator_one_shot(int channel, u32 delta)
-> > {
-> > 	u32 count;
-> >
-> > 	count = hpet_readl(HPET_COUNTER);
-> > 	count += delta;
-> > 	hpet_writel(count, HPET_Tn_CMP(channel));
-> > }
-> 
-> This function only works reliably when the delta is large. See
-> hpet_clkevt_set_next_event().
+Hi "José,
 
-That is a good point. One more reason to not have a
-hpet_set_comparator_one_shot(), IMO.
+Thank you for the patch! Perhaps something to improve:
 
-Thanks and BR,
-Ricardo
+[auto build test WARNING on f7d8e387d9aeff963e6691c0166269b8042b4ff9]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jos-Exp-sito/Add-support-for-XP-PEN-Deco-L/20220517-021641
+base:   f7d8e387d9aeff963e6691c0166269b8042b4ff9
+config: i386-randconfig-a006-20220516 (https://download.01.org/0day-ci/archive/20220518/202205180632.TtyLPtA5-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/f117e735d50f52f57bdabb589453959d60ae3ce6
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jos-Exp-sito/Add-support-for-XP-PEN-Deco-L/20220517-021641
+        git checkout f117e735d50f52f57bdabb589453959d60ae3ce6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/hid/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/hid/hid-uclogic-params.c:1078:21: warning: variable 'udev' set but not used [-Wunused-but-set-variable]
+           struct usb_device *udev;
+                              ^
+   1 warning generated.
+
+
+vim +/udev +1078 drivers/hid/hid-uclogic-params.c
+
+  1054	
+  1055	/**
+  1056	 * uclogic_params_ugee_v2_init() - initialize a UGEE graphics tablets by
+  1057	 * discovering their parameters.
+  1058	 *
+  1059	 * These tables, internally designed as v2 to differentiate them from older
+  1060	 * models, expect a payload of magic data in orther to be switched to the fully
+  1061	 * functional mode and expose their parameters in a similar way to the
+  1062	 * information present in uclogic_params_pen_init_v1() but with some
+  1063	 * differences.
+  1064	 *
+  1065	 * @params:	Parameters to fill in (to be cleaned with
+  1066	 *		uclogic_params_cleanup()). Not modified in case of error.
+  1067	 *		Cannot be NULL.
+  1068	 * @hdev:	The HID device of the tablet interface to initialize and get
+  1069	 *		parameters from. Cannot be NULL.
+  1070	 *
+  1071	 * Returns:
+  1072	 *	Zero, if successful. A negative errno code on error.
+  1073	 */
+  1074	static int uclogic_params_ugee_v2_init(struct uclogic_params *params,
+  1075					       struct hid_device *hdev)
+  1076	{
+  1077		int rc = 0;
+> 1078		struct usb_device *udev;
+  1079		struct usb_interface *iface;
+  1080		__u8 bInterfaceNumber;
+  1081		const int str_desc_len = 12;
+  1082		__u8 *str_desc = NULL;
+  1083		__u8 *rdesc_pen = NULL;
+  1084		__u8 *rdesc_frame = NULL;
+  1085		s32 desc_params[UCLOGIC_RDESC_PH_ID_NUM];
+  1086		s32 resolution;
+  1087		__u8 magic_arr[] = {
+  1088			0x02, 0xb0, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  1089		};
+  1090		/* The resulting parameters (noop) */
+  1091		struct uclogic_params p = {0, };
+  1092	
+  1093		if (!params || !hdev) {
+  1094			rc = -EINVAL;
+  1095			goto cleanup;
+  1096		}
+  1097	
+  1098		udev = hid_to_usb_dev(hdev);
+  1099		iface = to_usb_interface(hdev->dev.parent);
+  1100		bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
+  1101		if (bInterfaceNumber != 2) {
+  1102			uclogic_params_init_invalid(&p);
+  1103			goto output;
+  1104		}
+  1105	
+  1106		/*
+  1107		 * Initialize the interface by sending magic data.
+  1108		 * The specific data was discovered by sniffing the Windows driver
+  1109		 * traffic.
+  1110		 */
+  1111		rc = uclogic_probe_interface(hdev, magic_arr, sizeof(magic_arr), 0x03);
+  1112		if (rc) {
+  1113			uclogic_params_init_invalid(&p);
+  1114			goto output;
+  1115		}
+  1116	
+  1117		/*
+  1118		 * Read the string descriptor containing pen and frame parameters.
+  1119		 * The specific string descriptor and data were discovered by sniffing
+  1120		 * the Windows driver traffic.
+  1121		 */
+  1122		rc = uclogic_params_get_str_desc(&str_desc, hdev, 100, str_desc_len);
+  1123		if (rc != str_desc_len) {
+  1124			hid_err(hdev, "failed retrieving pen and frame parameters: %d\n", rc);
+  1125			uclogic_params_init_invalid(&p);
+  1126			goto output;
+  1127		}
+  1128	
+  1129		desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] =
+  1130			get_unaligned_le16(str_desc + 2);
+  1131		desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] =
+  1132			get_unaligned_le16(str_desc + 4);
+  1133		desc_params[UCLOGIC_RDESC_FRAME_PH_ID_UM] = str_desc[6];
+  1134		desc_params[UCLOGIC_RDESC_PEN_PH_ID_PRESSURE_LM] =
+  1135			get_unaligned_le16(str_desc + 8);
+  1136		resolution = get_unaligned_le16(str_desc + 10);
+  1137		if (resolution == 0) {
+  1138			desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] = 0;
+  1139			desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] = 0;
+  1140		} else {
+  1141			desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] =
+  1142				desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] * 1000 /
+  1143				resolution;
+  1144			desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] =
+  1145				desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] * 1000 /
+  1146				resolution;
+  1147		}
+  1148		kfree(str_desc);
+  1149		str_desc = NULL;
+  1150	
+  1151		/* Initialize the pen interface */
+  1152		rdesc_pen = uclogic_rdesc_template_apply(
+  1153					uclogic_rdesc_ugee_v2_pen_template_arr,
+  1154					uclogic_rdesc_ugee_v2_pen_template_size,
+  1155					desc_params, ARRAY_SIZE(desc_params));
+  1156		if (!rdesc_pen) {
+  1157			rc = -ENOMEM;
+  1158			goto cleanup;
+  1159		}
+  1160	
+  1161		p.pen.desc_ptr = rdesc_pen;
+  1162		p.pen.desc_size = uclogic_rdesc_ugee_v2_pen_template_size;
+  1163		p.pen.id = 0x02;
+  1164		p.pen.subreport_list[0].value = 0xf0;
+  1165		p.pen.subreport_list[0].id = UCLOGIC_RDESC_V1_FRAME_ID;
+  1166	
+  1167		/* Initialize the frame interface */
+  1168		rdesc_frame = uclogic_rdesc_template_apply(
+  1169					uclogic_rdesc_ugee_v2_frame_btn_template_arr,
+  1170					uclogic_rdesc_ugee_v2_frame_btn_template_size,
+  1171					desc_params, ARRAY_SIZE(desc_params));
+  1172		if (!rdesc_frame) {
+  1173			rc = -ENOMEM;
+  1174			goto cleanup;
+  1175		}
+  1176	
+  1177		rc = uclogic_params_frame_init_with_desc(&p.frame_list[0],
+  1178							 rdesc_frame,
+  1179							 uclogic_rdesc_ugee_v2_frame_btn_template_size,
+  1180							 UCLOGIC_RDESC_V1_FRAME_ID);
+  1181		kfree(rdesc_frame);
+  1182		if (rc) {
+  1183			uclogic_params_init_invalid(&p);
+  1184			goto output;
+  1185		}
+  1186	
+  1187	output:
+  1188		/* Output parameters */
+  1189		memcpy(params, &p, sizeof(*params));
+  1190		memset(&p, 0, sizeof(p));
+  1191		rc = 0;
+  1192	cleanup:
+  1193		kfree(str_desc);
+  1194		uclogic_params_cleanup(&p);
+  1195		return rc;
+  1196	}
+  1197	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
