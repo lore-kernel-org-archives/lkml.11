@@ -2,125 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06EAFC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06911C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345725AbiEQSY5 (ORCPT
+        id S1348836AbiEQS0f convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58042 "EHLO
+        Tue, 17 May 2022 14:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbiEQSYz (ORCPT
+        with ESMTP id S1352115AbiEQS0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:24:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B82496BB;
-        Tue, 17 May 2022 11:24:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C7866153B;
-        Tue, 17 May 2022 18:24:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B5AC34117;
-        Tue, 17 May 2022 18:24:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652811893;
-        bh=5s7DT1idOs5YfZG4Es2EkVEczNIwYfYftJleVW6Ca24=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Xz9rbHYUNn/Y1NPprhcdNc8fApOvghVXTjGOTYQIhrtyY5slzvzdIM+XkFKLhHFmk
-         gbsksDQqMehKHTzifihHnwInOy7/E/C3JwFYAxf2EIz3QGMaFFLBdRoeo3iN3Vj74c
-         3WgYBJy+g8ZCPQnAtoJ3dDfKU2xHlvRrli8Qb2McwRo5WHaNM7kB4ADZ3+ScZ35oua
-         FdktsMiV9LMxDoHQDeeWQxZYbsto+V6/m/DlgEQ0akRbHwjmNBj5FIy/qsGuRlyQbe
-         D4V98E0oDS3+xhKjAKTqka1he/xS5jP8Yia3SKlaNOuhPE5NteehW6+Bx8Ek4rowSq
-         0jJSD0W3fNMgg==
-Message-ID: <2d7e011ae604b3d6d952bed5f7ba08a090930fbe.camel@kernel.org>
-Subject: Re: [PATCH v4 1/6] tpm, tpm_tis_spi: Request threaded irq
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Date:   Tue, 17 May 2022 21:23:18 +0300
-In-Reply-To: <1b306d56-c6b3-e51f-1d63-2f6725fa7557@gmx.de>
-References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
-         <20220509080559.4381-2-LinoSanfilippo@gmx.de> <YnucgDH3I87RI8PN@kernel.org>
-         <486cec01-ec02-3f11-0b81-037e0700c503@gmx.de> <Yn6esMyUl+QhECq+@kernel.org>
-         <1b306d56-c6b3-e51f-1d63-2f6725fa7557@gmx.de>
+        Tue, 17 May 2022 14:26:16 -0400
+Received: from sender4-of-o58.zoho.com (sender4-of-o58.zoho.com [136.143.188.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FE4220EA;
+        Tue, 17 May 2022 11:26:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1652811971; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=E7nkhhzyAb2NSHwmsADpzJJWrCBT2Vk6ISmdbqYkrk/rG7Cr+Do73hCcR8g6gyPzIzBy7GgnGiEyEDQR+C+i06sl3brUJLXY9BnNZk4t2QyJ1gbG+d+DfT6bLXj1+W5DBnkPRV7PJRU1vfPovdQzZCO7Gh2ZYAnZeU7y1U97rd4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1652811971; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=Y9YimAnJKBglTx1djbp8syx3nqzLsbEglYyst69uI5Q=; 
+        b=TGhUqune1tf51bd7y1egfs2EWMS2T4+QvYyAUWigD9nw2wH1d1ZMTr1vmfsFAvmgO7oI40I3DI93CqV1vnOrhsCJ9+5Ep2/E4aZGo2RTajeVlwYIWla5gXgYbdjRT5zQE8wGqTEADZYC1CICTXlhwso5irv5fxFYU5EoVT0jegU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        spf=pass  smtp.mailfrom=linux@mniewoehner.de;
+        dmarc=pass header.from=<linux@mniewoehner.de>
+Received: from z3r0.lan (185.31.62.161 [185.31.62.161]) by mx.zohomail.com
+        with SMTPS id 1652811946661528.7783926675852; Tue, 17 May 2022 11:25:46 -0700 (PDT)
+Message-ID: <28686e8d994c297a78fb816805cd3652a8f8c90a.camel@mniewoehner.de>
+Subject: Re: [PATCH] ACPI: utils: include UUID in _DSM evaluation warning
+From:   Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Len Brown <lenb@kernel.org>,
+        "open list:ACPI" <linux-acpi@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+In-Reply-To: <CAJZ5v0h+kKwdntGPC5PP6N0ZRbRzLxuwcwTGm-PNBH6Z3mnETg@mail.gmail.com>
+References: <f80dfd57fdca87897f070a3ea4ee0a26b03e7831.camel@mniewoehner.de>
+         <CAJZ5v0h+kKwdntGPC5PP6N0ZRbRzLxuwcwTGm-PNBH6Z3mnETg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+Date:   Tue, 17 May 2022 20:25:43 +0200
 MIME-Version: 1.0
+User-Agent: Evolution 3.42.2 
+Content-Transfer-Encoding: 8BIT
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-16 at 21:52 +0200, Lino Sanfilippo wrote:
-> Hi,
->=20
-> On 13.05.22 at 20:08, Jarkko Sakkinen wrote:
-> > On Wed, May 11, 2022 at 09:18:39PM +0200, Lino Sanfilippo wrote:
-> > > Hi,
-> > >=20
-> > > On 11.05.22 at 13:22, Jarkko Sakkinen wrote:
-> > > > On Mon, May 09, 2022 at 10:05:54AM +0200, Lino Sanfilippo wrote:
-> > > > > From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> > > > >=20
-> > > > > Interrupt handling at least includes reading and writing the inte=
-rrupt
-> > > > > status register within the interrupt routine. Since accesses over=
- the SPI
-> > > > > bus are synchronized by a mutex, request a threaded interrupt han=
-dler to
-> > > > > ensure a sleepable context during interrupt processing.
-> > > > >=20
-> > > > > Fixes: 1a339b658d9d ("tpm_tis_spi: Pass the SPI IRQ down to the d=
-river")
-> > > > > Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> > > >=20
-> > > > When you state that it needs a sleepable context, you should bring =
-a
-> > > > context why it needs it. This not to disregard the code change over=
-ally but
-> > > > you cannot make even the most obvious claim without backing data.
-> > > >=20
-> > >=20
-> > > so what kind of backing data do you have in mind? Would it help to em=
-phasize more
-> > > that the irq handler is running in hard irq context in the current co=
-de and thus
-> > > must not access registers over SPI since SPI uses a mutex (I consider=
- it as basic
-> > > knowledge that a mutex must not be taken in hard irq context)?
-> >=20
-> > There's zero mention about specific lock you are talking about. Providi=
-ng
-> > the basic knowledge what you are trying to do is the whole point of the
-> > commit message in the first place. I'd presume this patch is related to=
- the
-> > use bus_lock_mutex but it is fully ingored here.
-> >=20
->=20
-> Ok, understood. I will amend the commit message to make more clear that
-> reading and writing registers from the interrupt handler results in
-> a call to tpm_tis_spi_transfer() which uses the bus_lock_mutex of the
-> spi device and thus requires a sleepable context.
+On Tue, 2022-05-17 at 16:49 +0200, Rafael J. Wysocki wrote:
+> On Mon, May 16, 2022 at 7:25 PM Michael Niewöhner <linux@mniewoehner.de>
+> wrote:
+> > 
+> > The _DSM evaluation warning in its current form is not very helpful, as
+> > it lacks any specific information:
+> >   ACPI: \: failed to evaluate _DSM (0x1001)
+> > 
+> > Thus, include the UUID of the missing _DSM:
+> >   ACPI: \: failed to evaluate _DSM bf0212f2-... (0x1001)
+> > 
+> > Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
+> > ---
+> >  drivers/acpi/utils.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
+> > index d5cedffeeff9..7da993f5b6c3 100644
+> > --- a/drivers/acpi/utils.c
+> > +++ b/drivers/acpi/utils.c
+> > @@ -681,7 +681,8 @@ acpi_evaluate_dsm(acpi_handle handle, const guid_t
+> > *guid,
+> > u64 rev, u64 func,
+> > 
+> >         if (ret != AE_NOT_FOUND)
+> >                 acpi_handle_warn(handle,
+> > -                               "failed to evaluate _DSM (0x%x)\n", ret);
+> > +                               "failed to evaluate _DSM %pUb (0x%x)\n",
+> > +                               ret, guid);
+> 
+> Shouldn't this be "guid, ret" ?
 
-Yeah, please be always as explicit as possible, so that it is impossible
-to get it wrong. Then a reader of your patch saves time from seeking e.g.
-the current name of the data structure. Just dumb things down as far as
-you can.
+Ouch, yes ofc.
 
-Commit messages have a dual function:
+> Also, don't you want to print the
+> value of the GUID rather than the address of its location?
 
-1. They *lower* the barrier to look into a code change, which helps
-the patches get any attention.
-2. Proper commit messages save tons of time from the maintainer, when
-you have revisit years old commits, e.g. when bisecting a bug.
+Not sure what you mean tbh. Documentation/core-api/printk-formats.rst states
+%pUb being the right format. lib/test_printf.c implements it that way, too.
 
-Comparing to e.g. Github the key difference is this: in Github you have
-commits and issues. In kernel commit is both issue and the commit bundled
-together. Therefore, every commit also needs to have a "bug report"
-included.
+> 
+> And I don't think you need to break the line here.
+> 
+> > 
+> >         return NULL;
+> >  }
+> > --
+> > 2.34.1
+> > 
+> > 
 
-BR, Jarkko
