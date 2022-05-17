@@ -2,141 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB51C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F63AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348808AbiEQOUO (ORCPT
+        id S1348784AbiEQOVY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:20:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
+        Tue, 17 May 2022 10:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348772AbiEQOUE (ORCPT
+        with ESMTP id S1348881AbiEQOVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:20:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 465784F9D0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:20:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652797202;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WYXjJfd1pESNYbrTTSqKIx0/7SN9768efdFnzL3MuFI=;
-        b=ARZE/Ot8cFAsBqfni9iHSRimkMOGwX+uJGFdMY0dnab26C4xYTSnTS8f9xL24ZunfDPGh4
-        cuLgLSULgF76gsqA0c2M0lF1NQwtpphhUj/Ceq+XnrSoypyD4JNAf7lyI7f3YnnVdTjaQO
-        aQkEamTs0rJfml2yzDkbExoereVAD5M=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-98-4Y-dBFB0OsGLD1XcfHIHZw-1; Tue, 17 May 2022 10:20:01 -0400
-X-MC-Unique: 4Y-dBFB0OsGLD1XcfHIHZw-1
-Received: by mail-wm1-f72.google.com with SMTP id c187-20020a1c35c4000000b003970013833aso3799269wma.1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:19:57 -0700 (PDT)
+        Tue, 17 May 2022 10:21:13 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB93F2D1F7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:21:11 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id h14so5339064wrc.6
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:21:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=w3FmS8E9GJtG8KLMLCBP6OvEjEYRbncgJvuz92a9Y3Q=;
+        b=reiEdp1V5nE0JJpdbBW2qBOflS79Ztgb8g8CdO/Li+I37z7PR/59XE+Leg1L75CqQw
+         9BK6faOl2tdi01jeq7p0CxMeqwUAP/8qr1OWlOck10571SjEiPhn6wA1kqE+GEt4S8br
+         pjJjOypYrTSGrc73ECniAR48ENwqW0G+dWPV5cohLnjN5DEtKiGZXQwy1eEldaU12TVp
+         i3GTSqcC/HcH+zoKUymPtYAbdOwPYjViLp0qOIuU/MNmtJQFiFAwJKrmQcIZOhvZSoYq
+         1TO4gDor+UHW9mcxYF1TSzosi3or36/MC5o0jiEJB3EPIpv9Dij9oTYF5qrTs9T5Ar7K
+         Fubg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=WYXjJfd1pESNYbrTTSqKIx0/7SN9768efdFnzL3MuFI=;
-        b=UmAxWn4Ubo7TZ9mBonaN2nSlyFmdOK/fMJiUA+8jazfhc0uTCp6Dm8fhiLQK1OobtV
-         WmVaB6pi1u5WcFug674mMR4OpQYvji0vgRtryQhLaPbEmhsFAKnHiMykPHJiOGUu/rmF
-         CoxRnm1qWi3Ak0b2gHiXQ8G/ftYIdh+TIhcWywFHCRejAVogOETzdOwzPmd5MMQI3hIe
-         p5miV3mwLaKEtGc1khEfzfp++rW5k2w5GueCnTtrBKQacryNcdH3yUj4CSsOf/MqnVAr
-         pVytUDVVIBxsSXhR7jSWRxWvNB9xnn4g7e7+Jo0weL1bqek0yCkg5Klw6SZjA9T8K7ue
-         XdUw==
-X-Gm-Message-State: AOAM533UHuzN7us3uqpRVV5tTsC5PkOjgb2cbZbucxaAlcVwUpRW5AIQ
-        lPS7PadGu1EmS9kE441f3uaiZexxqyHLabXaYnh8SseZGHgDbvNR1f94OkDUaPEZja1SHN0rSrb
-        4V/BRxbJBPHMkKMYBwRcvAp52CJMCLimdqbEUIcCcBveNaHitUOIS4CpI/uUEiGP2c3gfPCzlwT
-        Ul
-X-Received: by 2002:adf:dbce:0:b0:20c:f507:8ef9 with SMTP id e14-20020adfdbce000000b0020cf5078ef9mr15547850wrj.29.1652797196199;
-        Tue, 17 May 2022 07:19:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwm14vhveID3bnS4gZAuVd6DkGKO0v6KagNzfJE1Coe3sRC7u5JOMFT94nzhjZXGCVG8ILlNw==
-X-Received: by 2002:adf:dbce:0:b0:20c:f507:8ef9 with SMTP id e14-20020adfdbce000000b0020cf5078ef9mr15547827wrj.29.1652797195922;
-        Tue, 17 May 2022 07:19:55 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id c22-20020a05600c0a5600b003944821105esm2061670wmq.2.2022.05.17.07.19.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 07:19:55 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 11/34] KVM: x86: hyper-v: Use preallocated buffer in
- 'struct kvm_vcpu_hv' instead of on-stack 'sparse_banks'
-In-Reply-To: <YoOrc2hPF/QpJNeo@google.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
- <20220414132013.1588929-12-vkuznets@redhat.com>
- <YoKunaNKDjYx7C21@google.com> <87k0akuv1o.fsf@redhat.com>
- <YoOrc2hPF/QpJNeo@google.com>
-Date:   Tue, 17 May 2022 16:19:54 +0200
-Message-ID: <87h75outpx.fsf@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=w3FmS8E9GJtG8KLMLCBP6OvEjEYRbncgJvuz92a9Y3Q=;
+        b=qXu4JLsYlORxcilqtfT5Jx/49xEZ+O2Ka2rB/hiMuZER5uOblijcx4AmRlUsUFH4Ng
+         KfNgl0tTKjTV3EZx8Xeri7e6dvy0wSR+C+9hgviqOJ6UR7t28HABknxZ8WZfkBvBOTXN
+         004sOMg3aquSfljDW1hmpjHf+KlpjLIeR23GdgLzSTzAJ6TxMe4y+hTPXNPQNbBkPZhq
+         mZSWYZXh7IBp7ajDSKKwUCLuKk8kP/8tmvWq2o/naQGh/3lbV2zRQvneWwLo2MvoGE0M
+         QLvrP8KZhvgwflp6w5rAB9lw+xrDp0jZNp8oQBpjPLzDufnsOzNZcFOyNYVPLSaUiQpR
+         BpvA==
+X-Gm-Message-State: AOAM531+4v7n0wwOYvDsBTbb47NoZOY5APX3WBdeVXUIfDyqRwMRkmQV
+        x2O9Vxt4joZ7dvzjYpXuGBo9VuKsUp5dmg==
+X-Google-Smtp-Source: ABdhPJzDo6M41lTh6LfJJOPr5Ccy1udQgFveVfW+rzJ2VmZxCOHS/lYnJrFJ8GYXESDMFs6f/GY+dA==
+X-Received: by 2002:adf:ed01:0:b0:20c:c137:aaeb with SMTP id a1-20020adfed01000000b0020cc137aaebmr19194049wro.638.1652797270323;
+        Tue, 17 May 2022 07:21:10 -0700 (PDT)
+Received: from [192.168.0.17] ([83.216.184.132])
+        by smtp.gmail.com with ESMTPSA id g16-20020a7bc4d0000000b003942a244ed6sm1987123wmk.27.2022.05.17.07.21.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 May 2022 07:21:09 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH -next v2 2/2] block, bfq: make bfq_has_work() more
+ accurate
+From:   Paolo Valente <paolo.valente@linaro.org>
+In-Reply-To: <20220516095620.ge5gxmwrnbanfqea@quack3.lan>
+Date:   Tue, 17 May 2022 16:21:08 +0200
+Cc:     Yu Kuai <yukuai3@huawei.com>, Jens Axboe <axboe@kernel.dk>,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <740D270D-8723-4399-82CC-26CD861843D7@linaro.org>
+References: <20220513023507.2625717-1-yukuai3@huawei.com>
+ <20220513023507.2625717-3-yukuai3@huawei.com>
+ <20220516095620.ge5gxmwrnbanfqea@quack3.lan>
+To:     Jan Kara <jack@suse.cz>
+X-Mailer: Apple Mail (2.3445.104.11)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
 
-> On Tue, May 17, 2022, Vitaly Kuznetsov wrote:
->> Sean Christopherson <seanjc@google.com> writes:
->> 
->> > On Thu, Apr 14, 2022, Vitaly Kuznetsov wrote:
->> >> To make kvm_hv_flush_tlb() ready to handle L2 TLB flush requests, KVM needs
->> >> to allow for all 64 sparse vCPU banks regardless of KVM_MAX_VCPUs as L1
->> >> may use vCPU overcommit for L2. To avoid growing on-stack allocation, make
->> >> 'sparse_banks' part of per-vCPU 'struct kvm_vcpu_hv' which is allocated
->> >> dynamically.
->> >> 
->> >> Note: sparse_set_to_vcpu_mask() keeps using on-stack allocation as it
->> >> won't be used to handle L2 TLB flush requests.
->> >
->> > I think it's worth using stronger language; handling TLB flushes for L2 _can't_
->> > use sparse_set_to_vcpu_mask() because KVM has no idea how to translate an L2
->> > vCPU index to an L1 vCPU.  I found the above mildly confusing because it didn't
->> > call out "vp_bitmap" and so I assumed the note referred to yet another sparse_banks
->> > "allocation".  And while vp_bitmap is related to sparse_banks, it tracks something
->> > entirely different.
->> >
->> > Something like?
->> >
->> > Note: sparse_set_to_vcpu_mask() can never be used to handle L2 requests as
->> > KVM can't translate L2 vCPU indices to L1 vCPUs, i.e. its vp_bitmap array
->> > is still bounded by the number of L1 vCPUs and so can remain an on-stack
->> > allocation.
->> 
->> My brain is probably tainted by looking at all this for some time so I
->> really appreciate such improvements, thanks :)
->> 
->> I wouldn't, however, say "never" ('never say never' :-)): KVM could've
->> kept 2-level reverse mapping up-to-date:
->> 
->> KVM -> L2 VM list -> L2 vCPU ids -> L1 vCPUs which run them
->> 
->> making it possible for KVM to quickly translate between L2 VP IDs and L1
->> vCPUs. I don't do this in the series and just record L2 VM_ID/VP_ID for
->> each L1 vCPU so I have to go over them all for each request. The
->> optimization is, however, possible and we may get to it if really big
->> Windows VMs become a reality.
->
-> Out of curiosity, is L1 "required" to provides the L2 => L1 translation/map?
->
 
-To make this "Direct Virtual Flush" feature work? Yes, it is:
+> Il giorno 16 mag 2022, alle ore 11:56, Jan Kara <jack@suse.cz> ha =
+scritto:
+>=20
+> On Fri 13-05-22 10:35:07, Yu Kuai wrote:
+>> bfq_has_work() is using busy_queues currently, which is not accurate
+>> because bfq_queue is busy doesn't represent that it has requests. =
+Since
+>> bfqd aready has a counter 'queued' to record how many requests are in
+>> bfq, use it instead of busy_queues.
+>>=20
 
-...
-"
-Before enabling it, the L1 hypervisor must configure the following
-additional fields of the enlightened VMCS:
-- VpId: ID of the virtual processor that the enlightened VMCS controls.
-- VmId: ID of the virtual machine that the enlightened VMCS belongs to.
-- PartitionAssistPage: Guest physical address of the partition assist
-page.
-"
+The number of requests queued is not equal to the number of busy
+queues (it is >=3D).  If this patch is based on this assumption then
+unfortunately it is wrong :(
 
--- 
-Vitaly
+Paolo
+
+>> Noted that bfq_has_work() can be called with 'bfqd->lock' held, thus =
+the
+>> lock can't be held in bfq_has_work() to protect 'bfqd->queued'.
+>>=20
+>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+>=20
+> Looks good. Feel free to add:
+>=20
+> Reviewed-by: Jan Kara <jack@suse.cz>
+>=20
+> 								Honza
+>=20
+>> ---
+>> block/bfq-iosched.c | 16 ++++++++++++----
+>> 1 file changed, 12 insertions(+), 4 deletions(-)
+>>=20
+>> diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+>> index 61750696e87f..740dd83853a6 100644
+>> --- a/block/bfq-iosched.c
+>> +++ b/block/bfq-iosched.c
+>> @@ -2210,7 +2210,11 @@ static void bfq_add_request(struct request =
+*rq)
+>>=20
+>> 	bfq_log_bfqq(bfqd, bfqq, "add_request %d", rq_is_sync(rq));
+>> 	bfqq->queued[rq_is_sync(rq)]++;
+>> -	bfqd->queued++;
+>> +	/*
+>> +	 * Updating of 'bfqd->queued' is protected by 'bfqd->lock', =
+however, it
+>> +	 * may be read without holding the lock in bfq_has_work().
+>> +	 */
+>> +	WRITE_ONCE(bfqd->queued, bfqd->queued + 1);
+>>=20
+>> 	if (RB_EMPTY_ROOT(&bfqq->sort_list) && bfq_bfqq_sync(bfqq)) {
+>> 		bfq_check_waker(bfqd, bfqq, now_ns);
+>> @@ -2402,7 +2406,11 @@ static void bfq_remove_request(struct =
+request_queue *q,
+>> 	if (rq->queuelist.prev !=3D &rq->queuelist)
+>> 		list_del_init(&rq->queuelist);
+>> 	bfqq->queued[sync]--;
+>> -	bfqd->queued--;
+>> +	/*
+>> +	 * Updating of 'bfqd->queued' is protected by 'bfqd->lock', =
+however, it
+>> +	 * may be read without holding the lock in bfq_has_work().
+>> +	 */
+>> +	WRITE_ONCE(bfqd->queued, bfqd->queued - 1);
+>> 	elv_rb_del(&bfqq->sort_list, rq);
+>>=20
+>> 	elv_rqhash_del(q, rq);
+>> @@ -5063,11 +5071,11 @@ static bool bfq_has_work(struct blk_mq_hw_ctx =
+*hctx)
+>> 	struct bfq_data *bfqd =3D hctx->queue->elevator->elevator_data;
+>>=20
+>> 	/*
+>> -	 * Avoiding lock: a race on bfqd->busy_queues should cause at
+>> +	 * Avoiding lock: a race on bfqd->queued should cause at
+>> 	 * most a call to dispatch for nothing
+>> 	 */
+>> 	return !list_empty_careful(&bfqd->dispatch) ||
+>> -		bfq_tot_busy_queues(bfqd) > 0;
+>> +		READ_ONCE(bfqd->queued);
+>> }
+>>=20
+>> static struct request *__bfq_dispatch_request(struct blk_mq_hw_ctx =
+*hctx)
+>> --=20
+>> 2.31.1
+>>=20
+> --=20
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
 
