@@ -2,90 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E65AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEDE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349366AbiEQOvz (ORCPT
+        id S1349380AbiEQOwP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
+        Tue, 17 May 2022 10:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349402AbiEQOvl (ORCPT
+        with ESMTP id S1349358AbiEQOwM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:51:41 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6E819005
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:51:35 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id q130so22067003ljb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:51:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fItPi4WH6eFny62sNLwk0x/dSWz/KeliSihrZvDBGCI=;
-        b=SKZXvVEkhFni6NzylNm4G0Pn98ecOqHdH6IY3kqNwRU5BDemhZl6Sv2QTHDZ0+a3xG
-         3sHhiJ5rmPPO3CKqKQ+qHC+LALgxaG8MIqca3q6NaME1w9oWFnt/T+GbOubX0JaGfbVo
-         I14YjlrOIt8p9CeG7NNfLtfQyn7Wnnutw46/dJDMRe72Vm5F3esQbw5nNu6drp7I4XmU
-         GGF7duSC0YFVk5pOpwxrXEATYaGLxRMYwkyZOLlSvH/0pTPrgcbN6hd8ihEWvtLRpivt
-         OKirjfEO/QElSePc92GOVlV0B/ybygpT8Kr5aP6WO14zg4+ZQbcPb5rFNiDmwhUncKBh
-         QPYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fItPi4WH6eFny62sNLwk0x/dSWz/KeliSihrZvDBGCI=;
-        b=Np3z46a6tpSHqdXuFFxPcfRjgq1dCcDrDq+ZMwV3eVZek0W1x8XZyXVrdxb039s/rH
-         YlXv5P8DYKREWV6Fn68swLjcZyOSRsUqgLtPni1feia/N0TCpAZT0i8srW9e5e0RayMw
-         7c1ZoISjIMr5BwEiG7EqrTRy6zJx+0WTM7wpFO67LS+Ku3nxdERqB1bt6BEV/WlaBKb9
-         YkYwyI2Yvn+UG3rm2LpVfdhN8XzlJwlrcvEpJxYaTxo5T8x87VRX0JJQiPC2Qnsd8ZHw
-         v6cA/S+cxKF9ZCHBTsvJpg+Ck/kVuVEjMhbwvWfPZWAlkAvr/oTgXl9aaBgUU6hVJxmF
-         /mBQ==
-X-Gm-Message-State: AOAM530XoFbQaDMvg38XxgGmnnkZ/fRQFt1FO5lSYaGk5RTFNPRKl5Dw
-        W9Ppu3VV8HL6JtJAmrtYMQbTQQ==
-X-Google-Smtp-Source: ABdhPJyWm2Zl9OZhnOZge8xJaNB/lSejMQtbBHoeyzWsyXYfqc/xhWPGsDcU2RUdb22zZ0kRvGkOIw==
-X-Received: by 2002:a2e:8e84:0:b0:24f:1d40:ceb0 with SMTP id z4-20020a2e8e84000000b0024f1d40ceb0mr14890942ljk.292.1652799093975;
-        Tue, 17 May 2022 07:51:33 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id d7-20020a05651221c700b0047255d210f0sm1607514lft.31.2022.05.17.07.51.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 07:51:33 -0700 (PDT)
-Message-ID: <0f9398aa-ab7d-44e4-033a-e13bf57f88d2@linaro.org>
-Date:   Tue, 17 May 2022 16:51:32 +0200
+        Tue, 17 May 2022 10:52:12 -0400
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229DA1C135
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:52:07 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:c0f6:7ccf:c217:5f21])
+        by baptiste.telenet-ops.be with bizsmtp
+        id Xqs52700B0nFbBY01qs5MU; Tue, 17 May 2022 16:52:06 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nqyYP-000ht2-6h; Tue, 17 May 2022 16:52:05 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nqyYO-004IfE-Qv; Tue, 17 May 2022 16:52:04 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] arm64/sve: Move sve_free() into SVE code section
+Date:   Tue, 17 May 2022 16:52:03 +0200
+Message-Id: <cd633284683c24cb9469f8ff429915aedf67f868.1652798894.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] riscv: dts: microchip: fix gpio1 reg property typo
-Content-Language: en-US
-To:     Conor Paxton <conor.paxton@microchip.com>,
-        conor.dooley@microchip.com, Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     Lewis Hanly <lewis.hanly@microchip.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220517104058.2004734-1-conor.paxton@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220517104058.2004734-1-conor.paxton@microchip.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 12:40, Conor Paxton wrote:
-> Fix reg address typo in the gpio1 stanza.
-> 
-> Signed-off-by: Conor Paxton <conor.paxton@microchip.com>
-> ---
->  arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi | 2 +-
+If CONFIG_ARM64_SVE is not set:
 
-Pressed send to fast...
+    arch/arm64/kernel/fpsimd.c:294:13: warning: ‘sve_free’ defined but not used [-Wunused-function]
 
-Please add Fixes tag, unless fixed commit SHA is not considered stable.
+Fix this by moving sve_free() and __sve_free() into the existing section
+protected by "#ifdef CONFIG_ARM64_SVE", now the last user outside that
+section has been removed.
 
+Fixes: a1259dd807192917 ("arm64/sve: Delay freeing memory in fpsimd_flush_thread()")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ arch/arm64/kernel/fpsimd.c | 33 ++++++++++++++++-----------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/arch/arm64/kernel/fpsimd.c b/arch/arm64/kernel/fpsimd.c
+index d994bf0a6ca93984..819979398127e6f3 100644
+--- a/arch/arm64/kernel/fpsimd.c
++++ b/arch/arm64/kernel/fpsimd.c
+@@ -281,23 +281,6 @@ static bool have_cpu_fpsimd_context(void)
+ 	return !preemptible() && __this_cpu_read(fpsimd_context_busy);
+ }
+ 
+-/*
+- * Call __sve_free() directly only if you know task can't be scheduled
+- * or preempted.
+- */
+-static void __sve_free(struct task_struct *task)
+-{
+-	kfree(task->thread.sve_state);
+-	task->thread.sve_state = NULL;
+-}
+-
+-static void sve_free(struct task_struct *task)
+-{
+-	WARN_ON(test_tsk_thread_flag(task, TIF_SVE));
+-
+-	__sve_free(task);
+-}
+-
+ unsigned int task_get_vl(const struct task_struct *task, enum vec_type type)
+ {
+ 	return task->thread.vl[type];
+@@ -690,6 +673,22 @@ static void sve_to_fpsimd(struct task_struct *task)
+ }
+ 
+ #ifdef CONFIG_ARM64_SVE
++/*
++ * Call __sve_free() directly only if you know task can't be scheduled
++ * or preempted.
++ */
++static void __sve_free(struct task_struct *task)
++{
++	kfree(task->thread.sve_state);
++	task->thread.sve_state = NULL;
++}
++
++static void sve_free(struct task_struct *task)
++{
++	WARN_ON(test_tsk_thread_flag(task, TIF_SVE));
++
++	__sve_free(task);
++}
+ 
+ /*
+  * Return how many bytes of memory are required to store the full SVE
+-- 
+2.25.1
+
