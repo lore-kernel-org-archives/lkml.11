@@ -2,130 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B46C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 01:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238108AbiEQBxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 21:53:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
+        id S231899AbiEQBzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 21:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232437AbiEQBxl (ORCPT
+        with ESMTP id S229986AbiEQBzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 21:53:41 -0400
-Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5CF134B9C;
-        Mon, 16 May 2022 18:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Sv4p5
-        7RP4vVkhn/nojtlVRpzvQRuq8AhJ6Z3TmpD4+w=; b=VxH5ML3iwGU3p2+s48oUA
-        VlBBYuU1SIfOAwIg4a2DQ1H3ahskebu2lahBGeRqfSIeD74nHbIcFTcnxmNPCjCv
-        ALCYc2BjIxAW0DSTFSgb3I43FFFHsY4qt52PxMQg93zZu+unp19LrZdyRdqFMQ44
-        3coOnfQvmoiHx/0JkuempQ=
-Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.20])
-        by smtp9 (Coremail) with SMTP id DcCowAB3USwR_IJiF3ohDQ--.61255S3;
-        Tue, 17 May 2022 09:36:19 +0800 (CST)
-From:   qianfanguijin@163.com
-To:     linux-sunxi@lists.linux.dev
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        qianfan Zhao <qianfanguijin@163.com>
-Subject: [PATCH v5 1/3] ARM: dts: sun8i-r40: Add "cpu-supply" node for sun8i-r40 based board
-Date:   Tue, 17 May 2022 09:36:05 +0800
-Message-Id: <20220517013607.2252-2-qianfanguijin@163.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220517013607.2252-1-qianfanguijin@163.com>
-References: <20220517013607.2252-1-qianfanguijin@163.com>
+        Mon, 16 May 2022 21:55:47 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB726393
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 18:55:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcCowAB3USwR_IJiF3ohDQ--.61255S3
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Aw4UuryxWFW3uw4UGw4fuFg_yoW8ur4xpw
-        17CrZ7Gwn3WF15t347WrWDGr1UCFykW3yYvF15C34fJrsrXaykXryftwnakrZ8Xr4fJ3y0
-        93s5Xr97Xw4DX3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziQVyfUUUUU=
-X-Originating-IP: [218.201.129.20]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbCqRwE7V0Dfef3EwAAs8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1652752542;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qWnQ9OrgLIwprkIDdC4PTPjMfgbKUDA+HIW5i6AMBQs=;
+        b=XFjkeLjxacmUdB7EKOn88jPcXfZvszzOrlfUcJ1xFf8sydA1UyNR5Iybn7izIqLr87sEg2
+        E44Ho8EHz1L65XcRz2v5NcDxdwYSPfSNgaXI9joXEi93L1A+DlTgQnylxU8P6GCFf49XIn
+        Xnxw93uguKbimwLqmTHWRu7pVlvMFBU=
+Date:   Tue, 17 May 2022 01:55:41 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   "Yajun Deng" <yajun.deng@linux.dev>
+Message-ID: <fdfc0c8f6027c2071674d52f27f7d7da@linux.dev>
+Subject: Re: [PATCH v2] sched/rt: fix the case where sched_rt_period_us is
+ negative
+To:     "Valentin Schneider" <vschneid@redhat.com>, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org
+In-Reply-To: <xhsmhmtfh1ptb.mognet@vschneid.remote.csb>
+References: <xhsmhmtfh1ptb.mognet@vschneid.remote.csb>
+ <20220512003945.610093-1-yajun.deng@linux.dev>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: qianfan Zhao <qianfanguijin@163.com>
-
-The CPU of sun8i-r40 is powered by PMIC, let's add "cpu-supply" node.
-
-Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
----
- arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts | 4 ++++
- arch/arm/boot/dts/sun8i-r40-feta40i.dtsi          | 4 ++++
- arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts          | 4 ++++
- arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts | 4 ++++
- 4 files changed, 16 insertions(+)
-
-diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-index a6a1087a0c9b..4f30018ec4a2 100644
---- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-+++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-@@ -113,6 +113,10 @@ &ahci {
- 	status = "okay";
- };
- 
-+&cpu0 {
-+	cpu-supply = <&reg_dcdc2>;
-+};
-+
- &de {
- 	status = "okay";
- };
-diff --git a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
-index 265e0fa57a32..b872b51a346d 100644
---- a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
-@@ -6,6 +6,10 @@
- 
- #include "sun8i-r40.dtsi"
- 
-+&cpu0 {
-+	cpu-supply = <&reg_dcdc2>;
-+};
-+
- &i2c0 {
- 	status = "okay";
- 
-diff --git a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
-index 6931aaab2382..0eb1990742ff 100644
---- a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
-+++ b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
-@@ -88,6 +88,10 @@ &ahci {
- 	status = "okay";
- };
- 
-+&cpu0 {
-+	cpu-supply = <&reg_dcdc2>;
-+};
-+
- &de {
- 	status = "okay";
- };
-diff --git a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
-index 47954551f573..fdf8bd12faaa 100644
---- a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
-+++ b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
-@@ -107,6 +107,10 @@ &ahci {
- 	status = "okay";
- };
- 
-+&cpu0 {
-+	cpu-supply = <&reg_dcdc2>;
-+};
-+
- &de {
- 	status = "okay";
- };
--- 
-2.25.1
-
+May 16, 2022 11:04 PM, "Valentin Schneider" <vschneid@redhat.com> wrote:=
+=0A=0A> On 12/05/22 08:39, Yajun Deng wrote:=0A> =0A>> The proc_dointvec(=
+) is for integer, but sysctl_sched_rt_period is a=0A>> unsigned integer, =
+proc_dointvec() would convert negative number into=0A>> positive number. =
+So both proc_dointvec() and sched_rt_global_validate()=0A>> aren't return=
+ error even if we set a negative number.=0A>> =0A>> Use proc_dointvec_min=
+max() instead of proc_dointvec() and use extra1=0A>> limit the minimum va=
+lue for sched_rt_period_us/sched_rt_runtime_us.=0A>> =0A>> Fixes: 391e43d=
+a797a ("sched: Move all scheduler bits into kernel/sched/")=0A> =0A> That=
+'s just the last apparent change of the incriminated variable. AFAICT=0A>=
+ the issue stems from:=0A> =0A> - sysctl_sched_rt_period being unsigned i=
+nt=0A> - the ctl entry using proc_dointvec()=0A> - the bounds check on sy=
+sctl_sched_rt_period being just <=3D 0 which doesn't=0A> actually respect=
+ the [1, INT_MAX] stated in=0A> Documentation/scheduler/sched-rt-group.rs=
+t=0A> =0A> The <=3D thing was added by:=0A> =0A> ec5d498991e8 ("sched: fi=
+x deadlock in setting scheduler parameter to zero")=0A> =0A> but AFAICT t=
+he unsigned int vs proc_dointvec() thing dates back to:=0A> =0A> d0b27fa7=
+7854 ("sched: rt-group: synchonised bandwidth period")=0A> =0A=0AI know t=
+hat, but I didn't find out the source. Thank you for helping me find out =
+it.=0A=0A>> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>=0A>> ---=0A>=
+ =0A> In the absence of a cover letter (e.g. single-patch submission), th=
+is is=0A> where you should write patch version changelogs (see=0A> Docume=
+ntation/process).=0A> =0A=0AGot it, I will add it to the next version.=0A=
+=0A>> kernel/sched/rt.c | 8 ++++----=0A>> 1 file changed, 4 insertions(+)=
+, 4 deletions(-)=0A>> =0A>> diff --git a/kernel/sched/rt.c b/kernel/sched=
+/rt.c=0A>> index b491a0f8c25d..3add32679885 100644=0A>> --- a/kernel/sche=
+d/rt.c=0A>> +++ b/kernel/sched/rt.c=0A>> @@ -37,6 +37,7 @@ static struct =
+ctl_table sched_rt_sysctls[] =3D {=0A>> .maxlen =3D sizeof(unsigned int),=
+=0A>> .mode =3D 0644,=0A>> .proc_handler =3D sched_rt_handler,=0A>> + .ex=
+tra1 =3D SYSCTL_ONE,=0A> =0A> Per earlier comment, the Documentation says=
+ that this needs to be within=0A> [1, INT_MAX], which you do get by exclu=
+ding negative values when casting to=0A> int...=0A> =0A> How about we mak=
+e sysctl_sched_rt_period int on top of this, then all variables=0A> modif=
+ied by the sched_rt_handler() proc_dointvec() are *actually* int, and=0A>=
+ the upper bound requires less mental gymnastics to be figured out?=0A> =
+=0A=0AYes, we can make sysctl_sched_rt_period int.=0A>> },=0A>> {=0A>> .p=
+rocname =3D "sched_rt_runtime_us",=0A>> @@ -44,6 +45,8 @@ static struct c=
+tl_table sched_rt_sysctls[] =3D {=0A>> .maxlen =3D sizeof(int),=0A>> .mod=
+e =3D 0644,=0A>> .proc_handler =3D sched_rt_handler,=0A>> + .extra1 =3D S=
+YSCTL_NEG_ONE,=0A>> + .extra2 =3D (void *)&sysctl_sched_rt_period,=0A> =
+=0A> Per this, you could also remove the=0A> =0A> ((sysctl_sched_rt_runti=
+me > sysctl_sched_rt_period) ||=0A> =0A> from sched_rt_global_validate(),=
+ no?=0A>=0A=0ANo, the extra2 just limit the maximum value of sysctl_sched=
+_rt_runtime is sysctl_sched_rt_period, but not limit the minimum value of=
+ sysctl_sched_rt_period is sysctl_sched_rt_runtime. (sysctl_sched_rt_runt=
+ime > sysctl_sched_rt_period) can do both. =0AIts purpose is to return er=
+ror earlier. Perhaps I should remove extra2 to avoid ambiguity.=0A=0A>> }=
+, =0A>> {=0A>> .procname =3D "sched_rr_timeslice_ms",=0A>> @@ -2959,9 +29=
+62,6 @@ static int sched_rt_global_constraints(void)=0A>> #ifdef CONFIG_S=
+YSCTL=0A>> static int sched_rt_global_validate(void)=0A>> {=0A>> - if (sy=
+sctl_sched_rt_period <=3D 0)=0A>> - return -EINVAL;=0A>> -=0A>> if ((sysc=
+tl_sched_rt_runtime !=3D RUNTIME_INF) &&=0A>> ((sysctl_sched_rt_runtime >=
+ sysctl_sched_rt_period) ||=0A>> ((u64)sysctl_sched_rt_runtime *=0A>> @@ =
+-2992,7 +2992,7 @@ static int sched_rt_handler(struct ctl_table *table, i=
+nt write, void *buffer,=0A>> old_period =3D sysctl_sched_rt_period;=0A>> =
+old_runtime =3D sysctl_sched_rt_runtime;=0A>> =0A>> - ret =3D proc_dointv=
+ec(table, write, buffer, lenp, ppos);=0A>> + ret =3D proc_dointvec_minmax=
+(table, write, buffer, lenp, ppos);=0A>> =0A>> if (!ret && write) {=0A>> =
+ret =3D sched_rt_global_validate();=0A>> --=0A>> 2.25.1
