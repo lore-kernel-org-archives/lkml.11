@@ -2,100 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06911C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C27F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348836AbiEQS0f convert rfc822-to-8bit (ORCPT
+        id S1352054AbiEQS1Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        Tue, 17 May 2022 14:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352115AbiEQS0Q (ORCPT
+        with ESMTP id S1346758AbiEQS1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:26:16 -0400
-Received: from sender4-of-o58.zoho.com (sender4-of-o58.zoho.com [136.143.188.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FE4220EA;
-        Tue, 17 May 2022 11:26:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1652811971; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=E7nkhhzyAb2NSHwmsADpzJJWrCBT2Vk6ISmdbqYkrk/rG7Cr+Do73hCcR8g6gyPzIzBy7GgnGiEyEDQR+C+i06sl3brUJLXY9BnNZk4t2QyJ1gbG+d+DfT6bLXj1+W5DBnkPRV7PJRU1vfPovdQzZCO7Gh2ZYAnZeU7y1U97rd4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1652811971; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Y9YimAnJKBglTx1djbp8syx3nqzLsbEglYyst69uI5Q=; 
-        b=TGhUqune1tf51bd7y1egfs2EWMS2T4+QvYyAUWigD9nw2wH1d1ZMTr1vmfsFAvmgO7oI40I3DI93CqV1vnOrhsCJ9+5Ep2/E4aZGo2RTajeVlwYIWla5gXgYbdjRT5zQE8wGqTEADZYC1CICTXlhwso5irv5fxFYU5EoVT0jegU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        spf=pass  smtp.mailfrom=linux@mniewoehner.de;
-        dmarc=pass header.from=<linux@mniewoehner.de>
-Received: from z3r0.lan (185.31.62.161 [185.31.62.161]) by mx.zohomail.com
-        with SMTPS id 1652811946661528.7783926675852; Tue, 17 May 2022 11:25:46 -0700 (PDT)
-Message-ID: <28686e8d994c297a78fb816805cd3652a8f8c90a.camel@mniewoehner.de>
-Subject: Re: [PATCH] ACPI: utils: include UUID in _DSM evaluation warning
-From:   Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Len Brown <lenb@kernel.org>,
-        "open list:ACPI" <linux-acpi@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-In-Reply-To: <CAJZ5v0h+kKwdntGPC5PP6N0ZRbRzLxuwcwTGm-PNBH6Z3mnETg@mail.gmail.com>
-References: <f80dfd57fdca87897f070a3ea4ee0a26b03e7831.camel@mniewoehner.de>
-         <CAJZ5v0h+kKwdntGPC5PP6N0ZRbRzLxuwcwTGm-PNBH6Z3mnETg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Date:   Tue, 17 May 2022 20:25:43 +0200
+        Tue, 17 May 2022 14:27:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC3993879E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:27:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652812035;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=808kPoCVZ9QBXQQ50NY9PebUEFZ1B+K2Bsp/en8vgGY=;
+        b=hIpYi/sGN2DecSuoV+aN+/5uy97WasBMnQL/n4kbh3XyBo3J2E4ufENMgixlxA7jfbwPyq
+        NSG5GKRT4CCuW2QxV837+nuhLlAjJdFkVPD56gWrlx0tybTB4tsQsuIPvEc3mpfEifh+1m
+        79SrGJrgyTzkl3S1Q8OSGSJEmuOjDy0=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-83-5bZm3BkdPXupJUXC7AJ6Vg-1; Tue, 17 May 2022 14:27:14 -0400
+X-MC-Unique: 5bZm3BkdPXupJUXC7AJ6Vg-1
+Received: by mail-il1-f198.google.com with SMTP id m9-20020a056e021c2900b002d13627892eso1960268ilh.20
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:27:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=808kPoCVZ9QBXQQ50NY9PebUEFZ1B+K2Bsp/en8vgGY=;
+        b=gx+2SooNn5476SaYQBJq8Ck6DfpEKlo7FPZvlolUPw7IPdlqnP0CnT71e+XNapi0ot
+         wk+mNaH8m9EfknGnEBIheI2HsOkHRyqLXs/H8k+gLrKHnQ/u0K3uwi9GWO8QDpn2pela
+         mDvQRSiXdXSZEF6w4VbdZpschBqOh6gi74vE1SfGq2Qrkn8EcjVXLCxrhUkDs7Eyzxyj
+         E7Nax4yW++TzINuZ4Bjbr5IwZ6HvYawD7AbTUsd6ll8nyc1RHWFCnNTo2rZ5rlc3WmRF
+         arAiH3/e6H62Db3W0cn36PDpkYQ49OHY5PR4D0V33uZifUHwlbSjMnHkiY1i7bJRFdT4
+         p/ng==
+X-Gm-Message-State: AOAM532WGsQXLZD4RS+KkDiVT25BjM8PybwMYEvi4RH2ZRr28A/Oi2mh
+        fpNUyJn4Ed5rhaUe5sbyWBK17DiUYOgGKBSH3ac6XuFZV6Zc01RBY+ksdPOMGaXCGd/e5f3FgJQ
+        51YrD+z5R7n2NbIlU/kX6yHmU
+X-Received: by 2002:a05:6638:140d:b0:32b:c643:e334 with SMTP id k13-20020a056638140d00b0032bc643e334mr13045263jad.125.1652812033716;
+        Tue, 17 May 2022 11:27:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwXPnig6pt33JX7CJmiZk9MZj+x43/FCA6lZpbkCX+oaIPq/UYqAVOL24lvn/cJscVyWc3kyA==
+X-Received: by 2002:a05:6638:140d:b0:32b:c643:e334 with SMTP id k13-20020a056638140d00b0032bc643e334mr13045242jad.125.1652812033478;
+        Tue, 17 May 2022 11:27:13 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id r4-20020a02c844000000b0032e2dce10aesm1885083jao.160.2022.05.17.11.27.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 11:27:12 -0700 (PDT)
+Date:   Tue, 17 May 2022 12:27:10 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Abhishek Sahu <abhsahu@nvidia.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH v4 2/4] vfio/pci: Change the PF power state to D0 before
+ enabling VFs
+Message-ID: <20220517122710.093c9c19.alex.williamson@redhat.com>
+In-Reply-To: <20220517100219.15146-3-abhsahu@nvidia.com>
+References: <20220517100219.15146-1-abhsahu@nvidia.com>
+        <20220517100219.15146-3-abhsahu@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-User-Agent: Evolution 3.42.2 
-Content-Transfer-Encoding: 8BIT
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-05-17 at 16:49 +0200, Rafael J. Wysocki wrote:
-> On Mon, May 16, 2022 at 7:25 PM Michael Niewöhner <linux@mniewoehner.de>
-> wrote:
-> > 
-> > The _DSM evaluation warning in its current form is not very helpful, as
-> > it lacks any specific information:
-> >   ACPI: \: failed to evaluate _DSM (0x1001)
-> > 
-> > Thus, include the UUID of the missing _DSM:
-> >   ACPI: \: failed to evaluate _DSM bf0212f2-... (0x1001)
-> > 
-> > Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
-> > ---
-> >  drivers/acpi/utils.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
-> > index d5cedffeeff9..7da993f5b6c3 100644
-> > --- a/drivers/acpi/utils.c
-> > +++ b/drivers/acpi/utils.c
-> > @@ -681,7 +681,8 @@ acpi_evaluate_dsm(acpi_handle handle, const guid_t
-> > *guid,
-> > u64 rev, u64 func,
-> > 
-> >         if (ret != AE_NOT_FOUND)
-> >                 acpi_handle_warn(handle,
-> > -                               "failed to evaluate _DSM (0x%x)\n", ret);
-> > +                               "failed to evaluate _DSM %pUb (0x%x)\n",
-> > +                               ret, guid);
+On Tue, 17 May 2022 15:32:17 +0530
+Abhishek Sahu <abhsahu@nvidia.com> wrote:
+
+> According to [PCIe v5 9.6.2] for PF Device Power Management States
 > 
-> Shouldn't this be "guid, ret" ?
-
-Ouch, yes ofc.
-
-> Also, don't you want to print the
-> value of the GUID rather than the address of its location?
-
-Not sure what you mean tbh. Documentation/core-api/printk-formats.rst states
-%pUb being the right format. lib/test_printf.c implements it that way, too.
-
+>  "The PF's power management state (D-state) has global impact on its
+>   associated VFs. If a VF does not implement the Power Management
+>   Capability, then it behaves as if it is in an equivalent
+>   power state of its associated PF.
 > 
-> And I don't think you need to break the line here.
+>   If a VF implements the Power Management Capability, the Device behavior
+>   is undefined if the PF is placed in a lower power state than the VF.
+>   Software should avoid this situation by placing all VFs in lower power
+>   state before lowering their associated PF's power state."
 > 
-> > 
-> >         return NULL;
-> >  }
-> > --
-> > 2.34.1
-> > 
-> > 
+> From the vfio driver side, user can enable SR-IOV when the PF is in D3hot
+> state. If VF does not implement the Power Management Capability, then
+> the VF will be actually in D3hot state and then the VF BAR access will
+> fail. If VF implements the Power Management Capability, then VF will
+> assume that its current power state is D0 when the PF is D3hot and
+> in this case, the behavior is undefined.
+> 
+> To support PF power management, we need to create power management
+> dependency between PF and its VF's. The runtime power management support
+> may help with this where power management dependencies are supported
+> through device links. But till we have such support in place, we can
+> disallow the PF to go into low power state, if PF has VF enabled.
+> There can be a case, where user first enables the VF's and then
+> disables the VF's. If there is no user of PF, then the PF can put into
+> D3hot state again. But with this patch, the PF will still be in D0
+> state after disabling VF's since detecting this case inside
+> vfio_pci_core_sriov_configure() requires access to
+> struct vfio_device::open_count along with its locks. But the subsequent
+> patches related to runtime PM will handle this case since runtime PM
+> maintains its own usage count.
+> 
+> Also, vfio_pci_core_sriov_configure() can be called at any time
+> (with and without vfio pci device user), so the power state change
+> needs to be protected with the required locks.
+> 
+> Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
+> ---
+>  drivers/vfio/pci/vfio_pci_core.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> index b9f222ca48cf..4fe9a4efc751 100644
+> --- a/drivers/vfio/pci/vfio_pci_core.c
+> +++ b/drivers/vfio/pci/vfio_pci_core.c
+> @@ -217,6 +217,10 @@ int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev, pci_power_t stat
+>  	bool needs_restore = false, needs_save = false;
+>  	int ret;
+>  
+> +	/* Prevent changing power state for PFs with VFs enabled */
+> +	if (pci_num_vf(pdev) && state > PCI_D0)
+> +		return -EBUSY;
+> +
+>  	if (vdev->needs_pm_restore) {
+>  		if (pdev->current_state < PCI_D3hot && state >= PCI_D3hot) {
+>  			pci_save_state(pdev);
+> @@ -1960,6 +1964,13 @@ int vfio_pci_core_sriov_configure(struct vfio_pci_core_device *vdev,
+>  		}
+>  		list_add_tail(&vdev->sriov_pfs_item, &vfio_pci_sriov_pfs);
+>  		mutex_unlock(&vfio_pci_sriov_pfs_mutex);
+> +
+> +		/*
+> +		 * The PF power state should always be higher than the VF power
+> +		 * state. If PF is in the low power state, then change the
+> +		 * power state to D0 first before enabling SR-IOV.
+> +		 */
+> +		vfio_pci_lock_and_set_power_state(vdev, PCI_D0);
+
+But we need to hold memory_lock across the next function or else
+userspace could race a write to the PM register to set D3 before
+pci_num_vf() can protect us.  Thanks,
+
+Alex
+
+>  		ret = pci_enable_sriov(pdev, nr_virtfn);
+>  		if (ret)
+>  			goto out_del;
 
