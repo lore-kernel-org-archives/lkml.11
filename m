@@ -2,417 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D99C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 21:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5353DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 21:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237144AbiEQVVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 17:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
+        id S234412AbiEQVWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 17:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233101AbiEQVVS (ORCPT
+        with ESMTP id S231199AbiEQVWi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 17:21:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 469871BEAF
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 14:21:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652822476;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/7V7x1GpjVSqeqJcJJCFYfdfhdsBzg9+sabDuOPG7ao=;
-        b=Nh1s4sLh6oqTOdnD7inxVa9u4RwQwvVG0YVKim6DrrFXBsD1MaFDJ9nQ8oj5jSHWysbcMZ
-        ZGTxmtjNTyrdMoWFADJoMmoZ2kZ1u8r4tavPoG+LOhorGxfjWbGSMoajCBfAXeRnRXdLjp
-        P0HFqznOT8zkuwTAXo5+/HuXU12CzfY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-13--fs8iDDjO2C9wmc3CF8thA-1; Tue, 17 May 2022 17:21:14 -0400
-X-MC-Unique: -fs8iDDjO2C9wmc3CF8thA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3590A3C0CD46;
-        Tue, 17 May 2022 21:21:14 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.11.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E99FB40C1421;
-        Tue, 17 May 2022 21:21:13 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
-        id A7D582208FA; Tue, 17 May 2022 17:21:13 -0400 (EDT)
-Date:   Tue, 17 May 2022 17:21:13 -0400
-From:   Vivek Goyal <vgoyal@redhat.com>
-To:     Dharmendra Singh <dharamhans87@gmail.com>
-Cc:     miklos@szeredi.hu, linux-fsdevel@vger.kernel.org,
-        fuse-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        bschubert@ddn.com, Dharmendra Singh <dsingh@ddn.com>
-Subject: Re: [PATCH v5 1/3] FUSE: Avoid lookups in fuse create
-Message-ID: <YoQRyY8RkEWbn9Zp@redhat.com>
-References: <20220517100744.26849-1-dharamhans87@gmail.com>
- <20220517100744.26849-2-dharamhans87@gmail.com>
+        Tue, 17 May 2022 17:22:38 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565F63EB93
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 14:22:37 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id o13-20020a17090a9f8d00b001df3fc52ea7so3704598pjp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 14:22:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=uepQWFj4p9vvzxFu0J6TcubCn573rdrWQyzAe1PX5G0=;
+        b=Dy8WRIdSNRo8VedfCaJuzfBJKdEveNueIl6h1m5H7A7GpqO1VFIRFp3xhZUt4FRFO2
+         W3chIK/93Xpm3hii/SpKvczGW2Df+zSEX9NG0JxKOF5ehz9I6/07cUIMW8Itr/trzr0M
+         cwelbmHTgyV63Lvehq8qPp3YvsYj2q4YKkG94=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=uepQWFj4p9vvzxFu0J6TcubCn573rdrWQyzAe1PX5G0=;
+        b=q/50pK2fIwM0UghRy/eTB/StQq+OtfKs+hKyfgukrAdqRU/qJ45J0RYIPRIsc6lYVY
+         5g5+1m474D4Sczf29mpGQwIewX++yrrvbfZyZB5QghEQE6lLFa0InGk/w3zuuBZ9gmov
+         EF2OlWqb0O2SGBQdvVBfXwatm//YU4VDOb8FE0tGogHJEliEMcc3mCqvYFz9rnylhlfu
+         Q8G5kveoyKWUKNcb1HGJ11L1tXBrBnV2e04C+Am62hovnL/PlbFAtXa/6WoJmlv5ei8y
+         q8wyZiNJu6CcfNAjGk3Ti7c/G19iil9w30PgLUQmT8qH+B7L8pbpeiUVaQ1Xj6gye9ZQ
+         clzQ==
+X-Gm-Message-State: AOAM533Htn/0JNwICsurgPqWEE4LQmj7XpOpfizfzsp5MC1n+pP6V9p8
+        9k8Feg76sNSqWEWmIsXfp7F0nfctji1RRw==
+X-Google-Smtp-Source: ABdhPJweAH8JloCK5hClRf6c3ajBQArCtatGzkr3y/VhlYkSwTwIXhf6BZTUnYx7czoMf94YW2ba7w==
+X-Received: by 2002:a17:902:e88b:b0:161:79f6:42a8 with SMTP id w11-20020a170902e88b00b0016179f642a8mr12134677plg.131.1652822556812;
+        Tue, 17 May 2022 14:22:36 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id c18-20020aa78c12000000b0051815121e2csm173244pfd.164.2022.05.17.14.22.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 14:22:36 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Christophe de Dinechin <dinechin@redhat.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH v2 1/2] bitmap: Fix return values to be unsigned
+Date:   Tue, 17 May 2022 14:22:33 -0700
+Message-Id: <20220517212234.868181-2-keescook@chromium.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220517212234.868181-1-keescook@chromium.org>
+References: <20220517212234.868181-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517100744.26849-2-dharamhans87@gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4867; h=from:subject; bh=t1Ia3Wci2ZC0qKVzbH7/1fuiBHOoRUGjZ00k0amlW8s=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBihBIZqREFg+WTcBpL6MUHMvjMCQvDFYx6X+rk1V+U Gfh0dBCJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYoQSGQAKCRCJcvTf3G3AJjViD/ 9f1ik1XrhV2v/KFyUIvCtGUo+ArmKp4K2jNlNf35LGXiM+8iSIjhSs1EN7JhqLROfHWaHn2dNq4cXt 8w94o/An4USxo2OoLLjf9mzQugXU5qTu8ydNHBa1LMsMHrMu0RAY3GvX0uSFXMIUsEJwnpCNG2U96/ KRDJ8AWORRxQ04h16NO1eoy9kkC11cSvlUu2/VpJ4VKNsaFRoFj5vQ9oGwkgAe1hpI5xh4NIGEX+/F MnvebF4T7rMmbVwCqytI3XZ1EPNdXTDgUASc171ttgbDa2c3LndKkScU7lMXUPMrfn7XD5ZrsoBXjZ n1spwQS2Hyx5VpayIt4Ic+xVZ824koHfdV4iis7NcL1LvIzfLM3QUl0or6OErw/OSnc3eHtgDeAhts jcbPOY4EQugpZZU6kRiLBAzscPqFgtXAVa91NFnJdn2mis/nzq2Cy0cMUHWSh+fABrhyseOzIocoFB /153hvmLGdAvqBC3ff6nimVTs5zsD+HjMD+z5+ZqTqkCKBIgSTs5nMgkM1x2jR4YIhc5io2fNmLBiD RTA95RLJOFULKni+cWDE8WBUWbI+mqKqUWBLUfopuf5nljGHYCx9mNiyzP+Qy9qlz1swYv+uRLIa7G Lj6M/LMxDxM4/BsptiJruOlV0VNsu1PgR6ZlkESQCSikTl56D57gVdLGFyoQ==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 03:37:42PM +0530, Dharmendra Singh wrote:
-> From: Dharmendra Singh <dsingh@ddn.com>
-> 
-> When we go for creating a file (O_CREAT), we trigger
-> a lookup to FUSE USER space. It is very  much likely
-> that file does not exist yet as O_CREAT is passed to
-> open(). This extra lookup call can be avoided.
-> 
-> Here is how current fuse create works:
-> 
-> A. Looks up dentry (if d_in_lookup() is set.
-> B. If dentry is positive or O_CREAT is not set, return.
-> C. If server supports atomic create + open, use that to create file
->    and open it as well.
-> D. If server does not support atomic create + open, just create file
->    using "mknod" and return. VFS will take care of opening the file.
-> 
-> Here is how the proposed patch would work:
-> 
-> A. Skip lookup if extended create is supported and file is being
->    created.
-> B. Remains same. if dentry is positive or O_CREATE is not set, return.
-> C. If server supports new extended create, use that.
-> D. If not, if server supports atomic create + open, use that
-> E. If not, fall back to mknod and do not open file.
-> 
-> (Current code returns file attributes from user space as part of
->  reply of FUSE_CREATE call itself.)
-> 
-> It is expected that USER SPACE create the file, open it and fills in
-> the attributes which are then used to make inode stand/revalidate
-> in the kernel cache.
+Both nodemask and bitmap routines had mixed return values that provided
+potentially signed return values that could never happen. This was
+leading to the compiler getting confusing about the range of possible
+return values (it was thinking things could be negative where they could
+not be). In preparation for fixing nodemask, fix all the bitmap routines
+that should be returning unsigned (or bool) values.
 
-Even current FUSE_CREATE command does that. I think we need to make
-changelogs little more readable and clear. Something like.
+Cc: Yury Norov <yury.norov@gmail.com>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Christophe de Dinechin <dinechin@redhat.com>
+Cc: Alexey Dobriyan <adobriyan@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ include/linux/bitmap.h | 14 +++++++-------
+ lib/bitmap.c           | 28 ++++++++++++++--------------
+ 2 files changed, 21 insertions(+), 21 deletions(-)
 
-Current FUSE_CREATE command creates and opens a file. Client has
-either has a positive dentry or has done lookup to figure out if
-file needs to be created or not. Assumption here is that file does
-not exist on server and needs to be created.
-
-Now add command FUSE_CREATE_EXT which can return information whether
-file was actually created or not. It is possible that file already
-exists. Server sets bit FOPEN_FILE_CREATED in fuse_file_info if
-file was indeed created.
-
-> Also if file was newly created(does not
-> exist yet by this time) in USER SPACE then it should be indicated
-> in `struct fuse_file_info` by setting a bit which is again used by
-> libfuse to send some flags back to fuse kernel to indicate that
-> that file was newly created. These flags are used by kernel to
-> indicate changes in parent directory.
-> 
-> Fuse kernel automatically detects if extended create is implemented
-> by libfuse/USER SPACE or not. And depending upon the outcome of
-> this check all further creates are decided to be extended create or
-> the old create way.
-> 
-> If libfuse/USER SPACE has not implemented the extended create operation
-> then by default behaviour remains same i.e we do not optimize lookup
-> calls which are triggered before create calls into libfuse.
-> 
-> Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
-> ---
->  fs/fuse/dir.c             | 84 +++++++++++++++++++++++++++++++++------
->  fs/fuse/fuse_i.h          |  6 +++
->  include/uapi/linux/fuse.h |  3 ++
->  3 files changed, 81 insertions(+), 12 deletions(-)
-> 
-> diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
-> index 656e921f3506..ed9da8d6b57b 100644
-> --- a/fs/fuse/dir.c
-> +++ b/fs/fuse/dir.c
-> @@ -523,7 +523,7 @@ static int get_security_context(struct dentry *entry, umode_t mode,
->   */
->  static int fuse_create_open(struct inode *dir, struct dentry *entry,
->  			    struct file *file, unsigned int flags,
-> -			    umode_t mode)
-> +			    umode_t mode, uint32_t opcode)
->  {
->  	int err;
->  	struct inode *inode;
-> @@ -535,8 +535,10 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
->  	struct fuse_entry_out outentry;
->  	struct fuse_inode *fi;
->  	struct fuse_file *ff;
-> +	struct dentry *res = NULL;
->  	void *security_ctx = NULL;
->  	u32 security_ctxlen;
-> +	bool ext_create = (opcode == FUSE_CREATE_EXT ? true : false);
->  
->  	/* Userspace expects S_IFREG in create mode */
->  	BUG_ON((mode & S_IFMT) != S_IFREG);
-> @@ -566,7 +568,7 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
->  		inarg.open_flags |= FUSE_OPEN_KILL_SUIDGID;
->  	}
->  
-> -	args.opcode = FUSE_CREATE;
-> +	args.opcode = opcode;
->  	args.nodeid = get_node_id(dir);
->  	args.in_numargs = 2;
->  	args.in_args[0].size = sizeof(inarg);
-> @@ -613,9 +615,37 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
->  		goto out_err;
->  	}
->  	kfree(forget);
-> -	d_instantiate(entry, inode);
-> +	/*
-> +	 * In extended create, fuse_lookup() was skipped, which also uses
-> +	 * d_splice_alias(). As we come directly here after picking up dentry
-> +	 * it is very much likely that dentry has DCACHE_PAR_LOOKUP flag set
-> +	 * on it so call d_splice_alias().
-> +	 */
-
-Ok, following piece of code I don't understand. If we are not using
-FUSE_CREATE_EXT, then d_in_lookup() should always be false. Because
-in that case we have done lookup() if needed. So what's the point
-of following check.
-> +	if (!ext_create && !d_in_lookup(entry))
-			    ^^^^ This should always be true if
-			    ext_create=0.
-
-> +		d_instantiate(entry, inode);
-> +	else {
-> +		res = d_splice_alias(inode, entry);
-
-To me we have following 3 conditions.
-
-A. if FUSE_CREATE is being used, we have done the lookup if needed. File
-   has definitely been created. Just call d_instantiate().
-
-B. If we are using FUSE_CRATE_EXT, then it is possibel that d_in_lookup()
-   is true. But it is also possible that dentry is negative. So looks
-   you probably want to do this.
-
-   if (!ext_create || !d_in_lookup()) {
-   	d_instanatiate()
-   } else {
-	/* Dentry is in lookup() as well as we used FUSE_CRATE_EXT and
-	 * skipped lookup. So use d_splice_alias() instead of
-	 * d_instantiate().
-	 */
-   	d_splice_alias();
-   }
-
-Having said that I am not sure if using dentry_spliace_alias() is the
-right thing. I think Miklos or somebody else who understands associated
-logic better should have a look at it.
-
-I am just trying to reason through the code based on your arguments.
-
-> +		if (IS_ERR(res)) {
-> +			/* Close the file in user space, but do not unlink it,
-> +			 * if it was created - with network file systems other
-> +			 * clients might have already accessed it.
-> +			 */
-> +			fi = get_fuse_inode(inode);
-> +			fuse_sync_release(fi, ff, flags);
-> +			fuse_queue_forget(fm->fc, forget, outentry.nodeid, 1);
-> +			err = PTR_ERR(res);
-> +			goto out_err;
-> +		}
-> +	}
->  	fuse_change_entry_timeout(entry, &outentry);
-> -	fuse_dir_changed(dir);
-> +	/*
-> +	 * This should be always set when the file is created, but only
-> +	 * CREATE_EXT introduced FOPEN_FILE_CREATED to user space.
-> +	 */
-> +	if (!ext_create || (outopen.open_flags & FOPEN_FILE_CREATED)) {
-> +		fuse_dir_changed(dir);
-> +		file->f_mode |= FMODE_CREATED;
-> +	}
->  	err = finish_open(file, entry, generic_file_open);
->  	if (err) {
->  		fi = get_fuse_inode(inode);
-> @@ -634,6 +664,29 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
->  	return err;
->  }
->  
-> +static int fuse_create_ext(struct inode *dir, struct dentry *entry,
-> +			   struct file *file, unsigned int flags,
-> +			   umode_t mode)
-> +{
-> +	int err;
-> +	struct fuse_conn *fc = get_fuse_conn(dir);
-> +
-> +	if (fc->no_create_ext)
-> +		return -ENOSYS;
-
-If we check this in fuse_atomic_open(), then we don't need this check
-here. Look at suggested changes below in fuse_atomic_open().
-
-> +
-> +	err = fuse_create_open(dir, entry, file, flags, mode,
-> +			       FUSE_CREATE_EXT);
-> +	/* If ext create is not implemented then indicate in fc so that next
-> +	 * request falls back to normal create instead of going into libufse and
-> +	 * returning with -ENOSYS.
-> +	 */
-> +	if (err == -ENOSYS) {
-> +		if (!fc->no_create_ext)
-
-Why to check for !fc->no_create_ext.
-> +			fc->no_create_ext = 1;
-> +	}
-> +	return err;
-> +}
-
-I think we can completely get rid of fuse_create_ext() function. And
-just add a parameter "opcode" to FUSE_CREATE_OPEN and that should
-do it.
-
-> +
->  static int fuse_mknod(struct user_namespace *, struct inode *, struct dentry *,
->  		      umode_t, dev_t);
->  static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
-> @@ -643,29 +696,35 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
->  	int err;
->  	struct fuse_conn *fc = get_fuse_conn(dir);
->  	struct dentry *res = NULL;
-> +	bool create = flags & O_CREAT ? true : false;
->  
->  	if (fuse_is_bad(dir))
->  		return -EIO;
->  
-> -	if (d_in_lookup(entry)) {
-> +lookup:
-> +	if ((!create || fc->no_create_ext) && d_in_lookup(entry)) {
->  		res = fuse_lookup(dir, entry, 0);
->  		if (IS_ERR(res))
->  			return PTR_ERR(res);
-> -
->  		if (res)
->  			entry = res;
->  	}
-> -
-> -	if (!(flags & O_CREAT) || d_really_is_positive(entry))
-> +	if (!create || d_really_is_positive(entry))
->  		goto no_open;
->  
-> -	/* Only creates */
-> -	file->f_mode |= FMODE_CREATED;
-> -
->  	if (fc->no_create)
-
-This should be (fc_no_create && fc->no_create_ext)? In theory it is
-possible that a new server has FUSE_CREATE_EXT implemented but not
-FUSE_CREATE?
-
-If we are expecting FUSE_CREATE_EXT to be a super set of FUSE_CREATE,
-then this should be possible. Maybe it is a good idea to not assume
-the state of dentry (whether it is in lookup or not) if FUSE_CREATE_EXT 
-is being used. And just design FUSE_CREATE_EXT to be superset of
-FUSE_CREATE.
-
->  		goto mknod;
->  
-> -	err = fuse_create_open(dir, entry, file, flags, mode);
-> +	if (!fc->no_create_ext) {
-
-What happens if dentry is negative here and d_in_lookup(entry) == false?
-I mean there is no need to use FUSE_CREATE_EXT in that case necessarily?
-
-But using it does not harm either. Just that we need to then keep track
-what's the state of dentry. Whether it was in in lookup or not.
-
-
-> +		err = fuse_create_ext(dir, entry, file, flags, mode);
-> +		/* If libfuse/user space has not implemented extended create,
-> +		 * fall back to normal create.
-> +		 */
-> +		if (err == -ENOSYS)
-> +			goto lookup;
-> +	} else
-> +		err = fuse_create_open(dir, entry, file, flags, mode,
-> +				       FUSE_CREATE);
-
-BTW, may be following code structure is better. We can just add a label
-for create_ext.
-
-	if (fc->no_create_ext)
-		goto create;
-	err = fuse_create_ext(dir, entry, file, flags, mode);
-	if (err == -ENOSYS) {
-		fc->no_create_ext = 1;
-		/*
-		 * We might have skipped lookup assuming FUSE_CREATE_EXT
-		 * is supported. Go through lookup path again if needed.
-		 */
-		goto lookup;
-	}
-create:
-	err = fuse_create_open(dir, entry, file, flags, mode);
-
-Thanks
-Vivek
-
->  	if (err == -ENOSYS) {
->  		fc->no_create = 1;
->  		goto mknod;
-> @@ -683,6 +742,7 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
->  }
->  
->  /*
-> +
->   * Code shared between mknod, mkdir, symlink and link
->   */
->  static int create_new_entry(struct fuse_mount *fm, struct fuse_args *args,
-> diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
-> index e8e59fbdefeb..266133dcab5e 100644
-> --- a/fs/fuse/fuse_i.h
-> +++ b/fs/fuse/fuse_i.h
-> @@ -669,6 +669,12 @@ struct fuse_conn {
->  	/** Is open/release not implemented by fs? */
->  	unsigned no_open:1;
->  
-> +	/*
-> +	 * Is atomic lookup-create-open(extended create) not implemented
-> +	 * by fs?
-> +	 */
-> +	unsigned no_create_ext:1;
-> +
->  	/** Is opendir/releasedir not implemented by fs? */
->  	unsigned no_opendir:1;
->  
-> diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
-> index d6ccee961891..bebe4be3f1cb 100644
-> --- a/include/uapi/linux/fuse.h
-> +++ b/include/uapi/linux/fuse.h
-> @@ -301,6 +301,7 @@ struct fuse_file_lock {
->   * FOPEN_CACHE_DIR: allow caching this directory
->   * FOPEN_STREAM: the file is stream-like (no file position at all)
->   * FOPEN_NOFLUSH: don't flush data cache on close (unless FUSE_WRITEBACK_CACHE)
-> + * FOPEN_FILE_CREATED: the file was actually created
->   */
->  #define FOPEN_DIRECT_IO		(1 << 0)
->  #define FOPEN_KEEP_CACHE	(1 << 1)
-> @@ -308,6 +309,7 @@ struct fuse_file_lock {
->  #define FOPEN_CACHE_DIR		(1 << 3)
->  #define FOPEN_STREAM		(1 << 4)
->  #define FOPEN_NOFLUSH		(1 << 5)
-> +#define FOPEN_FILE_CREATED	(1 << 6)
->  
->  /**
->   * INIT request/reply flags
-> @@ -537,6 +539,7 @@ enum fuse_opcode {
->  	FUSE_SETUPMAPPING	= 48,
->  	FUSE_REMOVEMAPPING	= 49,
->  	FUSE_SYNCFS		= 50,
-> +	FUSE_CREATE_EXT		= 51,
->  
->  	/* CUSE specific operations */
->  	CUSE_INIT		= 4096,
-> -- 
-> 2.17.1
-> 
+diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+index 7dba0847510c..381735c2f2f1 100644
+--- a/include/linux/bitmap.h
++++ b/include/linux/bitmap.h
+@@ -132,8 +132,8 @@ unsigned long *devm_bitmap_zalloc(struct device *dev,
+  * lib/bitmap.c provides these functions:
+  */
+ 
+-int __bitmap_equal(const unsigned long *bitmap1,
+-		   const unsigned long *bitmap2, unsigned int nbits);
++bool __bitmap_equal(const unsigned long *bitmap1,
++		    const unsigned long *bitmap2, unsigned int nbits);
+ bool __pure __bitmap_or_equal(const unsigned long *src1,
+ 			      const unsigned long *src2,
+ 			      const unsigned long *src3,
+@@ -157,10 +157,10 @@ int __bitmap_andnot(unsigned long *dst, const unsigned long *bitmap1,
+ void __bitmap_replace(unsigned long *dst,
+ 		      const unsigned long *old, const unsigned long *new,
+ 		      const unsigned long *mask, unsigned int nbits);
+-int __bitmap_intersects(const unsigned long *bitmap1,
+-			const unsigned long *bitmap2, unsigned int nbits);
+-int __bitmap_subset(const unsigned long *bitmap1,
+-		    const unsigned long *bitmap2, unsigned int nbits);
++bool __bitmap_intersects(const unsigned long *bitmap1,
++			 const unsigned long *bitmap2, unsigned int nbits);
++bool __bitmap_subset(const unsigned long *bitmap1,
++		     const unsigned long *bitmap2, unsigned int nbits);
+ int __bitmap_weight(const unsigned long *bitmap, unsigned int nbits);
+ void __bitmap_set(unsigned long *map, unsigned int start, int len);
+ void __bitmap_clear(unsigned long *map, unsigned int start, int len);
+@@ -331,7 +331,7 @@ static inline void bitmap_complement(unsigned long *dst, const unsigned long *sr
+ #endif
+ #define BITMAP_MEM_MASK (BITMAP_MEM_ALIGNMENT - 1)
+ 
+-static inline int bitmap_equal(const unsigned long *src1,
++static inline bool bitmap_equal(const unsigned long *src1,
+ 			const unsigned long *src2, unsigned int nbits)
+ {
+ 	if (small_const_nbits(nbits))
+diff --git a/lib/bitmap.c b/lib/bitmap.c
+index 0d5c2ece0bcb..b57dafe13eec 100644
+--- a/lib/bitmap.c
++++ b/lib/bitmap.c
+@@ -45,19 +45,19 @@
+  * for the best explanations of this ordering.
+  */
+ 
+-int __bitmap_equal(const unsigned long *bitmap1,
++bool __bitmap_equal(const unsigned long *bitmap1,
+ 		const unsigned long *bitmap2, unsigned int bits)
+ {
+ 	unsigned int k, lim = bits/BITS_PER_LONG;
+ 	for (k = 0; k < lim; ++k)
+ 		if (bitmap1[k] != bitmap2[k])
+-			return 0;
++			return false;
+ 
+ 	if (bits % BITS_PER_LONG)
+ 		if ((bitmap1[k] ^ bitmap2[k]) & BITMAP_LAST_WORD_MASK(bits))
+-			return 0;
++			return false;
+ 
+-	return 1;
++	return true;
+ }
+ EXPORT_SYMBOL(__bitmap_equal);
+ 
+@@ -303,33 +303,33 @@ void __bitmap_replace(unsigned long *dst,
+ }
+ EXPORT_SYMBOL(__bitmap_replace);
+ 
+-int __bitmap_intersects(const unsigned long *bitmap1,
+-			const unsigned long *bitmap2, unsigned int bits)
++bool __bitmap_intersects(const unsigned long *bitmap1,
++			 const unsigned long *bitmap2, unsigned int bits)
+ {
+ 	unsigned int k, lim = bits/BITS_PER_LONG;
+ 	for (k = 0; k < lim; ++k)
+ 		if (bitmap1[k] & bitmap2[k])
+-			return 1;
++			return true;
+ 
+ 	if (bits % BITS_PER_LONG)
+ 		if ((bitmap1[k] & bitmap2[k]) & BITMAP_LAST_WORD_MASK(bits))
+-			return 1;
+-	return 0;
++			return true;
++	return false;
+ }
+ EXPORT_SYMBOL(__bitmap_intersects);
+ 
+-int __bitmap_subset(const unsigned long *bitmap1,
+-		    const unsigned long *bitmap2, unsigned int bits)
++bool __bitmap_subset(const unsigned long *bitmap1,
++		     const unsigned long *bitmap2, unsigned int bits)
+ {
+ 	unsigned int k, lim = bits/BITS_PER_LONG;
+ 	for (k = 0; k < lim; ++k)
+ 		if (bitmap1[k] & ~bitmap2[k])
+-			return 0;
++			return false;
+ 
+ 	if (bits % BITS_PER_LONG)
+ 		if ((bitmap1[k] & ~bitmap2[k]) & BITMAP_LAST_WORD_MASK(bits))
+-			return 0;
+-	return 1;
++			return false;
++	return true;
+ }
+ EXPORT_SYMBOL(__bitmap_subset);
+ 
+-- 
+2.32.0
 
