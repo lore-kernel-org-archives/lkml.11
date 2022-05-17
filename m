@@ -2,157 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4C0C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94930C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350669AbiEQPxp (ORCPT
+        id S1350644AbiEQPyK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
+        Tue, 17 May 2022 11:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350650AbiEQPxl (ORCPT
+        with ESMTP id S1350662AbiEQPyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:53:41 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60BA227;
-        Tue, 17 May 2022 08:53:40 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24HFmXiL021978;
-        Tue, 17 May 2022 15:53:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=sJA5HNvoKyXLH7X+0lH0WPS92sWNHhiOLepPwbTZTr0=;
- b=Rw71t49D8PqBOCh7jHat+NZ4UIMN23nIXWrZ/4ykLbBObKnoTIMa4lXUd+vsir1tKhIi
- LgqwcTHVhmnnfcFEHe23JeV8J6XhiSjUMkg73QXzGXcR/5Tf2r6VI825ACmk/ouqoomW
- mD0Eucns4l4qWvWKrLCtUhlDS5ALhoNWaJZq4XeYGhdVjaPlSxKd/tk1+dMcqndtRCjd
- fVcn1N+N4OcxMNUf08F+23mfeKBaasC98wLbDDuOD4t7DQEo246tl+GWcnYhEO/SOD9v
- 6CMGvcfn4Tdhp+MkeYyM/DuBeL8jJgzXEAHKfDy55Y6V4WoLuXrTl2NGlV047tfamqR5 eQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4ebt8nyn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 15:53:04 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24HFn7gO025135;
-        Tue, 17 May 2022 15:53:03 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4ebt8nxq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 15:53:03 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24HFqWIp032749;
-        Tue, 17 May 2022 15:53:01 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 3g2428kk1y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 15:53:01 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24HFqwcd43254228
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 17 May 2022 15:52:58 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AEC6BA404D;
-        Tue, 17 May 2022 15:52:58 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ABE4AA4040;
-        Tue, 17 May 2022 15:52:55 +0000 (GMT)
-Received: from sig-9-65-95-105.ibm.com (unknown [9.65.95.105])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 17 May 2022 15:52:55 +0000 (GMT)
-Message-ID: <1c6a5ce2564c29a06eca255072a379351a5fc026.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 2/7] KEYS: trusted: allow use of kernel RNG for key
- material
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     kernel@pengutronix.de, Sumit Garg <sumit.garg@linaro.org>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        David Gstir <david@sigma-star.at>,
-        Michael Walle <michael@walle.cc>,
-        John Ernberg <john.ernberg@actia.se>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Horia =?UTF-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Franck LENORMAND <franck.lenormand@nxp.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Date:   Tue, 17 May 2022 11:52:55 -0400
-In-Reply-To: <20220513145705.2080323-3-a.fatoum@pengutronix.de>
-References: <20220513145705.2080323-1-a.fatoum@pengutronix.de>
-         <20220513145705.2080323-3-a.fatoum@pengutronix.de>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: SE_jucLUMk1vHaVn0CtxN-mL7pixtwk2
-X-Proofpoint-GUID: WeggiYsQgcZKsHI4Vh9DhvROgGdOew6I
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-17_03,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- suspectscore=0 phishscore=0 lowpriorityscore=0 clxscore=1011 spamscore=0
- malwarescore=0 bulkscore=0 mlxscore=0 mlxlogscore=848 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205170095
+        Tue, 17 May 2022 11:54:02 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62D950B26;
+        Tue, 17 May 2022 08:53:54 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id 137so17293266pgb.5;
+        Tue, 17 May 2022 08:53:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rmBZXjHGe6pjrZrcbSckkH/iPjlINFANkKf9gszWPYU=;
+        b=mCL2WZQfUMWu4xy6yy7X1+ebSif5rAu/jKymgNsJYYzZFnA9ugCrwiihsPYjvzThIU
+         DFn5Lk91C0tZGoeUNkgplThRXBMayt2xcmaeF/kI+0KvGVR+kIISN5RmRdDJqe7Oadm+
+         ApJfECbPyywghswoV+jBSpOdkrBps9EXktTRVf3Url5a8fO/0L7wfegdHmd2rnO/VKqr
+         5aIFJRbhhBTCl8CG9Fz4O9HHJKwwrK9Rxg2vuvpaHSd9SFQ95LPDBKs/Xs2D02Uy/oXT
+         ZFn7YQQsYYxadnuLDDRi0dvdKAfQu/UzUbSJrsKeXA9Nrm8fbp9Bp3m1fdX1C87JU/JQ
+         FXxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rmBZXjHGe6pjrZrcbSckkH/iPjlINFANkKf9gszWPYU=;
+        b=Ib3dDUlTM04ry+BsbBJCGicKyfD0/9WIB+k0j8S6lgvmCrayRA2OM/3KYcnpChQHEa
+         YHGfzKJpQtQXXyWQlFXSCjnZOUVRV5qVeVqfERpxWHgm+3PqUfnhgt1SwnfYLoZKPh0Z
+         RSQOSYxo2Q5qO7xOHRKvsdOD/HjG46gWHysagO571KmfEWVkVA6zBf+TgVSw6CX0YF+L
+         QztLEkEaBOsZGsi5N7WMW7ixsMCoWMeyK1E4RrbNXpi+Ucb9F3Wqfqpq3dTdHhMfdnOw
+         LFC/Auv2sMTNW8+jV0Hrid8yRvHxMqj1/1oPNo5pNyk52iMC611MEgxS5TjxT+H32dht
+         iTsQ==
+X-Gm-Message-State: AOAM530j5FON1Djz9qZ5xcdpYGD1PkNHYtIYQpBTuyFwixC/CdWCkh77
+        HQ83wXMvDO4/v0SbDbDPquk=
+X-Google-Smtp-Source: ABdhPJxrXCSmhatJuzbkg3Oy+emIhom0t5nAYkNpvRG00a6Wimvdurd952Xq+8TaFxwV35QJJRu07A==
+X-Received: by 2002:a63:8442:0:b0:3c6:4271:cad with SMTP id k63-20020a638442000000b003c642710cadmr20242021pgd.275.1652802834212;
+        Tue, 17 May 2022 08:53:54 -0700 (PDT)
+Received: from MacBook-Pro.local ([2620:10d:c090:500::2:c22a])
+        by smtp.gmail.com with ESMTPSA id d14-20020a62f80e000000b0050dc76281fdsm6932pfh.215.2022.05.17.08.53.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 08:53:53 -0700 (PDT)
+Date:   Tue, 17 May 2022 08:53:49 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH bpf-next v4 3/6] bpf: Move is_valid_bpf_tramp_flags() to
+ the public trampoline code
+Message-ID: <20220517155349.4jk5oymnjvrasw2p@MacBook-Pro.local>
+References: <20220517071838.3366093-1-xukuohai@huawei.com>
+ <20220517071838.3366093-4-xukuohai@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517071838.3366093-4-xukuohai@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-13 at 16:57 +0200, Ahmad Fatoum wrote:
->  static int __init init_trusted(void)
->  {
-> +       int (*get_random)(unsigned char *key, size_t key_len);
->         int i, ret = 0;
+On Tue, May 17, 2022 at 03:18:35AM -0400, Xu Kuohai wrote:
 >  
->         for (i = 0; i < ARRAY_SIZE(trusted_key_sources); i++) {
-> @@ -322,6 +333,28 @@ static int __init init_trusted(void)
->                             strlen(trusted_key_sources[i].name)))
->                         continue;
->  
-> +               /*
-> +                * We always support trusted.rng="kernel" and "default" as
-> +                * well as trusted.rng=$trusted.source if the trust source
-> +                * defines its own get_random callback.
-> +                */
- 
-While TEE trusted keys support was upstreamed, there was a lot of
-discussion about using kernel RNG.  One of the concerns was lack of or
-insuffiencent entropy during early boot on embedded devices.  This
-concern needs to be clearly documented in both Documentation/admin-
-guide/kernel-parameters.txt and Documentation/security/keys/trusted-
-encrypted.rst.
-
-thanks,
-
-Mimi
-
-> +               get_random = trusted_key_sources[i].ops->get_random;
-> +               if (trusted_rng && strcmp(trusted_rng, "default")) {
-> +                       if (!strcmp(trusted_rng, "kernel")) {
-> +                               get_random = kernel_get_random;
-> +                       } else if (strcmp(trusted_rng, trusted_key_sources[i].name) ||
-> +                                  !get_random) {
-> +                               pr_warn("Unsupported RNG. Supported: kernel");
-> +                               if (get_random)
-> +                                       pr_cont(", %s", trusted_key_sources[i].name);
-> +                               pr_cont(", default\n");
-> +                               return -EINVAL;
-> +                       }
-> +               }
+> +static bool is_valid_bpf_tramp_flags(unsigned int flags)
+> +{
+> +	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
+> +	    (flags & BPF_TRAMP_F_SKIP_FRAME))
+> +		return false;
 > +
-> +               if (!get_random)
-> +                       get_random = kernel_get_random;
+> +	/* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
+> +	 * and it must be used alone.
+> +	 */
+> +	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
+> +	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
+> +		return false;
 > +
->                 static_call_update(trusted_key_init,
->                                    trusted_key_sources[i].ops->init);
+> +	return true;
+> +}
+> +
+> +int bpf_prepare_trampoline(struct bpf_tramp_image *tr, void *image,
+> +			   void *image_end, const struct btf_func_model *m,
+> +			   u32 flags, struct bpf_tramp_links *tlinks,
+> +			   void *orig_call)
+> +{
+> +	if (!is_valid_bpf_tramp_flags(flags))
+> +		return -EINVAL;
+> +
+> +	return arch_prepare_bpf_trampoline(tr, image, image_end, m, flags,
+> +					   tlinks, orig_call);
+> +}
 
+It's an overkill to introduce a new helper function just to validate
+flags that almost compile time constants.
+The flags are not user supplied.
+Please move /* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops ... */
+comment to bpf_struct_ops.c right before it calls arch_prepare_bpf_trampoline()
+And add a comment to trampoline.c saying that BPF_TRAMP_F_RESTORE_REGS
+and BPF_TRAMP_F_SKIP_FRAME should not be set together.
+We could add a warn_on there or in arch code, but feels like overkill.
