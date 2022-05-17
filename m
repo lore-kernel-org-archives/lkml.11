@@ -2,73 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C24C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E91C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 00:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232191AbiEQA6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 20:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
+        id S240574AbiEQA6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 20:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239719AbiEQAzx (ORCPT
+        with ESMTP id S242491AbiEQA4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 20:55:53 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62042DEA3;
-        Mon, 16 May 2022 17:55:46 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso958517pjj.4;
-        Mon, 16 May 2022 17:55:46 -0700 (PDT)
+        Mon, 16 May 2022 20:56:08 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE7721246
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:56:06 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id f10so4082657pjs.3
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 17:56:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oszu+rft9ZMt8hn3XlfQBiWXh4vkWerpEVjVpNGVwQE=;
-        b=GmR3175J1QJA++Kl/bkM18GAR0pdIOR/nKTuYJ02O2yIkNWXEOJPq5w2+cfh2DL/TI
-         +jpF745GD82YqiM0gAdhkEKWSc1XbAzth44QQ+UornMYJ4amJjWzRY33tQN2cmVR4ZWe
-         aUt8vVXkkVq0g7off74SJU92u11TirCMvQligM3DUzTK7LwzvsjXzY8jNQyQTQVHUY6G
-         Wl/ZlIgB8DVF8oJQKkNjJGtI74NFgq2+9SOhSvo8bQx38xZOaKs6snbLQD2nvg3DT4wT
-         j7yJRDZp4nZL3LnHSNNdGMqGRVp+SBRs8NMW1exWDQAv5MMUkn6s4sPJL4eNLfA873eH
-         Wwzg==
+        bh=E6nKYG584PAtoQ8/jvqpBx36KvgGo8qJoQWKQdOpBKU=;
+        b=IIIyXSQJWf8UayE82aTml286GpqPORX9ViI9e/yl8XghTxo/ZP4IGnG0yfs5lmsqZh
+         XAq01FX14zp3kWmuGrRB787zVcW0Xl2iiLvehDKRPIh6vH6lLApEoZfReOfW4GdGGCip
+         i3n+iOtizlgQl+dYG9gSswt+9j5ErccPVhmYyo7iCJC+0rlm2A3kFK/yB6V152fE1p/M
+         OiHfebI9mZGTN86UDz2R0krR4FF6bejrChRfTiWyCP05MNGmysQlsbAm5s/ghHmea3wm
+         eNqeweDIspoMcW9uaocky1EbdAzCujoUwYTRr0daPN1pfrfvathmDgiX0W85H+XFHVfk
+         v/ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oszu+rft9ZMt8hn3XlfQBiWXh4vkWerpEVjVpNGVwQE=;
-        b=veYIC+h+A4zg0b7UWqwWJlDCvLPIpRUv/1yxy+CU1IYSF6NNZ8psnOmMAveYLobQna
-         5WV24ZS0mQzhki7NoxQ/CSCZUNa2HfiPkLNtnwaGg9a2xfCBPJDmgxTEPJItSaxvEkWW
-         K71kzgFbEyGKo14lwtb8sts5GoBhkIRc0NZ3VVy/FHFBLAoz0JkpQ8B5MMvMYq/gGH/a
-         uyX11BztmYu/rl67yBhXt3wOsrRO8/VXqo+vDaFiZhQpDhE93VfX9hBmu5lInyKzX5mG
-         o8R9OOJfSY8az1n+iWoFxzUJW1r6KZATradB2fy0TcCK/2TxxjI9vzgXHvSZCjGF1VSK
-         7VJQ==
-X-Gm-Message-State: AOAM532+XcaJnOvigQUJUa3x3O8MimYT/47q0OUDwva7KQPenxFg8CwX
-        rewvzBJenoF+SUXxSBhkAMzaV8OeOgEElw==
-X-Google-Smtp-Source: ABdhPJx6yIrIZNvt4OMM4DykP/blCEK67dJ+2zkDI1WzYEMFAxHoTyKI6A15UXJyEq9tmctm+aFOgQ==
-X-Received: by 2002:a17:902:ce11:b0:15f:4acc:f1fb with SMTP id k17-20020a170902ce1100b0015f4accf1fbmr19520857plg.76.1652748945576;
-        Mon, 16 May 2022 17:55:45 -0700 (PDT)
+        bh=E6nKYG584PAtoQ8/jvqpBx36KvgGo8qJoQWKQdOpBKU=;
+        b=R16TsTSxYlweG2EX+Ub6CRIsmqkCN2SV/lupKlaT2c97Efo8NFjDsvghut3cLVSU9T
+         BlJMlWhL1CjkRskBJnM4z54RQhXWviiISNocyw0aXG9ADVx7dqEcu5V0ud13ST40uvRB
+         eWeO6wc03Joo2ef190OV2KXfkVjrKNukaF/RQaO2qx78Qij3vvFGvB2Nar7/YeWWm4EZ
+         5hzUDUryOZOPyE5tLXC/JbNh5T7SajO4wD9cR2E6CPoeOpUgXMMIEnd+L+KFx+WqNuNz
+         bAoz9plVQZxAh9fJ3Sg/l5GanhMQ50jdeUrEgeHdjRUYtv91GDcCcja6QVcSK+DKB2il
+         AcIA==
+X-Gm-Message-State: AOAM5301iTc+prN5PZQ/XNqDeXMY90RjLkZR9DDXPySAu5ukxttA350h
+        eERGdvyKRXJ1kjcjiy+6HL3sTdNAbGExKQ==
+X-Google-Smtp-Source: ABdhPJzCzap+mCp/6EYXmoaBxWvMCbfqW76N0OCIz6ZiKWNdjx7NhOv3OkFJ2by8dxR+EwgzUmRbjw==
+X-Received: by 2002:a17:902:a516:b0:15f:309f:7805 with SMTP id s22-20020a170902a51600b0015f309f7805mr20022119plq.114.1652748965506;
+        Mon, 16 May 2022 17:56:05 -0700 (PDT)
 Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id p26-20020a62b81a000000b0050dc7628177sm7474333pfe.81.2022.05.16.17.55.44
+        by smtp.gmail.com with ESMTPSA id k1-20020a17090ad08100b001df501391efsm273548pju.53.2022.05.16.17.56.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 17:55:44 -0700 (PDT)
+        Mon, 16 May 2022 17:56:04 -0700 (PDT)
 From:   Stafford Horne <shorne@gmail.com>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Openrisc <openrisc@lists.librecores.org>,
         Stafford Horne <shorne@gmail.com>,
         Jonas Bonn <jonas@southpole.se>,
         Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH v2 06/13] openrisc: Update litex defconfig to support glibc userland
-Date:   Tue, 17 May 2022 09:55:03 +0900
-Message-Id: <20220517005510.3500105-7-shorne@gmail.com>
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Qi Zheng <zhengqi.arch@bytedance.com>
+Subject: [PATCH v2 12/13] openrisc/fault: Fix symbol scope warnings
+Date:   Tue, 17 May 2022 09:55:09 +0900
+Message-Id: <20220517005510.3500105-13-shorne@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220517005510.3500105-1-shorne@gmail.com>
 References: <20220517005510.3500105-1-shorne@gmail.com>
@@ -78,78 +70,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have been using a litex SoC for glibc verification.  Update the
-default litex config to support required userspace API's needed for the
-full glibc testsuite to pass.
+Sparse reported the following warning:
 
-This includes enabling the litex mmc driver and filesystems used
-in a typical litex environment.
+    arch/openrisc/mm/fault.c:27:15: warning: symbol 'pte_misses' was not declared. Should it be static?
+    arch/openrisc/mm/fault.c:28:15: warning: symbol 'pte_errors' was not declared. Should it be static?
+    arch/openrisc/mm/fault.c:33:16: warning: symbol 'current_pgd' was not declared. Should it be static?
+
+This patch fixes these by:
+ - Remove unused pte_misses and pte_errors counters which are no longer
+   used.
+ - Add asm/mmu_context.h include to provide the current_pgd declaration.
 
 Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
- arch/openrisc/configs/or1klitex_defconfig | 33 +++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ arch/openrisc/mm/fault.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/openrisc/configs/or1klitex_defconfig b/arch/openrisc/configs/or1klitex_defconfig
-index d695879a4d26..4c0138340bd9 100644
---- a/arch/openrisc/configs/or1klitex_defconfig
-+++ b/arch/openrisc/configs/or1klitex_defconfig
-@@ -1,22 +1,55 @@
-+CONFIG_SYSVIPC=y
-+CONFIG_POSIX_MQUEUE=y
-+CONFIG_CGROUPS=y
-+CONFIG_NAMESPACES=y
-+CONFIG_USER_NS=y
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
-+CONFIG_SGETMASK_SYSCALL=y
- CONFIG_EMBEDDED=y
- CONFIG_OPENRISC_BUILTIN_DTB="or1klitex"
-+# CONFIG_OPENRISC_HAVE_INST_RORI is not set
- CONFIG_HZ_100=y
-+CONFIG_OPENRISC_HAVE_SHADOW_GPRS=y
- CONFIG_NET=y
- CONFIG_PACKET=y
-+CONFIG_PACKET_DIAG=y
- CONFIG_UNIX=y
-+CONFIG_UNIX_DIAG=y
- CONFIG_INET=y
-+CONFIG_IP_MULTICAST=y
-+CONFIG_IP_ADVANCED_ROUTER=y
-+CONFIG_INET_UDP_DIAG=y
-+CONFIG_INET_RAW_DIAG=y
-+# CONFIG_WIRELESS is not set
-+# CONFIG_ETHTOOL_NETLINK is not set
- CONFIG_DEVTMPFS=y
- CONFIG_DEVTMPFS_MOUNT=y
- CONFIG_OF_OVERLAY=y
- CONFIG_NETDEVICES=y
- CONFIG_LITEX_LITEETH=y
-+# CONFIG_WLAN is not set
- CONFIG_SERIAL_LITEUART=y
- CONFIG_SERIAL_LITEUART_CONSOLE=y
- CONFIG_TTY_PRINTK=y
-+# CONFIG_GPIO_CDEV is not set
-+CONFIG_MMC=y
-+CONFIG_MMC_LITEX=y
-+# CONFIG_VHOST_MENU is not set
-+# CONFIG_IOMMU_SUPPORT is not set
- CONFIG_LITEX_SOC_CONTROLLER=y
-+CONFIG_EXT2_FS=y
-+CONFIG_EXT3_FS=y
-+CONFIG_MSDOS_FS=y
-+CONFIG_VFAT_FS=y
-+CONFIG_EXFAT_FS=y
- CONFIG_TMPFS=y
-+CONFIG_NFS_FS=y
-+CONFIG_NFS_V3_ACL=y
-+CONFIG_NFS_V4=y
-+CONFIG_NLS_CODEPAGE_437=y
-+CONFIG_NLS_ISO8859_1=y
-+CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,bpf"
- CONFIG_PRINTK_TIME=y
- CONFIG_PANIC_ON_OOPS=y
- CONFIG_SOFTLOCKUP_DETECTOR=y
+diff --git a/arch/openrisc/mm/fault.c b/arch/openrisc/mm/fault.c
+index 80bb66ad42f6..516cba14dec9 100644
+--- a/arch/openrisc/mm/fault.c
++++ b/arch/openrisc/mm/fault.c
+@@ -18,15 +18,13 @@
+ #include <linux/perf_event.h>
+ 
+ #include <linux/uaccess.h>
++#include <asm/mmu_context.h>
+ #include <asm/siginfo.h>
+ #include <asm/signal.h>
+ 
+ #define NUM_TLB_ENTRIES 64
+ #define TLB_OFFSET(add) (((add) >> PAGE_SHIFT) & (NUM_TLB_ENTRIES-1))
+ 
+-unsigned long pte_misses;	/* updated by do_page_fault() */
+-unsigned long pte_errors;	/* updated by do_page_fault() */
+-
+ /* __PHX__ :: - check the vmalloc_fault in do_page_fault()
+  *            - also look into include/asm/mmu_context.h
+  */
 -- 
 2.31.1
 
