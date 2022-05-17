@@ -2,143 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FD7C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F230FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240745AbiEQHDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
+        id S233370AbiEQHFL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240500AbiEQHB3 (ORCPT
+        with ESMTP id S229568AbiEQHFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:01:29 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AE22D1EC
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:21 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id tk15so9304922ejc.6
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tfEGYpn75JZIAXykbEZSrC/6uLUKdiFuaaBfUgP96o4=;
-        b=aqrzdFHaxxIHJsOHHTRhp9XZBr3FCIznH3IAP/kCztIGY9IGSvhOU3TiqNp4osPaKn
-         5fGzy04VbBQ7ONevNZGOOx1IWMaN/CSTza9okBZfdEklrRSqAh1F7YfFVUsdXy9Rmusn
-         cva08ShLCkekAIzsxQytWi26XN5lomrL5Pq0FFtCRx5Xf+IVT822bnlXOEiWaHttKSza
-         LC6Lrte5DbeqISmg76YBdsa95O3zyX6PpLZ4fJ4k379pHdkSGNF4OZUVRKSoTFVMQONq
-         uMm5Y4JMMcaUp1O5M94mtQimsQ9zTbt0x4wFPspRwM9Lv+XQnEXWu6lsZCpTLXiiW3Iz
-         FQBg==
+        Tue, 17 May 2022 03:05:07 -0400
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA0A1EC7B;
+        Tue, 17 May 2022 00:05:05 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id o130so15353888ybc.8;
+        Tue, 17 May 2022 00:05:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tfEGYpn75JZIAXykbEZSrC/6uLUKdiFuaaBfUgP96o4=;
-        b=l4tgigtBiZUnoRW1iZ7/7TgnuPCQN0O7bH9qScU3QtbzN8OOBxLo7PHPoghy/94K22
-         0aFWrVnuosf9TH9+8pzZlBaoaiDEzlxqjdAJLGT/32x0zB7TlY6iE3TRqAforPxdaJkK
-         KMSNBxNeGOEQVyNPu0rLfDHpX8rUNj2yG3YebT5yXW7bNoojOvM8uYDhblVqmbKPeqOy
-         g+BB/UGzVeKFP/TI2ncF/Cfxxx1WOU8R6PYQfqWLgEFimNBd7ElcchxMCX6zMA9VJ0HQ
-         enMVP0wCtRWUhWag3onLpGCS/3cD5mt1YRpA1y6DrHsjJ1CKZpN4fP8CoWQD9qQbURRI
-         oq9Q==
-X-Gm-Message-State: AOAM532Za35mh35VBjl2EoQKwy0WfLPeoj6VekmG+XGMvD1q3VpGUnji
-        I35Pg7/7aqOtCqUXEA3lqKtoYA==
-X-Google-Smtp-Source: ABdhPJwU7YfLmQb69S3WYBqzwSble4j7A+5uNz0HWOjwom95/MqGo5I2jvhB/XOFIR4Oxu+aEhGzKQ==
-X-Received: by 2002:a17:907:1c21:b0:6f4:7a8a:d6a2 with SMTP id nc33-20020a1709071c2100b006f47a8ad6a2mr18490102ejc.288.1652770880298;
-        Tue, 17 May 2022 00:01:20 -0700 (PDT)
-Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id b5-20020a056402138500b0042617ba637esm6487016edv.8.2022.05.17.00.01.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 00:01:19 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 02/12] dt-bindings: remoteproc: remove unneeded ref for names
-Date:   Tue, 17 May 2022 09:01:03 +0200
-Message-Id: <20220517070113.18023-3-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220517070113.18023-1-krzysztof.kozlowski@linaro.org>
-References: <20220517070113.18023-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uGL6v7eQK1/0CRwWroEeXxkpUt+slToqlAa+poondV0=;
+        b=WJFzwfiTvp8Qoe/BXM3DE9JsAYNW9+ZVu9JikHZjOuUy3AbzUrBFvevljtQcwzxjLd
+         czUSSmun4yZsGEqD5Zve82sWCGI6c4bQa0xKG2DhlTRmU8UXIPFcsGcEDHr/oQ1dwtuE
+         zyBKxE6BxHYAOhsrVkHJfeDKmdD6yxfReAgRIFMr4rXRmN1JF0moOoHGvBs5sUi8jj7m
+         ObKeyW4W4y1ny4HmLUpZl/oc1e31Pl0l1pXRuZqhmw9oZc1OkK4eZ7kk4kDa7zKT0ww+
+         qNGOoBKawuq4Xv68j4JlYbHKwrJp2Sph1BKoLZp8kj7hdkNILDRLPlXlqrDsEqN0O9NC
+         Cing==
+X-Gm-Message-State: AOAM530ZaTGcsx1v6Ku4ZLqfFx7wVo8nfljnnfBzn8MeVvVx+4rv3v8f
+        tMsUmyfSVmP6+xy07wgTRT9CDQTkaNGFrC46orgWfEMw/F2pnw==
+X-Google-Smtp-Source: ABdhPJy683BW3WCcSZi2Cj9GijVHOZZd+oqshOvpXiUDGrBiMFaUyh8rHdidrsvX/lcd0qtI32pp9NMN2Z/62yAFKIY=
+X-Received: by 2002:a5b:ac4:0:b0:64b:48de:269b with SMTP id
+ a4-20020a5b0ac4000000b0064b48de269bmr22306374ybr.423.1652771104753; Tue, 17
+ May 2022 00:05:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr> <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
+ <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net> <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+ <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+In-Reply-To: <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 17 May 2022 16:04:53 +0900
+Message-ID: <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The core schema already sets a 'ref' for properties ending with 'names'.
+On Tue. 17 May 2022 at 15:08, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 17.05.2022 10:50:16, Vincent MAILHOL wrote:
+> > > would it probably make sense to
+> > > introduce a new can-skb module that could be used by all CAN
+> > > virtual/software interfaces?
+> > >
+> > > Or some other split-up ... any idea?
+> >
+> > My concern is: what would be the merrit? If we do not split, the users
+> > of slcan and v(x)can would have to load the can-dev module which will
+> > be slightly bloated for their use, but is this really an issue?
+>
+> If you use modprobe all required modules are loaded automatically.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml    | 1 -
- .../devicetree/bindings/remoteproc/qcom,qcs404-cdsp-pil.yaml   | 1 -
- .../devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml   | 3 +--
- .../devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml   | 1 -
- 4 files changed, 1 insertion(+), 5 deletions(-)
+Yes, this, now I know. In the past, when I started developing
+etas_es58x as an out of tree module (which I inserted using insmod),
+it took me a little time to figure out the dependencies tree and which
+module I actually had to modprobe separately.
 
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-index 947f94548d0e..810ef9d2bcc1 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-@@ -116,7 +116,6 @@ properties:
-       - description: Stop the modem
- 
-   qcom,smem-state-names:
--    $ref: /schemas/types.yaml#/definitions/string-array
-     description: The names of the state bits used for SMP2P output
-     items:
-       - const: stop
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,qcs404-cdsp-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,qcs404-cdsp-pil.yaml
-index 31413cfe10db..06f5f93f62a9 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,qcs404-cdsp-pil.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,qcs404-cdsp-pil.yaml
-@@ -90,7 +90,6 @@ properties:
-       - description: Stop the modem
- 
-   qcom,smem-state-names:
--    $ref: /schemas/types.yaml#/definitions/string
-     description: The names of the state bits used for SMP2P output
-     items:
-       - const: stop
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml
-index d99a729d2710..ade932468c38 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml
-@@ -76,7 +76,7 @@ properties:
-       - const: pdc_sync
- 
-   memory-region:
--    $ref: /schemas/types.yaml#/definitions/phandle
-+    maxItems: 1
-     description: Reference to the reserved-memory for the Hexagon core
- 
-   firmware-name:
-@@ -102,7 +102,6 @@ properties:
-       - description: Stop the modem
- 
-   qcom,smem-state-names:
--    $ref: /schemas/types.yaml#/definitions/string
-     description: The names of the state bits used for SMP2P output
-     const: stop
- 
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
-index 1535bbbe25da..20df83a96ef3 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
-@@ -90,7 +90,6 @@ properties:
-       - description: Stop the modem
- 
-   qcom,smem-state-names:
--    $ref: /schemas/types.yaml#/definitions/string
-     description: The names of the state bits used for SMP2P output
-     items:
-       - const: stop
--- 
-2.32.0
+> > I do
+> > not see how this can become a performance bottleneck, so what is the
+> > problem?
+> > I could also argue that most of the devices do not depend on
+> > rx-offload.o. So should we also split this one out of can-dev on the
+> > same basis and add another module dependency?
+>
+> We can add a non user visible Kconfig symbol for rx-offload and let the
+> drivers that need it do a "select" on it. If selected the rx-offload
+> would be compiled into to can-dev module.
 
+Yes, and this remark also applies to can-skb I think.
+
+So slcan, v(x)can and can-dev will select can-skb, and some of the
+hardware drivers (still have to figure out the list) will select
+can-rx-offload (other dependencies will stay as it is today).
+
+I think that splitting the current can-dev into can-skb + can-dev +
+can-rx-offload is enough. Please let me know if you see a need for
+more.
+
+> > The benefit (not having to load a bloated module for three drivers)
+> > does not outweigh the added complexity: all hardware modules will have
+> > one additional modprobe dependency on the tiny can-skb module.
+> >
+> > But as said above, I am not fully opposed to the split, I am just
+> > strongly divided. If we go for the split, creating a can-skb module is
+> > the natural and only option I see.
+> > If the above argument does not convince you, I will send a v3 with that split.
+
+If both you and Oliver prefer the split, then split it would be!
+
+Because this topic is related to Kbuild, there is actually one thing
+which bothered me but which I never asked: why are all the CAN devices
+under "Networking support" and not "Device Drivers" in menuconfig like
+everything else? Would it make sense to move our devices under the
+"Device Drivers" section? I can do it while working on the v3.
