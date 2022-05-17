@@ -2,317 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF51C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E3DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348303AbiEQODN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        id S241432AbiEQODd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 10:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiEQOCy (ORCPT
+        with ESMTP id S1348339AbiEQODP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:02:54 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614664C410
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:02:43 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id i19so34878770eja.11
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:02:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N9HewkSlUJVZn5Q/5DNbVooH5f3deVdZxeiACn1Li5Q=;
-        b=D1Bhh2rFbxniirvRlq8fQpSsjhzTd4HG9tCO9tweapcfhjW/Zh+gssG0f1VEJ0SmlX
-         lEjILkfOUWZaRc4WPbV2W6Nnj7uKhtjj0Yu0DwrRkePwpuJaqpXO1NMzG3fqnnQYiL5c
-         4o8vEwIookXG387ENoyDo+UuaMF6EJuQsmqw3+DhJ0s55EPeNU4tYlUk+Fmy3uX4vfP2
-         sIxYN2GrvAkrYiUayOaCkhdtVRcHLwThhbN8nI7Iz7xQpXLTPC1V4W2f9DCvooesQcfp
-         harY/gCcznNaXbYkuGnwboFsj9wtHrGUBBQPNfdUWMksNmk5vnf4Xnhc638E0z15KNqx
-         yhuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N9HewkSlUJVZn5Q/5DNbVooH5f3deVdZxeiACn1Li5Q=;
-        b=dyz0BOyehjNPFn1AmeM2fnxmnusFLnZznYr9YbFu/NVMhU4Aoa9T3RUDVqEJXNaKVo
-         Lf+fPgxpwqwTF+AYeUEsPkfQ5cVPq8ihyE0x7cr+URSBmh5rOj6R0G1WkM5YRiw4Vadq
-         FyO2hyxtMTIcXRalrxxtXJ52LwMvyJW32IkN4+978vX8mmNfeLAWrC87iAuNLBvw0VQY
-         +Ytbi81P1ktewskyTbLBxIBSiVBRBXYcHCmqgPgWTuq/ajOfH8XrLNrYdpPJnJ9Zy+ua
-         kc56BOKyzZ1gRB123VGv3Zh3UO6YtVMSKk8iJL5qWZHL1VV0lPNmI2etc5+mRuK73xIQ
-         hQ/Q==
-X-Gm-Message-State: AOAM533z99ZKYnZ3c1xDK+/whdqNPF7rJq0ZqVwpb4P4yK/mVJkpoMJK
-        Q5DNxLVtUmlnenpxsV6LDWm60KzvgVaB6N2iLZmhgQ==
-X-Google-Smtp-Source: ABdhPJxOwyk4HNt9oPRkEy5I5QUZydIXq/f8v17gUcucRvEiHNgTHnnnO/ED+5cn5m9R2w8ThMMfQZEO3BpzSSqd1+g=
-X-Received: by 2002:a17:906:9b8b:b0:6fe:55db:14e with SMTP id
- dd11-20020a1709069b8b00b006fe55db014emr5506610ejc.327.1652796161372; Tue, 17
- May 2022 07:02:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220507110114.4128854-1-tongtiangen@huawei.com>
- <20220507110114.4128854-6-tongtiangen@huawei.com> <20220517135435.GA553@mutt>
-In-Reply-To: <20220517135435.GA553@mutt>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Tue, 17 May 2022 10:02:06 -0400
-Message-ID: <CA+CK2bAnfxTo-Osvo9=0t=RkC4rTR+mgg2JSypsu3wm6BZFT=A@mail.gmail.com>
-Subject: Re: [PATCH -next v7 5/6] arm64/mm: Enable ARCH_SUPPORTS_PAGE_TABLE_CHECK
-To:     Anders Roxell <anders.roxell@linaro.org>
-Cc:     Tong Tiangen <tongtiangen@huawei.com>,
+        Tue, 17 May 2022 10:03:15 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09044C790;
+        Tue, 17 May 2022 07:03:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652796160;
+        bh=fNY2b38/lRCFmOcpmYkMr48xo1NJhCPqgD9dKQ1HrOM=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=MOD0wBu2si3IYs33eSdACwDOy4EbDCrJtxcvWgvDjQ4YslUMp4qkP1qhu6LJxjLkv
+         AkAdijPOiSqwgwE0bMJtQtCeW/T9QIjmMcfag4cU/CHjBTj1u7Eg3PDgYVzmTfKDRg
+         mHih7a+pc1Q2bcxwq7P0+qEpTUZfXoEce+X8jj5o=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([5.146.195.3]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MaJ3t-1oMdpl1mqb-00WH5f; Tue, 17
+ May 2022 16:02:40 +0200
+Date:   Tue, 17 May 2022 16:02:37 +0200
+From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-riscv@lists.infradead.org,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>
+Subject: Re: [PATCH v3 3/7] watchdog: npcm: Enable clock if provided
+Message-ID: <YoOq/enI6YSplnS5@latitude>
+References: <20220508194333.2170161-1-j.neuschaefer@gmx.net>
+ <20220508194333.2170161-4-j.neuschaefer@gmx.net>
+ <6c22fe1c-03d9-3a7e-26e8-463b989a02b7@roeck-us.net>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vQZf1NsHbsdMxgvC"
+Content-Disposition: inline
+In-Reply-To: <6c22fe1c-03d9-3a7e-26e8-463b989a02b7@roeck-us.net>
+X-Provags-ID: V03:K1:suSOJwDkQbNjA5mis1Bopb6tozdowhVxJzoa07b0zru4xZCWGOA
+ tsoznaEQDds/YKVMaJzzMaGBODp04lLUdTyFHM9euL564w+DelOmCjgLJDDF3cVbQCO+Neb
+ KOZQfLaSwI55oBzMeJ1q9ZUVKDCTcFqaDgvk9SgjR/aAim+tKhdVsllPF5BG/ZVozMGwhHh
+ NvwlEx5YR05vTcEL1mbLw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pHsyUMFlhB8=:JmoGOoA3kt1s/STOUO7LAm
+ iXaHbERzSnV9p8zPELbsRLWZq7q/kFAm1pusIJAvuF4F9RlCIIEMwPs9vv72NC6wMfmg4PKTf
+ ZLm44B7et5A9ShaSC7wkQKclQ7Tq0J/Ljp3L+m3GlHpMUPCtjJtWpU6foeNBFn8FqToKEIIw8
+ 8pCGGTCjE7EQ5vpbxjDptpjJr2qUaul+DTj6nQk3zxCrvnBOpDToYot8brs9A6RFzo6h8JxPs
+ uKh1+0+tWAEp3CbaNIq0K4DyjtzMM/y6A1cS1lfgVSzeBd9Vvzqm8cj/NNJV026WhVa5V64Yk
+ YBmJqzeFWZaRCoL0FgMTGxUN4hJaCnVTWVQuLBaeJGw9G7EMgqVik6agpozYet+wcMP29dw2p
+ XFulvkK7Y8PcnMYSN/rP5N8DPJQ94Vrb0qJstF75DpIGE7daly2mZh15McNG5v1E3GIsfavwe
+ qqoAB4mdml6kd7ms6T0k8gLihWItNHr+U3jPxqNC3Vskwp2sNPkOWq08O3HwJmbQ1ZjpjbNOC
+ NQY7A9tNN9p4EUdfabmQx/+Ek9dGDVAw94fFn/wKmhHq3JMMSadL0nZ+sQ9f+7JjcDKlwWTg+
+ xtYW85EKMkTpsjQgF4AOIVz0j/q0r777EWLvjTXTWDSlHZriB/q6XI1QVAW4UYpevMVBn92Aj
+ ZSa2JZjy5gnlWPTQEjCBgJagMD/9WOrUdXjLQZOFA8rxEG5Ib6NHLixUEVnThRdJgGFAZ0ski
+ IZrvCy7UhGS5IBvx/6xQu6wlNj1juyCob2CpBp3A5n9bp91FvjO9mosZhpGcTfqzXg6dhLnaO
+ Tg4qqkf1tEUH5sQGZOyEh4/esDiBMiatOe0ICiqM2/8QULtOwegqzttPPGGmWq4Wb5IOJOALq
+ fLmAek0MMrrIfolo/jWMyDwI0c4YvUqPtaYpRyfQWdrEfLHM4zmhS5ul2CyEQOVROyW16Rjsx
+ 8YPZPsHf6l9f2qKy9L8CYc9MAwp33iKDukhRC/kk1nyVlp8fBDoMC0dPNk+BK074ShiRxrA6o
+ VrJGF5490T7KDxj/khVUP8itVoo0EENnlKApJtTlId381SyIqwNczj/O8Vd9W+mzGiPQQ36sG
+ 62cfBgLD30wSZGrOUjYHQMeg40N/gRqdjaGMvZfQiZEjIXHOrZUvWVR7Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 9:54 AM Anders Roxell <anders.roxell@linaro.org> wrote:
->
-> On 2022-05-07 11:01, Tong Tiangen wrote:
-> > From: Kefeng Wang <wangkefeng.wang@huawei.com>
-> >
-> > As commit d283d422c6c4 ("x86: mm: add x86_64 support for page table check")
-> > , enable ARCH_SUPPORTS_PAGE_TABLE_CHECK on arm64.
-> >
-> > Add additional page table check stubs for page table helpers, these stubs
-> > can be used to check the existing page table entries.
-> >
-> > Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> > Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-> > Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
->
-> When building and booting an arm64 allmodconfig kernel on the next tree, branch next-20220516,
-> see the following kernel oops when booting in QEMU [1]:
->
-> T35] ------------[ cut here ]------------
-> [  578.695796][   T35] kernel BUG at mm/page_table_check.c:82!
-> [  578.697292][   T35] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-> [  578.704318][   T35] Modules linked in:
-> [  578.705907][   T35] CPU: 0 PID: 35 Comm: khugepaged Tainted: G                T 5.18.0-rc6-next-20220513 #1 893498a5d8159d9fb26e12492a93c07e83dd4b7f
-> [  578.711170][   T35] Hardware name: linux,dummy-virt (DT)
-> [  578.713315][   T35] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [  578.716398][   T35] pc : page_table_check_clear.constprop.0+0x1f4/0x280
-> [  578.719107][   T35] lr : page_table_check_clear.constprop.0+0x1cc/0x280
-> [  578.721781][   T35] sp : ffff80000f3778b0
-> [  578.723446][   T35] x29: ffff80000f3778b0 x28: ffff80000b891218 x27: ffff000012dd55f0
-> [  578.726667][   T35] x26: 0000000000000008 x25: ffff80000c38cd80 x24: 0000000000000000
-> [  578.729870][   T35] x23: ffff80000c38c9c0 x22: 0000000000000000 x21: 0000000000000200
-> [  578.733079][   T35] x20: ffff000007bae000 x19: ffff000007bae008 x18: 0000000000000000
-> [  578.736299][   T35] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
-> [  578.739505][   T35] x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000000
-> [  578.742735][   T35] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
-> [  578.745925][   T35] x8 : 0000000000000000 x7 : 0000000000000000 x6 : 0000000000000000
-> [  578.749145][   T35] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff000007bae00c
-> [  578.752348][   T35] x2 : 0000000000000000 x1 : 0000000000000001 x0 : 00000000ffffffff
-> [  578.755556][   T35] Call trace:
-> [  578.756877][   T35]  page_table_check_clear.constprop.0+0x1f4/0x280
-> [  578.759446][   T35]  __page_table_check_pmd_clear+0xc4/0x140
-> [  578.761757][   T35]  pmdp_collapse_flush+0xa4/0x1c0
-> [  578.763771][   T35]  collapse_huge_page+0x4e4/0xb00
-> [  578.765778][   T35]  khugepaged_scan_pmd+0xc18/0xd00
-> [  578.767840][   T35]  khugepaged_scan_mm_slot+0x580/0x780
-> [  578.770018][   T35]  khugepaged+0x2dc/0x400
-> [  578.771786][   T35]  kthread+0x164/0x180
-> [  578.773430][   T35]  ret_from_fork+0x10/0x20
-> [  578.775253][   T35] Code: 52800021 91001263 14000388 36f80040 (d4210000)
-> [  578.777990][   T35] ---[ end trace 0000000000000000 ]---
-> [  578.778021][   T35] Kernel panic - not syncing: Oops - BUG: Fatal exception
-> [  578.782934][   T35] Kernel Offset: disabled
-> [  578.784642][   T35] CPU features: 0x000,00100010,00001086
-> [  578.786848][   T35] Memory Limit: none
-> [  578.788433][   T35] ---[ end Kernel panic - not syncing: Oops - BUG: Fatal exception ]---
->
-> Bisected down to this patch, see the bisect log [2].
->
-> When I revert this patch I don't see the issue anymore.
 
-Thank you for reporting this. I believe, this is the same problem that
-Anshuman saw [1]. However, at that time he could not reproduce it
-anymore. Can you please provide QEMU command line, QEMU version,
-kernel config, and information about the base image you are using.
+--vQZf1NsHbsdMxgvC
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thank you,
-Pasha
-
-[1] https://lore.kernel.org/all/1c314feb-cd78-2bb3-462e-4ea3cefe122e@arm.com/
-
-
->
-> Cheers,
-> Anders
-> [1] https://people.linaro.org/~anders.roxell/output-next-20220513.log
-> [2] http://ix.io/3XZB
->
+On Mon, May 09, 2022 at 07:31:31PM -0700, Guenter Roeck wrote:
+> On 5/8/22 12:43, Jonathan Neusch=C3=A4fer wrote:
+> > On the Nuvoton WPCM450 SoC, with its upcoming clock driver, peripheral
+> > clocks are individually gated and ungated. Therefore, the watchdog
+> > driver must be able to ungate the watchdog clock.
+> >=20
+> > Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 > > ---
-> >  arch/arm64/Kconfig               |  1 +
-> >  arch/arm64/include/asm/pgtable.h | 61 ++++++++++++++++++++++++++++----
-> >  2 files changed, 56 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> > index 272c75af9302..3055fb5b3fb4 100644
-> > --- a/arch/arm64/Kconfig
-> > +++ b/arch/arm64/Kconfig
-> > @@ -92,6 +92,7 @@ config ARM64
-> >       select ARCH_SUPPORTS_ATOMIC_RMW
-> >       select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
-> >       select ARCH_SUPPORTS_NUMA_BALANCING
-> > +     select ARCH_SUPPORTS_PAGE_TABLE_CHECK
-> >       select ARCH_WANT_COMPAT_IPC_PARSE_VERSION if COMPAT
-> >       select ARCH_WANT_DEFAULT_BPF_JIT
-> >       select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
-> > diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-> > index 8ebf1cec5d90..4e61cde27f9f 100644
-> > --- a/arch/arm64/include/asm/pgtable.h
-> > +++ b/arch/arm64/include/asm/pgtable.h
-> > @@ -33,6 +33,7 @@
-> >  #include <linux/mmdebug.h>
-> >  #include <linux/mm_types.h>
-> >  #include <linux/sched.h>
-> > +#include <linux/page_table_check.h>
-> >
-> >  #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-> >  #define __HAVE_ARCH_FLUSH_PMD_TLB_RANGE
-> > @@ -96,6 +97,7 @@ static inline pteval_t __phys_to_pte_val(phys_addr_t phys)
-> >  #define pte_young(pte)               (!!(pte_val(pte) & PTE_AF))
-> >  #define pte_special(pte)     (!!(pte_val(pte) & PTE_SPECIAL))
-> >  #define pte_write(pte)               (!!(pte_val(pte) & PTE_WRITE))
-> > +#define pte_user(pte)                (!!(pte_val(pte) & PTE_USER))
-> >  #define pte_user_exec(pte)   (!(pte_val(pte) & PTE_UXN))
-> >  #define pte_cont(pte)                (!!(pte_val(pte) & PTE_CONT))
-> >  #define pte_devmap(pte)              (!!(pte_val(pte) & PTE_DEVMAP))
-> > @@ -312,8 +314,8 @@ static inline void __check_racy_pte_update(struct mm_struct *mm, pte_t *ptep,
-> >                    __func__, pte_val(old_pte), pte_val(pte));
-> >  }
-> >
-> > -static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
-> > -                           pte_t *ptep, pte_t pte)
-> > +static inline void __set_pte_at(struct mm_struct *mm, unsigned long addr,
-> > +                             pte_t *ptep, pte_t pte)
-> >  {
-> >       if (pte_present(pte) && pte_user_exec(pte) && !pte_special(pte))
-> >               __sync_icache_dcache(pte);
-> > @@ -343,6 +345,13 @@ static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
-> >       set_pte(ptep, pte);
-> >  }
-> >
-> > +static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
-> > +                           pte_t *ptep, pte_t pte)
-> > +{
-> > +     page_table_check_pte_set(mm, addr, ptep, pte);
-> > +     return __set_pte_at(mm, addr, ptep, pte);
-> > +}
+> >=20
+> > v3:
+> > - Add enable/disable calls to npcm_wdt_restart handler
+> > - Not applied due to the above change:  Acked-by: Guenter Roeck <linux@=
+roeck-us.net>
+> >=20
+> > v2:
+> > - https://lore.kernel.org/lkml/20220429172030.398011-4-j.neuschaefer@gm=
+x.net/
+> > - Add clk_disable_unprepare call, suggested by Guenter Roeck
+> >=20
+> > v1:
+> > - https://lore.kernel.org/lkml/20220422183012.444674-4-j.neuschaefer@gm=
+x.net/
+> > ---
+[...]
+> > @@ -147,9 +155,15 @@ static int npcm_wdt_restart(struct watchdog_device=
+ *wdd,
+> >   {
+> >   	struct npcm_wdt *wdt =3D to_npcm_wdt(wdd);
+> >=20
+> > +	if (wdt->clk)
+> > +		clk_prepare_enable(wdt->clk);
 > > +
-> >  /*
-> >   * Huge pte definitions.
-> >   */
-> > @@ -454,6 +463,8 @@ static inline int pmd_trans_huge(pmd_t pmd)
-> >  #define pmd_dirty(pmd)               pte_dirty(pmd_pte(pmd))
-> >  #define pmd_young(pmd)               pte_young(pmd_pte(pmd))
-> >  #define pmd_valid(pmd)               pte_valid(pmd_pte(pmd))
-> > +#define pmd_user(pmd)                pte_user(pmd_pte(pmd))
-> > +#define pmd_user_exec(pmd)   pte_user_exec(pmd_pte(pmd))
-> >  #define pmd_cont(pmd)                pte_cont(pmd_pte(pmd))
-> >  #define pmd_wrprotect(pmd)   pte_pmd(pte_wrprotect(pmd_pte(pmd)))
-> >  #define pmd_mkold(pmd)               pte_pmd(pte_mkold(pmd_pte(pmd)))
-> > @@ -501,8 +512,19 @@ static inline pmd_t pmd_mkdevmap(pmd_t pmd)
-> >  #define pud_pfn(pud)         ((__pud_to_phys(pud) & PUD_MASK) >> PAGE_SHIFT)
-> >  #define pfn_pud(pfn,prot)    __pud(__phys_to_pud_val((phys_addr_t)(pfn) << PAGE_SHIFT) | pgprot_val(prot))
-> >
-> > -#define set_pmd_at(mm, addr, pmdp, pmd)      set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd))
-> > -#define set_pud_at(mm, addr, pudp, pud)      set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud))
-> > +static inline void set_pmd_at(struct mm_struct *mm, unsigned long addr,
-> > +                           pmd_t *pmdp, pmd_t pmd)
-> > +{
-> > +     page_table_check_pmd_set(mm, addr, pmdp, pmd);
-> > +     return __set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd));
-> > +}
+> >   	writel(NPCM_WTR | NPCM_WTRE | NPCM_WTE, wdt->reg);
+> >   	udelay(1000);
+> >=20
+> > +	if (wdt->clk)
+> > +		clk_disable_unprepare(wdt->clk);
 > > +
-> > +static inline void set_pud_at(struct mm_struct *mm, unsigned long addr,
-> > +                           pud_t *pudp, pud_t pud)
-> > +{
-> > +     page_table_check_pud_set(mm, addr, pudp, pud);
-> > +     return __set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud));
-> > +}
-> >
-> >  #define __p4d_to_phys(p4d)   __pte_to_phys(p4d_pte(p4d))
-> >  #define __phys_to_p4d_val(phys)      __phys_to_pte_val(phys)
-> > @@ -643,6 +665,24 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
-> >  #define pud_present(pud)     pte_present(pud_pte(pud))
-> >  #define pud_leaf(pud)                (pud_present(pud) && !pud_table(pud))
-> >  #define pud_valid(pud)               pte_valid(pud_pte(pud))
-> > +#define pud_user(pud)                pte_user(pud_pte(pud))
-> > +
-> > +#ifdef CONFIG_PAGE_TABLE_CHECK
-> > +static inline bool pte_user_accessible_page(pte_t pte)
-> > +{
-> > +     return pte_present(pte) && (pte_user(pte) || pte_user_exec(pte));
-> > +}
-> > +
-> > +static inline bool pmd_user_accessible_page(pmd_t pmd)
-> > +{
-> > +     return pmd_present(pmd) && (pmd_user(pmd) || pmd_user_exec(pmd));
-> > +}
-> > +
-> > +static inline bool pud_user_accessible_page(pud_t pud)
-> > +{
-> > +     return pud_present(pud) && pud_user(pud);
-> > +}
-> > +#endif
-> >
-> >  static inline void set_pud(pud_t *pudp, pud_t pud)
-> >  {
-> > @@ -876,7 +916,11 @@ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
-> >  static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
-> >                                      unsigned long address, pte_t *ptep)
-> >  {
-> > -     return __pte(xchg_relaxed(&pte_val(*ptep), 0));
-> > +     pte_t pte = __pte(xchg_relaxed(&pte_val(*ptep), 0));
-> > +
-> > +     page_table_check_pte_clear(mm, address, pte);
-> > +
-> > +     return pte;
-> >  }
-> >
-> >  #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-> > @@ -884,7 +928,11 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
-> >  static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
-> >                                           unsigned long address, pmd_t *pmdp)
-> >  {
-> > -     return pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
-> > +     pmd_t pmd = __pmd(xchg_relaxed(&pmd_val(*pmdp), 0));
-> > +
-> > +     page_table_check_pmd_clear(mm, address, pmd);
-> > +
-> > +     return pmd;
-> >  }
-> >  #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-> >
-> > @@ -918,6 +966,7 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
-> >  static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
-> >               unsigned long address, pmd_t *pmdp, pmd_t pmd)
-> >  {
-> > +     page_table_check_pmd_set(vma->vm_mm, address, pmdp, pmd);
-> >       return __pmd(xchg_relaxed(&pmd_val(*pmdp), pmd_val(pmd)));
-> >  }
-> >  #endif
-> > --
-> > 2.25.1
-> >
->
-> --
-> Anders Roxell
-> anders.roxell@linaro.org
-> M: +46 708 22 71 05 | IRC: roxell
+>=20
+> I am trying to understand why you stop the clock here.
+> If the watchdog didn't reset the system by now, for whatever reason,
+> you explicitly don't want it to reset the system ? If so, please add
+> a comment describing the reason for stopping the clock here.
+
+It was for symmetry with starting the clock, and in the hope that
+udelay(1000) will be enough to reach timer expiration. (In practice it
+does appear to work, although 1ms is not much.)
+
+Upon reconsideration, I agree it's better to leave the clock running for
+reset (with a comment pointing out the asymmetry).
+
+
+Best regards,
+Jonathan
+
+--vQZf1NsHbsdMxgvC
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmKDqtwACgkQCDBEmo7z
+X9uEnQ/+PieUjR1LsgZzUOsXNS+aAubr0M4s9fyJdH14/eol2H39zy5/Y8ylCJIq
+zzFWjUFI6PVXPKiZ/GkOMMNp25cD2a+vEfFzSaaN/yaeNGv8vkU6q1ABm5PVihpK
++44o0bPpuy0SHbIxKCy7pGMvBR3UrjVA5Q/1GSxQd5fLQxOMwoziLNzhfXqI3dJb
+s5S1hx8pezpRR9WwAqIX4R6xiyqrwdL8KacjoAiNYQhLLrD/OOQcIlSijCLLnriM
+au59vZK1FzFaYsTI8w5vRgq8C6LtiXQCZsXUT9TJ17hC4OQnzNIlxvls+0O9GHlL
+e6MTmskpf/BLMbPiYUarLVvgFGqUE3FyVvuha3GUNK4nfBM5bjjyhtbDElvAs1j1
+cgBsIyWKbMB2zH5XrTsdTPB3CfQx8+ZZ98sHhzZEYg4C3oynFDNf1Y8g735SZiAq
+7bEqMy+nyrLXxPF55eEuh6AKm6FhZaVjZj9n5YqjxfAfeezDN4K8rCg9xWRy0Oyw
+C16jjVdbEufJWQIWopPzw5zM2uvu3ZTMjYr3kfIULs3wIYwoa2+fW6tiK8yHWB2B
+LFweECTpYkfBYkKGuxfnft4lgzTmSsSK7ggOnkkBjA0GiA0EgJN0JQ0SchBbzlhb
+nOPyAKh9/4LFosqLlGiLyDdZJGX3yaqw3xGK7up7tgfWUiWL+F8=
+=24UD
+-----END PGP SIGNATURE-----
+
+--vQZf1NsHbsdMxgvC--
