@@ -2,90 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC75CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:34:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349021AbiEQOeU (ORCPT
+        id S1349045AbiEQOej (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32962 "EHLO
+        Tue, 17 May 2022 10:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245165AbiEQOeH (ORCPT
+        with ESMTP id S1349041AbiEQOeg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:34:07 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07DE4248D
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:34:06 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id v11so17052615pff.6
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:34:06 -0700 (PDT)
+        Tue, 17 May 2022 10:34:36 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAE7419AD
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:34:35 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id 16so21971090lju.13
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:34:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GKG9qxJvJLAopP/NwMsxDvVc37jrWfz1QwXOphMi9Y8=;
-        b=JyAKK1rb3nhhl2JjdhenF9b0O10x5C7tuNv0qKiYrhvbA5xE8sUS+n9njtNo/yEBZ7
-         JraV3gJU6BShw4Vg49/tyeK5FPQNdkYzyBp+BZwqv19MVeuYGstHX4mrEhdnQR8gHkkH
-         cY9b4hq4p3h/8FXoRWG+LtG+5FISfqd13nVdUVkYxGPj8TXFlouZL5e2pjOh17uJQZ6+
-         CRoW8upGF0VzYXozNIXhzo7SWIZmDkMUXDx2VlT3e/AWEE6S5M3QL6vjwC98n8Q3OZfZ
-         yWMDfgIUFHC6azNevfCmNxcQTuJq7T3sLOv7dKBhVbHZTibQWfX7QBzXi1Ac6zF6KIVE
-         n/uA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=BKEEIeJk9pyimkOwL771ve8zRGUvSRERiQLufVuk7FQ=;
+        b=B9fOsmEcSjoHKTTzN+vwzSwM+wiYNXRp3MzXSbowWqT7alwNRgnZRyDUTBJtLsQU+w
+         JZnX/6GOOiB+HyQTVVZIZxs9y1jXptk6aFz+R6OIPMVdiXkhW0GQUNW6qbuCNbrWNFQQ
+         hK1qARpFVkTE7OOCeSEKn7pL6T+GL5hZY7ycmR9EKHjMBY+8IJ72TCIcrfcUuz2prdol
+         meb05JUTHO2vVQ97IdeCTadCfpgx+cm7Wv2qP1MxaTgDDBDdl4oHoFXz1O7zWGbTMRfo
+         FIFmPsNiO+tBa4fRBfb8r0IRZXoa7/2ESWsrOfRDvfc+5PdNUAC9p8dnOHfRaoWyhRYo
+         UTIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=GKG9qxJvJLAopP/NwMsxDvVc37jrWfz1QwXOphMi9Y8=;
-        b=zFZhOUs9iScvy1Wj7cocRMYg8QGw2vgjaeMQX6l8dtK0+NYIARjhxrySWdHtqiR4pv
-         Koz8e0xpZI782aiCHrShJgA4oss31Ej/zB6Cs5ekQI60AnrJblwbv9K9AjwTs5krYw1k
-         9E3kLo/8zm8S5szCIjKAlHAeFAsmW9XfudZUO8/Fs23dMByksCTMkLJg7eMwFxSjwRCA
-         Z9Yv0n5S1gZOxOAjGUHl7Bu8dpmLW3eaC31Fh3quRqw9mvgM4OiQE+2yvsabeoMx9S0K
-         emNXQRvBcV99Qbkm9ooo38fxHT9Z8NtRQCYPf0pbNaawLnqOLTttu721xuEd32tozmNE
-         Wj8Q==
-X-Gm-Message-State: AOAM530+2gLXNsfvlWajZZNrE1gGgHj2NfraAoO6BPO8qMclv1XRw29q
-        1FNkWzuTHReO3HxkcpgW8IBoRXGmQJJFnQ==
-X-Google-Smtp-Source: ABdhPJzdN10p6+jbRjBFVRujrjZAADIa/P2a60o0SCXs9HIaozOdkvhMLB8ygpgDW/Jp8iZgEa0YxA==
-X-Received: by 2002:a05:6a00:801:b0:50d:ec66:fac0 with SMTP id m1-20020a056a00080100b0050dec66fac0mr22894471pfk.23.1652798046431;
-        Tue, 17 May 2022 07:34:06 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.250])
-        by smtp.gmail.com with ESMTPSA id iz19-20020a17090ae79300b001cd4989ff53sm1733855pjb.26.2022.05.17.07.34.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 07:34:06 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev,
-        shakeelb@google.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH] MAINTAINERS: add myself as a memcg reviewer
-Date:   Tue, 17 May 2022 22:33:20 +0800
-Message-Id: <20220517143320.99649-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        bh=BKEEIeJk9pyimkOwL771ve8zRGUvSRERiQLufVuk7FQ=;
+        b=udtjj3Use+sh74u3YvkYtQVj1VJBmM+V5CZZ5SLfo/tRyiuITuREZEW7NEgrugxJmL
+         PaIggws176IdmsUSIsLlKakuofKLHVbPQ4RlDTaiMUjtjVyg+LqHs3SLd4XrxfaoyXkW
+         Tvy5a/1G2KW4xu0dsxIgBKGljfQD9LN/aXbS5J1wZfjqhX4ovKuuyHsEbHbygnxj+8O1
+         avEzK6TIfqSKpklkP66Okp9WGLj7GiUXp1MorbMq0YZsQxGaT/ew9ajHR/EB8F14Cevu
+         PDX6Shd8WCxfK8B1hjDNYTilyuOq2qr9jW63R2Ets2gWvQxFpuh4WDplQlQAdkm7NTsA
+         h2Ng==
+X-Gm-Message-State: AOAM531oR3yBOoXkb3inY9cst8f1jmn+z8feIrLnJ+UyZbiTRyal+RMM
+        1wV8qhcXZ0SbOjGiS2a7nZQDng==
+X-Google-Smtp-Source: ABdhPJxTbEck3uE8gmC09mqS32JpeRDUp/hAOTqTyVf3mpKHQovSsQyfUmD92szkmQkxjE/azPNPEg==
+X-Received: by 2002:a2e:7502:0:b0:250:9c00:b973 with SMTP id q2-20020a2e7502000000b002509c00b973mr14283382ljc.23.1652798074190;
+        Tue, 17 May 2022 07:34:34 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id g15-20020a2ea4af000000b0024f4bb33c50sm1847960ljm.100.2022.05.17.07.34.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 07:34:33 -0700 (PDT)
+Message-ID: <912f9756-e0b6-01da-27f7-2956558d327e@linaro.org>
+Date:   Tue, 17 May 2022 16:34:32 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 4/6] dt-bindings: arm: mt8195: Set #clock-cells as
+ required property
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sboyd@kernel.org, chun-jie.chen@mediatek.com,
+        rex-bc.chen@mediatek.com, wenst@chromium.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220517101514.21639-1-angelogioacchino.delregno@collabora.com>
+ <20220517101514.21639-5-angelogioacchino.delregno@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220517101514.21639-5-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have been focusing on mm for the past two years. e.g. developing,
-fixing bugs, reviewing.  I have fixed lots of races (including memcg).
-I would like to help people working on memcg or related by reviewing
-their work.  Let me be Cc'd on patches related to memcg.
+On 17/05/2022 12:15, AngeloGioacchino Del Regno wrote:
+> This is a clock-controller binding, so it needs #clock-cells, or
+> it would be of no use: add that to the list of required properties.
+> 
+> Fixes: 34d3ed3b9a00 ("dt-bindings: ARM: Mediatek: Add new document bindings of MT8195 clock")
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9ce78f2275dc..0d5de0c553aa 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5057,6 +5057,7 @@ M:	Johannes Weiner <hannes@cmpxchg.org>
- M:	Michal Hocko <mhocko@kernel.org>
- M:	Roman Gushchin <roman.gushchin@linux.dev>
- M:	Shakeel Butt <shakeelb@google.com>
-+R:	Muchun Song <songmuchun@bytedance.com>
- L:	cgroups@vger.kernel.org
- L:	linux-mm@kvack.org
- S:	Maintained
--- 
-2.11.0
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
