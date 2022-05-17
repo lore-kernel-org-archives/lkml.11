@@ -2,106 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D34C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E27C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350379AbiEQPiN (ORCPT
+        id S1350214AbiEQPit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
+        Tue, 17 May 2022 11:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350412AbiEQPiA (ORCPT
+        with ESMTP id S1350563AbiEQPif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:38:00 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06955047D;
-        Tue, 17 May 2022 08:37:04 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:55038)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nqzFo-00HUt8-UL; Tue, 17 May 2022 09:36:56 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38510 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nqzFn-00CCn9-VR; Tue, 17 May 2022 09:36:56 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Huacai Chen <chenhuacai@gmail.com>
-Cc:     WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "<linux-arch@vger.kernel.org>" <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Al Viro <viro@zeniv.linux.org.uk>
-References: <20220514080402.2650181-1-chenhuacai@loongson.cn>
-        <20220514080402.2650181-15-chenhuacai@loongson.cn>
-        <ef37e578-d843-6a2f-2108-2a26dc54bece@xen0n.name>
-        <CAAhV-H7UwLJLiMtjkW0xxfsBBaCPXqkQ-d+ZW4rm+=igvVP6ew@mail.gmail.com>
-        <b30e5b28-2a3a-f3a6-1bb1-592323f6eadd@xen0n.name>
-        <87bkvxd12b.fsf@email.froward.int.ebiederm.org>
-        <CAAhV-H7R4hioE-dHVxAnPmeJJ-eqiWkdmZWxNDfLesuvURCLcw@mail.gmail.com>
-Date:   Tue, 17 May 2022 10:36:48 -0500
-In-Reply-To: <CAAhV-H7R4hioE-dHVxAnPmeJJ-eqiWkdmZWxNDfLesuvURCLcw@mail.gmail.com>
-        (Huacai Chen's message of "Tue, 17 May 2022 10:08:18 +0800")
-Message-ID: <87v8u49nn3.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 17 May 2022 11:38:35 -0400
+Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C171D50468;
+        Tue, 17 May 2022 08:38:30 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id C621FFF88D;
+        Tue, 17 May 2022 15:38:29 +0000 (UTC)
+Date:   Tue, 17 May 2022 17:38:26 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+Message-ID: <20220517173821.445c5e90.max@enpas.org>
+In-Reply-To: <22590a57-c7c6-39c6-06d5-11c6e4e1534b@hartkopp.net>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+        <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
+        <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
+        <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
+        <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+        <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+        <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+        <20220517104545.eslountqjppvcnz2@pengutronix.de>
+        <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+        <20220517141404.578d188a.max@enpas.org>
+        <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+        <20220517143921.08458f2c.max@enpas.org>
+        <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+        <20220517154301.5bf99ba9.max@enpas.org>
+        <22590a57-c7c6-39c6-06d5-11c6e4e1534b@hartkopp.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nqzFn-00CCn9-VR;;;mid=<87v8u49nn3.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/z8zdXGiWLxn4UIls5cu+131SNiPOvwrA=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH V10 14/22] LoongArch: Add signal handling support
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Huacai Chen <chenhuacai@gmail.com> writes:
+On Tue, 17 May 2022 16:35:05 +0200
+Oliver Hartkopp <socketcan@hartkopp.net> wrote:
 
-> Hi, Eric,
->
-> On Mon, May 16, 2022 at 10:07 PM Eric W. Biederman
-> <ebiederm@xmission.com> wrote:
->>
->> I can understand exporting these values but the names aren't very
->> well namespaced at all.  Which means they could accidentially
->> conflict with things.
->>
->> It would probably be better to do:
->> SC_USED_FP
->> SC_ADDRERR_RD
->> SC_ADDRERR_WR
-> SC_ prefix is good, but ADRERR_RD/ADRERR_WR is used together with
-> SIGSEGV/SIGBUS, so I want to keep the same as BUS_ADRERR (a single D)
-> if possible.
+> I think it should be even more simple.
+> 
+> When you enter the current Kconfig page of "CAN Device Drivers" every 
+> selection of vcan/vxcan/slcan should directly select CAN_DEV_SW.
 
-Fair enough about the single D.  Please add the prefix in the next
-version. Especially for kabi symbols in a namespace is a very good idea.
+I'm a bit lost - what would CAN_DEV_SW do?
+
+If it enables can_dropped_invalid_skb(), then the HW drivers would also
+need to depend on CAN_DEV_SW directly or indirectly, or am I missing
+something?
 
 
->> Given that neither lsx_context nor lasx_context are used in the kernel
->> code yet I would very much prefer that their inclusion wait until there
->> is actual code that needs them.
->>
->> If nothing else that will put the definitions in context so people can
->> more easily see the big picture and understand how the pieces fit.
-> OK, I will remove lsx_context/lasx_context in the next version.
 
-Thanks,
-Eric
+Max
