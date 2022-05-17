@@ -2,68 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7ACDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236634AbiEQDyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 23:54:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47258 "EHLO
+        id S229579AbiEQD5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 23:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbiEQDyo (ORCPT
+        with ESMTP id S231331AbiEQD5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 23:54:44 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CC62E0BC
-        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:54:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Jej/zNlHp42fGBciz21lgfdwP2bYx92R3jqDU7lJwVE=; b=W2KvdG7RfjLdXNIFYkZIwx/L6b
-        Fm2U74FWqtNH+OJgDlLx9d1KHsLN867E91OX8LoJVgveHLgCkTm7Fi2M/WTi7h7VY2Bixqzpaak8u
-        QeikjgScoYhxNzplj+sD/X5Il7VgyNV7ugN09Lue1oMbdTc592mR1VnZzu7YpZF3myCtp+ppBCxCJ
-        nUhKIaPMPnYhgsUL92ibbsk452jVfiOctJpOq+JjnowXObG6idBJ2dpV037JmWMcNuLX45SC+koje
-        Hy4ZUhvKe0WqeD06xogBXG405qM/ARS5i3f22wJX4DetsjRyEPyIXTY1UKGxNi1HNX52YafY73G10
-        xYv/jJkA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nqoHx-00AVOS-GY; Tue, 17 May 2022 03:54:25 +0000
-Date:   Tue, 17 May 2022 04:54:25 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Christoph Lameter <cl@linux.com>, kernel@openvz.org,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH] tracing: add ACCOUNT flag for allocations from marked
- slab caches
-Message-ID: <YoMccU66auLAPEHa@casper.infradead.org>
-References: <1fd21e25-b095-e055-fc2e-abda640a0575@openvz.org>
- <CALvZod6wmxxigoLVg8Q+upqOkyoh+nPuVT0yx_XTbu8RXYYFgA@mail.gmail.com>
- <0aaf7b6d-6ed7-45ca-873e-394718f73c9a@openvz.org>
+        Mon, 16 May 2022 23:57:44 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E0134665
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:57:43 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id k16so9039255pff.5
+        for <linux-kernel@vger.kernel.org>; Mon, 16 May 2022 20:57:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RA/GUWzgAi0lwcfXCy8dlx+jGczfHJXUzSsauTL7va8=;
+        b=BeY8zMiMW/X7WmzuCHmm965ikZQBIMdHFO0I2g7IFpQ/ePUkEQrrbK1b7NOv03NgJy
+         jUgWTBWWp3kBDafKOX1jHwQM0owBrZLkeuGN2XSMwL80ZByHsYivfiFBkgJwqxmQtTEB
+         32JfrkJUSOkiHW4FZ+uaFMe3qwYV1PWn0AOBU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RA/GUWzgAi0lwcfXCy8dlx+jGczfHJXUzSsauTL7va8=;
+        b=beHwn3lOUEGLTILx/jIrzaRIVV9sJYTe/FN0Z16XqRi1OWI9WTZo8lHS33DD9fz5ML
+         HQ8TDfRkJJ+4eVbLU8g8lYDGGA9DKHcP7lO4burtAAiAyGhP2vUHsviQkncTSx4R8Hu9
+         ULDyIVQ+9rDj9KeJoUPV+Wr0El+LkMGE04HilT8mDnBP9rDpXDrKqoFYC1ntLVHNb0pB
+         Tc0hoOup31//692NTfu82/iykRjpdNCWLXhPsAxjn+dY4BQC8ISLL7Rh9HL/P1cA1dA8
+         T5w/au8B2L+o2bY3iYmqSJ1lRQYWG2Fyz8hxSIhfeB2Rdo96lUHNJal6/3w0GsUXxOgb
+         F4LQ==
+X-Gm-Message-State: AOAM530GtoKRxEdif/zingi3ibuX/CKcqDWegwEJXegTZDRCWbnJoaFs
+        dwr4PXRWA8Z++5fyJozm+og5fjGtGfiv5Q==
+X-Google-Smtp-Source: ABdhPJx7EyLV14gnE/eybLsCaXASC+lPagUlZeJRA4bfE1u5jFeEF85vrcWSpco4cEgBtHask9Z3Bw==
+X-Received: by 2002:a63:1904:0:b0:3c6:3fd3:4c28 with SMTP id z4-20020a631904000000b003c63fd34c28mr17768518pgl.308.1652759863198;
+        Mon, 16 May 2022 20:57:43 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id a1-20020a170902900100b0015e8d4eb2dfsm7711105plp.297.2022.05.16.20.57.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 20:57:42 -0700 (PDT)
+Date:   Mon, 16 May 2022 20:57:42 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc:     "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 05/32] brcmfmac: Use mem_to_flex_dup() with struct
+ brcmf_fweh_queue_item
+Message-ID: <202205162056.F8D1BF3E@keescook>
+References: <20220504014440.3697851-1-keescook@chromium.org>
+ <20220504014440.3697851-6-keescook@chromium.org>
+ <b197ca6d-4285-5310-7e98-918c885a2e38@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0aaf7b6d-6ed7-45ca-873e-394718f73c9a@openvz.org>
+In-Reply-To: <b197ca6d-4285-5310-7e98-918c885a2e38@broadcom.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 06:32:28AM +0300, Vasily Averin wrote:
-> > Should this 'if' be unlikely() or should we trace cachep->flags
-> > explicitly to avoid this branch altogether?
-> 
-> In general output of cachep->flags can be useful, but at the moment 
-> I am only interested in SLAB_ACCOUNT flag and in any case I would
-> prefer to translate it to GFP_ACCOUNT.
-> So I'm going to use unlikely() in v2 patch version.
+On Mon, May 16, 2022 at 02:49:21PM +0200, Arend van Spriel wrote:
+> On 5/4/2022 3:44 AM, Kees Cook wrote:
+> > As part of the work to perform bounds checking on all memcpy() uses,
+> > replace the open-coded a deserialization of bytes out of memory into a
+> > trailing flexible array by using a flex_array.h helper to perform the
+> > allocation, bounds checking, and copying.
+> > 
+> Reviewed-by: Arend van Spriel <aspriel@gmail.com>
 
-It's still going to be an extra test, and networking is extremely
-sensitive to extra instructions if tracing is compiled out.  Passing
-in 'cachep' to the trace call looked like the best suggestion to me.
+Thanks!
+
+> > [...]
+> > diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
+> > index bc3f4e4edcdf..bea798ca6466 100644
+> > --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
+> > +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
+> > @@ -32,8 +32,8 @@ struct brcmf_fweh_queue_item {
+> >   	u8 ifidx;
+> >   	u8 ifaddr[ETH_ALEN];
+> >   	struct brcmf_event_msg_be emsg;
+> > -	u32 datalen;
+> > -	u8 data[];
+> > +	DECLARE_FLEX_ARRAY_ELEMENTS_COUNT(u32, datalen);
+> > +	DECLARE_FLEX_ARRAY_ELEMENTS(u8, data);
+> >   };
+> > [...]
+> > @@ -414,8 +414,7 @@ void brcmf_fweh_process_event(struct brcmf_pub *drvr,
+> >   	    datalen + sizeof(*event_packet) > packet_len)
+> >   		return;
+> > -	event = kzalloc(sizeof(*event) + datalen, gfp);
+> > -	if (!event)
+> > +	if (mem_to_flex_dup(&event, data, datalen, gfp))
+> >   		return;
+> >   	event->code = code;
+> > @@ -423,8 +422,6 @@ void brcmf_fweh_process_event(struct brcmf_pub *drvr,
+> >   	/* use memcpy to get aligned event message */
+> >   	memcpy(&event->emsg, &event_packet->msg, sizeof(event->emsg));
+> > -	memcpy(event->data, data, datalen);
+> > -	event->datalen = datalen;
+> 
+> So does mem_to_flex_dup() store event->datalen?
+> 
+> Don't have the entire thread so missing bits and pieces, but at least this
+> raises questions for me.
+
+Yes, that's part of the internal workings here -- the flex array counter
+is declared and will be set as part of the copy.
+
+-- 
+Kees Cook
