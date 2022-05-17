@@ -2,75 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345471AbiEQLuY (ORCPT
+        id S1344904AbiEQLwN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 07:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53532 "EHLO
+        Tue, 17 May 2022 07:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345456AbiEQLuU (ORCPT
+        with ESMTP id S230254AbiEQLwJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 07:50:20 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EAA377E0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:50:19 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id g11-20020a056e021a2b00b002cf48b48824so9247884ile.21
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:50:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ohu20Gei/ORrqs2QS7qZhTZWRQML4W4vk+6nw675mBs=;
-        b=PfhLw39m7AzKihXoGwVNqySZxHLb+mvvtb1sIaUidhtW0WjRH2trnZ0a07FS4sqnig
-         lq+ceUWXapJj3ikniyGqlfIURBzebt9nVfU5IZvt/GpkLeZOX/9mDARaCiCHtJiMAq2o
-         jLP5DJCqjhFlGNSOzz77AhWKl8BTpX9ZCBrgzCPnOY3vQsZsDQnBpVN+Fof1NuIsYVLE
-         qUOrSlOohlnVD7y/4T3UobgJUHdpL76nhV726b/kQUB51Dcqz5mL9KRWVe7g3uzQ+Kmw
-         6yEgxStXN4aEVwFzsNlPAOViY74u3VWT18qtqe6FXTJdd4EAnEkW0L/cJiYMAXu7/Pgk
-         nacw==
-X-Gm-Message-State: AOAM533pRvCJgMDAeJp1yD/jNQ8jUyAazqrfOSIMWBfxrKBMhVCr/24d
-        95vIFq/Sn1AzyTtEzhT+ov/lwRq03ibx6ohqYtlizbAkAKA/
-X-Google-Smtp-Source: ABdhPJzGQpSEEHGpXaDF+BwJwyVS5yee9rx2BeXMo+M4VKfJGc/JNONGpbBDwPiPxS5/InacMv1SoM7iYfNMnRNAlUiGhc/OEguL
+        Tue, 17 May 2022 07:52:09 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B08CE0E;
+        Tue, 17 May 2022 04:52:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652788322;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=v4GkYgTTABh4HPSdojrqVvE6+lNCX1q0yeD6U3RA25Q=;
+    b=Hxe9PyozAcYw2b678Pt2M8Dqa4rBFAZ2vIug+BOA/nO2j+W8XHdnvY+DyFSRv8mTu6
+    BpqPOWQ5YXDHavWBs9bJpHAI9J8iTHhmt0YCkP2QH+WGZFsLDGLP7bquZEpm1JdR38Qt
+    uqBuJx1DxKWGZDb9eQhUVcZfHwiZUw7aUOc+3mA7gHOxCLDhK5y9y+GPUM8p2Id4lThf
+    TO2grjmERUqGu5H8Mwn7u+vmUGe0umbf4ac0NSHMpeKSVTNsMNolcRaazpfVb31863xS
+    3xgg1bwGLTR3jyTLnWxdcHP8kgvmItaQzbaQZl/U4ng+N05clGNKihw0rcPEuhPYmh16
+    9XHw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00::b82]
+    by smtp.strato.de (RZmta 47.45.0 AUTH)
+    with ESMTPSA id R0691fy4HBq1Dq4
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 17 May 2022 13:52:01 +0200 (CEST)
+Message-ID: <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+Date:   Tue, 17 May 2022 13:51:57 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:400d:b0:65d:bff5:4f35 with SMTP id
- bk13-20020a056602400d00b0065dbff54f35mr10076844iob.199.1652788219320; Tue, 17
- May 2022 04:50:19 -0700 (PDT)
-Date:   Tue, 17 May 2022 04:50:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b3a1f405df33be01@google.com>
-Subject: [syzbot] linux-next build error (13)
-From:   syzbot <syzbot+7013da477748d0b624b9@syzkaller.appspotmail.com>
-To:     axboe@fb.com, hch@lst.de, james.smart@broadcom.com,
-        kbusch@kernel.org, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-nvme@lists.infradead.org,
-        sagi@grimberg.me, sfr@canb.auug.org.au,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>, netdev@vger.kernel.org
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
+ <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
+ <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+ <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+ <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+ <20220517104545.eslountqjppvcnz2@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220517104545.eslountqjppvcnz2@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
 
-HEAD commit:    47c1c54d1bcd Add linux-next specific files for 20220517
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=137f0301f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=95ad7f734b04ada9
-dashboard link: https://syzkaller.appspot.com/bug?extid=7013da477748d0b624b9
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+On 17.05.22 12:45, Marc Kleine-Budde wrote:
+> On 17.05.2022 16:04:53, Vincent MAILHOL wrote:
+>> So slcan, v(x)can and can-dev will select can-skb, and some of the
+>> hardware drivers (still have to figure out the list) will select
+>> can-rx-offload (other dependencies will stay as it is today).
+> 
+> For rx-offload that's flexcan, ti_hecc and mcp251xfd
+> 
+>> I think that splitting the current can-dev into can-skb + can-dev +
+>> can-rx-offload is enough. Please let me know if you see a need for
+>> more.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7013da477748d0b624b9@syzkaller.appspotmail.com
+After looking through drivers/net/can/Kconfig I would probably phrase it 
+like this:
 
-drivers/nvme/host/fc.c:1914: undefined reference to `blkcg_get_fc_appid'
+Select CAN devices (hw/sw) -> we compile a can_dev module. E.g. to 
+handle the skb stuff for vcan's.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Select hardware CAN devices -> we compile the netlink stuff into can_dev 
+and offer CAN_CALC_BITTIMING and CAN_LEDS to be compiled into can_dev too.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+In the latter case: The selection of flexcan, ti_hecc and mcp251xfd 
+automatically selects CAN_RX_OFFLOAD which is then also compiled into 
+can_dev.
+
+Would that fit in terms of complexity?
+
+Best,
+Oliver
