@@ -2,88 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B710EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343620AbiEQKJp (ORCPT
+        id S1343628AbiEQKJv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60808 "EHLO
+        Tue, 17 May 2022 06:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343797AbiEQKG4 (ORCPT
+        with ESMTP id S1343788AbiEQKGz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:06:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB71213D6C;
-        Tue, 17 May 2022 03:06:53 -0700 (PDT)
+        Tue, 17 May 2022 06:06:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F35F12A8D;
+        Tue, 17 May 2022 03:06:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 668B961517;
-        Tue, 17 May 2022 10:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF4FC385B8;
-        Tue, 17 May 2022 10:06:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A443B817DF;
+        Tue, 17 May 2022 10:06:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AE9C34113;
+        Tue, 17 May 2022 10:06:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652782012;
-        bh=NMoilscLmc4PgSYU3AERGYXDODbll8nGlk8mFWQ/E+Q=;
+        s=korg; t=1652781992;
+        bh=HhKKBm3wiaE0xpknwdH7ZBGXkWj2DptvFeir39Hw/ek=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VDBl6/O+U+ffk25lnOuexCCDsFAZIusrbJup1PFWyJtlhRwaXWmv+h5JNiHWdoJpT
-         XNddlZSGY0izGxPw45GFl9BAJkwVN8bhlBpOEwq+jIQfC3f/0ooWEUZNxvGTtoIoqP
-         Oj8ffsrSXAsvmqwRzSwcO8aDd7iW46/PfQ0x/NGc=
-Date:   Tue, 17 May 2022 12:06:47 +0200
+        b=F4nSFNRTu0P8ATljrJdxEj6spDFOWhsmBg7TkrTDh2dqNptrLPUH7PzVSw+aVXFm8
+         0tPHPUBt/fc5Ue24QZByFrUBjiqMeuMx/eLrQHt5bMIT18zYXfATHho/FluGkpmYfU
+         lEl1JaLzl7F1l7D07G+6GoGhkDuL5q1uj1UYXfkk=
+Date:   Tue, 17 May 2022 12:06:27 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Yuanjun Gong <ruc_gongyuanjun@163.com>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] radeon: fix a possible null pointer dereference
-Message-ID: <YoNzt4jkENOakdYF@kroah.com>
-References: <20220517095700.7291-1-ruc_gongyuanjun@163.com>
+Cc:     Evan Quan <evan.quan@amd.com>, amd-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] drm/amd/pm: fix a potential gpu_metrics_table memory
+ leak
+Message-ID: <YoNzo5QonLeg9CYh@kroah.com>
+References: <20220517095746.7537-1-ruc_gongyuanjun@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220517095700.7291-1-ruc_gongyuanjun@163.com>
+In-Reply-To: <20220517095746.7537-1-ruc_gongyuanjun@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 05:57:00PM +0800, Yuanjun Gong wrote:
+On Tue, May 17, 2022 at 05:57:46PM +0800, Yuanjun Gong wrote:
 > From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 > 
-> In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
-> is assigned to mode, which will lead to a NULL pointer dereference
-> on failure of drm_mode_duplicate(). Add a check to avoid npd.
-> 
-> The failure status of drm_cvt_mode() on the other path is checked too.
+> gpu_metrics_table is allocated in yellow_carp_init_smc_tables() but
+> not freed in yellow_carp_fini_smc_tables().
 > 
 > Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
 > ---
->  drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
-> index 0cb1345c6ba4..fabe4f4ca124 100644
-> --- a/drivers/gpu/drm/radeon/radeon_connectors.c
-> +++ b/drivers/gpu/drm/radeon/radeon_connectors.c
-> @@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
->  	    native_mode->vdisplay != 0 &&
->  	    native_mode->clock != 0) {
->  		mode = drm_mode_duplicate(dev, native_mode);
-> +		if (!mode)
-> +			return NULL;
->  		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
->  		drm_mode_set_name(mode);
+> diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
+> index e2d099409123..c66c39ccf19c 100644
+> --- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
+> +++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
+> @@ -190,6 +190,9 @@ static int yellow_carp_fini_smc_tables(struct smu_context *smu)
+>  	kfree(smu_table->watermarks_table);
+>  	smu_table->watermarks_table = NULL;
 >  
-> @@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
->  		 * simpler.
->  		 */
->  		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-> +		if (!mode)
-> +			return NULL;
->  		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
->  		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
->  	}
+> +	kfree(smu_table->gpu_metrics_table);
+> +	smu_table->gpu_metrics_table = NULL;
+> +
+>  	return 0;
+>  }
+>  
 > -- 
 > 2.17.1
 > 
