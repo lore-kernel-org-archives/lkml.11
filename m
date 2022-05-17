@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5566BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6639C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240676AbiEQHBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
+        id S235208AbiEQHBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240022AbiEQHBZ (ORCPT
+        with ESMTP id S240592AbiEQHB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:01:25 -0400
+        Tue, 17 May 2022 03:01:29 -0400
 Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58D91EEEA
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E5F14D22
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:25 -0700 (PDT)
 Received: by mail-ej1-x633.google.com with SMTP id gh6so32914529ejb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:20 -0700 (PDT)
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=moO0mfzAsMtnfgS0NS7AObTvGTtLS3H0rOk3lb8ST4E=;
-        b=aPGWNN3PAd3qCX5gCedlMYKZImBmit6DpCCYVTshbdtR+j+xvc2yU+HVk1RMXd6W6v
-         1YkjAwxijgbh3d5sRwRypmdK5vt0wcFNlgoe7bCfFUSMyZAbpFoZoO4TIkL6A36o3GD0
-         22f2v+HNc7k3R0+ODOqzxg5F7NeSAcyO8jpyWW4qRLhOAKuJxYQ63isb9IzmmGM4SmId
-         N91X7IZEuOIjlw3KXtY91cOVwDr1oVtKiIJSBCHee8cSeZgAGO4Q5bmnx3C0lgcMg/kd
-         nFe6Z+GP8qyclKNsrvJ/NWditH7WdWHSOjkoRRDmtzptwViPWZ+b6KedgfbvL2NfJRYU
-         KOgw==
+        bh=KYeBcLtOIBRk8eetAhraGQ55nA0X3XbtRB4w/tNkBGA=;
+        b=cG61NTNM+ZDLAW7nVuf/6PqpcSZfx1QVKqJJJ1zpe+EOLS6pUwOs3XhzPf0KQUT8E4
+         7qB08/i9v3EEikoxIofIr/gRImD5o+/wg0Urg172SRXUZWav+J+kA2Tp40vijS4xaxnH
+         QusrQq1F6NIocC48zkiwe0aYwU9zXzIUjV/ydHEpJQxZadpxOcCz92Zm4jYVl8W9H5x5
+         yNWT2+QHlUQcGhe+Cyjv/gUadGNRvMW4abaj45iY269AhlDNilmlwl5MeQ2GspFl5Ikx
+         NAxD8bXKruURoVObOnvoRKVNfF1m/H0G3EnEaaoJ0TI/SbXTq6OGqR10/VrOfe5MUDvT
+         OlBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=moO0mfzAsMtnfgS0NS7AObTvGTtLS3H0rOk3lb8ST4E=;
-        b=Igx0f7ssZfeRwtNpaKt1hm8rrVN2ySPKEmGOWAnZ2EdpbA5F9h+cEUfPNJWpLdxJ81
-         p8iOZTll5sF7Dn7WTr5jK2BjNabgwJYUBlHTxvc35coAO2aECUOChZSrEG+P5aDqOf+f
-         qtMYqZUA9zvYRsH37nl/1LZegi9IgiLuS3LXPEq2B0mDdJZ7WNIDqoVvAhOEpXy96n4F
-         At2I3nAs+CqDCuomcVmAovmp0BJxFoPgeQK7DCQQ0s7veZKg5nXGe7Ffg0aek70yzPgV
-         4njkjy9rj3m/gGA11Szfj1fWFr+aJaSgXwFmbP5JtpJYFaDCIaIEdNC8Gj6r8wh5jspF
-         uHPA==
-X-Gm-Message-State: AOAM533wDblhkvWg+KxFUj2tflMQ9UYE75AbMbb6iRnTpcrqdWAC1p6x
-        aAThk2edKU8vGtXuyLj56E4LIw==
-X-Google-Smtp-Source: ABdhPJy/n8xO8YnxRehXQ1gZbEjZKoNLgBvMQ6gADrK7/3iIaYZ9CTI5ZfDCECnI+q9RXedO2sEsCw==
-X-Received: by 2002:a17:907:72c5:b0:6f4:678:8742 with SMTP id du5-20020a17090772c500b006f406788742mr18676120ejc.607.1652770879157;
-        Tue, 17 May 2022 00:01:19 -0700 (PDT)
+        bh=KYeBcLtOIBRk8eetAhraGQ55nA0X3XbtRB4w/tNkBGA=;
+        b=tdHN/D9NEV0l1vpCiR86pESlbL5XLCOa4sg07A9giRBjlvStUqM/BAUEyfvirOjCOC
+         BADvh0LsIYnvTdmBxqNBqqGfvR6sfDpyyz7FZ7B0u/EJM9xj3KWE3nUTGpiLyImjPjKc
+         IesEczZYkXNDVZZt0kox8KAhXxaF7Te8UmHuhmmJMNTRlXeBfWygiO+z2bgvDShlzXa5
+         N9OeLFZvIn+XyynKEyFejb2l73CM4mQqRmr49Na9wNkyM7USzgWUiHCntzpyxfIzmv8I
+         tY0mTRCSxqredLXCGJ2rtg+ezqSSSBEWxJ6UG9+o4JLhtYGVS98nkNx796877cj+NhjR
+         ta8g==
+X-Gm-Message-State: AOAM5326SHgzPFTq1sjyRhCu9gU1om59jEaQBUDl3W56uGqcMubZW/Gr
+        ZLuIfGCAjSPIKl/+XfDkWS5rKg==
+X-Google-Smtp-Source: ABdhPJxd5QFcbp/FZrPylMNIisctJd9WG/F8SkiGk1dWCV7+wPGAPI+hp9C/ZrhzR6QnmO3N8ipYWw==
+X-Received: by 2002:a17:906:3099:b0:6f3:e8e1:87cd with SMTP id 25-20020a170906309900b006f3e8e187cdmr18483709ejv.290.1652770885058;
+        Tue, 17 May 2022 00:01:25 -0700 (PDT)
 Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id b5-20020a056402138500b0042617ba637esm6487016edv.8.2022.05.17.00.01.18
+        by smtp.gmail.com with ESMTPSA id b5-20020a056402138500b0042617ba637esm6487016edv.8.2022.05.17.00.01.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 00:01:18 -0700 (PDT)
+        Tue, 17 May 2022 00:01:24 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -57,11 +57,10 @@ To:     Andy Gross <agross@kernel.org>,
         Manivannan Sadhasivam <mani@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 01/12] dt-bindings: soc: qcom,wcnss: remove unneeded ref for names
-Date:   Tue, 17 May 2022 09:01:02 +0200
-Message-Id: <20220517070113.18023-2-krzysztof.kozlowski@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 06/12] dt-bindings: remoteproc: qcom,adsp: use GIC_SPI defines in example
+Date:   Tue, 17 May 2022 09:01:07 +0200
+Message-Id: <20220517070113.18023-7-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220517070113.18023-1-krzysztof.kozlowski@linaro.org>
 References: <20220517070113.18023-1-krzysztof.kozlowski@linaro.org>
@@ -71,26 +70,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The core schema already sets a 'ref' for properties ending with 'names'.
+Use GIC_SPI defines instead of raw value in the DTS example.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml | 1 -
- 1 file changed, 1 deletion(-)
+ Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-index d891ecfb2691..5320504bb5e0 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-@@ -77,7 +77,6 @@ properties:
-           Should reference the tx-enable and tx-rings-empty SMEM states.
+diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
+index e3a193299c4a..d04de60ae017 100644
+--- a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
+@@ -575,11 +575,12 @@ allOf:
+ examples:
+   - |
+     #include <dt-bindings/clock/qcom,rpmcc.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
+     #include <dt-bindings/interrupt-controller/irq.h>
+     adsp {
+         compatible = "qcom,msm8974-adsp-pil";
  
-       qcom,smem-state-names:
--        $ref: /schemas/types.yaml#/definitions/string-array
-         items:
-           - const: tx-enable
-           - const: tx-rings-empty
+-        interrupts-extended = <&intc 0 162 IRQ_TYPE_EDGE_RISING>,
++        interrupts-extended = <&intc GIC_SPI 162 IRQ_TYPE_EDGE_RISING>,
+                       <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
+                       <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
+                       <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
+@@ -601,7 +602,7 @@ examples:
+         qcom,smem-state-names = "stop";
+ 
+         smd-edge {
+-            interrupts = <0 156 IRQ_TYPE_EDGE_RISING>;
++            interrupts = <GIC_SPI 156 IRQ_TYPE_EDGE_RISING>;
+ 
+             qcom,ipc = <&apcs 8 8>;
+             qcom,smd-edge = <1>;
 -- 
 2.32.0
 
