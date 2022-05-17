@@ -2,93 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E905AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239196AbiEQJQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
+        id S238764AbiEQJRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244835AbiEQJQU (ORCPT
+        with ESMTP id S244904AbiEQJQ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:16:20 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F61D65D8
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:16:18 -0700 (PDT)
-Date:   Tue, 17 May 2022 11:16:14 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652778976;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=f6jzBcvG4gkF3uY8ZyoOC/6JteZBe2MtYGB4fOc1h/c=;
-        b=XaHurQNoRkqxYt7/3hysF0hF7RFzvUXz2KOcGZzQtpL/n11nWYGprYZ/g3Nc3B7iDRW21L
-        lKG5LrFZaDRT88t6+U8Dj+zeyRqgvT5TYJISAxcwZ7/G6VifErGb6LgAuYTI/pFZO6AgQo
-        j+/eD4rOfXDD6flLpHqkEck7/P9NpaoTRO5wO2g4ifiVmpoJbXTIBWKwuajqEMkwy8jDSh
-        e0vWVH6loPL7U44au3uTa13O9txIx2tuKgbgc09NV3RGgAfIQmKzfhrhQRAqRUpTrFYIbW
-        liQeSFAp4Jvx4mCV2BozDMtoR729wXqd5Xuofy9A3liOiTmP6baFRk9Dtt/FNA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652778976;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=f6jzBcvG4gkF3uY8ZyoOC/6JteZBe2MtYGB4fOc1h/c=;
-        b=+8xCkTz1GsImU+vdcgwYneHsxOLwFZSv8xUfUfFie+LwNPtCRyJ/MJxTuivA3V99WqLeTy
-        epaO0Y653xSGMHCw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH] locking/lockdep: Use sched_clock() for random numbers.
-Message-ID: <YoNn3pTkm5+QzE5k@linutronix.de>
+        Tue, 17 May 2022 05:16:26 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B4E1EC5E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:16:24 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id c14so16369063pfn.2
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:16:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VbT9MivaGcVQLFLyZe58CMZOydl8bMnPHecbxMnGlAA=;
+        b=K926XyreguR/4XEGI2/XdLSg8xqkk79XZxpz2krQ3cDJULT8zIyem67TELbGWBtmTg
+         b05B8JjUy+SFZn96XQv2wbJdy6P1+68y3XmUl2REMzKOsiCerWpY4gxfkPaXYimAbdMw
+         aPDfZjT5rKLnZhvekRWx46Led/eHS37TdbpQ+k2rA3u5jcJAA1qE4EjEdY61h/y1aGDJ
+         HwKKYCRVUMiHvXIhC9uLV+1DSufpqUQKWO7jZmK8YgLeFAdxBOwUCCjPXoideDBIZwgv
+         +DFJROmmKg7yUnB015J5PHMAo6BmnjJV06lEU25NzkLOxPGGWKOdzM+q3EK1WrqC3yTM
+         NXyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VbT9MivaGcVQLFLyZe58CMZOydl8bMnPHecbxMnGlAA=;
+        b=1GTFNaH0ZipH19BdIL9v3fks7Z2JjS2B4gYdGeteVcdEbToYDHz4OS6cws+kTZu4Br
+         UHOxTKkVR3WdTVN20UbEN1cmfjJFIamF50gzFB26D4l3OEXbL12fxzme2dOOAKXYz1YJ
+         kIxO6tiIaNyUa4qC1a1wLoI7n7l63Y8iTdtUZxZtHd4TcvJ23AiApYifERCCHpKJoecH
+         +Vw/vWaAV/kCmw7VDf+eGttRNtiSwWiNEqj11+pc1SK/2MG8Jxmizziz6jrEZuvLBEjq
+         o+UgU/f56yuoD3lWlZrvt4JpgwEEmA2VWk7OUVSK7kOtLgkMkAaQEbA6gftySBHuppbX
+         qXKA==
+X-Gm-Message-State: AOAM533HurWjR7r/KI69ck6EGe/gIoClfEcDSYiHTMet7CSpzW/ifPoJ
+        XcQsuv2q7yKLk2PYwEp//hftQyQixuU12DOP39Q=
+X-Google-Smtp-Source: ABdhPJwb7TUPydJ5uJgGFBM3zIUz6PP1+ayvhR0HdyDTVVnTuilVTQ3Ohszxg4ss5MiddupCWgYYK0W77rGbKie7r8Q=
+X-Received: by 2002:a63:4d4:0:b0:3c1:f13f:a9a1 with SMTP id
+ 203-20020a6304d4000000b003c1f13fa9a1mr18365793pge.398.1652778984401; Tue, 17
+ May 2022 02:16:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <20220517082650.2005840-1-hsinyi@chromium.org> <20220517082650.2005840-2-hsinyi@chromium.org>
+In-Reply-To: <20220517082650.2005840-2-hsinyi@chromium.org>
+From:   Xiongwei Song <sxwjean@gmail.com>
+Date:   Tue, 17 May 2022 17:15:58 +0800
+Message-ID: <CAEVVKH8vOYov+edGWOWbrgi=5UAnNN4FzcAV5i3EVJ8S7_NSDw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] Revert "squashfs: provide backing_dev_info in
+ order to disable read-ahead"
+To:     Hsin-Yi Wang <hsinyi@chromium.org>
+Cc:     Phillip Lougher <phillip@squashfs.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Xiongwei Song <Xiongwei.Song@windriver.com>,
+        Zheng Liang <zhengliang6@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
+        "squashfs-devel @ lists . sourceforge . net" 
+        <squashfs-devel@lists.sourceforge.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the rewrote of prandom_u32(), in the commit mentioned below, the
-function uses sleeping locks which extracing random numbers and filling
-the batch.
-This breaks lockdep on PREEMPT_RT because lock_pin_lock() disables
-interrupts while calling __lock_pin_lock(). This can't be moved earlier
-because the main user of the function (rq_pin_lock()) invokes that
-function after disabling interrupts in order to acquire the lock.
+On Tue, May 17, 2022 at 4:27 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
+>
+> This reverts commit 9eec1d897139e5de287af5d559a02b811b844d82.
+>
+> Revert closing the readahead to squashfs since the readahead callback
+> for squashfs is implemented.
+>
+> Suggested-by: Xiongwei Song <sxwjean@gmail.com>
 
-The cookie does not require random numbers as its goal is to provide a
-random value in order to notice unexpected "unlock + lock" sites.
+I'd like to use "xiongwei.song@windriver.com" in my tag.
 
-Use sched_clock() to provide random numbers.
-
-Fixes: a0103f4d86f88 ("random32: use real rng for non-deterministic randomness")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-
-So if the architecture does not provide sched_clock() and does not
-enabled GENERIC_SCHED_CLOCK then we use jiffies here. Most of them do
-one or the other except for alpha, csky, hexagon, ... but I don't worry
-here since arm*, power*, x86* do provide it.
-
- kernel/locking/lockdep.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index 81e87280513ea..f06b91ca6482d 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -5432,7 +5432,7 @@ static struct pin_cookie __lock_pin_lock(struct lockdep_map *lock)
- 			 * be guessable and still allows some pin nesting in
- 			 * our u32 pin_count.
- 			 */
--			cookie.val = 1 + (prandom_u32() >> 16);
-+			cookie.val = 1 + (sched_clock() & 0xffff);
- 			hlock->pin_count += cookie.val;
- 			return cookie;
- 		}
--- 
-2.36.1
-
+> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> ---
+>  fs/squashfs/super.c | 33 ---------------------------------
+>  1 file changed, 33 deletions(-)
+>
+> diff --git a/fs/squashfs/super.c b/fs/squashfs/super.c
+> index 6d594ba2ed28..32565dafa7f3 100644
+> --- a/fs/squashfs/super.c
+> +++ b/fs/squashfs/super.c
+> @@ -29,7 +29,6 @@
+>  #include <linux/module.h>
+>  #include <linux/magic.h>
+>  #include <linux/xattr.h>
+> -#include <linux/backing-dev.h>
+>
+>  #include "squashfs_fs.h"
+>  #include "squashfs_fs_sb.h"
+> @@ -113,24 +112,6 @@ static const struct squashfs_decompressor *supported_squashfs_filesystem(
+>         return decompressor;
+>  }
+>
+> -static int squashfs_bdi_init(struct super_block *sb)
+> -{
+> -       int err;
+> -       unsigned int major = MAJOR(sb->s_dev);
+> -       unsigned int minor = MINOR(sb->s_dev);
+> -
+> -       bdi_put(sb->s_bdi);
+> -       sb->s_bdi = &noop_backing_dev_info;
+> -
+> -       err = super_setup_bdi_name(sb, "squashfs_%u_%u", major, minor);
+> -       if (err)
+> -               return err;
+> -
+> -       sb->s_bdi->ra_pages = 0;
+> -       sb->s_bdi->io_pages = 0;
+> -
+> -       return 0;
+> -}
+>
+>  static int squashfs_fill_super(struct super_block *sb, struct fs_context *fc)
+>  {
+> @@ -146,20 +127,6 @@ static int squashfs_fill_super(struct super_block *sb, struct fs_context *fc)
+>
+>         TRACE("Entered squashfs_fill_superblock\n");
+>
+> -       /*
+> -        * squashfs provides 'backing_dev_info' in order to disable read-ahead. For
+> -        * squashfs, I/O is not deferred, it is done immediately in read_folio,
+> -        * which means the user would always have to wait their own I/O. So the effect
+> -        * of readahead is very weak for squashfs. squashfs_bdi_init will set
+> -        * sb->s_bdi->ra_pages and sb->s_bdi->io_pages to 0 and close readahead for
+> -        * squashfs.
+> -        */
+> -       err = squashfs_bdi_init(sb);
+> -       if (err) {
+> -               errorf(fc, "squashfs init bdi failed");
+> -               return err;
+> -       }
+> -
+>         sb->s_fs_info = kzalloc(sizeof(*msblk), GFP_KERNEL);
+>         if (sb->s_fs_info == NULL) {
+>                 ERROR("Failed to allocate squashfs_sb_info\n");
+> --
+> 2.36.0.550.gb090851708-goog
+>
+>
