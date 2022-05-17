@@ -2,98 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4001DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3740DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbiEQW1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
+        id S231192AbiEQW2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiEQW1f (ORCPT
+        with ESMTP id S230011AbiEQW16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:27:35 -0400
-X-Greylist: delayed 3261 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 15:27:33 PDT
-Received: from mail.wantyapps.xyz (unknown [66.135.5.160])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5434ECF7
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:27:33 -0700 (PDT)
-Received: from localhost (bzq-79-183-83-88.red.bezeqint.net [79.183.83.88])
-        by mail.wantyapps.xyz (Postfix) with ESMTPSA id 758997D63E;
-        Tue, 17 May 2022 22:27:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wantyapps.xyz;
-        s=mail; t=1652826451;
-        bh=pd6Vee+X5bKnfkJoQvuv34sp7wFRIFqhfKwqf22xJJE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cuxxKNrIYB+sbARwoyzCbW2VM8FAjR+hQgkceYmIpqe4rZZDjvYuo5bxABWkx8LUc
-         VrQgIaJ5hgv58AvoAY/ouXv28gmZDHD3s4KJ8CleUZpyyhL5EtK/ma+WsuENP2P0Tj
-         PpFWhKg5zpIKnxD2ePWdACHDCwYbpLXNZT5+vcn4QqYEDKgRlCJbVB2NTkPhxXdsaE
-         znffAar84pz6SOYYjsl4Rubz/genEvSAMXsscdJSfVQRhBEybNGUWf9kZsDkIObukk
-         fYXDnY52A4FN58lX700DcwqVfRyEkT8bTQPF0rt02XU+gnhKxpAP0aSu9DJ6I6B+wh
-         WHDwhkI0ipSmA==
-From:   Uri Arev <me@wantyapps.xyz>
-Cc:     Uri Arev <me@wantyapps.xyz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] staging: axis-fifo: fix indentation according to checkpatch.pl
-Date:   Wed, 18 May 2022 01:27:09 +0300
-Message-Id: <20220517222710.678033-1-me@wantyapps.xyz>
-X-Mailer: git-send-email 2.36.1
+        Tue, 17 May 2022 18:27:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAE84F9D5;
+        Tue, 17 May 2022 15:27:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89C0FB81CA8;
+        Tue, 17 May 2022 22:27:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB1CC34113;
+        Tue, 17 May 2022 22:27:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652826475;
+        bh=YRNg4fUJchn2hn6EXpKMnrT7d/thkCzgxNDNr+EhcWM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aQvLPLWSVFJ6A2aBESvJvAKy6Ha8ipgadZRTF0RbEtHztIX/Rl7hezbc9haclggwv
+         egFR8HsIbMvNjHIzbG49fnyLRlrJS+dKZA3h5Z1ENOha+4Wv+lFeMc5WNE3XSpXnVg
+         eN66ndseY0Pas3rVb+KzXtK2rcBNTLZWy9PFKiAmxm772N4TCu/2ghbwNMtkOApKJU
+         IHp9QsIHL2bMbX/ZGYsXMn5vdcl9qQTllkUva8YNab3+pB1uPs6QeYRCeCShTpmaam
+         HPN3rOrADs5Lgit1lMijJC/1wKlC56kJDlKjrVvr2/MrmolY/LNnSETCtNB+fu/oNv
+         3BKsmx1quweNg==
+Date:   Tue, 17 May 2022 15:27:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Trimarchi <michael@amarulasolutions.com>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] net: fec: Avoid to allocate rx buffer using ATOMIC
+ in ndo_open
+Message-ID: <20220517152753.78685d6c@kernel.org>
+In-Reply-To: <20220517100544.2326499-1-michael@amarulasolutions.com>
+References: <20220517100544.2326499-1-michael@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(My first patch!)
+On Tue, 17 May 2022 12:05:44 +0200 Michael Trimarchi wrote:
+> Subject: [RFC PATCH] net: fec: Avoid to allocate rx buffer using ATOMIC in ndo_open
 
-scripts/checkpatch.pl warned about an indentation problem in
-the axis-fifo.c file.
+nit: "Avoid allocating"
 
-Checkpatch warning:
-	CHECK: Alignment should match open parenthesis
+We need a commit message, guessing your motivation something like this
+would be enough IMHO:
 
-Signed-off-by: Uri Arev <me@wantyapps.xyz>
----
- drivers/staging/axis-fifo/axis-fifo.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ Make ndo_open less sensitive to memory pressure.
 
-diff --git a/drivers/staging/axis-fifo/axis-fifo.c b/drivers/staging/axis-fifo/axis-fifo.c
-index dfd2b357f484..51ce48e68e27 100644
---- a/drivers/staging/axis-fifo/axis-fifo.c
-+++ b/drivers/staging/axis-fifo/axis-fifo.c
-@@ -383,10 +383,10 @@ static ssize_t axis_fifo_read(struct file *f, char __user *buf,
- 		 */
- 		mutex_lock(&fifo->read_lock);
- 		ret = wait_event_interruptible_timeout(fifo->read_queue,
--			ioread32(fifo->base_addr + XLLF_RDFO_OFFSET),
--				 (read_timeout >= 0) ?
--				  msecs_to_jiffies(read_timeout) :
--				  MAX_SCHEDULE_TIMEOUT);
-+						       ioread32(fifo->base_addr + XLLF_RDFO_OFFSET),
-+								(read_timeout >= 0) ?
-+								 msecs_to_jiffies(read_timeout) :
-+								 MAX_SCHEDULE_TIMEOUT);
- 
- 		if (ret <= 0) {
- 			if (ret == 0) {
-@@ -526,11 +526,11 @@ static ssize_t axis_fifo_write(struct file *f, const char __user *buf,
- 		 */
- 		mutex_lock(&fifo->write_lock);
- 		ret = wait_event_interruptible_timeout(fifo->write_queue,
--			ioread32(fifo->base_addr + XLLF_TDFV_OFFSET)
--				 >= words_to_write,
--				 (write_timeout >= 0) ?
--				  msecs_to_jiffies(write_timeout) :
--				  MAX_SCHEDULE_TIMEOUT);
-+						       ioread32(fifo->base_addr + XLLF_TDFV_OFFSET)
-+								>= words_to_write,
-+								(write_timeout >= 0) ?
-+								 msecs_to_jiffies(write_timeout) :
-+								 MAX_SCHEDULE_TIMEOUT);
- 
- 		if (ret <= 0) {
- 			if (ret == 0) {
--- 
-2.36.1
+> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+> ---
+>  drivers/net/ethernet/freescale/fec_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index 9f33ec838b52..09eb6ea9a584 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -3076,7 +3076,7 @@ fec_enet_alloc_rxq_buffers(struct net_device *ndev, unsigned int queue)
+>  	rxq = fep->rx_queue[queue];
+>  	bdp = rxq->bd.base;
+>  	for (i = 0; i < rxq->bd.ring_size; i++) {
+> -		skb = netdev_alloc_skb(ndev, FEC_ENET_RX_FRSIZE);
+> +		skb = __netdev_alloc_skb(ndev, FEC_ENET_RX_FRSIZE, GFP_KERNEL);
+>  		if (!skb)
+>  			goto err_alloc;
+>  
 
+The patch LGTM, feel free to repost as non-RFC.
