@@ -2,109 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63865C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB205C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343674AbiEQKwE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S239813AbiEQKzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344690AbiEQKu4 (ORCPT
+        with ESMTP id S233495AbiEQKzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:50:56 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3097D36317
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:50:54 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id nk9-20020a17090b194900b001df2fcdc165so2098928pjb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:50:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vVR6zNLI+c0k/X+csgUVN8nm7PvvodORekMaxXxc1M0=;
-        b=P2qf7Qtgz9XAg7exjMtb8+M9Sz0eO/t+AfddkwEFhWXoNRj99c1cdjLjuh/0JEsXQQ
-         dEsp4+DhbXW+qtdL1mcwW46guWWKLsujaG/UKrR1X03zrXbgN4RrR2vU+qzqQEJ59fQi
-         s5vtF0YquujenckSNVmVwq36pv5QhYE5WUXR7LUOLCf8UpFsjf8nzHdAp/1BCCVygnqH
-         IuoHakDVI4ykqxHBI9Fgp927b+FWf9Rfxjlnfz1ktQh+G+mkGGV9acXsQK8qXcDZBb3j
-         LY1JeU3X2Ixd2FUjs7iER8Xag1kDOEv6loGhpWZNd2YECqd2RE39jSBpEiCs4GBe0pFB
-         DSyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vVR6zNLI+c0k/X+csgUVN8nm7PvvodORekMaxXxc1M0=;
-        b=P+DZnk9sPtscYyMM7drLJidcQ8BGStjxBWwKeMB6OJeVmS3lPKu4p4won6TwXMjcUB
-         bJXiaK3Yruhs9H8JC1K/59EVQeX/nv2hv+gffRQ0DenLmNul3niwre9iyBNirIUSLAeS
-         wWmQwyHq5U5WEObiw7YGZro5dsaFz8yZ3cNdd9mKICRZwtwbl4Xgfdqbms+3tlF16AZq
-         5Np6JGI2eOmhOAwh3Km80eYVFaOccFH9YFQR+m/RcZWFE/DnahNi7eFD6ZUNpkle49Vo
-         y00qqUJsHDmTD4xh1X2B/4X9kEZcUKuOTtCqNYniw45ELPMm+AEm6YYvLwwspLsU/nrI
-         hfRQ==
-X-Gm-Message-State: AOAM533V/hcO5BFU6+QTJg5gO6D0rjFmNfLSZ4X4Hltoi8TU+NZgj6vt
-        F4FPL1+Yy9bx9LrWdZLfnJDlZg==
-X-Google-Smtp-Source: ABdhPJzJrylNLgqRP10b0FK8mEviLe31EBXM9tkz9+Fpl4VtpNbhDD1nImE+3rO4hV1KxBwVXYjkqw==
-X-Received: by 2002:a17:902:c7cd:b0:161:8b6f:73c3 with SMTP id r13-20020a170902c7cd00b001618b6f73c3mr7000127pla.156.1652784653611;
-        Tue, 17 May 2022 03:50:53 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s ([46.249.98.195])
-        by smtp.gmail.com with ESMTPSA id m6-20020a17090a858600b001df47e47d41sm1336540pjn.36.2022.05.17.03.50.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 03:50:53 -0700 (PDT)
-Date:   Tue, 17 May 2022 18:50:45 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        broonie@kernel.org, acme@kernel.org, german.gomez@arm.com,
-        mathieu.poirier@linaro.org, john.garry@huawei.com,
-        Will Deacon <will@kernel.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 1/4] perf tools: arm64: Copy perf_regs.h from the
- kernel
-Message-ID: <20220517105045.GB153558@leoy-ThinkPad-X240s>
-References: <20220517102005.3022017-1-james.clark@arm.com>
- <20220517102005.3022017-2-james.clark@arm.com>
+        Tue, 17 May 2022 06:55:21 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8A93E5C4;
+        Tue, 17 May 2022 03:55:20 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: shreeya)
+        with ESMTPSA id 733811F417F4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652784919;
+        bh=OzW1IAdicjiRJe7jjcmuiLDwRUkXPi2uk9eLVcRy3/U=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=XsuIX+SCjnh9NhpU3jHgJJhEIq5NU9r/7/sC9RotLk/4tWeZSGzliBEa5tHryMAzh
+         X7i87+rMQQYbRrT9j+0Vi0+M89k9d60ACL/rAR/rEGWjXdxjOjYflS75CNN24tzngh
+         MSucP55dULCl8vIULj9QNMPxUJsltkdp9otHweppLO6uzSajxqpMinseEiOTcGef06
+         da8cTb4eDm7B//gutbd/F+W/74c2daYbvoq1/ZM8SpvSZFQ8QO/ZcIjT4uA722mav0
+         +Ti0qZa+AY1/LUlkTBRf7r9W2ezEFEiTc62SRSK01Uo6u8PAfVZXflErEA3fjhOUHY
+         hFyypKN8iayjQ==
+Message-ID: <c18c9fee-9cc1-526c-3d4a-23b317d9bbff@collabora.com>
+Date:   Tue, 17 May 2022 16:24:54 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517102005.3022017-2-james.clark@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4 3/3] iio: light: Add support for ltrf216a sensor
+Content-Language: en-US
+To:     Dmitry Osipenko <digetx@gmail.com>, jic23@kernel.org,
+        lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
+        krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com
+References: <20220511094024.175994-1-shreeya.patel@collabora.com>
+ <20220511094024.175994-4-shreeya.patel@collabora.com>
+ <a54012e3-291b-42e8-752a-9abc9a88ad6c@gmail.com>
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+In-Reply-To: <a54012e3-291b-42e8-752a-9abc9a88ad6c@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 11:20:02AM +0100, James Clark wrote:
-> Get the updated header for the newly added VG register.
-> 
-> Signed-off-by: James Clark <james.clark@arm.com>
 
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
+On 13/05/22 06:00, Dmitry Osipenko wrote:
+> 11.05.2022 12:40, Shreeya Patel пишет:
+>> +static int ltrf216a_set_int_time(struct ltrf216a_data *data, int itime)
+>> +{
+>> +	int i, ret, index = -1;
+>> +	u8 reg_val;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(ltrf216a_int_time_available); i++) {
+>> +		if (ltrf216a_int_time_available[i][1] == itime) {
+>> +			index = i;
+>> +			break;
+>> +		}
+>> +	}
+>> +
+>> +	if (index < 0)
+>> +		return -EINVAL;
+>> +
+>> +	reg_val = ltrf216a_int_time_reg[index][1];
+>> +	data->int_time_fac = ltrf216a_int_time_reg[index][0];
+>> +
+>> +	ret = i2c_smbus_write_byte_data(data->client, LTRF216A_ALS_MEAS_RES, reg_val);
+>> +	if (ret < 0)
+>> +		return ret;
+> Should the data->int_time_fac be updated only if I2C write was successful?
 
-> ---
->  tools/arch/arm64/include/uapi/asm/perf_regs.h | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/arch/arm64/include/uapi/asm/perf_regs.h b/tools/arch/arm64/include/uapi/asm/perf_regs.h
-> index d54daafa89e3..fd157f46727e 100644
-> --- a/tools/arch/arm64/include/uapi/asm/perf_regs.h
-> +++ b/tools/arch/arm64/include/uapi/asm/perf_regs.h
-> @@ -36,6 +36,11 @@ enum perf_event_arm_regs {
->  	PERF_REG_ARM64_LR,
->  	PERF_REG_ARM64_SP,
->  	PERF_REG_ARM64_PC,
-> -	PERF_REG_ARM64_MAX,
-> +
-> +	/* Extended/pseudo registers */
-> +	PERF_REG_ARM64_VG = 46, // SVE Vector Granule
-> +
-> +	PERF_REG_ARM64_MAX = PERF_REG_ARM64_PC + 1,
-> +	PERF_REG_ARM64_EXTENDED_MAX = PERF_REG_ARM64_VG + 1
->  };
->  #endif /* _ASM_ARM64_PERF_REGS_H */
-> -- 
-> 2.28.0
-> 
+Yes, thanks for pointing it out. It should be updated only if write is 
+successful.
+
+> I'm not sure what reading of LTRF216A_CLEAR_DATA reg does, but if it
+> clears the measured data, then shouldn't the data be cleared after
+> changing the config?
+
+LTRF216A_CLEAR_DATA isn't used for clearing the measured data. Name is a
+bit confusing and even I assumed it is being used for clearing the data. 
+But from the
+datasheet, it seems that clear data registers provides light intensity 
+data related to infrared
+and ultravoilet.
+We are currently not using this anywhere in the driver so we could 
+remove the cleardata readings
+for now.
+
+
+Thanks,
+Shreeya Patel
+>> +	data->int_time = itime;
+>> +
+>> +	return 0;
+>> +}
+>
