@@ -2,118 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17226C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 543EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345823AbiEQQb4 (ORCPT
+        id S1350917AbiEQQdJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
+        Tue, 17 May 2022 12:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232072AbiEQQby (ORCPT
+        with ESMTP id S230033AbiEQQdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:31:54 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF0414D1E
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:31:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1652805112; x=1684341112;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IteN9ICL3vHHQMXeE78rzjKCW/+s+R1bzkPHD4BhrHE=;
-  b=jNGHWE4exEF9jzdP5+0zeSB1dH0UvztDW3mIVGXc9Ln2IkCnWVlb7B4y
-   vDo+kZbfUPnST6P1OiRM1I/QDqOwMyxd62gX+LCeztO8mN9IS9v2j9wSs
-   oLb0rj/AYav73tqW6OC+g59BUPPMQkNldho/s5ztqOS+cpPbuW4/3wb+N
-   c=;
-X-IronPort-AV: E=Sophos;i="5.91,233,1647302400"; 
-   d="scan'208";a="89313648"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 17 May 2022 16:24:43 +0000
-Received: from EX13D08EUC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com (Postfix) with ESMTPS id 2584E3E00E4;
-        Tue, 17 May 2022 16:24:43 +0000 (UTC)
-Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
- EX13D08EUC002.ant.amazon.com (10.43.164.124) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 17 May 2022 16:24:41 +0000
-Received: from dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (10.15.60.66)
- by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP Server id
- 15.0.1497.32 via Frontend Transport; Tue, 17 May 2022 16:24:40 +0000
-Received: by dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (Postfix, from userid 5466572)
-        id DC06A41146; Tue, 17 May 2022 16:24:40 +0000 (UTC)
-From:   Maximilian Heyne <mheyne@amazon.de>
-CC:     Maximilian Heyne <mheyne@amazon.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, <xen-devel@lists.xenproject.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] x86: xen: remove STACK_FRAME_NON_STANDARD from xen_cpuid
-Date:   Tue, 17 May 2022 16:24:25 +0000
-Message-ID: <20220517162425.100567-1-mheyne@amazon.de>
-X-Mailer: git-send-email 2.32.0
+        Tue, 17 May 2022 12:33:02 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6D43193C
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:33:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652805180; x=1684341180;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Qe4LIFT49VN/IVvl50czFXImIVyT8V7bld71clAHhnU=;
+  b=V05TyuaJgBOI2mwbqNnxbrmscp3IrNngRio6hFVbNf+rePj292p9EEh9
+   dE/DbnUfR0TxGcOx9kkZTShn9uaoP+KZqjjhayVQ12ISnfLQRjfaGrh6c
+   yXVBnm7EhNE09q/mKgbd8GFM0z29HN/K5ddJJNGuKbgzeuXu4zxQQdiER
+   M5Gf14ucGRzuadJoxVOA4s5DTYy7eYTIYzDsX+dTvfd0epvyFOXjsZuK+
+   XgbyibfErAe/3VvxYYkr8rr8l7Ecfc/PbgjUylVzM3BzEwnc+ukUzel1D
+   PxAnDxAbFNQtRDQfflzg30mXO6uYryyzUXhhoeIgXvAo/NVCQPyTEW25M
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="270932050"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="270932050"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:33:00 -0700
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="597222799"
+Received: from fyu1.sc.intel.com ([172.25.103.126])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:32:59 -0700
+Date:   Tue, 17 May 2022 09:33:28 -0700
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     Stephane Eranian <eranian@google.com>
+Cc:     linux-kernel@vger.kernel.org, reinette.chatre@intel.com,
+        babu.moger@amd.com, x86@kernel.org
+Subject: Re: [PATCH v2] x86/resctrl: Fix zero cbm for AMD in cbm_validate
+Message-ID: <YoPOWC0waMuSlvI6@fyu1.sc.intel.com>
+References: <20220517001234.3137157-1-eranian@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517001234.3137157-1-eranian@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 4d65adfcd119 ("x86: xen: insn: Decode Xen and KVM
-emulate-prefix signature"), objtool is able to correctly parse the
-prefixed instruction in xen_cpuid and emit correct orc unwind
-information. Hence, marking the function as STACKFRAME_NON_STANDARD is
-no longer needed.
+Hi, Eranian,
 
-This commit is basically a revert of commit 983bb6d254c7 ("x86/xen: Mark
-xen_cpuid() stack frame as non-standard").
+On Mon, May 16, 2022 at 05:12:34PM -0700, Stephane Eranian wrote:
+> AMD supports cbm with no bits set as reflected in rdt_init_res_defs_amd() by:
+...
+> @@ -107,6 +107,10 @@ static bool cbm_validate(char *buf, u32 *data, struct rdt_resource *r)
+>  	first_bit = find_first_bit(&val, cbm_len);
+>  	zero_bit = find_next_zero_bit(&val, cbm_len, first_bit);
+>  
+> +	/* no need to check bits if arch supports no bits set */
+> +	if (r->cache.arch_has_empty_bitmaps && val == 0)
+> +		goto done;
+> +
+>  	/* Are non-contiguous bitmaps allowed? */
+>  	if (!r->cache.arch_has_sparse_bitmaps &&
+>  	    (find_next_bit(&val, cbm_len, zero_bit) < cbm_len)) {
+> @@ -119,7 +123,7 @@ static bool cbm_validate(char *buf, u32 *data, struct rdt_resource *r)
+>  				    r->cache.min_cbm_bits);
+>  		return false;
+>  	}
+> -
+> +done:
+>  	*data = val;
+>  	return true;
+>  }
 
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
-CC: Josh Poimboeuf <jpoimboe@kernel.org>
+Isn't it AMD supports 0 minimal CBM bits? Then should set its min_cbm_bits as 0.
+Is the following patch a better fix? I don't have AMD machine and cannot
+test the patch.
 
-cr: https://code.amazon.com/reviews/CR-69645080
----
- arch/x86/xen/enlighten_pv.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
-index 5038edb79ad5..ca85d1409917 100644
---- a/arch/x86/xen/enlighten_pv.c
-+++ b/arch/x86/xen/enlighten_pv.c
-@@ -30,7 +30,6 @@
- #include <linux/pci.h>
- #include <linux/gfp.h>
- #include <linux/edd.h>
--#include <linux/objtool.h>
- 
- #include <xen/xen.h>
- #include <xen/events.h>
-@@ -165,7 +164,6 @@ static void xen_cpuid(unsigned int *ax, unsigned int *bx,
- 
- 	*bx &= maskebx;
- }
--STACK_FRAME_NON_STANDARD(xen_cpuid); /* XEN_EMULATE_PREFIX */
- 
- static bool __init xen_check_mwait(void)
- {
--- 
-2.32.0
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
-
+diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
+index 6055d05af4cc..031d77dd982d 100644
+--- a/arch/x86/kernel/cpu/resctrl/core.c
++++ b/arch/x86/kernel/cpu/resctrl/core.c
+@@ -909,6 +909,7 @@ static __init void rdt_init_res_defs_amd(void)
+ 			r->cache.arch_has_sparse_bitmaps = true;
+ 			r->cache.arch_has_empty_bitmaps = true;
+ 			r->cache.arch_has_per_cpu_cfg = true;
++			r->cache.min_cbm_bits = 0;
+ 		} else if (r->rid == RDT_RESOURCE_MBA) {
+ 			hw_res->msr_base = MSR_IA32_MBA_BW_BASE;
+ 			hw_res->msr_update = mba_wrmsr_amd;
