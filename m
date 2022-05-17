@@ -2,199 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D41AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C157C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244731AbiEQJXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
+        id S244475AbiEQJX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236326AbiEQJX0 (ORCPT
+        with ESMTP id S244863AbiEQJWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:23:26 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F18EA6
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:23:23 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id m2-20020a1ca302000000b003943bc63f98so915917wme.4
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 02:23:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=bb8/nB+kmhmFWXO5zVpYOav19fcBlS1D1P8aaZq8+TA=;
-        b=NLuQyV1W/2pAV/8qtAsbjvwJT0bp3/m6yP8/qSf4DNkBZWjJ2qSE9Ic+KESK+AZYBD
-         8YEie4oWlMR8nMC/+PrzaXDerzR9c1lFCh3BL0dZm7WN+oqSJqVcj7Lk4zHOAy0LhAmb
-         JLklEJdmplbSd2ydk6O/obwQazWLkGFoYwdMLrPGhqlAaOaq6bhNTc2crWk/GzOyYI1+
-         nSi7ffaNCjsaSz1SLD+6yRcsp42Ea3m1BpOU1mi8qeXcn29E77fvHCiS7tClfy6BmNpT
-         asg2VsBo4JEL5yc4L48803bAga1iwd1AJDvDkmI4tZvSn0DccQdt2Wekvfe0Ah4bj7/O
-         6n/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bb8/nB+kmhmFWXO5zVpYOav19fcBlS1D1P8aaZq8+TA=;
-        b=qEzUcF3Ae9KSHsceF/6/4h6AvFtWx4cD8PH/F0QxRTmDgzKmMJYNUWR+kEkd+zcLva
-         57QJwosrScWRX371K8Hkj/T9tSWkLtuYeip5e3TIwIGNxCbGQsVAG+yY48sqmq+KtL9y
-         HLjMDb0P1nv86W5Ih1RK++KdpTgA37cpj9ljTcW+2xfCAd0BmJH3/NaD/VPSMuvPE1t6
-         M1U3k3d4Luh476dpoqMwgg9n2v0Jh7J80iJsdJEh6Nh3PxoczrsEMgad768X0+YUjO+5
-         M/dkbWzh2lE1d7kAUrqwHxJFm1RuOwpNWE82QTatSWrYBifKEtiHZzKHEhhiLqq3k1wk
-         Ip6A==
-X-Gm-Message-State: AOAM533zSwTjQUQ7zEKyiRSTIX942QxLN+RG4LVJm+MXz6EBXDSIoNsB
-        voUoScUgHTYCPit3/fSbybM=
-X-Google-Smtp-Source: ABdhPJzPJ0rigZkAme1aN3XhsVvyYFk3+d9ermcQUZyB/s2knhda9Ri1e6wxK/jVN7+UIOAlVEsbYQ==
-X-Received: by 2002:a7b:c081:0:b0:394:789b:915 with SMTP id r1-20020a7bc081000000b00394789b0915mr20241355wmh.105.1652779402461;
-        Tue, 17 May 2022 02:23:22 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id l21-20020a7bcf15000000b003942a244ec8sm1409496wmg.13.2022.05.17.02.23.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 02:23:21 -0700 (PDT)
-Message-ID: <6917bfeb-2f20-dafd-14e9-2dd0dc42ab91@gmail.com>
-Date:   Tue, 17 May 2022 11:23:20 +0200
+        Tue, 17 May 2022 05:22:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141F236315;
+        Tue, 17 May 2022 02:22:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0E2D614A3;
+        Tue, 17 May 2022 09:22:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFCE7C385B8;
+        Tue, 17 May 2022 09:22:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652779333;
+        bh=qf2Sjr4YZGduUZZfCuitwrMOqUGbc0ojvfPoMfi/tdI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GcicAM+LdmzOG7AdCBhagBkpGqtduvlJB6UfcCbQmAs0FGuBgmd1BfPr2BTCE9NZN
+         mcOPupNkPHRL9QCggysS/azMlUFHoEs9p6wnx3P7wL7FJk/Yr7wPSA9NdQqK0SPvSA
+         hvLkSBbJNV4u3q1wlF+/VViXALPNufvajeRft7mLFkTZV/hj91dvHg4PI8RtkwZZLJ
+         xTKbcL2FgOp6CSo50O7fcb1MeiAPPkYHYtJ0Lze479hVf9jk+7XdUPHAjDReaJA+03
+         ELpHBngWc8dmIqNTwD+G3ELzjRxmacyaABEF98A0ApSRhkokd7QJ7U+xb5VWo7jMa7
+         aNJjD9bZBFA2Q==
+Date:   Tue, 17 May 2022 11:22:03 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Gao Xiang <hsiangkao@linux.alibaba.com>
+Cc:     fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-erofs@lists.ozlabs.org, Chao Yu <chao.yu@oppo.com>
+Subject: Re: [PATCH] erofs: support idmapped mounts
+Message-ID: <20220517092203.6dlcxynvpokqrfzg@wittgenstein>
+References: <20220517073210.3569589-1-chao@kernel.org>
+ <20220517090622.4wrtrjmzknh66bci@wittgenstein>
+ <YoNnlpGBFm7dh6yD@B-P7TQMD6M-0146.local>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 5/5] soc: mediatek: pwrap: Compress of_device_id
- entries to one line
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        nfraprado@collabora.com, rex-bc.chen@mediatek.com,
-        zhiyong.tao@mediatek.com
-References: <20220516124659.69484-1-angelogioacchino.delregno@collabora.com>
- <20220516124659.69484-6-angelogioacchino.delregno@collabora.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220516124659.69484-6-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YoNnlpGBFm7dh6yD@B-P7TQMD6M-0146.local>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 16/05/2022 14:46, AngeloGioacchino Del Regno wrote:
-> Compress each entry of the of_device_id tables in this driver to one
-> line instead of three, as they fit just fine in a single line.
+On Tue, May 17, 2022 at 05:15:02PM +0800, Gao Xiang wrote:
+> Hi Christian,
 > 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->   drivers/soc/mediatek/mtk-pmic-wrap.c | 90 ++++++++--------------------
->   1 file changed, 24 insertions(+), 66 deletions(-)
+> On Tue, May 17, 2022 at 11:06:22AM +0200, Christian Brauner wrote:
+> > On Tue, May 17, 2022 at 03:32:10PM +0800, Chao Yu wrote:
+> > > This patch enables idmapped mounts for erofs, since all dedicated helpers
+> > > for this functionality existsm, so, in this patch we just pass down the
+> > > user_namespace argument from the VFS methods to the relevant helpers.
+> > > 
+> > > Simple idmap example on erofs image:
+> > > 
+> > > 1. mkdir dir
+> > > 2. touch dir/file
+> > > 3. mkfs.erofs erofs.img dir
+> > > 4. mount -t erofs -o loop erofs.img  /mnt/erofs/
+> > > 
+> > > 5. ls -ln /mnt/erofs/
+> > > total 0
+> > > -rw-rw-r-- 1 1000 1000 0 May 17 15:26 file
+> > > 
+> > > 6. mount-idmapped --map-mount b:0:1001:1 /mnt/erofs/ /mnt/scratch_erofs/
+> > > 
+> > > 7. ls -ln /mnt/scratch_erofs/
+> > > total 0
+> > > -rw-rw-r-- 1 65534 65534 0 May 17 15:26 file
+> > 
+> > Your current example maps id 0 in the filesystem to id 1001 in the
+> > mount. But since no files with id 0 exist in the filesystem you're
+> > illustrating that unmapped ids are correctly reported as overflow{g,u}id.
+> > 
+> > I think what you'd rather want to show is something like this:
+> > 
+> > 5. ls -ln /mnt/erofs/
+> > total 0
+> > -rw-rw-r-- 1 1000 1000 0 May 17 15:26 file
+> > 
+> > 6. mount-idmapped --map-mount b:1000:1001:1 /mnt/erofs/ /mnt/scratch_erofs/
+> > 
+> > 7. ls -ln /mnt/scratch_erofs/
+> > total 0
+> > -rw-rw-r-- 1 1001 1001 0 May 17 15:26 file
+> > 
+> > where id 1000 in the filesystem maps to id 1001 in the mount.
+> > 
+> > > 
+> > > Signed-off-by: Chao Yu <chao.yu@oppo.com>
+> > > ---
+> > 
+> > Overall this is currently the smallest patch to support idmapped mounts.
+> > 
+> > Is erofs integrated with xfstests in any way?
+> > For read-only filesystems we probably only need to verify that {g,u}id
+> > are correctly reported. All the writable aspects are irrelevant.
 > 
-> diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
-> index 7d02e1d4faf4..c018092e6cbe 100644
-> --- a/drivers/soc/mediatek/mtk-pmic-wrap.c
-> +++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
-> @@ -1960,33 +1960,17 @@ static const struct pwrap_slv_type pmic_mt6397 = {
->   };
->   
->   static const struct of_device_id of_slave_match_tbl[] = {
-> -	{
-> -		.compatible = "mediatek,mt6323",
-> -		.data = &pmic_mt6323,
-> -	}, {
-> -		.compatible = "mediatek,mt6351",
-> -		.data = &pmic_mt6351,
-> -	}, {
-> -		.compatible = "mediatek,mt6357",
-> -		.data = &pmic_mt6357,
-> -	}, {
-> -		.compatible = "mediatek,mt6358",
-> -		.data = &pmic_mt6358,
-> -	}, {
-> -		.compatible = "mediatek,mt6359",
-> -		.data = &pmic_mt6359,
-> -	}, {
-> -		/* The MT6380 PMIC only implements a regulator, so we bind it
-> -		 * directly instead of using a MFD.
-> -		 */
-> -		.compatible = "mediatek,mt6380-regulator",
-> -		.data = &pmic_mt6380,
-> -	}, {
-> -		.compatible = "mediatek,mt6397",
-> -		.data = &pmic_mt6397,
-> -	}, {
-> -		/* sentinel */
-> -	}
-> +	{ .compatible = "mediatek,mt6323", .data = &pmic_mt6323 },
-> +	{ .compatible = "mediatek,mt6351", .data = &pmic_mt6351 },
-> +	{ .compatible = "mediatek,mt6357", .data = &pmic_mt6357 },
-> +	{ .compatible = "mediatek,mt6358", .data = &pmic_mt6358 },
-> +	{ .compatible = "mediatek,mt6359", .data = &pmic_mt6359 },
-> +	/* The MT6380 PMIC only implements a regulator, so we bind it
+> Currently most generic xfstests test cases are unsuitable for erofs.
+> 
+> Instead we have regression testcases for EROFS specific since it needs
+> to generate images with care,
+>  https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/log/?h=experimental-tests
+> 
+> Also we have an erofsstress to do long time random stress workloads,
+> https://github.com/erofs/erofsstress
+> 
+> But yeah, it's some awkward that fstests idmapped mount testcases may
+> be unsuitable for EROFS for now. I will add some new testcases to build
+> images and test for this behavior.
+> 
+> > 
+> > Looks good,
+> > Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+> 
+> Thanks for your review!
 
-Nit-pick alert: new line here for readability.
-
-Regards,
-Matthias
-
-> +	 * directly instead of using a MFD.
-> +	 */
-> +	{ .compatible = "mediatek,mt6380-regulator", .data = &pmic_mt6380 },
-> +	{ .compatible = "mediatek,mt6397", .data = &pmic_mt6397 },
-> +	{ /* sentinel */ }
->   };
->   MODULE_DEVICE_TABLE(of, of_slave_match_tbl);
->   
-> @@ -2145,45 +2129,19 @@ static struct pmic_wrapper_type pwrap_mt8186 = {
->   };
->   
->   static const struct of_device_id of_pwrap_match_tbl[] = {
-> -	{
-> -		.compatible = "mediatek,mt2701-pwrap",
-> -		.data = &pwrap_mt2701,
-> -	}, {
-> -		.compatible = "mediatek,mt6765-pwrap",
-> -		.data = &pwrap_mt6765,
-> -	}, {
-> -		.compatible = "mediatek,mt6779-pwrap",
-> -		.data = &pwrap_mt6779,
-> -	}, {
-> -		.compatible = "mediatek,mt6797-pwrap",
-> -		.data = &pwrap_mt6797,
-> -	}, {
-> -		.compatible = "mediatek,mt6873-pwrap",
-> -		.data = &pwrap_mt6873,
-> -	}, {
-> -		.compatible = "mediatek,mt7622-pwrap",
-> -		.data = &pwrap_mt7622,
-> -	}, {
-> -		.compatible = "mediatek,mt8135-pwrap",
-> -		.data = &pwrap_mt8135,
-> -	}, {
-> -		.compatible = "mediatek,mt8173-pwrap",
-> -		.data = &pwrap_mt8173,
-> -	}, {
-> -		.compatible = "mediatek,mt8183-pwrap",
-> -		.data = &pwrap_mt8183,
-> -	}, {
-> -		.compatible = "mediatek,mt8186-pwrap",
-> -		.data = &pwrap_mt8186,
-> -	}, {
-> -		.compatible = "mediatek,mt8195-pwrap",
-> -		.data = &pwrap_mt8195,
-> -	}, {
-> -		.compatible = "mediatek,mt8516-pwrap",
-> -		.data = &pwrap_mt8516,
-> -	}, {
-> -		/* sentinel */
-> -	}
-> +	{ .compatible = "mediatek,mt2701-pwrap", .data = &pwrap_mt2701 },
-> +	{ .compatible = "mediatek,mt6765-pwrap", .data = &pwrap_mt6765 },
-> +	{ .compatible = "mediatek,mt6779-pwrap", .data = &pwrap_mt6779 },
-> +	{ .compatible = "mediatek,mt6797-pwrap", .data = &pwrap_mt6797 },
-> +	{ .compatible = "mediatek,mt6873-pwrap", .data = &pwrap_mt6873 },
-> +	{ .compatible = "mediatek,mt7622-pwrap", .data = &pwrap_mt7622 },
-> +	{ .compatible = "mediatek,mt8135-pwrap", .data = &pwrap_mt8135 },
-> +	{ .compatible = "mediatek,mt8173-pwrap", .data = &pwrap_mt8173 },
-> +	{ .compatible = "mediatek,mt8183-pwrap", .data = &pwrap_mt8183 },
-> +	{ .compatible = "mediatek,mt8186-pwrap", .data = &pwrap_mt8186 },
-> +	{ .compatible = "mediatek,mt8195-pwrap", .data = &pwrap_mt8195 },
-> +	{ .compatible = "mediatek,mt8516-pwrap", .data = &pwrap_mt8516 },
-> +	{ /* sentinel */ }
->   };
->   MODULE_DEVICE_TABLE(of, of_pwrap_match_tbl);
->   
+Thanks for supporting this in erofs!
+Christian
