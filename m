@@ -2,78 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A89F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343855AbiEQKMU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
+        id S240220AbiEQKM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343849AbiEQKKg (ORCPT
+        with ESMTP id S1343788AbiEQKMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:10:36 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D6664B428;
-        Tue, 17 May 2022 03:09:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 209131042;
-        Tue, 17 May 2022 03:09:01 -0700 (PDT)
-Received: from e121896.warwick.arm.com (e121896.warwick.arm.com [10.32.33.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EB6603F66F;
-        Tue, 17 May 2022 03:08:58 -0700 (PDT)
-From:   James Clark <james.clark@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, broonie@kernel.org,
-        acme@kernel.org
-Cc:     german.gomez@arm.com, leo.yan@linaro.org,
-        mathieu.poirier@linaro.org, john.garry@huawei.com,
-        James Clark <james.clark@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mark Rutland <mark.rutland@arm.com>, linux-doc@vger.kernel.org
-Subject: [PATCH v2 0/2] perf: arm64: Kernel support for Dwarf unwinding through SVE functions
-Date:   Tue, 17 May 2022 11:07:41 +0100
-Message-Id: <20220517100743.3020667-1-james.clark@arm.com>
-X-Mailer: git-send-email 2.28.0
+        Tue, 17 May 2022 06:12:10 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B6514D3D
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:11:08 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id p189so10136642wmp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:11:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6Lu6f0d73oazesEuBZHPdAXNcyn4PVdVtPrb/jDtJ6I=;
+        b=PlrnrUEHymszdmHIcng8m5vAcej0j3tS1D+N6uRoaq2jGq1Lud4hO07wDpPnifs7M/
+         N/vvnuH1VyKSKuf5jjfMwvHHwgGEAqepEt4WN5wZoWgUbHqByJgAXy0ynt9kfNGhBJTF
+         u/CBML7Fc+zPlufcDyzUM7hBtKgfx86N+8J2KH36TNtwBON/wbS65BRMBiOTQnvXbZbL
+         08UEURw98dqxbXLiRPy2CPx7WNDrimZWTDE2R1lHlLqmxZxC8YUVfD4r9Y9bmtdZrfzv
+         08trCDrphc+izqhWbp98xkwW8BX+BXF3SQcAeqhWU8rl1PR/ylvM2FRID1cL2hfnBAzp
+         M8yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6Lu6f0d73oazesEuBZHPdAXNcyn4PVdVtPrb/jDtJ6I=;
+        b=kek11BFlfn4PJwp2JKxw9jXL7FGIwx72yYebm2dmWuciVVsIiv4Vce4WYgfq2nj6KY
+         nVVaGp4sliBHQL6Hs9MudylMP1vWfxrvCPBMPJCCMnXCY601l2LY9bVMxQCOkhj7zzHG
+         8FBht9Muke8t5yh8y3Pwz4SCIZW/Qgz9dMxFV/zdwBk7Eae4SBwKkks3aYYt6VU32ZSh
+         g0NTC0V66Raq+Wg9Fqysz8jrOvHxG193JPpD9fci12AI5SLd/jTl13uVTIwntildD4em
+         6KEzZ+lJnvB0IGFL+5uDXHWzD1pozwTVI0B6NN5w1XxqKrspBqqKo1bt9Xce6QpBL9Fv
+         IvBQ==
+X-Gm-Message-State: AOAM530Sn3GPh8RZ8FEILT3s3cSOs1nEk/qc2iXANWoBUfZZSycFnZLV
+        Nlu83S+R2qlvAB65W7wm0jufEnXuMSI9wFyI
+X-Google-Smtp-Source: ABdhPJzEcdGO4BEiKj9MU8Numtdd2YBnuh41a11Our/iJU2bQwHov5H0jYcNsPvff8YEb2UsONtN/w==
+X-Received: by 2002:a05:600c:3d8c:b0:394:6097:9994 with SMTP id bi12-20020a05600c3d8c00b0039460979994mr30990364wmb.29.1652782266658;
+        Tue, 17 May 2022 03:11:06 -0700 (PDT)
+Received: from uffe-XPS13.acentic.lan ([193.117.214.243])
+        by smtp.gmail.com with ESMTPSA id e12-20020adfa44c000000b0020c5253d8dcsm11767731wra.40.2022.05.17.03.11.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 03:11:05 -0700 (PDT)
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+To:     linux-mmc@vger.kernel.org,
+        Jean Rene Dawin <jdawin@math.uni-bielefeld.de>,
+        "H . Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Huijin Park <huijin.park@samsung.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.com
+Subject: [PATCH] mmc: core: Fix busy polling for MMC_SEND_OP_COND again
+Date:   Tue, 17 May 2022 12:10:46 +0200
+Message-Id: <20220517101046.27512-1-ulf.hansson@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes since v1:
+It turned out that polling period for MMC_SEND_OP_COND, that currently is
+set to 1ms, still isn't sufficient. In particular a Micron eMMC on a
+Beaglebone platform, is reported to sometimes fail to initialize.
 
-  * Add Mark's review tag
-  * Clarify in docs that it's the SVE register length
-  * Split patchset into kernel side and Perf tool changes
+Additional test, shows that extending the period to 4ms is working fine, so
+let's make that change.
 
-When SVE registers are pushed onto the stack the VG register is required to
-unwind because the stack offsets would vary by the SVE register width at the
-time when the sample was taken.
+Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+Tested-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+Fixes: 1760fdb6fe9f (mmc: core: Restore (almost) the busy polling for MMC_SEND_OP_COND")
+Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
+Cc: stable@vger.kernel.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+---
+ drivers/mmc/core/mmc_ops.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-These first two patches add support for sampling the VG register to the kernel
-and the docs. There is another patchset to add support to userspace perf.
-
-A small change is also required to libunwind or libdw depending on which
-unwinder is used, and these will be published later. Without these changes Perf
-continues to work with both libraries, although the VG register is still not
-used for unwinding. 
-
-Thanks
-James
-
-James Clark (2):
-  perf: arm64: Add SVE vector granule register to user regs
-  arm64/sve: Add Perf extensions documentation
-
- Documentation/arm64/sve.rst             | 20 +++++++++++++++++
- arch/arm64/include/uapi/asm/perf_regs.h |  7 +++++-
- arch/arm64/kernel/perf_regs.c           | 30 +++++++++++++++++++++++--
- drivers/perf/arm_pmu.c                  |  2 +-
- 4 files changed, 55 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
+index 180d7e9d3400..81c55bfd6e0c 100644
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -21,7 +21,7 @@
+ 
+ #define MMC_BKOPS_TIMEOUT_MS		(120 * 1000) /* 120s */
+ #define MMC_SANITIZE_TIMEOUT_MS		(240 * 1000) /* 240s */
+-#define MMC_OP_COND_PERIOD_US		(1 * 1000) /* 1ms */
++#define MMC_OP_COND_PERIOD_US		(4 * 1000) /* 4ms */
+ #define MMC_OP_COND_TIMEOUT_MS		1000 /* 1s */
+ 
+ static const u8 tuning_blk_pattern_4bit[] = {
 -- 
-2.28.0
+2.25.1
 
