@@ -2,50 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A245AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 06:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6088FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 06:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238887AbiEQGMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 02:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45010 "EHLO
+        id S238368AbiEQGNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 02:13:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232036AbiEQGMn (ORCPT
+        with ESMTP id S239028AbiEQGNE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 02:12:43 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F7443EFD;
-        Mon, 16 May 2022 23:12:41 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 8B87E68AFE; Tue, 17 May 2022 08:12:38 +0200 (CEST)
-Date:   Tue, 17 May 2022 08:12:38 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Khazhismel Kumykov <khazhy@google.com>
-Cc:     Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@lst.de>, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        cgroups@vger.kernel.org
-Subject: Re: [RESEND][RFC PATCH] blkcg: rewind seq_file if no stats
-Message-ID: <20220517061238.GB4789@lst.de>
-References: <CACGdZYLMW2KHVebfyJZVn9G=15N+Jt4+8oF5gq3wdDTOcXbk9A@mail.gmail.com> <20220513174030.1307720-1-khazhy@google.com>
+        Tue, 17 May 2022 02:13:04 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F44443D4;
+        Mon, 16 May 2022 23:13:02 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2QhG5mv0zGpQh;
+        Tue, 17 May 2022 14:10:06 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 14:13:00 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 14:12:59 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>,
+        <linux-hwmon@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH 1/2] hwmon: Directly use ida_alloc()/free()
+Date:   Tue, 17 May 2022 06:31:25 +0000
+Message-ID: <20220517063126.2142637-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513174030.1307720-1-khazhy@google.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 10:40:30AM -0700, Khazhismel Kumykov wrote:
-> Restores the previous behavior of only displaying devices for which we
-> have statistics (and removes the current, broken, behavior of printing
-> devname with no newline if no statistics)
-> 
-> In lieu of get_seq_buf + seq_commit, provide a way to "undo" writes if
-> we use seq_printf
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-I have to say I much prefer the simpler fix from Wolfgang.  But
-if we want to go down this route it needs to split into a patch
-for the seq_file infrastruture and a separate one for the blk-cgroup
-code.
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ drivers/hwmon/hwmon.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+index 22de7a9e7ba7..2e2cd79d89eb 100644
+--- a/drivers/hwmon/hwmon.c
++++ b/drivers/hwmon/hwmon.c
+@@ -764,7 +764,7 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
+ 			 "hwmon: '%s' is not a valid name attribute, please fix\n",
+ 			 name);
+ 
+-	id = ida_simple_get(&hwmon_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&hwmon_ida, GFP_KERNEL);
+ 	if (id < 0)
+ 		return ERR_PTR(id);
+ 
+@@ -856,7 +856,7 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
+ free_hwmon:
+ 	hwmon_dev_release(hdev);
+ ida_remove:
+-	ida_simple_remove(&hwmon_ida, id);
++	ida_free(&hwmon_ida, id);
+ 	return ERR_PTR(err);
+ }
+ 
+@@ -968,7 +968,7 @@ void hwmon_device_unregister(struct device *dev)
+ 
+ 	if (likely(sscanf(dev_name(dev), HWMON_ID_FORMAT, &id) == 1)) {
+ 		device_unregister(dev);
+-		ida_simple_remove(&hwmon_ida, id);
++		ida_free(&hwmon_ida, id);
+ 	} else
+ 		dev_dbg(dev->parent,
+ 			"hwmon_device_unregister() failed: bad class ID!\n");
+-- 
+2.25.1
+
