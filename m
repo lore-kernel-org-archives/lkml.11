@@ -2,72 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6908C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347997AbiEQNmG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
+        id S244975AbiEQNnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 09:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348137AbiEQNlb (ORCPT
+        with ESMTP id S240623AbiEQNnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:41:31 -0400
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89DF183B9;
-        Tue, 17 May 2022 06:41:29 -0700 (PDT)
-Received: from mail.denx.de (unknown [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: festevam@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 5806580762;
-        Tue, 17 May 2022 15:41:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1652794887;
-        bh=zbcQGbZS5AQ0KRI+idVh1qeEtKHtQw7LjdFgVa3rRLc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G2c9JyOsy5CSEQzMjnIkrpaVp7MKzwqtfrIO2CUPe103x84nb7j71L53RkO3uZceP
-         Wq/9SKbxdHk0EOJNTRfkjBK1/NGeAP849NNlK/ySImbsAL6TXZLJKPgfgKHCsyD0xn
-         cC78eys5rBxN2E4HbV+m7vTmx/N6DJB0zhfd56zbv1n3J+1os8YfrSzrCOnnYj8XZ+
-         8kAixmY4B7oIokfzG6QgwR7sV1/IGcit5kFaevbE0GZ45i24ktF2zDo59Spgik3sZX
-         ba7X0L8qdWaixlZ0XcqXhTFCadCXyhs/Ia8MayqAQhovkQLdjAmh7U30V6SJNU/NXm
-         93oIfRcov/8yA==
+        Tue, 17 May 2022 09:43:06 -0400
+Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE37A4B1F3;
+        Tue, 17 May 2022 06:43:04 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id B6671FF88D;
+        Tue, 17 May 2022 13:43:03 +0000 (UTC)
+Date:   Tue, 17 May 2022 15:43:01 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+Message-ID: <20220517154301.5bf99ba9.max@enpas.org>
+In-Reply-To: <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+        <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
+        <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
+        <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
+        <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+        <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+        <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+        <20220517104545.eslountqjppvcnz2@pengutronix.de>
+        <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+        <20220517141404.578d188a.max@enpas.org>
+        <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+        <20220517143921.08458f2c.max@enpas.org>
+        <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Date:   Tue, 17 May 2022 10:41:27 -0300
-From:   Fabio Estevam <festevam@denx.de>
-To:     Michael Trimarchi <michael@amarulasolutions.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-amarula@amarulasolutions.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Simon Holesch <simon.holesch@bshg.com>
-Subject: Re: [PATCH] arm: dts: imx6ulz-bsh-smm-m2: Support proper board power
- off
-In-Reply-To: <20220517133540.2456987-1-michael@amarulasolutions.com>
-References: <20220517133540.2456987-1-michael@amarulasolutions.com>
-Message-ID: <bd342e6be1723daa3787c7088c3510d0@denx.de>
-X-Sender: festevam@denx.de
-User-Agent: Roundcube Webmail/1.3.6
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michael,
+On Tue, 17 May 2022 15:35:03 +0200
+Oliver Hartkopp <socketcan@hartkopp.net> wrote:
 
-On 17/05/2022 10:35, Michael Trimarchi wrote:
-> From: Simon Holesch <simon.holesch@bshg.com>
-> 
-> Supports initiating poweroff on SNVS_PMIC_ON_REQ signal.
-> 
-> Signed-off-by: Simon Holesch <simon.holesch@bshg.com>
+> Oh, I didn't want to introduce two new kernel modules but to have 
+> can_dev in different 'feature levels'.
 
-You missed your own Signed-off-by tag here.
+Which I agree is a nice idea, as long as heisenbugs can be avoided :)
+
+(as for the separate modules vs. feature levels of can-dev - sorry, my
+two paragraphs were each referring to a different idea. I mixed them
+into one single email...)
+
+
+Maybe the can-skb and rx-offload parts could be a *visible* sub-option
+of can-dev in Kconfig, which is normally optional, but immediately
+force-selected once a CAN HW driver is selected?
+
+
+> But e.g. the people that are running Linux instances in a cloud only 
+> using vcan and vxcan would not need to carry the entire
+> infrastructure of CAN hardware support and rx-offload.
+
+Out of curiosity, do you have an example use case for this vcan cloud
+setup? I can't dream one up...
+
+
+
+Max
