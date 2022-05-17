@@ -2,96 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8039C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 12:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345716AbiEQMjm (ORCPT
+        id S1346051AbiEQMlZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 08:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53242 "EHLO
+        Tue, 17 May 2022 08:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346190AbiEQMj0 (ORCPT
+        with ESMTP id S1346219AbiEQMlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 08:39:26 -0400
-X-Greylist: delayed 30417 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 05:39:25 PDT
-Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14E8E4C7BB;
-        Tue, 17 May 2022 05:39:25 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id ED400FF9D7;
-        Tue, 17 May 2022 12:39:23 +0000 (UTC)
-Date:   Tue, 17 May 2022 14:39:21 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Message-ID: <20220517143921.08458f2c.max@enpas.org>
-In-Reply-To: <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
-        <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
-        <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
-        <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
-        <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
-        <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
-        <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
-        <20220517104545.eslountqjppvcnz2@pengutronix.de>
-        <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
-        <20220517141404.578d188a.max@enpas.org>
-        <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 17 May 2022 08:41:04 -0400
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED16C15724;
+        Tue, 17 May 2022 05:41:01 -0700 (PDT)
+Received: by mail-oi1-f182.google.com with SMTP id v65so22041308oig.10;
+        Tue, 17 May 2022 05:41:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=tU6K7uetAiw+rSP5T9+Sc20G5SXNExj5PkXgukoIQpY=;
+        b=WoOztYx/XHDkFLmzQgiX5NVA5acRpqNk2LOdGBMiQ0WPUob9msphTQ9b5/L+L11j5N
+         tgU4b4xaYtvgmBIGMVO7e/wd41apzro+ZyVL3NOIT0buGVv28Zi0A+wBcuiiCv6RGWXm
+         fpX3iDd10qympp97Ay1jn30aKp7bPX9YiRKlErcTbxaAg68QX3Io6XzwEYmsEk3ylSvc
+         o6ObbNyXLbkSAlO9ic0twr2Hk21e/tXxDHj40ipNg4Es+4kVKU39V23pQrNL9Fnk/kRz
+         2uhAyQBzFnHiTNdsV01dMRTNUxLcI5H/ns32KYflyTaNEgs8MSyuZRZ2lAxJEQWYT4OW
+         +s9Q==
+X-Gm-Message-State: AOAM533nTLjyMklk4wJYjauL3KEWKt504EMjaKrKH3hCm0L2g6Rldsza
+        zlhaUqcZ1URpLFxDR3l1bg==
+X-Google-Smtp-Source: ABdhPJxnbOAePBrL+7Vj6jx6SHaZRvhNaYbZt0r4+5WYZOCl4zrCDiMenp0OWItuwFOIpyqmNZ74CQ==
+X-Received: by 2002:a05:6808:2c8:b0:325:ad24:a002 with SMTP id a8-20020a05680802c800b00325ad24a002mr16074643oid.82.1652791261252;
+        Tue, 17 May 2022 05:41:01 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id m1-20020a05680806c100b003266e656d39sm4722981oih.4.2022.05.17.05.40.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 05:41:00 -0700 (PDT)
+Received: (nullmailer pid 785390 invoked by uid 1000);
+        Tue, 17 May 2022 12:40:59 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Max Krummenacher <max.oss.09@gmail.com>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Marek Vasut <marex@denx.de>, Sam Ravnborg <sam@ravnborg.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        max.krummenacher@toradex.com,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>
+In-Reply-To: <20220516162826.23025-2-max.oss.09@gmail.com>
+References: <20220516162826.23025-1-max.oss.09@gmail.com> <20220516162826.23025-2-max.oss.09@gmail.com>
+Subject: Re: [PATCH v1 1/2] dt-bindings: display: add new bus-format property for panel-dpi
+Date:   Tue, 17 May 2022 07:40:59 -0500
+Message-Id: <1652791259.418473.785387.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 17 May 2022 14:21:53 +0200
-Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-
-> On 17.05.2022 14:14:04, Max Staudt wrote:
-> > > After looking through drivers/net/can/Kconfig I would probably
-> > > phrase it like this:
-> > > 
-> > > Select CAN devices (hw/sw) -> we compile a can_dev module. E.g.
-> > > to handle the skb stuff for vcan's.
-> > > 
-> > > Select hardware CAN devices -> we compile the netlink stuff into
-> > > can_dev and offer CAN_CALC_BITTIMING and CAN_LEDS to be compiled
-> > > into can_dev too.
-> > > 
-> > > In the latter case: The selection of flexcan, ti_hecc and
-> > > mcp251xfd automatically selects CAN_RX_OFFLOAD which is then also
-> > > compiled into can_dev.
-> > > 
-> > > Would that fit in terms of complexity?  
-> > 
-> > IMHO these should always be compiled into can-dev. Out of tree
-> > drivers are fairly common here, and having to determine which kind
-> > of can-dev (stripped or not) the user has on their system is a
-> > nightmare waiting to happen.  
+On Mon, 16 May 2022 18:28:25 +0200, Max Krummenacher wrote:
+> From: Max Krummenacher <max.krummenacher@toradex.com>
 > 
-> I personally don't care about out-of-tree drivers.
+> The property is used to set the enum bus_format and infer the bpc
+> for a panel defined by 'panel-dpi'.
+> This specifies how the panel is connected to the display interface.
+> 
+> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+> ---
+> 
+>  .../bindings/display/panel/panel-dpi.yaml     | 11 +++++++++
+>  .../dt-bindings/display/dt-media-bus-format.h | 23 +++++++++++++++++++
+>  2 files changed, 34 insertions(+)
+>  create mode 100644 include/dt-bindings/display/dt-media-bus-format.h
+> 
 
-I know that this is the official stance in the kernel.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-But out-of-tree drivers do happen on a regular basis, even when
-developing with the aim of upstreaming. And if a developer builds a
-minimal kernel to host a CAN driver, without building in-tree hardware
-CAN drivers, then can-dev will be there but behave differently from
-can-dev in a full distro. Leading to heisenbugs and wasting time. The
-source of heisenbugs really are the suggested *hidden* Kconfigs.
+yamllint warnings/errors:
 
+dtschema/dtc warnings/errors:
+Error: Documentation/devicetree/bindings/display/panel/panel-dpi.example.dts:20.9-10 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/display/panel/panel-dpi.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
 
-On another note, is the module accounting overhead in the kernel for
-two new modules with relatively little code in each, code that almost
-always is loaded when CAN is used, really worth it?
+doc reference errors (make refcheckdocs):
 
+See https://patchwork.ozlabs.org/patch/
 
-Okay, I think I'm out of 2 cent pieces now :)
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-Max
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
