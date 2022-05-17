@@ -2,89 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D537C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB38C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242207AbiEQHj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
+        id S240772AbiEQHkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241951AbiEQHjL (ORCPT
+        with ESMTP id S242136AbiEQHj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:39:11 -0400
+        Tue, 17 May 2022 03:39:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4AA49CAC;
-        Tue, 17 May 2022 00:37:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BBC48E48;
+        Tue, 17 May 2022 00:38:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77DFBB8173A;
-        Tue, 17 May 2022 07:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FAE2C385B8;
-        Tue, 17 May 2022 07:37:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652773049;
-        bh=g7kgBkyM4zj9yW1DzflJG2l9JzxOE2iIeZ0vQz0Vo84=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=guY8bfkDmz9XnbIUdyAiOoxdSGMIwVRZQW+TWRBSHGXVldeIPilXmUTjdxJLqgBdz
-         y76cA62Q7P7J16m0bPZGE+XnbxuVaqhWBAuSCrrwf+gO5TUDMnp8aBlqEtTf6QPf6V
-         DLBlOOYD/KdmiV8N890gnX0VS4opNuU43Wy9zxl1ipRPx2TtbHyUdWDWFy7qY+rMdA
-         83XnM/y/aLToW/5EWoFT/St4p7RMlfXFGCsdAIRRTAyxXk4UgYZqOeJUC74g2lIoiX
-         qGafMTHj1sRVpDN0BzjOt78zsXMPazIq41YQGhLcW1JaLw+0MqyMYz0t//uxhdgoDq
-         Uo/YTg5vjDxRg==
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61E1DB8173A;
+        Tue, 17 May 2022 07:38:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D337C385B8;
+        Tue, 17 May 2022 07:38:14 +0000 (UTC)
+Message-ID: <b4757e58-fafb-c801-3c1f-6ba1c79e6b94@linux-m68k.org>
+Date:   Tue, 17 May 2022 17:38:12 +1000
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220503205722.24755-4-Sergey.Semin@baikalelectronics.ru>
-References: <20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru> <20220503205722.24755-4-Sergey.Semin@baikalelectronics.ru>
-Subject: Re: [PATCH v3 3/4] clk: baikal-t1: Move reset-controls code into a dedicated module
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Date:   Tue, 17 May 2022 00:37:26 -0700
-User-Agent: alot/0.10
-Message-Id: <20220517073729.2FAE2C385B8@smtp.kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] m68knommu: fix undefined reference to `mach_get_rtc_pll'
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linux/m68k <linux-m68k@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>
+References: <20220513064952.3610672-1-gerg@linux-m68k.org>
+ <CAMuHMdVWRM7U9_SxbtDUE0a-sB5_PDiO2009Cu3QKMP3wNc=yw@mail.gmail.com>
+ <2532419a-812b-c2de-ef56-849ec7dc16bc@linux-m68k.org>
+ <CAK8P3a3RuOTidFpW7diHekJ6POV20SBb5PhSF943Ju1xAtOxNw@mail.gmail.com>
+ <5d546c21-169c-cacc-6ca3-becf54876f7f@linux-m68k.org>
+ <CAMuHMdVdWhKJ4Lwr1RaDXsc1b6_J0Hnjv4d+r1q=Fd3qhQ_WLQ@mail.gmail.com>
+From:   Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <CAMuHMdVdWhKJ4Lwr1RaDXsc1b6_J0Hnjv4d+r1q=Fd3qhQ_WLQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Serge Semin (2022-05-03 13:57:21)
-> Before adding the directly controlled resets support it's reasonable to
-> move the existing resets control functionality into a dedicated object for
-> the sake of the CCU dividers clock driver simplification. After the new
-> functionality is added clk-ccu-div.c would have got to a mixture of the
-> weakly dependent clocks and resets methods. Splitting the methods up into
-> the two objects will make code easier to read especially seeing it isn't
-> that hard to do.
->=20
-> As before the CCU reset module will support the trigger-like CCU resets
-> only, which are responsible for the AXI-bus, APB-bus and SATA-ref blocks
-> reset. The assert/de-assert-capable reset controls support will be added
-> in the next commit.
->=20
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> ---
->  drivers/clk/baikal-t1/Kconfig       |  12 +-
->  drivers/clk/baikal-t1/Makefile      |   1 +
->  drivers/clk/baikal-t1/ccu-rst.c     | 258 ++++++++++++++++++++++++++++
->  drivers/clk/baikal-t1/ccu-rst.h     |  60 +++++++
->  drivers/clk/baikal-t1/clk-ccu-div.c |  94 ++--------
+Hi Geert,
 
-Perhaps this should be done via the auxiliary bus by having the clk
-driver register the reset driver and have some private API to pass any
-data to the reset driver? Then the whole file could be in
-drivers/reset/, reviewed and maintained by the reset maintainer.
+On 16/5/22 17:15, Geert Uytterhoeven wrote:
+> On Mon, May 16, 2022 at 8:08 AM Greg Ungerer <gerg@linux-m68k.org> wrote:
+>> On 13/5/22 22:59, Arnd Bergmann wrote:
+>>> On Fri, May 13, 2022 at 2:25 PM Greg Ungerer <gerg@linux-m68k.org> wrote:
+>>>> On 13/5/22 17:12, Geert Uytterhoeven wrote:
+>>>>> read_persistent_clock64() uses mach_hwclk(), which is provided by
+>>>>> both setup_mm.c and setup_no.c, so it's always available?> Albeit not populated by coldfire or nommu platform code, so I see
+>>>>> the point in depending on MMU (no nommu Amiga support yet ;-).
+>>>>
+>>>> Yes, exactly. And even worse is that on ColdFire platforms it
+>>>> is never set, so will be the startup value of NULL. It is called
+>>>> without checking for NULL in both of rtc_generic_get_time() and
+>>>> rtc_generic_set_time().
+>>>
+>>> I think that's ok because rtc_generic_{get,set}_time is only called
+>>> from the rtc_generic driver, but that is not registered when mach_hwclk()
+>>> is NULL.
+>>>
+>>> With your patch to add the CONFIG_MMU check, you can actually
+>>> remove the mach_hwclk() symbol from setup_no.c, and move the
+>>> remaining RTC related symbols from setup_mm.c into the #ifdef.
+>>
+>> Yes, I think that would be a good idea.
+>> Tidies thins up a little.
+> 
+> Let's fix the build error first.
+> 
+> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+I am re-thinking this fix at the moment. I think I missed the fact that
+the 68328 has underlying mach_hwclk support, and so can use be used by
+rtc_generic_{get,set}_time. So in other words classic m68k nommu config
+should be able to use this code too. CONFIG_MMU blocking it is probably
+not right here.
+
+New patch coming.
+
+Regards
+Greg
+
+
+> Gr{oetje,eeting}s,
+> 
+>                          Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
