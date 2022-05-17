@@ -2,220 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C17C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:37:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CA5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241629AbiEQHhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
+        id S230461AbiEQHhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241698AbiEQHfr (ORCPT
+        with ESMTP id S241667AbiEQHfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:35:47 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6386E49CA8;
-        Tue, 17 May 2022 00:34:24 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id s6so7281627ilp.9;
-        Tue, 17 May 2022 00:34:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc:content-transfer-encoding;
-        bh=pEIcGVNsbeP6EiKjnzSjTr7kPW4tfGTBsDC1SnKAcwM=;
-        b=AWgu/vGIkG8SmK3kIloR1l6q55qvAy1lBIHmOz8KORVQPGImI9XQpuXsSewqtqK4dY
-         AhJuZcWVYo2jdg5ieemepA284NKyMoJ8SDzMFb/B36gaJgd5p69vb+m3LABO/YVtbrtf
-         n6v8I7qGuiH4GdumG8EsJ+0e/nbhe8akw3iEC4oblawPKLd29OgOzARUx9xeYM2yCNR7
-         HqbkoJQ+I13WPVx6ZsHls7+ypCXVOk3/tPt0JUP+vqdY85PWOj+7DAbYm8jzeBx9vKBD
-         lTwBelAoH0dqeTRw2yh3z0YH7gmQOtRiPHxGx9UZEj+VOYhaoVrkej3TEfVDv2frlzEk
-         xA+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc:content-transfer-encoding;
-        bh=pEIcGVNsbeP6EiKjnzSjTr7kPW4tfGTBsDC1SnKAcwM=;
-        b=zlH8fmcZO4U5cmDfcH6hTpFQ1QKvXLA1TKLfTWE6EsBoRqPbzw7c1/7uW6pgMrWedu
-         8W9c4lA68FFcvNNMNnmxmM8gErn1VE6FSE+ezA5EdwP/6URd1r5WWVW4n3Le63fwlGkB
-         7T8HG/utk3Rk0w6OnipmY63886WTbuYxlAU9CrazLDpSHcow9dUirTsOPi6GMgnsBA4i
-         9FIO+23MPPGuPOCDO2cl0m+gx46DSavPrtAIiUN7w3Oqp0Sy61x3X/1Nems4d9TYEAZ5
-         aARUxckjb3NqQLapsvDmqujCVS9n4avtZ7lAbEzDjpYbJA2L6UE3RB5Nz7JOBSMLHC8q
-         zbBQ==
-X-Gm-Message-State: AOAM531ipZqzwAYakFRtnui3PjI62T+AgNisUOvTgjqC8JdDWmIRJEp3
-        drSQ/QPbZySCrjps+oelp37zAhEIG3nzPgej6QI=
-X-Google-Smtp-Source: ABdhPJxpxXwSTo6irCiTCVwfZuGB/jC8kC7emFTJHW5uAL3gMHm1SrXQKLS+6z5JRZflp7ueEwaZj1o0WavbtC3Flvs=
-X-Received: by 2002:a05:6e02:1a88:b0:2d1:f00:78b0 with SMTP id
- k8-20020a056e021a8800b002d10f0078b0mr7010341ilv.20.1652772863639; Tue, 17 May
- 2022 00:34:23 -0700 (PDT)
+        Tue, 17 May 2022 03:35:46 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E6E49C9A;
+        Tue, 17 May 2022 00:34:17 -0700 (PDT)
+Date:   Tue, 17 May 2022 07:34:14 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652772855;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cGGPCoT30zsHoUM7qYF9vcnNujH3Hey0sMxDFkGEqkI=;
+        b=inYQMdnQZzE3vnRrvSO+PMY2/HlWPmsrY/sA/Dvt06pk+IH+6RztNzp0GFkdLSsF2NNJgM
+        LPDWpiNXp6lsnOOGxe1B8h6tJfAcRIbftAfgUQwo1aDO8qAI3yI7l/xMOhtKdT5TlaqbY5
+        +hU7AsMoMEtAUBpMNvI+rY6L0zRCwTSSxZyARTfPqxMhbh6RKNX6DV8s/wX7RO7oG238cz
+        djnYBqCuWH0VKK970DCq25H5Khj29nJSf4uWO3vhZPMxYMEo1tqdHWmWZWx2SNolqpuTGq
+        3niuv3TJml4IilkKnPWXQCzDfMM2aK0yHvn1QTzmmDozAIwWJ3ubehHFVriIYg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652772855;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cGGPCoT30zsHoUM7qYF9vcnNujH3Hey0sMxDFkGEqkI=;
+        b=xiDAFAm3hH7eBs58Xp40/7Y7p3DXKRjyzfNF60fH1P4YIGUlPL9S4TNxHUp6vs8KGudbYF
+        NlxKhhbynSUH7BDg==
+From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/core] x86/nmi: Make register_nmi_handler() more robust
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220511234332.3654455-1-seanjc@google.com>
+References: <20220511234332.3654455-1-seanjc@google.com>
 MIME-Version: 1.0
-References: <20220513202159.1550547-1-samitolvanen@google.com>
- <CA+icZUWr+-HjMvY1VZf+nqjTadxSTDciux0Y5Y-+p_j4o7CmXg@mail.gmail.com> <CABCJKueVcwYishxSoEyn9b1vaGTXdoYWF7VyANPm7V=H+yyfhQ@mail.gmail.com>
-In-Reply-To: <CABCJKueVcwYishxSoEyn9b1vaGTXdoYWF7VyANPm7V=H+yyfhQ@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Tue, 17 May 2022 09:33:47 +0200
-Message-ID: <CA+icZUUBqz1zTcj61nK=sbkWcSncKYZgR2Qg0FSCWi9un84yLw@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 00/21] KCFI support
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <165277285410.4207.10970267068162746336.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 7:57 PM Sami Tolvanen <samitolvanen@google.com> wro=
-te:
->
-> On Mon, May 16, 2022 at 10:31 AM Sedat Dilek <sedat.dilek@gmail.com> wrot=
-e:
-> >> Anything Like LLVM cmake Options to be condidered and Set?
-> >
-> >
-> > I activate Clang and LLD ad projects - OK - enough?
->
-> Clang and LLD should be sufficient.
->
+The following commit has been merged into the x86/core branch of tip:
 
-Before I give this a try...
-Some questions about the LLVM toolchain requirements...
+Commit-ID:     a7fed5c0431dbfa707037848830f980e0f93cfb3
+Gitweb:        https://git.kernel.org/tip/a7fed5c0431dbfa707037848830f980e0f93cfb3
+Author:        Thomas Gleixner <tglx@linutronix.de>
+AuthorDate:    Sun, 15 May 2022 13:39:34 +02:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Tue, 17 May 2022 09:25:25 +02:00
 
-I use tc-build to generate a selfmade LLVM toolchain for X86
-(stage1-only + BPF).
+x86/nmi: Make register_nmi_handler() more robust
 
-$ python3 ./build-llvm.py --no-update --build-type Release -p
-clang;lld -t X86;BPF --clang-vendor dileks -B
-/home/dileks/src/llvm-toolchain/build -I /opt/llvm-toolchain
---check-targets clang lld --build-stage1-only --install-stage1-only -D
-LLVM_PARALLEL_LINK_JOBS=3D1 --show-build-commands
+register_nmi_handler() has no sanity check whether a handler has been
+registered already. Such an unintended double-add leads to list corruption
+and hard to diagnose problems during the next NMI handling.
 
-Link: https://github.com/ClangBuiltLinux/tc-build.git
+Init the list head in the static NMI action struct and check it for being
+empty in register_nmi_handler().
 
-tc-build uses a GOOD_REVISION for regular kernel-builds, this is
-currently 3b2e605e33bd.
+  [ bp: Fixups. ]
 
-$ git describe
-llvmorg-15-init-5163-g3b2e605e33bd
+Reported-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/lkml/20220511234332.3654455-1-seanjc@google.com
+---
+ arch/x86/include/asm/nmi.h |  1 +
+ arch/x86/kernel/nmi.c      | 12 ++++++++----
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-$ git show -1 42a879eb2f22
-commit 42a879eb2f22af6d1b85983c12fac68b2e9a5e03
-Author: Nathan Chancellor <nathan@kernel.org>
-Date:   Mon Mar 21 09:19:26 2022 -0700
-
-   build-llvm.py: Update known good revision
-
-   Qualified with https://github.com/nathanchance/llvm-kernel-testing.
-
-   Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-
-diff --git a/build-llvm.py b/build-llvm.py
-index c3aade1092ec..54e5d4729a1a 100755
---- a/build-llvm.py
-+++ b/build-llvm.py
-@@ -16,7 +16,7 @@ import urllib.request as request
-from urllib.error import URLError
-
-# This is a known good revision of LLVM for building the kernel
--GOOD_REVISION =3D '08f70adedb775ce6d41a1f8ad75c4bac225efb5b'
-+GOOD_REVISION =3D '3b2e605e33bd9017ff2eff1493add07822f9d58b'
-
-
-class Directories:
-
-So, your LLVM git is approx. 5.200 commits further.
-
-$ git log --oneline
-tc-build/GOOD_REVISION-20210321..for-15/kcfi-rfc-v2-samitolvanen | wc
--l
-5190
-
-Is your tags/kcfi-rfc-v2 the recommended LLVM toolchain for testing kcfi-rf=
-c-v2?
-
-What I want to ask is if your commit well tested for x86 (and arm64)
-means build and boot on bare metal?
-
-From Nathan I know if he says I have run kernel-tests - it works.
-"Qualified with https://github.com/nathanchance/llvm-kernel-testing."
-
-Just for the records:
-You definitely need a pre-LLVM-15 toolchain + KCFI sanitizer patch?
-LLVM-14?
-
-> >> This series is also available in GitHub:
-> >>
-> >>   https://github.com/samitolvanen/linux/commits/kcfi-rfc-v2
-> >>
-> >>
-> >>
-> >
-> >> Can you please add a history of what changed?
->
-> Oops, I forgot to include that.
->
-
-Thanks.
-Please fold this ChangeLog into kcfi-rfc-v3.
-
-> Changes in v2:
-> - Changed the compiler patch to encode arm64 target and type details
-> in the ESR, and updated the kernel error handling patch accordingly.
-> - Changed the compiler patch to embed the x86_64 type hash in a valid
-> instruction to avoid special casing objtool instruction decoding, and
-> added a __cfi_ symbol for the preamble. Changed the kernel error
-> handling and manual type annotations to match.
-> - Dropped the .kcfi_types section as that=E2=80=99s no longer needed by
-> objtool, and changed the objtool patch to simply ignore the __cfi_
-> preambles falling through.
-> - Dropped the .kcfi_traps section on arm64 as it=E2=80=99s no longer need=
-ed,
-> and moved the trap look-up code behind CONFIG_ARCH_USES_CFI_TRAPS,
-> which is selected only for x86_64.
-> - Dropped __nocfi attributes from arm64 code where CFI was disabled
-> due to address space confusion issues, and added type annotations to
-> relevant assembly functions.
-> - Dropped __nocfi from __init.
->
-> > Nathan has a i915 cfi patch in His personal kernel.org Git.
-> > Is this relevant to kcfi?
->
-> It fixes a type mismatch, so in that sense it's relevant.
->
-
-Here the link to patch "drm/i915: Fix CFI violation with show_dynamic_id()"=
-:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/nathan/linux.git/commit/?h=
-=3Dsubmitted/i915-cfi-fix&id=3D53735be6dc53453fcfbac658e847b54360e73871
-
-> > To distinguish between clang-cfi we should use different kbuild variabl=
-es for kcfi.
->
-> The plan is to replace the current CFI implementation. Does reusing
-> the kbuild variable names cause a problem?
->
-
-No hurry.
-Afaics someone in the long list of comments to single patches was
-thinking of when GCC has "KCFI" support implemented...
-
-You say no need to build your kernel with LTO...
-That sounds good.
-Currently, I build my kernels with Clang-14 and CONFIG_LTO_CLANG_THIN=3Dy.
-Does something speak against using CONFIG_LTO_CLANG_THIN=3Dy with KCFI supp=
-ort?
-Build-time?
-Disc-usage?
-
-Thanks for answering my questions.
-
-- Sedat -
+diff --git a/arch/x86/include/asm/nmi.h b/arch/x86/include/asm/nmi.h
+index 1cb9c17..5c5f1e5 100644
+--- a/arch/x86/include/asm/nmi.h
++++ b/arch/x86/include/asm/nmi.h
+@@ -47,6 +47,7 @@ struct nmiaction {
+ #define register_nmi_handler(t, fn, fg, n, init...)	\
+ ({							\
+ 	static struct nmiaction init fn##_na = {	\
++		.list = LIST_HEAD_INIT(fn##_na.list),	\
+ 		.handler = (fn),			\
+ 		.name = (n),				\
+ 		.flags = (fg),				\
+diff --git a/arch/x86/kernel/nmi.c b/arch/x86/kernel/nmi.c
+index e73f7df..cec0bfa 100644
+--- a/arch/x86/kernel/nmi.c
++++ b/arch/x86/kernel/nmi.c
+@@ -157,7 +157,7 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
+ 	struct nmi_desc *desc = nmi_to_desc(type);
+ 	unsigned long flags;
+ 
+-	if (!action->handler)
++	if (WARN_ON_ONCE(!action->handler || !list_empty(&action->list)))
+ 		return -EINVAL;
+ 
+ 	raw_spin_lock_irqsave(&desc->lock, flags);
+@@ -177,7 +177,7 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
+ 		list_add_rcu(&action->list, &desc->head);
+ 	else
+ 		list_add_tail_rcu(&action->list, &desc->head);
+-	
++
+ 	raw_spin_unlock_irqrestore(&desc->lock, flags);
+ 	return 0;
+ }
+@@ -186,7 +186,7 @@ EXPORT_SYMBOL(__register_nmi_handler);
+ void unregister_nmi_handler(unsigned int type, const char *name)
+ {
+ 	struct nmi_desc *desc = nmi_to_desc(type);
+-	struct nmiaction *n;
++	struct nmiaction *n, *found = NULL;
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave(&desc->lock, flags);
+@@ -200,12 +200,16 @@ void unregister_nmi_handler(unsigned int type, const char *name)
+ 			WARN(in_nmi(),
+ 				"Trying to free NMI (%s) from NMI context!\n", n->name);
+ 			list_del_rcu(&n->list);
++			found = n;
+ 			break;
+ 		}
+ 	}
+ 
+ 	raw_spin_unlock_irqrestore(&desc->lock, flags);
+-	synchronize_rcu();
++	if (found) {
++		synchronize_rcu();
++		INIT_LIST_HEAD(&found->list);
++	}
+ }
+ EXPORT_SYMBOL_GPL(unregister_nmi_handler);
+ 
