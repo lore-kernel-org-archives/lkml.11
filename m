@@ -2,201 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA47BC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8494C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351130AbiEQQnD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
+        id S241826AbiEQQqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 12:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350063AbiEQQnB (ORCPT
+        with ESMTP id S1351173AbiEQQqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:43:01 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C073B3FDAD;
-        Tue, 17 May 2022 09:42:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=scD/9Z9PP3JtS/QbR0S82HRrb/qzzKD7mmsgRlJKv48=; b=A0Wed33QPDatmI/wU05BORZ9n1
-        0hhJk6U25fx6bbbZAsMcq0PkUqYkw6doFXVO3lE2gRlx4mNP2Gg+o2qX5D1iIed/eOGnpU07MiS7v
-        johrL8ZXBr9bRs4m6YspjNjUrp3CRZWOwFXObkbK34aTXOqWVxjbnj+S21xz3SW3iyyzLS8il/lBE
-        YgblTLXs216LyG4XvwA74bc/PHj8Q4o7WtYFZIjzCamKnOfAXbs0CZLburXLM75F/4BH78OE9Feno
-        1CTSSOT/QCKGLXFRsMSKXpMjqSuNKxrbhetupOiCZ9xDYHRTskdd6CLiaYJY53xEUzZgCM24bzp0B
-        WqYqJCVA==;
-Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nr0Hb-008gzd-4h; Tue, 17 May 2022 18:42:51 +0200
-Message-ID: <d72b9aab-675c-ac89-b73a-b1de4a0b722d@igalia.com>
-Date:   Tue, 17 May 2022 13:42:06 -0300
+        Tue, 17 May 2022 12:46:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DC4136B7E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:46:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652805968;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=piCMWieXRym8M3zo/TuxzKtv65hW1PNViz8fSNfFTmE=;
+        b=OWo0Me9vyMxFpxUumyQdkIDdJy5JUQisLWwrL9HOaThPqSDSRba7Lx4UbAbo92WAwne2EO
+        6ES5X7S78UNpAofKlh4Kza0MgskG4RWPZzFV0WXs7AH77cS9u1X863f8GlGswVPWihGqv8
+        dspKs1WLhfWjDMxiFMz4V35YEMtIuiQ=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-197-hngRoOv3Ms6uhMNrvdvXvw-1; Tue, 17 May 2022 12:46:07 -0400
+X-MC-Unique: hngRoOv3Ms6uhMNrvdvXvw-1
+Received: by mail-ej1-f69.google.com with SMTP id v13-20020a170906b00d00b006f51e289f7cso7581354ejy.19
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:46:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=piCMWieXRym8M3zo/TuxzKtv65hW1PNViz8fSNfFTmE=;
+        b=vb7YzfHcdTmBANUzcwEJksa2IEPNcuE0/AGDdyK7Iw9x089K2mdBl4fR4TGEgdIyYz
+         D75gUVHuOB8JZSmX4IqaucsQWpvOXSYk3zCo4dwdO7M+zHB44bRP6/gqhgPpofh6m/Si
+         KUlGBcIxlYhUrm3WR5o+hfGYtPGLPS+3r04VqKQIntHFAFhgQ788r9QJZlLe4tyPZKty
+         /mX+Nku4Xw08TY61Psgu/eAE6snXpSGi/dfARB9A1BQm+Wt7V2JSmj4wagj6X3pfQ/E6
+         x0HOGsyIGCFMxCygYnc65BCyMih1t2OX0z29Ay3zMDQtWTUvGELgsz0bmhTl8LgSFCUT
+         tT3Q==
+X-Gm-Message-State: AOAM531yGquYVWICQ2y7nkNi8B6g8Z2H4pyGj0T1/HX4OxMwt6YKGcD2
+        pcQj7e09cLqZVRmnFo+6RIztyeCvN4Q5d1jj6NDraMKJegAwRLBq4Mi69Y/IOzruJQ9KunZfNKM
+        wuOxnE7ajbmeGMCpebXhs67Xx
+X-Received: by 2002:aa7:c314:0:b0:42a:bb52:59d2 with SMTP id l20-20020aa7c314000000b0042abb5259d2mr8688563edq.167.1652805965971;
+        Tue, 17 May 2022 09:46:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwdpNy//rc+0zCDq+88azenWdk1g2HDX29DoBlZaF7VmRSOmP5jdpEqhfA2htmZlmyKst9s8g==
+X-Received: by 2002:aa7:c314:0:b0:42a:bb52:59d2 with SMTP id l20-20020aa7c314000000b0042abb5259d2mr8688532edq.167.1652805965735;
+        Tue, 17 May 2022 09:46:05 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id 6-20020a170906024600b006f3ef214e5dsm1187928ejl.195.2022.05.17.09.46.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 09:46:05 -0700 (PDT)
+Message-ID: <4a7ff020-fe50-be46-0077-3ff3168a303b@redhat.com>
+Date:   Tue, 17 May 2022 18:46:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 00/12] KVM: SVM: Fix soft int/ex re-injection
 Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>,
-        Julius Werner <jwerner@chromium.org>,
-        bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
-        akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        zhenwei pi <pizhenwei@bytedance.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
- <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com> <YoOpyW1+q+Z5as78@alley>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YoOpyW1+q+Z5as78@alley>
-Content-Type: text/plain; charset=UTF-8
+To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1651440202.git.maciej.szmigiero@oracle.com>
+ <952cdf59-6abd-f67f-46c6-67d394b98380@maciej.szmigiero.name>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <952cdf59-6abd-f67f-46c6-67d394b98380@maciej.szmigiero.name>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 10:57, Petr Mladek wrote:
-> [...]
->>>> --- a/drivers/misc/bcm-vk/bcm_vk_dev.c
->>>> +++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
->>>> @@ -1446,7 +1446,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>> [... snip ...]
->>> It seems to reset some hardware or so. IMHO, it should go into the
->>> pre-reboot list.
->>
->> Mixed feelings here, I'm looping Broadcom maintainers to comment.
->> (CC Scott and Broadcom list)
->>
->> I'm afraid it breaks kdump if this device is not reset beforehand - it's
->> a doorbell write, so not high risk I think...
->>
->> But in case the not-reset device can be probed normally in kdump kernel,
->> then I'm fine in moving this to the reboot list! I don't have the HW to
->> test myself.
+On 5/17/22 14:28, Maciej S. Szmigiero wrote:
+> On 2.05.2022 00:07, Maciej S. Szmigiero wrote:
+>> This series is an updated version of Sean's SVM soft interrupt/exception
+>> re-injection fixes patch set, which in turn extended and generalized my
+>> nSVM L1 -> L2 event injection fixes series.
 > 
-> Good question. Well, it if has to be called before kdump then
-> even "hypervisor" list is a wrong place because is not always
-> called before kdump.
+> @Paolo:
+> Can't see this series in kvm/queue, do you plan to merge it for 5.19?
 
-Agreed! I'll defer that to Scott and Broadcom folks to comment.
-If it's not strictly necessary, I'll happily move it to the reboot list.
+Yes, FWIW my list right now is (from most likely to less likely but 
+still doable):
 
-If necessary, we could use the machine_crash_kexec() approach, but we'll
-fall into the case arm64 doesn't support it and I'm not sure if this
-device is available for arm - again a question for the maintainers.
+* deadlock (5.18)
 
+* PMU filter patches from alewis (5.18?)
 
->  [...]
->>>> --- a/drivers/power/reset/ltc2952-poweroff.c
->>>> +++ b/drivers/power/reset/ltc2952-poweroff.c
->> [...]
->> This is setting a variable only, and once it's set (data->kernel_panic
->> is the bool's name), it just bails out the IRQ handler and a timer
->> setting - this timer seems kinda tricky, so bailing out ASAP makes sense
->> IMHO.
-> 
-> IMHO, the timer informs the hardware that the system is still alive
-> in the middle of panic(). If the timer is not working then the
-> hardware (chip) will think that the system frozen in panic()
-> and will power off the system. See the comments in
-> drivers/power/reset/ltc2952-poweroff.c:
-> [.... snip ...]
-> IMHO, we really have to keep it alive until we reach the reboot stage.
-> 
-> Another question is how it actually works when the interrupts are
-> disabled during panic() and the timer callbacks are not handled.
+* architectural LBR
 
-Agreed here! Guess I can move this one the reboot list, fine by me.
-Unless PM folks think otherwise.
+* Like's perf HW_EVENT series
 
+* cache refresh
 
-> [...]
->> Disagree here, I'm CCing Florian for information.
->>
->> This notifier preserves RAM so it's *very interesting* if we have
->> kmsg_dump() for example, but maybe might be also relevant in case kdump
->> kernel is configured to store something in a persistent RAM (then,
->> without this notifier, after kdump reboots the system data would be lost).
-> 
-> I see. It is actually similar problem as with
-> drivers/firmware/google/gsmi.c.
-> 
-> I does similar things like kmsg_dump() so it should be called in
-> the same location (after info notifier list and before kdump).
-> 
-> A solution might be to put it at these notifiers at the very
-> end of the "info" list or make extra "dump" notifier list.
+* this one
 
-Here I still disagree. I've commented in the other response thread
-(about Google gsmi) about the semantics of the hypervisor list, but
-again: this list should contain callbacks that
+* nested dirty-log selftest
 
-(a) Should run early, _by default_ before a kdump;
-(b) Communicate with the firmware/hypervisor in a "low-risk" way;
+* x2AVIC
 
-Imagine a scenario where users configure kdump kernel to save something
-in a persistent form in DRAM - it'd be like a late pstore, in the next
-kernel. This callback enables that, it's meant to inform FW "hey, panic
-happened, please from now on don't clear the RAM in the next FW-reboot".
-I don't see a reason to postpone that - let's see if the maintainers
-have an opinion.
+* dirty quota
 
-Cheers,
+* CMCI
 
+* pfn functions
 
-Guilherme
+* Vitaly's Hyper-V TLB
+
