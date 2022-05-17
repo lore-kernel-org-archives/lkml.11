@@ -2,97 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 543EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8396DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350917AbiEQQdJ (ORCPT
+        id S1350925AbiEQQdO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
+        Tue, 17 May 2022 12:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbiEQQdC (ORCPT
+        with ESMTP id S1350912AbiEQQdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:33:02 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6D43193C
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:33:00 -0700 (PDT)
+        Tue, 17 May 2022 12:33:09 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F2633358;
+        Tue, 17 May 2022 09:33:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652805180; x=1684341180;
+  t=1652805188; x=1684341188;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Qe4LIFT49VN/IVvl50czFXImIVyT8V7bld71clAHhnU=;
-  b=V05TyuaJgBOI2mwbqNnxbrmscp3IrNngRio6hFVbNf+rePj292p9EEh9
-   dE/DbnUfR0TxGcOx9kkZTShn9uaoP+KZqjjhayVQ12ISnfLQRjfaGrh6c
-   yXVBnm7EhNE09q/mKgbd8GFM0z29HN/K5ddJJNGuKbgzeuXu4zxQQdiER
-   M5Gf14ucGRzuadJoxVOA4s5DTYy7eYTIYzDsX+dTvfd0epvyFOXjsZuK+
-   XgbyibfErAe/3VvxYYkr8rr8l7Ecfc/PbgjUylVzM3BzEwnc+ukUzel1D
-   PxAnDxAbFNQtRDQfflzg30mXO6uYryyzUXhhoeIgXvAo/NVCQPyTEW25M
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="270932050"
+  bh=KCbhEy6vdSkzBqE0YJ9VgoWS4GbK8olfcLls77Yab2Q=;
+  b=cpDmOzFtqKk7oRfQ2tqaAkO1LIkRkrIac9TfCpTkoHQNfIxFk/hT1b0H
+   rDwmM6+9d2PtoL+0vbhuPi1PSkHL13jzcRkZETIigkktcaSIeqfwC8eeA
+   t4NWha63RbqF0PXaEggb+XNtlaRyb4+BZAq8bVYsJrBUwm7+UO8cSqCOz
+   9VjAmv50HruX+ihzPLTope8nRysrqkkUUuHO3ZWgFOzBHjmhZRb4Kaitx
+   LgbTjmjHJJBmcvR34GfNgMwW9YCsegE+2ILvUu8jKxgA1gY/BjwZ/wSBD
+   9Tm2VCgs5CAUjUkzu0QBtpTYaGerY0drTsLq9oKr+vmAAF1EEt0uL8Lny
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="334286604"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="270932050"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:33:00 -0700
+   d="scan'208";a="334286604"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:33:08 -0700
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="597222799"
-Received: from fyu1.sc.intel.com ([172.25.103.126])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:32:59 -0700
-Date:   Tue, 17 May 2022 09:33:28 -0700
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Stephane Eranian <eranian@google.com>
-Cc:     linux-kernel@vger.kernel.org, reinette.chatre@intel.com,
-        babu.moger@amd.com, x86@kernel.org
-Subject: Re: [PATCH v2] x86/resctrl: Fix zero cbm for AMD in cbm_validate
-Message-ID: <YoPOWC0waMuSlvI6@fyu1.sc.intel.com>
-References: <20220517001234.3137157-1-eranian@google.com>
+   d="scan'208";a="523036457"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:33:06 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nr086-0008CP-M7;
+        Tue, 17 May 2022 19:33:02 +0300
+Date:   Tue, 17 May 2022 19:33:02 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v1 1/2] pinctrl: intel: make irq_chip immutable
+Message-ID: <YoPOPsmBj8LEZ2uD@smile.fi.intel.com>
+References: <20220516185618.32448-1-andriy.shevchenko@linux.intel.com>
+ <YoN0cdUdYQotyod9@lahna>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220517001234.3137157-1-eranian@google.com>
+In-Reply-To: <YoN0cdUdYQotyod9@lahna>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Eranian,
+On Tue, May 17, 2022 at 01:09:53PM +0300, Mika Westerberg wrote:
+> On Mon, May 16, 2022 at 09:56:17PM +0300, Andy Shevchenko wrote:
+> > Since recently, the kernel is nagging about mutable irq_chips:
+> > 
+> >    "not an immutable chip, please consider fixing it!"
+> > 
+> > Drop the unneeded copy, flag it as IRQCHIP_IMMUTABLE, add the new
+> > helper functions and call the appropriate gpiolib functions.
+> > 
+> > While at it, align IRQ chip callback names with member names for
+> > the sake of consistency.
+> 
+> Or for the sake of inconsistency? ;-)  All the other structs are not
+> using this kind of alignment and I would like to keep this one matching
+> the rest too. Also I prefer the format currently used in the driver.
 
-On Mon, May 16, 2022 at 05:12:34PM -0700, Stephane Eranian wrote:
-> AMD supports cbm with no bits set as reflected in rdt_init_res_defs_amd() by:
-...
-> @@ -107,6 +107,10 @@ static bool cbm_validate(char *buf, u32 *data, struct rdt_resource *r)
->  	first_bit = find_first_bit(&val, cbm_len);
->  	zero_bit = find_next_zero_bit(&val, cbm_len, first_bit);
->  
-> +	/* no need to check bits if arch supports no bits set */
-> +	if (r->cache.arch_has_empty_bitmaps && val == 0)
-> +		goto done;
-> +
->  	/* Are non-contiguous bitmaps allowed? */
->  	if (!r->cache.arch_has_sparse_bitmaps &&
->  	    (find_next_bit(&val, cbm_len, zero_bit) < cbm_len)) {
-> @@ -119,7 +123,7 @@ static bool cbm_validate(char *buf, u32 *data, struct rdt_resource *r)
->  				    r->cache.min_cbm_bits);
->  		return false;
->  	}
-> -
-> +done:
->  	*data = val;
->  	return true;
->  }
+I got your point. I will drop that part from v2.
 
-Isn't it AMD supports 0 minimal CBM bits? Then should set its min_cbm_bits as 0.
-Is the following patch a better fix? I don't have AMD machine and cannot
-test the patch.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
-index 6055d05af4cc..031d77dd982d 100644
---- a/arch/x86/kernel/cpu/resctrl/core.c
-+++ b/arch/x86/kernel/cpu/resctrl/core.c
-@@ -909,6 +909,7 @@ static __init void rdt_init_res_defs_amd(void)
- 			r->cache.arch_has_sparse_bitmaps = true;
- 			r->cache.arch_has_empty_bitmaps = true;
- 			r->cache.arch_has_per_cpu_cfg = true;
-+			r->cache.min_cbm_bits = 0;
- 		} else if (r->rid == RDT_RESOURCE_MBA) {
- 			hw_res->msr_base = MSR_IA32_MBA_BW_BASE;
- 			hw_res->msr_update = mba_wrmsr_amd;
+
