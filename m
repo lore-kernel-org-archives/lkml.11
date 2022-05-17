@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9056BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:15:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5364C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344985AbiEQLPt (ORCPT
+        id S1345082AbiEQLPy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 07:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        Tue, 17 May 2022 07:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344032AbiEQLPW (ORCPT
+        with ESMTP id S1344121AbiEQLPW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 17 May 2022 07:15:22 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6616649256
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2810E2BB39
         for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:15:21 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nqvAT-0004KD-0Q; Tue, 17 May 2022 13:15:09 +0200
+        id 1nqvAT-0004KC-0O; Tue, 17 May 2022 13:15:09 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nqvAS-002rTj-0S; Tue, 17 May 2022 13:15:06 +0200
+        id 1nqvAR-002rTe-Qf; Tue, 17 May 2022 13:15:06 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nqvAP-003tst-NO; Tue, 17 May 2022 13:15:05 +0200
+        id 1nqvAP-003tsb-Lw; Tue, 17 May 2022 13:15:05 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -39,9 +39,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Rob Herring <robh@kernel.org>, kernel@pengutronix.de,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org
-Subject: [PATCH v6 3/3] dt-bindings: usb: ci-hdrc-usb2: fix node node for ethernet controller
-Date:   Tue, 17 May 2022 13:15:05 +0200
-Message-Id: <20220517111505.929722-4-o.rempel@pengutronix.de>
+Subject: [PATCH v6 1/3] dt-bindings: net: add schema for ASIX USB Ethernet controllers
+Date:   Tue, 17 May 2022 13:15:03 +0200
+Message-Id: <20220517111505.929722-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220517111505.929722-1-o.rempel@pengutronix.de>
 References: <20220517111505.929722-1-o.rempel@pengutronix.de>
@@ -55,30 +55,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This documentation provides wrong node name for the Ethernet controller.
-It should be "ethernet" instead of "smsc" as required by Ethernet
-controller devicetree schema:
- Documentation/devicetree/bindings/net/ethernet-controller.yaml
+Create schema for ASIX USB Ethernet controllers and import some of
+currently supported USB IDs form drivers/net/usb/asix_devices.c
+
+These devices are already used in some of DTs. So, this schema makes it official.
+NOTE: there was no previously documented txt based DT binding for this
+controllers.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/usb/ci-hdrc-usb2.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/net/asix,ax88178.yaml | 68 +++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/asix,ax88178.yaml
 
-diff --git a/Documentation/devicetree/bindings/usb/ci-hdrc-usb2.txt b/Documentation/devicetree/bindings/usb/ci-hdrc-usb2.txt
-index a5c5db6a0b2d..ba51fb1252b9 100644
---- a/Documentation/devicetree/bindings/usb/ci-hdrc-usb2.txt
-+++ b/Documentation/devicetree/bindings/usb/ci-hdrc-usb2.txt
-@@ -151,7 +151,7 @@ Example for HSIC:
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 
--		usbnet: smsc@1 {
-+		usbnet: ethernet@1 {
- 			compatible = "usb424,9730";
- 			reg = <1>;
- 		};
+diff --git a/Documentation/devicetree/bindings/net/asix,ax88178.yaml b/Documentation/devicetree/bindings/net/asix,ax88178.yaml
+new file mode 100644
+index 000000000000..1af52358de4c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/asix,ax88178.yaml
+@@ -0,0 +1,68 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/asix,ax88178.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: The device tree bindings for the USB Ethernet controllers
++
++maintainers:
++  - Oleksij Rempel <o.rempel@pengutronix.de>
++
++description: |
++  Device tree properties for hard wired USB Ethernet devices.
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - usbb95,1720   # ASIX AX88172
++          - usbb95,172a   # ASIX AX88172A
++          - usbb95,1780   # ASIX AX88178
++          - usbb95,7720   # ASIX AX88772
++          - usbb95,772a   # ASIX AX88772A
++          - usbb95,772b   # ASIX AX88772B
++          - usbb95,7e2b   # ASIX AX88772B
++
++  reg: true
++  local-mac-address: true
++  mac-address: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    usb {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ethernet@1 {
++            compatible = "usbb95,7e2b";
++            reg = <1>;
++            local-mac-address = [00 00 00 00 00 00];
++        };
++    };
++  - |
++    usb {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        usb1@1 {
++            compatible = "usb1234,5678";
++            reg = <1>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            ethernet@1 {
++               compatible = "usbb95,772b";
++               reg = <1>;
++            };
++        };
++    };
 -- 
 2.30.2
 
