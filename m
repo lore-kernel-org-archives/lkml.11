@@ -2,92 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC04C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349470AbiEQO4u (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        id S236645AbiEQO47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 10:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240074AbiEQO4r (ORCPT
+        with ESMTP id S1349423AbiEQO4v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:56:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A742430555
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:56:45 -0700 (PDT)
+        Tue, 17 May 2022 10:56:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FACE3669D
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:56:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 445F2B818F3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 14:56:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB605C34116;
-        Tue, 17 May 2022 14:56:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1FCD6167E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 14:56:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA40EC385B8;
+        Tue, 17 May 2022 14:56:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652799403;
-        bh=Aun7xA8wrKxkh8OitJvtWBCd91a1rKp95MRXQjNQsRE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d8SZ6Ne2UdUUm623dbz/Zoy06FydBfBFMzE5AvpQ8pjrJeWWKkg3nG+Fd4RmQ5Wen
-         99w2nlSrztxq9DbVK0FyUOFNLE/OONGa3th44h3fQ74jV/4/SVO/IR9ob8sJOF/rn1
-         h0MoXQS7+Rtsa9ajPLQySK2uky0/KNc8cul1LDkMt7qollmGJe4OdKDKKh4S+EIXnN
-         383ZvVzOuMdBe6pssOJNPyCrisAPx3KYjGtvlDOdU998nCdWVjU+Dau7w8rT/2dF5k
-         0x0V/opCynL/l+6+puuCWv6qtqY4fRaQICjIixmafGMC0G5F40fvwit5VJDWJ/UYc9
-         tfVlaCK+BYmIQ==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 088BE400B1; Tue, 17 May 2022 11:56:41 -0300 (-03)
-Date:   Tue, 17 May 2022 11:56:40 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH 0/3] perf intel-pt: Add support for emulated ptwrite
-Message-ID: <YoO3qM9EyF1WZOkq@kernel.org>
-References: <20220509152400.376613-1-adrian.hunter@intel.com>
- <d9b6a2c0-2387-2c2e-eedb-9de8a36a2eb5@intel.com>
+        s=k20201202; t=1652799409;
+        bh=9G4bRLZbkmaoTeyxyDS0FY/VhwuNvTEg2IWb6RR7uDs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=qGBxyzRKO/VviBndF4dA0oxNkyStZ0yhkdRZvuYHuIqsomujGyf3QiKOPZPYJ6Ei2
+         G3NTdNxBWb5NRgZkG84x31DrNH8qg82lPljsdLPtknwV/fyp2rD11hmrbTeOGRp2BJ
+         SfR0Fbdq0MpiC/+r9AICVWlig49y8Tsr8BBmh5WM2a0C0oD9+2dxEy3OvKdII/0PBL
+         Tsjv0lEu3YT4PCqfY1+JxxOz8QqYNZHzMxE27iQRGJfkzpJSSIHjf7Y2fTY7ZP8XAl
+         RH2zp/4r93qMfayhYirj/XN2I1AcJMfuIYsyKruvzlWS3BQev+RJ7D4ftvZCJODnyU
+         QW77kam9yUszQ==
+Message-ID: <2cf13dcd-7fa3-4216-a67e-0a4ea66ecf95@kernel.org>
+Date:   Tue, 17 May 2022 22:56:44 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d9b6a2c0-2387-2c2e-eedb-9de8a36a2eb5@intel.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 2/3] erofs: remove obsoluted comments
+Content-Language: en-US
+To:     Gao Xiang <hsiangkao@linux.alibaba.com>,
+        linux-erofs@lists.ozlabs.org
+Cc:     LKML <linux-kernel@vger.kernel.org>
+References: <20220506194612.117120-1-hsiangkao@linux.alibaba.com>
+ <20220506194612.117120-2-hsiangkao@linux.alibaba.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220506194612.117120-2-hsiangkao@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, May 17, 2022 at 04:13:14PM +0300, Adrian Hunter escreveu:
-> On 9/05/22 18:23, Adrian Hunter wrote:
-> > Hi
-> > 
-> > Here are 3 patches (on top of "perf intel-pt: Add link to the perf wiki's
-> > Intel PT page") to add support for decoding emulated ptwrite i.e. for
-> > hardware that does not have the ptwrite instruction.
+On 2022/5/7 3:46, Gao Xiang wrote:
+> Some comments haven't been useful anymore since the code updated.
+> Let's drop them instead.
 > 
-> Is this OK?
+> Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 
-yeah, thanks, applied.
+Reviewed-by: Chao Yu <chao@kernel.org>
 
-- Arnaldo
- 
-> > 
-> > 
-> > Adrian Hunter (3):
-> >       perf intel-pt: Add support for emulated ptwrite
-> >       perf script: Print Intel ptwrite value as a string if it is ASCII
-> >       perf scripts python: intel-pt-events.py: Print ptwrite value as a string if it is ASCII
-> > 
-> >  tools/perf/Documentation/perf-intel-pt.txt         | 88 +++++++++++++++++++
-> >  tools/perf/builtin-script.c                        | 32 ++++++-
-> >  tools/perf/scripts/python/intel-pt-events.py       |  8 +-
-> >  .../perf/util/intel-pt-decoder/intel-pt-decoder.c  | 99 +++++++++++++++++++++-
-> >  .../perf/util/intel-pt-decoder/intel-pt-decoder.h  |  1 +
-> >  .../util/intel-pt-decoder/intel-pt-insn-decoder.c  |  1 +
-> >  .../util/intel-pt-decoder/intel-pt-insn-decoder.h  |  1 +
-> >  tools/perf/util/intel-pt.c                         | 37 +++++++-
-> >  8 files changed, 261 insertions(+), 6 deletions(-)
-> > 
-> > 
-> > Regards
-> > Adrian
-
--- 
-
-- Arnaldo
+Thanks,
