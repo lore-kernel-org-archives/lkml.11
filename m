@@ -2,112 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 18:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345143AbiEQSFn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 14:05:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
+        id S236820AbiEQSFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 14:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351895AbiEQSF0 (ORCPT
+        with ESMTP id S1351931AbiEQSF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 14:05:26 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F67251582
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:04:31 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id p189so10866511wmp.3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:04:31 -0700 (PDT)
+        Tue, 17 May 2022 14:05:27 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B8E5158D
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:04:33 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso1694989wmp.0
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 11:04:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=EKSmnvJVRKuNiorxmh6RKpW9+C+oBWZuirhwngUpiFA=;
-        b=d8XJLJsZpEXABv6ZORuvVlkZV/eZ0n5QWvVfV1Il8MFmUInxoYkMl3Kmq2wMRGnu/Y
-         tGbJqIujPWUGCNgZ/tqGy1+5cJlA7oXSk+0oDV1jG1oZ7o9gkyVG9ATGIB0RjMTRhhL3
-         OB76y7+GsffV/CyOU75jAwBwYjMFeWYOacizhtdmid6sisM4pzfceqYcyTq1aNYQkZ42
-         XcUOTZerZ4FvdaSvcQx0+uErEOW1VaA0Js5mUP10jFw0gcH5pu2DuTZ4HlBZo/OWP7lq
-         bUhyWznZSNRpzW/t/T6xXZf95iBXy/9wwFuCzKZcv/KtEhRZzwvHKypq/MhU7fck63m3
-         Gdxw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=xUxnvY0wWYvQFwVkkKnZ0hYzB77/1hWqL1wilzE489c=;
+        b=kb8ddVNGcr5cVeafnyHPeYNXQERd/qF31HFkfUdq2R0uWdYsIrV5qJc5rqOLz8AJ2R
+         LeqlzPakVREbISyj+rzFqGHtWdSCexiQvfb3BzQZY4Gb6WIGH1gnWvSpBsaSAoOAgJPw
+         Y2gQVbghkdgpguWD5R6ZUeT1mykXPwp1lsXvUamDbQaFqmfp7ZJs19gwZMPPJzKo2yI5
+         qsxQdCIXfE44XW+Ui9ZV8j0XprUOYnEv+bHcF2+ibhH3I9NCtjxHxMwKRYDXdrArzigQ
+         AkB6D1SgJLfFBjy+aEuoy/qrUgNvZwQus2tAbvnVgDGakrkC9Xvt3cWzsnYci380bHt5
+         MjFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=EKSmnvJVRKuNiorxmh6RKpW9+C+oBWZuirhwngUpiFA=;
-        b=2blnNmERAldlNgAf/dEtDb7YHJQOPDWqzmIMRhdK82Ld0IA1h3W0FfEco7ZdwMzbzc
-         LfzzQM4dfm3+zeRUn75nP49DutBqkziMBG8+qyH8SQQD9xKjkifcJmrzX79qrNSLXtZ3
-         nX3XhWP75qtWKxSmp17ZOhuhHHkgaejyCMfBHvwYHXxJhwWuYuCXx41eFizTxoBLiST6
-         oan6lKFw8zjwKmFFbS8kQqJiWJpd/T8oFVbOnDiVDsLLS+Fr5oT1oe5kGnCGYxFTPdq6
-         N0hyu6hEF12JNCv1Pn1sK2tf/XPTYQ586f8+L7v03mi3jzLE+ZDBvaOcsa77XPdkfZXD
-         nprg==
-X-Gm-Message-State: AOAM533B4OGkm0QIJOCqrPkvtyu0TsvkoSCUh30VmSgG9lmeKN6TBYqG
-        wknBrswu16vM67BdEDk16Ym6JWGleJk=
-X-Google-Smtp-Source: ABdhPJxvO8aJltdNydOcbp7B8L4owevPlqnxSW+KqTPFcqROlQBAyvV0Gb48z5sSt/DmKwKj8j4PqQ==
-X-Received: by 2002:a05:600c:3caa:b0:394:8fb8:716 with SMTP id bg42-20020a05600c3caa00b003948fb80716mr32758904wmb.105.1652810670151;
-        Tue, 17 May 2022 11:04:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=xUxnvY0wWYvQFwVkkKnZ0hYzB77/1hWqL1wilzE489c=;
+        b=rJ3sRgpdWQjRsPrMVGIVDDw9mAyP62EFJA32M0pAF+iewIGG6150dKGjar9oerkoju
+         DhDYxAq40E2gi+c3eKytSpPR+/7AimuK9YClA+M7mTsKTKodEu90mFf9KzyLVDiyBc8X
+         PvnBJkW3BXiR/G2yueRzWCSeb2DJF1S7+V8oOs5aO8WY0JoQSHx6AVNDHlPvMsnM0DSa
+         rvx7lhdMtEwquvJMM5awP6lF6G5bQ1M05NW+MSqphvv58MD6KMw3qeCy0BNS0FaYp+m4
+         lZq63t5ej8c5VlYOun/iqhaJ3PEzSBHLpwvRlYB5Im2+5+Of14Pp2oRGUwYKwEJ3aWQq
+         p3sQ==
+X-Gm-Message-State: AOAM5334ui9/7PAXtpZU/icfmRfXVwG45gYFXhxGgEfI/K9POYSAWkSt
+        eXK+dDxQtX25fg3VJUiANQE=
+X-Google-Smtp-Source: ABdhPJzy8So6LUCbbqsaVyGqZpkGWh1nIJifHTvsH6tXSl1Cxhg/tQhSmkYmww8KULDXmX3Xv/O7fQ==
+X-Received: by 2002:a05:600c:1989:b0:394:8dc0:b57f with SMTP id t9-20020a05600c198900b003948dc0b57fmr33101152wmq.110.1652810672320;
+        Tue, 17 May 2022 11:04:32 -0700 (PDT)
 Received: from otyshchenko.router ([212.22.223.21])
-        by smtp.gmail.com with ESMTPSA id c3-20020adfc6c3000000b0020c5253d8dasm12978625wrh.38.2022.05.17.11.04.29
+        by smtp.gmail.com with ESMTPSA id c3-20020adfc6c3000000b0020c5253d8dasm12978625wrh.38.2022.05.17.11.04.31
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 May 2022 11:04:29 -0700 (PDT)
+        Tue, 17 May 2022 11:04:31 -0700 (PDT)
 From:   Oleksandr Tyshchenko <olekstysh@gmail.com>
 To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
 Cc:     Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
         Stefano Stabellini <sstabellini@kernel.org>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
         Juergen Gross <jgross@suse.com>, Julien Grall <julien@xen.org>
-Subject: [RFC PATCH 0/2] Ability to allocate DMAable pages using unpopulated-alloc 
-Date:   Tue, 17 May 2022 21:04:16 +0300
-Message-Id: <1652810658-27810-1-git-send-email-olekstysh@gmail.com>
+Subject: [RFC PATCH 2/2] xen/grant-table: Use unpopulated DMAable pages instead of real RAM ones
+Date:   Tue, 17 May 2022 21:04:18 +0300
+Message-Id: <1652810658-27810-3-git-send-email-olekstysh@gmail.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1652810658-27810-1-git-send-email-olekstysh@gmail.com>
+References: <1652810658-27810-1-git-send-email-olekstysh@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-Hello all.
+Depends on CONFIG_XEN_UNPOPULATED_ALLOC. If enabled then unpopulated
+DMAable (contiguous) pages will be allocated for grant mapping into
+instead of ballooning out real RAM pages.
 
-The purpose of this RFC patch series is to get feedback about supporting the allocation
-of DMAable pages by Linux's unpopulated-alloc.
+TODO: Fallback to real RAM pages if xen_alloc_unpopulated_dma_pages()
+fails.
 
-The unpopulated-alloc feature has been enabled on Arm since the extended-regions support
-reached upstream. With that (if, of course, we run new Xen version and Xen was able to
-allocate extended regions), we don't allocate the real RAM pages from host memory and balloon
-them out (in order to obtain physical memory space to map the guest pages into) anymore, we use
-the unpopulated pages instead. And it seems that all users I have played with on Arm (I mean,
-Xen PV and virtio backends) are happy with the pages provided by xen_alloc_unpopulated_pages().
-It is worth mentioning that these pages are not contiguous, but this wasn't an issue so far.
+Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+---
+ drivers/xen/grant-table.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-There is one place, where we still steal RAM pages if user-space Xen PV backend tries
-to establish grant mapping with a need to be backed by a DMA buffer for the sake of zero-copy
-(see dma_alloc*() usage in gnttab_dma_alloc_pages()).
-
-And, if I am not mistaken (there might be pitfalls which I am not aware of), we could avoid
-wasting real RAM pages in that particular case also by adding an ability to allocate
-unpopulated DMAable pages (which are guaranteed to be contiguous in IPA).
-The benefit is quite clear here:
-1. Avoid wasting real RAM pages (reducing the amount of CMA memory usable) for allocating
-   physical memory space to map the granted buffer into (which can be big enough if
-   we deal with Xen PV Display driver using multiple Full HD buffers) 
-2. Avoid superpage shattering in Xen P2M when establishing stage-2 mapping for that
-   granted buffer
-3. Avoid extra operations needed for the granted buffer to be properly mapped and
-   unmapped such as ballooning in/out real RAM pages
-
-Please note, there are several TODOs (described in corresponding commit subjects),
-which I will try to eliminate in next versions if we find a common ground regarding
-the approach.
-
-Any feedback/help would be highly appreciated.
-
-Oleksandr Tyshchenko (2):
-  xen/unpopulated-alloc: Introduce helpers for DMA allocations
-  xen/grant-table: Use unpopulated DMAable pages instead of real RAM
-    ones
-
- drivers/xen/grant-table.c       |  27 +++++++
- drivers/xen/unpopulated-alloc.c | 167 ++++++++++++++++++++++++++++++++++++++++
- include/xen/xen.h               |  15 ++++
- 3 files changed, 209 insertions(+)
-
+diff --git a/drivers/xen/grant-table.c b/drivers/xen/grant-table.c
+index 8ccccac..2bb4392 100644
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -864,6 +864,25 @@ EXPORT_SYMBOL_GPL(gnttab_free_pages);
+  */
+ int gnttab_dma_alloc_pages(struct gnttab_dma_alloc_args *args)
+ {
++#ifdef CONFIG_XEN_UNPOPULATED_ALLOC
++	int ret;
++
++	ret = xen_alloc_unpopulated_dma_pages(args->dev, args->nr_pages,
++			args->pages);
++	if (ret < 0)
++		return ret;
++
++	ret = gnttab_pages_set_private(args->nr_pages, args->pages);
++	if (ret < 0) {
++		gnttab_dma_free_pages(args);
++		return ret;
++	}
++
++	args->vaddr = page_to_virt(args->pages[0]);
++	args->dev_bus_addr = page_to_phys(args->pages[0]);
++
++	return ret;
++#else
+ 	unsigned long pfn, start_pfn;
+ 	size_t size;
+ 	int i, ret;
+@@ -910,6 +929,7 @@ int gnttab_dma_alloc_pages(struct gnttab_dma_alloc_args *args)
+ fail:
+ 	gnttab_dma_free_pages(args);
+ 	return ret;
++#endif
+ }
+ EXPORT_SYMBOL_GPL(gnttab_dma_alloc_pages);
+ 
+@@ -919,6 +939,12 @@ EXPORT_SYMBOL_GPL(gnttab_dma_alloc_pages);
+  */
+ int gnttab_dma_free_pages(struct gnttab_dma_alloc_args *args)
+ {
++#ifdef CONFIG_XEN_UNPOPULATED_ALLOC
++	gnttab_pages_clear_private(args->nr_pages, args->pages);
++	xen_free_unpopulated_dma_pages(args->dev, args->nr_pages, args->pages);
++
++	return 0;
++#else
+ 	size_t size;
+ 	int i, ret;
+ 
+@@ -946,6 +972,7 @@ int gnttab_dma_free_pages(struct gnttab_dma_alloc_args *args)
+ 		dma_free_wc(args->dev, size,
+ 			    args->vaddr, args->dev_bus_addr);
+ 	return ret;
++#endif
+ }
+ EXPORT_SYMBOL_GPL(gnttab_dma_free_pages);
+ #endif
 -- 
 2.7.4
 
