@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350720AbiEQP7g (ORCPT
+        id S1350733AbiEQP7k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
+        Tue, 17 May 2022 11:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350686AbiEQP72 (ORCPT
+        with ESMTP id S1350714AbiEQP7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:59:28 -0400
+        Tue, 17 May 2022 11:59:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17727496A6
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:59:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16BCF4C7B4
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:59:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A67A861222
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:59:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A50C4C34116;
-        Tue, 17 May 2022 15:59:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A496061236
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:59:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7B8DC385B8;
+        Tue, 17 May 2022 15:59:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652803167;
-        bh=fERQZggsBwWdHxLHZxC0R2Zo7qJEWV8qww8X1ChV7yQ=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=UmswcLTQcZ6lYohR+eGjuKxzz/8hmQSfYpceg8ruIh3IcM1uLe4ucUO/QGLDH/NHi
-         amZVYSEL2ZvFXzKDCS9TYFBNnmHOUhy+5Y6RDeM7S650l39uIg7CFMzgqVsTeLavUb
-         tRy3q0+U2GDPeU7tGCfYQye7JFjfRJ8iN6euPxdMVftG6LzSEYMBHJd9BqyMOpFY2G
-         GUjijiX0OUIRY6H+G4kdEb3okth1LkLkUlYFPZbj40EKcTugJMhew8AauQzJqt2CQ4
-         GoaZrgLp7ukC6qONRfMshQoycYExFIFBGRUUJIoIoygKbwghAxs7Y4W5olp+1USBd4
-         jFOU+73QxR+XA==
+        s=k20201202; t=1652803173;
+        bh=OlVi754PWvWretVqYxq67E2aohcBH4s2889TUQW3KBc=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=SRokXpDeyHlG4seZRgvsGnwQlKy8eOt11cPXln8wZv2UIaGJgcR6ekll9EQstUEeb
+         aLxDEjnAqmAQ1iAx2ouiihP3HYyaiZ7ETAlgNC7LopQXApYa6J1ImPQlUDYRnA+Zy9
+         hT2r6uicnQT374PyC9MgNNjkq0J6Gv8VfithKaRVpycV2N/U6Gyjgao80quytTSkyB
+         firecNHb1hRY4rWS35hbkrkwtitEtUAUKm7zi77MqRXqPruM7yEgKSdrqV7yFyE3Ab
+         bvM9YAYIna3x/CtjtlC+thpagYCsT00omA1/PLZ3bIKLNaCVozZCPaMYW8mwbm18aV
+         nOq6f0IoGLX9Q==
 From:   Mark Brown <broonie@kernel.org>
-To:     tiwai@suse.com, alsa-devel@alsa-project.org, lgirdwood@gmail.com,
-        perex@perex.cz, linux-kernel@vger.kernel.org, linmq006@gmail.com,
-        peter.ujfalusi@gmail.com
-In-Reply-To: <20220512111331.44774-1-linmq006@gmail.com>
-References: <20220512111331.44774-1-linmq006@gmail.com>
-Subject: Re: [PATCH] ASoC: ti: j721e-evm: Fix refcount leak in j721e_soc_probe_*
-Message-Id: <165280316539.1635268.5141203985086127855.b4-ty@kernel.org>
-Date:   Tue, 17 May 2022 16:59:25 +0100
+To:     tiwai@suse.com, festevam@gmail.com, shengjiu.wang@nxp.com,
+        Xiubo.Lee@gmail.com, alsa-devel@alsa-project.org,
+        lgirdwood@gmail.com, shengjiu.wang@gmail.com, perex@perex.cz,
+        nicoleotsuka@gmail.com
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
+References: <1652688372-10274-1-git-send-email-shengjiu.wang@nxp.com>
+Subject: Re: [PATCH 0/3] ASoC: fsl_sai: Add support for i.MX8MM, MP, ULP
+Message-Id: <165280317067.1635268.8779077482848386414.b4-ty@kernel.org>
+Date:   Tue, 17 May 2022 16:59:30 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,12 +51,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 15:13:30 +0400, Miaoqian Lin wrote:
-> of_parse_phandle() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not needed anymore.
-> Add missing of_node_put() to avoid refcount leak.
+On Mon, 16 May 2022 16:06:09 +0800, Shengjiu Wang wrote:
+> ASoC: fsl_sai: Add support for i.MX8MM, MP, ULP platforms
 > 
+> Shengjiu Wang (3):
+>   ASoC: fsl_sai: Add support for i.MX8MM
+>   ASoC: fsl_sai: Add support for i.MX8M Plus
+>   ASoC: fsl_sai: Add support for i.MX8ULP
 > 
+> [...]
 
 Applied to
 
@@ -62,8 +67,12 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: ti: j721e-evm: Fix refcount leak in j721e_soc_probe_*
-      commit: a34840c4eb3278a7c29c9c57a65ce7541c66f9f2
+[1/3] ASoC: fsl_sai: Add support for i.MX8MM
+      commit: 9e71bc33ae0d402b1579dc7a7afb3916dd35cb17
+[2/3] ASoC: fsl_sai: Add support for i.MX8M Plus
+      commit: 2530c5e875eab853125265b4f24a69e042d9580b
+[3/3] ASoC: fsl_sai: Add support for i.MX8ULP
+      commit: af0bd3c0ffae8c11790ab0108787c03767869a9a
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
