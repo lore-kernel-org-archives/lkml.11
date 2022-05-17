@@ -2,107 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E47C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE8F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231467AbiEQWtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
+        id S231475AbiEQWtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbiEQWtI (ORCPT
+        with ESMTP id S231447AbiEQWt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:49:08 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2B953708
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:49:07 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id e10-20020a056602158a00b0065a9bede1c4so13317411iow.8
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:49:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=C5tbz7L6ZC70ZmPXy4SlO57rkraDyi8Sv2/GOu0X9Y8=;
-        b=bZYlujERcH5tlev35PJUesL4N3R9nXA8z9w7fEJVPq4je5hn6mE6OYolgmcJHCZSa2
-         xqCgEkD3cXgJaJGcXOXTw4XAWWcG39Nuz6ebeW+UyeA1yd2vtcbNVcruBD7CJYwbE/Qk
-         oNIsQURXNEcHF94+MQxV9gCSPXKENP5fP5hHwCDDMfL8TKrqs8sZ4KT2wAarrcSOGJND
-         A2hjjO2hjFpHH8RXVDZUi+BVMFoWJtFIhALMd/cSuH8fXPErzlbuo3awBKXQhPGmJj/d
-         4b4q5m5oaDGmeTS3/GO5LybdmwXaTSsBih7ld1ovQZ0ccOsQcXlqRIIdH+jGZi+I4KU9
-         FDWQ==
-X-Gm-Message-State: AOAM533E1NSUFk7K75t3kARrNq0JZKDG2r7caamQGaciyK6aXTOObZU/
-        F3NPxvl08RtoXmjL5OmtVpBJ3TEhOKHhQa9vFcJGhx7viWl7
-X-Google-Smtp-Source: ABdhPJxFO+q1ewwiIRLvzkMe9aIdaCrUmRb2JUBOui2twRMZ1GON+O9rfQVoP+zSaZmpMx2GTlmsDVDf3dv30O98d3pItYjgt0Rt
+        Tue, 17 May 2022 18:49:27 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83CA552E6E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 15:49:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652827766; x=1684363766;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eW9eeCQ/ZnkVlQzYhrGw1tL7ydi/5swHvLwwK3+msYw=;
+  b=KW0YKMPMHh9jm84ggUkMVPwKKOogXdXo6lACmg6OLYJajbhpC5oExT8u
+   TCjQUzBLtEQe1LbQ8Imhpxv/vK7HUBRQA8aqj3m+v0sp8cZbv5u0uz5G0
+   BUDQIKfBaQ81TCPHJVaqlnNIyH9qjsmwEnGOt5Wm4lmWal2Cp/8/2ylS0
+   cflszpzJ8APD/LE4QUQhXtuJnLJiAIw0BlvxBOQhYCz3OW7CTzM+Zj81c
+   jKgWu0giJU+BhDT9A6xpdHfuMvouxCFQbAobiMB37WPTXctjwJ2i4dyBw
+   8OUYyLKLozM6eLRrcDYTRLayD58i+krSeEQSQ7NLsZRkRMeEk6l5GmKbB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="331980533"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="331980533"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 15:49:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="626709312"
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+  by fmsmga008.fm.intel.com with ESMTP; 17 May 2022 15:49:25 -0700
+Date:   Tue, 17 May 2022 15:53:08 -0700
+From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Nicholas Piggin <npiggin@gmail.com>, x86@kernel.org,
+        Andi Kleen <ak@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Stephane Eranian <eranian@google.com>,
+        iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        Tony Luck <tony.luck@intel.com>
+Subject: Re: [PATCH v6 28/29] x86/tsc: Restart NMI watchdog after refining
+ tsc_khz
+Message-ID: <20220517225308.GC6711@ranerica-svr.sc.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-29-ricardo.neri-calderon@linux.intel.com>
+ <1652180070.1r874kr0tg.astroid@bobo.none>
+ <87ilqdpq7u.ffs@tglx>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:37a8:b0:32b:5d5c:7f9d with SMTP id
- w40-20020a05663837a800b0032b5d5c7f9dmr13422573jal.3.1652827747134; Tue, 17
- May 2022 15:49:07 -0700 (PDT)
-Date:   Tue, 17 May 2022 15:49:07 -0700
-In-Reply-To: <20220517223806.2299-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000be329205df3cf252@google.com>
-Subject: Re: [syzbot] WARNING in mntput_no_expire (3)
-From:   syzbot <syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ilqdpq7u.ffs@tglx>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Tue, May 10, 2022 at 01:44:05PM +0200, Thomas Gleixner wrote:
+> On Tue, May 10 2022 at 21:16, Nicholas Piggin wrote:
+> > Excerpts from Ricardo Neri's message of May 6, 2022 10:00 am:
+> >> +	/*
+> >> +	 * If in use, the HPET hardlockup detector relies on tsc_khz.
+> >> +	 * Reconfigure it to make use of the refined tsc_khz.
+> >> +	 */
+> >> +	lockup_detector_reconfigure();
+> >
+> > I don't know if the API is conceptually good.
+> >
+> > You change something that the lockup detector is currently using, 
+> > *while* the detector is running asynchronously, and then reconfigure
+> > it. What happens in the window? If this code is only used for small
+> > adjustments maybe it does not really matter but in principle it's
+> > a bad API to export.
+> >
+> > lockup_detector_reconfigure as an internal API is okay because it
+> > reconfigures things while the watchdog is stopped [actually that
+> > looks untrue for soft dog which uses watchdog_thresh in
+> > is_softlockup(), but that should be fixed].
+> >
+> > You're the arch so you're allowed to stop the watchdog and configure
+> > it, e.g., hardlockup_detector_perf_stop() is called in arch/.
+> >
+> > So you want to disable HPET watchdog if it was enabled, then update
+> > wherever you're using tsc_khz, then re-enable.
+> 
+> The real question is whether making this refined tsc_khz value
+> immediately effective matters at all. IMO, it does not because up to
+> that point the watchdog was happily using the coarse calibrated value
+> and the whole use TSC to assess whether the HPET fired mechanism is just
+> a guestimate anyway. So what's the point of trying to guess 'more
+> correct'.
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-WARNING in mntput_no_expire
+In some of my test systems I observed that, the TSC value does not fall
+within the expected error window the first time the HPET channel expires.
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 4486 at fs/namespace.c:1285 mntput_no_expire+0x985/0xfe0 fs/namespace.c:1285
-Modules linked in:
+I inferred that the error computed using the coarser tsc_khz was wrong.
+Recalculating the error window with refined tsc_khz would correct it.
 
-CPU: 1 PID: 4486 Comm: syz-executor.3 Not tainted 5.18.0-rc6-syzkaller-00009-gfeb9c5e19e91-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:mntput_no_expire+0x985/0xfe0 fs/namespace.c:1285
-Code: 00 00 00 bf 08 00 00 00 48 c7 c2 60 fe f0 8b e8 91 0b 72 ff e9 01 f9 ff ff e8 d7 bd 9d ff 0f 0b e9 b6 f8 ff ff e8 cb bd 9d ff <0f> 0b e9 aa f8 ff ff e8 bf bd 9d ff e8 aa dd 91 07 31 ff 89 c3 89
-RSP: 0018:ffffc90004857d78 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 00000000ffffffff RCX: 0000000000000000
-RDX: ffff888018b80000 RSI: ffffffff81db8365 RDI: 0000000000000003
-RBP: 0000000000000008 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff81db7c0e R11: 0000000000000000 R12: 0000000000000002
-R13: ffff88801d671e00 R14: dffffc0000000000 R15: ffffed1003ace3ca
-FS:  0000555555fbb400(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000555556f3e848 CR3: 000000001f615000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- mntput+0x67/0x90 fs/namespace.c:1347
- __fput+0x3ba/0x9d0 fs/file_table.c:333
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
- exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:201
- __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:294
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f3b7a03bd2b
-Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
-RSP: 002b:00007ffe9eb268b0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 00007f3b7a03bd2b
-RDX: 0000001b2ff20000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 00007f3b7a19d960 R08: 0000000000000000 R09: 00007ffe9ebbf080
-R10: 00007ffe9ebbf090 R11: 0000000000000293 R12: 00000000000181f5
-R13: 00007ffe9eb269b0 R14: 00007ffe9eb269d0 R15: 0000000000000032
- </TASK>
+However, restarting the timer has the side-effect of kicking the timer and,
+therefore pushing the first HPET NMI further in the future.
 
+Perhaps kicking HPET channel, not recomputing the error window, corrected
+(masked?) the problem.
 
-Tested on:
+I will investigate further and rework or drop this patch as needed.
 
-commit:         feb9c5e1 Merge tag 'for_linus' of git://git.kernel.org..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-console output: https://syzkaller.appspot.com/x/log.txt?x=15ee4759f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=79caa0035f59d385
-dashboard link: https://syzkaller.appspot.com/bug?extid=5b1e53987f858500ec00
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1108ae3af00000
-
+Thanks and BR,
+Ricardo
