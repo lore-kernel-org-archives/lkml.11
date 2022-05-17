@@ -2,76 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65875C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343628AbiEQKJv (ORCPT
+        id S1343641AbiEQKJ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
+        Tue, 17 May 2022 06:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343788AbiEQKGz (ORCPT
+        with ESMTP id S1343712AbiEQKHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:06:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F35F12A8D;
-        Tue, 17 May 2022 03:06:34 -0700 (PDT)
+        Tue, 17 May 2022 06:07:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6C2101C6;
+        Tue, 17 May 2022 03:07:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A443B817DF;
-        Tue, 17 May 2022 10:06:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AE9C34113;
-        Tue, 17 May 2022 10:06:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F0E96159F;
+        Tue, 17 May 2022 10:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 251E7C385B8;
+        Tue, 17 May 2022 10:06:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652781992;
-        bh=HhKKBm3wiaE0xpknwdH7ZBGXkWj2DptvFeir39Hw/ek=;
+        s=korg; t=1652782020;
+        bh=Wtg35uVUr6hMwIWoaURTUK7Y2GU9twVAt6QGoTAABv8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F4nSFNRTu0P8ATljrJdxEj6spDFOWhsmBg7TkrTDh2dqNptrLPUH7PzVSw+aVXFm8
-         0tPHPUBt/fc5Ue24QZByFrUBjiqMeuMx/eLrQHt5bMIT18zYXfATHho/FluGkpmYfU
-         lEl1JaLzl7F1l7D07G+6GoGhkDuL5q1uj1UYXfkk=
-Date:   Tue, 17 May 2022 12:06:27 +0200
+        b=yyCpCgftolA8RmlkGqK2Rn+p7Lx2EZTQLrEhiTkO9Cqk+KWPHxa5PtTWw6qIIn9q4
+         TYN+cHA/GilYl/Y/lEYqXqx2I79MkLYME2fBC1nCYTHQacetrx09BhZCTNcc1u8hmV
+         pfjdVojy2uUDKdY9JZtsp0q+QeWcPDNLP6F2YWew=
+Date:   Tue, 17 May 2022 12:06:57 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Yuanjun Gong <ruc_gongyuanjun@163.com>
-Cc:     Evan Quan <evan.quan@amd.com>, amd-gfx@lists.freedesktop.org,
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] drm/amd/pm: fix a potential gpu_metrics_table memory
- leak
-Message-ID: <YoNzo5QonLeg9CYh@kroah.com>
-References: <20220517095746.7537-1-ruc_gongyuanjun@163.com>
+Subject: Re: [PATCH 1/1] staging: fix a potential infinite loop
+Message-ID: <YoNzwe9BodtxAH1N@kroah.com>
+References: <20220517095809.7791-1-ruc_gongyuanjun@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220517095746.7537-1-ruc_gongyuanjun@163.com>
+In-Reply-To: <20220517095809.7791-1-ruc_gongyuanjun@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 05:57:46PM +0800, Yuanjun Gong wrote:
+On Tue, May 17, 2022 at 05:58:09PM +0800, Yuanjun Gong wrote:
 > From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 > 
-> gpu_metrics_table is allocated in yellow_carp_init_smc_tables() but
-> not freed in yellow_carp_fini_smc_tables().
+> In the for-loop in _rtl92e_update_rxcounts(),
+> i is a u8 counter while priv->rtllib->LinkDetectInfo.SlotNum is
+> a u16 num, there is a potential infinite loop if SlotNum is larger
+> than u8_max.
+> 
+> Change the u8 loop counter i into u16.
 > 
 > Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
 > ---
->  drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  drivers/staging/rtl8192e/rtl8192e/rtl_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-> index e2d099409123..c66c39ccf19c 100644
-> --- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-> +++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-> @@ -190,6 +190,9 @@ static int yellow_carp_fini_smc_tables(struct smu_context *smu)
->  	kfree(smu_table->watermarks_table);
->  	smu_table->watermarks_table = NULL;
+> diff --git a/drivers/staging/rtl8192e/rtl8192e/rtl_core.c b/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
+> index b9ce71848023..3c5082abc583 100644
+> --- a/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
+> +++ b/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
+> @@ -1342,7 +1342,7 @@ static void _rtl92e_update_rxcounts(struct r8192_priv *priv, u32 *TotalRxBcnNum,
+>  				    u32 *TotalRxDataNum)
+>  {
+>  	u16	SlotIndex;
+> -	u8	i;
+> +	u16	i;
 >  
-> +	kfree(smu_table->gpu_metrics_table);
-> +	smu_table->gpu_metrics_table = NULL;
-> +
->  	return 0;
->  }
->  
+>  	*TotalRxBcnNum = 0;
+>  	*TotalRxDataNum = 0;
 > -- 
 > 2.17.1
 > 
