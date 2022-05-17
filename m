@@ -2,100 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27952C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A53C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 16:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350868AbiEQQWx (ORCPT
+        id S1350885AbiEQQZp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 12:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
+        Tue, 17 May 2022 12:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243610AbiEQQWt (ORCPT
+        with ESMTP id S1350851AbiEQQZj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 12:22:49 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433D63AA52;
-        Tue, 17 May 2022 09:22:48 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id bo5so17324452pfb.4;
-        Tue, 17 May 2022 09:22:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Yhb3WErHrmOFWHGszdbPVKejMq8kZztuL4yq8HDl1Ug=;
-        b=hOGzhDujpEd7P86BYpziCdlIATt8jcgjuCt+fGGQDfTcDcRDkgBTE7Mtojx1W/6YKD
-         F2R0bc4TUtIG4i7f32ecFgMVq7NuL5W19bTThkDr1gQUZPS5gjS/oi0mADUQVxDQgXaT
-         bF4DgxrYJtm9AXXTSa4Yc3eDIkiZXOUISBWDdPqCWO6TDXqhLKpSaVCZpOas9V2Ducrp
-         A9Bp66VKhReaeHSVk1xy1FqhMaeV6RdSx+F9HtxiLxT2ylVY0CyRn4C/dD34C4Ov4mvU
-         7kDOF+JdtMkPDIoAV4ZU09GZ24XpQrFEhgiPu7658QroJZlOloF6mhBgUZsT9HQflrV0
-         yBWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Yhb3WErHrmOFWHGszdbPVKejMq8kZztuL4yq8HDl1Ug=;
-        b=0CaHYSPmarbwB/CKbwuWA907vHAVHp/1zRQCXB1jZeyBpA3+RrcDrZ2DllDoACi+MM
-         g+uyY0Ypb4yeLtqB1dmRb1dQWKPaVo/ipB47zUBbzSRwD0nU4CNCA67r4uUxolOfJIb5
-         +Uni0WGtlPJ9SSlEGKJHcvyiJuJOLgJjnDt7r9dD+AeJ9i1/Z/fedDkck/F//C/9z/RW
-         KTtG3q1xfEokFOb6OnTije7uYQvUAa4RJJEptDI/DEimPL+Ox/JuVGKSqyigQAO1MOke
-         KNUv4U8id22XTM+Dgc3DYMZuV+uC2w7qKlRD1fElyPJX+XMxXXk0fZQpl3O17WbRb8dP
-         ZOfA==
-X-Gm-Message-State: AOAM531bkHfEhYhcqMS9pNx423SlQg0zrJ4LXPYNh0cQBcFbmlDsw2x9
-        KPhne2ieJ+DvtB4YfTpoHnA=
-X-Google-Smtp-Source: ABdhPJzZ1O8uBFfp+Jhby6TKO6auMiPULqRHvLh5ace3A5VLpeaImfGTO4kJxrIJYIKJAoD36m2X6Q==
-X-Received: by 2002:a05:6a00:2310:b0:505:a8ac:40e7 with SMTP id h16-20020a056a00231000b00505a8ac40e7mr23402260pfh.11.1652804567715;
-        Tue, 17 May 2022 09:22:47 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id w133-20020a62828b000000b0050dc762815asm7385pfd.52.2022.05.17.09.22.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 09:22:47 -0700 (PDT)
-Message-ID: <6494ece8-7c56-0420-f3d9-eb2392ef576d@gmail.com>
-Date:   Tue, 17 May 2022 09:22:45 -0700
+        Tue, 17 May 2022 12:25:39 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06ABC3B3D8
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 09:25:38 -0700 (PDT)
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1nr00b-0007lD-3L; Tue, 17 May 2022 18:25:17 +0200
+Message-ID: <6da32ccf-1735-c47f-02c3-f7a8c736dbe3@pengutronix.de>
+Date:   Tue, 17 May 2022 18:25:08 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 5.17 000/114] 5.17.9-rc1 review
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [PATCH v10 2/7] KEYS: trusted: allow use of kernel RNG for key
+ material
+To:     Mimi Zohar <zohar@linux.ibm.com>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     kernel@pengutronix.de, Sumit Garg <sumit.garg@linaro.org>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        David Gstir <david@sigma-star.at>,
+        Michael Walle <michael@walle.cc>,
+        John Ernberg <john.ernberg@actia.se>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        =?UTF-8?Q?Horia_Geant=c4=83?= <horia.geanta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jan Luebbe <j.luebbe@pengutronix.de>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Franck LENORMAND <franck.lenormand@nxp.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        Theodore Ts'o <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+References: <20220513145705.2080323-1-a.fatoum@pengutronix.de>
+ <20220513145705.2080323-3-a.fatoum@pengutronix.de>
+ <1c6a5ce2564c29a06eca255072a379351a5fc026.camel@linux.ibm.com>
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220516193625.489108457@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220516193625.489108457@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <1c6a5ce2564c29a06eca255072a379351a5fc026.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello Mimi,
 
+[Cc'ing RNG maintainers in case they want to chime in]
 
-On 5/16/2022 12:35 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.9 release.
-> There are 114 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 18 May 2022 19:36:02 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.9-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> and the diffstat can be found below.
+On 17.05.22 17:52, Mimi Zohar wrote:
+> On Fri, 2022-05-13 at 16:57 +0200, Ahmad Fatoum wrote:
+>>  static int __init init_trusted(void)
+>>  {
+>> +       int (*get_random)(unsigned char *key, size_t key_len);
+>>         int i, ret = 0;
+>>  
+>>         for (i = 0; i < ARRAY_SIZE(trusted_key_sources); i++) {
+>> @@ -322,6 +333,28 @@ static int __init init_trusted(void)
+>>                             strlen(trusted_key_sources[i].name)))
+>>                         continue;
+>>  
+>> +               /*
+>> +                * We always support trusted.rng="kernel" and "default" as
+>> +                * well as trusted.rng=$trusted.source if the trust source
+>> +                * defines its own get_random callback.
+>> +                */
+>  
+> While TEE trusted keys support was upstreamed, there was a lot of
+> discussion about using kernel RNG.  One of the concerns was lack of or
+> insuffiencent entropy during early boot on embedded devices.  This
+> concern needs to be clearly documented in both Documentation/admin-
+> guide/kernel-parameters.txt and Documentation/security/keys/trusted-
+> encrypted.rst.
+
+If a user decides to use kernel RNG for trusted keys, wait_for_random_bytes()
+called first thing in the used get_random_bytes_wait() will (quoting
+documentation) "wait for the input pool to be seeded and thus [is] guaranteed
+to supply cryptographically secure random numbers."
+
+Does this address your concerns about Kernel RNG use?
+
+Thanks,
+Ahmad
+
 > 
 > thanks,
 > 
-> greg k-h
+> Mimi
+> 
+>> +               get_random = trusted_key_sources[i].ops->get_random;
+>> +               if (trusted_rng && strcmp(trusted_rng, "default")) {
+>> +                       if (!strcmp(trusted_rng, "kernel")) {
+>> +                               get_random = kernel_get_random;
+>> +                       } else if (strcmp(trusted_rng, trusted_key_sources[i].name) ||
+>> +                                  !get_random) {
+>> +                               pr_warn("Unsupported RNG. Supported: kernel");
+>> +                               if (get_random)
+>> +                                       pr_cont(", %s", trusted_key_sources[i].name);
+>> +                               pr_cont(", default\n");
+>> +                               return -EINVAL;
+>> +                       }
+>> +               }
+>> +
+>> +               if (!get_random)
+>> +                       get_random = kernel_get_random;
+>> +
+>>                 static_call_update(trusted_key_init,
+>>                                    trusted_key_sources[i].ops->init);
+> 
+> 
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Florian
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
