@@ -2,111 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1194C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A68C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348247AbiEQOC3 (ORCPT
+        id S1348267AbiEQOCi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+        Tue, 17 May 2022 10:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346587AbiEQOCZ (ORCPT
+        with ESMTP id S1346587AbiEQOCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:02:25 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2E437BF9;
-        Tue, 17 May 2022 07:02:24 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24HD7lP9029190;
-        Tue, 17 May 2022 14:02:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : reply-to : subject : to : cc : references : from :
- in-reply-to : content-type : content-transfer-encoding; s=pp1;
- bh=DrVpZigRu9u6n68/um6cr9ohlOVQVmzfH2/MDHip6dU=;
- b=BG+/C+xm5xQcNT8GUiK1gvuDulbqj4JsCV4Jzt0BPSkj2zhN4B8N24FoTIr1Bav4Bs2l
- 0WuzlIWfclrZZQt8zZSPNmQiybTYRk/xGCMGdTxZgsMSV4fUP9zrF2AT4jyFGuIlPqeO
- Dq+5nB3Zr2Rye0KW6Ed1fLuAat+nVoTrE4YWINLqUm8wQg4fOKuEyLe1k7PjrPOmLddi
- f6eMGpAxVCrtg2CR284cKPMRgms/TiM33gC2jwwIZkm3Mdb78vixMD35mRPmrFnJQyy7
- 4O8ajnonIHwEUDvsVecQGBXg2FQ+ZAYf/3kQQWSCUV55UZK0lzTwvcK4700hn517/Nmj NQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4cafhc9k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 14:02:14 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24HDksrx022419;
-        Tue, 17 May 2022 14:02:14 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4cafhc98-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 14:02:14 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24HDvjEZ022166;
-        Tue, 17 May 2022 14:02:13 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma03dal.us.ibm.com with ESMTP id 3g242ab3p1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 14:02:13 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24HE2C1p28443014
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 17 May 2022 14:02:12 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4D9DE2805A;
-        Tue, 17 May 2022 14:02:12 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7232128059;
-        Tue, 17 May 2022 14:02:11 +0000 (GMT)
-Received: from [9.65.94.178] (unknown [9.65.94.178])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 17 May 2022 14:02:11 +0000 (GMT)
-Message-ID: <a26ce34d-0ed8-5479-805b-d863ff056848@linux.ibm.com>
-Date:   Tue, 17 May 2022 10:02:11 -0400
+        Tue, 17 May 2022 10:02:31 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4201435846
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:02:30 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id c24so22030956lfv.11
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:02:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=CQwSm2PuvXfSLnxNme8zs3Uk9oZ+IhRxhCGlk4ycJy0=;
+        b=Q5X5Jo3FzsfspuiqLOGZHCgZCd4mrQmvFLKZGsQP2z2Q7Io+RUDBQyVKOSeDDeGDPV
+         qVTG8fMs+Mzzh4ILiAb6EZu+kTZFnoVn+SBpOxluL5bi3zs4Nn9Ko48t8q6A1yn0J/u/
+         sALmNvpIe2L6dg8SLt+BI9+cP2qiENrUcMLOXBm15vB14YLf401p9JVrrrSpn54F7+NR
+         Ge9ddTqk6OJAJaWP8QOlmVJKJV01U5hlNMcDCuLu9rKEPjZqJXYPfbrWJvx4C4db7oZ/
+         wvFh1Vgt1e3ZFPqGXoKrfuNqWWsb0+WaTXHuLWXHZ0/W9X51TTEQMBKiRe/StsABjUS9
+         FAXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CQwSm2PuvXfSLnxNme8zs3Uk9oZ+IhRxhCGlk4ycJy0=;
+        b=6JcL8NxgjxHVPbRoUUzORshCkPmo4Tuhsw1b3K7vNFSUVPEreg+0xXDCyxq81BBDgX
+         xd+UdVpxPagKDW1oMHePdSRjnV6B7VeDRK5S+6xSJmAXbJaIfJXjB2gecA9tsZsVjnsG
+         LfN8GVoRn2obOphfv7Vztiabm0KTRX5MYLdOp4ZV7Sz0F8RDAbgnW8qpZw82pBHspO9L
+         nCqpKnFloldAxh2UBSNQkb1LXHUAf4iOHr2tBvswPTRi2TbOq+l++5Ki1coP8bH4Rhjq
+         1bCApY9w3bmMZUD78YFDQCDT9GiTzMSnTrNkbkSuCiSoWROYUMCKy0Qk1/fc5592LTuq
+         Raiw==
+X-Gm-Message-State: AOAM531kUcWPZt0Hp3IztiuXCA7ONyOQQPR8+b/7zUw6OoDReodOnxWv
+        niNs8MDRXVDjVCKtyT/AQt9nRQ==
+X-Google-Smtp-Source: ABdhPJyweBhl9pE8z5ss/fr4IZMnmqQ7r2cggKtk4orRrn9prFRQT3z2AljFX7ZsWU8AIClueF+7lA==
+X-Received: by 2002:a05:6512:2a92:b0:472:5c09:c1a8 with SMTP id dt18-20020a0565122a9200b004725c09c1a8mr16906494lfb.265.1652796148215;
+        Tue, 17 May 2022 07:02:28 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id a6-20020ac25e66000000b0047255d21157sm1598796lfr.134.2022.05.17.07.02.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 07:02:27 -0700 (PDT)
+Message-ID: <60219d61-a39c-554f-af71-07cf7e6c40b0@linaro.org>
+Date:   Tue, 17 May 2022 16:02:25 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Reply-To: jjherne@linux.ibm.com
-Subject: Re: [PATCH v19 07/20] s390/vfio-ap: rename matrix_dev->lock mutex to
- matrix_dev->mdevs_lock
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 19/20] arm64: dts: fsd: Add MFC related DT enteries
 Content-Language: en-US
-To:     Tony Krowiak <akrowiak@linux.ibm.com>, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
-        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
-        alex.williamson@redhat.com, kwankhede@nvidia.com,
-        fiuczy@linux.ibm.com
-References: <20220404221039.1272245-1-akrowiak@linux.ibm.com>
- <20220404221039.1272245-8-akrowiak@linux.ibm.com>
-From:   "Jason J. Herne" <jjherne@linux.ibm.com>
-Organization: IBM
-In-Reply-To: <20220404221039.1272245-8-akrowiak@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Smitha T Murthy <smitha.t@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     m.szyprowski@samsung.com, andrzej.hajda@intel.com,
+        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, jernej.skrabec@gmail.com,
+        benjamin.gaignard@collabora.com, stanimir.varbanov@linaro.org,
+        dillon.minfei@gmail.com, david.plowman@raspberrypi.com,
+        mark.rutland@arm.com, robh+dt@kernel.org, krzk+dt@kernel.org,
+        andi@etezian.org, alim.akhtar@samsung.com,
+        aswani.reddy@samsung.com, pankaj.dubey@samsung.com,
+        linux-fsd@tesla.com
+References: <20220517125548.14746-1-smitha.t@samsung.com>
+ <CGME20220517125656epcas5p1cc1296b200ff8801f24243aa47de8fe1@epcas5p1.samsung.com>
+ <20220517125548.14746-20-smitha.t@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220517125548.14746-20-smitha.t@samsung.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 1S2X6TnasrcIRhSuV07yWaDP2llsHoxk
-X-Proofpoint-GUID: SoYli1w7L62sEgmMRmMImVUu3KZ19Pfl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-17_03,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- bulkscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999
- phishscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205170083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 18:10, Tony Krowiak wrote:
-> The matrix_dev->lock mutex is being renamed to matrix_dev->mdevs_lock to
-> better reflect its purpose, which is to control access to the state of the
-> mediated devices under the control of the vfio_ap device driver.
+On 17/05/2022 14:55, Smitha T Murthy wrote:
+> Add MFC DT node and reserve memory node for MFC usage.
 > 
-> Signed-off-by: Tony Krowiak <akrowiak@linux.ibm.com>
+> Cc: linux-fsd@tesla.com
+> Signed-off-by: Smitha T Murthy <smitha.t@samsung.com>
 > ---
->   drivers/s390/crypto/vfio_ap_drv.c     |  6 +--
->   drivers/s390/crypto/vfio_ap_ops.c     | 72 ++++++++++++++-------------
->   drivers/s390/crypto/vfio_ap_private.h |  4 +-
->   3 files changed, 42 insertions(+), 40 deletions(-)
-Reviewed-by: Jason J. Herne <jjherne@linux.ibm.com>
+>  arch/arm64/boot/dts/tesla/fsd-evb.dts |  8 ++++++++
+>  arch/arm64/boot/dts/tesla/fsd.dtsi    | 22 ++++++++++++++++++++++
+>  2 files changed, 30 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/tesla/fsd-evb.dts b/arch/arm64/boot/dts/tesla/fsd-evb.dts
+> index 5af560c1b5e6..36f6b013ce99 100644
+> --- a/arch/arm64/boot/dts/tesla/fsd-evb.dts
+> +++ b/arch/arm64/boot/dts/tesla/fsd-evb.dts
+> @@ -37,3 +37,11 @@
+>  &serial_0 {
+>  	status = "okay";
+>  };
+> +
+> +&clock_mfc {
+> +	status = "okay";
+> +};
+> +
+> +&mfc_0 {
+> +	status = "okay";
+> +};
 
--- 
--- Jason J. Herne (jjherne@linux.ibm.com)
+Labels are ordered by name.
+
+> diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
+> index 9a652abcbcac..434ae75421d8 100644
+> --- a/arch/arm64/boot/dts/tesla/fsd.dtsi
+> +++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
+> @@ -249,6 +249,18 @@
+>  		#clock-cells = <0>;
+>  	};
+>  
+> +	reserved-memory {
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
+> +
+> +		mfc_left: region@84000000 {
+> +			compatible = "shared-dma-pool";
+> +			no-map;
+> +			reg = <0 0x84000000 0 0x8000000>;
+> +		};
+> +	};
+> +
+>  	soc: soc@0 {
+>  		compatible = "simple-bus";
+>  		#address-cells = <2>;
+> @@ -748,6 +760,16 @@
+>  			clocks = <&fin_pll>, <&clock_imem IMEM_MCT_PCLK>;
+>  			clock-names = "fin_pll", "mct";
+>  		};
+> +
+> +		mfc_0: mfc0@12880000 {
+
+Generic node names, so mfc.
+
+> +			compatible = "samsung,mfc-v12";
+> +			reg = <0x0 0x12880000 0x0 0x10000>;
+> +			interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
+> +			clock-names = "mfc";
+> +			clocks = <&clock_mfc MFC_MFC_IPCLKPORT_ACLK>;
+> +			memory-region = <&mfc_left>;
+> +			status = "disabled";
+
+Why exactly this is disabled? Usually we disable nodes which needs
+resources from the boards, but this is not the case here. Unless it is?
+
+> +		};
+>  	};
+>  };
+>  
+
+
+Best regards,
+Krzysztof
