@@ -2,87 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1194C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:02:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348208AbiEQOBv (ORCPT
+        id S1348247AbiEQOC3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
+        Tue, 17 May 2022 10:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243926AbiEQOBs (ORCPT
+        with ESMTP id S1346587AbiEQOCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:01:48 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E963C702
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:01:46 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id k16so10200936pff.5
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 07:01:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MYT6AoGjpjKPZE95kv4oaDF35B9E5NzFdrvZoyxWcfA=;
-        b=h1qEseCrbWCj13XjC66q1TpmrQDsxSXfNGCvfk3f0yHCGxRlvkQo+FG5JqeH0W3WNV
-         oqbfBYZplGBv5LWIVW8pynuaooMkDr1dshu0Td5haE8lk0E8KVd22UjjbPshRn8qDOyc
-         ibV/i8A9SGqrXhoTxPMrgStxernfMqqJfe5L0A1ooekmAeqZzZXMBKaec1xYDeOB5btY
-         SbldITFsqMnPUw9GkuT7uaZQsY+KvMAKzJV3tV8Z1m5vPLwYVGAOspxc2b4Yb082Z1Zg
-         6P4+CfjPKz2vQ0XOKiCap262JZRqFPTnkFlHaZw/w+r9PV9hsqijym3LhHGcr8LxuDjP
-         OTvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MYT6AoGjpjKPZE95kv4oaDF35B9E5NzFdrvZoyxWcfA=;
-        b=Rei/SLmPctXkSTH+V/uH7s+B0CazwVMb5W07vS8HMAbHohrq9k7xqYqzJXFwmz2LoZ
-         bud32rhyzxQXStxT7xiW1aCNRSs7eGEqXiYUKAopAesaAiBheUJGdf+H3ftiqMlvCnRh
-         WqZQrSmCN6GJrv6ViJGcwioMA085v+J6CupzR3Q2Tjf2jMBgmY3aNKDoIFubFUsfGyxW
-         dRl2FF3wtJaTfwQyFV5mbvnKGVJemEif28OLL1FNPvXWmBESwnPjQKpbCpjRMEgARVHb
-         4hQwXYobmx9M8vGxe70mw+vfnIvbxat34P4wKQc95v16ba5KS7VUZ3gHk1l3/VMxFhkm
-         ldwQ==
-X-Gm-Message-State: AOAM531w9VrOTs6wzwSx5EGcsRWYipEkUt+kJ2HNROd+Wy7OlC+2DM/g
-        mJwKTvwG2PL4XUc8PGEaUvxpC7oAzc20H9V5VQMPaQ==
-X-Google-Smtp-Source: ABdhPJxJJdV1gKFQTcRKSnGQ3y//p40QUYAHJFm/TBZOjXQB3WsSLQ1+IBIurA4uiIr+8zv3iOSg7rJj4y/374mFa5I=
-X-Received: by 2002:a63:31d3:0:b0:3f5:d1f4:5f95 with SMTP id
- x202-20020a6331d3000000b003f5d1f45f95mr1754162pgx.178.1652796105800; Tue, 17
- May 2022 07:01:45 -0700 (PDT)
+        Tue, 17 May 2022 10:02:25 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2E437BF9;
+        Tue, 17 May 2022 07:02:24 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24HD7lP9029190;
+        Tue, 17 May 2022 14:02:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : reply-to : subject : to : cc : references : from :
+ in-reply-to : content-type : content-transfer-encoding; s=pp1;
+ bh=DrVpZigRu9u6n68/um6cr9ohlOVQVmzfH2/MDHip6dU=;
+ b=BG+/C+xm5xQcNT8GUiK1gvuDulbqj4JsCV4Jzt0BPSkj2zhN4B8N24FoTIr1Bav4Bs2l
+ 0WuzlIWfclrZZQt8zZSPNmQiybTYRk/xGCMGdTxZgsMSV4fUP9zrF2AT4jyFGuIlPqeO
+ Dq+5nB3Zr2Rye0KW6Ed1fLuAat+nVoTrE4YWINLqUm8wQg4fOKuEyLe1k7PjrPOmLddi
+ f6eMGpAxVCrtg2CR284cKPMRgms/TiM33gC2jwwIZkm3Mdb78vixMD35mRPmrFnJQyy7
+ 4O8ajnonIHwEUDvsVecQGBXg2FQ+ZAYf/3kQQWSCUV55UZK0lzTwvcK4700hn517/Nmj NQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4cafhc9k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 May 2022 14:02:14 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24HDksrx022419;
+        Tue, 17 May 2022 14:02:14 GMT
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4cafhc98-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 May 2022 14:02:14 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24HDvjEZ022166;
+        Tue, 17 May 2022 14:02:13 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+        by ppma03dal.us.ibm.com with ESMTP id 3g242ab3p1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 May 2022 14:02:13 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24HE2C1p28443014
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 17 May 2022 14:02:12 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4D9DE2805A;
+        Tue, 17 May 2022 14:02:12 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7232128059;
+        Tue, 17 May 2022 14:02:11 +0000 (GMT)
+Received: from [9.65.94.178] (unknown [9.65.94.178])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 17 May 2022 14:02:11 +0000 (GMT)
+Message-ID: <a26ce34d-0ed8-5479-805b-d863ff056848@linux.ibm.com>
+Date:   Tue, 17 May 2022 10:02:11 -0400
 MIME-Version: 1.0
-References: <449e08ca791a3ca308de5477c1bdc1f6eb1b34e7.1652104211.git.geert+renesas@glider.be>
- <6ac50bba-e18f-0aeb-90a3-5e448328b22e@denx.de>
-In-Reply-To: <6ac50bba-e18f-0aeb-90a3-5e448328b22e@denx.de>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Tue, 17 May 2022 16:01:34 +0200
-Message-ID: <CAG3jFyvXbVCMqo=mjSd_jk2kCcg8fJe585E1b5P-tGb_y0aXVw@mail.gmail.com>
-Subject: Re: [PATCH] drm: bridge: DRM_FSL_LDB should depend on ARCH_MXC
-To:     Marek Vasut <marex@denx.de>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Reply-To: jjherne@linux.ibm.com
+Subject: Re: [PATCH v19 07/20] s390/vfio-ap: rename matrix_dev->lock mutex to
+ matrix_dev->mdevs_lock
+Content-Language: en-US
+To:     Tony Krowiak <akrowiak@linux.ibm.com>, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
+        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
+        alex.williamson@redhat.com, kwankhede@nvidia.com,
+        fiuczy@linux.ibm.com
+References: <20220404221039.1272245-1-akrowiak@linux.ibm.com>
+ <20220404221039.1272245-8-akrowiak@linux.ibm.com>
+From:   "Jason J. Herne" <jjherne@linux.ibm.com>
+Organization: IBM
+In-Reply-To: <20220404221039.1272245-8-akrowiak@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 1S2X6TnasrcIRhSuV07yWaDP2llsHoxk
+X-Proofpoint-GUID: SoYli1w7L62sEgmMRmMImVUu3KZ19Pfl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-17_03,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ bulkscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999
+ phishscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205170083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 9 May 2022 at 16:41, Marek Vasut <marex@denx.de> wrote:
->
-> On 5/9/22 15:52, Geert Uytterhoeven wrote:
-> > The Freescale i.MX8MP LDB bridge is only present on Freescale i.MX8MP
-> > SoCs.  Hence add a dependency on ARCH_MXC, to prevent asking the user
-> > about this driver when configuring a kernel without i.MX SoC support.
-> >
-> > Fixes: 463db5c2ed4aed01 ("drm: bridge: ldb: Implement simple Freescale i.MX8MP LDB bridge")
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->
-> Reviewed-by: Marek Vasut <marex@denx.de>
+On 4/4/22 18:10, Tony Krowiak wrote:
+> The matrix_dev->lock mutex is being renamed to matrix_dev->mdevs_lock to
+> better reflect its purpose, which is to control access to the state of the
+> mediated devices under the control of the vfio_ap device driver.
+> 
+> Signed-off-by: Tony Krowiak <akrowiak@linux.ibm.com>
+> ---
+>   drivers/s390/crypto/vfio_ap_drv.c     |  6 +--
+>   drivers/s390/crypto/vfio_ap_ops.c     | 72 ++++++++++++++-------------
+>   drivers/s390/crypto/vfio_ap_private.h |  4 +-
+>   3 files changed, 42 insertions(+), 40 deletions(-)
+Reviewed-by: Jason J. Herne <jjherne@linux.ibm.com>
 
-Applied to drm-misc-next
+-- 
+-- Jason J. Herne (jjherne@linux.ibm.com)
