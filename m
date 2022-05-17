@@ -2,209 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB707C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236456AbiEQJUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35574 "EHLO
+        id S244542AbiEQJVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244830AbiEQJUM (ORCPT
+        with ESMTP id S244871AbiEQJVD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:20:12 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2056A3A18A;
-        Tue, 17 May 2022 02:20:01 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id r188-20020a1c44c5000000b003946c466c17so992954wma.4;
-        Tue, 17 May 2022 02:20:01 -0700 (PDT)
+        Tue, 17 May 2022 05:21:03 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04E964C9;
+        Tue, 17 May 2022 02:20:56 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id k126so10080105wme.2;
+        Tue, 17 May 2022 02:20:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=jms.id.au; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5/To3q1iix39r0lCQ+hhuwUqkdpFvOMo3ijNMqcdH64=;
-        b=kiu/iECmQxpFDXj3H3uLLN100wIRqg8E8311/LlhcNSFiQmy18ebSvnt9ct+FVv6Zn
-         hSt+mkPDxQDPhd/o+oBS7Rw8YazWmLE3uvixG85ukYIZoONIipM3R24UIpQe6FcU4T09
-         oUqKxrJRbJ9J3YkxIT2iVYCSSYXqcsU2Z2Fjg=
+        bh=bcX3jvyky5Zk1BA9CMjUs4Jca7mrgBWVxkDo89CEHzg=;
+        b=e+oQjDpVJTotBuHUxen0PIl62GNZJClBrr6ySobqIJkbmgE/BQHXpDYKaHDmJ6A2Bh
+         CttzTVPFNmITqU31R8RPcoMY7kvQRjXEuAyj0ks2ifwICACW5p2do4LVrx40zoK0+ck6
+         obqDGtSPvQmFvO88eBrDlGKe1UVPStbDzJqx8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5/To3q1iix39r0lCQ+hhuwUqkdpFvOMo3ijNMqcdH64=;
-        b=49+y8WVNN63nxUJsGq+heXKJAvYSYG3Yt1dXcXOHRGEAsgbq6TvCoKZ270rGHhImwP
-         2ALcbkczo75k0W4Vr7e6OVrEyHa+xplNWzoqdgYuBricjkKcoppGtwaK7p/jjZROaNMv
-         jIYVqEHGwydgfVB/T8qZEQrtVMinRcPbuYNkLzXXlICrAuXBHnl/NRdn6PVPQSZaL06l
-         EzXf3wgbSQctDtlCyqSMkAS9+TQ9xGSThreRbCAsgoKN+K/SCcrNEtECWiiBg4dDWS4C
-         jdIF6QFZvYBMMvV1og7VAK2PKYRXIK8wyR1NgHVhpAyBkQwzwVHZpClOwc4v6hb6Af7N
-         Oo3A==
-X-Gm-Message-State: AOAM533dqy4ssaJfCzcXRH0cqeWFJ2uYp49kMt3IPkZWBF89G5p5SCev
-        crFEapKKtHE+ZbngpwXc5/q9vmzFFjUIESAipRgpQVf35I4=
-X-Google-Smtp-Source: ABdhPJy1rSqL48gyvRhmpjpN8GuHXjUytsXO0NGJntsr0tTAcsfAMsqLvBb8AQIyi9ayddqeP56N5IkuzIzJV/x8CEk=
-X-Received: by 2002:a7b:cd82:0:b0:389:77ef:66d7 with SMTP id
- y2-20020a7bcd82000000b0038977ef66d7mr19878367wmj.171.1652779199500; Tue, 17
- May 2022 02:19:59 -0700 (PDT)
+        bh=bcX3jvyky5Zk1BA9CMjUs4Jca7mrgBWVxkDo89CEHzg=;
+        b=Odt0+xOQWKNOTU8S79jVeSFfTmgqrhDUsyY2EAJHu+ZSwdD964dQX1kmu/FdFfMoJb
+         MLqLkKXVbHhrtBWJbNCQPuddrnw8X5wmwZ6OKvl+U2Y/Jf8UiJIh9g3tMpMIb6MJV8Ep
+         tLrdvA6CUJDGzuqin7UiA53Dly7uZ1ztMOz1OaHW3Mtc33E/v2FfvCq0RiEzR2TTZgSk
+         bu+WB1GCMhaTg02G0dcK2vPS5nZOVQsgxrmrMGSpo1XZ3fRcYGF6a5jujG5i7Aw+MGZK
+         sYXJgERck5e5EeuBbORgzzcFZAz76OzWYR7E+WFtGlIKfk1CbY3R4hcD9hAtl2oNEzFG
+         tKZA==
+X-Gm-Message-State: AOAM531pD/kAE9zFGVCXrMstyXBkaxG+N2P9jdx3IvYAt8l3Xt19yDmo
+        ZAwwxw1XoPLhFC4AQ4wDKRZlt5xqzTqb6THftzQ=
+X-Google-Smtp-Source: ABdhPJxjyoMaplhahUMc5vmQunZ55IVRht20Aa1fvbTBU8WBhjMtVxgkuh1btiXLCak6T4vSnA5rC7RjSCAsl9k2dGk=
+X-Received: by 2002:a05:600c:1c0e:b0:394:66af:ef0f with SMTP id
+ j14-20020a05600c1c0e00b0039466afef0fmr30434678wms.48.1652779254607; Tue, 17
+ May 2022 02:20:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220512231938.228651-1-joel@jms.id.au> <b6da2e5a-eb85-d3cf-d4c3-ca9c0f0c04a4@molgen.mpg.de>
-In-Reply-To: <b6da2e5a-eb85-d3cf-d4c3-ca9c0f0c04a4@molgen.mpg.de>
+References: <20220512231938.228651-1-joel@jms.id.au> <HK0PR06MB28341F811AD74F52ACA5D19B9CCA9@HK0PR06MB2834.apcprd06.prod.outlook.com>
+In-Reply-To: <HK0PR06MB28341F811AD74F52ACA5D19B9CCA9@HK0PR06MB2834.apcprd06.prod.outlook.com>
 From:   Joel Stanley <joel@jms.id.au>
-Date:   Tue, 17 May 2022 09:19:47 +0000
-Message-ID: <CACPK8XchZcjXjkhDEa=RnnbD3PycwM7Hu5x2tB3A4g0v4964_w@mail.gmail.com>
+Date:   Tue, 17 May 2022 09:20:41 +0000
+Message-ID: <CACPK8XfS+orcdGxGtDy4_gjT9Za9B4umELVcWVYAJv1MWhV4qQ@mail.gmail.com>
 Subject: Re: [PATCH net v2] net: ftgmac100: Disable hardware checksum on AST2600
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Dylan Hung <dylan_hung@aspeedtech.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
         David Wilder <dwilder@us.ibm.com>,
-        Networking <netdev@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        David Wilder <wilder@us.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Wilder <wilder@us.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 13 May 2022 at 05:11, Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+On Fri, 13 May 2022 at 01:46, Dylan Hung <dylan_hung@aspeedtech.com> wrote:
 >
-> Dear Joel,
->
->
-> Am 13.05.22 um 01:19 schrieb Joel Stanley:
+> > -----Original Message-----
+> > From: joel.stan@gmail.com [mailto:joel.stan@gmail.com] On Behalf Of Joel
+> > Stanley
+> > Sent: Friday, May 13, 2022 7:20 AM
+> > To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
+> > <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; Benjamin
+> > Herrenschmidt <benh@kernel.crashing.org>; Dylan Hung
+> > <dylan_hung@aspeedtech.com>; David Wilder <dwilder@us.ibm.com>
+> > Cc: openbmc@lists.ozlabs.org; netdev@vger.kernel.org;
+> > linux-kernel@vger.kernel.org; David Wilder <wilder@us.ibm.com>
+> > Subject: [PATCH net v2] net: ftgmac100: Disable hardware checksum on
+> > AST2600
+> >
 > > The AST2600 when using the i210 NIC over NC-SI has been observed to
-> > produce incorrect checksum results with specific MTU values. This was
-> > first observed when sending data across a long distance set of networks.
+> > produce incorrect checksum results with specific MTU values. This was first
+> > observed when sending data across a long distance set of networks.
 > >
 > > On a local network, the following test was performed using a 1MB file of
 > > random data.
 > >
 > > On the receiver run this script:
 > >
-> >   #!/bin/bash
-> >   while [ 1 ]; do
-> >          # Zero the stats
-> >          nstat -r  > /dev/null
-> >          nc -l 9899 > test-file
-> >          # Check for checksum errors
-> >          TcpInCsumErrors=$(nstat | grep TcpInCsumErrors)
-> >          if [ -z "$TcpInCsumErrors" ]; then
-> >                  echo No TcpInCsumErrors
-> >          else
-> >                  echo TcpInCsumErrors = $TcpInCsumErrors
-> >          fi
-> >   done
+> >  #!/bin/bash
+> >  while [ 1 ]; do
+> >         # Zero the stats
+> >         nstat -r  > /dev/null
+> >         nc -l 9899 > test-file
+> >         # Check for checksum errors
+> >         TcpInCsumErrors=$(nstat | grep TcpInCsumErrors)
+> >         if [ -z "$TcpInCsumErrors" ]; then
+> >                 echo No TcpInCsumErrors
+> >         else
+> >                 echo TcpInCsumErrors = $TcpInCsumErrors
+> >         fi
+> >  done
 > >
 > > On an AST2600 system:
 > >
-> >   # nc <IP of  receiver host> 9899 < test-file
+> >  # nc <IP of  receiver host> 9899 < test-file
 > >
 > > The test was repeated with various MTU values:
 > >
-> >   # ip link set mtu 1410 dev eth0
+> >  # ip link set mtu 1410 dev eth0
 > >
 > > The observed results:
 > >
-> >   1500 - good
-> >   1434 - bad
-> >   1400 - good
-> >   1410 - bad
-> >   1420 - good
->
-> Sort the values? As some MTUs are good, should a allow list for these
-> values be added?
-
-No.
-
->
+> >  1500 - good
+> >  1434 - bad
+> >  1400 - good
+> >  1410 - bad
+> >  1420 - good
+> >
 > > The test was repeated after disabling tx checksumming:
 > >
-> >   # ethtool -K eth0 tx-checksumming off
+> >  # ethtool -K eth0 tx-checksumming off
 > >
 > > And all MTU values tested resulted in transfers without error.
 > >
-> > An issue with the driver cannot be ruled out, however there has been no
-> > bug discovered so far.
+> > An issue with the driver cannot be ruled out, however there has been no bug
+> > discovered so far.
 > >
-> > David has done the work to take the original bug report of slow data
-> > transfer between long distance connections and triaged it down to this
-> > test case.
+> > David has done the work to take the original bug report of slow data transfer
+> > between long distance connections and triaged it down to this test case.
 > >
-> > The vendor suspects this this is a hardware issue when using NC-SI. The fixes line refers
-> > to the patch that introduced AST2600 support.
->
-> Please wrap the line after 75 characters.
->
-> Can the problem be reproduced with QEMU?
-
-It can not. If you wanted to try you could modify the model to corrupt
-tx checksums, but I would consider this of limited value.
-
->
-> > Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
+> > The vendor suspects this this is a hardware issue when using NC-SI. The fixes
+> > line refers to the patch that introduced AST2600 support.
+> >
+> > Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle
+> > property")
 > > Reported-by: David Wilder <wilder@us.ibm.com>
 > > Signed-off-by: Joel Stanley <joel@jms.id.au>
->
-> Should the intel-wired-lan folks be put in Cc?
 
-No, as all evidence points towards this being an AST2600 problem.
+> Reviewed-by: Dylan Hung <dylan_hung@aspeedtech.com>
 
-ASPEED did not report the issue relates to the i210 doing anything
-wrong. The issue is not seen from the host PCIe interface, and the
-i210 is in widespread use with other BMCs without issue.
-
->
-> > ---
-> > v2 updates the commit message with confirmation form the vendor that
->
-> from
->
-> > this is a hardware issue, and clarifes why the commit used in the fixes
->
-> clarifies
->
-> > tag was chosen.
-> >
-> >   drivers/net/ethernet/faraday/ftgmac100.c | 5 +++++
-> >   1 file changed, 5 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-> > index caf48023f8ea..5231818943c6 100644
-> > --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> > @@ -1928,6 +1928,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
-> >       /* AST2400  doesn't have working HW checksum generation */
-> >       if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
-> >               netdev->hw_features &= ~NETIF_F_HW_CSUM;
-> > +
-> > +     /* AST2600 tx checksum with NC-SI is broken */
->
-> Does ASPEED have an internal bug for this, so should there be new
-> revisions of the AST2600, the bug can be fixed?
-
-There are no plans to fix it that I'm aware of.
-
->
-> > +     if (priv->use_ncsi && of_device_is_compatible(np, "aspeed,ast2600-mac"))
-> > +             netdev->hw_features &= ~NETIF_F_HW_CSUM;
-> > +
->
-> I would fancy a note or even warning about this hardware issue.
-
-I don't see the need to clutter up the kernel logs.
-
-We've had a similar workaround for the 2400 since support was added
-for the aspeed part. It doesn't affect the operation of the system; in
-fact it improves it as without this we see degraded throughput due to
-retransmissions.
-
-We have git history for detailed notes on why a change was made.
-
->
-> >       if (np && of_get_property(np, "no-hw-checksum", NULL))
-> >               netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
-> >       netdev->features |= netdev->hw_features;
->
->
-> Kind regards,
->
-> Paul
+Thank you Dylan. I've added your r-b to v3, as the only changes are to
+the wrapping of the commit message.
