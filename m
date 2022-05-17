@@ -2,75 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE93C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2544C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347200AbiEQNJg (ORCPT
+        id S1347223AbiEQNKc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50466 "EHLO
+        Tue, 17 May 2022 09:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235536AbiEQNJd (ORCPT
+        with ESMTP id S232762AbiEQNK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:09:33 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F5435267;
-        Tue, 17 May 2022 06:09:33 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id A2E9B1F444FA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652792971;
-        bh=xNlpc1F54muTtr/z6RaIWW7IyIDJ/ccOrpEag1kxRY0=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=KDnZ/Esd0KFmaNmaa2agEpHbzNnQooi2fseRoNXogH+pvDy/sxy4EmcyjYFBrZ/5c
-         C1Bx0BJBxy2S+6pCPAScHlJKK2wuVGFaT+dX+jb5Qadmg3AR4zozG2aLIxSy1PCDpW
-         6j1/ocxXbpPbpkSVlCc8/8K57nSVbCyKrV5nl9Fc4iy3pHoSMWiwWFqB7x9nO45bLl
-         B8ThvCr0NOV5h/U0Tflcsokrydi3VK4V+iJ6f8fUekNXdgWjB6OlelYPzLQpasuWyA
-         KmpEiitplMjeySVR61i+RsdclsBaodOEu2Uc1Jwh/J4JLaOpQcrLItsV5rv4Pn3Weu
-         d3G5iA4fmtm5A==
-Message-ID: <5d148732-c14d-4e96-f8fc-31acc8932534@collabora.com>
-Date:   Tue, 17 May 2022 18:09:25 +0500
+        Tue, 17 May 2022 09:10:28 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DB03526C;
+        Tue, 17 May 2022 06:10:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652793027; x=1684329027;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1nPBQlk1v0spoAKW3hSYWBBd7Hx4xf2A2nxLzd0Qt44=;
+  b=L/J/iUliUtVzMk0MZT1OvXnLD/k6FBVA240ycFVKdRT97IIKNrBEEEml
+   VGCPK+SwZx0jTCkrQ3c/Z9z8l9wb0Y58bIXD2veuvHSVZKk+0lZWJPBmm
+   myUTRUvZP+qichDbQF3bTpYKwdCfljK20Hqhpgpie2Be4GZk9bi1bLZDf
+   Od1LLz5FksL0lYaZSnzYBxoJ6nfpRPy8ZZNthDUZMndoJ4LlIbi1TRB57
+   ScGjnRZx2ooHKGzUmEGLPv+ThynycWvnnbPGlovE11slNlCT1V4947ti6
+   C7vaaWCg0lX7PX4pTo9qbunSBsIYdE48/zI3/1gzqBdwPmvyD3NFuRTYJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="271300094"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="271300094"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:10:27 -0700
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="713844207"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.52.217])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:10:24 -0700
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>, Leo Yan <leo.yan@linaro.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH V2 0/6] perf intel-pt: Add support for tracing KVM test programs
+Date:   Tue, 17 May 2022 16:10:05 +0300
+Message-Id: <20220517131011.6117-1-adrian.hunter@intel.com>
+X-Mailer: git-send-email 2.25.1
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Cc:     usama.anjum@collabora.com, Tzung-Bi Shih <tzungbi@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the chrome-platform tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Benson Leung <bleung@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-References: <20220516213832.19127535@canb.auug.org.au>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20220516213832.19127535@canb.auug.org.au>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/16/22 4:38 PM, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the chrome-platform tree, today's linux-next build
-> (htmldocs) produced this warning:
-> 
-> Documentation/ABI/testing/sysfs-driver-chromeos-acpi:2: WARNING: Unexpected indentation.
-> Documentation/ABI/testing/sysfs-driver-chromeos-acpi:11: WARNING: Unexpected indentation.
-> Documentation/ABI/testing/sysfs-driver-chromeos-acpi:22: WARNING: Unexpected indentation.
-> Documentation/ABI/testing/sysfs-driver-chromeos-acpi:56: WARNING: Unexpected indentation.
-> 
-> Introduced by commit
-> 
->   0a4cad9c11ad ("platform/chrome: Add ChromeOS ACPI device driver")
-> 
-I've found these warnings in local build. But I'm unable to fix them.
-Apparently, there doesn't seem any unexpected indentation. This kind of
-same warnings have also appeared on some more files before this commit
-without any reason.
+Hi
 
--- 
-Muhammad Usama Anjum
+A common case for KVM test programs is that the guest object code can be
+found in the hypervisor process (i.e. the test program running on the
+host).  Add support for that.
+
+For some more details refer the 3rd patch "perf tools: Add guest_code
+support"
+
+For an example, see the last patch "perf intel-pt: Add guest_code support"
+
+For more information about Perf tools support for Intel® Processor Trace
+refer:
+
+  https://perf.wiki.kernel.org/index.php/Perf_tools_support_for_Intel%C2%AE_Processor_Trace
+
+
+Changes in V2:
+	Add more explanation to commits, comments and documentation.
+
+
+Adrian Hunter (6):
+      perf tools: Add machine to machines back pointer
+      perf tools: Factor out thread__set_guest_comm()
+      perf tools: Add guest_code support
+      perf script: Add guest_code support
+      perf kvm report: Add guest_code support
+      perf intel-pt: Add guest_code support
+
+ tools/perf/Documentation/perf-intel-pt.txt |  70 ++++++++++++++++++++
+ tools/perf/Documentation/perf-kvm.txt      |   3 +
+ tools/perf/Documentation/perf-script.txt   |   4 ++
+ tools/perf/builtin-kvm.c                   |   2 +
+ tools/perf/builtin-script.c                |   5 +-
+ tools/perf/util/event.c                    |   7 +-
+ tools/perf/util/intel-pt.c                 |  20 +++++-
+ tools/perf/util/machine.c                  | 101 ++++++++++++++++++++++++++++-
+ tools/perf/util/machine.h                  |   4 ++
+ tools/perf/util/session.c                  |   7 ++
+ tools/perf/util/symbol_conf.h              |   3 +-
+ 11 files changed, 217 insertions(+), 9 deletions(-)
+
+
+Regards
+Adrian
