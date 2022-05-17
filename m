@@ -2,175 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 22:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbiEQWOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 18:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
+        id S230291AbiEQWPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 18:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiEQWOi (ORCPT
+        with ESMTP id S229527AbiEQWPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 18:14:38 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A747245523;
-        Tue, 17 May 2022 15:14:37 -0700 (PDT)
-Date:   Tue, 17 May 2022 22:14:34 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652825676;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=ZkW25diCjZhhJiIeWzEaepfs+AscLxtkOsxOdut4Bxk=;
-        b=h5TezNhRyghH/9o4IflJ2M3p0L6N+YMUWGRO1Zdc3NAygyLs1vT/E0cbiCYWejFzw0QTjj
-        ZEldu3XxINxCdi+b7OieIMXq/aXSGAtGYXFxPvZCkRHM6es/sMr+XTyHsg9dZ81TDAbh4g
-        XAlPSzWyf4eNU+gUb6pQEam+Npk0JilGgQNBQx64RQoynwAD0GMlGRULrxCPfAS9r5Sm3p
-        9hCQibGAIud6PKXC3Fuxc7wuiU909vUqDCYeIFtodZXqHRSnNfBwpisa03NeMClcZmK5Nv
-        LL/+wv1TAPYcoTLGdQyXPvh4jCF+odJ3uvOf/Ffp1/nN4IQHLgx2EIdRVKvdpQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652825676;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=ZkW25diCjZhhJiIeWzEaepfs+AscLxtkOsxOdut4Bxk=;
-        b=iz9WaRRx9zxKx0zNPcIP4BOX5W1vUenA1F6c3Ff57rBO4HJjpYBvskTeY69AdwYperIAkZ
-        1/TvTIO9XjD465Cg==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/x86/amd: Fix AMD BRS period adjustment
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
+        Tue, 17 May 2022 18:15:09 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671AF396A5;
+        Tue, 17 May 2022 15:15:08 -0700 (PDT)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 8D66F100006;
+        Tue, 17 May 2022 22:15:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652825707;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/JjH2s+XnUZEsXjcYOLzSvl6ZNThviCEVc61/n52xQc=;
+        b=eA8eNHlXjV5vGVMPA6To+ieNXYlkdCwriqFYaa5SORfbCKHNDdeSdBeodpV/X4Fl7owmXe
+        es/tABfnIXYTFpw+TovGh4Q7UlrKq//xc5JzoD88srolhTw4uF8BTeU/6/SI40qxr7qgZW
+        O1wDFJ4yy2KrOtPrQ80yikxBHz7GXZWJtCWPQNoDMgvitXGn8YZ24C3FgbJQLQ6NaGm+S6
+        BGI8INMoAb4tivhqtyctogtgbzmjUPrir5gl5JXoZlg34M+jqnFNSLtxoOisJRUpQpWmSK
+        tOO/hxRNQ96/KU/7AHIXBJPuMcngLMxKF49dpA8ukctdWmHwX/0juUY0RfP1Qg==
+Date:   Wed, 18 May 2022 00:15:06 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
+        <linux-rtc@vger.kernel.org>
+Subject: Re: [RFC v2 29/39] rtc: add HAS_IOPORT dependencies
+Message-ID: <YoQeagVSRyaeA+vd@mail.local>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+ <20220429135108.2781579-52-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-Message-ID: <165282567475.4207.12287002853279789468.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429135108.2781579-52-schnelle@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+Hi,
 
-Commit-ID:     3c27b0c6ea48bc61492a138c410e262735d660ab
-Gitweb:        https://git.kernel.org/tip/3c27b0c6ea48bc61492a138c410e262735d660ab
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 10 May 2022 21:22:04 +02:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Wed, 18 May 2022 00:08:25 +02:00
+On 29/04/2022 15:50:49+0200, Niklas Schnelle wrote:
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. We thus need to add HAS_IOPORT as dependency for
+> those drivers using them.
+> 
 
-perf/x86/amd: Fix AMD BRS period adjustment
+I'm fine taking that this cycle if there are no dependencies. Should I?
 
-There's two problems with the current amd_brs_adjust_period() code:
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>  drivers/rtc/Kconfig | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
+> index 41c65b4d2baf..e1bb11a225b2 100644
+> --- a/drivers/rtc/Kconfig
+> +++ b/drivers/rtc/Kconfig
+> @@ -951,6 +951,7 @@ comment "Platform RTC drivers"
+>  config RTC_DRV_CMOS
+>  	tristate "PC-style 'CMOS'"
+>  	depends on X86 || ARM || PPC || MIPS || SPARC64
+> +	depends on HAS_IOPORT
+>  	default y if X86
+>  	select RTC_MC146818_LIB
+>  	help
+> @@ -971,6 +972,7 @@ config RTC_DRV_CMOS
+>  config RTC_DRV_ALPHA
+>  	bool "Alpha PC-style CMOS"
+>  	depends on ALPHA
+> +	depends on HAS_IOPORT
+>  	select RTC_MC146818_LIB
+>  	default y
+>  	help
+> @@ -1188,7 +1190,7 @@ config RTC_DRV_MSM6242
+>  
+>  config RTC_DRV_BQ4802
+>  	tristate "TI BQ4802"
+> -	depends on HAS_IOMEM
+> +	depends on HAS_IOMEM && HAS_IOPORT
+>  	help
+>  	  If you say Y here you will get support for the TI
+>  	  BQ4802 RTC chip.
+> -- 
+> 2.32.0
+> 
 
- - it isn't in fact AMD specific and wil always adjust the period;
-
- - it adjusts the period, while it should only adjust the event count,
-   resulting in repoting a short period.
-
-Fix this by using x86_pmu.limit_period, this makes it specific to the
-AMD BRS case and ensures only the event count is adjusted while the
-reported period is unmodified.
-
-Fixes: ba2fe7500845 ("perf/x86/amd: Add AMD branch sampling period adjustment")
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/events/amd/core.c   | 13 +++++++++++++
- arch/x86/events/core.c       |  7 -------
- arch/x86/events/perf_event.h | 18 ------------------
- 3 files changed, 13 insertions(+), 25 deletions(-)
-
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index d81eac2..3eee59c 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -1255,6 +1255,18 @@ static void amd_pmu_sched_task(struct perf_event_context *ctx,
- 		amd_pmu_brs_sched_task(ctx, sched_in);
- }
- 
-+static u64 amd_pmu_limit_period(struct perf_event *event, u64 left)
-+{
-+	/*
-+	 * Decrease period by the depth of the BRS feature to get the last N
-+	 * taken branches and approximate the desired period
-+	 */
-+	if (has_branch_stack(event) && left > x86_pmu.lbr_nr)
-+		left -= x86_pmu.lbr_nr;
-+
-+	return left;
-+}
-+
- static __initconst const struct x86_pmu amd_pmu = {
- 	.name			= "AMD",
- 	.handle_irq		= amd_pmu_handle_irq,
-@@ -1415,6 +1427,7 @@ static int __init amd_core_pmu_init(void)
- 	if (boot_cpu_data.x86 >= 0x19 && !amd_brs_init()) {
- 		x86_pmu.get_event_constraints = amd_get_event_constraints_f19h;
- 		x86_pmu.sched_task = amd_pmu_sched_task;
-+		x86_pmu.limit_period = amd_pmu_limit_period;
- 		/*
- 		 * put_event_constraints callback same as Fam17h, set above
- 		 */
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index b08052b..3078889 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -1375,13 +1375,6 @@ int x86_perf_event_set_period(struct perf_event *event)
- 		return x86_pmu.set_topdown_event_period(event);
- 
- 	/*
--	 * decrease period by the depth of the BRS feature to get
--	 * the last N taken branches and approximate the desired period
--	 */
--	if (has_branch_stack(event))
--		period = amd_brs_adjust_period(period);
--
--	/*
- 	 * If we are way outside a reasonable range then just skip forward:
- 	 */
- 	if (unlikely(left <= -period)) {
-diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
-index 3b03245..21a5482 100644
---- a/arch/x86/events/perf_event.h
-+++ b/arch/x86/events/perf_event.h
-@@ -1254,14 +1254,6 @@ static inline void amd_pmu_brs_del(struct perf_event *event)
- }
- 
- void amd_pmu_brs_sched_task(struct perf_event_context *ctx, bool sched_in);
--
--static inline s64 amd_brs_adjust_period(s64 period)
--{
--	if (period > x86_pmu.lbr_nr)
--		return period - x86_pmu.lbr_nr;
--
--	return period;
--}
- #else
- static inline int amd_brs_init(void)
- {
-@@ -1290,11 +1282,6 @@ static inline void amd_pmu_brs_sched_task(struct perf_event_context *ctx, bool s
- {
- }
- 
--static inline s64 amd_brs_adjust_period(s64 period)
--{
--	return period;
--}
--
- static inline void amd_brs_enable_all(void)
- {
- }
-@@ -1324,11 +1311,6 @@ static inline void amd_brs_enable_all(void)
- static inline void amd_brs_disable_all(void)
- {
- }
--
--static inline s64 amd_brs_adjust_period(s64 period)
--{
--	return period;
--}
- #endif /* CONFIG_CPU_SUP_AMD */
- 
- static inline int is_pebs_pt(struct perf_event *event)
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
