@@ -2,99 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2754C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242933AbiEQI2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
+        id S242997AbiEQI2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243431AbiEQI1s (ORCPT
+        with ESMTP id S243314AbiEQI1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:27:48 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2E54926A
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:27:32 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id x23-20020a17090a789700b001df763d4ed0so1670238pjk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 01:27:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OQSG90JJ/COqv9mWqt/xzSdYdvO+juHcEsbjP8h9uxE=;
-        b=XcC1UInh58Jl4PGskeuciU5P2OCq/na/kier41kk7nJnA+K4cEl02/LJnIEGZgSSbw
-         46fOUd7SGbpqEEc3PJLWzP0fGpCcY9nhGSToswlzecCHtOUtlh3tdUCq9U5gVrQ65glI
-         WbHgy4IsWtvjdPvjNZVgKPhcTQK2xWks8//qk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OQSG90JJ/COqv9mWqt/xzSdYdvO+juHcEsbjP8h9uxE=;
-        b=HInvC7TGOabtKIkuf9y8zJEkbIlL4u8GqWPqg18U435BAi++R/IIINiTrQG/z2TLw4
-         dCHuIcX1yRjLsDVDUQ3GK7d+O5drmriC/+1NVt9fbdJW/davyBLvnNjChTKzQGMMlsNu
-         6BgPkeCsSiLWXTfnjHQdneTYtCmMJ79rfC+TtKyIrLVNUpJ4MEe1VinDrwpy/kpZzhWp
-         1TP4rlRQosQTluACyfL3omxrcAC03bD2cbli+PzEOpVfwSyLWV3cxOw8TWlQU3jBNSt+
-         eYB+LX5mORr8DEBefIq1Q8hM4ui2hUQlE7rSsRwPepfIAqWAKxu9ETIzCipnOET2mfWw
-         kJ+Q==
-X-Gm-Message-State: AOAM5337dC9eEJx7ucMuY+VGlxIifsky2ULRezSAlzcPqyqAXoDLyLVE
-        t6wjO6dF88cbApHntPNQ5dhvpw==
-X-Google-Smtp-Source: ABdhPJzacU5LTBci6tcDoYr6acvV+Apcw/E8uyjMeF6Su/oDlkem6pI1bRcqtwJR4I+BtXjbHyL8Dg==
-X-Received: by 2002:a17:902:ce87:b0:15e:a619:4294 with SMTP id f7-20020a170902ce8700b0015ea6194294mr21385038plg.157.1652776052116;
-        Tue, 17 May 2022 01:27:32 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:beb2:ec58:2159:9a33])
-        by smtp.gmail.com with ESMTPSA id k9-20020a628409000000b0050dc76281d3sm8615083pfd.173.2022.05.17.01.27.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 01:27:31 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Phillip Lougher <phillip@squashfs.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>
-Cc:     Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/3] Implement readahead for squashfs
-Date:   Tue, 17 May 2022 16:26:48 +0800
-Message-Id: <20220517082650.2005840-1-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+        Tue, 17 May 2022 04:27:47 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF0136339;
+        Tue, 17 May 2022 01:27:21 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 422D71F44233
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652776040;
+        bh=tE2Neszj+y3O1cmeD6vmFcKg7q+eIA8I1b4UnVOkoE8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=BJL5v0bhuVFvcCQ25D+0pK3NIga8y2Un6h5uMhfxH1hCPQs3rOACMYkyuhdftODMA
+         smu6iAvegiNflzFCbuhqFT/2s31v5ZA9YoWy0ljjT7HESoXXPDOzz/j74fbRRlC0wF
+         gvjgdD2Ix8DZ9LK+lSBwINqwPj0l7qzi47HqevxeFw0jg2gHOvqokYwxH3xxjc5SBb
+         iE0py6i4qoCiLcxX8ZMESLn5YDM4s+PlUQIiH26CJucIwb7ph6qrj1dcIzie6lp3Yn
+         nJU/CaP4iR5oHkZ/SNghJwxsrkTGw296rc5WWsPV+U713IMpxtoohYuiH7PixO4KBV
+         ah5V4clhlBlRw==
+Message-ID: <f222e1c5-4ce1-a42d-ceef-a292136d8b61@collabora.com>
+Date:   Tue, 17 May 2022 10:27:16 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 2/2] memory: mtk-smi: Add support for MT6795 Helio X10
+Content-Language: en-US
+To:     Yong Wu <yong.wu@mediatek.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     krzysztof.kozlowski@linaro.org, robh+dt@kernel.org,
+        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, konrad.dybcio@somainline.org,
+        marijn.suijten@somainline.org, martin.botka@somainline.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        paul.bouchara@somainline.org, kernel@collabora.com,
+        yi.kuo@mediatek.com, anthony.huang@mediatek.com,
+        wendy-st.lin@mediatek.com
+References: <20220513150633.387200-1-angelogioacchino.delregno@collabora.com>
+ <20220513150633.387200-3-angelogioacchino.delregno@collabora.com>
+ <cf2442b9c7124ebf1ce62ae5df597f003fa447d7.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <cf2442b9c7124ebf1ce62ae5df597f003fa447d7.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c1f6925e1091("mm: put readahead pages in cache earlier") requires
-fs to implement readahead callback. Otherwise there will be a
-performance regression.
+Il 17/05/22 08:37, Yong Wu ha scritto:
+> On Fri, 2022-05-13 at 17:06 +0200, AngeloGioacchino Del Regno wrote:
+>> The MediaTek Helio X10 (MT6795) SoC has 5 LARBs and one common SMI
+>> instance without any sub-common and without GALS.
+>>
+>> While the smi-common configuration is specific to this SoC, on the
+>> LARB side, this is similar to MT8173, in the sense that it doesn't
+>> need the port in LARB, and the register layout is also compatible
+>> with that one, which makes us able to fully reuse the smi-larb
+>> platform data struct that was introduced for MT8173.
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <
+>> angelogioacchino.delregno@collabora.com>
+>> ---
+>>   drivers/memory/mtk-smi.c | 17 +++++++++++++++++
+>>   1 file changed, 17 insertions(+)
+>>
+>> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+>> index 86a3d34f418e..7e7c3ede19e4 100644
+>> --- a/drivers/memory/mtk-smi.c
+>> +++ b/drivers/memory/mtk-smi.c
+>> @@ -21,11 +21,13 @@
+>>   /* SMI COMMON */
+>>   #define SMI_L1LEN			0x100
+>>   
+>> +#define SMI_L1_ARB			0x200
+>>   #define SMI_BUS_SEL			0x220
+>>   #define SMI_BUS_LARB_SHIFT(larbid)	((larbid) << 1)
+>>   /* All are MMU0 defaultly. Only specialize mmu1 here. */
+>>   #define F_MMU1_LARB(larbid)		(0x1 <<
+>> SMI_BUS_LARB_SHIFT(larbid))
+>>   
+>> +#define SMI_FIFO_TH0			0x230
+> 
+> Does the name come from the coda you got?
+> It is called SMI_READ_FIFO_TH in my coda.
+> 
 
-Commit 9eec1d897139("squashfs: provide backing_dev_info in order to
-disable read-ahead") mitigates the performance drop issue for squashfs
-by closing readahead for it.
+Documentation for this SoC is not public and I have no access to it, so
+everything that you see here comes from reading downstream kernel code :-(
 
-This series implements readahead callback for squashfs. The previous
-discussion are in [1] and [2].
+I'll change the name to SMI_READ_FIFO_TH as suggested, thanks!
 
-[1] https://lore.kernel.org/all/CAJMQK-g9G6KQmH-V=BRGX0swZji9Wxe_2c7ht-MMAapdFy2pXw@mail.gmail.com/T/
-[2] https://lore.kernel.org/linux-mm/Yn5Yij9pRPCzDozt@casper.infradead.org/t/#m4af4473b94f98a4996cb11756b633a07e5e059d1
+>>   #define SMI_M4U_TH			0x234
+>>   #define SMI_FIFO_TH1			0x238
+>>   #define SMI_FIFO_TH2			0x23c
+>> @@ -360,6 +362,7 @@ static const struct of_device_id
+>> mtk_smi_larb_of_ids[] = {
+>>   	{.compatible = "mediatek,mt2701-smi-larb", .data =
+>> &mtk_smi_larb_mt2701},
+>>   	{.compatible = "mediatek,mt2712-smi-larb", .data =
+>> &mtk_smi_larb_mt2712},
+>>   	{.compatible = "mediatek,mt6779-smi-larb", .data =
+>> &mtk_smi_larb_mt6779},
+>> +	{.compatible = "mediatek,mt6795-smi-larb", .data =
+>> &mtk_smi_larb_mt8173},
+>>   	{.compatible = "mediatek,mt8167-smi-larb", .data =
+>> &mtk_smi_larb_mt8167},
+>>   	{.compatible = "mediatek,mt8173-smi-larb", .data =
+>> &mtk_smi_larb_mt8173},
+>>   	{.compatible = "mediatek,mt8183-smi-larb", .data =
+>> &mtk_smi_larb_mt8183},
+>> @@ -541,6 +544,13 @@ static struct platform_driver
+>> mtk_smi_larb_driver = {
+>>   	}
+>>   };
+>>   
+>> +static const struct mtk_smi_reg_pair
+>> mtk_smi_common_mt6795_init[SMI_COMMON_INIT_REGS_NR] = {
+>> +	{SMI_L1_ARB, 0x1b},
+>> +	{SMI_M4U_TH, 0xce810c85},
+>> +	{SMI_FIFO_TH1, 0x43214c8},
+>> +	{SMI_FIFO_TH0, 0x191f},
+>> +};
+>> +
+>>   static const struct mtk_smi_reg_pair
+>> mtk_smi_common_mt8195_init[SMI_COMMON_INIT_REGS_NR] = {
+>>   	{SMI_L1LEN, 0xb},
+>>   	{SMI_M4U_TH, 0xe100e10},
+>> @@ -565,6 +575,12 @@ static const struct mtk_smi_common_plat
+>> mtk_smi_common_mt6779 = {
+>>   		    F_MMU1_LARB(5) | F_MMU1_LARB(6) | F_MMU1_LARB(7),
+>>   };
+>>   
+>> +static const struct mtk_smi_common_plat mtk_smi_common_mt6795 = {
+>> +	.type	  = MTK_SMI_GEN2,
+>> +	.bus_sel  = BIT(0),
+> 
+> Like the other larbs, use F_MMU1_LARB(0) here?
+> 
 
-Hsin-Yi Wang (2):
-  Revert "squashfs: provide backing_dev_info in order to disable
-    read-ahead"
-  squashfs: implement readahead
+I agree that F_MMU1_LARB(0) == (1 << (0 << 1)) == BIT(0), but that would
+not be correct and induce other people to mistake, I think?
+Downstream doesn't do MMU1 bits, but MMU0 in this case... but if you can
+check on internal documentation and confirm that the downstream kernel's
+logic is wrong on that - and that you've verified that this should indeed
+be F_MMU1_LARB(x), you'll get a big(bigger) thank you from me :-)
 
-Phillip Lougher (1):
-  squashfs: always build "file direct" version of page actor
+Meanwhile...
 
- fs/squashfs/Makefile     |  4 +--
- fs/squashfs/file.c       | 77 +++++++++++++++++++++++++++++++++++++++-
- fs/squashfs/page_actor.h | 41 ---------------------
- fs/squashfs/super.c      | 33 -----------------
- 4 files changed, 78 insertions(+), 77 deletions(-)
+Thanks!
+Angelo
 
--- 
-2.36.0.550.gb090851708-goog
-
+> 
+> After the two changes,
+> 
+> Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+> 
+> Thanks.
