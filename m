@@ -2,177 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F16C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F21C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 09:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232344AbiEQJPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 05:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47292 "EHLO
+        id S244697AbiEQJQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 05:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244366AbiEQJOt (ORCPT
+        with ESMTP id S244446AbiEQJPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 05:14:49 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDFF377F0;
-        Tue, 17 May 2022 02:14:31 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: benjamin.gaignard)
-        with ESMTPSA id B95B41F43FCE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652778870;
-        bh=fCYepzJoAZcKTyNoRcMgbFFK4G3t9TWqByVz/7XlOQI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Oks0Gx4rySToXBFKfP0HWbGFJ6utOnElUvYiT44suCh/qBJUiF3yI1IBYefE0qtSx
-         4rfg7mNed3N01asl07+QZej1sIgo3ofugBrotF0/TlhmOzbgi1XeDSBRMMyNvDCl64
-         MaKyuAZ+oVDPVDO76DPcHCsNFJQBMQRTf17jJHB5sY3rJl+3/7EZ2Cu4qIT88w0rpn
-         70n+8X71/bdEQ9E9VxAX0wd8setAI/YrHIqWxl3L1xAkvAgi41AKLlR1HxD/7k+bp5
-         wsCabQn+HbhNxUPT/THBr4pYWIyzvF4MACqdcgfR8iqurCLX/slY6ABcqLy61SsA6S
-         GEAF3robY0Ong==
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To:     mchehab@kernel.org, hverkuil@xs4all.nl,
-        nicolas.dufresne@collabora.com
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v3] media: Add P010 video format
-Date:   Tue, 17 May 2022 11:14:19 +0200
-Message-Id: <20220517091419.248265-1-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.32.0
+        Tue, 17 May 2022 05:15:00 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31927366AC;
+        Tue, 17 May 2022 02:14:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652778898; x=1684314898;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=zGMNwgf7AhJx+C2tSJI6ZcLVK4iVnN8x7Ixj+NE3fdg=;
+  b=dk6pEZW1cu9w2LFX3VK6fRlwys9MpXRTa7EDahTg+iEmSUy+Ym6qmKPO
+   4a6MzUiTQwvqcGrcsIgxtadRRPVLeVSqk2aenX+iUU7+5XKBv9n2YnSrj
+   41zJQQ4LklfZGFyxzLcLeCSVo2ap+o684FVlBFsZOCkeT02CCBoJ6GXo7
+   A=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 17 May 2022 02:14:57 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 02:14:57 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 17 May 2022 02:14:56 -0700
+Received: from [10.79.43.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 17 May
+ 2022 02:14:53 -0700
+Subject: Re: [PATCH v2] mailbox: qcom-ipcc: Log the pending interrupt during
+ resume
+To:     Manivannan Sadhasivam <mani@kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <jassisinghbrar@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <agross@kernel.org>, Prasad Sodagudi <quic_psodagud@quicinc.com>
+References: <1652251404-30562-1-git-send-email-quic_sibis@quicinc.com>
+ <20220512074312.GA35848@thinkpad>
+ <5b8aa653-5af8-a54f-b7bd-4d758eac9019@quicinc.com>
+ <20220512095952.GB35848@thinkpad>
+ <76a15747-b06e-e869-078f-ac4ad2e4a5ec@quicinc.com>
+ <20220516132737.GA5492@thinkpad>
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+Message-ID: <878688ab-9ee9-b353-d091-9cad7d725ade@quicinc.com>
+Date:   Tue, 17 May 2022 14:44:44 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220516132737.GA5492@thinkpad>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-P010 is a YUV format with 16-bits per pixel with interleaved UV.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
----
-version 3:
-- remove LE suffix
-- rebased on media_tree_master branch
 
- .../media/v4l/pixfmt-yuv-planar.rst           | 53 +++++++++++++++++++
- drivers/media/v4l2-core/v4l2-common.c         |  1 +
- drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
- include/uapi/linux/videodev2.h                |  1 +
- 4 files changed, 56 insertions(+)
+On 5/16/22 6:57 PM, Manivannan Sadhasivam wrote:
+> On Thu, May 12, 2022 at 04:49:30PM +0530, Sibi Sankar wrote:
+>>
+>>
+>> On 5/12/22 3:29 PM, Manivannan Sadhasivam wrote:
+>>> On Thu, May 12, 2022 at 03:08:43PM +0530, Sibi Sankar wrote:
+>>>> Hey Mani,
+>>>>
+>>>> Thanks for taking time to review the patch.
+>>>>
+>>>> On 5/12/22 1:13 PM, Manivannan Sadhasivam wrote:
+>>>>> On Wed, May 11, 2022 at 12:13:24PM +0530, Sibi Sankar wrote:
+>>>>>> From: Prasad Sodagudi <quic_psodagud@quicinc.com>
+>>>>>>
+>>>>>> Enable logging of the pending interrupt that triggered device wakeup. This
+>>>>>> logging information helps to debug IRQs that cause periodic device wakeups
+>>>>>> and prints the detailed information of pending IPCC interrupts instead of
+>>>>>> the generic "Resume caused by IRQ 17, ipcc".
+>>>>>>
+>>>>>> Scenario: Device wakeup caused by Modem crash
+>>>>>> Logs:
+>>>>>> qcom-ipcc mailbox: virq: 182 triggered client-id: 2; signal-id: 2
+>>>>>>
+>>>>>>    From the IPCC bindings it can further understood that the client here is
+>>>>>> IPCC_CLIENT_MPSS and the signal was IPCC_MPROC_SIGNAL_SMP2P.
+>>>>>>
+>>>>>> Signed-off-by: Prasad Sodagudi <quic_psodagud@quicinc.com>
+>>>>>> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+>>>>>> ---
+>>>>>>
+>>>>>> V2:
+>>>>>>     * Fix build error when ipcc is a module [Kernel Test Bot]
+>>>>>>
+>>>>>>     drivers/mailbox/qcom-ipcc.c | 27 +++++++++++++++++++++++++++
+>>>>>>     1 file changed, 27 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/mailbox/qcom-ipcc.c b/drivers/mailbox/qcom-ipcc.c
+>>>>>> index c5d963222014..21c071ec119c 100644
+>>>>>> --- a/drivers/mailbox/qcom-ipcc.c
+>>>>>> +++ b/drivers/mailbox/qcom-ipcc.c
+>>>>>> @@ -254,6 +254,28 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
+>>>>>>     	return devm_mbox_controller_register(dev, mbox);
+>>>>>>     }
+>>>>>> +#ifdef CONFIG_PM_SLEEP
+>>>>>
+>>>>> You don't need this guard anymore. Please see below.
+>>>>
+>>>> ack
+>>>>
+>>>>>
+>>>>>> +static int qcom_ipcc_pm_resume(struct device *dev)
+>>>>>> +{
+>>>>>> +	struct qcom_ipcc *ipcc = dev_get_drvdata(dev);
+>>>>>> +	u32 hwirq;
+>>>>>> +	int virq;
+>>>>>> +
+>>>>>> +	hwirq = readl(ipcc->base + IPCC_REG_RECV_ID);
+>>>>>> +	if (hwirq == IPCC_NO_PENDING_IRQ)
+>>>>>> +		return 0;
+>>>>>> +
+>>>>>> +	virq = irq_find_mapping(ipcc->irq_domain, hwirq);
+>>>>>> +
+>>>>>> +	dev_info(dev, "virq: %d triggered client-id: %ld; signal-id: %ld\n", virq,
+>>>>>> +		 FIELD_GET(IPCC_CLIENT_ID_MASK, hwirq), FIELD_GET(IPCC_SIGNAL_ID_MASK, hwirq));
+>>>>>> +
+>>>>>
+>>>>> Does this really need to be dev_info? This looks like a dev_dbg() material to
+>>>>> me.
+>>>>
+>>>> The whole point of the log is to catch sporadic issues like random
+>>>> wakeups caused by remoteprocs through ipcc. We would just end up with
+>>>> a single line identifying the client id during resume if ipcc had indeed
+>>>> caused the wakeup else it wouldn't print anything.
+>>>>
+>>>
+>>> Right but that information is only required for debugging the periodic wakeups.
+>>> And that's not going to be useful for an end user.
+>>
+>> I would consider this an extension to "Resume caused by IRQ xx, xxxx"
+> 
+> May I know from where it is coming? I couldn't grep it.
 
-diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-index 8dff5906639b..fc2fc17cb371 100644
---- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-+++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-@@ -109,6 +109,13 @@ All components are stored with the same number of bits per component.
-       - Cb, Cr
-       - No
-       - 16x16 tiles
-+    * - V4L2_PIX_FMT_P010
-+      - 'P010'
-+      - 16
-+      - 4:2:0
-+      - Cb, Cr
-+      - No
-+      - Linear
-     * - V4L2_PIX_FMT_NV16
-       - 'NV16'
-       - 8
-@@ -171,6 +178,7 @@ horizontally.
- .. _V4L2-PIX-FMT-NV21:
- .. _V4L2-PIX-FMT-NV12M:
- .. _V4L2-PIX-FMT-NV21M:
-+.. _V4L2-PIX-FMT-P010:
- 
- NV12, NV21, NV12M and NV21M
- ---------------------------
-@@ -519,6 +527,51 @@ number of lines as the luma plane.
-       - Cb\ :sub:`33`
-       - Cr\ :sub:`33`
- 
-+.. _V4L2_PIX_FMT_P010:
-+
-+P010
-+----
-+
-+Like NV12 with 16 bits per component, data in the 10 high bits, zeros in the 6 low bits, arranged in little endian order
-+
-+.. flat-table:: Sample 4x4 P010 Image
-+    :header-rows:  0
-+    :stub-columns: 0
-+
-+    * - start + 0:
-+      - Y'\ :sub:`00`
-+      - Y'\ :sub:`01`
-+      - Y'\ :sub:`02`
-+      - Y'\ :sub:`03`
-+    * - start + 8:
-+      - Y'\ :sub:`10`
-+      - Y'\ :sub:`11`
-+      - Y'\ :sub:`12`
-+      - Y'\ :sub:`13`
-+    * - start + 16:
-+      - Y'\ :sub:`20`
-+      - Y'\ :sub:`21`
-+      - Y'\ :sub:`22`
-+      - Y'\ :sub:`23`
-+    * - start + 24:
-+      - Y'\ :sub:`30`
-+      - Y'\ :sub:`31`
-+      - Y'\ :sub:`32`
-+      - Y'\ :sub:`33`
-+    * - start + 32:
-+      - Cb\ :sub:`00`
-+      - Cr\ :sub:`00`
-+      - Cb\ :sub:`01`
-+      - Cr\ :sub:`01`
-+    * - start + 40:
-+      - Cb\ :sub:`10`
-+      - Cr\ :sub:`10`
-+      - Cb\ :sub:`11`
-+      - Cr\ :sub:`11`
-+
-+.. raw:: latex
-+
-+    \endgroup
- 
- Fully Planar YUV Formats
- ========================
-diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
-index df34b2a283bc..1e38ad8906a2 100644
---- a/drivers/media/v4l2-core/v4l2-common.c
-+++ b/drivers/media/v4l2-core/v4l2-common.c
-@@ -266,6 +266,7 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
- 		{ .format = V4L2_PIX_FMT_NV61,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
- 		{ .format = V4L2_PIX_FMT_NV24,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
- 		{ .format = V4L2_PIX_FMT_NV42,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
-+		{ .format = V4L2_PIX_FMT_P010,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 2, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
- 
- 		{ .format = V4L2_PIX_FMT_YUV410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
- 		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
-diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index e2636539c9db..857a4e0d74a1 100644
---- a/drivers/media/v4l2-core/v4l2-ioctl.c
-+++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -1305,6 +1305,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
- 	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
- 	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
- 	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
-+	case V4L2_PIX_FMT_P010:		descr = "16-bit Y/CrCb 4:2:0"; break;
- 	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
- 	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
- 	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
-diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index 6d465dc443b7..311f106bbdf5 100644
---- a/include/uapi/linux/videodev2.h
-+++ b/include/uapi/linux/videodev2.h
-@@ -601,6 +601,7 @@ struct v4l2_pix_format {
- #define V4L2_PIX_FMT_NV61    v4l2_fourcc('N', 'V', '6', '1') /* 16  Y/CrCb 4:2:2  */
- #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
- #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
-+#define V4L2_PIX_FMT_P010    v4l2_fourcc('P', '0', '1', '0') /* 16  Y/CbCr 4:2:0 16-bit per pixel */
- 
- /* two non contiguous planes - one Y, one Cr + Cb interleaved  */
- #define V4L2_PIX_FMT_NV12M   v4l2_fourcc('N', 'M', '1', '2') /* 12  Y/CbCr 4:2:0  */
--- 
-2.32.0
+My bad I happened to have an out of tree patch in there. And it happens 
+that all the logging done related to wakeup are under debug so I'll 
+convert mine as well in v3. Thanks for the review!
 
+-Sibi
+
+> 
+>> print that we get to identify the wake up source. That's the reasoning
+>> behind marking it as dev_info (being able to nail down random wakeups is
+>> just an added advantage). That said I'll re-spin it with dbg if that's
+>> the consensus.
+>>
+> 
+> I'll leave it up to Jassi to decide. But this patch looks good to me otherwise.
+> 
+> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+> 
+> Thanks,
+> Mani
+> 
+>>>
+>>> Thanks,
+>>> Mani
+>>>
+>>>> -Sibi
+>>>>>
+>>>>>> +	return 0;
+>>>>>> +}
+>>>>>> +#else
+>>>>>> +#define qcom_ipcc_pm_resume NULL
+>>>>>> +#endif
+>>>>>> +
+>>>>>>     static int qcom_ipcc_probe(struct platform_device *pdev)
+>>>>>>     {
+>>>>>>     	struct qcom_ipcc *ipcc;
+>>>>>> @@ -324,6 +346,10 @@ static const struct of_device_id qcom_ipcc_of_match[] = {
+>>>>>>     };
+>>>>>>     MODULE_DEVICE_TABLE(of, qcom_ipcc_of_match);
+>>>>>> +static const struct dev_pm_ops qcom_ipcc_dev_pm_ops = {
+>>>>>> +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, qcom_ipcc_pm_resume)
+>>>>>> +};
+>>>>>> +
+>>>>>>     static struct platform_driver qcom_ipcc_driver = {
+>>>>>>     	.probe = qcom_ipcc_probe,
+>>>>>>     	.remove = qcom_ipcc_remove,
+>>>>>> @@ -331,6 +357,7 @@ static struct platform_driver qcom_ipcc_driver = {
+>>>>>>     		.name = "qcom-ipcc",
+>>>>>>     		.of_match_table = qcom_ipcc_of_match,
+>>>>>>     		.suppress_bind_attrs = true,
+>>>>>> +		.pm = &qcom_ipcc_dev_pm_ops,
+>>>>>
+>>>>> You can use the new pm_sleep_ptr() macro to avoid the PM_SLEEP guard.
+>>>>>
+>>>>> 		.pm = pm_sleep_ptr(&qcom_ipcc_dev_pm_ops),
+>>>>
+>>>> ack
+>>>>
+>>>>>
+>>>>> Thanks,
+>>>>> Mani
+>>>>>
+>>>>>>     	},
+>>>>>>     };
+>>>>>> -- 
+>>>>>> 2.7.4
+>>>>>>
+>>>>>
+>>>
+> 
