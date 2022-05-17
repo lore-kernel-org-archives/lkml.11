@@ -2,84 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 010D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 03:12:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238314AbiEQDM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 16 May 2022 23:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
+        id S237091AbiEQDMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 16 May 2022 23:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234180AbiEQDMU (ORCPT
+        with ESMTP id S239781AbiEQDMi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 16 May 2022 23:12:20 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910BE1D0F6;
-        Mon, 16 May 2022 20:12:17 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L2LkP1XzXzhZG6;
-        Tue, 17 May 2022 11:11:41 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+        Mon, 16 May 2022 23:12:38 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B1E1EC58;
+        Mon, 16 May 2022 20:12:32 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L2Ljp3wbHz1JC5q;
+        Tue, 17 May 2022 11:11:10 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500015.china.huawei.com (7.221.188.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 11:12:14 +0800
-Subject: Re: [PATCH net-next] net: wwan: t7xx: fix GFP_KERNEL usage in
- spin_lock context
-To:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>
-CC:     "Devegowda, Chandrashekar" <chandrashekar.devegowda@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        <chiranjeevi.rapolu@linux.intel.com>,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>,
-        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220514091443.4150162-1-william.xuanziyang@huawei.com>
- <CAHNKnsS0D8bRA5GY0xss2ZUCwY2HoLNMgeR0K4ecH-HfmdTefg@mail.gmail.com>
- <0b90f4f6-6911-017b-6d37-50354003900e@linux.intel.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <0d5e1262-8140-32d2-e589-d29d68ac49a4@huawei.com>
-Date:   Tue, 17 May 2022 11:12:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ 15.1.2375.24; Tue, 17 May 2022 11:12:30 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 11:12:29 +0800
+Subject: Re: [PATCH -next] block: fix io hung of setting throttle limit
+ frequently
+To:     Tejun Heo <tj@kernel.org>,
+        Zhang Wensheng <zhangwensheng5@huawei.com>,
+        "ming.lei@redhat.com >> Ming Lei" <ming.lei@redhat.com>
+CC:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>
+References: <20220516014429.33723-1-zhangwensheng5@huawei.com>
+ <YoKmCOAzwzw3Lz7g@slm.duckdns.org>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <ca251645-8d52-7a93-6ac2-579d97922a9e@huawei.com>
+Date:   Tue, 17 May 2022 11:12:28 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <0b90f4f6-6911-017b-6d37-50354003900e@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
+In-Reply-To: <YoKmCOAzwzw3Lz7g@slm.duckdns.org>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+ÔÚ 2022/05/17 3:29, Tejun Heo Ð´µÀ:
+> On Mon, May 16, 2022 at 09:44:29AM +0800, Zhang Wensheng wrote:
+>> diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+>> index 469c483719be..8acb205dfa85 100644
+>> --- a/block/blk-throttle.c
+>> +++ b/block/blk-throttle.c
+>> @@ -1321,12 +1321,14 @@ static void tg_conf_updated(struct throtl_grp *tg, bool global)
+>>   	 * that a group's limit are dropped suddenly and we don't want to
+>>   	 * account recently dispatched IO with new low rate.
+>>   	 */
+>> -	throtl_start_new_slice(tg, READ);
+>> -	throtl_start_new_slice(tg, WRITE);
+>> +	if (!timer_pending(&sq->parent_sq->pending_timer)) {
+>> +		throtl_start_new_slice(tg, READ);
+>> +		throtl_start_new_slice(tg, WRITE);
+>>   
+>> -	if (tg->flags & THROTL_TG_PENDING) {
+>> -		tg_update_disptime(tg);
+>> -		throtl_schedule_next_dispatch(sq->parent_sq, true);
+>> +		if (tg->flags & THROTL_TG_PENDING) {
+>> +			tg_update_disptime(tg);
+>> +			throtl_schedule_next_dispatch(sq->parent_sq, true);
+>> +		}
 > 
-> On 5/16/2022 1:36 PM, Sergey Ryazanov wrote:
->> Hello Ziyang,
->>
->> On Sat, May 14, 2022 at 11:57 AM Ziyang Xuan
->> <william.xuanziyang@huawei.com> wrote:
->>> t7xx_cldma_clear_rxq() call t7xx_cldma_alloc_and_map_skb() in spin_lock
->>> context, But __dev_alloc_skb() in t7xx_cldma_alloc_and_map_skb() uses
->>> GFP_KERNEL, that will introduce scheduling factor in spin_lock context.
->>>
->>> Replace GFP_KERNEL with GFP_ATOMIC to fix it.
->> Would not it will be more reliable to just rework
->> t7xx_cldma_clear_rxq() to avoid calling t7xx_cldma_alloc_and_map_skb()
->> under the spin lock instead of doing each allocation with GFP_ATOMIC?
->> E.g. t7xx_cldma_gpd_rx_from_q() calls t7xx_cldma_alloc_and_map_skb()
->> avoiding any lock holding.
+> Yeah, but this ends up breaking the reason why it's starting the new slices
+> in the first place explained in the commit above, right? I'm not sure what
+> the right solution is but this likely isn't it.
 > 
-> t7xx_cldma_clear_rxq() is a helper for t7xx_cldma_clear_all_qs() which is only called by t7xx_cldma_exception() after stopping CLDMA, so it should be OK to remove the spin lock from t7xx_cldma_clear_rxq().
-> 
+Hi, Tejun
 
-OK, I see. Thus we can remove spink_lock and annotate it.
+Ming added a condition in tg_with_in_bps_limit():
+-       if (bps_limit == U64_MAX) {
++       /* no need to throttle if this bio's bytes have been accounted */
++       if (bps_limit == U64_MAX || bio_flagged(bio, BIO_THROTTLED)) {
+
+Which will let the first throttled bio to be issued immediately once
+the config if updated.
+
+Do you think this behaviour is OK? If so, we can do the same for
+tg_with_in_iops_limit.
+
+Thanks,
+Kuai
 
 > 
-> .
