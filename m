@@ -2,102 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EBCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE70C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 11:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345264AbiEQLcN (ORCPT
+        id S1344180AbiEQLfO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 07:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        Tue, 17 May 2022 07:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345257AbiEQLcL (ORCPT
+        with ESMTP id S233028AbiEQLfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 07:32:11 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C0127177;
-        Tue, 17 May 2022 04:32:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652787130; x=1684323130;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0cl+rkmtmTmZKgTuf6PUoBtPHgmWZT9BcBjwdiNcxa8=;
-  b=lDmthmvx3rnZyMYP9ItKpZoff6jwftcqNVkPAvpuX9Ch/pBwzGvxKK8t
-   vvuxaOWv/1GYuoPSPQpo5OOJehjwc1JkQsR5QrPJkRq/Gss31nuflcTOh
-   Gr3469gO/ZVfMjhhpRic///CPnWb8bcZNuF9FvrCsPhucCOtuq4GuwIkU
-   ONLZAqlH9WP3E4dUb4X0nLvNIiVk4yoM3od+eRcXAaJweJxRG9MyKYjK0
-   Brf21isp0RazVJcccx5nd9mYx11KKNvqr52dp06KVUTd3Ubtp0/3HurX4
-   77dlnDwHKzMoErYCZG5ybrdDgxsrfFlAZfuO3zI+qnhlUfV7YmY/0zqIn
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="296427742"
-X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="296427742"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 04:32:04 -0700
-X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="568840984"
-Received: from yangweij-mobl.ccr.corp.intel.com (HELO [10.255.31.115]) ([10.255.31.115])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 04:32:01 -0700
-Message-ID: <84f4eb85-0ab4-07f8-e0a0-4b172d420c4d@intel.com>
-Date:   Tue, 17 May 2022 19:31:51 +0800
+        Tue, 17 May 2022 07:35:11 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2C72717E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:35:10 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id l13-20020a056e0212ed00b002d07cd1db63so7642684iln.7
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 04:35:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=FkY6wA5Kc8BpmjekXlBJGuJOJHx9rxAyEBHBHuyzTL8=;
+        b=TTYrejGhWfE17IKyUjC8aAGCRW+ZYq6uq55HWxvWj4MXP1JzHL9NFNqRr16VrMADmY
+         F5w3MPr3fkx7NJ0t0qm6PhP+2jxoRUxGcBCNv4kAIY37f158RRdZPd6t1/0PU1TvVeW2
+         OtHwCTxcd4G4EBuC8URK1kTFSO+3p6ipoCYJnEUhgSXaLbQU47bUKMDrGSpN+XF6MkuZ
+         sUpSUXVVVd6ny7QLvVKNrAAeIwv7swJ8/lgq+ZmeR648ZHQ4XgegzMWSq4zQwHI9KIor
+         raGmer0ABQWRef6HsWDNIDP5XgKJB4wVvjCmHO3W5KHAbfqI8ZKeMO1oVOALkEJOI5m6
+         H9XA==
+X-Gm-Message-State: AOAM533xbdXQx2CXgXgnfh0djeq19kRmbgj4Jt14M3t04RdCbRikaib1
+        T4uBlgoaF/OtZbopnXYnFNlllDcJZKEKpDT504V8cWtd6w/d
+X-Google-Smtp-Source: ABdhPJwF+dz8wsHIXhj0sW0JLk3zUAJ5JZRZtsYREEoA9W2MtmjkreDnLc6q0Znbbsg+YXutDzUJxeteHGEtyBU4S0QugRMpasrw
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v11 14/16] KVM: x86/vmx: Flip Arch LBREn bit on guest
- state change
-Content-Language: en-US
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     "jmattson@google.com" <jmattson@google.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "kan.liang@linux.intel.com" <kan.liang@linux.intel.com>,
-        "like.xu.linux@gmail.com" <like.xu.linux@gmail.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "Wang, Wei W" <wei.w.wang@intel.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220506033305.5135-1-weijiang.yang@intel.com>
- <20220506033305.5135-15-weijiang.yang@intel.com>
- <9f19a5eb-3eb0-58a2-e4ee-612f3298ba82@redhat.com>
- <9e2b5e9f-25a2-b724-c6d7-282dc987aa99@intel.com>
- <8a15c4b4-cabe-7bc3-bd98-bd669d586616@redhat.com>
- <5f264701-b6d5-8660-55ae-a5039d6a9d3a@intel.com>
- <d68f61ab-d122-809b-913e-4eaf89b337c4@intel.com>
- <6212bdfe-ecd2-3787-a2cb-b285318b102a@redhat.com>
-From:   "Yang, Weijiang" <weijiang.yang@intel.com>
-In-Reply-To: <6212bdfe-ecd2-3787-a2cb-b285318b102a@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:b:b0:32e:3b8d:3e5d with SMTP id
+ z11-20020a056638000b00b0032e3b8d3e5dmr4245685jao.91.1652787309767; Tue, 17
+ May 2022 04:35:09 -0700 (PDT)
+Date:   Tue, 17 May 2022 04:35:09 -0700
+In-Reply-To: <20220517111247.2103-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007cf04605df3388a8@google.com>
+Subject: Re: [syzbot] WARNING in mntput_no_expire (3)
+From:   syzbot <syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
-On 5/17/2022 5:01 PM, Paolo Bonzini wrote:
-> On 5/17/22 10:56, Yang, Weijiang wrote:
->>> I added more things to ease migration handling in SMM because: 1) qemu
->>> checks LBREn before transfer Arch LBR MSRs.
-> I think it should always transfer them instead?  There's time to post a
-> fixup patch.
-OK, I'll send a fix patch.
->
->>> 2) Perf event is created when
->>> LBREn is being set.  Two things are not certain: 1) IA32_LBR_CTL doesn't have
->>> corresponding slot in SMRAM,not sure if we need to rely on it to transfer the MSR.
->>> I chose 0x7f10 as the offset(CET takes 0x7f08) for storage, need you double check if
->>> it's free or used.
-> 0x7f10 sounds good.
->
->> Hi, Paolo,
->>
->> I found there're some rebase conflicts between this series and your kvm
->> queue branch due to PEBS patches, I can re-post a new version based on
->> your queue branch if necessary.
-> Yes, please.
-Sure, I'll post  v12 soon.
->
->> Waiting for your comments on this patch...
-> I already commented that using bit 63 is not good, didn't I?
-Clear :-D, thanks!
->
-> Paolo
->
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+WARNING in mntput_no_expire
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 4042 at fs/namespace.c:1239 mntput_no_expire+0xb02/0xfe0 fs/namespace.c:1239
+Modules linked in:
+CPU: 0 PID: 4042 Comm: syz-executor.2 Not tainted 5.18.0-rc6-syzkaller-00009-gfeb9c5e19e91-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:mntput_no_expire+0xb02/0xfe0 fs/namespace.c:1239
+Code: 00 48 c7 c7 c0 16 db 89 c6 05 33 c9 c8 0b 01 e8 c9 55 4d 07 e9 57 ff ff ff e8 2a bd 9d ff 0f 0b e9 df f9 ff ff e8 1e bd 9d ff <0f> 0b e9 d3 f9 ff ff e8 12 bd 9d ff e8 4d b7 88 ff 31 ff 89 c3 89
+RSP: 0018:ffffc9000313fcf0 EFLAGS: 00010293
+
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88801ba15880 RSI: ffffffff81db8412 RDI: 0000000000000003
+RBP: 0000000000000008 R08: 0000000000000000 R09: ffffffff9006e94f
+R10: ffffffff81db7dce R11: 0000000000000001 R12: ffffc9000313fd40
+R13: ffff88801f6ea800 R14: 0000000000000002 R15: dffffc0000000000
+FS:  000055555676b400(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fff05411c78 CR3: 000000007a034000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ path_umount+0x7d4/0x1260 fs/namespace.c:1819
+ ksys_umount fs/namespace.c:1838 [inline]
+ __do_sys_umount fs/namespace.c:1843 [inline]
+ __se_sys_umount fs/namespace.c:1841 [inline]
+ __x64_sys_umount+0x159/0x180 fs/namespace.c:1841
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f67c148a557
+Code: ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc7f7ec938 EFLAGS: 00000246
+ ORIG_RAX: 00000000000000a6
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f67c148a557
+RDX: 00007ffc7f7eca0a RSI: 000000000000000a RDI: 00007ffc7f7eca00
+RBP: 00007ffc7f7eca00 R08: 00000000ffffffff R09: 00007ffc7f7ec7d0
+R10: 000055555676c8b3 R11: 0000000000000246 R12: 00007f67c14e21f8
+R13: 00007ffc7f7edac0 R14: 000055555676c810 R15: 00007ffc7f7edb00
+ </TASK>
+
+
+Tested on:
+
+commit:         feb9c5e1 Merge tag 'for_linus' of git://git.kernel.org..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=10df1295f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=79caa0035f59d385
+dashboard link: https://syzkaller.appspot.com/bug?extid=5b1e53987f858500ec00
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=16f621b9f00000
+
