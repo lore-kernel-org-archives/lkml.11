@@ -2,345 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC58C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343663AbiEQNzw (ORCPT
+        id S1348137AbiEQN5l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
+        Tue, 17 May 2022 09:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348003AbiEQNzq (ORCPT
+        with ESMTP id S232153AbiEQN5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:55:46 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8BA33A25
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:55:43 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id a23so13763677ljd.9
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:55:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Sxr705jZC8qwBHiwQ0dlLfdaaSWTqvjEURwffcf7Xtk=;
-        b=pqjyv0Ute1e96047pfU5nKGgnaYqhyPiUOUSl3PZ561saMuArdMZd2qdK9kcOh4Mz2
-         nno4wpRxxJg13GrxWLppxtngA5iFNYAmzzjDFMa6D/Pai3Z5DfILW32LD0hjhyYHHIZq
-         ZHu3ps7Y355wMdJk9auRHkB/gDoSAx9nF8RQ5Og3h72QiNZk//zfCKf5v5HJmNtxjx23
-         JTr+NHb723MCTXISD2ZWKgxOCos92w4Evv4L5Dzu/PCAZLnfBbz2ZToJv6Nx1W5p+55l
-         ALHV0ThwaYygX152HWCGv3XtzYhtseOZSX0yu3+sINQVezPetq27rdnqT/agiyuPMhPa
-         IyWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Sxr705jZC8qwBHiwQ0dlLfdaaSWTqvjEURwffcf7Xtk=;
-        b=FBlfMpxU7VHCuaCGshy3Jz6xqRn7RAp2twC9Q+DpdB49ZduXvV93B2CJlkh9BXPKNq
-         swY1vDN5WVtx6LABkmUdoakklBIGb2TFyAB8Y9jKHSDIQ45PERyJYfAjTBHgjTIGoyVf
-         t/W6DbqcDVEJ4wyuyRg/K7C36JlQ6qbu/SUG0LaHGesPobCFuwTSHVltN1z1ilwM6rND
-         oENzAIT7kcyu87POWDSrHgVrlZ+t6HwsHlQKLHlHDLxT+xzqteNCNdfX9aosQiN4MbJm
-         kjzUY8+w9J8lW+aa/u6anWPn3Tn1oCcluKXFOApXcUZ0EnJB926GhKSGcveIoOy6qYBx
-         WKKQ==
-X-Gm-Message-State: AOAM533hhZalYgL/I1U1xBQ6g6mAv/dhBf7dl5MywCnpBZWSlg2VS/+Z
-        lBCtOrXwhFEHKTb5uKHZ9J3uT8h/QRGFSRNW
-X-Google-Smtp-Source: ABdhPJxU3rEbOrP15QmzJWshAm2FKWF9dKPOC9EJhEy/iX80uWHvbEb/N3DSQEbjIKDF9xJDNDuXgw==
-X-Received: by 2002:a2e:b893:0:b0:250:6ab8:6e1a with SMTP id r19-20020a2eb893000000b002506ab86e1amr14034943ljp.193.1652795741365;
-        Tue, 17 May 2022 06:55:41 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id t10-20020a2e954a000000b0024b14fa6061sm1900075ljh.1.2022.05.17.06.55.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 06:55:40 -0700 (PDT)
-Message-ID: <6c2ea5f7-3cc0-d43c-c667-18c25b64ff72@linaro.org>
-Date:   Tue, 17 May 2022 15:55:39 +0200
+        Tue, 17 May 2022 09:57:37 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94673C4A1;
+        Tue, 17 May 2022 06:57:35 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 5FD4E1F8CA;
+        Tue, 17 May 2022 13:57:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652795854; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=F/28g65NUYRrE0kqo9hb+aIMt4lDnxj7qFXJPB2SFKQ=;
+        b=La0hw1fimyOXZWGy7NhUralYCHdeUAgxZ7Jx2l4teL3ZObgxCoYN3MJlutKivdf7Tw8ScF
+        Jcou2BEeZy+SMDvZr2KkytW34i2oUnUQq/Rvj3HIt6rmBgE0M6mmkljwufeUEZWWTXnkMR
+        l7FZzEHlQDvQ7gIrbLVQoj/qRxAknBE=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 47D802C141;
+        Tue, 17 May 2022 13:57:32 +0000 (UTC)
+Date:   Tue, 17 May 2022 15:57:29 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        Scott Branden <scott.branden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+Message-ID: <YoOpyW1+q+Z5as78@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-20-gpiccoli@igalia.com>
+ <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 02/20] dt-bindings: media: s5p-mfc: Convert s5p-mfc.txt to
- new DT schema
-Content-Language: en-US
-To:     Smitha T Murthy <smitha.t@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     m.szyprowski@samsung.com, andrzej.hajda@intel.com,
-        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, jernej.skrabec@gmail.com,
-        benjamin.gaignard@collabora.com, stanimir.varbanov@linaro.org,
-        dillon.minfei@gmail.com, david.plowman@raspberrypi.com,
-        mark.rutland@arm.com, robh+dt@kernel.org, krzk+dt@kernel.org,
-        andi@etezian.org, alim.akhtar@samsung.com,
-        aswani.reddy@samsung.com, pankaj.dubey@samsung.com,
-        linux-fsd@tesla.com
-References: <20220517125548.14746-1-smitha.t@samsung.com>
- <CGME20220517125554epcas5p4e87a71471525056281f1578f4f80f760@epcas5p4.samsung.com>
- <20220517125548.14746-3-smitha.t@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220517125548.14746-3-smitha.t@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 14:55, Smitha T Murthy wrote:
-> Adds DT schema for s5p-mfc in yaml format.
+On Mon 2022-05-16 12:06:17, Guilherme G. Piccoli wrote:
+> Thanks for the review!
 > 
-
-Thank you for your patch. There is something to discuss/improve.
-
-> Cc: linux-fsd@tesla.com
-> Signed-off-by: Smitha T Murthy <smitha.t@samsung.com>
-> ---
->  .../devicetree/bindings/media/s5p-mfc.txt     | 77 +--------------
->  .../devicetree/bindings/media/s5p-mfc.yaml    | 98 +++++++++++++++++++
->  2 files changed, 99 insertions(+), 76 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/media/s5p-mfc.yaml
+> I agree with the blinking stuff, I can rework and add all LED/blinking
+> stuff into the loop list, it does make sense. I'll comment a bit in the
+> others below...
 > 
-> diff --git a/Documentation/devicetree/bindings/media/s5p-mfc.txt b/Documentation/devicetree/bindings/media/s5p-mfc.txt
-> index aa54c8159d9f..f00241ed407f 100644
-> --- a/Documentation/devicetree/bindings/media/s5p-mfc.txt
-> +++ b/Documentation/devicetree/bindings/media/s5p-mfc.txt
-> @@ -1,76 +1 @@
-> -* Samsung Multi Format Codec (MFC)
-> -
-> -Multi Format Codec (MFC) is the IP present in Samsung SoCs which
-> -supports high resolution decoding and encoding functionalities.
-> -The MFC device driver is a v4l2 driver which can encode/decode
-> -video raw/elementary streams and has support for all popular
-> -video codecs.
-> -
-> -Required properties:
-> -  - compatible : value should be either one among the following
-> -	(a) "samsung,mfc-v5" for MFC v5 present in Exynos4 SoCs
-> -	(b) "samsung,mfc-v6" for MFC v6 present in Exynos5 SoCs
-> -	(c) "samsung,mfc-v7" for MFC v7 present in Exynos5420 SoC
-> -	(d) "samsung,mfc-v8" for MFC v8 present in Exynos5800 SoC
-> -	(e) "samsung,exynos5433-mfc" for MFC v8 present in Exynos5433 SoC
-> -	(f) "samsung,mfc-v10" for MFC v10 present in Exynos7880 SoC
-> -
-> -  - reg : Physical base address of the IP registers and length of memory
-> -	  mapped region.
-> -
-> -  - interrupts : MFC interrupt number to the CPU.
-> -  - clocks : from common clock binding: handle to mfc clock.
-> -  - clock-names : from common clock binding: must contain "mfc",
-> -		  corresponding to entry in the clocks property.
-> -
-> -Optional properties:
-> -  - power-domains : power-domain property defined with a phandle
-> -			   to respective power domain.
-> -  - memory-region : from reserved memory binding: phandles to two reserved
-> -	memory regions, first is for "left" mfc memory bus interfaces,
-> -	second if for the "right" mfc memory bus, used when no SYSMMU
-> -	support is available; used only by MFC v5 present in Exynos4 SoCs
-> -
-> -Obsolete properties:
-> -  - samsung,mfc-r, samsung,mfc-l : support removed, please use memory-region
-> -	property instead
-> -
-> -
-> -Example:
-> -SoC specific DT entry:
-> -
-> -mfc: codec@13400000 {
-> -	compatible = "samsung,mfc-v5";
-> -	reg = <0x13400000 0x10000>;
-> -	interrupts = <0 94 0>;
-> -	power-domains = <&pd_mfc>;
-> -	clocks = <&clock 273>;
-> -	clock-names = "mfc";
-> -};
-> -
-> -Reserved memory specific DT entry for given board (see reserved memory binding
-> -for more information):
-> -
-> -reserved-memory {
-> -	#address-cells = <1>;
-> -	#size-cells = <1>;
-> -	ranges;
-> -
-> -	mfc_left: region@51000000 {
-> -		compatible = "shared-dma-pool";
-> -		no-map;
-> -		reg = <0x51000000 0x800000>;
-> -	};
-> -
-> -	mfc_right: region@43000000 {
-> -		compatible = "shared-dma-pool";
-> -		no-map;
-> -		reg = <0x43000000 0x800000>;
-> -	};
-> -};
-> -
-> -Board specific DT entry:
-> -
-> -codec@13400000 {
-> -	memory-region = <&mfc_left>, <&mfc_right>;
-> -};
-> +This file has moved to s5p-mfc.yaml
+> On 16/05/2022 11:01, Petr Mladek wrote:
+> >> --- a/drivers/firmware/google/gsmi.c
+> >> +++ b/drivers/firmware/google/gsmi.c
+> >> @@ -1034,7 +1034,7 @@ static __init int gsmi_init(void)
+> >>  
+> >>  	register_reboot_notifier(&gsmi_reboot_notifier);
+> >>  	register_die_notifier(&gsmi_die_notifier);
+> >> -	atomic_notifier_chain_register(&panic_notifier_list,
+> >> +	atomic_notifier_chain_register(&panic_hypervisor_list,
+> >>  				       &gsmi_panic_notifier);
+> > 
+> > I am not sure about this one. It looks like some logging or
+> > pre_reboot stuff.
+> > 
+> 
+> Disagree here. I'm looping Google maintainers, so they can comment.
+> (CCed Evan, David, Julius)
+> 
+> This notifier is clearly a hypervisor notification mechanism. I've fixed
+> a locking stuff there (in previous patch), I feel it's low-risk but even
+> if it's mid-risk, the class of such callback remains a perfect fit with
+> the hypervisor list IMHO.
 
-Instead entirely remove the file.
+It is similar to drivers/soc/bcm/brcmstb/pm/pm-arm.c.
+See below for another idea.
 
-> diff --git a/Documentation/devicetree/bindings/media/s5p-mfc.yaml b/Documentation/devicetree/bindings/media/s5p-mfc.yaml
-> new file mode 100644
-> index 000000000000..fff7c7e0d575
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/s5p-mfc.yaml
-> @@ -0,0 +1,98 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/media/s5p-mfc.yaml#
+> >> --- a/drivers/misc/bcm-vk/bcm_vk_dev.c
+> >> +++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
+> >> @@ -1446,7 +1446,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+> >>  
+> >>  	/* register for panic notifier */
+> >>  	vk->panic_nb.notifier_call = bcm_vk_on_panic;
+> >> -	err = atomic_notifier_chain_register(&panic_notifier_list,
+> >> +	err = atomic_notifier_chain_register(&panic_hypervisor_list,
+> >>  					     &vk->panic_nb);
+> > 
+> > It seems to reset some hardware or so. IMHO, it should go into the
+> > pre-reboot list.
+> 
+> Mixed feelings here, I'm looping Broadcom maintainers to comment.
+> (CC Scott and Broadcom list)
+> 
+> I'm afraid it breaks kdump if this device is not reset beforehand - it's
+> a doorbell write, so not high risk I think...
+> 
+> But in case the not-reset device can be probed normally in kdump kernel,
+> then I'm fine in moving this to the reboot list! I don't have the HW to
+> test myself.
 
-Let's convert the name as well, so "samsung,s5p-mfc.yaml"
-
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Samsung Exynos Multi Format Codec (MFC)
-> +
-> +maintainers:
-> +  - Mauro Carvalho Chehab <mchehab@kernel.org>
-> +  - Rob Herring <robh+dt@kernel.org>
-> +  - Mark Rutland <mark.rutland@arm.com>
-> +  - Smitha T Murthy <smitha.t@samsung.com>
-
-Only people with access to HW, so you can put here Marek and yourself.
-
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - samsung,mfc-v5                  # Exynos4
-> +      - samsung,mfc-v6                  # Exynos5
-> +      - samsung,mfc-v7                  # Exynos5420
-> +      - samsung,mfc-v8                  # Exynos5800
-> +      - samsung,exynos5433-mfc          # Exynos5433
-> +      - samsung,mfc-v10                 # Exynos7880
-
-Ugh, how MFCv10 appeared here? Since 5433 we moved from versions to Soc
-compatibles as recommended... eh, please follow this convention, don't
-reverse it to other way.
-
-I propose to deprecated this in next patch and instead use SoC-based
-compatible.
-
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    description:
-> +      Phandle to MFC IP clock.
-
-Here and other places: s/Phandle//
-Instead describe what is it, e.g. "MFC IP clock"
+Good question. Well, it if has to be called before kdump then
+even "hypervisor" list is a wrong place because is not always
+called before kdump.
 
 
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    description:
-> +      Must contain clock name (mfc) matching phandle in clocks
-> +      property.
+> >> --- a/drivers/power/reset/ltc2952-poweroff.c
+> >> +++ b/drivers/power/reset/ltc2952-poweroff.c
+> >> @@ -279,7 +279,7 @@ static int ltc2952_poweroff_probe(struct platform_device *pdev)
+> >>  	pm_power_off = ltc2952_poweroff_kill;
+> >>  
+> >>  	data->panic_notifier.notifier_call = ltc2952_poweroff_notify_panic;
+> >> -	atomic_notifier_chain_register(&panic_notifier_list,
+> >> +	atomic_notifier_chain_register(&panic_hypervisor_list,
+> >>  				       &data->panic_notifier);
+> > 
+> > I looks like this somehow triggers the reboot. IMHO, it should go
+> > into the pre_reboot list.
+> 
+> Mixed feeling again here - CCing the maintainers for comments (Sebastian
+> / PM folks).
+> 
+> This is setting a variable only, and once it's set (data->kernel_panic
+> is the bool's name), it just bails out the IRQ handler and a timer
+> setting - this timer seems kinda tricky, so bailing out ASAP makes sense
+> IMHO.
 
-Skip description, its obvious. Instead list the items.
+IMHO, the timer informs the hardware that the system is still alive
+in the middle of panic(). If the timer is not working then the
+hardware (chip) will think that the system frozen in panic()
+and will power off the system. See the comments in
+drivers/power/reset/ltc2952-poweroff.c:
 
-> +    maxItems: 1
+ * The following GPIOs are used:
+ * - trigger (input)
+ *     A level change indicates the shut-down trigger. If it's state reverts
+ *     within the time-out defined by trigger_delay, the shut down is not
+ *     executed. If no pin is assigned to this input, the driver will start the
+ *     watchdog toggle immediately. The chip will only power off the system if
+ *     it is requested to do so through the kill line.
+ *
+ * - watchdog (output)
+ *     Once a shut down is triggered, the driver will toggle this signal,
+ *     with an internal (wde_interval) to stall the hardware shut down.
 
-No need, list the items.
+IMHO, we really have to keep it alive until we reach the reboot stage.
 
-> +
-> +  interrupts:
-> +    description:
-> +      MFC interrupt number to the CPU.
-
-Skip description, it's obvious.
-
-> +    maxItems: 1
-> +
-> +  memory-region:
-> +    description:
-> +      From reserved memory binding phandles to two reserved
-> +      memory regions, first is for "left" mfc memory bus interfaces,
-> +      second if for the "right" mfc memory bus, used when no SYSMMU
-> +      support is available; used only by MFC v5 present in Exynos4 SoCs.
-> +    minItems: 1
-> +    maxItems: 2
-
-This needs allOf:if:then restricting two items to specific compatible.
-
-> +
-> +  iommus:
-> +    description:
-> +      Include the IOMMU domain MFC belong to.
-
-Skip description, it's obvious.
-
-> +    maxItems: 2
-> +
-
-What happened to power domains? You also removed them from the
-example... Does this pass dtbs_check?
-
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - interrupts
-> +  - iommus
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +        /* Reserved memory specific DT entry for given board */
-> +        reserved-memory {
-
-Wrong indentation. Four spaces. See example schema.
-
-> +                #address-cells = <1>;
-> +                #size-cells = <1>;
-> +                ranges;
-> +
-> +                mfc_left: region@84000000 {
-> +                        compatible = "shared-dma-pool";
-> +                        no-map;
-> +                        reg = <0x84000000 0x800000>;
-> +                };
-> +
-> +                mfc_right: region@A9000000 {
-
-lower case hex addresses, everywhere.
-
-> +                        compatible = "shared-dma-pool";
-> +                        no-map;
-> +                        reg = <0xA9000000 0x800000>;
-> +                };
-> +        };
-> +
-> +        mfc_0: mfc0@12880000 {
-
-Generic node names, so mfc.
-
-> +                compatible = "samsung,mfc-v12";
-
-Does not look like you tested the bindings. Please run `make
-dt_binding_check` (see
-Documentation/devicetree/bindings/writing-schema.rst for instructions).
-Be sure to test your bindings before sending them.
-
-> +                reg = <0x12880000 0x10000>;
-> +                clock-names = "mfc";
-> +                interrupts = <0 137 4>;
-
-Use interrupt defines.
-
-> +                clocks = <&clock_mfc 1>;
-> +                memory-region = <&mfc_left>, <&mfc_right>;
-> +                /* If IOMMU is present use below instead of memory-region property */
-> +                iommus = <&smmu_isp 0x1000 0x0>, <&smmu_isp 0x1400 0x0>;
-> +        };
+Another question is how it actually works when the interrupts are
+disabled during panic() and the timer callbacks are not handled.
 
 
-Best regards,
-Krzysztof
+> > [...]
+> >> --- a/drivers/soc/bcm/brcmstb/pm/pm-arm.c
+> >> +++ b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
+> >> @@ -814,7 +814,7 @@ static int brcmstb_pm_probe(struct platform_device *pdev)
+> >>  		goto out;
+> >>  	}
+> >>  
+> >> -	atomic_notifier_chain_register(&panic_notifier_list,
+> >> +	atomic_notifier_chain_register(&panic_hypervisor_list,
+> >>  				       &brcmstb_pm_panic_nb);
+> > 
+> > I am not sure about this one. It instruct some HW to preserve DRAM.
+> > IMHO, it better fits into pre_reboot category but I do not have
+> > strong opinion.
+> 
+> Disagree here, I'm CCing Florian for information.
+> 
+> This notifier preserves RAM so it's *very interesting* if we have
+> kmsg_dump() for example, but maybe might be also relevant in case kdump
+> kernel is configured to store something in a persistent RAM (then,
+> without this notifier, after kdump reboots the system data would be lost).
+
+I see. It is actually similar problem as with
+drivers/firmware/google/gsmi.c.
+
+I does similar things like kmsg_dump() so it should be called in
+the same location (after info notifier list and before kdump).
+
+A solution might be to put it at these notifiers at the very
+end of the "info" list or make extra "dump" notifier list.
+
+Best Regards,
+Petr
