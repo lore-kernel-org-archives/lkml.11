@@ -2,144 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA0C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE235C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 13:16:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232369AbiEQNO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 09:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
+        id S1347358AbiEQNQf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 09:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347356AbiEQNOG (ORCPT
+        with ESMTP id S1346394AbiEQNPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 09:14:06 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2064.outbound.protection.outlook.com [40.107.94.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFB5419A6
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:14:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UJm7oWh2bu8SoTRU3HPS2JLhRnLbBjAm9xzsmlqNI0mU7Rtpgv7RZj6MOtgMeeNli3V5jTHBWBJ/bB7wgA9wjcEGaIFvZWYsxyPiNIP61TvjrXUskHEJauKb/yI4mZYexuHrbtEZMBPMQ5QmqFKWILQ+UR5/o18uhUGOk/+Vt8e0jkFt8PCr3uEkQLrcQYrGq7pUCEQD3kkaqTxeememslV1CPYGajqNESlnXBxWZHf91zBQRHnilRrdoTbD6eJX07MtGgn/IXv1DsD76T/AITqcC8iKM3XbV03pKXvHPHRTogAsjCgZ0oKQsRaVPK88hpj8goz5MPieMNaJU4eEAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hp2CQkeKufDpXiu33CxbPm9FCMw4CDft+U6WNmlxzc8=;
- b=WTNkb3qzYlJADiqWum8H+BZqxJ5ELqn4JrR2WQPvyB2hT42MYijrs1RhbKBcl6fRme/qa8uWFQcH7QoQ3acLJPQemihL2zq1ZkGlXN5QA/rdgmTq3FvPd5wQ0zzUOKz1u62neOcAqN+yKZmGXCEABxHxd/LPAby7alyKwQx+Jv6bwL8bh4DIyT/WA4qdRKD3Zwqx+VgIEvs+n+erFZKqSxSyZgMPQ7fSfFZE7Q4ALAo7S9Rbg72bgMcIH0d4skQwpmF+VeVhksm1vIQp8Y3k6t5tLQIFPD1lUW3b3zkIpws9TwQLcVZoHsGh53Ieneon9kZOU9AK0kgSOHtMHRIKZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hp2CQkeKufDpXiu33CxbPm9FCMw4CDft+U6WNmlxzc8=;
- b=V6guPVxcdHKvv0oJHVATh7N9kO0WQM0IzSGVGv8HZGFCySMvifdPp39bQxbQ4ib0x0rlYr4UwGxLhCG72cmScXNTWXMxA9yAzZVa1F/X7MjPonBWB9VSt4EUceUlm9xzAi59hoOe3uEOVVj/BCW1HEV6RnsnGMD9r1nZU8uk9W6RtzD1TGpZKd68+WrzKFFrPxgBBAB8/kpTM13F6YXWvA+/g7FdMVy0xfMyogW8i3nMjkopZjWyrIXRjSDK8rhV1ViJJYGXZfsVi80uHjFOvNY8QQCR0tbaH0UShZSweRMjyItEcJou2b4thW+aC1iSKYvuxF0svbnjaU8p8NmLRA==
-Received: from BN9PR03CA0543.namprd03.prod.outlook.com (2603:10b6:408:138::8)
- by MWHPR12MB1245.namprd12.prod.outlook.com (2603:10b6:300:13::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.15; Tue, 17 May
- 2022 13:14:02 +0000
-Received: from BN8NAM11FT003.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:138:cafe::cf) by BN9PR03CA0543.outlook.office365.com
- (2603:10b6:408:138::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.15 via Frontend
- Transport; Tue, 17 May 2022 13:13:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT003.mail.protection.outlook.com (10.13.177.90) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5250.13 via Frontend Transport; Tue, 17 May 2022 13:13:56 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 17 May
- 2022 13:13:55 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 17 May
- 2022 06:13:54 -0700
-Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Tue, 17 May
- 2022 06:13:53 -0700
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, <si-wei.liu@oracle.com>,
-        Eli Cohen <elic@nvidia.com>
-Subject: [PATCH v7 1/5] vdpa: Fix error logic in vdpa_nl_cmd_dev_get_doit
-Date:   Tue, 17 May 2022 16:13:44 +0300
-Message-ID: <20220517131348.498421-2-elic@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220517131348.498421-1-elic@nvidia.com>
-References: <20220517131348.498421-1-elic@nvidia.com>
+        Tue, 17 May 2022 09:15:47 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19A8C15
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 06:15:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652793343; x=1684329343;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=8mWjW4yAnDCSLkP6NBgFg32a6PR/TmaX5fUPkbkf5AQ=;
+  b=i5FDiQE3unyKsqb+b1nz3+AQUu2P8/sRHcaRB52DbY9iw0pAm91CeTIR
+   4Yq/1Fc46cz1U2+5sL/GK9MpDCPyUXID2ko8llLRS9yCxU+biq1XUociO
+   DQKnIbAI/rF2CMq35MJoqcJVertUdfIGXMrnF0JtAz6wqYXVAB7Yrro8p
+   Sztpucnc9+f3QOKoad8cZV060bIToZtRIPsrgZnlycfTtr/Te0kbcZVFV
+   ESYOWJhp5LIA0cJKxunb+0yNPafD0O/YUWKjdZ0H1K9Tn4d8k6LnzFN6Q
+   lUiC/6ZhBXJt1lbxirEF5YsowLVo0wnVw6bUNlmckIkwmSVIDLMUZIpAJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="270869787"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="270869787"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 06:15:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="522954807"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 17 May 2022 06:15:41 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nqx37-0000zL-6N;
+        Tue, 17 May 2022 13:15:41 +0000
+Date:   Tue, 17 May 2022 21:15:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.18-rc1 6/9]
+ arch/arm/mm/init.c:276:5: warning: format specifies type 'unsigned long' but
+ the argument has type 'char *'
+Message-ID: <202205172143.m2ngCwCl-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dcfc7f22-e9a7-4e3a-bc7d-08da38071936
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1245:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB12450F822C5CF5373AB21D30ABCE9@MWHPR12MB1245.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: arL523cJnI0rrVd8tV495ZeHbLdI+NYdui2p8tEskGg8OKXYQf/dHvU4fw3QfnwMDpgSiPMG6Vxw8OzoWVMFLR9jZnJb5s4iB1IJZrNoYmQaOa7jHAus+He5gYzikOevMPWf8mLTpgzbn4h6pra/jJ0z9bUQF3VGFqWZbLhDRJ5GDiiwPxpKWw+VfEweMoYseEs/MEfVQA0kbCb691hVmKbsarovLuCXky3YQskFHyFXalda0ZTI8vZ1ZHCU9+D6+O10hVpdDOEsm96hPWJ1DryVBdk1OJjxqlXS3trW+uJ+JqwMX6ju6qX+X/g/zS00LjIBpzuQj/YB+xipg0l+Roj2nDL2no+ZJCFn47bxy3uH/N3mzz6lSjEHs8M2SW/QgZBPRO0IIpAq+Xow2kHCUFAE4zNtmoq9vgOTwjAEOaBZTMKrMODxxKX9MUSY4hy+9VofkmJygI2+atqBqqy/Gs2jO109vPlO5VSb80Q78pmkHK7ElKdHyeXKU6FjBxiBlTYykvVrgWY4HZyDwHYU76sx7o1XPiWHxCFCHfCV6gDjyrOzAZAOHxhGXuIyw2iuzJshY0TzWfj0u4levQTtCDdEN5NHwaRB9IFGnvP0crw1TZzPzKfo3K860Onz4CdZrsXhy1zqjOKAZRRGX2sw9RWGNXChL53SgXagKVX0ihoEnNxqQdWlGwjvdTifaMq3sZ1BU+JdYrwYgc/Y9SSnMQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(107886003)(82310400005)(36860700001)(2616005)(70586007)(47076005)(336012)(40460700003)(36756003)(1076003)(186003)(70206006)(426003)(81166007)(316002)(2906002)(7696005)(6666004)(26005)(110136005)(8676002)(508600001)(83380400001)(4326008)(5660300002)(356005)(8936002)(54906003)(86362001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2022 13:13:56.3728
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dcfc7f22-e9a7-4e3a-bc7d-08da38071936
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT003.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1245
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In vdpa_nl_cmd_dev_get_doit(), if the call to genlmsg_reply() fails we
-must not call nlmsg_free() since this is done inside genlmsg_reply().
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.18-rc1
+head:   67a8d6eb3d015908f35d6091c02f17d7c3b55bf3
+commit: e916acde63f41816676698a5d750588269d0fd64 [6/9] ARM: Print virtual memory info again
+config: arm-randconfig-r021-20220516 (https://download.01.org/0day-ci/archive/20220517/202205172143.m2ngCwCl-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=e916acde63f41816676698a5d750588269d0fd64
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.18-rc1
+        git checkout e916acde63f41816676698a5d750588269d0fd64
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mm/ lib/
 
-Fix it.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Fixes: bc0d90ee021f ("vdpa: Enable user to query vdpa device info")
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- drivers/vdpa/vdpa.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 2b75c00b1005..fac89a0d8178 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -756,14 +756,19 @@ static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info *info)
- 		goto mdev_err;
- 	}
- 	err = vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info->extack);
--	if (!err)
--		err = genlmsg_reply(msg, info);
-+	if (err)
-+		goto mdev_err;
-+
-+	err = genlmsg_reply(msg, info);
-+	put_device(dev);
-+	mutex_unlock(&vdpa_dev_mutex);
-+	return err;
-+
- mdev_err:
- 	put_device(dev);
- err:
- 	mutex_unlock(&vdpa_dev_mutex);
--	if (err)
--		nlmsg_free(msg);
-+	nlmsg_free(msg);
- 	return err;
- }
- 
+   arch/arm/mm/init.c:97:13: warning: no previous prototype for function 'setup_dma_zone' [-Wmissing-prototypes]
+   void __init setup_dma_zone(const struct machine_desc *mdesc)
+               ^
+   arch/arm/mm/init.c:97:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init setup_dma_zone(const struct machine_desc *mdesc)
+   ^
+   static 
+>> arch/arm/mm/init.c:276:5: warning: format specifies type 'unsigned long' but the argument has type 'char *' [-Wformat]
+                     "     kernel : 0x%08lx - 0x%08lx   (%4ld MB)\n",
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
+           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+                                     ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+>> arch/arm/mm/init.c:281:5: warning: data argument not used by format string [-Wformat-extra-args]
+                     MLM(MODULES_VADDR, MODULES_END),
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
+           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^
+   arch/arm/mm/init.c:268:25: note: expanded from macro 'MLM'
+   #define MLM(b, t) b, t, ((t) - (b)) >> 20
+                           ^
+   arch/arm/mm/init.c:266:13: warning: no previous prototype for function 'mem_init_print_arm_info' [-Wmissing-prototypes]
+   void __init mem_init_print_arm_info(void)
+               ^
+   arch/arm/mm/init.c:266:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init mem_init_print_arm_info(void)
+   ^
+   static 
+   4 warnings generated.
+
+
+vim +276 arch/arm/mm/init.c
+
+    96	
+  > 97	void __init setup_dma_zone(const struct machine_desc *mdesc)
+    98	{
+    99	#ifdef CONFIG_ZONE_DMA
+   100		if (mdesc->dma_zone_size) {
+   101			arm_dma_zone_size = mdesc->dma_zone_size;
+   102			arm_dma_limit = PHYS_OFFSET + arm_dma_zone_size - 1;
+   103		} else
+   104			arm_dma_limit = 0xffffffff;
+   105		arm_dma_pfn_limit = arm_dma_limit >> PAGE_SHIFT;
+   106	#endif
+   107	}
+   108	
+   109	static void __init zone_sizes_init(unsigned long min, unsigned long max_low,
+   110		unsigned long max_high)
+   111	{
+   112		unsigned long max_zone_pfn[MAX_NR_ZONES] = { 0 };
+   113	
+   114	#ifdef CONFIG_ZONE_DMA
+   115		max_zone_pfn[ZONE_DMA] = min(arm_dma_pfn_limit, max_low);
+   116	#endif
+   117		max_zone_pfn[ZONE_NORMAL] = max_low;
+   118	#ifdef CONFIG_HIGHMEM
+   119		max_zone_pfn[ZONE_HIGHMEM] = max_high;
+   120	#endif
+   121		free_area_init(max_zone_pfn);
+   122	}
+   123	
+   124	#ifdef CONFIG_HAVE_ARCH_PFN_VALID
+   125	int pfn_valid(unsigned long pfn)
+   126	{
+   127		phys_addr_t addr = __pfn_to_phys(pfn);
+   128		unsigned long pageblock_size = PAGE_SIZE * pageblock_nr_pages;
+   129	
+   130		if (__phys_to_pfn(addr) != pfn)
+   131			return 0;
+   132	
+   133		/*
+   134		 * If address less than pageblock_size bytes away from a present
+   135		 * memory chunk there still will be a memory map entry for it
+   136		 * because we round freed memory map to the pageblock boundaries.
+   137		 */
+   138		if (memblock_overlaps_region(&memblock.memory,
+   139					     ALIGN_DOWN(addr, pageblock_size),
+   140					     pageblock_size))
+   141			return 1;
+   142	
+   143		return 0;
+   144	}
+   145	EXPORT_SYMBOL(pfn_valid);
+   146	#endif
+   147	
+   148	static bool arm_memblock_steal_permitted = true;
+   149	
+   150	phys_addr_t __init arm_memblock_steal(phys_addr_t size, phys_addr_t align)
+   151	{
+   152		phys_addr_t phys;
+   153	
+   154		BUG_ON(!arm_memblock_steal_permitted);
+   155	
+   156		phys = memblock_phys_alloc(size, align);
+   157		if (!phys)
+   158			panic("Failed to steal %pa bytes at %pS\n",
+   159			      &size, (void *)_RET_IP_);
+   160	
+   161		memblock_phys_free(phys, size);
+   162		memblock_remove(phys, size);
+   163	
+   164		return phys;
+   165	}
+   166	
+   167	#ifdef CONFIG_CPU_ICACHE_MISMATCH_WORKAROUND
+   168	void check_cpu_icache_size(int cpuid)
+   169	{
+   170		u32 size, ctr;
+   171	
+   172		asm("mrc p15, 0, %0, c0, c0, 1" : "=r" (ctr));
+   173	
+   174		size = 1 << ((ctr & 0xf) + 2);
+   175		if (cpuid != 0 && icache_size != size)
+   176			pr_info("CPU%u: detected I-Cache line size mismatch, workaround enabled\n",
+   177				cpuid);
+   178		if (icache_size > size)
+   179			icache_size = size;
+   180	}
+   181	#endif
+   182	
+   183	void __init arm_memblock_init(const struct machine_desc *mdesc)
+   184	{
+   185		/* Register the kernel text, kernel data and initrd with memblock. */
+   186		memblock_reserve(__pa(KERNEL_START), KERNEL_END - KERNEL_START);
+   187	
+   188		reserve_initrd_mem();
+   189	
+   190		arm_mm_memblock_reserve();
+   191	
+   192		/* reserve any platform specific memblock areas */
+   193		if (mdesc->reserve)
+   194			mdesc->reserve();
+   195	
+   196		early_init_fdt_scan_reserved_mem();
+   197	
+   198		/* reserve memory for DMA contiguous allocations */
+   199		dma_contiguous_reserve(arm_dma_limit);
+   200	
+   201		arm_memblock_steal_permitted = false;
+   202		memblock_dump_all();
+   203	}
+   204	
+   205	void __init bootmem_init(void)
+   206	{
+   207		memblock_allow_resize();
+   208	
+   209		find_limits(&min_low_pfn, &max_low_pfn, &max_pfn);
+   210	
+   211		early_memtest((phys_addr_t)min_low_pfn << PAGE_SHIFT,
+   212			      (phys_addr_t)max_low_pfn << PAGE_SHIFT);
+   213	
+   214		/*
+   215		 * sparse_init() tries to allocate memory from memblock, so must be
+   216		 * done after the fixed reservations
+   217		 */
+   218		sparse_init();
+   219	
+   220		/*
+   221		 * Now free the memory - free_area_init needs
+   222		 * the sparse mem_map arrays initialized by sparse_init()
+   223		 * for memmap_init_zone(), otherwise all PFNs are invalid.
+   224		 */
+   225		zone_sizes_init(min_low_pfn, max_low_pfn, max_pfn);
+   226	}
+   227	
+   228	/*
+   229	 * Poison init memory with an undefined instruction (ARM) or a branch to an
+   230	 * undefined instruction (Thumb).
+   231	 */
+   232	static inline void poison_init_mem(void *s, size_t count)
+   233	{
+   234		u32 *p = (u32 *)s;
+   235		for (; count != 0; count -= 4)
+   236			*p++ = 0xe7fddef0;
+   237	}
+   238	
+   239	static void __init free_highpages(void)
+   240	{
+   241	#ifdef CONFIG_HIGHMEM
+   242		unsigned long max_low = max_low_pfn;
+   243		phys_addr_t range_start, range_end;
+   244		u64 i;
+   245	
+   246		/* set highmem page free */
+   247		for_each_free_mem_range(i, NUMA_NO_NODE, MEMBLOCK_NONE,
+   248					&range_start, &range_end, NULL) {
+   249			unsigned long start = PFN_UP(range_start);
+   250			unsigned long end = PFN_DOWN(range_end);
+   251	
+   252			/* Ignore complete lowmem entries */
+   253			if (end <= max_low)
+   254				continue;
+   255	
+   256			/* Truncate partial highmem entries */
+   257			if (start < max_low)
+   258				start = max_low;
+   259	
+   260			for (; start < end; start++)
+   261				free_highmem_page(pfn_to_page(start));
+   262		}
+   263	#endif
+   264	}
+   265	
+   266	void __init mem_init_print_arm_info(void)
+   267	{
+   268	#define MLM(b, t) b, t, ((t) - (b)) >> 20
+   269		pr_notice("Virtual kernel memory layout:\n"
+   270			  "    fixmap  : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   271			  "    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   272			  "    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   273	#ifdef CONFIG_MODULES
+   274			  "    modules : 0x%08lx - 0x%08lx   (%4ld MB)\n",
+   275	#endif
+ > 276			  "     kernel : 0x%08lx - 0x%08lx   (%4ld MB)\n",
+   277			  MLM(FIXADDR_START, FIXADDR_END),
+   278			  MLM(VMALLOC_START, VMALLOC_END),
+   279			  MLM(PAGE_OFFSET, (unsigned long)high_memory),
+   280	#ifdef CONFIG_MODULES
+ > 281			  MLM(MODULES_VADDR, MODULES_END),
+   282	#endif
+   283			  /* From beginning of .text to end of .bss */
+   284			  MLM((unsigned long)_text, (unsigned long)__bss_stop));
+   285	#undef MLM
+   286	}
+   287	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
