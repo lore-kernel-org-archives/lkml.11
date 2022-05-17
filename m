@@ -2,131 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF74C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:58:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241744AbiEQI57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36140 "EHLO
+        id S243542AbiEQI6X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244099AbiEQI5I (ORCPT
+        with ESMTP id S244092AbiEQI6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:57:08 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31AB912ACC;
-        Tue, 17 May 2022 01:57:07 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24H6ehTU014061;
-        Tue, 17 May 2022 10:56:44 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=NFkSiXvk9GeH0y6id+39wV1HHzqLZwH5JZ5X47VuFQs=;
- b=Sw6zuW7U2QLFAgPcGmuguFRvRlsQG4SHf5B1trNsqp6tRzu5sf/iHAxdxRd2VMT00QzR
- xqWm3+U73dYKoGrkccH+PSAw4aZdmjNcOlsyQY2AP3yfMcts+yg5tA6vlBvXFmWsdoCr
- dsqWMkTKAaoVIjbTtxa+jwGNwXOW2JYUsqhzeTEyWyzhAvb/idoRrWozhyFv/9tG5c7l
- VM3+gG1MpMxWshzzDOixrTT778pxG1ZyifDqc8HW3yOfTrhyjNSkCbpKUtAVYduwq4jm
- Hn6WfUNa0KpXZRMoFJLNQ97iRJmVxZEJAn2YN0RklRfQOoR2Q3J44RLMD575r3ytTxR9 jQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g23ahgnun-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 10:56:44 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id BD21F10002A;
-        Tue, 17 May 2022 10:56:43 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id B35F4214D1B;
-        Tue, 17 May 2022 10:56:43 +0200 (CEST)
-Received: from [10.48.1.102] (10.75.127.51) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 17 May
- 2022 10:56:43 +0200
-Message-ID: <bd36b061-9838-868e-d8c6-c7d1b01ea4ab@foss.st.com>
-Date:   Tue, 17 May 2022 10:56:42 +0200
+        Tue, 17 May 2022 04:58:13 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E261115A28;
+        Tue, 17 May 2022 01:58:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=1SCVVAHtClu+1FWsc5YTD1Uvr3wge/WoMABPfJaW99k=; b=qEhWpebbnSLca20mptfUhLsTth
+        WXioCEDPccsX+uQXKR/gNXlIgWiHbdAeMKWBC3RPXtj8U/eKff585U7QCd1O5daXFEFQ8cMp4Jl4Y
+        6ucOdd0e7zRlMc01/8mnuXEB9tmsngezC8p/5pk9TFs2YmKQdEqDtsqWWnRQmBq9dguXgThGChB1d
+        eQYTYGwlTANRuZ2lZoacSC6p8jTaNBMV8GcGpbFTkueKbBRe9G/nL8HwoZKXzSvDfcYpSHubktF8/
+        gh5FDjm/ukuL1HUi7uRaJ/Oe4G1cyieglJHOgoA76LSOPxolv74x2YPVA5V5/JIZvN7bSKmCmB+e4
+        uM8I4f7w==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nqt1c-001BZn-V9; Tue, 17 May 2022 08:57:53 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3367130018E;
+        Tue, 17 May 2022 10:57:50 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 18EBE2023D0E2; Tue, 17 May 2022 10:57:50 +0200 (CEST)
+Date:   Tue, 17 May 2022 10:57:50 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sami Tolvanen <samitolvanen@google.com>
+Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
+Subject: Re: [RFC PATCH v2 00/21] KCFI support
+Message-ID: <YoNjjjb3ygIKnwfj@hirez.programming.kicks-ass.net>
+References: <20220513202159.1550547-1-samitolvanen@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 2/2] iio: adc: stm32: Fix IRQs on STM32F4 by removing
- custom spurious IRQs message
-Content-Language: en-US
-To:     Yannick Brosseau <yannick.brosseau@gmail.com>, <jic23@kernel.org>,
-        <lars@metafoo.de>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@foss.st.com>, <olivier.moysan@foss.st.com>
-CC:     <paul@crapouillou.net>, <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220516203939.3498673-1-yannick.brosseau@gmail.com>
- <20220516203939.3498673-3-yannick.brosseau@gmail.com>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-In-Reply-To: <20220516203939.3498673-3-yannick.brosseau@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-17_01,2022-05-16_02,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513202159.1550547-1-samitolvanen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/16/22 22:39, Yannick Brosseau wrote:
-> The check for spurious IRQs introduced in 695e2f5c289bb assumed that the bits
-> in the control and status registers are aligned. This is true for the H7 and MP1
-> version, but not the F4. The interrupt was then never handled on the F4.
+On Fri, May 13, 2022 at 01:21:38PM -0700, Sami Tolvanen wrote:
+> KCFI is a proposed forward-edge control-flow integrity scheme for
+> Clang, which is more suitable for kernel use than the existing CFI
+> scheme used by CONFIG_CFI_CLANG. KCFI doesn't require LTO, doesn't
+> alter function references to point to a jump table, and won't break
+> function address equality. The latest LLVM patch is here:
 > 
-> Instead of increasing the complexity of the comparison and check each bit specifically,
-> we remove this check completely and rely on the generic handler for spurious IRQs.
+>   https://reviews.llvm.org/D119296
 > 
-> Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
-> Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
+> This RFC series replaces the current arm64 CFI implementation with
+> KCFI and adds support for x86_64.
 
-Hi Yannick,
+You have some weird behaviour vs weak functions (I so hate those)...
 
-Feel free to add my:
+100: 0000000000000980     9 FUNC    LOCAL  DEFAULT    2 __cfi_free_initmem
+233: 0000000000000989    35 FUNC    WEAK   DEFAULT    2 free_initmem
 
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+With the result that on the final link:
 
-Thanks,
-Fabrice
+   179: 00000000000009b0     9 FUNC    LOCAL  DEFAULT    1 __cfi_free_initmem
+  8689: 00000000000007f0     9 FUNC    LOCAL  DEFAULT   65 __cfi_free_initmem
+173283: 00000000000007f9   198 FUNC    GLOBAL DEFAULT   65 free_initmem
 
-> ---
->  drivers/iio/adc/stm32-adc.c | 10 ----------
->  1 file changed, 10 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-> index a68ecbda6480..8c5f05f593ab 100644
-> --- a/drivers/iio/adc/stm32-adc.c
-> +++ b/drivers/iio/adc/stm32-adc.c
-> @@ -1407,7 +1407,6 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
->  	struct stm32_adc *adc = iio_priv(indio_dev);
->  	const struct stm32_adc_regspec *regs = adc->cfg->regs;
->  	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
-> -	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
->  
->  	/* Check ovr status right now, as ovr mask should be already disabled */
->  	if (status & regs->isr_ovr.mask) {
-> @@ -1422,11 +1421,6 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
->  		return IRQ_HANDLED;
->  	}
->  
-> -	if (!(status & mask))
-> -		dev_err_ratelimited(&indio_dev->dev,
-> -				    "Unexpected IRQ: IER=0x%08x, ISR=0x%08x\n",
-> -				    mask, status);
-> -
->  	return IRQ_NONE;
->  }
->  
-> @@ -1436,10 +1430,6 @@ static irqreturn_t stm32_adc_isr(int irq, void *data)
->  	struct stm32_adc *adc = iio_priv(indio_dev);
->  	const struct stm32_adc_regspec *regs = adc->cfg->regs;
->  	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
-> -	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
-> -
-> -	if (!(status & mask))
-> -		return IRQ_WAKE_THREAD;
->  
->  	if (status & regs->isr_ovr.mask) {
->  		/*
+This is getting me objtool issues (I'll fix them) but perhaps it's
+something you can do something about as well.
