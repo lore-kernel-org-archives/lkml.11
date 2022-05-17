@@ -2,89 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02905C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38F0C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 14:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349089AbiEQOgO (ORCPT
+        id S1349071AbiEQOge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 10:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
+        Tue, 17 May 2022 10:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349127AbiEQOgM (ORCPT
+        with ESMTP id S1349142AbiEQOg3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 10:36:12 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2BB2E9;
-        Tue, 17 May 2022 07:36:10 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 6A5E2DF866;
-        Tue, 17 May 2022 07:35:40 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id tUInY8X_WcUF; Tue, 17 May 2022 07:35:39 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1652798139; bh=0IASOl+36nZc05gh2SkCy6PUCwx8Zj2iARw2qdlE2FE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hAakK45ngtWlK27gcKaRE/cvpViGaHTm+fawKVtw5nHoIDwRrTZbt2YJdLpfglSYF
-         UStLJkk1jYycYuXYf8spNqCS5XDYgzm/dlbkpyrDe3hdfw/ivEuYoFvp5aBkFbLdKK
-         z1oxpRHuhVtzdivceGrTtS5oxZL0pCGcy0NudmvRK36EcgNQUT/rHkw83kErPM/4A7
-         n+mHF93ukD3UwqWhR4OdFOxCV50V8h4+JXh1mxvXaxFvC+IZuwrVy++LqunI62O/k4
-         VaB48WGjXpPEjjd+wIc90vMuJNEQvcm7n74dRzgqIX0v1DcMdddpRGt9L1tLbo04AV
-         R6xP4tdJXaDwQ==
-To:     ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>
-Subject: [PATCH] media: hantro: fix compatible string deprecation warning
-Date:   Tue, 17 May 2022 16:35:21 +0200
-Message-Id: <20220517143521.1670663-1-martin.kepplinger@puri.sm>
+        Tue, 17 May 2022 10:36:29 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB262E9;
+        Tue, 17 May 2022 07:36:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652798187; x=1684334187;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HVPfHtlxBRDzWgbJQqS6BesX8jQgiqWFkyA4yeFc3gI=;
+  b=UVieVEOp96d/tbqg2jPSnMJ5juY6icIiJ6QBzceAq03BjcbCFnv1PFkO
+   iS/WVghUsvU+5g+JYPzISHSNuhsn2fraaxuy7orlB1JOguZTJD55jWghY
+   /7nrNkiQ1wEnPa5dBX4lPi2rW7o/9MLtk/h0qrfUX9mTOIPvzlGK1GxDr
+   2RMKy92Qp4JkGvwnpH33OlD3N4Tg7gp+9cP8uGBOJNjGCKaOT0ef1k7M0
+   hebBUIwdG/MkmkMDSOC7KAPtINe9dCOV/ip/PTsYJ2/DerIFlOZ9hP1QJ
+   KmZ/fLsLG3DUS3kLZ90HdsOTjb3i4+TLAtBo3ysqGsMtzNr6KTOtUv4aM
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="173758629"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 07:36:25 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 17 May 2022 07:36:25 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 17 May 2022 07:36:20 -0700
+Message-ID: <21a16074-9179-f57b-a667-cccddcab6e24@microchip.com>
+Date:   Tue, 17 May 2022 16:36:17 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 5/6] ARM: dts: lan966x: rename pinctrl nodes
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Paul Burton <paulburton@kernel.org>,
+        "Quentin Schulz" <quentin.schulz@bootlin.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        <UNGLinuxDriver@microchip.com>, <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mips@vger.kernel.org>
+References: <20220319204628.1759635-1-michael@walle.cc>
+ <20220319204628.1759635-6-michael@walle.cc>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220319204628.1759635-6-michael@walle.cc>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_device_is_compatible() in the end uses strlen of the string
-for comparison, so in this case, the condition is true even if
-the requested string "nxp,imx8mq-vpu-g1" is being used. The first
-chars containing "nxp,imx8mq-vpu" are the same.
+On 19/03/2022 at 21:46, Michael Walle wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> The pinctrl device tree binding will be converted to YAML format. Rename
+> the pin nodes so they end with "-pins" to match the schema.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Fix this by encoding what the comment says.
+For the record:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
----
+This patch was taken by Claudiu and sent in the PR targeting 5.19 
+arm-soc tree via the at91-dt branch. It's currently in linux-next.
 
-This is more of a bugreport as the solution doesn't look very elegant
-to me. I'm happy for advice.
+Best regards,
+   Nicolas
 
-thanks,
-                           martin
+> ---
+>   arch/arm/boot/dts/lan966x-pcb8291.dts | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
+> index 3281af90ac6d..3c7e3a7d6f14 100644
+> --- a/arch/arm/boot/dts/lan966x-pcb8291.dts
+> +++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
+> @@ -35,7 +35,7 @@ fc3_b_pins: fcb3-spi-pins {
+>                  function = "fc3_b";
+>          };
+> 
+> -       can0_b_pins:  can0_b_pins {
+> +       can0_b_pins:  can0-b-pins {
+>                  /* RX, TX */
+>                  pins = "GPIO_35", "GPIO_36";
+>                  function = "can0_b";
+> --
+> 2.30.2
+> 
 
 
- drivers/staging/media/hantro/hantro_drv.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-index ac232b5f7825..014fab637df0 100644
---- a/drivers/staging/media/hantro/hantro_drv.c
-+++ b/drivers/staging/media/hantro/hantro_drv.c
-@@ -923,10 +923,11 @@ static int hantro_probe(struct platform_device *pdev)
- 
- 	/*
- 	 * Support for nxp,imx8mq-vpu is kept for backwards compatibility
--	 * but it's deprecated. Please update your DTS file to use
--	 * nxp,imx8mq-vpu-g1 or nxp,imx8mq-vpu-g2 instead.
-+	 * but it's deprecated.
- 	 */
--	if (of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu"))
-+	if ((of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu")) &&
-+	    (!of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu-g1")) &&
-+	    (!of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu-g2")))
- 		dev_warn(&pdev->dev, "%s compatible is deprecated\n",
- 			 match->compatible);
- 
 -- 
-2.30.2
-
+Nicolas Ferre
