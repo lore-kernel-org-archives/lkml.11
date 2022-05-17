@@ -2,123 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA17C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C2E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:36:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349855AbiEQPgn (ORCPT
+        id S1350187AbiEQPgy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
+        Tue, 17 May 2022 11:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350280AbiEQPfW (ORCPT
+        with ESMTP id S1350287AbiEQPfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:35:22 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4185005B
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 08:35:20 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24HFGYnk032564;
-        Tue, 17 May 2022 15:35:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : references : date : in-reply-to : message-id : mime-version :
- content-type; s=pp1; bh=ZEvjJejiz2ASi5QVdyD0zjeKQVsGiVKnV7cFfqntoFc=;
- b=Znivp8sjP5eVxgYkFQUEP2EgYrAFVkTOlTIAtj9Iwvcjx5KXUwXkgbrizunuRqEXj7kS
- 5rCjHgvgbwL7rM7ZX0TSwIWRanrnySCUfrCdatHuoWCS+Y2HcItTxMoDOb+0Zfc7SiyB
- DZTOYlRL3TgFTtzbt2W7OO9Tyb96kGGYXVYTHtY3Cea2GO+9AgIDWdG2Wc6KlCUKumtz
- 42qrnCha2XhD2fOx9BG3RhPz6V/Uj21eFTCS4T/eiE0kRO8fK360u+4lxp3tEP4GOa95
- xxcJ4u7uE9T7/3h10Xio6cVI/zRQ1Z+fv30qdy07xlUxPMUrW1SvFEmjB+F6cUYhZplM cQ== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4dv7h8yr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 15:35:03 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24HFRu9o031127;
-        Tue, 17 May 2022 15:35:01 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3g23pjcekh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 15:35:01 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24HFYx6L54984974
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 17 May 2022 15:34:59 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4DB0DAE051;
-        Tue, 17 May 2022 15:34:59 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1E2C7AE045;
-        Tue, 17 May 2022 15:34:59 +0000 (GMT)
-Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 17 May 2022 15:34:59 +0000 (GMT)
-From:   Sven Schnelle <svens@linux.ibm.com>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] maple_tree: Fix mas_next() when already on the last
- node entry
-References: <20220517145913.3480729-1-Liam.Howlett@oracle.com>
-Date:   Tue, 17 May 2022 17:34:58 +0200
-In-Reply-To: <20220517145913.3480729-1-Liam.Howlett@oracle.com> (Liam
-        Howlett's message of "Tue, 17 May 2022 14:59:22 +0000")
-Message-ID: <yt9dee0s41gd.fsf@linux.ibm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        Tue, 17 May 2022 11:35:24 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482694F9E4;
+        Tue, 17 May 2022 08:35:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652801723; x=1684337723;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xF84dLhyksFpMyCb7NPvfM3NGwTlY5bjd8sAol6pl90=;
+  b=TMYtVfDZgaBZGMHR8c6G5saRyd6A//WHxkW6YdnM+feS8lxIoVvUFkln
+   bhOqBajPGLii3l5RapKBm+YZMOeXu1Wzzvy6EjUzUiRHCMT2iWXi4eH28
+   ZQjq5Ggz426zmgCXIzns5i1p1tl3QvPwiwKC71hS14lrV1oU5ghhf5CjI
+   97zVgCm83npGSh45rMVVOxgwvj7jOfklyYD9ka7Ye3Lg1ptTvOc6C3uyF
+   2Mr8ltkxgme92WASguTm3+czpk9H5+h2zovznMkEDKlpFGsDOiC11ByLr
+   R6VVoegZbEwm9GKuB8Ta6FU1v+BjuJQgbFv4grr0zp2D3q8ZCU9USYS6U
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="253270625"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="253270625"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:35:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="555823109"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 17 May 2022 08:34:58 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id CBC23D38; Tue, 17 May 2022 18:34:50 +0300 (EEST)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv6 11/15] x86: Disable kexec if system has unaccepted memory
+Date:   Tue, 17 May 2022 18:34:40 +0300
+Message-Id: <20220517153444.11195-12-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220517153444.11195-1-kirill.shutemov@linux.intel.com>
+References: <20220517153444.11195-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: lCWJGAHmWlx5L8whc4bPSmCTS75gflvh
-X-Proofpoint-ORIG-GUID: lCWJGAHmWlx5L8whc4bPSmCTS75gflvh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-17_03,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 malwarescore=0 spamscore=0 impostorscore=0
- clxscore=1011 phishscore=0 suspectscore=0 mlxlogscore=999 bulkscore=0
- adultscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205170095
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Liam Howlett <liam.howlett@oracle.com> writes:
+On kexec, the target kernel has to know what memory has been accepted.
+Information in EFI map is out of date and cannot be used.
 
-> It is possible to return the metadata as the next entry if the last node
-> entry is already in the maple state and the limit is not reached.  Check
-> for this condition in mas_next_nentry() where the node end is returned.
->
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+boot_params.unaccepted_memory can be used to pass the bitmap between two
+kernels on kexec, but the use-case is not yet implemented.
 
-Thanks, that matches my observation from the initial report that we're
-returing metadata. I just applied the patch to next-20220516 and i'm no
-longer able to trigger the crash. So feel free to add my:
+Disable kexec on machines with unaccepted memory for now.
 
-Tested-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ arch/x86/mm/unaccepted_memory.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-However, as Heiko already wrote in another mail i would also like to
-request that the maple tree code isn't merged with the next merge
-window. These patches touch a lot of critical infrastructure, and i would like
-to have it in next for at least one development cycle, so we can be sure
-that we've seen and fixed most of the issues.
+diff --git a/arch/x86/mm/unaccepted_memory.c b/arch/x86/mm/unaccepted_memory.c
+index 1ca71eb98c24..b4c43e6089b0 100644
+--- a/arch/x86/mm/unaccepted_memory.c
++++ b/arch/x86/mm/unaccepted_memory.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0-only
++#include <linux/kexec.h>
+ #include <linux/memblock.h>
+ #include <linux/mm.h>
+ #include <linux/pfn.h>
+@@ -114,6 +115,15 @@ static int __init unaccepted_init(void)
+ 	if (!boot_params.unaccepted_memory)
+ 		return 0;
+ 
++#ifdef CONFIG_KEXEC_CORE
++	/*
++	 * TODO: Information on memory acceptance status has to be communicated
++	 * between kernel.
++	 */
++	pr_warn("Disable kexec: not yet supported on systems with unaccepted memory\n");
++	kexec_load_disabled = 1;
++#endif
++
+ 	bitmap_size = e820__end_of_ram_pfn() * PAGE_SIZE / PMD_SIZE;
+ 	unaccepted_memory = __va(boot_params.unaccepted_memory);
+ 
+-- 
+2.35.1
 
-Thanks,
-Sven
-> ---
->  lib/maple_tree.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/lib/maple_tree.c b/lib/maple_tree.c
-> index 967631055210..751aafd01c42 100644
-> --- a/lib/maple_tree.c
-> +++ b/lib/maple_tree.c
-> @@ -4547,6 +4547,9 @@ static inline void *mas_next_nentry(struct ma_state *mas,
->  		return NULL;
->  
->  	count = ma_data_end(node, type, pivots, mas->max);
-> +	if (mas->offset > count)
-> +		return NULL;
-> +
->  	while (mas->offset < count) {
->  		pivot = pivots[mas->offset];
->  		entry = mas_slot(mas, slots, mas->offset);
