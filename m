@@ -2,137 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C75CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A25C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 10:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344320AbiEQKXr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 06:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
+        id S243372AbiEQKZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 06:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344598AbiEQKVv (ORCPT
+        with ESMTP id S1344271AbiEQKY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 06:21:51 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C090C4D27D
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 03:19:59 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24H8jZ6g011328;
-        Tue, 17 May 2022 10:19:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : message-id : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=PdP/vPSqJqgm2nNKPy/B91D5+/a0Nyurp+7QonVFxWI=;
- b=QdJqlPATnP5SI6+AqxqrzGu9s5vC/TbIUKUB3LAOl6lGYCOEKuJtQXrv9h6P66vDLbAI
- ZNRXSIp1AHqF/15k+4AtVXo1lanYmAWOKvpWAKFjoxAfKn8JRIQjZ3tINzswwb18QmhJ
- nj3LLFeBwu545Dwzf8getZScTHg3OSmb5Bs2ZFb2yGUUBL/Er3MaKRBN9W42qBgREMni
- 48GWSVcF1wND2HrFo/kLp4eyiAkGzyws7kU/Sn+NJcx4GUJFxn1Nk40F/kyP6C7Xu0XE
- AP2J9JNpbFHBFo0anMatosO/UADR0YmItDOKqATd2eZTmx+bRBm20RRUAkN4BL4BLf8p Cg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g48fu9xsh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 10:19:47 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24HAGbYk024944;
-        Tue, 17 May 2022 10:19:47 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g48fu9xru-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 10:19:47 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24HAHXVb028860;
-        Tue, 17 May 2022 10:19:45 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04ams.nl.ibm.com with ESMTP id 3g2429c1et-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 May 2022 10:19:45 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24HA5rhq41353560
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 17 May 2022 10:05:53 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 17EB6A405B;
-        Tue, 17 May 2022 10:19:43 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A0607A4054;
-        Tue, 17 May 2022 10:19:42 +0000 (GMT)
-Received: from localhost (unknown [9.43.12.56])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 17 May 2022 10:19:42 +0000 (GMT)
-Date:   Tue, 17 May 2022 15:49:41 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH] kexec_file: Drop pr_err in weak implementations of
- arch_kexec_apply_relocations[_add]
-To:     Baoquan He <bhe@redhat.com>
-Cc:     Eric Biederman <ebiederm@xmission.com>, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Michael Ellerman <mpe@ellerman.id.au>
-References: <20220425174128.11455-1-naveen.n.rao@linux.vnet.ibm.com>
-        <YoNqJ/MOSIVwKP/o@MiWiFi-R3L-srv>
-In-Reply-To: <YoNqJ/MOSIVwKP/o@MiWiFi-R3L-srv>
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1652782155.56t7mah8ib.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 3VF1AMtnPOAhP9HZz_RcBqZuj551GDIq
-X-Proofpoint-GUID: GMmMoVdAmJIpiPaER6o347wEx1mnozOB
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 17 May 2022 06:24:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA2613CEC;
+        Tue, 17 May 2022 03:23:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58B3FB81822;
+        Tue, 17 May 2022 10:23:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DDF8C385B8;
+        Tue, 17 May 2022 10:23:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652783033;
+        bh=rReOvOmhDEHjFGqHgf89jVP6b2wbvBVISjGbIlFVMfU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ax+B0LvHN+fGTU2qRbOnMAeBdyPtqmbOWfX91NMKl4fyZ30ALqFs/H4jGul7dNMsH
+         Giy0aYr0b7toT8SaD8XiFejt3j8hpPGPX2kKHCVqiM0QALP6zwBGLCjp7WlZFO+OBa
+         32lZwWUakuJ4cNHG9qOqvnO9Hdtz9Uo0eBy/AtHQ=
+Date:   Tue, 17 May 2022 12:23:46 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yuanjun Gong <ruc_gongyuanjun@163.com>
+Cc:     Benson Leung <bleung@chromium.org>,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] platform/chrome: check *dest of memcpy
+Message-ID: <YoN3su+KZFwjypXc@kroah.com>
+References: <20220517095521.6897-1-ruc_gongyuanjun@163.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-17_01,2022-05-17_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 bulkscore=0 lowpriorityscore=0 clxscore=1015
- priorityscore=1501 mlxscore=0 adultscore=0 malwarescore=0 impostorscore=0
- phishscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205170060
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517095521.6897-1-ruc_gongyuanjun@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Baoquan He wrote:
-> On 04/25/22 at 11:11pm, Naveen N. Rao wrote:
->> kexec_load_purgatory() can fail for many reasons - there is no need to
->> print an error when encountering unsupported relocations.
->>=20
->> This solves a build issue on powerpc with binutils v2.36 and newer [1].
->> Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
->> symbols") [2], binutils started dropping section symbols that it thought
->=20
-> I am not familiar with binutils, while wondering if this exists in other
-> ARCHes except of ppc. Arm64 doesn't have the ARCH override either, do we
-> have problem with it?
+On Tue, May 17, 2022 at 05:55:21PM +0800, Yuanjun Gong wrote:
+> From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+> 
+> In regulator/cros-ec-regulator.c, cros_ec_cmd is sometimes called
+> with *indata set to NULL.
+> 
+> static int cros_ec_regulator_enable(struct regulator_dev *dev){
+> ...
+>      cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_ENABLE, &cmd,
+> 			  sizeof(cmd), NULL, 0)
+> ...}
+> 
+> Don't do memcpy if indata is NULL.
+> 
+> Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+> ---
+>  drivers/platform/chrome/cros_ec_proto.c | 2 +-
+>  drivers/regulator/cros-ec-regulator.c   | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index c4caf2e2de82..da175c57cff7 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -938,7 +938,7 @@ int cros_ec_command(struct cros_ec_device *ec_dev,
+>  	if (ret < 0)
+>  		goto error;
+>  
+> -	if (insize)
+> +	if (indata && insize)
+>  		memcpy(indata, msg->data, insize);
+>  error:
+>  	kfree(msg);
+> diff --git a/drivers/regulator/cros-ec-regulator.c b/drivers/regulator/cros-ec-regulator.c
+> index c4754f3cf233..1c7ff085e492 100644
+> --- a/drivers/regulator/cros-ec-regulator.c
+> +++ b/drivers/regulator/cros-ec-regulator.c
+> @@ -44,7 +44,7 @@ static int cros_ec_cmd(struct cros_ec_device *ec, u32 version, u32 command,
+>  	if (ret < 0)
+>  		goto cleanup;
+>  
+> -	if (insize)
+> +	if (indata && insize)
+>  		memcpy(indata, msg->data, insize);
+>  
+>  cleanup:
+> -- 
+> 2.17.1
+> 
 
-I'm not aware of this specific file causing a problem on other=20
-architectures - perhaps the config options differ enough. There are=20
-however more reports of similar issues affecting other architectures=20
-with the llvm integrated assembler:
-https://github.com/ClangBuiltLinux/linux/issues/981
+<formletter>
 
->=20
->> were unused.  This isn't an issue in general, but with kexec_file.c, gcc
->> is placing kexec_arch_apply_relocations[_add] into a separate
->> .text.unlikely section and the section symbol ".text.unlikely" is being
->> dropped. Due to this, recordmcount is unable to find a non-weak symbol
->=20
-> But arch_kexec_apply_relocations_add is weak symbol on ppc.
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
 
-Yes. Note that it is just the section symbol that gets dropped. The=20
-section is still present and will continue to hold the symbols for the=20
-functions themselves.
-
->=20
->> in .text.unlikely to generate a relocation record against. Dropping
->> pr_err() calls results in these functions being left in .text section,
->=20
-> Why dropping pr_err() can make arch_kexec_apply_relocations_add put in
-> .text?
-
-I'm not actually sure, though Josh suspected that printk() might be=20
-cold:
-http://lkml.kernel.org/r/20210214155147.3owdimqv2lyhu6by@treble
-
-
-- Naveen
-
+</formletter>
