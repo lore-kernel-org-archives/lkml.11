@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E80C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 15:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350314AbiEQPmG (ORCPT
+        id S1350402AbiEQPmN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 11:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57342 "EHLO
+        Tue, 17 May 2022 11:42:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350486AbiEQPlh (ORCPT
+        with ESMTP id S1350530AbiEQPll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 11:41:37 -0400
+        Tue, 17 May 2022 11:41:41 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8913240E7C;
-        Tue, 17 May 2022 08:41:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7E341300;
+        Tue, 17 May 2022 08:41:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652802096; x=1684338096;
+  t=1652802099; x=1684338099;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lPvj3AuKPLOBCyfjiHi73B4oqME7322FSr1EsA5Gyy8=;
-  b=DSuY6ZQyvCRnB71qfe0TuZS/2Zalm4Hm2HcwRlRk8vfWSXSGaRj4iaJt
-   QiH9JHHNBe00AtU0PLATRxVnZKqkBNGYC3kZL3+ChxEvPeYKmqizvXdel
-   qD5MDWnVIycDlRcaXXPyXQr+asM22KzcoLti0H4zSW0oF2mEAOtCzYlAv
-   4DnPxByO43/n0ruaSGDIjEtUqAPwqDbTzpae18o8jNy0o8TsAX+UHCFFW
-   KeaBE/QUMJTiJ3sMPqahg+zcYZjn/pwqBvIC7Q2NiISwxiDOGtKGtEJrg
-   SDXRv24JT9kVC+mtdGyAyRM3b2CVFfjVvVZVz6+w+VgJ3ih1eLOy3L9JJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632101"
+  bh=lhC2usiG+1H5H2VssG+zdF+wUakdHjKd7UumL0U69io=;
+  b=n6zojqx3ie9muSs0h+yTCWuxWWnml5Et35o5GzGlGtyhFEF2Pof8yCbk
+   8NVBuBPuzlzTtmZC/0CMnfh629eEU+6DOv6wOZhAdQW6j78p1ubnaej+4
+   BSB1T0QUVKQpLWqIjtgdUIqhi4qqPIbsJ7CfDWt4OxHxQzdDL+txRDKXb
+   qp0M6OIRzyaDgAh/s9vsw37i3Yi+YrVEYWHwnshGfG/EmEoAtVSrJl6+r
+   Ht6dXX9roiY0MK0OWpxYdRmo67doGdsDKtH49+xu81EqwW/zVEMOwIBPb
+   eGLvw10PZ9vdAuKyYULhX54ZDHyexf9ESLiBNKJzfk1m3segHMr537ypV
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357632113"
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="357632101"
+   d="scan'208";a="357632113"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:34 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:35 -0700
 X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="626533571"
+   d="scan'208";a="626533600"
 Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:33 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 08:41:35 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com,
         kan.liang@linux.intel.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Like Xu <like.xu@linux.intel.com>,
-        Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v12 06/16] KVM: vmx/pmu: Emulate MSR_ARCH_LBR_DEPTH for guest Arch LBR
-Date:   Tue, 17 May 2022 11:40:50 -0400
-Message-Id: <20220517154100.29983-7-weijiang.yang@intel.com>
+Cc:     Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v12 12/16] KVM: nVMX: Add necessary Arch LBR settings for nested VM
+Date:   Tue, 17 May 2022 11:40:56 -0400
+Message-Id: <20220517154100.29983-13-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220517154100.29983-1-weijiang.yang@intel.com>
 References: <20220517154100.29983-1-weijiang.yang@intel.com>
@@ -57,141 +56,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <like.xu@linux.intel.com>
+Arch LBR is not supported in nested VM now. This patch is to add
+necessary settings to make it pass host KVM checks before L2 VM is
+launched and also to avoid some warnings reported from L1.
 
-The number of Arch LBR entries available is determined by the value
-in host MSR_ARCH_LBR_DEPTH.DEPTH. The supported LBR depth values are
-enumerated in CPUID.(EAX=01CH, ECX=0):EAX[7:0]. For each bit "n" set
-in this field, the MSR_ARCH_LBR_DEPTH.DEPTH value of "8*(n+1)" is
-supported. In the first generation of Arch LBR, max entry size is 32,
-host configures the max size and guest always honors the setting.
-
-Write to MSR_ARCH_LBR_DEPTH has side-effect, all LBR entries are reset
-to 0. Kernel PMU driver can leverage this effect to do fask reset to
-LBR record MSRs. KVM allows guest to achieve it when Arch LBR records
-MSRs are passed through to the guest.
-
-Signed-off-by: Like Xu <like.xu@linux.intel.com>
-Co-developed-by: Yang Weijiang <weijiang.yang@intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/vmx/pmu_intel.c    | 48 +++++++++++++++++++++++++++++++++
- 2 files changed, 51 insertions(+)
+ arch/x86/kvm/vmx/nested.c    | 7 +++++--
+ arch/x86/kvm/vmx/pmu_intel.c | 2 ++
+ arch/x86/kvm/vmx/vmcs12.c    | 1 +
+ arch/x86/kvm/vmx/vmcs12.h    | 3 ++-
+ 4 files changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 9cdc5bbd721f..b6735dcf5a6a 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -547,6 +547,9 @@ struct kvm_pmu {
- 	 * redundant check before cleanup if guest don't use vPMU at all.
- 	 */
- 	u8 event_count;
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index a6688663da4d..5028a8bfa4e1 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -6580,7 +6580,9 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 		VM_EXIT_HOST_ADDR_SPACE_SIZE |
+ #endif
+ 		VM_EXIT_LOAD_IA32_PAT | VM_EXIT_SAVE_IA32_PAT |
+-		VM_EXIT_CLEAR_BNDCFGS | VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
++		VM_EXIT_CLEAR_BNDCFGS | VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |
++		VM_EXIT_CLEAR_IA32_LBR_CTL;
 +
-+	/* Guest arch lbr depth supported by KVM. */
-+	u64 kvm_arch_lbr_depth;
- };
+ 	msrs->exit_ctls_high |=
+ 		VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR |
+ 		VM_EXIT_LOAD_IA32_EFER | VM_EXIT_SAVE_IA32_EFER |
+@@ -6600,7 +6602,8 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 		VM_ENTRY_IA32E_MODE |
+ #endif
+ 		VM_ENTRY_LOAD_IA32_PAT | VM_ENTRY_LOAD_BNDCFGS |
+-		VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
++		VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL | VM_ENTRY_LOAD_IA32_LBR_CTL;
++
+ 	msrs->entry_ctls_high |=
+ 		(VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR | VM_ENTRY_LOAD_IA32_EFER);
  
- struct kvm_pmu_ops;
 diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 84b326c4dce9..22d6a869ea4d 100644
+index 41a9c7fbad45..f5499f391a8b 100644
 --- a/arch/x86/kvm/vmx/pmu_intel.c
 +++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -182,6 +182,12 @@ static bool intel_pmu_is_valid_lbr_msr(struct kvm_vcpu *vcpu, u32 index)
- 	if (!intel_pmu_lbr_is_enabled(vcpu))
- 		return ret;
+@@ -183,6 +183,8 @@ static bool intel_pmu_is_valid_lbr_msr(struct kvm_vcpu *vcpu, u32 index)
+ 		return false;
  
-+	if (index == MSR_ARCH_LBR_DEPTH) {
-+		if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-+			ret = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
-+		return ret;
-+	}
-+
- 	ret = (index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS) ||
- 		(index >= records->from && index < records->from + records->nr) ||
- 		(index >= records->to && index < records->to + records->nr);
-@@ -343,10 +349,26 @@ static bool intel_pmu_handle_lbr_msrs_access(struct kvm_vcpu *vcpu,
- 	return true;
- }
- 
-+/*
-+ * Check if the requested depth value the same as that of host.
-+ * When guest/host depth are different, the handling would be tricky,
-+ * so now only max depth is supported for both host and guest.
-+ */
-+static bool arch_lbr_depth_is_valid(struct kvm_vcpu *vcpu, u64 depth)
-+{
-+	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
-+
-+	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-+		return false;
-+
-+	return (depth == pmu->kvm_arch_lbr_depth);
-+}
-+
- static int intel_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- {
- 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
- 	struct kvm_pmc *pmc;
-+	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
- 	u32 msr = msr_info->index;
- 
- 	switch (msr) {
-@@ -371,6 +393,9 @@ static int intel_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_PEBS_DATA_CFG:
- 		msr_info->data = pmu->pebs_data_cfg;
- 		return 0;
-+	case MSR_ARCH_LBR_DEPTH:
-+		msr_info->data = lbr_desc->records.nr;
-+		return 0;
- 	default:
- 		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
- 		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
-@@ -397,6 +422,7 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- {
- 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
- 	struct kvm_pmc *pmc;
-+	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
- 	u32 msr = msr_info->index;
- 	u64 data = msr_info->data;
- 	u64 reserved_bits;
-@@ -452,6 +478,16 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 			return 0;
- 		}
- 		break;
-+	case MSR_ARCH_LBR_DEPTH:
-+		if (!arch_lbr_depth_is_valid(vcpu, data))
-+			return 1;
-+		lbr_desc->records.nr = data;
-+		/*
-+		 * Writing depth MSR from guest could either setting the
-+		 * MSR or resetting the LBR records with the side-effect.
-+		 */
-+		wrmsrl(MSR_ARCH_LBR_DEPTH, lbr_desc->records.nr);
-+		return 0;
- 	default:
- 		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
- 		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
-@@ -615,6 +651,18 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 		vcpu->arch.ia32_misc_enable_msr |= MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL;
- 		vcpu->arch.perf_capabilities &= ~PERF_CAP_PEBS_MASK;
+ 	if (index == MSR_ARCH_LBR_DEPTH || index == MSR_ARCH_LBR_CTL) {
++		if (is_guest_mode(vcpu))
++			return false;
+ 		return kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
+ 		       guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
  	}
-+
-+	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-+		return;
-+
-+	entry = kvm_find_cpuid_entry(vcpu, 28, 0);
-+	if (entry) {
-+		/*
-+		 * The depth mask in CPUID is fixed to host supported
-+		 * value when userspace sets guest CPUID.
-+		 */
-+		pmu->kvm_arch_lbr_depth = fls(entry->eax & 0xff) * 8;
-+	}
- }
- 
- static void intel_pmu_init(struct kvm_vcpu *vcpu)
+diff --git a/arch/x86/kvm/vmx/vmcs12.c b/arch/x86/kvm/vmx/vmcs12.c
+index 2251b60920f8..bcda664e4d26 100644
+--- a/arch/x86/kvm/vmx/vmcs12.c
++++ b/arch/x86/kvm/vmx/vmcs12.c
+@@ -65,6 +65,7 @@ const unsigned short vmcs12_field_offsets[] = {
+ 	FIELD64(HOST_IA32_PAT, host_ia32_pat),
+ 	FIELD64(HOST_IA32_EFER, host_ia32_efer),
+ 	FIELD64(HOST_IA32_PERF_GLOBAL_CTRL, host_ia32_perf_global_ctrl),
++	FIELD64(GUEST_IA32_LBR_CTL, guest_lbr_ctl),
+ 	FIELD(PIN_BASED_VM_EXEC_CONTROL, pin_based_vm_exec_control),
+ 	FIELD(CPU_BASED_VM_EXEC_CONTROL, cpu_based_vm_exec_control),
+ 	FIELD(EXCEPTION_BITMAP, exception_bitmap),
+diff --git a/arch/x86/kvm/vmx/vmcs12.h b/arch/x86/kvm/vmx/vmcs12.h
+index 746129ddd5ae..bf50227fe401 100644
+--- a/arch/x86/kvm/vmx/vmcs12.h
++++ b/arch/x86/kvm/vmx/vmcs12.h
+@@ -71,7 +71,7 @@ struct __packed vmcs12 {
+ 	u64 pml_address;
+ 	u64 encls_exiting_bitmap;
+ 	u64 tsc_multiplier;
+-	u64 padding64[1]; /* room for future expansion */
++	u64 guest_lbr_ctl;
+ 	/*
+ 	 * To allow migration of L1 (complete with its L2 guests) between
+ 	 * machines of different natural widths (32 or 64 bit), we cannot have
+@@ -254,6 +254,7 @@ static inline void vmx_check_vmcs12_offsets(void)
+ 	CHECK_OFFSET(pml_address, 312);
+ 	CHECK_OFFSET(encls_exiting_bitmap, 320);
+ 	CHECK_OFFSET(tsc_multiplier, 328);
++	CHECK_OFFSET(guest_lbr_ctl, 336);
+ 	CHECK_OFFSET(cr0_guest_host_mask, 344);
+ 	CHECK_OFFSET(cr4_guest_host_mask, 352);
+ 	CHECK_OFFSET(cr0_read_shadow, 360);
 -- 
 2.27.0
 
