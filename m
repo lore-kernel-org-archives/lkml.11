@@ -2,68 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D51DC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 07:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240658AbiEQHCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 03:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34090 "EHLO
+        id S231909AbiEQHCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 03:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240627AbiEQHB3 (ORCPT
+        with ESMTP id S239876AbiEQHBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 03:01:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC5545074;
+        Tue, 17 May 2022 03:01:32 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD09F25C4E
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:30 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id kq17so32829940ejb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 00:01:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=a0nTM6qsq4GtGJkoH4nf0Q+TnkSQuyFZioVt/ZR1zw4=;
+        b=KyCAbTTMVnROhAWhKMIJxpaFtqhASwLPlQnI6zyJnMA861UhvrMpV8uiyyYbcenumd
+         pUsni593woFCYfRxNtulIrbjduv4JLZHLJXxaADspko9cA1csQmLvt0WXd0b9HXf7DST
+         NTkmBaqOUXT6RnVjf+Pv16SYYmIvtRwbkXSCVoWMO3lW/5C1hCgLXLVFTL5z7CYvd5y0
+         kFdKMONi+s7OXBvunWgezadfXxn13GJMgevy5L8VOoYfe9MwJ6eAbW8qS+1OFh+wb4fB
+         JNFqZShDE41K8Js4Tn9ZaWLeT9SZt8VJvM5s/cJlXKzBDUa0FsXpIk/wdp2lX5DfeDNV
+         YsJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=a0nTM6qsq4GtGJkoH4nf0Q+TnkSQuyFZioVt/ZR1zw4=;
+        b=O4LYi2vr/78s2gin8I3FcDI6/9tZEwrnpbVoXFbTleGD7REXGxl4H4RlybNQqbIx7l
+         o41kkxDH/VVunPhBHFnedfRCoCKxKwyUUITKnA8VFZ+j2X3nloOj5o8LaNovKIPm2mQX
+         l19bpBBJh6L+NMKhxgYAQfLZGzEuo6BDOJffKC9ina/1z9bJIx9guwJzTBEdtuLGu9gZ
+         fBS1LrHNBBTepGB1NHgBP3MM915buIWDS1x7HUDV2amycHIXq4fVyRaAHrFWPeNVQDJb
+         ekr3aOIuhIMAWqt8RpC+3tTEILhBwUldkH4YhkL+6FDIdc976yOAaTceoR0m72hbLcP6
+         EefQ==
+X-Gm-Message-State: AOAM532KZLF89o9CG88BjXy+jTOvkZ3kgxGB00wsjTOSLUpgY2HWenE8
+        L55HcsOMjGGYEN7V8qiiZSv2rg==
+X-Google-Smtp-Source: ABdhPJz1Wy90bvIuITitIqGO/uaK5LgSpxtYb8P9aCGxTkSHFD0DXaP3Gg6ENrsWV0WPKNQTxSgdxA==
+X-Received: by 2002:a17:907:1ca3:b0:6f4:d185:9f46 with SMTP id nb35-20020a1709071ca300b006f4d1859f46mr18061789ejc.165.1652770888746;
         Tue, 17 May 2022 00:01:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B764615B6;
-        Tue, 17 May 2022 07:01:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED728C34119;
-        Tue, 17 May 2022 07:01:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652770887;
-        bh=kk3k6llzVPvOiyVwtI1w8V49kIHd781E2pe6yqRZhys=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=T3ArEvcAh5VKL8yv++QVhPTIi02OIM8W37fO+3AxNgX+3Sgoo0QkEHPEKhcNspyCk
-         wjwR4ETj3RcNDvQsDhaL7UT0dbYNrpkMDPV6EofNA12peCuGfxm4+4GzfYLrpbXu8m
-         JkgUXzz/6J4dgBs7JBWIjrJXitpStCDTFMZseR29pdCpEghhawxh2skPj+aMx9qs9I
-         6oMGw7T7g8F/5owGtZVEQB0hllScacbe1eFPxvBtip3xvcmipFYWqs38RQxzT9kgp+
-         XxcTWoFO/Wl1uArNOrSTK7Ygeu9LFHjdNvIk3t4vxe2TKfIZRRaLyKuEjEHVDKUIv1
-         5rHn2D+LeyAig==
-Content-Type: text/plain; charset="utf-8"
+Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id b5-20020a056402138500b0042617ba637esm6487016edv.8.2022.05.17.00.01.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 00:01:28 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 09/12] arm64: dts: qcom: ipq6018: add label to remoteproc node
+Date:   Tue, 17 May 2022 09:01:10 +0200
+Message-Id: <20220517070113.18023-10-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220517070113.18023-1-krzysztof.kozlowski@linaro.org>
+References: <20220517070113.18023-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220428183010.1635248-1-stefan.wahren@i2se.com>
-References: <20220428183010.1635248-1-stefan.wahren@i2se.com>
-Subject: Re: [PATCH] clk: bcm2835: fix bcm2835_clock_choose_div
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Stefan Wahren <stefan.wahren@i2se.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>
-Date:   Tue, 17 May 2022 00:01:25 -0700
-User-Agent: alot/0.10
-Message-Id: <20220517070126.ED728C34119@smtp.kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Stefan Wahren (2022-04-28 11:30:10)
-> The commit 09e3b18ca5de ("clk: bcm2835: Remove unused variable")
-> accidentially breaks the behavior of bcm2835_clock_choose_div() and
-> booting of Raspberry Pi. The removed do_div macro call had side effects,
-> so we need to restore it.
->=20
-> Fixes: 09e3b18ca5de ("clk: bcm2835: Remove unused variable")
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> ---
+glink-edge bindings require label:
 
-Applied to clk-fixes
+  ipq6018-cp01-c1.dtb: glink-edge: 'label' is a required property
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index c89499e366d3..9db30e7da7bd 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -621,6 +621,7 @@ q6v5_wcss: remoteproc@cd00000 {
+ 
+ 			glink-edge {
+ 				interrupts = <GIC_SPI 321 IRQ_TYPE_EDGE_RISING>;
++				label = "rtr";
+ 				qcom,remote-pid = <1>;
+ 				mboxes = <&apcs_glb 8>;
+ 
+-- 
+2.32.0
+
