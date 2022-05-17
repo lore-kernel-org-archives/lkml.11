@@ -2,90 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF36C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B45B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 17 May 2022 08:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243752AbiEQIlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 04:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33762 "EHLO
+        id S242970AbiEQImE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 04:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243690AbiEQIls (ORCPT
+        with ESMTP id S243625AbiEQIk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 04:41:48 -0400
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F1A403E8;
-        Tue, 17 May 2022 01:41:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
-         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=JnpHbAHKIJD181537/cR0smEcalwP0yv2oixjdSOWLo=; b=t5gHAOolWKGfGgeSakfoenFaG1
-        GUBhXQRpEqKk5x56BbAsg/D5oOX2a0r7Ovmzb2bberPec9VO13oSrW133HKR+rff/VP25/LHQIfFW
-        oQUj5OaS5VbasIJqGd27pUP+hzTlrSdEfik9pMRSwpQLXPnJvoxQgA7IiBjJR5V4whvkLrsIAM2EY
-        hjquylPvgoPrBKhTlXt5jqGtf0PywZnlXnOYbjOF46Ev44U2m6pZzyTNQKLPRk16nOs905Bdo9axj
-        eXAc1gF3g4uW0hNYRbQn9EdQ/ZCPd4S73+VC3MzxHJMp2sBKhBDZLppRvlOw5rF2gpbp73QlX+8Gp
-        OxmOz/ig==;
-Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=[192.168.1.10])
-        by mail.kapsi.fi with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <cyndis@kapsi.fi>)
-        id 1nqslu-0000CX-GG; Tue, 17 May 2022 11:41:38 +0300
-Message-ID: <3b1e22cf-a439-2d84-a1fc-dd352a3f1b2c@kapsi.fi>
-Date:   Tue, 17 May 2022 11:41:37 +0300
+        Tue, 17 May 2022 04:40:57 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDA9637B;
+        Tue, 17 May 2022 01:40:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=z19aIPjW70USLBbDz8uwfQbhmVmgCMWnBLLEt2fwQnk=; b=voDMYDaCISF39VMEpWSPipKHw4
+        RJaugttebgQvZtxGRduIu8CzrYyHjtMiZtXJZeJXSLVHC+ZDD/t2wf6LKvmk2MPzv3SWZMwo3lGde
+        eJd09dZ+ZdyK/cw81ZmHLGuNqJwJfOXTnDKKfpYGS3zC+tOit5o9pavUKyDuW+fAIBOg8j7CY59di
+        XevmJRydszXBTDMJIwM5TIGA4qto7CiVmv+9xJu2gepwBfx3tazxUiO0Vjmfvt2fe9aL5GTEBjIkR
+        zO3FmVe5j26LXpdAVEeCabxU98ftjnaU+WW5Hcm0YqEK7gHtczNWKF11XiwBDv2q0AQf0vpxmUyGB
+        Nkg6s9zA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nqsl0-00AgeZ-K5; Tue, 17 May 2022 08:40:42 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7EA48300642;
+        Tue, 17 May 2022 10:40:40 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 402F22023D0E2; Tue, 17 May 2022 10:40:40 +0200 (CEST)
+Date:   Tue, 17 May 2022 10:40:40 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        x86@kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
+Subject: Re: [RFC PATCH v2 20/21] x86: Add support for CONFIG_CFI_CLANG
+Message-ID: <YoNfiK1qKd9YDVIf@hirez.programming.kicks-ass.net>
+References: <20220513202159.1550547-1-samitolvanen@google.com>
+ <20220513202159.1550547-21-samitolvanen@google.com>
+ <YoIfWENLV1AR2ijj@hirez.programming.kicks-ass.net>
+ <CABCJKucXA2jbTc9TF1mLUsEDKu52t71tzxpnsGOXY3_ks+W4Bg@mail.gmail.com>
+ <20220516183047.GM76023@worktop.programming.kicks-ass.net>
+ <202205161531.3339CA95@keescook>
+ <YoNXPVQRvIFS81aW@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v1 02/13] dt-bindings: Add headers for Host1x and VIC on
- Tegra234
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, digetx@gmail.com
-Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mikko Perttunen <mperttunen@nvidia.com>
-References: <20220516100213.1536571-1-cyndis@kapsi.fi>
- <20220516100213.1536571-3-cyndis@kapsi.fi>
- <20a7087d-dddd-134b-4cef-0ebcbc5115f3@linaro.org>
-From:   Mikko Perttunen <cyndis@kapsi.fi>
-In-Reply-To: <20a7087d-dddd-134b-4cef-0ebcbc5115f3@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 91.158.25.70
-X-SA-Exim-Mail-From: cyndis@kapsi.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoNXPVQRvIFS81aW@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/17/22 11:02, Krzysztof Kozlowski wrote:
-> On 16/05/2022 12:02, cyndis@kapsi.fi wrote:
->> From: Mikko Perttunen <mperttunen@nvidia.com>
->>
->> Add clock, memory controller, powergate and reset dt-binding headers
->> for Host1x and VIC on Tegra234.
->>
->> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+On Tue, May 17, 2022 at 10:05:17AM +0200, Peter Zijlstra wrote:
+> On Mon, May 16, 2022 at 03:59:41PM -0700, Kees Cook wrote:
 > 
-> All your patches are send from wrong email address and the SoB chain is
-> not correct. Please add respective SoB.
+> > I'm still not convinced about this, but I'm on the fence.
+> > 
+> > Cons:
+> > - FineIBT does callee-based hash verification, which means any
+> >   attacker-constructed memory region just has to have an endbr and nops at
+> >   "shellcode - 9". KCFI would need the region to have the hash at
+> >   "shellcode - 6" and an endbr at "shellcode". However, that hash is well
+> >   known, so it's not much protection.
 > 
-> This applies to entire patchset.
+> How would you get the ENDBR there anyway? If you can write code it's
+> game over.
 > 
+> > - Potential performance hit due to making an additional "call" outside
+> >   the cache lines of both caller and callee.
 > 
-> Best regards,
-> Krzysztof
+> That was all an effort to shrink and simplify, all this CFI stuff is
+> massive bloat :/
+> 
+> If we use %eax instead of %r10d for the hash transfer (as per Joao), and
+> use int3 instead of ud2, then we can shrink the fineibt sequence to:
+> 
+> __cfi_\func:
+> 	endbr				# 4
+> 	xorl	$0x12345678, %eax	# 5
+> 	jz	1f			# 2
+> 	int3				# 1
+> \func:
+> 	...
+> 
+> Which is 12 bytes, and needs a larger preamble (up from 9 in the current
+> proposal).
 
-I can do
+On all that; perhaps it would be good to have a compiler option to
+specify the preamble size. It can enforce the minimum at 7 to have at
+least the required:
 
-   Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-   Signed-off-by: Mikko Perttunen <cyndis@kapsi.fi>
+	movl $0x12345678, %eax
+	int3
+	int3
 
-if that is better.
+but any larger number will just increase the preamble with int3 padding
+at the top.
 
-I used to just send with From: mperttunen@nvidia.com but unsurprisingly 
-many mail servers have started rejecting that.
-
-Mikko
+That can go right along with the option to supress endbr when preamble
+:-)
