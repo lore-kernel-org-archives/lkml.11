@@ -2,80 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2851C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C83DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233136AbiERIY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
+        id S233097AbiERI1e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233054AbiERIX5 (ORCPT
+        with ESMTP id S233092AbiERI1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:23:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD46B1078B5
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:23:50 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nrExn-0004Qy-12; Wed, 18 May 2022 10:23:23 +0200
-Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nrExm-0032p6-BB; Wed, 18 May 2022 10:23:20 +0200
-Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nrExj-00GXTX-SU; Wed, 18 May 2022 10:23:19 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     linux-wireless@vger.kernel.org
-Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH 01/10] rtw88: Call rtw_fw_beacon_filter_config() with rtwdev->mutex held
-Date:   Wed, 18 May 2022 10:23:09 +0200
-Message-Id: <20220518082318.3898514-2-s.hauer@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+        Wed, 18 May 2022 04:27:22 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEE7E277F;
+        Wed, 18 May 2022 01:27:10 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id gg20so1327306pjb.1;
+        Wed, 18 May 2022 01:27:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6uhcCD9Q9c+zxCoqwp1SKWrlds09Ui+hTejJMadUYQ8=;
+        b=knwLeeGs2uTSf5TwdhIm5ljqftyq1jOVfMGjDCVCBvz+83z5bXFaX8traenYQKYQ8C
+         brZkSLz9KC2b8krw58NkVoJw7Ud89iYQwNAzPkIkOaQktOoSYrP6j4rCZhGuWN8TxEgN
+         ramS9v19nXbCk8S71Wts7wJEb9/2SrRWIpcr/0kCAGD3cFI3+/6f26O729X1Jvv3O6c/
+         errWLCITazNz03uyIZJu3618L0T9aO6RxfqzsuLLL3JSWeS+K80KJAvYlXERe1U787PE
+         UJ7F/Mxg69KsqzhDiUwXkBXCrIplFXzYI3RGlELI/deqFj874rIBdROFxc2c0uUqVqxD
+         vyuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6uhcCD9Q9c+zxCoqwp1SKWrlds09Ui+hTejJMadUYQ8=;
+        b=yDdSXrpKZVV9TMkXSGgKPdVhxB2WhxxTfm7/QDdNqkO4oetzljGburtAuASaJ7gkDD
+         wtPK74GCJH5b62pYNz5j0pkEL6RQgEH0w/olDAgf2jp7wRyjLlToFVbDkv4VSo9/Ky6M
+         FG+W6Xo9Ks3znO6sWOg7LAOVXtPHGb9yOgAfrElBi0o2TFgxdMAvBDMd4pxLNVM+3VxU
+         2bIYS3lUyB3FEJDxO4rPxxxY+9Za1+f1uWFQX60XjqJg5rg30eW+Auv0fWWUxNTrAEh5
+         ssLwuzV1r+EyBZZ/pYJ9zB/sgm9/lP0XP5cwL5McaS6el12gBFFMjCuSvqf0UdubTGuF
+         Tbgg==
+X-Gm-Message-State: AOAM530r8VASqmGkBjZy+Npjo98ZzL8gdO3EZzFxTuYznwmMzCECl/Dn
+        Fmwrdrlh9W99YnmKPY9WsgI=
+X-Google-Smtp-Source: ABdhPJzNcgMOvUnJ/r2cIpDRhf/x+W2Y7fPUMs3R1jptn1Ppwt0PjAo2/lB6RnG7YaR7+yNBtgjoxA==
+X-Received: by 2002:a17:902:7781:b0:161:c85a:8fff with SMTP id o1-20020a170902778100b00161c85a8fffmr1444679pll.97.1652862424843;
+        Wed, 18 May 2022 01:27:04 -0700 (PDT)
+Received: from ip-172-31-7-97.ap-south-1.compute.internal (ec2-15-207-112-74.ap-south-1.compute.amazonaws.com. [15.207.112.74])
+        by smtp.gmail.com with ESMTPSA id s26-20020a056a001c5a00b005180ea859d7sm1206643pfw.123.2022.05.18.01.27.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 01:27:04 -0700 (PDT)
+From:   Praghadeesh T K S <praghadeeshthevendria@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        "GitAuthor: Praghadeesh T K S" <praghadeeshthevendria@gmail.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     skhan@linuxfoundation.org, praghadeeshtks@zohomail.in
+Subject: [PATCH] Fixed 'make htmldocs' warning: Documentation/admin-guide/perf/hisi-pcie-pmu.rst: WARNING: document isn't included in any toctree
+Date:   Wed, 18 May 2022 08:26:27 +0000
+Message-Id: <20220518082627.9144-1-praghadeeshthevendria@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rtw_fw_beacon_filter_config() is called once with rtwdev->mutex held
-and once without the mutex held. Call it consistently with rtwdev->mutex
-held.
-
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Praghadeesh T K S <praghadeeshthevendria@gmail.com>
 ---
- drivers/net/wireless/realtek/rtw88/mac80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/admin-guide/perf/index.rst | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/mac80211.c b/drivers/net/wireless/realtek/rtw88/mac80211.c
-index 5cdc54c9a9aae..3c07485d6ba47 100644
---- a/drivers/net/wireless/realtek/rtw88/mac80211.c
-+++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -466,8 +466,8 @@ static int rtw_ops_sta_remove(struct ieee80211_hw *hw,
- {
- 	struct rtw_dev *rtwdev = hw->priv;
+diff --git a/Documentation/admin-guide/perf/index.rst b/Documentation/admin-guide/perf/index.rst
+index 5a8f252..69b23f0 100644
+--- a/Documentation/admin-guide/perf/index.rst
++++ b/Documentation/admin-guide/perf/index.rst
+@@ -8,6 +8,7 @@ Performance monitor support
+    :maxdepth: 1
  
--	rtw_fw_beacon_filter_config(rtwdev, false, vif);
- 	mutex_lock(&rtwdev->mutex);
-+	rtw_fw_beacon_filter_config(rtwdev, false, vif);
- 	rtw_sta_remove(rtwdev, sta, true);
- 	mutex_unlock(&rtwdev->mutex);
- 
+    hisi-pmu
++   hisi-pcie-pmu
+    imx-ddr
+    qcom_l2_pmu
+    qcom_l3_pmu
 -- 
-2.30.2
+2.34.1
 
