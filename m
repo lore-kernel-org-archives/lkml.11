@@ -2,116 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27B7C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BF4C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:49:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235784AbiERLrd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58486 "EHLO
+        id S235799AbiERLtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232124AbiERLrc (ORCPT
+        with ESMTP id S235772AbiERLtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:47:32 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F761169E28;
-        Wed, 18 May 2022 04:47:31 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IAvhEQ020241;
-        Wed, 18 May 2022 11:47:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=+nKPEVL8prVFTEnvtOi0sxLtE2RHvbWJm1XphVS7dGQ=;
- b=LQWw2yLiLlVRd6+/IOveV5GxBcCA9k7BZnfJDL47ao2NuNkpVTVdXEh+BVelhf99QEmu
- WSiFpCwotuHwiHQKmtjYZN05VUKcJdBJ3NEKgBmwR3MvJ/7n+L2u9zmWUjKqOG5lWSYL
- rffEzxP32HeljHN3LqmrDXncIPm2im98ffsCE5vpW/8OAQI37FYxb2Oz6q8w+L78uGRe
- Lw9CVPoqya8UT/GE4WQZcVmSFW6oYcGBYsZNN126pcypmj19ubHut258tqwsn/N0ljni
- 0WMdOATQWRjz2TXAx/oeQyL5azCRjsPOEg4nWyO69gpK8xzAMBoRBymyM/qM9zQ5BByw 0Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4ygr14x1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 11:47:26 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IB2CYs019307;
-        Wed, 18 May 2022 11:47:26 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4ygr14w7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 11:47:26 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IBg1Pr028421;
-        Wed, 18 May 2022 11:47:23 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06ams.nl.ibm.com with ESMTP id 3g23pjdn4n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 11:47:23 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IBlK8G58130702
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 11:47:20 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6B17742042;
-        Wed, 18 May 2022 11:47:20 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E997242041;
-        Wed, 18 May 2022 11:47:19 +0000 (GMT)
-Received: from osiris (unknown [9.145.54.247])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 18 May 2022 11:47:19 +0000 (GMT)
-Date:   Wed, 18 May 2022 13:47:18 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Steffen Eiden <seiden@linux.ibm.com>
-Cc:     Greg KH <greg@kroah.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Nico Boehr <nrb@linux.ibm.com>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] drivers/s390/char: Add Ultravisor io device
-Message-ID: <YoTcxhulemnqiUbC@osiris>
-References: <20220510144724.3321985-1-seiden@linux.ibm.com>
- <20220510144724.3321985-2-seiden@linux.ibm.com>
+        Wed, 18 May 2022 07:49:11 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF263179C19;
+        Wed, 18 May 2022 04:49:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652874549; x=1684410549;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=d9QZeZd2/xhOso7dWnKP7HbWb4p7FSS+gP0Yr1dxXPE=;
+  b=2Fnye8GT2IwDRrc2mJpNP4eaFGygTEA/zVmqmHY8yVcFcjIhVhTxGoHn
+   yA57sU1i3vVrC996BPFB03A0CT8BpU2d+yq6XCnjpKrqXXaf0h/of5oLR
+   5Z35jGp35KD44JaAJ0RprWnKYxzIrzy5pEF/G1iWsnwtZqqPLGREjMyTf
+   T8ZNdlDH7tbjwn7+l4HOlQjerz1tDb0sP9+tyCZU7dSafsf88DtYonL+7
+   zr+QEWKVhepIdAbE55VSayC1dBe75wKLwDESxpDmqUyAxzUI2qgTQuzCC
+   5lUvLzmoA5zZkcVoG0pvoJfkBjBm3Vb1jvVpKxmBQZksrLx6u/SybR93o
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="164583728"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 May 2022 04:49:08 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 18 May 2022 04:49:07 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 18 May 2022 04:49:05 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v3 0/2] nvmem: add Microchip OTP controller
+Date:   Wed, 18 May 2022 14:51:27 +0300
+Message-ID: <20220518115129.908787-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510144724.3321985-2-seiden@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 3drxn84-cVvXdIpMwW-724Y69aCBEo3a
-X-Proofpoint-GUID: HYccexZNg8GE4fFYEkJgiomCoVDPSJsk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_04,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 lowpriorityscore=0
- mlxscore=0 mlxlogscore=999 bulkscore=0 clxscore=1011 malwarescore=0
- suspectscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205180065
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 02:47:23PM +0000, Steffen Eiden wrote:
-> diff --git a/drivers/s390/char/Kconfig b/drivers/s390/char/Kconfig
-> index 6cc4b19acf85..e9b9902abbaf 100644
-> --- a/drivers/s390/char/Kconfig
-> +++ b/drivers/s390/char/Kconfig
-> @@ -100,6 +100,16 @@ config SCLP_OFB
->  	  This option enables the Open-for-Business interface to the s390
->  	  Service Element.
->  
-> +config S390_UV_UAPI
-> +	def_tristate y
-> +	prompt "Ultravisor userspace API"
-> +	help
-> +	  Selecting exposes parts of the UV interface to userspace
-> +	  by providing a misc character device at /dev/uv.
-> +	  Using IOCTLs one can interact with the UV.
-> +	  The device is only available if the Ultravisor
-> +	  Facility (158) is present.
+Hi,
 
-Is there a reason why this is default "y"? If you think this should be
-compiled into the kernel if used, then why allow to make it a module
-at all?
-Instead you could get rid of a couple if lines of code.
+This series adds support for Microchip OTP controller available on
+SAMA7G5. The driver gives access to a non-volatile memory which
+keeps (at the moment) information like booting media and temperature
+calibration data used for thermal measurements.
+
+Thank you,
+Claudiu Beznea
+
+Changes in v3:
+- fixed Documentation and binding files names
+- used __maybe_unused for mchp_otpc_ids
+
+Changes in v2:
+- updated the bindings (patch 1/2) as follows:
+	- included the device name in files names and updated binding
+	  content accordingly
+	- updated the description
+	- removed address-cells, size-cells
+	- removed clock include
+	- use GPL-2.0 OR BSD-2-Clause license
+	- removed OTP_PKT_SAMA7G5_TEMP_CALIB_LEN and keep hardcoded
+	  value in examples
+	  
+- updated MAINTAINERS file with new naming of bindings
+
+Claudiu Beznea (2):
+  dt-bindings: microchip-otpc: document Microchip OTPC
+  nvmem: microchip-otpc: add support
+
+ .../nvmem/microchip,sama7g5-otpc.yaml         |  50 +++
+ MAINTAINERS                                   |   8 +
+ drivers/nvmem/Kconfig                         |   7 +
+ drivers/nvmem/Makefile                        |   2 +
+ drivers/nvmem/microchip-otpc.c                | 288 ++++++++++++++++++
+ .../nvmem/microchip,sama7g5-otpc.h            |  12 +
+ 6 files changed, 367 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/microchip,sama7g5-otpc.yaml
+ create mode 100644 drivers/nvmem/microchip-otpc.c
+ create mode 040000 include/dt-bindings/nvmem
+ create mode 100644 include/dt-bindings/nvmem/microchip,sama7g5-otpc.h
+
+-- 
+2.34.1
+
