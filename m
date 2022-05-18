@@ -2,142 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:01:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92449C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241300AbiERSA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 14:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44266 "EHLO
+        id S238952AbiERSBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 14:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241274AbiERSAy (ORCPT
+        with ESMTP id S241357AbiERSBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 14:00:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BB1828E33
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:00:51 -0700 (PDT)
+        Wed, 18 May 2022 14:01:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1AFD68CCC3
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:01:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652896850;
+        s=mimecast20190719; t=1652896872;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=sZ6XkqftPp6+2SO/U19yMkAzwiwGJ8gH141XFFjaMZE=;
-        b=Zli3fe1oCRlC2yfmJmJKwh5a2km+ZR0r9+hIu0/IBCxBCxTDIbXILXoZ6CGrWMae1KeXOE
-        tF5z/13QO9BrK6eVhrMyuXNExUa7GxJgLtzGPtxuDj/hY0i8CF2sH6GrVInYLhS6+POUhS
-        XhXIxC7tDotq+uMlqwSa1DNJPvLMU8Q=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=z8xlrowAUvM1/2ybSeOaJOkkrtVJbfEDH0nQAodlR3g=;
+        b=U0VQQd818+Fs6/ZSL+dyTMFSnmMoGcUNogps86rWyNXLAnTN5K4gZStA9OU4TOxRt8aERO
+        aVH2czJkkn6J8IGTag/mRSnx3wzGl3cK/jerpJanu7XH0zL6eqw8fKDHha/C9KRp27ealP
+        XRlYGsjriAHxczCOZj1BLevyZHQSY7I=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-318-EQPSi9SHMQCc3qgclNXBrQ-1; Wed, 18 May 2022 14:00:45 -0400
-X-MC-Unique: EQPSi9SHMQCc3qgclNXBrQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 85D7180B712;
-        Wed, 18 May 2022 18:00:44 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 48B83401E74;
-        Wed, 18 May 2022 18:00:44 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id A7A3E41C3A1B; Wed, 18 May 2022 14:26:08 -0300 (-03)
-Date:   Wed, 18 May 2022 14:26:08 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Qian Cai <quic_qiancai@quicinc.com>
-Cc:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+ us-mta-451-ETkq05ZvP7SV80FQFsNKkA-1; Wed, 18 May 2022 14:01:10 -0400
+X-MC-Unique: ETkq05ZvP7SV80FQFsNKkA-1
+Received: by mail-wm1-f70.google.com with SMTP id e9-20020a05600c4e4900b00394779649b1so3234477wmq.3
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:01:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=z8xlrowAUvM1/2ybSeOaJOkkrtVJbfEDH0nQAodlR3g=;
+        b=6C/ty3c3SmIDwXBz71FRjwmT8jgvwLq7R4bT5/X5/VnueEnBdS8CSKmHfbZioKwiXv
+         yQv6Kihi5EwnaA49lrDkBCrT6Mek4xsQjwBtbGjysvBleYF20HaRj3Vn26kNROfAGLL3
+         4btLoke5YuFpWr5WVnmh8EFAxtNMRTexaj3m0gZ9vM2Btig7R8VkDtPUFw5beD47nWGQ
+         BrmBZYwm30SmKT01Y/XuYXxtnOAkt9KgJksulbumfb2bYjA72KRJM6AZ9EZVYYQ9SDY6
+         h8Zth62lAv9f0MeaSO8UkwzwJnCFzW4LaND4gU//HUB9/KvxZA+MzaguSmK2GFKUjFNB
+         MAnw==
+X-Gm-Message-State: AOAM533dt/9PCyVe3RQW6XsJWSka1KJxu+nwuUOcXDAw9jVogm17yo53
+        rXbrwqrhgk8dImsFo4sSIGZY6sUhFFFIzUqHYm9ctB8BHqa0Ubtz9IlgYN+W5QOzUr0rHbuvrLT
+        ZggacBFXd7abJq8b1ulIxN/3U
+X-Received: by 2002:a7b:ce02:0:b0:381:2007:f75c with SMTP id m2-20020a7bce02000000b003812007f75cmr1050650wmc.6.1652896869369;
+        Wed, 18 May 2022 11:01:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxBcYFHJwrznm9sfk4CRqqfgijdDfW6hPYDdn37Qxw4KOcOCf+ZFixqXha94HyPD+3N3LMb4g==
+X-Received: by 2002:a7b:ce02:0:b0:381:2007:f75c with SMTP id m2-20020a7bce02000000b003812007f75cmr1050631wmc.6.1652896869182;
+        Wed, 18 May 2022 11:01:09 -0700 (PDT)
+Received: from ?IPv6:2a0c:5a80:1d02:ba00:f4f8:7394:c8:7ddf? ([2a0c:5a80:1d02:ba00:f4f8:7394:c8:7ddf])
+        by smtp.gmail.com with ESMTPSA id j10-20020adfa78a000000b0020c5253d8fcsm3034662wrc.72.2022.05.18.11.01.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 11:01:08 -0700 (PDT)
+Message-ID: <09fbcf0884ef5e03812566b9576979253e506ce9.camel@redhat.com>
+Subject: Re: [PATCH 0/6] Drain remote per-cpu directly v3
+From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
+To:     Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
         Vlastimil Babka <vbabka@suse.cz>,
         Michal Hocko <mhocko@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH 0/6] Drain remote per-cpu directly v3
-Message-ID: <YoUsMIlWvczo3J24@fuller.cnet>
+Date:   Wed, 18 May 2022 20:01:07 +0200
+In-Reply-To: <20220512085043.5234-1-mgorman@techsingularity.net>
 References: <20220512085043.5234-1-mgorman@techsingularity.net>
- <20220517233507.GA423@qian>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517233507.GA423@qian>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 07:35:07PM -0400, Qian Cai wrote:
-> On Thu, May 12, 2022 at 09:50:37AM +0100, Mel Gorman wrote:
-> > Changelog since v2
-> > o More conversions from page->lru to page->[pcp_list|buddy_list]
-> > o Additional test results in changelogs
-> > 
-> > Changelog since v1
-> > o Fix unsafe RT locking scheme
-> > o Use spin_trylock on UP PREEMPT_RT
-> > 
-> > This series has the same intent as Nicolas' series "mm/page_alloc: Remote
-> > per-cpu lists drain support" -- avoid interference of a high priority
-> > task due to a workqueue item draining per-cpu page lists. While many
-> > workloads can tolerate a brief interruption, it may be cause a real-time
-> > task runnning on a NOHZ_FULL CPU to miss a deadline and at minimum,
-> > the draining in non-deterministic.
-> > 
-> > Currently an IRQ-safe local_lock protects the page allocator per-cpu lists.
-> > The local_lock on its own prevents migration and the IRQ disabling protects
-> > from corruption due to an interrupt arriving while a page allocation is
-> > in progress. The locking is inherently unsafe for remote access unless
-> > the CPU is hot-removed.
-> > 
-> > This series adjusts the locking. A spinlock is added to struct
-> > per_cpu_pages to protect the list contents while local_lock_irq continues
-> > to prevent migration and IRQ reentry. This allows a remote CPU to safely
-> > drain a remote per-cpu list.
-> > 
-> > This series is a partial series. Follow-on work should allow the
-> > local_irq_save to be converted to a local_irq to avoid IRQs being
-> > disabled/enabled in most cases. Consequently, there are some TODO comments
-> > highlighting the places that would change if local_irq was used. However,
-> > there are enough corner cases that it deserves a series on its own
-> > separated by one kernel release and the priority right now is to avoid
-> > interference of high priority tasks.
-> 
-> Reverting the whole series fixed an issue that offlining a memory
-> section blocking for hours on today's linux-next tree.
-> 
->  __wait_rcu_gp
->  synchronize_rcu at kernel/rcu/tree.c:3915
->  lru_cache_disable at mm/swap.c:886
->  __alloc_contig_migrate_range at mm/page_alloc.c:9078
->  isolate_single_pageblock at mm/page_isolation.c:405
->  start_isolate_page_range
->  offline_pages
->  memory_subsys_offline
->  device_offline
->  online_store
->  dev_attr_store
->  sysfs_kf_write
->  kernfs_fop_write_iter
->  new_sync_write
->  vfs_write
->  ksys_write
->  __arm64_sys_write
->  invoke_syscall
->  el0_svc_common.constprop.0
->  do_el0_svc
->  el0_svc
->  el0t_64_sync_handler
->  el0t_64_sync
-> 
-> For full disclosure, I have also reverted the commit 0d523026abd4
-> ("mm/page_alloc: fix tracepoint mm_page_alloc_zone_locked()"), so the
-> series can be reverted cleanly. But, I can't see how the commit
-> 0d523026abd4 could cause this issue at all.
+On Thu, 2022-05-12 at 09:50 +0100, Mel Gorman wrote:
+> Changelog since v2
+> o More conversions from page->lru to page->[pcp_list|buddy_list]
+> o Additional test results in changelogs
+>=20
+> Changelog since v1
+> o Fix unsafe RT locking scheme
+> o Use spin_trylock on UP PREEMPT_RT
+>=20
+> This series has the same intent as Nicolas' series "mm/page_alloc: Remote
+> per-cpu lists drain support" -- avoid interference of a high priority
+> task due to a workqueue item draining per-cpu page lists. While many
+> workloads can tolerate a brief interruption, it may be cause a real-time
+> task runnning on a NOHZ_FULL CPU to miss a deadline and at minimum,
+> the draining in non-deterministic.
+>=20
+> Currently an IRQ-safe local_lock protects the page allocator per-cpu list=
+s.
+> The local_lock on its own prevents migration and the IRQ disabling protec=
+ts
+> from corruption due to an interrupt arriving while a page allocation is
+> in progress. The locking is inherently unsafe for remote access unless
+> the CPU is hot-removed.
+>=20
+> This series adjusts the locking. A spinlock is added to struct
+> per_cpu_pages to protect the list contents while local_lock_irq continues
+> to prevent migration and IRQ reentry. This allows a remote CPU to safely
+> drain a remote per-cpu list.
+>=20
+> This series is a partial series. Follow-on work should allow the
+> local_irq_save to be converted to a local_irq to avoid IRQs being
+> disabled/enabled in most cases. Consequently, there are some TODO comment=
+s
+> highlighting the places that would change if local_irq was used. However,
+> there are enough corner cases that it deserves a series on its own
+> separated by one kernel release and the priority right now is to avoid
+> interference of high priority tasks.
 
-Hi Qian,
+FWIW tested this against our RT+nohz_full workloads. I can have another go =
+if
+the locking scheme changes.
 
-The issue is probably due to lack of the following:
+Tested-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
 
-https://lore.kernel.org/linux-mm/YmrWK%2FKoU1zrAxPI@fuller.cnet/
+Thanks,
 
-Can you please give the patch on the URL a try? 
-
-Thanks!
-
+--=20
+Nicol=C3=A1s S=C3=A1enz
 
