@@ -2,79 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C7CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D29C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236181AbiERMKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:10:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39796 "EHLO
+        id S236206AbiERMMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236165AbiERMKk (ORCPT
+        with ESMTP id S236184AbiERMMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:10:40 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C090AEE04
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:10:39 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id bq30so3276316lfb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:10:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:from
-         :subject:content-transfer-encoding;
-        bh=0g7yfMu4xCSIVHCVIGNCQOlaN6kewY2P9A0tD20ICLA=;
-        b=ds3eUN+dNaVVValwr99xS/sS1bYFOO+X4hToNb0ioC4zrERQFjJFWvzqNOvGACCwwU
-         uIT4di61+d4UyW7nsqeKhBVxCPqhxgdUCY3cHTkWxf4Hw8h7xMFtZU12MWRUB5S2ALzk
-         UkTDaFfE1QnbX3j90KvljUFzhMezFIL+ES4P6OBpF/r3bnquJixamrvKYHge4Z1vRGVH
-         VhFk4MHAiXrqUI0CfXyLQMWCwzFExa0rAI53wM7gKcw4NZbKXeD2/9pEuHtcru+f8+m0
-         j5rzIfStoXY8w3/Gw/cJz9ZKXOP3PyEnxpOGEg28+mSz9Cxf4jQ6iPjx7qDKDY/cOTwb
-         9YTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:from:subject:content-transfer-encoding;
-        bh=0g7yfMu4xCSIVHCVIGNCQOlaN6kewY2P9A0tD20ICLA=;
-        b=jTCr0ZJjO5vpkmQ5u2QfKIbD4ggY8oV1MQxXrJv5PmTVxhqV6cuzH5gsa4n5+Mv61m
-         A8SrDWChnNr195u5x+iRiwNocFzQnOUgH7xClFtT2v7FuD0dwp4IymGjvnBnkRzBe4kM
-         WOLgaBYvzA6gTXeeDT14sGMdwr/r8lNUbzerU3ct8fcozYyAi8i2EKcvozj2AMf5Z9nq
-         cfMF0Zv5kOubp5mzzex8qjGjQILtXALhE8eZkG1I4yWi6rISyTXuLeqKVaLguxo+5R1D
-         5hS5MlqTUM4xchRgh95Z6F0RytBYaGDwiZJA/yD858ZC9Z/agPApcouYPTEliUFtG8b/
-         9gTw==
-X-Gm-Message-State: AOAM533EdZu1iVveRxubc0MmU7kA00xswzTUBYCCJBKmulM+J7nxsoGh
-        0VApZ0FCidHtHL89tj5DYN4UQVWZu70hyQ==
-X-Google-Smtp-Source: ABdhPJx1Etk3lrBUM3tTNom3YZzjRejYzCiGQdWf/gzByf6kPJDz0GFgzb7sxUyQc/Mt+HdA9ZwMuw==
-X-Received: by 2002:ac2:50d6:0:b0:477:a6d0:be6e with SMTP id h22-20020ac250d6000000b00477a6d0be6emr5401964lfm.197.1652875837833;
-        Wed, 18 May 2022 05:10:37 -0700 (PDT)
-Received: from [10.0.0.2] (89-69-162-27.dynamic.chello.pl. [89.69.162.27])
-        by smtp.gmail.com with ESMTPSA id s5-20020a2e83c5000000b0024f3d1daf04sm187245ljh.140.2022.05.18.05.10.36
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 05:10:37 -0700 (PDT)
-Message-ID: <54db8933-f2f3-d31a-c71f-860285e25abf@gmail.com>
-Date:   Wed, 18 May 2022 14:10:25 +0200
+        Wed, 18 May 2022 08:12:31 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B7E14AA5E
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:12:30 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nrIXT-0003wh-SJ; Wed, 18 May 2022 14:12:27 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C627681373;
+        Wed, 18 May 2022 12:12:26 +0000 (UTC)
+Date:   Wed, 18 May 2022 14:12:26 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Max Staudt <max@enpas.org>, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Device Drivers: (was: Re: [PATCH v3 3/4] can: skb:: move
+ can_dropped_invalid_skb and can_skb_headroom_valid to skb.c)
+Message-ID: <20220518121226.inixzcttub6iuwll@pengutronix.de>
+References: <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+ <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+ <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+ <20220517104545.eslountqjppvcnz2@pengutronix.de>
+ <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+ <20220517141404.578d188a.max@enpas.org>
+ <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+ <20220517143921.08458f2c.max@enpas.org>
+ <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+ <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org
-From:   =?UTF-8?Q?Micha=c5=82_Dec?= <moog621@gmail.com>
-Subject: Alternatives after removal of ReiserFS
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3kuiw7eefpz5cmyt"
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
 
-Does the Linux kernel actually offer any alternatives to users whose use 
-cases are satisfied by ReiserFS? These users will probably be stuck with 
-a much older kernel once ReiserFS is completely removed. I'm one of 
-those users and I use ReiserFS to keep around large quantities of small 
-files and quite ironically these are copies of the Linux kernel. I keep 
-around 2, maybe 3 separate kernel trees to make sure the kernels I have 
-on my devices can be rebuilt at any time.
+--3kuiw7eefpz5cmyt
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
+On 18.05.2022 21:03:37, Vincent MAILHOL wrote:
+> On a different topic, why are all the CAN devices
+> under "Networking support" and not "Device Drivers" in menuconfig
+> like everything else? Would it make sense to move our devices
+> under the "Device Drivers" section?
 
-Michał Dec
+ACK
 
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--3kuiw7eefpz5cmyt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKE4qcACgkQrX5LkNig
+012uAwf+LE2AN6s/mYbZjNau8v96x1hj/9QBlr0QTmKGAt9UN0QPqms3zhapK2C0
+8s0SKtEykDR/6gx9OyIDeQWQbQqf07R/iX0amf7OXnE4TPSx56p3pYk85MCXPoX4
+KWoGcTZSBLFV9Sim+yfs6JaXak1L6mejyWQDz8VqqOx2dpuTgrPETQaGe43Sfh7+
+FH4cIvzhEncq6UpzTpV95hCkv0pqykrhaD4K3Edy8Ay2uBi8ojw1oX5fP2PR5BLu
+SgqJHj+7isGkwRJWgcaYlGBk6jeDsewb5t2UCF+Gt7B4D8ODh8YTSUH7KQwAH+3Q
+bONELRwrsSPNcQqaX/63QyjA7MOiDw==
+=tKnl
+-----END PGP SIGNATURE-----
+
+--3kuiw7eefpz5cmyt--
