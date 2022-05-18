@@ -2,100 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39CB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE9CC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238973AbiEROz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 10:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
+        id S238900AbiERO4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 10:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238860AbiEROzW (ORCPT
+        with ESMTP id S239010AbiEROze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 10:55:22 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD54A4616A
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:55:20 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id bo5so2382251pfb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:55:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=o7tY6ZcRmC6gYAakiOEfUJCGVoPD3Xvj9BL1UezKdDA=;
-        b=VPhKTi9d8w7lwf065MCuP6kWcomDghzJDkfvBQwDM9ND2AbNAeIZk20nTc63vu6Mos
-         wag31H9GOQNSydzbC5RipG22vzckeEC+ITBUZzqhHq7mDWtPnoKq5jo2cTUqWpLKrTe4
-         WRkoKwzSZ6uhDh9PaswEQCSHJIPI22M/PAjIqhjrXaGjT3XGB75hvtpifewTVXtoWVmn
-         iJ0qdKOWoGkCWpDZrLhex/I5t0AlklSTgtp4IWxeJ0JihjReGg8FJ+USEvlJmqa8Esfi
-         i6NlWqbaVKThA/yt171mlYyO0TUSCPiXvO14Ex5U20QOp72xCVt484SU7jhaoMdIof0b
-         LBwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=o7tY6ZcRmC6gYAakiOEfUJCGVoPD3Xvj9BL1UezKdDA=;
-        b=cr9ZYUahui1v6pj9c1A5Vf0YqcboQYBolfNLdq1oBbIlppzUWyBuJVkLt3gbje6lW0
-         kVcm4HCIYgli3UZaDOvW22aTxxqEyHM+nkIKJ1byDEC+h+Gb2HM9LT07r4xEcQiq6Vxf
-         XvmhSCAC82CZUgosPU9LbAUUpod2owB6gdpD1UkJeLMEqQui/eMcnU/PkiXrl7xNiujk
-         nRCe/o9yshERtdEH+lc8kjMxBtNhp/QggsuasNl7xOyuqsCGc5nvZgp4ylxKue+r/B1U
-         VeFoQoA12KwUIsq3xkfFo3n8csCPRTjVTT6Z10w9UmECtQO/TdIfW8G1f1pzoHrjKdTF
-         7+tg==
-X-Gm-Message-State: AOAM530P/4qqBJ7ISWSBjM6yM+SH70KeohMZY9SvXo4nB67RwDA25Q0f
-        rr3x8bTj5FIDGEtCUTPd/GRZUQ==
-X-Google-Smtp-Source: ABdhPJysEejWXF06hcE4vW/aCi2q+cxS02x/9DLbVEAvnOwBC9SO7Q3PrJUwsB/1bty7W3/d06HCcQ==
-X-Received: by 2002:a05:6a00:2908:b0:4fa:9297:f631 with SMTP id cg8-20020a056a00290800b004fa9297f631mr93240pfb.3.1652885720016;
-        Wed, 18 May 2022 07:55:20 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id jh1-20020a170903328100b0015e8d4eb269sm1781608plb.179.2022.05.18.07.55.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 07:55:19 -0700 (PDT)
-Date:   Wed, 18 May 2022 14:55:15 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v3 04/34] KVM: x86: hyper-v: Handle
- HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
-Message-ID: <YoUI03NDdMPYTiSO@google.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
- <20220414132013.1588929-5-vkuznets@redhat.com>
- <165aea185dfef1eba9ba0f4fd1c3a95361c41396.camel@redhat.com>
- <877d6juqkw.fsf@redhat.com>
- <YoUAM9UtfQlGOZxl@google.com>
- <87y1yyucis.fsf@redhat.com>
+        Wed, 18 May 2022 10:55:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE28AF1D9;
+        Wed, 18 May 2022 07:55:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CD6560DC0;
+        Wed, 18 May 2022 14:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4268FC385AA;
+        Wed, 18 May 2022 14:55:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652885726;
+        bh=y/nVf707/t+pKLmjuo0j1M7q/g28bwWk29Oh1R8DBz4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=guZ+Xxyh9gOkTE0/y4ptl2ieLoWdWs8y2aB+SXXif8B4B9IuEuRDrUwRsuZXklT3N
+         ul7wcMyOzBlrEmtToMcUWRw6rfipS9zgxXnmXFTpOSCBZ761OnPlfU2BzgzIXwH76q
+         UibMwKzOH1hdVomum7sS+fYiLUEaXUMIn40NKQsVnGERenGbm4F81BOboZHxe7IpVY
+         9jcmA4cH5OZTL2Z0LvDg1fLiu10iBYaPRrKvSxHCASViIEXxHCE5CmrvlRP5WYYOHp
+         DeKdQsmHEOGj7bJ9CnOGrFR1d9SAn9QbK0l0othc6qYTacv6/1dm5sOEVVlGMoSM/b
+         Y7FqFC23QbMUQ==
+Date:   Wed, 18 May 2022 17:57:07 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>,
+        Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH v3 15/21] xen/tpmfront: use xenbus_setup_ring() and
+ xenbus_teardown_ring()
+Message-ID: <YoUJQ5KQYZyG4gj3@iki.fi>
+References: <20220505081640.17425-1-jgross@suse.com>
+ <20220505081640.17425-16-jgross@suse.com>
+ <YnWh6P7kBtPa2aTA@kernel.org>
+ <642471c7-f717-2ef4-1d6d-6fabf57db08f@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87y1yyucis.fsf@redhat.com>
+In-Reply-To: <642471c7-f717-2ef4-1d6d-6fabf57db08f@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022, Vitaly Kuznetsov wrote:
-> Sean Christopherson <seanjc@google.com> writes:
+On Wed, May 18, 2022 at 11:41:51AM +0200, Juergen Gross wrote:
+> On 07.05.22 00:32, Jarkko Sakkinen wrote:
+> > On Thu, May 05, 2022 at 10:16:34AM +0200, Juergen Gross wrote:
+> > > Simplify tpmfront's ring creation and removal via xenbus_setup_ring()
+> > > and xenbus_teardown_ring().
+> > > 
+> > > Signed-off-by: Juergen Gross <jgross@suse.com>
+> > 
+> > Please add to the commit message why these provide an equivalent
+> > functionality.
 > 
-> > On Wed, May 18, 2022, Vitaly Kuznetsov wrote:
-> >> Maxim Levitsky <mlevitsk@redhat.com> writes:
-> >> > Or if using kfifo, then it can contain plain u64 items, which is even more natural.
-> >> >
-> >> 
-> >> In the next version I switch to fifo and get rid of 'flush_all' entries
-> >> but instead of a boolean I use a 'magic' value of '-1' in GVA. This way
-> >> we don't need to synchronize with the reader and add any special
-> >> handling for the flag.
-> >
-> > Isn't -1 theoretically possible?  Or is wrapping not allowed?  E.g. requesting a
-> > flush for address=0xfffffffffffff000, count = 0xfff will yield -1 and doesn't
-> > create any illegal addresses in the process.
-> >
+> Would you be fine with:
 > 
-> Such an error would just lead to KVM flushing the whole guest address
-> space instead of flushing 4096 pages starting with 0xfffffffffffff000
-> but over-flushing is always architecturally correct, isn't it?
+>   Simplify tpmfront's ring creation and removal via xenbus_setup_ring()
+>   and xenbus_teardown_ring(), which are provided exactly for the use
+>   pattern as seen in this driver.
+> 
+> 
+> Juergen
 
-Oh, duh.  Yeah, flushing everything is totally ok.  Maybe just add a comment above
-the #define for the magic value calling out that corner case and why it's ok?
+Looks fine to me!
+
+BR, Jarkko
+
+
+
+
