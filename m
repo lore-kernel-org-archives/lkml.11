@@ -2,162 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:29:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D68C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233169AbiERI3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37484 "EHLO
+        id S233305AbiERIbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233052AbiERI3b (ORCPT
+        with ESMTP id S233266AbiERIbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:29:31 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F95131F1D;
-        Wed, 18 May 2022 01:29:30 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 3EE671F44C48
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652862568;
-        bh=B5iXBTSLQ4uTMVDMAikh/PyBC8/1DmHnDiYnDQpXUGc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=VcZSgyDFkXVQ7ZBn6tniLuaZ9UMwP2ol1ef2Kzy5s8z7Xo9QrYRbECkueg5HvXsu7
-         Kj0VuXcW9sczbDy0CexTkc3zMJf3rKpQzlGST0kZr8cbOuqQ9rUy3ht1H7G9Q2rmnU
-         UOlyrtxgsMkLwV4A0gJdMmkKPmLvofWMD6kNgk6rpx+DVqph87f5Qb8dUdTBUjZkzH
-         WDAW1JqlhB3X/IxoSD3TV8WpPVN6JuYGyV4MfFvyWUqZFsIZCMF4nyHI0hwskPq+g7
-         Od19IMjW/qJd5+RBTtB5vaoC921CK71aF1PFQozoeBmiE9QRtEd6h7f4XRjg944Mvv
-         qqJcGEHj8exew==
-Message-ID: <b003c37c-0f2d-31f6-6a74-4e1f0f4a1ccb@collabora.com>
-Date:   Wed, 18 May 2022 10:29:26 +0200
+        Wed, 18 May 2022 04:31:38 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995064C7BF
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:31:37 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 524D21F9B0;
+        Wed, 18 May 2022 08:31:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652862696; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=clHMZp1vlTxFjg2PbSC20KdrMGXGOqwY/UgJfCLMkCk=;
+        b=oGeFYrFgtziEZt8WTwwCH2Q4fx8hjN4wHcvTldIY5BKjkC/eJbdIHi39fmrGWNZIDsUdKL
+        sQ6MVSM1Nc5m27RLx77P57pqtVdkrxSnE3sg7ydRO6M2fz3dwBPQfzAgAidcssP9g+7mcb
+        BLXm2yF4b+eq5bJbO15mBKhyMVTdA+o=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652862696;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=clHMZp1vlTxFjg2PbSC20KdrMGXGOqwY/UgJfCLMkCk=;
+        b=ailfFGbikuR24eepb4GmtM1ajAW3yj+5CmVd5bclqJ0iQRHeTV6xZ1Jdr2F/4BCH7tEvRy
+        WGoM7VlTstnvX6Ag==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 492EF13A6D;
+        Wed, 18 May 2022 08:31:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 2NJUDueuhGJwbQAAMHmgww
+        (envelope-from <osalvador@suse.de>); Wed, 18 May 2022 08:31:35 +0000
+Date:   Wed, 18 May 2022 10:31:28 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, willy@infradead.org, vbabka@suse.cz,
+        dhowells@redhat.com, neilb@suse.de, apopple@nvidia.com,
+        david@redhat.com, surenb@google.com, peterx@redhat.com,
+        naoya.horiguchi@nec.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/15] mm/swap: use helper is_swap_pte() in
+ swap_vma_readahead
+Message-ID: <YoSu4ClIm/suFAFH@localhost.localdomain>
+References: <20220509131416.17553-1-linmiaohe@huawei.com>
+ <20220509131416.17553-2-linmiaohe@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/8] iommu: mtk_iommu: Lookup phandle to retrieve syscon
- to infracfg
-Content-Language: en-US
-To:     Robin Murphy <robin.murphy@arm.com>, yong.wu@mediatek.com
-Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220517132107.195932-1-angelogioacchino.delregno@collabora.com>
- <20220517132107.195932-3-angelogioacchino.delregno@collabora.com>
- <16fb07d9-28d8-5c73-1eb5-ec13544d22e5@arm.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <16fb07d9-28d8-5c73-1eb5-ec13544d22e5@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509131416.17553-2-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 17/05/22 16:12, Robin Murphy ha scritto:
-> On 2022-05-17 14:21, AngeloGioacchino Del Regno wrote:
->> This driver will get support for more SoCs and the list of infracfg
->> compatibles is expected to grow: in order to prevent getting this
->> situation out of control and see a long list of compatible strings,
->> add support to retrieve a handle to infracfg's regmap through a
->> new "mediatek,infracfg" phandle.
->>
->> In order to keep retrocompatibility with older devicetrees, the old
->> way is kept in place, but also a dev_warn() was added to advertise
->> this change in hope that the user will see it and eventually update
->> the devicetree if this is possible.
->>
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->> ---
->>   drivers/iommu/mtk_iommu.c | 40 +++++++++++++++++++++++++--------------
->>   1 file changed, 26 insertions(+), 14 deletions(-)
->>
->> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
->> index 71b2ace74cd6..cfaaa98d2b50 100644
->> --- a/drivers/iommu/mtk_iommu.c
->> +++ b/drivers/iommu/mtk_iommu.c
->> @@ -1134,22 +1134,34 @@ static int mtk_iommu_probe(struct platform_device *pdev)
->>       data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
->>       if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE)) {
->> -        switch (data->plat_data->m4u_plat) {
->> -        case M4U_MT2712:
->> -            p = "mediatek,mt2712-infracfg";
->> -            break;
->> -        case M4U_MT8173:
->> -            p = "mediatek,mt8173-infracfg";
->> -            break;
->> -        default:
->> -            p = NULL;
->> +        infracfg = syscon_regmap_lookup_by_phandle(dev->of_node, 
->> "mediatek,infracfg");
->> +        if (IS_ERR(infracfg)) {
->> +            dev_warn(dev, "Cannot find phandle to mediatek,infracfg:"
->> +                      " Please update your devicetree.\n");
+On Mon, May 09, 2022 at 09:14:02PM +0800, Miaohe Lin wrote:
+> Use helper is_swap_pte() to check whether pte is swap entry to make code
+> more clear. Minor readability improvement.
 > 
-> Is this really a dev_warn-level problem? There's no functional impact, given that 
-> we can't stop supporting the original binding any time soon, if ever, so I suspect 
-> this is more likely to just annoy users and CI systems than effect any significant 
-> change.
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+
+> ---
+>  mm/swap_state.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/mm/swap_state.c b/mm/swap_state.c
+> index 577c2848ae49..240b39ed5922 100644
+> --- a/mm/swap_state.c
+> +++ b/mm/swap_state.c
+> @@ -818,9 +818,7 @@ static struct page *swap_vma_readahead(swp_entry_t fentry, gfp_t gfp_mask,
+>  	for (i = 0, pte = ra_info.ptes; i < ra_info.nr_pte;
+>  	     i++, pte++) {
+>  		pentry = *pte;
+> -		if (pte_none(pentry))
+> -			continue;
+> -		if (pte_present(pentry))
+> +		if (!is_swap_pte(pentry))
+>  			continue;
+>  		entry = pte_to_swp_entry(pentry);
+>  		if (unlikely(non_swap_entry(entry)))
+> -- 
+> 2.23.0
+> 
 > 
 
-The upstream devicetrees were updated to use the new handle and this is a way to
-warn about having outdated DTs... besides, I believe that CIs will always get the
-devicetree from the same tree that the kernel was compiled from (hence no message
-will be thrown).
-
-In any case, if you think that a dev_info would be more appropriate, I can change
-that no problem.
-
->> +            /*
->> +             * Legacy devicetrees will not specify a phandle to
->> +             * mediatek,infracfg: in that case, we use the older
->> +             * way to retrieve a syscon to infra.
->> +             *
->> +             * This is for retrocompatibility purposes only, hence
->> +             * no more compatibles shall be added to this.
->> +             */
->> +            switch (data->plat_data->m4u_plat) {
->> +            case M4U_MT2712:
->> +                p = "mediatek,mt2712-infracfg";
->> +                break;
->> +            case M4U_MT8173:
->> +                p = "mediatek,mt8173-infracfg";
->> +                break;
->> +            default:
->> +                p = NULL;
->> +            }
->> +
->> +            infracfg = syscon_regmap_lookup_by_compatible(p);
-> 
-> Would it not make sense to punt this over to the same mechanism as for pericfg, 
-> such that it simplifies down to something like:
-> 
->      if (IS_ERR(infracfg) && plat_data->infracfg) {
->          infracfg = syscon_regmap_lookup_by_compatible(plat_data->infracfg);
->          ...
->      }
-> 
-> ?
-> 
-> TBH if we're still going to have a load of per-SoC data in the driver anyway then I 
-> don't see that we really gain much by delegating one aspect of it to DT, but meh. I 
-> would note that with the phandle approach, you still need some *other* flag in the 
-> driver to know whether a phandle is expected to be present or not, whereas a NULL 
-> vs. non-NULL string is at least neatly self-describing.
-> 
-
-That would be possible but, as Yong also pointed out, we should try to reduce the
-per-SoC data in the driver by commonizing as much as possible, because this driver
-supports a very long list of SoCs (even though they're not all upstreamed yet),
-and the list is going to grow even more with time: this is also why I have changed
-the MT8195 pericfg regmap lookup with a phandle like I've done for infra.
-
-There would also be another way, which would imply adding a generic compatible
-"mediatek,infracfg" to the infra syscon node, but I really don't like that for
-more than one reason, one of which is that this poses an issue, for which it's
-not guaranteed that the registers are in infracfg and not infracfg_ao (even
-though the offsets are the same), so then we would be back to ground zero.
-
-Regards,
-Angelo
-
+-- 
+Oscar Salvador
+SUSE Labs
