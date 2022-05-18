@@ -2,120 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B6E4C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD535C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241678AbiERSxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 14:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
+        id S241673AbiERSx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 14:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241708AbiERSxO (ORCPT
+        with ESMTP id S241646AbiERSx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 14:53:14 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6D020EE20;
-        Wed, 18 May 2022 11:53:10 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e5e433d66dso3914370fac.5;
-        Wed, 18 May 2022 11:53:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=8MjJCE/8K8+TV18DiRjp4WnXk9vy6w8u4Ub+xfkaiUo=;
-        b=NWb6Q3Xp8TjvfEuECfIQr9df1jw+ayPwuRvx0niNBQuVXPSTM+UUV9YoaOuxuK70MH
-         C2pCHplp1VP4eV5d0Pkihl3CYLiitDTRasrd+7p/pYXn+DV89pSXfMOKLllydTfH8NeF
-         7mRQub4QFL+L6RR4mfEjJhA+SRKn9X+zHqtPYelTGz0gstgzPRNP5StkaljSpjCOS0Lq
-         hJKA51WujP9e9c8K4GzLG7mBFm8hsli0kcmWSUjyNZAzQ3EkU7kVgoHwjV+IDP5DcEMe
-         T09kJRO94G5ogh7TMRGPX24aDGQmFNkOZzkFi+Iia2gp6lr3twPg9GB3BZ6KSMNxpOxg
-         m7oQ==
-X-Gm-Message-State: AOAM531rZ1Jh8K+slVqKDs6Wjlg0WgEukSX7nEhxc664egcU3G5Gj/5J
-        piGvk4IjSs5kLkyCKqhEbA==
-X-Google-Smtp-Source: ABdhPJw+P/6QyDD9F7P5YoNd1qUPUMDZ8vwFg4Y7o7BJFW/d3h8QUhanxfXSfGfLfywzFxVJbjIodA==
-X-Received: by 2002:a05:6870:f61a:b0:f1:7484:8eca with SMTP id ek26-20020a056870f61a00b000f174848ecamr546312oab.107.1652899989566;
-        Wed, 18 May 2022 11:53:09 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id a9-20020a056870618900b000edda81f868sm1267659oah.10.2022.05.18.11.53.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 11:53:08 -0700 (PDT)
-Received: (nullmailer pid 3685342 invoked by uid 1000);
-        Wed, 18 May 2022 18:53:07 -0000
-Date:   Wed, 18 May 2022 13:53:07 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 05/12] dt-bindings: net: dsa: add bindings
- for Renesas RZ/N1 Advanced 5 port switch
-Message-ID: <20220518185307.GL3302100-robh@kernel.org>
-References: <20220509131900.7840-1-clement.leger@bootlin.com>
- <20220509131900.7840-6-clement.leger@bootlin.com>
- <20220511152221.GA334055-robh@kernel.org>
- <20220511153337.deqxawpbbk3actxf@skbuf>
- <20220518015924.GC2049643-robh@kernel.org>
- <20220518120503.3m2zfw7kmhsfg336@skbuf>
- <20220518144111.135c7d0d@fixe.home>
+        Wed, 18 May 2022 14:53:26 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167FA1F90E0;
+        Wed, 18 May 2022 11:53:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652900005; x=1684436005;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2hqguD+cz1/iZKLkowNHSUq5raydVYd0Hdqyf7PUieI=;
+  b=mbvReICNSesHetVAzcE2eue9K+kZWz0YDZRrZLnBuSrp9MHWvSTDU3fW
+   glRPOf14XekZ+yd78AJtiV0WmtqgbQ7NJzZY0SbefQ99iqNUdEmaTjFJU
+   PAYT5fITmx/ITtxZ2kQUwK9rqug2zvzVvLHzqvUHlW09XGl7pAWP4npu7
+   LvRv82PUe/hbo/Ba3zKxlNDdSS3xVdvF3oXahGPjpSveZ/ONKV0/3DDQs
+   xuUTFAErDizdEH3VT0RNkSeF7zF/xWynqmc5DTN8yYl7etclvqn0ab37v
+   MAMRcFi55FlLvBegi0WCfXe/HYNvwo0v1E2DpyEg8A5+SV7uCaosCGxwr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="271975090"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="271975090"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:48:36 -0700
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="545621407"
+Received: from cmhseih-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.195.218])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:48:34 -0700
+Message-ID: <41e7d536f72accbcbd2c782f1a5f18d0546098fb.camel@linux.intel.com>
+Subject: Re: hid-sensor-hub 001F:8087:0AC2.0002: timeout waiting for
+ response from ISHTP device
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Jiri Kosina <jikos@kernel.org>, Even Xu <even.xu@intel.com>,
+        Zhang Lixu <lixu.zhang@intel.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Dell.Client.Kernel@dell.com
+Date:   Wed, 18 May 2022 11:48:34 -0700
+In-Reply-To: <82e9a41c-552a-07e2-7caa-a14913cd34f4@molgen.mpg.de>
+References: <289be79b-8fbb-d171-a1e5-5d8218dff39d@molgen.mpg.de>
+         <8833ba2600208a05940943636a3bd8b6af6a9fe4.camel@linux.intel.com>
+         <dff3d94c-93be-2b31-35c6-35a7886f3680@molgen.mpg.de>
+         <8fc40ebb2fbcecb1ab2f5ea156bf9ec10aff06bf.camel@linux.intel.com>
+         <82e9a41c-552a-07e2-7caa-a14913cd34f4@molgen.mpg.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220518144111.135c7d0d@fixe.home>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 02:41:11PM +0200, Clément Léger wrote:
-> Le Wed, 18 May 2022 15:05:03 +0300,
-> Vladimir Oltean <olteanv@gmail.com> a écrit :
-> 
-> > On Tue, May 17, 2022 at 08:59:24PM -0500, Rob Herring wrote:
-> > > On Wed, May 11, 2022 at 06:33:37PM +0300, Vladimir Oltean wrote:  
-> > > > On Wed, May 11, 2022 at 10:22:21AM -0500, Rob Herring wrote:  
-> > > > > > +patternProperties:
-> > > > > > +  "^ethernet-ports$":  
-> > > > > 
-> > > > > Move to 'properties', not a pattern.
-> > > > > 
-> > > > > With that,
-> > > > > 
-> > > > > Reviewed-by: Rob Herring <robh@kernel.org>  
-> > > > 
-> > > > Even if it should have been "^(ethernet-)?ports$"?  
-> > > 
-> > > Why? Allowing 'ports' is for existing users. New ones don't need the 
-> > > variability and should use just 'ethernet-ports'.
-> > > 
-> > > Rob  
-> > 
-> > Yeah, ok, somehow the memo that new DSA drivers shouldn't support "ports"
-> > didn't reach me. They invariably will though, since the DSA framework is
-> > the main parser of the property, and that is shared by both old and new
-> > drivers.
-> 
-> Should also the subnodes of "ethernet-ports" use the
-> "ethernet-port@[0-9]*" naming ? Or keeping the existing pattern is ok
-> (ie "^(ethernet-)?port@[0-4]$") ?
+Hi Paul,
 
-I prefer the former, but care less. The whole reason for 'ethernet-' 
-prefix is to make this distinct from the graph binding that uses ports 
-and port.
+On Wed, 2022-05-18 at 20:06 +0200, Paul Menzel wrote:
+> Dear Srinivas,
+> 
+> 
+> Am 18.05.22 um 17:39 schrieb srinivas pandruvada:
+> 
+> > Attached a diff. Please use git apply and build kernel. And attach
+> > dmesg. I want to see where did it fail.
+> 
+> As written, the device is used in production by a user, so I am not 
+> sure, if I can get the device to test self-built Linux kernel images
+> to 
+> debug this issue. It would really be better to get access to such a 
+> device from Dell or in some Intel lab.
+> 
+Let me try to get one.
+You described some firmware version. Where did you see that? Do you
+mean BIOS version?
 
-Rob
+Thanks,
+Srinivas
+
+
+> 
+> Kind regards,
+> 
+> Paul
+
