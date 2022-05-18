@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D41C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21663C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237059AbiERMeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
+        id S237067AbiERMeQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237005AbiERMdJ (ORCPT
+        with ESMTP id S236795AbiERMdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:33:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DA8115CAD;
-        Wed, 18 May 2022 05:29:28 -0700 (PDT)
+        Wed, 18 May 2022 08:33:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D624F13275E;
+        Wed, 18 May 2022 05:29:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F638B81FB8;
-        Wed, 18 May 2022 12:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DDE2C385A5;
-        Wed, 18 May 2022 12:28:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C93261688;
+        Wed, 18 May 2022 12:29:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B668C34100;
+        Wed, 18 May 2022 12:29:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876917;
-        bh=bmNDXt0dhhCHvZC50SZNQe0bZ4XDsvewzFJ1e8Dm0K0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m8bue/yyLBC0cbGjkjP0wCmVfY13c088dqmnuandPg1YJu1jJofIlj8paojZIlXQo
-         6px7iMnbugbaNAwnCW1gooVKKaKLswXIioULnuHFAF7Kl4nDy/J3GLK1ze4Z2IBbAG
-         hy/5OF+YQePXgoIVoxwMTDXoGHNfFpBZvacvXIM5xmsu3DsUL5t7gpr86JABRGuSiB
-         W4WO2yJm1792k4gQmrnk66coMB1zIEUSHjJaRbn06XyBYouw2AFmtIg2Yo9V+K0tvc
-         YZ3furQ1pP3Wj0pEDHcHzFW1kXiD7KcVTF0N+OAHB8IStebKFAGiSYhwsVl+qmW4A4
-         UneyNoGljeSEA==
+        s=k20201202; t=1652876972;
+        bh=PbB7C77+uD6w0+4mF6M8fnCmGhUXFeYrAwDI9Gltt64=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lTckHEocHQZ5e2/iGwY1bRYorpQGOwkn5FVgJzQ/SBLGPOHvYsCGqzH3OQQbPuN90
+         YEMxfMAqmMjjkvZXK4RM99Je0l8jkCL9m8WuLFIe5afYTjOngKhmB+Jk/Rwka7d9iV
+         mEFOfFeyxAmM0TW+J6tL3kY9M7f1KQwLWUY3dJoMQbEHEk3q8PSQmYb5nwPGnNu7A5
+         dFSUSrYTTASxNjhXuWXwBIeW65Lxar0T+lE8x2idn+5R/a36Cf8ta6PHFTmszhLEYF
+         N+cFM8+0ciHkjGyjK2Z6PTmQ5SgER+RuxtU66LN5jWTyL4H+3gJVcKhAAZrU1I799U
+         6Da3XU4yuIQJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shreyas K K <quic_shrekk@quicinc.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        catalin.marinas@arm.com, corbet@lwn.net, anshuman.khandual@arm.com,
-        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
-        james.morse@arm.com, lcherian@marvell.com, maz@kernel.org,
-        arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 16/17] arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs
-Date:   Wed, 18 May 2022 08:27:50 -0400
-Message-Id: <20220518122753.342758-16-sashal@kernel.org>
+Cc:     Gleb Chesnokov <Chesnokov.G@raidix.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, njavali@marvell.com,
+        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 1/6] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
+Date:   Wed, 18 May 2022 08:29:24 -0400
+Message-Id: <20220518122929.343615-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
-References: <20220518122753.342758-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,55 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreyas K K <quic_shrekk@quicinc.com>
+From: Gleb Chesnokov <Chesnokov.G@raidix.com>
 
-[ Upstream commit 51f559d66527e238f9a5f82027bff499784d4eac ]
+[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
 
-Add KRYO4XX gold/big cores to the list of CPUs that need the
-repeat TLBI workaround. Apply this to the affected
-KRYO4XX cores (rcpe to rfpe).
+Aborting commands that have already been sent to the firmware can
+cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
 
-The variant and revision bits are implementation defined and are
-different from the their Cortex CPU counterparts on which they are
-based on, i.e., (r0p0 to r3p0) is equivalent to (rcpe to rfpe).
+For instance:
 
-Signed-off-by: Shreyas K K <quic_shrekk@quicinc.com>
-Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Link: https://lore.kernel.org/r/20220512110134.12179-1-quic_shrekk@quicinc.com
-Signed-off-by: Will Deacon <will@kernel.org>
+ - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
+
+ - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
+
+ - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
+
+ - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
+   unmapped
+
+Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
+
+Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/arm64/silicon-errata.rst | 3 +++
- arch/arm64/kernel/cpu_errata.c         | 2 ++
- 2 files changed, 5 insertions(+)
+ drivers/scsi/qla2xxx/qla_target.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index d410a47ffa57..7c1750bcc5bd 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -163,6 +163,9 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | Qualcomm Tech. | Kryo4xx Silver  | N/A             | ARM64_ERRATUM_1024718       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| Qualcomm Tech. | Kryo4xx Gold    | N/A             | ARM64_ERRATUM_1286807       |
-++----------------+-----------------+-----------------+-----------------------------+
+diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
+index df598c377161..cb97565b6a33 100644
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -3768,6 +3768,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+ 
+ 	spin_lock_irqsave(&cmd->cmd_lock, flags);
+ 	if (cmd->aborted) {
++		if (cmd->sg_mapped)
++			qlt_unmap_sg(vha, cmd);
 +
- +----------------+-----------------+-----------------+-----------------------------+
- | Fujitsu        | A64FX           | E#010001        | FUJITSU_ERRATUM_010001      |
- +----------------+-----------------+-----------------+-----------------------------+
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index a33d7b8f3b93..c67c19d70159 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -208,6 +208,8 @@ static const struct arm64_cpu_capabilities arm64_repeat_tlbi_list[] = {
- #ifdef CONFIG_ARM64_ERRATUM_1286807
- 	{
- 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
-+		/* Kryo4xx Gold (rcpe to rfpe) => (r0p0 to r3p0) */
-+		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
- 	},
- #endif
- 	{},
+ 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
+ 		/*
+ 		 * It's normal to see 2 calls in this path:
 -- 
 2.35.1
 
