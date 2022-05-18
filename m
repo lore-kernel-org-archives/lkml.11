@@ -2,164 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D69C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 05:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47997C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 05:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbiERF6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 01:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33658 "EHLO
+        id S230432AbiERF6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 01:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230407AbiERF6o (ORCPT
+        with ESMTP id S230414AbiERF6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 01:58:44 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A962DC1ED8;
-        Tue, 17 May 2022 22:58:42 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id k16so1190072pff.5;
-        Tue, 17 May 2022 22:58:42 -0700 (PDT)
+        Wed, 18 May 2022 01:58:39 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9017FC03AB
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 22:58:37 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id i8so795511plr.13
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 22:58:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Wvwoi2ieX1SAY39tBWj8LHG37asi931JP8mrlpfaKk4=;
-        b=IYRMNrIiumsSaflitKrY0i7FLS+lQCNLzOzrzfpuDPHl8qKTyR2SruC/IiZPaWASLU
-         h1814XYKS6hk+GXI8YmOfUnZZvmtntVApJKWkygY16itKnRQP2mlCzMkvZBUWHpeFhdf
-         vxsTjQ/hFRdQmWf81TAcvUVbgUIqwgYy/P2macO/GgTqyvjwUq6j6rEzicfyDezBeCJh
-         jalDG8dek+x5k4G1i6fjll8rsPu9bLOuh5MuDAsCSNI+H91QXyUx22iqd8m24ddtm7p9
-         SQvgRYreW4YjQ3RNg+uvIuLy6RceXkwr/A5qYIInoXTV+YQHxzPC4L5WS8ySQpgc+F6R
-         R5yg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9SWvOVMom7eH8OxIEa5j/UzCXep6BepIu9+Sif8dUOs=;
+        b=JqcJt6uIoGSIGoO1syYH8keD5bz6dUyxA8kyc0WiuF4JA0MqIT4+Cbg9tR7PQPUiCZ
+         dpN/HenEBY2Ii1GOg1gBN5kxBqu29xz90NEA1W8lh+cZOSTgsC4JcNG59ObBxco/28qh
+         oSLNze77Z0vBtSgGoPRYeNlwJlGGnWOh91H5d4UjIGpYeZnQf2FqjzuW3rJ4LsZnyhSz
+         5UJSo/b9/JjQZtTUo7+IFSJImj98/2PNaGeEk5JM6TUm8nWP5xWeooZNOu2XSa5zetfJ
+         8OYToR6vrreKvb4zWfhDctjECDX2NL4YQjCEOPWPeNE/BCfW7uhsZZ0Z06GgNE0dMMGS
+         Yl7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Wvwoi2ieX1SAY39tBWj8LHG37asi931JP8mrlpfaKk4=;
-        b=xCX9NlvSF5v2EHSXkqW2W7By52Pssel/I3L1TpNUQop0PsCIdJ0KaswWdZmsYhT9UL
-         ROCiwZqU9vDGnfnFLZjXK8LJ8lAg6d5nXXNzoGV3k+KOlpTwibI+LWnwf207VyrnvjKm
-         qTCJfdnXurpPdzMrZhZ8gva4eY2/pzligiZc+uCbb/T+PKClqKt6sM1QRtxjiub3tIil
-         Lps85V/5MzQ0GO9406X6z+rxUShcoL5F+bAdTJImJ+WBpejALcycdSIZYkKsLwW4+2h2
-         DhN++/vmXwD86by/NM5gIAeAEJf9r54SB27Qa3Y7ScI0R+0HxmYlynT4iA0Ggt20b6iW
-         54Ng==
-X-Gm-Message-State: AOAM530R0N0HgWofdpR6aAGaAJCE9WMCiPMaI/Suj8jZVNiYJZ52yHGj
-        E5+U2s0hBOBul3eS4h5oGKY=
-X-Google-Smtp-Source: ABdhPJwr9HRFJAt/zhYuJZ10Py9yYXbZjFzFpTiFrytFhnSOVnn+LtwTvwpMfpIndB0c1Sf+6QiTvA==
-X-Received: by 2002:a63:5d50:0:b0:3db:5325:b120 with SMTP id o16-20020a635d50000000b003db5325b120mr22910678pgm.212.1652853521830;
-        Tue, 17 May 2022 22:58:41 -0700 (PDT)
-Received: from localhost ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id q13-20020a170903204d00b0015e8d4eb20asm649445pla.84.2022.05.17.22.58.40
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9SWvOVMom7eH8OxIEa5j/UzCXep6BepIu9+Sif8dUOs=;
+        b=uU5E7Vzpxi3QdQcfBFWbO/BYDRuT0DIC2evReVahYgwDmqU5QDgEu/Fej2kRV1nKNk
+         pQCBgZHBTIPqgYoit7EYPpw+cap7BeCuOAb4HXyfW8wsAg1X4dMpc2HtSTACIreDXUrS
+         fyDINKCvKWA5D3AaVraPwwrV7CGqv5xDXzwqgj+BSmPbn8TiPxqywYThlYLv8z23PYpc
+         oeJ/mzqpt2rUNMJlfLHQaWyF5Xae3yNNAV5obWlMMWOVOwSr9rnlRj5E5In1R3h3F+lN
+         a4juLiderbEFiJ78uW+3cLVzpKzvqkMTgtHpcNsSxqCeeXKsgJ5Vo2X/1N+Wuz9hIgze
+         s+Mg==
+X-Gm-Message-State: AOAM531dcpPa7fWM7xIwMeYzmaFro/1oc4JTHlX5Z2mF+LlnJfMpjLnp
+        GQLApO9dA2u+Q0ITeQnfhsbSzQ==
+X-Google-Smtp-Source: ABdhPJzHjbGfUbQ2W9SW30P+OO67WGBSZyKgknK2Dr3MxlJpsx//hJaD/732Fw7cpIF7Rh6ibp5lXw==
+X-Received: by 2002:a17:90b:4acc:b0:1df:ac4c:d6d with SMTP id mh12-20020a17090b4acc00b001dfac4c0d6dmr2403094pjb.5.1652853516713;
+        Tue, 17 May 2022 22:58:36 -0700 (PDT)
+Received: from localhost.localdomain (n058152048195.netvigator.com. [58.152.48.195])
+        by smtp.gmail.com with ESMTPSA id cp16-20020a170902e79000b0015e8d4eb2c2sm627127plb.268.2022.05.17.22.58.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 22:58:41 -0700 (PDT)
-Message-ID: <62848b11.1c69fb81.6ce50.2091@mx.google.com>
-X-Google-Original-Message-ID: <20220518055839.GA1677365@cgel.zte@gmail.com>
-Date:   Wed, 18 May 2022 05:58:39 +0000
-From:   CGEL <cgel.zte@gmail.com>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
-        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
-        linmiaohe@huawei.com, william.kucharski@oracle.com,
-        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
-        songmuchun@bytedance.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
-Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
-References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
- <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
- <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
- <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
- <6278fa75.1c69fb81.9c598.f794@mx.google.com>
- <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
- <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
- <Yno3pNQOn1lAMPnu@dhcp22.suse.cz>
- <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
- <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
+        Tue, 17 May 2022 22:58:36 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Like Xu <likexu@tencent.com>, Alyssa Ross <hi@alyssa.is>,
+        Ian Rogers <irogers@google.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Adam Li <adamli@amperemail.onmicrosoft.com>,
+        Li Huafei <lihuafei1@huawei.com>,
+        German Gomez <german.gomez@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Ali Saidi <alisaidi@amazon.com>, Joe Mario <jmario@redhat.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH v3 09/11] perf c2c: Sort on peer snooping for load operations
+Date:   Wed, 18 May 2022 13:57:27 +0800
+Message-Id: <20220518055729.1869566-10-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220518055729.1869566-1-leo.yan@linaro.org>
+References: <20220518055729.1869566-1-leo.yan@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 03:36:34PM +0200, Michal Hocko wrote:
-> On Tue 10-05-22 11:52:51, CGEL wrote:
-> > On Tue, May 10, 2022 at 12:00:04PM +0200, Michal Hocko wrote:
-> > > On Tue 10-05-22 01:43:38, CGEL wrote:
-> > > > On Mon, May 09, 2022 at 01:48:39PM +0200, Michal Hocko wrote:
-> > > > > On Mon 09-05-22 11:26:43, CGEL wrote:
-> > > > > > On Mon, May 09, 2022 at 12:00:28PM +0200, Michal Hocko wrote:
-> > > > > > > On Sat 07-05-22 02:05:25, CGEL wrote:
-> > > > > > > [...]
-> > > > > > > > If there are many containers to run on one host, and some of them have high
-> > > > > > > > performance requirements, administrator could turn on thp for them:
-> > > > > > > > # docker run -it --thp-enabled=always
-> > > > > > > > Then all the processes in those containers will always use thp.
-> > > > > > > > While other containers turn off thp by:
-> > > > > > > > # docker run -it --thp-enabled=never
-> > > > > > > 
-> > > > > > > I do not know. The THP config space is already too confusing and complex
-> > > > > > > and this just adds on top. E.g. is the behavior of the knob
-> > > > > > > hierarchical? What is the policy if parent memcg says madivise while
-> > > > > > > child says always? How does the per-application configuration aligns
-> > > > > > > with all that (e.g. memcg policy madivise but application says never via
-> > > > > > > prctl while still uses some madvised - e.g. via library).
-> > > > > > >
-> > > > > > 
-> > > > > > The cgroup THP behavior is align to host and totally independent just likes
-> > > > > > /sys/fs/cgroup/memory.swappiness. That means if one cgroup config 'always'
-> > > > > > for thp, it has no matter with host or other cgroup. This make it simple for
-> > > > > > user to understand or control.
-> > > > > 
-> > > > > All controls in cgroup v2 should be hierarchical. This is really
-> > > > > required for a proper delegation semantic.
-> > > > >
-> > > > 
-> > > > Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
-> > > > Some distributions like Ubuntu is still using cgroup v1.
-> > > 
-> > > cgroup v1 interface is mostly frozen. All new features are added to the
-> > > v2 interface.
-> > >
-> > 
-> > So what about we add this interface to cgroup v2?
-> 
-> Can you come up with a sane hierarchical behavior?
-> 
-> [...]
-> > > > For micro-service architecture, the application in one container is not a
-> > > > set of loosely tight processes, it's aim at provide one certain service,
-> > > > so different containers means different service, and different service
-> > > > has different QoS demand. 
-> > > 
-> > > OK, if they are tightly coupled you could apply the same THP policy by
-> > > an existing prctl interface. Why is that not feasible. As you are noting
-> > > below...
-> > > 
-> > > >     5.containers usually managed by compose software, which treats container as
-> > > > base management unit;
-> > > 
-> > > ..so the compose software can easily start up the workload by using prctl
-> > > to disable THP for whatever workloads it is not suitable for.
-> > 
-> > prctl(PR_SET_THP_DISABLE..) can not be elegance to support the semantic we
-> > need. If only some containers needs THP, other containers and host do not need
-> > THP. We must set host THP to always first, and call prctl() to close THP for
-> > host tasks and other containers one by one,
-> 
-> It might not be the most elegant solution but it should work.
-> Maintaining user interfaces for ever has some cost and the THP
-> configuration space is quite large already. So I would rather not add
-> more complication in unless that is absolutely necessary.
->
+Except the existed three display options 'tot', 'rmt', 'lcl', this patch
+adds a new option 'peer' so can sort on the cache hit for peer snooping.
 
-By the way, should we let prctl() support PR_SET_THP_ALWAYS? Just likes
-PR_TASK_PERF_EVENTS_DISABLE and PR_TASK_PERF_EVENTS_ENABLE. This would
-make it simpler to let certain process use THP while others not use.
+For displaying with option 'peer', the "Shared Data Cache Line Table" and
+"Shared Cache Line Distribution Pareto" both sort with the metrics
+"ld_peer".  As result, we can get the 'peer' display as below:
 
-> > in this process some tasks that start before we call prctl() may
-> > already use THP with no need.
-> 
-> As long as all those processes have a common ancestor I do not see how
-> that would be possible.
-> 
-> -- 
-> Michal Hocko
-> SUSE Labs
+  # perf c2c report -d peer --coalesce tid,pid,iaddr,dso -N --stdio
+
+  [...]
+
+  =================================================
+             Shared Data Cache Line Table
+  =================================================
+  #
+  #        ----------- Cacheline ----------    Snoop  ------- Load Hitm -------    Snoop    Total    Total    Total  --------- Stores --------  ----- Core Load Hit -----  - LLC Load Hit --  - RMT Load Hit --  --- Load Dram ----
+  # Index             Address  Node  PA cnt     Peer    Total  LclHitm  RmtHitm     Peer  records    Loads   Stores    L1Hit   L1Miss      N/A       FB       L1       L2    LclHit  LclHitm    RmtHit  RmtHitm       Lcl       Rmt
+  # .....  ..................  ....  ......  .......  .......  .......  .......  .......  .......  .......  .......  .......  .......  .......  .......  .......  .......  ........  .......  ........  .......  ........  ........
+  #
+        0      0xaaaac17d6000   N/A       0  100.00%        0        0        0       99    18851    18851        0        0        0        0        0    18752        0         0        0         0        0         0         0
+
+  =================================================
+        Shared Cache Line Distribution Pareto
+  =================================================
+  #
+  #        ----- HITM -----    Snoop  ------- Store Refs ------  --------- Data address ---------                                                  --------------- cycles ---------------    Total       cpu                                    Shared
+  #   Num  RmtHitm  LclHitm     Peer   L1 Hit  L1 Miss      N/A              Offset  Node  PA cnt      Pid                Tid        Code address  rmt hitm  lcl hitm      load      peer  records       cnt                  Symbol            Object      Source:Line  Node{cpus %peers %stores}
+  # .....  .......  .......  .......  .......  .......  .......  ..................  ....  ......  .......  .................  ..................  ........  ........  ........  ........  .......  ........  ......................  ................  ...............  ....
+  #
+    -------------------------------------------------------------------------------
+        0        0        0       99        0        0        0      0xaaaac17d6000
+    -------------------------------------------------------------------------------
+             0.00%    0.00%    3.03%    0.00%    0.00%    0.00%                0x20   N/A       0     3603     3603:memstress      0xaaaac17c25ac         0         0        41       376     9314         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0{ 2 100.0%    n/a}
+             0.00%    0.00%    3.03%    0.00%    0.00%    0.00%                0x20   N/A       0     3603     3606:memstress      0xaaaac17c25ac         0         0        44       375     9155         1  [.] 0x00000000000025ac  memstress         memstress[25ac]   0{ 1 100.0%    n/a}
+             0.00%    0.00%   45.45%    0.00%    0.00%    0.00%                0x29   N/A       0     3603     3603:memstress      0xaaaac17c3e88         0         0       175       180       70         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0{ 2 100.0%    n/a}
+             0.00%    0.00%   48.48%    0.00%    0.00%    0.00%                0x29   N/A       0     3603     3606:memstress      0xaaaac17c3e88         0         0       170       180       65         1  [.] 0x0000000000003e88  memstress         memstress[3e88]   0{ 1 100.0%    n/a}
+
+  [...]
+
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: Ali Saidi <alisaidi@amazon.com>
+---
+ tools/perf/builtin-c2c.c | 63 +++++++++++++++++++++++++++++++---------
+ 1 file changed, 49 insertions(+), 14 deletions(-)
+
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 757a79442a52..3bd422c5e8ae 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -117,13 +117,15 @@ enum {
+ 	DISPLAY_LCL_HITM,
+ 	DISPLAY_RMT_HITM,
+ 	DISPLAY_TOT_HITM,
++	DISPLAY_SNP_PEER,
+ 	DISPLAY_MAX,
+ };
+ 
+ static const char *display_str[DISPLAY_MAX] = {
+-	[DISPLAY_LCL_HITM] = "Local",
+-	[DISPLAY_RMT_HITM] = "Remote",
+-	[DISPLAY_TOT_HITM] = "Total",
++	[DISPLAY_LCL_HITM] = "Local HITMs",
++	[DISPLAY_RMT_HITM] = "Remote HITMs",
++	[DISPLAY_TOT_HITM] = "Total HITMs",
++	[DISPLAY_SNP_PEER] = "Snoop Peers",
+ };
+ 
+ static const struct option c2c_options[] = {
+@@ -816,6 +818,11 @@ static double percent_costly_snoop(struct c2c_hist_entry *c2c_he)
+ 	case DISPLAY_TOT_HITM:
+ 		st  = stats->tot_hitm;
+ 		tot = total->tot_hitm;
++		break;
++	case DISPLAY_SNP_PEER:
++		st  = stats->ld_peer;
++		tot = total->ld_peer;
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -1191,6 +1198,10 @@ node_entry(struct perf_hpp_fmt *fmt __maybe_unused, struct perf_hpp *hpp,
+ 				ret = display_metrics(hpp, stats->tot_hitm,
+ 						      c2c_he->stats.tot_hitm);
+ 				break;
++			case DISPLAY_SNP_PEER:
++				ret = display_metrics(hpp, stats->ld_peer,
++						      c2c_he->stats.ld_peer);
++				break;
+ 			default:
+ 				break;
+ 			}
+@@ -1546,6 +1557,7 @@ static struct c2c_header percent_costly_snoop_header[] = {
+ 	[DISPLAY_LCL_HITM] = HEADER_BOTH("Lcl", "Hitm"),
+ 	[DISPLAY_RMT_HITM] = HEADER_BOTH("Rmt", "Hitm"),
+ 	[DISPLAY_TOT_HITM] = HEADER_BOTH("Tot", "Hitm"),
++	[DISPLAY_SNP_PEER] = HEADER_BOTH("Snoop", "Peer"),
+ };
+ 
+ static struct c2c_dimension dim_percent_costly_snoop = {
+@@ -2022,6 +2034,10 @@ static bool he__display(struct hist_entry *he, struct c2c_stats *stats)
+ 		he->filtered = filter_display(c2c_he->stats.tot_hitm,
+ 					      stats->tot_hitm);
+ 		break;
++	case DISPLAY_SNP_PEER:
++		he->filtered = filter_display(c2c_he->stats.ld_peer,
++					      stats->ld_peer);
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -2050,6 +2066,8 @@ static inline bool is_valid_hist_entry(struct hist_entry *he)
+ 	case DISPLAY_TOT_HITM:
+ 		has_record = !!c2c_he->stats.tot_hitm;
+ 		break;
++	case DISPLAY_SNP_PEER:
++		has_record = !!c2c_he->stats.ld_peer;
+ 	default:
+ 		break;
+ 	}
+@@ -2139,7 +2157,10 @@ static int resort_cl_cb(struct hist_entry *he, void *arg __maybe_unused)
+ }
+ 
+ static struct c2c_header header_node_0 = HEADER_LOW("Node");
+-static struct c2c_header header_node_1 = HEADER_LOW("Node{cpus %hitms %stores}");
++static struct c2c_header header_node_1_hitms_stores =
++		HEADER_LOW("Node{cpus %hitms %stores}");
++static struct c2c_header header_node_1_peers_stores =
++		HEADER_LOW("Node{cpus %peers %stores}");
+ static struct c2c_header header_node_2 = HEADER_LOW("Node{cpu list}");
+ 
+ static void setup_nodes_header(void)
+@@ -2149,7 +2170,10 @@ static void setup_nodes_header(void)
+ 		dim_node.header = header_node_0;
+ 		break;
+ 	case 1:
+-		dim_node.header = header_node_1;
++		if (c2c.display == DISPLAY_SNP_PEER)
++			dim_node.header = header_node_1_peers_stores;
++		else
++			dim_node.header = header_node_1_hitms_stores;
+ 		break;
+ 	case 2:
+ 		dim_node.header = header_node_2;
+@@ -2223,13 +2247,15 @@ static int setup_nodes(struct perf_session *session)
+ }
+ 
+ #define HAS_HITMS(__h) ((__h)->stats.lcl_hitm || (__h)->stats.rmt_hitm)
++#define HAS_PEER(__h) ((__h)->stats.ld_peer)
+ 
+ static int resort_shared_cl_cb(struct hist_entry *he, void *arg __maybe_unused)
+ {
+ 	struct c2c_hist_entry *c2c_he;
+ 	c2c_he = container_of(he, struct c2c_hist_entry, he);
+ 
+-	if (HAS_HITMS(c2c_he)) {
++	if ((c2c.display != DISPLAY_SNP_PEER && HAS_HITMS(c2c_he)) ||
++	    (c2c.display == DISPLAY_SNP_PEER && HAS_PEER(c2c_he))) {
+ 		c2c.shared_clines++;
+ 		c2c_add_stats(&c2c.shared_clines_stats, &c2c_he->stats);
+ 	}
+@@ -2404,7 +2430,7 @@ static void print_c2c_info(FILE *out, struct perf_session *session)
+ 		fprintf(out, "%-36s: %s\n", first ? "  Events" : "", evsel__name(evsel));
+ 		first = false;
+ 	}
+-	fprintf(out, "  Cachelines sort on                : %s HITMs\n",
++	fprintf(out, "  Cachelines sort on                : %s\n",
+ 		display_str[c2c.display]);
+ 	fprintf(out, "  Cacheline data grouping           : %s\n", c2c.cl_sort);
+ }
+@@ -2561,7 +2587,7 @@ static int perf_c2c_browser__title(struct hist_browser *browser,
+ {
+ 	scnprintf(bf, size,
+ 		  "Shared Data Cache Line Table     "
+-		  "(%lu entries, sorted on %s HITMs)",
++		  "(%lu entries, sorted on %s)",
+ 		  browser->nr_non_filtered_entries,
+ 		  display_str[c2c.display]);
+ 	return 0;
+@@ -2767,6 +2793,8 @@ static int setup_display(const char *str)
+ 		c2c.display = DISPLAY_RMT_HITM;
+ 	else if (!strcmp(display, "lcl"))
+ 		c2c.display = DISPLAY_LCL_HITM;
++	else if (!strcmp(display, "peer"))
++		c2c.display = DISPLAY_SNP_PEER;
+ 	else {
+ 		pr_err("failed: unknown display type: %s\n", str);
+ 		return -1;
+@@ -2848,6 +2876,7 @@ static int build_cl_output(char *cl_sort, bool no_source)
+ static int setup_coalesce(const char *coalesce, bool no_source)
+ {
+ 	const char *c = coalesce ?: coalesce_default;
++	const char *sort_str = NULL;
+ 
+ 	if (asprintf(&c2c.cl_sort, "offset,%s", c) < 0)
+ 		return -ENOMEM;
+@@ -2855,12 +2884,16 @@ static int setup_coalesce(const char *coalesce, bool no_source)
+ 	if (build_cl_output(c2c.cl_sort, no_source))
+ 		return -1;
+ 
+-	if (asprintf(&c2c.cl_resort, "offset,%s",
+-		     c2c.display == DISPLAY_TOT_HITM ?
+-		     "tot_hitm" :
+-		     c2c.display == DISPLAY_RMT_HITM ?
+-		     "rmt_hitm,lcl_hitm" :
+-		     "lcl_hitm,rmt_hitm") < 0)
++	if (c2c.display == DISPLAY_TOT_HITM)
++		sort_str = "tot_hitm";
++	else if (c2c.display == DISPLAY_RMT_HITM)
++		sort_str = "rmt_hitm,lcl_hitm";
++	else if (c2c.display == DISPLAY_LCL_HITM)
++		sort_str = "lcl_hitm,rmt_hitm";
++	else if (c2c.display == DISPLAY_SNP_PEER)
++		sort_str = "ld_peer";
++
++	if (asprintf(&c2c.cl_resort, "offset,%s", sort_str) < 0)
+ 		return -ENOMEM;
+ 
+ 	pr_debug("coalesce sort   fields: %s\n", c2c.cl_sort);
+@@ -3021,6 +3054,8 @@ static int perf_c2c__report(int argc, const char **argv)
+ 		sort_str = "rmt_hitm";
+ 	else if (c2c.display == DISPLAY_LCL_HITM)
+ 		sort_str = "lcl_hitm";
++	else if (c2c.display == DISPLAY_SNP_PEER)
++		sort_str = "ld_peer";
+ 
+ 	c2c_hists__reinit(&c2c.hists, output_str, sort_str);
+ 
+-- 
+2.25.1
+
