@@ -2,102 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238267AbiERNym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
+        id S238432AbiERNzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238395AbiERNy2 (ORCPT
+        with ESMTP id S238443AbiERNz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:54:28 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1831C7666;
-        Wed, 18 May 2022 06:54:08 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L3DwB0mhqzhZBc;
-        Wed, 18 May 2022 21:53:14 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 18 May 2022 09:55:26 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C837E1C7669;
+        Wed, 18 May 2022 06:55:11 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L3Dxj5GTtzhZ19;
+        Wed, 18 May 2022 21:54:33 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 21:54:02 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: [PATCH bpf-next v5 6/6] selftests/bpf: Fix trivial typo in fentry_fexit.c
-Date:   Wed, 18 May 2022 09:16:38 -0400
-Message-ID: <20220518131638.3401509-7-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220518131638.3401509-1-xukuohai@huawei.com>
-References: <20220518131638.3401509-1-xukuohai@huawei.com>
+ 2022 21:55:09 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <geert@linux-m68k.org>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v2 -next] serial: cpm_uart: Fix build error without CONFIG_SERIAL_CPM_CONSOLE
+Date:   Wed, 18 May 2022 21:54:52 +0800
+Message-ID: <20220518135452.39480-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500013.china.huawei.com (7.221.188.120)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500007.china.huawei.com (7.192.104.62)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "ipv6" word in assertion message should be "fentry_fexit".
+drivers/tty/serial/cpm_uart/cpm_uart_core.c: In function ‘cpm_uart_init_port’:
+drivers/tty/serial/cpm_uart/cpm_uart_core.c:1251:7: error: ‘udbg_port’ undeclared (first use in this function); did you mean ‘uart_port’?
+  if (!udbg_port)
+       ^~~~~~~~~
+       uart_port
 
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Acked-by: Song Liu <songliubraving@fb.com>
+commit d142585bceb3 leave this corner, wrap it with #ifdef block
+
+Fixes: d142585bceb3 ("serial: cpm_uart: Protect udbg definitions by CONFIG_SERIAL_CPM_CONSOLE")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- tools/testing/selftests/bpf/prog_tests/fentry_fexit.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v2: merge #ifdef
+---
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c b/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
-index 130f5b82d2e6..e3c139bde46e 100644
---- a/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
-@@ -28,8 +28,8 @@ void test_fentry_fexit(void)
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index d6d3db9c3b1f..db07d6a5d764 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -1247,7 +1247,7 @@ static int cpm_uart_init_port(struct device_node *np,
+ 	}
  
- 	prog_fd = fexit_skel->progs.test1.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
--	ASSERT_OK(err, "ipv6 test_run");
--	ASSERT_OK(topts.retval, "ipv6 test retval");
-+	ASSERT_OK(err, "fentry_fexit test_run");
-+	ASSERT_OK(topts.retval, "fentry_fexit test retval");
- 
- 	fentry_res = (__u64 *)fentry_skel->bss;
- 	fexit_res = (__u64 *)fexit_skel->bss;
+ #ifdef CONFIG_PPC_EARLY_DEBUG_CPM
+-#ifdef CONFIG_CONSOLE_POLL
++#if defined(CONFIG_CONSOLE_POLL) && defined(CONFIG_SERIAL_CPM_CONSOLE)
+ 	if (!udbg_port)
+ #endif
+ 		udbg_putc = NULL;
 -- 
-2.30.2
+2.17.1
 
