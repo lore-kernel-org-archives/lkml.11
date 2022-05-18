@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42996C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F96C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236862AbiERMaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
+        id S236699AbiERMaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236846AbiERM3U (ORCPT
+        with ESMTP id S236867AbiERM3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:29:20 -0400
+        Wed, 18 May 2022 08:29:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0101737C2;
-        Wed, 18 May 2022 05:28:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F26E195795;
+        Wed, 18 May 2022 05:28:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E04361625;
-        Wed, 18 May 2022 12:28:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D29F3C34117;
-        Wed, 18 May 2022 12:27:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 240FD6164C;
+        Wed, 18 May 2022 12:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44938C34119;
+        Wed, 18 May 2022 12:28:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876880;
-        bh=3jqX2tNzlGdh6B6LW6vTGiMiL3pLN+9ZoUniItJymII=;
+        s=k20201202; t=1652876891;
+        bh=2G3O/BeuOB/LP+pXY8WjpNyQcb0iZ9J+DrQIeLIcGXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hk6F6X1fNOlwpFKZLI7PRa6/f/uIYlCwdz+z2jro1vyYSbsOAtcwEmzEHUQxhkysb
-         0wwT558C4sBmcCLGyCZhnNQpBECQy2LXBClP5JS/Yy+arJqasE3Qh5YUDLl0zH9+8T
-         Vo2Ulj0/pYfg6FMgwVrW6cLX1FNFoScZiCCr4bQGu38EPhrcJRwjxpGzG9xEcfPPKt
-         WVyS7zBsYWv0wdybdxueguQQCoIiy3i5srMSo/qSA8ZQatGbSPSWgPydkksUsYPtN2
-         AtXm0/xy+zt2V6TTtcW/AwzEAik4SEU+oKKWIgoRtqNQQagafXjDdGjgAoP79aPPu5
-         Q1rHzwdR3VKTg==
+        b=boOUcq/+nlWQEoFW6WOugy+AXfoip8MtHPwSJ2jzQu5iucQZa6ZHqkvuUPd8gV1cv
+         SEIeJ9Rr5K6MXJ8AYXtRY740YD+OBB1AKHjjCSCRGzkxuOVw+8IXKTQIsUBe4T6SdW
+         YN9L02OCFTmew9kz+//gRD0qJca91EUxGD5p2k06Ztj43S1p0GMcN9psuQkQ8HNTzT
+         umPjyzoAWkQ+OOBODwIVGr/+aVG7mMVUJK8N90HciP2/CPjKQ6ycoE5vCU4nHtAzOX
+         jFycRdjAA40VGdSiLOdnHH0hrbvo1uesHAvTtvOAd1W9+ifVlF3BTTDB/zGLVUKw7H
+         HpEmhdlE2P89Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/17] mac80211: fix rx reordering with non explicit / psmp ack policy
-Date:   Wed, 18 May 2022 08:27:37 -0400
-Message-Id: <20220518122753.342758-3-sashal@kernel.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>, daniel@ffwll.ch,
+        deller@gmx.de, wangqing@vivo.com, sam@ravnborg.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 07/17] fbdev: Prevent possible use-after-free in fb_release()
+Date:   Wed, 18 May 2022 08:27:41 -0400
+Message-Id: <20220518122753.342758-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
 References: <20220518122753.342758-1-sashal@kernel.org>
@@ -54,36 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
+[ Upstream commit 89bfd4017e58faaf70411555e7f508495114e90b ]
 
-When the QoS ack policy was set to non explicit / psmp ack, frames are treated
-as not being part of a BA session, which causes extra latency on reordering.
-Fix this by only bypassing reordering for packets with no-ack policy
+Most fbdev drivers have issues with the fb_info lifetime, because call to
+framebuffer_release() from their driver's .remove callback, rather than
+doing from fbops.fb_destroy callback.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Doing that will destroy the fb_info too early, while references to it may
+still exist, leading to a use-after-free error.
+
+To prevent this, check the fb_info reference counter when attempting to
+kfree the data structure in framebuffer_release(). That will leak it but
+at least will prevent the mentioned error.
+
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220505220413.365977-1-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/video/fbdev/core/fbsysfs.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index eab6283b3479..743e97ba352c 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1400,8 +1400,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
- 		goto dont_reorder;
- 
- 	/* not part of a BA session */
--	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
--	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
-+	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
- 		goto dont_reorder;
- 
- 	/* new, potentially un-ordered, ampdu frame - process it */
+diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
+index 65dae05fff8e..ce699396d6ba 100644
+--- a/drivers/video/fbdev/core/fbsysfs.c
++++ b/drivers/video/fbdev/core/fbsysfs.c
+@@ -80,6 +80,10 @@ void framebuffer_release(struct fb_info *info)
+ {
+ 	if (!info)
+ 		return;
++
++	if (WARN_ON(refcount_read(&info->count)))
++		return;
++
+ 	kfree(info->apertures);
+ 	kfree(info);
+ }
 -- 
 2.35.1
 
