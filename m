@@ -2,109 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A364BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A902C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233369AbiERBPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 21:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
+        id S233380AbiERBRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 21:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233380AbiERBPS (ORCPT
+        with ESMTP id S233353AbiERBRT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 21:15:18 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A6D54187;
-        Tue, 17 May 2022 18:15:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652836514; x=1684372514;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6tM7gH4JRFS/rWl6JwkUGKCjUG1QwGkrdJ6CLSIx99k=;
-  b=BW5DDf8NhRFcwwpKiqW9KZolGfJwVscOubYrTOKqqHebUf91oDAXlarP
-   k/aN2ccibWeqLp5xycukAmpICJ/jwTPjFvlpCpn6qwsMniJcRU/JEeKty
-   MsmFB9hJw5xYSfbhiW+0ArudxZNQAVqL9+gK9QisOYmoQIvkvM+OVRxmx
-   A/9GaW+W9Qasylu3nkPgUK1yH0xijTCFJTfBfP0pSa0pwr71/THrnCWpH
-   tGiSONpmu/w8dJeAa0mwkcNADEUfEA/PLN0AJJWMBqKgxHwt/FW4SGuy2
-   hyq8XsEHR2i2iykVT8qkfxlqHyz3V2RFT+eHrrvLkE6mUrUF5l2/KqfKq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="258979715"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="258979715"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 18:15:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="597448146"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 17 May 2022 18:15:10 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nr8HN-0001d7-Md;
-        Wed, 18 May 2022 01:15:09 +0000
-Date:   Wed, 18 May 2022 09:14:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     longli@linuxonhyperv.com, "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Long Li <longli@microsoft.com>
-Subject: Re: [PATCH 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
- Network Adapter
-Message-ID: <202205180903.446J0L2Y-lkp@intel.com>
-References: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
+        Tue, 17 May 2022 21:17:19 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488162BB3C
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 18:17:18 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id k30so554416wrd.5
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 18:17:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=66BpVpX1hmsXLIKfSSFdSpdl5oqz90D5jwxwG9o6mz4=;
+        b=xRYWEaCNYX3CRkGbSb4Lw1NbuD1fUhSJXWVeeeS+fYrLui8cAamp3GLZ5IrJmOwlHL
+         cIwxRHBDy2EYZaX5HQlzo5cHlmXO4fc6AkevIifcdVt3aqG/EefBANpLhfO/IgGNThLi
+         XXLG+lLTKSGbegkuAdO/g7AGpPVLaAUdZSBWcy+FO+q+hMmllMvXwCPop9daonKuHsTB
+         tglkvTKV9qIWdLh0wlZz6dVSqg1zMF7WsuVzxKms+6AHzX2isFrEv75VOukGFsUyZy5D
+         pNTnRKdGNlqV7iWjgnlst45h2wwejrXC1qf/n4xNGqx+LtpHMX4qYW1fo7tfBm8x3pQy
+         1pRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=66BpVpX1hmsXLIKfSSFdSpdl5oqz90D5jwxwG9o6mz4=;
+        b=5CUzIztVDqj2aTE6ARKMn+XMLZRwBiOpoJLxPG2/wRQmnxZK8MFvUea17T63TWgzsj
+         OjAF+Vxi5D+kLhRPVtCwWhjgHJvO/9CgJM6hzXxu82Kjhmqi/8F8anOlF3zATVN8ZwQ2
+         d49L5tXxiE1+MD4Xgk8UXkhW3b0o3ldbKw+EuEQZpgaPV+EVsbtXmqKMt1cEouxCvIKd
+         DOOM9lAlthyDeFUTfSrY8kix/qkM2xKLvMLOYbZ7JTSBoFkcjyQE3DsqXH0KTPrj019m
+         tpOgD2+qeopXQjLIjyFi7S/CRmobak8JtgsPQBZ7IMxjUHeRxARnndHTARmfW5NbdmKp
+         ZC2A==
+X-Gm-Message-State: AOAM532c+rYdPP7oyFULHezMxJTpzj5rDOaz1QkcOBVBsTMCfdPcfiQy
+        5TUn+WPUB+bJt3eK8fik8U4EuzJCBXK9UVDOmN39
+X-Google-Smtp-Source: ABdhPJwgGJ20dTMB4rX7QcbmClGxzMeLSl+5R1372QnAoz8I90LnDWXFMl7B7wWxBi+NGEuc+n5MNXshqKaGIp7Rhoc=
+X-Received: by 2002:a5d:5888:0:b0:20c:9868:9d94 with SMTP id
+ n8-20020a5d5888000000b0020c98689d94mr19998482wrf.433.1652836636768; Tue, 17
+ May 2022 18:17:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
+References: <20220503183750.1977-1-duguoweisz@gmail.com>
+In-Reply-To: <20220503183750.1977-1-duguoweisz@gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 17 May 2022 21:17:06 -0400
+Message-ID: <CAHC9VhRfRKS_-A6LGhgMp06wsvHtRj6ZaiQWp8c7U_LXozTeYg@mail.gmail.com>
+Subject: Re: [PATCH] fsnotify: add generic perm check for unlink/rmdir
+To:     Guowei Du <duguoweisz@gmail.com>
+Cc:     jack@suse.cz, amir73il@gmail.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jmorris@namei.org, serge@hallyn.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-security-module@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
+        tony.luck@intel.com, selinux@vger.kernel.org,
+        duguowei <duguowei@xiaomi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, May 3, 2022 at 2:38 PM Guowei Du <duguoweisz@gmail.com> wrote:
+>
+> From: duguowei <duguowei@xiaomi.com>
+>
+> For now, there have been open/access/open_exec perms for file operation,
+> so we add new perms check with unlink/rmdir syscall. if one app deletes
+> any file/dir within pubic area, fsnotify can sends fsnotify_event to
+> listener to deny that, even if the app have right dac/mac permissions.
+>
+> Signed-off-by: duguowei <duguowei@xiaomi.com>
+> ---
+>  fs/notify/fsnotify.c             |  2 +-
+>  include/linux/fs.h               |  2 ++
+>  include/linux/fsnotify.h         | 16 ++++++++++++++++
+>  include/linux/fsnotify_backend.h |  6 +++++-
+>  security/security.c              | 12 ++++++++++--
+>  security/selinux/hooks.c         |  4 ++++
+>  6 files changed, 38 insertions(+), 4 deletions(-)
 
-I love your patch! Yet something to improve:
+...
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.18-rc7 next-20220517]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> index e9e959343de9..f0780f0eb903 100644
+> --- a/security/selinux/hooks.c
+> +++ b/security/selinux/hooks.c
+> @@ -1801,8 +1801,12 @@ static int may_create(struct inode *dir,
+>  }
+>
+>  #define MAY_LINK       0
+> +#ifndef MAY_UNLINK
+>  #define MAY_UNLINK     1
+> +#endif
+> +#ifndef MAY_RMDIR
+>  #define MAY_RMDIR      2
+> +#endif
 
-url:    https://github.com/intel-lab-lkp/linux/commits/longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220517-170632
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 42226c989789d8da4af1de0c31070c96726d990c
-config: x86_64-randconfig-a002-20220516 (https://download.01.org/0day-ci/archive/20220518/202205180903.446J0L2Y-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f082dc68ab65c498c978d574e62413d50286b4f9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220517-170632
-        git checkout f082dc68ab65c498c978d574e62413d50286b4f9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from <built-in>:1:
->> ./usr/include/rdma/mana-abi.h:12:10: fatal error: 'linux/mana/mana.h' file not found
-   #include <linux/mana/mana.h>
-            ^~~~~~~~~~~~~~~~~~~
-   1 error generated.
+In the future if you run into a symbol collision here I would prefer
+if you renamed the SELinux constants to something like SEL_MAY_LINK,
+etc.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+paul-moore.com
