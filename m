@@ -2,126 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD88C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E173C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbiERGbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
+        id S231460AbiERGbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230512AbiERGau (ORCPT
+        with ESMTP id S231433AbiERGbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:30:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90612DFF49
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:30:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652855447;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=HiUpgPTTlKwXv4we5H4dCAID8KOjBHxi0Xtt24lk5jI=;
-        b=gCsHJ7NndDTq3S/1d08gvXS7/f26u1OZae55U4+tKOZk/cUE830XQzmkeBZn+cwygdqQOO
-        cQnmKgr1rAYk+GzmpxX6XfHaCTr7IAwNPdq6/Ap6NNyMqxFJ/koEMWj30aY0PRdIddnvw2
-        asO63bqc3EgI/nzK5JObFFKB4/O0nFY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-41-guaH5da3M3KxDG2S8TfNzQ-1; Wed, 18 May 2022 02:30:42 -0400
-X-MC-Unique: guaH5da3M3KxDG2S8TfNzQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 472348032EA;
-        Wed, 18 May 2022 06:30:42 +0000 (UTC)
-Received: from localhost (unknown [10.39.192.212])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D72E6492C3B;
-        Wed, 18 May 2022 06:30:41 +0000 (UTC)
-Date:   Wed, 18 May 2022 07:30:40 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Kirill Tkhai <kirill.tkhai@openvz.org>
-Cc:     qemu-devel@nongnu.org, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org, Kevin Wolf <kwolf@redhat.com>,
-        hreitz@redhat.com, Xie Yongji <xieyongji@bytedance.com>,
-        sgarzare@redhat.com
-Subject: Attaching qcow2 images to containers
-Message-ID: <YoSSkOQaGL0sBNOI@stefanha-x1.localdomain>
+        Wed, 18 May 2022 02:31:31 -0400
+Received: from esa12.hc1455-7.c3s2.iphmx.com (esa12.hc1455-7.c3s2.iphmx.com [139.138.37.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE75AE59
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:31:30 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="52853254"
+X-IronPort-AV: E=Sophos;i="5.91,234,1647270000"; 
+   d="scan'208";a="52853254"
+Received: from unknown (HELO yto-r1.gw.nic.fujitsu.com) ([218.44.52.217])
+  by esa12.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 15:31:23 +0900
+Received: from yto-m1.gw.nic.fujitsu.com (yto-nat-yto-m1.gw.nic.fujitsu.com [192.168.83.64])
+        by yto-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 3AC93E5B1E
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:23 +0900 (JST)
+Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
+        by yto-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id 6CAF2D0434
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:22 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by yto-om4.fujitsu.com (Postfix) with ESMTP id ECDB8400C1BB9;
+        Wed, 18 May 2022 15:31:21 +0900 (JST)
+From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, gregkh@linuxfoundation.org,
+        rafael@kernel.org, mchehab+huawei@kernel.org, eugenis@google.com,
+        tony.luck@intel.com, pcc@google.com, peterz@infradead.org,
+        marcos@orca.pet, conor.dooley@microchip.com,
+        nicolas.ferre@microchip.com, marcan@marcan.st,
+        linus.walleij@linaro.org, arnd@arndb.de,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     tarumizu.kohei@fujitsu.com
+Subject: [PATCH v4 1/8] drivers: base: Add hardware prefetch control core driver
+Date:   Wed, 18 May 2022 15:30:25 +0900
+Message-Id: <20220518063032.2377351-2-tarumizu.kohei@fujitsu.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
+References: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="VxVmuJGtHcUMbdkL"
-Content-Disposition: inline
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Adds a register/unregister function to provide sysfs interface to
+control CPU's hardware prefetch behavior. It creates the
+"prefetch_control" sysfs directory and some attributes.
 
---VxVmuJGtHcUMbdkL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Attributes are hardware dependent, so it must be implemented for each
+hardware. If CPU has a hardware prefetch behavior, call this function
+to create sysfs.
 
-Hi Kirill,
-I saw your "[PATCH 0/4] dm: Introduce dm-qcow2 driver to attach QCOW2
-files as block device" patch series:
-https://lore.kernel.org/linux-kernel/YkME5ZS2CpXuNmN6@infradead.org/T/
+Following patches add support for A64FX and x86.
 
-There has been recent work in vDPA (VIRTIO Data Path Acceleration) to
-achieve similar functionality. The qemu-storage-daemon VDUSE export
-attaches a virtio-blk device to the host kernel and QEMU's qcow2
-implementation can be used:
-https://patchew.org/QEMU/20220504074051.90-1-xieyongji@bytedance.com/
+Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+---
+ drivers/base/pfctl.c  | 180 ++++++++++++++++++++++++++++++++++++++++++
+ include/linux/pfctl.h |  14 ++++
+ 2 files changed, 194 insertions(+)
+ create mode 100644 drivers/base/pfctl.c
+ create mode 100644 include/linux/pfctl.h
 
-A container can then access this virtio-blk device (/dev/vda). Note that
-the virtio-blk device is implemented in software using vDPA/VDUSE, there
-is no virtio-pci device.
-
-As a quick comparison with a dm-qcow2 target, this approach keeps the
-qcow2 code in QEMU userspace and can take advantage of QEMU block layer
-features (storage migration/mirroring/backup, snapshots, etc). On the
-other hand, it's likely to be more heavyweight because bounce buffers
-are required in VDUSE for security reasons, there is a separate
-userspace process involved, and there's the virtio_blk.ko driver and an
-emulated virtio-blk device involved.
-
-Another similar feature that was recently added to QEMU is the
-qemu-storage-daemon FUSE export:
-
-  $ qemu-storage-daemon \
-        --blockdev file,filename=test.img,node-name=drive0 \
-	--export fuse,node-name=drive0,id=fuse0,mountpoint=/tmp/foo
-  $ ls -alF /tmp/foo
-  -r--------. 1 me me 10737418240 May 18 07:22 /tmp/foo
-
-This exports a disk image as a file via FUSE. Programs can access it
-like a regular file and qemu-storage-daemon will do the qcow2 I/O on the
-underlying file.
-
-I wanted to mention these options for exposing qcow2 disk images to
-processes/containers on the host. Depending on your use cases they might
-be interesting. Performance comparisons against VDUSE and FUSE exports
-would be interesting since these new approaches seem to be replacing
-qemu-nbd.
-
-Can you share more about your use cases for the dm-qcow2 target? It
-could be useful for everyone I've CCed to be aware of various efforts in
-this area.
-
-Thanks,
-Stefan
-
---VxVmuJGtHcUMbdkL
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmKEkpAACgkQnKSrs4Gr
-c8hBOggAjwLYdNLqHIo1rQgUfb93kau+ER5YddjUvSxG65CLZGYWeB86JOUfT+rR
-hVi2bBGX1OkL1a66tWLK2Tcbakc6XfQXQ6JCbzJUoKCTI9gIA9i3ztjqrQEzoagn
-liMWkk89XmdrLE8gsA7MOKHdFELKRiFds8JKU0Pny/VDJkOlYO/6gcqCw5fcXkrv
-58PTohwKlOgOVdQ1wzlkFGRtTPtc5/JeFzJOIUs4i+GnqtjubKl4VfbjRiAoqTEj
-uOO5gsJ9mdTHyWd1lugxiSqttqVVZZb6VEQvsnZUwFUoNkB/KHoILTcMWd9GWRn0
-HNO2R2xD/zhG2j+x7dw6n7RBczgUdw==
-=Wa4Q
------END PGP SIGNATURE-----
-
---VxVmuJGtHcUMbdkL--
+diff --git a/drivers/base/pfctl.c b/drivers/base/pfctl.c
+new file mode 100644
+index 000000000000..08ee8faaf277
+--- /dev/null
++++ b/drivers/base/pfctl.c
+@@ -0,0 +1,180 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Hardware prefetch control support via sysfs.
++ *
++ * Copyright 2022 FUJITSU LIMITED
++ *
++ * See Documentation/ABI/testing/sysfs-devices-system-cpu for more information.
++ */
++
++#include <linux/cacheinfo.h>
++#include <linux/cpu.h>
++#include <linux/device.h>
++#include <linux/pfctl.h>
++#include <linux/slab.h>
++
++#ifdef pr_fmt
++#undef pr_fmt
++#endif
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++const struct pfctl_group *pgroups;
++enum cpuhp_state hp_online;
++
++static struct device_attribute **
++get_pfctl_attribute(unsigned int level, enum cache_type type)
++{
++	int i;
++
++	for (i = 0; pgroups[i].attrs; i++)
++		if ((level == pgroups[i].level) && (type == pgroups[i].type))
++			return pgroups[i].attrs;
++
++	return NULL;
++}
++
++static int remove_pfctl_attr(struct device *index_dev, void *data)
++{
++	struct cacheinfo *leaf = dev_get_drvdata(index_dev);
++	struct device_attribute **attrs;
++	struct device *pfctl_dev;
++	int i;
++
++	attrs = get_pfctl_attribute(leaf->level, leaf->type);
++	if (!attrs)
++		return 0;
++
++	pfctl_dev = device_find_child_by_name(index_dev, "prefetch_control");
++	if (!pfctl_dev)
++		return 0;
++
++	for (i = 0; attrs[i]; i++)
++		device_remove_file(pfctl_dev, attrs[i]);
++
++	device_unregister(pfctl_dev);
++	put_device(pfctl_dev);
++
++	pfctl_dev = NULL;
++
++	return 0;
++}
++
++static int create_pfctl_attr(struct device *index_dev, void *data)
++{
++	struct cacheinfo *leaf = dev_get_drvdata(index_dev);
++	struct device_attribute **attrs;
++	struct device *pfctl_dev;
++	int i, err;
++
++	attrs = get_pfctl_attribute(leaf->level, leaf->type);
++	if (!attrs)
++		return 0;
++
++	pfctl_dev = cpu_device_create(index_dev, NULL, NULL,
++				      "prefetch_control");
++	if (IS_ERR(pfctl_dev))
++		return PTR_ERR(pfctl_dev);
++
++	for (i = 0; attrs[i]; i++) {
++		err = device_create_file(pfctl_dev, attrs[i]);
++		if (err) {
++			while (--i >= 0)
++				device_remove_file(pfctl_dev, attrs[i]);
++
++			device_unregister(pfctl_dev);
++			pfctl_dev = NULL;
++
++			return err;
++		}
++	}
++
++	return 0;
++}
++
++static int pfctl_online(unsigned int cpu)
++{
++	struct device *cpu_dev = get_cpu_device(cpu);
++	struct device *cache_dev;
++	int ret;
++
++	cache_dev = device_find_child_by_name(cpu_dev, "cache");
++	if (!cache_dev)
++		return -ENODEV;
++
++	ret = device_for_each_child(cache_dev, NULL, create_pfctl_attr);
++	if (ret < 0)
++		device_for_each_child(cache_dev, NULL, remove_pfctl_attr);
++
++	put_device(cache_dev);
++
++	return ret;
++}
++
++static int pfctl_prepare_down(unsigned int cpu)
++{
++	struct device *cpu_dev = get_cpu_device(cpu);
++	struct device *cache_dev;
++
++	cache_dev = device_find_child_by_name(cpu_dev, "cache");
++	if (!cache_dev)
++		return 0;
++
++	device_for_each_child(cache_dev, NULL, remove_pfctl_attr);
++
++	put_device(cache_dev);
++
++	return 0;
++}
++
++/**
++ * pfctl_register_attrs - register a Hardware Prefetch Control attributes
++ * @pfctl_groups: pfctl_groups contains device attribute group to control the
++ *                hardware prefetch register.
++ *
++ * Note: Call this function after the cache device is initialized because it
++ * requires access to the cache device. (e.g. Call at the late_initcall)
++ *
++ * Context: Any context.
++ * Return: 0 on success, negative error code on failure.
++ */
++int pfctl_register_attrs(const struct pfctl_group *pfctl_groups)
++{
++	int ret;
++
++	if (pgroups)
++		return -EEXIST;
++
++	pgroups = pfctl_groups;
++
++	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "base/pfctl:online",
++				pfctl_online, pfctl_prepare_down);
++	if (ret < 0) {
++		pr_err("failed to register hotplug callbacks\n");
++		pgroups = NULL;
++		return ret;
++	}
++
++	hp_online = ret;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(pfctl_register_attrs);
++
++/**
++ * pfctl_unregister_attrs - unregister the Hardware Prefetch Control driver
++ * @pfctl_groups: Used to verify that this function is called by the same driver
++ *                that called pfctl_register_attrs.
++ *
++ * Context: Any context.
++ * Return: nothing.
++ */
++void pfctl_unregister_attrs(const struct pfctl_group *pfctl_groups)
++{
++	if (!pgroups || (pfctl_groups != pgroups))
++		return;
++
++	cpuhp_remove_state(hp_online);
++
++	pgroups = NULL;
++}
++EXPORT_SYMBOL_GPL(pfctl_unregister_attrs);
+diff --git a/include/linux/pfctl.h b/include/linux/pfctl.h
+new file mode 100644
+index 000000000000..ecdab78be09f
+--- /dev/null
++++ b/include/linux/pfctl.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_PFCTL_H
++#define _LINUX_PFCTL_H
++
++struct pfctl_group {
++	unsigned int		level;
++	enum cache_type		type;
++	struct device_attribute	**attrs;
++};
++
++int pfctl_register_attrs(const struct pfctl_group *pfctl_groups);
++void pfctl_unregister_attrs(const struct pfctl_group *pfctl_groups);
++
++#endif
+-- 
+2.27.0
 
