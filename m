@@ -2,265 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B580BC4167B
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A33C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238007AbiERN0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
+        id S237929AbiERN0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237825AbiERNZw (ORCPT
+        with ESMTP id S237801AbiERNZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:25:52 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6EFAFB09;
-        Wed, 18 May 2022 06:25:50 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id i8so1735503plr.13;
-        Wed, 18 May 2022 06:25:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=InECIgSZ0QPmtYHzj1Juv9iX30hqeOQtFiR8TnwIpkk=;
-        b=MMa7UcDqe3NztEgAoWKoc79WYsyZyGuVhIY8+mgRs3qZyGi62S3JQ1PMMVKSUiVlfn
-         nN4n9WWVCDrJjzVsjua3/EkFIxdITSfZNpVAZMNBaH08diQenCWunfQMF9Q32uiwFYw2
-         yQTecdH1DOsZbnO3spGNb2nYi3Bl9yk2VVQ4bDA9HOBLvAV4zZBnqG0krx9waDr8+nJY
-         +xwpN/Bz/ATVOmSsDV07rpshwA6Vo+z0TScDVj13ckjEfWEITkddWe06VYQV9TUo3YI+
-         IOUYau13DOxeTz4/cjVDTB/NXUuOjyRYNBsofnKU7SwGJhRrgMQr8eGdTaM/7H5LDZL2
-         wtaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=InECIgSZ0QPmtYHzj1Juv9iX30hqeOQtFiR8TnwIpkk=;
-        b=W9Gk02DS/VsDPcP4l7CFppZBSGLq3DZx611surMoGQnyPE1Jt8RdmZ+y79kv9uGh95
-         wRqNLICUfz+mDQ37BGQ7OdawWcRj2C0KsZr5GaYnjkSW+Rq81Bwd+J2kwWYjlw08nU+Z
-         j268ZEfQzquSom7QkH3VS7JfJW2bFc2jyk+2z7PYYmZrn0Vsp51d4ckMySfM81knmc3I
-         nM/IWpju6CdNOPp7e41ZMCYLVjj4XqWTs01itvJqsuIACMauD0laeNa3/9NsNeYu19Eg
-         ImjQvzYxCFU071Rt7iAm0RaLLkbh5I9ohOLf0gO3uTtwvJ9dEbd8TmNXjrYS/AV/1Ygq
-         fpOw==
-X-Gm-Message-State: AOAM530RMBQnx0ne7PH1+CURLa0kAKGLE2fasus0uoy/DqQZM11voZEN
-        2bxaBKsn4lmT/bYfI8nq+wE=
-X-Google-Smtp-Source: ABdhPJyGausP/HaR90eiCTKx/g3tX1H76STHGVBFl5nIC+S+CYDhEiOTlENLOVOTdPzQ9kvcoIaucA==
-X-Received: by 2002:a17:90a:9a8b:b0:1df:6b7a:8a40 with SMTP id e11-20020a17090a9a8b00b001df6b7a8a40mr14059230pjp.213.1652880349751;
-        Wed, 18 May 2022 06:25:49 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.117])
-        by smtp.gmail.com with ESMTPSA id s13-20020a17090302cd00b0015e8d4eb244sm1625549plk.142.2022.05.18.06.25.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 06:25:49 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH RESEND v3 11/11] KVM: x86/pmu: Drop amd_event_mapping[] in the KVM context
-Date:   Wed, 18 May 2022 21:25:12 +0800
-Message-Id: <20220518132512.37864-12-likexu@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518132512.37864-1-likexu@tencent.com>
-References: <20220518132512.37864-1-likexu@tencent.com>
+        Wed, 18 May 2022 09:25:49 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47086B7D6;
+        Wed, 18 May 2022 06:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=aBHSQ74cshobrBoDeAcAwH8dbmp4ORux6n0j1EJ9zhs=; b=PbQX6jJxrSTFYuY1QkUAm5HHAj
+        4zjhUqw9dZUmp+/h7FpyGsMd9T7KC01Lk8wihlfsVt15sYS07bd4AGqx/olI4ChlgEfTgoKgt6ghF
+        u4Ul+3a/u8AC1yN3var2ePdBq3yJ0QNuCnzFCU2AsJ1yN+Ew0qnuNx0AKJJMSgaFsHSKjAS/RJyRX
+        nQBP35ba/Mxst73B+b2bL1GyLemevCz0TIExKe/iFre2S2JyltNIOuuqHTXgx4xNR3AtqS8MDXev4
+        Htu1aPv+rb/vlxpa70azlfd8R3qZ4EjVERsEcfu9NCpHDF7PwWBcLltMr6Fz/cDtJaPv3zZndTfPs
+        +f+vkTJA==;
+Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nrJg7-009yTw-Of; Wed, 18 May 2022 15:25:27 +0200
+Message-ID: <5ed2ca7a-5bf3-f101-a1f4-9a320c79f5a0@igalia.com>
+Date:   Wed, 18 May 2022 10:24:39 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+Content-Language: en-US
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Evan Green <evgreen@chromium.org>, David Gow <davidgow@google.com>,
+        Julius Werner <jwerner@chromium.org>,
+        Scott Branden <scott.branden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Sebastian Reichel <sre@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
+        kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de,
+        Kees Cook <keescook@chromium.org>, luto@kernel.org,
+        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
+        peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
+        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
+        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        zhenwei pi <pizhenwei@bytedance.com>,
+        Stephen Boyd <swboyd@chromium.org>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
+ <CAE=gft7ds+dHfEkRz8rnSH1EbTpGTpKbi5Wxj9DW0Jr5mX_j4w@mail.gmail.com>
+ <YoOi9PFK/JnNwH+D@alley> <b9ec2fc8-216f-f261-8417-77b6dd95e25c@igalia.com>
+ <YoShZVYNAdvvjb7z@alley>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <YoShZVYNAdvvjb7z@alley>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On 18/05/2022 04:33, Petr Mladek wrote:
+> [...]
+> Anyway, I would distinguish it the following way.
+> 
+>   + If the notifier is preserving kernel log then it should be ideally
+>     treated as kmsg_dump().
+> 
+>   + It the notifier is saving another debugging data then it better
+>     fits into the "hypervisor" notifier list.
+> 
+>
 
-All gp or fixed counters have been reprogrammed using PERF_TYPE_RAW,
-which means that the table that maps perf_hw_id to event select values is
-no longer useful, at least for AMD.
+Definitely, I agree - it's logical, since we want more info in the logs,
+and happens some notifiers running in the informational list do that,
+like ftrace_on_oops for example.
 
-For Intel, the logic to check if the pmu event reported by Intel cpuid is
-not available is still required, in which case pmc_perf_hw_id() could be
-renamed to hw_event_is_unavail() and a bool value is returned to replace
-the semantics of "PERF_COUNT_HW_MAX+1".
 
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/include/asm/kvm-x86-pmu-ops.h |  2 +-
- arch/x86/kvm/pmu.c                     |  6 +--
- arch/x86/kvm/pmu.h                     |  2 +-
- arch/x86/kvm/svm/pmu.c                 | 56 ++------------------------
- arch/x86/kvm/vmx/pmu_intel.c           | 11 ++---
- 5 files changed, 12 insertions(+), 65 deletions(-)
+> Regarding the reliability. From my POV, any panic notifier enabled
+> in a generic kernel should be reliable with more than 99,9%.
+> Otherwise, they should not be in the notifier list at all.
+> 
+> An exception would be a platform-specific notifier that is
+> called only on some specific platform and developers maintaining
+> this platform agree on this.
+> 
+> The value "99,9%" is arbitrary. I am not sure if it is realistic
+> even in the other code, for example, console_flush_on_panic()
+> or emergency_restart(). I just want to point out that the border
+> should be rather high. Otherwise we would back in the situation
+> where people would want to disable particular notifiers.
+> 
 
-diff --git a/arch/x86/include/asm/kvm-x86-pmu-ops.h b/arch/x86/include/asm/kvm-x86-pmu-ops.h
-index fdfd8e06fee6..227317bafb22 100644
---- a/arch/x86/include/asm/kvm-x86-pmu-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-pmu-ops.h
-@@ -12,7 +12,7 @@ BUILD_BUG_ON(1)
-  * a NULL definition, for example if "static_call_cond()" will be used
-  * at the call sites.
-  */
--KVM_X86_PMU_OP(pmc_perf_hw_id)
-+KVM_X86_PMU_OP(hw_event_is_unavail)
- KVM_X86_PMU_OP(pmc_is_enabled)
- KVM_X86_PMU_OP(pmc_idx_to_pmc)
- KVM_X86_PMU_OP(rdpmc_ecx_to_pmc)
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 7dc949f6a92c..c01d66d237bb 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -151,9 +151,6 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 	};
- 	bool pebs = test_bit(pmc->idx, (unsigned long *)&pmu->pebs_enable);
- 
--	if (type == PERF_TYPE_HARDWARE && config >= PERF_COUNT_HW_MAX)
--		return;
--
- 	attr.sample_period = get_sample_period(pmc, pmc->counter);
- 
- 	if ((attr.config & HSW_IN_TX_CHECKPOINTED) &&
-@@ -248,6 +245,9 @@ static bool check_pmu_event_filter(struct kvm_pmc *pmc)
- 	__u64 key;
- 	int idx, srcu_idx;
- 
-+	if (static_call(kvm_x86_pmu_hw_event_is_unavail)(pmc))
-+		return false;
-+
- 	srcu_idx = srcu_read_lock(&kvm->srcu);
- 	filter = srcu_dereference(kvm->arch.pmu_event_filter, &kvm->srcu);
- 	if (!filter)
-diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
-index 8d7912978249..1ad19c1949ad 100644
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -30,7 +30,7 @@ struct kvm_event_hw_type_mapping {
- };
- 
- struct kvm_pmu_ops {
--	unsigned int (*pmc_perf_hw_id)(struct kvm_pmc *pmc);
-+	bool (*hw_event_is_unavail)(struct kvm_pmc *pmc);
- 	bool (*pmc_is_enabled)(struct kvm_pmc *pmc);
- 	struct kvm_pmc *(*pmc_idx_to_pmc)(struct kvm_pmu *pmu, int pmc_idx);
- 	struct kvm_pmc *(*rdpmc_ecx_to_pmc)(struct kvm_vcpu *vcpu,
-diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-index b5ba846fee88..0c9f2e4b7b6b 100644
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -33,34 +33,6 @@ enum index {
- 	INDEX_ERROR,
- };
- 
--/* duplicated from amd_perfmon_event_map, K7 and above should work. */
--static struct kvm_event_hw_type_mapping amd_event_mapping[] = {
--	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
--	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
--	[2] = { 0x7d, 0x07, PERF_COUNT_HW_CACHE_REFERENCES },
--	[3] = { 0x7e, 0x07, PERF_COUNT_HW_CACHE_MISSES },
--	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
--	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
--	[6] = { 0xd0, 0x00, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
--	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
--};
--
--/* duplicated from amd_f17h_perfmon_event_map. */
--static struct kvm_event_hw_type_mapping amd_f17h_event_mapping[] = {
--	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
--	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
--	[2] = { 0x60, 0xff, PERF_COUNT_HW_CACHE_REFERENCES },
--	[3] = { 0x64, 0x09, PERF_COUNT_HW_CACHE_MISSES },
--	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
--	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
--	[6] = { 0x87, 0x02, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
--	[7] = { 0x87, 0x01, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
--};
--
--/* amd_pmc_perf_hw_id depends on these being the same size */
--static_assert(ARRAY_SIZE(amd_event_mapping) ==
--	     ARRAY_SIZE(amd_f17h_event_mapping));
--
- static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
- {
- 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
-@@ -154,31 +126,9 @@ static inline struct kvm_pmc *get_gp_pmc_amd(struct kvm_pmu *pmu, u32 msr,
- 	return &pmu->gp_counters[msr_to_index(msr)];
- }
- 
--static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
-+static bool amd_hw_event_is_unavail(struct kvm_pmc *pmc)
- {
--	struct kvm_event_hw_type_mapping *event_mapping;
--	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
--	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
--	int i;
--
--	/* return PERF_COUNT_HW_MAX as AMD doesn't have fixed events */
--	if (WARN_ON(pmc_is_fixed(pmc)))
--		return PERF_COUNT_HW_MAX;
--
--	if (guest_cpuid_family(pmc->vcpu) >= 0x17)
--		event_mapping = amd_f17h_event_mapping;
--	else
--		event_mapping = amd_event_mapping;
--
--	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
--		if (event_mapping[i].eventsel == event_select
--		    && event_mapping[i].unit_mask == unit_mask)
--			break;
--
--	if (i == ARRAY_SIZE(amd_event_mapping))
--		return PERF_COUNT_HW_MAX;
--
--	return event_mapping[i].event_type;
-+	return false;
- }
- 
- /* check if a PMC is enabled by comparing it against global_ctrl bits. Because
-@@ -344,7 +294,7 @@ static void amd_pmu_reset(struct kvm_vcpu *vcpu)
- }
- 
- struct kvm_pmu_ops amd_pmu_ops __initdata = {
--	.pmc_perf_hw_id = amd_pmc_perf_hw_id,
-+	.hw_event_is_unavail = amd_hw_event_is_unavail,
- 	.pmc_is_enabled = amd_pmc_is_enabled,
- 	.pmc_idx_to_pmc = amd_pmc_idx_to_pmc,
- 	.rdpmc_ecx_to_pmc = amd_rdpmc_ecx_to_pmc,
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 75aa2282ae93..6d24db41d8e0 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -84,7 +84,7 @@ static void global_ctrl_changed(struct kvm_pmu *pmu, u64 data)
- 	}
- }
- 
--static unsigned int intel_pmc_perf_hw_id(struct kvm_pmc *pmc)
-+static bool intel_hw_event_is_unavail(struct kvm_pmc *pmc)
- {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
- 	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
-@@ -98,15 +98,12 @@ static unsigned int intel_pmc_perf_hw_id(struct kvm_pmc *pmc)
- 
- 		/* disable event that reported as not present by cpuid */
- 		if ((i < 7) && !(pmu->available_event_types & (1 << i)))
--			return PERF_COUNT_HW_MAX + 1;
-+			return true;
- 
- 		break;
- 	}
- 
--	if (i == ARRAY_SIZE(intel_arch_events))
--		return PERF_COUNT_HW_MAX;
--
--	return intel_arch_events[i].event_type;
-+	return false;
- }
- 
- /* check if a PMC is enabled by comparing it with globl_ctrl bits. */
-@@ -805,7 +802,7 @@ void intel_pmu_cross_mapped_check(struct kvm_pmu *pmu)
- }
- 
- struct kvm_pmu_ops intel_pmu_ops __initdata = {
--	.pmc_perf_hw_id = intel_pmc_perf_hw_id,
-+	.hw_event_is_unavail = intel_hw_event_is_unavail,
- 	.pmc_is_enabled = intel_pmc_is_enabled,
- 	.pmc_idx_to_pmc = intel_pmc_idx_to_pmc,
- 	.rdpmc_ecx_to_pmc = intel_rdpmc_ecx_to_pmc,
--- 
-2.36.1
+Totally agree, these percentages are just an example, 50% is ridiculous
+low reliability in my example heheh
+
+But some notifiers deep dive in abstraction layers (like regmap or GPIO
+stuff) and it's hard to determine the probability of a lock issue (take
+a spinlock already taken inside regmap code and live-lock forever, for
+example). These are better to run, if possible, later than kdump or even
+info list.
+
+Thanks again for the good analysis Petr!
+Cheers,
+
+
+Guilherme
+
 
