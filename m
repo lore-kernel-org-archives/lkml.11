@@ -2,138 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D213C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FFBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238571AbiEROVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 10:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48700 "EHLO
+        id S238586AbiEROXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 10:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238551AbiEROVS (ORCPT
+        with ESMTP id S238584AbiEROXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 10:21:18 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686CC1C103;
-        Wed, 18 May 2022 07:21:16 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id bq30so3941235lfb.3;
-        Wed, 18 May 2022 07:21:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OgF7hB842Xb1tcpu/exVm00l5yNp9b+2bCf12T/zGxc=;
-        b=e7RUpvLPw1/sKoLVxVoOxzKi3xQRj3PpyVvr333lxyBp/yvOTfwmgKKAHFDm9CshR4
-         NvheW1Z+C/naejxdGvSKLOi7EaEmLYVb2fq254kes7ntQmFcbqCtIH7qgqj0uBlSjewP
-         y3nmYCWY/Wo+7Dyt53yvbAI8H+jCSAP4XJ3P9S/ukSPyKuJY5V2guFPrT2FPhT+LnyX7
-         WmVSTfkIGQgIo6m+LzUYb6iGOdDEWE6hyXuTeyFNzIl1y0R/Tw+BXAbPiVjjc6NEcHA9
-         v0l0cm1kMLgAuH/fG6sa1VdNDaE/61nnECZLz+KEkuIIK2tJpo86oiYElEkpUKfImlF3
-         sLyA==
+        Wed, 18 May 2022 10:23:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 116F4252B1
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:23:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652883814;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xEnVe+thJMrj0C89/i9QBXS8K26hkY9sQCbQCmrjIxg=;
+        b=D9MGNU+wxdLBcrQwKvjxhr7UNSsynGH2erWhzIhQ85+saYU9pakJ8rzUK9fsWLaxTNPtsX
+        PtG7tJyteymBk64Dx6SnTHO+zzMZK9qV7i3uM6gboaS9OFLaeT2Q9ZEhCc5pkU1yuTaYKj
+        TUCMd05ptBnIcsyRVzv1/3SWDp8Sbc4=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-650-nCy9_tE7OFCLLZye584mzg-1; Wed, 18 May 2022 10:23:33 -0400
+X-MC-Unique: nCy9_tE7OFCLLZye584mzg-1
+Received: by mail-pf1-f199.google.com with SMTP id w83-20020a627b56000000b005182702c297so1237515pfc.0
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:23:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OgF7hB842Xb1tcpu/exVm00l5yNp9b+2bCf12T/zGxc=;
-        b=VQiaBrrk+NcVIYdFLa68mOTJuAGuULjH2pPhsFC1MMVJ/gAvtrgeIr9FwdcqUj/ZJg
-         xtfuwqAYfPb3Avxfa3A4triB3CFfOpcKZxSYDYeFrgLDKYBHamTXLaj4pWGEDtdcSGfs
-         fFZY2oyVVsAh6ab+hp0c7hHea5Rgp1gl983faAq1+GuHHsh5Hm8BYDS+rL3aWw7whOeF
-         qA8iAIekakIEWfzEZzvqJDD50vVy3X3QdASvFI7U5+XCZwBcByqXRjnyEX10D05Ad3Lw
-         tAoKKFuprUokM1g/+D1OK0wUZXE/3gQH68vwNZ62zBsrW2Baoc9ll8eOdcgTsbxSTzsv
-         WPQQ==
-X-Gm-Message-State: AOAM532+iv+YwxbOzbyZR8IorFeF4/ou2wiOUIj9d3DWvlKKAiD1xa5s
-        1hwp0ApHMklMogukx0Sh0rDhM3suLATia+VINUo=
-X-Google-Smtp-Source: ABdhPJwBXTEz06RJoigcTFP/EBVz+helwZx8NYWmO9cAOVwwvhieqj9DYnDaTZICu64zreOkTLHGIXwQvCu7H+MnSEg=
-X-Received: by 2002:ac2:550f:0:b0:477:bc6e:9bcc with SMTP id
- j15-20020ac2550f000000b00477bc6e9bccmr1697600lfk.279.1652883674662; Wed, 18
- May 2022 07:21:14 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=xEnVe+thJMrj0C89/i9QBXS8K26hkY9sQCbQCmrjIxg=;
+        b=26U1CHKidZ497Gjw0sTj6sY0UdnYfimG5vQezi/1yb7HnhdRCsot/QQfqnTCXyyV4T
+         6G0oG4WKoEYtu9LUFxf9B09ULuD4Q/2ZPXIj6s6VBsjNtQDhxElQqMqf0ecfhGQ3RKaE
+         RBN9zTwV+IYn8VxGTOhNVe/zMnu3LiddNaJuMRZ/c9rCoViyOO32JMvs8lrJW+7jcscv
+         nlb8PXEbcCaESwnYuzOg5Vb87fw/AOT1ad59tGmk6JNxuRIG7P8YmtaPrszgRLNLPCCF
+         I0D9xmlz+hr4Wz567g6hDwmX+1m1VufyiqU1ZLbPeJGV8eFItyrmxH11BTJvmrCvDMN7
+         ugig==
+X-Gm-Message-State: AOAM5308iPpP212KqhYDcuhC9vcVQqcNG1tq3+VNiP7pxjIYRq8LWRaK
+        6jRvxJRgsQtALxXKb1t9Lviig6Mt76iq+tktH9bTbclOEaeOXD8srWh3WYOCyAyLVUab0xDKguG
+        T5tbkxMy24CbAEwSU1DxTuYANj3rTVsVEkVT2IW1QzCO4gDSVunW/Ny4JjATVwd8wWZAWG5sJ6Q
+        ==
+X-Received: by 2002:a17:90b:1c8e:b0:1bf:364c:dd7a with SMTP id oo14-20020a17090b1c8e00b001bf364cdd7amr225184pjb.103.1652883811595;
+        Wed, 18 May 2022 07:23:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw7BLP1J1H8f7oD1TY5TGuF+QDjgPJtGJ1rzPMQGjEi3Mxt4eMzgGqbzqjFJq4C8NXIHPKx2A==
+X-Received: by 2002:a17:90b:1c8e:b0:1bf:364c:dd7a with SMTP id oo14-20020a17090b1c8e00b001bf364cdd7amr225147pjb.103.1652883811225;
+        Wed, 18 May 2022 07:23:31 -0700 (PDT)
+Received: from [10.72.12.136] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id r19-20020a63ce53000000b003c6a80e54cfsm1620634pgi.75.2022.05.18.07.23.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 07:23:30 -0700 (PDT)
+Subject: Re: [PATCH] ceph: remove redundant variable ino
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220518085508.509104-1-colin.i.king@gmail.com>
+From:   Xiubo Li <xiubli@redhat.com>
+Message-ID: <5398e036-8150-ffd0-844e-719257c6e2f7@redhat.com>
+Date:   Wed, 18 May 2022 22:23:22 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20220516115846.58328-1-max.oss.09@gmail.com> <20220516115846.58328-12-max.oss.09@gmail.com>
- <CAOMZO5DhTNDHLt_VZoWqD5dMBHq3rvJ+0j8-4xHHThyqheqcgQ@mail.gmail.com>
-In-Reply-To: <CAOMZO5DhTNDHLt_VZoWqD5dMBHq3rvJ+0j8-4xHHThyqheqcgQ@mail.gmail.com>
-From:   Max Krummenacher <max.oss.09@gmail.com>
-Date:   Wed, 18 May 2022 16:21:03 +0200
-Message-ID: <CAEHkU3Xtm9gk6xXr586M3pm4tPpFA-fGn+QyKXfF+Cqqa8VK8g@mail.gmail.com>
-Subject: Re: [PATCH v1 11/17] ARM: dts: imx6q-apalis: Add ov5640 mipi csi camera
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
-        Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220518085508.509104-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabio
 
-On Mon, May 16, 2022 at 2:08 PM Fabio Estevam <festevam@gmail.com> wrote:
+On 5/18/22 4:55 PM, Colin Ian King wrote:
+> Variable ino is being assigned a value that is never read. The variable
+> and assignment are redundant, remove it.
 >
-> Hi Max,
+> Cleans up clang scan build warning:
+> warning: Although the value stored to 'ino' is used in the enclosing
+> expression, the value is never actually read from 'ino'
+> [deadcode.DeadStores]
 >
-> On Mon, May 16, 2022 at 8:59 AM Max Krummenacher <max.oss.09@gmail.com> wrote:
-> >
-> > From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-> >
-> > The Apalis iMX6 modules allow connecting a mipi-csi video input.
-> > Add support for our OV5640 camera module but have it disabled.
-> > This allows to enable it in an overlay per the current system
-> > configuration.
-> >
-> > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-> > Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-> > ---
-> >
-> >  arch/arm/boot/dts/imx6qdl-apalis.dtsi | 67 ++++++++++++++++++++++++++-
-> >  1 file changed, 66 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-> > index 506d040ea37a..0d1004eede62 100644
-> > --- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-> > +++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-> > @@ -29,6 +29,12 @@
-> >                 status = "disabled";
-> >         };
-> >
-> > +       clk_ov5640_osc: clk_ov5640_osc_int {
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>   fs/ceph/mds_client.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 >
-> Node names should have "-", not "_"
+> diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+> index 00c3de177dd6..20197f05faec 100644
+> --- a/fs/ceph/mds_client.c
+> +++ b/fs/ceph/mds_client.c
+> @@ -437,7 +437,7 @@ static int ceph_parse_deleg_inos(void **p, void *end,
+>   	ceph_decode_32_safe(p, end, sets, bad);
+>   	dout("got %u sets of delegated inodes\n", sets);
+>   	while (sets--) {
+> -		u64 start, len, ino;
+> +		u64 start, len;
+>   
+>   		ceph_decode_64_safe(p, end, start, bad);
+>   		ceph_decode_64_safe(p, end, len, bad);
+> @@ -449,7 +449,7 @@ static int ceph_parse_deleg_inos(void **p, void *end,
+>   			continue;
+>   		}
+>   		while (len--) {
+> -			int err = xa_insert(&s->s_delegated_inos, ino = start++,
+> +			int err = xa_insert(&s->s_delegated_inos, start++,
+>   					    DELEGATED_INO_AVAILABLE,
+>   					    GFP_KERNEL);
+>   			if (!err) {
 
-Ups, missed that one. Will fix it in V2. Thanks.
+Merged into ceph-client/testing branch. Thanks!
 
->
-> clk_ov5640_osc: clk-ov5640-osc
->
-> Also, no need for the _int suffix.
->
-> Just curious: is ov5640 mipi support functional?
->
-> I recalled that I had issues in getting Gstreamer pipeline to capture
-> from the ov5640 mipi.
->
-> There were some errors related to LP-11 during the start of the capture.
+-- Xiubo
 
-In my (limited) testing I saw no issues that the camera would not come up.
-It takes 2 to 3 seconds until the pipeline is running but I noted no hickups.
-I did this with setting the resolution to 640x480 and 1920x1080 which
-probably would not relate to the LP-11 issue you mention.
 
-I.e. I set up the v4l2 pipeline and start capture to the screen as follows:
-```
-media-ctl -l "'ov5640 1-003c':0 -> 'imx6-mipi-csi2':0[1]"
-media-ctl -l "'imx6-mipi-csi2':2 -> 'ipu1_csi1':0[1]"
-media-ctl -l "'ipu1_csi1':2 -> 'ipu1_csi1 capture':0[1]"
-media-ctl -V "'ov5640 1-003c':0 [fmt:UYVY2X8/640x480 field:none]"
-media-ctl -V "'imx6-mipi-csi2':2 [fmt:UYVY2X8/640x480 field:none]"
-media-ctl -V "'ipu1_csi1':2 [fmt:AYUV32/640x480 field:none]"
-gst-launch-1.0 v4l2src device='/dev/video0' ! videoconvert ! waylandsink
-```
-
-Max
