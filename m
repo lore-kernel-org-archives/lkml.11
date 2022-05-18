@@ -2,102 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D79F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38FF0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231634AbiERGxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
+        id S231726AbiERG40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231520AbiERGxi (ORCPT
+        with ESMTP id S231639AbiERG4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:53:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325EA1D320;
-        Tue, 17 May 2022 23:53:37 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L33bJ0tMDzhZ5T;
-        Wed, 18 May 2022 14:53:00 +0800 (CST)
-Received: from dggpemm500016.china.huawei.com (7.185.36.25) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 14:53:35 +0800
-Received: from [10.67.108.157] (10.67.108.157) by
- dggpemm500016.china.huawei.com (7.185.36.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 14:53:35 +0800
-Message-ID: <6e2534c3-9af1-0c84-96ac-79075f79ab39@huawei.com>
-Date:   Wed, 18 May 2022 14:53:35 +0800
+        Wed, 18 May 2022 02:56:24 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539EBD104
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:56:22 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id t6so1257409wra.4
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:56:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=CQIReHnD+6J/f9DYUtohMgFS79x6Zc0p2l4WD6IBG7c=;
+        b=KyJCyCdZX/CgAvmTt7yYHwAt8cwO+kY+mY1Q9hSekfZAEuaZm4EtJijZqVNc2O63c4
+         h9pACHHzz2ZLJ/YQnc2e5gMLpvwkjM0ipMcB+3VM6Etb704T5hLWiUbKYzNgGM47CvID
+         qmhWCsdy/0g3axEBFScsaWFI1wZrdcZ438b3WkaFg6Ht7Mse1GKnG+mUnqe3ZFy/UEzl
+         MvkXJgNfg8ryjQpyc5Ba26iyuCQz75kKZ++SOmNTPKrr0I3nwteVmSJZOmcg6jxaIyQl
+         NdkcYaDDvblu1CdZz4hE4BHZmKzk/SFSKRC80p4HOrfaf2tjDRqzjlzokEM3TnaLbJSR
+         VpAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=CQIReHnD+6J/f9DYUtohMgFS79x6Zc0p2l4WD6IBG7c=;
+        b=gEV4sbMjJ/7xzmsFVTmjM+Qwl/nrQ1VmoL9OevZRpqA1iV4w09ilKR4rA7MIpt5YqD
+         ul7usrtT974nYFW8sZeFlQfCagSkJFcDF1I/tdCknib2N7PlqT/As6Pp3KsmIWhLF2nn
+         XZMi+3P6vtHNCnZJNUimhGHg4PvWWxztnCmbs8vH1w4zpQQTLpuF3Nc3olt4GMrfim6d
+         ruZJ7K7+Baoy9lYbB4D8PKgrjYYX5cQuNeIexSRO2y061JUUgD7u5VFUPyJMzJZ/7epd
+         k38gMNEZmaGiUJvzq9/CvenDMudPDmJUfrBpxgKVAra1LD+YG4avJiHUhIPTjG1Np9Is
+         8y3A==
+X-Gm-Message-State: AOAM531v9IiKi40FlwTY7/TJoeKO6q/yQ9Gcl4FNPBv1xvwByktXLdYW
+        NCcqPAuBQHLXP7oXpWqePXlo0g==
+X-Google-Smtp-Source: ABdhPJxqFJWFFJAZOCXntQD4XGLErH8Sgri/Wrkfkvpk99R2ty4HwuD52N1klwypW+CMYx+ticzBqg==
+X-Received: by 2002:a5d:448d:0:b0:20d:744:7663 with SMTP id j13-20020a5d448d000000b0020d07447663mr12747395wrq.654.1652856980810;
+        Tue, 17 May 2022 23:56:20 -0700 (PDT)
+Received: from localhost (laubervilliers-656-1-151-143.w92-154.abo.wanadoo.fr. [92.154.18.143])
+        by smtp.gmail.com with ESMTPSA id m7-20020adfa3c7000000b0020c5253d8cesm1097175wrb.26.2022.05.17.23.56.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 23:56:20 -0700 (PDT)
+From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        linux-input@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH 1/2] Input: mt6779-keypad - fix hardware code
+ mapping
+In-Reply-To: <4a7bcbfb-12da-0e3f-8732-ecc53046a4ff@collabora.com>
+References: <20220513151845.2802795-1-mkorpershoek@baylibre.com>
+ <20220513151845.2802795-2-mkorpershoek@baylibre.com>
+ <YoHf6Z4HTfh4Y+bn@google.com> <874k1qkk7n.fsf@baylibre.com>
+ <4a7bcbfb-12da-0e3f-8732-ecc53046a4ff@collabora.com>
+Date:   Wed, 18 May 2022 08:56:19 +0200
+Message-ID: <87bkvve3cc.fsf@baylibre.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] selinux: add __randomize_layout to selinux_audit_data
-Content-Language: en-US
-To:     Paul Moore <paul@paul-moore.com>
-CC:     Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Kees Cook <keescook@chromium.org>, <selinux@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Wang Weiyang <wangweiyang2@huawei.com>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>
-References: <20220518092137.141626-1-gongruiqi1@huawei.com>
- <CAHC9VhTj365p3SJvX+8eBqRO3wddnj0sXtRDp=jEhSdADwiGrg@mail.gmail.com>
-From:   Gong Ruiqi <gongruiqi1@huawei.com>
-In-Reply-To: <CAHC9VhTj365p3SJvX+8eBqRO3wddnj0sXtRDp=jEhSdADwiGrg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.108.157]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500016.china.huawei.com (7.185.36.25)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, May 16, 2022 at 13:06, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> wrote:
 
+> Il 16/05/22 09:30, Mattijs Korpershoek ha scritto:
+>> Hi Dmitry,
+>> 
+>> Thank you for your review,
+>> 
+>> On dim., mai 15, 2022 at 22:23, Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
+>> 
+>>> On Fri, May 13, 2022 at 05:18:44PM +0200, Mattijs Korpershoek wrote:
+>>>> In mt6779_keypad_irq_handler(), we
+>>>> 1. Read a hardware code from KPD_MEM1 -> KPD_MEM5
+>>>> 2. Use that hardware code to compute columns/rows for the standard
+>>>>     keyboard matrix.
+>>>>
+>>>> According to the (non-public) datasheet, the
+>>>> map between the hardware code and the cols/rows is:
+>>>>
+>>>>          |(0)  |(1)  |(2)
+>>>>      ----*-----*-----*-----
+>>>>          |     |     |
+>>>>          |(9)  |(10) |(11)
+>>>>      ----*-----*-----*-----
+>>>>          |     |     |
+>>>>          |(18) |(19) |(20)
+>>>>      ----*-----*-----*-----
+>>>>          |     |     |
+>>>>
+>>>> This brings us to another formula:
+>>>> -> row = code / 9;
+>>>> -> col = code % 3;
+>>>
+>>> What if there are more than 3 columns?
+>> That's not supported, in hardware, according to the datasheet.
+>> 
+>> The datasheet I have states that "The interface of MT6763 only supports
+>> 3*3 single or 2*2 double, but internal ASIC still detects keys in the
+>> manner of 8*8 single, and 3*3 double. The registers and key codes still
+>> follows the legacy naming".
+>> 
+>> Should I add another patch in this series to add that limitation in the
+>> probe? There are no checks done in the probe() right now.
+>> 
+>
+> I've just checked a downstream kernel for MT6795 and that one looks like
+> being fully compatible with this driver as well... and as far as downstream
+> is concerned, apparently, mt6735, 6739, 6755, 6757, 6758, 6763, 6771, 6775
+> all have the same register layout and the downstream driver for these is
+> always the very same one...
+Thank you for taking the time to check in your downstream kernels, I
+really appreciate it.
 
-On 2022/05/18 9:39, Paul Moore wrote:
-> On Tue, May 17, 2022 at 9:21 PM GONG, Ruiqi <gongruiqi1@huawei.com> wrote:
->>
->> Randomize the layout of struct selinux_audit_data as suggested in [1],
->> since it contains a pointer to struct selinux_state, an already
->> randomized strucure.
->>
->> [1]: https://github.com/KSPP/linux/issues/188
->>
->> Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
->> ---
->>  security/selinux/include/avc.h | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/security/selinux/include/avc.h b/security/selinux/include/avc.h
->> index 2b372f98f2d7..5525b94fd266 100644
->> --- a/security/selinux/include/avc.h
->> +++ b/security/selinux/include/avc.h
->> @@ -53,7 +53,7 @@ struct selinux_audit_data {
->>         u32 denied;
->>         int result;
->>         struct selinux_state *state;
->> -};
->> +} __randomize_layout;
-> 
-> I'll apologize in advance for the stupid question, but does
+>
+> ...so, I don't think that there's currently any SoC that supports more than
+> three columns. Besides, a fast check shows that MT8195 also has the same.
+> At this point, I'd say that assuming that there are 3 columns, nor less, not
+> more, is just fine.
+>
+> To stay on the safe side, though, perhaps add a comment explaining that
+> this driver works on that assumption? ..but that's clear, anyway, if you
+> actually read the code.
+>
+>  From my perspective, this commit is good to go.
+I will keep as is for v2 series and apply your review tag. thanks again !
 
-Not at all :)
-
-> __randomize_layout result in any problems when the struct is used in a
-> trace event?  (see include/trace/events/avc.h)
-> 
-
-No, as least it doesn't in the testing I did. I believe we can use the
-struct tagged with __randomize_layout as normal except that 1) it should
-be initialized with a designated initializer, and 2) pointers to this
-type can't be cast to/from pointers to another type. Other operations
-like dereferencing members of the struct (as in
-include/trace/events/avc.h) shouldn't be a problem.
-
-I did a testing to the patch on a qemu vm by running the selinux
-testsuite with tracing events "avc:selinux_audited" enabled. The
-testsuite completed successfully and from the tracing log I saw nothing
-abnormal with my bare eyes. You can do more testing if you want or you
-have other ideas of how to do so ;)
+>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
