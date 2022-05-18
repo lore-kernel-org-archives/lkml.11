@@ -2,84 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6958C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F58C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238771AbiEROnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 10:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
+        id S238801AbiEROnu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 10:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238718AbiEROnP (ORCPT
+        with ESMTP id S238755AbiEROnq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 10:43:15 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71FF5B36CD;
-        Wed, 18 May 2022 07:43:13 -0700 (PDT)
-Received: from kwepemi500004.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L3G0D3htQzgYJF;
-        Wed, 18 May 2022 22:41:48 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- kwepemi500004.china.huawei.com (7.221.188.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 22:43:10 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 22:43:09 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <sfrench@samba.org>
-CC:     <linux-cifs@vger.kernel.org>, <samba-technical@lists.samba.org>,
-        <linux-kernel@vger.kernel.org>, <chenxiaosong2@huawei.com>,
-        <liuyongqiang13@huawei.com>, <yi.zhang@huawei.com>,
-        <zhangxiaoxu5@huawei.com>
-Subject: [PATCH -next] cifs: return the more nuanced writeback error on close()
-Date:   Wed, 18 May 2022 22:56:49 +0800
-Message-ID: <20220518145649.2487377-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 18 May 2022 10:43:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22CDA1D4A35
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:43:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652885023;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UhIAzrZlP5b0i3o1JZmMpkBOPZBq8P077L23uqMpDbI=;
+        b=a8u06DJvFOB9zR5/sCkQrIZ1649OVWbRgtNgiMk3q75jFKvCopEqznWUNp0+NaUUd7Lqpb
+        CAABPnie3f3MdaTSPEBdaSIikM3mvMyLB47J9yjyQOs7l7BlbwGiYth1xvZ5ycUkFpQpQP
+        jw+smOWTwz0R7BQ3nW3+WfJf+Wt9g0o=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-561-VS5megc2Pn-OnpRpYsF3zg-1; Wed, 18 May 2022 10:43:41 -0400
+X-MC-Unique: VS5megc2Pn-OnpRpYsF3zg-1
+Received: by mail-wm1-f70.google.com with SMTP id m124-20020a1c2682000000b00393fcd2722dso856153wmm.4
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:43:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=UhIAzrZlP5b0i3o1JZmMpkBOPZBq8P077L23uqMpDbI=;
+        b=d/J2G5zaeE8PYLLUMfETUqnGZYphDcyposObnRly1CMt8is6HvI0+0M3WMvVxScqFg
+         8yPMsXVWDWcv09neYfod40UYZOOH7NB1U9Ox+qxE2Xthmo7XcECNecVw2+Rlpe9+Oeb9
+         FLDZUGEVhdIcV65CVqRLsH2UqF3fP/3sRQf3FeqPWKwD5GjCPiroQJzUWxK/SXjvqkAt
+         Vb+Uh6KKmV/eMT/JYIWU5kr3yzJm2qqtmqNPkdS4c2hEJ7/cPwHcorghxStSMTOer5S0
+         IqhmB/TjXNCCBJGeTb0FBfz1vj0TPSYZouYXuGRiWZ5cGuUHY0Ri4QOBwjI10HNOgX4i
+         8+3A==
+X-Gm-Message-State: AOAM531Wsu4bWhxc1j8oIpH466JKvgTfyWhygE3Uv2f1v4i5Ptk8KnjK
+        jMJVApOlOeGPARs3Iz6M8rfAEeejYTAOmhv2TRM78ZC7Fop0CS4G3804VatsDd1pOHJZYSbW0xJ
+        BBM91g2jSQR4qNEkPnr824S+g
+X-Received: by 2002:a05:6000:154a:b0:20c:7e65:c79e with SMTP id 10-20020a056000154a00b0020c7e65c79emr42571wry.582.1652885020774;
+        Wed, 18 May 2022 07:43:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy1tUZPrs0aGeRCeoRMTq7S873vylB577Hd5LWEh1T4z3FePha2SLMPoPBbOBefUrEfYhTqTQ==
+X-Received: by 2002:a05:6000:154a:b0:20c:7e65:c79e with SMTP id 10-20020a056000154a00b0020c7e65c79emr42555wry.582.1652885020577;
+        Wed, 18 May 2022 07:43:40 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id bh16-20020a05600c3d1000b003942a244edfsm1947203wmb.36.2022.05.18.07.43.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 07:43:40 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v3 04/34] KVM: x86: hyper-v: Handle
+ HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
+In-Reply-To: <YoUAM9UtfQlGOZxl@google.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+ <20220414132013.1588929-5-vkuznets@redhat.com>
+ <165aea185dfef1eba9ba0f4fd1c3a95361c41396.camel@redhat.com>
+ <877d6juqkw.fsf@redhat.com> <YoUAM9UtfQlGOZxl@google.com>
+Date:   Wed, 18 May 2022 16:43:39 +0200
+Message-ID: <87y1yyucis.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As filemap_check_errors() only report -EIO or -ENOSPC, we return more nuanced
-writeback error -(file->f_mapping->wb_err & MAX_ERRNO).
+Sean Christopherson <seanjc@google.com> writes:
 
-  filemap_write_and_wait
-    filemap_write_and_wait_range
-      filemap_check_errors
-        -ENOSPC or -EIO
-  filemap_check_wb_err
-    errseq_check
-      return -(file->f_mapping->wb_err & MAX_ERRNO)
+> On Wed, May 18, 2022, Vitaly Kuznetsov wrote:
+>> Maxim Levitsky <mlevitsk@redhat.com> writes:
+>> > Or if using kfifo, then it can contain plain u64 items, which is even more natural.
+>> >
+>> 
+>> In the next version I switch to fifo and get rid of 'flush_all' entries
+>> but instead of a boolean I use a 'magic' value of '-1' in GVA. This way
+>> we don't need to synchronize with the reader and add any special
+>> handling for the flag.
+>
+> Isn't -1 theoretically possible?  Or is wrapping not allowed?  E.g. requesting a
+> flush for address=0xfffffffffffff000, count = 0xfff will yield -1 and doesn't
+> create any illegal addresses in the process.
+>
 
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
- fs/cifs/file.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Such an error would just lead to KVM flushing the whole guest address
+space instead of flushing 4096 pages starting with 0xfffffffffffff000
+but over-flushing is always architecturally correct, isn't it?
 
-diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-index d511a78383c3..559f59a047c2 100644
---- a/fs/cifs/file.c
-+++ b/fs/cifs/file.c
-@@ -2777,8 +2777,11 @@ int cifs_flush(struct file *file, fl_owner_t id)
- 		rc = filemap_write_and_wait(inode->i_mapping);
- 
- 	cifs_dbg(FYI, "Flush inode %p file %p rc %d\n", inode, file, rc);
--	if (rc)
-+	if (rc) {
-+		/* get more nuanced writeback errors */
-+		rc = filemap_check_wb_err(file->f_mapping, 0);
- 		trace_cifs_flush_err(inode->i_ino, rc);
-+	}
- 	return rc;
- }
- 
+Personally, I'm not opposed to dropping the magic and enhancing flush
+entries with 'flags' again but I'd like to avoid keeping this info
+somewhere aside. Also, after we switch to kfifo, we can't play with
+ring indexes to somehow indicate this special case. We probably can use
+'fifo is full' as such indication but this is very, very un-obvious.
+
 -- 
-2.31.1
+Vitaly
 
