@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 929C4C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B580BC4167B
 	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237970AbiERN0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47908 "EHLO
+        id S238007AbiERN0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237909AbiERNZp (ORCPT
+        with ESMTP id S237825AbiERNZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:25:45 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA670A5AA4;
-        Wed, 18 May 2022 06:25:38 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id q4so1739297plr.11;
-        Wed, 18 May 2022 06:25:38 -0700 (PDT)
+        Wed, 18 May 2022 09:25:52 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6EFAFB09;
+        Wed, 18 May 2022 06:25:50 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id i8so1735503plr.13;
+        Wed, 18 May 2022 06:25:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5rJYKB50pqwoRKSdVNgGM4Ug4UmJXRZvOCRmjAZMIK8=;
-        b=a7Q0hcuUejglF/nUBx3FEUNOPWv/CgJ7paV/YyBks6cCNp9/9h0yVHtOcn/kRaCxjs
-         s/QerGzPZnIEeT/MdOUwNEAJipS5dK3eOs2jN0s99zLR2cUrjEpyyat4SphODbVxlfzq
-         Y5ZmJRcWu7ph/6y6Vm4H1h3tdHvjEogYyuULXiWIZ/RGC+yAITXljg4lvGJcs6Z5kleY
-         wqy1VbPYy0UxuFp4qokfaMCl86RNPoulONOSjOc+OlRNH3x/3l3Zz3Rp1nuxO1CMjGiP
-         pKolpI4pDWrSByap6Wsj/AUbZID5WrbkAbSx2auHpm4X+Rh77X8EZlARsfkfGDm5w1S8
-         VjrQ==
+        bh=InECIgSZ0QPmtYHzj1Juv9iX30hqeOQtFiR8TnwIpkk=;
+        b=MMa7UcDqe3NztEgAoWKoc79WYsyZyGuVhIY8+mgRs3qZyGi62S3JQ1PMMVKSUiVlfn
+         nN4n9WWVCDrJjzVsjua3/EkFIxdITSfZNpVAZMNBaH08diQenCWunfQMF9Q32uiwFYw2
+         yQTecdH1DOsZbnO3spGNb2nYi3Bl9yk2VVQ4bDA9HOBLvAV4zZBnqG0krx9waDr8+nJY
+         +xwpN/Bz/ATVOmSsDV07rpshwA6Vo+z0TScDVj13ckjEfWEITkddWe06VYQV9TUo3YI+
+         IOUYau13DOxeTz4/cjVDTB/NXUuOjyRYNBsofnKU7SwGJhRrgMQr8eGdTaM/7H5LDZL2
+         wtaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5rJYKB50pqwoRKSdVNgGM4Ug4UmJXRZvOCRmjAZMIK8=;
-        b=su8maLCYuagcmP9uX6ZC1MZjUYMPwZNai3AcqrKTIVXwQfM1j9RNypgHl9kMp124lH
-         tInh+CnBqmF5Bx4asZmrbjTzpOd80y/cXr/osgSoW+AKVbwwdOvPipvofzcpDPTwzRnO
-         4eMIZQPzxmOIHA0mPWerzPOwQ0Xk2oWKexan0OZJEuVeUuoM39zj0wtk4QiwmEqV2EGc
-         2wKbeIY9mzRJCf/tIPtRKYnRWur7Vvp/Y/L3ZJyF7OHBGlJQymyGLcKWvpAUkJdrcemz
-         fxtUjvAkk2z1FspINtBL3AeQSWmrHaTjQiZzLTj5k3jalX+XcEjuEz8CdxqcfQeAt/9q
-         lMzA==
-X-Gm-Message-State: AOAM5332zpWlloabBauKGOhxHG86KUCBmfnEB8V3drrHIg4FhLit3kMe
-        rnWWVbz1zD4dMlgx9dsCmyY=
-X-Google-Smtp-Source: ABdhPJyFaoda7Yd+qN6bKSH010pp1lvQOIXW0axA5QCzcsIWBgr76ktxjosOG27Ilj9mHQOggFPSuQ==
-X-Received: by 2002:a17:902:c40f:b0:15e:bc6b:6980 with SMTP id k15-20020a170902c40f00b0015ebc6b6980mr27090075plk.145.1652880338280;
-        Wed, 18 May 2022 06:25:38 -0700 (PDT)
+        bh=InECIgSZ0QPmtYHzj1Juv9iX30hqeOQtFiR8TnwIpkk=;
+        b=W9Gk02DS/VsDPcP4l7CFppZBSGLq3DZx611surMoGQnyPE1Jt8RdmZ+y79kv9uGh95
+         wRqNLICUfz+mDQ37BGQ7OdawWcRj2C0KsZr5GaYnjkSW+Rq81Bwd+J2kwWYjlw08nU+Z
+         j268ZEfQzquSom7QkH3VS7JfJW2bFc2jyk+2z7PYYmZrn0Vsp51d4ckMySfM81knmc3I
+         nM/IWpju6CdNOPp7e41ZMCYLVjj4XqWTs01itvJqsuIACMauD0laeNa3/9NsNeYu19Eg
+         ImjQvzYxCFU071Rt7iAm0RaLLkbh5I9ohOLf0gO3uTtwvJ9dEbd8TmNXjrYS/AV/1Ygq
+         fpOw==
+X-Gm-Message-State: AOAM530RMBQnx0ne7PH1+CURLa0kAKGLE2fasus0uoy/DqQZM11voZEN
+        2bxaBKsn4lmT/bYfI8nq+wE=
+X-Google-Smtp-Source: ABdhPJyGausP/HaR90eiCTKx/g3tX1H76STHGVBFl5nIC+S+CYDhEiOTlENLOVOTdPzQ9kvcoIaucA==
+X-Received: by 2002:a17:90a:9a8b:b0:1df:6b7a:8a40 with SMTP id e11-20020a17090a9a8b00b001df6b7a8a40mr14059230pjp.213.1652880349751;
+        Wed, 18 May 2022 06:25:49 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.117])
-        by smtp.gmail.com with ESMTPSA id s13-20020a17090302cd00b0015e8d4eb244sm1625549plk.142.2022.05.18.06.25.36
+        by smtp.gmail.com with ESMTPSA id s13-20020a17090302cd00b0015e8d4eb244sm1625549plk.142.2022.05.18.06.25.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 06:25:38 -0700 (PDT)
+        Wed, 18 May 2022 06:25:49 -0700 (PDT)
 From:   Like Xu <like.xu.linux@gmail.com>
 X-Google-Original-From: Like Xu <likexu@tencent.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
@@ -57,9 +57,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
         kvm@vger.kernel.org
-Subject: [PATCH RESEND v3 08/11] KVM: x86/pmu: Use PERF_TYPE_RAW to merge reprogram_{gp,fixed}counter()
-Date:   Wed, 18 May 2022 21:25:09 +0800
-Message-Id: <20220518132512.37864-9-likexu@tencent.com>
+Subject: [PATCH RESEND v3 11/11] KVM: x86/pmu: Drop amd_event_mapping[] in the KVM context
+Date:   Wed, 18 May 2022 21:25:12 +0800
+Message-Id: <20220518132512.37864-12-likexu@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220518132512.37864-1-likexu@tencent.com>
 References: <20220518132512.37864-1-likexu@tencent.com>
@@ -71,150 +71,196 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Like Xu <likexu@tencent.com>
 
-The code sketch for reprogram_{gp, fixed}_counter() is similar, while the
-fixed counter using the PERF_TYPE_HARDWAR type and the gp being
-able to use either PERF_TYPE_HARDWAR or PERF_TYPE_RAW type
-depending on the pmc->eventsel value.
+All gp or fixed counters have been reprogrammed using PERF_TYPE_RAW,
+which means that the table that maps perf_hw_id to event select values is
+no longer useful, at least for AMD.
 
-After 'commit 761875634a5e ("KVM: x86/pmu: Setup pmc->eventsel
-for fixed PMCs")', the pmc->eventsel of the fixed counter will also have
-been setup with the same semantic value and will not be changed during
-the guest runtime.
+For Intel, the logic to check if the pmu event reported by Intel cpuid is
+not available is still required, in which case pmc_perf_hw_id() could be
+renamed to hw_event_is_unavail() and a bool value is returned to replace
+the semantics of "PERF_COUNT_HW_MAX+1".
 
-The original story of using the PERF_TYPE_HARDWARE type is to emulate
-guest architecture PMU on a host without architecture PMU (the Pentium 4),
-for which the guest vPMC needs to be reprogrammed using the kernel
-generic perf_hw_id. But essentially, "the HARDWARE is just a convenience
-wrapper over RAW IIRC", quoated from Peterz. So it could be pretty safe
-to use the PERF_TYPE_RAW type only in practice to program both gp and
-fixed counters naturally in the reprogram_counter().
-
-To make the gp and fixed counters more semantically symmetrical,
-the selection of EVENTSEL_{USER, OS, INT} bits is temporarily translated
-via fixed_ctr_ctrl before the pmc_reprogram_counter() call.
-
-Cc: Peter Zijlstra <peterz@infradead.org>
-Suggested-by: Jim Mattson <jmattson@google.com>
 Signed-off-by: Like Xu <likexu@tencent.com>
 ---
- arch/x86/kvm/pmu.c | 87 +++++++++++++---------------------------------
- 1 file changed, 25 insertions(+), 62 deletions(-)
+ arch/x86/include/asm/kvm-x86-pmu-ops.h |  2 +-
+ arch/x86/kvm/pmu.c                     |  6 +--
+ arch/x86/kvm/pmu.h                     |  2 +-
+ arch/x86/kvm/svm/pmu.c                 | 56 ++------------------------
+ arch/x86/kvm/vmx/pmu_intel.c           | 11 ++---
+ 5 files changed, 12 insertions(+), 65 deletions(-)
 
+diff --git a/arch/x86/include/asm/kvm-x86-pmu-ops.h b/arch/x86/include/asm/kvm-x86-pmu-ops.h
+index fdfd8e06fee6..227317bafb22 100644
+--- a/arch/x86/include/asm/kvm-x86-pmu-ops.h
++++ b/arch/x86/include/asm/kvm-x86-pmu-ops.h
+@@ -12,7 +12,7 @@ BUILD_BUG_ON(1)
+  * a NULL definition, for example if "static_call_cond()" will be used
+  * at the call sites.
+  */
+-KVM_X86_PMU_OP(pmc_perf_hw_id)
++KVM_X86_PMU_OP(hw_event_is_unavail)
+ KVM_X86_PMU_OP(pmc_is_enabled)
+ KVM_X86_PMU_OP(pmc_idx_to_pmc)
+ KVM_X86_PMU_OP(rdpmc_ecx_to_pmc)
 diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index c2f00f07fbd7..33bf08fc0282 100644
+index 7dc949f6a92c..c01d66d237bb 100644
 --- a/arch/x86/kvm/pmu.c
 +++ b/arch/x86/kvm/pmu.c
-@@ -275,85 +275,48 @@ static bool check_pmu_event_filter(struct kvm_pmc *pmc)
- 	return allow_event;
+@@ -151,9 +151,6 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+ 	};
+ 	bool pebs = test_bit(pmc->idx, (unsigned long *)&pmu->pebs_enable);
+ 
+-	if (type == PERF_TYPE_HARDWARE && config >= PERF_COUNT_HW_MAX)
+-		return;
+-
+ 	attr.sample_period = get_sample_period(pmc, pmc->counter);
+ 
+ 	if ((attr.config & HSW_IN_TX_CHECKPOINTED) &&
+@@ -248,6 +245,9 @@ static bool check_pmu_event_filter(struct kvm_pmc *pmc)
+ 	__u64 key;
+ 	int idx, srcu_idx;
+ 
++	if (static_call(kvm_x86_pmu_hw_event_is_unavail)(pmc))
++		return false;
++
+ 	srcu_idx = srcu_read_lock(&kvm->srcu);
+ 	filter = srcu_dereference(kvm->arch.pmu_event_filter, &kvm->srcu);
+ 	if (!filter)
+diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
+index 8d7912978249..1ad19c1949ad 100644
+--- a/arch/x86/kvm/pmu.h
++++ b/arch/x86/kvm/pmu.h
+@@ -30,7 +30,7 @@ struct kvm_event_hw_type_mapping {
+ };
+ 
+ struct kvm_pmu_ops {
+-	unsigned int (*pmc_perf_hw_id)(struct kvm_pmc *pmc);
++	bool (*hw_event_is_unavail)(struct kvm_pmc *pmc);
+ 	bool (*pmc_is_enabled)(struct kvm_pmc *pmc);
+ 	struct kvm_pmc *(*pmc_idx_to_pmc)(struct kvm_pmu *pmu, int pmc_idx);
+ 	struct kvm_pmc *(*rdpmc_ecx_to_pmc)(struct kvm_vcpu *vcpu,
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index b5ba846fee88..0c9f2e4b7b6b 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -33,34 +33,6 @@ enum index {
+ 	INDEX_ERROR,
+ };
+ 
+-/* duplicated from amd_perfmon_event_map, K7 and above should work. */
+-static struct kvm_event_hw_type_mapping amd_event_mapping[] = {
+-	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
+-	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
+-	[2] = { 0x7d, 0x07, PERF_COUNT_HW_CACHE_REFERENCES },
+-	[3] = { 0x7e, 0x07, PERF_COUNT_HW_CACHE_MISSES },
+-	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
+-	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
+-	[6] = { 0xd0, 0x00, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
+-	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
+-};
+-
+-/* duplicated from amd_f17h_perfmon_event_map. */
+-static struct kvm_event_hw_type_mapping amd_f17h_event_mapping[] = {
+-	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
+-	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
+-	[2] = { 0x60, 0xff, PERF_COUNT_HW_CACHE_REFERENCES },
+-	[3] = { 0x64, 0x09, PERF_COUNT_HW_CACHE_MISSES },
+-	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
+-	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
+-	[6] = { 0x87, 0x02, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
+-	[7] = { 0x87, 0x01, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
+-};
+-
+-/* amd_pmc_perf_hw_id depends on these being the same size */
+-static_assert(ARRAY_SIZE(amd_event_mapping) ==
+-	     ARRAY_SIZE(amd_f17h_event_mapping));
+-
+ static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
+ {
+ 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
+@@ -154,31 +126,9 @@ static inline struct kvm_pmc *get_gp_pmc_amd(struct kvm_pmu *pmu, u32 msr,
+ 	return &pmu->gp_counters[msr_to_index(msr)];
  }
  
--static void reprogram_gp_counter(struct kvm_pmc *pmc)
-+void reprogram_counter(struct kvm_pmc *pmc)
+-static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
++static bool amd_hw_event_is_unavail(struct kvm_pmc *pmc)
  {
--	u64 config;
--	u32 type = PERF_TYPE_RAW;
+-	struct kvm_event_hw_type_mapping *event_mapping;
+-	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
+-	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
+-	int i;
+-
+-	/* return PERF_COUNT_HW_MAX as AMD doesn't have fixed events */
+-	if (WARN_ON(pmc_is_fixed(pmc)))
+-		return PERF_COUNT_HW_MAX;
+-
+-	if (guest_cpuid_family(pmc->vcpu) >= 0x17)
+-		event_mapping = amd_f17h_event_mapping;
+-	else
+-		event_mapping = amd_event_mapping;
+-
+-	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
+-		if (event_mapping[i].eventsel == event_select
+-		    && event_mapping[i].unit_mask == unit_mask)
+-			break;
+-
+-	if (i == ARRAY_SIZE(amd_event_mapping))
+-		return PERF_COUNT_HW_MAX;
+-
+-	return event_mapping[i].event_type;
++	return false;
+ }
+ 
+ /* check if a PMC is enabled by comparing it against global_ctrl bits. Because
+@@ -344,7 +294,7 @@ static void amd_pmu_reset(struct kvm_vcpu *vcpu)
+ }
+ 
+ struct kvm_pmu_ops amd_pmu_ops __initdata = {
+-	.pmc_perf_hw_id = amd_pmc_perf_hw_id,
++	.hw_event_is_unavail = amd_hw_event_is_unavail,
+ 	.pmc_is_enabled = amd_pmc_is_enabled,
+ 	.pmc_idx_to_pmc = amd_pmc_idx_to_pmc,
+ 	.rdpmc_ecx_to_pmc = amd_rdpmc_ecx_to_pmc,
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 75aa2282ae93..6d24db41d8e0 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -84,7 +84,7 @@ static void global_ctrl_changed(struct kvm_pmu *pmu, u64 data)
+ 	}
+ }
+ 
+-static unsigned int intel_pmc_perf_hw_id(struct kvm_pmc *pmc)
++static bool intel_hw_event_is_unavail(struct kvm_pmc *pmc)
+ {
  	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
- 	u64 eventsel = pmc->eventsel;
-+	u64 new_config = eventsel;
-+	u8 fixed_ctr_ctrl;
-+
-+	pmc_pause_counter(pmc);
-+
-+	if (!pmc_speculative_in_use(pmc) || !pmc_is_enabled(pmc))
-+		return;
-+
-+	if (!check_pmu_event_filter(pmc))
-+		return;
+ 	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
+@@ -98,15 +98,12 @@ static unsigned int intel_pmc_perf_hw_id(struct kvm_pmc *pmc)
  
- 	if (eventsel & ARCH_PERFMON_EVENTSEL_PIN_CONTROL)
- 		printk_once("kvm pmu: pin control bit is ignored\n");
+ 		/* disable event that reported as not present by cpuid */
+ 		if ((i < 7) && !(pmu->available_event_types & (1 << i)))
+-			return PERF_COUNT_HW_MAX + 1;
++			return true;
  
--	pmc_pause_counter(pmc);
--
--	if (!(eventsel & ARCH_PERFMON_EVENTSEL_ENABLE) || !pmc_is_enabled(pmc))
--		return;
--
--	if (!check_pmu_event_filter(pmc))
--		return;
--
--	if (!(eventsel & (ARCH_PERFMON_EVENTSEL_EDGE |
--			  ARCH_PERFMON_EVENTSEL_INV |
--			  ARCH_PERFMON_EVENTSEL_CMASK |
--			  HSW_IN_TX |
--			  HSW_IN_TX_CHECKPOINTED))) {
--		config = static_call(kvm_x86_pmu_pmc_perf_hw_id)(pmc);
--		if (config != PERF_COUNT_HW_MAX)
--			type = PERF_TYPE_HARDWARE;
-+	if (pmc_is_fixed(pmc)) {
-+		fixed_ctr_ctrl = fixed_ctrl_field(pmu->fixed_ctr_ctrl,
-+						  pmc->idx - INTEL_PMC_IDX_FIXED);
-+		if (fixed_ctr_ctrl & 0x1)
-+			eventsel |= ARCH_PERFMON_EVENTSEL_OS;
-+		if (fixed_ctr_ctrl & 0x2)
-+			eventsel |= ARCH_PERFMON_EVENTSEL_USR;
-+		if (fixed_ctr_ctrl & 0x8)
-+			eventsel |= ARCH_PERFMON_EVENTSEL_INT;
-+		new_config = (u64)fixed_ctr_ctrl;
+ 		break;
  	}
  
--	if (type == PERF_TYPE_RAW)
--		config = eventsel & pmu->raw_event_mask;
+-	if (i == ARRAY_SIZE(intel_arch_events))
+-		return PERF_COUNT_HW_MAX;
 -
--	if (pmc->current_config == eventsel && pmc_resume_counter(pmc))
-+	if (pmc->current_config == new_config && pmc_resume_counter(pmc))
- 		return;
- 
- 	pmc_release_perf_event(pmc);
- 
--	pmc->current_config = eventsel;
--	pmc_reprogram_counter(pmc, type, config,
-+	pmc->current_config = new_config;
-+	pmc_reprogram_counter(pmc, PERF_TYPE_RAW,
-+			      (eventsel & pmu->raw_event_mask),
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_OS),
- 			      eventsel & ARCH_PERFMON_EVENTSEL_INT);
+-	return intel_arch_events[i].event_type;
++	return false;
  }
--
--static void reprogram_fixed_counter(struct kvm_pmc *pmc)
--{
--	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
--	int idx = pmc->idx - INTEL_PMC_IDX_FIXED;
--	u8 ctrl = fixed_ctrl_field(pmu->fixed_ctr_ctrl, idx);
--	unsigned en_field = ctrl & 0x3;
--	bool pmi = ctrl & 0x8;
--
--	pmc_pause_counter(pmc);
--
--	if (!en_field || !pmc_is_enabled(pmc))
--		return;
--
--	if (!check_pmu_event_filter(pmc))
--		return;
--
--	if (pmc->current_config == (u64)ctrl && pmc_resume_counter(pmc))
--		return;
--
--	pmc_release_perf_event(pmc);
--
--	pmc->current_config = (u64)ctrl;
--	pmc_reprogram_counter(pmc, PERF_TYPE_HARDWARE,
--			      static_call(kvm_x86_pmu_pmc_perf_hw_id)(pmc),
--			      !(en_field & 0x2), /* exclude user */
--			      !(en_field & 0x1), /* exclude kernel */
--			      pmi);
--}
--
--void reprogram_counter(struct kvm_pmc *pmc)
--{
--	if (pmc_is_gp(pmc))
--		reprogram_gp_counter(pmc);
--	else
--		reprogram_fixed_counter(pmc);
--}
- EXPORT_SYMBOL_GPL(reprogram_counter);
  
- void kvm_pmu_handle_event(struct kvm_vcpu *vcpu)
+ /* check if a PMC is enabled by comparing it with globl_ctrl bits. */
+@@ -805,7 +802,7 @@ void intel_pmu_cross_mapped_check(struct kvm_pmu *pmu)
+ }
+ 
+ struct kvm_pmu_ops intel_pmu_ops __initdata = {
+-	.pmc_perf_hw_id = intel_pmc_perf_hw_id,
++	.hw_event_is_unavail = intel_hw_event_is_unavail,
+ 	.pmc_is_enabled = intel_pmc_is_enabled,
+ 	.pmc_idx_to_pmc = intel_pmc_idx_to_pmc,
+ 	.rdpmc_ecx_to_pmc = intel_rdpmc_ecx_to_pmc,
 -- 
 2.36.1
 
