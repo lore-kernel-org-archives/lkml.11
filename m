@@ -2,93 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66925C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7604BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236516AbiERMWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
+        id S236523AbiERMZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236475AbiERMWn (ORCPT
+        with ESMTP id S236399AbiERMZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:22:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36C691207CE
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:22:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652876561;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MlM2AUQc/4YaS8YQ+3153zXGMb60UOH0oHzcHsTkB/k=;
-        b=QqJStpI4kMr2yObFurxqvdUw/hBas3uCRxtAc9cwoXqPxyKoB/A5YhzE/C3SlecVptR0Pu
-        g3O4cE7lUK+r39t1Y9dXbb5gHjywGHMapBgiyIp+9XVrwjbhWyso56jnSbgAAKKrUQ8rKS
-        N1oG3jRJtQiJd5QKXJAr/maYUb+C0Kk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-73-rBBidYBlPCKRs_9PNwSsAw-1; Wed, 18 May 2022 08:22:38 -0400
-X-MC-Unique: rBBidYBlPCKRs_9PNwSsAw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8C6271C01B24;
-        Wed, 18 May 2022 12:22:37 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3AC8F2166B40;
-        Wed, 18 May 2022 12:22:34 +0000 (UTC)
-Date:   Wed, 18 May 2022 14:22:31 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf v3 2/2] bpf_trace: bail out from
- bpf_kprobe_multi_link_attach when in compat
-Message-ID: <47cbdb76178a112763a3766a03d8cc51842fcab0.1652876188.git.esyr@redhat.com>
-References: <cover.1652876187.git.esyr@redhat.com>
+        Wed, 18 May 2022 08:25:15 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DAC518FF24;
+        Wed, 18 May 2022 05:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652876714; x=1684412714;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=S/LRXJejZvAPg3mhWE1mMw8GrU9PbO2g/1at3Bi1V74=;
+  b=SrbF8KMxZXJNqxQjPTWAL0MqiezjrSDO7w7xbVPnKc/T4ebzjvE3Gulu
+   DFWDpnQfYQf0KTmPVAbmU4ROrgpD8yy2rmyVLow++k/iVv2DOy5Ii82/C
+   ig/wJp8mXWUmDGpoluwwI6MG62iXdHe490SukGPG6Jes2xposc+9VpAaI
+   zNiycU7v4ng1Dp+Q6KHJb1ykz2lqC0SzPtcMqkynYC1d2koTq/63HWoYw
+   2WF1qOg8it+ukLxoCjaTmKkW5Dyi66DxVdpiIwGpwvIog45pVoOCPHQAb
+   +Z5ZxgcVM7eKgBLXG4xIJ9eiIsWepiTjug6P572fw0ZbYCm5EQvnT5hNu
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271775335"
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="271775335"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:25:12 -0700
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="597763855"
+Received: from lgomesba-mobl.ger.corp.intel.com ([10.252.38.97])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:25:09 -0700
+Date:   Wed, 18 May 2022 15:25:07 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Sean Anderson <sean.anderson@seco.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/9] serial: uartline: Fix BRKINT clearing
+In-Reply-To: <CAKfKVtFO5z68JwFtGDoHAVVfwXvNnT0B_dGZutCLyu6Vo8tXOQ@mail.gmail.com>
+Message-ID: <3c5532e-c8f1-791d-6c58-ccd1c426432@linux.intel.com>
+References: <20220517110737.37148-1-ilpo.jarvinen@linux.intel.com> <20220517110737.37148-2-ilpo.jarvinen@linux.intel.com> <CAKfKVtFO5z68JwFtGDoHAVVfwXvNnT0B_dGZutCLyu6Vo8tXOQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1652876187.git.esyr@redhat.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: multipart/mixed; boundary="8323329-733060916-1652876712=:1539"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since bpf_kprobe_multi_link_attach doesn't support 32-bit kernels
-for whatever reason, having it enabled for compat processes on 64-bit
-kernels makes even less sense due to discrepances in the type sizes
-that it does not handle.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- kernel/trace/bpf_trace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--8323329-733060916-1652876712=:1539
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 212faa4..2f83489 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2412,7 +2412,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 	int err;
- 
- 	/* no support for 32bit archs yet */
--	if (sizeof(u64) != sizeof(void *))
-+	if (sizeof(u64) != sizeof(void *) || in_compat_syscall())
- 		return -EOPNOTSUPP;
- 
- 	if (prog->expected_attach_type != BPF_TRACE_KPROBE_MULTI)
+On Wed, 18 May 2022, Shubhrajyoti Datta wrote:
+
+> On Tue, May 17, 2022 at 5:58 PM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+> >
+> > BRKINT is within c_iflag rather than c_cflag.
+> Nit typo in the subject line.
+
+Indeed, good catch. Even after you pointed it out, it was still hard to 
+spot what was wrong with it.
+
+Thanks.
+
 -- 
-2.1.4
+ i.
 
+> > Cc: Sean Anderson <sean.anderson@seco.com>
+> > Fixes: ea017f5853e9 (tty: serial: uartlite: Prevent changing fixed parameters)
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > ---
+> >  drivers/tty/serial/uartlite.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> > index 007db67292a2..880e2afbb97b 100644
+> > --- a/drivers/tty/serial/uartlite.c
+> > +++ b/drivers/tty/serial/uartlite.c
+> > @@ -321,7 +321,8 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
+> >         struct uartlite_data *pdata = port->private_data;
+> >
+> >         /* Set termios to what the hardware supports */
+> > -       termios->c_cflag &= ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE);
+> > +       termios->c_iflag &= ~BRKINT;
+> > +       termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CSIZE);
+> >         termios->c_cflag |= pdata->cflags & (PARENB | PARODD | CSIZE);
+> >         tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
+> >
+> > --
+> > 2.30.2
+> >
+> 
+
+--8323329-733060916-1652876712=:1539--
